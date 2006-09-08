@@ -116,78 +116,108 @@ G_BEGIN_DECLS
 
 
 /* unicode encodings for digbat symbols */
-   
+
 static const char filled_circle[]
 #ifdef DO_INITIALISE
-={0xCF, 0x25}
+=
+  {
+    0xCF, 0x25
+  }
 #endif
-     ;
+  ;
 
 static const char filled_square[]
 #ifdef DO_INITIALISE
-= {0xA0, 0x25};
+=
+  {
+    0xA0, 0x25
+  };
 #endif
-     ;
+;
 
 static const char filled_uptri[]
 #ifdef DO_INITIALISE
-= {0xB2, 0x25};
+=
+  {
+    0xB2, 0x25
+  };
 #endif
-     ;
+;
 
 static const char filled_downtri[]
 #ifdef DO_INITIALISE
-= {0xBC, 0x25};
+=
+  {
+    0xBC, 0x25
+  };
 #endif
-     ;
+;
 
 static const char filled_diamond[]
 #ifdef DO_INITIALISE
-= {0xC6, 0x25};
+=
+  {
+    0xC6, 0x25
+  };
 #endif
-     ;
+;
 
 static const char filled_4star[]
 #ifdef DO_INITIALISE
-= {0x26, 0x27};
+=
+  {
+    0x26, 0x27
+  };
 #endif
-     ;
+;
 
 static const char open_4star[]
 #ifdef DO_INITIALISE
-= {0x27, 0x27};
+=
+  {
+    0x27, 0x27
+  };
 #endif
-     ;
+;
 
 static const char filled_5star[]
 #ifdef DO_INITIALISE
-= {0x05, 0x26};
+=
+  {
+    0x05, 0x26
+  };
 #endif
-     ;
+;
 
-typedef struct {
-  const char * unicode;
-  char * utf8;
-  gint    strlen;
-  PangoLayout *layout;
-  gint h_center;
-  gint v_center;
-} db_symbols_s;
+typedef struct
+  {
+    const char * unicode;
+    char * utf8;
+    gint    strlen;
+    PangoLayout *layout;
+    gint h_center;
+    gint v_center;
+  }
+db_symbols_s;
 
 static db_symbols_s db_symbols[]
 #ifdef DO_INITIALISE
-= {
-  {filled_circle,	NULL, 0, NULL, 0, 0},		/* filled circle	*/
-  {filled_square,	NULL, 0, NULL, 0, 0},		/* filled square	*/
-  {filled_uptri,	NULL, 0, NULL, 0, 0},		/* filled uptri		*/
-  {filled_downtri,	NULL, 0, NULL, 0, 0},		/* filled downtri	*/
-  {filled_diamond,	NULL, 0, NULL, 0, 0},		/* filled diamond	*/
-  {filled_4star,	NULL, 0, NULL, 0, 0},		/* filled 4-pt star	*/
-  {open_4star,		NULL, 0, NULL, 0, 0},		/* open 4-pt star	*/
-  {filled_5star,	NULL, 0, NULL, 0, 0},		/* filled 5-pt star	*/
-}
+=
+  {
+    {
+      filled_circle,	NULL, 0, NULL, 0, 0
+    }
+    ,		/* filled circle	*/
+    {filled_square,	NULL, 0, NULL, 0, 0},		/* filled square	*/
+    {filled_uptri,	NULL, 0, NULL, 0, 0},		/* filled uptri		*/
+    {filled_downtri,	NULL, 0, NULL, 0, 0},		/* filled downtri	*/
+    {filled_diamond,	NULL, 0, NULL, 0, 0},		/* filled diamond	*/
+    {filled_4star,	NULL, 0, NULL, 0, 0},		/* filled 4-pt star	*/
+    {open_4star,		NULL, 0, NULL, 0, 0},		/* open 4-pt star	*/
+    {filled_5star,	NULL, 0, NULL, 0, 0},		/* filled 5-pt star	*/
+  }
 #endif
-;
+  ;
 
 #define ftk_symbol_unicode(i)	db_symbols[i].unicode
 #define ftk_symbol_utf8(i)	db_symbols[i].utf8
@@ -200,17 +230,21 @@ static const gint db_symbols_count
 #ifdef DO_INITIALISE
 = sizeof(db_symbols)/sizeof(db_symbols_s)
 #endif
-     ;
+  ;
 
 static db_symbols_s little_dot
 #ifdef DO_INITIALISE
-= {filled_circle,	NULL, 0, NULL, 0, 0}
+=
+  {
+    filled_circle,	NULL, 0, NULL, 0, 0
+  }
 #endif
-;
+  ;
 
 #endif  /* INCLUDE_PRIVATE */
 
-typedef enum {
+typedef enum
+{
   FTK_GLYPH_FILLED_CIRCLE,
   FTK_GLYPH_FILLED_SQUARE,
   FTK_GLYPH_FILLED_UP_TRIANGLE,
@@ -221,7 +255,8 @@ typedef enum {
   FTK_GLYPH_FILLED_FIVE_STAR,
   FTK_GLYPH_LAST
   //FTK_GLYPH_AUTOMATIC
-} FtkGlyph;
+}
+FtkGlyph;
 
 
 #define FTK_EVENTVIEWER_TYPE            \
@@ -240,22 +275,22 @@ typedef enum {
 
 #define FTK_IS_EVENTVIEWER_CLASS(klass)	\
         (G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_EVENTVIEWER_TYPE))
-        
+
 #define FTK_DRAWING_AREA_TYPE					\
 		(ftk_drawing_area_get_type())
-		
+
 #define FTK_DRAWING_AREA(obj) \
 		(G_TYPE_CHECK_INSTANCE_CAST ((obj), \
 		FTK_DRAWING_AREA_TYPE, FtkDrawingArea))
-		
+
 #define FTK_IS_DRAWING_AREA(obj) \
 		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_DRAWING_AREA_TYPE))
-		
+
 #define FTK_IS_DRAWING_AREA_CLASS(klass) \
-		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_DRAWING_AREA_TYPE))	
-		
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_DRAWING_AREA_TYPE))
+
 #define FTK_DRAWING_AREA_GET_CLASS(klass) \
-		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_DRAWING_AREA_TYPE, FtkDrawingAreaClass))					
+		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_DRAWING_AREA_TYPE, FtkDrawingAreaClass))
 
 #define FTK_LEGEND_TYPE					\
 		(ftk_legend_get_type())
@@ -263,47 +298,49 @@ typedef enum {
 #define FTK_LEGEND(obj) \
 		(G_TYPE_CHECK_INSTANCE_CAST ((obj), \
 		FTK_LEGEND_TYPE, FtkLegend))
-		
+
 #define FTK_IS_LEGEND(obj) \
 		(G_TYPE_CHECK_INSTANCE_TYPE ((obj,), FTK_LEGEND_TYPE))
-		
+
 #define FTK_IS_LEGEND_CLASS(klass) \
-		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_LEGEND_TYPE))	
-		
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_LEGEND_TYPE))
+
 #define FTK_LEGEND_GET_CLASS(klass) \
-		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_LEGEND_TYPE, FtkLegendClass))					
-        
+		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_LEGEND_TYPE, FtkLegendClass))
+
 #define FTK_TRACE_TYPE					\
 		(ftk_trace_get_type ())
 
 #define FTK_TRACE(obj)					\
 		(G_TYPE_CHECK_INSTANCE_CAST ((obj),	\
 		FTK_TRACE_TYPE, FtkTrace))
-		
+
 #define FTK_TRACE_CLASS(klass)		\
 		(G_TYPE_CHECK_CLASS_CAST ((klass),	\
 		FTK_TRACE_TYPE, FtkTraceClass))
-		
+
 #define FTK_IS_TRACE(obj)			\
 		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_TRACE_TYPE))
-		
-#define	FTK_IS_TRACE_CLASS(klass)	\
-		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_TRACE_TYPE))		
 
-typedef struct {
-  GdkGC       * gc;
-  PangoLayout * label;
-  gint		glyph_hpos_d;
-  gint		label_hpos_d;
-  gint		label_width;
-  gint		label_height;
-  gint		vpos;
-  FtkGlyph	glyph;
-  GdkColor	color;
-  char	      * string;
-  gboolean	label_modified;
-  gint index;
-} ftk_marker_s;
+#define	FTK_IS_TRACE_CLASS(klass)	\
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_TRACE_TYPE))
+
+typedef struct
+  {
+    GdkGC       * gc;
+    PangoLayout * label;
+    gint		glyph_hpos_d;
+    gint		label_hpos_d;
+    gint		label_width;
+    gint		label_height;
+    gint		vpos;
+    FtkGlyph	glyph;
+    GdkColor	color;
+    char	      * string;
+    gboolean	label_modified;
+    gint index;
+  }
+ftk_marker_s;
 
 #define ftk_marker_gc(m)		(m)->gc
 #define ftk_marker_label(m)		(m)->label
@@ -322,13 +359,15 @@ typedef struct {
 #define ftk_marker_index(m)			(m)->index
 
 
-typedef struct {
-  gint		marker;
-  gchar	      * string;
-  GdkPoint		loc;
-  double	time;
-  gint index;
-} FtkEvent;
+typedef struct
+  {
+    gint		marker;
+    gchar	      * string;
+    GdkPoint		loc;
+    double	time;
+    gint index;
+  }
+FtkEvent;
 
 #define ftk_event_marker(e)	(e)->marker
 #define ftk_event_string(e)	(e)->string
@@ -336,29 +375,31 @@ typedef struct {
 #define ftk_event_time(e)	(e)->time
 #define ftk_event_index(e)	(e)->index
 
-typedef struct _FtkTrace {
-  GtkWidget * parent;
-  double	linestyle;
-  double	linewidth;
-  double	min_time;
-  double	max_time;
-  GdkColor	color;
-  GdkGC       * gc;
-  PangoLayout * label;
-  gint		label_width_d;
-  gint		label_height_d;
-  gint		vpos_d;
-  char	      * string;
-  FtkEvent * events;
-  gint		event_next;
-  gint		event_max;
-  gboolean	label_modified;		/* used */
-  gboolean	valid;
-  gboolean	time_set;
-  gint index;
-  gboolean	selected;
-  gboolean modified;
-} FtkTrace;
+typedef struct _FtkTrace
+  {
+    GtkWidget * parent;
+    double	linestyle;
+    double	linewidth;
+    double	min_time;
+    double	max_time;
+    GdkColor	color;
+    GdkGC       * gc;
+    PangoLayout * label;
+    gint		label_width_d;
+    gint		label_height_d;
+    gint		vpos_d;
+    char	      * string;
+    FtkEvent * events;
+    gint		event_next;
+    gint		event_max;
+    gboolean	label_modified;		/* used */
+    gboolean	valid;
+    gboolean	time_set;
+    gint index;
+    gboolean	selected;
+    gboolean modified;
+  }
+FtkTrace;
 
 #define ftk_tie_s FtkTrace
 
@@ -388,28 +429,39 @@ typedef struct _FtkTrace {
 #define ftk_trace_selected(t)	(t)->selected
 #define ftk_trace_modified(t)	(t)->modified
 
-typedef struct _FtkTraceClass {
-  GtkWidgetClass parent_class;
-  void (* ftktrace) (FtkTrace * trace);
-} FtkTraceClass;
+typedef struct _FtkTraceClass
+  {
+    GtkWidgetClass parent_class;
+    void (* ftktrace) (FtkTrace * trace);
+  }
+FtkTraceClass;
 
-typedef struct _FtkDrawingArea {
-	GtkDrawingArea	parent;
-	FtkTrace		* traces;
-  gint			  trace_next;
-  gint			  trace_max;
-  gint			* trace_pool;
-  gint			  trace_pool_next;
-  gint			  trace_pool_max;
-  gint			* trace_order;
-  gint			  trace_order_next;
-  gint			  trace_order_max;
-  gboolean		  trace_modified;		/* used */
-  gint			  trace_origin;
-  gint			  trace_width;
-  GtkAdjustment		*hadjustment;
-  GtkAdjustment		*vadjustment;
-} FtkDrawingArea;
+typedef enum {
+  SCROLL_OFF,
+  SCROLL_LEFT,
+  SCROLL_RIGHT
+} HScrollDirection;
+
+typedef struct _FtkDrawingArea
+  {
+    GtkDrawingArea	parent;
+    FtkTrace		* traces;
+    gint			  trace_next;
+    gint			  trace_max;
+    gint			* trace_pool;
+    gint			  trace_pool_next;
+    gint			  trace_pool_max;
+    gint			* trace_order;
+    gint			  trace_order_next;
+    gint			  trace_order_max;
+    gboolean		  trace_modified;		/* used */
+    gint			  trace_origin;
+    gint			  trace_width;
+    GtkAdjustment		*hadjustment;
+    GtkAdjustment		*vadjustment;
+    gint			hscroll_direction;
+  }
+FtkDrawingArea;
 
 #define ftk_da_trace_pool(d)		(d)->trace_pool
 #define ftk_da_trace_pool_ety(d,i)	(d)->trace_pool[i]
@@ -428,26 +480,34 @@ typedef struct _FtkDrawingArea {
 #define ftk_da_trace_width(d)		(d)->trace_width
 #define ftk_da_hadjustment(d)		(d)->hadjustment
 #define ftk_da_vadjustment(d)		(d)->vadjustment
+#define ftk_da_hscroll_direction(d)	(d)->hscroll_direction
 
-typedef struct _FtkDrawingAreaClass {
-	GtkDrawingAreaClass parent_class;
-	
-	void (* set_scroll_adjustments)   (FtkDrawingArea    *da,
-                                     GtkAdjustment  *hadjustment,
-                                     GtkAdjustment  *vadjustment);
-} FtkDrawingAreaClass;
 
-typedef struct _FtkLegend {
-	GtkDrawingArea parent;
-	ftk_marker_s	        * markers;
-  gint	      		  markers_next;
-  gint	      		  markers_max;
-  gboolean     		  markers_modified;		/* used */
-} FtkLegend;
+typedef struct _FtkDrawingAreaClass
+  {
+    GtkDrawingAreaClass parent_class;
 
-typedef struct _FtkLegendClass {
-	GtkDrawingAreaClass parent_class;
-} FtkLegendClass;
+    void (* set_scroll_adjustments)   (FtkDrawingArea    *da,
+                                       GtkAdjustment  *hadjustment,
+                                       GtkAdjustment  *vadjustment);
+  }
+FtkDrawingAreaClass;
+
+typedef struct _FtkLegend
+  {
+    GtkDrawingArea parent;
+    ftk_marker_s	        * markers;
+    gint	      		  markers_next;
+    gint	      		  markers_max;
+    gboolean     		  markers_modified;		/* used */
+  }
+FtkLegend;
+
+typedef struct _FtkLegendClass
+  {
+    GtkDrawingAreaClass parent_class;
+  }
+FtkLegendClass;
 
 #define ftk_legend_markers(l)		(l)->markers
 #define ftk_legend_marker(l,i)	      &((l)->markers[i])
@@ -469,13 +529,15 @@ typedef struct _FtkLegendClass {
 #define ftk_tie_color_blue(t)		(t)->color.blue
 #define ftk_tie_label_modified(t)	(t)->label_modified
 
-typedef struct {
-  double when;
-  gint tie_index;
-  gint * trace_list;
-  gint trace_list_next;
-  gint trace_list_max;
-} ftk_link_s;
+typedef struct
+  {
+    double when;
+    gint tie_index;
+    gint * trace_list;
+    gint trace_list_next;
+    gint trace_list_max;
+  }
+ftk_link_s;
 
 #define ftk_link_when(l)		(l)->when
 #define ftk_link_tie_index(l)		(l)->tie_index
@@ -484,17 +546,21 @@ typedef struct {
 #define ftk_link_trace_list_next(l)	(l)->trace_list_next
 #define ftk_link_trace_list_max(l)	(l)->trace_list_max
 
-typedef struct {
-  gint trace_idx;
-  gint event_idx;
-} ftk_event_pair_s;
+typedef struct
+  {
+    gint trace_idx;
+    gint event_idx;
+  }
+ftk_event_pair_s;
 
-typedef struct {
-  gint tie_index;
-  ftk_event_pair_s * event_pair_list;
-  gint event_list_next;
-  gint event_list_max;
-} ftk_dlink_s;
+typedef struct
+  {
+    gint tie_index;
+    ftk_event_pair_s * event_pair_list;
+    gint event_list_next;
+    gint event_list_max;
+  }
+ftk_dlink_s;
 
 #define ftk_dlink_tie_index(l)		(l)->tie_index
 #define ftk_dlink_event_pair_list(l)	(l)->event_pair_list
@@ -512,66 +578,68 @@ typedef enum {
   FTK_POPUP_TYPE_TIME
 } ftk_popup_type_e;
 
-typedef struct _FtkEventViewer {
-  GtkVBox		  vbox;
-  double		  zero_d;
-  double		  now_d;
-  double		  span_d;
-  double		  min_time;
-  double		  max_time;
-  GtkWidget		* popup_window;
-  GtkWidget		* popup_label;
-  GtkWidget		* button_legend_box;
-  GtkWidget		* hbutton_box;
-  GtkWidget		* scale_toggle_button;
-  GtkWidget		* hold_toggle_button;
+typedef struct _FtkEventViewer
+  {
+    GtkVBox		  vbox;
+    double		  zero_d;
+    double		  now_d;
+    double		  span_d;
+    double		  min_time;
+    double		  max_time;
+    GtkWidget		* popup_window;
+    GtkWidget		* popup_label;
+    GtkWidget		* button_legend_box;
+    GtkWidget		* hbutton_box;
+    GtkWidget		* scale_toggle_button;
+    GtkWidget		* hold_toggle_button;
 #ifdef USE_SLIDER_INTERVAL
-  GtkWidget		* interval_scale;
+    GtkWidget		* interval_scale;
 #endif
-#ifndef USE_SLIDER_INTERVAL  
-  GtkWidget		* interval_spin_button;
+#ifndef USE_SLIDER_INTERVAL
+    GtkWidget		* interval_spin_button;
 #endif
-  GtkWidget		* da_frame;
-  GtkWidget		* legend_frame;
-  GtkWidget		* readout;
-  GtkWidget		* scroll;
-  GtkAdjustment		* scroll_adj;
-  FtkDrawingArea	* da;
-  GtkScrolledWindow * da_scrolled_window;
-  FtkLegend	* legend_da;
-  GdkColor		  bg_color;
-  const GdkColor       ** color_set;
-  
-  
-  ftk_tie_s		* ties;
-  gint			  tie_next;
-  gint			  tie_max;
-  ftk_link_s		* links;
-  gint			  link_next;
-  gint			  link_max;
-  ftk_dlink_s		* dlinks;
-  gint			  dlink_next;
-  gint			  dlink_max;
-  gint			  label_box_width;
-  gint			  label_box_height;
-  gint			  da_height;
-  gint			  legend_height;
+    GtkWidget		* da_frame;
+    GtkWidget		* legend_frame;
+    GtkWidget		* readout;
+    GtkWidget		* scroll;
+    GtkAdjustment		* scroll_adj;
+    FtkDrawingArea	* da;
+    GtkScrolledWindow * da_scrolled_window;
+    FtkLegend	* legend_da;
+    GdkColor		  bg_color;
+    const GdkColor       ** color_set;
 
-  gint			  popup_trace;
-  gint			  popup_marker;
-  ftk_popup_type_e	  popup_type;
-  FtkGlyph		  next_glyph;
-  gint			  next_color;
-  gboolean		  tie_modified;
-  gboolean     		  widget_modified;		/* used */
-  gboolean     		  symbols_initted;
-  gboolean		  drawable;
-  gboolean		  time_set;
-  gboolean		  hold_activated;
-  gint			  accessible_index;
-  
-  gint			 selected_trace;
-} FtkEventViewer;
+
+    ftk_tie_s		* ties;
+    gint			  tie_next;
+    gint			  tie_max;
+    ftk_link_s		* links;
+    gint			  link_next;
+    gint			  link_max;
+    ftk_dlink_s		* dlinks;
+    gint			  dlink_next;
+    gint			  dlink_max;
+    gint			  label_box_width;
+    gint			  label_box_height;
+    gint			  da_height;
+    gint			  legend_height;
+
+    gint			  popup_trace;
+    gint			  popup_marker;
+    ftk_popup_type_e	  popup_type;
+    FtkGlyph		  next_glyph;
+    gint			  next_color;
+    gboolean		  tie_modified;
+    gboolean     		  widget_modified;		/* used */
+    gboolean     		  symbols_initted;
+    gboolean		  drawable;
+    gboolean		  time_set;
+    gboolean		  hold_activated;
+    gint			  accessible_index;
+
+    gint			 selected_trace;
+  }
+FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)
 #ifdef USE_READOUT
@@ -597,7 +665,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_hbutton_box(v)		(v)->hbutton_box
 #define ftk_ev_scale_toggle_button(v)	(v)->scale_toggle_button
 #define ftk_ev_hold_toggle_button(v)	(v)->hold_toggle_button
-#ifndef USE_SLIDER_INTERVAL  
+#ifndef USE_SLIDER_INTERVAL
 #define ftk_ev_interval_button(v)	(v)->interval_spin_button
 #endif
 #ifdef USE_SLIDER_INTERVAL
@@ -645,10 +713,12 @@ typedef struct _FtkEventViewer {
 
 #define ftk_ev_selected_trace(v)	(v)->selected_trace
 
-typedef struct _FtkEventViewerClass {
-  GtkVBoxClass parent_class;
-  void (* ftkeventviewer) (FtkEventViewer * eventviewer);
-} FtkEventViewerClass;
+typedef struct _FtkEventViewerClass
+  {
+    GtkVBoxClass parent_class;
+    void (* ftkeventviewer) (FtkEventViewer * eventviewer);
+  }
+FtkEventViewerClass;
 
 typedef enum {
   FTK_EV_ERROR_NONE,
@@ -665,11 +735,13 @@ typedef enum {
 
 /*************** public api *****************/
 
-typedef struct {
-  gint trace;
-  gint marker;
-  gchar * string;
-} ftk_simultaneous_events_s;
+typedef struct
+  {
+    gint trace;
+    gint marker;
+    gchar * string;
+  }
+ftk_simultaneous_events_s;
 
 
 GType
@@ -681,27 +753,27 @@ ftk_eventviewer_new		();
 
 gboolean
 ftk_eventviewer_resize_e	(FtkEventViewer * eventviewer,
-				 gint width, gint height,
-				 GError ** err);
+                          gint width, gint height,
+                          GError ** err);
 
 gboolean
 ftk_eventviewer_resize		(FtkEventViewer * eventviewer,
-				 gint width, gint height);
+                         gint width, gint height);
 
 gboolean
 ftk_eventviewer_set_bg_rgb_e	(FtkEventViewer * eventviewer,
-				 guint red, guint green, guint blue,
-				 GError ** err);
+                              guint red, guint green, guint blue,
+                              GError ** err);
 gboolean
 ftk_eventviewer_set_bg_rgb	(FtkEventViewer * eventviewer,
-				 guint red, guint green, guint blue);
+                            guint red, guint green, guint blue);
 gboolean
 ftk_eventviewer_set_bg_color_e	(FtkEventViewer * eventviewer,
-				 GdkColor * color, GError ** err);
+                                GdkColor * color, GError ** err);
 gboolean
 ftk_eventviewer_set_bg_color	(FtkEventViewer * eventviewer,
-				 GdkColor * color);
-				 
+                              GdkColor * color);
+
 gboolean
 ftk_eventviewer_set_bg_default	(FtkEventViewer * eventviewer);
 
@@ -713,246 +785,246 @@ ftk_eventviewer_get_fg_default (FtkEventViewer * eventviewer);
 
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
-				 double span,
-				 GError ** err);
+                                double span,
+                                GError ** err);
 gboolean
 ftk_eventviewer_set_timebase	(FtkEventViewer * eventviewer,
-				 double span);
+                              double span);
 
 gint
 ftk_eventviewer_add_trace_e	(FtkEventViewer * eventviewer,
-				 char * label,
-				 char * string,
-				 GError ** err);
+                             char * label,
+                             char * string,
+                             GError ** err);
 
 gint
 ftk_eventviewer_add_trace	(FtkEventViewer * eventviewer,
-				 char * label,
-				 char * string);
-				 
+                           char * label,
+                           char * string);
+
 gint
 ftk_eventviewer_add_trace_after_trace_e (FtkEventViewer * eventviewer,
-				 gint parent_trace,
-			     char * label,
-			     char * string,
-			     GError ** err);				 
+    gint parent_trace,
+    char * label,
+    char * string,
+    GError ** err);
 
 gboolean
 ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
-				 gint trace_idx,
-				 GError ** err);
+                                gint trace_idx,
+                                GError ** err);
 
 gboolean
 ftk_eventviewer_delete_trace	(FtkEventViewer * eventviewer,
-				 gint trace_idx);
-				 
+                              gint trace_idx);
+
 GList *
 ftk_eventviewer_get_selected_traces (FtkEventViewer * eventviewer);
 
 gboolean
 ftk_eventviewer_set_trace_rgb_e	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 guint red, guint green, guint blue,
-				 GError ** err);
+                                 gint trace,
+                                 guint red, guint green, guint blue,
+                                 GError ** err);
 
 gboolean
 ftk_eventviewer_set_trace_rgb	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 guint red, guint green, guint blue);
+                               gint trace,
+                               guint red, guint green, guint blue);
 
 gboolean
 ftk_eventviewer_set_trace_color_e	(FtkEventViewer * eventviewer,
-					 gint trace,
-					 GdkColor * color,
-					 GError ** err);
+                                   gint trace,
+                                   GdkColor * color,
+                                   GError ** err);
 
 gboolean
 ftk_eventviewer_set_trace_color		(FtkEventViewer * eventviewer,
-					 gint trace,
-					 GdkColor * color);
+                                  gint trace,
+                                  GdkColor * color);
 
 gboolean
 ftk_eventviewer_set_trace_label_e	(FtkEventViewer * eventviewer,
-					 gint trace,
-					 char * label,
-					 GError ** err);
+                                   gint trace,
+                                   char * label,
+                                   GError ** err);
 
 gboolean
 ftk_eventviewer_set_trace_label		(FtkEventViewer * eventviewer,
-					 gint trace,
-					 char * label);
+                                  gint trace,
+                                  char * label);
 
 gboolean
 ftk_eventviewer_set_trace_linestyle_e	(FtkEventViewer * eventviewer,
-					 gint trace,
-					 gint lw,
-					 gint ls,
-					 GError ** err);
+                                       gint trace,
+                                       gint lw,
+                                       gint ls,
+                                       GError ** err);
 gboolean
 ftk_eventviewer_set_trace_linestyle	(FtkEventViewer * eventviewer,
-					 gint trace,
-					 gint lw,
-					 gint ls);
+                                     gint trace,
+                                     gint lw,
+                                     gint ls);
 
 gint
 ftk_eventviewer_marker_new_e		(FtkEventViewer * eventviewer,
-					 FtkGlyph glyph,
-					 char * label,
-					 char * string,
-					 GError ** err);
+                               FtkGlyph glyph,
+                               char * label,
+                               char * string,
+                               GError ** err);
 
 gint
 ftk_eventviewer_marker_new 		(FtkEventViewer * eventviewer,
-					 FtkGlyph glyph,
-					 char * label,
-					 char * string);
+                              FtkGlyph glyph,
+                              char * label,
+                              char * string);
 
 gboolean
 ftk_eventviewer_set_marker_rgb_e	(FtkEventViewer * eventviewer,
-					 gint marker,
-					 guint red, guint green, guint blue,
-					 GError ** err);
+                                  gint marker,
+                                  guint red, guint green, guint blue,
+                                  GError ** err);
 
 gboolean
 ftk_eventviewer_set_marker_rgb		(FtkEventViewer * eventviewer,
-					 gint marker,
-					 guint red, guint green, guint blue);
+                                 gint marker,
+                                 guint red, guint green, guint blue);
 
 gboolean
 ftk_eventviewer_set_marker_color_e	(FtkEventViewer * eventviewer,
-					 gint marker,
-					 GdkColor * color,
-					 GError ** err);
+                                    gint marker,
+                                    GdkColor * color,
+                                    GError ** err);
 
 gboolean
 ftk_eventviewer_set_marker_color	(FtkEventViewer * eventviewer,
-					 gint marker,
-					 GdkColor * color);
+                                  gint marker,
+                                  GdkColor * color);
 
 GdkColor *
 ftk_eventviewer_get_marker_color_e	(FtkEventViewer * eventviewer,
-					 gint marker,
-					 GError ** err);
+                                    gint marker,
+                                    GError ** err);
 
 GdkColor *
 ftk_eventviewer_get_marker_color	(FtkEventViewer * eventviewer,
-					 gint marker);
+                                  gint marker);
 
 gint
 ftk_eventviewer_tie_new_e	(FtkEventViewer * eventviewer,
 #ifdef USE_TIE_LABEL
-				 char * label,
+                           char * label,
 #endif
-				 GError ** err);
+                           GError ** err);
 gint
 ftk_eventviewer_tie_new		(FtkEventViewer * eventviewer
 #ifdef USE_TIE_LABEL
-				 , char * label
+                          , char * label
 #endif
-				 );
+                         );
 
 gboolean
 ftk_eventviewer_set_tie_rgb_e	(FtkEventViewer * eventviewer,
-				 gint tie,
-				 guint red, guint green, guint blue,
-				 GError ** err);
+                               gint tie,
+                               guint red, guint green, guint blue,
+                               GError ** err);
 
 gboolean
 ftk_eventviewer_set_tie_rgb	(FtkEventViewer * eventviewer,
-				 gint tie,
-				 guint red, guint green, guint blue);
+                             gint tie,
+                             guint red, guint green, guint blue);
 
 gboolean
 ftk_eventviewer_set_tie_color_e	(FtkEventViewer * eventviewer,
-					 gint tie,
-					 GdkColor * color,
-					 GError ** err);
+                                 gint tie,
+                                 GdkColor * color,
+                                 GError ** err);
 
 gboolean
 ftk_eventviewer_set_tie_color		(FtkEventViewer * eventviewer,
-					 gint tie,
-					 GdkColor * color);
+                                gint tie,
+                                GdkColor * color);
 
 #ifdef USE_TIE_LABEL
 gboolean
 ftk_eventviewer_set_tie_label_e	(FtkEventViewer * eventviewer,
-					 gint tie,
-					 char * label,
-					 GError ** err);
+                                 gint tie,
+                                 char * label,
+                                 GError ** err);
 gboolean
 ftk_eventviewer_set_tie_label		(FtkEventViewer * eventviewer,
-					 gint tie,
-					 char * label);
+                                gint tie,
+                                char * label);
 #endif
 
 gboolean
 ftk_eventviewer_set_tie_linestyle_e	(FtkEventViewer * eventviewer,
-					 gint tie,
-					 gint lw,
-					 gint ls,
-					 GError ** err);
+                                     gint tie,
+                                     gint lw,
+                                     gint ls,
+                                     GError ** err);
 
 gboolean
 ftk_eventviewer_set_tie_linestyle	(FtkEventViewer * eventviewer,
-					 gint tie,
-					 gint lw,
-					 gint ls);
+                                   gint tie,
+                                   gint lw,
+                                   gint ls);
 
 gint
 ftk_eventviewer_append_event_e	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 gint marker,
-				 gchar * string,
-				 GError ** err);
+                                gint trace,
+                                gint marker,
+                                gchar * string,
+                                GError ** err);
 
 gint
 ftk_eventviewer_append_event	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 gint marker,
-				 gchar * string);
+                              gint trace,
+                              gint marker,
+                              gchar * string);
 
 gboolean
 ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
-					      gint tie_index,
-					      GError ** err, ...);
+    gint tie_index,
+    GError ** err, ...);
 
 gboolean
 ftk_eventviewer_append_simultaneous_events (FtkEventViewer * eventviewer,
-					    gint tie_index, ...);
+    gint tie_index, ...);
 
 gboolean
 ftk_eventviewer_append_simultaneous_event_array_e (FtkEventViewer * eventviewer,
-						   gint tie_index,
-						   gint array_count,
-						   ftk_simultaneous_events_s * events_array,
-						   GError ** err);
+    gint tie_index,
+    gint array_count,
+    ftk_simultaneous_events_s * events_array,
+    GError ** err);
 
 gboolean
 ftk_eventviewer_append_simultaneous_event_array (FtkEventViewer * eventviewer,
-						 gint tie_index,
-						 gint array_count,
-						 ftk_simultaneous_events_s * events_array);
+    gint tie_index,
+    gint array_count,
+    ftk_simultaneous_events_s * events_array);
 
 gboolean
 ftk_eventviewer_tie_events_e (FtkEventViewer * eventviewer,
-			      gint tie_index,
-			      GError ** err, ...);
+                              gint tie_index,
+                              GError ** err, ...);
 
 gboolean
 ftk_eventviewer_tie_events (FtkEventViewer * eventviewer,
-			    gint tie_index, ...); 
+                            gint tie_index, ...);
 
 gboolean
 ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
-				   gint tie_index,
-				   gint count,
-				   ftk_event_pair_s * events,
-				   GError ** err);
+                                   gint tie_index,
+                                   gint count,
+                                   ftk_event_pair_s * events,
+                                   GError ** err);
 
 gboolean
 ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
-				 gint tie_index, gint count,
-				 ftk_event_pair_s * events);
+                                 gint tie_index, gint count,
+                                 ftk_event_pair_s * events);
 
 
 G_END_DECLS
