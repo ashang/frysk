@@ -70,6 +70,7 @@ public class StatusWidget extends VBox {
 
 	private Color backgroundColor = new Color(50000, 50000, 50000);
 
+	private int[] legendAdded = {0,0,0,0}; 
 	private Color[] markerColors = { Color.RED, Color.GREEN, Color.BLUE,
 			Color.ORANGE };
 
@@ -166,7 +167,7 @@ public class StatusWidget extends VBox {
 		}
 		
 		if (observer instanceof TaskCloneObserver) {
-			((TaskCloneObserver)observer).clonedTaskActionPoint.addAction(new TimelineAction(
+			((TaskCloneObserver)observer).cloningTaskActionPoint.addAction(new TimelineAction(
 					observer, guiData));
 		}
 		
@@ -176,7 +177,7 @@ public class StatusWidget extends VBox {
 		}
 		
 		if (observer instanceof TaskForkedObserver) {
-			((TaskForkedObserver)observer).forkedTaskActionPoint.addAction(new TimelineAction(
+			((TaskForkedObserver)observer).forkingTaskActionPoint.addAction(new TimelineAction(
 					observer, guiData));
 		}
 		
@@ -258,6 +259,7 @@ public class StatusWidget extends VBox {
         {
           observerglyph = 0;
           observercolor = 0;
+
         }
       else if (observer.getBaseName().equals("Exec Observer"))
         {
@@ -279,23 +281,16 @@ public class StatusWidget extends VBox {
           observerglyph = 4;
           observercolor = 1;
         }
-      else if (observer.getBaseName().equals("Exit Notification Observer"))
-        {
-          observerglyph = 5;
-          observercolor = 2;
-        }
-      else
-        {
-          System.out.println("Couldn't understand observer base name: "
-                             + observer.getBaseName());
-
-        }
-
       
-      viewer.addMarker(observerglyph, observer.getName(),
-                                       observer.getToolTip());
-
-      viewer.setMarkerColor(this.markerId, markerColors[observercolor]);
+      if  (legendAdded[observerglyph] == 0) {
+	
+	      viewer.addMarker(observerglyph, observer.getName(),
+	                                       observer.getToolTip());
+	      viewer.setMarkerColor(this.markerId, markerColors[observercolor]);
+	      
+      }
+      
+      legendAdded[observerglyph]++;
 
     }
 

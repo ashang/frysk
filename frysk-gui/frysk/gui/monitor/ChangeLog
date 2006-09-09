@@ -1,5 +1,12 @@
 2006-09-08  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* StatusWidget.java (TimelineAction.createEvent): Only add
+	one glyph per observer type.
+	(addObserverActionPoint): Changed clonedTaskActionPoint to
+	cloningTaskActionPoint.
+	(addObserverActionPoint): Changed forkingTaskActionPoint to
+	forkedTaskActionPoint.
+	
 	* StatusWidget.java (addObserverActionPoint): New.
 	(initEventViewer): Don't use generic action points (broken).
 	(TimelineAction): Rebase on TaskActionPoint, not Generic.
