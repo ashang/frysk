@@ -1,3 +1,23 @@
+2006-09-10    <swagiaal@redhat.com>
+
+	* observers/TaskObserverRoot.java: Added handling for addedTo and 
+	removedFrom, which just forward the call to the GuiTask (part of fix
+	for bz 3190).
+	* observers/ObserverRoot.java: Removed onAdded and onRemoved runnables
+	and all references.
+	* observers/AttachedContinueObserver.java: Removed
+	* observers/AttachedResumeObserver.java: Removed
+	* observers/AttachedStopObserver.java: Removed
+	* observers/DetachedContinueObserver.java: Removed
+	* GuiTask.java: Removed observer.onAdded/onRemoved Runnables. This
+	is now done by TaskObserverRoot.
+	Added functions observerRemoved, observerAdded.
+	* GuiProc.java: Removed observer.onAdded/onRemoved Runnables. This
+	is now done by TaskObserverRoot.
+	* EventLogger.java: Removed references to AttachedContinueObserver
+	AttachedResumeObserver, AttachedStopObserver, 
+	DetachedContinueObserver.
+
 2006-09-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (TimelineAction.createEvent): Only add

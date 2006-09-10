@@ -36,8 +36,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		private ObservableLinkedList actions;
 		private ObservableLinkedList runnables;
 			
-		Runnable onAdded;
-		Runnable onDeleted;
+//		Runnable onAdded;
+//		Runnable onDeleted;
 		
 		private String info;
 		
@@ -129,17 +129,17 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.runnables.add(action);
 		}
 			
-		public void addedTo (Object o) {
-			if(this.onAdded != null){
-				CustomEvents.addEvent(this.onAdded);
-			}
-		}
-
-		public void deletedFrom (Object o) {
-			if(this.onDeleted != null){
-				CustomEvents.addEvent(this.onDeleted);
-			}
-		}
+//		public void addedTo (Object o) {
+//			if(this.onAdded != null){
+//				CustomEvents.addEvent(this.onAdded);
+//			}
+//		}
+//
+//		public void deletedFrom (Object o) {
+//			if(this.onDeleted != null){
+//				CustomEvents.addEvent(this.onDeleted);
+//			}
+//		}
 
 		public void addFailed (Object o, Throwable w) {
 			
@@ -147,13 +147,13 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			throw new RuntimeException (w);
 		}
 
-		public void onAdded(Runnable r){
-			this.onAdded = r;
-		}
-		
-		public void onDeleted(Runnable r){
-			this.onDeleted = r;
-		}
+//		public void onAdded(Runnable r){
+//			this.onAdded = r;
+//		}
+//		
+//		public void onDeleted(Runnable r){
+//			this.onDeleted = r;
+//		}
 
 		/**
 		 * Could be called by an action during the update call to get
@@ -371,5 +371,17 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		public frysk.proc.Action getCurrentAction(){
 			return this.returnAction;
 		}
+
+      
+        //XXX: These should really be abstract
+        // they cannot be made abstract right now because
+        // ObserverRoot cannot be made abstract because dummy
+        // instances of it is needed. perhaps creating a class
+        // DummyObserverRoot can solve that problem... sami
+	  public void addedTo (Object observable){}
+      public void deletedFrom (Object observable){}
+
+//    abstract public void addedTo (Object observable);
+//    abstract public void deletedFrom (Object observable);
 		
 	}

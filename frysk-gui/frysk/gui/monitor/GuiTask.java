@@ -74,21 +74,29 @@ public class GuiTask extends GuiData{
 	}
 
 	public void add(final TaskObserverRoot observer){
-		observer.onAdded(new Runnable() {
-			public void run() {
-				observers.add(observer);
-			}
-		});
-		
-		observer.onDeleted(new Runnable() {
-			public void run() {
-				observers.remove(observer);
-			}
-		});
-		//System.out.println("TaskData.add()");
+//		observer.onAdded(new Runnable() {
+//			public void run() {
+//				observers.add(observer);
+//			}
+//		});
+//		
+//		observer.onDeleted(new Runnable() {
+//			public void run() {
+//				observers.remove(observer);
+//			}
+//		});
+//		//System.out.println("TaskData.add()");
 		observer.apply(this.task);
 	}
 	
+    public void observerAdded(TaskObserverRoot observer){
+        observers.add(observer);
+    }
+    
+    public void observerRemoved(TaskObserverRoot observer){
+      observers.remove(observer);
+    }
+  
    public static class GuiTaskFactory{
 		static HashMap map = new HashMap();
 		

@@ -156,21 +156,21 @@ public class GuiProc extends GuiData{
 	
 	public void add(final TaskObserverRoot observer){
 		
-		observer.onAdded(new Runnable() { 
-			public void run() {
-				//XXX: this will result in the Observer being
-				// added too many times this is solved by a 
-				// hack right now. better model should be found
-	
-				//observers.add(observer);
-			}
-		});
-		
-		observer.onDeleted(new Runnable() {
-			public void run() {
-				observers.remove(observer);
-			}
-		});
+//		observer.onAdded(new Runnable() { 
+//			public void run() {
+//				//XXX: this will result in the Observer being
+//				// added too many times this is solved by a 
+//				// hack right now. better model should be found
+//	
+//				//observers.add(observer);
+//			}
+//		});
+//		
+//		observer.onDeleted(new Runnable() {
+//			public void run() {
+//				observers.remove(observer);
+//			}
+//		});
 		observer.apply(this.proc);
 		observers.add(observer);
 	}

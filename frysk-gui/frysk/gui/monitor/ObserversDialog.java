@@ -105,7 +105,7 @@ public class ObserversDialog extends FryskDialog {
 				updateEnabled();
 			}
 		});
-		
+		observersListView.setSort();
 		
 		this.newObserverButton = (Button) glade.getWidget("createObserverButton");
 		this.newObserverButton.addListener(new ButtonListener() {

@@ -49,6 +49,7 @@ import java.util.logging.Level;
 
 
 import frysk.gui.Gui;
+import frysk.gui.monitor.GuiTask;
 
 public abstract class TaskObserverRoot extends ObserverRoot {
 
@@ -109,4 +110,17 @@ public abstract class TaskObserverRoot extends ObserverRoot {
     
     public abstract void apply(Task task);
     public abstract void unapply(Task task);
+    
+    public void addedTo (Object observable){
+      Task task = (Task) observable;
+      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
+      guiTask.observerAdded(this);
+    }
+    
+    public void deletedFrom (Object observable){
+      Task task = (Task) observable;
+      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
+      guiTask.observerRemoved(this);      
+    }
+        
 }

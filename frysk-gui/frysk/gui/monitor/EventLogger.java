@@ -40,18 +40,14 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Observable;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.Date;
 
 import frysk.gui.Gui;
-import frysk.gui.monitor.observers.AttachedContinueObserver;
-import frysk.gui.monitor.observers.AttachedResumeObserver;
-import frysk.gui.monitor.observers.AttachedStopObserver;
-import frysk.gui.monitor.observers.DetachedContinueObserver;
 import frysk.gui.monitor.observers.ObserverRunnable;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskTerminatingObserver;
@@ -103,17 +99,7 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return this.eventLogFile;
 	}
 	
-	/**{
-	 * Local Observers
-	 * */
-	public AttachedContinueObserver attachedContinueObserver;
-
-	public DetachedContinueObserver detachedContinueObserver;
-
-	public AttachedStopObserver attachedStopObserver;
-
-	public AttachedResumeObserver attachedResumeObserver;
-
+	
 	public TaskExecObserver taskExecObserver;
 
 	public TaskTerminatingObserver taskExitingObserver;
@@ -121,15 +107,7 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 	/** }*/
 
 	public EventLogger() {
-		this.attachedContinueObserver = new AttachedContinueObserver();
-
-		this.detachedContinueObserver = new DetachedContinueObserver();
-
-		this.attachedStopObserver = new AttachedStopObserver();
-
-		this.attachedResumeObserver = new AttachedResumeObserver();
-
-		eventLogFile = Logger.getLogger(EVENT_LOG_ID);
+	    eventLogFile = Logger.getLogger(EVENT_LOG_ID);
 		eventLogFile.setUseParentHandlers(false);
 		eventLogFile.addHandler(buildHandler());
 		eventLogFile.setLevel(Level.ALL);
