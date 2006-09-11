@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 abstract class ProcEvent
     implements Event
 {
-    private static Logger logger = Logger.getLogger ("frysk.proc");
+    private static Logger logger = Logger.getLogger ("frysk");//.proc");
     protected Proc proc;
     protected TaskId taskId; // Random task within Proc.
     ProcEvent ()

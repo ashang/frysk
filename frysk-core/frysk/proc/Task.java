@@ -52,7 +52,7 @@ import lib.dw.DwflLine;
 
 abstract public class Task
 {
-  protected static final Logger logger = Logger.getLogger ("frysk.proc");
+    protected static final Logger logger = Logger.getLogger ("frysk");//.proc");
 
   /**
    * If known, as a result of tracing clone or fork, the task that created this

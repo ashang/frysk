@@ -54,7 +54,7 @@ import java.util.logging.Logger;
 
 public abstract class Proc
 {
-    protected static final Logger logger = Logger.getLogger ("frysk.proc");
+    protected static final Logger logger = Logger.getLogger ("frysk");//.proc");
     final ProcId id;
     public ProcId getId ()
     {

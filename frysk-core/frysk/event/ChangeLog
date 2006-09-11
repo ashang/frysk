@@ -1,3 +1,7 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TimerEvent.java: Pass just "frysk" to getLogger, work-around.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TimerEvent.java: Specify "frysk.event" as the logger, delete

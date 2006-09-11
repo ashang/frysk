@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 public abstract class TimerEvent
     implements Event, Comparable
 {
-    private static Logger logger = Logger.getLogger ("frysk.event");
+    private static Logger logger = Logger.getLogger ("frysk");//.event");
     private long timeMillis;
     private long periodMillis = 0;
 

@@ -1,3 +1,7 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Pass just "frysk" to getLogger, work-around.
+
 2006-09-04  Chris Moller  <moller@mollerware.com>
 
 	* cni/Wait.cxx: Added a bit of code to check for unset status from

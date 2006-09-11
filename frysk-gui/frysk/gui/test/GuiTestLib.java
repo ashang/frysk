@@ -60,7 +60,7 @@ import frysk.gui.monitor.EventLogger;
 
 public class GuiTestLib extends TestCase{
 	
-    protected final static Logger logger = Logger.getLogger ("frysk.gui.test");
+    protected final static Logger logger = Logger.getLogger ("frysk");//.gui.test");
 
 	public GuiTestLib(){
 	}

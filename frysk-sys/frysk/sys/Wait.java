@@ -59,7 +59,7 @@ public final class Wait
 	// Seems that when calling static methods this isn't
 	// initialized, force it.
 	if (logger == null)
-	    logger = Logger.getLogger ("frysk.sys");
+	    logger = Logger.getLogger ("frysk");//.sys");
 	// Log everything, use isLoggable so as to avoid all the
 	// boxing when it isn't needed.
 	if (logger.isLoggable (Level.FINE)) {

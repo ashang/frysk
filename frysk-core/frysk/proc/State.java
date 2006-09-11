@@ -45,7 +45,7 @@ import frysk.event.Event;
 
 class State
 {
-    protected static Logger logger = Logger.getLogger ("frysk.proc");
+    protected static Logger logger = Logger.getLogger ("frysk");//.proc");
 
     private String name;
     protected State (String name)

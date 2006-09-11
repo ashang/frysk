@@ -69,7 +69,7 @@ import java.util.logging.Logger;
 public class TestLib
     extends TestCase
 {
-    protected final static Logger logger = Logger.getLogger ("frysk.proc");
+    protected final static Logger logger = Logger.getLogger ("frysk");//.proc");
 
     /**
      * Return the exec prefix that should be prepended to all

@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 class LinuxPPC64
   extends IsaPPC64 implements SyscallEventDecoder
 {
-  private static Logger logger = Logger.getLogger ("frysk.proc");
+    private static Logger logger = Logger.getLogger ("frysk");//.proc");
   private static LinuxPPC64 isa;
 
   static LinuxPPC64 isaSingleton ()

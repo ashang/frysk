@@ -53,7 +53,7 @@ import frysk.event.Event;
 public final class ProcTasksObserver
     implements TaskObserver.Cloned, TaskObserver.Terminated
 {
-    protected static final Logger logger = Logger.getLogger ("frysk.proc");
+    protected static final Logger logger = Logger.getLogger ("frysk");//.proc");
     private final Proc proc;
     private final ProcObserver.ProcTasks procTasksObserver;
     private Task mainTask;

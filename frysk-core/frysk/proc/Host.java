@@ -57,7 +57,7 @@ import java.util.logging.Logger;
 
 public abstract class Host
 {
-    public static final Logger logger = Logger.getLogger ("frysk.proc");
+    public static final Logger logger = Logger.getLogger ("frysk");//.proc");
     /**
      * The host corresponds to a specific system.
      */

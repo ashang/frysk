@@ -1,3 +1,17 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Pass just "frysk" to getLogger, work-around.
+	* LinuxPPC.java: Ditto.
+	* Task.java: Ditto.
+	* TestLib.java: Ditto.
+	* ProcEvent.java: Ditto.
+	* Host.java: Ditto.
+	* IsaFactory.java: Ditto.
+	* LinuxPPC64.java: Ditto.
+	* State.java: Ditto.
+	* ProcTasksObserver.java: Ditto.
+	* TaskEvent.java: Ditto.
+
 2006-09-11  Mark Wielaard  <mark@klomp.org>
 
 	* TestSyscallRunning.java: Add message to each assert.

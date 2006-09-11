@@ -1,3 +1,7 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* WindowManager.java: Pass just "frysk" to getLogger, work-around.
+
 2006-09-11  Phil Muldoon <pmuldoon@redhat.com>
 
 	* StatusWidget.java: Increase size of legend array.
