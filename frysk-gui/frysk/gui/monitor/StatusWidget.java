@@ -70,7 +70,7 @@ public class StatusWidget extends VBox {
 
 	private Color backgroundColor = new Color(50000, 50000, 50000);
 
-	private int[] legendAdded = {0,0,0,0}; 
+	private int[] legendAdded = {0,0,0,0,0}; 
 	private Color[] markerColors = { Color.RED, Color.GREEN, Color.BLUE,
 			Color.ORANGE };
 
