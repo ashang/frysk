@@ -1,3 +1,9 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Replace frysk_suite.sh with
+	frysk_suite.py.
+	(frysk/gui/test/dogtail_scripts/frysk_suite.py): Ditto for rule.
+
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Link in libunwind-ptrace.a.

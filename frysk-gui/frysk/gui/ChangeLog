@@ -1,5 +1,11 @@
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* test/dogtail_scripts/frysk_suite.in (frysk, src, funitChild):
+	Wrap generated strings in double quotes.
+	* test/dogtail_scripts/frysk_suite.py: Delete.
+
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
 	* test/GuiTestLib.java: Pass just "frysk" to getLogger, work-around.
 
 2006-09-06  Mike Cvet  <mcvet@redhat.com>

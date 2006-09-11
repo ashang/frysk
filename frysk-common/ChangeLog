@@ -1,3 +1,8 @@
+2006-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST): Handle .py files.  For .sh and .py add
+	#! magic.
+
 2006-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (TESTS): Exclude TestCase.java from possible

@@ -47,9 +47,9 @@ Summary:        Still a prototype
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
-frysk=@abs_builddir@/frysk/gui/FryskGui
-src=@abs_srcdir@/frysk/gui/test/dogtail_scripts/
-funitChild=@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child
+frysk="@abs_builddir@/frysk/gui/FryskGui"
+src="@abs_srcdir@/frysk/gui/test/dogtail_scripts/"
+funitChild="@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child"
 
 # Import needed to access test file input files via envron var's
 import os
@@ -69,7 +69,6 @@ import viewerMarkers
 import test2866
 import test2985
 import stressDruid
-import elena
 
 # Define the test input files
 os.environ.__setitem__('TestDruid_FILE', src + 'another_new_session.xml')
@@ -87,7 +86,6 @@ viewerMarkersSuite = viewerMarkers.suite()
 test2866Suite = test2866.suite()
 test2985Suite = test2985.suite()
 stressDruidSuite = stressDruid.suite()
-elenaSuite = elena.suite()
 
 # Assemble the suite
 suite = unittest.TestSuite()
@@ -100,7 +98,6 @@ suite.addTest(viewerMarkersSuite)
 suite.addTest(test2866Suite)
 suite.addTest(test2985Suite)
 # Commented out - test aborts - bug 2807 suite.addTest(stressDruidSuite)
-suite.addTest(elenaSuite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)

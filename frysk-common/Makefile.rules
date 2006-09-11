@@ -241,6 +241,12 @@ SUBST = \
 			echo ''				>> $@.tmp ; \
 			;; \
 		*.sh) \
+			echo '\#! /bin/sh'		>> $@.tmp ; \
+			echo '\# Generated from: $<'	>> $@.tmp ; \
+			echo ''				>> $@.tmp ; \
+			;; \
+		*.py) \
+			echo '\#! /usr/bin/env python'	>> $@.tmp ; \
 			echo '\# Generated from: $<'	>> $@.tmp ; \
 			echo ''				>> $@.tmp ; \
 			;; \
