@@ -1,3 +1,8 @@
+2006-09-11  Mark Wielaard  <mark@klomp.org>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Disabled when
+	MachineType is not IA32.
+
 2006-09-08  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Commented out
@@ -6,7 +11,7 @@
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Remove
-    expected failure marker.
+	expected failure marker.
 
 2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
 

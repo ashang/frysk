@@ -42,6 +42,7 @@ package frysk.rt.tests;
 
 import inua.eio.ByteBuffer;
 import frysk.proc.Action;
+import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
@@ -60,8 +61,12 @@ public class TestStackBacktrace
 
   public void testBacktrace () throws TaskException
   {
-//     if (brokenXXX(2936))
-//      return;
+     // Backtraces only work on x86 for now.
+     if (MachineType.getMachineType() != MachineType.IA32)
+       {
+	  brokenXXX(2936);
+	  return;
+       }
     
     class TaskCreatedObserver extends TaskObserverBase
         implements TaskObserver.Attached
