@@ -756,9 +756,9 @@ abstract public class Task
   }
 
   /**
-   * Set of Syscall observers.
+   * Set of Syscall observers. Checked in TaskState.
    */
-  private TaskObservable syscallObservers = new TaskObservable(this);
+  TaskObservable syscallObservers = new TaskObservable(this);
 
   /**
    * Add TaskObserver.Syscall to the TaskObserver pool.

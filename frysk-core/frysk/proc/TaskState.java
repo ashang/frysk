@@ -74,7 +74,10 @@ class TaskState
 	    // XXX: Is this needed?  Surely the infant can detect that
 	    // it should detach, and the parent handle that.
 	    return detaching;
-	else if (parentState == running || parentState == runningInSyscall)
+	else if (parentState == running
+		 || parentState == inSyscallRunning
+		 || parentState == syscallRunning
+		 || parentState == inSyscallRunningTraced)
 	    return StartClonedTask.waitForStop;
     
 	throw new RuntimeException ("clone's parent in unexpected state "
@@ -787,7 +790,12 @@ class TaskState
 	}
 	TaskState handleStoppedEvent (Task task)
 	{
-	  if (pendingCodeObservers.isEmpty())
+	  // Should we turn on or off syscall tracing?
+	  int syscallobs = task.syscallObservers.numberOfObservers();
+	  boolean start_trace = ! syscalltracing && syscallobs > 0 ;
+	  boolean stop_trace = syscalltracing && syscallobs == 0;
+
+	  if (pendingCodeObservers.isEmpty() && ! start_trace && ! stop_trace)
 	    {
 	      // From time to time bogus stop events appear, for
 	      // instance when the kernel simultaneously receives both
@@ -828,9 +836,23 @@ class TaskState
 	      it.remove();
 	    }
 
-	  // And pretend nothing happend, happily continue running.
-	  sendContinue(task, 0);
-	  return this;
+	  if (start_trace)
+	    {
+	      task.startTracingSyscalls();
+	      task.sendSyscallContinue(0);
+	      return insyscall ? inSyscallRunningTraced : syscallRunning;
+	    }
+	  else if (stop_trace)
+	    {
+	      task.stopTracingSyscalls();
+	      task.sendContinue(0);
+	      return insyscall ? inSyscallRunning : running;
+	    }
+	  else
+	    {
+	      sendContinue(task, 0);
+	      return this;
+	    }
 	}
 
 	TaskState handleTerminatingEvent (Task task, boolean signal,
@@ -875,10 +897,15 @@ class TaskState
 	    else
 	      {
 		if (syscalltracing)
-		  task.sendSyscallContinue(0);
+		  {
+		    task.sendSyscallContinue(0);
+		    return inSyscallRunningTraced;
+		  }
 		else
-		  sendContinue(task, 0);
-		return runningInSyscall;
+		  {
+		    sendContinue(task, 0);
+		    return inSyscallRunning;
+		  }
 	      }
 	}
 	TaskState handleDisappearedEvent (Task task, Throwable w)
@@ -1049,10 +1076,7 @@ class TaskState
 	{
 	  observable.add(observer);
 	  if (! syscalltracing)
-	    {
-	      task.sendStop();
-	      return transitionToSyscallRunning;
-	    }
+	    task.sendStop();
 	  return this;
 	}
       TaskState handleDeleteSyscallObserver(Task task,
@@ -1061,13 +1085,12 @@ class TaskState
       {
 	logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
 	observable.delete(observer);
-	if (observable.numberOfObservers() == 0)
+	if (syscalltracing && observable.numberOfObservers() == 0)
 	  {
 	    logger.log(Level.FINE,
 		       "{0} handleDeleteSyscallObserver no observers left\n",
 		       task);
 	    task.sendStop();
-	    return transitionOutOfSyscallRunning;
 	  }
 	return this;
       }
@@ -1084,7 +1107,7 @@ class TaskState
 	      return syscallBlockedContinue;
 
 	    task.sendSyscallContinue(0);
-	    return insyscall ? syscallRunning : runningInSyscall;
+	    return insyscall ? syscallRunning : inSyscallRunningTraced;
 	  }
 	else
 	  {
@@ -1092,70 +1115,8 @@ class TaskState
 	    return this;
 	  }
       }
-		
-    /**
-     * A task has been requested to stop, it is waiting
-     * for a stopevent to tell so it can send syscall tracing
-     * options and trasition to syscallRunning.
-     */
-     private static TaskState transitionToSyscallRunning = new TaskState("transitionToSyscallRunning"){
-       TaskState handleDeleteObserver (Task task, Observable observable,
-                                      Observer observer)
-       {
-         logger.log(Level.FINE, "{0} handleDeleteObserver\n", task);
-         observable.delete(observer);
-         return this;
-       }
-       TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-       {
-         logger.log(Level.FINE, "{0} handleAddSyscallObserver\n", task);
-         observable.add(observer);
-         return this; 
-       }
-       TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
-       {
-         logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-         observable.delete(observer);
-         return this; 
-       }
-       TaskState handleStoppedEvent (Task task)
-       {
-         logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-         task.startTracingSyscalls();
-         task.sendSyscallContinue(0);
-         return syscallRunning;
-       }
-    
-     };
-      
     }
   
-    /**
-     * A task has been requested to stop, it is waiting
-     * for a stopevent to tell so it can send syscall tracing
-     * options and trasition to syscallRunning.
-     */
-     private static TaskState transitionOutOfSyscallRunning = new TaskState("transitionOutOfSyscallRunning"){
-       TaskState handleStoppedEvent (Task task)
-       {
-         logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-         task.stopTracingSyscalls();
-         task.sendContinue(0);
-         return running;
-       }
-       
-       TaskState handleSyscalledEvent (Task task)
-        {
-          // if the user chooses to removed the last syscallObserver
-          // while runningInSyscall casing the task to stop tracking syscalls
-          // an event signifying the syscall exit is deterministically received.
-          // In that case it is ignored.
-          logger.log (Level.FINE, "{0} handleSyscalledEvent -- ignored\n", task); 
-          return this;  
-        }
-       
-     };
-     
     /**
      * Sharable instance of the running state.
      */
@@ -1169,8 +1130,12 @@ class TaskState
       new Running("syscallRunning", true, false);
     
     // Task is running inside a syscall.
-    private static final TaskState runningInSyscall =
-      new Running("runningInSyscall", true, true);
+    private static final TaskState inSyscallRunning =
+      new Running("inSyscallRunning", true, false);
+
+    // Task is running inside a syscall.
+    private static final TaskState inSyscallRunningTraced =
+      new Running("inSyscallRunningTraced", true, true);
 
     private static final TaskState detaching = new TaskState ("detaching")
 	{
@@ -1303,7 +1268,7 @@ class TaskState
 	    if (syscallObserverAdded)
 	      {
 		task.sendSyscallContinue(sig);
-		return insyscall ? runningInSyscall: syscallRunning;
+		return insyscall ? inSyscallRunningTraced : syscallRunning;
 	      }
 	    else
 	      {

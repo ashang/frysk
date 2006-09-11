@@ -1,3 +1,10 @@
+2006-09-11  Mark Wielaard  <mark@klomp.org>
+
+	* Task.java (syscallObservers): Made package private.
+	* TaskState (transitionToSyscallRunning): Removed merged with Running.
+	(transitionOutOfSyscallRunning): Likewise.
+	(inSyscallRunningTraced): New state.
+
 2006-09-08  Tom Tromey  <tromey@redhat.com>
 
 	* Host.java (requestRefreshXXX): Remove extra field from anonymous
