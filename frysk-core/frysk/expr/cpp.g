@@ -82,6 +82,7 @@ header
 
     import frysk.lang.*;
     import java.util.*;
+    import inua.eio.ByteOrder;
 }
 
 class CppParser extends Parser;
@@ -678,8 +679,8 @@ options {
     public CppTreeParser(int intSize, int shortSize, Map _symTab) {
         this();
         symTab = _symTab;
-        intType = new IntegerType(intSize, Endian.BIG_ENDIAN);
-        shortType = new ShortType(shortSize, Endian.LITTLE_ENDIAN);
+        intType = new IntegerType(intSize, ByteOrder.BIG_ENDIAN);
+        shortType = new ShortType(shortSize, ByteOrder.LITTLE_ENDIAN);
     }
 }
 

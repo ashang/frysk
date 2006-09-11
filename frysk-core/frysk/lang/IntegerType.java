@@ -1,6 +1,8 @@
 
   package frysk.lang;
 
+import inua.eio.ByteOrder;
+
   //import inua.eio.*;
   //import java.lang.reflect.Constructor;
 
@@ -12,7 +14,7 @@
       return String.valueOf(v.getInt());
     }
 
-    public IntegerType(int size, int endian)  {
+    public IntegerType(int size, ByteOrder endian)  {
       super(size, endian, BaseTypes.baseTypeInteger, "int");
     }
 

@@ -1,3 +1,11 @@
+2006-09-11  Stan Cox  <scox@redhat.com>
+
+	* IntegerType.java (IntegerType): Use ByteOrder.
+	* ShortType.java (ShortType): Likewise.
+	* Type.java (Type): Likewise.
+	(getEndian): Likewise.
+	* TypeTest.java (TypeTest): Likewise.
+
 2005-11-07  Tarun Khanna  <tkhanna@redhat.com>
 
 	* IntegerType.java: Commented out some code to remove warnings.

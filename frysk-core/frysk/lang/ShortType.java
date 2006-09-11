@@ -1,6 +1,8 @@
 
   package frysk.lang;
 
+import inua.eio.ByteOrder;
+
   public class ShortType extends Type
   {
 
@@ -8,7 +10,7 @@
       return String.valueOf(v.getShort());
     }
 
-    public ShortType(int size, int endian)  {
+    public ShortType(int size, ByteOrder endian)  {
       super(size, endian, BaseTypes.baseTypeShort, "short");
     }
 

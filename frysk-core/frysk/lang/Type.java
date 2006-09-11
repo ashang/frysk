@@ -39,6 +39,8 @@
 
 package frysk.lang;
 
+import inua.eio.ByteOrder;
+
 /**
  * Holds the type of a Variable and also defines possible operations. 
  * Classes extended from this type will have to define the individual operation that are defined on those types.
@@ -48,16 +50,16 @@ package frysk.lang;
 public abstract class Type
 {
   protected int _size;
-  protected int _endian;
+  protected ByteOrder _endian;
   protected int _typeId;
   protected String _name;
 
-  Type(int size, int endian, int typeId)
+  Type(int size, ByteOrder endian, int typeId)
   {
     this(size, endian, typeId, "");
   }
 
-  Type(int size, int endian, int typeId, String name)
+  Type(int size, ByteOrder endian, int typeId, String name)
   {
     _size = size;
     _endian = endian;
@@ -66,14 +68,14 @@ public abstract class Type
   }
 
   public int getSize() { return _size;}
-  public int getEndian() { return _endian;}
+  public ByteOrder getEndian() { return _endian;}
   public int getTypeId() { return _typeId;}
   public String getName() { return _name;}
 
   public String toString() {return _name;}
   public abstract String toString(Variable v);  
 
-  protected long longValue(Variable v)	throws InvalidOperatorException	{
+  public long longValue(Variable v)	throws InvalidOperatorException	{
     if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
 	return  0 ;//v.getChar();
     if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
