@@ -1,5 +1,9 @@
 2006-09-11  Mark Wielaard  <mark@klomp.org>
 
+	* TestSyscallRunning.java: Add message to each assert.
+
+2006-09-11  Mark Wielaard  <mark@klomp.org>
+
 	* Task.java (syscallObservers): Made package private.
 	* TaskState (transitionToSyscallRunning): Removed merged with Running.
 	(transitionOutOfSyscallRunning): Likewise.

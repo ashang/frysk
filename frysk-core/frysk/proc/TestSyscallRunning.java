@@ -197,10 +197,10 @@ public class TestSyscallRunning
       }
 
     // Sanity check
-    assertTrue(syso.getEntered());
-    assertFalse(syso.getExited());
-    assertFalse(syso2.getEntered());
-    assertFalse(syso2.getExited());
+    assertTrue("syso entered", syso.getEntered());
+    assertFalse("syso exited", syso.getExited());
+    assertFalse("syso2 entered", syso2.getEntered());
+    assertFalse("syso2 exited", syso2.getExited());
 
     // Write something to the socket and close it so the syscall exits.
     OutputStream out = s.getOutputStream();
