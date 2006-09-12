@@ -1,3 +1,7 @@
+2006-09-12  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* src/ptrace/_UPT_find_proc_info.c: Add UNW_TARGET_PPC64 in #elif.
+
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
 	* src/os-linux (tdep_get_elf_image): Define for remote only too.
