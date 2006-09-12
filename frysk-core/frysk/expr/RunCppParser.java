@@ -51,6 +51,15 @@ import frysk.lang.*;
  * A Test framework for the C++ expression parser with tab auto completion.
  */
 
+  class symTab implements CppSymTab
+  {
+    static Map symTab = new HashMap();
+    public void put(String s, Variable v)
+    { symTab.put(s, v);}
+    public Variable get(String s)
+    { return (Variable)symTab.get(s); }
+  }
+
 public class RunCppParser 
 {
     /**
@@ -237,7 +246,8 @@ public class RunCppParser
     {
         // Create the command line parser, and use it to parse all
         // command line options.
-        CmdLineParser clParser = new CmdLineParser ();
+    symTab hpdsymTab = new symTab();
+    CmdLineParser clParser = new CmdLineParser ();
 	Completor parseCompletor = new ParserCompletor();
 	ConsoleReader consReader = null;
 	CmdLineParser.Option verboseOption 
@@ -292,7 +302,7 @@ public class RunCppParser
 	      // Print the resulting tree out in LISP notation
 	      if (verbose.booleanValue())
 		  System.out.println("parse tree: " + t.toStringTree());
-	      CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
+	      CppTreeParser treeParser = new CppTreeParser(4, 2, hpdsymTab);
 
 	      try {
 		result = treeParser.expr(t);

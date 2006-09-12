@@ -19,12 +19,23 @@
       }
     }
 
+    class rctpsymTab implements CppSymTab
+    {
+      static final Map symTab = new HashMap();
+      public void put(String s, Variable v)
+      { symTab.put(s, v);}
+      public Variable get(String s)
+      { return (Variable)symTab.get(s); }
+    }
+
+    
     public static void main(String []argv)  {
       //String []sTestResult = { "PASS", "FAIL"};
       int a,b,c;
       a=5;
       b=3;
       c=8;
+      rctpsymTab hpdsymTab = new rctpsymTab();
 
       ExpressionTest expressionTest[] = { 
 	(new ExpressionTest("a=" + a, String.valueOf(a), "assign equal")), 
@@ -65,7 +76,6 @@
 
       String sInput;
       Variable result;
-      Map symTab = new HashMap();
       try {
 	for(int i=0;i<expressionTest.length;i++)
 	{
@@ -76,7 +86,7 @@
 	  parser.start();
 
 	  CommonAST t = (CommonAST)parser.getAST();
-	  CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
+	  CppTreeParser treeParser = new CppTreeParser(4, 2, hpdsymTab);
 
 	  try {
 	    result = treeParser.expr(t);

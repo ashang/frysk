@@ -1,3 +1,17 @@
+2006-09-12  Stan Cox  <scox@redhat.com>
+
+	* hpd/CLI.java (proc): New.
+	(task): New.
+	(symtab): New.
+	(AttachHandler): New.
+	(DetachHandler): New.
+	* hpd/hpd.java: New file for standalone execution of hpd.
+	* hpd/SymTab.java (symTab): New.
+	(what): Use it.
+	(print): Use it.
+	* hpd/UserHelp.java (UserHelp): Add print, assign, what, attach, detach.
+	* hpd/PrintHandler.java: Moved to SymTab.java.
+
 2006-08-21  Stan Cox  <scox@redhat.com>
 
 	* hpd/PrintHandler.java (handle): Add -format and hex/octal output.

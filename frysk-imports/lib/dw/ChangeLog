@@ -1,3 +1,21 @@
+2006-09-12  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getScopeVar): New.
+	(getScope): New.
+	(getDeclFile): New.
+	(getDeclLine): New.
+	(getAddr): New.
+	(getType): New.
+	(fbregVariable): New.
+	(getFrameBase): New.
+	* cni/DwarfDie.cxx (get_scopevar): New.
+	(get_decl_file): New.
+	(get_decl_line): New.
+	(get_addr): New.
+	(get_type): New.
+	(fbreg_variable): New.
+	(get_framebase): New.
+
 2006-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java: Extend frysk.junit.TestCase.

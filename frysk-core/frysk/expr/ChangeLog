@@ -1,3 +1,10 @@
+2006-09-12  Stan Cox  <scox@redhat.com>
+
+	* CppSymTab.java: New file.
+	* RunCppTreeParser.java (rctpsymTab): Use CppSymTab.
+	* RunCppParser.java (symtab): Use CppSymTab.
+	* cpp.g (CppTreeParser): Use CppSymTab.
+
 2006-08-21  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppTreeParser): Add HEXADECIMALINT and OCTALINT.

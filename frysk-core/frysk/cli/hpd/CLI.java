@@ -48,8 +48,30 @@ import java.util.Iterator;
 import java.text.ParseException;
 import java.lang.RuntimeException;
 
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+import frysk.proc.Task;
+import frysk.proc.TaskException;
+import frysk.sys.Errno;
+import frysk.sys.Ptrace;
+import frysk.sys.Sig;
+
+
+import lib.dw.DwarfDie;
+import lib.dw.Dwfl;
+import lib.dw.DwflDieBias;
+import lib.dw.DwflLine;
+
+
 public class CLI 
 {
+    private Dwfl dwfl;
+    Proc proc;
+    Task task;
+    int pid = 0;
+    SymTab symtab;
+
 	/*
 	 * Command handlers
 	 */
@@ -255,6 +277,64 @@ public class CLI
 		}
 	}
 
+    class AttachHandler implements CommandHandler
+    {
+        public void handle(Command cmd) throws ParseException
+        {
+          Vector params = cmd.getParameters();
+          String executable = "";
+          boolean cli = false;
+
+          if (params.size() < 2)
+            {
+              cmd.getOut().println ("Usage " + cmd.getAction() + "Executable PID");
+              return;
+            }
+          if (params.size() == 3 && ((String)params.elementAt(2)).equals("-cli"))
+            cli = true;
+          executable = ((String)params.elementAt(0));
+          pid = Integer.parseInt((String)params.elementAt(1));
+
+          if (cli)
+            {
+              Manager.eventLoop.runPolling (1000);
+              try {
+                Ptrace.attach(pid);
+              }
+              catch (Errno errno) {
+                addMessage(new Message("No such process.", Message.TYPE_ERROR));
+              }
+              Manager.host.requestRefreshXXX (true);
+              Manager.eventLoop.runPending ();
+            }
+          if (Manager.host == null)
+            {
+              addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
+              return;
+            }
+          proc = Manager.host.getProc (new ProcId (pid));
+          task = proc.getMainTask();
+          SymTab symtab = new SymTab(pid, proc, task);
+        }
+    }
+
+    class DetachHandler implements CommandHandler
+    {
+        public void handle(Command cmd) throws ParseException
+        {
+          Vector params = cmd.getParameters();
+          String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
+
+          if (params.size() > 0)
+            {
+              cmd.getOut().println ("Usage " + cmd.getAction());
+              return;
+            }
+
+          Manager.eventLoop.requestStop();
+        }
+    }
+    
 	class UnaliasHandler implements CommandHandler
 	{
 		public void handle(Command cmd)  throws ParseException
@@ -360,9 +440,16 @@ public class CLI
 	class WhatHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
-		       SymTab.what(cmd);
+		       symtab.what(cmd);
 		}
 	}
+    
+    class PrintHandler implements CommandHandler
+    {
+      public void handle(Command cmd) throws ParseException {
+               symtab.print(cmd);
+      }
+    }
 	class QuitHandler implements CommandHandler
     {
 		public void handle(Command cmd) throws ParseException {
@@ -380,10 +467,7 @@ public class CLI
 				temp = (String)iter.next();
 				output += temp + " - " + userhelp.getCmdDescription(temp) + "\n";
 			}
-		    output += "assign Lhs Expression\n";
-		    output += "print Expression\n";
-		    output += "what Lhs\n";
-		    output += "help\n";
+ 		    output += "help\n";
 		    output += "quit\n";
 
 		    addMessage(new Message(output, Message.TYPE_NORMAL));
@@ -431,21 +515,22 @@ public class CLI
 		handlers = new Hashtable();
 		userhelp = new UserHelp();
 		dbgvars = new DbgVariables();
-
-		handlers.put("defset", new DefsetHandler());
-		handlers.put("undefset", new UndefsetHandler());
-		handlers.put("whichsets", new WhichsetsHandler());
-		handlers.put("viewset", new ViewsetHandler());
+        handlers.put("alias", new AliasHandler());
+        handlers.put("assign", new PrintHandler());
+        handlers.put("attach", new AttachHandler());
+        handlers.put("defset", new DefsetHandler());
+        handlers.put("detach", new DetachHandler());
 		handlers.put("focus", new FocusHandler());
-		handlers.put("alias", new AliasHandler());
-		handlers.put("unalias", new UnaliasHandler());
-		handlers.put("set", new SetHandler());
-		handlers.put("unset", new UnsetHandler());
-		handlers.put("assign", new PrintHandler());
+        handlers.put("help", new HelpHandler());
 		handlers.put("print", new PrintHandler());
-		handlers.put("what", new WhatHandler());
-		handlers.put("help", new HelpHandler());
 		handlers.put("quit", new QuitHandler());
+        handlers.put("set", new SetHandler());
+        handlers.put("unalias", new UnaliasHandler());
+        handlers.put("undefset", new UndefsetHandler());
+        handlers.put("unset", new UnsetHandler());
+        handlers.put("viewset", new ViewsetHandler());
+        handlers.put("what", new WhatHandler());
+        handlers.put("whichsets", new WhichsetsHandler());
 
 		// initialize PT set stuff
 		setparser = new SetNotationParser();

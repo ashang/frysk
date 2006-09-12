@@ -145,6 +145,31 @@ class UserHelp
 													"Revert variable value to default.",
 													"unset { debugger-var | -all }",
 													temp));
+        temp = "Print value of expression.";
+        commandHelp.put("print", new CommandHelp("print",
+                                                    "Print value of expression.",
+                                                    "print expression { -format x|d|o }",
+                                                    temp)); 
+        temp = "Evaluate expression and assign value to variable.";
+        commandHelp.put("assign", new CommandHelp("assign",
+                                                    "Assign value of expression.",
+                                                    "assign variable expression",
+                                                    temp));
+        temp = "Attach to a running process.";
+        commandHelp.put("attach", new CommandHelp("attach",
+                                                    "Attach to a running process.",
+                                                    "attach executable pid { -cli }",
+                                                    temp));
+        temp = "Detach from a running process.";
+        commandHelp.put("detach", new CommandHelp("detach",
+                                                    "Detach from a running process.",
+                                                    "detach",
+                                                    temp));
+        temp = "Print data type of expression.";
+        commandHelp.put("what", new CommandHelp("what",
+                                                    "Print data type of expression.",
+                                                    "what expression",
+                                                    temp));  
 	}
 
 	public boolean isValidCommand(String cmd)

@@ -675,10 +675,10 @@ options {
 {
     IntegerType intType;
     ShortType shortType;
-    Map symTab;
-    public CppTreeParser(int intSize, int shortSize, Map _symTab) {
+    private CppSymTab cppSymTabRef;
+    public CppTreeParser(int intSize, int shortSize, CppSymTab symTab) {
         this();
-        symTab = _symTab;
+	cppSymTabRef = symTab; 
         intType = new IntegerType(intSize, ByteOrder.BIG_ENDIAN);
         shortType = new ShortType(shortSize, ByteOrder.LITTLE_ENDIAN);
     }
@@ -761,91 +761,91 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().assign(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(TIMESEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().timesEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(DIVIDEEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().divideEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(MINUSEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().minusEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(PLUSEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().plusEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(MODEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().modEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(SHIFTLEFTEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().shiftLeftEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(SHIFTRIGHTEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().shiftRightEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(BITWISEANDEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().bitWiseAndEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(BITWISEXOREQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().bitWiseXorEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(BITWISEOREQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
             v1 = v2.getType().newVariable(v2.getType(), v1);
             v1.getType().bitWiseOrEqual(v1, v2);
             returnVar = v1;
-            symTab.put(v1.getText(), v1);
+            cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(CAST primitiveType v2=expr) { returnVar = v2; }
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {
-            if((returnVar = ((Variable)symTab.get(ident.getText()))) == null) {
+            if((returnVar = ((Variable)cppSymTabRef.get(ident.getText()))) == null) {
                 returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
-                symTab.put(ident.getText(), returnVar);
+                cppSymTabRef.put(ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
-            if((returnVar = ((Variable)symTab.get(tident.getText()))) == null) {
+            if((returnVar = ((Variable)cppSymTabRef.get(tident.getText()))) == null) {
                 returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
-                symTab.put(tident.getText(), returnVar);
+                cppSymTabRef.put(tident.getText(), returnVar);
             }
         }
     ;

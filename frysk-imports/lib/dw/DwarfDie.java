@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ public class DwarfDie
 {
 
   private long pointer;
+  
+  private long scope;
 
   private Dwfl parent;
 
@@ -80,6 +82,17 @@ public class DwarfDie
   {
     return get_diename();
   }
+  
+  public String getDeclFile ()
+  {
+    return get_decl_file(this.getPointer());
+  }
+  
+  public long getDeclLine ()
+  {
+    return get_decl_line(this.getPointer());
+  }
+
 
   public DwarfDie[] getScopes (long addr)
   {
@@ -94,11 +107,59 @@ public class DwarfDie
     return dies;
   }
   
+  public DwarfDie getScopeVar (DwarfDie[] scopes, String variable)
+  {
+    long[] vals = new long[scopes.length];
+    long[] die_and_scope = new long[2];
+    for(int i = 0; i < scopes.length; i++)
+	vals[i] = scopes[i].getPointer();
+
+    DwarfDie die = null;
+    long val = get_scopevar(die_and_scope, vals, variable);
+    if (val >= 0)
+      {
+        die = new DwarfDie(die_and_scope[0], this.parent);
+        // new DwarfDie(die_and_scope[1], this.parent);
+        die.scope = die_and_scope[1];
+      }
+    return die;
+  }
+    
+  public long getScope ()
+  {
+      return this.scope;
+  }
+  
+  public long getAddr ()
+  {
+    return get_addr(this.getPointer());
+  }
+
+  public String getType ()
+  {
+    return get_type(this.getPointer());
+  }
+  
   protected long getPointer ()
   {
     return this.pointer;
   }
+ 
+  public boolean fbregVariable ()
+  {
+    long is_fb = fbreg_variable (this.getPointer());
+    if (is_fb == 1)
+      return true;
+    else
+      return false;
+  }
 
+  public long getFrameBase (long scope, long pc)
+  {
+    return get_framebase(this.getPointer(), scope, pc);
+  }
+
+  
   // protected native long dwarf_diecu();
   private native long get_lowpc ();
 
@@ -106,5 +167,19 @@ public class DwarfDie
 
   private native String get_diename ();
   
+  private native String get_decl_file (long var_die);
+  
+  private native long get_decl_line (long var_die);
+  
   private native long[] get_scopes (long addr);
+
+  private native long get_scopevar (long[] die_scope, long[] scopes, String variable);
+
+  private native long get_addr (long addr);
+  
+  private native String get_type (long addr);
+  
+  private native long fbreg_variable (long addr);
+  
+  private native long get_framebase (long addr, long scope, long pc);
 }

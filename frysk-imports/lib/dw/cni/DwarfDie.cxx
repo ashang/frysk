@@ -38,9 +38,11 @@
 // exception.
 #include <libdw.h>
 #include <gcj/cni.h>
+#include <dwarf.h>
 
 #include "lib/dw/DwarfDie.h"
 
+#define DW_OP_fbreg 0x91
 #define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
 
 jlong
@@ -65,16 +67,160 @@ lib::dw::DwarfDie::get_diename()
 	return JvNewStringUTF(dwarf_diename(DWARF_DIE_POINTER));
 }
 
+jstring
+lib::dw::DwarfDie::get_decl_file(jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  return JvNewStringLatin1 (dwarf_decl_file (die));
+}
+
+jlong
+lib::dw::DwarfDie::get_decl_line(jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  int lineno;
+  dwarf_decl_line (die, &lineno);
+  return lineno;
+}
+
 jlongArray
 lib::dw::DwarfDie::get_scopes(jlong addr)
 {
-	Dwarf_Die *dies;
-	int count = dwarf_getscopes(DWARF_DIE_POINTER, (Dwarf_Addr) addr, &dies);
-	jlongArray longs = JvNewLongArray((jint) count);
-	jlong* longp = elements(longs);
+  Dwarf_Die *dies;
+  int count = dwarf_getscopes(DWARF_DIE_POINTER, (Dwarf_Addr) addr, &dies);
+  jlongArray longs = JvNewLongArray((jint) count);
+  jlong* longp = elements(longs);
 	
-	for(int i = 0; i < count; i++)
-		longp[i] = (jlong) &dies[i];
+  for(int i = 0; i < count; i++)
+    longp[i] = (jlong) &dies[i];
 		
-	return longs;
+  return longs;
 }
+
+Dwarf_Die *var_die;
+
+jlong
+lib::dw::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
+				 jstring variable)
+{
+  
+  var_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  int nscopes = JvGetArrayLength (scopes);
+
+  Dwarf_Die *dies[nscopes];
+  jlong* scopesp = elements(scopes);
+
+  for(int i = 0; i < nscopes; i++)
+    {
+      jlong dieptr = scopesp[i];
+      dies[i] = (Dwarf_Die*)dieptr;
+    }
+  
+  int code = dwarf_getscopevar (*dies, nscopes,
+				(const char*)JvGetStringChars(variable),
+				0, NULL, 0, 0, var_die);
+  if (code >= 0)
+    {
+      jlong* longp = elements(die_scope);
+      longp[0] = (jlong)var_die;    // Die for variable
+      longp[1] = (jlong)dies[code]; // Die for scope
+    }
+  return code;
+}
+
+jlong
+lib::dw::DwarfDie::get_addr (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Block block;
+  Dwarf_Attribute loc_attr;
+  Dwarf_Op *fb_expr;
+  size_t fb_len;
+  
+  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
+    {
+      dwarf_formblock (&loc_attr, &block);
+      dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      return fb_expr[0].number;
+    }
+  else
+    return 0;
+}
+
+jstring
+lib::dw::DwarfDie::get_type (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Die *type_die, type_mem_die;
+  Dwarf_Attribute type_attr;
+  
+  if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
+    {
+      type_die = dwarf_formref_die (&type_attr, &type_mem_die);
+      if (dwarf_tag (type_die) == DW_TAG_base_type)
+	{
+	  return JvNewStringLatin1
+	    (dwarf_formstring (dwarf_attr_integrate
+			       (type_die, DW_AT_name, &type_attr)));
+	}
+    }
+  return 0;
+}
+
+jlong
+lib::dw::DwarfDie::fbreg_variable (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Block block;
+  Dwarf_Attribute loc_attr;
+  Dwarf_Op *fb_expr;
+  size_t fb_len;
+  
+  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
+    {
+      dwarf_formblock (&loc_attr, &block);
+      dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      if (fb_expr[0].atom == DW_OP_fbreg)
+	return 1;
+    }
+  return 0;
+}
+
+jlong
+lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg,
+				  jlong pc)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Block block;
+  Dwarf_Attribute loc_attr;
+  Dwarf_Op *fb_expr;
+  int code;
+  size_t fb_len;
+  
+  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
+    {
+      dwarf_formblock (&loc_attr, &block);
+      dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      if (fb_expr[0].atom != DW_OP_fbreg)
+	return 0;
+
+      Dwarf_Attribute *fb_attr;
+      fb_attr = dwarf_attr_integrate ((Dwarf_Die*) scope_arg,
+				      DW_AT_frame_base,
+				      &loc_attr);
+
+      code = (dwarf_getlocation_addr (fb_attr, pc, &fb_expr, &fb_len, 1));
+      if (code != 1 || fb_len <= 0)
+	return 0;
+      switch (fb_expr[0].atom) 
+	{
+	case DW_OP_breg0 ... DW_OP_breg31:
+	  //          reg = fb_expr[0].atom - DW_OP_breg0;
+          return fb_expr[0].number;
+	default:
+	  return 0;
+	}
+    }
+  return 0;
+}
+
