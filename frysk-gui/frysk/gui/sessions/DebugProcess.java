@@ -237,7 +237,8 @@ public class DebugProcess extends GuiObject {
 		
 		while (i.hasNext()){
 			Element elementXML = (Element) i.next();
-			ObserverRoot observer = ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name"));
+			ObserverRoot observer = ObserverManager.theManager.getObserverCopy(
+					ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
 			if (observer == null) {
 				errorLog.log(Level.SEVERE, new Date() + " DebugProcess.load(Element node): observer " + 
 						elementXML.getAttributeValue("name") + " not found in configuration \n");

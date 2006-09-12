@@ -1,3 +1,10 @@
+2006-09-12  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): Use
+	setCheckedbyName, instead of setChecked().
+	* sessions/DebugProcess.java (load): Create a copy of the observer
+	and do not add a reference to the base observer.
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* test/dogtail_scripts/frysk_suite.in (frysk, src, funitChild):

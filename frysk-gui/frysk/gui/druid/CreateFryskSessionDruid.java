@@ -601,9 +601,11 @@ public class CreateFryskSessionDruid
                           {
                             Iterator i = selected.getObservers().iterator();
                             observerSelectionTreeView.clearChecked();
-                            while (i.hasNext())
-                              observerSelectionTreeView.setChecked((ObserverRoot) i.next(),
+                            while (i.hasNext()){
+                              ObserverRoot givenObserver = (ObserverRoot) i.next();
+                              observerSelectionTreeView.setCheckedByName(givenObserver.getName(),
                                                                    true);
+                            }
                           }
                       }
                     });
@@ -623,7 +625,7 @@ public class CreateFryskSessionDruid
                            {
                              if (! observerProcessSelected.getObservers().contains(
                                                                                    selected))
-                               observerProcessSelected.addObserver((ObserverRoot) selected);
+                               observerProcessSelected.addObserver((ObserverRoot) selected.getCopy());
                            }
                          else
                            {
