@@ -3274,7 +3274,7 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     ftk_trace_gc (trace)		= NULL;
     ftk_trace_vpos_d (trace)		= 0.0;
     ftk_trace_linestyle (trace)		= -1.0;
-    ftk_trace_linewidth (trace)		= -1.0;
+    ftk_trace_linewidth (trace)		= 0.4;
     gtk_widget_ensure_style(GTK_WIDGET (ftk_ev_da(eventviewer)));
     GtkStyle *style = gtk_widget_get_style (GTK_WIDGET (ftk_ev_da(eventviewer)));
     ftk_trace_color (trace) = style->fg[GTK_STATE_NORMAL];

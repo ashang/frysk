@@ -1,5 +1,9 @@
 2006-09-12  Nurdin Premji  <npremji@redhat.com>
-	*src/widgets/ftkeventviewer.c: Shrank size of glyphs.
+	* src/widgets/ftkeventviewer.c: Shrank size of glyphs.
+
+	* src/widgets/ftkeventviewer.c: Made trace lines "thinner" 
+	Apparently thinner than 1.0 means that the line becomes grayer. 
+	Still looks nicer than black.
 
 2006-09-08  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Ran artistic style for gnu formatting.
