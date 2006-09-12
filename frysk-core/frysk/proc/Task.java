@@ -932,4 +932,9 @@ abstract public class Task
       }
     return blockers.size();
   }
+
+  // List containing the CodeObservers that are pending addition
+  // or deletion (in order that they were requested). Will be inserted
+  // as soon as a stop event is received during one of the running states.
+  LinkedList pendingCodeObservers = new LinkedList();
 }

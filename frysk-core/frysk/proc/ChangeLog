@@ -1,3 +1,10 @@
+2006-09-12  Mark Wielaard  <mark@klomp.org>
+
+	* PendingCodeObserver.java: New class.
+	* Task.java (pendingCodeObservers): New field.
+	* TaskState.java (PendingCodeObserver): Removed, created new class.
+	(Running.pendingCodeObservers): Removed, needs to be hold in Task.
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Pass just "frysk" to getLogger, work-around.

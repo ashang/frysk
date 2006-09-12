@@ -41,8 +41,8 @@ package frysk.proc;
 
 import java.util.logging.Level;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * The task state machine.
@@ -795,6 +795,8 @@ class TaskState
 	  boolean start_trace = ! syscalltracing && syscallobs > 0 ;
 	  boolean stop_trace = syscalltracing && syscallobs == 0;
 
+	  Collection pendingCodeObservers = task.pendingCodeObservers;
+
 	  if (pendingCodeObservers.isEmpty() && ! start_trace && ! stop_trace)
 	    {
 	      // From time to time bogus stop events appear, for
@@ -997,31 +999,6 @@ class TaskState
 	  return blockedContinue();
       }
 
-      // List containing the CodeObservers that are pending addition
-      // or deletion (in order that they were requested).
-      LinkedList pendingCodeObservers = new LinkedList();
-
-      // Small struct to put in pendingCodeObservers
-      static final class PendingCodeObserver
-      {
-	// True if this observer needs to be added,
-	// false if it needs to be deleted deletion.
-	boolean addition;
-
-	// The Code observer to add or delete.
-	TaskObserver.Code observer;
-
-	// The observable - XXX isn't this always the task?
-	Observable observable;
-
-	public String toString()
-	{
-	  return ("PendingCodeObserver[observer=" +observer
-		  + ", addition=" + addition
-		  + ", observable=" + observable + "]");
-	}
-      }
-
       TaskState handleAddCodeObserver(Task task, Observable observable,
 				      TaskObserver.Code observer)
       {
@@ -1031,7 +1008,7 @@ class TaskState
 	pco.addition = true;
 	pco.observer = observer;
 	pco.observable = observable;
-	pendingCodeObservers.add(pco);
+	task.pendingCodeObservers.add(pco);
 	task.sendStop();
 	return this;
       }
@@ -1045,7 +1022,7 @@ class TaskState
 	pco.addition = false;
 	pco.observer = observer;
 	pco.observable = observable;
-	pendingCodeObservers.add(pco);
+	task.pendingCodeObservers.add(pco);
 	task.sendStop();
 	return this;
       }
