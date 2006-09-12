@@ -578,7 +578,9 @@ ftk_init_cr (FtkEventViewer * eventviewer)
     PangoFontDescription * desc;
     gint width, height;
 
-#define FONT "dingbats 10"
+	  
+// Font and Size for symbols.	  
+#define FONT "dingbats 6"
     desc = pango_font_description_from_string (FONT);
 
     for (i = 0; i < db_symbols_count; i++)
@@ -2258,7 +2260,7 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
 
             cairo_move_to (cr,
                            (double)(h_offset - ftk_symbol_h_center(sym_idx)),
-                           (double)(v_offset /*- ftk_symbol_v_center(sym_idx) */ ));
+                           (double)(v_offset /*- ftk_symbol_v_center(sym_idx)*/ ));
 
             pango_cairo_show_layout (cr, ftk_symbol_layout (sym_idx));
             cairo_stroke (cr);

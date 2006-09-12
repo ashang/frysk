@@ -1,4 +1,7 @@
-2006-09-08  Nurdin Premj  <npremji@redhta.com>
+2006-09-12  Nurdin Premji  <npremji@redhat.com>
+	*src/widgets/ftkeventviewer.c: Shrank size of glyphs.
+
+2006-09-08  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Ran artistic style for gnu formatting.
 	Added mouse edge scrolling
 	* src/widgets/ftkeventviewer.h: Ditto.
