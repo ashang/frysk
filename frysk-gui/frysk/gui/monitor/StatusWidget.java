@@ -70,9 +70,9 @@ public class StatusWidget extends VBox {
 
 	private Color backgroundColor = new Color(50000, 50000, 50000);
 
-	private int[] legendAdded = {0,0,0,0,0}; 
 	private Color[] markerColors = { Color.RED, Color.GREEN, Color.BLUE,
 			Color.ORANGE };
+	HashMap markerStore = new HashMap();
 
 	Label nameLabel;
 
@@ -190,14 +190,8 @@ public class StatusWidget extends VBox {
 
 	private void initEventViewer(final GuiData guiData) {
 		ObservableLinkedList observers;
-		if (guiData instanceof GuiTask)
-			observers = ((GuiTask)guiData).getParent().getObservers();
-		else
-			observers = null;
-			//observers = guiData.getObservers();
-			// uncomment above line to add observers to proc view in timeline
-		
-		
+		observers = guiData.getObservers();
+
 		if (observers != null) {
 
 			ListIterator iter = observers.listIterator();
@@ -235,7 +229,7 @@ public class StatusWidget extends VBox {
       extends TaskAction
   {
 
-    int markerId;
+    int markerId = 0;
 
     private ObserverRoot observer;
 
@@ -274,33 +268,46 @@ public class StatusWidget extends VBox {
       else if (observer.getBaseName().equals("Clone Observer"))
         {
           observerglyph = 3;
-          observercolor = 0;
+          observercolor = 3;
         }
       else if (observer.getBaseName().equals("Syscall Observer"))
         {
           observerglyph = 4;
-          observercolor = 1;
+          observercolor = 3;
         }
       
-      if  (legendAdded[observerglyph] == 0) {
-	
-	      viewer.addMarker(observerglyph, observer.getName(),
+      if (!markerStore.containsKey(observer.getName()))
+      {
+	      int i = viewer.addMarker(observerglyph, observer.getName(),
 	                                       observer.getToolTip());
-	      viewer.setMarkerColor(this.markerId, markerColors[observercolor]);
+	      markerStore.put(new String(observer.getName()), new Integer(i));
+
+	      viewer.setMarkerColor(i, markerColors[observercolor]);
 	      
       }
       
-      legendAdded[observerglyph]++;
-
     }
 
   
 	public void execute(Task task) {
 		      
+		  Integer iO = (Integer) markerStore.get(new String(observer.getName()));
+		  int i = iO.intValue();
 	      if (guiData instanceof GuiTask)
-	    	  if (task.getTid() == ((GuiTask)guiData).getTask().getTid())
-	    		  viewer.appendEvent(guiData.getTrace(), markerId,
-	                         "Other useful per-event information.");
+	    	  if (task.getTid() == ((GuiTask)guiData).getTask().getTid()) {
+	    		  viewer.appendEvent(guiData.getTrace(), i,
+                  "Other useful per-event information.");
+	    	  }
+	      else
+	      {
+	    	  if (guiData instanceof GuiProc)
+	    	  {
+	    		  if (task.getProc().getPid() == ((GuiProc)guiData).getProc().getPid()) {
+		    		  viewer.appendEvent(guiData.getTrace(), i,
+	                  "Other useful per-event information.");
+	    		  }
+	    	  }
+	      }
 	}
 
 	public String getArgument() {
