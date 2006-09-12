@@ -1,3 +1,7 @@
+2006-09-12  Mike Cvet  <mcvet@redhat.com>
+
+	* Makefile.am: Removed a target to funit-rt-looper.h
+
 2006-09-11  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (prune_ecj): Add antlr generated source files.
