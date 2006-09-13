@@ -3,7 +3,8 @@
 	* sessions/DebugProcess.java: Rewritten, commented and
 	(throughly cleaned out). Added Java Doc.
 	* sessions/Session.java: Ditto
-
+	* sessions/SessionManager.java Ditto.
+	
 2006-09-12  Phil Muldoon  <pmuldoon@localhost.localdomain>
 
 	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): Use
