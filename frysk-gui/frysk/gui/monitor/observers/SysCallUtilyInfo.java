@@ -49,118 +49,125 @@ public class SysCallUtilyInfo {
 
 		long addr = 0;
 		long arg = 0;
-		String enterCall = "";
+		StringBuffer enterCall = new StringBuffer("");
 
 		SyscallEventInfo syscallEventInfo = null;
 		try {
 			syscallEventInfo = task.getSyscallEventInfo();
-		} catch (TaskException e) {
+		} catch (final TaskException e) {
 			return "";
 		}
 
-		Syscall syscall = Syscall
-				.syscallByNum(syscallEventInfo.number(task));
-		enterCall = syscall.getName();
-		if (syscall.numArgs > 0)
-			enterCall += " (";
+		final Syscall syscall = Syscall.syscallByNum(syscallEventInfo.number(task));
+		enterCall.append(syscall.getName());
+		if (syscall.numArgs > 0) {
+			enterCall.append(" (");
+		}
 
 		for (int i = 1; i <= syscall.numArgs; ++i) {
-			char fmt = syscall.argList.charAt(i + 1);
+			final char fmt = syscall.argList.charAt(i + 1);
 			switch (fmt) {
 			case 'a':
 			case 'b':
 			case 'p':
 				arg = syscallEventInfo.arg(task, i);
-				if (arg == 0)
-					enterCall += "NULL";
-				else
-					enterCall += "0x" + Long.toHexString(arg);
+				if (arg == 0) {
+					enterCall.append("NULL");
+				} else {
+					enterCall.append("0x" + Long.toHexString(arg));
+				}
 				break;
 			case 's':
 			case 'S':
 				addr = syscallEventInfo.arg(task, i);
-				if (addr == 0)
-					enterCall += "0x0";
-				else {
-					enterCall += "\"";
-					StringBuffer x = new StringBuffer();
+				if (addr == 0) {
+					enterCall.append("0x0");
+				} else {
+					enterCall.append("\"");
+					final StringBuffer x = new StringBuffer();
 					task.getMemory().get(addr, 20, x);
-					if (x.length() == 20)
+					if (x.length() == 20) {
 						x.append("...");
+					}
 					x.append("\"");
-					enterCall += x;
+					enterCall.append(x);
 				}
 				break;
 			case 'i':
 			default:
 				arg = (int) syscallEventInfo.arg(task, i);
-				enterCall += (arg);
+				enterCall.append(arg);
 				break;
 			}
-			if (i < syscall.numArgs)
-				enterCall += ",";
+			if (i < syscall.numArgs) {
+				enterCall.append(",");
+			}
 		}
 
-		if (syscall.numArgs > 0)
-			enterCall += ')';
-		
-		return enterCall;
+		if (syscall.numArgs > 0) {
+			enterCall.append(')');
+		}
+
+		return enterCall.toString();
 	}
 
 	public static String getReturnInfoFromSyscall(Task task) {
 		long addr = 0;
 		long arg = 0;
-		String returnCall = "";
+		StringBuffer returnCall = new StringBuffer("");
 
 		SyscallEventInfo syscallEventInfo = null;
 		try {
 			syscallEventInfo = task.getSyscallEventInfo();
-		} catch (TaskException e) {
+		} catch (final TaskException e) {
 			return "";
 		}
 
-		Syscall syscall = Syscall.syscallByNum(syscallEventInfo.number(task));
+		final Syscall syscall = Syscall.syscallByNum(syscallEventInfo.number(task));
 
-		returnCall += syscall.getName() + " returns with value ";
+		returnCall.append(syscall.getName() + " returns with value ");
 
 		switch (syscall.argList.charAt(0)) {
 		case 'a':
 		case 'b':
 		case 'p':
 			arg = syscallEventInfo.returnCode(task);
-			if (arg == 0)
-				returnCall += ("NULL");
-			else
-				returnCall += ("0x" + Long.toHexString(arg));
+			if (arg == 0) {
+				returnCall.append("NULL");
+			} else {
+				returnCall.append("0x" + Long.toHexString(arg));
+			}
 			break;
 		case 's':
 		case 'S':
 			addr = syscallEventInfo.returnCode(task);
-			if (addr == 0)
-				returnCall += "0x0";
-			else {
-				returnCall += "\"";
-				StringBuffer x = new StringBuffer();
+			if (addr == 0) {
+				returnCall.append("0x0");
+			} else {
+				returnCall.append("\"");
+				final StringBuffer x = new StringBuffer();
 				task.getMemory().get(addr, 20, x);
-				if (x.length() == 20)
+				if (x.length() == 20) {
 					x.append("...");
+				}
 				x.append("\"");
-				returnCall += x;
+				returnCall.append(x);
 			}
-			returnCall += ("");
+			returnCall.append("");
 			break;
 		case 'i':
 			arg = (int) syscallEventInfo.returnCode(task);
 			if (arg < 0) {
-				returnCall += ("-1");
-				returnCall += (" ERRNO=" + (-arg));
-			} else
-				returnCall += (syscallEventInfo.returnCode(task));
+				returnCall.append("-1");
+				returnCall.append(" ERRNO=" + -arg);
+			} else {
+				returnCall.append(syscallEventInfo.returnCode(task));
+			}
 			break;
 		default:
-			returnCall += (syscallEventInfo.returnCode(task));
+			returnCall.append(syscallEventInfo.returnCode(task));
 			break;
 		}
-		return returnCall;
+		return returnCall.toString();
 	}
 }

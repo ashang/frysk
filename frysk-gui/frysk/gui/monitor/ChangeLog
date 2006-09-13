@@ -1,3 +1,9 @@
+2006-09-13  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* observers/SysCallUtilyInfo.java (getCallInfoFromSyscall): Convert to 
+	use StringBuffers. Format code.
+	(getReturnInfoFromSyscall): Ditto.
+
 2006-09-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (TimelineAction.execute): Cleaned hashmap
@@ -8,7 +14,8 @@
 2006-09-13  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java: Changed clones to be colored blue.
-	Added a call to change the size of a marker to 6 (default is 30 so you'll know its huge).
+	Added a call to change the size of a marker to 6 (default is 30 
+	so you'll know its huge).
 
 2006-09-13  Phil Muldoon  <pmuldoon@redhat.com>
 
