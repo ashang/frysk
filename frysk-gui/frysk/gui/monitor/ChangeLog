@@ -1,3 +1,11 @@
+2006-09-13  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* ObserversMenu.java (setCurrentTask): Convert hash lookup key
+	to observer.getName().
+	(setCurrentProc): Ditto.
+	(removeGuiObject): Ditto.
+	(addGuiObject): Ditto.
+
 2006-09-12  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (TimeLine): Build a Hashmap of marker's to

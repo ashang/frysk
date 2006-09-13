@@ -114,14 +114,14 @@ public class ObserversMenu extends Menu{
 		});
 
 		this.add(item);
-		this.map.put(observer, item);
+		this.map.put(observer.getName(), item);
         this.showAll();
 	}
 
 	private void removeGuiObject(final GuiObject observer) {
-        MenuItem item = (MenuItem) this.map.get(observer);
+        MenuItem item = (MenuItem) this.map.get(observer.getName());
 		this.remove(item);
-		this.map.remove(observer);
+		this.map.remove(observer.getName());
         this.showAll();
 	}
 
@@ -155,7 +155,8 @@ public class ObserversMenu extends Menu{
 		ObservableLinkedList foo = this.currentProc.getObservers();
 		Iterator i = foo.iterator();
 		while (i.hasNext())	{
-			MenuItem item = (MenuItem) this.map.get(((GuiObject)i.next()));
+			GuiObject guiProc = ((GuiObject)i.next());
+			MenuItem item = (MenuItem) this.map.get(guiProc.getName());
 			item.setSensitive(false);
 		}
 	}
@@ -174,18 +175,11 @@ public class ObserversMenu extends Menu{
 		// De-sensitize already added observers tasks observers from session, or 
 		// from previous user selections.
 		ObservableLinkedList foo = this.currentTask.getObservers();
+		
 		Iterator i = foo.iterator();
 		while (i.hasNext())	{
-			item = (MenuItem) this.map.get(((GuiObject)i.next()));
-			item.setSensitive(false);
-		}
-		
-		// De-sensitize already added Proc observers  from session, or 
-		// from previous user selections.
-		foo = this.currentTask.getParent().getObservers();
-		i = foo.iterator();
-		while (i.hasNext())	{
-			item = (MenuItem) this.map.get(((GuiObject)i.next()));
+			GuiObject guiTask = ((GuiObject)i.next());			
+			item = (MenuItem) this.map.get(guiTask.getName());
 			item.setSensitive(false);
 		}
 		
