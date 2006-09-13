@@ -68,12 +68,13 @@ import frysk.proc.Task;
 
 public class StatusWidget extends VBox {
 
-	private Color backgroundColor = new Color(50000, 50000, 50000);
-
+	private static final Color BACKGROUND_COLOR = new Color(50000, 50000, 50000);
+	private static final int INTERVAL = 60;
+	
 	private Color[] markerColors = { Color.RED, Color.GREEN, Color.BLUE,
 			Color.ORANGE };
+	
 	HashMap markerStore = new HashMap();
-
 	Label nameLabel;
 
 	private EventViewer viewer;
@@ -95,8 +96,8 @@ public class StatusWidget extends VBox {
 		this.viewer = new EventViewer();
 		this.viewer.setBorderWidth(5);
 		this.viewer.resize(1, 1);
-		this.viewer.setBackgroundColor(backgroundColor);
-		this.viewer.setTimebase(10.0);
+		this.viewer.setBackgroundColor(BACKGROUND_COLOR);
+		this.viewer.setTimebase(INTERVAL);
 	}
 	
 	public EventViewer getViewer() {
@@ -162,6 +163,7 @@ public class StatusWidget extends VBox {
 	
 	private void addObserverActionPoint(ObserverRoot observer, GuiData guiData)	{
 		if (observer instanceof TaskSyscallObserver) {
+			
 			((TaskSyscallObserver)observer).enteringTaskActionPoint.addAction(new TimelineAction(
 				observer, guiData));
 		}
@@ -248,7 +250,7 @@ public class StatusWidget extends VBox {
     {
       count++;
 
-      int observerglyph = 0, observercolor = 0;
+      int observerglyph = 0, observercolor = 0, markerSize = 6;
       if (observer.getBaseName().equals("Fork Observer"))
         {
           observerglyph = 0;
@@ -283,7 +285,7 @@ public class StatusWidget extends VBox {
 	      markerStore.put(new String(observer.getName()), new Integer(i));
 
 	      viewer.setMarkerColor(i, markerColors[observercolor]);
-	      viewer.setMarkerSymbolSize(i, 6);
+	      viewer.setMarkerSymbolSize(i, markerSize);
 	      
       }
       
@@ -292,8 +294,7 @@ public class StatusWidget extends VBox {
   
 	public void execute(Task task) {
 		      
-		  Integer iO = (Integer) markerStore.get(new String(observer.getName()));
-		  int i = iO.intValue();
+		  int i = ((Integer) markerStore.get(observer.getName())).intValue();
 	      if (guiData instanceof GuiTask)
 	    	  if (task.getTid() == ((GuiTask)guiData).getTask().getTid()) {
 	    		  viewer.appendEvent(guiData.getTrace(), i,

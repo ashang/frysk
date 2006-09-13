@@ -1,8 +1,16 @@
-200609-13  Nurdin Premji  <npremji@redhat.com>
+2006-09-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StatusWidget.java (TimelineAction.execute): Cleaned hashmap
+	lookup.
+	(buildEventViewer): Use constants BACKGROUND_COLOR and
+	INTERVAL
+	
+2006-09-13  Nurdin Premji  <npremji@redhat.com>
+
 	* StatusWidget.java: Changed clones to be colored blue.
 	Added a call to change the size of a marker to 6 (default is 30 so you'll know its huge).
 
-2006-09-13  Phil Muldoon  <pmuldoon@localhost.localdomain>
+2006-09-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ObserversMenu.java (setCurrentTask): Convert hash lookup key
 	to observer.getName().
