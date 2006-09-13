@@ -37,10 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.gui.sessions;
-
-import java.util.Iterator;
 
 import org.jdom.Element;
 
@@ -51,80 +48,101 @@ import frysk.gui.monitor.ObservableLinkedList;
  * @author swagiaal, pmuldoon A Session object is used to hold and save user
  *         preferences with respect to a debug session.
  */
-public class Session
-    extends GuiObject
-{
+public class Session extends GuiObject {
 
-  private ObservableLinkedList procs;
+	private ObservableLinkedList procs;
 
-  public void setName (String name)
-  {
-    super.setName(name);
-  }
+	/**
+	 * Creates a new empty session object, with an empty list processes.
+	 * 
+	 * Debug processes should be added to this session. 
+	 */
+	public Session() {
+		super();
+		procs = new ObservableLinkedList();
+	}
 
-  public Session ()
-  {
-    super();
-    this.procs = new ObservableLinkedList();
-  }
+	/**
+	 * Creates a new session, which is clone of the 
+	 * session that is passed in as a paraemter
+	 * 
+	 * @param other - the session you want this
+	 * session to clone.
+	 */
+	public Session(final Session other) {
+		super(other);
 
-  public Session (String name, String toolTip)
-  {
-    super(name, toolTip);
-    this.procs = new ObservableLinkedList();
-  }
+		procs = new ObservableLinkedList(other.procs);
+	}
 
-  public Session (Session other)
-  {
-    super(other);
+	/**
+	 * Creates a new empty session object, with an empty list processes.
+	 * 
+	 * Debug processes should be added to this session. 
+	 * 
+	 * @param name - the name of the session
+	 * @param toolTip - the tool-tip or additional associative information.
+	 */
+	public Session(final String name, final String toolTip) {
+		super(name, toolTip);
+		procs = new ObservableLinkedList();
+	}
 
-    this.procs = new ObservableLinkedList(other.procs);
-  }
+	/* (non-Javadoc)
+	 * @see frysk.gui.monitor.GuiObject#setName(java.lang.String)
+	 */
+	public void setName(final String name) {
+		super.setName(name);
+	}
+	
+	/**
+	 * Add a debug process to this session
+	 * 
+	 * @param process - The Debug Process that is to be added.
+	 */
+	public void addProcess(final DebugProcess process) {
+		procs.add(process);
+	}
 
-  public void addProcess (DebugProcess process)
-  {
-    this.procs.add(process);
-  }
+	/**
+	 * Remove a debug process from this session.
+	 * 
+	 * @param process - a reference to the debug process
+	 * that is to be removed.
+	 */
+	public void removeProcess(final DebugProcess process) {
+		procs.remove(process);
+	}
+	
+	/* (non-Javadoc)
+	 * @see frysk.gui.monitor.GuiObject#getCopy()
+	 */
+	public GuiObject getCopy() {
+		return new Session(this);
+	}
 
-  public void removeProcess (DebugProcess process)
-  {
-    this.procs.remove(process);
-  }
+	/**
+	 * Return a list of debug process that are contained within
+	 * this session object
+	 * 
+	 * @return ObservableLinkedList of Debug Processes.
+	 */
+	public ObservableLinkedList getProcesses() {
+		return procs;
+	}
 
-  public ObservableLinkedList getProcesses ()
-  {
-    return this.procs;
-  }
+	public void load(final Element node) {
+		super.load(node);
 
-  public void populateProcs ()
-  {
-    Iterator iterator = this.procs.iterator();
-    while (iterator.hasNext())
-      {
-        DebugProcess debugProcess = (DebugProcess) iterator.next();
-        debugProcess.populateProcs();
-      }
-  }
+		final Element procsXML = node.getChild("procs");
+		procs.load(procsXML);
+	}
 
-  public void save (Element node)
-  {
-    super.save(node);
-    Element procsXML = new Element("procs");
-    this.procs.save(procsXML);
-    node.addContent(procsXML);
-  }
-
-  public GuiObject getCopy ()
-  {
-    return new Session(this);
-  }
-
-  public void load (Element node)
-  {
-    super.load(node);
-
-    Element procsXML = node.getChild("procs");
-    this.procs.load(procsXML);
-  }
+	public void save(final Element node) {
+		super.save(node);
+		final Element procsXML = new Element("procs");
+		procs.save(procsXML);
+		node.addContent(procsXML);
+	}
 
 }
