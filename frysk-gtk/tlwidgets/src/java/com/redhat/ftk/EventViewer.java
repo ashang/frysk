@@ -186,6 +186,14 @@ public class EventViewer extends VBox
     	return ftk_eventviewer_set_marker_color(getHandle(), marker, 
     			color.getHandle());
     }
+    
+    /**
+    * Set the marker symbol size
+    */
+    public boolean setMarkerSymbolSize(int marker, int symbol_size) {
+	    return ftk_eventviewer_set_marker_symbol_size(getHandle(), marker, symbol_size);
+    }
+    
     /**
      * Append event
      */
@@ -290,6 +298,9 @@ public class EventViewer extends VBox
     
     native static final protected boolean
     ftk_eventviewer_set_marker_color (Handle sc, int marker, Handle color);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_marker_symbol_size (Handle sc, int marker, int sym_size);
     
     native static final protected boolean
 	ftk_eventviewer_append_event (Handle sc, int trace, int marker,

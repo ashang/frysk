@@ -1,3 +1,9 @@
+2006-09-13  Nurdin Premji  <npremji@redhat.com>
+	* src/widgets/ftkeventviewer.c: Added support for user resizable glyph sizes.
+	* src/widgets/ftkeventviewer.h: Ditto.
+	* src/jni/com_redhat_ftk_EventViewer.c: Ditto.
+	* src/java/com/redhat/ftk/EventViewer.java: Ditto.
+
 2006-09-12  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Shrank size of glyphs.
 

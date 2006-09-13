@@ -443,6 +443,28 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1color (JNIEnv *en
 }
 
 /*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_marker_symbol_size
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1symbol_1size (JNIEnv *env, 
+								    jclass cls,
+								    jobject sc,
+								    jint mk,
+								    jint ss)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint marker = (gint) mk;
+  
+  gint symbol_size = (gint) ss;
+  return (jboolean)ftk_eventviewer_set_marker_symbol_size (eventviewer,
+						   marker, symbol_size);
+}
+
+
+/*
  * Class:     com.redhat.ftk.EventViewr
  * Method:    ftk_eventviewer_append_event
  */

@@ -338,6 +338,7 @@ typedef struct
     GdkColor	color;
     char	      * string;
     gboolean	label_modified;
+    gint 		symbol_size;
     gint index;
   }
 ftk_marker_s;
@@ -356,6 +357,7 @@ ftk_marker_s;
 #define ftk_marker_color_green(m)	(m)->color.green
 #define ftk_marker_color_blue(m)	(m)->color.blue
 #define ftk_marker_label_modified(m)	(m)->label_modified
+#define ftk_marker_symbol_size(m)		(m)->symbol_size
 #define ftk_marker_index(m)			(m)->index
 
 
@@ -900,6 +902,15 @@ gboolean
 ftk_eventviewer_set_marker_color	(FtkEventViewer * eventviewer,
                                   gint marker,
                                   GdkColor * color);
+
+gboolean
+ftk_eventviewer_set_marker_symbol_size_e (FtkEventViewer *eventviewer,
+								gint marker_index,
+								gint symbol_size, GError ** err);
+								
+gboolean
+ftk_eventviewer_set_marker_symbol_size (FtkEventViewer *eventviewer,
+								gint marker_index, gint symbol_size);								
 
 GdkColor *
 ftk_eventviewer_get_marker_color_e	(FtkEventViewer * eventviewer,

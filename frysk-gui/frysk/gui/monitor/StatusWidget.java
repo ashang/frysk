@@ -262,13 +262,13 @@ public class StatusWidget extends VBox {
         }
       else if (observer.getBaseName().equals("Terminating Observer"))
         {
-          observerglyph = 2;
-          observercolor = 2;
+          observerglyph = 3;
+          observercolor = 3;
         }
       else if (observer.getBaseName().equals("Clone Observer"))
         {
-          observerglyph = 3;
-          observercolor = 3;
+          observerglyph = 2;
+          observercolor = 2;
         }
       else if (observer.getBaseName().equals("Syscall Observer"))
         {
@@ -283,6 +283,7 @@ public class StatusWidget extends VBox {
 	      markerStore.put(new String(observer.getName()), new Integer(i));
 
 	      viewer.setMarkerColor(i, markerColors[observercolor]);
+	      viewer.setMarkerSymbolSize(i, 6);
 	      
       }
       

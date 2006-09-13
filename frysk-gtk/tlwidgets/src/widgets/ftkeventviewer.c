@@ -1826,6 +1826,7 @@ create_popup_marker_label (gboolean prepend_ts,
 
   ftk_ev_popup_marker (eventviewer) = marker_idx;
 
+	//convert time_d to real time here as well.
 
   if (prepend_ts)
     {
@@ -1930,6 +1931,7 @@ create_popup_label (FtkEventViewer * eventviewer,
 
       break;
     case FTK_POPUP_TYPE_TIME:
+	    //convert time_d to real time here.
       asprintf (&lbl, "%g", time_d);
       break;
     }
@@ -2250,21 +2252,22 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
                             ftk_symbol_v_center(sym_idx));
 
             gdk_cairo_set_source_color (cr, &ftk_marker_color (marker));
-            //	cairo_set_source_rgb (cr,
-            //			      (double)(ftk_marker_color_red (marker)) /
-            //			      (double)65535,
-            //			      (double)(ftk_marker_color_green (marker)) /
-            //			      (double)65535,
-            //			      (double)(ftk_marker_color_blue (marker)) /
-            //			      (double)65535);
-
             cairo_move_to (cr,
                            (double)(h_offset - ftk_symbol_h_center(sym_idx)),
                            (double)(v_offset /*- ftk_symbol_v_center(sym_idx)*/ ));
-
-            pango_cairo_show_layout (cr, ftk_symbol_layout (sym_idx));
+	    
+		  
+		  PangoLayout * layout = pango_layout_copy (ftk_symbol_layout(sym_idx));
+	   PangoFontDescription *font_desc = 
+		  pango_font_description_copy (pango_layout_get_font_description(layout));
+          pango_font_description_set_size (font_desc, ftk_marker_symbol_size(marker)*PANGO_SCALE);
+	   pango_layout_set_font_description (layout, font_desc);
+            
+		  
+	pango_cairo_show_layout (cr, layout);
             cairo_stroke (cr);
 
+	  g_object_unref(layout);
             ftk_event_hloc (event) = h_offset;
           }
       }
@@ -3817,6 +3820,7 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
     ftk_marker_color_red (marker)   = 0;
     ftk_marker_color_green (marker) = 0;
     ftk_marker_color_blue (marker)  = 0;
+    ftk_marker_symbol_size(marker) = 30;
   }
 
   pango_layout_get_pixel_size (ftk_marker_label(marker),
@@ -3957,6 +3961,53 @@ ftk_eventviewer_set_marker_color (FtkEventViewer * eventviewer,
          NULL);
 }
 
+gboolean
+ftk_eventviewer_set_marker_symbol_size_e (FtkEventViewer *eventviewer,
+								gint marker_index,
+								gint symbol_size, GError ** err)
+{
+	 ftk_marker_s * marker;
+
+  if (!FTK_IS_EVENTVIEWER (eventviewer))
+    {
+      g_set_error (err,
+                   ftk_quark,				/* error domain */
+                   FTK_EV_ERROR_INVALID_WIDGET,	/* error code */
+                   "Invalid FtkEventViewer widget.");
+      return FALSE;
+    }
+
+  FtkLegend *legend = ftk_ev_legend_da(eventviewer);
+  if ((marker_index < 0) ||
+      (marker_index >= ftk_legend_markers_next (legend)))
+    {
+      g_set_error (err,
+                   ftk_quark,				/* error domain */
+                   FTK_EV_ERROR_INVALID_EVENT_TYPE,	/* error code */
+                   "Invalid FtkEventViewer event type.");
+      return FALSE;
+    }
+    
+    if (symbol_size < 0)
+    {
+	    g_set_error (err, ftk_quark, FTK_EV_ERROR_INVALID_EVENT_TYPE,
+				"Symbol size less than zero.");
+	    return FALSE;
+    }
+    
+    marker = ftk_legend_marker (legend, marker_index);
+    ftk_marker_symbol_size(marker) = symbol_size;
+    return TRUE;
+
+}
+
+gboolean
+ftk_eventviewer_set_marker_symbol_size (FtkEventViewer *eventviewer,
+								gint marker_index, gint symbol_size)
+{
+	return ftk_eventviewer_set_marker_symbol_size_e(eventviewer, marker_index, symbol_size, NULL);
+}
+
 GdkColor *
 ftk_eventviewer_get_marker_color_e	(FtkEventViewer * eventviewer,
                                     gint marker_index,
@@ -3999,11 +4050,6 @@ ftk_eventviewer_get_marker_color	(FtkEventViewer * eventviewer,
 {
   return ftk_eventviewer_get_marker_color_e (eventviewer, marker, NULL);
 }
-
-
-
-
-
 
 
 gint
