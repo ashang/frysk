@@ -213,7 +213,7 @@ public class CurrentStackView
   //public StackFrame getCurrentFrame ()
   public StackLevel getCurrentLevel ()
   {
-    return currentFrame;
+    return currentLevel;
   }
 
   public void addListener (StackViewListener listener)
