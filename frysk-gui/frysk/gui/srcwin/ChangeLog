@@ -1,5 +1,10 @@
 2006-09-08  Mike Cvet  <mcvet@redhat.com>
 
+    * CurrentStackView.java (CurrentStackView): Added architecture
+    checks to address #3198.
+
+2006-09-08  Mike Cvet  <mcvet@redhat.com>
+
 	* SourceWindowFactory.java (finishSourceWin): Creates a new
 	StackFrame to send to the SourceWindow. Removed some unneeded 
 	comments and information.

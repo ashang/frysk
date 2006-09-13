@@ -61,6 +61,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
+import frysk.proc.MachineType;
 import frysk.rt.StackFrame;
 
 public class CurrentStackView
@@ -70,11 +71,13 @@ public class CurrentStackView
 
   public interface StackViewListener
   {
+    //void currentStackChanged (StackFrame newFrame);
     void currentStackChanged (StackLevel newLevel);
   }
 
   private DataColumn[] stackColumns;
 
+  //private StackFrame currentFrame;
   private StackLevel currentLevel;
 
   private Vector observers;
@@ -110,6 +113,8 @@ public class CurrentStackView
 
     // Go through each segment of the current line, but once we've found
     // one stop checking
+    if (MachineType.getMachineType() == MachineType.IA32)
+    {
     while (current != null && ! hasInlinedCode)
       {
         // Go through each line of the segment
@@ -126,41 +131,23 @@ public class CurrentStackView
 
         current = current.getNextSection();
       }
+    }
 
-    // DOMSource source = topLevel.getData();
-    // DOMFunction func = topLevel.getFunc();
-    //
-    // String row = (source == null ? "Unknown file" : source.getFileName())
-    // + ": "
-    // + (func == null ? "Unknown function" : func.getName());
-
-    // If we've found inlined code, update the display
-    // if (hasInlinedCode)
-    // row += " (i)";
-
-    // listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-    //
-    // listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
-
-    // Save the last node so we can select it
-    // if (topLevel.getNextScope() == null)
-    // {
-    // currentLevel = topLevel;
-    // last = iter;
-    // }
-
-    // topLevel = topLevel.getNextScope();
-    // }
-
+    if (MachineType.getMachineType() == MachineType.IA32)
+      {
     DOMSource source = topLevel.getData();
     DOMFunction func = topLevel.getFunc();
     String row = "";
+    
+    /* Current frame is the top one */
+    //currentFrame = frame;
+    
     if (source == null || func == null)
       {
         iter = listModel.appendRow();
         row = "Unknown file : Unknown function";
         listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel); //frame);
       }
     else
       {
@@ -192,10 +179,18 @@ public class CurrentStackView
             row = "";
           }
       }
+      }
+    else
+      {
+        iter = listModel.appendRow();
+        String row = "Unknown file : Unknown function";
+        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+      }
 
     last = iter;
     /* For now - its always null anyway */
-    currentLevel = topLevel;
+    currentLevel = topLevel; // remove
 
     this.setModel(listModel);
 
@@ -213,11 +208,12 @@ public class CurrentStackView
   }
 
   /**
-   * @return The currently selected stack level
+   * @return The currently selected stack frame
    */
+  //public StackFrame getCurrentFrame ()
   public StackLevel getCurrentLevel ()
   {
-    return currentLevel;
+    return currentFrame;
   }
 
   public void addListener (StackViewListener listener)
@@ -225,6 +221,7 @@ public class CurrentStackView
     this.observers.add(listener);
   }
 
+  //private void notifyObservers (StackFrame newStack)
   private void notifyObservers (StackLevel newStack)
   {
     Iterator iter = this.observers.iterator();
@@ -243,7 +240,9 @@ public class CurrentStackView
     if (paths.length == 0)
       return;
 
-    StackLevel selected = (StackLevel) model.getValue(
+    //XXX
+    //StackFrame selected = (StackFrame) model.getValue(
+     StackLevel selected = (StackLevel) model.getValue(
                                                       model.getIter(paths[0]),
                                                       (DataColumnObject) stackColumns[1]);
 
