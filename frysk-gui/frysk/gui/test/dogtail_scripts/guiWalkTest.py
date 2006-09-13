@@ -39,9 +39,9 @@
 # exception.
 
 """
-Script name:    TestLicense.py
-Creation date:  April 2006
-Purpose:        Verify correct license text is displayed by Frysk gui
+Script name:    walkGuiTest.py
+Creation date:  Sept 2006
+Purpose:        Verify all elements in GUI work
 Summary:        Simple, demo/prototype dogtail test script for Frysk
 """
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
@@ -102,7 +102,7 @@ class guiWalktest (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
 
     def testall(self):      
-        """Check that the license text is correct"""   
+        """Check that the GUI elements can be accessed and acted upon"""   
   
         ###############################################
         def showChildren ( theNode, skipList ):
@@ -112,23 +112,20 @@ class guiWalktest (unittest.TestCase):
                 theNode.blink()
                 theNode.blink()
 
-                #Need to define the skipList!
-
-#            compiledPattern = re.compile('*Color*')
-#            matchedPattern = compiledPattern.search (theNode.name)
-#
+            #Need to define the skipList!
             theActions = theNode.actions
             for x in theActions:
-                print "action=" + x
+                #print "action=" + x
 
                 if ( skipList[0] != 'all'):
                     print 'perform the actions other than those listed in the skiplist'
                     for y in skipList:
-                        print "The node on which to perform an action is: " + x 
+                        print "The node on which to perform an action is: " + y 
                         if ((y == theNode.name) and (x == 'click')):
                             print "Got one!" + y + theNode.name
                         else:
                            theNode.actions[x].do()
+                           print str(theNode.actions[x])
  
 
 
