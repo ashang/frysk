@@ -4,6 +4,8 @@
 	* src/jni/com_redhat_ftk_EventViewer.c: Ditto.
 	* src/java/com/redhat/ftk/EventViewer.java: Ditto.
 
+	* src/widgets/ftkeventviewer.c: Changed to display real time and microseconds.
+
 2006-09-12  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Shrank size of glyphs.
 
