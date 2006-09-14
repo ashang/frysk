@@ -50,6 +50,7 @@ public class SysCallUtilyInfo {
 		long addr = 0;
 		long arg = 0;
 		StringBuffer enterCall = new StringBuffer("");
+		Syscall syscall;
 
 		SyscallEventInfo syscallEventInfo = null;
 		try {
@@ -57,8 +58,14 @@ public class SysCallUtilyInfo {
 		} catch (final TaskException e) {
 			return "";
 		}
+		
+		try {
+			syscall = syscallEventInfo.getSyscall(task);
+		}
+		catch (final RuntimeException e1) {
+			return "**** Error: " + e1.getMessage();
+		}
 
-		final Syscall syscall = syscallEventInfo.getSyscall(task);
 		enterCall.append(syscall.getName());
 		if (syscall.numArgs > 0) {
 		  enterCall.append(" (");
@@ -115,6 +122,7 @@ public class SysCallUtilyInfo {
 		long addr = 0;
 		long arg = 0;
 		StringBuffer returnCall = new StringBuffer("");
+		Syscall syscall;
 
 		SyscallEventInfo syscallEventInfo = null;
 		try {
@@ -123,7 +131,12 @@ public class SysCallUtilyInfo {
 			return "";
 		}
 
-		Syscall syscall = syscallEventInfo.getSyscall(task);
+		try {
+			syscall = syscallEventInfo.getSyscall(task);
+		}
+		catch (final RuntimeException e1) {
+			return "**** Error: " + e1.getMessage();
+		}
 
 		returnCall.append(syscall.getName() + " returns with value ");
 

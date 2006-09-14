@@ -1,3 +1,11 @@
+2006-09-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/SysCallUtilyInfo.java (getReturnInfoFromSyscall): Wrap
+	syscall interrogation in Try/Catch loop.
+	(getCallInfoFromSyscall):Ditto
+	
+	* WindowManager.java (initProcessPicker): Added.
+
 2006-09-14  Nurdin Premji <npremji@redhat.com>
 	
 	* StatusWidget.java: Added code to use some of the grid api.
