@@ -3,7 +3,10 @@
 	Added a grid and api stuff to change the grid size, color and whether it is showing.
 	* src/widgets/ftkeventviewer.h: Added a grid and api stuff to change the grid size, color and whether it is showing.
 	* src/jni/com_redhat_ftk_EventViewer.c: Ditto.
-	*src/java/com/redhat/ftk/Eventviewer.java: Ditto.
+	* src/java/com/redhat/ftk/Eventviewer.java: Ditto.
+
+	* src/widgets/ftkeventviewer.c: Changed grid lines to not antialias. The two options for antialiasing are: NONE, and GRAY, which just grays the lines.
+	There is a third option SUBPIXEL, but Cairo documentation says no backend supports this yet.
 
 2006-09-13  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Added support for user resizable glyph sizes.

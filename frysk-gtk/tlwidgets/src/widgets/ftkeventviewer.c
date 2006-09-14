@@ -2600,8 +2600,10 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     cairo_clip (cr);
 
     //Draw grid lines.
+      
     if (ftk_da_show_grid(da)) 
 	{
+		cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
     double start_time = ftk_da_hadjustment(da)->value + ftk_ev_zero(eventviewer);
     double round_time = 1.0/ftk_da_grid_size(da) * round (start_time * ftk_da_grid_size(da));
     double end_time = ftk_da_hadjustment(da)->value + ftk_da_hadjustment(da)->page_size + ftk_ev_zero(eventviewer);
@@ -2610,6 +2612,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     {
 	  draw_grid_vline(eventviewer, cr, i);
     }
+    cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
     }
     {				/* draw points */
       gint i,j;
