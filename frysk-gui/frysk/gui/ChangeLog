@@ -1,5 +1,11 @@
 2006-09-14  Mike Cvet  <mcvet@redhat.com>
 
+	* sessions/ProcessPicker.java: Got rid of the proc linked list
+	and added a hashtable instead.
+	(checkSession): Put GuiProcs into the new hashtable.
+	(pickProcs): Instead of iterating through a linked list, grab the
+	GuiProc directly from a table since we won't know the order of PIDs
+	and would have to iterate the list every time. Fixes #3208.
 	* glade/disassemblywindow.glade: Added.
 	* disassembler/DisassemblyFormatDialog.java: Added.
 	* disassembler/DisassemblyWindowFactory.java: Added.

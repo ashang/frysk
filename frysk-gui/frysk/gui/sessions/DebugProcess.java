@@ -66,438 +66,498 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
- * @author pmuldoon, swagiaal,  A container that refers to an executable there
+ * @author pmuldoon, swagiaal, A container that refers to an executable there
  *         could be zero or many instances of these executable. This keeps track
  *         of those too.
  */
 
-public class DebugProcess extends GuiObject {
+public class DebugProcess
+    extends GuiObject
+{
 
-	String executablePath;
+  String executablePath;
 
-	ObservableLinkedList procs;
+  ObservableLinkedList procs;
 
-	ObservableLinkedList observers;
-
-	ObservableLinkedList tagsets;
-
-	ObservableLinkedList allProcsList;
-
-	String alternativeDisplayName = "";
-
-	private String realName;
-
-	private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
-
-	/**
-	 * Create a new Debug Process. A session is comprised of n debug processes.
-	 * A debug process stores a process name, and what observer to apply to that
-	 * process when a session is loaded. 
-	 */
-	public DebugProcess() {
-		super();
-
-		procs = new ObservableLinkedList();
-
-		observers = new ObservableLinkedList();
-		tagsets = new ObservableLinkedList();
-
-		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
-		addProgramObserver();
-	}
-
-	/**
-	 * Create a new Debug Process. A session is comprised of n debug processes.
-	 * A debug process stores a process name, and what observer to apply to that
-	 * process when a session is loaded. 
-	 * 
-	 * @param other - Create a debug process from the the given parameter. Used in 
-	 * copying a debug process.
-	 */
-	public DebugProcess(DebugProcess other) {
-		super(other);
-
-		realName = other.realName;
-		alternativeDisplayName = other.alternativeDisplayName;
-		executablePath = other.executablePath;
-
-		procs = new ObservableLinkedList();
-
-		observers = new ObservableLinkedList(other.observers);
-		tagsets = new ObservableLinkedList(other.tagsets);
-
-		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
-		addProgramObserver();
-	}
-
-	/**
-	 * * Create a new Debug Process. A session is comprised of n debug processes.
-	 * A debug process stores a process name, and what observer to apply to that
-	 * process when a session is loaded. 
-	 * 
-	 * @param name - The name of the process
-	 * @param altName - The display name of the process
-	 * @param executablePath - Where the process can be found on disk
-	 */
-	public DebugProcess(String name, String altName, String executablePath) {
-		super(altName, altName);
-
-		realName = name;
-		alternativeDisplayName = altName;
-		this.executablePath = executablePath;
-
-		procs = new ObservableLinkedList();
-
-		observers = new ObservableLinkedList();
-		tagsets = new ObservableLinkedList();
-
-		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
-
-		addProgramObserver();
-	}
-
-	
-	/**
-	 * Adds an obsever to the list of observers
-	 * to be added to the debug process on load.
-	 * 
-	 * @param observer - ObserverRoot to add.
-	 */
-	public void addObserver(ObserverRoot observer) {
-		observers.add(observer);
-	}
-
-	
-	/**
-	 * Adds all observers from the observer list
-	 * to the process represented by this debug
-	 * process
-	 * 
-	 */
-	public void addObservers() {
-		Iterator procIter = allProcsList.iterator();
-		while (procIter.hasNext()) {
-			GuiProc guiProc = (GuiProc) procIter.next();
-			if (guiProc.getNiceExecutablePath().equals(executablePath)) {
-				Iterator obIter = observers.iterator();
-				while (obIter.hasNext()) {
-					TaskObserverRoot observer = (TaskObserverRoot) obIter
-							.next();
-					guiProc.add(observer);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds a GuiProc to the Debug Process
-	 * 
-	 * @param guiProc - GuiProc that is to be added
-	 */
-	public void addProc(GuiProc guiProc) {
-		// Add terminated observer to catch the procs exit
-		guiProc.getProc().getMainTask().requestAddTerminatedObserver(
-				new TaskObserver.Terminated() {
-
-					public void addedTo(Object observable) {
-						// TODO Auto-generated method stub
-
-					}
-
-					public void addFailed(Object observable, Throwable w) {
-						// TODO Auto-generated method stub
-
-					}
-
-					public void deletedFrom(Object observable) {
-						// TODO Auto-generated method stub
-
-					}
-
-					public Action updateTerminated(Task task, boolean signal,
-							int value) {
-						removeProc(GuiProc.GuiProcFactory.getGuiProc(task
-								.getProc()));
-						return Action.CONTINUE;
-					}
-
-				});
-
-		Iterator iterator = observers.iterator();
-		while (iterator.hasNext()) {
-			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-			guiProc.add(observer);
-		}
-
-		procs.add(guiProc);
-	}
-	
-	public void addProcsMinusObserver() {
-		Iterator iterator = allProcsList.iterator();
-		while (iterator.hasNext()) {
-			GuiProc guiProc = (GuiProc) iterator.next();
-			if (guiProc.getNiceExecutablePath().equals(executablePath)) {
-				procs.add(guiProc);
-			}
-		}
-	}
-
-	/**
-	 *  Adds a program observer to the debug process
-	 */
-	private void addProgramObserver() {
-		ObserverManager.theManager.programObserver.getProcsList().itemAdded
-				.addObserver(new Observer() {
-					public void update(Observable observable, Object object) {
-
-						GuiProc guiProc = (GuiProc) object;
-						if (guiProc.getNiceExecutablePath()
-								.equals(executablePath)) {
-							addProc(guiProc);
-						}
-					}
-				});
-	}
-
-	/**
-	 *  Adds the listed debug process observers to the
-	 *  processes that this debug container represents.
-	 */
-	public void addRemoveObservers() {
-		allProcsList.itemAdded.addObserver(new Observer() {
-			public void update(Observable observable, Object arg) {
-				GuiProc guiProc = (GuiProc) arg;
-				if (guiProc.getNiceExecutablePath().equals(executablePath)) {
-					// XXX: Hack this out. Needs core investigation. This will be caught
-					// when bash forks().The child fork is named /bin/bash and
-					// it will try to be added to a session here if the parent
-					// had a fork process observer added. However the child will
-					// very soon be exec'd and in a short lived process, die.
-					// This will cause havoc in core state machine, because
-					// we are asking it to do continue attaching observer to a detached
-					// process.
-					// Double Jeopardy.
-
-					 //addProc(guiProc);
-				}
-			}
-		});
-
-		allProcsList.itemRemoved.addObserver(new Observer() {
-			public void update(Observable observable, Object arg) {
-				//System.out.println(".update()");
-				GuiProc guiProc = (GuiProc) arg;
-				//        if (guiProc.getNiceExecutablePath().equals(executablePath))
-				//{
-				removeProc(guiProc);
-				//}
-			}
-		});
-	}
-
-	/**
-	 * Adds a tagset to the debug process
-	 * 
-	 * @param tagset - tagset to be added.
-	 */
-	public void addTagset(Tagset tagset) {
-		tagsets.add(tagset);
-	}
-
-	/**
-	 * Returns the alternative name of the debug
-	 * process 
-	 * @return String.
-	 */
-	public String getAlternativeDisplayName() {
-		return alternativeDisplayName;
-	}
-
-	/* (non-Javadoc)
-	 * @see frysk.gui.monitor.GuiObject#getCopy()
-	 */
-	public GuiObject getCopy() {
-		return new DebugProcess(this);
-	}
-
-	/**
-	 * Returns a list of  of observers
-	 * to be added to the debug process on load.
-	 * 
-	 * @return Observable linked list of observers.
-	 */
-	public ObservableLinkedList getObservers() {
-		return observers;
-	}
-
-	/**
-	 * getProcs() Returns a linked list of processes in a debug process.
-	 * 
-	 * @return Observable linked list of processes.
-	 */
-	public ObservableLinkedList getProcs() {
-		return procs;
-	}
-
-	/**
-	 * Returns the real name of this process. The real name 
-	 * is normally the system name of the process.
-	 * 
-	 * @return String.
-	 */
-	public String getRealName() {
-		return realName;
-	}
-		
-	/**
-	 * Returns a list of tag sets that have been
-	 * added to this debug process.
-	 * 
-	 * @return ObservableLinkedList of tagsets.
-	 */
-	public ObservableLinkedList getTagsets() {
-		return tagsets;
-	}
-
-	/**
-	 * Removes an obsever from the list of observers
-	 * to be added to the debug process on load.
-	 * 
-	 * @param observer - ObserverRoot to add.
-	 */
-	public void removeObserver(ObserverRoot observer) {
-		observers.remove(observer);
-	}
-
-	/**
-	 * Removes a GuiProc from the list of GuiProcs
-	 * representred by this process.
-	 * 
-	 * @param guiProc - GuiProc to remove.
-	 */
-	public void removeProc(GuiProc guiProc) {
-
-		Iterator iterator = observers.iterator();
-		while (iterator.hasNext()) {
-			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-			guiProc.add(observer);
-		}
-
-		procs.remove(guiProc);
-	}
-
-	public void removeProcsMinusObserver() {
-		Iterator iterator = allProcsList.iterator();
-		while (iterator.hasNext()) {
-			GuiProc guiProc = (GuiProc) iterator.next();
-			if (guiProc.getNiceExecutablePath().equals(executablePath)) {
-				procs.remove(guiProc);
-			}
-		}
-	}
-
-	/**
-	 * Remove a tagset from this debug process
-	 * @param tagset - the tagset to remove.
-	 */
-	public void removeTagset(Tagset tagset) {
-		tagsets.remove(tagset);
-	}
-
-
-	/**
-	 * Allows you to set a name that is different from the underlying process.
-	 * 
-	 * @param name - Alternative name to display in the session.
-	 */
-	public void setAlternativeDisplayName(String name) {
-		alternativeDisplayName = name;
-	}
-	
-	/**
-	 * Allows you to set the real name (ie system) name of the process
-	 * 
-	 * @param name - Name of the process.
-	 */
-	public void setRealName(String name) {
-		realName = name;
-	}
-
-	public void save(Element node) {
-		super.save(node);
-
-		node.setAttribute("executablePath", executablePath);
-		Element observersXML = new Element("observers");
-
-		Iterator iterator = observers.iterator();
-		while (iterator.hasNext()) {
-			GuiObject object = (GuiObject) iterator.next();
-			Element elementXML = new Element("element");
-			elementXML.setAttribute("name", object.getName());
-			observersXML.addContent(elementXML);
-		}
-
-		node.addContent(observersXML);
-
-		//save tagsets
-		Element tagSetsXML = new Element("tagsets");
-
-		Iterator i = tagsets.iterator();
-		while (i.hasNext()) {
-			GuiObject object = (GuiObject) i.next();
-			Element elementXML = new Element("element");
-			elementXML.setAttribute("name", object.getName());
-			tagSetsXML.addContent(elementXML);
-		}
-
-		node.addContent(tagSetsXML);
-	}
-	
-	public void load(Element node) {
-		super.load(node);
-
-		executablePath = node.getAttribute("executablePath").getValue();
-		Element observersXML = node.getChild("observers");
-		List list = observersXML.getChildren("element");
-		Iterator i = list.iterator();
-
-		while (i.hasNext()) {
-			Element elementXML = (Element) i.next();
-			ObserverRoot observer = ObserverManager.theManager
-					.getObserverCopy(ObserverManager.theManager
-							.getObserverByName(elementXML
-									.getAttributeValue("name")));
-			if (observer == null) {
-				errorLog.log(Level.SEVERE, new Date()
-						+ " DebugProcess.load(Element node): observer "
-						+ elementXML.getAttributeValue("name")
-						+ " not found in configuration \n");
-				WindowManager.theManager.logWindow.print(new Date()
-						+ " DebugProcess.load(Element node): observer "
-						+ elementXML.getAttributeValue("name")
-						+ " not found in configuration \n");
-			} else {
-				observers.add(observer);
-			}
-		}
-
-		// load tagsets
-
-		Element tagSetsXML = node.getChild("tagsets");
-		List tagList = tagSetsXML.getChildren("element");
-		Iterator iterator = tagList.iterator();
-
-		while (iterator.hasNext()) {
-			Element elementXML = (Element) iterator.next();
-
-			Tagset tag = TagsetManager.manager.getTagsetByName(elementXML
-					.getAttributeValue("name"));
-			if (tag != null) {
-				tagsets.add(tag);
-			}
-
-		}
-	}
+  ObservableLinkedList observers;
+
+  ObservableLinkedList tagsets;
+
+  ObservableLinkedList allProcsList;
+
+  String alternativeDisplayName = "";
+
+  private String realName;
+
+  private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+
+  /**
+   * Create a new Debug Process. A session is comprised of n debug processes. A
+   * debug process stores a process name, and what observer to apply to that
+   * process when a session is loaded.
+   */
+  public DebugProcess ()
+  {
+    super();
+
+    procs = new ObservableLinkedList();
+
+    observers = new ObservableLinkedList();
+    tagsets = new ObservableLinkedList();
+
+    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
+
+    addProgramObserver();
+  }
+
+  /**
+   * Create a new Debug Process. A session is comprised of n debug processes. A
+   * debug process stores a process name, and what observer to apply to that
+   * process when a session is loaded.
+   * 
+   * @param other - Create a debug process from the the given parameter. Used in
+   *          copying a debug process.
+   */
+  public DebugProcess (DebugProcess other)
+  {
+    super(other);
+
+    realName = other.realName;
+    alternativeDisplayName = other.alternativeDisplayName;
+    executablePath = other.executablePath;
+
+    procs = new ObservableLinkedList();
+
+    observers = new ObservableLinkedList(other.observers);
+    tagsets = new ObservableLinkedList(other.tagsets);
+
+    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
+
+    addProgramObserver();
+  }
+
+  /**
+   * * Create a new Debug Process. A session is comprised of n debug processes.
+   * A debug process stores a process name, and what observer to apply to that
+   * process when a session is loaded.
+   * 
+   * @param name - The name of the process
+   * @param altName - The display name of the process
+   * @param executablePath - Where the process can be found on disk
+   */
+  public DebugProcess (String name, String altName, String executablePath)
+  {
+    super(altName, altName);
+
+    realName = name;
+    alternativeDisplayName = altName;
+    this.executablePath = executablePath;
+
+    procs = new ObservableLinkedList();
+
+    observers = new ObservableLinkedList();
+    tagsets = new ObservableLinkedList();
+
+    allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
+
+    addProgramObserver();
+  }
+
+  /**
+   * Adds an obsever to the list of observers to be added to the debug process
+   * on load.
+   * 
+   * @param observer - ObserverRoot to add.
+   */
+  public void addObserver (ObserverRoot observer)
+  {
+    observers.add(observer);
+  }
+
+  /**
+   * Adds all observers from the observer list to the process represented by
+   * this debug process
+   */
+  public void addObservers ()
+  {
+    Iterator procIter = allProcsList.iterator();
+    while (procIter.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) procIter.next();
+        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          {
+            Iterator obIter = observers.iterator();
+            while (obIter.hasNext())
+              {
+                TaskObserverRoot observer = (TaskObserverRoot) obIter.next();
+                System.out.println("PID: " + guiProc.getProc().getPid());
+                guiProc.add(observer);
+              }
+          }
+      }
+  }
+
+  /**
+   * Adds a GuiProc to the Debug Process
+   * 
+   * @param guiProc - GuiProc that is to be added
+   */
+  public void addProc (GuiProc guiProc)
+  {
+    // Add terminated observer to catch the procs exit
+    guiProc.getProc().getMainTask().requestAddTerminatedObserver(
+                                                                 new TaskObserver.Terminated()
+                                                                 {
+
+                                                                   public void addedTo (
+                                                                                        Object observable)
+                                                                   {
+                                                                     // TODO
+                                                                      // Auto-generated
+                                                                      // method
+                                                                      // stub
+
+                                                                   }
+
+                                                                   public void addFailed (
+                                                                                          Object observable,
+                                                                                          Throwable w)
+                                                                   {
+                                                                     // TODO
+                                                                      // Auto-generated
+                                                                      // method
+                                                                      // stub
+
+                                                                   }
+
+                                                                   public void deletedFrom (
+                                                                                            Object observable)
+                                                                   {
+                                                                     // TODO
+                                                                      // Auto-generated
+                                                                      // method
+                                                                      // stub
+
+                                                                   }
+
+                                                                   public Action updateTerminated (
+                                                                                                   Task task,
+                                                                                                   boolean signal,
+                                                                                                   int value)
+                                                                   {
+                                                                     removeProc(GuiProc.GuiProcFactory.getGuiProc(task.getProc()));
+                                                                     return Action.CONTINUE;
+                                                                   }
+
+                                                                 });
+
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+        guiProc.add(observer);
+      }
+
+    procs.add(guiProc);
+  }
+
+  public void addProcsMinusObserver ()
+  {
+    Iterator iterator = allProcsList.iterator();
+    while (iterator.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) iterator.next();
+        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          {
+            procs.add(guiProc);
+          }
+      }
+  }
+
+  /**
+   * Adds a program observer to the debug process
+   */
+  private void addProgramObserver ()
+  {
+    ObserverManager.theManager.programObserver.getProcsList().itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+
+        GuiProc guiProc = (GuiProc) object;
+        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          {
+            addProc(guiProc);
+          }
+      }
+    });
+  }
+
+  /**
+   * Adds the listed debug process observers to the processes that this debug
+   * container represents.
+   */
+  public void addRemoveObservers ()
+  {
+    allProcsList.itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object arg)
+      {
+        GuiProc guiProc = (GuiProc) arg;
+        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          {
+            // XXX: Hack this out. Needs core investigation. This will be caught
+            // when bash forks().The child fork is named /bin/bash and
+            // it will try to be added to a session here if the parent
+            // had a fork process observer added. However the child will
+            // very soon be exec'd and in a short lived process, die.
+            // This will cause havoc in core state machine, because
+            // we are asking it to do continue attaching observer to a detached
+            // process.
+            // Double Jeopardy.
+
+            // addProc(guiProc);
+          }
+      }
+    });
+
+    allProcsList.itemRemoved.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object arg)
+      {
+        // System.out.println(".update()");
+        GuiProc guiProc = (GuiProc) arg;
+        // if (guiProc.getNiceExecutablePath().equals(executablePath))
+        // {
+        removeProc(guiProc);
+        // }
+      }
+    });
+  }
+
+  /**
+   * Adds a tagset to the debug process
+   * 
+   * @param tagset - tagset to be added.
+   */
+  public void addTagset (Tagset tagset)
+  {
+    tagsets.add(tagset);
+  }
+
+  /**
+   * Returns the alternative name of the debug process
+   * 
+   * @return String.
+   */
+  public String getAlternativeDisplayName ()
+  {
+    return alternativeDisplayName;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see frysk.gui.monitor.GuiObject#getCopy()
+   */
+  public GuiObject getCopy ()
+  {
+    return new DebugProcess(this);
+  }
+
+  /**
+   * Returns a list of of observers to be added to the debug process on load.
+   * 
+   * @return Observable linked list of observers.
+   */
+  public ObservableLinkedList getObservers ()
+  {
+    return observers;
+  }
+
+  /**
+   * getProcs() Returns a linked list of processes in a debug process.
+   * 
+   * @return Observable linked list of processes.
+   */
+  public ObservableLinkedList getProcs ()
+  {
+    return procs;
+  }
+
+  /**
+   * Returns the real name of this process. The real name is normally the system
+   * name of the process.
+   * 
+   * @return String.
+   */
+  public String getRealName ()
+  {
+    return realName;
+  }
+
+  /**
+   * Returns a list of tag sets that have been added to this debug process.
+   * 
+   * @return ObservableLinkedList of tagsets.
+   */
+  public ObservableLinkedList getTagsets ()
+  {
+    return tagsets;
+  }
+
+  /**
+   * Removes an obsever from the list of observers to be added to the debug
+   * process on load.
+   * 
+   * @param observer - ObserverRoot to add.
+   */
+  public void removeObserver (ObserverRoot observer)
+  {
+    observers.remove(observer);
+  }
+
+  /**
+   * Removes a GuiProc from the list of GuiProcs representred by this process.
+   * 
+   * @param guiProc - GuiProc to remove.
+   */
+  public void removeProc (GuiProc guiProc)
+  {
+
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+        guiProc.add(observer);
+      }
+
+    procs.remove(guiProc);
+  }
+
+  public void removeProcsMinusObserver ()
+  {
+    Iterator iterator = allProcsList.iterator();
+    while (iterator.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) iterator.next();
+        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          {
+            procs.remove(guiProc);
+          }
+      }
+  }
+
+  /**
+   * Remove a tagset from this debug process
+   * 
+   * @param tagset - the tagset to remove.
+   */
+  public void removeTagset (Tagset tagset)
+  {
+    tagsets.remove(tagset);
+  }
+
+  /**
+   * Allows you to set a name that is different from the underlying process.
+   * 
+   * @param name - Alternative name to display in the session.
+   */
+  public void setAlternativeDisplayName (String name)
+  {
+    alternativeDisplayName = name;
+  }
+
+  /**
+   * Allows you to set the real name (ie system) name of the process
+   * 
+   * @param name - Name of the process.
+   */
+  public void setRealName (String name)
+  {
+    realName = name;
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+
+    node.setAttribute("executablePath", executablePath);
+    Element observersXML = new Element("observers");
+
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        GuiObject object = (GuiObject) iterator.next();
+        Element elementXML = new Element("element");
+        elementXML.setAttribute("name", object.getName());
+        observersXML.addContent(elementXML);
+      }
+
+    node.addContent(observersXML);
+
+    //save tagsets
+    Element tagSetsXML = new Element("tagsets");
+
+    Iterator i = tagsets.iterator();
+    while (i.hasNext())
+      {
+        GuiObject object = (GuiObject) i.next();
+        Element elementXML = new Element("element");
+        elementXML.setAttribute("name", object.getName());
+        tagSetsXML.addContent(elementXML);
+      }
+
+    node.addContent(tagSetsXML);
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+
+    executablePath = node.getAttribute("executablePath").getValue();
+    Element observersXML = node.getChild("observers");
+    List list = observersXML.getChildren("element");
+    Iterator i = list.iterator();
+
+    while (i.hasNext())
+      {
+        Element elementXML = (Element) i.next();
+        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
+        if (observer == null)
+          {
+            errorLog.log(Level.SEVERE,
+                         new Date()
+                             + " DebugProcess.load(Element node): observer "
+                             + elementXML.getAttributeValue("name")
+                             + " not found in configuration \n");
+            WindowManager.theManager.logWindow.print(new Date()
+                                                     + " DebugProcess.load(Element node): observer "
+                                                     + elementXML.getAttributeValue("name")
+                                                     + " not found in configuration \n");
+          }
+        else
+          {
+            observers.add(observer);
+          }
+      }
+
+    // load tagsets
+
+    Element tagSetsXML = node.getChild("tagsets");
+    List tagList = tagSetsXML.getChildren("element");
+    Iterator iterator = tagList.iterator();
+
+    while (iterator.hasNext())
+      {
+        Element elementXML = (Element) iterator.next();
+
+        Tagset tag = TagsetManager.manager.getTagsetByName(elementXML.getAttributeValue("name"));
+        if (tag != null)
+          {
+            tagsets.add(tag);
+          }
+
+      }
+  }
 }

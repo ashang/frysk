@@ -3,7 +3,7 @@
 	* Disassembler.java (appendCurrentInstruction): Changed from
 	setCurrentInstruction to prevent overwriting the given 
 	instruction with the parameters. Now properly appends
-	parameters to instructions.
+	parameters to instructions. Closes #3209
 	* cni/Disassembler.cxx (disassemble): Changed the 
 	i386 and x86_64 instruction flavours to att.
 	(read_from_byte_buffer): Fixed up formatting.
