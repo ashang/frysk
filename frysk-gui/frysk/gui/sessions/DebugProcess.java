@@ -190,7 +190,6 @@ public class DebugProcess
             while (obIter.hasNext())
               {
                 TaskObserverRoot observer = (TaskObserverRoot) obIter.next();
-                System.out.println("PID: " + guiProc.getProc().getPid());
                 guiProc.add(observer);
               }
           }

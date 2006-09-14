@@ -94,19 +94,18 @@ public class ProcessPicker
   private DataColumn[] columns = { new DataColumnBoolean(),
                                   new DataColumnString() };
 
-  private LinkedList guiProcsList;
-
   private Session newSession;
 
   private Hashtable nameHT;
 
   private Hashtable pidHT;
+  
+  private Hashtable procPidHT;
 
   public ProcessPicker (LibGlade glade)
   {
     super(glade.getWidget("processPickerWindow").getHandle());
     this.glade = glade;
-    this.guiProcsList = new LinkedList();
   }
 
   /**
@@ -160,6 +159,7 @@ public class ProcessPicker
     else
       /* We've got multiple processes by the same name... */
       {
+        this.procPidHT = new Hashtable();
         this.procView = new TreeView();
         this.procView = (TreeView) this.glade.getWidget("procView");
         this.procView.setHeadersVisible(true);
@@ -186,7 +186,7 @@ public class ProcessPicker
             model.setValue(iter, (DataColumnBoolean) columns[0], true);
             model.setValue(iter, (DataColumnString) columns[1],
                            "" + gp.getProc().getPid());
-            guiProcsList.add(gp);
+            procPidHT.put(new Integer(gp.getProc().getPid()), gp);
 
             while (j.hasNext())
               {
@@ -195,7 +195,7 @@ public class ProcessPicker
                 model.setValue(iter, (DataColumnBoolean) columns[0], true);
                 model.setValue(iter, (DataColumnString) columns[1],
                                "" + gp.getProc().getPid());
-                guiProcsList.add(gp);
+                procPidHT.put(new Integer(gp.getProc().getPid()), gp);
               }
           }
 
@@ -227,7 +227,6 @@ public class ProcessPicker
       {
         TreePath path = new TreePath(arg0.getPath());
         TreeIter iter = model.getIter(path);
-
         boolean prev = model.getValue(iter, (DataColumnBoolean) columns[0]);
         model.setValue(iter, (DataColumnBoolean) columns[0], ! prev);
 
@@ -351,20 +350,20 @@ public class ProcessPicker
   {
 
     TreeIter parent = model.getFirstIter();
-    Iterator i = guiProcsList.iterator();
 
     while (parent != null)
       {
         TreeIter child = parent.getFirstChild();
         while (child != null)
           {
-            GuiProc gp = (GuiProc) i.next();
+            GuiProc gp = (GuiProc) procPidHT.get(new Integer(
+                       model.getValue(child, (DataColumnString) columns[1])));
 
             if (gp != null
                 && ! model.getValue(child, (DataColumnBoolean) columns[0]))
               {
                 DebugProcess dp = (DebugProcess) pidHT.get(new Integer(
-                                                                       gp.getProc().getPid()));
+                                                       gp.getProc().getPid()));
                 dp.removeProc(gp);
               }
             child = child.getNextIter();
