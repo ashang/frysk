@@ -44,11 +44,36 @@ package frysk.proc;
  */
 public abstract class SyscallEventInfo
 {
-    public final static int ENTER = 0;
-    public final static int EXIT = 1;
-    public final static int UNKNOWN = -1;
+  public final static int ENTER = 0;
+  public final static int EXIT = 1;
+  public final static int UNKNOWN = -1;
+  
+  public abstract int number (Task task);
+  /** 
+   * getSyscall does everything on the assumption that there is a 
+   * system, and programmer want to know the information about this
+   * system call.  A meaningless Syscall object is returned when
+   * getSyscall is called at the moment no system call occurs.
+   * @param task the task that system call occurred
+   * @return the Syscall object
+   */
+  public abstract Syscall getSyscall (Task task);
 
-    public abstract int number (Task task);
-    public abstract long arg (Task task, int n);
-    public abstract long returnCode (Task task);
+  /** 
+   * @param task the task that system call occurred
+   * @param n the number of this argument
+   * @return value of this argument
+   */
+  public long arg (Task task, int n)
+  {
+    return getSyscall(task).getArguments(task, n);
+  }
+  /** 
+   * @param task the task that system call occurred
+   * @return return value of this system call
+   */
+  public long returnCode (Task task)
+  {
+    return getSyscall(task).getReturnCode(task);
+  }
 }

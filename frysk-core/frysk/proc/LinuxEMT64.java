@@ -39,53 +39,40 @@
 
 package frysk.proc;
 
-class LinuxEMT64
-    extends IsaEMT64 implements SyscallEventDecoder
-{
-        private static LinuxEMT64 isa;
-    static LinuxEMT64 isaSingleton ()
-    {
-        if (isa == null)
-            isa = new LinuxEMT64 ();
-        return isa;
-    }
+import java.util.HashMap;
 
-    private SyscallEventInfo info;
-    public SyscallEventInfo getSyscallEventInfo ()
-    {
-	if (info == null)
-	    info = new SyscallEventInfo ()
-		{
-		    public int number (Task task)
-		    {
-			return (int)getRegisterByName ("orig_rax").get (task);
-		    }
-		    public long returnCode (Task task)
-		    {
-			return getRegisterByName ("rax").get (task);
-		    }
-		    public long arg (Task task, int n)
-		    {
-			switch (n) {
-			case 0:
-			    return (long)number (task);
-			case 1:
-			    return getRegisterByName("rdi").get (task);
-			case 2:
-			    return getRegisterByName("rsi").get (task);
-			case 3:
-			    return getRegisterByName("rdx").get (task);
-			case 4:
-			    return getRegisterByName("r10").get (task);
-			case 5:
-			    return getRegisterByName("r8").get (task);
-			case 6:
-			    return getRegisterByName("r9").get (task);
-			default:
-			    throw new RuntimeException ("unknown syscall arg");
-			}
-		    }
-		};
-	return info;
-    }
+class LinuxEMT64
+  extends IsaEMT64 implements SyscallEventDecoder
+{
+  private static LinuxEMT64 isa;
+  static LinuxEMT64 isaSingleton ()
+  {
+    if (isa == null)
+      isa = new LinuxEMT64 ();
+    return isa;
+  }
+
+  // This is used to keep track of syscalls whose number we do not
+  // know.
+  static HashMap unknownSyscalls;
+
+  private SyscallEventInfo info;
+  
+  public SyscallEventInfo getSyscallEventInfo ()
+  {
+    if (info == null)
+      info = new SyscallEventInfo ()
+      {
+	public int number (Task task)
+	{
+	  return (int)getRegisterByName ("orig_rax").get (task);
+	}
+	public Syscall getSyscall(Task task)
+	{
+	  int number = this.number(task);
+	  return LinuxX8664Syscall.syscallByNum (task, number);
+	}
+      };
+    return info;
+  }
 }

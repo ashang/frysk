@@ -1,3 +1,38 @@
+2006-09-14  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* Isa.java (getSyscallList): New method.
+	(getUnknownSyscalls): Likewise.
+	(syscallByName): Likewise.
+	
+	* IsaEMT64.java: Implement them.
+	* IsaIA32.java: Likewise.
+	* IsaPPC.java: Likewise.
+	* IsaPPC64.java: Likewise.
+
+	* LinuxPowerPCSyscall.java: New file.
+	* LinuxX8664Syscall.java: New file.
+	* LinuxIa32Syscall.java: New file.
+
+	* LinuxIa32.java (returnCode): Remvoed.
+	(arg): Removed.
+	* LinuxEMT64.java: Likewise.
+	* LinuxPPC.java: Likewise.
+	* LinuxPPC64.java: Likewise.
+
+	* Syscall.java (iterateSyscallByName): New method. 
+
+	* SyscallEventInfo.java (getSyscall): New abstract method.
+	(arg): New method.
+	(returnCode): Likewise.
+	
+	Tom Tromey  <tromey@redhat.com>
+
+	* Syscall.java (syscallByNum): Updated javadoc.  Fixed typo.
+	Cache unknown syscalls.
+	(unknownSyscalls): New field.
+	(equals): New method.
+	(syscallByName): Likewise.
+	
 2006-09-12  Mark Wielaard  <mark@klomp.org>
 
 	* PendingCodeObserver.java: New class.

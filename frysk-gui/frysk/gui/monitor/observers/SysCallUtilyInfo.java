@@ -58,12 +58,12 @@ public class SysCallUtilyInfo {
 			return "";
 		}
 
-		final Syscall syscall = Syscall.syscallByNum(syscallEventInfo.number(task));
+		final Syscall syscall = syscallEventInfo.getSyscall(task);
 		enterCall.append(syscall.getName());
 		if (syscall.numArgs > 0) {
-			enterCall.append(" (");
+		  enterCall.append(" (");
 		}
-
+		
 		for (int i = 1; i <= syscall.numArgs; ++i) {
 			final char fmt = syscall.argList.charAt(i + 1);
 			switch (fmt) {
@@ -123,7 +123,7 @@ public class SysCallUtilyInfo {
 			return "";
 		}
 
-		final Syscall syscall = Syscall.syscallByNum(syscallEventInfo.number(task));
+		Syscall syscall = syscallEventInfo.getSyscall(task);
 
 		returnCall.append(syscall.getName() + " returns with value ");
 

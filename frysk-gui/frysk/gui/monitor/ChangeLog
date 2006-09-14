@@ -1,3 +1,8 @@
+2006-09-14  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* observers/SysCallUtilyInfo.java: Get Syscall object from 
+	syscallEventInfo.
+
 2006-09-13  Phil Muldoon  <pmuldoon@localhost.localdomain>
 
 	* observers/SysCallUtilyInfo.java (getCallInfoFromSyscall): Convert to 

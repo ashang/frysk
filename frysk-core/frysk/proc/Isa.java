@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import inua.eio.ByteOrder;
 
@@ -95,4 +96,13 @@ public interface Isa
   //{
   //throw new RuntimeException ("not implemented");
   //}
+
+  /** @return Syscall[] return system call list for this Linux<ISA>. */
+  Syscall[] getSyscallList ();
+  /** @return HashMap return a HashMap for unknown system calls. */
+  HashMap getUnknownSyscalls ();
+
+  /** @return Syscall return system call object if the name could be 
+   * found in syscallList, otherwise return null. */
+  Syscall syscallByName (String Name);
 }

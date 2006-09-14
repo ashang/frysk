@@ -144,7 +144,9 @@ class ftrace
 	  System.out.println("Got task exception " + e);
 	  return Action.CONTINUE;
 	}
-      frysk.proc.Syscall syscall = frysk.proc.Syscall.syscallByNum(syscallEventInfo.number(task));
+
+      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+
       PrintWriter printWriter = new PrintWriter(System.out);
       printWriter.print(task.getProc().getPid() + "." + task.getTid() + " ");
       syscall.printCall(printWriter, task, syscallEventInfo);
@@ -165,7 +167,8 @@ class ftrace
 	  System.out.println("Got task exception " + e);
 	  return Action.CONTINUE;
 	}
-      frysk.proc.Syscall syscall = frysk.proc.Syscall.syscallByNum(syscallEventInfo.number(task));
+      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+
       PrintWriter printWriter = new PrintWriter(System.out);
       syscall.printReturn(printWriter, task, syscallEventInfo);
       printWriter.flush();

@@ -40,52 +40,33 @@
 package frysk.proc;
 
 class LinuxIa32
-    extends IsaIA32 implements SyscallEventDecoder
+  extends IsaIA32 implements SyscallEventDecoder
 {
-    private static LinuxIa32 isa;
-    static LinuxIa32 isaSingleton ()
-    {
-        if (isa == null)
-            isa = new LinuxIa32 ();
-        return isa;
-    }
+  private static LinuxIa32 isa;
+  static LinuxIa32 isaSingleton ()
+  {
+    if (isa == null)
+      isa = new LinuxIa32 ();
+    return isa;
+  }
 
-    private SyscallEventInfo info;
-    public SyscallEventInfo getSyscallEventInfo ()
-    {
-	if (info == null)
-	    info = new SyscallEventInfo ()
-		{
-		    public int number (Task task)
-		    {
-			return (int)getRegisterByName ("orig_eax").get (task);
-		    }
-		    public long returnCode (Task task)
-		    {
-			return getRegisterByName ("eax").get (task);
-		    }
-		    public long arg (Task task, int n)
-		    {
-			switch (n) {
-			case 0:
-			    return (long)number (task);
-			case 1:
-			    return getRegisterByName("ebx").get (task);
-			case 2:
-			    return getRegisterByName("ecx").get (task);
-			case 3:
-			    return getRegisterByName("edx").get (task);
-			case 4:
-			    return getRegisterByName("esi").get (task);
-			case 5:
-			    return getRegisterByName("edi").get (task);
-			case 6:
-			    return getRegisterByName("eax").get (task);
-			default:
-			    throw new RuntimeException ("unknown syscall arg");
-			}
-		    }
-		};
-	return info;
-    }
+  private SyscallEventInfo info;
+  public SyscallEventInfo getSyscallEventInfo ()
+  {
+    if (info == null)
+      info = new SyscallEventInfo ()
+      {
+	public int number (Task task)
+	{
+	  return (int)getRegisterByName ("orig_eax").get (task);
+	}
+	public Syscall getSyscall(Task task)
+	{
+	  int number = this.number(task);
+	  return LinuxIa32Syscall.syscallByNum (task, number);
+	}
+	};
+    return info;
+  }
+
 }

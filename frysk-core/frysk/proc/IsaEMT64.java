@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
@@ -164,5 +165,20 @@ class IsaEMT64 implements Isa
     pcValue = pcValue - IsaEMT64.BREAKPOINT_INSTRUCTION.length;
     
     return pcValue;
+  }
+
+  public Syscall[] getSyscallList ()
+  {
+    return LinuxX8664Syscall.syscallList;
+  }
+
+  public HashMap getUnknownSyscalls ()
+  {
+    return LinuxX8664Syscall.unknownSyscalls;
+  }
+
+  public Syscall syscallByName (String name)
+  {
+    return Syscall.iterateSyscallByName (name, LinuxX8664Syscall.syscallList);
   }
 }

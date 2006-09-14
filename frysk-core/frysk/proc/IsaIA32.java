@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
@@ -172,6 +173,33 @@ class IsaIA32 implements Isa
     
     return pcValue;
   }
-}
 
+  public Syscall[] getSyscallList ()
+  {
+    return LinuxIa32Syscall.syscallList;
+  }
+
+  public HashMap getUnknownSyscalls ()
+  {
+    return LinuxIa32Syscall.unknownSyscalls;
+  }
+
+  public Syscall syscallByName (String name)
+  {
+    Syscall syscall;
+
+    syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.syscallList);
+    if (syscall != null)
+      return syscall;
     
+    syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.socketSubcallList);
+    if (syscall != null)
+      return syscall;
+    
+    syscall = Syscall.iterateSyscallByName (name, LinuxIa32Syscall.ipcSubcallList);
+    if (syscall != null)
+      return syscall;
+
+    return null;
+  }
+}
