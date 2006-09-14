@@ -1,3 +1,9 @@
+2006-09-14  Phil Muldoon  <pmuldoon@localhost.localdomain>
+
+	* SessionManagerGui.java (SessionManagerGui): Added JavaDoc
+	and cleaned up.
+	* Gui.java (Gui): Added processPicker load glade.
+
 2006-09-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* sessions/DebugProcess.java: Rewritten, commented and

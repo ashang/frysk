@@ -257,6 +257,7 @@ public class Gui implements LifeCycleListener, Saveable {
 			WindowManager.theManager
 					.initSessionDruidWindow(create_session_glade);
 			WindowManager.theManager.initSessionManagerWindow(session_glade);
+			WindowManager.theManager.initProcessPicker(process_picker_glade);
 		} catch (IOException e) {
 			throw e;
 		}
@@ -413,7 +414,6 @@ public class Gui implements LifeCycleListener, Saveable {
 		SourceWindowFactory.setGladePaths(glade_dirs);
 		RegisterWindowFactory.setPaths(glade_dirs);
 		MemoryWindowFactory.setPaths(glade_dirs);
-		WindowManager.theManager.sessionManager.setGladePath(glade_dirs);
 
 		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
 		PreferenceManager.setPreferenceModel(prefs);

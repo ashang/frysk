@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.gui;
 
 import java.io.File;
@@ -71,390 +70,412 @@ import frysk.proc.Proc;
 /**
  * @author pmuldoon
  * 
- * SessionManagerGui - Manager all entry workflows into the UI
+ * SessionManagerGui - Manage all entry workflows into the UI
  * 
  * 
  */
-public class SessionManagerGui
-    extends org.gnu.gtk.Dialog
-    implements LifeCycleListener
-{
+public class SessionManagerGui extends org.gnu.gtk.Dialog implements
+		LifeCycleListener {
 
-  private Button quitButton;
+	private Button quitButton;
 
-  private Session currentSession;
+	private Session currentSession;
 
-  ListView previousSessions;
+	ListView previousSessions;
 
-  RadioButton terminalSession;
+	RadioButton terminalSession;
 
-  RadioButton previousSession;
+	RadioButton previousSession;
 
-  RadioButton debugSingleProcess;
+	RadioButton debugSingleProcess;
 
-  Button debugSingleProcessAction;
+	Button debugSingleProcessAction;
 
-  private Button editSession;
+	private Button editSession;
 
-  private Button copySession;
+	private Button copySession;
 
-  private Button deleteSession;
+	private Button deleteSession;
 
-  private Button newSession;
+	private Button newSession;
 
-  private Button openButton;
-  
-  private String[] glade_dirs;
-  
-  private ProcessPicker processPicker;
+	private Button openButton;
 
-  public SessionManagerGui (LibGlade glade)
-  {
-    super(glade.getWidget("SessionManager").getHandle());
-    this.addListener(this);
-    this.setIcon(IconManager.windowIcon);
+	private ProcessPicker processPicker;
 
-    getManagerControls(glade);
-    getSessionManagementControls(glade);
-    // getDebugExecutableControls(glade);
-    getDebugSingleProcess(glade);
-	getTerminalSession(glade);
-    setButtonStates();
-  }
+	/**
+	 * Session Manager UI entry point. Read the glade files,
+	 * setup the controls, and setup edit data if needed.
+	 * 
+	 * @param glade - glade file for the session manager.
+	 */
+	public SessionManagerGui(LibGlade glade) {
+		super(glade.getWidget("SessionManager").getHandle());
+		this.addListener(this);
+		setIcon(IconManager.windowIcon);
 
-  private void getDebugSingleProcess (LibGlade glade)
-  {
-    debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
-    debugSingleProcess.setState(false);
-	debugSingleProcess.addListener(new ToggleListener()
-    {
-      public void toggleEvent (ToggleEvent arg0)
-      {
-        setButtonStates();
-      }
-    });
-
-    debugSingleProcessAction = (Button) glade.getWidget("SessionManager_singleProcessChooser");
-    debugSingleProcessAction.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            WindowManager.theManager.pickProcDialog.showAll();
-            int response = WindowManager.theManager.pickProcDialog.run();
-            Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
-            if (response == ResponseType.OK.getValue())
-              if (chosenProc != null)
-                SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
-          }
-      }
-    });
-
-  }
-
-  private void getTerminalSession(LibGlade glade)
-  {
-  	terminalSession = (RadioButton) glade.getWidget("SessionManager_startTerminalSessionButton");
-	terminalSession.setState(false);
-   	terminalSession.addListener(new ToggleListener()
-    {
-      public void toggleEvent (ToggleEvent arg0)
-      {
-        setButtonStates();
-      }
-    });
-
-  }
-
-  private void setButtonStates ()
-  {
-    if (previousSession.getState())
-	{
-		previousSessions.setSensitive(true);
-       	this.newSession.setSensitive(true);
-      if ((previousSessions.getSelectedObject() == null))
-        {
-          this.editSession.setSensitive(false);
-          this.copySession.setSensitive(false);
-          this.deleteSession.setSensitive(false);
-        }
-      else
-        {
-          this.editSession.setSensitive(true);
-          this.copySession.setSensitive(true);
-          this.deleteSession.setSensitive(true);
-        }
-	}
-	else
-	{
-		previousSessions.setSensitive(false);
-        this.editSession.setSensitive(false);
-        this.copySession.setSensitive(false);
-        this.deleteSession.setSensitive(false);
-       	this.newSession.setSensitive(false);
+		getManagerControls(glade);
+		getSessionManagementControls(glade);
+		getDebugSingleProcess(glade);
+		getTerminalSession(glade);
+		setButtonStates();
 	}
 
-    if ((previousSessions.getSelectedObject() != null
-        && previousSession.getState())
-		|| terminalSession.getState())
-      this.openButton.setSensitive(true);
-    else
-      this.openButton.setSensitive(false);
+	/**
+	 * Setup the Debug single process chooser dialog
+	 * 
+	 * Allow the user to choose a single running process
+	 * and sends that process to the source window
+	 * 
+	 * @param glade - glade file the Session Manager
+	 */
+	private void getDebugSingleProcess(LibGlade glade) {
+		debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
+		
+		debugSingleProcess.setState(false);
+		debugSingleProcess.addListener(new ToggleListener() {
+			public void toggleEvent(ToggleEvent arg0) {
+				setButtonStates();
+			}
+		});
 
-	if (debugSingleProcess.getState())
-    	debugSingleProcessAction.setSensitive(true);
-	else
-    	debugSingleProcessAction.setSensitive(false);
-  }
+		debugSingleProcessAction = (Button) glade
+				.getWidget("SessionManager_singleProcessChooser");
+		
+		debugSingleProcessAction.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					WindowManager.theManager.pickProcDialog.showAll();
+					final int response = WindowManager.theManager.pickProcDialog.run();
+					final Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
+					if (response == ResponseType.OK.getValue()) {
+						if (chosenProc != null) {
+							SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
+						}
+					}
+				}
+			}
+		});
 
-  private void getSessionManagementControls (LibGlade glade)
-  {
+	}
 
-    previousSessions = new ListView(
-                                    glade.getWidget(
-                                                    "SessionManager_previousSessionsListView").getHandle());
-    previousSessions.watchLinkedList(SessionManager.theManager.getSessions());
+	/**
+	 * Setup the action for the blank terrminal session.
+	 * 
+	 * @param glade - the glade file for the Session Manager.
+	 */
+	private void getTerminalSession(LibGlade glade) {
+		terminalSession = (RadioButton) glade
+				.getWidget("SessionManager_startTerminalSessionButton");
+		terminalSession.setState(false);
+		terminalSession.addListener(new ToggleListener() {
+			public void toggleEvent(ToggleEvent arg0) {
+				setButtonStates();
+			}
+		});
 
-    previousSessions.addListener(new TreeViewListener()
-    {
-      public void treeViewEvent (TreeViewEvent arg0)
-      {
-        if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
-          {
-            openSession();
-          }
-      }
-    });
+	}
 
-    previousSessions.getSelection().addListener(new TreeSelectionListener()
-    {
-      public void selectionChangedEvent (TreeSelectionEvent arg0)
-      {
-        setButtonStates();
-      }
-    });
+	/**
+	 * Sets the button states depending on the state of the 
+	 * Manager, and what options are set in that manager
+	 * 
+	 */
+	private void setButtonStates() {
+		
+		// if the previous sessions radio button is selected
+		if (previousSession.getState()) {
+			// Set the treeview to be interactive
+			previousSessions.setSensitive(true);
+			
+			// Set the new session button to be interactive
+			newSession.setSensitive(true);
+			
+			// If there are no previous saved sessions, then
+			// disable the edit, copy and delete buttons.
+			if (previousSessions.getSelectedObject() == null) {
+				editSession.setSensitive(false);
+				copySession.setSensitive(false);
+				deleteSession.setSensitive(false);
+			} else {
+				// If there are previous sessions, enable them.
+				editSession.setSensitive(true);
+				copySession.setSensitive(true);
+				deleteSession.setSensitive(true);
+			}
+		} else {
+			
+			// If the previous session radio button is not
+			// selected, disallow all ui interactions with
+			// session management controls
+			previousSessions.setSensitive(false);
+			editSession.setSensitive(false);
+			copySession.setSensitive(false);
+			deleteSession.setSensitive(false);
+			newSession.setSensitive(false);
+		}
 
-    previousSessions.setStickySelect(true);
-    previousSessions.setSort();
+		// Set whether the open button should be interactive.
+		if (previousSessions.getSelectedObject() != null && previousSession.getState()
+				|| terminalSession.getState()) {
+			openButton.setSensitive(true);
+		} else {
+			openButton.setSensitive(false);
+		}
 
-    editSession = (Button) glade.getWidget("SessionManager_editSessionButton");
-    copySession = (Button) glade.getWidget("SessionManager_copySessionButton");
-    deleteSession = (Button) glade.getWidget("SessionManager_deleteSessionButton");
-    newSession = (Button) glade.getWidget("SessionManager_newSessionButton");
+		// If the debug single process radio button is 
+		// active, then allow the user to choose a process to debug
+		if (debugSingleProcess.getState()) {
+			debugSingleProcessAction.setSensitive(true);
+		} else {
+			debugSingleProcessAction.setSensitive(false);
+		}
+	}
 
-    newSession.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            WindowManager.theManager.createFryskSessionDruid.setNewSessionMode();
-            WindowManager.theManager.createFryskSessionDruid.show();
+	/**
+	 * Retrieves the glade defined controls from the 
+	 * glade file, and build the session management controls
+	 * and listeners.
+	 * 
+	 * @param glade - - the glade file for the Session Manager.
+	 */
+	private void getSessionManagementControls(LibGlade glade) {
 
-          }
-      }
-    });
+		
+		// Previous session radio button. This gates the session
+		// edit/new/delete abilities, and the ability to launch
+		// an existing session.
+		previousSession = (RadioButton) glade
+				.getWidget("SessionManager_startSessionButton");
+		previousSession.setState(true);
+		
+		previousSession.addListener(new ToggleListener() {
+			public void toggleEvent(ToggleEvent arg0) {
+				setButtonStates();
+			}
+		});
 
-    previousSession = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
-    previousSession.setState(true);
-    previousSession.addListener(new ToggleListener()
-    {
-      public void toggleEvent (ToggleEvent arg0)
-      {
-        setButtonStates();
-      }
-    });
+		
+		// Previous Session (ie saved) List View
+		previousSessions = new ListView(glade.getWidget(
+				"SessionManager_previousSessionsListView").getHandle());
+		previousSessions.watchLinkedList(SessionManager.theManager
+				.getSessions());
 
-    editSession.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            currentSession = (Session) previousSessions.getSelectedObject();
-            if (currentSession != null)
-              {
-                WindowManager.theManager.createFryskSessionDruid.setEditSessionMode(currentSession);
-                WindowManager.theManager.createFryskSessionDruid.show();
-              }
+		// Double click to launch a session
+		previousSessions.addListener(new TreeViewListener() {
+			public void treeViewEvent(TreeViewEvent arg0) {
+				if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+					openSession();
+				}
+			}
+		});
 
-          }
+		// If we change our selection in the listview, change the button states
+		// to match usable states.
+		previousSessions.getSelection().addListener(
+				new TreeSelectionListener() {
+					public void selectionChangedEvent(TreeSelectionEvent arg0) {
+						setButtonStates();
+					}
+				});
 
-      }
-    });
+		previousSessions.setStickySelect(true);
+		previousSessions.setSort();
 
-    copySession.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            Session selected = (Session) previousSessions.getSelectedObject();
-            if (selected != null)
-              {
-                SessionManager.theManager.addSession(copySession(selected));
-                SessionManager.theManager.save();
-              }
-          }
-      }
-    });
+		// Get the edit, copy, delete and new sessions buttons
+		editSession = (Button) glade
+				.getWidget("SessionManager_editSessionButton");
+		copySession = (Button) glade
+				.getWidget("SessionManager_copySessionButton");
+		deleteSession = (Button) glade
+				.getWidget("SessionManager_deleteSessionButton");
+		newSession = (Button) glade
+				.getWidget("SessionManager_newSessionButton");
 
-    deleteSession.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            Session selected = (Session) previousSessions.getSelectedObject();
-            if (selected != null)
-              SessionManager.theManager.removeSession(selected);
-          }
-      }
-    });
+		// New Session Button will launch the new session druid.
+		// Set "New Session Mode" in the druid, and open.
+		newSession.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					WindowManager.theManager.createFryskSessionDruid
+							.setNewSessionMode();
+					WindowManager.theManager.createFryskSessionDruid.show();
 
-  }
+				}
+			}
+		});
 
-  private void getManagerControls (LibGlade glade)
-  {
+		// Edit Session Button will launch the new session druid.
+		// Set "Edit Session Mode" in the druid, and open.
+		editSession.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					currentSession = (Session) previousSessions
+							.getSelectedObject();
+					if (currentSession != null) {
+						WindowManager.theManager.createFryskSessionDruid
+								.setEditSessionMode(currentSession);
+						WindowManager.theManager.createFryskSessionDruid.show();
+					}
 
-    this.quitButton = (Button) glade.getWidget("SessionManager_quitButton");
-    this.quitButton.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          Gui.quitFrysk();
-      }
-    });
+				}
 
-    this.openButton = (Button) glade.getWidget("SessionManager_openButton");
-    this.openButton.setSensitive(false);
-    this.openButton.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            openSession();
-          }
-      }
-    });
+			}
+		});
 
-  }
-  
-  private LibGlade getGlade()
-  {
-    LibGlade glade = null;
+		// Copy Session. Will copy the selected session
+		// and renamed the copied session according to
+		// nautilus style renaming.
+		copySession.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					final Session selected = (Session) previousSessions
+							.getSelectedObject();
+					if (selected != null) {
+						SessionManager.theManager
+								.addSession(copySession(selected));
+						SessionManager.theManager.save();
+					}
+				}
+			}
+		});
 
-    // Look for the right path to load the glade file from
-    int i = 0;
-    for (; i < glade_dirs.length; i++)
-      {
-        try
-          {
-            glade = new LibGlade(glade_dirs[i] + "/"
-                                 + "processpicker.glade", null);
-          }
-        catch (Exception e)
-          {
-            if (i < glade_dirs.length - 1)
-              // If we don't find the glade file, look at the next file
-              continue;
-            else
-              {
-                e.printStackTrace();
-                System.exit(1);
-              }
+		// Delete Session Button will delete the session
+		// from disk and from the session manager.
+		deleteSession.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					final Session selected = (Session) previousSessions
+							.getSelectedObject();
+					if (selected != null) {
+						SessionManager.theManager.removeSession(selected);
+					}
+				}
+			}
+		});
 
-          }
+	}
 
-        // If we've found it, break
-        break;
-      }
-    // If we don't have a glade file by this point, bail
-    if (glade == null)
-      {
-        System.err.println("Could not file source window glade file in path "
-                           + glade_dirs[glade_dirs.length - 1]
-                           + "! Exiting.");
-      }
-    return glade;
-  }
+	/**
+	 * Retrieves the glade defined controls from the 
+	 * glade file, and build the session manager controls
+	 * and listeners.
+	 * 
+	 * @param glade - - the glade file for the Session Manager.
+	 */
+	private void getManagerControls(LibGlade glade) {
 
- private Session copySession (Session source)
-  {
-    String session_name = source.getName();
-    String name[] = { session_name + " (copy)",
-                     session_name + " (another copy)" };
-    Session dest = (Session) source.getCopy();
+		quitButton = (Button) glade.getWidget("SessionManager_quitButton");
+		quitButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					Gui.quitFrysk();
+				}
+			}
+		});
 
-    for (int i = 0; i < name.length; i++)
-      if (SessionManager.theManager.getSessionByName(name[i]) == null)
-        {
-          dest.setName(name[i]);
-          return dest;
-        }
-    for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
-      if (SessionManager.theManager.getSessionByName(session_name + " (" + i
-                                                     + Util.getNumberSuffix(i)
-                                                     + " copy)") == null)
-        {
+		openButton = (Button) glade.getWidget("SessionManager_openButton");
+		openButton.setSensitive(false);
+		openButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+					openSession();
+				}
+			}
+		});
 
-          dest.setName(session_name + " (" + i + Util.getNumberSuffix(i) + " copy)");
-          return dest;
-        }
+	}
 
-    try
-      {
-        dest.setName(session_name + "_"
-                     + File.createTempFile("zxc", "dfg").getName());
-      }
-    catch (IOException e)
-      {
-      }
-    return dest;
-  }
+	/**
+	 * Utility method that takes a session as an argument,
+	 * generates a unique name based on the nautilus naming 
+	 * method for copies, and returns a clone of that session
+	 * with the new name.
+	 * 
+	 * @param source - Session to copy.
+	 * @return - Session, cloned session with new name.
+	 */
+	private Session copySession(Session source) {
+		final String session_name = source.getName();
+		
+		final String name[] = { session_name + " (copy)",
+				session_name + " (another copy)" };
+		final Session dest = (Session) source.getCopy();
 
-  public void lifeCycleEvent (LifeCycleEvent event)
-  {
+		// Try {name} + (copy)
+		// if that does not work, try {name} + (another copy)
+		for (int i = 0; i < name.length; i++) {
+			if (SessionManager.theManager.getSessionByName(name[i]) == null) {
+				dest.setName(name[i]);
+				return dest;
+			}
+		}
+		
+		// If neither of above work, try {name}+" "int+{st/nd/rd/th}
+		for (int i = 3; i < Integer.MAX_VALUE - 1; i++) {
+			if (SessionManager.theManager.getSessionByName(session_name + " ("
+					+ i + Util.getNumberSuffix(i) + " copy)") == null) {
 
-  }
+				dest.setName(session_name + " (" + i + Util.getNumberSuffix(i)
+						+ " copy)");
+				return dest;
+			}
+		}
 
-  public boolean lifeCycleQuery (LifeCycleEvent event)
-  {
-    if (event.isOfType(LifeCycleEvent.Type.DESTROY)
-        || event.isOfType(LifeCycleEvent.Type.DELETE))
-      {
-       Gui.quitFrysk();
-        return true;
-      }
-    return false;
-  }
-  
-  public void openSession()
-  {
-    
-    LibGlade glade = getGlade();
-    processPicker = new ProcessPicker(glade);
-    Session s = (Session) previousSessions.getSelectedObject();
+		// last chance, just create a random name
+		try {
+			dest.setName(session_name + "_"
+					+ File.createTempFile("zxc", "dfg").getName());
+		} catch (final IOException e) {
+		}
+		return dest;
+	}
 
-    if (previousSession.getState())
-    {
-        processPicker.checkSession(s);
-        WindowManager.theManager.mainWindow.hideTerminal();
-    }
-    if (terminalSession.getState())
-    {
-        WindowManager.theManager.mainWindow.buildTerminal();
-        hideAll();
-        WindowManager.theManager.mainWindow.showAll();
-    }
-  }
-  
-  public void setGladePath(String[] glade_dirs)
-  {
-    this.glade_dirs = glade_dirs;
-  }
+	// Empty implementation of implementing LifeCycleListener
+	// we do not care what happens here.
+	
+	/* (non-Javadoc)
+	 * @see org.gnu.gtk.event.LifeCycleListener#lifeCycleEvent(org.gnu.gtk.event.LifeCycleEvent)
+	 */
+	public void lifeCycleEvent(LifeCycleEvent event) {
+
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gnu.gtk.event.LifeCycleListener#lifeCycleQuery(org.gnu.gtk.event.LifeCycleEvent)
+	 */
+	public boolean lifeCycleQuery(LifeCycleEvent event) {
+		if (event.isOfType(LifeCycleEvent.Type.DESTROY)
+				|| event.isOfType(LifeCycleEvent.Type.DELETE)) {
+			Gui.quitFrysk();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Open a session. When the open button is clicked, run process picker.
+	 * The process picker will decide what PIDS are to be launched into th
+	 * monitor.
+	 */
+	public void openSession() {
+
+		processPicker = new ProcessPicker(WindowManager.theManager.processPickerGlade);
+		final Session s = (Session) previousSessions.getSelectedObject();
+
+		// If this is not a terminal session, hide the terminal and run process picker
+		if (previousSession.getState()) {
+			processPicker.checkSession(s);
+			WindowManager.theManager.mainWindow.hideTerminal();
+		}
+		
+		// If it is a terminal session, launch the session cleanly with a terminal
+		if (terminalSession.getState()) {
+			WindowManager.theManager.mainWindow.buildTerminal();
+			hideAll();
+			WindowManager.theManager.mainWindow.showAll();
+		}
+	}
 
 }
