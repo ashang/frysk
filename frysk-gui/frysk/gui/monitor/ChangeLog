@@ -1,5 +1,7 @@
 2006-09-14  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* StatusWidget.java (buildEventViewer): Turned grid off.
+	
 	* observers/SysCallUtilyInfo.java (getReturnInfoFromSyscall): Wrap
 	syscall interrogation in Try/Catch loop.
 	(getCallInfoFromSyscall):Ditto
