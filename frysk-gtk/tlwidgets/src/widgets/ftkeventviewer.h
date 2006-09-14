@@ -462,6 +462,9 @@ typedef struct _FtkDrawingArea
     GtkAdjustment		*hadjustment;
     GtkAdjustment		*vadjustment;
     gint			hscroll_direction;
+    gboolean 		show_grid;
+    gdouble		grid_size;
+    GdkColor		grid_color;
   }
 FtkDrawingArea;
 
@@ -483,6 +486,9 @@ FtkDrawingArea;
 #define ftk_da_hadjustment(d)		(d)->hadjustment
 #define ftk_da_vadjustment(d)		(d)->vadjustment
 #define ftk_da_hscroll_direction(d)	(d)->hscroll_direction
+#define ftk_da_show_grid(d)		(d)->show_grid
+#define ftk_da_grid_size(d)		(d)->grid_size
+#define ftk_da_grid_color(d)		(d)->grid_color
 
 
 typedef struct _FtkDrawingAreaClass
@@ -784,6 +790,24 @@ ftk_eventviewer_get_bg_default (FtkEventViewer * eventviewer);
 
 GdkColor *
 ftk_eventviewer_get_fg_default (FtkEventViewer * eventviewer);
+
+gboolean
+ftk_eventviewer_set_show_grid(FtkEventViewer *eventviewer, gboolean sg) ;
+
+gboolean 
+ftk_eventviewer_is_show_grid(FtkEventViewer *eventviewer);
+
+gboolean 
+ftk_eventviewer_set_grid_size(FtkEventViewer *eventviewer, gdouble grid_size);
+
+gdouble 
+ftk_eventviewer_get_grid_size(FtkEventViewer *eventviewer) ;
+
+gboolean
+ftk_eventviewer_set_grid_color(FtkEventViewer *eventviewer, GdkColor *color);
+
+GdkColor *
+ftk_eventviewer_get_grid_color(FtkEventViewer *eventviewer);
 
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,

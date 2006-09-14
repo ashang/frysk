@@ -98,6 +98,9 @@ public class StatusWidget extends VBox {
 		this.viewer.resize(1, 1);
 		this.viewer.setBackgroundColor(BACKGROUND_COLOR);
 		this.viewer.setTimebase(INTERVAL);
+		this.viewer.setShowGrid(true);
+		this.viewer.setGridColor (Color.YELLOW);
+		this.viewer.setGridSize(10.0);
 	}
 	
 	public EventViewer getViewer() {

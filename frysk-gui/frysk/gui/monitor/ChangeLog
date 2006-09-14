@@ -1,3 +1,7 @@
+2006-09-14  Nurdin Premji <npremji@redhat.com>
+	
+	* StatusWidget.java: Added code to use some of the grid api.
+
 2006-09-14  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* observers/SysCallUtilyInfo.java: Get Syscall object from 

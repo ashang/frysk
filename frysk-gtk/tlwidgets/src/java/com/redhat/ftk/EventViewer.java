@@ -102,6 +102,48 @@ public class EventViewer extends VBox
       return ftk_eventviewer_get_fg_default(getHandle());
     }
     
+    /*
+    * Set show grid
+    */
+    public boolean setShowGrid(boolean sg) {
+	    return ftk_eventviewer_set_show_grid (getHandle(), sg);
+    }
+    
+    /*
+    * Is the grid showing?
+    */
+    public boolean isShowGrid() {
+	    return ftk_eventviewer_is_show_grid(getHandle());
+    }
+    
+    /*
+    * Set the grid size.
+    */
+    public boolean setGridSize(double gs) {
+	    return ftk_eventviewer_set_grid_size(getHandle(), gs);
+    }
+    
+    /*
+    * Get the grid size.
+    */
+    public double getGridSize() {
+	    return ftk_eventviewer_get_grid_size(getHandle());
+    }
+    
+    /*
+     *  Set the grid color.
+     */
+    public boolean setGridColor(Color col) {
+	    return ftk_eventviewer_set_grid_color(getHandle(), col.getHandle());
+    }
+    
+    /*
+     * Get the grid color.
+     */
+    public Color getGridColor() {
+	    return ftk_eventviewer_get_grid_color(getHandle());
+    }
+    
     /**
      * Set viewable window (seconds)
      */
@@ -266,6 +308,24 @@ public class EventViewer extends VBox
     
     native static final protected Color[]
     ftk_eventviewer_get_fg_default(Handle sc);
+    
+    native static final protected boolean
+	    ftk_eventviewer_set_show_grid(Handle sc, boolean sg);
+    
+    native static final protected boolean
+	    ftk_eventviewer_is_show_grid(Handle sc);
+    
+    native static final protected boolean
+	    ftk_eventviewer_set_grid_size(Handle sc, double gs);
+    
+    native static final protected double
+	    ftk_eventviewer_get_grid_size(Handle sc);
+    
+    native static final protected boolean
+	    ftk_eventviewer_set_grid_color(Handle sc, Handle col);
+    
+    native static final protected Color
+	    ftk_eventviewer_get_grid_color(Handle sc);
     
     native static final protected boolean
 	ftk_eventviewer_set_timebase (Handle sc, double span);

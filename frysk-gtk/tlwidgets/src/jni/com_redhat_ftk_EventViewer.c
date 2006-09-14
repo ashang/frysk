@@ -194,6 +194,116 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1fg_1default (JNIEnv *env,
 
 /*
  * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_show_grid
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1show_1grid (JNIEnv *env, 
+								 jclass cls,
+								 jobject sc,
+								 jboolean sg)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gboolean show_grid = (gboolean) sg;
+  return (jboolean) ftk_eventviewer_set_show_grid (eventviewer, show_grid);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_is_show_grid
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1is_1show_1grid (JNIEnv *env, 
+								 jclass cls,
+								 jobject sc)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  return (jboolean) ftk_eventviewer_is_show_grid (eventviewer);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_grid_size
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1grid_1size (JNIEnv *env, 
+								 jclass cls,
+								 jobject sc,
+								 jdouble gs)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gdouble grid_size = (gdouble) gs;
+	return (jboolean) ftk_eventviewer_set_grid_size (eventviewer, grid_size);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_get_grid_size
+ */
+
+JNIEXPORT jdouble JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1grid_1size (JNIEnv *env, 
+								 jclass cls,
+								 jobject sc)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  return (jdouble) ftk_eventviewer_get_grid_size (eventviewer);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_grid_color
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1grid_1color (JNIEnv *env, 
+								   jclass cls,
+								   jobject sc,
+								   jobject clr)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  
+  GdkColor *color = (GdkColor *)getPointerFromHandle(env, clr);
+  return (jboolean)ftk_eventviewer_set_grid_color (eventviewer, color);
+}
+
+/*
+ * Class: com.redhat.ft.EventViewer
+ * Method: ftk_eventviewer_get_grid_color
+ */
+
+JNIEXPORT jobject JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1grid_1color (JNIEnv *env,
+					jclass cls,
+					jobject sc)
+{
+	FtkEventViewer *eventviewer = (FtkEventViewer*)getPointerFromHandle(env,sc);
+	
+	
+	 jclass colorClass = (*env)->FindClass(env, "org/gnu/gdk/Color");
+  if (NULL == colorClass) {
+  	fprintf(stderr, "Could not find Color class");
+  	return NULL;
+  }
+  
+  jmethodID cid = (*env)->GetMethodID(env, colorClass, "<init>", "(III)V");
+  
+  GdkColor * grid_color = ftk_eventviewer_get_grid_color (eventviewer);
+  	jobject tempColor = (*env)->NewObject(env, colorClass, cid, 
+  	grid_color->red, grid_color->green, grid_color->blue);
+  
+  return tempColor;
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_timebase
  */
 

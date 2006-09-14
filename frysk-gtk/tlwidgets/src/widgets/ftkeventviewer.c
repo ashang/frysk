@@ -49,7 +49,7 @@ GQuark ftk_quark;
 G_DEFINE_TYPE (FtkDrawingArea, ftk_drawing_area, GTK_TYPE_DRAWING_AREA);
 G_DEFINE_TYPE (FtkLegend, ftk_legend, GTK_TYPE_DRAWING_AREA);
 
-static void ftk_da_redraw_canvas (FtkDrawingArea *da);
+static void ftk_da_redraw_canvas (GtkDrawingArea *da);
 
 /************************************************************
  *                                                          *
@@ -79,6 +79,7 @@ static gboolean ftk_eventviewer_style (GtkWidget * widget,
 static gboolean ftk_eventviewer_legend_da_expose (GtkWidget * widget,
     GdkEventExpose * event,
     gpointer data);
+    
 #ifdef USE_OLD_STYLE
 static void ftk_eventviewer_realize (GtkWidget * widget,
                                      gpointer data);
@@ -304,6 +305,11 @@ ftk_drawing_area_init (FtkDrawingArea * da)
   ftk_da_trace_max(da)  = 0;
   ftk_da_trace_modified(da)  = FALSE;
   ftk_da_hscroll_direction(da) = SCROLL_OFF;
+  ftk_da_show_grid(da) = FALSE;
+  ftk_da_grid_size(da) = 10.0;
+  
+  GtkStyle *style = gtk_widget_get_style (GTK_WIDGET (da));
+  ftk_da_grid_color(da) = style->fg[GTK_STATE_INSENSITIVE];
 }
 
 GtkWidget*
@@ -1153,7 +1159,7 @@ ftk_eventviewer_scroll_adj_val_changed (GtkAdjustment *adjustment,
     {
       ftk_da_trace_modified(ftk_ev_da(eventviewer)) = TRUE;
     }
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return FALSE; //allow propagation
 }
@@ -1487,7 +1493,7 @@ ftk_eventviewer_center_click (GtkButton *button,
 
 
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 }
 
@@ -1501,7 +1507,7 @@ ftk_eventviewer_da_scroll (GtkWidget * widget,
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
   gboolean rc = FALSE;		/* false to propagate */
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   switch ((int)(event->state))
     {
@@ -1573,7 +1579,7 @@ ftk_eventviewer_slider_cv (GtkRange * range,
       gtk_adjustment_changed (adj);
 
 
-      ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+      ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
       return FALSE;
@@ -1653,7 +1659,7 @@ ftk_ev_button_press_event (GtkWidget * widget,
       ftk_trace_selected (temp_trace) = FALSE;
     }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return FALSE; /* Continue handling event. */
@@ -1688,7 +1694,7 @@ ftk_ev_button_release_event (GtkWidget * widget,
           if  (abs ((double) event->y - vp) < SELECT_TOLERANCE)
             {
 
-              ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+              ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
               return FALSE; /* Continue handling event. */
             }
@@ -1735,7 +1741,7 @@ ftk_ev_third_button_press_event	(GtkWidget * widgeet,
         }
     }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return FALSE;
@@ -1942,7 +1948,6 @@ create_popup_label (FtkEventViewer * eventviewer,
 
       break;
     case FTK_POPUP_TYPE_TIME:
-      //convert time_d to real time here.
       asprintf (&lbl, "%s", get_time_from_time_d(eventviewer, time_d));
       break;
     }
@@ -2287,6 +2292,32 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
   if (kill_cr)  cairo_destroy (cr);
 }
 
+static void
+draw_grid_vline (FtkEventViewer *eventviewer, cairo_t *cr, double time)
+{
+	gdouble time_offset = gtk_adjustment_get_value(ftk_ev_scroll_adj (eventviewer));
+	double mark_time = (time - time_offset - ftk_ev_zero(eventviewer));
+	FtkDrawingArea *da = ftk_ev_da(eventviewer);
+	
+	if (mark_time >= 0.0)
+	{
+		double loc_d = mark_time /ftk_ev_span (eventviewer);
+		
+		if ((loc_d >= 0.0) && (loc_d <= 1.0))
+		{
+			int h_offset = ftk_da_trace_origin (da) + lrint ((double) ftk_da_trace_width(da) * loc_d);
+			
+			cairo_save(cr);
+			gdk_cairo_set_source_color (cr, &ftk_da_grid_color(da));
+			cairo_set_line_width(cr, 1.0);
+			cairo_move_to (cr, (double) h_offset, 0.0);
+			cairo_line_to (cr, (double) h_offset, GTK_WIDGET(da)->allocation.height);
+			cairo_stroke (cr);
+			cairo_restore(cr);
+		}
+	}
+}
+
 #define LEGEND_MARGIN		10
 #define LEGEND_GLYPH_SPACING	3
 
@@ -2459,22 +2490,20 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   {
 
     //Draw Background.
-    cairo_t * cr = gdk_cairo_create (dwidge->window);
-
+    cairo_t * cr = gdk_cairo_create (dwidge->window);	  
+	  
     gint dww = (int)(dwidge->allocation.width);
     gint dwh = (int)(dwidge->allocation.height);
 
     cairo_rectangle (cr, 0, 0, dww, dwh);
     gdk_cairo_set_source_color (cr, &ftk_ev_bg_color(eventviewer));
-    //    cairo_set_source_rgb (cr,
-    //			  (double)ftk_ev_bg_red (eventviewer)/65535.0,
-    //			  (double)ftk_ev_bg_green (eventviewer)/65535.0,
-    //			  (double)ftk_ev_bg_blue (eventviewer)/65535.0);
-
+  
     cairo_fill_preserve (cr);
     cairo_clip (cr);
     cairo_stroke (cr);
 
+		  
+	  
     {		/* draw labels and baselines */
       gint i;
 
@@ -2570,6 +2599,18 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
                      dwh);
     cairo_clip (cr);
 
+    //Draw grid lines.
+    if (ftk_da_show_grid(da)) 
+	{
+    double start_time = ftk_da_hadjustment(da)->value + ftk_ev_zero(eventviewer);
+    double round_time = 1.0/ftk_da_grid_size(da) * round (start_time * ftk_da_grid_size(da));
+    double end_time = ftk_da_hadjustment(da)->value + ftk_da_hadjustment(da)->page_size + ftk_ev_zero(eventviewer);
+    
+    for (double i = round_time; i <= end_time; i = i + ftk_da_grid_size(da))
+    {
+	  draw_grid_vline(eventviewer, cr, i);
+    }
+    }
     {				/* draw points */
       gint i,j;
 
@@ -2692,13 +2733,13 @@ ftk_eventviewer_style (GtkWidget * widget, GtkStyle *previous_style,
         }
     }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE;
 }
 
 static void
-ftk_da_redraw_canvas (FtkDrawingArea *da)
+ftk_da_redraw_canvas (GtkDrawingArea *da)
 {
   GdkRectangle *rectangle = g_new(GdkRectangle, 1);
   GtkWidget* widget = GTK_WIDGET(da);
@@ -2720,6 +2761,7 @@ ftk_da_redraw_canvas (FtkDrawingArea *da)
   // not strictly required but pushes updates faster.
   //gdk_window_process_updates (widget->window, TRUE);
 }
+
 
 static void
 ftk_eventviewer_destroy(GtkObject * widget,
@@ -2812,7 +2854,7 @@ ftk_eventviewer_scroll_cv(GtkRange     *range,
   GtkAdjustment * adj = gtk_range_get_adjustment (range);
   gtk_adjustment_set_value (adj, value);
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE; //Inhibit propagation.
 }
@@ -2877,7 +2919,7 @@ do_append (FtkEventViewer * eventviewer,
         gtk_adjustment_value_changed(adj);
 
 
-        ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+        ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
         // Only redraw what needs to be redrawn. Doesn't quite work yet.
         //fixme hardcoded values.
@@ -3023,7 +3065,7 @@ ftk_eventviewer_resize_e (FtkEventViewer * eventviewer,
 
   ftk_ev_widget_modified (eventviewer) = TRUE;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3085,7 +3127,7 @@ ftk_eventviewer_set_bg_rgb_e (FtkEventViewer * eventviewer,
       return FALSE;
     }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3172,6 +3214,54 @@ ftk_eventviewer_get_fg_default(FtkEventViewer *eventviewer)
   return foregrounds;
 }
 
+
+/* Grid API */
+
+gboolean
+ftk_eventviewer_set_show_grid(FtkEventViewer *eventviewer, gboolean sg) 
+{
+	FtkDrawingArea *da = ftk_ev_da(eventviewer);
+	ftk_da_show_grid(da) = sg;
+	return TRUE;
+}
+
+gboolean 
+ftk_eventviewer_is_show_grid(FtkEventViewer *eventviewer)
+{
+    FtkDrawingArea *da = ftk_ev_da(eventviewer);
+    return ftk_da_show_grid(da);
+}
+
+gboolean 
+ftk_eventviewer_set_grid_size(FtkEventViewer *eventviewer, gdouble grid_size)
+{
+    FtkDrawingArea *da = ftk_ev_da(eventviewer);
+    ftk_da_grid_size(da) = grid_size;
+    return TRUE;
+}
+
+gdouble 
+ftk_eventviewer_get_grid_size(FtkEventViewer *eventviewer) 
+{
+    FtkDrawingArea * da = ftk_ev_da (eventviewer);
+    return ftk_da_grid_size(da);
+}
+
+gboolean
+ftk_eventviewer_set_grid_color(FtkEventViewer *eventviewer, GdkColor *color)
+{
+	FtkDrawingArea *da = ftk_ev_da(eventviewer);
+	ftk_da_grid_color(da) = *color;
+	return TRUE;
+}
+
+GdkColor *
+ftk_eventviewer_get_grid_color(FtkEventViewer *eventviewer)
+{
+	FtkDrawingArea *da = ftk_ev_da(eventviewer);
+	return &ftk_da_grid_color(da);
+}
+
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
                                 double span,
@@ -3213,7 +3303,7 @@ ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
     gtk_adjustment_changed (adj);
   }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3316,7 +3406,7 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
 
     ftk_da_trace_modified (da) = TRUE;
 
-    ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+    ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   }
@@ -3505,7 +3595,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
 
   ftk_da_trace_modified(da) = TRUE;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE;
 }
@@ -3582,7 +3672,7 @@ ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
       return FALSE;
     }
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3670,7 +3760,7 @@ ftk_eventviewer_set_trace_label_e (FtkEventViewer * eventviewer,
   free (t_label);
 
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3727,7 +3817,7 @@ ftk_eventviewer_set_trace_linestyle_e (FtkEventViewer * eventviewer,
   ftk_trace_linestyle (trace)		= (double)ls;
   ftk_trace_linewidth (trace)		= (double)lw;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -3841,14 +3931,9 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
   ftk_marker_string (marker) = string ? strdup (string) : NULL;
   ftk_legend_markers_modified (legend) = TRUE;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    {
-      ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)),
-                                       NULL, eventviewer);
-      ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
-
-
-    }
+  
+      ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_legend_da(eventviewer)));
+      ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return ftk_legend_markers_next (legend)++;
 }
@@ -3927,11 +4012,9 @@ ftk_eventviewer_set_marker_rgb_e (FtkEventViewer * eventviewer,
     {
       return FALSE;
     }
-
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    {
-      ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)), NULL, eventviewer);
-    }
+    
+    ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_legend_da(eventviewer)));
+    ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE;
 }
@@ -4185,7 +4268,7 @@ ftk_eventviewer_set_tie_rgb_e (FtkEventViewer * eventviewer,
   ftk_tie_color_blue (tie)		= blue;
   ftk_ev_tie_modified (eventviewer)	= TRUE;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
 
   return TRUE;
@@ -4271,7 +4354,7 @@ ftk_eventviewer_set_tie_label_e (FtkEventViewer * eventviewer,
   free (t_label);
   ftk_tie_label_modified (tie)	= TRUE;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE;
 }
@@ -4325,7 +4408,7 @@ ftk_eventviewer_set_tie_linestyle_e (FtkEventViewer * eventviewer,
   ftk_tie_linewidth (tie)		= (double)lw;
   ftk_tie_linestyle (tie)		= (double)ls;
 
-  ftk_da_redraw_canvas(ftk_ev_da(eventviewer));
+  ftk_da_redraw_canvas(GTK_DRAWING_AREA(ftk_ev_da(eventviewer)));
 
   return TRUE;
 }
