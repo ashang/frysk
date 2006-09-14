@@ -77,9 +77,9 @@ public final class Disassembler
 
   // THIS SHOULD NOT BE CALLED FROM JAVA!
   // It is not private because it is called from CNI
-  protected void setCurrentInstruction (String inst)
+  protected void appendCurrentInstruction (String inst)
   {
-    current.instruction = inst;
+    current.instruction = current.instruction + inst;
   }
 
   // THIS SHOULD NOT BE CALLED FROM JAVA!

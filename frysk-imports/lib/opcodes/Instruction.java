@@ -41,7 +41,7 @@ package lib.opcodes;
 public class Instruction {
 
 	public long address;
-	public String instruction;
+	public String instruction  = "";
 	
 	public String toString(){
 		return "0x"+Long.toHexString(address)+"\t"+instruction;

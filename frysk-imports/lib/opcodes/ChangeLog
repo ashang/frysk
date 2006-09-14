@@ -1,3 +1,17 @@
+2006-09-14  Mike Cvet  <mcvet@redhat.com>
+
+	* Disassembler.java (appendCurrentInstruction): Changed from
+	setCurrentInstruction to prevent overwriting the given 
+	instruction with the parameters. Now properly appends
+	parameters to instructions.
+	* cni/Disassembler.cxx (disassemble): Changed the 
+	i386 and x86_64 instruction flavours to att.
+	(read_from_byte_buffer): Fixed up formatting.
+	(print_addr): Changed from an empty function to one that
+	updates the Disassembler object with the instruction
+	address parameter.
+	(save_instruction): Fixed up formatting.
+
 2006-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestOpcodes.java: Extend frysk.junit.TestCase.

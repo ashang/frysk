@@ -82,6 +82,7 @@ import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceGroup;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.disassembler.DisassemblyWindowFactory;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.CoreDebugLogViewer;
@@ -112,6 +113,8 @@ public class Gui implements LifeCycleListener, Saveable {
 	LibGlade register_window;
 
 	LibGlade memory_window;
+    
+    LibGlade disassembler_window;
 
 	LibGlade session_glade;
 
@@ -236,6 +239,8 @@ public class Gui implements LifeCycleListener, Saveable {
 						+ "/registerwindow.glade", null);
 				memory_window = new LibGlade(glade_dirs[i]
 						+ "/memorywindow.glade", null);
+                disassembler_window = new LibGlade(glade_dirs[i]
+                        + "/disassemblywindow.glade", null);
 				session_glade = new LibGlade(glade_dirs[i]
 						+ SESSION_MANAGER_GLADE, this);
 				process_picker_glade = new LibGlade(glade_dirs[i]
@@ -414,6 +419,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		SourceWindowFactory.setGladePaths(glade_dirs);
 		RegisterWindowFactory.setPaths(glade_dirs);
 		MemoryWindowFactory.setPaths(glade_dirs);
+        DisassemblyWindowFactory.setPaths(glade_dirs);
 
 		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
 		PreferenceManager.setPreferenceModel(prefs);

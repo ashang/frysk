@@ -1,3 +1,11 @@
+2006-09-14  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (toggleDisassemblyWindow): Added a toggleAction
+	for the DisassemblyWindow.
+	(createActions): Set up the toggleAction for above.
+	(createMenus): Added menu items for the above window.
+	(toggleDisassemblyWindow): Added.
+
 2006-09-08  Mike Cvet  <mcvet@redhat.com>
 
     * CurrentStackView.java (CurrentStackView): Added architecture

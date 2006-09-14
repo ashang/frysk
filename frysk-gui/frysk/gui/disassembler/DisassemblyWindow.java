@@ -38,19 +38,17 @@
 //exception.
 
 
-package frysk.gui.memory;
+package frysk.gui.disassembler;
 
 import java.util.prefs.Preferences;
 import java.util.LinkedList;
 import java.util.Iterator;
-import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnDouble;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
@@ -62,18 +60,13 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.ComboBoxEvent;
-import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;
-import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
@@ -82,31 +75,16 @@ import lib.opcodes.OpcodesException;
 import lib.opcodes.Instruction;
 
 /**
- * The MemoryWindow displays the information stored at various locations in
- * memory, starting from the current program counter to a user-defined region.
- * The information can be displayed from 4-bit to 64-bit values, and in binary,
- * octal, decimal or hexadecimal format.
- * 
- * @author mcvet, ajocksch
+ * @author mcvet
  */
-public class MemoryWindow
+public class DisassemblyWindow
     extends Window
     implements Saveable
 {
 
-  private final int EIGHT_BIT = 0;
-
-  private final int SIXTEEN_BIT = 1;
-
-  private final int THIRTYTWO_BIT = 2;
-
-  private final int SIXTYFOUR_BIT = 3;
-
   private final int LOC = 0; /* Memory address */
 
-  private final int OBJ = 10; /* Object stored in above address */
-
-  private final int BYTE_BITS = 8;
+  private final int OBJ = 3; /* Object stored in above address */
 
   private Task myTask;
 
@@ -119,35 +97,20 @@ public class MemoryWindow
   TreeIter lastIter = null;
 
   private DataColumn[] cols = { new DataColumnString(), /* memory location */
-  new DataColumnString(), /* binary little endian */
-  new DataColumnString(), /* binary big endian */
-  new DataColumnString(), /* octal little endian */
-  new DataColumnString(), /* octal big endian */
-  new DataColumnString(), /* decimal little endian */
-  new DataColumnString(), /* decimal big endian */
-  new DataColumnString(), /* hexadecimal little endian */
-  new DataColumnString(), /* hexadecimal big endian */
+  new DataColumnString(), /* function offset */
   new DataColumnString(), /* instruction */
   new DataColumnObject(), /* memory object */
-  new DataColumnDouble() /* alignment field */
   };
 
-  protected static String[] colNames = { "X-bit Binary (LE)",
-                                        "X-bit Binary (BE)",
-                                        "X-bit Octal (LE)", "X-bit Octal (BE)",
-                                        "X-bit Decimal (LE)",
-                                        "X-bit Decimal (BE)",
-                                        "X-bit Hexadecimal (LE)",
-                                        "X-bit Hexadecimal (BE)", "Instruction" };
+  protected static String[] colNames = { "Function offset", "Instruction" };
 
-  protected boolean[] colVisible = { true, false, false, false, false, false,
-                                    false, false, false };
+  protected boolean[] colVisible = { true, true };
 
-  private TreeViewColumn[] columns = new TreeViewColumn[10];
+  private TreeViewColumn[] columns = new TreeViewColumn[3];
 
-  private MemoryFormatDialog formatDialog;
+  private DisassemblyFormatDialog formatDialog;
 
-  private TreeView memoryView;
+  private TreeView disassemblerView;
 
   private Disassembler diss;
 
@@ -159,42 +122,25 @@ public class MemoryWindow
 
   private Entry pcEntryHex;
 
-  private SimpleComboBox bitsCombo;
-
-  private GuiObject eight;
-
-  private GuiObject sixteen;
-
-  private GuiObject thirtytwo;
-
-  private GuiObject sixtyfour;
-
-  private ObservableLinkedList bitsList;
-
   private ListStore model;
 
   private double lastKnownFrom;
 
   private double lastKnownTo;
+  
+  private long pc;
 
-  protected static int currentFormat = 0;
-
-  public MemoryWindow (LibGlade glade)
+  public DisassemblyWindow (LibGlade glade)
   {
-    super(glade.getWidget("memoryWindow").getHandle());
+    super(glade.getWidget("disassemblyWindow").getHandle());
     this.glade = glade;
-    this.formatDialog = new MemoryFormatDialog(this.glade);
-    if (currentFormat == 0)
-      currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
+    this.formatDialog = new DisassemblyFormatDialog(this.glade);
 
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
-    this.bitsCombo = new SimpleComboBox(
-                                        (this.glade.getWidget("bitsCombo")).getHandle());
     this.model = new ListStore(cols);
-    this.bitsList = new ObservableLinkedList();
 
     this.setIcon(IconManager.windowIcon);
   }
@@ -208,18 +154,18 @@ public class MemoryWindow
   {
     if (running)
       {
-        this.glade.getWidget("memoryView").setSensitive(false);
+        this.glade.getWidget("disassemblerView").setSensitive(false);
         this.glade.getWidget("formatSelector").setSensitive(false);
       }
     else
       {
-        this.glade.getWidget("memoryView").setSensitive(true);
+        this.glade.getWidget("disassemblerView").setSensitive(true);
         this.glade.getWidget("formatSelector").setSensitive(true);
       }
   }
 
   /**
-   * Assign this MemoryWindow to a task
+   * Assign this DisassemblyWindow to a task
    */
   public void setTask (Task myTask)
   {
@@ -230,6 +176,7 @@ public class MemoryWindow
         this.diss = new Disassembler(myTask.getMemory());
 
         pc_inc = myTask.getIsa().pc(myTask);
+        this.pc = pc_inc;
       }
     catch (TaskException e)
       {
@@ -241,24 +188,8 @@ public class MemoryWindow
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
-    this.eight = new GuiObject("8", "");
-    this.sixteen = new GuiObject("16", "");
-    this.thirtytwo = new GuiObject("32", "");
-    this.sixtyfour = new GuiObject("64", "");
+    this.disassemblerView = (TreeView) this.glade.getWidget("disassemblerView");
 
-    bitsList.add(EIGHT_BIT, eight);
-    bitsList.add(SIXTEEN_BIT, sixteen);
-    bitsList.add(THIRTYTWO_BIT, thirtytwo);
-    bitsList.add(SIXTYFOUR_BIT, sixtyfour);
-
-    this.bitsCombo.watchLinkedList(bitsList);
-    this.bitsCombo.setSelectedObject((GuiObject) bitsList.get(currentFormat));
-
-    this.bitsCombo.setActive(currentFormat + 1);
-
-    this.memoryView = (TreeView) this.glade.getWidget("memoryView");
-
-    this.bitsCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setValue((double) end);
@@ -267,7 +198,7 @@ public class MemoryWindow
 
     recalculate();
 
-    memoryView.setAlternateRowColor(true);
+    disassemblerView.setAlternateRowColor(true);
 
     this.formatDialog.addListener(new LifeCycleListener()
     {
@@ -280,25 +211,9 @@ public class MemoryWindow
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          MemoryWindow.this.refreshList();
+          DisassemblyWindow.this.refreshList();
       }
 
-    });
-
-    bitsCombo.addListener(new ComboBoxListener()
-    {
-      public void comboBoxEvent (ComboBoxEvent arg0)
-      {
-        if (arg0.isOfType(ComboBoxEvent.Type.CHANGED))
-          {
-            if (bitsList.indexOf(bitsCombo.getSelectedObject()) == - 1)
-              {
-                return;
-              }
-            currentFormat = bitsList.indexOf(bitsCombo.getSelectedObject());
-            recalculate();
-          }
-      }
     });
 
     ((Button) this.glade.getWidget("closeButton")).addListener(new ButtonListener()
@@ -306,7 +221,7 @@ public class MemoryWindow
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          MemoryWindow.this.hideAll();
+          DisassemblyWindow.this.hideAll();
       }
     });
 
@@ -315,9 +230,11 @@ public class MemoryWindow
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          MemoryWindow.this.formatDialog.showAll();
+          DisassemblyWindow.this.formatDialog.showAll();
       }
     });
+    
+    ((Button) this.glade.getWidget("formatButton")).setSensitive(false);
 
     ((SpinButton) this.glade.getWidget("fromSpin")).addListener(new SpinListener()
     {
@@ -354,12 +271,12 @@ public class MemoryWindow
     this.lastKnownTo = (double) end;
     this.model.clear();
 
-    memoryView.setModel(model);
+    disassemblerView.setModel(model);
 
-    TreeViewColumn[] tvc = memoryView.getColumns();
+    TreeViewColumn[] tvc = disassemblerView.getColumns();
     for (int i = 0; i < tvc.length; i++)
       {
-        memoryView.removeColumn(tvc[i]);
+        disassemblerView.removeColumn(tvc[i]);
       }
 
     for (long i = start; i < end + 1; i++)
@@ -372,17 +289,11 @@ public class MemoryWindow
     col.setReorderable(false);
     col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
                             cols[LOC]);
-    memoryView.appendColumn(col);
+    disassemblerView.appendColumn(col);
 
     for (int i = 0; i < this.columns.length - 1; i++)
       {
         col = new TreeViewColumn();
-        col.setTitle(colNames[i].replaceFirst(
-                                              "X",
-                                              ""
-                                                  + (int) Math.pow(
-                                                                   2,
-                                                                   currentFormat + 3)));
 
         col.setReorderable(true);
         renderer = new CellRendererText();
@@ -392,10 +303,8 @@ public class MemoryWindow
         col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
                                 cols[i + 1]);
 
-        memoryView.appendColumn(col);
+        disassemblerView.appendColumn(col);
 
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN,
-                                cols[11]);
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
 
         columns[i] = col;
@@ -430,87 +339,35 @@ public class MemoryWindow
     Instruction ins = (Instruction) li.next();
 
     // update values in the columns if one of them has been edited
-    ListStore model = (ListStore) this.memoryView.getModel();
+    ListStore model = (ListStore) this.disassemblerView.getModel();
     TreeIter iter = model.getFirstIter();
 
     while (iter != null)
       {
-        BigInteger bi = new BigInteger(
-                                       (String) model.getValue(
-                                                               iter,
-                                                               (DataColumnObject) cols[OBJ]),
-                                       10);
-        String addr = new String((String) model.getValue(
-                                        iter, (DataColumnString) cols[LOC])).substring(2);
 
-        byte[] b = bi.toByteArray();
-        String bin = "";
-        String oct = "";
-        String hex = "";
-        String dec = "";
-
-        if (bi.signum() < 0)
+        model.setValue(iter, (DataColumnString) cols[1], "<pc+" 
+                       + (ins.address - this.pc) + ">: ");
+        
+        if (ins != null)
           {
-            for (int i = 0; i < b.length; i++)
-              {
-                bin = bin + Integer.toBinaryString(b[i] & 0xff);
-                oct = oct + Integer.toOctalString(b[i] & 0xff);
-                hex = hex + Integer.toHexString(b[i] & 0xff);
-              }
-          }
-        else
-          {
-            bin = bi.toString(2);
-            oct = bi.toString(8);
-            hex = bi.toString(16);
-          }
-        dec = bi.toString(10);
-
-        int diff = bin.length() % BYTE_BITS;
-        if (diff != 0)
-          bin = padBytes(bin, false, diff);
-
-        /* Little endian first */
-        model.setValue(iter, (DataColumnString) cols[1], bin);
-        model.setValue(iter, (DataColumnString) cols[3], oct);
-        model.setValue(iter, (DataColumnString) cols[5], dec);
-        model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
-
-        /* Big endian second */
-        String bin2 = switchEndianness(bin, true);
-        BigInteger bii = new BigInteger(bin2, 2);
-
-        oct = bii.toString(8);
-        hex = bii.toString(16);
-
-        /* Bad hack to get around weird BigInteger endian bug */
-        if (bin2.equals(bin))
-          dec = bi.toString(10);
-        else
-          dec = bii.toString(10);
-
-        model.setValue(iter, (DataColumnString) cols[2], bin2);
-        model.setValue(iter, (DataColumnString) cols[4], oct);
-        model.setValue(iter, (DataColumnString) cols[6], dec);
-        model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
-
-        if (ins != null && Long.toHexString(ins.address).equals(addr))
-          {
-            model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
+            model.setValue(iter, (DataColumnString) cols[0], Long.toHexString(ins.address));
+            model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             if (li.hasNext())
               ins = (Instruction) li.next();
             else
               ins = null;
           }
         else
-          model.setValue(iter, (DataColumnString) cols[9], "");
+          model.setValue(iter, (DataColumnString) cols[1], "");
 
+        model.setValue(iter, (DataColumnObject) cols[OBJ], ins);
+        
         iter = iter.getNextIter();
       }
 
-    for (int i = 0; i < MemoryWindow.colNames.length; i++)
+    for (int i = 0; i < DisassemblyWindow.colNames.length; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
-                                                       MemoryWindow.colNames[i],
+                                                       DisassemblyWindow.colNames[i],
                                                        this.colVisible[i]));
 
     this.showAll();
@@ -528,103 +385,7 @@ public class MemoryWindow
 
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
-    model.setValue(iter, (DataColumnDouble) cols[11], 1.0);
 
-    switch (currentFormat)
-      {
-      case EIGHT_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getByte(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTEEN_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getShort(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case THIRTYTWO_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getInt(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTYFOUR_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getLong(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-      }
-
-  }
-
-  /*****************************************************************************
-   * Endianness methods
-   ****************************************************************************/
-
-  /**
-   * Pad this byte string with zeroes so that it is of proper size.
-   */
-  private String padBytes (String s, boolean littleEndian, int diff)
-  {
-
-    if (littleEndian)
-      for (int i = 0; i < BYTE_BITS - diff; i++)
-        s = s + "0";
-    else
-      for (int i = 0; i < BYTE_BITS - diff; i++)
-        s = "0" + s;
-
-    return s;
-  }
-
-  /**
-   * Switch the endianness of a binary string
-   */
-  private String switchEndianness (String toReverse, boolean littleEndian)
-  {
-    int diff = toReverse.length() % BYTE_BITS;
-
-    /* The string isn't properly composed of bits yet */
-    if (diff != 0)
-      toReverse = padBytes(toReverse, littleEndian, diff);
-
-    /* No need to switch this string, it'll be identical either way */
-    if (toReverse.length() == BYTE_BITS)
-      return toReverse;
-
-    char[] tmp = new char[toReverse.length()];
-    for (int i = 0; i < tmp.length; i += BYTE_BITS)
-      for (int bitOffset = 0; bitOffset < BYTE_BITS; bitOffset++)
-        tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i
-                                              - (BYTE_BITS - bitOffset));
-
-    return new String(tmp);
   }
 
   /*****************************************************************************

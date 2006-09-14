@@ -1,3 +1,14 @@
+2006-09-14  Mike Cvet  <mcvet@redhat.com>
+
+	* glade/disassemblywindow.glade: Added.
+	* disassembler/DisassemblyFormatDialog.java: Added.
+	* disassembler/DisassemblyWindowFactory.java: Added.
+	* disassembler/DisassemblyWindow.java: Added.
+	* memory/MemoryWindow.java (refreshList): Made sure that the address
+	on the current line matches the address in an assembly instruction.
+	* Gui.java (Gui): Set a new glade file for the disassembler.
+	(gui): Passed in the glade directories to the disassembler factory.
+
 2006-09-14  Phil Muldoon  <pmuldoon@localhost.localdomain>
 
 	* SessionManagerGui.java (SessionManagerGui): Added JavaDoc

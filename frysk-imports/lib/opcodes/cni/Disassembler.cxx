@@ -88,11 +88,11 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 #ifdef __x86_64__
 	disasm_info.arch = bfd_arch_i386;
 	disasm_info.mach = bfd_mach_x86_64;
-	disasm_func = &(::print_insn_i386_intel);
+	disasm_func = &(::print_insn_i386_att);
 #elif defined (__i386__)
 	disasm_info.arch = bfd_arch_i386;
 	disasm_info.mach = bfd_mach_i386_i386;
-	disasm_func = &(::print_insn_i386_intel);
+	disasm_func = &(::print_insn_i386_att);
 #elif defined (__powerpc64__)
 	disasm_info.arch = bfd_arch_powerpc;
 	disasm_info.mach = bfd_mach_ppc64;
@@ -144,7 +144,8 @@ int read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd, unsigned int length
 	inua::eio::ByteBuffer *buffer = obj->buffer;
 	
 	char tmp[length];
-	for(unsigned int i = 0; i < length; i++){
+	for (unsigned int i = 0; i < length; i++)
+	{
 		long offset = ((long) memaddr) + i;
 		tmp[i] = (char) buffer->getByte (offset);
 	}
@@ -159,12 +160,26 @@ int read_from_byte_buffer (bfd_vma memaddr, bfd_byte* myadd, unsigned int length
  */
 void error_func (int status, bfd_vma memaddr, struct disassemble_info *info)
 {
-	throw new lib::opcodes::OpcodesException(
-		JvNewStringUTF("Error occured while disassembling."), (jint) status, (jlong) memaddr
-	);
+	throw new lib::opcodes::OpcodesException (
+		JvNewStringUTF ("Error occured while disassembling."), 
+		(jint) status, (jlong) memaddr);
 }
 
-void print_addr (bfd_vma addr, struct disassemble_info *info) {}
+void print_addr (bfd_vma addr, struct disassemble_info *info)
+{
+
+	lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) info->stream;
+
+	char *mystr = NULL;
+	if (::asprintf (&mystr, "0x%lx", (long) addr) > 0)
+	{	
+		obj->appendCurrentInstruction (JvNewStringUTF (mystr));
+		::free (mystr);
+	}
+	else
+		throw new lib::opcodes::OpcodesException (
+  			JvNewStringUTF ("Couldn't parse variable address"));
+}
 
 /*
  * When we're asked to print a statement, store it on the java side instead
@@ -172,20 +187,20 @@ void print_addr (bfd_vma addr, struct disassemble_info *info) {}
 int save_instruction (void* disassembler, const char *args, ...)
 {
 	lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
-	
 	va_list ap;
 	::va_start (ap, args);
 	char * mystr;
-	if(::vasprintf (&mystr, args, ap) > 0){
-		obj->setCurrentInstruction (JvNewStringUTF (mystr));
+	if (::vasprintf (&mystr, args, ap) > 0)
+	{
+		obj->appendCurrentInstruction (JvNewStringUTF (mystr));
 		::free (mystr);
 	}
 	else
 	{
-  		throw new lib::opcodes::OpcodesException(
+  		throw new lib::opcodes::OpcodesException (
   			JvNewStringUTF("Could not parse variable argument list"));
 	}
-	::va_end(ap);
+	::va_end (ap);
 	
 	int len = strlen (mystr);
 	

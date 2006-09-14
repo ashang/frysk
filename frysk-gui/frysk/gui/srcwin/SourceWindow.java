@@ -97,6 +97,8 @@ import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
+import frysk.gui.disassembler.DisassemblyWindowFactory;
+import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.register.RegisterWindow;
@@ -204,6 +206,8 @@ public class SourceWindow
   private ToggleAction toggleRegisterWindow;
 
   private ToggleAction toggleMemoryWindow;
+  
+  private ToggleAction toggleDisassemblyWindow;
 
   // private DOMFrysk dom;
 
@@ -644,6 +648,17 @@ public class SourceWindow
         SourceWindow.this.toggleMemoryWindow();
       }
     });
+    
+    this.toggleDisassemblyWindow = new ToggleAction("toggleDisWindow",
+                                               "Disassembly Window",
+                                               "Toggle the Disassembly Window", "");
+    this.toggleDisassemblyWindow.addListener(new ActionListener()
+    {
+      public void actionEvent (ActionEvent arg0)
+      {
+        SourceWindow.this.toggleDisassemblyWindow();
+      }
+    });
   }
 
   /*
@@ -688,6 +703,9 @@ public class SourceWindow
     tmp.append(mi);
 
     mi = (MenuItem) this.toggleMemoryWindow.createMenuItem();
+    tmp.append(mi);
+    
+    mi = (MenuItem) this.toggleDisassemblyWindow.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);
@@ -1284,6 +1302,20 @@ public class SourceWindow
     else
       {
         MemoryWindowFactory.memWin.showAll();
+      }
+  }
+  
+  private void toggleDisassemblyWindow ()
+  {
+    DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
+    if (disWin == null)
+      {
+        DisassemblyWindowFactory.createDisassemblyWindow(myTask);
+        DisassemblyWindowFactory.setDisWin(myTask);
+      }
+    else
+      {
+        DisassemblyWindowFactory.disWin.showAll();
       }
   }
 
