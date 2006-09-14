@@ -93,6 +93,8 @@ public class WindowManager
 
   public ProgramObserverDialog programObserverDialog;
   
+  public LibGlade processPickerGlade;
+  
   /** } */
 
   public WindowManager ()
@@ -131,6 +133,11 @@ public class WindowManager
   {
     this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
   }
+  
+  public void initProcessPicker(LibGlade process_picker_glade) {
+	  this.processPickerGlade = process_picker_glade;
+		
+	}
 
   public void save (Preferences prefs)
   {
@@ -157,4 +164,6 @@ public class WindowManager
                                                            prefs.absolutePath()
                                                                + "/programObserverDialog"));
   }
+
+
 }
