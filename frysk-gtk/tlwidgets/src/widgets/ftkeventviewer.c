@@ -1848,13 +1848,13 @@ create_popup_marker_label (gboolean prepend_ts,
   if (prepend_ts)
     {
       if (ftk_event_string (revent))
-        count = asprintf (&lbl, "%s\nTrace=%s\nEvent = %s\n%s",
+        count = asprintf (&lbl, "%s\nTrace = %s\nEvent = %s\n%s",
                           get_time_from_time_d(eventviewer, time_d),
                           trace_label,
                           marker_label,
                           ftk_event_string (revent));
       else
-        count = asprintf (&lbl, "%s\nTrace=%s\nEvent = %s",
+        count = asprintf (&lbl, "%s\nTrace = %s\nEvent = %s",
                           get_time_from_time_d(eventviewer, time_d),
                           trace_label,
                           marker_label);
@@ -2135,6 +2135,7 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
                 for (j = 0; j <  ftk_trace_event_next(ltrace); j++)
                   {
                     FtkEvent * pevent = ftk_trace_event (ltrace, j);
+
                     if ((abs (ftk_event_hloc (pevent) - phpos) < POPUP_TOLERANCE) &&
                         (trace_idx == i))
                       {		/* fixme -- always true ? */
@@ -2260,31 +2261,40 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
 
         if ((loc_d >= 0.0) && (loc_d <= 1.0))
           {
-            int h_offset = ftk_da_trace_origin (da) +
-                           lrint (((double)ftk_da_trace_width (da)) * loc_d);
-            int sym_idx = ftk_marker_glyph (marker);
-            int v_offset = ftk_trace_vpos_d (trace) +
-                           ((ftk_trace_label_dheight(trace) >> 1) -
-                            ftk_symbol_v_center(sym_idx));
+		  gint width, height;
 
-            gdk_cairo_set_source_color (cr, &ftk_marker_color (marker));
-            cairo_move_to (cr,
-                           (double)(h_offset - ftk_symbol_h_center(sym_idx)),
-                           (double)(v_offset /*- ftk_symbol_v_center(sym_idx)*/ ));
-
-
-            PangoLayout * layout = pango_layout_copy (ftk_symbol_layout(sym_idx));
+		  int sym_idx = ftk_marker_glyph (marker);	
+		  
+		  PangoLayout * layout = pango_layout_copy (ftk_symbol_layout(sym_idx));
             PangoFontDescription *font_desc =
               pango_font_description_copy (pango_layout_get_font_description(layout));
             pango_font_description_set_size (font_desc, ftk_marker_symbol_size(marker)*PANGO_SCALE);
             pango_layout_set_font_description (layout, font_desc);
+		  
+		  pango_layout_get_pixel_size (layout, &width, &height);
+		  
+	//Divide the width and height by two.
+        width = width  >> 1;
+       height = height >> 1;
+				  
+            int h_offset = ftk_da_trace_origin (da) 
+		  + lrint (((double)ftk_da_trace_width (da)) * loc_d) 
+		  - width;
+               
+		  int v_offset = ftk_trace_vpos_d (trace) 
+		  + ((ftk_trace_label_dheight(trace) >> 1) 
+		  -  height);
 
+            gdk_cairo_set_source_color (cr, &ftk_marker_color (marker));
+            cairo_move_to (cr,
+                           (double)(h_offset),
+                           (double)(v_offset));
 
             pango_cairo_show_layout (cr, layout);
             cairo_stroke (cr);
 
             g_object_unref(layout);
-            ftk_event_hloc (event) = h_offset;
+            ftk_event_hloc (event) = h_offset + width;
           }
       }
   }

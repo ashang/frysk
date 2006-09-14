@@ -8,6 +8,8 @@
 	* src/widgets/ftkeventviewer.c: Changed grid lines to not antialias. The two options for antialiasing are: NONE, and GRAY, which just grays the lines.
 	There is a third option SUBPIXEL, but Cairo documentation says no backend supports this yet.
 
+	* src/widgets/ftkeventviewer.c: Fixed problem with large glyphs not being centered properly.
+
 2006-09-13  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Added support for user resizable glyph sizes.
 	* src/widgets/ftkeventviewer.h: Ditto.
