@@ -65,74 +65,86 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class guiWalktest (unittest.TestCase):
+class guiWalktest ( unittest.TestCase ):
 
-    def setUp(self):
+    def setUp( self ):
         
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  } )
 
         # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
+        self.FryskBinary = os.getenv( 'fryskBinary' )
+        self.funitChildBinary = os.getenv( 'funitChild' )
 
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.startObject = startFrysk( self.FryskBinary, self.funitChildBinary, self.theLogWriter )
         self.frysk = self.startObject.getFryskObject()
 
         # Load up Session object
-        self.parser = xml.sax.make_parser(  )
-        self.handler = FryskHandler.FryskHandler(  )
-        self.parser.setContentHandler(self.handler)
+        self.parser = xml.sax.make_parser()
+        self.handler = FryskHandler.FryskHandler()
+        self.parser.setContentHandler( self.handler )
 
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
         # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        self.parser.parse( os.getenv( 'TestDruid_FILE' ) )
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
-#        createMinimalSession (self.frysk, self.theSession, False)
+        # createMinimalSession (self.frysk, self.theSession, False)
         
-    def tearDown(self):    
+    def tearDown( self ):    
         # Exit Frysk
-        endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-
-    def testall(self):      
-        """Check that the GUI elements can be accessed and acted upon"""   
-  
-        ###############################################
-        def showChildren ( theNode, skipList ):
-            print "the name = " + theNode.name + " the roleName = " 
-            if theNode.showing:            
-                theNode.blink()
-                theNode.blink()
-                theNode.blink()
-
-            #Need to define the skipList!
+        endFrysk ( self.startObject )
+        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  } )
+        
+              ###############################################
+    # Don't perform the 'click' action on nodes in the skipList
+    def showChildren ( self, theNode, skipList ):
+        if theNode.showing: 
+            theNode.blink()
             theActions = theNode.actions
             for x in theActions:
-                #print "action=" + x
-
-                if ( skipList[0] != 'all'):
-                    print 'perform the actions other than those listed in the skiplist'
-                    for y in skipList:
-                        print "The node on which to perform an action is: " + y 
-                        if ((y == theNode.name) and (x == 'click')):
-                            print "Got one!" + y + theNode.name
-                        else:
-                           theNode.actions[x].do()
-                           print str(theNode.actions[x])
+                if ( skipList[0] != 'all' ):
+                    if ( ( theNode.name in skipList ) and ( x == 'click' ) ):
+                        print "Got one to not click!" + theNode.name
+                    else:
+                        try:
+                            theNode.actions[x].do()
+                            print str(theNode.actions[x])
+                        except:
+                            self.fail( 'Clicking on: ' + str( theNode.actions[x] ) + ' in GUI: ' + theNode.name + ' failed' )
+        # Recursively call the function to walk thru the GUI nodes
+        theList = theNode.children
+        for x in theList:
+            self.showChildren( x, skipList )    
  
-
-
-            # Recursively call the function to walk thru the GUI nodes
-            theList = theNode.children
-            for x in theList:
-                showChildren(x, skipList)
+    # Don't perform the 'click' action on nodes in the skipList
+    def showChildren_new ( self, theNode, theType, theAction ):
+        if theNode.showing: 
+            theNode.blink()             
+            theActions = theNode.actions
+            for x in theActions:
+                if ((theNode.roleName == 'push button') and (x == 'click'))  or ((theNode.roleName == theType) and (x == theAction)):
+                        print "Got one to not click!" + theNode.name
+                else:
+                    try:
+                        theNode.actions[x].do()
+                        theNode.actions[x].do()
+                        print str(theNode.actions[x])
+                    except:
+                        self.fail( 'Clicking on: ' + str( theNode.actions[x] ) + ' in GUI: ' + theNode.name + ' failed' )
+        # Recursively call the function to walk thru the GUI nodes
+        theList = theNode.children
+        for x in theList:
+            self.showChildren_new ( x, theType, theAction )    
+ 
+    def testall( self ):      
+        """Check that the GUI elements can be accessed and acted upon"""   
+                
         #######################################################
         # open frysk startup manager
         #   1 open debug existing process window
@@ -157,66 +169,104 @@ class guiWalktest (unittest.TestCase):
         #            open help window
         #                open about window
 
-        # showChildren(self.frysk)
+       
 
         # 1 open debug existing process window
         skipList = ['all']
-        showChildren(self.frysk, skipList)
-        debugRadioButton = self.frysk.child (roleName='radio button', name='Debug an Existing Process')
+        self.showChildren(self.frysk, skipList)
+        debugRadioButton = self.frysk.child ( roleName='radio button', name='Debug an Existing Process' )
         debugRadioButton.click()
-        debugButton = self.frysk.child (roleName='push button')
+        debugButton = self.frysk.child ( roleName='push button' )
         debugButton.click()
 
         # a open debug process list window
         skipList = ['all']
-        processDialog = self.frysk.dialog('Debug Process List')
-        showChildren(processDialog, skipList)
-        theTable = processDialog.child (roleName='tree table') 
-        hello = theTable.child (name='ahello')
+        processDialog = self.frysk.dialog( 'Debug Process List' )
+        self.showChildren(processDialog, skipList)
+        #self.showChildren_new ( processDialog, "table cell", "activate" )
+        theTable = processDialog.child ( roleName='tree table' ) 
+        hello = theTable.child ( name='ahello' )
         hello.grabFocus()
-        OKbutton = processDialog.child(name='Open', roleName='push button')
+        OKbutton = processDialog.child( name='Open', roleName='push button' )
         OKbutton.click()
 
-        # b open frysk source window
+        # b open frysk source window - need to wait for it to be displayed
         import time
-        time.sleep (10)
-        theApp = tree.root.application('Frysk')
+        time.sleep ( 5 )
+        theApp = tree.root.application( 'Frysk' )
         theList = theApp.children
         sourceDialog = theList[1]   # App.dialog('Frysk Source Window for: ahello Task 18952')
         skipList = ['all']
-        showChildren(sourceDialog, skipList)
-        edit = sourceDialog.child(name='Edit', roleName='menu')
+        self.showChildren(sourceDialog, skipList)
+        #self.showChildren_new ( sourceDialog, "push button", "click" )
+        edit = sourceDialog.child( name='Edit', roleName='menu' )
         edit.click()
 
         # c open preferences window
-        preferences = edit.menuItem('Frysk Preferences')
+        preferences = edit.menuItem( 'Frysk Preferences' )
         preferences.click()
-        prefDialog = theApp.child('prefWin_preferencesWindow')  #'Preferences') #prefWin_preferencesWindow
-        skipList = ['all']
-        showChildren(prefDialog, skipList)
+        prefDialog = theApp.child( 'prefWin_preferencesWindow' )  #'Preferences') #prefWin_preferencesWindow
 
-        # d open source window
-        prefTable = prefDialog.child('preferenceTree_listOfPreferenceGroups')
-        sourceWindow = prefTable.child('Source Window')      
-        skipList = ['all']
-        showChildren(sourceWindow, skipList)
-        sourceWindow.actions['expand or contract'].do() 
-        sourceWindow.actions['activate'].do()
-
-        # e open pick a color window
-        colorButton = prefDialog.child('linenumColor_colorOfLineNumbers')
+        # Skip any GUI nodes that cause another GUI window to be opened
+        skipList = ['linenumColor_colorOfLineNumbers', 
+                    'execColor_executableMarkColor', 
+                    'classColor_classSyntaxHighlightingColor', 
+                    'funcColor_FunctionSyntaxHighlightingColor', 
+                    'keyColor_syntaxKeywordColor', 
+                    'localColor_localVariableSytnaxHighlightingColor', 
+                    'globalColor_globalVariabelsSyntaxHighlightingColor', 
+                    'oosColor_OutOfScopeVariablesSyntaxHighlightingColor', 
+                    'optColor_optimizedVariablesSyntaxHighlightingColor', 
+                    'commentColor_commentSyntaxHighlightingColor', 
+                    'namespaceColor_namespaceNameSyntaxHighlightingColor', 
+                    'includeColor_preprocessorIncludeSyntaxHighlightingColor', 
+                    'macorColor_preprocessorMacroSyntaxHighlightingColor', 
+                    'templateColor_templateSyntaxHighlightingColor', 
+                    'textColor_textForegroundColor', 
+                    'backgroundColor_textBackgroundColor', 
+                    'marginColor_sideMarginColor', 
+                    'searchColor_searchResultsColor', 
+                    'currentlineColor_currentlineColor', 
+                    'Cancel', 
+                    'Apply' ]       
+        
+        prefTable = prefDialog.child( 'preferenceTree_listOfPreferenceGroups' )     
+        sourceWindow = prefTable.child( 'Source Window' )   
+        self.showChildren( prefDialog, skipList )
+        #self.showChildren_new ( prefDialog, "push button", "click" )
+         
+        #sourceWindow.actions['expand or contract'].do() 
+        lookAndFeel = prefTable.child( 'Look and Feel' ) 
+        lookAndFeel.actions['activate'].do()
+        lookAndFeel.grabFocus()
+        self.showChildren( prefDialog, skipList )
+        #self.showChildren_new ( prefDialog, "push button", "click" )
+        
+        syntaxHighlighting = prefTable.child( 'Syntax Highlighting' ) 
+        syntaxHighlighting.actions['activate'].do()
+        syntaxHighlighting.grabFocus()
+        self.showChildren( prefDialog, skipList )
+        #self.showChildren_new ( prefDialog, "push button", "click" )
+        
+        # The same color dialog is used for all colors - only ues once
+        colorButton = prefDialog.child( 'classColor_classSyntaxHighlightingColor' )
         colorButton.click()
-        pickColor = theApp.child('Pick a Color')
-        closeButton = pickColor.button('OK')
-        cancelButton = pickColor.button('Cancel')
+        pickColor = theApp.child( 'Pick a Color' )
+        closeButton = pickColor.button( 'OK' )
+        cancelButton = pickColor.button( 'Cancel' )
         skipList = ['OK', 'Cancel']
-        showChildren(pickColor, skipList)
-
+        #self.showChildren( pickColor, skipList )
+        self.showChildren_new ( pickColor, "push button", "click" )
+        
         # close pick a color window
-        closeButton = pickColor.button('OK')
+        closeButton = pickColor.button( 'OK' )
         closeButton.click()
-        # close source window
-        cancelButton = prefDialog.button('Cancel')
+        colorButton.click()
+        pickColor = theApp.child( 'Pick a Color' )
+        cancelButton.click()       
+        
+        # close preferences window
+        cancelButton = prefDialog.button( 'Cancel' )
         cancelButton.click()
 
         #       g     open register window
@@ -229,10 +279,9 @@ class guiWalktest (unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(guiWalktest ('testall'))
+    suite.addTest( guiWalktest ( 'testall' ) )
     return suite
 
 if __name__ == '__main__':
   #unittest.main()
-  unittest.TextTestRunner(verbosity=2).run(suite())
-
+  unittest.TextTestRunner( verbosity=2 ).run( suite() )
