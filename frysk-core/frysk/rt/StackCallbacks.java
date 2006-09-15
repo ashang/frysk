@@ -40,8 +40,11 @@
 
 package frysk.rt;
 
+import frysk.proc.Isa;
+import frysk.proc.Task;
+import frysk.proc.TaskException;
 import java.util.logging.Level;
-
+import java.util.logging.Logger;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
@@ -53,14 +56,11 @@ import lib.elf.ElfFileException;
 import lib.elf.ElfSection;
 import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
-import frysk.proc.Host;
-import frysk.proc.Isa;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 public class StackCallbacks
   implements UnwindCallbacks
 {
+    static final Logger logger = Logger.getLogger ("frysk");//.rt");
   private Task myTask;
 
   private Isa isa;
@@ -75,7 +75,7 @@ public class StackCallbacks
   public boolean findProcInfo (long procInfo, long addressSpace,
                                long instructionAddress, boolean needInfo)
   {
-    Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
+    logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
                                 + Long.toHexString(instructionAddress) + "\n");
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
@@ -83,7 +83,7 @@ public class StackCallbacks
 
     if (bias == null)
       {
-        Host.logger.log(Level.FINE,
+        logger.log(Level.FINE,
                         "Libunwind: aborted, could not find dwfl die and bias\n");
         return false;
       }
@@ -93,7 +93,7 @@ public class StackCallbacks
 
     if (die == null)
       {
-        Host.logger.log(Level.FINE,
+        logger.log(Level.FINE,
                         "Libunwind: aborted, could not find dwfl die\n");
         return false;
       }
@@ -101,7 +101,7 @@ public class StackCallbacks
     DwarfDie lowest = die.getScopes(adjustedAddress)[0];
     if (lowest == null)
       {
-        Host.logger.log(Level.FINE,
+        logger.log(Level.FINE,
                         "Libunwind: aborted, could not find lowest scope information\n");
         return false;
       }
@@ -118,7 +118,7 @@ public class StackCallbacks
           {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            Host.logger.log(Level.FINE,
+            logger.log(Level.FINE,
                             "Libunwind: aborted, could not find elf information\n");
             return false;
           }
@@ -126,7 +126,7 @@ public class StackCallbacks
           {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            Host.logger.log(Level.FINE,
+            logger.log(Level.FINE,
                             "Libunwind: aborted, could not find elf information\n");
             return false;
           }
@@ -144,7 +144,7 @@ public class StackCallbacks
 
         if (found == null)
           {
-            Host.logger.log(Level.FINE,
+            logger.log(Level.FINE,
                             "Libunwind: aborted, could not .debug_frame section\n");
             return false;
           }
@@ -172,20 +172,20 @@ public class StackCallbacks
 
   public long accessMem (long addressSpace, long addr)
   {
-    Host.logger.log(Level.FINE, "Libunwind: reading memory at 0x"
+    logger.log(Level.FINE, "Libunwind: reading memory at 0x"
                                 + Long.toHexString(addr) + "\n");
 
     // XXX: Fixme for 64
     long value = myTask.getMemory().getInt(addr);
 
-    Host.logger.log(Level.FINE, "Libunwind: read value 0x"
+    logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
     return value;
   }
 
   public void writeMem (long as, long addr, long value)
   {
-    Host.logger.log(Level.FINE, "Libunwind: writing value 0x"
+    logger.log(Level.FINE, "Libunwind: writing value 0x"
                                 + Long.toHexString(value)
                                 + " to memory address 0x"
                                 + Long.toHexString(addr) + "\n");
@@ -195,12 +195,12 @@ public class StackCallbacks
   public long accessReg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading from register "
+    logger.log(Level.FINE, "Libunwind: reading from register "
                                 + registerName + "\n");
 
     long value = isa.getRegisterByName(registerName).get(myTask);
 
-    Host.logger.log(Level.FINE, "Libunwind: read value 0x"
+    logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
     return value;
   }
@@ -208,7 +208,7 @@ public class StackCallbacks
   public void writeReg (long as, long regnum, long value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value 0x"
+    logger.log(Level.FINE, "Libunwind: writing value 0x"
                                 + Long.toHexString(value) + " to register "
                                 + registerName + "\n");
     // TODO Auto-generated method stub
@@ -218,7 +218,7 @@ public class StackCallbacks
   public double accessFpreg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName
+    logger.log(Level.FINE, "Libunwind: reading register " + registerName
                                 + "\n");
 
     throw new RuntimeException("Not implemented in core yet");
@@ -229,7 +229,7 @@ public class StackCallbacks
   public void writeFpreg (long as, long regnum, double value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value " + value
+    logger.log(Level.FINE, "Libunwind: writing value " + value
                                 + " to register " + registerName + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
@@ -245,7 +245,7 @@ public class StackCallbacks
 
   public String getProcName (long as, long addr)
   {
-    Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
+    logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
                                 + Long.toHexString(addr) + "\n");
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
@@ -265,7 +265,7 @@ public class StackCallbacks
 
   public long getProcOffset (long as, long addr)
   {
-    Host.logger.log(Level.FINE, "Libunwind: getting procedure offset at 0x"
+    logger.log(Level.FINE, "Libunwind: getting procedure offset at 0x"
                                 + Long.toHexString(addr) + "\n");
 
     Dwfl dwfl = new Dwfl(myTask.getTid());

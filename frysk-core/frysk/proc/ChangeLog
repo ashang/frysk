@@ -1,3 +1,7 @@
+2006-09-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (logger): Remove "public" designation.
+
 2006-09-14  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* Isa.java (getSyscallList): New method.

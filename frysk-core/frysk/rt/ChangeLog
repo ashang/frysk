@@ -1,3 +1,8 @@
+2006-09-15  Andrew Cagney  <cagney@redhat.com>
+
+	* StackCallbacks.java: Use java.util.logging.Logger, instead of
+	frysk.proc.Host.logger.  Pass "this" to logger, use {0} et.al.
+
 2006-09-11  Mark Wielaard  <mark@klomp.org>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Disabled when
