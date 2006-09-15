@@ -1,3 +1,11 @@
+2006-09-15  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (conWin): Imported and made variables for
+	ConsoleWindow - now represented by the SourceWindow.
+	(createMenus): Added code to display the ConsoleWindow from the 
+	menu - commented out for now, pending bugs.
+	(toggleConsoleWindow): Added.
+
 2006-09-14  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (toggleDisassemblyWindow): Added a toggleAction

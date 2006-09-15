@@ -107,6 +107,7 @@ import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
+import frysk.vtecli.ConsoleWindow;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -208,6 +209,8 @@ public class SourceWindow
   private ToggleAction toggleMemoryWindow;
   
   private ToggleAction toggleDisassemblyWindow;
+  
+  private ToggleAction toggleConsoleWindow;
 
   // private DOMFrysk dom;
 
@@ -218,6 +221,8 @@ public class SourceWindow
   private CurrentStackView stackView;
 
   private VariableWatchView watchView;
+  
+  private ConsoleWindow conWin;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -659,6 +664,19 @@ public class SourceWindow
         SourceWindow.this.toggleDisassemblyWindow();
       }
     });
+    
+    this.toggleConsoleWindow = new ToggleAction(
+                                                    "toggleConWindow",
+                                                    "Console Window",
+                                                    "Toggle the Console Window",
+                                                    "");
+    this.toggleConsoleWindow.addListener(new ActionListener()
+    {
+      public void actionEvent (ActionEvent arg0)
+      {
+        SourceWindow.this.toggleConsoleWindow();
+      }
+    });
   }
 
   /*
@@ -698,6 +716,9 @@ public class SourceWindow
     // View Menu
     menu = new MenuItem("View", false);
     tmp = new Menu();
+    
+//    mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
+//    tmp.append(mi);
 
     mi = (MenuItem) this.toggleRegisterWindow.createMenuItem();
     tmp.append(mi);
@@ -1317,6 +1338,14 @@ public class SourceWindow
       {
         DisassemblyWindowFactory.disWin.showAll();
       }
+  }
+  
+  private void toggleConsoleWindow ()
+  {
+    if (this.conWin == null)
+        this.conWin = new ConsoleWindow();
+    else
+        this.conWin.showAll();
   }
 
   private class SourceWindowListener

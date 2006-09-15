@@ -1,3 +1,8 @@
+2006-09-15  Mike Cvet  <mcvet@redhat.com>
+
+	* ConsoleWindow.java: Applied GNU formatting. Added as a menu item
+	in the SourceWindow.
+
 2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* ConsoleWindow.java: Better name, better prompt, better colors

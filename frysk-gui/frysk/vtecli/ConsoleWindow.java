@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.vtecli;
 
 import org.gnu.gtk.Window;
@@ -51,135 +52,142 @@ import frysk.cli.hpd.CLI;
 import jline.ConsoleReader;
 import jline.PtyTerminal;
 
-public class ConsoleWindow extends Window {
-    private Terminal term;
-	
-	private class reader implements Runnable
-	{
-		CLI cli;
-		ConsoleReader jlreader;
-		String fname;
+public class ConsoleWindow
+    extends Window
+{
+  private Terminal term;
 
-		reader(String fname)
-		{
-			this.fname = fname;
+  private class reader
+      implements Runnable
+  {
+    CLI cli;
 
-			try
-			{
-				cli = new CLI("(frysk) ", new PrintStream( new FileOutputStream(new File(fname)) ) );
-			}
-			catch (IOException ioe)
-			{
-				System.out.println("ERROR: Could not create a file output stream: ");
-				System.out.print(ioe.getMessage());
-			}
+    ConsoleReader jlreader;
 
-			FileWriter out = null;
-			FileInputStream in = null;
+    String fname;
 
-			try
-			{
-				out = new FileWriter(new File(fname));
-			}
-			catch (IOException ioe)
-			{
-				System.out.println("ERROR: Could not create a file writer: ");
-				System.out.print(ioe.getMessage());
-			}
+    reader (String fname)
+    {
+      this.fname = fname;
 
-			try
-			{
-				in = new FileInputStream(new File(fname));
-			}
-			catch (IOException ioe)
-			{
-				System.out.println("ERROR: Could not create a file input stream: ");
-				System.out.print(ioe.getMessage());
-			}
+      try
+        {
+          cli = new CLI("(frysk) ",
+                        new PrintStream(new FileOutputStream(new File(fname))));
+        }
+      catch (IOException ioe)
+        {
+          System.out.println("ERROR: Could not create a file output stream: ");
+          System.out.print(ioe.getMessage());
+        }
 
-			try
-			{
-				jlreader = new ConsoleReader(in, out, null, new PtyTerminal(fname));
-			}
-			catch (IOException ioe)	{
-				System.out.println("ERROR: Could not create a command line");
-				System.out.print(ioe.getMessage());
-			}
-		}
+      FileWriter out = null;
+      FileInputStream in = null;
 
-		public void run()
-		{
-			String line = "";
+      try
+        {
+          out = new FileWriter(new File(fname));
+        }
+      catch (IOException ioe)
+        {
+          System.out.println("ERROR: Could not create a file writer: ");
+          System.out.print(ioe.getMessage());
+        }
 
-			try
-			{
-				while (line != null && !line.trim().equals("quit"))
-				{
-					line = jlreader.readLine(cli.getPrompt());
-					cli.execCommand(line);
-				}
+      try
+        {
+          in = new FileInputStream(new File(fname));
+        }
+      catch (IOException ioe)
+        {
+          System.out.println("ERROR: Could not create a file input stream: ");
+          System.out.print(ioe.getMessage());
+        }
 
-			}
-			catch (IOException ioe)
-			{
-				System.out.println("ERROR: Could not read from command line");
-				System.out.print(ioe.getMessage());
-			}
-
-			ConsoleWindow.this.shutDown();
-		}
-	}
-
-    public ConsoleWindow()
-	{
-		super(WindowType.TOPLEVEL);
-
-		this.setTitle("Frysk Console Interface");
-		this.addListener(new LifeCycleListener() {
-				public void lifeCycleEvent(LifeCycleEvent event)
-				{
-				}
-
-				public boolean lifeCycleQuery(LifeCycleEvent event)
-				{
-					if (event.isOfType(LifeCycleEvent.Type.DESTROY) ||
-						event.isOfType(LifeCycleEvent.Type.DELETE))
-						ConsoleWindow.this.shutDown();
-					
-					return true;
-				}
-			});
-
-		String[] cmdargs = new String[1];
-		cmdargs[0] = "-1";
-
-		Pty pty = new Pty();
-		
-		int master = pty.getFd ();
-		String name = pty.getName ();
-		System.out.println ("master = " + master + " name = " + name);
-
-		term = new Terminal();
-		term.setPty (master);
-		
-		term.setDefaultColors();
-		term.setBackgroudColor(Color.WHITE);
-		term.setForegroundColor(Color.BLACK);
-		term.setSize (80, 25);
-//		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
-
-		this.add(term);
-		this.showAll();
-
-		System.out.println ("master = " + master + " name = " + name);
-
-		reader rd = new reader(name);
-		new Thread(rd).start();
+      try
+        {
+          jlreader = new ConsoleReader(in, out, null, new PtyTerminal(fname));
+        }
+      catch (IOException ioe)
+        {
+          System.out.println("ERROR: Could not create a command line");
+          System.out.print(ioe.getMessage());
+        }
     }
 
-	private void shutDown()
-	{
-		this.destroy();
-	}
-}
+    public void run ()
+    {
+      String line = "";
 
+      try
+        {
+          while (line != null && ! line.trim().equals("quit"))
+            {
+              line = jlreader.readLine(cli.getPrompt());
+              cli.execCommand(line);
+            }
+
+        }
+      catch (IOException ioe)
+        {
+          System.out.println("ERROR: Could not read from command line");
+          System.out.print(ioe.getMessage());
+        }
+
+      ConsoleWindow.this.shutDown();
+    }
+  }
+
+  public ConsoleWindow ()
+  {
+    super(WindowType.TOPLEVEL);
+
+    this.setTitle("Frysk Console Interface");
+    this.addListener(new LifeCycleListener()
+    {
+      public void lifeCycleEvent (LifeCycleEvent event)
+      {
+      }
+
+      public boolean lifeCycleQuery (LifeCycleEvent event)
+      {
+        if (event.isOfType(LifeCycleEvent.Type.DESTROY)
+            || event.isOfType(LifeCycleEvent.Type.DELETE))
+          ConsoleWindow.this.shutDown();
+
+        return true;
+      }
+    });
+
+    String[] cmdargs = new String[1];
+    cmdargs[0] = "-1";
+
+    Pty pty = new Pty();
+
+    int master = pty.getFd();
+    String name = pty.getName();
+    System.out.println("master = " + master + " name = " + name);
+
+    term = new Terminal();
+    term.setPty(master);
+
+    term.setDefaultColors();
+    term.setBackgroudColor(Color.WHITE);
+    term.setForegroundColor(Color.BLACK);
+    term.setSize(80, 25);
+    //		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
+
+    this.add(term);
+    this.showAll();
+
+    System.out.println("master = " + master + " name = " + name);
+
+    reader rd = new reader(name);
+    new Thread(rd).start();
+  }
+
+  private void shutDown ()
+  {
+    this.destroy();
+  }
+}
