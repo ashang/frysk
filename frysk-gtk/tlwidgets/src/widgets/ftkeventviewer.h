@@ -809,6 +809,9 @@ ftk_eventviewer_set_grid_color(FtkEventViewer *eventviewer, GdkColor *color);
 GdkColor *
 ftk_eventviewer_get_grid_color(FtkEventViewer *eventviewer);
 
+GtkWidget *
+ftk_eventviewer_get_interval_slider (FtkEventViewer *eventviewer);
+
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
                                 double span,

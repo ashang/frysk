@@ -2285,7 +2285,17 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
 		  + ((ftk_trace_label_dheight(trace) >> 1) 
 		  -  height);
 
-            gdk_cairo_set_source_color (cr, &ftk_marker_color (marker));
+            //gdk_cairo_set_source_color (cr, &ftk_marker_color (marker));
+	    GdkColor color = ftk_marker_color(marker);
+	    cairo_set_source_rgba(cr, 
+					(double)color.red/
+        			    (double)65535,
+        			    (double)color.green /
+        			    (double)65535,
+        			    (double)color.blue /
+        			    (double)65535,
+				    0.5);
+				    
             cairo_move_to (cr,
                            (double)(h_offset),
                            (double)(v_offset));
@@ -3266,6 +3276,12 @@ ftk_eventviewer_set_grid_color(FtkEventViewer *eventviewer, GdkColor *color)
 	FtkDrawingArea *da = ftk_ev_da(eventviewer);
 	ftk_da_grid_color(da) = *color;
 	return TRUE;
+}
+
+GtkWidget *
+ftk_eventviewer_get_interval_slider (FtkEventViewer *eventviewer)
+{
+	return ftk_ev_interval_scale(eventviewer);
 }
 
 GdkColor *

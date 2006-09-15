@@ -16,13 +16,14 @@ import org.gnu.glib.Type;
 import org.gnu.glib.Struct;
 import org.gnu.glib.Handle;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.HScale;
+import org.gnu.gtk.Widget;
 
 /**
  * The EventViewer widget is used for displaying events on multiple timelines.
  */
 public class EventViewer extends VBox 
 {
-
     static {
 	System.loadLibrary ("ftk");
 	System.loadLibrary ("ftkjni");
@@ -142,6 +143,19 @@ public class EventViewer extends VBox
      */
     public Color getGridColor() {
 	    return ftk_eventviewer_get_grid_color(getHandle());
+    }
+    
+    /*
+    * Get the interval slider
+    */
+    public HScale getInterval() {
+	    Handle hndl = ftk_eventviewer_get_interval_slider(getHandle());
+	    if (null == hndl)
+		    return null;
+	    GObject obj = getGObjectFromHandle(hndl);
+	    if (null != obj)
+		    return (HScale) obj;
+	    return new HScale(hndl);
     }
     
     /**
@@ -326,6 +340,9 @@ public class EventViewer extends VBox
     
     native static final protected Color
 	    ftk_eventviewer_get_grid_color(Handle sc);
+    
+    native static final protected Handle
+	    ftk_eventviewer_get_interval_slider(Handle sc);
     
     native static final protected boolean
 	ftk_eventviewer_set_timebase (Handle sc, double span);

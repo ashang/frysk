@@ -304,6 +304,20 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1grid_1color (JNIEnv *env,
 
 /*
  * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_get_interval_slider
+ */
+JNIEXPORT jobject JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1interval_1slider (JNIEnv *env, 
+						       jclass cls, jobject sc) 
+{
+	FtkEventViewer *eventviewer = (FtkEventViewer*)getPointerFromHandle(env, sc);
+	jobject scale = getHandleFromPointer(env, ftk_eventviewer_get_interval_slider (eventviewer));
+	return scale;
+}
+
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_timebase
  */
 
