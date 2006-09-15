@@ -53,9 +53,10 @@
 	    <td valign="top">
 	      <!-- start logo -->
 <p>
-<a href="#rhel4">RHEL 4</a><br>
 <a href="#fc5">Fedora Core 5</a><br>
 <a href="#fc6">Fedora Core 6</a><br>
+<a href="#rhel4">RHEL 4</a><br>
+<a href="#rhel5">RHEL 5</a><br>
 <a href="#ubuntu">Ubuntu</a><br>
 </p>
 	      <!-- end logo -->
@@ -72,6 +73,72 @@ out from <tt>CVS</tt>, on a number of systems.</p>
 that all its prerequisites are met.</p>
 
 <dl>
+
+<dt><a name="fc5">Fedora Core 5</a></dt>
+
+<dd>
+
+With the release of Fedora Core 5 it is largely possible to build and
+run <em>frysk</em> using the distributed RPMs.  Just note the
+following:
+
+<ul>
+
+<li>Check that the <tt>selinux</tt> security database is up-to-date
+(or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
+behave weird; and <tt>/proc</tt> is not accessible</li>
+
+<li>You will need to install a number of packages vis:
+<pre>
+sudo yum install antlr jdom junit gcc-java gcc-c++ \
+    libglade-java-devel libvte-java-devel \
+    automake xmlto transfig eclipse-ecj dogtail \
+    libglade2-devel vte-devel ghostscript sharutils \
+    libgtk-java-devel cvs
+</pre>
+Packages libglade2-devel, vte-devel, and ghostscript must be explicitely
+specified because of broken dependencies in packages libglade-java-devel,
+libvte-java-devel, and transfig, respectively.  The problem is fixed in
+current Fedora Devel.
+</li>
+
+<li>The <em>frysk</em> RPM included in FC-5 is very different to that
+used for RHEL-4 (the former is a lot simpler).  The Fedora Core 5
+source RPM can be found in the <a
+href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
+development SRPM directory</a>.</li>
+
+</ul>
+
+For additional updates, check Fedora Core 5's tracker bug's <a
+href="/bugzilla/showdependencytree.cgi?id=2104">dependency
+tree</a>
+
+</dd>
+
+<dt><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL 5</a></dt>
+
+<dd>
+
+Just note the following:
+
+<ul>
+
+<li>You will need to install a number of packages vis:
+<pre>
+sudo yum install antlr jdom junit gcc-java gcc-c++ \
+    libglade-java-devel libvte-java-devel \
+    automake xmlto transfig eclipse-ecj dogtail \
+    sharutils libgtk-java-devel cvs binutils-devel
+</pre>
+</li>
+
+</ul>
+
+For additional updates, check Fedora Core 6's tracker bug's <a
+href="/bugzilla/showdependencytree.cgi?id=2654">dependency tree</a>
+
+</dd>
 
 <dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
 
@@ -93,48 +160,6 @@ explicitly specified.)
 bug's <a
 href="/bugzilla/showdependencytree.cgi?id=2004">dependency
 tree</a>.
-
-</dd>
-
-<dt><a name="fc5">Fedora Core 5</a><br><a name="fc6">Fedora Core 6</a></dt>
-
-<dd>
-
-With the release of Fedora Core 5 it is largely possible to build and
-run <em>frysk</em> using the distributed RPMs.  Just note the
-following:
-
-<ul>
-
-<li>Check that the <tt>selinux</tt> security database is up-to-date
-(or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
-behave weird; and <tt>/proc</tt> is not accessible</li>
-
-<li>You will need to install a number of packages vis:
-<pre>
-sudo yum install antlr jdom junit gcc-java gcc-c++ \
-    libglade-java-devel libvte-java-devel \
-    automake xmlto transfig eclipse-ecj dogtail \
-    libglade2-devel vte-devel ghostscript sharutils \
-    libgtk-java-devel cvs binutils-devel
-</pre>
-Packages libglade2-devel, vte-devel, and ghostscript must be explicitely
-specified because of broken dependencies in packages libglade-java-devel,
-libvte-java-devel, and transfig, respectively.  The problem is fixed in
-current Fedora Devel.
-</li>
-
-<li>The <em>frysk</em> RPM included in FC-5 is very different to that
-used for RHEL-4 (the former is a lot simpler).  The Fedora Core 5
-source RPM can be found in the <a
-href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
-development SRPM directory</a>.</li>
-
-</ul>
-
-For additional updates, check Fedora Core 5's tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2104">dependency
-tree</a>
 
 </dd>
 
