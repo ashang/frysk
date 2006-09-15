@@ -90,17 +90,43 @@ public class TestOpcodes
 
     if (! is64)
       {
-        insts = new String[] { "DWORD PTR [ecx]", "BYTE PTR [ebx]", "0x5",
-                              "es", "es", "al", "BYTE PTR [ebx]", "0x5", "es",
-                              "es", "al", "BYTE PTR [ebx]", "0x5", "es", "es",
-                              "al" };
+        insts = new String[] { "incl   (%ecx)",
+                               "add    (%ebx),%al", 
+                               "add    $0x5,%al", 
+                               "push   %es",
+                               "pop    %es", 
+                               "add    %al,(%ecx)", 
+                               "add    (%ebx),%al",
+                               "add    $0x5,%al", 
+                               "push   %es", 
+                               "pop    %es",
+                               "add    %al,(%ecx)",
+                               "add    (%ebx),%al", 
+                               "add    $0x5,%al",
+                               "push   %es",
+                               "pop    %es", 
+                               "add    %al,(%ecx)" };
 
       }
     else
       {
-        insts = new String[] { "DWORD PTR [rcx]", "BYTE PTR [rbx]", "0x5",
-                              "(bad)  ", "(bad)  ", "al", "BYTE PTR [rbx]",
-                              "0x5", "(bad)  ", "(bad)  ", "al" };
+        insts = new String[] { "incl   (%rcx)",
+                               "add    (%rbx),%al",
+                               "add    $0x5,%al",
+                               "(bad)  ",
+                               "(bad)  ",
+                               "add    %al,(%rcx)",
+                               "add    (%rbx),%al",
+                               "add    $0x5,%al",
+                               "(bad)  ",
+                               "(bad)  ",
+                               "add    %al,(%rcx)",
+                               "add    (%rbx),%al",
+                               "add    $0x5,%al",
+                               "(bad)  ",
+                               "(bad)  ",
+                               "add    %al,(%rcx)" };
+
       }
 
     assertNotNull(insts);
