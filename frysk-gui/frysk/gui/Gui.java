@@ -98,27 +98,17 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
-//import frysk.gui.srcwin.tags.Tagset;
-//import frysk.gui.srcwin.tags.TagsetManager;
+
 import frysk.proc.Manager;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 
+/**
+ * @author pmuldoon
+ *
+ */
 public class Gui implements LifeCycleListener, Saveable {
-	LibGlade glade;
-
-	LibGlade create_session_glade;
-
-	LibGlade register_window;
-
-	LibGlade memory_window;
-    
-    LibGlade disassembler_window;
-
-	LibGlade session_glade;
-
-	LibGlade process_picker_glade;
 
 	private static Logger errorLogFile = null;
 
@@ -130,10 +120,539 @@ public class Gui implements LifeCycleListener, Saveable {
 
 	private static final String SESSION_MANAGER_GLADE = "frysk_session_manager.glade";
 
-	static Logger logger;
-
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
+	LibGlade glade;
+
+	LibGlade create_session_glade;
+
+	LibGlade register_window;
+
+	LibGlade memory_window;
+
+	LibGlade disassembler_window;
+
+	LibGlade session_glade;
+
+	LibGlade process_picker_glade;
+
+	static Logger logger;
+
+	/**
+	 * gui - FryskUI main program. Loads the window from glade,
+	 * sets logging and preference, signal handlers for duplicate instances. 
+	 * Initializes gtk, and runs the main event loop.
+	 * @param args - args passed from FryskUI
+	 * @param glade_dirs - where the glade files can be found
+	 * @param imagePaths - where the images are
+	 * @param messagePaths - where the message paths are.
+	 * @param testfilePaths
+	 */
+	public static void gui(String[] args, String[] glade_dirs,
+			String[] imagePaths, String[] messagePaths, String[] testfilePaths) {
+
+		Gui procpop = null;
+		Preferences prefs = null;
+		
+		// Set Frysk Name
+		System.setProperty("gnome.appName", "Frysk");
+		
+		// Check Frysk data location is created
+		createFryskDataLocation(Config.FRYSK_DIR);
+
+		// Make sure that a Frysk invocation is not already running
+		if (isFryskRunning())
+		{
+			System.err.println("Frysk is already running!");
+			System.exit(0);
+		} 
+		
+		// Create a Frysk lock file
+		createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
+
+		Gtk.init(args);
+
+		// XXX: a hack to make sure the DataModelManager
+		// is initialized early enough. Should probably
+		// have an entitiy that initializes all Managers
+		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+
+		// Setup Icon Manager singleton
+		IconManager.setImageDir(imagePaths);
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
+
+		// Bootstraps Core logging
+		setupCoreLogging();
+
+		// Bootsraps Error Logging
+		setupErrorLogging();
+
+		// Sets transaltion bundle paths
+		Messages.setBundlePaths(messagePaths);
+
+		// Load glade, and setup WindowManager
+		try {
+			procpop = new Gui(glade_dirs);
+		} catch (GladeXMLException e1) {
+			errorLogFile.log(Level.SEVERE, "glade XML is badly formed", //$NON-NLS-1$
+					e1);
+			System.exit(1);
+		} catch (FileNotFoundException e1) {
+			errorLogFile.log(Level.SEVERE, "glade XML files not found", //$NON-NLS-1$
+					e1);
+			System.exit(1);
+		} catch (IOException e1) {
+			errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
+			System.exit(1);
+		}
+
+		// Hide main for now
+		WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
+		WindowManager.theManager.mainWindow.hideAll();
+
+		// Now that we now the glade paths are good, send the paths to
+		// the SourceWindowFactory
+		SourceWindowFactory.setGladePaths(glade_dirs);
+		RegisterWindowFactory.setPaths(glade_dirs);
+		MemoryWindowFactory.setPaths(glade_dirs);
+		DisassemblyWindowFactory.setPaths(glade_dirs);
+
+		// Find and load preferences.
+		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
+		PreferenceManager.setPreferenceModel(prefs);
+		initializePreferences();
+
+		// Startup Trayicon Manager right click menu.
+		buildTrayManager();
+		
+		// Bootstrap Core Event Loop
+		startCoreEventLoop();
+		
+		// Assign
+		final Gui myGui = procpop;
+		final Preferences myPrefs = prefs;
+
+		// Load preferences
+		myGui.load(myPrefs);
+		
+		// Add interruption and multiple
+		// invocations handlers
+		addInvocationEvents();
+
+		// Show wndow and run
+		WindowManager.theManager.sessionManager.showAll();
+		Gtk.main();
+
+		// Gtk main loop exited, stop core event loop.
+		Manager.eventLoop.requestStop();
+		
+		// Save preferences
+		procpop.save(prefs);
+		WindowManager.theManager.mainWindow.killTerminalShell();
+
+		// XXX: Save Observers
+		ObserverManager.theManager.save();
+
+		try {
+			// Export the node to a file
+			prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
+					+ SETTINGSFILE));
+		} catch (Exception e) {
+			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
+
+		}
+
+	}
+	
+	/**
+	 * Creates a lock file in ~/.frysk
+	 * 
+	 * @param lockFile - name and location of lock file
+	 */
+	private static void createFryskLockFile(String lockFile) {
+		File lock = new File(lockFile);
+		try {
+			lock.createNewFile();
+			lock.deleteOnExit();
+		} catch (IOException ioe) {
+			System.err.println(ioe.getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 * Creates a data dir for Frysk
+	 * 
+	 * @param config - location for dir
+	 * 
+	 */
+	private static void createFryskDataLocation(String config) {
+		File dir = new File(config);
+		if (!dir.exists())
+			dir.mkdir();
+	}
+	
+	/**
+	 * 
+	 * Checks to see if there already is a Frysk invocation running
+	 * 
+	 * @return - true if there is a Frysk invocation already running.
+	 * 
+	 */
+	private static boolean isFryskRunning() {
+		// Make sure that a Frysk invocation is not already running
+		int currentlyRunningPID;
+		File dir = new File(Config.FRYSK_DIR);
+
+		if (dir.exists()) {
+			String[] contents = dir.list();
+			for (int i = 0; i < contents.length; i++) {
+				if (contents[i].startsWith("lock")) {
+					currentlyRunningPID = Integer.parseInt(contents[i]
+							.substring(4));
+					try {
+						Signal.kill(currentlyRunningPID, Sig.USR1);
+					} catch (Exception e) {
+						/* The lock file shouldn't be there */
+						File f = new File(Config.FRYSK_DIR + contents[i]);
+						f.delete();
+						break;
+					}
+					return true;
+				}
+			}
+		} 
+		
+		return false;
+	}
+
+	/**
+	 * Adds Multiple and Interruption events to the 
+	 * core event loop.
+	 */
+	private static void addInvocationEvents() {
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				MultipleInvocationEvent mie = new MultipleInvocationEvent();
+				Manager.eventLoop.add(mie);
+			}
+		});
+
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				InterruptEvent ie = new InterruptEvent();
+				Manager.eventLoop.add(ie);
+			}
+		});
+	}
+	
+	
+	/**
+	 * Starts the core event loop inside a Runnable. 
+	 * 
+	 * Also sets up the error handler for core errors,
+	 * and initiates a refresh timer for events from
+	 * the core.
+	 * 
+	 */
+	private static void startCoreEventLoop() {
+		final Thread backendStarter = new Thread(new Runnable() {
+			public void run() {
+				try {
+					// EventLoop eventLoop = new EventLoop();
+					// eventLoop.run();
+					Manager.eventLoop.run();
+				} catch (Exception e) {
+					errorLogFile
+							.log(
+									Level.SEVERE,
+									"Frysk Core Warnings. The Frysk Core has encountered problems: ", e); //$NON-NLS-1$
+					int response = DialogManager
+							.showErrorDialog(
+									"Frysk Core Warnings",
+									"The Frysk Core has encountered problems with the last request.\n"
+											+ "It has reported the following conditions. You can either ignore\n"
+											+ "the condition and continue, or Quit Frysk.", e); //$NON-NLS-1$ //$NON-NLS-2$
+					if (response == ErrorDialog.QUIT)
+						System.exit(1);
+					else
+						run();
+				}
+			}
+		});
+		backendStarter.start();
+		
+		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
+			public void execute() {
+				CustomEvents.addEvent(new Runnable() {
+					public void run() {
+						Manager.host.requestRefreshXXX(true);
+					}
+				});
+			}
+		};
+		Manager.eventLoop.add(refreshTimer);
+
+	}
+	
+	/**
+	 * Function to quit fryks. All requests to quit frysk should be funneled
+	 * though this function.
+	 */
+	public static void quitFrysk() {
+		Gtk.mainQuit();
+	}
+	
+	/**
+	 * Builds the tray icon, and the menus that are associated with the icon.
+	 *
+	 */
+	private static void buildTrayManager()
+	{
+		
+		IconManager.trayIcon.setMenuButton(TrayIcon.BUTTON_3);
+		IconManager.trayIcon.setWindowButton(TrayIcon.BUTTON_1);
+		IconManager.trayIcon
+				.addPopupWindow(WindowManager.theManager.mainWindow);
+		
+		Menu popupMenu = new Menu();
+		IconManager.trayIcon.setPopupMenu(popupMenu);
+
+		// Quit
+		MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
+		quitItem.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent arg0) {
+				Gui.quitFrysk();
+			}
+		});
+		popupMenu.add(quitItem);
+
+		// Console Window
+		MenuItem consoleWindowItem = new MenuItem("Console Window", false); //$NON-NLS-1$
+		consoleWindowItem.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent arg0) {
+				new ConsoleWindow();
+			}
+		});
+
+		popupMenu.prepend(consoleWindowItem);
+	}
+
+	Gui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
+			IOException {
+		// The location of the glade file may need to be modified
+		// here, depending on where the program is being run from. If
+		// the directory that the src directory is in is used as the
+		// root, this should work without modification
+		String searchPath = new String();
+		for (int i = 0; i < glade_dirs.length; i++) {
+			try {// command line glade_dir
+				glade = new LibGlade(glade_dirs[i] + GLADE_FILE, this);
+				create_session_glade = new LibGlade(glade_dirs[i]
+						+ CREATE_SESSION_GLADE, this);
+				register_window = new LibGlade(glade_dirs[i]
+						+ "/registerwindow.glade", null);
+				memory_window = new LibGlade(glade_dirs[i]
+						+ "/memorywindow.glade", null);
+				disassembler_window = new LibGlade(glade_dirs[i]
+						+ "/disassemblywindow.glade", null);
+				session_glade = new LibGlade(glade_dirs[i]
+						+ SESSION_MANAGER_GLADE, this);
+				process_picker_glade = new LibGlade(glade_dirs[i]
+						+ "/processpicker.glade", null);
+			} catch (FileNotFoundException missingFile) {
+				searchPath += glade_dirs[i] + "\n";
+				if (i == glade_dirs.length - 1) {
+					throw new FileNotFoundException(
+							"Glade file not found in path " + searchPath); //$NON-NLS-1$
+				} else {
+					continue;
+				}
+			}
+			break;
+		}
+
+		try {
+			WindowManager.theManager.initLegacyProcpopWindows(glade);
+			WindowManager.theManager
+					.initSessionDruidWindow(create_session_glade);
+			WindowManager.theManager.initSessionManagerWindow(session_glade);
+			WindowManager.theManager.initProcessPicker(process_picker_glade);
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * Builds a file handler for the frysk ui error logs
+	 * 
+	 * @return FileHandler - instance of the frysk ui error handler.
+	 */
+	private static FileHandler buildHandler() {
+		FileHandler handler = null;
+		File log_dir = new File(Config.FRYSK_DIR + "logs" + "/");
+
+		if (!log_dir.exists())
+			log_dir.mkdirs();
+
+		try {
+			handler = new FryskErrorFileHandler(log_dir.getAbsolutePath() + "/"
+					+ "frysk_monitor_error.log", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return handler;
+	}
+
+	/**
+	 * Starts up the logger that records errors encountered
+	 * when running Frysk. This log can capture both ui
+	 * and core based errors.
+	 */
+	private static void setupErrorLogging() {
+		// Get a logger; the logger is automatically created if it
+		// doesn't already exist
+		errorLogFile = Logger.getLogger(ERROR_LOG_ID);
+		errorLogFile.setUseParentHandlers(false);
+		// errorLogFile.setUseParentHandlers(true);
+		errorLogFile.addHandler(buildHandler());
+	}
+
+	/**
+	 * Boostraps the coe logging according to the properties
+	 * found in loggin.properties
+	 */
+	private static void setupCoreLogging() {
+		// Get Core logger
+
+		logger = EventLogger.get("logs/", "frysk_core_event.log");
+		Handler consoleHandler = new ConsoleHandler();
+		Handler guiHandler = new CoreDebugHandler();
+		logger.addHandler(consoleHandler);
+		logger.addHandler(guiHandler);
+
+		// Set the location of the level sets
+		System.setProperty("java.util.logging.config.file", Config.FRYSK_DIR
+				+ "logging.properties");
+		LogManager logManager = LogManager.getLogManager();
+		logManager.addLogger(logger);
+
+		Level loggerLevel = Level.OFF;
+		try {
+			loggerLevel = Level.parse(logManager
+					.getProperty("java.util.logging.FileHandler.level"));
+		} catch (IllegalArgumentException e) {
+			loggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			loggerLevel = Level.OFF;
+		}
+
+		Level consoleLoggerLevel = Level.OFF;
+		try {
+			consoleLoggerLevel = Level.parse(logManager
+					.getProperty("java.util.logging.ConsoleHandler.level"));
+		} catch (IllegalArgumentException e) {
+			consoleLoggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			consoleLoggerLevel = Level.OFF;
+		}
+
+		Level guiLoggerLevel = Level.OFF;
+		try {
+			guiLoggerLevel = Level.parse(logManager
+					.getProperty("frysk.core.debug.WindowHandler.level"));
+		} catch (IllegalArgumentException e) {
+			guiLoggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			guiLoggerLevel = Level.OFF;
+		}
+
+		if (guiLoggerLevel != Level.OFF) {
+			CoreDebugLogViewer logShow = new CoreDebugLogViewer();
+			logShow.showAll();
+
+		}
+
+		logger.setLevel(loggerLevel);
+		consoleHandler.setLevel(consoleLoggerLevel);
+		guiHandler.setLevel(guiLoggerLevel);
+	}
+
+	/**
+	 * @author mcvet
+	 *
+	 * Handle a signal if another instance of Frysk is started
+	 */
+	static class MultipleInvocationEvent extends SignalEvent {
+
+		public MultipleInvocationEvent() {
+			super(Sig.USR1);
+			logger.log(Level.FINE, "{0} MultipleInvocationEvent\n", this);
+		}
+
+		public final void execute() {
+			logger.log(Level.FINE, "{0} execute\n", this);
+			CustomEvents.addEvent(new Runnable() {
+				public void run() {
+					WindowManager.theManager.mainWindow.showAll();
+				}
+			});
+		}
+	}
+
+	/**
+	 * @author mcvet
+	 *
+	 * If the user cntl-c interrupts, handle it cleanly
+	 */
+	static class InterruptEvent extends SignalEvent {
+
+		public InterruptEvent() {
+			super(Sig.INT);
+			logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+		}
+
+		public final void execute() {
+			logger.log(Level.FINE, "{0} execute\n", this);
+			Gui.quitFrysk();
+		}
+	}
+
+	/**
+	 * Imports the user preferences in frysk data dir. This will
+	 * be replaced with gconf soon
+	 * 
+	 * @param location - location of preferences
+	 * @return - Preferences objct
+	 */
+	private static Preferences importPreferences(String location) {
+		InputStream is = null;
+		Preferences prefs = null;
+
+		File checkFile = new File(location);
+		if (checkFile.exists()) {
+			try {
+				is = new BufferedInputStream(new FileInputStream(location));
+				Preferences.importPreferences(is);
+			} catch (FileNotFoundException e1) {
+				errorLogFile.log(Level.WARNING, location
+						+ " not found. Will be created on program exit", e1); //$NON-NLS-1$
+			} catch (IOException e) {
+				errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
+			} catch (InvalidPreferencesFormatException e) {
+				errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
+			}
+		}
+
+		prefs = Preferences.userRoot();
+		return prefs;
+	}
+
+	/**
+	 * Initializes the preferences for the source window
+	 * 
+	 */
 	private static void initializePreferences() {
 		PreferenceManager.sourceWinGroup.addPreference(new IntPreference(
 				SourceWinPreferenceGroup.INLINE_LEVELS, 0, 10, 2));
@@ -221,106 +740,16 @@ public class Gui implements LifeCycleListener, Saveable {
 				.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
 	}
 
-
-
-	Gui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
-			IOException {
-		// The location of the glade file may need to be modified
-		// here, depending on where the program is being run from. If
-		// the directory that the src directory is in is used as the
-		// root, this should work without modification
-		String searchPath = new String();
-		for (int i = 0; i < glade_dirs.length; i++) {
-			try {// command line glade_dir
-				glade = new LibGlade(glade_dirs[i] + GLADE_FILE, this);
-				create_session_glade = new LibGlade(glade_dirs[i]
-						+ CREATE_SESSION_GLADE, this);
-				register_window = new LibGlade(glade_dirs[i]
-						+ "/registerwindow.glade", null);
-				memory_window = new LibGlade(glade_dirs[i]
-						+ "/memorywindow.glade", null);
-                disassembler_window = new LibGlade(glade_dirs[i]
-                        + "/disassemblywindow.glade", null);
-				session_glade = new LibGlade(glade_dirs[i]
-						+ SESSION_MANAGER_GLADE, this);
-				process_picker_glade = new LibGlade(glade_dirs[i]
-						+ "/processpicker.glade", null);
-			} catch (FileNotFoundException missingFile) {
-				searchPath += glade_dirs[i] + "\n";
-				if (i == glade_dirs.length - 1) {
-					throw new FileNotFoundException(
-							"Glade file not found in path " + searchPath); //$NON-NLS-1$
-				} else {
-					continue;
-				}
-			}
-			break;
-		}
-
-		try {
-			WindowManager.theManager.initLegacyProcpopWindows(glade);
-			WindowManager.theManager
-					.initSessionDruidWindow(create_session_glade);
-			WindowManager.theManager.initSessionManagerWindow(session_glade);
-			WindowManager.theManager.initProcessPicker(process_picker_glade);
-		} catch (IOException e) {
-			throw e;
-		}
-	}
-
-	private static FileHandler buildHandler() {
-		FileHandler handler = null;
-		File log_dir = new File(Config.FRYSK_DIR + "logs" + "/");
-
-		if (!log_dir.exists())
-			log_dir.mkdirs();
-
-		try {
-			handler = new FryskErrorFileHandler(log_dir.getAbsolutePath() + "/"
-					+ "frysk_monitor_error.log", true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return handler;
-	}
-
-	private static void setupErrorLogging() {
-		// Get a logger; the logger is automatically created if it
-		// doesn't already exist
-		errorLogFile = Logger.getLogger(ERROR_LOG_ID);
-		errorLogFile.setUseParentHandlers(false);
-		//errorLogFile.setUseParentHandlers(true);
-		errorLogFile.addHandler(buildHandler());
-	}
-
-	private static Preferences importPreferences(String location) {
-		InputStream is = null;
-		Preferences prefs = null;
-
-		File checkFile = new File(location);
-		if (checkFile.exists()) {
-			try {
-				is = new BufferedInputStream(new FileInputStream(location));
-				Preferences.importPreferences(is);
-			} catch (FileNotFoundException e1) {
-				errorLogFile.log(Level.WARNING, location
-						+ " not found. Will be created on program exit", e1); //$NON-NLS-1$
-			} catch (IOException e) {
-				errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
-			} catch (InvalidPreferencesFormatException e) {
-				errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
-			}
-		}
-
-		prefs = Preferences.userRoot();
-		return prefs;
-	}
-
+	/* (non-Javadoc)
+	 * @see org.gnu.gtk.event.LifeCycleListener#lifeCycleEvent(org.gnu.gtk.event.LifeCycleEvent)
+	 */
 	public void lifeCycleEvent(LifeCycleEvent arg0) {
 		Gui.quitFrysk();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.gnu.gtk.event.LifeCycleListener#lifeCycleQuery(org.gnu.gtk.event.LifeCycleEvent)
+	 */
 	public boolean lifeCycleQuery(LifeCycleEvent arg0) {
 		Gui.quitFrysk();
 		return false;
@@ -336,299 +765,4 @@ public class Gui implements LifeCycleListener, Saveable {
 				prefs.absolutePath() + "theManager"));
 	}
 
-	public static void gui(String[] args, String[] glade_dirs,
-			String[] imagePaths, String[] messagePaths, String[] testfilePaths) {
-
-		/* Make sure that a Frysk invocation is not already running */
-		int currentlyRunningPID;
-		File dir = new File(Config.FRYSK_DIR);
-
-		System.setProperty("gnome.appName", "Frysk");
-		if (dir.exists()) {
-			String[] contents = dir.list();
-			for (int i = 0; i < contents.length; i++) {
-				if (contents[i].startsWith("lock")) {
-					currentlyRunningPID = Integer.parseInt(contents[i]
-							.substring(4));
-					try {
-						Signal.kill(currentlyRunningPID, Sig.USR1);
-					} catch (Exception e) {
-						/* The lock file shouldn't be there */
-						File f = new File(Config.FRYSK_DIR + contents[i]);
-						f.delete();
-						break;
-					}
-					System.out.println("Frysk is already running!");
-					System.exit(0);
-				}
-			}
-		} else
-			dir.mkdir();
-
-		File lock = new File(Config.FRYSK_DIR + "lock" + Pid.get());
-		try {
-			lock.createNewFile();
-			lock.deleteOnExit();
-		} catch (IOException ioe) {
-			System.out.println(ioe.getMessage());
-			System.exit(1);
-		}
-
-		Gtk.init(args);
-
-		//XXX: a hack to make sure the DataModelManager
-		// is initialized early enough. Should probably
-		// have an entitiy that initializes all Managers
-		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
-
-		IconManager.setImageDir(imagePaths);
-		IconManager.loadIcons();
-		IconManager.useSmallIcons();
-
-		// Creates example tagsets until we can have real ones.
-		//createDummyTagsets();
-
-		setupCoreLogging();
-
-		Gui procpop = null;
-		Preferences prefs = null;
-
-		setupErrorLogging();
-
-		Messages.setBundlePaths(messagePaths);
-
-		try {
-			procpop = new Gui(glade_dirs);
-		} catch (GladeXMLException e1) {
-			errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed", //$NON-NLS-1$
-					e1);
-			System.exit(1);
-		} catch (FileNotFoundException e1) {
-			errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found", //$NON-NLS-1$
-					e1);
-			System.exit(1);
-		} catch (IOException e1) {
-			errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
-			System.exit(1);
-		}
-
-		WindowManager.theManager.mainWindow.hideAll();
-
-		// Now that we now the glade paths are good, send the paths to
-		// the SourceWindowFactory
-		SourceWindowFactory.setGladePaths(glade_dirs);
-		RegisterWindowFactory.setPaths(glade_dirs);
-		MemoryWindowFactory.setPaths(glade_dirs);
-        DisassemblyWindowFactory.setPaths(glade_dirs);
-
-		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
-		PreferenceManager.setPreferenceModel(prefs);
-		initializePreferences();
-
-		IconManager.trayIcon.setMenuButton(TrayIcon.BUTTON_3);
-		IconManager.trayIcon.setWindowButton(TrayIcon.BUTTON_1);
-		IconManager.trayIcon
-				.addPopupWindow(WindowManager.theManager.mainWindow);
-
-		// Right click menu.
-		Menu popupMenu = new Menu();
-		IconManager.trayIcon.setPopupMenu(popupMenu);
-
-		// Quit 
-		MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
-		quitItem.addListener(new MenuItemListener() {
-			public void menuItemEvent(MenuItemEvent arg0) {
-				Gui.quitFrysk();
-			}
-		});
-		popupMenu.add(quitItem);
-
-		// Console Window
-		MenuItem consoleWindowItem = new MenuItem("Console Window", false); //$NON-NLS-1$
-		consoleWindowItem.addListener(new MenuItemListener() {
-			public void menuItemEvent(MenuItemEvent arg0) {
-				new ConsoleWindow();
-			}
-		});
-
-
-		popupMenu.prepend(consoleWindowItem);
-
-		final Thread backendStarter = new Thread(new Runnable() {
-			public void run() {
-				try {
-					// EventLoop eventLoop = new EventLoop();
-					// eventLoop.run();
-					Manager.eventLoop.run();
-				} catch (Exception e) {
-					errorLogFile
-							.log(
-									Level.SEVERE,
-									"Frysk Core Warnings. The Frysk Core has encountered problems: ", e); //$NON-NLS-1$
-					int response = DialogManager
-							.showErrorDialog(
-									"Frysk Core Warnings",
-									"The Frysk Core has encountered problems with the last request.\n"
-											+ "It has reported the following conditions. You can either ignore\n"
-											+ "the condition and continue, or Quit Frysk.", e); //$NON-NLS-1$ //$NON-NLS-2$
-					if (response == ErrorDialog.QUIT)
-						System.exit(1);
-					else
-						run();
-				}
-			}
-		});
-		backendStarter.start();
-
-		WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
-
-		final Gui myGui = procpop;
-		final Preferences myPrefs = prefs;
-
-		myGui.load(myPrefs);
-		
-
-	
-		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
-			public void execute() {
-				CustomEvents.addEvent(new Runnable() {
-					public void run() {
-						Manager.host.requestRefreshXXX(true);
-					}
-				});
-			}
-		};
-		Manager.eventLoop.add(refreshTimer);
-
-		CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				MultipleInvocationEvent mie = new MultipleInvocationEvent();
-				Manager.eventLoop.add(mie);
-			}
-		});
-
-		CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				InterruptEvent ie = new InterruptEvent();
-				Manager.eventLoop.add(ie);
-			}
-		});
-
-		WindowManager.theManager.sessionManager.showAll();
-		Gtk.main();
-
-		Manager.eventLoop.requestStop();
-		procpop.save(prefs);
-		WindowManager.theManager.mainWindow.killTerminalShell();
-
-		//XXX:
-		ObserverManager.theManager.save();
-
-		try {
-			// Export the node to a file
-			prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
-					+ SETTINGSFILE));
-		} catch (Exception e) {
-			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
-
-		}
-
-	}
-
-	/**
-	 * Function to quit fryks.
-	 * All requests to quit frysk should be funneled 
-	 * though this function.
-	 */
-	public static void quitFrysk() {
-		Gtk.mainQuit();
-	}
-
-	private static void setupCoreLogging() {
-		// Get Core logger
-
-		logger = EventLogger.get("logs/", "frysk_core_event.log");
-		Handler consoleHandler = new ConsoleHandler();
-		Handler guiHandler = new CoreDebugHandler();
-		logger.addHandler(consoleHandler);
-		logger.addHandler(guiHandler);
-
-		// Set the location of the level sets
-		System.setProperty("java.util.logging.config.file", Config.FRYSK_DIR
-				+ "logging.properties");
-		LogManager logManager = LogManager.getLogManager();
-		logManager.addLogger(logger);
-
-		Level loggerLevel = Level.OFF;
-		try {
-			loggerLevel = Level.parse(logManager
-					.getProperty("java.util.logging.FileHandler.level"));
-		} catch (IllegalArgumentException e) {
-			loggerLevel = Level.OFF;
-		} catch (NullPointerException e1) {
-			loggerLevel = Level.OFF;
-		}
-
-		Level consoleLoggerLevel = Level.OFF;
-		try {
-			consoleLoggerLevel = Level.parse(logManager
-					.getProperty("java.util.logging.ConsoleHandler.level"));
-		} catch (IllegalArgumentException e) {
-			consoleLoggerLevel = Level.OFF;
-		} catch (NullPointerException e1) {
-			consoleLoggerLevel = Level.OFF;
-		}
-
-		Level guiLoggerLevel = Level.OFF;
-		try {
-			guiLoggerLevel = Level.parse(logManager
-					.getProperty("frysk.core.debug.WindowHandler.level"));
-		} catch (IllegalArgumentException e) {
-			guiLoggerLevel = Level.OFF;
-		} catch (NullPointerException e1) {
-			guiLoggerLevel = Level.OFF;
-		}
-
-		if (guiLoggerLevel != Level.OFF) {
-			CoreDebugLogViewer logShow = new CoreDebugLogViewer();
-			logShow.showAll();
-
-		}
-
-		logger.setLevel(loggerLevel);
-		consoleHandler.setLevel(consoleLoggerLevel);
-		guiHandler.setLevel(guiLoggerLevel);
-	}
-
-	/* Handle a signal if another instance of Frysk is started */
-	static class MultipleInvocationEvent extends SignalEvent {
-
-		public MultipleInvocationEvent() {
-			super(Sig.USR1);
-			logger.log(Level.FINE, "{0} MultipleInvocationEvent\n", this);
-		}
-
-		public final void execute() {
-			logger.log(Level.FINE, "{0} execute\n", this);
-			CustomEvents.addEvent(new Runnable() {
-				public void run() {
-					WindowManager.theManager.mainWindow.showAll();
-				}
-			});
-		}
-	}
-
-	/* If the user cntl-c interrupts, handle it cleanly */
-	static class InterruptEvent extends SignalEvent {
-
-		public InterruptEvent() {
-			super(Sig.INT);
-			logger.log(Level.FINE, "{0} InterruptEvent\n", this);
-		}
-
-		public final void execute() {
-			logger.log(Level.FINE, "{0} execute\n", this);
-			Gui.quitFrysk();
-		}
-	}
 }

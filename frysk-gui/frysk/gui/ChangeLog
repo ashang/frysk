@@ -1,3 +1,14 @@
+2006-09-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java: Added Java Doc comments.
+	(buildTrayManager): New. Refactored from Gui.
+	(startCoreEventLoop): Ditto.
+	(addInvocationEvents): Ditto.
+	(isFryskRunning): Ditto.
+	(createFryskDataLocation): Ditto.
+	(createFryskLockFile): Ditto.
+	(gui): Refactored.
+
 2006-09-14  Mike Cvet  <mcvet@redhat.com>
 
 	* sessions/ProcessPicker.java: Got rid of the proc linked list
@@ -15,7 +26,7 @@
 	* Gui.java (Gui): Set a new glade file for the disassembler.
 	(gui): Passed in the glade directories to the disassembler factory.
 
-2006-09-14  Phil Muldoon  <pmuldoon@localhost.localdomain>
+2006-09-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (SessionManagerGui): Added JavaDoc
 	and cleaned up.
