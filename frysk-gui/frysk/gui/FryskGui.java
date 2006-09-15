@@ -39,6 +39,10 @@
 
 package frysk.gui;
 
+/**
+ * Wrapper class for Gui.java. This is an entry point
+ * for the Frysk UI 
+ */
 public class FryskGui
 {
     private static final String BASE_PATH = "frysk/gui/";

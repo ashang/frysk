@@ -1,5 +1,7 @@
 2006-09-15  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* FryskGui.java (GLADE_PKG_PATH): Added wrapper class comment
+
 	* Gui.java: Added Java Doc comments.
 	(buildTrayManager): New. Refactored from Gui.
 	(startCoreEventLoop): Ditto.
