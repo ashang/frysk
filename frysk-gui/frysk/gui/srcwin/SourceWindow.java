@@ -93,6 +93,7 @@ import org.gnu.gtk.event.MouseListener;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
+import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
@@ -105,6 +106,7 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.proc.MachineType;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
@@ -1314,6 +1316,17 @@ public class SourceWindow
 
   private void toggleMemoryWindow ()
   {
+    if (MachineType.getMachineType() == MachineType.X8664
+        || MachineType.getMachineType() == MachineType.PPC64)
+      {
+        WarnDialog dialog = new WarnDialog(
+                                           " The Memory Window is yet not supported\n"
+                                               + " on 64-bit architectures! ");
+        dialog.showAll();
+        dialog.run();
+        return;
+      }
+    
     MemoryWindow memWin = MemoryWindowFactory.memWin;
     if (memWin == null)
       {
@@ -1328,6 +1341,17 @@ public class SourceWindow
   
   private void toggleDisassemblyWindow ()
   {
+    if (MachineType.getMachineType() == MachineType.X8664
+        || MachineType.getMachineType() == MachineType.PPC64)
+      {
+        WarnDialog dialog = new WarnDialog(
+                                           " The Disassembly Window is yet not supported\n"
+                                               + " on 64-bit architectures! ");
+        dialog.showAll();
+        dialog.run();
+        return;
+      }
+    
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
     if (disWin == null)
       {

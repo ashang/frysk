@@ -5,6 +5,9 @@
 	(createMenus): Added code to display the ConsoleWindow from the 
 	menu - commented out for now, pending bugs.
 	(toggleConsoleWindow): Added.
+	(toggleDisassemblyWindow): Added a catch for 64-bit architectures,
+	on which the disassembler does not work properly, yet. Fixes #3203.
+	(toggleMemoryWindow): Ditto.
 
 2006-09-14  Mike Cvet  <mcvet@redhat.com>
 

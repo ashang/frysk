@@ -40,10 +40,12 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 //import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
+import frysk.proc.MachineType;
 import frysk.proc.Task;
 
 /**
@@ -65,6 +67,17 @@ public class ShowMemWin
 
   public void execute (Task task)
   {
+    if (MachineType.getMachineType() == MachineType.X8664
+        || MachineType.getMachineType() == MachineType.PPC64)
+      {
+        WarnDialog dialog = new WarnDialog(
+                                           " The Memory Window is yet not supported\n"
+                                               + " on 64-bit architectures! ");
+        dialog.showAll();
+        dialog.run();
+        return;
+      }
+
     MemoryWindowFactory.setMonitor();
     MemoryWindowFactory.createMemoryWindow(task);
   }

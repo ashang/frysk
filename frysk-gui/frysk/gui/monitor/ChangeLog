@@ -1,3 +1,8 @@
+2006-09-15  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowMemWin.java (execute): Added a catch for 64-bit
+	architectures, fixes #3203.
+
 2006-09-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (buildEventViewer): Turned grid off.

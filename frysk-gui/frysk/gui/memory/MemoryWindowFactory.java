@@ -136,7 +136,6 @@ public class MemoryWindowFactory
    */
   public static MemoryWindow finishMemWin (MemoryWindow mw, Task task)
   {
-
     LibGlade glade = null;
 
     // Look for the right path to load the glade file from
@@ -145,8 +144,7 @@ public class MemoryWindowFactory
       {
         try
           {
-            glade = new LibGlade(gladePaths[i] + "/"
-                                 + MEM_GLADE, null);
+            glade = new LibGlade(gladePaths[i] + "/" + MEM_GLADE, null);
           }
         catch (Exception e)
           {
@@ -168,11 +166,10 @@ public class MemoryWindowFactory
     if (glade == null)
       {
         System.err.println("Could not file source window glade file in path "
-                           + gladePaths[gladePaths.length - 1]
-                           + "! Exiting.");
+                           + gladePaths[gladePaths.length - 1] + "! Exiting.");
         return mw;
       }
-    
+
     try
       {
         mw = new MemoryWindow(glade);
@@ -182,9 +179,9 @@ public class MemoryWindowFactory
       {
         e.printStackTrace();
       }
-    
+
     mw.addListener(new MemWinListener());
-    
+
     Preferences prefs = PreferenceManager.getPrefs();
     mw.load(prefs.node(prefs.absolutePath() + "/memory"));
 
@@ -195,7 +192,7 @@ public class MemoryWindowFactory
       }
     else
       mw.showAll();
-    
+
     return mw;
   }
   
@@ -224,8 +221,6 @@ public class MemoryWindowFactory
       {
         if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
           {
-            System.out.println(">>>DETACHING<<<");
-
             try
               {
                 TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
