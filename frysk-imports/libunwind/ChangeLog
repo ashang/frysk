@@ -1,10 +1,15 @@
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* configure.ac: Don't define UNW_REMOTE_ONLY.
+	* src/os-linux.c: Restore #ifndef removed it previous patch.
+
 2006-09-12  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* src/ptrace/_UPT_find_proc_info.c: Add UNW_TARGET_PPC64 in #elif.
 
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
-	* src/os-linux (tdep_get_elf_image): Define for remote only too.
+	* src/os-linux.c (tdep_get_elf_image): Define for remote only too.
 
 2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
 

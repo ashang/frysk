@@ -34,7 +34,6 @@ AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE"
-CFLAGS="${CFLAGS} -DUNW_REMOTE_ONLY"
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug          turn on debug support (slows down execution)],
