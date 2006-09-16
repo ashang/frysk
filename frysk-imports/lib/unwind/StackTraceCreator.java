@@ -40,6 +40,9 @@
 
 package lib.unwind;
 
+import gnu.gcj.RawDataManaged;
+import java.util.Hashtable;
+
 public class StackTraceCreator
 {
   /**
@@ -62,20 +65,84 @@ public class StackTraceCreator
   {
     public UnwindCallbacks CBarg;
 
-    public long UPTarg;
+    public RawDataManaged UPTarg;
 
-    public long unwas;
+    public RawDataManaged unwas;
 
     public UnwindArgs (UnwindCallbacks CBarg)
     {
       this.CBarg = CBarg;
-      this.UPTarg = 0;
-      this.unwas = 0;
+      this.UPTarg = null;
+      this.unwas = null;
+
+      /* register_hashes must be called later, from within
+	 unwind_setup().  Calling it within an if (false) avoids a
+	 warning about the unused method.  */
+      if (false)
+	try {
+	  register_hashes (this);
+	} catch (UnwindException _) {
+	}
     }
 
     public void finalize ()
     {
+      /* unregister_hashes could be called here, but we call it in
+	 unwind_finish(), to mirror the constructor above.  */
+      if (false)
+	unregister_hashes (this);
       unwind_finish(this);
     }
   }
+
+    /* arg_hash maps long values corresponding to the addresses of an
+     * UnwindArgs object and its CBarg and UPTarg fields, to the
+     * UnwindArgs object itself.  This enables us to choose the right
+     * argument to pass to callbacks even when one callback calls
+     * another.  */
+  private static Hashtable arg_hash = new Hashtable();
+  private static native long pointer_to_long (Object obj);
+
+  private static void register_hashes (UnwindArgs args)
+    throws UnwindException {
+    if (args.CBarg == null || args.UPTarg == null)
+      throw new UnwindException ("Internal error in unwinder set up");
+    arg_hash.put (new Long (pointer_to_long (args)), args);
+    arg_hash.put (new Long (pointer_to_long (args.CBarg)), args);
+    arg_hash.put (new Long (pointer_to_long (args.UPTarg)), args);
+  }
+
+  private static void unregister_hashes (UnwindArgs args) {
+    arg_hash.remove (new Long (pointer_to_long (args.UPTarg)));
+    arg_hash.remove (new Long (pointer_to_long (args.CBarg)));
+    arg_hash.remove (new Long (pointer_to_long (args)));
+  }
+
+  public static UnwindArgs find_arg_from_long (long val,
+					       RawDataManaged unwas)
+  throws UnwindException {
+    UnwindArgs arg = (UnwindArgs) arg_hash.get (new Long (val));
+    if (arg.unwas != unwas)
+      throw new UnwindException ("Internal error in unwinder use");
+    return arg;
+  }
+
+  /**
+   * This method is used in combination with dispatch_todo in order to
+   * turn any exception into a -1 return value.  It's used in the
+   * access_mem callback, that would otherwise throw an exception if
+   * given an address not available in the target address space.
+
+   * @param todo The argument to be passed to dispatch_todo.
+   * @return The return value of dispatch_todo, unless it throws a
+   * RuntimeException, in which case -1 is returned.  */
+  public static int catch_errors (RawDataManaged todo) {
+    try {
+      return dispatch_todo (todo);
+    } catch (RuntimeException whatever) {
+      return -1;
+    }
+  }
+
+  private static native int dispatch_todo (RawDataManaged todo);
 }

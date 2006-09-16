@@ -57,64 +57,102 @@ typedef lib::unwind::StackTraceCreator$UnwindArgs unwargs;
  * functionality
  ***************************/
  
+static inline unwargs *find_unwarg(void *arg, ::unw_addr_space_t as)
+{
+	return lib::unwind::StackTraceCreator::find_arg_from_long
+		((jlong)arg, (gnu::gcj::RawDataManaged *)as);
+}
+
 /*
  * Get misc. proc info
  */
 int find_proc_info (::unw_addr_space_t as, ::unw_word_t ip, 
-					::unw_proc_info_t *pip, int need_unwind_info, void *arg)
+		    ::unw_proc_info_t *pip, int need_unwind_info,
+		    void *arg)
 {
-	  return _UPT_find_proc_info (as, ip, pip, need_unwind_info,
-	                               (void *)((unwargs *)arg)->UPTarg);
+	return _UPT_find_proc_info (as, ip, pip, need_unwind_info,
+				    find_unwarg (arg, as)->UPTarg);
 }
 
 /*
  * Free space allocated during find_proc_info
  */
 void put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *pip,
-						void *arg)
+		      void *arg)
 {
-       return _UPT_put_unwind_info (as, pip,
-                                    (void *)((unwargs *)arg)->UPTarg);
+	return _UPT_put_unwind_info (as, pip, find_unwarg (arg, as)->UPTarg);
 }
 
 /*
  * Get the head of the dynamic unwind registration list.
  */
 int get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
-							void *arg)
+			    void *arg)
 {
-       return _UPT_get_dyn_info_list_addr (as, dilap,
-                                           (void *)((unwargs *)arg)->UPTarg);
+	return _UPT_get_dyn_info_list_addr (as, dilap,
+					    find_unwarg (arg, as)->UPTarg);
 }
+
+struct todo {
+	jint (*func) (struct todo *arg);
+};
+
+jint
+lib::unwind::StackTraceCreator::dispatch_todo (gnu::gcj::RawDataManaged *todo_)
+{
+	struct todo *todo = (struct todo *)todo_;
+	return todo->func (todo);
+}
+
+struct access_mem_todo {
+	struct todo todo;
+	::unw_addr_space_t as;
+	::unw_word_t addr;
+	::unw_word_t *valp;
+	int write;
+	void *arg;
+};
 
 /*
  * Perform memory read/write
  */
-int access_mem (::unw_addr_space_t as, ::unw_word_t addr,
-				::unw_word_t *valp, int write, void *arg)
+jint real_access_mem (struct todo *todo_)
 {
-	lib::unwind::UnwindCallbacks *cb = ((unwargs *)arg)->CBarg;
+	struct access_mem_todo *todo = (struct access_mem_todo *)todo_;
+
+	lib::unwind::UnwindCallbacks *cb = find_unwarg (todo->arg,
+							todo->as)->CBarg;
 	
 	// we've separated read and write in the java interface for simplicity
-	if(write == 0){
-		jlong retval = cb->accessMem ((jlong) as, (jlong) addr);
-		*valp = (::unw_word_t) retval;
+	if(todo->write == 0){
+		jlong retval = cb->accessMem ((jlong) todo->as,
+					      (jlong) todo->addr);
+		*todo->valp = (::unw_word_t) retval;
 	}
 	else{
-		cb->writeMem ((jlong) as, (jlong) addr, (jlong) *valp);
+		cb->writeMem ((jlong) todo->as, (jlong) todo->addr,
+			      (jlong) *todo->valp);
 	}
 	
 	return 0;
 }
 
+int access_mem (::unw_addr_space_t as, ::unw_word_t addr,
+		::unw_word_t *valp, int write, void *arg) {
+	struct access_mem_todo todo = {
+		{ real_access_mem }, as, addr, valp, write, arg
+	};
+	return lib::unwind::StackTraceCreator::catch_errors
+		((gnu::gcj::RawDataManaged *)&todo);
+}
+
 /*
  * perform register read/write
  */
-int access_reg(::unw_addr_space_t as,
-			::unw_regnum_t regnum, ::unw_word_t *valp,
-			int write, void *arg)
+int access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
+	       ::unw_word_t *valp, int write, void *arg)
 {
-	lib::unwind::UnwindCallbacks *cb = ((unwargs *)arg)->CBarg;
+	lib::unwind::UnwindCallbacks *cb = find_unwarg (arg, as)->CBarg;
 	
 	// read and write are separated in the java interface
 	if(write == 0){
@@ -131,11 +169,10 @@ int access_reg(::unw_addr_space_t as,
 /*
  * Perform a floating point register read/write
  */
-int access_fpreg(::unw_addr_space_t as,
-			::unw_regnum_t regnum, ::unw_fpreg_t *fpvalp,
-			int write, void *arg)
+int access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
+		 ::unw_fpreg_t *fpvalp, int write, void *arg)
 { 
-	lib::unwind::UnwindCallbacks *cb = ((unwargs *)arg)->CBarg;
+	lib::unwind::UnwindCallbacks *cb = find_unwarg (arg, as)->CBarg;
 	
 	if(write == 0){
 		jdouble retval = cb->accessFpreg ((jlong) as, (jlong) regnum);
@@ -151,10 +188,9 @@ int access_fpreg(::unw_addr_space_t as,
 /*
  * Resumes the process at the provided stack level
  */
-int resume(::unw_addr_space_t as,
-			::unw_cursor_t *cp, void *arg)
+int resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 {
-	lib::unwind::UnwindCallbacks *cb = ((unwargs *)arg)->CBarg;
+	lib::unwind::UnwindCallbacks *cb = find_unwarg (arg, as)->CBarg;
 	
 	return (int) cb->resume ((jlong) as, (jlong) cp);
 }
@@ -164,25 +200,11 @@ int resume(::unw_addr_space_t as,
  * the offset from the start of the procedure.
  */
 int get_proc_name(::unw_addr_space_t as,
-			::unw_word_t addr, char *bufp,
-			size_t buf_len, ::unw_word_t *offp, void *arg)
+		  ::unw_word_t addr, char *bufp,
+		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
-	lib::unwind::UnwindCallbacks *cb = ((unwargs *)arg)->CBarg;
-	
-	jstring name = cb->getProcName ((jlong) as, (jlong) addr);
-	jlong offset = cb->getProcOffset ((jlong) as, (jlong) addr);
-	
-	*offp = (::unw_word_t) offset;
-	if((unsigned int) buf_len <= (unsigned int) name->length ()){
-		JvGetStringUTFRegion (name, 0, buf_len, bufp);
-		bufp[buf_len-1] = '\0';
-		return -UNW_ENOMEM;
-	}
-	else{
-		JvGetStringUTFRegion (name, 0, name->length (), bufp);
-		bufp[name->length ()] = '\0';
-		return 0;
-	}
+	return _UPT_get_proc_name (as, addr, bufp, buf_len, offp,
+				   find_unwarg (arg, as)->UPTarg);
 }
 
 lib::unwind::FrameCursor*
@@ -197,12 +219,14 @@ lib::unwind::StackTraceCreator::unwind_setup (unwargs *args)
 	
 	// Initialize libunwind
 	::unw_addr_space_t addr_space = ::unw_create_addr_space(&accessors, 0);
-	args->unwas = (jlong)addr_space;
+	args->unwas = (gnu::gcj::RawDataManaged *)addr_space;
 	::unw_cursor_t cursor;
 	
-    /* Since we're not actually using ptrace, the PID below is unused.  */
-    args->UPTarg = (jlong)_UPT_create (/* PID = */ 0);
-    ::unw_init_remote(&cursor, addr_space, args);
+	/* Since we're not actually using ptrace, the PID below is unused.  */
+	args->UPTarg = (gnu::gcj::RawDataManaged *)
+		_UPT_create (args->CBarg->getPid());
+	register_hashes (args);
+	::unw_init_remote(&cursor, addr_space, args);
 	::unw_set_caching_policy(addr_space, UNW_CACHE_PER_THREAD);
 	
 	// Create the frame objects and return the top (most recent one)
@@ -221,12 +245,16 @@ lib::unwind::StackTraceCreator::unwind_setup (unwargs *args)
 	return base_frame;
 }
 
-void
-lib::unwind::StackTraceCreator::unwind_finish (unwargs *args)
+void lib::unwind::StackTraceCreator::unwind_finish (unwargs *args)
 {
-       unw_destroy_addr_space ((unw_addr_space_t)args->unwas);
-       args->unwas = 0;
-       _UPT_destroy ((void*)args->UPTarg);
-       args->UPTarg = 0;
+	unregister_hashes (args);
+	unw_destroy_addr_space ((unw_addr_space_t)args->unwas);
+	args->unwas = 0;
+	_UPT_destroy ((void*)args->UPTarg);
+	args->UPTarg = 0;
 }
 
+jlong lib::unwind::StackTraceCreator::pointer_to_long (java::lang::Object *obj)
+{
+	return (jlong)obj;
+}

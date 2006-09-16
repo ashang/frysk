@@ -1,3 +1,11 @@
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* StackCallbacks.java (findProcInfo, putUnwindInfo,
+	getDynInfoListAddr, getProcName, populate_procinfo,
+	populate_procinfo_nounwind, free_proc_info): Remove, obsolete.
+	(getPid): New.
+	* cni/StackCallbacks.cxx: Delete.
+
 2006-09-15  Andrew Cagney  <cagney@redhat.com>
 
 	* StackCallbacks.java: Use java.util.logging.Logger, instead of

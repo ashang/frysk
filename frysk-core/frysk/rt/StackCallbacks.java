@@ -45,15 +45,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfData;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-import lib.elf.ElfSection;
 import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
 
@@ -70,104 +61,6 @@ public class StackCallbacks
     this.myTask = myTask;
     this.myTask.toString();
     isa = myTask.getIsa();
-  }
-
-  public boolean findProcInfo (long procInfo, long addressSpace,
-                               long instructionAddress, boolean needInfo)
-  {
-    logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
-                                + Long.toHexString(instructionAddress) + "\n");
-
-    Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwflDieBias bias = dwfl.getDie(instructionAddress);
-
-    if (bias == null)
-      {
-        logger.log(Level.FINE,
-                        "Libunwind: aborted, could not find dwfl die and bias\n");
-        return false;
-      }
-
-    DwarfDie die = bias.die;
-    long adjustedAddress = instructionAddress - bias.bias;
-
-    if (die == null)
-      {
-        logger.log(Level.FINE,
-                        "Libunwind: aborted, could not find dwfl die\n");
-        return false;
-      }
-
-    DwarfDie lowest = die.getScopes(adjustedAddress)[0];
-    if (lowest == null)
-      {
-        logger.log(Level.FINE,
-                        "Libunwind: aborted, could not find lowest scope information\n");
-        return false;
-      }
-
-    if (needInfo)
-      {
-        Elf elf = null;
-        // elf = dwfl.getModule(adjustedAddress).getElf().elf;
-        try
-          {
-            elf = new Elf(myTask.getTid(), ElfCommand.ELF_C_READ);
-          }
-        catch (ElfFileException e)
-          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            logger.log(Level.FINE,
-                            "Libunwind: aborted, could not find elf information\n");
-            return false;
-          }
-        catch (ElfException e)
-          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            logger.log(Level.FINE,
-                            "Libunwind: aborted, could not find elf information\n");
-            return false;
-          }
-
-        ElfSection found = null;
-        for (int i = 0; i < elf.getSectionCount(); i++)
-          {
-            ElfSection current = elf.getSection(i);
-            if (current.getSectionHeader().name.equals(".debug_frame"))
-              {
-                found = current;
-                break;
-              }
-          }
-
-        if (found == null)
-          {
-            logger.log(Level.FINE,
-                            "Libunwind: aborted, could not .debug_frame section\n");
-            return false;
-          }
-
-        populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0,
-                          0, 0, found.getData());
-      }
-    else
-      populate_procinfo_nounwind(procInfo, lowest.getLowPC(),
-                                 lowest.getHighPC(), 0, 0, 0);
-
-    return true;
-  }
-
-  public void putUnwindInfo (long addressSpace, long procInfo)
-  {
-    free_proc_info(procInfo);
-  }
-
-  public long getDynInfoListAddr (long addressSpace)
-  {
-    // No such thing :)
-    return 0;
   }
 
   public long accessMem (long addressSpace, long addr)
@@ -243,53 +136,10 @@ public class StackCallbacks
     // return 0;
   }
 
-  public String getProcName (long as, long addr)
+  public int getPid ()
   {
-    logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
-                                + Long.toHexString(addr) + "\n");
-
-    Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwflDieBias bias = dwfl.getDie(addr);
-    if (bias == null)
-      return "";
-    DwarfDie die = bias.die;
-    if (die == null)
-      return "";
-
-    DwarfDie lowest = die.getScopes(addr - bias.bias)[0];
-    if (lowest == null)
-      return "";
-
-    return lowest.getName();
+    /* FIXME: this relies on the hashCode of a ProcId returning the
+     * actual id.  */
+    return myTask.getProc().getId().hashCode();
   }
-
-  public long getProcOffset (long as, long addr)
-  {
-    logger.log(Level.FINE, "Libunwind: getting procedure offset at 0x"
-                                + Long.toHexString(addr) + "\n");
-
-    Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwflDieBias bias = dwfl.getDie(addr);
-    if (bias == null)
-      return 0;
-    DwarfDie die = bias.die;
-    if (die == null)
-      return 0;
-
-    DwarfDie lowest = die.getScopes(addr - bias.bias)[0];
-    if (lowest == null)
-      return 0;
-
-    return addr - lowest.getLowPC();
-  }
-
-  private native void populate_procinfo (long procInfo, long lowPC,
-                                         long highPC, long lsda, long gp,
-                                         long flags, ElfData debug_frame);
-
-  private native void populate_procinfo_nounwind (long procInfo, long lowPC,
-                                                  long highPC, long lsda,
-                                                  long gp, long flags);
-
-  private native void free_proc_info (long proc_info);
 }

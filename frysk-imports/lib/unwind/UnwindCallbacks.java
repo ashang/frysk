@@ -42,40 +42,6 @@ package lib.unwind;
 public interface UnwindCallbacks
 {
   /**
-   * Retrieves the information about a procedure that will be needed to unwind
-   * it. If needinfo is true the returned struct does not need to contain values
-   * for format, unwind_info_size, and unwind_info
-   * @param procInfo TODO
-   * @param addressSpace The unwind address space
-   * @param instructionAddress The address within the procedure whose
-   *          information is needed
-   * @param needInfo Whether or not to fill in extra information
-   * 
-   * @return The value of the pointer to the returned struct.
-   */
-  boolean findProcInfo (long procInfo, long addressSpace,
-                     long instructionAddress, boolean needInfo);
-
-  /**
-   * Releases the resources allocated by the call to findProcInfo with needInfo
-   * set to true.
-   * 
-   * @param addressSpace The unwind address space
-   * @param procInfo The value of the pointer to the proc info struc to be
-   *          freed.
-   */
-  void putUnwindInfo (long addressSpace, long procInfo);
-
-  /**
-   * Gets the address of the head of the dynamic unwind-info registration list,
-   * or zero if no such record exist.
-   * 
-   * @param as
-   * @return the address of the head of the list, or zero if no list exists.
-   */
-  long getDynInfoListAddr (long addressSpace);
-
-  /**
    * Reads a word of memory from from the given address
    * 
    * @param as The unwind_addr_space
@@ -139,21 +105,8 @@ public interface UnwindCallbacks
   int resume (long as, long cp);
 
   /**
-   * Returns the name of a static (not dynamically generated) procedure.
-   * 
-   * @param as The unw_addr_space
-   * @param addr An address within the procedure to get the name of
-   * @return The name of the procedure
-   */
-  String getProcName (long as, long addr);
-
-  /**
-   * Returns the offset within the procudure that the current address is located
-   * at
-   * 
-   * @param as The unw_addr_space
-   * @param addr The address to get the offset of.
-   * @return The offset from the start of the current procedure to addr.
-   */
-  long getProcOffset (long as, long addr);
+   * Obtain the PID of the target process.
+   *
+   * @return the PID of the target process.  */
+  int getPid ();
 }

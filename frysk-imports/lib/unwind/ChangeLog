@@ -1,3 +1,27 @@
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* UnwindCallbacks.java (findProcInfo, putUnwindInfo,
+	getDynInfoListAddr, getProcName): Remove, obsolete.
+	(getPid): New.
+	* StackTraceCreator.java (UnwindArgs::UPTarg,
+	UnwindArgs::unwas): Change to pointer type.
+	(arg_hash): New static fields.
+	(pointer_to_long, dispatch_todo): New static native methods.
+	(register_hashes, unregister_hashes, find_arg_from_long,
+	catch_errors): New static methods.
+	* cni/StackTraceCreator.cxx (find_unwargs): New.  Use it all over.
+	(struct todo): New.
+	(StackTraceCreator::dispatch_todo): New.
+	(struct access_mem_todo): New.
+	(access_mem): Turn into dispatch_todo wrapper.  Rename
+	original to...
+	(real_access_mem): ... this.  Unwrap incoming arguments.
+	(get_proc_name): Use libunwind implementation.
+	(StackTraceCreator::unwind_setup): Pass pid to _UPT_create.
+	Register args hashes.
+	(StackTraceCreator::unwind_finish): Unregister them.
+	(StackTraceCreator::pointer_to_long): New.
+
 2006-09-08	Alexandre Oliva	<aoliva@redhat.com>
 
 	* StackTraceCreator.java (UnwindArgs): New inner class.
