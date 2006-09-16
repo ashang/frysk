@@ -1,3 +1,7 @@
+2006-09-16  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: Added Javadoc.
+
 2006-09-15  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (conWin): Imported and made variables for

@@ -61,7 +61,7 @@ import frysk.proc.TaskObserver;
  * instantiated for different processes, and disallows multiple windows on the
  * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
  * process between the Memory and SourceWindows if the other two are also 
- * running on that process.
+ * running on that process. A singleton class dynamically creating RegisterWindows.
  *  
  * @author mcvet
  */
@@ -86,6 +86,12 @@ public class RegisterWindowFactory
   
   private final static String REG_GLADE = "registerwindow.glade";
 
+  /**
+   * Set the paths to look in for the RegisterWindow glade widgets, and initialize
+   * the Hashtables.
+   * 
+   * @param paths   An array of paths containing glade files.
+   */
   public static void setPaths (String[] paths)
   {
     gladePaths = paths;
@@ -97,6 +103,8 @@ public class RegisterWindowFactory
    * Performs checks to ensure no other RegisterWindow is running on this Task;
    * if not, assigns a TaskBlockCounter and attaches an Observer if there is
    * no other Window already running on this Task.
+   * 
+   * @param task    The Task to be examined by the new RegisterWindow.
    */
   public static void createRegisterWindow (Task task)
   {
@@ -133,6 +141,9 @@ public class RegisterWindowFactory
   /**
    * Initializes the Glade file, the RegisterWindow itself, adds listeners and
    * Assigns the Task.
+   * 
+   * @param rw  The RegisterWindow to be initialized.
+   * @param task    The Task to be examined by mw.
    */
   public static RegisterWindow finishRegWin (RegisterWindow rw, Task task)
   {
@@ -199,12 +210,17 @@ public class RegisterWindowFactory
   /**
    * Used by the SourceWindow to assign the static regWin object which it uses
    * to ensure there is only one RegisterWindow running for its Task.
+   * 
+   * @param task    The Task used to find the RegisterWindow representing it.
    */
   public static void setRegWin (Task task)
   {
     regWin = (RegisterWindow) taskTable.get(task);
   }
   
+  /**
+   * Tells this factory it is being called from the Monitor.
+   */
   public static void setMonitor()
   {
     monitor = true;
@@ -214,6 +230,8 @@ public class RegisterWindowFactory
    * Check to see if this instance is the last one blocking the Task - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
+   * 
+   * @param task    The Task to be unblocked.
    */
   private static void unblockTask (Task task)
   {
@@ -221,8 +239,6 @@ public class RegisterWindowFactory
       {
         if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
           {
-            System.out.println(">>>DETACHING<<<");
-
             try
               {
                 TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
@@ -246,6 +262,10 @@ public class RegisterWindowFactory
       }
   }
 
+  /**
+   * A wrapper for LifeCycleListener which cleans up when the RegisterWindow 
+   * is closed.
+   */
   private static class RegWinListener
       implements LifeCycleListener
   {
@@ -254,6 +274,12 @@ public class RegisterWindowFactory
     {
     }
 
+    /**
+     * If the RegisterWindow is closed, let the Task know that it isn't being
+     * examined anymore and then hide the window.
+     * 
+     * @param arg0  The LifeCycleEvent affecting this window.
+     */
     public boolean lifeCycleQuery (LifeCycleEvent arg0)
     {
 
@@ -282,12 +308,21 @@ public class RegisterWindowFactory
 
   }
 
+  /**
+   * A wrapper for TaskObserver.Attached which initializes the RegisterWindow 
+   * upon call, and blocks the task it is to examine.
+   */
   private static class RegWinBlocker
       implements TaskObserver.Attached
   {
 
     private Task myTask;
 
+    /**
+     * Finish the RegisterWindow initialization and block the task.
+     * 
+     * @param task  The Task being blocked by this RegisterWindow.
+     */
     public Action updateAttached (Task task)
     {
       // TODO Auto-generated method stub

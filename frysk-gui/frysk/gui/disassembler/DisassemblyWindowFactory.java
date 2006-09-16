@@ -57,6 +57,12 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
+ * Factory for creating DisassemblyWindows - allows multiple DisassemblyWindows to be
+ * instantiated for different processes, and disallows multiple windows on the
+ * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
+ * process between the Register and SourceWindows if the other two are also 
+ * running on that process. A singleton class dynamically creating DisassemblyWindows.
+ *  
  * @author mcvet
  */
 public class DisassemblyWindowFactory
@@ -80,6 +86,12 @@ public class DisassemblyWindowFactory
   
   private final static String DIS_GLADE = "disassemblywindow.glade";
   
+  /**
+   * Set the paths to look in for the DisassemblyWindow glade widgets, and initialize
+   * the Hashtables.
+   * 
+   * @param paths   An array of paths containing glade files.
+   */
   public static void setPaths(String[] paths)
   {
     gladePaths = paths;
@@ -91,6 +103,8 @@ public class DisassemblyWindowFactory
    * Performs checks to ensure no other DisassemblyWindow is running on this Task;
    * if not, assigns a TaskBlockCounter and attaches an Observer if there is
    * no other Window already running on this Task.
+   * 
+   * @param task    The Task to be examined by the new DisassemblyWindow.
    */
   public static void createDisassemblyWindow (Task task)
   {
@@ -103,7 +117,7 @@ public class DisassemblyWindowFactory
         return;
       }
 
-    disWinBlocker blocker = new disWinBlocker();
+    DisWinBlocker blocker = new DisWinBlocker();
     blocker.myTask = task;
     
      if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
@@ -127,6 +141,9 @@ public class DisassemblyWindowFactory
   /**
    * Initializes the Glade file, the DisassemblyWindow itself, adds listeners and
    * Assigns the Task.
+   * 
+   * @param dw  The DisassemblyWindow to be initialized.
+   * @param task    The Task to be examined by mw.
    */
   public static DisassemblyWindow finishDisWin (DisassemblyWindow dw, Task task)
   {
@@ -177,7 +194,7 @@ public class DisassemblyWindowFactory
         e.printStackTrace();
       }
     
-    dw.addListener(new disWinListener());
+    dw.addListener(new DisWinListener());
     
     Preferences prefs = PreferenceManager.getPrefs();
     dw.load(prefs.node(prefs.absolutePath() + "/disassembler"));
@@ -194,14 +211,19 @@ public class DisassemblyWindowFactory
   }
   
   /**
-   * Used by the SourceWindow to assign the static disWin object which it uses
+   * Used by the SourceWindow to assign the static memWin object which it uses
    * to ensure there is only one DisassemblyWindow running for its Task.
+   * 
+   * @param task    The Task used to find the DisassemblyWindow representing it.
    */
   public static void setDisWin(Task task)
   {
     disWin = (DisassemblyWindow) taskTable.get(task);
   }
   
+  /**
+   * Tells this factory it is being called from the Monitor.
+   */
   public static void setMonitor()
   {
     monitor = true;
@@ -211,6 +233,8 @@ public class DisassemblyWindowFactory
    * Check to see if this instance is the last one blocking the Task - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
+   * 
+   * @param task    The Task to be unblocked.
    */
   private static void unblockTask (Task task)
   {
@@ -218,8 +242,6 @@ public class DisassemblyWindowFactory
       {
         if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
           {
-            System.out.println(">>>DETACHING<<<");
-
             try
               {
                 TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
@@ -243,7 +265,11 @@ public class DisassemblyWindowFactory
       }
   }
   
-  private static class disWinListener
+  /**
+   * A wrapper for LifeCycleListener which cleans up when the DisassemblyWindow 
+   * is closed.
+   */
+  private static class DisWinListener
       implements LifeCycleListener
   {
 
@@ -251,6 +277,12 @@ public class DisassemblyWindowFactory
     {
     }
 
+    /**
+     * If the DisassemblyWindow is closed, let the Task know that it isn't being
+     * examined anymore and then hide the window.
+     * 
+     * @param arg0  The LifeCycleEvent affecting this window.
+     */
     public boolean lifeCycleQuery (LifeCycleEvent arg0)
     {
 
@@ -279,12 +311,21 @@ public class DisassemblyWindowFactory
 
   }
 
-  private static class disWinBlocker
+  /**
+   * A wrapper for TaskObserver.Attached which initializes the DisassemblyWindow 
+   * upon call, and blocks the task it is to examine.
+   */
+  private static class DisWinBlocker
       implements TaskObserver.Attached
   {
 
     private Task myTask;
 
+    /**
+     * Finish the DisassemblyWindow initialization and block the task.
+     * 
+     * @param task  The Task being blocked by this DisassemblyWindow.
+     */
     public Action updateAttached (Task task)
     {
       // TODO Auto-generated method stub

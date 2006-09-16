@@ -102,6 +102,11 @@ public class ProcessPicker
   
   private Hashtable procPidHT;
 
+  /**
+   * Initializes this ProcessPicker. Sets up the glade file.
+   * 
+   * @param glade   The LibGlade representing the glade file containing widgets.
+   */
   public ProcessPicker (LibGlade glade)
   {
     super(glade.getWidget("processPickerWindow").getHandle());
@@ -112,6 +117,8 @@ public class ProcessPicker
    * Determine whether or not the incoming session contains multiple processes
    * with the same name. If so, build a dialog for the user so they can
    * determine specifically which processes they are interested in.
+   * 
+   * @param s   The session to be loaded.
    */
   public void checkSession (Session s)
   {
@@ -121,6 +128,11 @@ public class ProcessPicker
     Iterator debugprocesses = s.getProcesses().iterator();
     LinkedList ll;
 
+    /* Iterate through all the DebugProcesses owned by this Session. Start 
+     * hashing them by name. If any of them hash to the same place, we have
+     * multiple processes by the same name - so set a flag and continue with
+     * initialization of this class. Otherwise, bail out because this class
+     * is no longer needed. */
     while (debugprocesses.hasNext())
       {
         DebugProcess dp = (DebugProcess) debugprocesses.next();
@@ -156,8 +168,7 @@ public class ProcessPicker
         WindowManager.theManager.sessionManager.hideAll();
         finish(s);
       }
-    else
-      /* We've got multiple processes by the same name... */
+    else /* We've got multiple processes by the same name... Continue. */
       {
         this.procPidHT = new Hashtable();
         this.procView = new TreeView();
@@ -344,7 +355,8 @@ public class ProcessPicker
 
   /**
    * After the user is finished selecting PIDs from the checkboxes, iterate
-   * through the boxes and remove the de-selected PIDs from the session.
+   * through the boxes and remove the de-selected PIDs from the session, 
+   * because the user has chosen not to include them in this monitoring session.
    */
   public void pickProcs ()
   {
@@ -380,6 +392,8 @@ public class ProcessPicker
   /**
    * Finish everything up: hide this window, bring up the MainWindow, and set
    * the current session.
+   * 
+   * @param s   The session to initiate.
    */
   public void finish (Session s)
   {

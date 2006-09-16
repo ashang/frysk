@@ -1,3 +1,16 @@
+2006-09-16  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/ProcessPicker.java: Added Javadoc.
+	* disassembler/DisassemblyWindowFactory.java: Ditto.
+	* disassembler/DisassemblyWindow.java: Ditto.
+	* disassembler/DisassemblyFormatDialog.java: Ditto.
+	* memory/MemoryWindowFactory.java: Ditto.
+	* memory/MemoryWindow.java: Ditto.
+	* memory/MemoryFormatDialog.java: Ditto.
+	* register/RegisterWindowFactory.java: Ditto.
+	* register/RegisterWindow.java: Ditto.
+	* register/RegisterFormatDialog.java: Ditto.
+
 2006-09-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (GLADE_PKG_PATH): Added wrapper class comment

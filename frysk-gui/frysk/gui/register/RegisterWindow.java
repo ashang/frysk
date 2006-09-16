@@ -74,10 +74,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskException;
 
 /**
- * The RegisterWindow allows the display and editing of the names and values of
- * system registers. The values of the registers can be displayed in decimal,
- * hexadecimal, octal, or binary. Manipulating the registers is only possible
- * when the task is stopped, otherwise all functionality is disabled
  * 
  * @author ajocksch
  */
@@ -121,7 +117,12 @@ public class RegisterWindow
   private TreeView registerView;
 
   /**
-   * Creates a new RegistryWindow
+   * The RegisterWindow allows the display and editing of the names and values of
+   * system registers. The values of the registers can be displayed in decimal,
+   * hexadecimal, octal, or binary. Manipulating the registers is only possible
+   * when the task is stopped, otherwise all functionality is disabled.
+   * 
+   * The RegisterWindow is created dynamically from the RegisterWindowFactory.
    * 
    * @param task The Task for which to display the registers
    * @param glade The glade file for the register window
@@ -135,11 +136,23 @@ public class RegisterWindow
     this.setIcon(IconManager.windowIcon);
   }
 
+  /**
+   * Check to see if the task to be examined has already been set.
+   * 
+   * @return    False if myTask is null, True otherwise.
+   */
   public boolean hasTaskSet ()
   {
     return myTask != null;
   }
 
+  /**
+   * Sets the task to be examined by this RegisterWindow. Also initializes 
+   * the ISA used and does most of the work setting up the initial members
+   * used by this class.
+   * 
+   * @param myTask  The Task to be examined by this RegisterWindow.
+   */
   public void setTask (Task myTask)
   {
     this.myTask = myTask;
@@ -288,11 +301,21 @@ public class RegisterWindow
       }
   }
 
+  /**
+   * Saves the new preferences of this window.
+   * 
+   * @param prefs   The preference node to be saved.
+   */
   public void save (Preferences prefs)
   {
     this.formatDialog.save(prefs);
   }
 
+  /**
+   * Loads the saved preferences of this window.
+   * 
+   * @param prefs   The preference node used to load preferences.
+   */
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
@@ -300,8 +323,9 @@ public class RegisterWindow
     this.refreshList();
   }
 
-  /*
-   * Refreshes the view of the items in the list
+  /**
+   * Refreshes the TreeView displayed to the user with values grabbed from
+   * the Register Objects in the model.
    */
   private void refreshList ()
   {
@@ -360,6 +384,9 @@ public class RegisterWindow
 
   /**
    * Reverse the byte order of an integer.
+   * 
+   * @param val The value to be reversed
+   * @param bitLength   The number of bits in this value.
    */
   private static BigInteger swizzleByteOrder(BigInteger val, int bitLength)
   {
@@ -374,6 +401,12 @@ public class RegisterWindow
     return new BigInteger(newbytes);
   }
 
+  /**
+   * Saves the incoming binary value to the model.
+   * 
+   * @param val The binary value to save
+   * @param path    The path used to get the TreeIter from the model.
+   */
   private void saveBinaryValue (BigInteger val, TreePath path)
   {
     ListStore model = (ListStore) this.registerView.getModel();
@@ -381,6 +414,12 @@ public class RegisterWindow
     model.setValue (iter, (DataColumnObject)cols[11], val);
   }
 
+  /**
+   * Writes the incoming binary value to the Register Object for this Task.
+   * 
+   * @param val The binary value to write
+   * @param path    The TreePath used to get the TreeIter from the model.
+   */
   private void writeBinaryValue (BigInteger val, TreePath path)
   {
     ListStore model = (ListStore) this.registerView.getModel();
@@ -392,8 +431,15 @@ public class RegisterWindow
   }
 
   /**
+   * Writes the incoming binary value to the Register Object for this Task.
+   * 
    * If the string is not negative but the sign bit of the register
    * will be set, ensure that the BigInteger value is negative.
+   * 
+   * @param rawString   The String containing the value to write.
+   * @param radix   The radix to convert rawString to.
+   * @param littleEndian    The endianness of the incoming value.
+   * @param path    The path used to get the TreeIter from this model.
    */
   private void writeBinaryValue (String rawString, int radix,
                                 boolean littleEndian, TreePath path)
@@ -427,11 +473,20 @@ public class RegisterWindow
 
     boolean littleEndian;
 
+    /**
+     * Listens to the Decimal cells for changes to write to the Register Object.
+     * @param littleEndian
+     */
     public DecCellListener (boolean littleEndian)
     {
       this.littleEndian = littleEndian;
     }
 
+    /**
+     * Calls to write the new value to the Register and refreshes the TreeView.
+     * 
+     * @param arg0  The argument to write.
+     */
     public void cellRendererTextEvent (CellRendererTextEvent arg0)
     {
       String text = arg0.getText();
@@ -449,11 +504,20 @@ public class RegisterWindow
 
     boolean littleEndian;
 
+    /**
+     * Listens to the Hexadecimal cells for changes to write to the Register Object.
+     * @param littleEndian
+     */
     public HexCellListener (boolean littleEndian)
     {
       this.littleEndian = littleEndian;
     }
 
+    /**
+     * Calls to write the new value to the Register and refreshes the TreeView.
+     * 
+     * @param arg0  The argument to write.
+     */
     public void cellRendererTextEvent (CellRendererTextEvent arg0)
     {
       String text = arg0.getText();
@@ -473,11 +537,20 @@ public class RegisterWindow
 
     boolean littleEndian;
 
+    /**
+     * Listens to the Octal cells for changes to write to the Register Object.
+     * @param littleEndian
+     */
     public OctCellListener (boolean littleEndian)
     {
       this.littleEndian = littleEndian;
     }
 
+    /**
+     * Calls to write the new value to the Register and refreshes the TreeView.
+     * 
+     * @param arg0  The argument to write.
+     */
     public void cellRendererTextEvent (CellRendererTextEvent arg0)
     {
       String text = arg0.getText();
@@ -495,11 +568,20 @@ public class RegisterWindow
 
     boolean littleEndian;
 
+    /**
+     * Listens to the Binary cells for changes to write to the Register Object.
+     * @param littleEndian
+     */
     public BinCellListener (boolean littleEndian)
     {
       this.littleEndian = littleEndian;
     }
 
+    /**
+     * Calls to write the new value to the Register and refreshes the TreeView.
+     * 
+     * @param arg0  The argument to write.
+     */
     public void cellRendererTextEvent (CellRendererTextEvent arg0)
     {
       String text = arg0.getText();
@@ -511,6 +593,11 @@ public class RegisterWindow
 
   }
   
+  /**
+   * Returns the Task being examined by this Window.
+   * 
+   * @return myTask The Task being examined.
+   */
   public Task getMyTask()
   {
     return this.myTask;

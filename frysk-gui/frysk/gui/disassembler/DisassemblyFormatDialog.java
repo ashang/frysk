@@ -67,6 +67,8 @@ import frysk.gui.common.IconManager;
 import frysk.gui.monitor.Saveable;
 
 /**
+ * A dialog to display options available to the DisassemblyWindow.
+ * 
  * @author mcvet
  */
 public class DisassemblyFormatDialog
@@ -83,6 +85,12 @@ public class DisassemblyFormatDialog
 
   private Preferences prefs;
 
+  /**
+   * On initialization, set the glade file, the titles for CheckBox options,
+   * the columns in this window, and add all the Listeners.
+   * 
+   * @param glade   The glade file containing the needed widgets.
+   */
   public DisassemblyFormatDialog (LibGlade glade)
   {
     super(glade.getWidget("formatDialog").getHandle());
@@ -172,6 +180,12 @@ public class DisassemblyFormatDialog
     });
   }
 
+  /**
+   * Save the preferences contained in this Preferences node, apply to all 
+   * options represented by the TreeIters in this dialog.
+   * 
+   * @param prefs   The Preferences node to save.
+   */
   public void save (Preferences prefs)
   {
     ListStore model = (ListStore) this.formatList.getModel();
@@ -186,6 +200,12 @@ public class DisassemblyFormatDialog
       }
   }
 
+  /**
+   * Load the options contained in this Preferences node, apply the changes
+   * to each of the options represented by the TreeIters in this dialog.
+   * 
+   * @param prefs   The Preferences node to load from.
+   */
   public void load (Preferences prefs)
   {
     this.prefs = prefs;

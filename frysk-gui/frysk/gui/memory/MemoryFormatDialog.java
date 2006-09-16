@@ -86,6 +86,12 @@ public class MemoryFormatDialog
 
   private Preferences prefs;
 
+  /**
+   * On initialization, set the glade file, the titles for CheckBox options,
+   * the columns in this window, and add all the Listeners.
+   * 
+   * @param glade   The glade file containing the needed widgets.
+   */
   public MemoryFormatDialog (LibGlade glade)
   {
     super(glade.getWidget("formatDialog").getHandle());
@@ -178,6 +184,12 @@ public class MemoryFormatDialog
     });
   }
 
+  /**
+   * Save the preferences contained in this Preferences node, apply to all 
+   * options represented by the TreeIters in this dialog.
+   * 
+   * @param prefs   The Preferences node to save.
+   */
   public void save (Preferences prefs)
   {
     ListStore model = (ListStore) this.formatList.getModel();
@@ -192,6 +204,12 @@ public class MemoryFormatDialog
       }
   }
 
+  /**
+   * Load the options contained in this Preferences node, apply the changes
+   * to each of the options represented by the TreeIters in this dialog.
+   * 
+   * @param prefs   The Preferences node to load from.
+   */
   public void load (Preferences prefs)
   {
     this.prefs = prefs;

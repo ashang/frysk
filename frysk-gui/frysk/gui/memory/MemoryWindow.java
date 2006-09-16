@@ -82,11 +82,6 @@ import lib.opcodes.OpcodesException;
 import lib.opcodes.Instruction;
 
 /**
- * The MemoryWindow displays the information stored at various locations in
- * memory, starting from the current program counter to a user-defined region.
- * The information can be displayed from 4-bit to 64-bit values, and in binary,
- * octal, decimal or hexadecimal format.
- * 
  * @author mcvet, ajocksch
  */
 public class MemoryWindow
@@ -179,6 +174,16 @@ public class MemoryWindow
 
   protected static int currentFormat = 0;
 
+  /**
+   * The MemoryWindow displays the information stored at various locations in
+   * memory, starting from the current program counter to a user-defined region.
+   * The information can be displayed from 4-bit to 64-bit values, and in binary,
+   * octal, decimal or hexadecimal format.
+   * 
+   * The MemoryWindow is dynamically created through the MemoryWindowFactory.
+   * 
+   * @param glade   The glade file containing MemoryWindow widgets.
+   */
   public MemoryWindow (LibGlade glade)
   {
     super(glade.getWidget("memoryWindow").getHandle());
@@ -199,11 +204,21 @@ public class MemoryWindow
     this.setIcon(IconManager.windowIcon);
   }
 
+  /**
+   * Check to see if the task to be examined has already been set.
+   * 
+   * @return    False if myTask is null, True otherwise.
+   */
   public boolean hasTaskSet ()
   {
     return myTask != null;
   }
 
+  /**
+   * Set the sensitivity of this window and the formatting window.
+   *  
+   * @param running True if the window is running, false otherwise.
+   */
   public void setIsRunning (boolean running)
   {
     if (running)
@@ -219,12 +234,18 @@ public class MemoryWindow
   }
 
   /**
-   * Assign this MemoryWindow to a task
+   * Set the task for this MemoryWindow to examine. Initializes the 
+   * Disassembler we use to grab instructions from memory, as well as
+   * initialize values for critical members of this class. Also performs
+   * the first refresh and display of information.
+   * 
+   * @param myTask The task to be examined.
    */
   public void setTask (Task myTask)
   {
     this.myTask = myTask;
     long pc_inc;
+    
     try
       {
         this.diss = new Disassembler(myTask.getMemory());
@@ -237,6 +258,7 @@ public class MemoryWindow
         e.printStackTrace();
         return;
       }
+    
     long end = pc_inc + 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -344,7 +366,8 @@ public class MemoryWindow
    ****************************************************************************/
 
   /**
-   * Recalculate the memory information based on a new bitsize and/or radix
+   * Recalculate the memory information based on a new bitsize and/or radix,
+   * and then update the display.
    */
   public void recalculate ()
   {
@@ -356,6 +379,7 @@ public class MemoryWindow
 
     memoryView.setModel(model);
 
+    /* Remove the existing information because we have to change it anyway. */
     TreeViewColumn[] tvc = memoryView.getColumns();
     for (int i = 0; i < tvc.length; i++)
       {
@@ -374,6 +398,8 @@ public class MemoryWindow
                             cols[LOC]);
     memoryView.appendColumn(col);
 
+    /* Replace the X in the title of the column with the bitsize to be displayed,
+     * and then append the columns into the view. */
     for (int i = 0; i < this.columns.length - 1; i++)
       {
         col = new TreeViewColumn();
@@ -404,7 +430,8 @@ public class MemoryWindow
   }
 
   /**
-   * Refresh and update the display of addresses and values
+   * Refresh and update the display of addresses and values from what is 
+   * re-calculated and turned into BigIntegers.
    */
   private void refreshList ()
   {
@@ -518,8 +545,12 @@ public class MemoryWindow
 
   /**
    * Helper function for calculating memory information and putting it into rows
-   * to be displayed.
-   * By default append rows to the end; occasionally prepend rows to the front.
+   * to be displayed. By default append rows to the end; occasionally prepend rows
+   * to the front.
+   * 
+   * @param i   The memory address from which information is read from and stored
+   * in the model as an Object.
+   * @param iter    The row in the TreeView.
    */
   public void rowAppend (long i, TreeIter iter)
   {
@@ -589,6 +620,10 @@ public class MemoryWindow
 
   /**
    * Pad this byte string with zeroes so that it is of proper size.
+   * 
+   * @param s   The String to pad zeroes to.
+   * @param littleEndian    The endianness of the binary string.
+   * @param diff    Eight minus this many bits need to be added.
    */
   private String padBytes (String s, boolean littleEndian, int diff)
   {
@@ -605,6 +640,9 @@ public class MemoryWindow
 
   /**
    * Switch the endianness of a binary string
+   * 
+   * @param toReverse   The String to converted
+   * @param littleEndian    The endianness of this binary string.
    */
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
@@ -631,6 +669,12 @@ public class MemoryWindow
    * SpinBox callback methods
    ****************************************************************************/
 
+  /**
+   * When the 'From' SpinBox is changed, update the displayed information 
+   * accordingly.
+   * 
+   * @param val The new value of the SpinBox.
+   */
   public void handleFromSpin (double val)
   {
 
@@ -663,6 +707,12 @@ public class MemoryWindow
     this.lastKnownFrom = val;
   }
 
+  /**
+   * When the 'To' SpinBox value is changed, update the displayed information
+   * accordingly. 
+   * 
+   * @param val The new value of the SpinBox.
+   */
   public void handleToSpin (double val)
   {
 
@@ -704,11 +754,21 @@ public class MemoryWindow
    * Save and Load
    ***************************************************************************/
 
+  /**
+   * Saves the new preferences of this window.
+   * 
+   * @param prefs   The preference node to be saved.
+   */
   public void save (Preferences prefs)
   {
     this.formatDialog.save(prefs);
   }
 
+  /**
+   * Loads the saved preferences of this window.
+   * 
+   * @param prefs   The preference node used to load preferences.
+   */
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
@@ -716,6 +776,11 @@ public class MemoryWindow
     this.refreshList();
   }
   
+  /**
+   * Returns the Task being examined by this Window.
+   * 
+   * @return myTask The Task being examined.
+   */
   public Task getMyTask()
   {
     return this.myTask;

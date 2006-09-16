@@ -61,7 +61,7 @@ import frysk.proc.TaskObserver;
  * instantiated for different processes, and disallows multiple windows on the
  * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
  * process between the Register and SourceWindows if the other two are also 
- * running on that process.
+ * running on that process. A singleton class dynamically creating MemoryWindows.
  *  
  * @author mcvet
  */
@@ -86,6 +86,12 @@ public class MemoryWindowFactory
   
   private final static String MEM_GLADE = "memorywindow.glade";
   
+  /**
+   * Set the paths to look in for the MemoryWindow glade widgets, and initialize
+   * the Hashtables.
+   * 
+   * @param paths   An array of paths containing glade files.
+   */
   public static void setPaths(String[] paths)
   {
     gladePaths = paths;
@@ -97,6 +103,8 @@ public class MemoryWindowFactory
    * Performs checks to ensure no other MemoryWindow is running on this Task;
    * if not, assigns a TaskBlockCounter and attaches an Observer if there is
    * no other Window already running on this Task.
+   * 
+   * @param task    The Task to be examined by the new MemoryWindow.
    */
   public static void createMemoryWindow (Task task)
   {
@@ -133,6 +141,9 @@ public class MemoryWindowFactory
   /**
    * Initializes the Glade file, the MemoryWindow itself, adds listeners and
    * Assigns the Task.
+   * 
+   * @param mw  The MemoryWindow to be initialized.
+   * @param task    The Task to be examined by mw.
    */
   public static MemoryWindow finishMemWin (MemoryWindow mw, Task task)
   {
@@ -199,12 +210,17 @@ public class MemoryWindowFactory
   /**
    * Used by the SourceWindow to assign the static memWin object which it uses
    * to ensure there is only one MemoryWindow running for its Task.
+   * 
+   * @param task    The Task used to find the MemoryWindow representing it.
    */
   public static void setMemWin(Task task)
   {
     memWin = (MemoryWindow) taskTable.get(task);
   }
   
+  /**
+   * Tells this factory it is being called from the Monitor.
+   */
   public static void setMonitor()
   {
     monitor = true;
@@ -214,6 +230,8 @@ public class MemoryWindowFactory
    * Check to see if this instance is the last one blocking the Task - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
+   * 
+   * @param task    The Task to be unblocked.
    */
   private static void unblockTask (Task task)
   {
@@ -244,6 +262,10 @@ public class MemoryWindowFactory
       }
   }
   
+  /**
+   * A wrapper for LifeCycleListener which cleans up when the MemoryWindow 
+   * is closed.
+   */
   private static class MemWinListener
       implements LifeCycleListener
   {
@@ -252,6 +274,12 @@ public class MemoryWindowFactory
     {
     }
 
+    /**
+     * If the MemoryWindow is closed, let the Task know that it isn't being
+     * examined anymore and then hide the window.
+     * 
+     * @param arg0  The LifeCycleEvent affecting this window.
+     */
     public boolean lifeCycleQuery (LifeCycleEvent arg0)
     {
 
@@ -280,12 +308,21 @@ public class MemoryWindowFactory
 
   }
 
+  /**
+   * A wrapper for TaskObserver.Attached which initializes the MemoryWindow 
+   * upon call, and blocks the task it is to examine.
+   */
   private static class MemWinBlocker
       implements TaskObserver.Attached
   {
 
     private Task myTask;
 
+    /**
+     * Finish the MemoryWindow initialization and block the task.
+     * 
+     * @param task  The Task being blocked by this MemoryWindow.
+     */
     public Action updateAttached (Task task)
     {
       // TODO Auto-generated method stub

@@ -46,7 +46,7 @@ import frysk.proc.Task;
 /**
  * Used as kind of semaphore to co-ordinate the un-blocking of a Task between
  * different Objects which may be using the same blocked Task - the Register/
- * Memory/SourceWindows.
+ * Memory/Disassembly/SourceWindows.
  * 
  * @author mcvet
  */
@@ -56,6 +56,12 @@ public class TaskBlockCounter
   /* Keep track how many Objects are watching each Task */
   public static Hashtable blockTable = new Hashtable();
   
+  /**
+   * Return the number of blockers on this incoming Task.
+   * 
+   * @param task    The task to check for blockers.
+   * @return    The number of blockers.
+   */
   public static int getBlockCount(Task task)
   {
     Integer i = (Integer)blockTable.get(task);
@@ -65,6 +71,12 @@ public class TaskBlockCounter
       return i.intValue();
   }
   
+  /**
+   * Increment the number of blockers for the incoming Task - called when a
+   * new window has been created by a factory.
+   * 
+   * @param task    The Task whose number of blockers is incremented by one.
+   */
   public static void incBlockCount(Task task)
   {
     Integer i = (Integer)blockTable.get(task);
@@ -74,6 +86,12 @@ public class TaskBlockCounter
       blockTable.put(task, new Integer(i.intValue() + 1));
   }
   
+  /**
+   * Decrement the number of blockers for the incoming Task - called when a 
+   * window has been destroyed.
+   * 
+   * @param task    The Task whose number of blockers is decremented by one.
+   */
   public static void decBlockCount(Task task)
   {
     Integer i = (Integer)blockTable.get(task);

@@ -74,7 +74,8 @@ import frysk.rt.StackFrame;
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
  * in frysk should be created. It takes care of setting paths to resource files
- * as well as making sure that at most one window is opened per Task.
+ * as well as making sure that at most one window is opened per Task. A singleton 
+ * class dynamically creating SourceWindows.
  * 
  * @author ajocksch
  */
@@ -199,6 +200,13 @@ public class SourceWindowFactory
 
   }
 
+  /**
+   * Initializes the Glade file, the SourceWindow itself, adds listeners and
+   * Assigns the Task. Sets up the DOM information and the Stack information.
+   * 
+   * @param mw  The MemoryWindow to be initialized.
+   * @param task    The Task to be examined by mw.
+   */
   private static void finishSourceWin (Task task)
   {
     Proc proc = task.getProc();
@@ -322,6 +330,8 @@ public class SourceWindowFactory
   
   /**
    * Print out the DOM in XML format
+   * 
+   * @param dom The DOMFrysk to output.
    */
   public static void printDOM (DOMFrysk dom)
   {
@@ -336,6 +346,12 @@ public class SourceWindowFactory
       }
   }
 
+  /**
+   * Unblocks the Task being examined and removes all Observers on it, and removes
+   * it from the tables watching it.
+   * 
+   * @param task    The Task to be unblocked.
+   */
   private static void unblockTask (Task task)
   {
     if (blockerTable.containsKey(task) && TaskBlockCounter.getBlockCount(task) == 1)
@@ -349,6 +365,15 @@ public class SourceWindowFactory
     TaskBlockCounter.decBlockCount(task);
   }
 
+  /**
+   * Returns a DOMFunction matching the incoming function information from 
+   * the DOMImage.
+   * 
+   * @param image   The DOMImage containing the source information.
+   * @param filename    The name of the source file.
+   * @param linenum     The line number of the function.
+   * @return    The found DOMFunction.
+   */
   private static DOMFunction getFunctionXXX (DOMImage image, String filename,
                                              int linenum)
   {

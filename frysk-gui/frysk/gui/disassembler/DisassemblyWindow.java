@@ -129,7 +129,14 @@ public class DisassemblyWindow
   private double lastKnownTo;
   
   private long pc;
-
+  
+  /**
+   * The DisassmblyWindow, given a Task, will disassemble the instructions
+   * and parameters for that task in memory and display them, as well as their
+   * absolute address in memory and relative distance from the program counter.
+   * 
+   * @param glade   The glade file containing the widgets for this window.
+   */
   public DisassemblyWindow (LibGlade glade)
   {
     super(glade.getWidget("disassemblyWindow").getHandle());
@@ -145,11 +152,21 @@ public class DisassemblyWindow
     this.setIcon(IconManager.windowIcon);
   }
 
+  /**
+   * Check to see if the task to be examined has already been set.
+   * 
+   * @return    False if myTask is null, True otherwise.
+   */
   public boolean hasTaskSet ()
   {
     return myTask != null;
   }
 
+  /**
+   * Set the sensitivity of this window and the formatting window.
+   *  
+   * @param running True if the window is running, false otherwise.
+   */
   public void setIsRunning (boolean running)
   {
     if (running)
@@ -165,7 +182,12 @@ public class DisassemblyWindow
   }
 
   /**
-   * Assign this DisassemblyWindow to a task
+   * Set the Task for this window to examine. Initializes the Disassembler
+   * used as the backend for this window, and assigns initial values to 
+   * members of this class. Also refreshes the window itself, displaying 
+   * information for the first time.
+   * 
+   * @param myTask  The task to be examined.
    */
   public void setTask (Task myTask)
   {
@@ -196,7 +218,7 @@ public class DisassemblyWindow
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
-    recalculate();
+    setUpColumns();
 
     disassemblerView.setAlternateRowColor(true);
 
@@ -261,9 +283,10 @@ public class DisassemblyWindow
    ****************************************************************************/
 
   /**
-   * Recalculate the memory information based on a new bitsize and/or radix
+   * Sets up the columns in the TreeView between the addresses given by the
+   * SpinBoxes.
    */
-  public void recalculate ()
+  public void setUpColumns ()
   {
     long start = (long) this.fromSpin.getValue();
     long end = (long) this.toSpin.getValue();
@@ -313,7 +336,7 @@ public class DisassemblyWindow
   }
 
   /**
-   * Refresh and update the display of addresses and values
+   * Grabs information out of the Disassembler and updates the display
    */
   private void refreshList ()
   {
@@ -377,6 +400,9 @@ public class DisassemblyWindow
    * Helper function for calculating memory information and putting it into rows
    * to be displayed.
    * By default append rows to the end; occasionally prepend rows to the front.
+   * 
+   * @param i   The address to be displayed
+   * @param iter    The TreeIter representing the row to be added.
    */
   public void rowAppend (long i, TreeIter iter)
   {
@@ -392,6 +418,12 @@ public class DisassemblyWindow
    * SpinBox callback methods
    ****************************************************************************/
 
+  /**
+   * When the 'From' SpinBox is changed, update the displayed information 
+   * accordingly.
+   * 
+   * @param val The new value of the SpinBox.
+   */
   public void handleFromSpin (double val)
   {
 
@@ -424,6 +456,12 @@ public class DisassemblyWindow
     this.lastKnownFrom = val;
   }
 
+  /**
+   * When the 'To' SpinBox is changed, update the displayed information 
+   * accordingly.
+   * 
+   * @param val The new value of the SpinBox.
+   */
   public void handleToSpin (double val)
   {
 
@@ -465,11 +503,21 @@ public class DisassemblyWindow
    * Save and Load
    ***************************************************************************/
 
+  /**
+   * Saves the new preferences of this window.
+   * 
+   * @param prefs   The preference node to be saved.
+   */
   public void save (Preferences prefs)
   {
     this.formatDialog.save(prefs);
   }
 
+  /**
+   * Loads the saved preferences of this window.
+   * 
+   * @param prefs   The preference node used to load preferences.
+   */
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
@@ -477,6 +525,11 @@ public class DisassemblyWindow
     this.refreshList();
   }
   
+  /**
+   * Returns the Task being examined by this Window.
+   * 
+   * @return myTask The Task being examined.
+   */
   public Task getMyTask()
   {
     return this.myTask;
