@@ -36,8 +36,23 @@ unw_get_proc_info (unw_cursor_t *cursor, unw_proc_info_t *pi)
 	 are missing DWARF unwind info.  We don't want to fail in that
 	 case, because those frames are uninteresting and just mark
 	 the end of the frame-chain anyhow.  */
+      int size = 128;
+      unw_word_t offset;
+      int ret;
+
+      do
+	{
+	  char buf[size];
+
+	  ret = unw_get_proc_name (cursor, buf, size, &offset);
+	}
+      while (ret == -UNW_ENOMEM && (size *= 2));
+
+      if (ret != 0)
+	offset = 0;
+
       memset (pi, 0, sizeof (*pi));
-      pi->start_ip = c->dwarf.ip;
+      pi->start_ip = c->dwarf.ip - offset;
       pi->end_ip = c->dwarf.ip + 4;
       return 0;
     }

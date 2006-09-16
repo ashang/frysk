@@ -1,5 +1,12 @@
 2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
 
+	* src/x86/Gget_proc_info.c (unw_get_proc_info): Use
+	unw_get_proc_name to build a proper proc_info_t.
+	* src/x86_64/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* src/hppa/Gget_proc_info.c (unw_get_proc_info): Likewise.
+
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
 	* configure.ac: Don't define UNW_REMOTE_ONLY.
 	* src/os-linux.c: Restore #ifndef removed it previous patch.
 
