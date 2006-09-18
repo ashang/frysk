@@ -35,6 +35,8 @@
 	* SourceWindowFactory.java (finishSourceWin): Properly creates
 	StackFrames, and initializes information for each frame on the 
 	call stack, rather than just the top StackLevel.
+	(SourceWinBlocker.addFailed): Logging call made directly to errorLog
+	rather than the EventLogger.
 
 2006-09-16  Mike Cvet  <mcvet@redhat.com>
 

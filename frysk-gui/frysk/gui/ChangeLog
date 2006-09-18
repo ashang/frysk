@@ -1,3 +1,11 @@
+2006-09-18  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindowFactory.java (MemWinBlocker.addFailed): 
+	Logging call made directly to errorLog rather than EventLogger.
+	* register/RegisterWindowFactory.java (RegWinBlocker.addFailed): Ditto.
+	* disassembler/DisassemblyWindowFactory.java (DisWinBlocker.addFailed):
+	Ditto.
+
 2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Remove Vbox encapsulating

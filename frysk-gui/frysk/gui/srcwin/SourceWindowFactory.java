@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
@@ -59,9 +61,9 @@ import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
+import frysk.gui.Gui;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.TaskBlockCounter;
-import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Proc;
@@ -91,6 +93,8 @@ public class SourceWindowFactory
   private static Hashtable taskTable;
   
   public static SourceWindow srcWin = null;
+  
+  private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 
   /**
    * Sets the paths to look in to find the .glade files needed for the gui
@@ -186,9 +190,7 @@ public class SourceWindowFactory
 
     public void addFailed (Object observable, Throwable w)
     {
-
-      EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
-                               observable);
+      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)", w);
       throw new RuntimeException(w);
     }
 

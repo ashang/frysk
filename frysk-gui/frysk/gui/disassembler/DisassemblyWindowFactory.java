@@ -40,6 +40,8 @@
 
 package frysk.gui.disassembler;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.Hashtable;
 
@@ -48,9 +50,9 @@ import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.Gui;
 import frysk.gui.common.TaskBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
-import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -83,6 +85,8 @@ public class DisassemblyWindowFactory
   /* Bad hack to tell if we've been called from the Monitor or SourceWindow */
   /* TODO: Get rid of this when the BlockedObserver becomes a reality */
   private static boolean monitor = false;
+  
+  private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
   
   private final static String DIS_GLADE = "disassemblywindow.glade";
   
@@ -352,9 +356,7 @@ public class DisassemblyWindowFactory
 
     public void addFailed (Object observable, Throwable w)
     {
-
-      EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
-                               observable);
+      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)", w);
       throw new RuntimeException(w);
     }
 
