@@ -75,9 +75,12 @@ main ()
   printf("%d\n", ntohs (addr.sin_port));
   fflush(stdout);
 
+  // Wait for the start sign
+  getchar();
+  
+  // Accept connection.
   struct sockaddr_in sai;
   len = sizeof (sai);
-  fflush(stderr);
   int f = accept (fd, (struct sockaddr *) &sai, &len);
   if (f == -1)
     {
@@ -85,17 +88,5 @@ main ()
       exit (-1);
     }
 
-  // Wait for the start sign
-  getchar();
-  
-  char cs[1];
-  // Keep reading from the socket till it is closed.
-  ssize_t c = 1;
-  while (c > 0)
-    c = read(f, &cs, 1);
-  
-  if (c < 0) 
-    perror ("read");
-
-  return c;
+  return f;
 }

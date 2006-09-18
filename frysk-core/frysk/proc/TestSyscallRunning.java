@@ -42,8 +42,6 @@ package frysk.proc;
 import java.io.*;
 import java.net.*;
 
-import frysk.sys.SyscallNum;
-
 public class TestSyscallRunning
   extends TestLib
 {
@@ -120,14 +118,13 @@ public class TestSyscallRunning
 
   public void testSyscallRunning() throws IOException
   {
-    // Get the port that will be listened on and connect to it.
+    // Get the port that will be listened on.
     String line = in.readLine();
     int port = Integer.decode(line).intValue();
-    Socket s = new Socket("localhost", port);
 
     final Task task = proc.getMainTask();
 
-    final SyscallObserver syso = new SyscallObserver();
+    final SyscallObserver syso = new SyscallObserver("accept", task, false);
     task.requestAddSyscallObserver(syso);
 
     // Make sure the observer is properly installed.
@@ -168,7 +165,7 @@ public class TestSyscallRunning
 
     // Now unblock and then attach another observer.
     // Do all this on the eventloop so properly serialize calls.
-    final SyscallObserver syso2 = new SyscallObserver();
+    final SyscallObserver syso2 = new SyscallObserver("accept", task, true);
     Manager.eventLoop.add(new TaskEvent()
       {
 	public void execute ()
@@ -199,10 +196,11 @@ public class TestSyscallRunning
     // Sanity check
     assertTrue("syso entered", syso.getEntered());
     assertFalse("syso exited", syso.getExited());
-    assertFalse("syso2 entered", syso2.getEntered());
+    assertTrue("syso2 entered", syso2.getEntered());
     assertFalse("syso2 exited", syso2.getExited());
 
     // Write something to the socket and close it so the syscall exits.
+    Socket s = new Socket("localhost", port);
     OutputStream out = s.getOutputStream();
     out.write(1);
     out.flush();
@@ -236,19 +234,22 @@ public class TestSyscallRunning
     private boolean added;
     private boolean removed;
 
-    SyscallObserver()
+    private final frysk.proc.Syscall syscall;
+
+    SyscallObserver(String call, Task task, boolean entered)
     {
+      syscall = frysk.proc.Syscall.syscallByName(call, task);
+      this.entered = entered;
     }
 
     public Action updateSyscallEnter(Task task)
     {
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      int syscallNum = syscallEventInfo.number (task);
-      if (syscallNum == SyscallNum.SYSread)
+      if (syscallEventInfo.getSyscall(task).equals(syscall))
 	{
-	  entered = true;
 	  synchronized(monitor)
 	    {
+	      entered = true;
 	      monitor.notifyAll();
 	      return Action.BLOCK;
 	    }
@@ -258,13 +259,11 @@ public class TestSyscallRunning
 
     public Action updateSyscallExit(Task task)
     {
-      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      int syscallNum = syscallEventInfo.number (task);
-      if (syscallNum == SyscallNum.SYSread)
+      if (entered)
 	{
-	  exited = true;
 	  synchronized(monitor)
             {
+	      exited = true;
               monitor.notifyAll();
             }
 	}

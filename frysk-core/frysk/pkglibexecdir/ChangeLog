@@ -1,3 +1,7 @@
+2006-09-18  Mark Wielaard  <mark@klomp.org>
+
+	* funit-syscall-running.c: Don't read, just accept socket.
+
 2006-09-07  Mark Wielaard  <mark@klomp.org>
 
 	* funit-syscall-signal.c: New test prog.

@@ -1,3 +1,10 @@
+2006-09-18  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #3193
+	* TestSyscallRunning (SyscallObserver): Take syscall name and
+	whether the syscall is in an entered state. Use Syscall.getByName()
+	for accept.
+
 2006-09-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (logger): Remove "public" designation.
