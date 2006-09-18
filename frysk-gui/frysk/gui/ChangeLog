@@ -1,3 +1,8 @@
+2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Remove Vbox encapsulating
+	logTextView widget. Fixes bz 3222.
+
 2006-09-16  Mike Cvet  <mcvet@redhat.com>
 
 	* sessions/ProcessPicker.java: Added Javadoc.
