@@ -409,11 +409,33 @@ public class DebugProcess
    * Removes an obsever from the list of observers to be added to the debug
    * process on load.
    * 
-   * @param observer - ObserverRoot to add.
+   * @param observer - ObserverRoot to remove.
    */
   public void removeObserver (ObserverRoot observer)
   {
+
     observers.remove(observer);
+  }
+  
+  /**
+   * Removes an obsever from the list of observers to be added to the debug
+   * process on load.
+   * 
+   * @param observerName - Observer name to remove
+   */
+  public void removeObserverByName (String observerName)
+  {
+
+	Iterator i = observers.iterator();
+	while (i.hasNext())
+	{
+		ObserverRoot givenObserver = (ObserverRoot)i.next();
+		if (observerName.equals(givenObserver.getName()))
+		{
+			removeObserver(givenObserver);
+			return;
+		}
+	}
   }
 
   /**

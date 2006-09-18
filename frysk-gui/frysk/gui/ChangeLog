@@ -8,6 +8,11 @@
 
 2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java: Partial Java-DOC.
+	(getProcessObserverControls): Add call to 
+	removeObserverByName instead of removeObserver.
+	* sessions/DebugProcess.java (removeObserverByName): Added.
+	
 	* glade/procpop.glade: Remove Vbox encapsulating
 	logTextView widget. Fixes bz 3222.
 
