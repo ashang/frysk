@@ -286,35 +286,50 @@ public class SourceWindowFactory
         DwflLine line;
         DOMFunction f = null;
         StackLevel stack1 = null;
-	try 
-	  {
-	    line = task.getDwflLineXXX();
-	  }
-	catch (TaskException e)
-	  {
-	    line = null;
-	  }
-	
-        if (line != null)
-          {
-            String filename = line.getSourceFile();
-            filename = filename.substring(filename.lastIndexOf("/") + 1);
-            f = getFunctionXXX(dom.getImage(task.getName()), filename,
-                               line.getLineNum());
-            stack1 = new StackLevel(f, line.getLineNum());
-          }
-        else
-          {
-            stack1 = new StackLevel(f, StackLevel.NO_LINE);
-          }
+        
+        /** Create the stack frame **/
+        
         StackFrame frame = null;
+        StackFrame curr = null;
         try
           {
             frame = StackFactory.createStackFrame(task);
+            curr = frame;
           }
         catch (Exception e)
           {
             System.out.println(e.getMessage());
+          }
+        
+        /** Stack frame created **/
+        
+        while (curr != null)    /* Iterate and initialize information
+                                 * for all frames, not just the top one */
+          {
+            try
+              {
+                line = task.getDwflLineXXX(curr.getAddress());
+              }
+            catch (TaskException e)
+              {
+                line = null;
+              }
+
+            if (line != null)
+              {
+                String filename = line.getSourceFile();
+                filename = filename.substring(filename.lastIndexOf("/") + 1);
+                f = getFunctionXXX(dom.getImage(task.getName()), filename,
+                                   line.getLineNum());
+                stack1 = new StackLevel(f, line.getLineNum());
+              }
+            else
+              {
+                stack1 = new StackLevel(f, StackLevel.NO_LINE);
+              }
+
+            curr.setFunction(f);
+            curr = curr.getOuter();
           }
 
         srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1, frame);

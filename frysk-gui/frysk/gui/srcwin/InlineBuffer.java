@@ -50,6 +50,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
+import frysk.rt.StackFrame;
 
 /**
  * The InlineBuffer performs much of the same functionality as the SourceBuffer,
@@ -75,8 +76,8 @@ public class InlineBuffer extends SourceBuffer {
 		super();
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
-		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-		this.setScope(myScope);
+		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
+		//this.setScope(myScope);
 	}
 	
 	
@@ -209,10 +210,10 @@ public class InlineBuffer extends SourceBuffer {
     /**
      * Sets the current line, taking into account the offset from the start of the file
      */
-    protected void setCurrentLine(CurrentLineSection currentLine){
-    		currentLine.setStartLine(currentLine.getStartLine() - this.declaration.getStartingLine()+1);
-    		currentLine.setEndLine(currentLine.getEndLine() - this.declaration.getStartingLine()+1);
-    		super.setCurrentLine(currentLine);
+    protected void setCurrentLine(StackFrame frame){
+    		frame.setStartLine(frame.getStartLine() - this.declaration.getStartingLine()+1);
+    		frame.setEndLine(frame.getEndLine() - this.declaration.getStartingLine()+1);
+    		super.setCurrentLine(frame);
     }
     
     /**
@@ -295,8 +296,9 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasInlineInstance()){
     		this.instance = instance.getInlineInstance();
     		this.declaration = this.instance.getDeclaration(); 
-    		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-    		this.setScope(myScope);
+            /* XXX: fix! */
+    		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
+    		//this.setScope(myScope);
     	}
     	// Can we even get a case where there is no next inline instance and this method
     	// is called?
@@ -311,8 +313,8 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasParentInlineInstance()){
     		this.instance = instance.getPreviousInstance();
     		this.declaration = this.instance.getDeclaration();
-    		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-    		this.setScope(myScope);
+    		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
+    		//this.setScope(myScope);
     	}
     	// Same connundrum as above method...
     }

@@ -82,6 +82,7 @@ import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.rt.StackFrame;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -142,12 +143,12 @@ public class SourceView
    * @param scope The source file that this widget will be displaying
    * @param parent The SourceWindow that this SourceViewWidget is contained in
    */
-  public SourceView (StackLevel scope, SourceWindow parent)
+  public SourceView (StackFrame scope, SourceWindow parent)
   {
     this(new SourceBuffer(scope), parent);
   }
 
-  public SourceView (StackLevel scope, SourceWindow parent, int mode)
+  public SourceView (StackFrame scope, SourceWindow parent, int mode)
   {
     this(new SourceBuffer(scope, mode), parent);
   }
@@ -266,7 +267,7 @@ public class SourceView
    * 
    * @param data The new stack frame to load.
    */
-  public void load (StackLevel data)
+  public void load (StackFrame data)
   {
     this.buf.setScope(data);
     this.expanded = false;
@@ -346,7 +347,7 @@ public class SourceView
     return this.buf.getFunctions();
   }
 
-  public StackLevel getScope ()
+  public StackFrame getScope ()
   {
     return this.buf.getScope();
   }

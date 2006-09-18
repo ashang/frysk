@@ -43,6 +43,8 @@ import java.util.Vector;
 
 import org.gnu.gtk.Widget;
 
+import frysk.rt.StackFrame;
+
 
 public interface View{
 	
@@ -57,9 +59,9 @@ public interface View{
 	
 	Vector getFunctions();
 	
-	void load(StackLevel data);
+	void load(StackFrame data);
 	
-	StackLevel getScope();
+	StackFrame getScope();
 	
 	void setSubscopeAtCurrentLine(InlineSourceView child);
 	

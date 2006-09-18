@@ -1,3 +1,41 @@
+2006-09-18  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (populateStackBrowser): Initializes the
+	View with a StackFrame.
+	(SourceWindow): Got rid of the StackLevel global variable.
+	* SourceView.java (SourceView): Changed StackLevel to 
+	a StackFrame.
+	(SourceView): Ditto.
+	(load): Ditto.
+	(getScope): Ditto.
+	* View.java (load): Ditto.
+	(getScope): Ditto.
+	* SourceBuffer.java (scope): Changed StackLevel variable
+	to a StackFrame.
+	(SourceBuffer): Changed StackLevel to a StackFrame.
+	(SourceBuffer): Ditto.
+	(setCurrentLine): Ditto. Updated calls properly.
+	(setScope): Ditto.
+	(setScope): Ditto.
+	(getScope): Ditto.
+	* MixedView.java (MixedView): Changed StackLevel to a
+	StackFrame.
+	(load): Ditto.
+	(getScope): Ditto.
+	* InlineBuffer.java (InlineBuffer): Temporarily removed 
+	calls to setScope.
+	(moveDown): Ditto.
+	(moveUp): Ditto.
+	(setCurrentLine): Switched the change line calls to a 
+	StackFrame instead of a CurrentLineSection.
+	* CurrentStackView.java (StackViewListener): Changed to a
+	StackFrame from a StackLevel.
+	(notifyObservers): Ditto.
+	(selectionChangedEvent): Ditto.
+	* SourceWindowFactory.java (finishSourceWin): Properly creates
+	StackFrames, and initializes information for each frame on the 
+	call stack, rather than just the top StackLevel.
+
 2006-09-16  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java: Added Javadoc.

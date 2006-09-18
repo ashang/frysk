@@ -218,8 +218,6 @@ public class SourceWindow
 
   private Task myTask;
 
-  private StackLevel stack;
-
   private CurrentStackView stackView;
 
   private VariableWatchView watchView;
@@ -253,7 +251,6 @@ public class SourceWindow
     this.glade = glade;
     this.gladePath = gladePath;
     // this.dom = dom;
-    this.stack = stack;
 
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 
@@ -262,7 +259,7 @@ public class SourceWindow
 
     this.tips = new ToolTips();
 
-    this.populateStackBrowser(this.stack, frame);
+    this.populateStackBrowser(stack, frame);
 
     this.createActions(ag);
     this.createMenus();
@@ -352,12 +349,13 @@ public class SourceWindow
   {
     stackView = new CurrentStackView(top, frame);
 
-    StackLevel lastStack = stackView.getCurrentLevel();
+    //StackLevel lastStack = stackView.getCurrentLevel();
 
     if (this.view != null)
       ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
 
-    this.view = new SourceView(lastStack, this);
+    //this.view = new SourceView(lastStack, this);
+    this.view = new SourceView(frame, this);
     ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
     this.view.showAll();
 
@@ -1113,7 +1111,7 @@ public class SourceWindow
       }
   }
 
-  private void updateShownStackFrame (StackLevel selected)
+  private void updateShownStackFrame (StackFrame selected)
   {
     DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
@@ -1474,9 +1472,9 @@ public class SourceWindow
 
     }
 
-    public void currentStackChanged (StackLevel newLevel)
+    public void currentStackChanged (StackFrame newFrame)
     {
-      target.updateShownStackFrame(newLevel);
+      target.updateShownStackFrame(newFrame);
     }
 
   }

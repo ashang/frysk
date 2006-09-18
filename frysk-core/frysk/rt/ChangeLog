@@ -1,3 +1,12 @@
+2006-09-18  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (StackFrame): Added variables and initializations
+	for start and end lines and offsets, as well as getters and setters.
+	(setFunction): Added.
+	(setData): Ditto.
+	(getFunction): Ditto.
+	(getData): Ditto.
+
 2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
 
 	* StackCallbacks.java (findProcInfo, putUnwindInfo,

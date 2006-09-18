@@ -40,6 +40,8 @@
 
 package frysk.rt;
 
+import frysk.dom.DOMFunction;
+import frysk.dom.DOMSource;
 import frysk.proc.Task;
 import gnu.gcj.RawDataManaged;
 import lib.dw.Dwfl;
@@ -54,6 +56,14 @@ public class StackFrame
   private String sourceFile;
 
   private int lineNum;
+  
+  private int startLine;
+
+  private int endLine;
+
+  private int startOffsset;
+
+  private int endOffset;
 
   private int column;
 
@@ -64,6 +74,10 @@ public class StackFrame
   protected StackFrame outer;
 
   private RawDataManaged unwind_data;
+  
+  private DOMFunction func;
+  
+  private DOMSource data;
 
   private Task myTask;
 
@@ -80,6 +94,10 @@ public class StackFrame
         if (line != null)
           {
             this.lineNum = line.getLineNum();
+            this.startLine = this.lineNum;
+            this.endLine = this.lineNum;
+            this.startOffsset = 0;
+            this.endOffset = -1;
             this.sourceFile = line.getSourceFile();
             this.column = line.getColumn();
           }
@@ -88,6 +106,30 @@ public class StackFrame
       {
         this.sourceFile = "<Unknown file>";
       }
+  }
+  
+  public void setFunction(DOMFunction f)
+  {
+    this.func = f;
+    if (f != null)
+        setData(f.getSource());
+    else
+        setData(null);
+  }
+  
+  public void setData(DOMSource s)
+  {
+    this.data = s;
+  }
+  
+  public DOMFunction getFunction()
+  {
+    return this.func;
+  }
+  
+  public DOMSource getData()
+  {
+    return this.data;
   }
 
   public String getMethodName ()
@@ -135,5 +177,35 @@ public class StackFrame
   public StackFrame getOuter ()
   {
     return outer;
+  }
+  
+  public int getEndLine ()
+  {
+    return endLine;
+  }
+  
+  public void setEndLine (int i )
+  {
+    this.endLine = i;
+  }
+
+  public int getEndOffset ()
+  {
+    return endOffset;
+  }
+  
+  public int getStartLine ()
+  {
+    return startLine;
+  }
+  
+  public void setStartLine (int i)
+  {
+    this.startLine = i;
+  }
+
+  public int getStartOffsset ()
+  {
+    return startOffsset;
   }
 }

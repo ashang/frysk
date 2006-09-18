@@ -44,12 +44,14 @@ import java.util.Vector;
 import org.gnu.gtk.HPaned;
 import org.gnu.gtk.ScrolledWindow;
 
+import frysk.rt.StackFrame;
+
 public class MixedView extends HPaned implements View {
 
 	private SourceView sourceWidget;
 	private SourceView assemblyWidget;
 	
-	public MixedView(StackLevel scope, SourceWindow parent){
+	public MixedView(StackFrame scope, SourceWindow parent){
 		super();
 		
 		this.sourceWidget = new SourceView(scope, parent);
@@ -89,7 +91,7 @@ public class MixedView extends HPaned implements View {
 		// TODO: same problem as findPrevious
 	}
 
-	public void load(StackLevel data) {
+	public void load(StackFrame data) {
 		this.sourceWidget.load(data);
 		this.assemblyWidget.load(data);
 		this.assemblyWidget.setMode(SourceBuffer.ASM_MODE);
@@ -119,7 +121,7 @@ public class MixedView extends HPaned implements View {
 		return null;
 	}
 
-	public StackLevel getScope() {
+	public StackFrame getScope() {
 		return this.sourceWidget.getScope();
 	}
 

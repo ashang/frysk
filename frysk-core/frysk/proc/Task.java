@@ -113,6 +113,14 @@ abstract public class Task
       dwfl = new Dwfl(getTid());
     return dwfl.getSourceLine(getIsa().pc(this));
   }
+  
+  public final DwflLine getDwflLineXXX (long addr)
+  throws TaskException
+{
+  if (dwfl == null)
+    dwfl = new Dwfl(getTid());
+  return dwfl.getSourceLine(addr);
+}
 
   /**
    * This Task's Instruction Set Architecture.

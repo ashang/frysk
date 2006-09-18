@@ -68,6 +68,7 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
+import frysk.rt.StackFrame;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -145,7 +146,7 @@ public class SourceBuffer
   // Since conceptually each sourcebuffer will only be viewing one file, we
   // don't
   // need any information higher than this
-  protected StackLevel scope;
+  protected StackFrame scope;
 
   protected TextChildAnchor anchor;
 
@@ -165,13 +166,13 @@ public class SourceBuffer
    * 
    * @param scope
    */
-  public SourceBuffer (StackLevel scope)
+  public SourceBuffer (StackFrame scope)
   {
     this();
     this.setScope(scope, SOURCE_MODE);
   }
 
-  public SourceBuffer (StackLevel scope, int mode)
+  public SourceBuffer (StackFrame scope, int mode)
   {
     this();
     this.setScope(scope, mode);
@@ -262,13 +263,13 @@ public class SourceBuffer
    * @param endCol The offset (wrt. the start of the line) that the instruction
    *          ends on
    */
-  protected void setCurrentLine (CurrentLineSection currentLine)
+  protected void setCurrentLine (StackFrame frame)
   {
 
-    int startLine = currentLine.getStartLine();
-    int startCol = currentLine.getStartOffsset();
-    int endLine = currentLine.getEndLine();
-    int endCol = currentLine.getEndOffset();
+    int startLine = frame.getStartLine();
+    int startCol = frame.getStartOffsset();
+    int endLine = frame.getEndLine();
+    int endCol = frame.getEndOffset();
 
     this.startCurrentLine = this.createMark(
                                             "currentLineStart",
@@ -297,9 +298,9 @@ public class SourceBuffer
                   this.getIter(this.endCurrentLine));
 
     // Apply the next sections of the 'current line'
-    currentLine = currentLine.getNextSection();
-    if (currentLine != null)
-      setCurrentLine(currentLine);
+    frame = frame.getOuter();
+    if (frame != null)
+      setCurrentLine(frame);
   }
 
   /**
@@ -636,7 +637,7 @@ public class SourceBuffer
     return new DOMInlineInstance((Element) iter.next());
   }
 
-  public void setScope (StackLevel scope)
+  public void setScope (StackFrame scope)
   {
     this.setScope(scope, SOURCE_MODE);
   }
@@ -646,7 +647,7 @@ public class SourceBuffer
    * 
    * @param scope The stack frame to be displayed
    */
-  private void setScope (StackLevel scope, int mode)
+  private void setScope (StackFrame scope, int mode)
   {
     for (int i = 0; i < functions.size(); i++)
       if (this.markExists((String) functions.get(i)))
@@ -678,7 +679,7 @@ public class SourceBuffer
       }
 
     if (scope != null)
-      this.setCurrentLine(this.scope.getCurrentLine());
+      this.setCurrentLine(scope);
   }
 
   public void setMode (int mode)
@@ -724,7 +725,7 @@ public class SourceBuffer
   /**
    * @return The stack frame currently being displayed
    */
-  public StackLevel getScope ()
+  public StackFrame getScope ()
   {
     return scope;
   }

@@ -71,8 +71,7 @@ public class CurrentStackView
 
   public interface StackViewListener
   {
-    //void currentStackChanged (StackFrame newFrame);
-    void currentStackChanged (StackLevel newLevel);
+    void currentStackChanged (StackFrame newFrame);
   }
 
   private DataColumn[] stackColumns;
@@ -221,8 +220,7 @@ public class CurrentStackView
     this.observers.add(listener);
   }
 
-  //private void notifyObservers (StackFrame newStack)
-  private void notifyObservers (StackLevel newStack)
+  private void notifyObservers (StackFrame newStack)
   {
     Iterator iter = this.observers.iterator();
 
@@ -240,9 +238,7 @@ public class CurrentStackView
     if (paths.length == 0)
       return;
 
-    //XXX
-    //StackFrame selected = (StackFrame) model.getValue(
-     StackLevel selected = (StackLevel) model.getValue(
+     StackFrame selected = (StackFrame) model.getValue(
                                                       model.getIter(paths[0]),
                                                       (DataColumnObject) stackColumns[1]);
 
