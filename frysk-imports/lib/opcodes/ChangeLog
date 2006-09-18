@@ -1,3 +1,16 @@
+2006-09-18  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* Instruction.java (length): New member.
+	* Disassembler.java (setCurrentInstructionLength): New method.
+	
+	* cni/Disassembler.cxx (disassemble): Fill in instruciton length.
+
+	* tests/TestOpcodes.java: Add test case for powerpc.
+	* tests/DummyByteBuffer.java (DummyByteBuffer): Write dummy 
+	byte buffer for powerpc.
+	(peek): Modify the condition as 0 is the first index.
+	(poke): Likewise.
+
 2006-09-15  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestOpcodes.java (testDisassembler): Updated expected

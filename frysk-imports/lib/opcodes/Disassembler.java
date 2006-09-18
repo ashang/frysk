@@ -84,6 +84,13 @@ public final class Disassembler
 
   // THIS SHOULD NOT BE CALLED FROM JAVA!
   // It is not private because it is called from CNI
+  protected void setCurrentInstructionLength (int len)
+  {
+    current.length = len;
+  }
+
+  // THIS SHOULD NOT BE CALLED FROM JAVA!
+  // It is not private because it is called from CNI
   protected void moveToNext ()
   {
     this.isnList.add(this.current);

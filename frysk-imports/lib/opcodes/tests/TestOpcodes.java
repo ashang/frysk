@@ -51,17 +51,10 @@ import lib.opcodes.OpcodesException;
 import frysk.imports.Build;
 
 public class TestOpcodes
-    extends TestCase
+  extends TestCase
 {
-  /*
-   * Note: this test is expected to fail on anything but i386 for the time
-   * being. TODO: come up with a way of doing the correct assertEquals for other
-   * archs
-   */
   public void testDisassembler ()
   {
-      if (brokenPpcXXX(2712))
-          return;
 
     ByteBuffer buffer = new DummyByteBuffer();
     final int numInstructions = 16;
@@ -81,65 +74,63 @@ public class TestOpcodes
     assertNotNull(list);
     assertEquals(list.size(), numInstructions);
 
-    String[] addrs = { "0", "2", "4", "6", "7", "8", "a", "c", "e", "f", "10",
-                      "12", "14", "16", "17", "18" };
+    String[] insts = new String[0];
 
-    String[] insts;
+    //boolean is64 = Build.BUILD_ARCH.indexOf("_64") != - 1;
 
-    boolean is64 = Build.BUILD_ARCH.indexOf("_64") != - 1;
-
-    if (! is64)
+    // for powerpc
+    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
       {
-        insts = new String[] { "incl   (%ecx)",
-                               "add    (%ebx),%al", 
-                               "add    $0x5,%al", 
-                               "push   %es",
-                               "pop    %es", 
-                               "add    %al,(%ecx)", 
-                               "add    (%ebx),%al",
-                               "add    $0x5,%al", 
-                               "push   %es", 
-                               "pop    %es",
-                               "add    %al,(%ecx)",
-                               "add    (%ebx),%al", 
+	insts = new String[]
+	  { 
+	    "bctr",
+	    "sc",
+	    "blr",
+	    "nop",
+	    "li      r0,2",
+	    "addi    r12,r12,872",
+	    "addi    r1,r1,112",
+	    "mtctr   r11",
+	    "rldicr  r5,r5,36,27"
+	  };
+      }
+    // for X86_64
+    else if (Build.BUILD_ARCH.indexOf("_64") != - 1)
+      {
+
+        insts = new String[] { "add    %al,(%rcx)",
+                               "add    (%rbx),%al",
                                "add    $0x5,%al",
-                               "push   %es",
-                               "pop    %es", 
-                               "add    %al,(%ecx)" };
+                               "(bad)",
+                               "(bad)"};
 
       }
+    // for x86
     else
       {
-        insts = new String[] { "incl   (%rcx)",
-                               "add    (%rbx),%al",
-                               "add    $0x5,%al",
-                               "(bad)  ",
-                               "(bad)  ",
-                               "add    %al,(%rcx)",
-                               "add    (%rbx),%al",
-                               "add    $0x5,%al",
-                               "(bad)  ",
-                               "(bad)  ",
-                               "add    %al,(%rcx)",
-                               "add    (%rbx),%al",
-                               "add    $0x5,%al",
-                               "(bad)  ",
-                               "(bad)  ",
-                               "add    %al,(%rcx)" };
-
+	insts = new String[] { "add    %al,(%ecx)",
+                               "add    (%ebx),%al", 
+                               "add    $0x5,%al", 
+                               "push   %es",
+                               "pop    %es" 
+			       };
       }
 
     assertNotNull(insts);
 
-    int instCount = is64 ? 11 : 16;
 
-    for (int i = 0; i < instCount; i++)
+    // Address for DummyByteBuffer is started at 0x00.
+    int address = 0;
+    for (int i = 0; i < insts.length; i++)
       {
         Instruction inst = (Instruction) list.get(i);
         assertNotNull(inst);
 
-        assertEquals(addrs[i], Long.toHexString(inst.address));
-        assertEquals(insts[i], inst.instruction);
+        assertEquals(address, inst.address);
+	//Remve tailing whiespace before compare.
+        assertEquals(insts[i], inst.instruction.trim());
+
+	address += inst.length;
       }
   }
 }

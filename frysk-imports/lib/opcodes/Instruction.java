@@ -38,12 +38,15 @@
 // exception.
 package lib.opcodes;
 
-public class Instruction {
+public class Instruction 
+{
 
-	public long address;
-	public String instruction  = "";
+  public long address;
+  public int length =0;
+  public String instruction  = "";
 	
-	public String toString(){
-		return "0x"+Long.toHexString(address)+"\t"+instruction;
-	}
+  public String toString()
+  {
+    return "0x"+Long.toHexString(address)+"\t"+instruction;
+  }
 }

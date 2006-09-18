@@ -79,8 +79,9 @@ void
 lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 {
 
-	disassemble_info disasm_info;
-	int (*disasm_func) (bfd_vma, disassemble_info*);
+  disassemble_info disasm_info;
+  int (*disasm_func) (bfd_vma, disassemble_info*);
+  int instr_length = 0;
 
 	::init_disassemble_info (&disasm_info, (void*) this, save_instruction);
 
@@ -128,7 +129,10 @@ lib::opcodes::Disassembler::disassemble (jlong address, jlong instructions)
 	for (int i = 0; i < instructions; i++)
 	{
 		this->setCurrentAddress(current_address);
-		current_address += disasm_func(current_address, &disasm_info);
+		instr_length = disasm_func(current_address, &disasm_info);
+		current_address += instr_length;
+
+		this->setCurrentInstructionLength (instr_length);
 		this->moveToNext();
 	}
 }

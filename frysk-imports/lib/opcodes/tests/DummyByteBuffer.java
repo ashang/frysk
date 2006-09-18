@@ -39,25 +39,68 @@
 package lib.opcodes.tests;
 
 import inua.eio.ByteBuffer;
+import frysk.imports.Build;
 
-public class DummyByteBuffer extends ByteBuffer {
+public class DummyByteBuffer
+  extends ByteBuffer 
+{
 
-	private byte[] bytes = {0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7};
-	
-	public DummyByteBuffer(){
-		super(0, 8);
-	}
-	
-	protected int peek(long caret) {
-		if(caret < bytes.length && caret > 0)
-			return bytes[(int) caret];
-		
-		return -1;
-	}
+  private byte bytes[];
+  
+  public DummyByteBuffer()
+  {
+    super(0, 8);
 
-	protected void poke(long caret, int val) {
-		if(caret < bytes.length && caret > 0)
-			bytes[(int) caret] = (byte) val;
-	}
+    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
+      {
+	bytes = new byte[]
+	  {
+	    0x4e, (byte)0x80, 0x04, 0x20, // bctr
+	    0x44, 0x00, 0x00, 0x02,       // sc
+	    0x4e, (byte)0x80, 0x00, 0x20, // blr
+	    0x60, 0x00, 0x00, 0x00,       // nop
+	    0x38, 0x00, 0x00, 0x02,       // li      r0,2
+	    0x39, (byte)0x8c, 0x03, 0x68, // addi    r12,r12,872
+	    0x38, 0x21, 0x00, 0x70,       // addi    r1,r1,112
+	    (byte)0x7d, 0x69, 0x03, (byte)0xa6,        // mtctr   r11
+	    (byte)0x78, (byte)0xa5, 0x26, (byte) 0xc6  // rldicr  r5,r5,36,27
+	  };
 
+      }
+    else if (Build.BUILD_ARCH.indexOf("_64") != - 1)
+      {
+	bytes = new byte[]
+	  {
+	    0, 1, // add    %al,(%rcx) 
+	    2, 3, // add    (%rbx),%al
+	    4, 5, // add    $0x5,%al
+	    6,    // (bad)
+	    7     // (bad)
+	  };
+      }
+    else
+      {
+	bytes = new byte[]
+	  {
+	    0, 1, // add    %al,(%ecx)
+	    2, 3, // add    (%ebx),$al
+	    4, 5, // add    $0x5,%al
+	    6,    // push   %es
+	    7     // pop    %es
+	  };
+      }
+  }
+
+  protected int peek(long caret) 
+  {
+    if(caret < bytes.length && caret >= 0)
+      return bytes[(int) caret];	
+    return -1;
+  }
+
+  protected void poke(long caret, int val) 
+  {
+    if(caret < bytes.length && caret >= 0)
+      bytes[(int) caret] = (byte) val;
+  }
 }
