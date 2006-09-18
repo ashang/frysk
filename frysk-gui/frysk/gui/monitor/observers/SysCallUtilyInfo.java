@@ -45,6 +45,26 @@ import frysk.proc.TaskException;
 
 public class SysCallUtilyInfo {
 
+	public static String getSysCallName(Task task) {
+		Syscall syscall;
+
+		SyscallEventInfo syscallEventInfo = null;
+		try {
+			syscallEventInfo = task.getSyscallEventInfo();
+		} catch (final TaskException e) {
+			return null;
+		}
+		
+		try {
+			syscall = syscallEventInfo.getSyscall(task);
+		}
+		catch (final RuntimeException e1) {
+			return null;
+		}
+
+		return syscall.getName();
+	}
+	
 	public static String getCallInfoFromSyscall(Task task) {
 
 		long addr = 0;

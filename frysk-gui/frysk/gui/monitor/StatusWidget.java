@@ -62,6 +62,7 @@ import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskCloneObserver;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.gui.monitor.observers.TaskSignaledObserver;
 import frysk.gui.monitor.observers.TaskSyscallObserver;
 import frysk.gui.monitor.observers.TaskTerminatingObserver;
 import frysk.proc.Task;
@@ -165,6 +166,11 @@ public class StatusWidget extends VBox {
 	}
 	
 	private void addObserverActionPoint(ObserverRoot observer, GuiData guiData)	{
+		
+		if (observer instanceof TaskSignaledObserver) {
+			((TaskSignaledObserver)observer).taskActionPoint.addAction(new TimelineAction(
+					observer, guiData));
+		}
 		if (observer instanceof TaskSyscallObserver) {
 			
 			((TaskSyscallObserver)observer).enteringTaskActionPoint.addAction(new TimelineAction(
@@ -279,6 +285,11 @@ public class StatusWidget extends VBox {
         {
           observerglyph = 4;
           observercolor = 3;
+        }
+      else if (observer.getBaseName().equals("Signaled Observer"))
+        {
+          observerglyph = 1;
+          observercolor = 1;
         }
       
       if (!markerStore.containsKey(observer.getName()))

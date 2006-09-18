@@ -1,5 +1,10 @@
 2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* observers/TaskSignaledObserver.java (TaskSignaledObserver): New.
+	* observers/ObserverManager.java (initTaskObservers): Instantiate Signaled 
+	observer.
+	* StatusWidget.java (addObserverActionPoint): Add signaled observer.
+	(TimelineAction.createEvent): Ditto.
 	* EventLogger.java: Removed old legacy logging/observer implementing code.
 	Remove custom handler. Replace with standard FileHandler.
 

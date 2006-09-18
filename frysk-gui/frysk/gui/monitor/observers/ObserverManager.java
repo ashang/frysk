@@ -110,8 +110,15 @@ public class ObserverManager {
 	 * and adds it to the list.
 	 * */
 	private void initTaskObservers() {
+		
 		//============================================
-		ObserverRoot observer = new TaskExecObserver();
+		ObserverRoot observer = new TaskSignaledObserver();
+		observer.dontSaveObject();
+		this.tryAddTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+		
+		//============================================
+		observer = new TaskExecObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
