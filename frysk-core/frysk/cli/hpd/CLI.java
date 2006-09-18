@@ -307,12 +307,13 @@ public class CLI
               Manager.host.requestRefreshXXX (true);
               Manager.eventLoop.runPending ();
             }
-          if (Manager.host == null)
+
+          proc = Manager.host.getProc (new ProcId (pid));
+          if (proc == null)
             {
               addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
               return;
-            }
-          proc = Manager.host.getProc (new ProcId (pid));
+            }          
           task = proc.getMainTask();
           SymTab symtab = new SymTab(pid, proc, task);
         }

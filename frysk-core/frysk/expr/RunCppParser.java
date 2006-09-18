@@ -305,10 +305,15 @@ public class RunCppParser
 	      CppTreeParser treeParser = new CppTreeParser(4, 2, hpdsymTab);
 
 	      try {
-		result = treeParser.expr(t);
-		consReader.printString(String.valueOf(result.getInt()));
+	        result = treeParser.expr(t);
+            if (result.getType().getTypeId() == BaseTypes.baseTypeFloat)
+              consReader.printString(String.valueOf(result.getFloat()));
+            else if (result.getType().getTypeId() == BaseTypes.baseTypeDouble)
+              consReader.printString(String.valueOf(result.getDouble()));
+            else
+              consReader.printString(String.valueOf(result.getInt()));
 	      }	catch (ArithmeticException ae)  {
-		System.err.println("Arithmetic Exception occurred:  " + ae);
+	        System.err.println("Arithmetic Exception occurred:  " + ae);
 	      }
 	    }
 	  } catch (IOException ioe) {

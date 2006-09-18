@@ -1,3 +1,8 @@
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java (get): Handle float and double.
+	(print): Likewise.
+
 2006-09-12  Stan Cox  <scox@redhat.com>
 
 	* hpd/CLI.java (proc): New.

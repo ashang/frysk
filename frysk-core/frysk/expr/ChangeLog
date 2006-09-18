@@ -1,3 +1,9 @@
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* RunCppParser.java (main): Handle float and double.
+	* cpp.g (NUM): Likewise.
+	(CAST): Likewise.
+
 2006-09-12  Stan Cox  <scox@redhat.com>
 
 	* CppSymTab.java: New file.

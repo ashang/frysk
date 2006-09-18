@@ -410,8 +410,7 @@ constant
     |   HEXADECIMALINT
     |   CharLiteral
     |   (StringLiteral)+
-    |   FLOATONE
-    |   FLOATTWO
+    |   FLOAT
     |   "true"
     |   "false"
     ;
@@ -627,21 +626,21 @@ Vocabulary
 NUM
     :	( (Digit)+ ('.' | 'e' | 'E') )=> 
         (Digit)+
-        (   '.' (Digit)* (Exponent)? {_ttype = FLOATONE;} //Zuo 3/12/01
-	    |   Exponent                 {_ttype = FLOATTWO;} //Zuo 3/12/01
+        (   '.' (Digit)* (Exponent)?  //{_ttype = FLOATONE;} //Zuo 3/12/01
+	    |   Exponent              //{_ttype = FLOATTWO;} //Zuo 3/12/01
         )                          //{_ttype = DoubleDoubleConst;}
         (   FloatSuffix               //{_ttype = FloatDoubleConst;}
         |   LongSuffix                //{_ttype = LongDoubleConst;}
-        )?
+        )?			   {_ttype = FLOAT;}
 
     |	("...")=> "..."            {_ttype = ELLIPSIS;}
 
     |   '.'                     {_ttype = DOT;}
-        ((Digit)+ (Exponent)?   {_ttype = FLOATONE;} //Zuo 3/12/01
+        ((Digit)+ (Exponent)?         //{_ttype = FLOATONE;} //Zuo 3/12/01
             (   FloatSuffix           //{_ttype = FloatDoubleConst;}
             |   LongSuffix            //{_ttype = LongDoubleConst;}
             )?
-        )?
+        )?			   {_ttype = FLOAT;}
 
     |   ('0' ('0'..'7'))=>
         '0' ('0'..'7')*            //{_ttype = IntOctalConst;}
@@ -675,11 +674,13 @@ options {
 {
     IntegerType intType;
     ShortType shortType;
+    FloatType floatType;
     private CppSymTab cppSymTabRef;
     public CppTreeParser(int intSize, int shortSize, CppSymTab symTab) {
         this();
 	cppSymTabRef = symTab; 
-        intType = new IntegerType(intSize, ByteOrder.BIG_ENDIAN);
+        intType = new IntegerType(intSize, ByteOrder.LITTLE_ENDIAN);
+        floatType = new FloatType(intSize, ByteOrder.LITTLE_ENDIAN);
         shortType = new ShortType(shortSize, ByteOrder.LITTLE_ENDIAN);
     }
 }
@@ -745,16 +746,36 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             returnVar = ((log_expr.getType().getLogicalValue(log_expr)) ? v1 : v2);  
         }
     |   o:OCTALINT  {
+    	    char c = o.getText().charAt(o.getText().length() - 1);
+    	    int l = o.getText().length();
+    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
+    	       l -= 1;
             returnVar = IntegerType.newIntegerVariable (
-                intType, Integer.parseInt(o.getText().substring(1),8));
+                intType, Integer.parseInt(o.getText().substring(1, l), 8));
         }
     |   i:DECIMALINT  {
+    	    char c = i.getText().charAt(i.getText().length() - 1);
+    	    int l = i.getText().length();
+    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
+    	       l -= 1;
             returnVar = IntegerType.newIntegerVariable (
-                intType, Integer.parseInt(i.getText()));
+                intType, Integer.parseInt(i.getText().substring(0, l)));
         }
     |   h:HEXADECIMALINT  {
+    	    char c = h.getText().charAt(h.getText().length() - 1);
+    	    int l = h.getText().length();
+    	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
+    	       l -= 1;
             returnVar = IntegerType.newIntegerVariable (
-                intType, Integer.parseInt(h.getText().substring(2),16));
+                intType, Integer.parseInt(h.getText().substring(2, l), 16));
+        }
+    |   f:FLOAT  {
+    	    char c = f.getText().charAt(f.getText().length() - 1);
+    	    int l = f.getText().length();
+    	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
+    	       l -= 1;
+            returnVar = FloatType.newFloatVariable (
+                floatType, Float.parseFloat(f.getText().substring(0, l)));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
@@ -833,7 +854,17 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             returnVar = v1;
             cppSymTabRef.put(v1.getText(), v1);
         }
-    |   #(CAST primitiveType v2=expr) { returnVar = v2; }
+    |   #(CAST pt:primitiveType v2=expr) { 
+	    if(pt.getText().compareTo("short") == 0) {
+	      returnVar = shortType.newShortVariable(shortType, "0", (short)0);
+              returnVar.getType().assign(returnVar, v2);
+	      }
+	    else if(pt.getText().compareTo("float") == 0) {
+	      returnVar = floatType.newFloatVariable(floatType, "0", (float)0);
+              returnVar.getType().assign(returnVar, v2);
+	      }
+	    else returnVar = v2;
+        }
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {

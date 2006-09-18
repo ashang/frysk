@@ -1,3 +1,19 @@
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* Variable.java (getFloat): New.
+	(getDouble): New.
+	(putFloat): New.
+	(putDouble): New.
+	* FloatType.java: New file.
+	* Type.java (newFloatVariable): New.
+	(newDoubleVariable): New.
+	* Location.java (getDouble): New.
+	(getFloat): New.
+	* IntegerType.java (newFloatVariable): New.
+	(newDoubleVariable): New.
+	* ShortType.java (newFloatVariable): New.
+	(newDoubleVariable): New.
+
 2006-09-11  Stan Cox  <scox@redhat.com>
 
 	* IntegerType.java (IntegerType): Use ByteOrder.

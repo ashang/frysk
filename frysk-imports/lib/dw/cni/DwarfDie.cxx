@@ -116,8 +116,13 @@ lib::dw::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
       dies[i] = (Dwarf_Die*)dieptr;
     }
   
+  int utf_variable_len = variable->length ();
+  char utf_variable[utf_variable_len + 1];
+  JvGetStringUTFRegion (variable, 0, utf_variable_len, utf_variable);
+  utf_variable[utf_variable_len] = '\0';
+
   int code = dwarf_getscopevar (*dies, nscopes,
-				(const char*)JvGetStringChars(variable),
+				utf_variable,
 				0, NULL, 0, 0, var_die);
   if (code >= 0)
     {

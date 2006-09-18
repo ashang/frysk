@@ -55,6 +55,10 @@ abstract class ByteOrdered
     abstract long peekLong (ByteBuffer b, long cursor);
     abstract long peekULong (ByteBuffer b);
     abstract long peekULong (ByteBuffer b, long cursor);
+    abstract float peekFloat (ByteBuffer b);
+    abstract float peekFloat (ByteBuffer b, long cursor);
+    abstract double peekDouble (ByteBuffer b);
+    abstract double peekDouble (ByteBuffer b, long cursor);
     
     abstract void pokeShort (ByteBuffer b, short v);
     abstract void pokeShort (ByteBuffer b, long cursor, short v);
@@ -68,6 +72,10 @@ abstract class ByteOrdered
     abstract void pokeLong (ByteBuffer b, long cursor, long v);
     abstract void pokeULong (ByteBuffer b, long v);
     abstract void pokeULong (ByteBuffer b, long cursor, long v);
+    abstract void pokeFloat (ByteBuffer b, float v );
+    abstract void pokeFloat (ByteBuffer b, long cursor, float v);
+    abstract void pokeDouble (ByteBuffer b, double v );
+    abstract void pokeDouble (ByteBuffer b, long cursor, double v);
 
     static final ByteOrdered[] byteOrders = {
 	new ByteOrdered (ByteOrder.BIG_ENDIAN)
@@ -84,6 +92,10 @@ abstract class ByteOrdered
 	    long peekULong (ByteBuffer b, long cursor) { return (long) b.peekBig (cursor, 8); }
 	    long peekLong (ByteBuffer b) { return (long) b.peekBig (8); }
 	    long peekLong (ByteBuffer b, long cursor) { return (long) b.peekBig (cursor, 8); }
+	    float peekFloat (ByteBuffer b) { return (float) b.peekBigFloat (4); }
+	    float peekFloat (ByteBuffer b, long cursor) { return (float) b.peekBigFloat (cursor, 4); }
+	    double peekDouble (ByteBuffer b) { return (double) b.peekBigDouble (8); }
+	    double peekDouble (ByteBuffer b, long cursor) { return (double) b.peekBigDouble (cursor, 8); }
 	    
 	    void pokeShort (ByteBuffer b, short v) { b.pokeBig (2, v); }
 	    void pokeShort (ByteBuffer b, long cursor, short v) { b.pokeBig (cursor, 2, v); }
@@ -97,6 +109,10 @@ abstract class ByteOrdered
 	    void pokeLong (ByteBuffer b, long cursor, long v) { b.pokeBig (cursor, 8, v); }
 	    void pokeULong (ByteBuffer b, long v) { b.pokeBig (8, v); }
 	    void pokeULong (ByteBuffer b, long cursor, long v) { b.pokeBig (cursor, 8, v); }
+	    void pokeFloat (ByteBuffer b, float v) { b.pokeBig (4, v); }
+	    void pokeFloat (ByteBuffer b, long cursor, float v) { b.pokeBig (cursor, 4, v); }
+	    void pokeDouble (ByteBuffer b, double v) { b.pokeBig (4, v); }
+	    void pokeDouble (ByteBuffer b, long cursor, double v) { b.pokeBig (cursor, 8, v); }
 	},
 	new ByteOrdered (ByteOrder.LITTLE_ENDIAN)
 	{
@@ -112,6 +128,10 @@ abstract class ByteOrdered
 	    long peekULong (ByteBuffer b, long cursor) { return (long) b.peekLittle (cursor, 8); }
 	    long peekLong (ByteBuffer b) { return (long) b.peekLittle (8); }
 	    long peekLong (ByteBuffer b, long cursor) { return (long) b.peekLittle (cursor, 8); }
+	    float peekFloat (ByteBuffer b) { return (float) b.peekLittleFloat (4); }
+	    float peekFloat (ByteBuffer b, long cursor) { return (float) b.peekLittleFloat (cursor, 4); }
+	    double peekDouble (ByteBuffer b) { return (double) b.peekLittleDouble (8); }
+	    double peekDouble (ByteBuffer b, long cursor) { return (double) b.peekLittleDouble (cursor, 8); }
 	    void pokeShort (ByteBuffer b, short v) { b.pokeLittle (2, v); }
 	    void pokeShort (ByteBuffer b, long cursor, short v) { b.pokeLittle (cursor, 2, v); }
 	    void pokeUShort (ByteBuffer b, int v) { b.pokeLittle (2, v); }
@@ -124,6 +144,10 @@ abstract class ByteOrdered
 	    void pokeLong (ByteBuffer b, long cursor, long v) { b.pokeLittle (cursor, 8, v); }
 	    void pokeULong (ByteBuffer b, long v) { b.pokeLittle (8, v); }
 	    void pokeULong (ByteBuffer b, long cursor, long v) { b.pokeLittle (cursor, 8, v); }
+	    void pokeFloat (ByteBuffer b, float v) { b.pokeLittle (4, v); }
+	    void pokeFloat (ByteBuffer b, long cursor, float v) { b.pokeLittle (cursor, 4, v); }
+	    void pokeDouble (ByteBuffer b, double v) { b.pokeLittle (8, v); }
+	    void pokeDouble (ByteBuffer b, long cursor, double v) { b.pokeLittle (cursor, 8, v); }
 	}
     };
 

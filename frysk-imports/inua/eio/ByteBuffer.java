@@ -115,6 +115,22 @@ public abstract class ByteBuffer
     return value;
   }
 
+  protected final float peekBigFloat (long caret, int len)
+  {
+    long iv = peekBig(caret, len);
+    float v = Float.intBitsToFloat((int)iv);
+    cursor += len;
+    return v;
+  }
+
+  protected final double peekBigDouble (long caret, int len)
+  {
+    long iv = peekBig(caret, len);
+    double v = Double.longBitsToDouble(iv);
+    cursor += len;
+    return v;
+  }
+
   protected final void pokeBig (long caret, int len, long value)
   {
     for (int i = len - 1; i >= 0; i--)
@@ -125,6 +141,18 @@ public abstract class ByteBuffer
     pokeFully(caret, scratch, 0, len);
   }
 
+  protected final void pokeBig (long caret, int len, float value)
+  {
+    int iv = Float.floatToIntBits(value);
+    pokeBig(caret, len, iv);
+  }
+
+  protected final void pokeBig (long caret, int len, double value)
+  {
+    long iv = Double.doubleToLongBits(value);
+    pokeBig(caret, len, iv);
+  }
+    
   protected final long peekLittle (long caret, int len)
   {
     peekFully(caret, scratch, 0, len);
@@ -134,6 +162,22 @@ public abstract class ByteBuffer
         value |= (scratch[i] & 0xffL) << i * 8;
       }
     return value;
+  }
+
+  protected final float peekLittleFloat (long caret, int len)
+  {
+    long iv = peekLittle(caret, len);
+    float v = Float.intBitsToFloat((int)iv);
+    cursor += len;
+    return v;
+  }
+
+    protected final double peekLittleDouble (long caret, int len)
+  {
+    long lv = peekLittle(caret, len);
+    double v = Double.longBitsToDouble(lv);
+    cursor += len;
+    return v;
   }
 
   protected final void pokeLittle (long caret, int len, long value)
@@ -146,9 +190,37 @@ public abstract class ByteBuffer
     pokeFully(caret, scratch, 0, len);
   }
 
-  protected final long peekBig (int len)
+  protected final void pokeLittle (long caret, int len, float value)
   {
-    long v = peekBig(cursor, len);
+    int iv = Float.floatToIntBits(value);
+    pokeLittle(caret, len, iv);
+  }
+
+  protected final void pokeLittle (long caret, int len, double value)
+  {
+    long iv = Double.doubleToLongBits(value);
+    pokeLittle(caret, len, iv);
+  }
+    
+  protected final long peekLittle (int len)
+  {
+    long v = peekLittle(cursor, len);
+    cursor += len;
+    return v;
+  }
+
+  protected final float peekLittleFloat (int len)
+  {
+    long iv = peekLittle(cursor, len);
+    float v = Float.intBitsToFloat((int)iv);
+    cursor += len;
+    return v;
+  }
+
+  protected final double peekLittleDouble (int len)
+  {
+    long iv = peekLittle(cursor, len);
+    double v = Double.longBitsToDouble(iv);
     cursor += len;
     return v;
   }
@@ -159,9 +231,39 @@ public abstract class ByteBuffer
     cursor += len;
   }
 
-  protected final long peekLittle (int len)
+  protected final void pokeBig (int len, float value)
   {
-    long v = peekLittle(cursor, len);
+    int iv = Float.floatToIntBits(value);
+    pokeBig(cursor, len, iv);
+    cursor += len;
+  }
+
+  protected final void pokeBig (int len, double value)
+  {
+    long iv = Double.doubleToLongBits(value);
+    pokeBig(cursor, len, iv);
+    cursor += len;
+  }
+
+  protected final long peekBig (int len)
+  {
+    long v = peekBig(cursor, len);
+    cursor += len;
+    return v;
+  }
+
+  protected final float peekBigFloat (int len)
+  {
+    long iv = peekBig(cursor, len);
+    float v = Float.intBitsToFloat((int)iv);
+    cursor += len;
+    return v;
+  }
+
+  protected final double peekBigDouble (int len)
+  {
+    long iv = peekBig(cursor, len);
+    double v = Double.longBitsToDouble(iv);
     cursor += len;
     return v;
   }
@@ -169,6 +271,20 @@ public abstract class ByteBuffer
   protected final void pokeLittle (int len, long value)
   {
     pokeLittle(cursor, len, value);
+    cursor += len;
+  }
+
+  protected final void pokeLittle (int len, float value)
+  {
+    int iv = Float.floatToIntBits(value);
+    pokeLittle(cursor, len, iv);
+    cursor += len;
+  }
+
+    protected final void pokeLittle (int len, double value)
+  {
+    long lv = Double.doubleToLongBits(value);
+    pokeLittle(cursor, len, lv);
     cursor += len;
   }
 
@@ -367,6 +483,16 @@ public abstract class ByteBuffer
     return byteOrdered.peekLong(this, lowWater + index);
   }
 
+  public final float getFloat (long index)
+  {
+    return byteOrdered.peekFloat(this, lowWater + index);
+  }
+
+  public final double getDouble (long index)
+  {
+    return byteOrdered.peekDouble(this, lowWater + index);
+  }
+
   public final void putShort (short v)
   {
     byteOrdered.pokeShort(this, v);
@@ -425,6 +551,26 @@ public abstract class ByteBuffer
   public final void putLong (long index, long v)
   {
     byteOrdered.pokeLong(this, lowWater + index, v);
+  }
+
+  public final void putFloat (float v)
+  {
+    byteOrdered.pokeFloat(this, v);
+  }
+
+  public final void putFloat (long index, float v)
+  {
+    byteOrdered.pokeFloat(this, lowWater + index, v);
+  }
+
+  public final void putDouble (double v)
+  {
+    byteOrdered.pokeDouble(this, v);
+  }
+
+  public final void putDouble (long index, double v)
+  {
+    byteOrdered.pokeDouble(this, lowWater + index, v);
   }
 
   public final long getWord ()

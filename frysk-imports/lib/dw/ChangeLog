@@ -1,3 +1,7 @@
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.cxx (getScopeVar): Use JvGetStringUTFRegion.
+
 2006-09-12  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getScopeVar): New.

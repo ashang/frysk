@@ -54,6 +54,9 @@ import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 
 import antlr.CommonAST;
+import frysk.lang.BaseTypes;
+import frysk.lang.DoubleType;
+import frysk.lang.FloatType;
 import frysk.lang.IntegerType;
 import frysk.lang.ShortType;
 import frysk.lang.Type;
@@ -161,10 +164,23 @@ class symTab implements CppSymTab
       {
         buffer.putShort(addr, v.getShort());
       }
+    else if (varDie.getType().compareTo("char") == 0)
+      {
+        buffer.putByte(addr, (byte)v.getChar());
+      }
+    else if (varDie.getType().compareTo("float") == 0)
+      {
+        buffer.putFloat(addr, v.getFloat());
+      }
+    else if (varDie.getType().compareTo("double") == 0)
+      {
+        buffer.putDouble(addr, v.getDouble());
+      }
   }
   
   public Variable get (String s)
   {
+    ByteOrder byteorder;
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
@@ -174,31 +190,24 @@ class symTab implements CppSymTab
     ByteBuffer buffer;
     buffer = new PtraceByteBuffer(SymTab.pid, PtraceByteBuffer.Area.DATA,
                                   0xffffffffl);
-    try
+    
+    try 
     {
-      buffer = buffer.order(SymTab.task.getIsa().getByteOrder());
+      byteorder = SymTab.task.getIsa().getByteOrder();
     }
     catch (TaskException tte)
     {
       throw new RuntimeException(tte);
     }
+    buffer = buffer.order(byteorder);
 
+    Variable v;
     if (varDie.getType().compareTo("int") == 0)
       {
         int intVal;
         intVal = buffer.getInt(addr);
-    
-        Variable v;
-        try
-        {
-          IntegerType intType = new IntegerType(4,
-                                                SymTab.task.getIsa().getByteOrder());
-          v = IntegerType.newIntegerVariable(intType, s, intVal); 
-        }
-        catch (TaskException tte)
-        {
-          throw new RuntimeException(tte);
-        }
+        IntegerType intType = new IntegerType(4, byteorder);
+        v = IntegerType.newIntegerVariable(intType, s, intVal); 
         return v; 
       }
     
@@ -206,20 +215,34 @@ class symTab implements CppSymTab
       {
         short shortVal;
         shortVal = buffer.getShort(addr);
-    
-        Variable v;
-        try
-        {
-          ShortType shortType = new ShortType(2,
-                                                SymTab.task.getIsa().getByteOrder());
-          v = ShortType.newShortVariable(shortType, s, shortVal); 
-        }
-        catch (TaskException tte)
-        {
-          throw new RuntimeException(tte);
-        }
+        ShortType shortType = new ShortType(2, byteorder);
+        v = ShortType.newShortVariable(shortType, s, shortVal); 
         return v; 
       }
+//    else if (varDie.getType().compareTo("char") == 0)
+//      {
+//        byte byteVal;
+//        byteVal = buffer.getByte(addr);
+//        ByteType byteType = new ByteType(2, byteorder);
+//        v = ByteType.newByteVariable(byteType, s, byteVal); 
+//        return v; 
+//      }
+    else if (varDie.getType().compareTo("float") == 0)
+      {
+        float floatVal;
+        floatVal = buffer.getFloat(addr);
+        FloatType floatType = new FloatType(4, byteorder);
+        v = FloatType.newFloatVariable(floatType, s, floatVal);
+        return v; 
+      }    
+    else if (varDie.getType().compareTo("double") == 0)
+      {
+        double doubleVal;
+        doubleVal = buffer.getDouble(addr);
+        DoubleType doubleType = new DoubleType(8, byteorder);
+        v = DoubleType.newDoubleVariable(doubleType, s, doubleVal); 
+        return v; 
+      }    
     return null;
   }
 }
@@ -350,7 +373,12 @@ public class SymTab
           cmd.getOut().print("0");
           break;
         }
-        cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat));
+        if (result.getType().getTypeId() == BaseTypes.baseTypeFloat)
+          cmd.getOut().println(String.valueOf(result.getFloat()));
+        else if (result.getType().getTypeId() == BaseTypes.baseTypeDouble)
+          cmd.getOut().println(String.valueOf(result.getDouble()));
+        else
+          cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat));
       }   catch (ArithmeticException ae)  {
         cmd.getOut().println("Arithmetic Exception occurred:  " + ae);
       }

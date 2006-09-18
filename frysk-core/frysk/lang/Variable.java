@@ -79,9 +79,9 @@ public class Variable
       return _text;
     }
 
-    /*public char getChar() {
-      return _location.getShort();
-    }*/
+    public char getChar() {
+      return _location.getChar();
+    }
 
     public short getShort() {
       return _location.getShort();
@@ -95,9 +95,17 @@ public class Variable
       return _location.getInt();
     }
 
-    /*public void putChar(char val) {
+    public float getFloat() {
+      return _location.getFloat();
+    }
+
+    public double getDouble() {
+      return _location.getDouble();
+    }
+
+    public void putChar(char val) {
       _location.putChar(val);
-    }*/
+    }
 
     public void putShort(short val) {
       _location.putShort(val);
@@ -109,6 +117,14 @@ public class Variable
 
     public void putLong(long val) {
       _location.putLong(val);
+    }
+
+    public void putFloat(float val) {
+      _location.putFloat(val);
+    }
+
+    public void putDouble(double val) {
+      _location.putDouble(val);
     }
 
     public String toString()  {

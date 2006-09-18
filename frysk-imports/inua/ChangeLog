@@ -1,3 +1,18 @@
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* eio/ByteOrdered.java (peekFloat): New.
+	(peekDouble): New.
+	(pokeFloat): New.
+	(pokeDouble): New.
+	* eio/ByteBuffer.java (peekBigFloat): New.
+	(peekBigDouble): New.
+	(peekLittleFloat): New.
+	(peekLittleDouble): New.
+	(pokeLittle): New for float and double.
+	(pokeBig): New for float and double.
+	(getFloat): New.
+	(getDouble): New.
+
 2006-07-05  Mike Cvet  <mcvet@redhat.com>
 
 	* eio/ByteBuffer.java (ByteBuffer): Applied GNU formatting.

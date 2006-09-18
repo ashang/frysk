@@ -32,6 +32,16 @@ import inua.eio.ByteOrder;
 	return val.getType().newIntegerVariable((IntegerType)type, val);
     }
 
+    public Variable newFloatVariable(FloatType type, Variable val) {
+      Variable returnVar = new Variable(type, val.getText());
+      returnVar.getLocation().putFloat(val.getInt());
+      return returnVar;
+      }
+    public Variable newDoubleVariable(DoubleType type, Variable val) {
+      Variable returnVar = new Variable(type, val.getText());
+      returnVar.getLocation().putDouble(val.getInt());
+      return returnVar;
+      }
     public Variable newIntegerVariable(IntegerType type, Variable val) {
       Variable returnVar = new Variable(type, val.getText());
       returnVar.getLocation().putInt(val.getInt());
