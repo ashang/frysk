@@ -39,32 +39,19 @@
 package frysk.gui.monitor;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-import java.util.Observable;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import frysk.Config;
 import frysk.gui.Gui;
-import frysk.gui.monitor.observers.ObserverRunnable;
-import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskTerminatingObserver;
-import frysk.proc.Action;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 
 /**
  * @author pmuldoon
  *
  */
-public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
-		TaskObserver.Cloned, TaskObserver.Forked, TaskObserver.Terminating {
-
-	private static final String FRYSK_CONFIG = System.getProperty("user.home") //$NON-NLS-1$
-			+ "/" + ".frysk" + "/"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+public class EventLogger {
 
 	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog"; //$NON-NLS-1$
 
@@ -74,37 +61,10 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 	
 	private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
-	class EventFileHandler extends FileHandler {
-
-		public EventFileHandler(String arg0, boolean arg1) throws IOException,
-				SecurityException {
-			super(arg0, arg1);
-		}
-
-		public synchronized void publish(LogRecord arg) {
-
-			// As this is going to log exceptions, and as frysk might be kill -9'd
-			// I've not found a way to let normal FileHandlers do an explicit flush
-			// after each log event. So we found logfiles that were incomplete.
-			// So will cause and explicit flush after each publish, until we figure out
-			// otherwise.
-
-			super.publish(arg);
-			super.flush();
-		}
-
-	}
-
 	public Logger getEventLogger(){
 		return this.eventLogFile;
 	}
 	
-	
-	public TaskExecObserver taskExecObserver;
-
-	public TaskTerminatingObserver taskExitingObserver;
-
-	/** }*/
 
 	public EventLogger() {
 	    eventLogFile = Logger.getLogger(EVENT_LOG_ID);
@@ -116,13 +76,13 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 
 	private FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/"); //$NON-NLS-1$ //$NON-NLS-2$
+		File log_dir = new File(Config.FRYSK_DIR + "eventlogs" + "/"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();
 
 		try {
-			handler = new EventFileHandler(log_dir.getAbsolutePath() + "/" //$NON-NLS-1$
+			handler = new FileHandler(log_dir.getAbsolutePath() + "/" //$NON-NLS-1$
 					+ "frysk_event_log.log", true); //$NON-NLS-1$
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -132,110 +92,13 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return handler;
 	}
 
-	//XXX: soon to be removed
-	class AttachedContinueRunnable implements ObserverRunnable {
-		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid() //$NON-NLS-1$
-					+ " Host XXX Attached "); //$NON-NLS-1$
-		}
-	}
 
-	//XXX: soon to be removed
-	class DetachedContinueRunnable implements ObserverRunnable {
-		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid() //$NON-NLS-1$
-					+ " Host XXX Detached "); //$NON-NLS-1$
-		}
-	}
-
-	//XXX: soon to be removed
-	class AttachedStopRunnable implements ObserverRunnable {
-		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid() //$NON-NLS-1$
-					+ " Host XXX Stopped"); //$NON-NLS-1$
-		}
-	}
-
-	//XXX: soon to be removed
-	class AttachedResumeRunnable implements ObserverRunnable {
-		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid() //$NON-NLS-1$
-					+ " Host XXX Resumed"); //$NON-NLS-1$
-		}
-	}
-
-	public Action updateExeced(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX Execed"); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-
-	public Action updateSyscallEnter(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX entered syscall"); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-
-	public Action updateSyscallExit(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX left syscall"); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-
-	public Action updateClonedParent (Task task, Task clone) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX cloned new task: " + clone); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-
-	public Action updateClonedOffspring (Task task, Task clone) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX cloned new task: " + clone); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-
-	public Action updateForkedParent(Task task, Task child) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX Forked a new proccess: " //$NON-NLS-1$
-				 + child.getProc ());
-		return Action.CONTINUE;
-	}
-
-	public Action updateForkedOffspring(Task task, Task child) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX Forked a new proccess: " //$NON-NLS-1$
-				 + child.getProc ());
-		return Action.CONTINUE;
-	}
-
-	public Action updateTerminating(Task task, boolean signal, int value) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
-				+ " Host XXX is exiting with signal: " + value); //$NON-NLS-1$
-		return Action.CONTINUE;
-	}
-	
-	public void addedTo(Object o) {
-		// TODO Auto-generated method stub
-	}
-
-	public void addFailed(Object o, Throwable w) {
-		
-		logAddFailed("addFailed(Object o, Throwable w)", o);
-		throw new RuntimeException (w);
-	}
-	
 	public static void logAddFailed(String where, Object o) {
 		
 		errorLog.log(Level.SEVERE, new Date() + " " + where + ": " + o 
 				+ " failed " + "to add");
-		WindowManager.theManager.logWindow.print(new Date() + " " + where 
-				+ ": " + o + " failed to add");
+//		WindowManager.theManager.logWindow.print(new Date() + " " + where 
+//				+ ": " + o + " failed to add");
 	}
-
-	public void deletedFrom(Object o) {
-		// TODO Auto-generated method stub
-	}
-	
-	
 	
 }

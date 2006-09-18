@@ -1,3 +1,8 @@
+2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* EventLogger.java: Removed old legacy logging/observer implementing code.
+	Remove custom handler. Replace with standard FileHandler.
+
 2006-09-15  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/ShowMemWin.java (execute): Added a catch for 64-bit
