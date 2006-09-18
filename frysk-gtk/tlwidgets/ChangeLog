@@ -1,3 +1,9 @@
+2006-09-18  Nurdin Premji  <npremji@redhat.com>
+	* src/widgets/ftkeventviewer.c: Added api to change alpha values externally.
+	* src/widgets/ftkeventviewer.h: Ditto.
+	* src/java/com/redhat/ftk/EventViewer.java: Ditto
+	* src/jni/com_redhat_ftk_EventViewer.c: Ditto.
+
 2006-09-15  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Changed alpha value of markers, for bug 3211 
 	Added preliminary support for giving access to the interval slider, doesn't work yet.

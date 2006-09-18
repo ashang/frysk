@@ -251,6 +251,13 @@ public class EventViewer extends VBox
     }
     
     /**
+    * Set the marker alpha value, between 0.0 and1.0
+    */
+    public boolean setMarkerAlpha(int marker, double alpha) {
+	    return ftk_eventviewer_set_marker_alpha(getHandle(), marker, alpha);
+    }
+    
+    /**
      * Append event
      */
     public boolean  appendEvent(int trace, int marker, String desc) {
@@ -378,6 +385,9 @@ public class EventViewer extends VBox
     
     native static final protected boolean
     ftk_eventviewer_set_marker_symbol_size (Handle sc, int marker, int sym_size);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_marker_alpha (Handle sc, int marker, double alpha);
     
     native static final protected boolean
 	ftk_eventviewer_append_event (Handle sc, int trace, int marker,

@@ -568,6 +568,28 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1color (JNIEnv *en
 
 /*
  * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_marker_alpha
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1alpha (JNIEnv *env, 
+								    jclass cls,
+								    jobject sc,
+								    jint mk,
+								    jdouble af)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint marker = (gint) mk;
+  
+  gdouble alpha = (gdouble) af;
+  return (jboolean)ftk_eventviewer_set_marker_symbol_size (eventviewer,
+						   marker, alpha);
+}
+
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_marker_symbol_size
  */
 
@@ -586,7 +608,6 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1symbol_1size (JNI
   return (jboolean)ftk_eventviewer_set_marker_symbol_size (eventviewer,
 						   marker, symbol_size);
 }
-
 
 /*
  * Class:     com.redhat.ftk.EventViewr

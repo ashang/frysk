@@ -340,6 +340,7 @@ typedef struct
     gboolean	label_modified;
     gint 		symbol_size;
     gint index;
+   gdouble  	alpha;
   }
 ftk_marker_s;
 
@@ -359,6 +360,7 @@ ftk_marker_s;
 #define ftk_marker_label_modified(m)	(m)->label_modified
 #define ftk_marker_symbol_size(m)		(m)->symbol_size
 #define ftk_marker_index(m)			(m)->index
+#define ftk_marker_alpha(m)			(m)->alpha
 
 
 typedef struct
@@ -937,7 +939,16 @@ ftk_eventviewer_set_marker_symbol_size_e (FtkEventViewer *eventviewer,
 								
 gboolean
 ftk_eventviewer_set_marker_symbol_size (FtkEventViewer *eventviewer,
-								gint marker_index, gint symbol_size);								
+								gint marker_index, gint symbol_size);
+
+gboolean
+ftk_eventviewer_set_marker_alpha_e (FtkEventViewer *eventviewer,
+								gint marker_index,
+								gdouble alpha, GError ** err);
+								
+gboolean
+ftk_eventviewer_set_marker_alpha (FtkEventViewer *eventviewer,
+								gint marker_index, gdouble alpha);
 
 GdkColor *
 ftk_eventviewer_get_marker_color_e	(FtkEventViewer * eventviewer,

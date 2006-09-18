@@ -2294,7 +2294,7 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
         			    (double)65535,
         			    (double)color.blue /
         			    (double)65535,
-				    0.5);
+				    ftk_marker_alpha(marker));
 				    
             cairo_move_to (cr,
                            (double)(h_offset),
@@ -3951,6 +3951,7 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
     ftk_marker_color_green (marker) = 0;
     ftk_marker_color_blue (marker)  = 0;
     ftk_marker_symbol_size(marker) = 30;
+    ftk_marker_alpha(marker) = 0.5;
   }
 
   pango_layout_get_pixel_size (ftk_marker_label(marker),
@@ -4172,6 +4173,55 @@ ftk_eventviewer_get_marker_color	(FtkEventViewer * eventviewer,
                                   gint marker)
 {
   return ftk_eventviewer_get_marker_color_e (eventviewer, marker, NULL);
+}
+
+
+gboolean
+ftk_eventviewer_set_marker_alpha_e (FtkEventViewer *eventviewer,
+    gint marker_index,
+    gdouble alpha, GError ** err)
+{
+  ftk_marker_s * marker;
+
+  if (!FTK_IS_EVENTVIEWER (eventviewer))
+    {
+      g_set_error (err,
+                   ftk_quark,				/* error domain */
+                   FTK_EV_ERROR_INVALID_WIDGET,	/* error code */
+                   "Invalid FtkEventViewer widget.");
+      return FALSE;
+    }
+
+  FtkLegend *legend = ftk_ev_legend_da(eventviewer);
+  if ((marker_index < 0) ||
+      (marker_index >= ftk_legend_markers_next (legend)))
+    {
+      g_set_error (err,
+                   ftk_quark,				/* error domain */
+                   FTK_EV_ERROR_INVALID_EVENT_TYPE,	/* error code */
+                   "Invalid FtkEventViewer event type.");
+      return FALSE;
+    }
+
+  if (alpha < 0.0 || alpha > 1.0)
+    {
+      g_set_error (err, ftk_quark, FTK_EV_ERROR_INVALID_EVENT_TYPE,
+                   "Alpha size not between 0.0 and 1.0");
+      return FALSE;
+    }
+
+  marker = ftk_legend_marker (legend, marker_index);
+  ftk_marker_alpha(marker) = alpha;
+  return TRUE;
+
+}
+
+
+gboolean
+ftk_eventviewer_set_marker_alpha (FtkEventViewer *eventviewer,
+                                        gint marker_index, gdouble alpha)
+{
+  return ftk_eventviewer_set_marker_alpha_e(eventviewer, marker_index, alpha, NULL);
 }
 
 
