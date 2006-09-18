@@ -97,6 +97,10 @@ public class TestDwfl
     for (int i = 0; i < allDies.length; i++)
       {
         assertNotNull(allDies[i]);
+        /* Enable this line if you think that checking for inlined code in a test suite
+         * is ok
+         */
+//        assertEquals(false, allDies[i].isInlinedFunction());        
         if (i == 1)
           assertEquals(
                        names[i],

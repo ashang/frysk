@@ -159,6 +159,14 @@ public class DwarfDie
     return get_framebase(this.getPointer(), scope, pc);
   }
 
+  /**
+   * 
+   * @return True if this is an inlined instance of a function, false otherwise
+   */
+  public boolean isInlinedFunction ()
+  {
+    return is_inline_func();
+  }
   
   // protected native long dwarf_diecu();
   private native long get_lowpc ();
@@ -182,4 +190,6 @@ public class DwarfDie
   private native long fbreg_variable (long addr);
   
   private native long get_framebase (long addr, long scope, long pc);
+  
+  private native boolean is_inline_func ();
 }

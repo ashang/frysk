@@ -229,3 +229,11 @@ lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg,
   return 0;
 }
 
+/*
+ * Returns true if this die has the DW_TAG_inlined_subroutine tag
+ */
+jboolean
+lib::dw::DwarfDie::is_inline_func ()
+{
+	return dwarf_tag(DWARF_DIE_POINTER) == DW_TAG_inlined_subroutine;
+}
