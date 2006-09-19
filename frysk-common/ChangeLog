@@ -1,3 +1,7 @@
+2006-09-19  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Makefile.gen.sh: Add rules generation for assembly programs.
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (SUBST): Handle .py files.  For .sh and .py add

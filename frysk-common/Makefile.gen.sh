@@ -400,6 +400,23 @@ for suffix in .cxx .c .hxx ; do
     done
 done
 
+#
+# Generate rules for .S/.s assembly files
+#
+for suffix in .s .S ; do
+    print_header "... ${suffix}"
+    find ${dirs} \
+        -name "[A-Za-z]*${suffix}" -print \
+        | sort -f | while read file ; do
+        d=`dirname ${file}`
+        b=`basename ${file} ${suffix}`
+        name=${d}/${b}
+        name_=`echo ${name} | sed -e 'y,/-,__,'`
+	
+	echo "${name_}_SOURCES = ${file}"
+	echo_PROGRAMS ${name}
+    done
+done
 
 # Grep the cni/*.cxx files forming a list of included files.  Assume
 # these are all generated from .class files.  The list can be pruned a
