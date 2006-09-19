@@ -85,8 +85,7 @@ Just note the following:
 sudo yum install antlr jdom junit gcc-java gcc-c++ \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
-    sharutils libgtk-java-devel cvs binutils-devel \
-    audit-libs-devel
+    sharutils cvs audit-libs-devel binutils-devel
 </pre>
 </li>
 
@@ -116,13 +115,8 @@ behave weird; and <tt>/proc</tt> is not accessible</li>
 sudo yum install antlr jdom junit gcc-java gcc-c++ \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
-    libglade2-devel vte-devel ghostscript sharutils \
-    libgtk-java-devel cvs audit-libs-devel
+    sharutils cvs audit-libs-devel
 </pre>
-Packages libglade2-devel, vte-devel, and ghostscript must be explicitely
-specified because of broken dependencies in packages libglade-java-devel,
-libvte-java-devel, and transfig, respectively.  The problem is fixed in
-current Fedora Devel.
 </li>
 
 <li>The <em>frysk</em> RPM included in FC-5 is very different to that
