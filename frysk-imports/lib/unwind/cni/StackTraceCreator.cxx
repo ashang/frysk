@@ -236,6 +236,11 @@ lib::unwind::StackTraceCreator::unwind_setup (unwargs *args)
 	{
 		lib::unwind::FrameCursor *prev = new lib::unwind::FrameCursor((jlong) &cursor);
 		
+		if (unw_is_signal_frame (&cursor))
+			prev->signal_frame = 1;
+		else
+			prev->signal_frame = 0;
+			
 		// This seems backwards, but remember we're starting from the *most recent* frame
 		current->outer = prev;
 		prev->inner = current;

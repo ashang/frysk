@@ -64,10 +64,12 @@ public class StackFactory
     FrameCursor currentCursor = innermost.getOuter();
     while (currentCursor != null)
       {
-        StackFrame outerFrame = new StackFrame(currentCursor, task);
+        StackFrame outerFrame = new StackFrame(currentCursor, task, current);
+
+        if (currentCursor.getIsSignalFrame() == 1)
+          outerFrame.setIsSignalFrame(true);
 
         current.outer = outerFrame;
-        outerFrame.inner = current;
         current = outerFrame;
 
         currentCursor = currentCursor.getOuter();

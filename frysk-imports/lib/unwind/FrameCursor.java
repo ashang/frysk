@@ -50,6 +50,8 @@ public class FrameCursor
   protected FrameCursor inner;
 
   protected FrameCursor outer;
+  
+  protected int signal_frame;
 
   protected FrameCursor (long cursor)
   {
@@ -81,6 +83,11 @@ public class FrameCursor
   public RawDataManaged getNativeCursor ()
   {
     return nativeCursor;
+  }
+  
+  public int getIsSignalFrame()
+  {
+    return signal_frame;
   }
 
   private native void create_frame_cursor (long cursor);

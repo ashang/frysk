@@ -1,3 +1,15 @@
+2006-09-19  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (StackFrame): Added new constructor, taking an 
+	inner StackFrame as an argument. Old constructor calls this one,
+	with null. Added check to see if this StackFrame is the innermost
+	or a signal frame. Added Javadoc.
+	(setIsSignalFrame): Added.
+	(getIsSignalFrame): Added.
+	* StackFactory.java (createStackFrame): Calls new StackFrame 
+	constructor (above). Initializes the current frame's inner frame
+	through constructor call.
+
 2006-09-18  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (StackFrame): Added variables and initializations

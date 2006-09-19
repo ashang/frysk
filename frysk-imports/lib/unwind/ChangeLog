@@ -1,3 +1,9 @@
+2006-09-19  Mike Cvet  <mcvet@redhat.com>
+
+	* FrameCursor.java (getIsSignalFrame): Added.
+	* cni/StackTraceCreator.cxx (unwind_setup): Added a check
+	to see if the frame is a signal frame.
+
 2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
 
 	* UnwindCallbacks.java (findProcInfo, putUnwindInfo,
