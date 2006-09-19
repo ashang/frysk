@@ -47,11 +47,12 @@ lib::dw::tests::TestLib::getPid(){
   return (jint) getpid();
 }
 
-jlong
-lib::dw::tests::TestLib::getFuncAddr(){
 #ifdef __powerpc64__
-  return *((jlong*) &getFuncAddr);
+  #define FUNC_ADDR *((jlong*) &getFuncAddr)
 #else
-  return (jlong) &getFuncAddr;	
+  #define FUNC_ADDR (jlong) &getFuncAddr;	
 #endif
-}
+
+// All one one line to make debug line number info predictable
+// Next line is line #58
+jlong lib::dw::tests::TestLib::getFuncAddr(){ return FUNC_ADDR; }

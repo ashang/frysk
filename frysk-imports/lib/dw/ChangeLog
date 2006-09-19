@@ -1,3 +1,10 @@
+2006-09-19  Mark Wielaard  <mark@klomp.org>
+
+	* tests/cni/TestLib.cxx (getFuncAddr): Extract define out of
+	function and put whole definition on one line.
+	* tests/TestDwfl.java (testGetLine): Use same line number for all
+	architectures.
+
 2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* tests/TestDwfl.java (testGetLine): Skip it when build on X86_64.
