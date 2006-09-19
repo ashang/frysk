@@ -76,8 +76,7 @@ public class CurrentStackView
 
   private DataColumn[] stackColumns;
 
-  //private StackFrame currentFrame;
-  private StackLevel currentLevel;
+  private StackFrame currentFrame;
 
   private Vector observers;
 
@@ -102,59 +101,47 @@ public class CurrentStackView
     TreeIter last = null;
 
     boolean hasInlinedCode = false;
-
-    // while (topLevel != null) // Always one iteration anyway
-    // {
-    // iter = listModel.appendRow();
-
-    CurrentLineSection current = topLevel.getCurrentLine();
-    hasInlinedCode = false;
-
-    // Go through each segment of the current line, but once we've found
-    // one stop checking
-    if (MachineType.getMachineType() == MachineType.IA32)
-    {
-    while (current != null && ! hasInlinedCode)
-      {
-        // Go through each line of the segment
-        for (int i = current.getStartLine(); i < current.getEndLine(); i++)
-          {
-            // Check for inlined code
-            DOMLine line = topLevel.getData().getLine(i);
-            if (line != null && line.hasInlinedCode())
-              {
-                hasInlinedCode = true;
-                break;
-              }
-          }
-
-        current = current.getNextSection();
-      }
-    }
-
-    if (MachineType.getMachineType() == MachineType.IA32)
-      {
-    DOMSource source = topLevel.getData();
-    DOMFunction func = topLevel.getFunc();
+    
+    DOMSource source = frame.getData();
+    DOMFunction func = frame.getFunction();
     String row = "";
     
-    /* Current frame is the top one */
-    //currentFrame = frame;
-    
-    if (source == null || func == null)
+    if (source == null || func == null || MachineType.getMachineType() != MachineType.IA32)
       {
         iter = listModel.appendRow();
         row = "Unknown file : Unknown function";
         listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel); //frame);
+        listModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
       }
+
     else
       {
-
         int level = 0;
         while (frame != null)
           {
+            hasInlinedCode = false;
+            
+            // Go through each segment of the current line, but once we've found
+            // one stop checking
+            // StackFrame curr =
+            // while (current != null && ! hasInlinedCode)
+            // {
+            // // Go through each line of the segment
+            // for (int i = current.getStartLine(); i <
+            // current.getEndLine(); i++)
+            // {
+            // Check for inlined code
+            
+            DOMLine line = frame.getData().getLine(frame.getLineNumber());
+            if (line != null && line.hasInlinedCode())
+              {
+                hasInlinedCode = true;
+              }
+
+            // current = current.getNextSection();
+
             iter = listModel.appendRow();
+
             if (frame.getMethodName() != "")
               {
                 row = "#" + (++level) + " 0x"
@@ -178,18 +165,22 @@ public class CurrentStackView
             row = "";
           }
       }
-      }
-    else
-      {
-        iter = listModel.appendRow();
-        String row = "Unknown file : Unknown function";
-        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
-      }
+      
+
+    //CurrentLineSection current = topLevel.getCurrentLine();
+    //hasInlinedCode = false;
+    
+    /* Current frame is the top one */
+    
+    
+    this.currentFrame = frame;
+    
+    
+
 
     last = iter;
     /* For now - its always null anyway */
-    currentLevel = topLevel; // remove
+    //currentLevel = topLevel; // remove
 
     this.setModel(listModel);
 
@@ -209,10 +200,9 @@ public class CurrentStackView
   /**
    * @return The currently selected stack frame
    */
-  //public StackFrame getCurrentFrame ()
-  public StackLevel getCurrentLevel ()
+  public StackFrame getCurrentFrame ()
   {
-    return currentLevel;
+    return currentFrame;
   }
 
   public void addListener (StackViewListener listener)

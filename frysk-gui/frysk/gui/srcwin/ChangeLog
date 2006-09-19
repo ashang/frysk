@@ -1,3 +1,9 @@
+2006-09-19  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (CurrentStackView): Got rid of all references
+	to StackLevel and CurrentLineSection. Re-organized to properly detect
+	inline code.
+
 2006-09-18  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Initializes the
