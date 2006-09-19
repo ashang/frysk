@@ -1,3 +1,10 @@
+2006-09-19  Stepan Kasal  <kasal@ucw.cz>
+
+	* htdocs/build/index.html: Remove libgtk-java-devel from Fedora
+	Core 5 and 6 requirements; it's brought in by dependencies.
+	Also remove the requirement for libglade2-devel, vte-devel,
+	and ghostscript; the dependecies are fixed in FC5 Updates.
+
 2006-09-18  Stepan Kasal  <kasal@ucw.cz>
 
 	* htdocs/build/index.html: Add audit-libs-devel to the build
