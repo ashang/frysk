@@ -1,3 +1,7 @@
+2006-09-19  Nurdin Premji  <npremji@tow.toronto.redhat.com>
+
+	* frysk/bindir/FStack.java: Added
+
 2006-09-19  Yong Zheng <zhengyo@cn.ibm.com>
 
 	* Makefile.am: Removed all assembly test programs.
