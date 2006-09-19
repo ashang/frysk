@@ -399,3 +399,8 @@ frysk2760/barriertest: $(frysk2760_FILES)
 	$(GCJ) -g -I. --main=frysk2760.TestBarrier -o frysk2760/barriertest \
 		$(srcdir)/frysk2760/TestBarrier.java \
 		frysk2760/barriertest.o
+
+XFAIL_TESTS += frysk3228/LoggerParent
+frysk3228_LoggerParent_SOURCES = frysk3228/LoggerParent.java
+frysk3228_LoggerParent_LDFLAGS = --main=LoggerParent
+noinst_PROGRAMS += frysk3228/LoggerParent
