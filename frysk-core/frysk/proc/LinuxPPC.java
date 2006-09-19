@@ -22,7 +22,7 @@ class LinuxPPC
 
   // This is used to keep track of syscalls whose number we do not
   // know.
-  static HashMap unknownSyscalls;
+  static HashMap unknownSyscalls = new HashMap();
 
   private SyscallEventInfo info;
 

@@ -46,7 +46,7 @@ public class LinuxX8664Syscall
 
   // This is used to keep track of syscalls whose number we do not
   // know.
-  static HashMap unknownSyscalls;
+  static HashMap unknownSyscalls = new HashMap();
 
   static class X8664Syscall 
     extends Syscall

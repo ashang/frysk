@@ -48,7 +48,7 @@ public class LinuxPowerPCSyscall
 
   // This is used to keep track of syscalls whose number we do not
   // know.
-  static HashMap unknownSyscalls;
+  static HashMap unknownSyscalls = new HashMap();
 
   static class PowerPCSyscall 
     extends Syscall

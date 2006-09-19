@@ -1,3 +1,17 @@
+2006-09-18  Tom Tromey  <tromey@redhat.com>
+
+	* LinuxX8664Syscall.java (unknownSyscalls): Initialize.
+	* LinuxPPC.java (unknownSyscalls): Initialize.
+	* LinuxPPC64.java (unknownSyscalls): Initialize.
+	* LinuxPowerPCSyscall.java (unknownSyscalls): Initialize.
+	* LinuxIa32Syscall.java (unknownSyscalls): Initialize.
+	* LinuxEMT64.java (unknownSyscalls): Initialize.
+	* Syscall.java (syscallByName): Chain exceptions.  Don't "over
+	catch".
+	(iterateSyscallByName): Now package-private.
+	(syscallByNum): Removed redundant toString.  Chain exceptions.
+	Removed dead code.  Synchronize on hash map.
+
 2006-09-18  Mike Cvet  <mcvet@redhat.com>
 
 	* Task.java (getDwflLineXXX): Added, takes a long address parameter.

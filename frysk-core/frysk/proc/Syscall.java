@@ -63,6 +63,7 @@ public abstract class Syscall
 	this.argList = argList;
 	this.noreturn = noreturn;
     }
+
     Syscall (String name, int number, int numArgs, String argList)
     {
 	this.name = name;
@@ -230,7 +231,7 @@ public abstract class Syscall
    * @param syscallList system calls list
    * @return the Syscall object, or null
    */
-  public static Syscall iterateSyscallByName (String name, Syscall[] syscallList)
+  static Syscall iterateSyscallByName (String name, Syscall[] syscallList)
   {
     for (int i = 0; i < syscallList.length; ++i)
       if (name.equals(syscallList[i].name))
@@ -243,8 +244,8 @@ public abstract class Syscall
    * Syscall object.  Note that system call numbers are platform
    * dependent.  This will return a Syscall object in all cases; if
    * there is no predefined system call with the given number, a unique
-   * "unknown" system call with the indicated number will be saved in
-   * unknownSyscalls.
+   * "unknown" system call with the indicated number will be created.
+   *
    * @param num the number of the system call
    * @param task the current task
    * @return the Syscall object
@@ -259,24 +260,21 @@ public abstract class Syscall
 	syscallList = task.getIsa().getSyscallList ();
 	unknownSyscalls = task.getIsa().getUnknownSyscalls ();
       }
-    catch (Exception e)
+    catch (TaskException e)
       {
-	throw new RuntimeException ("Could not get the isa");
+	throw new RuntimeException ("Could not get the isa", e);
       }
 
     if (num < 0)
       {
-	throw new RuntimeException ("Negative Syscall Number:" + 
-				    Integer.toString(num));
+	throw new RuntimeException ("Negative syscall number: " + num);
       }
     else if (num >= syscallList.length)
       {
-	synchronized (Syscall.class)
+	synchronized (unknownSyscalls)
 	  {
 	    Integer key = new Integer(num);
-	    if (unknownSyscalls == null)
-	      unknownSyscalls = new HashMap();
-	    else if (unknownSyscalls.containsKey(key))
+	    if (unknownSyscalls.containsKey(key))
 	      return (Syscall) unknownSyscalls.get(key);
 	    
 	    class UnknownSyscall
@@ -296,8 +294,7 @@ public abstract class Syscall
 		return 0;
 	      }
 	    }
-	    Syscall result = new UnknownSyscall("UNKNOWN SYSCALL " 
-						+ Integer.toString(num), num);
+	    Syscall result = new UnknownSyscall("UNKNOWN SYSCALL " + num, num);
 
 	    unknownSyscalls.put(key, result);
 	    
@@ -327,9 +324,9 @@ public abstract class Syscall
       {
 	syscall = task.getIsa().syscallByName(name);
       }
-    catch (Exception e)
+    catch (TaskException e)
       {
-	throw new RuntimeException ("Could not get the name of isa");
+	throw new RuntimeException ("Could not get the name of isa", e);
       }
 
     return syscall;
