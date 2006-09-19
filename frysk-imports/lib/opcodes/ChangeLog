@@ -3,7 +3,7 @@
 	* Instruction.java (length): New member.
 	* Disassembler.java (setCurrentInstructionLength): New method.
 	
-	* cni/Disassembler.cxx (disassemble): Fill in instruciton length.
+	* cni/Disassembler.cxx (disassemble): Fill in instruction length.
 
 	* tests/TestOpcodes.java: Add test case for powerpc.
 	* tests/DummyByteBuffer.java (DummyByteBuffer): Write dummy 
