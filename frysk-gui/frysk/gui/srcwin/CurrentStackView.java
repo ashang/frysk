@@ -80,7 +80,7 @@ public class CurrentStackView
 
   private Vector observers;
 
-  public CurrentStackView (StackLevel topLevel, StackFrame frame)
+  public CurrentStackView (StackFrame frame)
   {
     super();
 

@@ -1,5 +1,10 @@
 2006-09-19  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceWindow.java (SourceWindow): Removed StackLevel from 
+	parameters.
+	(populateStackBrowser): Removed StackLevel.
+	* SourceWindowFactory.java (finishSourceWin): Removed creation of 
+	StackLevels.
 	* CurrentStackView.java (CurrentStackView): Got rid of all references
 	to StackLevel and CurrentLineSection. Re-organized to properly detect
 	inline code.

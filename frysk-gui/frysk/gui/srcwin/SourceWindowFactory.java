@@ -287,7 +287,6 @@ public class SourceWindowFactory
 
         DwflLine line;
         DOMFunction f = null;
-        StackLevel stack1 = null;
         
         /** Create the stack frame **/
         
@@ -323,18 +322,18 @@ public class SourceWindowFactory
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
                 f = getFunctionXXX(dom.getImage(task.getName()), filename,
                                    line.getLineNum());
-                stack1 = new StackLevel(f, line.getLineNum());
+//                stack1 = new StackLevel(f, line.getLineNum());
               }
-            else
-              {
-                stack1 = new StackLevel(f, StackLevel.NO_LINE);
-              }
+//            else
+//              {
+//                stack1 = new StackLevel(f, StackLevel.NO_LINE);
+//              }
 
             curr.setFunction(f);
             curr = curr.getOuter();
           }
 
-        srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1, frame);
+        srcWin = new SourceWindow(glade, gladePaths[i], dom, frame);
         taskTable.put(task, srcWin);
         srcWin.setMyTask(task);
         srcWin.addListener(new SourceWinListener());

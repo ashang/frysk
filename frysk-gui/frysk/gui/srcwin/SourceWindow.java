@@ -241,7 +241,7 @@ public class SourceWindow
    * @param stack The stack frame that represents the current state of execution
    */
   public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackLevel stack, StackFrame frame)
+                       StackFrame frame)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -259,7 +259,7 @@ public class SourceWindow
 
     this.tips = new ToolTips();
 
-    this.populateStackBrowser(stack, frame);
+    this.populateStackBrowser(frame);
 
     this.createActions(ag);
     this.createMenus();
@@ -345,9 +345,9 @@ public class SourceWindow
    * 
    * @param top
    */
-  private void populateStackBrowser (StackLevel top, StackFrame frame)
+  private void populateStackBrowser (StackFrame frame)
   {
-    stackView = new CurrentStackView(top, frame);
+    stackView = new CurrentStackView(frame);
 
     //StackLevel lastStack = stackView.getCurrentLevel();
 
