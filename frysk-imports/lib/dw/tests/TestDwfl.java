@@ -53,8 +53,9 @@ public class TestDwfl
 {
   public void testGetLine ()
   {
-    if (brokenXXX(2965))
+    if (brokenX8664XXX(2965))
       return;
+
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
     DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
@@ -65,8 +66,8 @@ public class TestDwfl
 
     if(Build.BUILD_ARCH.indexOf("x86_64") != -1)
       assertEquals(55, line.getLineNum());
-    else if (Build.BUILD_ARCH.indexOf("powerpc") != -1)
-      assertEquals(53, line.getLineNum());
+    else if (Build.BUILD_ARCH.indexOf("powerpc64") != -1)
+      assertEquals(51, line.getLineNum());
     else
       assertEquals(51, line.getLineNum());
 

@@ -1,3 +1,7 @@
+2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* TestCase.java (brokenX8664XXX): New method. 
+
 2006-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java: New file.

@@ -1,3 +1,8 @@
+2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* tests/TestDwfl.java (testGetLine): Sikp it when build on X86_64.
+	Change the line number result for powerpc64.
+
 2006-09-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DwarfDie.java (isInlinedFunction): New.

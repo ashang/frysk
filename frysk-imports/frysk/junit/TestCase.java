@@ -78,4 +78,16 @@ public class TestCase
     return false;
   }
 
+  /**
+   * A method that returns true, and prints skip, when the build
+   * architecture is X86_64.
+   */
+  protected static boolean brokenX8664XXX (int bug)
+  {
+    if (Build.BUILD_ARCH.indexOf ("_64") != - 1) {
+	return brokenXXX (bug);
+    }
+    return false;
+  }
+
 }
