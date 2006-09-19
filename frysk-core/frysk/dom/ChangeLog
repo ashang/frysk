@@ -1,3 +1,7 @@
+2006-09-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Fixed formatting of javadoc comments.
+
 2006-07-28  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java: Applied GNU formatting.
