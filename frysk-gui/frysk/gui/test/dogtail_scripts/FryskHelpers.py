@@ -715,3 +715,33 @@ def signalFunitChild2 (targetPid, theSignal, stdoutFile ):
     
     return returnString
 
+# ---------------------
+def showChildren_new ( theNode, theType, theAction ):  
+    """ Function to recursively 'walk the gui' and invoke all gui nodes
+    """  
+    # Always skip the click action on push buttons, optionally
+    # skip other GUI node types and actions
+    if theNode.showing: 
+        try:
+            theNode.blink()
+        except:
+            self.fail( 'Blinking on: ' + theNode.name + ' failed' )
+               
+        theActions = theNode.actions
+        for x in theActions:
+            if not (((theNode.roleName == 'push button') and (x == 'click')) or \
+                    ((theNode.roleName == theType) and (x == theAction))):
+                    #print "Got one to not click!" + theNode.name
+            #else:
+                try:
+                    # Perform the action twice - resets radio buttons to their original state
+                    theNode.actions[x].do()
+                    theNode.actions[x].do()
+                    print str(theNode.actions[x])
+                except:
+                    self.fail( 'Clicking on: ' + str( theNode.actions[x] ) + ' in GUI: ' + theNode.name + ' failed' )
+        
+    # Recursively call the function to walk thru the GUI nodes
+    theList = theNode.children
+    for x in theList:
+        showChildren_new ( x, theType, theAction )    
