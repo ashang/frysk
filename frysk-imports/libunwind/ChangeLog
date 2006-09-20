@@ -1,3 +1,7 @@
+2006-09-20	Arun Sharma	<arun.sharma@google.com>
+
+	* src/dwarf/Gparser.c (hash): Fixes the compiler warning on x86-32.
+
 2006-09-20  Alexandre Oliva  <aoliva@redhat.com>
 
 	* src/os-linux.h (maps_next): Don't error out just because

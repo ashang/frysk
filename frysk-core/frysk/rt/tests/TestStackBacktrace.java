@@ -128,17 +128,63 @@ public class TestStackBacktrace
 
     assertNotNull(frame);
 
-    //int level = 0;
-    while (frame != null)
-      {
+//    int level = 0;
+//    while (frame != null)
+//      {
 //        System.out.println("Frame " + (++level));
 //        System.out.println("\tFile: " + frame.getSourceFile());
 //        System.out.println("\tFunc: " + frame.getMethodName());
 //        System.out.println("\tLine: " + frame.getLineNumber());
 //        System.out.println("\tCol: " + frame.getColumn());
 //        System.out.println("\tAddr: " + frame.getAddress());
-        frame = frame.getOuter();
-      }
+//        frame = frame.getOuter();
+//      }
+    
+    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertEquals("baz", frame.getMethodName());
+    assertNull(frame.getInner());
+    /* XXX: this should be 62 */
+    assertEquals(61, frame.getLineNumber());
+   
+    frame = frame.getOuter();
+    
+    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertEquals("bar", frame.getMethodName());
+    assertNotNull(frame.getInner());
+    assertEquals(71, frame.getLineNumber());
+    
+    frame = frame.getOuter();
+    
+    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertEquals("foo", frame.getMethodName());
+    assertNotNull(frame.getInner());
+    assertEquals(81, frame.getLineNumber());
+    
+    frame = frame.getOuter();
+    
+    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertEquals("main", frame.getMethodName());
+    assertNotNull(frame.getInner());
+    assertEquals(117, frame.getLineNumber());
+    
+    frame = frame.getOuter();
+    
+    assertEquals(null, frame.getSourceFile());
+    assertEquals("__libc_start_main", frame.getMethodName());
+    assertNotNull(frame.getInner());
+    assertEquals(0, frame.getLineNumber());
+    
+    frame = frame.getOuter();
+    
+    assertEquals(null, frame.getSourceFile());
+    assertEquals("_start", frame.getMethodName());
+    assertNotNull(frame.getInner());
+    assertEquals(0, frame.getLineNumber());
+    
+    frame = frame.getOuter();
+    
+    assertNull(frame);
+    
 
 //     MyBuilder builder2 = new MyBuilder();
 //     System.out.println("Before maps test");

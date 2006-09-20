@@ -59,17 +59,25 @@ void *signal_parent(void* args)
 void baz()
 {
   lock = 0;
-  while(1){
-  }
+  while(1);
 }
 
 void bar()
 {
+  int i;
+  for (i = 0; i < 10000; i+=2)
+    i--;
+
   baz();
 }
 
 void foo()
 {
+  int a = 2;
+  int b = 6;
+  char c = (char) (a + b);
+  c--;
+  /* Comment */
   bar();
 }
 
@@ -77,26 +85,26 @@ int main(int argc, char ** argv)
 {
 
   if(argc < 3)
-  {
-  	printf("Usage: looper2 <pid> <signal>\n");
-  	exit(0);
-  }
+    {
+      printf("Usage: looper2 <pid> <signal>\n");
+      exit(0);
+    }
 
   errno = 0;
   pid_t target_pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
   if(errno)
-  {
-  	perror("Invalid pid");
-  	exit(1);
-  }
+    {
+      perror("Invalid pid");
+      exit(1);
+    }
   
   errno = 0;
   int signal = (int) strtoul(argv[2], (char **) NULL, 10);
   if(errno)
-  {
-  	perror("Invalid signal");
-  	exit(1);
-  }
+    {
+      perror("Invalid signal");
+      exit(1);
+    }
   
   pid = target_pid;
   sig = signal;

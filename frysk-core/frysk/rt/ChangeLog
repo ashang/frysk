@@ -1,3 +1,7 @@
+2006-09-20  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Expanded test.
+
 2006-09-20  Tom Tromey  <tromey@redhat.com>
 
 	* StackFrame.java (toString): New method.
