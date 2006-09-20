@@ -58,9 +58,9 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.dom.DOMFunction;
+//import frysk.dom.DOMFunction;
 import frysk.dom.DOMLine;
-import frysk.dom.DOMSource;
+//import frysk.dom.DOMSource;
 import frysk.proc.MachineType;
 import frysk.rt.StackFrame;
 
@@ -102,11 +102,11 @@ public class CurrentStackView
 
     boolean hasInlinedCode = false;
     
-    DOMSource source = frame.getData();
-    DOMFunction func = frame.getFunction();
+//    DOMSource source = frame.getData();
+//    DOMFunction func = frame.getFunction();
     String row = "";
     
-    if (source == null || func == null || MachineType.getMachineType() != MachineType.IA32)
+    if (MachineType.getMachineType() != MachineType.IA32)
       {
         iter = listModel.appendRow();
         row = "Unknown file : Unknown function";
@@ -131,18 +131,19 @@ public class CurrentStackView
             // current.getEndLine(); i++)
             // {
             // Check for inlined code
-            
+            if (frame.getData() != null) {
             DOMLine line = frame.getData().getLine(frame.getLineNumber());
             if (line != null && line.hasInlinedCode())
               {
                 hasInlinedCode = true;
               }
+            }
 
             // current = current.getNextSection();
 
             iter = listModel.appendRow();
 
-            if (frame.getMethodName() != "")
+            if (frame.getData() != null)
               {
                 row = "#" + (++level) + " 0x"
                       + Long.toHexString(frame.getAddress()) + " in "
@@ -152,7 +153,8 @@ public class CurrentStackView
             else
               {
                 row = "#" + (++level) + " 0x"
-                      + Long.toHexString(frame.getAddress()) + " in (null) ()";
+                      + Long.toHexString(frame.getAddress()) + " in " 
+                      + frame.getMethodName() + " ()";
               }
 
             if (hasInlinedCode)

@@ -151,6 +151,8 @@ public class SourceBuffer
   protected TextChildAnchor anchor;
 
   private int mode = SOURCE_MODE;
+  
+  private boolean firstLoad = true;
 
   /**
    * Creates a new SourceBuffer
@@ -851,7 +853,11 @@ public class SourceBuffer
     DOMSource source = this.scope.getData();
     if (source == null)
       {
+        if (!this.firstLoad)
+          return;
+        
         this.insertText("No debug information available for this stack frame");
+        this.firstLoad = false;
         return;
       }
 

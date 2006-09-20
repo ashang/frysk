@@ -1,3 +1,10 @@
+2006-09-20  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (loadFile): Added a boolean and a check to 
+	prevent error message being continuously printed to the view.
+	* CurrentStackView.java (CurrentStackView): Now displays a stack
+	backtrace on tasks without debug info.
+
 2006-09-19  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Removed StackLevel from 
