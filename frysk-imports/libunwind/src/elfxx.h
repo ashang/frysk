@@ -68,6 +68,7 @@ elf_map_image (struct elf_image *ei, const char *path)
 }
 
 extern int elf_w (valid_object) (struct elf_image *ei);
-extern int elf_w (get_proc_name) (pid_t pid, unw_word_t ip,
+extern int elf_w (get_proc_name) (unw_addr_space_t as,
+				  pid_t pid, unw_word_t ip,
 				  char *buf, size_t len,
-				  unw_word_t *offp);
+				  unw_word_t *offp, void *arg);

@@ -352,7 +352,7 @@ get_static_proc_name (unw_addr_space_t as, unw_word_t ip,
   if (!_Uelf64_get_proc_name)
     return -UNW_EINVAL;
 #endif
-  return _Uelf64_get_proc_name (getpid (), ip, buf, buf_len, offp);
+  return _Uelf64_get_proc_name (as, getpid (), ip, buf, buf_len, offp, arg);
 }
 
 HIDDEN void

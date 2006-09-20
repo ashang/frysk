@@ -1,3 +1,27 @@
+2006-09-20  Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/os-linux.h (maps_next): Don't error out just because
+	path is missing.
+	* include/tdep-hppa/libunwind_i.h (tdep_get_elf_image): Add as
+	and arg to the parameter list.
+	* include/tdep-ia64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-ppc64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* include/tdep-x86_64/libunwind_i.h (tdep_get_elf_image): Ditto.
+	* src/elfxx.h (get_proc_name): Ditto.
+	* src/elfxx.c (get_proc_name): Ditto.  Adjust.
+	* src/hppa/Ginit.c (get_static_proc_name): Adjust.
+	* src/ia64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ppc64/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86/Ginit.c (get_static_proc_name): Ditto.
+	* src/x86_64/Ginit.c (get_static_proc_name): Ditto.
+	* src/ptrace/_UPT_find_proc_info.c (get_unwind_info): Ditto.
+	* src/ptrace/_UPT_get_proc_name.c (_UPT_get_proc_name): Ditto.
+	* src/os-hpux.c (tdep_get_elf_image): Ditto.
+	* src/os-linux.c (tdep_get_elf_image): Ditto.  Read in 1-page
+	segments that start with the ELF magic.
+	(MAX_VDSO_SIZE): New.
+
 2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
 
 	* src/x86/Gget_proc_info.c (unw_get_proc_info): Use
