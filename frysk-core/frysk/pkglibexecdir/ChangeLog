@@ -1,6 +1,8 @@
 2006-09-20	Mike Cvet	<mcvet@redhat.com>
 	
 	* funit-rt-looper.c: Threw in a little entropy.
+	* funit-rt-threader.c: Added - will be used for threaded
+	stack trace tests.
 
 2006-09-18  Mark Wielaard  <mark@klomp.org>
 
