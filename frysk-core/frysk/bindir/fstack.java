@@ -51,24 +51,29 @@ import frysk.rt.StackFrame;
 
 class fstack
 {
-  private static PrintWriter writer;
+  private PrintWriter writer;
 
-  private static Proc proc;
+  private Proc proc;
 
-  private static int pid;
+  private int pid;
 
-  private static ProcTasksObserver procTasksObserver;
+  private ProcTasksObserver procTasksObserver;
 
   public static void main (String[] args)
   {
+    
     fstack stacker = new fstack();
+    stacker.setWriter(new PrintWriter(System.out, true));
     stacker.run(args);
   }
 
-  private void run (String[] args)
+  private void setWriter (PrintWriter writer)
   {
-    writer = new PrintWriter(System.out, true);
+    this.writer = writer;
+  }
 
+  private void run (String[] args)
+  {    
     // Logger logger = EventLogger.get ("logs/", "frysk_core_event.log");
     // Handler handler = new ConsoleHandler ();
     // handler.setLevel(Level.FINEST);
@@ -98,87 +103,15 @@ class fstack
 
     procTasksObserver = new ProcTasksObserver(proc, new StackTasksObserver(proc));
     Manager.eventLoop.start();
-  }
+  }  
 
-  
-
-  private static class StackTasksObserver
-      implements ProcObserver.ProcTasks
-  {
-    private LinkedList taskList;
-
-    public StackTasksObserver (Proc proc)
-    {
-      taskList = proc.getTasks();
-    }
-
-    public void existingTask (Task task)
-    {
-      // Remove this task from the list of tasks.
-      if (taskList.contains(task))
-        taskList.remove(task);
-
-      // Print the stack frame for this stack.
-      handleTask(task, writer);
-
-      removeObservers(task);
-      if (0 == taskList.size())
-        {
-          Manager.eventLoop.requestStop();
-        }
-    }
-
-    public void taskAdded (Task task)
-    {
-      // TODO Auto-generated method stub
-
-	//Bonus task:
-	handleTask(task, writer);
-	removeObservers(task);
-    }
-
-    public void taskRemoved (Task task)
-    {
-      // TODO Auto-generated method stub
-      if (taskList.contains(task))
-        {
-          System.out.println("Task was removed before stack trace could occur");
-	  //Should I be able to print a stack frame here?
-	  handleTask(task, writer);
-          taskList.remove(task);
-        }
-
-	//Do I need to remove the observer from a dead task?
-	removeObservers(task);
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-  }
-
-private final static void removeObservers(Task task) 
+  private final  void removeObservers(Task task) 
   {
 	task.requestDeleteClonedObserver(procTasksObserver);
-	task.requestDeleteTerminatedObserver(procTasksObserver);
+	//task.requestDeleteTerminatedObserver(procTasksObserver);
   }
 
-  public final static void handleTask (Task task, PrintWriter writer)
+  public final void handleTask (Task task, PrintWriter writer)
   {
     if (null != task)
       {
@@ -205,4 +138,92 @@ private final static void removeObservers(Task task)
       }
   }
 
+  private class StackTasksObserver
+      implements ProcObserver.ProcTasks
+  {
+    private LinkedList taskList;
+
+    public StackTasksObserver (Proc proc)
+    {
+      taskList = proc.getTasks();
+    }
+
+    public void existingTask (Task task)
+    {
+      
+      // Print the stack frame for this stack.
+      handleTask(task, writer);    
+// Remove this task from the list of tasks.
+      if (taskList.contains(task)) {
+        taskList.remove(task);
+       }
+
+
+      if (0 == taskList.size())
+        {
+           removeObservers(task);
+        }  
+      
+    }
+
+    public void taskAdded (Task task)
+    {
+      // TODO Auto-generated method stub
+
+	//Bonus task:
+	handleTask(task, writer);
+	removeObservers(task);
+
+	if (taskList.contains(task)) {
+		taskList.remove(task);
+	}
+
+	if (0 == taskList.size())
+	{
+		removeObservers(task);
+	}
+    }
+
+    public void taskRemoved (Task task)
+    {
+      // TODO Auto-generated method stub
+      if (taskList.contains(task))
+        {
+          System.out.println("Task was removed before stack trace could occur");
+	  
+          taskList.remove(task);
+        }
+
+	if (0  == taskList.size())
+	  {
+	     removeObservers(task);
+	  }
+
+	//Should I be able to print a stack frame here?
+	  handleTask(task, writer);
+
+	//Do I need to remove the observer from a dead task?
+	removeObservers(task);
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+	System.out.println("Shutting down");
+	Manager.eventLoop.requestStop();
+    }
+
+  }  
 }

@@ -154,7 +154,7 @@ public final class ProcTasksObserver
 	
     public void deletedFrom(Object observable)
     {
-	//procTasksObserver.taskRemoved ((Task) observable);
+	procTasksObserver.deletedFrom(observable);
     }
 	
     public Action updateTerminated(Task task, boolean signal, int value) {
