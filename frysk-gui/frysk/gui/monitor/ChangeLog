@@ -1,5 +1,10 @@
 2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LogWidget.java (LogWidget): Create TextBuffer once on constructor. 
+	Create mark.
+	(print): Don't create a new TextBuffer per print. Move endIter to
+	mark after print. Scroll to mark after print.
+	
 	* actions/PrintTaskBacktrace.java: News
 	* actions/TaskActionPoint.java (initApplicableActions): Added printTaskBackTrace
 	to applicable actions.

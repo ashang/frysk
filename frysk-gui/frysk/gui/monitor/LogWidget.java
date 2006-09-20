@@ -49,34 +49,51 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.Widget;
 
 /**
- * @author sami wagiaalla
+ * @author pmuldoon,  sami wagiaalla
+ * 
  * Generic log window, just prints out events it recieves
  * */
 public class LogWidget extends Widget implements Saveable {
 
 	public TextView logTextView;
-
+    private TextBuffer tb;
+    private TextMark tm;
+    
 	public LogWidget(LibGlade glade){
 		super(glade.getWidget("logWidget").getHandle());
 		this.logTextView = (TextView) glade.getWidget("logTextView");
 		WindowManager.logger.log(Level.FINE, "{0} LogWidget\n", this);
+		tb = logTextView.getBuffer();
+		tm = tb.createMark("endMark", tb.getEndIter(), false);
 	}
 
+	/**
+	 * Print the given string to the log window.
+	 * 
+	 * @param string - string to print.
+	 */
 	public void print(String string){
-		TextBuffer tb = logTextView.getBuffer();
 		tb.insertText(string);
+		tb.moveMark(tm, tb.getEndIter());
+		logTextView.scrollToMark(tm,0.0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see frysk.gui.monitor.Saveable#save(java.util.prefs.Preferences)
+	 */
 	public void save(Preferences prefs) {
-		// TODO Auto-generated method stub
 		
 	}
+	
+	/* (non-Javadoc)
+	 * @see frysk.gui.monitor.Saveable#load(java.util.prefs.Preferences)
+	 */
 	public void load(Preferences prefs) {
-		// TODO Auto-generated method stub
 		
 	}
 }
