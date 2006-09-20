@@ -366,13 +366,11 @@ public class DisassemblyWindow
     TreeIter iter = model.getFirstIter();
 
     while (iter != null)
-      {
-
-        model.setValue(iter, (DataColumnString) cols[1], "<pc+" 
-                       + (ins.address - this.pc) + ">: ");
-        
+      { 
         if (ins != null)
           {
+	    model.setValue(iter, (DataColumnString) cols[1], "<pc+" 
+			   + (ins.address - this.pc) + ">: ");
             model.setValue(iter, (DataColumnString) cols[0], Long.toHexString(ins.address));
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             if (li.hasNext())
