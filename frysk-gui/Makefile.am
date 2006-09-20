@@ -84,7 +84,7 @@ GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
 GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
 # link -lbfd_get just for simplification.
-GEN_GCJ_LDADD += -lopcodes -L../frysk-imports/lib/opcodes -lbfd_get
+GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 
 # Skip the JUnit tests (exit with status 77) when there is no display; bug #3012.
 #TESTS_ENVIRONMENT = ( test $$tst != TestRunner || test -n "$$DISPLAY" || exit 77 ) && 

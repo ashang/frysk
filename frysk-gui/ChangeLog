@@ -1,3 +1,7 @@
+2006-09-19    <swagiaal@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Added -laudit
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Replace frysk_suite.sh with
