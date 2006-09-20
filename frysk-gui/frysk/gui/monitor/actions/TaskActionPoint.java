@@ -87,6 +87,7 @@ public class TaskActionPoint
     this.applicableActions.add(new ShowSourceWin());
     this.applicableActions.add(new AddTaskObserverAction());
     this.applicableActions.add(new PrintTask());
+    this.applicableActions.add(new PrintTaskBacktrace());
     this.applicableActions.add(new ShowRegWin());
     this.applicableActions.add(new ShowMemWin());
     this.applicableActions.add(new RunExternal());

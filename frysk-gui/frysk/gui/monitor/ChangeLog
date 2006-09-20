@@ -1,3 +1,11 @@
+2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* actions/PrintTaskBacktrace.java: News
+	* actions/TaskActionPoint.java (initApplicableActions): Added printTaskBackTrace
+	to applicable actions.
+	* actions/ActionManager.java (initActionList): Added printTaskBackTrace
+	to action list.
+
 2006-09-18  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* observers/TaskSignaledObserver.java (TaskSignaledObserver): New.

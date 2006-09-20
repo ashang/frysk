@@ -78,7 +78,7 @@ public class ActionManager
     this.addGenericActionPrototype(new NotifyUserAction());
     
     this.addTaskActionPrototype(new PrintTask());
-
+    this.addTaskActionPrototype(new PrintTaskBacktrace());
     this.addProcActionPrototype(new PrintProc());
   }
 
