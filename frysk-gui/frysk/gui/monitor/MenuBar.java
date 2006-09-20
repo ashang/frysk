@@ -103,12 +103,12 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 			}
 		});
 
-        item = (MenuItem) glade.getWidget("programObserverMenuItem");
-        item.addListener(new MenuItemListener(){
-            public void menuItemEvent(MenuItemEvent event) {
-                WindowManager.theManager.programObserverDialog.showAll();
-            }
-        });
+//        item = (MenuItem) glade.getWidget("programObserverMenuItem");
+//        item.addListener(new MenuItemListener(){
+//            public void menuItemEvent(MenuItemEvent event) {
+//                WindowManager.theManager.programObserverDialog.showAll();
+//            }
+//        });
 
 	}
 	

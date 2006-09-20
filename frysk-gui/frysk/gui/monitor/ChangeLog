@@ -1,5 +1,8 @@
 2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* MenuBar.java (MenuBar): Remove program observes until we
+	refactor usage into a better place in the workflow.
+	
 	* LogWidget.java (LogWidget): Create TextBuffer once on constructor. 
 	Create mark.
 	(print): Don't create a new TextBuffer per print. Move endIter to
