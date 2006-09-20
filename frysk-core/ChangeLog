@@ -1,4 +1,7 @@
 2006-0-20  Nurdin Premji  <npremji@redhat.com>
+	
+	* frysk/bindir/ftrace.xml: Added fstack to See also.
+	* frysk/pkglibexecdir/funit.xml: Ditto.	
 	* frysk/bindir/fstack.java: 
 	Added code to remove observers when finished.
 	Renamed was:
