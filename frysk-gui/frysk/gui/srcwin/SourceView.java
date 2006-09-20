@@ -322,7 +322,7 @@ public class SourceView
 
         DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
 
-        InlineSourceView nested = new InlineSourceView(this.parent, instance);
+        InlineSourceView nested = new InlineSourceView(this.parent, instance, CurrentStackView.getCurrentFrame());
         this.setSubscopeAtCurrentLine(nested);
       }
     else

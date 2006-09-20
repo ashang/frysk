@@ -66,18 +66,20 @@ public class InlineBuffer extends SourceBuffer {
 	private DOMInlineInstance instance; 
 	
 	private TextChildAnchor ellipsisAnchor;
+    
+    StackFrame currentFrame;
 	
 	/**
 	 * Creates a new InlineBuffer to reflect the provided instance
 	 * @param scope The file that the declaration is in
 	 * @param instance The inlined instance to display
 	 */
-	public InlineBuffer(DOMInlineInstance instance) {
+	public InlineBuffer(DOMInlineInstance instance, StackFrame frame) {
 		super();
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
-		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-		//this.setScope(myScope);
+        this.currentFrame = frame;
+		this.setScope(frame);
 	}
 	
 	
@@ -296,9 +298,7 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasInlineInstance()){
     		this.instance = instance.getInlineInstance();
     		this.declaration = this.instance.getDeclaration(); 
-            /* XXX: fix! */
-    		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-    		//this.setScope(myScope);
+    		this.setScope(currentFrame);
     	}
     	// Can we even get a case where there is no next inline instance and this method
     	// is called?
@@ -313,8 +313,7 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasParentInlineInstance()){
     		this.instance = instance.getPreviousInstance();
     		this.declaration = this.instance.getDeclaration();
-    		//StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
-    		//this.setScope(myScope);
+    		this.setScope(currentFrame);
     	}
     	// Same connundrum as above method...
     }

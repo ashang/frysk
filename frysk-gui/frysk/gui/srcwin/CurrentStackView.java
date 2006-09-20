@@ -76,7 +76,7 @@ public class CurrentStackView
 
   private DataColumn[] stackColumns;
 
-  private StackFrame currentFrame;
+  private static StackFrame currentFrame;
 
   private Vector observers;
 
@@ -175,7 +175,7 @@ public class CurrentStackView
     /* Current frame is the top one */
     
     
-    this.currentFrame = frame;
+    currentFrame = frame;
     
     
 
@@ -202,7 +202,7 @@ public class CurrentStackView
   /**
    * @return The currently selected stack frame
    */
-  public StackFrame getCurrentFrame ()
+  public static StackFrame getCurrentFrame ()
   {
     return currentFrame;
   }
@@ -235,6 +235,7 @@ public class CurrentStackView
                                                       (DataColumnObject) stackColumns[1]);
 
     this.notifyObservers(selected);
+    currentFrame = selected;
   }
 
 }

@@ -1,9 +1,17 @@
 2006-09-20  Mike Cvet  <mcvet@redhat.com>
 
+	* InlineSourceView.java (InlineSourceView): Passes a StackFrame
+	to the new InlineBuffer.
+	(toggleChild): Passes in a StackFrame to the new InlineSourceView.
+	* InlineBuffer.java (InlineBuffer): Takes a StackFrame, used
+	as the current scope.
+	(moveDown): Uses StackFrame to set current scope.
+	(moveUp): Ditto.
 	* SourceBuffer.java (loadFile): Added a boolean and a check to 
 	prevent error message being continuously printed to the view.
 	* CurrentStackView.java (CurrentStackView): Now displays a stack
 	backtrace on tasks without debug info.
+	(getCurrentFrame): Made this and the returned variable static.
 
 2006-09-19  Mike Cvet  <mcvet@redhat.com>
 

@@ -59,6 +59,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.rt.StackFrame;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always
@@ -88,8 +89,8 @@ public class InlineSourceView extends SourceView{
 	 *     InlineViewer will be displaying
 	 * @param instance The inline instance to display
 	 */
-	public InlineSourceView(SourceWindow top, DOMInlineInstance instance) {
-		super(new InlineBuffer(instance), top);
+	public InlineSourceView(SourceWindow top, DOMInlineInstance instance, StackFrame frame) {
+		super(new InlineBuffer(instance, frame), top);
 		this.setBorderWidth(1);
 		this.depth = 1;
 		this.tips = new ToolTips();
