@@ -1,8 +1,15 @@
+2006-0-20  Nurdin Premji  <npremji@redhat.com>
+	* frysk/bindir/fstack.java: 
+	Added code to remove observers when finished.
+	Renamed was:
+	* frysk/bindir/FStack.java: Removed.
+	* frysk/bindir/fstack.xml: Added
+
 2006-09-19    <swagiaal@redhat.com>
 
 	* Makefile.am: Added -laudit to GEN_GCJ_LDADD.
 
-2006-09-19  Nurdin Premji  <npremji@tow.toronto.redhat.com>
+2006-09-19  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk/bindir/FStack.java: Added
 

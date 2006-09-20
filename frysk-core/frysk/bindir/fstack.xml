@@ -48,26 +48,26 @@
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="ftrace">
+<refentry id="fstack">
 
   <refentryinfo>
-    <title>ftrace</title>
-    <date>July 12 2006</date>
+    <title>fstack</title>
+    <date>September 20 2006</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>ftrace</refentrytitle>
+    <refentrytitle>fstack</refentrytitle>
     <manvolnum>1</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>ftrace</refname>
-    <refpurpose>Runs the frysk ftrace systemcall tracing utility</refpurpose>
+    <refname>fstack</refname>
+    <refpurpose>Runs the frysk fstack stack trace utility</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>ftrace</command>
+      <command>fstack</command>
       <!-- arg choice="opt">
         <option>-list of options</option>
       </arg -->
@@ -77,11 +77,10 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>ftrace</function> Runs the frysk ftrace systemcall tracing
+    <para><function>fstack</function> Runs the frysk fstack stack tracing
      utility.</para>
 
-    <para>ftrace is a small utility that uses the frysk engine to trace
-    systemcalls in a similar manner to strace. </para>
+    <para>fstack is a small utility that uses the frysk engine to display a process stack in a similar manner to pstack. </para>
 
     <!-- variablelist>
       <varlistentry>
@@ -116,7 +115,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>ftrace</screen>
+    <screen>fstack</screen>
   </refsect1>
    
   <!-- refsect1>
@@ -131,7 +130,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8) fstack(1)</para>
+    <para>funit(8) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>
@@ -151,8 +150,8 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http:/sources.redhat.com/ftrace">
-    http://sources.redhat.com/ftrace/ </ulink>. </para>
+    <para>Report bugs to <ulink url="http:/sources.redhat.com/fstack">
+    http://sources.redhat.com/fstack/ </ulink>. </para>
   </refsect1>
   
   <!-- refsect1>

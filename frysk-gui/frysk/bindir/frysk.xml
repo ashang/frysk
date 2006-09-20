@@ -148,7 +148,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8)</para>
+    <para>funit(8) fstack(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>

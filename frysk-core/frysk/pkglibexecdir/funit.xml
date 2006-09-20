@@ -164,7 +164,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(1) funit(8) funit-child(8) funit-exec(8)</para>
+    <para>frysk(1) funit(8) funit-child(8) funit-exec(8) fstack(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>
