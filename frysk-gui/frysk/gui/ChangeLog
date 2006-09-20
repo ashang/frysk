@@ -1,3 +1,8 @@
+2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Remove program observers menu item,
+	until we decide a better place in the workflow.
+
 2006-09-20  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* disassembler/DisassemblyWindow.java: Check null pointer
