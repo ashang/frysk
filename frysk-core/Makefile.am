@@ -90,7 +90,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
 endif
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
 # link -lbfd_get just for simplification.
-GEN_GCJ_LDADD += -lopcodes -L../frysk-imports/lib/opcodes -lbfd_get
+GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 
 # For TestExec.java
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-child-alias

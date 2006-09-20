@@ -1,3 +1,7 @@
+2006-09-19    <swagiaal@redhat.com>
+
+	* Makefile.am: Added -laudit to GEN_GCJ_LDADD.
+
 2006-09-19  Nurdin Premji  <npremji@tow.toronto.redhat.com>
 
 	* frysk/bindir/FStack.java: Added

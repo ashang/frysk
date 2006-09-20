@@ -1,3 +1,7 @@
+2006-09-16    <swagiaal@redhat.com>
+
+	* Makefile.am: Added -laudit to GEN_GCJ_LADD.
+
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Link in libunwind-ptrace.a.

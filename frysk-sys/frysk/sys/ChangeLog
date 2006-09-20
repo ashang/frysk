@@ -1,3 +1,8 @@
+2006-09-16    <swagiaal@redhat.com>
+
+	* cni/AuditLibs.cxx: New file.
+	* AuditLibs.java: New file.
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Wait.java: Pass just "frysk" to getLogger, work-around.

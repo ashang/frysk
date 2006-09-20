@@ -1,3 +1,8 @@
+2006-09-19    <swagiaal@redhat.com>
+
+	* TestSyscallsWithAudit.java: New file.
+	* LinuxIa32Syscall.java: Fixed all discrepencies with Audit libs.
+
 2006-09-18  Tom Tromey  <tromey@redhat.com>
 
 	* LinuxX8664Syscall.java (unknownSyscalls): Initialize.

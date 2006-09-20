@@ -60,6 +60,7 @@ fi
 
 AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)
+AC_FIND_FILE([libaudit.h], [/usr/include/], LIBAUDIT_H)
 
 AC_CONFIG_FILES([
 	Makefile
