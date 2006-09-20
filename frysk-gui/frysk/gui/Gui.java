@@ -413,8 +413,8 @@ public class Gui implements LifeCycleListener, Saveable {
 		
 		IconManager.trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 		IconManager.trayIcon.setWindowButton(TrayIcon.BUTTON_1);
-		IconManager.trayIcon
-				.addPopupWindow(WindowManager.theManager.mainWindow);
+//		IconManager.trayIcon
+//				.addPopupWindow(WindowManager.theManager.mainWindow);
 		
 		Menu popupMenu = new Menu();
 		IconManager.trayIcon.setPopupMenu(popupMenu);

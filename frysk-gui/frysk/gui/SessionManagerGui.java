@@ -41,6 +41,7 @@ package frysk.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Vector;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -102,6 +103,10 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	private Button openButton;
 
 	private ProcessPicker processPicker;
+	
+	private Vector popupControl = new Vector();
+	
+	private boolean sessionLaunched = false;
 
 	/**
 	 * Session Manager UI entry point. Read the glade files,
@@ -119,6 +124,9 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		getDebugSingleProcess(glade);
 		getTerminalSession(glade);
 		setButtonStates();
+		
+		popupControl.add(this);
+		IconManager.trayIcon.setPopupWindows(popupControl);
 	}
 
 	/**
@@ -453,6 +461,15 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns whether there is a session currently running
+	 * 
+	 * @return - boolea, is there a session running?
+	 */
+	public boolean isSessionLaunched() {
+		return this.sessionLaunched;
+	}
 
 	/**
 	 * Open a session. When the open button is clicked, run process picker.
@@ -467,6 +484,11 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		// If this is not a terminal session, hide the terminal and run process picker
 		if (previousSession.getState()) {
 			processPicker.checkSession(s);
+			sessionLaunched = true;
+			popupControl.removeAllElements();
+			popupControl.add(WindowManager.theManager.mainWindow);
+			IconManager.trayIcon.setPopupWindows(popupControl);
+		
 			WindowManager.theManager.mainWindow.hideTerminal();
 		}
 		
@@ -474,6 +496,10 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		if (terminalSession.getState()) {
 			WindowManager.theManager.mainWindow.buildTerminal();
 			hideAll();
+			sessionLaunched = true;
+			popupControl.removeAllElements();
+			popupControl.add(WindowManager.theManager.mainWindow);
+			IconManager.trayIcon.setPopupWindows(popupControl);
 			WindowManager.theManager.mainWindow.showAll();
 		}
 	}

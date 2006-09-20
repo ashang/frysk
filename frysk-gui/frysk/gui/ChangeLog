@@ -1,5 +1,10 @@
 2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Gui.java: (buildTrayManager): Remove popup control.
+	* SessionManagerGui.java (isSessionLaunched): New.
+	(openSession): Control the popup of the tray icon to either
+	select monitor window, or session manager, depending on context.
+	
 	* glade/procpop.glade: Remove program observers menu item,
 	until we decide a better place in the workflow.
 
