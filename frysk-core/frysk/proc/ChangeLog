@@ -1,4 +1,10 @@
-2006-09-19    <swagiaal@redhat.com>
+2006-09-20  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* LinuxPowerPCSyscall.java: Change the system call name per
+	libaudit result.
+	* TestSyscallsWithAudit.java: Enable test for PPC and PPC64.
+
+2006-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestSyscallsWithAudit.java: New file.
 	* LinuxIa32Syscall.java: Fixed all discrepencies with Audit libs.

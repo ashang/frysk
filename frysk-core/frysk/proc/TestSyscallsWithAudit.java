@@ -69,8 +69,8 @@ public class TestSyscallsWithAudit
   }
 
   public void testLinuxPPC(){
-    if (brokenXXX (3218))
-      return;
+//    if (brokenXXX (3218))
+//      return;
     
     int machine = AuditLibs.MACH_PPC;
     Isa isa = LinuxPPC.isaSingleton();
@@ -92,8 +92,8 @@ public class TestSyscallsWithAudit
   }
 
   public void testLinuxPPC64(){
-    if (brokenXXX (3218))
-      return;
+//    if (brokenXXX (3218))
+//      return;
     
     int machine = AuditLibs.MACH_PPC;
     Isa isa = LinuxPPC64.isaSingleton();
@@ -107,7 +107,7 @@ public class TestSyscallsWithAudit
     assertNotNull(auditName);
     
     for(i = i+1; auditName != null; i++){
-//        System.out.println(i + ": " + auditName + " " + fryskName);
+        // System.out.println(i + ": " + auditName + " " + fryskName);
         assertEquals(auditName, fryskName);
         auditName = AuditLibs.SyscallToName(i, machine);
         fryskName = isa.getSyscallList()[i].getName();

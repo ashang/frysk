@@ -130,8 +130,8 @@ public class LinuxPowerPCSyscall
 
   static Syscall[] syscallList = {
     new PowerPCSyscall (0),
-    new PowerPCSyscall ("write", 1, 3, "i:ibn "),
-    new PowerPCSyscall ("open", 2, 3, "i:siv "),
+    new PowerPCSyscall ("exit", 1, 1),
+    new PowerPCSyscall ("fork", 2, 0, "i: "),
     new PowerPCSyscall ("read", 3, 3, "i:ibn "),
     new PowerPCSyscall ("write", 4, 3, "i:ibn "),
     new PowerPCSyscall ("open", 5, 3, "i:siv "),
@@ -308,8 +308,8 @@ public class LinuxPowerPCSyscall
     new PowerPCSyscall ("rt_sigtimedwait", 176),
     new PowerPCSyscall ("rt_sigqueueinfo", 177),
     new PowerPCSyscall ("rt_sigsuspend", 178),
-    new PowerPCSyscall ("pread64", 179),
-    new PowerPCSyscall ("pwrite64", 180),
+    new PowerPCSyscall ("pread", 179),
+    new PowerPCSyscall ("pwrite", 180),
     new PowerPCSyscall ("chown", 181, 3, "i:sii "),
     new PowerPCSyscall ("getcwd", 182, 2, "i:bi "),
     new PowerPCSyscall ("capget", 183, 2, "i:pp "),
