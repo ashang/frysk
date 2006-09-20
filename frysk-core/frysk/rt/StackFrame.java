@@ -61,7 +61,7 @@ public class StackFrame
 
   private int endLine;
 
-  private int startOffsset;
+  private int startOffset;
 
   private int endOffset;
 
@@ -132,15 +132,11 @@ public class StackFrame
             this.lineNum = line.getLineNum();
             this.startLine = this.lineNum;
             this.endLine = this.lineNum;
-            this.startOffsset = 0;
+            this.startOffset = 0;
             this.endOffset = -1;
             this.sourceFile = line.getSourceFile();
             this.column = line.getColumn();
           }
-      }
-    else
-      {
-        this.sourceFile = "<Unknown file>";
       }
   }
   
@@ -151,8 +147,10 @@ public class StackFrame
   private native void initialize ();
   
   /**
-   * Sets func to the incoming DOMFunction representing the function which
-   * is in turn represented by this StackFrame. 
+   * Sets the DOMFunction representing the function which is in turn
+   * represented by this StackFrame.  This method also calls
+   * {@link setData} using the function's source as an argument; if
+   * the function does not have a source, then null is used.
    * 
    * @param f   The DOMFunction for this StackFrame.
    */
@@ -166,8 +164,8 @@ public class StackFrame
   }
   
   /**
-   * Sets data to the incoming DOMSource, representing the source code of
-   * the executable.
+   * Sets the DOMSource, representing the source code of the
+   * executable.
    * 
    * @param s   The DOMSource for the executable this StackFrame belongs to.
    */
@@ -177,9 +175,10 @@ public class StackFrame
   }
   
   /**
-   * Returns this StackFrame's function.
+   * Returns this StackFrame's function.  If no function was
+   * previously set using {@link setFunction}, this will return null.
    * 
-   * @return func   This StackFrame's function.
+   * @return This StackFrame's function.
    */
   public DOMFunction getFunction()
   {
@@ -187,9 +186,10 @@ public class StackFrame
   }
   
   /**
-   * Returns this StackFrame's source code.
+   * Returns this StackFrame's source code.  If no source was
+   * previously set using {@link setData}, null is returned.
    * 
-   * @return data   This StackFrame's source code.
+   * @return This StackFrame's source code.
    */
   public DOMSource getData()
   {
@@ -197,9 +197,8 @@ public class StackFrame
   }
 
   /**
-   * Returns this StackFrame's method name.
-   * 
-   * @return methodName  This StackFrame's method name.
+   * Return the name of the function associated with this stack frame.
+   * This will return null if the function's name is not known.
    */
   public String getMethodName ()
   {
@@ -207,10 +206,8 @@ public class StackFrame
   }
 
   /**
-   * Returns the name of the source file represented by this StackFrame
-   * 
-   * @return sourceFile The name of the SourceFile represented by this 
-   * StackFrame.
+   * Return the name of the source file associated with this stack
+   * frame.  If the source file is not known, this will return null.
    */
   public String getSourceFile ()
   {
@@ -218,9 +215,9 @@ public class StackFrame
   }
 
   /**
-   * Returns the current line number of this StackFrame.
-   * 
-   * @return lineNum    The current line number of this Stackframe.
+   * Return the line number of the source code associated with this
+   * stack frame.  Line numbers begin at 1.  If the source line number
+   * is not known, this will return 0.
    */
   public int getLineNumber ()
   {
@@ -230,7 +227,7 @@ public class StackFrame
   /**
    * Returns the column in the currently executing line in the source file.
    * 
-   * @return column The column in the currently executing source file line. 
+   * @return The column in the currently executing source file line. 
    */
   public int getColumn ()
   {
@@ -240,7 +237,7 @@ public class StackFrame
   /**
    * Returns the program counter for this StackFrame.
    * 
-   * @return address    The program counter for this StackFrame.
+   * @return The program counter for this StackFrame.
    */
   public long getAddress ()
   {
@@ -250,7 +247,7 @@ public class StackFrame
   /**
    * Returns the Task this StackFrame belongs to.
    * 
-   * @return myTask The Task this StackFrame belongs to.
+   * @return The Task this StackFrame belongs to.
    */
   public Task getMyTask ()
   {
@@ -260,7 +257,7 @@ public class StackFrame
   /**
    * Returns the RawDataManaged  which represents this StackFrame's cursor.
    * 
-   * @return unwind_data    This StackFrame's cursor.
+   * @return This StackFrame's cursor.
    */
   protected RawDataManaged getUnwindData ()
   {
@@ -270,7 +267,7 @@ public class StackFrame
   /**
    * Returns this StackFrame's inner frame.
    * 
-   * @return inner  This StackFrame's inner frame.
+   * @return This StackFrame's inner frame.
    */
   public StackFrame getInner ()
   {
@@ -280,11 +277,44 @@ public class StackFrame
   /**
    * Returns this StackFrame's outer frame.
    * 
-   * @return outer  This StackFrame's outer frame.
+   * @return This StackFrame's outer frame.
    */
   public StackFrame getOuter ()
   {
     return outer;
+  }
+
+  /**
+   * Return a string representation of this stack frame.
+   * The returned string is suitable for display to the user.
+   */
+  public String toString ()
+  {
+    StringBuffer builder = new StringBuffer("0x");
+    builder.append(Long.toHexString(getAddress()));
+    String mn = getMethodName();
+    if (mn != null && ! "".equals(mn))
+      {
+	builder.append(" in function: ");
+	builder.append(getMethodName());
+      }
+    String sf = getSourceFile();
+    int line = getLineNumber();
+    if (sf != null || line != 0)
+      {
+	builder.append(" (");
+	if (sf != null)
+	  builder.append(sf);
+	else
+	  builder.append("Unknown source");
+	if (line != 0)
+	  {
+	    builder.append(":");
+	    builder.append(line);
+	  }
+	builder.append(")");
+      }
+    return builder.toString();
   }
   
   public int getEndLine ()
@@ -292,7 +322,7 @@ public class StackFrame
     return endLine;
   }
   
-  public void setEndLine (int i )
+  public void setEndLine (int i)
   {
     this.endLine = i;
   }
@@ -312,9 +342,9 @@ public class StackFrame
     this.startLine = i;
   }
 
-  public int getStartOffsset ()
+  public int getStartOffset ()
   {
-    return startOffsset;
+    return startOffset;
   }
   
   /**
@@ -332,7 +362,7 @@ public class StackFrame
   /**
    * Returns whether or not this frame is a signal frame.
    * 
-   * @return isSignalFrame  Whether or not this frame is a signal frame.
+   * @return Whether or not this frame is a signal frame.
    */
   public boolean getIsSignalFrame()
   {

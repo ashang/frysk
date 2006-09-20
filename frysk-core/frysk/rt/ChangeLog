@@ -1,3 +1,23 @@
+2006-09-20  Tom Tromey  <tromey@redhat.com>
+
+	* StackFrame.java (toString): New method.
+	(StackFrame): Don't initialize sourceFile if file is not known.
+	(startOffset): Renamed.
+	(getStartOffset): Likewise.
+	(setFunction): Javadoc fixes.
+	(getFunction): Likewise.
+	(getData): Likewise.
+	(getMethodName): Likewise.
+	(getSourceFile): Likewise.
+	(getLineNumber): Likewise.
+	(getColumn): Likewise.
+	(getAddress): Likewise.
+	(getMyTask): Likewise.
+	(getUnwindData): Likewise.
+	(getInner): Likewise.
+	(getOuter): Likewise.
+	(getIsSignalFrame): Likewise.
+
 2006-09-19  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (StackFrame): Added new constructor, taking an 

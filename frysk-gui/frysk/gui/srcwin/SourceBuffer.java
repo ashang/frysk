@@ -269,7 +269,7 @@ public class SourceBuffer
   {
 
     int startLine = frame.getStartLine();
-    int startCol = frame.getStartOffsset();
+    int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
     int endCol = frame.getEndOffset();
 

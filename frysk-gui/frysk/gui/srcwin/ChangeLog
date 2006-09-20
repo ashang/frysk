@@ -1,3 +1,11 @@
+2006-09-20  Tom Tromey  <tromey@redhat.com>
+
+	* CurrentLineSection.java (startOffset): Renamed.
+	(CurrentLineSection): Updated.
+	(getStartOffset): Renamed.
+	(setStartOffset): Likewise.
+	* SourceBuffer.java (setCurrentLine): Use renamed getStartOffset.
+
 2006-09-20  Mike Cvet  <mcvet@redhat.com>
 
 	* InlineSourceView.java (InlineSourceView): Passes a StackFrame

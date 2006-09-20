@@ -46,7 +46,7 @@ public class CurrentLineSection
 
   private int endLine;
 
-  private int startOffsset;
+  private int startOffset;
 
   private int endOffset;
 
@@ -59,7 +59,7 @@ public class CurrentLineSection
   {
     startLine = lineStart;
     endLine = lineEnd;
-    startOffsset = colStart;
+    startOffset = colStart;
     endOffset = colEnd;
   }
 
@@ -113,13 +113,13 @@ public class CurrentLineSection
     this.startLine = startLine;
   }
 
-  public int getStartOffsset ()
+  public int getStartOffset ()
   {
-    return startOffsset;
+    return startOffset;
   }
 
-  public void setStartOffsset (int startOffsset)
+  public void setStartOffset (int startOffset)
   {
-    this.startOffsset = startOffsset;
+    this.startOffset = startOffset;
   }
 }
