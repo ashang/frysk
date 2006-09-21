@@ -170,9 +170,9 @@ public class TestBreakpoints
 
     // Put in breakpoint observers
     CodeObserver code1 = new CodeObserver(breakpoint1);
-    task.requestAddCodeObserver(code1);
+    task.requestAddCodeObserver(code1, breakpoint1);
     CodeObserver code2 = new CodeObserver(breakpoint2);
-    task.requestAddCodeObserver(code2);
+    task.requestAddCodeObserver(code2, breakpoint2);
 
     // Make sure the observers are properly installed.
     synchronized (monitor)
@@ -269,8 +269,8 @@ public class TestBreakpoints
     // Put in breakpoint observers
     CodeObserver code1 = new CodeObserver(breakpoint1);
     CodeObserver code2 = new CodeObserver(breakpoint2);
-    task.requestAddCodeObserver(code1);
-    task.requestAddCodeObserver(code2);
+    task.requestAddCodeObserver(code1, breakpoint1);
+    task.requestAddCodeObserver(code2, breakpoint2);
 
     // Make sure the observers are properly installed.
     synchronized (monitor)
@@ -307,7 +307,7 @@ public class TestBreakpoints
     assertEquals(3, code2.getTriggered());
 
     // Remove one breakpoint.
-    task.requestDeleteCodeObserver(code2);
+    task.requestDeleteCodeObserver(code2, breakpoint2);
 
     // Wait for removal
     synchronized (monitor)
@@ -340,7 +340,7 @@ public class TestBreakpoints
     assertEquals(3, code2.getTriggered());
 
     // Remove the other breakpoint.
-    task.requestDeleteCodeObserver(code1);
+    task.requestDeleteCodeObserver(code1, breakpoint1);
 
     // Wait for removal
     synchronized (monitor)
@@ -435,14 +435,14 @@ public class TestBreakpoints
     for (int i = 0; i < 1512; i++)
       {
 	CodeObserver code = new CodeObserver(breakpoint1);
-	task.requestAddCodeObserver(code);
+	task.requestAddCodeObserver(code, breakpoint1);
 	codes1[i] = code;
       }
     CodeObserver[] codes2 = new CodeObserver[1512];
     for (int i = 0; i < 1512; i++)
       {
 	CodeObserver code = new CodeObserver(breakpoint2);
-	task.requestAddCodeObserver(code);
+	task.requestAddCodeObserver(code, breakpoint2);
 	codes2[i] = code;
       }
 
@@ -613,15 +613,13 @@ public class TestBreakpoints
       this.address = address;
     }
 
-    public Action updateHit (Task task)
+    public Action updateHit (Task task, long address)
     {
+      if (address != this.address)
+	fail("updateHit on unknown address");
+
       triggered++;
       return Action.CONTINUE;
-    }
-
-    public long getAddress()
-    {
-      return address;
     }
 
     int getTriggered()

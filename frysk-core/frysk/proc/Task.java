@@ -309,9 +309,10 @@ abstract public class Task
    * event loop.
    */
   void handleAddCodeObserver (Observable observable,
-			      TaskObserver.Code observer)
+			      TaskObserver.Code observer, long address)
   {
-    newState = oldState().handleAddCodeObserver(this, observable, observer);
+    newState = oldState().handleAddCodeObserver(this, observable, observer,
+						address);
   }
 
   /**
@@ -319,9 +320,10 @@ abstract public class Task
    * event loop.
    */
   void handleDeleteCodeObserver (Observable observable,
-				 TaskObserver.Code observer)
+				 TaskObserver.Code observer, long address)
   {
-    newState = oldState().handleDeleteCodeObserver(this, observable, observer);
+    newState = oldState().handleDeleteCodeObserver(this, observable, observer,
+						   address);
   }
 
   /**
@@ -907,19 +909,19 @@ abstract public class Task
   /**
    * Add TaskObserver.Code to the TaskObserver pool.
    */
-  public void requestAddCodeObserver (TaskObserver.Code o)
+  public void requestAddCodeObserver (TaskObserver.Code o, long a)
   {
     logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-    proc.requestAddCodeObserver(this, codeObservers, o);
+    proc.requestAddCodeObserver(this, codeObservers, o, a);
   }
 
   /**
    * Delete TaskObserver.Code for the TaskObserver pool.
    */
-  public void requestDeleteCodeObserver (TaskObserver.Code o)
+  public void requestDeleteCodeObserver (TaskObserver.Code o, long a)
   {
     logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-    proc.requestDeleteCodeObserver(this, codeObservers, o);
+    proc.requestDeleteCodeObserver(this, codeObservers, o, a);
   }
   
   /**
@@ -935,7 +937,7 @@ abstract public class Task
     while (i.hasNext())
       {
 	TaskObserver.Code observer = (TaskObserver.Code) i.next();
-	if (observer.updateHit(this) == Action.BLOCK)
+	if (observer.updateHit(this, address) == Action.BLOCK)
 	  blockers.add(observer);
       }
     return blockers.size();

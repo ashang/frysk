@@ -87,9 +87,8 @@ public class BreakpointAddresses
    * added to the list of objects to notify when the breakpoint is
    * hit (and the method returns false).
    */
-  public boolean addBreakpoint(TaskObserver.Code observer)
+  public boolean addBreakpoint(TaskObserver.Code observer, long address)
   {
-    long address = observer.getAddress();
     Breakpoint breakpoint = Breakpoint.create(address, proc);
 
     ArrayList list = (ArrayList) map.get(breakpoint);
@@ -117,9 +116,8 @@ public class BreakpointAddresses
    *
    * @throws IllegalArgumentException if the observer was never added.
    */
-  public boolean removeBreakpoint(TaskObserver.Code observer)
+  public boolean removeBreakpoint(TaskObserver.Code observer, long address)
   {
-    long address = observer.getAddress();
     Breakpoint breakpoint = Breakpoint.create(address, proc);
     ArrayList list = (ArrayList) map.get(breakpoint);
     if (list == null || ! list.remove(observer))

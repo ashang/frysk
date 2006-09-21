@@ -48,14 +48,18 @@ package frysk.proc;
 abstract class TaskCodeObservation
   extends TaskObservation
 {
+  private final long address;
+
   /**
    * Create a new CodeObserver binding.
    */
   public TaskCodeObservation(Task task,
 			     Observable observable,
-			     TaskObserver.Code observer)
+			     TaskObserver.Code observer,
+			     long address)
   {
     super(task, observable, observer);
+    this.address = address;
   }
 
   /**
@@ -63,7 +67,8 @@ abstract class TaskCodeObservation
    */
   public void handleAdd()
   {
-    task.handleAddCodeObserver(observable, (TaskObserver.Code) observer);
+    task.handleAddCodeObserver(observable, (TaskObserver.Code) observer,
+			       address);
   }
 
   /**
@@ -71,6 +76,7 @@ abstract class TaskCodeObservation
    */
   public void handleDelete ()
   {
-    task.handleDeleteCodeObserver(observable, (TaskObserver.Code) observer);
+    task.handleDeleteCodeObserver(observable, (TaskObserver.Code) observer,
+				  address);
   }
 }

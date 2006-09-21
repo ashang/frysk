@@ -165,12 +165,14 @@ class TaskState
 	throw unhandled (task, "handleDeleteSyscallObserver");
     }
     TaskState handleAddCodeObserver(Task task, Observable observable,
-				    TaskObserver.Code observer)
+				    TaskObserver.Code observer,
+				    long address)
     {
       throw unhandled (task, "handleAddCodeObserver");
     } 
     TaskState handleDeleteCodeObserver(Task task, Observable observable,
-				       TaskObserver.Code observer)
+				       TaskObserver.Code observer,
+				       long address)
     {
       throw unhandled (task, "handleDeleteCodeObserver");
     } 
@@ -815,22 +817,22 @@ class TaskState
 	      PendingCodeObserver pco = (PendingCodeObserver) it.next();
 	      if (pco.addition)
 		{
-		  if (task.proc.breakpoints.addBreakpoint(pco.observer))
+		  if (task.proc.breakpoints.addBreakpoint(pco.observer,
+							  pco.address))
 		    {
-		      long address = pco.observer.getAddress();
 		      Breakpoint breakpoint;
-		      breakpoint = Breakpoint.create(address, task.proc);
+		      breakpoint = Breakpoint.create(pco.address, task.proc);
 		      breakpoint.install(task);
 		    }
 		  pco.observable.add(pco.observer);
 		}
 	      else
 		{
-		  if (task.proc.breakpoints.removeBreakpoint(pco.observer))
+		  if (task.proc.breakpoints.removeBreakpoint(pco.observer,
+							     pco.address))
 		    {
-		      long address = pco.observer.getAddress();
 		      Breakpoint breakpoint;
-		      breakpoint = Breakpoint.create(address, task.proc);
+		      breakpoint = Breakpoint.create(pco.address, task.proc);
 		      breakpoint.remove(task);
 		    }
 		  pco.observable.delete(pco.observer);
@@ -1000,7 +1002,8 @@ class TaskState
       }
 
       TaskState handleAddCodeObserver(Task task, Observable observable,
-				      TaskObserver.Code observer)
+				      TaskObserver.Code observer,
+				      long address)
       {
 	// We cannot add or delete when running, push it on the queue
 	// and stop the task.
@@ -1008,13 +1011,15 @@ class TaskState
 	pco.addition = true;
 	pco.observer = observer;
 	pco.observable = observable;
+	pco.address = address;
 	task.pendingCodeObservers.add(pco);
 	task.sendStop();
 	return this;
       }
 
       TaskState handleDeleteCodeObserver(Task task, Observable observable,
-					 TaskObserver.Code observer)
+					 TaskObserver.Code observer,
+					 long address)
       {
 	// We cannot add or delete when running, push it on the queue
 	// and stop the task.
@@ -1022,6 +1027,7 @@ class TaskState
 	pco.addition = false;
 	pco.observer = observer;
 	pco.observable = observable;
+	pco.address = address;
 	task.pendingCodeObservers.add(pco);
 	task.sendStop();
 	return this;
@@ -1269,11 +1275,11 @@ class TaskState
   	  }
 
       TaskState handleAddCodeObserver(Task task, Observable observable,
-				      TaskObserver.Code observer)
+				      TaskObserver.Code observer,
+				      long address)
       {
-	if (task.proc.breakpoints.addBreakpoint(observer))
+	if (task.proc.breakpoints.addBreakpoint(observer, address))
 	  {
-	    long address = observer.getAddress();
 	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
 	    breakpoint.install(task);
 	  }
@@ -1282,11 +1288,11 @@ class TaskState
       }
 
       TaskState handleDeleteCodeObserver(Task task, Observable observable,
-					 TaskObserver.Code observer)
+					 TaskObserver.Code observer,
+					 long address)
       {
-	if (task.proc.breakpoints.removeBreakpoint(observer))
+	if (task.proc.breakpoints.removeBreakpoint(observer, address))
 	  {
-	    long address = observer.getAddress();
 	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
 	    breakpoint.remove(task);
 	  }

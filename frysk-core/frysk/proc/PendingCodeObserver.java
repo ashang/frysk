@@ -53,6 +53,9 @@ final class PendingCodeObserver
   
   // The Code observer to add or delete.
   TaskObserver.Code observer;
+
+  // The address on which to set a breakpoint
+  long address;
   
   // The observable - XXX isn't this always the task?
   Observable observable;
@@ -61,6 +64,8 @@ final class PendingCodeObserver
   {
     return ("PendingCodeObserver[observer=" +observer
 	    + ", addition=" + addition
-	    + ", observable=" + observable + "]");
+	    + ", observable=" + observable
+	    + ", address=" + Long.toHexString(address)
+	    + "]");
   }
 }

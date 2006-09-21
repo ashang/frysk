@@ -419,11 +419,12 @@ public abstract class Proc
      */
     void requestAddCodeObserver (Task task,
 				 TaskObservable observable,
-				 TaskObserver.Code observer)
+				 TaskObserver.Code observer,
+				 long address)
     {
 	logger.log (Level.FINE, "{0} requestAddCodeObserver\n", this); 
 	TaskCodeObservation tco;
-	tco = new TaskCodeObservation(task, observable, observer)
+	tco = new TaskCodeObservation(task, observable, observer, address)
 	  {
 	    public void execute ()
 	    {
@@ -439,10 +440,11 @@ public abstract class Proc
      */
     void requestDeleteCodeObserver (Task task,
 				    TaskObservable observable,
-				    TaskObserver.Code observer)
+				    TaskObserver.Code observer,
+				    long address)
     {
       TaskCodeObservation tco;
-      tco = new TaskCodeObservation(task, observable, observer)
+      tco = new TaskCodeObservation(task, observable, observer, address)
 	{
 	  public void execute()
 	  {

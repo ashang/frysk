@@ -1,5 +1,26 @@
 2006-09-21  Mark Wielaard  <mark@klomp.org>
 
+	* BreakpointAddresses.java (addBreakpoint): Take address as argument.
+	(removeBreakpoint): Likewise.
+	* PendingCodeObserver.java (address): New field.
+	* Proc.java (requestAddCodeObserver): Take address as argument.
+	(requestDeleteCodeObserver): Likewise.
+	* Task.java (handleAddCodeObserver): Likewise.
+	(handleDeleteCodeObserver): Likewise.
+	(requestAddCodeObserver): Likewise.
+	(requestDeleteCodeObserver): Likewise.
+	* TaskCodeObservation (address): New field.
+	(TaskCodeObservation): Take address as argument.
+	(handleAdd): Pass on address.
+	(handleDelete): Likewise.
+	* TaskObserver.java (Code.getAddress): Removed method.
+	(updateHit): Take address as argument.
+	* TaskState (*.handleAddCodeObserver): Handle address as argument.
+	(*.handleDeleteCodeObserver): Likewise.
+	* TestBreakpoints.java: Update test to pass address as argument.
+
+2006-09-21  Mark Wielaard  <mark@klomp.org>
+
 	* LinuxX8664Syscall.java (syscallList): Updated with audit results.
 	* TestSyscallsWithAudit.java (testLinuxEMT64): Enable test.
 
