@@ -122,7 +122,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		getManagerControls(glade);
 		getSessionManagementControls(glade);
 		getDebugSingleProcess(glade);
-		getTerminalSession(glade);
 		setButtonStates();
 		
 		popupControl.add(this);
@@ -167,22 +166,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 
 	}
 
-	/**
-	 * Setup the action for the blank terrminal session.
-	 * 
-	 * @param glade - the glade file for the Session Manager.
-	 */
-	private void getTerminalSession(LibGlade glade) {
-		terminalSession = (RadioButton) glade
-				.getWidget("SessionManager_startTerminalSessionButton");
-		terminalSession.setState(false);
-		terminalSession.addListener(new ToggleListener() {
-			public void toggleEvent(ToggleEvent arg0) {
-				setButtonStates();
-			}
-		});
-
-	}
 
 	/**
 	 * Sets the button states depending on the state of the 
@@ -224,8 +207,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		}
 
 		// Set whether the open button should be interactive.
-		if (previousSessions.getSelectedObject() != null && previousSession.getState()
-				|| terminalSession.getState()) {
+		if (previousSessions.getSelectedObject() != null && previousSession.getState()) {
 			openButton.setSensitive(true);
 		} else {
 			openButton.setSensitive(false);
@@ -484,24 +466,14 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		// If this is not a terminal session, hide the terminal and run process picker
 		if (previousSession.getState()) {
 			processPicker.checkSession(s);
-			sessionLaunched = true;
-			popupControl.removeAllElements();
-			popupControl.add(WindowManager.theManager.mainWindow);
-			IconManager.trayIcon.setPopupWindows(popupControl);
-		
-			WindowManager.theManager.mainWindow.hideTerminal();
-		}
-		
-		// If it is a terminal session, launch the session cleanly with a terminal
-		if (terminalSession.getState()) {
 			WindowManager.theManager.mainWindow.buildTerminal();
-			hideAll();
 			sessionLaunched = true;
 			popupControl.removeAllElements();
 			popupControl.add(WindowManager.theManager.mainWindow);
 			IconManager.trayIcon.setPopupWindows(popupControl);
-			WindowManager.theManager.mainWindow.showAll();
+			//WindowManager.theManager.mainWindow.hideTerminal();
 		}
+		
 	}
 
 }

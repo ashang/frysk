@@ -244,6 +244,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		WindowManager.theManager.sessionManager.showAll();
 		Gtk.main();
 
+		WindowManager.theManager.mainWindow.killTerminalShell();
 		// Gtk main loop exited, stop core event loop.
 		Manager.eventLoop.requestStop();
 		

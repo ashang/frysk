@@ -1,6 +1,19 @@
+2006-09-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java (openSession): Always
+	start a terminal session.
+	(getTerminalSession): Remove.
+	(SessionManagerGui): Remove reference to getTerminalSession.
+	* Gui.java (gui): Properly kill terminal on exit.
+	* glade/procpop.glade: Add scrolled window to
+	terminalWidget Vbox.
+	* glade/frysk_session_manager.glade: Remove 
+	blank session with terminal option.
+	
 2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Gui.java: (buildTrayManager): Remove popup control.
+	* Gui.java (buildTrayManager): Remove popup control.
+	(gui): 
 	* SessionManagerGui.java (isSessionLaunched): New.
 	(openSession): Control the popup of the tray icon to either
 	select monitor window, or session manager, depending on context.
