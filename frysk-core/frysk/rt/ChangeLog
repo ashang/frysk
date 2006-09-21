@@ -1,3 +1,13 @@
+2006-09-21  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (StackTasksObserver): Added.
+	(handleTask): Added - grabs stack information from incoming Tasks.
+	(frameAssertions): Added, runs assertions on stack information
+	from all three threads.
+	(testThreadedBacktrace): Added, runs a multithreaded test program,
+	collecting stack information from all threads and running assertions
+	on it.
+
 2006-09-20  Tom Tromey  <tromey@redhat.com>
 
 	* StackFrame.java (toString): Pad address to task's word size.

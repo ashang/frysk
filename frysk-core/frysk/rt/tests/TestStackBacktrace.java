@@ -40,10 +40,17 @@
 
 package frysk.rt.tests;
 
+//import java.util.Iterator;
+//import java.util.LinkedList;
+
 import inua.eio.ByteBuffer;
 import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+import frysk.proc.ProcObserver;
+import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
@@ -58,35 +65,38 @@ public class TestStackBacktrace
     extends TestLib
 {
   private Task myTask;
+  
+  private int task_count = 0;
+  
+  /*
+   *    [frame.getLineNumber()]
+   * [frame.getInner().toString()]
+   *    [frame.getMethodName()]
+   *    [frame.getSourceFile()]
+   *            ^
+   *            |  ...   ...          
+   * [TID] -> [f0|f1|f2|f3...]
+   * [TID] -> ....
+   */
+  private String[][][] frameTracker = new String[3][9][5];
 
   public void testBacktrace () throws TaskException
   {
-     // Backtraces only work on x86 for now.
-     if (MachineType.getMachineType() != MachineType.IA32)
-       {
-	  brokenXXX(2936);
-	  return;
-       }
     
-    class TaskCreatedObserver extends TaskObserverBase
-        implements TaskObserver.Attached
-    {
-
-      public Action updateAttached (Task task)
+    // Backtraces only work on x86 for now.
+    if (MachineType.getMachineType() != MachineType.IA32)
       {
-        // TestStackBacktrace.this.myTask = task;
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
+        brokenXXX(2936);
+        return;
       }
-    }
 
     TaskCreatedObserver obs = new TaskCreatedObserver();
     AckDaemonProcess process = new AckDaemonProcess(
-                                                    Sig.POLL,
-                                                    new String[] {
-                                                                  Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/funit-rt-looper",
-                                                                      ""+ frysk.rt.tests.TestLib.getMyPid(),
-                                                                      ""+ Sig.POLL_});
+                            Sig.POLL, new String[] {
+                            Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/funit-rt-looper",
+                            "" + frysk.rt.tests.TestLib.getMyPid(),
+                            "" + Sig.POLL_ });
+    
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
     myTask.requestAddAttachedObserver(obs);
@@ -119,77 +129,370 @@ public class TestStackBacktrace
 
     }
 
-//     MyBuilder builder = new MyBuilder();
-//     System.out.println("Before maps test");
-//     builder.construct(myTask.getTid());
-//     System.out.println("After maps test");
+    // MyBuilder builder = new MyBuilder();
+    // System.out.println("Before maps test");
+    // builder.construct(myTask.getTid());
+    // System.out.println("After maps test");
 
     StackFrame frame = StackFactory.createStackFrame(myTask);
 
     assertNotNull(frame);
 
-//    int level = 0;
-//    while (frame != null)
-//      {
-//        System.out.println("Frame " + (++level));
-//        System.out.println("\tFile: " + frame.getSourceFile());
-//        System.out.println("\tFunc: " + frame.getMethodName());
-//        System.out.println("\tLine: " + frame.getLineNumber());
-//        System.out.println("\tCol: " + frame.getColumn());
-//        System.out.println("\tAddr: " + frame.getAddress());
-//        frame = frame.getOuter();
-//      }
-    
-    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    // int level = 0;
+    // while (frame != null)
+    // {
+    // System.out.println("Frame " + (++level));
+    // System.out.println("\tFile: " + frame.getSourceFile());
+    // System.out.println("\tFunc: " + frame.getMethodName());
+    // System.out.println("\tLine: " + frame.getLineNumber());
+    // System.out.println("\tCol: " + frame.getColumn());
+    // System.out.println("\tAddr: " + frame.getAddress());
+    // frame = frame.getOuter();
+    // }
+
+    assertTrue(frame.getSourceFile().endsWith(
+                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("baz", frame.getMethodName());
     assertNull(frame.getInner());
     /* XXX: this should be 62 */
     assertEquals(61, frame.getLineNumber());
-   
+
     frame = frame.getOuter();
-    
-    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertTrue(frame.getSourceFile().endsWith(
+                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("bar", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(71, frame.getLineNumber());
-    
+
     frame = frame.getOuter();
-    
-    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertTrue(frame.getSourceFile().endsWith(
+                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("foo", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(81, frame.getLineNumber());
-    
+
     frame = frame.getOuter();
-    
-    assertTrue(frame.getSourceFile().endsWith("/frysk/pkglibexecdir/funit-rt-looper.c"));
+    assertTrue(frame.getSourceFile().endsWith(
+                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("main", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(117, frame.getLineNumber());
-    
+
     frame = frame.getOuter();
-    
-    assertEquals(null, frame.getSourceFile());
+    assertNull(frame.getSourceFile());
     assertEquals("__libc_start_main", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());
-    
+
     frame = frame.getOuter();
-    
-    assertEquals(null, frame.getSourceFile());
+    assertNull(frame.getSourceFile());
     assertEquals("_start", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());
-    
-    frame = frame.getOuter();
-    
-    assertNull(frame);
-    
 
-//     MyBuilder builder2 = new MyBuilder();
-//     System.out.println("Before maps test");
-//     builder2.construct(myTask.getTid());
-//     System.out.println("After maps test");
+    frame = frame.getOuter();
+
+    assertNull(frame);
+
+    // MyBuilder builder2 = new MyBuilder();
+    // System.out.println("Before maps test");
+    // builder2.construct(myTask.getTid());
+    // System.out.println("After maps test");
   }
 
+  
+  public synchronized void testThreadedBacktrace () throws TaskException
+  {
+    
+    AckDaemonProcess process = new AckDaemonProcess(
+                     Sig.POLL, new String[] { Build.ABS_BUILDDIR
+                     + "/frysk/pkglibexecdir/funit-rt-threader", "" 
+                     + frysk.rt.tests.TestLib.getMyPid(), ""
+                     + Sig.POLL_ });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    
+    Proc proc = Manager.host.getProc(new ProcId(process.getPid()));
+    new ProcTasksObserver(proc, new StackTasksObserver());
+    
+    Manager.eventLoop.start();
+    
+    try
+      {
+        wait(); /* Wait for all thread information to be collected */
+      }
+    catch (InterruptedException ie)
+      {
+        System.out.println(ie.getMessage());
+      }
+  
+  frameAssertions();
+  }
+  
+  /**
+   * Sort the matrix by TID and compare its contents to the actual source file.
+   */
+  public void frameAssertions()
+  {
+    
+    int tid = Integer.parseInt(this.frameTracker[0][0][0]);
+    int lowest = 0;
+    int next = 0;
+    int last = 0;
+    int temp = 0;
+    
+    /* Find the numerically lowest TID (== main task) because these tasks may
+     * have come in any order, and we need to know which task is which to
+     * perform assertions */
+    for (int i = 0; i < 3; i++)
+      {
+        temp = Integer.parseInt(this.frameTracker[i][0][0]);
+        if (temp < tid)
+          {
+            tid = temp;
+            lowest = i;
+          }
+      }
+    
+    /* Main thread assertions */
+    
+    assertTrue(this.frameTracker[lowest][1][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("bak_two", this.frameTracker[lowest][1][2]);
+    assertNotNull(this.frameTracker[lowest][1][3]);
+    assertEquals(71, Integer.parseInt(this.frameTracker[lowest][1][4]));
+    
+    assertTrue(this.frameTracker[lowest][2][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("bak", this.frameTracker[lowest][2][2]);
+    assertNotNull(this.frameTracker[lowest][2][3]);
+    assertEquals(81, Integer.parseInt(this.frameTracker[lowest][2][4]));
+    
+    assertTrue(this.frameTracker[lowest][3][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("baz_two", this.frameTracker[lowest][3][2]);
+    assertNotNull(this.frameTracker[lowest][3][3]);
+    assertEquals(91, Integer.parseInt(this.frameTracker[lowest][3][4]));
+    
+    assertTrue(this.frameTracker[lowest][4][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("bar_two", this.frameTracker[lowest][4][2]);
+    assertNotNull(this.frameTracker[lowest][4][3]);
+    assertEquals(105, Integer.parseInt(this.frameTracker[lowest][4][4]));
+    
+    assertTrue(this.frameTracker[lowest][5][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("foo_two", this.frameTracker[lowest][5][2]);
+    assertNotNull(this.frameTracker[lowest][5][3]);
+    assertEquals(123, Integer.parseInt(this.frameTracker[lowest][5][4]));
+    
+    assertTrue(this.frameTracker[lowest][6][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("main", this.frameTracker[lowest][6][2]);
+    assertNotNull(this.frameTracker[lowest][6][3]);
+    assertEquals(172, Integer.parseInt(this.frameTracker[lowest][6][4]));
+    
+    assertNull(this.frameTracker[lowest][7][1]);
+    assertEquals("__libc_start_main", this.frameTracker[lowest][7][2]);
+    assertNotNull(this.frameTracker[lowest][7][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[lowest][7][4]));
+    
+    assertNull(this.frameTracker[lowest][8][1]);
+    assertEquals("_start", this.frameTracker[lowest][8][2]);
+    assertNotNull(this.frameTracker[lowest][8][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[lowest][8][4]));
+    
+    
+    /* Find the first thread the main thread created - the signal thread. */
+    for (int i = 0; i < 3; i++)
+      {
+        temp = Integer.parseInt(this.frameTracker[i][0][0]);
+        if (temp == (tid + 1))
+          {
+            next = i;
+          }
+      }
+    
+    /* Second thread assertions */
+    
+    assertTrue(this.frameTracker[next][1][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("signal_parent", this.frameTracker[next][1][2]);
+    assertNotNull(this.frameTracker[next][1][3]);
+    assertEquals(63, Integer.parseInt(this.frameTracker[next][1][4]));
+    
+    assertNull(this.frameTracker[next][2][1]);
+    assertEquals("start_thread", this.frameTracker[next][2][2]);
+    assertNotNull(this.frameTracker[next][2][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
+    
+    assertNull(this.frameTracker[next][3][1]);
+    assertEquals("__clone", this.frameTracker[next][3][2]);
+    assertNotNull(this.frameTracker[next][3][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
+    
+    
+    /* Find the last thread */
+    switch (lowest + next)
+      {
+      case 1:
+        last = 2;
+        break;
+      case 2:
+        last = 1;
+        break;
+      case 3:
+        last = 0;
+        break;
+      }
+    
+    /* Third thread assertions */
+    
+    assertEquals("bak", this.frameTracker[last][1][2]);
+    assertNotNull(this.frameTracker[last][1][3]);
+    assertEquals(83, Integer.parseInt(this.frameTracker[last][1][4]));
+    
+    assertTrue(this.frameTracker[last][2][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("baz", this.frameTracker[last][2][2]);
+    assertNotNull(this.frameTracker[last][2][3]);
+    assertEquals(98, Integer.parseInt(this.frameTracker[last][2][4]));
+    
+    assertTrue(this.frameTracker[last][3][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("bar", this.frameTracker[last][3][2]);
+    assertNotNull(this.frameTracker[last][3][3]);
+    assertEquals(116, Integer.parseInt(this.frameTracker[last][3][4]));
+    
+    assertTrue(this.frameTracker[last][4][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertEquals("foo", this.frameTracker[last][4][2]);
+    assertNotNull(this.frameTracker[last][4][3]);
+    assertEquals(130, Integer.parseInt(this.frameTracker[last][4][4]));
+    
+    assertNull(this.frameTracker[next][2][1]);
+    assertEquals("start_thread", this.frameTracker[next][2][2]);
+    assertNotNull(this.frameTracker[next][2][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
+    
+    assertNull(this.frameTracker[next][3][1]);
+    assertEquals("__clone", this.frameTracker[next][3][2]);
+    assertNotNull(this.frameTracker[next][3][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
+  }
+  
+  
+  /*****************************
+   * Observer Classes          *
+   *****************************/
+
+  /**
+   * Used by the single-threaded test - blocks the task and stops the event loop.
+   */
+  class TaskCreatedObserver
+      extends TaskObserverBase
+      implements TaskObserver.Attached
+  {
+
+    public synchronized Action updateAttached (Task task)
+    {
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+  }
+
+  /** 
+   * Used by the multi-threaded test - blocks all tasks and retreives stack
+   * information into the global matrix. 
+   */
+  private class StackTasksObserver
+      implements ProcObserver.ProcTasks
+  {
+
+    public void existingTask (Task task)
+    {
+      handleTask(task);
+    }
+
+    public void taskAdded (Task task)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void taskRemoved (Task task)
+    {
+      // TODO Auto-generated method stub
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      // TODO Auto-generated method stub
+    }
+
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+      Manager.eventLoop.requestStop();
+    }
+
+  }
+
+  /**
+   * Each task belonging to the process executes this in a synchronized manner.
+   * The innermost StackFrame is generated for the task, which is properly
+   * blocked by the time it gets here. This Task's TID and its StackFrame's 
+   * information is stored into the global matrix for assertions later. 
+   * 
+   * @param task    The Task to save a stack trace from. 
+   */
+  public synchronized void handleTask (Task task)
+  {
+
+    StackFrame frame = null;
+    
+    if (task != null)
+      {
+        try
+        {
+          frame = StackFactory.createStackFrame(task);
+        }
+        catch (TaskException te)
+        {
+          System.out.println(te.getMessage());
+        }
+        
+        assertNotNull(frame);
+        
+        frameTracker[task_count][0][0] = "" + task.getTid();
+        
+        int i = 1;
+        while (frame != null)
+          {
+            frameTracker[task_count][i][0] = "" + frame.toString();
+            frameTracker[task_count][i][1] = frame.getSourceFile();
+            frameTracker[task_count][i][2] = frame.getMethodName();
+            
+            if (frame.getInner() == null)
+              frameTracker[task_count][i][3] = "";
+            else
+              frameTracker[task_count][i][3] = "" + frame.getInner().toString();
+            
+            frameTracker[task_count][i][4] = "" + frame.getLineNumber();
+            
+            frame = frame.getOuter();
+            i++;
+          }
+        
+        ++task_count;
+        
+        /* All three tasks have gone through - wake the test and finish up */
+        if (task_count == 3)
+          {
+            notify();
+            return;
+          }
+      }
+    else
+      return;
+
+  }
 }

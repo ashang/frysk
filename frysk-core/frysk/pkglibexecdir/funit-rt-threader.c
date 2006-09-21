@@ -57,11 +57,11 @@ volatile pid_t pid;
 volatile int sig;
 
 void 
-signal_parent ()
+*signal_parent ()
 {
   while (lock_one || lock_two);
-  sleep (2);
   kill (pid, sig);
+  while(1);
 }
 
 /* tester_thread_two */
@@ -118,10 +118,9 @@ bar ()
 
 /* tester_thread_two: a = 0 */
 void
-*foo_two ()
+foo_two ()
 {
   bar_two ();
-  return NULL;
 }
 
 /* tester_thread_one: a = 1 */
@@ -138,7 +137,7 @@ main (int argc, char ** argv)
 
   if (argc < 3)
     {
-      printf("Usage: looper2 <pid> <signal>\n");
+      printf("Usage: funit-rt-threader <pid> <signal>\n");
       exit(0);
     }
 
@@ -167,10 +166,10 @@ main (int argc, char ** argv)
   pthread_attr_t attr;
   pthread_attr_init (&attr);
 
-  pthread_create (&tester_thread_one, &attr, foo, NULL);
-  pthread_create (&tester_thread_two, &attr, foo_two, NULL);
+  pthread_create (&tester_thread_one, &attr, signal_parent, NULL);
+  pthread_create (&tester_thread_two, &attr, foo, NULL);
 
-  signal_parent ();
-  
+  foo_two ();
+
   return 0;
 }
