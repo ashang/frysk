@@ -96,6 +96,9 @@ There are an infinite number of paths thru the GUI - this script will cover thes
                 j         open edit columns window
             path 2 open blank session with terminal window
                 a open frysk monitor window
+                b   open help window
+                c      open about window
+
             path 3 open run/manage session window
                 a open create a frysk debug session window
                 b open frysk monitor window
@@ -129,8 +132,7 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 from DebugExistingProcessDialog import *
-
-
+import time
 
 class guiWalktest ( unittest.TestCase ):
 
@@ -190,7 +192,6 @@ class guiWalktest ( unittest.TestCase ):
         OKbutton.click()
 
         # b open frysk source window - need to wait for it to be displayed
-        import time
         time.sleep ( 5 )
         theApp = tree.root.application( 'Frysk' )
         theList = theApp.children
@@ -234,7 +235,6 @@ class guiWalktest ( unittest.TestCase ):
         pickColor = theApp.child( 'Pick a Color' )
         closeButton = pickColor.button( 'OK' )
         cancelButton = pickColor.button( 'Cancel' )
-        #skipList = ['OK', 'Cancel']
         showChildren_new ( pickColor, "push button", "click" )
         
         # close pick a color window
@@ -278,6 +278,8 @@ class guiWalktest ( unittest.TestCase ):
         
         theApp = tree.root.application( 'Frysk' )
         theList = theApp.children
+        for x in theList:
+            print str(x)
         memoryDialog = theList[2]  
         showChildren_new ( memoryDialog, "push button", "click" )
         
@@ -303,18 +305,78 @@ class guiWalktest ( unittest.TestCase ):
         programList = program.children
         for x in programList:
             x.click()            
-                
-        #sourceDialog
-        #self.frysk.dialog( 'Frysk Startup Manager' )
         
-        #self.close_StartupManagerDialog (self.frysk)
+        programClose = sourceDialog.child( name='File', roleName='menu' )
+        programClose.click()
+        closeItem = programClose.child (name='Close', roleName = 'menu item')
+        closeItem.click()
+
+
+
+    #def testPath_2( self ):
+        """Check that the GUI elements can be accessed and acted upon"""
+
+        # Start at the top level Frysk gui
+        topFryskDialog = AbstractGuiClass()
+        topFryskDialog.setCurrentGui(self.frysk)
+        showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
+
+        # path 2 open blank session with terminal window
+        # a. open frysk monitor window
+        fryskStartupManager = self.frysk.child ( 'Frysk Startup Manager' )
+
+        terminalRadioButton = fryskStartupManager.child ( roleName='radio button', name='Open Blank Session with a Terminal' )
+        terminalRadioButton.click()
+        openButton = fryskStartupManager.child (roleName='push button', name = 'Open')
+        openButton.click()
+
+        # Need to handle the delay in getting the Frysk Monitor frame to appear
+        time.sleep ( 5 )
+
+        fryskMonitor = self.frysk.child ('Frysk Monitor')
+        showChildren_new ( fryskMonitor, "menu item", "click" )
+
+        # Select the 'Help' menu item
+        helpItem = fryskMonitor.menuItem('Help')
+        helpItem.click()
+
+        # Select the 'About Frysk' Help menu item
+        aboutItem = helpItem.menuItem('About')
+        aboutItem.click() 
+        aboutFrame = self.frysk.child(ABOUT_FRYSK)
+        showChildren_new ( aboutFrame, "push button", "click" )
+
+        # Select the 'License' menu pick and click the button to open the license frame
+        licenseButton = aboutFrame.button(LICENSE)
+        licenseButton.click()
+        licenseFrame = self.frysk.dialog(LICENSE)
+        showChildren_new ( licenseFrame, "push button", "click" )
+
+        # Close the license text frame
+        closeButton = licenseFrame.button('Close')
+        closeButton.click()
+
+        # Select the 'Credits' menu pick and click the button to open the credits frame
+        creditsButton = aboutFrame.button(CREDITS)
+        creditsButton.click()
+        creditsFrame = self.frysk.dialog(CREDITS)
+        showChildren_new ( creditsFrame, "push button", "click" )
+
+        # Close the license text frame
+        closeButton = creditsFrame.button('Close')
+        closeButton.click()
+
+        #self.frysk.dump()
 
    
 def suite():
     suite = unittest.TestSuite()
     suite.addTest( guiWalktest ( 'testPath_1' ) )
+#    suite.addTest( guiWalktest ( 'testPath_2' ) )
     return suite
 
 if __name__ == '__main__':
   #unittest.main()
   unittest.TextTestRunner( verbosity=1 ).run( suite() )
+
+
