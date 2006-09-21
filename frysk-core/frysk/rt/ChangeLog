@@ -1,3 +1,7 @@
+2006-09-20  Tom Tromey  <tromey@redhat.com>
+
+	* StackFrame.java (toString): Pad address to task's word size.
+
 2006-09-20  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Expanded test.
