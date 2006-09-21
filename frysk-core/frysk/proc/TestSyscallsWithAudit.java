@@ -115,25 +115,23 @@ public class TestSyscallsWithAudit
   }
 
   public void testLinuxEMT64(){
-    if (brokenXXX (3218))
-      return;
-    
     int machine = AuditLibs.MACH_86_64;
     Isa isa = LinuxEMT64.isaSingleton();
     
     String auditName;
     String fryskName;
     
-    int i = 0; //XXX: There is no syscall 0 in PPC ??
+    int i = 0;
     auditName = AuditLibs.SyscallToName(i, machine);
     fryskName = isa.getSyscallList()[i].getName();
     assertNotNull(auditName);
     
     for(i = i+1; auditName != null; i++){
-//        System.out.println(i + ": " + auditName + " " + fryskName);
+        // System.out.println(i - 1 + ": " + auditName + " " + fryskName);
         assertEquals(auditName, fryskName);
         auditName = AuditLibs.SyscallToName(i, machine);
-        fryskName = isa.getSyscallList()[i].getName();
+        if (auditName != null)
+          fryskName = isa.getSyscallList()[i].getName();
     }
   }
 
