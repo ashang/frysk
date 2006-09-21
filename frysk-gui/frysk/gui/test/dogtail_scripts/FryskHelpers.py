@@ -84,11 +84,13 @@ EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
 LICENSE = 'License'
 OBSERVERS = 'Observers'
 MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
+PROGRAM_OBSERVERS = 'Program Observer...'
 CUSTOM_OBSERVERS = 'Frysk Custom Observers'
 DEBUG_SESSION_DRUID = 'Debug Session Druid'
 FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
 CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
 MONITOR = 'Frysk Monitor'
+FRYSK = 'Frysk'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
@@ -300,9 +302,11 @@ def endFrysk( testObject ):
     """ Close the Frysk GUI 
     """
     # Exit Frysk GUI
-    fryskObject = testObject.getFryskObject()
-    closeItem = fryskObject.menuItem( 'Close' )
-    closeItem.click()
+    # TODO - Need to generalize this to handle closing Frysk from any Frysk GUI
+    # For now, exit via brute force killing of FryskGui process
+    #fryskObject = testObject.getFryskObject()
+    #closeItem = fryskObject.menuItem( 'Close' )
+    #closeItem.click()
     killFrysk()
     
     # And, kill the funit-child process
@@ -336,7 +340,7 @@ def getEventType ( eventClassName ):
     return returnString
 
 # ---------------------
-def createMinimalSession (fryskObject, sessionObject, quitBoolean):
+def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolean):
     """ This function is used to create a minimal session object - this
         is needed as all tests that access the FryskGui must either create
         a session or access an existing session.
@@ -359,6 +363,9 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     newButton.click()
     
     theSessionManager = fryskObject.dialog(CREATE_A_FRYSK_SESSION_DIALOG)
+    if walkGuiBoolean:
+        showChildren_new ( theSessionManager, "table cell", "activate" )
+    
     quitButton = theDruid.button('Quit')
     openButton = theDruid.button('Open')
 
@@ -418,6 +425,8 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     # groups are selected
 
     forwardButton.click()
+    if walkGuiBoolean:
+        showChildren_new ( theSessionManager, "table cell", "activate" )
 
     # ---------------------
     # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
@@ -453,7 +462,6 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
             
 
     forwardButton.click()
-
     # Close the Druid
     finishButton.click()
 

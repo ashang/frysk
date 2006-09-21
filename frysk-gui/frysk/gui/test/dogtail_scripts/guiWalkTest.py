@@ -161,6 +161,10 @@ class guiWalktest ( unittest.TestCase ):
         self.parser.parse( os.getenv( 'TestDruid_FILE' ) )
         self.theSession = self.handler.theDebugSession
         
+        # Create a Frysk session - param #3 = quit the FryskGui after
+        # creating the session, param #4 = walk thru all the GUI nodes 
+        #createMinimalSession (self.frysk, self.theSession, False, False)
+        
         
     def tearDown( self ):    
         # Exit Frysk
@@ -174,11 +178,11 @@ class guiWalktest ( unittest.TestCase ):
         # Start at the top level Frysk gui
         topFryskDialog = AbstractGuiClass()
         topFryskDialog.setCurrentGui(self.frysk)
-        showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
+        #showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
                 
         # 1 open debug existing process window
         theDebugProcessDialog = DebugExistingProcessDialog(topFryskDialog.getCurrentGui())
-        showChildren_new ( theDebugProcessDialog.getCurrentGui(), "table cell", "activate" )
+        #showChildren_new ( theDebugProcessDialog.getCurrentGui(), "table cell", "activate" )
         processDialog = theDebugProcessDialog.getCurrentGui()
         
         ##################################continue work here ########################
@@ -200,7 +204,7 @@ class guiWalktest ( unittest.TestCase ):
         # Open up the 'find' panel on the open frysk source window
         findPanel = sourceDialog.child( name='Find', roleName='check menu item' )
         findPanel.click()
-        showChildren_new ( sourceDialog, "menu", "click" )
+        #showChildren_new ( sourceDialog, "menu", "click" )
         
         # And close the 'find panel'
         gtkcancel = sourceDialog.child (name='gtk-cancel')
@@ -216,7 +220,7 @@ class guiWalktest ( unittest.TestCase ):
         prefDialog = theApp.child( 'prefWin_preferencesWindow' )       
         prefTable = prefDialog.child( 'preferenceTree_listOfPreferenceGroups' )     
         sourceWindow = prefTable.child( 'Source Window' )   
-        showChildren_new ( prefDialog, "push button", "click" )
+        #showChildren_new ( prefDialog, "push button", "click" )
          
         sourceWindow.actions['expand or contract'].do() 
         lookAndFeel = prefTable.child( 'Look and Feel' ) 
@@ -227,7 +231,7 @@ class guiWalktest ( unittest.TestCase ):
         syntaxHighlighting = prefTable.child( 'Syntax Highlighting' ) 
         syntaxHighlighting.actions['activate'].do()
         syntaxHighlighting.grabFocus()
-        showChildren_new ( prefDialog, "push button", "click" )
+        #showChildren_new ( prefDialog, "push button", "click" )
         
         # The same color dialog is used for all colors - only ues once
         colorButton = prefDialog.child( 'classColor_classSyntaxHighlightingColor' )
@@ -235,7 +239,7 @@ class guiWalktest ( unittest.TestCase ):
         pickColor = theApp.child( 'Pick a Color' )
         closeButton = pickColor.button( 'OK' )
         cancelButton = pickColor.button( 'Cancel' )
-        showChildren_new ( pickColor, "push button", "click" )
+        #showChildren_new ( pickColor, "push button", "click" )
         
         # close pick a color window
         closeButton = pickColor.button( 'OK' )
@@ -257,13 +261,13 @@ class guiWalktest ( unittest.TestCase ):
         theApp = tree.root.application( 'Frysk' )
         theList = theApp.children
         registerDialog = theList[2]  
-        showChildren_new ( registerDialog, "push button", "click" )
+        #showChildren_new ( registerDialog, "push button", "click" )
         
         # h open edit columns window
         editColumns = registerDialog.button('Edit Columns...')
         editColumns.click()
         editColumnsDialog = theApp.dialog('Frysk / Register Formats')
-        showChildren_new ( editColumnsDialog, "push button", "click" )
+        #showChildren_new ( editColumnsDialog, "push button", "click" )
         closeButton = editColumnsDialog.button ('Close')
         closeButton.click()
         
@@ -281,13 +285,13 @@ class guiWalktest ( unittest.TestCase ):
         for x in theList:
             print str(x)
         memoryDialog = theList[2]  
-        showChildren_new ( memoryDialog, "push button", "click" )
+        #showChildren_new ( memoryDialog, "push button", "click" )
         
         # j open edit columns window
         editColumns = memoryDialog.button('Edit Columns...')
         editColumns.click()
         editColumnsDialog = theApp.dialog('Frysk / Memory Formats')
-        showChildren_new ( editColumnsDialog, "push button", "click" )
+        #showChildren_new ( editColumnsDialog, "push button", "click" )
         closeButton = editColumnsDialog.button ('Close')
         closeButton.click()
         
@@ -313,7 +317,7 @@ class guiWalktest ( unittest.TestCase ):
 
 
 
-    #def testPath_2( self ):
+    def testPath_2( self ):
         """Check that the GUI elements can be accessed and acted upon"""
 
         # Start at the top level Frysk gui
@@ -365,14 +369,64 @@ class guiWalktest ( unittest.TestCase ):
         # Close the license text frame
         closeButton = creditsFrame.button('Close')
         closeButton.click()
+        
+        closeButton = aboutFrame.button('Close')
+        closeButton.click()
+        
+ 
+    def testPath_3( self ):
+        """Check that the GUI elements can be accessed and acted upon"""
+        
+        # Create a Frysk session - param #3 = quit the FryskGui after
+        # creating the session, param #4 = walk thru all the GUI nodes 
+        createMinimalSession (self.frysk, self.theSession, False, False)
+        
+        # Select the 'Observers' menu item
+        observersItem = self.frysk.menuItem( OBSERVERS )
+        observersItem.click()
+        
+        # And the menu pick to access Observers
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
+        observersSelection.click()
+        
+        # Create a new custom observer
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
+        
+        # Press 'New'
+        newObserverButton = customObservers.button( 'New' )
+        newObserverButton.click()
+        observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
+        
+        # Save the new Observer
+        cancelButton = observerDetails.child ( name = 'Cancel' )
+        cancelButton.click()
+        cancelButton = customObservers.button( 'Cancel' )
+        cancelButton.click()
+        
+        # And the menu pick to access Observers
+        programSelection = observersItem.menuItem( PROGRAM_OBSERVERS )
+        programSelection.click()        
+        
+       # Create a new custom observer
+        programObservers = self.frysk.child( FRYSK )
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+        programObservers.blink()
+          
+        
 
-        #self.frysk.dump()
 
    
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest( guiWalktest ( 'testPath_1' ) )
-#    suite.addTest( guiWalktest ( 'testPath_2' ) )
+    #suite.addTest( guiWalktest ( 'testPath_1' ) )
+    #suite.addTest( guiWalktest ( 'testPath_2' ) )
+    suite.addTest( guiWalktest ( 'testPath_3' ) )    
     return suite
 
 if __name__ == '__main__':

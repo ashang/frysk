@@ -92,9 +92,9 @@ class license (unittest.TestCase):
         self.parser.parse(os.getenv('TestDruid_FILE') )
         self.theSession = self.handler.theDebugSession
 
-        # Create a Frysk session - True = quit the FryskGui after
-        # creating the session
-        createMinimalSession (self.frysk, self.theSession, False)
+        # Create a Frysk session - param #3 = quit the FryskGui after
+        # creating the session, param #4 = walk thru all the GUI nodes 
+        createMinimalSession (self.frysk, self.theSession, False, False)
         
     def tearDown(self):    
         # Exit Frysk
