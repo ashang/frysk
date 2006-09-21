@@ -1,5 +1,18 @@
+2006-09-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionProcTreeView.java (procDataModel): Change visibility
+	to public.
+	* GuiProc.java (GuiProc): make public
+	* MainWindow.java (buildTerminal): Add terminal to 
+	ScrolledWindow, not Vbox.
+	(buildTerminal.TaskObserver.Attached): Add the created terminal
+	back into the session.
+	
 2006-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* MainWindow.java (buildTerminal): Add terminal to 
+	ScrolledWindow, not Vbox.
+	
 	* MenuBar.java (MenuBar): Remove program observes until we
 	refactor usage into a better place in the workflow.
 	

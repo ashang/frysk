@@ -77,7 +77,7 @@ public class GuiProc extends GuiData{
 	
     private ObservableLinkedList tasks;
     
-	private GuiProc(Proc proc){
+	public GuiProc(Proc proc){
 		if(proc == null){
 			throw new IllegalArgumentException("proc cannot be null");
 		}

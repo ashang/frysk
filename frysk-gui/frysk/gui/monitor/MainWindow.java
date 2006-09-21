@@ -46,9 +46,9 @@ import java.lang.Throwable;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
+import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.Notebook;
-import org.gnu.gtk.VBox;
 import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
 import frysk.gui.Gui;
@@ -66,7 +66,7 @@ public class MainWindow extends Window implements Saveable{
   	private Notebook statusNotebook;
 
 	//terminal things
-	private VBox terminalWidget;
+	private ScrolledWindow terminalWidget;
 	private Task shellTask = null;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
@@ -75,7 +75,7 @@ public class MainWindow extends Window implements Saveable{
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
 		this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
-		this.terminalWidget = (VBox) glade.getWidget("terminalWidget");
+		this.terminalWidget = (ScrolledWindow) glade.getWidget("terminalScrolledWindow");
 
 		try {
 	//		this.procViewPage = new ProcViewPage(glade);
@@ -137,13 +137,17 @@ public class MainWindow extends Window implements Saveable{
 		String name = pty.getName();
 	  	final Terminal term = new Terminal();
 		
-		System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
+		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
 		Manager.host.requestCreateAttachedProc(name, name, name, new String[] {"/bin/sh"},
 												new TaskObserver.Attached()
 												{
 													public Action updateAttached(Task task)
 													{
+														
 														shellTask = task;
+														GuiProc shellProc = new GuiProc(task.getProc());
+														shellProc.setName("Frysk Terminal Process");
+														sessionProcTreeView.procDataModel.addProc(shellProc);
 														return Action.CONTINUE;
 													}
 													public void addedTo(Object observable)
@@ -165,7 +169,7 @@ public class MainWindow extends Window implements Saveable{
 
 		CustomEvents.addEvent(new Runnable() {
 			public void run() {
-				terminalWidget.add(term);
+				terminalWidget.addWithViewport(term);
 				term.showAll();
 				terminalWidget.showAll();
 			}
@@ -175,7 +179,11 @@ public class MainWindow extends Window implements Saveable{
 	public void killTerminalShell()
 	{
 		if (shellTask != null)
-			Signal.kill(shellTask.getTid(), Sig.HUP);
+			try {
+				Signal.kill(shellTask.getTid(), Sig.HUP);
+			} catch (Exception e) {
+				errorLog.log(Level.WARNING, "Could not kill process" +  shellTask.getTid(),e);
+			}
 	}
 }
 

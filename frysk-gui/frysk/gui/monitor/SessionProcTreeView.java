@@ -88,7 +88,7 @@ public class SessionProcTreeView
 
   private TreeView threadTreeView;
 
-  private SessionProcDataModel procDataModel;
+  public SessionProcDataModel procDataModel;
 
   private VPaned vPane;
 
