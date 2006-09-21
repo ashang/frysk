@@ -240,7 +240,11 @@ public class SessionProcDataModel
 
     try
       {
-        treeStore.setValue(iter, commandDC, proc.getCommand());
+    	// XXX: Hack, hack, hack. Need to do this properly.
+    	if (guiProc.getName() == "Frysk Terminal Process")
+    		treeStore.setValue(iter, commandDC, guiProc.getName());		
+    	else
+    		treeStore.setValue(iter, commandDC, proc.getCommand());
         treeStore.setValue(iter, tidDC, proc.getPid());
         treeStore.setValue(iter, procDataDC,
                            (GuiProc.GuiProcFactory.getGuiProc(proc)));
