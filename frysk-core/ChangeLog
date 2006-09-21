@@ -1,4 +1,8 @@
-2006-0-20  Nurdin Premji  <npremji@redhat.com>
+2006-09-21  Nurdin Premji  <npremji@redhat.com>
+	
+	* Makefile.am: Added support for getopt option parser.
+
+2006-09-20  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk/bindir/fstack.java: Made some variables less static.
 	Changed to stop eventloop after observer detaches have finished.

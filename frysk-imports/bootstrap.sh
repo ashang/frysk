@@ -46,6 +46,7 @@ FILE_LIST="frysk \
     JDOM_JAR \
     jline/jline.jar \
     jargs/jargs.jar \
+    getopt/getopt.jar \
     lib/dw \
     lib/elf \
     lib/opcodes "

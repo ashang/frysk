@@ -52,6 +52,7 @@ SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%,$(SUBDIRS)) \
 	$(srcdir)/frysk-imports/jargs/src \
+	$(srcdir)/frysk-imports/getopt/src \
 	$(srcdir)/frysk-imports/jline/src \
 	$(srcdir)/frysk-imports/junit/src
 SOURCEPATH = $(subst $(space),:,$(strip $(SOURCEDIRS)))
@@ -81,8 +82,8 @@ javadoc: all
 		-doctitle '<em>frysk</em> - Execution Analysis Technology' \
 		-windowtitle 'FRYSK' \
 		-group "<em>frysk</em> Packages" 'frysk*' \
-		-group "Imported Packages" 'jline*:jargs*:inua*' \
-		-subpackages 'frysk:inua:jline:jargs' ; \
+		-group "Imported Packages" 'jline*:jargs*:getopt*:inua*' \
+		-subpackages 'frysk:inua:jline:jargs:getopt' ; \
 	done
 
 # Since javadoc re-generates all the files, changing their

@@ -66,6 +66,7 @@ AC_CONFIG_FILES([
 	Makefile
 	jline/Makefile
 	jargs/Makefile
+	getopt/Makefile
 	tests/Makefile
 	cdtparser/Makefile
 	junit/Makefile])

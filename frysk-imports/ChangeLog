@@ -1,3 +1,9 @@
+2006-09-21  Nurdin Premji  <npremji@redhat.com>
+	
+	* Makefile.am: Added in support for getopt command line option parser.
+	* bootstrap.sh: Ditto.
+	* configure.ac: Ditto.
+
 2006-09-16    <swagiaal@redhat.com>
 
 	* configure.ac: Added search for libaudit.h to insure that

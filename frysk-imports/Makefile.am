@@ -46,7 +46,8 @@ CHECK_SUBDIRS = \
 	tests \
 	cdtparser \
 	junit \
-	elfutils
+	elfutils \ 
+	getopt
 
 SUBDIRS = $(CHECK_SUBDIRS)
 	
@@ -72,8 +73,10 @@ EXTRA_DIST += \
 	lib/elf/tests/helloworld.o.bz2.uu
 
 GEN_CLASSPATH += jargs.jar
+GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
 GEN_GCJ_LDADD += libfrysk-jargs.a
+GEN_GCJ_LDADD += libfrysk-getopt.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
