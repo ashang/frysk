@@ -185,7 +185,8 @@ public class InlineBuffer extends SourceBuffer {
 		
 		Variable var = new Variable(
 				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
-				iter.getLineNumber(), tag.getStart(), false);
+				this.scope.getSourceFile(),
+                iter.getLineNumber(), tag.getStart(), false);
 		return var;
     }
     

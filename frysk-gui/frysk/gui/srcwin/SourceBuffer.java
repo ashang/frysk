@@ -542,6 +542,7 @@ public class SourceBuffer
                                                          tag.getStart(),
                                                          tag.getStart()
                                                              + tag.getLength()),
+                                this.scope.getSourceFile(),
                                 iter.getLineNumber(), tag.getStart(), false);
     return var;
   }

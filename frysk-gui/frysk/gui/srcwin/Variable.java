@@ -53,12 +53,14 @@ public class Variable{
 	private String name;
 	private int line;
 	private int col;
+    private String filepath;
 	
 	/**
 	 * Create a new, empty variable
 	 */
 	public Variable(){
 		this.name = "";
+        this.filepath = "";
 		this.line = -1;
 		this.col = -1;
 	}
@@ -66,12 +68,14 @@ public class Variable{
 	/**
 	 * Create a new VariableLocation with the given parameters
 	 * @param name Name of the variable
+	 * @param filepath The file that the variable exists in
 	 * @param lineNum Line number where it occurs
 	 * @param startCol Start of the column span (wrt the line it's on)
 	 * @param endCol End of the column span (wrt the line it's on)
 	 */
-	public Variable(String name, int lineNum, int startCol, boolean member){
+	public Variable(String name, String filepath, int lineNum, int startCol, boolean member){
 		this.name = name;
+        this.filepath = filepath;
 		this.line = lineNum;
 		this.col = startCol;
 		this.isMember = member;
@@ -111,4 +115,9 @@ public class Variable{
 	public void setCol(int col) {
 		this.col = col;
 	}
+
+  public String getFilepath ()
+  {
+    return filepath;
+  }
 }

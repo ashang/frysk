@@ -412,6 +412,7 @@ public class SourceView
     for (int i = firstLine; i <= lastLine && i < this.buf.getLineCount(); i++)
       {
 
+        // Make adjustments if we are after the current line - there may have been inline code
         if (i > this.buf.getCurrentLine())
           {
             drawingHeight = currentHeight + gapHeight;
@@ -430,6 +431,7 @@ public class SourceView
 
         int iconStart = lineHeight / 2;
 
+        // skipNextLine is true when we're on a line containing the inlined code, do nothing
         if (skipNextLine)
           {
             skipNextLine = false;
@@ -446,6 +448,7 @@ public class SourceView
         if (i == this.buf.getCurrentLine())
           {
 
+            // Draw executable marks
             this.myContext.setRGBForeground(this.currentLineColor);
             if (showingExecMarks)
               drawingArea.drawRectangle(this.myContext, true, 0,
@@ -457,6 +460,7 @@ public class SourceView
                                         this.marginWriteOffset + 20, lineHeight);
             this.myContext.setRGBForeground(lineColor);
 
+            // Draw an 'i' in the margin if this line has inlined code
             if (this.buf.hasInlineCode(i))
               {
                 this.myContext.setRGBForeground(this.execMarkColor);
@@ -472,6 +476,7 @@ public class SourceView
                                          actualFirstStart + drawingHeight, lo);
                 this.myContext.setRGBForeground(lineColor);
 
+                // We don't want to draw anything in the margin next to the inlined code
                 if (this.expanded)
                   skipNextLine = true;
               }
@@ -817,10 +822,14 @@ public class SourceView
     return false;
   }
 
+  /*
+   * Called when there's mouse movement over the text area
+   */
   private boolean mousedOverText (MouseMotionEvent event)
   {
     TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                  (int) event.getY());
+    // Check to see if we've moused over a variable
     Variable var = this.buf.getVariable(iter);
     
     if (var != null)
@@ -834,6 +843,7 @@ public class SourceView
         event.getWindow().setCursor(new Cursor(CursorType.XTERM));
       }
     
+    // If that status changed, we need to redraw
     boolean refresh = (this.hoveredVar == null || var == null)  && this.hoveredVar != var;
     
     this.hoveredVar = var;

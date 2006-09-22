@@ -1,3 +1,13 @@
+2006-09-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (getVariable): Changed to reflect new parameter to
+	Variable constructor.
+	* SourceBuffer.java (getVariable): Ditto.
+	* SourceView.java (drawMargin): Added additional comments.
+	(mousedOverText): Ditto.
+	* Variable.java (Variable): Added filepath parameter.
+	(getFilePath): Added.
+
 2006-09-20  Tom Tromey  <tromey@redhat.com>
 
 	* CurrentLineSection.java (startOffset): Renamed.
