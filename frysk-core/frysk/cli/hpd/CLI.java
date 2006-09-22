@@ -48,6 +48,11 @@ import java.util.Iterator;
 import java.text.ParseException;
 import java.lang.RuntimeException;
 
+import javax.naming.NameNotFoundException;
+
+import frysk.lang.BaseTypes;
+import frysk.lang.InvalidOperatorException;
+import frysk.lang.Variable;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -441,16 +446,93 @@ public class CLI
 	class WhatHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
-		       symtab.what(cmd);
+        if (cmd.getFullCommand().length() < 5)
+          return;
+        String sInput = cmd.getFullCommand().substring(4).trim();
+        try 
+        {
+          cmd.getOut().println(symtab.what(sInput));
+        }
+        catch (NameNotFoundException nnfe)
+        {
+          addMessage(new Message(nnfe.getMessage(),
+                                 Message.TYPE_ERROR));
+        }
 		}
 	}
     
+    private static final int DECIMAL = 10;
+    private static final int HEX = 16;
+    private static final int OCTAL = 8;    
+    
     class PrintHandler implements CommandHandler
     {
-      public void handle(Command cmd) throws ParseException {
-               symtab.print(cmd);
+      public void handle(Command cmd) throws ParseException
+      {
+        Vector params = cmd.getParameters();
+        boolean haveFormat = false;
+        int outputFormat = DECIMAL;
+        
+        String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
+
+        for (int i = 0; i < params.size(); i++)
+          {
+            if (((String)params.elementAt(i)).equals("-format"))
+              {
+                haveFormat = true;
+                i += 1;
+                String arg = ((String)params.elementAt(i));
+                if (arg.compareTo("d") == 0)
+                  outputFormat = DECIMAL;
+                else if (arg.compareTo("o") == 0)
+                  outputFormat = OCTAL;
+                else if (arg.compareTo("x") == 0)
+                  outputFormat = HEX;
       }
     }
+        if (haveFormat)
+          sInput = sInput.substring(0,sInput.indexOf("-format"));
+
+        if (sInput.length() == 0) {
+          cmd.getOut().println ("Usage " + cmd.getAction() + " Expression [-format d|x|o]");
+          return;
+        }
+
+        if (cmd.getAction().compareTo("assign") == 0) {
+          int i = sInput.indexOf(' ');
+          if (i == -1) {
+            cmd.getOut().println ("Usage: assign Lhs Expression");
+            return;
+          }
+          sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
+        }        
+
+        Variable result = symtab.print(sInput);
+
+        try
+        {
+          switch (outputFormat)
+          {
+          case HEX: 
+            cmd.getOut().print("0x");
+            break;
+          case OCTAL: 
+            cmd.getOut().print("0");
+            break;
+          }
+          if (result.getType().getTypeId() == BaseTypes.baseTypeFloat)
+            cmd.getOut().println(String.valueOf(result.getFloat()));
+          else if (result.getType().getTypeId() == BaseTypes.baseTypeDouble)
+            cmd.getOut().println(String.valueOf(result.getDouble()));
+          else
+            cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat));
+        }
+        catch (InvalidOperatorException ioe)
+        {
+        }
+      }
+    }
+    
 	class QuitHandler implements CommandHandler
     {
 		public void handle(Command cmd) throws ParseException {

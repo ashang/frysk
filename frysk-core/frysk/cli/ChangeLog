@@ -1,3 +1,8 @@
+2006-09-22  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java (what,print): Refactor command handling from here...
+	* hpd/CLI.java (what,print): to here.
+
 2006-09-18  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java (get): Handle float and double.
