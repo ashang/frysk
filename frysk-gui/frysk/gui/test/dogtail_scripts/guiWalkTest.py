@@ -158,10 +158,6 @@ class guiWalktest ( unittest.TestCase ):
         # not the test script. 
         self.parser.parse( os.getenv( 'TestDruid_FILE' ) )
         self.theSession = self.handler.theDebugSession
-        
-        # Create a Frysk session - param #3 = quit the FryskGui after
-        # creating the session, param #4 = walk thru all the GUI nodes 
-        #createMinimalSession (self.frysk, self.theSession, False, False)
                
     def tearDown( self ):    
         # Exit Frysk
@@ -183,16 +179,21 @@ class guiWalktest ( unittest.TestCase ):
         
         #######################continue work here on generalizing code to walk GUI ############
              
+        # TODO - replace this with a program built with debug enabled so we can see the source     
         theTable = processDialog.child ( roleName='tree table' ) 
-        hello = theTable.child ( name='ahello' )
-        hello.grabFocus()
+        theList = theTable.children
+        targetPID = theList[3]
+        targetProcessName = theList[4]
+        targetProcessLocation = theList[5]
+        targetPID.grabFocus()
+        
         OKbutton = processDialog.child( name='Open', roleName='push button' )
         OKbutton.click()
 
         # b open frysk source window - need to wait for it to be displayed
         time.sleep ( 5 )
-        theList = self.frysk.children
-        sourceDialog = theList[1]  
+        sourceDialogName = 'Frysk Source Window for: ' + targetProcessName.name[0:15] + ' Task ' + targetPID.name
+        sourceDialog = self.frysk.child (sourceDialogName)        
         
         # Open up the 'find' panel on the open frysk source window
         findPanel = sourceDialog.child( name='Find', roleName='check menu item' )
@@ -251,8 +252,8 @@ class guiWalktest ( unittest.TestCase ):
         registerWindow = view.menuItem( 'Register Window' )
         registerWindow.click()
         
-        theList = self.frysk.children
-        registerDialog = theList[2]  
+        registerDialogName = 'Frysk Register Window for: ' + targetProcessName.name[0:15] + ' Task ' + targetPID.name
+        registerDialog = self.frysk.child(registerDialogName)
         showChildren_new ( registerDialog, "push button", "click" )
         
         # h open edit columns window
@@ -272,10 +273,8 @@ class guiWalktest ( unittest.TestCase ):
         memoryWindow = view.menuItem( 'Memory Window' )
         memoryWindow.click()
         
-        theList = self.frysk.children
-        for x in theList:
-            print str(x)
-        memoryDialog = theList[2]  
+        memoryDialogName = 'Frysk / Memory Examination - ' + targetProcessName.name[0:15] + ' Task ' + targetPID.name
+        memoryDialog = self.frysk.child(memoryDialogName)
         showChildren_new ( memoryDialog, "push button", "click" )
         
         # j open edit columns window
@@ -398,6 +397,10 @@ class guiWalktest ( unittest.TestCase ):
         programSelection = observersItem.menuItem( PROGRAM_OBSERVERS )
         programSelection.click()   
         theList = self.frysk.children
+        
+        # TODO Replace this hard-coded reference to a list element with a reference
+        # to the sourceDialog name - the problem is that the dialog name as of 20060922
+        # is not defined - the dialog is generated at runtime and has no AT information
         programObservers = theList[1]     
         showChildren_new ( programObservers, "table cell", "activate" )
         
