@@ -204,6 +204,13 @@ public class TestStackBacktrace
   public synchronized void testThreadedBacktrace () throws TaskException
   {
     
+    // Backtraces only work on x86 for now.
+    if (MachineType.getMachineType() != MachineType.IA32)
+      {
+        brokenXXX(2936);
+        return;
+      }
+
     AckDaemonProcess process = new AckDaemonProcess(
                      Sig.POLL, new String[] { Build.ABS_BUILDDIR
                      + "/frysk/pkglibexecdir/funit-rt-threader", "" 

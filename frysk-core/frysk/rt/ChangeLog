@@ -1,3 +1,7 @@
+2006-09-22  Mark Wielaard  <mark@klomp.org>
+
+	(testThreadedBacktrace): Disabled. Bug #2936.
+
 2006-09-21  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (StackTasksObserver): Added.
