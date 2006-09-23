@@ -191,9 +191,14 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return lineNo <= this.getLineCount();
 
+    if (this.scope == null || this.scope.getData() == null)
+      return false;
+    
     DOMLine line = this.scope.getData().getLine(lineNo + 1);
+    
     if (line == null)
       return false;
+    
     return line.isExecutable();
   }
 
@@ -524,7 +529,11 @@ public class SourceBuffer
    */
   public Variable getVariable (TextIter iter)
   {
+    if (this.scope == null)
+      return null;
+    
     DOMSource source = this.scope.getData();
+    
     if (mode != SOURCE_MODE || source == null)
       return null;
 
@@ -591,7 +600,11 @@ public class SourceBuffer
    */
   public int getLineCount ()
   {
+    if (this.scope == null)
+      return 0;
+    
     DOMSource source = this.scope.getData();
+    
     if (mode == SOURCE_MODE && source != null)
       return this.scope.getData().getLineCount();
     else
@@ -614,6 +627,9 @@ public class SourceBuffer
    */
   public boolean hasInlineCode (int lineNumber)
   {
+    if (this.scope == null)
+      return false;
+    
     DOMSource source = this.scope.getData();
     // TODO: Inline code with assembly?
     if (mode != SOURCE_MODE || source == null)
@@ -633,6 +649,9 @@ public class SourceBuffer
    */
   public DOMInlineInstance getInlineInstance (int lineNumber)
   {
+    if (this.scope == null)
+      return null;
+    
     Iterator iter = this.scope.getData().getLine(lineNumber + 1).getInlines();
     if (! iter.hasNext())
       return null;
@@ -851,6 +870,9 @@ public class SourceBuffer
    */
   protected void loadFile () throws FileNotFoundException, JGException
   {
+    if (this.scope == null)
+      return;
+    
     DOMSource source = this.scope.getData();
     if (source == null)
       {

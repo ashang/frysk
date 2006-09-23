@@ -1,3 +1,13 @@
+2006-09-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (isLineExecutable): Check for a null StackFrame
+scope. Addresses #3250.
+	(getVariable): Ditto.
+	(getLineCount): Ditto.
+	(hasInlineCode): Ditto.
+	(getInlineInstance): Ditto.
+	(loadFile): Ditto.
+
 2006-09-21  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (getVariable): Changed to reflect new parameter to
