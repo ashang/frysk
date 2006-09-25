@@ -40,7 +40,7 @@
 	.global main
 main:
 #ifdef __x86_64__
-	mov $0x14, %rax		// getpid syscall number
+	mov $39, %rax		// getpid syscall number
 	mov $21, %rdi		// values for test program to inspect
 	mov $22, %rsi
 	mov $23, %rdx
@@ -53,22 +53,24 @@ main:
 	// Verify values written into registers and memory by the test program
 	cmp $2, %rdi
 	jne .L2
+
 	cmp $3, %rsi
 	jne .L2
+
 	movq $d0, %r10
 	mov 0(%r10), %r10
 	cmp $8, %r10
 	jne .L2
+
 	mov $0xdeadbeef,%r10
 	cmp %r10, %rdx
 	jne .L2
-	mov $0xfeeddeadbeef, %r10
-	cmp %r10, %rcx
-	jne .L2
+
 	mov $0xdeadbeefdeadbeef, %r10
 	cmp %r10, %r8
 	jne .L2
-	mov $1, %rax
+	
+	mov $60, %rax
 	syscall
 	jmp .L1
 .L2:	jmp 0			// failure

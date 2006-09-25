@@ -1,5 +1,11 @@
 2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
 
+	* funit-ppc64-modify.S: New PPC64 specific test program.
+	* funit-x8664-modify.S: Correct the syscall number on X8664 
+	and do some modifications to keep synch with TestRegMemModify.
+	
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
 	* funit.java: Refactor to suport arch32 test.
 	* funit.xml: Update the --arch option info.
 

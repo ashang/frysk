@@ -1,3 +1,10 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* TestRegMemModify.java: New file to add PPC64 specific 
+	case and merge Test<ISA>Modify into one case.
+	* TestI386Modify.java: Delete.
+	* TestX8664Modify.java: Delete. 
+
 2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
 
 	* Isa.java (getRegisterNameByUnwindRegnum): New.
