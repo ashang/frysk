@@ -52,6 +52,8 @@ public interface Isa
 {
   Iterator RegisterIterator();
 
+  String getRegisterNameByUnwindRegnum(long regnum);
+
   Register getRegisterByName(String name);
 
   long pc(Task task);

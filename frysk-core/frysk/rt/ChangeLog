@@ -1,3 +1,10 @@
+2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
+
+	* StackCallbacks.java: Do not import lib.unwind.RegisterX86.
+	(accessMem): Implement according to Isa-specified word size.
+	(accessReg, writeReg, accessFpreg, writeFpreg): Do not use
+	RegisterX86 directly.
+
 2006-09-22  Mark Wielaard  <mark@klomp.org>
 
 	(testThreadedBacktrace): Disabled. Bug #2936.

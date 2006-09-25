@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
+import lib.unwind.RegisterAMD64;
 
 class IsaEMT64 implements Isa
 {
@@ -111,6 +112,11 @@ class IsaEMT64 implements Isa
   public Iterator RegisterIterator()
   {
     return registerMap.values().iterator();
+  }
+
+  public String getRegisterNameByUnwindRegnum(long regnum)
+  {
+    return RegisterAMD64.getUnwindRegister(regnum);
   }
 
   public Register getRegisterByName(String name)

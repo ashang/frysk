@@ -1,3 +1,7 @@
+2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
+
+	* RegisterAMD64.java: New class.
+
 2006-09-19  Mike Cvet  <mcvet@redhat.com>
 
 	* FrameCursor.java (getIsSignalFrame): Added.

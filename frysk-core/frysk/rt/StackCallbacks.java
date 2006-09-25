@@ -45,7 +45,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
 
 public class StackCallbacks
@@ -68,8 +67,19 @@ public class StackCallbacks
     logger.log(Level.FINE, "Libunwind: reading memory at 0x"
                                 + Long.toHexString(addr) + "\n");
 
-    // XXX: Fixme for 64
-    long value = myTask.getMemory().getInt(addr);
+    long value;
+
+    switch (isa.getWordSize())
+      {
+      case 4:
+	value = myTask.getMemory().getInt(addr);
+	break;
+      case 8:
+	value = myTask.getMemory().getLong(addr);
+	break;
+      default:
+	throw new RuntimeException("Not implemented for this word length yet");
+      }
 
     logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
@@ -87,7 +97,7 @@ public class StackCallbacks
 
   public long accessReg (long as, long regnum)
   {
-    String registerName = RegisterX86.getUnwindRegister(regnum);
+    String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
     logger.log(Level.FINE, "Libunwind: reading from register "
                                 + registerName + "\n");
 
@@ -100,7 +110,7 @@ public class StackCallbacks
 
   public void writeReg (long as, long regnum, long value)
   {
-    String registerName = RegisterX86.getUnwindRegister(regnum);
+    String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
     logger.log(Level.FINE, "Libunwind: writing value 0x"
                                 + Long.toHexString(value) + " to register "
                                 + registerName + "\n");
@@ -110,7 +120,9 @@ public class StackCallbacks
 
   public double accessFpreg (long as, long regnum)
   {
-    String registerName = RegisterX86.getUnwindRegister(regnum);
+    /* This is probably broken, since the numbering for FP regs ought
+     * to be different from that for non-FP reg.  */
+    String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
     logger.log(Level.FINE, "Libunwind: reading register " + registerName
                                 + "\n");
 
@@ -121,7 +133,9 @@ public class StackCallbacks
 
   public void writeFpreg (long as, long regnum, double value)
   {
-    String registerName = RegisterX86.getUnwindRegister(regnum);
+    /* This is probably broken, since the numbering for FP regs ought
+     * to be different from that for non-FP reg.  */
+    String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
     logger.log(Level.FINE, "Libunwind: writing value " + value
                                 + " to register " + registerName + "\n");
     throw new RuntimeException("Not implemented in core yet");

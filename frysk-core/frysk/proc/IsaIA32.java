@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
+import lib.unwind.RegisterX86;
 
 class IsaIA32 implements Isa
 {
@@ -120,7 +121,12 @@ class IsaIA32 implements Isa
     return registerMap.values().iterator();
   }
 
-  public Register getRegisterByName(String name)
+    public String getRegisterNameByUnwindRegnum(long regnum)
+  {
+    return RegisterX86.getUnwindRegister(regnum);
+  }
+
+    public Register getRegisterByName(String name)
   {
     return (Register)registerMap.get(name);
   }

@@ -1,3 +1,11 @@
+2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
+
+	* Isa.java (getRegisterNameByUnwindRegnum): New.
+	* IsaEMT64.java (getRegisterNameByUnwindRegnum): Implement.
+	* IsaIA32.java (getRegisterNameByUnwindRegnum): Implement.
+	* IsaPPC.java (getRegisterNameByUnwindRegnum): Add stub.
+	* IsaPPC64.java (getRegisterNameByUnwindRegnum): Add stub.
+
 2006-09-21  Mark Wielaard  <mark@klomp.org>
 
 	* BreakpointAddresses.java (addBreakpoint): Take address as argument.

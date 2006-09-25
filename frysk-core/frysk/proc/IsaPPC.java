@@ -110,6 +110,12 @@ class IsaPPC
     return registerMap.values().iterator();
   }
 
+  public String getRegisterNameByUnwindRegnum(long regnum)
+  {
+    /* FIXME: needs implementation.  */
+    return null;
+  }
+
   public Register getRegisterByName (String name)
   {
     return (Register)registerMap.get(name);
