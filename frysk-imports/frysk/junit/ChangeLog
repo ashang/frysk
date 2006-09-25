@@ -1,3 +1,15 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Runner.java (repeatValue,archTarget, archBuild, 
+`	testCases, parser, ARCH64, ARCH32): New.
+	(usage): New method.
+	(setTestCases, GetTestCases): New methods.
+	(setBuildArch, GetBuildArch): New methods.
+	(runCases): New method.
+	(runArchCases): New method.
+	(runArch32Cases): New method.
+	(Runner): Refactor to support arch32 test.
+
 2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* TestCase.java (brokenX8664XXX): New method. 

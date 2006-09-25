@@ -40,6 +40,7 @@
 package frysk.junit;
 
 import frysk.EventLogger;
+import frysk.imports.Build;
 import jargs.gnu.CmdLineParser;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -63,6 +64,18 @@ public class Runner
     extends TestRunner
 {
     static Logger logger;
+    
+    // Reapeat onece by default.
+    private int repeatValue = 1;
+    private String archTarget = null;
+    private String archBuild = null; 
+    private Collection testCases = null;
+    
+    private CmdLineParser parser = null;
+    
+    public final static String ARCH64 = "64";
+    public final static String ARCH32 = "32";
+    
     /**
      * Overide JUnit's print methods with a version that displays each
      * test as it is run.  Makes tracking down problems when the run
@@ -115,113 +128,289 @@ public class Runner
 	    super (stream);
 	}
     }
+    
+    public static void usage(String message, int exitVal)
+    {
+        System.out.println (message);
+        System.out.println ("Usage: [ -c <console-level> ] [ -l <log-level> ]" +
+			    " [ -r <repeat-count> ] [--arch <arch>] [ class ... ]");
+        System.out.println ("Options: ");
+        System.out.println ("         -c <console-level>");
+        System.out.println ("            Set the console level. The console-level"+
+			    " can be [ OFF | SEVERE | WARNING |"); 
+        System.out.println ("            INFO | CONFIG | FINE | FINER | FINEST].");
+        System.out.println ("         -l <log-level>");
+        System.out.println ("            Set the log level. The log-level can be " +
+			    "[ OFF | SEVERE | WARNING | INFO |"); 
+        System.out.println ("            CONFIG | FINE | FINER | FINEST].");
+        System.out.println ("         -r <repeat-count>");
+        System.out.println ("            Set the count of repeating the test.");
+        System.out.println ("         --arch=<ARCH>");
+        System.out.println ("            Set the target arch whose test cases " + 
+			    "will be running. <ARCH> can be 64 or 32. ");
+        System.out.println ("            If no any arch is set, the arch-64 " + 
+			    "cases will be run.");
+        System.out.println ("            All arch-64 and arch-32 cases will be"+
+			    " run when arch-32 is ready. The --arch option ");
+        System.out.println ("            will take no effect on 32-bit machines.");
+       
+        System.exit (exitVal);
+    }
 
+    public void setTestCases(Collection testCases)
+    {
+      this.testCases = testCases;
+    }
+    
+    public Collection getTestCases()
+    {
+      return this.testCases;
+    }
+   
+    public void setBuildArch(String buildArch)
+    {
+      this.archBuild = buildArch;
+    }
+    public String getBuildArch()
+    {
+      return this.archBuild;
+    }
+
+    private int runCases(Collection testClasses)
+    {
+      // Create the testsuite to be run, either as specified on the
+      // command line, or from the provided list of classes.  XXX:
+      // It would be good if individual tests from within a testcase
+      // could be identified and run.
+      String[] otherArgs = parser.getRemainingArgs ();
+      
+      TestSuite testSuite = new TestSuite ();
+      
+      if (otherArgs.length > 0)
+      {
+	// Construct the testsuite from the list of names.
+	for (int i = 0; i < otherArgs.length; i++)
+          {
+            if (otherArgs[i].charAt (0) == '-')
+              this.repeatValue = -Integer.parseInt (otherArgs[i]);
+            else
+              testSuite.addTest (getTest (otherArgs[i]));
+            }
+          }
+      else
+      {
+        for (Iterator i = testClasses.iterator (); i.hasNext (); )
+          {
+            Class testClass = (Class) i.next ();
+            testSuite.addTest (new TestSuite (testClass));
+          }
+      }
+  
+      // Run the TestSuite <<repeat>> times.
+      try
+        {
+          for (int i = 0; i < this.repeatValue; i++)
+            {
+              TestResult testResult = doRun (testSuite);
+              
+              if (!testResult.wasSuccessful()) 
+                return FAILURE_EXIT;
+            }
+        }
+      catch(Exception e)
+        {
+          System.err.println(e.getMessage());
+          
+          return EXCEPTION_EXIT;
+        }
+      
+      return SUCCESS_EXIT;      
+    }
+    
+    /**
+     * Run the testcases carried by testClasses.
+     * 
+     * @param testClasses
+     * @return int the value of exit.
+     */
+    public int runArchCases(Collection testClasses)
+    {
+      // Check whether we should continue.
+      if ((null != this.archTarget) &&
+          (false == this.archTarget.equals(Runner.ARCH64)))
+        return SUCCESS_EXIT;
+     
+      boolean testArch64 = false;
+      
+      if (null == this.archBuild)
+        this.archBuild = Build.BUILD_ARCH;
+
+      // Check whether --arch=64 is given on 32-bit machine.
+      if (archBuild.equalsIgnoreCase("x86_64") ||
+          archBuild.equalsIgnoreCase("ppc64") ||
+          archBuild.equalsIgnoreCase("powerpc64"))
+      {
+        testArch64 = true;
+      }
+
+      if ((null != this.archTarget) && 
+          (false == testArch64))
+      {
+        System.out.println ("It's unsupported "+
+                            "to do arch test in " + archBuild +". ");
+        System.out.println ("Please try without --arch option! Exit...");
+        System.exit (SUCCESS_EXIT);
+      }
+ 
+      return this.runCases(testClasses);
+    }
+    
+    /**
+     * Run bi-arch test when the "-i" or "-b" option is given.
+     * When doing bi-arch test, all cases are the same as the 
+     * common test except for the execPrefix path. So after the 
+     * correct execPrefix is set before calling this function
+     * in frysk.junit.Paths, we do the same procedures as the doRunner().
+     * 
+     * @param testClasses
+     * @return
+     * @see frysk.junit.Paths
+     */
+    public int runArch32Cases(Collection testClasses)
+    {
+      //XXX: if all 32-bit cases pass, we should comment 
+      //the following instruction.
+      if (null == this.archTarget)
+        return SUCCESS_EXIT;
+      
+      boolean testArch32 = false;
+
+      if (null == this.archBuild)
+        this.archBuild = Build.BUILD_ARCH;
+
+      if (archBuild.equalsIgnoreCase("x86_64") || 
+	  archBuild.equalsIgnoreCase("ppc64") || 
+          archBuild.equalsIgnoreCase("powerpc64"))
+      {
+        testArch32 = true;
+      }
+	  
+      if (false == testArch32)
+      {
+        System.out.println("It's unnecessary or unsupported "+ 
+                           "to do arch test in " + archBuild +". Exit...");
+        System.exit (SUCCESS_EXIT);
+      }
+      else if (false == this.archTarget.equals(Runner.ARCH32))
+        return SUCCESS_EXIT;
+      
+      /**
+       * Output some prompt message when we run both 64-bit and 32-bit cases.
+       */
+      if (null == this.archTarget)
+      {
+        System.out.println("+====================================================+");
+        System.out.println("|                                                    |");
+        System.out.println("|            The following is Biarch Test            |");
+        System.out.println("|                                                    |");
+        System.out.println("+====================================================+");
+      }
+      
+      return this.runCases(testClasses);
+    }
+    
     /**
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
      */
-    public Runner (String[] args, Collection testClasses)
+    public Runner (String[] args)
     {
 	// Override the print methods.
 	super (new Results (System.out));
 
 	// Create the command line parser, and use it to parse all
 	// command line options.
-	CmdLineParser parser = new CmdLineParser ();
+	parser = new CmdLineParser ();
+    
 	CmdLineParser.Option levelOption
 	    = parser.addStringOption ('l', "level");
 	CmdLineParser.Option consoleOption
 	    = parser.addStringOption ('c', "console");
 	CmdLineParser.Option repeatOption
 	    = parser.addIntegerOption ('r', "repeat");
-	try {
+    
+	CmdLineParser.Option archTestOption
+	    = parser.addStringOption("arch");
+    
+	try
+	  {
 	    parser.parse(args);
-	}
-	catch (CmdLineParser.OptionException e) {
-	    System.out.println (e.getMessage());
-	    System.out.println ("Usage: [ -c <console-level> ] [ -l <log-level> ] [ -r <repeat-count> ] [ class ... ]");
-	    System.exit (FAILURE_EXIT);
-	}
+	  }
+	catch (CmdLineParser.OptionException e)
+	  {
+	    Runner.usage(e.getMessage(), FAILURE_EXIT);
+	  }
 
+	Object archObj = parser.getOptionValue (archTestOption);
+	if (null != archObj)
+        {
+          if ((true == archObj.equals(Runner.ARCH32)) ||
+              (true == archObj.equals(Runner.ARCH64)))
+            this.archTarget = (String)archObj;
+          else
+            Runner.usage("Invalid arch value: <" + archObj + ">", FAILURE_EXIT);
+        }
+    
 	// Create the file logger, and then set it's level to that
 	// specified on the command line.
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	String levelValue = (String) parser.getOptionValue (levelOption);
-	if (levelValue != null) {
-	    Level level = null;
-	    try {
-		level = Level.parse (levelValue);
-	    }
-	    catch (IllegalArgumentException e) {
-		System.out.println ("Invalid log level: " + levelValue);
-		System.exit (FAILURE_EXIT);
-	    }
-	    logger.setLevel (level);
+	if (levelValue != null)
+	{
+	  Level level = null;
+	  try
+            {
+              level = Level.parse (levelValue);
+            }
+	  catch (IllegalArgumentException e)
+            {
+              Runner.usage("Invalid log level: " + levelValue, FAILURE_EXIT);
+            }
+	  logger.setLevel (level);
 	}
 
 	// Need to set both the console and the main logger as
 	// otherwize the console won't see the log messages.
 	String consoleValue = (String) parser.getOptionValue (consoleOption);
-	if (consoleValue != null) {
-	    Level consoleLevel = null;
-	    try {
-		consoleLevel = Level.parse (consoleValue);
-	    }
-	    catch (IllegalArgumentException e) {
-		System.out.println ("Invalid log console: " + consoleValue);
-		System.exit (FAILURE_EXIT);
-	    }
-	    System.out.println ("console " + consoleLevel);
-	    Handler consoleHandler = new ConsoleHandler ();
-	    consoleHandler.setLevel (consoleLevel);
-	    logger.addHandler (consoleHandler);
-	    logger.setLevel (consoleLevel);
-	    System.out.println (consoleHandler);
+	if (consoleValue != null)
+	{
+	  Level consoleLevel = null;
+	  try
+            {
+	      consoleLevel = Level.parse (consoleValue);
+            }
+	  catch (IllegalArgumentException e)
+            {
+              Runner.usage("Invalid log console: " + 
+			   consoleValue, FAILURE_EXIT);
+            }
+        
+	   System.out.println ("console " + consoleLevel);
+	   Handler consoleHandler = new ConsoleHandler ();
+	   consoleHandler.setLevel (consoleLevel);
+	   logger.addHandler (consoleHandler);
+	   logger.setLevel (consoleLevel);
+	   System.out.println (consoleHandler);
 	}
 
 	// Determine the number of times that the testsuite should be
 	// run.
+	int repeats = 1;
 	Integer repeatValue = (Integer) parser.getOptionValue (repeatOption);
-        int repeats = 1;
-	if (repeatValue != null) {
-	    repeats = repeatValue.intValue ();
-	}
+    
+	if (repeatValue != null)
+          repeats = repeatValue.intValue ();
 
-	// Create the testsuite to be run, either as specified on the
-	// command line, or from the provided list of classes.  XXX:
-	// It would be good if individual tests from within a testcase
-	// could be identified and run.
-	String[] otherArgs = parser.getRemainingArgs ();
-        TestSuite testSuite = new TestSuite ();
-        if (otherArgs.length > 0) {
-	    // Construct the testsuite from the list of names.
-            for (int i = 0; i < otherArgs.length; i++) {
-                if (otherArgs[i].charAt (0) == '-')
-		    repeats = -Integer.parseInt (otherArgs[i]);
-                else
-                    testSuite.addTest (getTest (otherArgs[i]));
-            }
-        }
-        else {
-	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
-		Class testClass = (Class) i.next ();
-                testSuite.addTest (new TestSuite (testClass));
-	    }
-
-        }
-
-	// Run the TestSuite <<repeat>> times.
-        try {
-	    for (int i = 0; i < repeats; i++) {
-	        TestResult testResult = doRun (testSuite);
-	        if (!testResult.wasSuccessful()) 
-		    System.exit (FAILURE_EXIT);
-            }
-	} catch(Exception e) {
-	    System.err.println(e.getMessage());
-	    System.exit (EXCEPTION_EXIT);
-	}
-
-	System.exit (SUCCESS_EXIT);
+	this.repeatValue = repeats;
     }
 }

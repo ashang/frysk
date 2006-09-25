@@ -49,10 +49,22 @@ import @GEN_PACKAGENAME@.Build;
  */
 
 public class TestRunner
-{
+{    
     public static void main (String[] args)
     {
+	int ret = 0;
+
+	Runner testRunner = new Runner (args);
+
+        testRunner.setBuildArch(Build.BUILD_ARCH);
+	
+	// Set the execPrefix path and then do the common test.
 	Paths.setExecPrefix (Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/");
-	new Runner (args, JUnitTests.get ());
+	testRunner.runArchCases(JUnitTests.get ());
+	
+	// Set the execPrefix of arch32 and then do the arch32 test.
+	Paths.setExecPrefix(Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/");
+	ret = testRunner.runArch32Cases(JUnitTests.get ());
+	System.exit(ret);
     }
 }

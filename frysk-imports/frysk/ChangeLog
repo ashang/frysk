@@ -1,3 +1,7 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Config.javain (PKGLIBEXEC_ARCH32DIR): Add.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain (FRYSK_LOG_ID): Delete.

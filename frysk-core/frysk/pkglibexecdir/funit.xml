@@ -78,6 +78,9 @@
         <option>-l <replaceable>log-level</replaceable></option>
       </arg>
       <arg choice="opt">
+        <option>--arch=ARCH<replaceable>ARCH</replaceable></option>
+      </arg>
+      <arg choice="opt">
         <option><replaceable>test-class</replaceable> ...</option>
       </arg>
     </cmdsynopsis>
@@ -105,15 +108,24 @@
 	<term>-c <replaceable>console-log-level</replaceable></term>
 	<listitem>
           <para> Enable logging to the console and at the specified
-          log level.  </para>
+          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
         </listitem>
       </varlistentry>
       <varlistentry>
 	<term>-l <replaceable>log-level</replaceable></term>
 	<listitem>
-          <para> Specify the file logging level. </para>
+          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term>--arch=ARCH<replaceable>ARCH</replaceable></term>
+        <listitem>
+          <para> Specify the test cases' arch. The ARCH can be 64 or 32. If no arch is specified, arch-64 cases will be run. When the arch-32 cases are ready, all cases will be run be default.The option will take no effect in 32-bit machine.  </para>
+        </listitem>
+      </varlistentry>
+
+
     </variablelist>
   </refsect1>
   

@@ -140,6 +140,72 @@ echo_PROGRAMS ()
     esac
 }
 
+echo_arch32_COMPILER()
+{
+	echo "if DO_ARCH32_TEST"
+	echo "ARCH32_COMPILE=\$(CC) \$(DEFAULT_INCLUDES) \$(INCLUDES) \
+	      \$(AM_CPPFLAGS) \$(CPPFLAGS) \$(AM_CFLAGS)"
+	echo "endif"
+}
+
+# usage:
+#	echo_arch32_PROGRAMS ${name} ${file} $(COMPILE_CMD) ${arch32_cflag_name}
+echo_arch32_PROGRAMS()
+{
+    case "$1" in
+        *dir/* )
+            # extract the directory prefix
+            local dir=`echo /"$1" | sed -e 's,.*/\([a-z]*\)dir/.*,\1,'`
+
+	    local dname=`dirname $1`
+		
+	    dname=`dirname ${dname}`
+	    if [ "${dir}" = "pkglibexec" ] && [ "${dname}" = "frysk" ]; then
+		local file="$2"
+		local dir_name=`dirname $1`
+		local base_name=`basename $1`
+		local name="${dir_name}/arch32/${base_name}"
+
+		local name_=`echo ${name} | sed -e 'y,/-,__,'`
+		local ldflags="${name_}_LDFLAGS = -m32 -g"
+		
+		local compiler="$3"
+		local cflag="$4"
+
+		echo 
+		echo "if DO_ARCH32_TEST"
+		echo "${name_}_SOURCES = ${file}"
+		echo "am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
+		echo "${ldflags}"
+
+           	test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
+
+cat <<EOF
+${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibexecdir/arch32/\$(am__dirstamp)
+	@ARCH32_COMPILE=\`echo "\$(${compiler}) " | sed -e 's, -m64 , ,g'\`; \\
+	\$\$ARCH32_COMPILE \$(${cflag}) -c -o \$@ $<
+
+${dir_name}/arch32/${base_name}\$(EXEEXT): \$(${name_}_OBJECTS) \$(${name_}_DEPENDENCIES) ${dir_name}/arch32/\$(am__dirstamp)
+	@rm -f \$@
+	@ARCH32_LINK=\`echo "\$(LINK) " | sed -e 's, -m64 , ,g'\`; \\
+	\$\$ARCH32_LINK \$(${name_}_LDFLAGS) \$(${name_}_OBJECTS) \$(${name_}_LDADD) \$(LIBS)
+EOF
+	
+            	echo "${dir}_arch32_PROGRAMS += ${dir_name}/arch32/${base_name}"
+		echo "MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
+
+		if grep pthread.h ${file} > /dev/null 2>&1 ; then
+                    echo "${name_}_LDADD = -lpthread"
+           	fi
+		echo "endif"
+		echo
+	    fi
+            ;;
+        * )
+            ;;
+    esac
+}
+
 # Convert path to the automake equivalent (/ replaced with _).
 echo_name_ ()
 {
@@ -377,6 +443,12 @@ for suffix in .java ; do
     done
 done
 
+# output the compile for arch32
+echo_arch32_COMPILER
+
+# the flag for output of arch32 test's CFLAGS
+arch32_cflags_output=0
+
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     find ${dirs} \
@@ -394,6 +466,19 @@ for suffix in .cxx .c .hxx ; do
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
+
+           # Generate the rules for arch32 test
+           if [ $arch32_cflags_output -eq 0 ]; then
+               echo "if DO_ARCH32_TEST"
+               arch32_path="${d}/arch32"
+               arch32_cflag_name=`echo ${arch32_path}_CFLAGS | sed -e 'y,/-,__,'`
+               echo "${arch32_cflag_name}=-m32 -g"
+               echo "endif"
+           fi
+
+           echo_arch32_PROGRAMS ${name} ${file} "ARCH32_COMPILE" ${arch32_cflag_name}
+           arch32_cflags_output=1
+
 	else
 	    echo "${sources} += ${file}"
 	fi
@@ -415,6 +500,18 @@ for suffix in .s .S ; do
 	
 	echo "${name_}_SOURCES = ${file}"
 	echo_PROGRAMS ${name}
+
+	# Generate the rules for arch32 test
+	if [ $arch32_cflags_output -eq 0 ]; then
+	    echo "if DO_ARCH32_TEST"
+	    arch32_path="${d}/arch32"
+	    arch32_as_cflag_name=`echo ${arch32_path}_AS_CFLAGS | sed -e 'y,/-,__,'`
+	    echo "${arch32_as_cflag_name}=-m32 -g"
+	    echo "endif"
+	fi
+
+	echo_arch32_PROGRAMS ${name} ${file} "CCASCOMPILE" ${arch32_as_cflag_name}
+	arch32_cflags_output=1
     done
 done
 

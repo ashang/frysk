@@ -1,3 +1,7 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Makefile.am: Add the funit-child-alias for arch32 test.
+
 2006-09-21  Nurdin Premji  <npremji@redhat.com>
 	
 	* Makefile.am: Added support for getopt option parser.

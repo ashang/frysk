@@ -51,6 +51,10 @@ sbin_PROGRAMS =
 libexec_PROGRAMS =
 pkglibexec_PROGRAMS =
 pkglibexecdir = $(libexecdir)/@PACKAGE@
+
+pkglibexec_arch32_PROGRAMS =
+pkglibexec_arch32dir = $(pkglibexecdir)/arch32
+
 noinst_LIBRARIES =
 man_MANS =
 LDADD = 
@@ -227,6 +231,7 @@ SUBST_SED = sed \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
 		-e 's,[@]pkglibexecdir[@],$(pkglibexecdir),g' \
+		-e 's,[@]pkglibexec_arch32dir[@],$(pkglibexec_arch32dir),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
 		-e 's,[@]VERSION[@],$(VERSION),g' \
 		-e 's,[@]target_cpu[@],@target_cpu@,g'

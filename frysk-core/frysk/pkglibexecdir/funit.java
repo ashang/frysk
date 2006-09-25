@@ -40,6 +40,9 @@
 import frysk.Config;
 import frysk.junit.Paths;
 import frysk.junit.Runner;
+import frysk.core.Build;
+
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -48,14 +51,32 @@ import java.util.LinkedList;
  */
 
 public class funit
-{
+{  
     public static void main (String[] args)
     {
-	LinkedList list = new LinkedList ();
-	list.addAll (frysk.imports.JUnitTests.get ());
-	list.addAll (frysk.sys.JUnitTests.get ());
-	list.addAll (frysk.core.JUnitTests.get ());
-	Paths.setExecPrefix (Config.PKGLIBEXECDIR + "/");
-	new Runner (args, list);
+      int ret = 0;
+
+      LinkedList list = new LinkedList ();
+
+      list.addAll (frysk.imports.JUnitTests.get ());
+      list.addAll (frysk.sys.JUnitTests.get ());
+      list.addAll (frysk.core.JUnitTests.get ());
+	
+      Runner testRunner = new Runner (args);   
+      testRunner.setBuildArch(Build.BUILD_ARCH);
+ 
+      // Set the pkglibexec's directroy according to configuration 
+      // and then do the test.
+      Paths.setExecPrefix (Config.PKGLIBEXECDIR + "/");
+      testRunner.runArchCases(list);
+    
+      // It's unnecessary for other modules(such as frysk-import) to 
+      // do arch32 test, so we just add the frysk-core's JUnitTests.
+      LinkedList arch32List = new LinkedList();
+      arch32List.addAll(frysk.core.JUnitTests.get ());
+
+      Paths.setExecPrefix(Config.PKGLIBEXEC_ARCH32DIR + File.separator);
+      ret = testRunner.runArch32Cases(arch32List);
+      System.exit(ret);
     }
 }

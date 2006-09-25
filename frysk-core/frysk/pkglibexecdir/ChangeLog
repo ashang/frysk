@@ -1,3 +1,8 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* funit.java: Refactor to suport arch32 test.
+	* funit.xml: Update the --arch option info.
+
 2006-09-21	Mike Cvet	<mcvet@redhat.com>
 	
 	* funit-rt-threader.c (signal_parent): loops instead of 
