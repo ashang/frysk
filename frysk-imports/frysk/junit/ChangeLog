@@ -1,3 +1,7 @@
+2006-09-26  Nurdin Premji <npremji@redhat.com>
+
+	* Runner.java: Changed to use getopt command line parser.
+
 2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* Runner.java (repeatValue,archTarget, archBuild, 

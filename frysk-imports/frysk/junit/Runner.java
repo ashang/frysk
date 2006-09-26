@@ -41,7 +41,6 @@ package frysk.junit;
 
 import frysk.EventLogger;
 import frysk.imports.Build;
-import jargs.gnu.CmdLineParser;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,6 +54,13 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import junit.textui.ResultPrinter;
 import junit.textui.TestRunner;
+
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
+
+import java.util.LinkedList;
 
 /**
  * <em>frysk</em> specific extension to the JUnit test framework.
@@ -71,7 +77,14 @@ public class Runner
     private String archBuild = null; 
     private Collection testCases = null;
     
-    private CmdLineParser parser = null;
+    private Parser parser = null;
+	    
+    private String levelValue = null;
+	
+    private  Level level = null;
+	    
+
+	LinkedList otherArgs;
     
     public final static String ARCH64 = "64";
     public final static String ARCH32 = "32";
@@ -131,29 +144,7 @@ public class Runner
     
     public static void usage(String message, int exitVal)
     {
-        System.out.println (message);
-        System.out.println ("Usage: [ -c <console-level> ] [ -l <log-level> ]" +
-			    " [ -r <repeat-count> ] [--arch <arch>] [ class ... ]");
-        System.out.println ("Options: ");
-        System.out.println ("         -c <console-level>");
-        System.out.println ("            Set the console level. The console-level"+
-			    " can be [ OFF | SEVERE | WARNING |"); 
-        System.out.println ("            INFO | CONFIG | FINE | FINER | FINEST].");
-        System.out.println ("         -l <log-level>");
-        System.out.println ("            Set the log level. The log-level can be " +
-			    "[ OFF | SEVERE | WARNING | INFO |"); 
-        System.out.println ("            CONFIG | FINE | FINER | FINEST].");
-        System.out.println ("         -r <repeat-count>");
-        System.out.println ("            Set the count of repeating the test.");
-        System.out.println ("         --arch=<ARCH>");
-        System.out.println ("            Set the target arch whose test cases " + 
-			    "will be running. <ARCH> can be 64 or 32. ");
-        System.out.println ("            If no any arch is set, the arch-64 " + 
-			    "cases will be run.");
-        System.out.println ("            All arch-64 and arch-32 cases will be"+
-			    " run when arch-32 is ready. The --arch option ");
-        System.out.println ("            will take no effect on 32-bit machines.");
-       
+        System.out.println (message);                                       
         System.exit (exitVal);
     }
 
@@ -182,19 +173,21 @@ public class Runner
       // command line, or from the provided list of classes.  XXX:
       // It would be good if individual tests from within a testcase
       // could be identified and run.
-      String[] otherArgs = parser.getRemainingArgs ();
+     //String[] otherArgs = parser.getRemainingArgs ();
       
       TestSuite testSuite = new TestSuite ();
       
-      if (otherArgs.length > 0)
+      if (otherArgs.size() > 0)
       {
 	// Construct the testsuite from the list of names.
-	for (int i = 0; i < otherArgs.length; i++)
+	Iterator iter = otherArgs.listIterator(0);
+	      while (iter.hasNext())
           {
-            if (otherArgs[i].charAt (0) == '-')
-              this.repeatValue = -Integer.parseInt (otherArgs[i]);
+		  String arg = (String) iter.next();
+            if (arg.charAt (0) == '-')
+              this.repeatValue = -Integer.parseInt (arg);
             else
-              testSuite.addTest (getTest (otherArgs[i]));
+              testSuite.addTest (getTest (arg));
             }
           }
       else
@@ -319,6 +312,86 @@ public class Runner
       return this.runCases(testClasses);
     }
     
+    private void addOptions(Parser parser) 
+    {
+	    parser.add(new Option("console", 'c', "Set the console level. The console-level can be "
+		+ "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]", "<console-level>") {
+			public void parsed (String consoleValue) throws OptionException
+			{			
+				 try
+            {		
+	      Level consoleLevel = Level.parse (consoleValue);	
+		// Need to set both the console and the main logger as
+		// otherwize the console won't see the log messages.		
+
+	  
+		System.out.println ("console " + consoleLevel);	   
+		Handler consoleHandler = new ConsoleHandler ();
+		consoleHandler.setLevel (consoleLevel);
+		logger.addHandler (consoleHandler);
+		logger.setLevel (consoleLevel);
+		System.out.println (consoleHandler);		
+	  		    
+            }
+	  catch (IllegalArgumentException e)
+            {
+              throw new OptionException("Invalid log console: " + consoleValue);
+            }
+	   
+			}
+		});
+	    parser.add(new Option("level", 'l', "Set the log level. The log-level can be " +
+			    "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]", "<log-level>") {
+			public void parsed(String arg0) throws OptionException
+			{
+				levelValue = arg0;				
+				try
+				{
+					level = Level.parse (levelValue);
+				}
+				catch (IllegalArgumentException e)
+				{
+					throw new OptionException ("Invalid log level: " + levelValue);
+				}
+			}
+		});
+	
+		
+		
+		// Determine the number of times that the testsuite should be
+	// run.		
+		parser.add(new Option("repeat",  'r', "Set the count of repeating the test.", "<repeat-count>") {
+			public void parsed (String arg0) throws OptionException
+			{
+				try
+				{
+				repeatValue = Integer.parseInt(arg0);
+				}
+				catch (NumberFormatException _) 
+					{
+						throw new OptionException("Argument: " + arg0 + " was not a number");
+					}
+					
+				
+			}
+		});
+			
+		parser.add(new Option("arch",  "Set the target arch whose test " +
+		"cases will be running. <ARCH> can be 64 or 32. If no any arch " + 
+		"is set, the arch-64 cases will be run. All arch-64 and arch-32 " + 
+		"cases will be run when arch-32 is ready. The --arch option will " + 
+		"take no effect on 32-bit machines.", "<ARCH>") {
+			public void parsed (String arg0) throws OptionException
+			{
+				if (arg0.equals(Runner.ARCH32) || arg0.equals(Runner.ARCH64))
+					archTarget = arg0;
+				else {
+					throw new OptionException( "Invalid arch value: <" + arg0 + ">");
+				}
+			}
+		});
+    }
+    
     /**
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
@@ -330,87 +403,36 @@ public class Runner
 
 	// Create the command line parser, and use it to parse all
 	// command line options.
-	parser = new CmdLineParser ();
+	parser = new Parser ("Runner", "1.0", true)
+	    {
+		    protected void validate() throws OptionException {
+			}
+	    };
     
-	CmdLineParser.Option levelOption
-	    = parser.addStringOption ('l', "level");
-	CmdLineParser.Option consoleOption
-	    = parser.addStringOption ('c', "console");
-	CmdLineParser.Option repeatOption
-	    = parser.addIntegerOption ('r', "repeat");
-    
-	CmdLineParser.Option archTestOption
-	    = parser.addStringOption("arch");
-    
-	try
-	  {
-	    parser.parse(args);
-	  }
-	catch (CmdLineParser.OptionException e)
-	  {
-	    Runner.usage(e.getMessage(), FAILURE_EXIT);
-	  }
+	    addOptions(parser);
+	    
+	    parser.setHeader("Usage: [ -c <console-level> ] [ -l <log-level> ]" +
+			    " [ -r <repeat-count> ] [--arch <arch>] [ class ... ]");
+	
+	    otherArgs = new LinkedList();
+	    
+	logger = EventLogger.get ("logs/", "frysk_core_event.log");
+	    parser.parse(args, new FileArgumentCallback() {
+			public void notifyFile(String arg) throws OptionException
+			{			
+				otherArgs.add(arg);
+				System.out.println(arg);
+			}
+		});
+	
 
-	Object archObj = parser.getOptionValue (archTestOption);
-	if (null != archObj)
-        {
-          if ((true == archObj.equals(Runner.ARCH32)) ||
-              (true == archObj.equals(Runner.ARCH64)))
-            this.archTarget = (String)archObj;
-          else
-            Runner.usage("Invalid arch value: <" + archObj + ">", FAILURE_EXIT);
-        }
-    
+	
+	  
 	// Create the file logger, and then set it's level to that
 	// specified on the command line.
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
-	String levelValue = (String) parser.getOptionValue (levelOption);
 	if (levelValue != null)
-	{
-	  Level level = null;
-	  try
-            {
-              level = Level.parse (levelValue);
-            }
-	  catch (IllegalArgumentException e)
-            {
-              Runner.usage("Invalid log level: " + levelValue, FAILURE_EXIT);
-            }
 	  logger.setLevel (level);
-	}
 
-	// Need to set both the console and the main logger as
-	// otherwize the console won't see the log messages.
-	String consoleValue = (String) parser.getOptionValue (consoleOption);
-	if (consoleValue != null)
-	{
-	  Level consoleLevel = null;
-	  try
-            {
-	      consoleLevel = Level.parse (consoleValue);
-            }
-	  catch (IllegalArgumentException e)
-            {
-              Runner.usage("Invalid log console: " + 
-			   consoleValue, FAILURE_EXIT);
-            }
-        
-	   System.out.println ("console " + consoleLevel);
-	   Handler consoleHandler = new ConsoleHandler ();
-	   consoleHandler.setLevel (consoleLevel);
-	   logger.addHandler (consoleHandler);
-	   logger.setLevel (consoleLevel);
-	   System.out.println (consoleHandler);
-	}
-
-	// Determine the number of times that the testsuite should be
-	// run.
-	int repeats = 1;
-	Integer repeatValue = (Integer) parser.getOptionValue (repeatOption);
-    
-	if (repeatValue != null)
-          repeats = repeatValue.intValue ();
-
-	this.repeatValue = repeats;
     }
 }
