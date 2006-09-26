@@ -1,0 +1,502 @@
+2006-09-21  Nurdin Premji  <npremji@redhat.com>
+	
+	* Makefile.am: Added in support for getopt command line option parser.
+	* bootstrap.sh: Ditto.
+	* configure.ac: Ditto.
+
+2006-09-16    <swagiaal@redhat.com>
+
+	* configure.ac: Added search for libaudit.h to insure that
+	libaudit-devel is installed.
+
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Link in libunwind-ptrace.a.
+    * Makefile.in: Rebuild.
+
+2006-09-04  Mark Wielaard  <mark@klomp.org>
+
+	* include/linux.syscall.h: include errno.h.
+
+2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
+
+	* bootstrap.sh: Build libunwind unconditionally.
+
+2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* lib/opcodes/libbfd_get.c : New file to stub bfd_getb32 and bfd_getl32
+	on PPC64.
+	* Makefile.am : Add lib/opcodes/libbfd_get.a to noinst_LIBRARIES.
+
+2006-07-31  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* bootstrap.sh: Build libunwind if it is supported.
+
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	config.guess
+	config.sub
+
+2006-07-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* bootstrap.sh: Run autoheader in libunwind, autoconf in antlr..
+	* antlr/configure, libunwind/include/config.h.in, libunwind/aclocal.m4:
+	* elfutils/configure, elfutils/aclocal.m4, libunwind/configure: Delete.
+
+2006-07-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Remove libunwind-ptrace.a.
+
+2006-07-12  Stepan Kasal  <kasal@ucw.cz>
+
+	* elfutils/config.h.in: Delete.
+	* bootstrap.sh: Run autoheader in elfutils.
+
+2006-07-11  Rick Moseley <rmoseley@redhat.com>
+
+	* Makefile.am: Remove generic libunwind.a lib.
+
+2006-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* lib/unwind: Added.
+
+2006-07-10  Rick Moseley <rmoseley@redhat.com>
+
+	* Makefile.am: Remove libunwind-setjmp.a for now.
+
+2006-06-30  Stepan Kasal  <kasal@ucw.cz>
+
+	* configure.ac: Remove the code deciding whether to use libunwind,
+	it is in common/m4/frysk-use-libunwind.m4 now.  Add conditional
+	whether libunwind can undertake "make check".  And some cosmetics.
+	Include common/acinclude.m4 before AM_INIT_AUTOMAKE.
+	* Makefile.am: Clean up the code for libunwind; add hack to skip
+	"make check" there.
+
+2006-06-29  Stepan Kasal  <kasal@ucw.cz>
+
+	* bootstrap.sh: Do not run automake in libunwind, it doesn't use it.
+
+2006-06-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* bootstrap.sh: Added libunwind.
+	* configure.ac: Ditto.
+	* Makefile.am: Ditto.
+	* libunwind/configure.ac: Added macro so autogen.sh would work.
+
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* jline/src/jline/PtyTerminal.java: constructor calls initializeTerminal now
+	
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* jline/src/jline/PtyTerminal.java: new
+
+2006-06-23	Nurdin Premji <npremji@redhat.com>
+	* include/linux.syscall.h: Changed from undef def to ifndef.
+
+2006-06-21  Stepan Kasal  <kasal@ucw.cz>
+
+	* include/linux.syscall.h: Include the headers necessary to use
+	the macros defined here, users do not have to include them.
+	* Makefile.am (noinst_HEADERS): Add include/linux.syscall.h.
+
+2006-06-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Use uudecode instead of gmime-uudecode.
+
+2006-06-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Specify static elfutil libraries,
+	re-order and add libebl/libebl.a.
+
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* include/linux.syscall.h: New file.
+
+2006-06-15  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (EXTRA_DIST): Add lib/elf/tests/*.uu
+
+2006-06-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (EXTRA_DIST): Add several ChangeLog's.
+
+2006-06-09  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	compile
+	depcomp
+	install-sh
+	missing
+
+2006-06-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Changed linking against .a's to -Ldir -llib.
+
+2006-05-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am: Added libdwfl.a.
+	* elfutils/libdw/libdw.h: Added extern "C" as a temporary fix.
+	* elfutils/libdwfl/libdwfl.h: Ditto.
+
+2006-05-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Added libdw.a.
+
+2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am (all-local): Added rule to de-encode and unpack test
+	object file.
+
+2006-05-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Add line to make the dir to unpack the core file into.
+
+2006-05-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am (all-local): Added rule to deencode and unpack test 
+	core file.
+
+2006-05-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* bootstrap.sh: Configure elfutils.
+	* configure.ac: Add in processing of elfutils.
+	* Makefile.am:  Add in processing of elfutils.
+	Add -lopcodes for linking.
+
+2006-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh: Do not yet configure elfutils.
+
+	* configure.ac: Makefile.am: Disable elfutils until FC update cut.
+
+2006-05-08  Rick Moseley  <rmoseley@redhat.com>
+
+	* bootstrap.sh: Added elfutils.
+	* Makefile.am: Ditto.
+	* configure.ac: Ditto.
+	* elfutils: Added this directory from the elfutils-0.120 source.
+
+2006-04-27  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh: Copy autogen.sh.
+	* autogen.sh: Delete.
+
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Delete references to /opt/frysk/share/java.
+
+2006-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* EXCEPTION: Delete, moved to common/.
+
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* EggTrayIcon/: Directory moved to ../frysk-gtk/.
+	* tlwidgets/: Directory moved to ../frysk-gtk/.
+	* configure.ac (PKG_CHECK_MODULES, FRYSK_IMPORTS_JARS)
+	(FRYSK_IMPORTS_CLASSPATH): Delete.
+	(lib): Delete.
+	* autogen.sh: Delete tlwidgets/ftk.jar.
+	* Makefile.am (solib_PROGRAMS, EggTrayIcon/libEggTrayIcon.so)
+	(EggTrayIcon_libEggTrayIcon_so_LDADD)
+	(EggTrayIcon_libEggTrayIcon_a_CFLAGS): Delete.
+	(GEN_CLASSPATH): Do not add $(FRYSK_IMPORTS_JARS).
+	(SUBDIRS): Do not add tlwidgets.
+	
+2005-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Define FRYSK_IMPORTS_CLASSPATH.
+
+	* configure.ac: Use PKG_CHECK_MODULES, and
+	FRYSK_PKG_MODULE_VARIABLE, to define FRYSK_IMPORTS_LIBS,
+	FRYSK_IMPORTS_CFLAGS, and FRYSK_IMPORTS_JARS.
+	* Makefile.am (EggTrayIcon_libEggTrayIcon_so_LDADD): Set to
+	FRYSK_IMPORTS_LIBS.
+	(GEN_CLASSPATH): Add FRYSK_IMPORTS_JARS.
+
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Move checks for gtk2-java, glade-java, glib-java,
+	and gtk+-2.0, to common/acinclude.m4.
+
+	* configure.ac: For GTK2_JAR, GLADE_JAR, and GLIB_JAVA_JAR use
+	FRYSK_FIND_JAR to set variable.
+
+	* configure.ac: For antlr.jar, and jdom.jar, use AC_FIND_FILE.
+
+2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* autogen.sh: added ftk.jar to the list passed to ./common/Makefile.gen.sh
+	* Makefile.am: Added $(GTK2_JAR) $(GLIB_JAVA_JAR) to classpath.
+
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_INIT): Shorten package to just <<frysk>>.
+
+	Revert 2005-11-25 change:
+	* configure.ac (AC_CONFIG_SUBDIRS([antlr]): Delete.
+	(ANTLR_JAR, JDOM_JAR): Optionally set from the environment.
+	(PKG_CONFIG_PATH): Move to before all PKG_CHECK_MODULES.
+	* autogen.sh: Specify ANTLR_JAR.
+	* Makefile.am (SUBDIRS): Delete antlr/
+
+	* autogen.sh: Add -f to autoconf.
+
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh: Replace ANTLR_JAR with antlr/antlr/antlr.jar.
+	* configure.ac (AC_CONFIG_SUBDIRS): Add antlr.  Delete ANTLR_JAR
+	check.
+	* Makefile.am (SUBDIRS): Add antlr.
+
+	* configure.ac: Delete check for JUNIT_JAR.
+
+	* autogen.sh: Replace JUNIT_JAR with junit/junit.jar.
+	* configure.ac (AC_CONFIG_FILES): Add junit/Makefile.
+	* Makefile.am (SUBDIRS): Add junit.
+
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CONFIG_FILES): Delete frysk/Makefile.
+	* Makefile.am (SUBDIRS): Delete frysk.
+
+	* configure.ac: Include common/version.ac.  Update AC_INIT to
+	frysk-imports FRYSK_VERSION.
+
+2005-11-21  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (SUBDIRS): Add frysk.
+	* autogen.sh: Likewise.
+	* configure.ac (AC_CONFIG_FILES): Likewise.
+	* frysk/Config.javain: Moved from frysk-core/frysk.
+	* frysk/Makefile.am: New file.
+	* frysk/configure.ac: New file.
+
+2005-11-21  Rick Moseley  <rmoseley@redhat.com>
+	* Makefile.am: added cdtparser compiler compilation
+	* configure.ac: ditto
+	* autogen.sh: ditto
+
+2005-11-21    <moller@mollerware.com>
+
+	* Makefile.am: Added tlwidgets to SUBDIRS.
+	* configure.ac: Added tlwidgets/Makefile to AC_CONFIG_FILES.
+
+2005-11-16  Igor Foox  <ifoox@redhat.com>
+
+	* configure.ac: Added 3.0.1 eclipse search path for cdtparser.jar.
+	
+2005-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (solib_PROGRAMS): Rename solib_DATA.
+
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (LIBJUNIT): Delete.
+	
+	* Makefile.am (GEN_GCJ_LDADD, GEN_CLASSPATH): Add junit.
+	
+	* Makefile.am (GEN_GCJ_LDADD): Add frysk- prefix to all libraries.
+
+2005-11-10  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CONFIG_FILES): Remove tlwidgets/Makefile.
+	* Makefile.am (SUBDIRS): Remove tlwidgets.
+
+2005-11-09    <moller@mollerware.com>
+
+	* Makefile.am: Added tlwidgets to SUBDIRS.
+	* configure.ac: Added tlwidgets/Makefile to AC_CONFIG_FILES.
+
+2005-11-09  Igor Foox  <ifoox@redhat.com>
+
+	* autogen.sh, configure.ac: Changed to use cdtparser.jar from
+	eclipse-cdt package.
+
+2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/SourceWinRunner.java (main): Now uses paths out of Config.java.
+	(mainSourceWin): Uses same process as main.
+
+2005-11-03  Igor Foox  <ifoox@redhat.com>
+
+    * autogen.sh: Added -I common/m4 to aclocal invokation.
+
+	* configure.ac: Added detecton for x86_64 that adds /opt/frysk/lib64 to
+	PKG_CONFIG_PATH.
+
+2005-10-21  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CINFIG_FILES): Replace tests/cniinner/Makefile,
+	tests/anoncall/Makefile, tests/werror/Makefile,
+	tests/gcjtreeiter/Makefile, tests/samename/Makefile, and
+	tests/textiter/Makefile with just tests/Makefile.
+	* Makefile.am (SUBDIRS): Replace tests/cniinner, tests/anoncall,
+	tests/werror, tests/gcjtreeiter, tests/samename, and
+	tests/textiter, with just tests/.
+	
+2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am, configure.ac: Added tests/textiter, tests/gcjtreeiter,
+	removed tests/gcc_4_0_15
+
+2005-10-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am, configure.ac: Add tests/samename.
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Added EggTrayIcon/eggtrayicon.h to EXTRA_DIST. Added
+	include/linux.ptrace.h to noinst_HEADERS so it's included in the
+	distribution.
+
+2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am: Added tests/gcc_4_0_15 as a subdir.
+
+	* configure.ac: Added checks for Java-gnome libraries and added
+	tests/gcc_4_0_15 to AC_CONFIG_FILES.
+
+2005-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* EggTrayIcon/libEggTrayIcon.c: changed to using getGObjectHandle().
+
+2005-09-26  Igor Foox  <ifoox@redhat.com>
+
+	* configure.ac: Changed PKG_CONFIG_PATH to /opt/frysk from /opt.
+
+2005-09-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* .classpath: Add frysk-imports generated .jars to
+	project .classpath.
+
+2005-09-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac: No longer checks for cdtparser.jar.
+
+	* autogen.sh: CDTPARSER_JAR removed from builds.
+
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Add jargs.
+	* autogen.sh: Replace "util" with "inua".
+
+2005-09-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac: Added check for jdom.jar.
+	Added JDOM_JAR variable.
+
+	* autogen.sh: Added JDOM_JAR to things to build.
+
+2005-09-15  Igor Foox  <ifoox@redhat.com>
+
+	* configure.ac: Changed all references to jg-common to glib-java.
+	Change JGCOMMON variable to GLIB_JAVA.
+	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
+	Change JGCOMMON variable to GLIB_JAVA.
+
+2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac (CDTPARSER_JAR): Changed path to /opt/share/java.
+
+2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* autogen.sh (./common/Makefile.gen.sh): Added CDTPARSER_JAR.
+
+	* configure.ac: Added CDTPARSER_JAR
+
+2005-09-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EggTrayIcon_libEggTrayIcon_so_LDADD)
+	(noinst_PROGRAMS): Replace GEN_GCJ_LDADD.
+
+	* Makefile.am: Replace EggTrayIcon_libEggTrayIcon_so_LDFLAGS with
+	GEN_GCJ_LDADD.
+
+2005-09-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (solib_DATA): Set, instead of so_DATA.
+
+2005-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Install libEggTrayIcon.so in libdir.
+
+	* configure.ac: Set package name to "frysk".
+
+	* COPYING, EXCEPTION: New files; copyright of all files updated.
+
+	* EggTrayIcon/libEggTrayIcon.c, EggTrayIcon/eggtrayicon.c,
+	EggTrayIcon/eggtrayicon.h: New files; copied from frysk-gui.
+	* Makefile.am: Add rules for EggTrayIcon.
+	* configure.ac: Set PKG_CONFIG_PATH; check for gtk+-2.0 and
+	jg-common.
+
+	* include/linux.ptrace.h: Copy to here from frysk-sys/include/.
+
+2005-09-10  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac, Makefile.am: Add sub-directory tests/werror.
+
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Check that $(JUNIT_JAR) and $(ANTLR_JAR) exist.
+
+	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
+
+	* configure.ac: Add code to substitute JUNIT_JAR and ANTLR_JAR.
+	* autogen.sh: Replace path-to junit.jar and path-to antlr.jar with
+	JUNIT_JAR and ANTLR_JAR.
+
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cdtparser.jar: Deleted.
+
+2005-09-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cdtparser.jar: Added
+
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Add AM_PROG_CXX.
+	* autogen.sh: Pass util/ to Makefile.gen.sh.
+
+2005-09-02  Igor Foox  <ifoox@redhat.com>
+
+	* rpm-specs: New directory.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* .externalToolBuilders/AntBuilder.launch, .classpath, .project,
+	build.xml: New files.
+	* .cvsignore: Add more files.
+
+	* configure.ac, Makefile.am: Add subdirectory tests/anoncall.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (LIBJUNIT): Define.
+
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh, configure.ac, Makefile.am: Add jargs/jargs.jar.
+
+	* autogen.sh: Add jline/jline.jar to Makefile.gen.sh option list.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am, configure.ac: Add directory tests/cniinner.
+
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore, Makefile.am, README, autogen.sh, configure.ac: New.
+	* jline/: Import.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

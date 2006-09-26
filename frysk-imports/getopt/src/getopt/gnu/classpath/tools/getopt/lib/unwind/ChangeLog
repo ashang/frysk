@@ -1,0 +1,102 @@
+2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
+
+	* RegisterAMD64.java: New class.
+
+2006-09-19  Mike Cvet  <mcvet@redhat.com>
+
+	* FrameCursor.java (getIsSignalFrame): Added.
+	* cni/StackTraceCreator.cxx (unwind_setup): Added a check
+	to see if the frame is a signal frame.
+
+2006-09-16  Alexandre Oliva  <aoliva@redhat.com>
+
+	* UnwindCallbacks.java (findProcInfo, putUnwindInfo,
+	getDynInfoListAddr, getProcName): Remove, obsolete.
+	(getPid): New.
+	* StackTraceCreator.java (UnwindArgs::UPTarg,
+	UnwindArgs::unwas): Change to pointer type.
+	(arg_hash): New static fields.
+	(pointer_to_long, dispatch_todo): New static native methods.
+	(register_hashes, unregister_hashes, find_arg_from_long,
+	catch_errors): New static methods.
+	* cni/StackTraceCreator.cxx (find_unwargs): New.  Use it all over.
+	(struct todo): New.
+	(StackTraceCreator::dispatch_todo): New.
+	(struct access_mem_todo): New.
+	(access_mem): Turn into dispatch_todo wrapper.  Rename
+	original to...
+	(real_access_mem): ... this.  Unwrap incoming arguments.
+	(get_proc_name): Use libunwind implementation.
+	(StackTraceCreator::unwind_setup): Pass pid to _UPT_create.
+	Register args hashes.
+	(StackTraceCreator::unwind_finish): Unregister them.
+	(StackTraceCreator::pointer_to_long): New.
+
+2006-09-08	Alexandre Oliva	<aoliva@redhat.com>
+
+	* StackTraceCreator.java (UnwindArgs): New inner class.
+    (createStackTrace): Instantiate it.
+    (unwind_setup): Take it as argument.
+    (unwind_finish): New native method.
+    * cni/StackTraceCreator.cxx: Include libunwind-ptrace.h and
+    header for new inner class.
+    (find_proc_info, put_unwind_info, get_dyn_info_list_addr): Use
+    implementation from libunwind-ptrace.
+    (access_mem, access_reg, access_fpreg, resume, get_proc_name):
+    Adjust.
+    (unwind_setup): Set up libunwind-ptrace opaque args and
+    UnwindArgs fields that need native finalization.
+    (unwind_finish): Finalize them.
+
+2005-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* UnwindCallbacks.java (getProcInfo): Now returns a boolean and takes the
+	address of a pre-allocated proc_info object.
+	* cni.StackTraceCreator.cxx (find_proc_info): Uses refactored callback and
+	correctly passes the struct back to libunwind.
+	(unwind_setup): Set caching to UNW_CACHE_PER_THREAD.
+
+2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/StackTraceCreator.cxx (get_dyn_info_addr_list): Now sets dilap to 0
+	if retval is zero rather than just setting the value it points to to
+	zero.
+
+	* RegisterX86.java: Added preamble.
+	(getUnwindRegister): Now returns the string name of the register
+	for use in getRegisterByName.
+	* UnwindException.java: Added preamble.
+
+2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* RegisterX86.java: Added.
+
+	* cni/StackTraceCreator.cxx (unwind_setup): Fixed typo.
+
+	* FrameCursor.java (getNext): Renamed to getInner.
+	(getPrevious): Renamed to getOuter.
+	* cni/StackTraceCreator.cxx (unwind_setup): Changed to reflect updated
+	variable names.
+
+	* Frame.java: Renamed to FrameCursor.java.
+	(getFuncEndAddr): Removed, should be part of a higher level usage.
+	(getFuncStartAddr): Ditto.
+	(getFunctionName): Ditto.
+	(getPc): Ditto.
+	(create_frame): Renamed to create_frame_cursor.
+	* StackCreator.java (createStackTrace): Added javadoc comments.
+	* cni/Frame.cxx: Renamed to FrameCursor.cxx.
+	(create_frame): Renamed to create_frame_cursor, now only memcpy's the
+	data in the provided cursor into it's own personal pointer.
+	* cni/StackTraceCreator.cxx (unwind_setup): Now links FrameCursors together
+	in the correct order (i.e. last->first), so that each frame's "previous"
+	frame is the one immediately before it chronologically.
+
+2005-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Frame.java: Created.
+	* StackTraceCreator.java: Created.
+	* UnwindException.java: Created.
+	* UnwindCallbacks.java: Created.
+	* cni/Frame.cxx: Created.
+	* cni/StackTraceCreator.cxx: Created.

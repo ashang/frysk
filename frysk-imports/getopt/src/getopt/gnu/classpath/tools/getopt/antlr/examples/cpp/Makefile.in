@@ -1,0 +1,16 @@
+###############################################################################
+# $Id: Makefile.in,v 1.1.1.1 2005/11/25 22:29:33 cagney Exp $
+###############################################################################
+## do not change this value 
+subdir=examples/cpp
+
+# get configured vars
+@stdvars@
+
+SUBDIRS_NOT = flexLexer
+
+## get configured rules
+@stdmake@
+
+## get configured deps
+@stddeps@

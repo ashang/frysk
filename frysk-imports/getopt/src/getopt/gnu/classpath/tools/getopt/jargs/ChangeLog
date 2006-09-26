@@ -1,0 +1,30 @@
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (jargs.jar): Use $(JAVAC), and $(JAR).
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Substituted EXTRA_DIST for DIST_SOURCES to aleviate
+	automake warnings.
+	
+	* Makefile.am: Added DIST_SOURCES variable to include the jargs
+	sources in the distribution.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Add more files.
+
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Add Makefile.in.
+	* src/jargs/gnu/CmdLineParser.java: Don't import
+	java.util.Enumeration.  Add serialVersionUID to serializable
+	classes.
+	* Makefile.am: New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

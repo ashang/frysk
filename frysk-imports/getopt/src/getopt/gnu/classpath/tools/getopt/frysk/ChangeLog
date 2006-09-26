@@ -1,0 +1,94 @@
+2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* Config.javain (PKGLIBEXEC_ARCH32DIR): Add.
+
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (FRYSK_LOG_ID): Delete.
+	* EventLogger.java: Specify "frysk" for logger.
+
+2006-08-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (FRYSK_LOG_ID): Rename to just "frysk".
+
+2006-02-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* EventLogger.java:  Remove unneeded import of ConsoleHnadler.
+
+2006-02-27  Stan Cox  <scox@redhat.com>
+
+	* EventLogger.java (get): Create FRYSK_DIR/logs if necessary.
+
+2006-02-07  Stan Cox  <scox@redhat.com>
+
+	* EventLogger.java (get): Look for FRYSK_DIR/logging.properties.
+
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain PKGLIBEXECDIR): Add.
+
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (FRYSK_DIR): Rename FRYSK_CONFIG.
+	* EventLogger.java: Update.
+
+	* JUnitRunner.java: Move to frysk-imports/frysk/junit/Runner.java.
+
+	* JUnitRunner.java: New; based heavily on common/TestRunner.java.
+
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLogger.java: Do not add a ConsoleHandler.
+	
+	* Config.javain: Refactor EventLogger to ...
+	* EventLogger.java: ... new file.  Simplify.
+
+	* Config.javain (BUILDDIR, SRCDIR, ABS_BUILDDIR, ABS_SRCDIR):
+	Delete.  Add -*- Java -*- marker.  Re-indent.
+
+2006-01-23  Stan Cox  <scox@redhat.com>
+
+	* Config.javain (EventLogger): Add ConsoleHandler.
+
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Delete.
+	* Makefile.am: Delete.
+
+	* Config.javain: Add .VERSION, set to @VERSION@.
+
+2005-11-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Directory frysk/ moved to under frysk-imports/.
+
+2005-11-14  Stan Cox  <scox@scox.rdu.redhat.com>
+
+	* Config.javain (EventLogger): New.
+
+2005-11-04  Stan Cox  <scox@redhat.com>
+
+	* Config.javain (FRYSK_CONFIG, FRYSK_LOG_ID): New.
+
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Config.javain: Added PKGDATADIR, PKGLIBDIR, PKGINCLUDEDIR.
+
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Config.javain: Added IMAGEDIR.
+
+2005-09-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain: Add BINDIR, LIBDIR, LIBEXECDIR, ABS_SRCDIR, and
+	ABS_BUILDDIR.
+
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain: Moved from frysk/bin/.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

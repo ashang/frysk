@@ -1,0 +1,5 @@
+libunwind_OBJS_common += os-linux.o
+
+# _ReadULEB()/_ReadSLEB() are needed for Intel C++ 8.0 compatibility
+# ??? For x86, x86_64 or ia64?  Perhaps we should limit how far this goes.
+libunwind_OBJS_local += mi/_ReadULEB.o mi/_ReadSLEB.o

@@ -1,0 +1,40 @@
+2006-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	Fix from Wu Zhou <woodzltc@cn.ibm.com>:
+	* configure.in: Correctly quote basename applied to commands.
+	* scripts/cpp.sh.in: Ditto.
+	* scripts/cxx.sh.in: Ditto.
+	* scripts/jar.sh.in: Ditto.
+	* scripts/javac.sh.in: Ditto.
+	* scripts/lib.sh.in: Ditto.
+	* scripts/link.sh.in: Ditto.
+	* configure: Re-generate.
+	
+	* scripts/config.sub, scripts/config.guess: Import 2006-01-02.
+
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* scripts/javac.sh.in: Accept gcj4.
+
+	* configure.in (user_make): Make gcc4 and gcj first choice.
+	* configure: Re-generate.
+	
+2005-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* antlr/Makefile.in (antlr_java_FILES): Delete "damned ugly hack".
+
+	* .cvsignore: New file, add autom4te.cache.
+	* configure.in (AX_JAVA_PROGS([JAR])): Check for fastjar.
+	(AX_JAVA_PROGS([JAVAC])): Check for ecj.
+	* configure: Re-generate.
+	
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.in (install): Cripple target.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

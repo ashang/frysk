@@ -1,0 +1,1 @@
+libunwind_OBJS_common += os-hpux.o

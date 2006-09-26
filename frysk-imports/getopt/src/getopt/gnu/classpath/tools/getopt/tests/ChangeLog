@@ -1,0 +1,557 @@
+2006-09-21  Chris Moller  <moller@mollerware.com>
+
+	* frysk2131/ptrace-test.c: Simplified test to demonstrate
+	PTRACE_DETACH failure under utrace-compatible ptrace.
+
+2006-09-20  Chris Moller  <moller@mollerware.com>
+
+	* frysk2131/ptrace-test.c: Added test to demonstrate PTRACE_DETACH
+	failure under utrace-compatible ptrace.
+
+2006-09-19    <swagiaal@redhat.com>
+
+	* audit/test-audit-libs.c: New file.
+	* Makefile.am: Added test-audit-libs to the test suit.
+
+2006-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (XFAIL_TESTS): Add frysk3228/LoggerParent.
+	* frysk3228/LoggerParent.java: New test.  From Mark Wielaard.
+
+2006-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2130/strace-clone-exec.shin: Add check for strace, fail
+	when not installed.
+
+2006-08-31  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk2760/TestBarrier.java (GCThread.run): Removed frivolous
+	print statement.
+	* frysk2760/TestBarrier.cxx: Extensively cleaned up, sends 
+	proper kill signals now, regarding #3151.
+
+2006-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (TESTS): Revert 2006-08-08 change.  Test must pass.
+
+2006-08-08  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Move frysk2130/strace-clone-exec.sh to XFAIL_TESTS.
+
+2006-08-02  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Do not list XFAIL_TESTS twice when declaring
+	that all TESTS depend on Makefile.
+
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* frysk2595/ptrace_after_exec.c: Added #include <linux.syscall.h>
+	and <sys/syscall>.
+	* frysk2595/ptrace_after_exec_of_thread.c: Ditto.
+	* frysk2595/ptrace_after_forked_thread_exits.c: Ditto.
+	* frysk2595/ptrace_before_forked_thread_exits.c: Ditto.
+	* frysk2595/ptrace_peek_wrong_thread.c: Ditto.
+	* process/multi_child_exec.c: Ditto.
+	* process/multi_child_parent_exec.c: Ditto.
+	* process/multi_parent_exec.c: Ditto.
+	* process/single_exec.c: Ditto.
+	* Makefile.am (AM_CFLAGS): Add -I$(top_srcdir)/include.
+
+2006-06-15  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (frysk2760_FILES): Add frysk2760/linux.ptrace.h
+
+2006-06-15  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk2760/TestBarrier.java: Added
+	* frysk2760/TestBarrier.cxx: Added
+	* frysk2760/linux.ptrace.h: Added as a dependency for the .cxx.
+	* Makefile.am: Updated to include the above files for XFAIL_TESTS.
+
+2006-06-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (noinst_PROGRAMS): Do not list frysk2137/Gcov.sh.
+
+2006-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2670/Action.java: Move ...
+	* frysk2670/one/Action.java: ... to here.
+	* frysk2670/AddTaskObserverAction.java: Move ...
+	* frysk2670/one/AddTaskObserverAction.java: .. to here.
+	* frysk2670/ExitNotificationObserver.java: Move ...
+	* frysk2670/one/ExitNotificationObserver.java: ... to here.
+	* frysk2670/TaskAction.java: Move ...
+	* frysk2670/one/TaskAction.java: ... to here.
+	* Makefile.am: Update.
+	(XFAIL_TESTS): Add frysk2670/gcj.sh.
+
+	* Makefile.am (frysk2670/gcj.sh): Do not pass frysk.jar to GCJ.
+	Add $(srcdir) to include path.
+	(EXTRA_DIST): Remove frysk.jar.
+	* frysk2670/frysk.jar: Delete.
+	* frysk2670/other/Action.java: New file.
+	* frysk2670/Action.java: Change package to "one".
+	* frysk2670/AddTaskObserverAction.java: Ditto.
+	* frysk2670/ExitNotificationObserver.java: Ditto.
+	* frysk2670/TaskAction.java: Ditto.
+	
+	* frysk2670/LiaisonItem.java: Delete.
+	* frysk2670/Action.java: Fold in LiaisonItem.java, simplify.
+	* frysk2670/TaskAction.java: Simplify.
+	* frysk2670/Action.java: Update.
+	* frysk2670/AddTaskObserverAction.java: Update.
+	* frysk2670/ExitNotificationObserver.java: Update.
+	* Makefile.am (frysk2670_FILES): Remove LiaisonItem.java.
+	
+	* Makefile.am (frysk2670_FILES): Remove GuiObject.java.
+	(frysk2670/gcj.sh): Explicitly check for exit status.
+	* frysk2670/GuiObject.java: Delete.
+	* frysk2670/LiaisonItem.java: Merge in GuiObject.java.
+	* frysk2670/AddTaskObserverAction.java: Update.
+	* frysk2670/ExitNotificationObserver.java: Update.
+	
+	* Makefile.am (frysk2670/gcj.sh): Use frysk2670_FILES.
+	(frysk2670_FILES): Add LiaisonItem.java, Event.java, and
+	GuiObject.java.
+	* frysk2670/LiaisonItem.java: Copy from frysk-gui, trim down.
+	* frysk2670/Event.java: Ditto.
+	* frysk2670/GuiObject.java: Ditto.
+
+2006-06-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Use $(GCJ), not gcj; add -d
+	. and -I . to GCJ.
+	* frysk2670/ExitNotificationObserver.java: Simplify.
+	* frysk2670/AddTaskObserverAction.java: Simplify.
+	* frysk2670/TaskAction.java: Simplify.
+	
+	* Makefile.am (frysk2670_FILES): Drop frysk2670/files0.list and
+	frysk2670/files.list.
+	(frysk2670/gcj.sh): List files explicitly.
+	* frysk2670/files0.list: Delete.
+	* frysk2670/files.list: Delete.
+
+	* Makefile.am (frysk2137/Gcov.sh): Replace frysk2137/Gcj.sh, runs
+	gcov; mark as PASS.
+	* frysk2137/Gcov.java: Rename frysk2137/Hello.java
+
+2006-06-09  Mike Cvet  <mcvet@redhat.com>
+        
+    * Makefile.am: Small fix for build breakage; frysk2670
+    directory wasn't created by the Makefile.
+
+2006-06-06  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (frysk2670_FILES): Fix typo, add remaining files.
+
+2006-05-24  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Copy files explicitly.
+
+2006-05-23  Stan Cox <scox@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Add rules.
+	* frysk2670/AddTaskObserverAction.java: New.
+	* frysk2670/ExitNotificationObserver.java: New.
+	* frysk2670/TaskAction.java: New.
+	* frysk2670/frysk.jar: New.
+
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (CLEANFILES): Delete *.gcno files created by gcc.
+
+2006-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk1986_FILES): Fix paths to U.java and T.java.
+
+2006-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2630/noerror.sh, frysk2631/ice.sh): Add rules.
+	* frysk2630/ClassIndex.java: New.
+	* frysk2631/EnumClass.java: New.
+	* frysk2631/ClassSwitch.java: New.
+
+2006-04-25  Rick Moseley  <rmoseley@redhat.com>
+
+        * frysk2595/ptrace_peek_wrong_thread.c: Add #define _GNU_SOURCE.
+        * frysk2595/ptrace_before_forked_thread.c: Add #define _GNU_SOURCE.
+        * frysk2595/ptrace_after_forked_thread_exits.c: Add #define _GNU_SOURCE.
+
+2006-04-24  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2595/ptrace_after_forked_thread_exits.c: Return skip status.
+	* Makefile.am (XFAIL_TESTS): Move ptrace_peek_wrong_thread,
+	ptrace_after_forked_thread_exits, and
+	ptrace_before_forked_thread_exits to TESTS.
+
+2006-04-22  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2595/ptrace_after_exec.c: Add Copyright.
+	* frysk2595/ptrace_after_exec_of_thread.c: Add Copyright.
+	* frysk2595/ptrace_after_forked_thread_exits.c: Add Copyright.
+	* frysk2595/ptrace_before_forked_thread_exits.c: Add Copyright.
+	* frysk2595/ptrace_peek_wrong_thread.c: Add Copyright.
+	
+	* frysk2595/ptrace_after_exec_of_thread.c: New.
+	* frysk2595/ptrace_after_exec.c: New.
+	* Makefile.am: Add to TESTS.
+	* frysk2595/ptrace_before_forked_thread_exits.c: New.
+	* Makefile.am: Add to XFAIL_TESTS.
+
+	* frysk2595/ptrace_after_forked_thread_exits.c (main): New.
+	* Makefile.am: Add rules for XFAIL_TEST.
+
+2006-04-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* frysk2595: Added.
+	* frysk2595/ptrace_peek_wrong_thread.c: Added.
+	* Makefile.am: Added frysk2595/ptrace_peek_wrong_thread
+	to XFAIL_TESTS.
+
+2006-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (TESTS): Add frysk2105/O.out, remove from
+	XFAIL_TESTS.
+
+2006-03-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2493_Npe_LDFLAGS): Rename logger to match
+	frysk bug number.
+
+2006-03-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2492/java.sh, frysk2492/cxx.sh): Rename werror
+	tests to match frysk bug number.
+
+2006-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2130/strace-clone-exec.shin: Fix path to threadexec.
+
+	* Makefile.am (frysk1929/gcj.sh, frysk2490/a.out)
+	(frysk2491_Anon_LDFLAGS, frysk2491_Nest_LDFLAGS): Name tests after
+	their frysk bug number.
+
+2006-03-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2041/gcj.sh, frysk2299_GCTest_LDFLAGS) 
+	(frysk2105_O_LDFLAGS, frysk2105_C_LDFLAGS) 
+	(frysk2270/WrongScope.gcj, frysk2270_WrongVariable_LDFLAGS) 
+	(frysk2270_SameName_LDFLAGS): 
+
+	* Makefile.am (frysk1986/ice.sh, frysk1986/gcj.sh)
+	(frysk2130_threadexec_LDFLAGS, frysk1929/a.out): Rename tests so
+	that they refer to frysk bug numbers.
+
+	* Makefile.am (frysk2488/gcj.sh, frysk2137/gcj.sh) 
+	(frysk1840/gcj.sh): GCC tests to more local frysk tests.
+
+	* Makefile.am (rh177450/gcj.sh): New.
+	* rh177450/Hello.java: New.
+
+	* gcc26042/Two.java: New file, from Ben Elliston.
+	* Makefile.am (gcc26042/gcj.sh): New target.
+	* gcc8544/gcj.sh: Revert previous move.
+	
+	* gcc/8544/DisplayRenderer.java, gcc/8544/StyledText.java: Move
+	from gcc8544 directory.
+	* Makefile.am (gcc/8544/gcj.sh): Replace gcc8544/gcj.sh.
+
+2006-03-07  Andrew Cagney  <cagney@redhat.com>
+
+	* process/multi_child_parent_exec.c: Fix 64-bit warnings.
+	* process/multi_parent_exec.c: Fix 64-bit warnings.
+	* process/multi_child_exec.c: Fix 64-bit warnings.
+	* vfork-exec/vfork-exec.c (_GNU_SOURCE): Define, include
+	<string.h>.
+
+2006-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (vfork_exec_vfork_exec_SOURCES, noinst_PROGRAMS)
+	(TESTS): Add vfork-exec/vfork-exec.c.
+	* vfork-exec/vfork-exec.c: New test.
+
+2006-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add gctest/GCTest.
+	* gctest/GCTest.java: New file.  From Pat Tullmann
+	(tullmann@cs.utah.edu), via Bryce.
+
+2006-02-08  Adam Jocksch  <ajocksch@toothpaste.toronto.redhat.com>
+
+	* process/single_exec.c (main): Fixed pedantic compiler errors.
+	* process/multi_child_exec.c (BusyWorkExec): Ditto.
+	(main): Ditto.
+	* process/multi_parent_exec.c (_GNU_SOURCE): Ditto.
+	(main): Ditto.
+	* process/multi_child_parent_exec.c (BusyWork): Ditto.
+	* cmdline/dump.c (_GNU_SOURCE): Ditto.
+
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (clean-local): Use find to locate all the stray
+	files.  Remove any *$*.h files.
+	(TESTS_ENVIRONMENT): Send output to /dev/null, not <<log>>.
+
+2006-02-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add samename/WrongVariable, and
+	samename/WrongScope.gcj.
+	* samename/WrongVariable.java: New file.
+	* samename/WrongScope.java: New file.
+	
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS, noinst_SCRIPTS): Replace
+	check_PROGRAMS, and check_SCRIPTS so that tests are always built.
+
+2006-01-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add rh177240/strace-clone-exec.shin.
+
+2006-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Where possible use check_PROGRAMS.
+	(check-local): Print the compiler version.
+
+2006-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* rh177240/strace-clone-exec.shin: Add -f option to strace.
+	
+	* Makefile.am (check_PROGRAMS): Add rh177240/threadexec.
+	(check_SCRIPTS): Add rh177240/strace-clone-exec.sh
+	(TESTS): Add rh177240/strace-clone-exec.sh.
+	(.shin.sh): New rule.
+	* rh177240/threadexec.c: New file; copied from
+	frysk-core/prog/syscall.
+	* rh177240/strace-clone-exec.shin: New file.
+
+2006-01-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (process_TESTS): Define.  Append to check_PROGRAMS
+	and TESTS.
+	
+	* Makefile.am (check_PROGRAMS): Add cmdline/dump, and
+	cmdline/print.
+	(TESTS): Add cmdline/print.
+	* cmdline/dump.c: New file.
+	* cmdline/print.c: New file.
+
+	* Makefile.am (rh175569/gcj.sh): Change to expected pass.
+
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (cdtparserversion/cdttest.sh): Re-implement using
+	JAVAC and JAVA.
+	
+	* gcjtreeiter/.cvsignore: Delete.
+	* gcjtreeiter/IterTest.java: Delete.
+	* textiter/.cvsignore: Delete.
+	* textiter/JNICrash.java: Delete.
+	* Makefile.am: Delete corresponding, but disabled rules.
+	
+	* Makefile.am (gcjtreeiter/a.out, gcjtreeiter/gij.sh)
+	(textiter/a.out): Disable.
+
+2006-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* rh174912/rh174912.java: Add "package rh17492".
+	* Makefile.am (rh174912/gcj.sh): Change -drh17492 to -d.
+	(rh174912ice/gcj.sh): Ditto.
+
+	* Makefile.am (rh174912/gcj.sh): Add missing -Irh174912.
+	(rh174912ice/gcj.sh): Ditto.
+	(textiter/a.out, gcjtreeiter/a.out, gcjtreeiter/gij.sh): Add
+	/usr/lib/frysk to hard wired rpath.
+
+	* Makefile.am: Add anoncall/a.out, and wrongclass/gcj.sh to TESTS
+	instead of XFAIL_TESTS.
+	
+	* packagename/C.java: New file; from Tom Tromey.
+	* Makefile.am (packagename/C.out): New target.
+	(packagename/O.out): Rename packagename/a.out.
+	
+2006-01-03  Andrew Cagney  <cagney@redhat.com>
+
+	* packagename/O.java: New file.  From Tom Tromey.
+	* Makefile.am (packagename/a.out): New target.
+
+2005-12-13  Stan Cox  <scox@multics.rdu.redhat.com>
+
+	* Makefile.am (process_FILES): add.
+	* process/single_exec.c: New file.
+	* process/multi_child_exec.c: New file.
+	* process/multi_parent_exec.c: New file.
+	* process/multi_child_parent_exec.c: New file.
+
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (rh175569_FILES): Fix, should contain
+	rh175569/C.java.
+
+2005-12-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (rh175569/gcj.sh): Add target.
+	* rh175569/C.java: New.
+
+	* rh174912ice/T.java, rh174912ice/U.java: New, from Alex Oliva.
+	* Makefile.am (rh174912/gcj.sh): Add target.
+
+2005-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Use FRYSK_IMPORTS_LIBS, FRYSK_IMPORTS_CFLAGS, and
+	FRYSK_IMPORTS_CLASSPATH throughout.
+
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (gcc8544/gcj.sh): Add target.
+	* gcc8544/DisplayRenderer.java: New file.
+	* gcc8544/StyledText.java: New file.
+
+2005-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* rh174912/rh174912.java: New, from Tom Tromey.
+	* Makefile.am (rh174912/gcj.sh): Add target.
+
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Use $(GCJ) and $(GIJ).
+
+2005-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (wrongclass/gcj.sh): New target.
+	* wrongclass/frysk/model/Signal.java: New file.
+	* wrongclass/frysk/event/Signal.java: New file.
+	* wrongclass/frysk/event/SignalEvent.java: New file.
+	* wrongclass/frysk/sys/Wait.java: New file.
+	* wrongclass/frysk/proc/LinuxHost.java: New file.
+
+2005-11-18  Andrew Cagney  <cagney@redhat.com>
+
+	* nestcall/Nest.java: Update.  Original was not valid java.
+
+2005-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (nestcall/a.out): Add.
+	* nestcall/Nest.java: New file.
+
+2005-11-11  Andrew Cagney  <cagney@redhat.com>
+
+	* logger/Npe.java: New file.
+	* Makefile.am: Add logger/Npe.java.
+
+2005-11-09  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Uncommented cdtparser tests, since they need to be fixed
+	after the transition to eclipse-cdt.
+
+2005-11-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am: Added test for cdtparserversion.
+	* cdtparserversion/CDTParserTest.java: Added.
+	* cdtparserversion/main.cpp: Added (test input for cdtparserversion).
+
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Add copyright.
+	(werror/java.sh, werror/cxx.sh): New targets.
+	(werror/FAIL): Delete.
+	* werror/Werror.cxx: New file, contains -Wformat error.
+
+2005-10-21  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: New file.
+	* Makefile.am: New file.
+	* anoncall/Makefile.am: Delete.
+	* cniinner/Makefile.am: Delete.
+	* gcjtreeiter/Makefile.am: Delete.
+	* samename/Makefile.am: Delete.
+	* textiter/Makefile.am: Delete.
+	* werror/Makefile.am: Delete.
+	* gcc_4_0_15/Makefile.am: Delete.
+	* gcc_4_0_15/JNICrash.java: Delete.
+	
+2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15: Contents moved to textiter.
+	* gcjtreeiter: Added.
+	* gcjtreeiter/Makefile.am: Added.
+	* gcjtreeiter/IterTest.java: Added.
+
+	* gcjtreeiter/.cvsignore: Added.
+	* textiter/.cvsignore: Added.
+
+2005-10-20  Andrew Cagney  <cagney@redhat.com>
+
+	* samename/SameName.java, samename/Makefile.am: New.
+
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15/Makefile.am: Fixed test so that it will fail
+	properly.
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* anoncall/Makefile.am,
+	cniinner/Makefile.am, 
+	gcc_4_0_15/Makefile.am,
+	werror/Makefile.am: Substituted EXTRA_DIST  for DIST_SOURCES to
+	aleviate automake warnings.
+	* anoncall/Makefile.am: Fixed typo.
+	
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15/Makefile.am: Changed rule to PASS, will no longer
+	run test once test has passed.
+	* JNICrash.java: Changed so that program will not hand if test
+	passes.
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* anoncall/Makefile.am, 
+	cniinner/Makefile.am,
+	gcc_4_0_15/Makefile.am, 
+	werror/Makefile.am: Added DIST_SOURCES variable to include the jargs sources in the 
+	distribution.
+
+2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15: Added.
+
+	* gcc_4_0_15/JNICrash.java: Added.
+
+	* gcc_4_0_15/Makefile.am: Added.
+
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/Makefile.am: Do not expect the test to fail.
+
+2005-09-10  Andrew Cagney  <cagney@redhat.com>
+
+	* werror/Makefile.am, werror/Werror.java,
+	werror/.cvsignore: New files.
+
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/Makefile.am (clean-local): Add -f to "rm", and
+	also delete PASS and FAIL.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/.cvsignore: New files.
+	* cniinner/.cvsignore: Add more files.
+
+	* anoncall/Anon.java,
+	* anoncall/Makefile.am: New test; expected to FAIL.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* cniinner/.cvsignore, cniinner/Child.java,
+	cniinner/Makefile.am, cniinner/Parent.java,
+	cniinner/native.cxx: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

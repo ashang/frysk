@@ -1,0 +1,346 @@
+2006-07-12  Ulrich Drepper  <drepper@redhat.com>
+
+	* cu.c: Adjust for internal_function_def removal.
+	* dwfl_error.c: Likewise.
+	* dwfl_module.c: Likewise.
+	* dwfl_module_getdwarf.c: Likewise.
+	* lines.c: Likewise.
+	* relocate.c: Likewise.
+
+2006-07-11  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwfl_module.c (compare_modules): Don't return GElf_Sxword value,
+	it can overflow the return value type.
+	Patch by Tim Moore <timoore@redhat.com>.
+
+2006-06-28  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl.h: Cosmetic changes.
+
+	* dwfl_line_comp_dir.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_line_comp_dir.
+
+	* dwfl_lineinfo.c (dwfl_lineinfo): Remove stray extern in defn.
+
+	* dwfl_linecu.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_linecu.
+
+	* libdwflP.h (dwfl_linecu_inline): Function renamed from dwfl_linecu.
+	(dwfl_linecu): Define as macro.
+
+	* relocate.c (__libdwfl_relocate): Use dwfl_module_getsym.
+
+	* dwfl_module_getdwarf.c (dwfl_module_getsymtab): New function.
+	(dwfl_module_addrname): Function moved ...
+	* dwfl_module_addrname.c: ... here, new file.
+	* dwfl_module_getsym.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add them.
+	* libdwfl.h: Declare dwfl_module_getsymtab, dwfl_module_getsym.
+	* libdwflP.h: Add INTDECLs.
+
+2006-06-27  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (dwfl_report_end): Whitespace fix.
+
+2006-06-13  Roland McGrath  <roland@redhat.com>
+
+	* elf-from-memory.c (elf_from_remote_memory): Fix 32/64 typo.
+	Use __libdwfl_seterrno for elf_memory failure.
+
+2006-05-22  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_return_value_location.c
+	(dwfl_module_return_value_location): Use __libdwfl_module_getebl.
+
+2006-05-27  Ulrich Drepper  <drepper@redhat.com>
+
+	* libdwfl.h: Add extern "C".
+
+2006-05-22  Ulrich Drepper  <drepper@redhat.com>
+
+	* cu.c (addrarange): Handle files without aranges information.
+
+2006-05-16  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwfl_addrmodule.c (dwfl_addrmodule): Also return NULL of
+	->modules is NULL.
+
+2006-02-26  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_version.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_version.
+
+	* offline.c (dwfl_report_offline): Account for dwfl_report_elf having
+	aligned up from DWFL->offline_next_address when checking for overlap.
+
+2005-12-22  Roland McGrath  <roland@redhat.com>
+
+	* argp-std.c (parse_opt): Call dwfl_end in failure cases.
+
+	* linux-proc-maps.c (proc_maps_report): New function, broken out of ...
+	(dwfl_linux_proc_report): ... here.  Call it.
+	(dwfl_linux_proc_maps_report): New function.
+	* libdwfl.h: Declare it.
+	* libdwflP.h: Add INTDECL.
+	* argp-std.c (options, parse_opt): Grok -M/--linux-process-map.
+
+	* dwfl_nextcu.c (dwfl_nextcu): Don't fail when dwfl_module_getdwarf
+	failed with DWFL_E_NO_DWARF.
+
+2005-11-26  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_end.c (dwfl_end): Free the DWFL itself.
+
+2005-11-25  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_getdwarf.c (__libdwfl_module_getebl): New function.
+	(load_dw): Use it.
+	* dwfl_module_register_names.c (dwfl_module_register_names): Likewise.
+	* libdwflP.h: Declare it.
+
+	* dwfl_module_register_names.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_module_register_names.
+
+2005-11-21  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_module_section_address):
+	Don't leak malloc'd file name.
+	If a /sys/.../sections file is missing and starts with ".init",
+	try the variant with "_init" too; catches PPC64 kernel braindamage.
+
+2005-11-15  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl.h: Comment fixes.
+
+	* dwfl_module_return_value_location.c: Add unlikely for error case.
+
+2005-11-13  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_return_value_location.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_module_return_value_location.
+	* libdwflP.h (DWFL_ERRORS): Add DWFL_E_WEIRD_TYPE.
+
+2005-10-20  Roland McGrath  <roland@redhat.com>
+
+	* libdwflP.h (DWFL_ERRORS): New error UNKNOWN_MACHINE.
+	* relocate.c (__libdwfl_relocate): Return DWFL_E_UNKNOWN_MACHINE
+	instead of DWFL_E_BADRELTYPE if ebl_get_elfmachine yields EM_NONE.
+
+2005-10-01  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (report_kernel): Return ENOENT if we fail
+	with errno 0.
+
+2005-09-19  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_report_modules): Use
+	PRIx64 instead of PRIi64, lest addresses with high bits set overflow
+	the signed integer reading; they will just have to be in hexadecimal.
+	(dwfl_linux_kernel_module_section_address): Likewise.
+
+2005-08-28  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am (%.os): Use COMPILE.os.
+	(COMPILE.os): Filter out gconv options.
+
+2005-08-25  Roland McGrath  <roland@redhat.com>
+
+	* cu.c (__libdwfl_nextcu): Return success when dwarf_nextcu hits end.
+	* dwfl_nextcu.c (dwfl_nextcu): Skip modules with no dwarf info.
+
+2005-08-24  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_lineinfo.c (dwfl_lineinfo): Add bias, don't subtract it.
+
+	* argp-std.c [_MUDFLAP] (__libdwfl_argp_mudflap_options): New function,
+	magic initializer to set -heur-stack-bound option.
+
+2005-08-22  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_validate_address.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_validate_address.
+
+	* derelocate.c (dwfl_module_relocate_address): Add INTDEF.
+	* libdwflP.h: Add INTDECL.
+
+	* dwfl_module_getdwarf.c (find_symtab): Use elf_getdata instead of
+	elf_rawdata for symbol-related sections.
+
+	* offline.c (dwfl_report_offline): Move offline_next_address outside
+	module's range, in case it's an ET_EXEC using fixed segment locations.
+	* libdwfl.h: Update comment.
+
+	* dwfl_report_elf.c (dwfl_report_elf): Align BASE to first segment's
+	required alignment.
+
+2005-08-20  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (report_kernel): Take new argument PREDICATE,
+	function to choose whether to report.
+	(dwfl_linux_kernel_report_offline): Likewise.
+	* libdwfl.h: Update decl.
+	* argp-std.c (parse_opt): Update caller.
+
+	* dwfl_getsrclines.c: New file.
+	* dwfl_onesrcline.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add them.
+	* libdwfl.h: Declare dwfl_getsrclines, dwfl_onesrcline.
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_find_elf): Don't leak
+	MODULESDIR[0].  Call fts_close on failure.
+
+	* dwfl_module_getdwarf.c (load_dw): Take dwfl_file * instead of Elf *.
+	Close ET_REL file descriptors after relocation.
+	(find_dw): Update caller.
+	* offline.c (dwfl_report_offline): Get the file into memory and close
+	the file descriptor.
+
+	* dwfl_module_getdwarf.c (find_debuginfo): Do nothing when
+	MOD->debug.elf is already set.
+
+	* find-debuginfo.c (try_open): Use TEMP_FAILURE_RETRY.
+	(dwfl_standard_find_debuginfo): Fail on errors not ENOENT or ENOTDIR.
+
+	* argp-std.c (options, parse_opt): Grok -K/--offline-kernel, use
+	dwfl_linux_kernel_report_offline with offline_callbacks.
+
+	* linux-kernel-modules.c (report_kernel): New function, broken out of
+	...
+	(dwfl_linux_kernel_report_kernel): ... here.  Use it.
+	(dwfl_linux_kernel_report_offline): New function.
+	* libdwfl.h: Declare it.
+	* libdwflP.h: Add INTDECL.
+
+2005-08-19  Roland McGrath  <roland@redhat.com>
+
+	Use standard debuginfo search path to look for vmlinux.
+	* find-debuginfo.c (dwfl_standard_find_debuginfo): Don't check CRC if
+	passed zero.
+	* linux-kernel-modules.c (try_kernel_name): New function, broken out
+	of ...
+	(dwfl_linux_kernel_report_kernel): ... here.  Use it.
+
+	* argp-std.c (offline_callbacks): New variable.
+	(parse_opt): Use it for -e.  Allow multiple -e options.
+
+	* offline.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_offline_section_address, dwfl_report_offline.
+	* libdwflP.h: Add INTDECLs.
+	(OFFLINE_REDZONE): New macro.
+	(struct Dwfl): New member `offline_next_address'.
+	* dwfl_begin.c (dwfl_begin): Initialize it.
+	* dwfl_module.c (dwfl_report_begin): Likewise.
+
+	* dwfl_report_elf.c (dwfl_report_elf): Accept all types.  When ET_REL,
+	do a nominal absolute section layout starting at BASE.
+	* libdwfl.h: Update comment.
+
+2005-08-18  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_getsrc_file.c (dwfl_module_getsrc_file): Do
+	dwfl_module_getdwarf if necessary.
+
+	* dwfl_report_elf.c (dwfl_report_elf): Permit ET_REL with BASE==0.
+	* libdwfl.h: Update comment.
+
+	* derelocate.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+
+	* libdwflP.h (struct Dwfl_Module): isrel -> e_type.
+	* dwfl_report_elf.c (dwfl_report_elf): Initialize it.
+	* dwfl_module_getdwarf.c (open_elf): Update initialization.
+	(load_dw, dwfl_module_addrname): Update uses.
+	* relocate.c (__libdwfl_relocate): Likewise.
+
+2005-08-04  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl.h (Dwfl_Callbacks.section_address): Take additional
+	arguments SHNDX, SHDR.
+	(dwfl_linux_kernel_module_section_address): Update prototype.
+	* relocate.c (__libdwfl_relocate_value): Update caller.
+	* linux-kernel-modules.c (dwfl_linux_kernel_module_section_address):
+	Take the new arguments.
+
+2005-08-10  Roland McGrath  <roland@redhat.com>
+
+	* relocate.c (__libdwfl_relocate): Take argument DEBUGFILE,
+	use it instead of MOD->debug.file.
+	* libdwflP.h: Update decl.
+	* dwfl_module_getdwarf.c (load_dw): Update caller.
+	Fixes bug #165598.
+
+2005-08-09  Roland McGrath  <roland@redhat.com>
+
+	* libdwflP.h: Include ../libdw/libdwP.h for its INTDECLs.
+	* cu.c: Use INTUSE on dwarf_* calls.
+	* dwfl_error.c: Likewise.
+	* dwfl_module.c: Likewise.
+	* dwfl_module_getdwarf.c: Likewise.
+	* dwfl_module_getsrc_file.c: Likewise.
+	* lines.c: Likewise.
+
+2005-08-07  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (dwfl_linux_kernel_find_elf): When module
+	names contain '_' or '-', look for files named either "foo-bar.ko"
+	or "foo_bar.ko".
+
+2005-07-29  Roland McGrath  <roland@redhat.com>
+
+	* loc2c.c: File removed.
+	* loc2c.h: File removed.
+	* loc2c-runtime.h: File removed.
+	* test2.c: File removed.
+	* Makefile.am (EXTRA_DIST): Variable removed.
+	(noinst_HEADERS): Remove loc2c.h from here.
+
+2005-07-28  Ulrich Drepper  <drepper@redhat.com>
+
+	* libdwfl.h: Add a few missing extern for function prototypes.
+
+	* libdwfl_crc32.c: New file.
+	* libdwfl_crc32_file.c: New file.
+	* libdwflP.h: Declare the new functions.
+	* Makefile.am (libdwfl_a_SOURCES): Add libdwfl_crc32.c and
+	libdwfl_crc32_file.c.
+	* libdwfl/find-debuginfo.c (check_crc): Use __libdwfl_crc32_file
+	instead of crc32_file.
+
+2005-07-28  Roland McGrath  <roland@redhat.com>
+
+	* ptest.c: Moved to ../tests/dwflmodtest.c.
+
+	* Makefile.am (noinst_PROGRAMS): Variable removed.
+	(libdwfl_so_SOURCES, libdwfl_LIBS, libdwfl_so_LDADD): Likewise.
+	(EXTRA_DIST, ptest_LDADD, test2_LDADD): Likewise.
+	(libdwfl): Don't use libdwfl.so any more.
+	(libdwfl.so, install, uninstall): Targets removed.
+	(test2_SOURCES): Define EXTRA_DIST instead of this.
+	* libdwfl.map: File removed.
+
+	* libdwfl.h: Use "" for libdw.h #include.
+
+2005-07-27  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl.map: Add dwfl_getmodules.
+
+2005-07-23  Ulrich Drepper  <drepper@redhat.com>
+
+	* Makefile.am: Fix rules to allow building with mudflap.
+
+2005-07-21  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (noinst_HEADERS): Add loc2c.c.
+
+	* test2.c (main): Check sscanf result to quiet warning.
+
+2005-07-20  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl-branch merged, creating this direcotry.

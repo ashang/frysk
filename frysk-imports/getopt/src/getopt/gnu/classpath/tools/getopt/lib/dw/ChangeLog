@@ -1,0 +1,192 @@
+2006-09-19  Mark Wielaard  <mark@klomp.org>
+
+	* tests/cni/TestLib.cxx (getFuncAddr): Extract define out of
+	function and put whole definition on one line.
+	* tests/TestDwfl.java (testGetLine): Use same line number for all
+	architectures.
+
+2006-09-19  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* tests/TestDwfl.java (testGetLine): Skip it when build on X86_64.
+	Change the line number result for powerpc64.
+
+2006-09-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwarfDie.java (isInlinedFunction): New.
+	(is_inline_func): New.
+	* cni/DwarfDie.cxx (is_inline_func): New.
+	* tests/TestDwfl.java (testGetDie): Added commented out line to test
+	isInlinedFunction, do not want to enable this right now until we
+	are sure it does not break the build.
+
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.cxx (getScopeVar): Use JvGetStringUTFRegion.
+
+2006-09-12  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getScopeVar): New.
+	(getScope): New.
+	(getDeclFile): New.
+	(getDeclLine): New.
+	(getAddr): New.
+	(getType): New.
+	(fbregVariable): New.
+	(getFrameBase): New.
+	* cni/DwarfDie.cxx (get_scopevar): New.
+	(get_decl_file): New.
+	(get_decl_line): New.
+	(get_addr): New.
+	(get_type): New.
+	(fbreg_variable): New.
+	(get_framebase): New.
+
+2006-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestDwfl.java: Extend frysk.junit.TestCase.
+	(trueXXX, brokenXXX): Delete, moved to frysk.junit.TestCase.
+
+2006-08-16  Tim Moore  <timoore@redhat.com>
+
+	* TestDwfl.java (testGetLine): Disable; it's too sensitive to compiler
+	debug settings.
+
+2006-08-07  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* tests/cni/TestLib.cxx (getFuncAddr): Return function
+	address instead of function descriptor on PPC64.
+	* tests/TestDwfl.java: Take powerpc into account, and
+	change the expected line numbers.
+
+2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/TestDwfl.java (testGetLine): Fixed, test now works on x86_64.
+
+2006-07-27  Mark Wielaard  <mark@klomp.org>
+
+	* tests/TestDwfl.java (testGetLine): Mark as broken bug #2965.
+
+2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (getDie): Now returns an instance of DwflDieBias.
+	(dwfl_addrdie): Ditto.
+	* DwflDieBias.java: Added.
+	* DwflModule.java (getElf): Refactored to reflect the name change to
+	ModuleElfBias, also moved most of the logic to the native code.
+	(module_getelf): Now returns a ModuleElfBias object.
+	* ModuleElfBias.java: Renamed from ModuleElfFile.java.
+	* cni/Dwfl.cxx (dwfl_addrdie): Now returns a DwflDieBias object.
+	* cni/DwflModule.cxx (module_getelf): Now returns a ModuleElfBias
+	object.
+	* tests/TestDwfl.java (testGetDie): Now uses DwflDieBias and checks for
+	the returned bias.
+
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (getModule): Added.
+	(dwfl_addrmodule): Added.
+	* DwflModule.java: Added header and formatted to GNU formatting.
+	(getElf): Added.
+	(module_getelf): Added.
+	* ModuleElfFile.java: Added, rename pending.
+	* cni/Dwfl.cxx (dwfl_addrmodule): Added.
+	* cni/DwflModule.cxx: Added.
+
+	* test/TestDwfl.java (testGetLine): Removed checks for pc addresses,
+	since they were very fragile and break given the slightest change
+	(bug 2951).
+
+2006-07-22  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestDwfl.java (trueXXX, brokenXXX): Add.
+	(testGetLine): Disable.
+
+2005-07-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/testDwfl.java: GNU formatted.
+
+	* DwarfDie.java (getScopes): Added.
+	(get_scopes): Added.
+	* cni/DwarfDie.cxx (get_scopes): Added.
+	* tests/TestDwfl.java (testGetDie): Added.
+
+2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwarfDie.java (getName): Added.
+	(get_diename): Added.
+	* cni/Dwarf.cxx (DWARF_POINTER): Refactored out.
+	* cni/DwarfDie.cxx (DWARF_DIE_POINTER): Ditto.
+	(get_diename): Added.
+	* cni/Dwfl.cxxx (DWFL_POINTER): Refactored out.
+	* cni/DwflLine.cxx (DWFL_LINE_POINTER): Ditto.
+
+2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java: Changed to GNU formatting.
+	(getDie): Added.
+	* DwflDie.java: Changed to GNU formatting.
+	(DwflDie): Now takes a pointer to a Dwfl parent object.
+	(getLowPC): Added.
+	(getHighPC): Added.
+	* cni/DwflDie.cxx: Added.
+	* cni/Dwfl.java (dwfl_addrdie): Added.
+
+2005-06-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* NoDebugInfoException.java: Added.
+
+2005-06-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/Dwfl.cxx (dwfl_begin): Now uses JvAllocBytes to allocate the
+	memory for the callbacks struct, so it can be kept in a RawDataManaged.
+
+2005-06-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/TestDwfl.java (testGetLine): Now checks for correctness of
+	filename, line number, and column, also removed failing assertion from
+	end that was used for debugging purposes.
+	
+	* tests/TestDwfl.java: Added Frysk license.
+	* tests/TestLib.java: Ditto.
+	* tests/cni/TestLib.cxx: Ditto.
+
+	* tests: Added.
+	* tests/TestDwfl.java: Added.
+	* tests/TestLib.java: Added.
+	* tests/cni: Added.
+	* tests/cni/TestLib.cxx: Added.
+
+2005-06-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (getCallbacks): Added, shouldn't be called just satisfying
+	ecj.
+	* Dwfl.cxx (dwfl_begin): Now properly allocates callback object.
+
+2005-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwflLine.java (DwflLine): Now takes a pointer to the parent Dwfl.
+	(getParent): Added.
+	* DwflModule.java (DwflModule): Now takes a pointer to the parent Dwfl.
+	(getParent): Added.
+
+2005-05-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/Dwfl.cxx (dwfl_begin): Fixed errors.
+
+	* Dwfl.java (Dwfl): Now takes a pid.
+	* cni/Dwfl.cxx (dwfl_begin): Now takes a pid, and calls
+	dwfl_linux_proc_report for that process.
+
+2005-05-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwarf.java: Created.
+	* DwarfCommand.java: Ditto.
+	* DwarfDie.java: Ditto.
+	* Dwfl.java: Ditto.
+	* DwflLine.java: Ditto.
+	* DwflModule.java: Ditto.
+	* cni: Added.
+	* cni/Dwarf.cxx: Created.
+	* cni/Dwfl.cxx: Ditto.
+	* cni/DwflLine.cxx: Ditto.
+	

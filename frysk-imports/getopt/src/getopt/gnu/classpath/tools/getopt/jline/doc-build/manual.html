@@ -1,0 +1,338 @@
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title></title><link href="styles.css" rel="stylesheet" type="text/css"><meta content="DocBook XSL Stylesheets V1.67.2" name="generator"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="N10002"></a>
+			JLine
+		</h1></div><div><p class="copyright"> &copy; 2002, 2003,  2004, 2005 Marc Prud'hommeaux</p></div></div><hr></div><div class="toc"><p><b></b></p><dl><dt><span class="part"><a href="#manual">JLine Manual</a></span></dt><dd><dl><dt><span class="chapter"><a href="#introduction">Introduction</a></span></dt><dt><span class="chapter"><a href="#license">License and Terms of Use</a></span></dt><dt><span class="chapter"><a href="#obtaining">Obtaining JLine</a></span></dt><dt><span class="chapter"><a href="#installation">Installation</a></span></dt><dt><span class="chapter"><a href="#supported_platforms">Supported Platforms</a></span></dt><dt><span class="chapter"><a href="#features">Features</a></span></dt><dd><dl><dt><span class="section"><a href="#features_history">Command History</a></span></dt><dt><span class="section"><a href="#features_completion">Tab completion</a></span></dt><dt><span class="section"><a href="#features_line_editing">Line editing</a></span></dt><dt><span class="section"><a href="#features_keybindings">Custom Keybindings</a></span></dt><dt><span class="section"><a href="#features_masking">Character masking</a></span></dt></dl></dd><dt><span class="chapter"><a href="#api">API</a></span></dt><dd><dl><dt><span class="section"><a href="#reading_password">Reading a password from the console</a></span></dt></dl></dd><dt><span class="chapter"><a href="#faq">Frequently Asked Questions</a></span></dt><dd><dl><dt><span class="section"><a href="#faq_unsupported_platform">
+				Can I disable JLine if it isn't working on my platform?
+				</a></span></dt><dt><span class="section"><a href="#faq_custom_keybindings">
+				How do I customize the key bindings?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_as_default">
+				Can I use JLine as the default console input stream for
+				all applications?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_beanshell">
+				Can I use JLine as the input handler for BeanShell?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_jdb">
+				Can I use JLine as the input handler for jdb (the java debugger)?
+				</a></span></dt><dt><span class="section"><a href="#faq_pure_java">
+				Is JLine <span class="trademark">100% pure Java</span>&trade;?
+				</a></span></dt><dt><span class="section"><a href="#faq_password">
+				How do I make it so password characters are no echoed
+				to the screen?
+				</a></span></dt><dt><span class="section"><a href="#faq_cursrs">
+				Is JLine a full-featured curses implementation?
+				</a></span></dt></dl></dd></dl></dd><dt><span class="appendix"><a href="#known_bugs">Known Bugs</a></span></dt><dt><span class="appendix"><a href="#todo">Future enhancements</a></span></dt><dt><span class="appendix"><a href="#changelog">Change Log</a></span></dt></dl></div><div class="part" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="manual"></a>JLine Manual</h1></div></div></div><div class="toc"><p><b></b></p><dl><dt><span class="chapter"><a href="#introduction">Introduction</a></span></dt><dt><span class="chapter"><a href="#license">License and Terms of Use</a></span></dt><dt><span class="chapter"><a href="#obtaining">Obtaining JLine</a></span></dt><dt><span class="chapter"><a href="#installation">Installation</a></span></dt><dt><span class="chapter"><a href="#supported_platforms">Supported Platforms</a></span></dt><dt><span class="chapter"><a href="#features">Features</a></span></dt><dd><dl><dt><span class="section"><a href="#features_history">Command History</a></span></dt><dt><span class="section"><a href="#features_completion">Tab completion</a></span></dt><dt><span class="section"><a href="#features_line_editing">Line editing</a></span></dt><dt><span class="section"><a href="#features_keybindings">Custom Keybindings</a></span></dt><dt><span class="section"><a href="#features_masking">Character masking</a></span></dt></dl></dd><dt><span class="chapter"><a href="#api">API</a></span></dt><dd><dl><dt><span class="section"><a href="#reading_password">Reading a password from the console</a></span></dt></dl></dd><dt><span class="chapter"><a href="#faq">Frequently Asked Questions</a></span></dt><dd><dl><dt><span class="section"><a href="#faq_unsupported_platform">
+				Can I disable JLine if it isn't working on my platform?
+				</a></span></dt><dt><span class="section"><a href="#faq_custom_keybindings">
+				How do I customize the key bindings?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_as_default">
+				Can I use JLine as the default console input stream for
+				all applications?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_beanshell">
+				Can I use JLine as the input handler for BeanShell?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_jdb">
+				Can I use JLine as the input handler for jdb (the java debugger)?
+				</a></span></dt><dt><span class="section"><a href="#faq_pure_java">
+				Is JLine <span class="trademark">100% pure Java</span>&trade;?
+				</a></span></dt><dt><span class="section"><a href="#faq_password">
+				How do I make it so password characters are no echoed
+				to the screen?
+				</a></span></dt><dt><span class="section"><a href="#faq_cursrs">
+				Is JLine a full-featured curses implementation?
+				</a></span></dt></dl></dd></dl></div><div class="chapter" lang="en"><div class="titlepage"></div><p>
+			JLine is a Java library for handling console input.
+			It is similar in functionality to BSD editline and GNU
+			readline. People familiar with the readline/editline
+			capabilities for modern shells (such as bash and tcsh) will
+			find most of the command editing features of JLine to
+			be familiar.
+			</p></div><div class="chapter" lang="en"><div class="titlepage"></div><p>
+				JLine is distributed under the BSD license, meaning that
+				you are completely free to redistribute, modify, or sell it
+				with almost no restrictins.
+				For more information on the BSD license, see
+				<a href="http://www.opensource.org/licenses/bsd-license.php" target="_top">http://www.opensource.org/licenses/bsd-license.php</a>.
+			</p><p>
+				For information on obtaining the software under another
+				license, contact the copyright holder:
+				<a href="mailto:mwp1@cornell.edu" target="_top">mwp1@cornell.edu</a>.
+			</p></div><div class="chapter" lang="en"><div class="titlepage"></div><p>
+				JLine is hosted on SourceForge, and is located at
+				<a href="http://jline.sf.net" target="_top">http://jline.sf.net</a>.
+				The latest release can be downloaded from 
+				<a href="http://sourceforge.net/project/showfiles.php?group_id=64033" target="_top">http://sourceforge.net/project/showfiles.php?group_id=64033</a>.
+				API documentation can be found in the <a href="javadoc" target="_top">javadoc</a>
+				directory.
+			</p></div><div class="chapter" lang="en"><div class="titlepage"></div><p>
+				JLine has no library dependencies, aside from a JVM
+				of version 1.2 or higher. To install JLine, download the
+				<code class="filename">jline.jar</code> file, and either place it in
+				the system-wide java extensions directory, or
+				manually add it to your
+				<code class="computeroutput">CLASSPATH</code>.
+				The extensions directory is dependent on your operating
+				system. Some few examples are:
+				<div class="itemizedlist"><ul type="disc"><li><p>
+					Macintosh OS X:
+					<code class="filename">/Library/Java/Extensions</code> or
+					<code class="filename">/System/Library/Java/Extensions</code>
+					</p></li><li><p>
+					Microsoft Windows:
+					<code class="filename">JAVAHOME\jre\lib\ext</code>
+					(example: 
+					<code class="filename">C:\j2sdk1.4.1_03\jre\lib\ext</code>)
+					</p></li><li><p>
+					UNIX Systems:
+					<code class="filename">JAVAHOME/jre/lib/ext</code>
+					(example: 
+					<code class="filename">/usr/local/java/jre/lib/ext</code>)
+					</p></li></ul></div>
+			</p><p>
+				JLine is not 100% pure Java. On Windows, it relies on a
+				<code class="filename">.dll</code> file to initialize the terminal
+				to be able to accept unbuffered input. However,
+				no installation is necessary for this: when initialized,
+				JLine will dynamically extract the DLL to a temporary
+				directory and load it. For more details, see the
+				documentation for the <a href="javadoc/jline/WindowsTerminal.html" target="_top"><code class="classname">jline.WindowsTerminal</code></a> class.
+			</p><p>
+				On UNIX systems (including Macintosh OS X), JLine will
+				execute the <code class="filename">stty</code> command to initialize
+				the terminal to allow unbuffered input. For more details,
+				see the documentation for the <a href="javadoc/jline/UnixTerminal.html" target="_top"><code class="classname">jline.UnixTerminal</code></a> class.
+			</p><p>
+				For both Windows and UNIX systems, JLine will fail to
+				initialize if it is run inside a strict security manager
+				that does not allow the loading of libraries, writing
+				to the file system, or executing external programs. However,
+				for most console applications, this is usually not the case.
+			</p></div><div class="chapter" lang="en"><div class="titlepage"></div><p>
+				JLine should work on any Windows system, or any
+				minimally compliant POSIX system (includling Linux and
+				Macintosh OS X).
+			</p><p>
+				The platforms on which JLine has been confirmed to work are:
+				<div class="itemizedlist"><ul type="disc"><li><p>
+						Microsoft Windows XP
+					</p></li><li><p>
+						RedHat Linux 9.0
+					</p></li><li><p>
+						Debian Linux 3.0
+					</p></li><li><p>
+						Macintosh OS X 10.3
+					</p></li></ul></div>
+			</p><p>
+				Please report successes or failures to the author:
+				<a href="mailto:mwp1@cornell.edu" target="_top">mwp1@cornell.edu</a>.
+			</p></div><div class="chapter" lang="en"><div class="titlepage"></div><div class="toc"><dl><dt><span class="section"><a href="#features_history">Command History</a></span></dt><dt><span class="section"><a href="#features_completion">Tab completion</a></span></dt><dt><span class="section"><a href="#features_line_editing">Line editing</a></span></dt><dt><span class="section"><a href="#features_keybindings">Custom Keybindings</a></span></dt><dt><span class="section"><a href="#features_masking">Character masking</a></span></dt></dl></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				You can create your own keybindings by creating a
+				<code class="filename">HOME/.jlinebindings.properties"</code>
+				file. You can override the location of this file with
+				the "<code class="computeroutput">jline.keybindings</code>"
+				system property.
+				</p><p>
+				The default keybindings are as follows:
+					<pre class="programlisting">
+# Keybinding mapping for JLine. The format is:
+#    [key code]: [logical operation]
+
+# CTRL-B: move to the previous character
+2: PREV_CHAR
+
+# CTRL-G: move to the previous word
+7: PREV_WORD
+
+# CTRL-F: move to the next character
+6: NEXT_CHAR
+
+# CTRL-A: move to the beginning of the line
+1: MOVE_TO_BEG
+
+# CTRL-D: close out the input stream
+4: EXIT
+
+# CTRL-E: move the cursor to the end of the line
+5: MOVE_TO_END
+
+# CTRL-H: delete the previous character
+8: DELETE_PREV_CHAR
+
+# TAB, CTRL-I: signal that console completion should be attempted
+9: COMPLETE
+
+# CTRL-J, CTRL-M: newline
+10: NEWLINE
+
+# CTRL-K: erase the current line
+11: KILL_LINE
+
+# ENTER: newline
+13: NEWLINE
+
+# CTRL-L: clear screem
+12: CLEAR_SCREEN
+
+# CTRL-N: scroll to the next element in the history buffer
+14: NEXT_HISTORY
+
+# CTRL-P: scroll to the previous element in the history buffer
+16: PREV_HISTORY
+
+# CTRL-R: redraw the current line
+18: REDISPLAY
+
+# CTRL-U: delete all the characters before the cursor position
+21: KILL_LINE_PREV
+
+# CTRL-V: paste the contents of the clipboard (useful for Windows terminal)
+22: PASTE
+
+# CTRL-W: delete the word directly before the cursor
+23: DELETE_PREV_WORD
+
+# CTRL-?: delete the previous character
+127: DELETE_PREV_CHAR
+
+					</pre>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				</p></div></div><div class="chapter" lang="en"><div class="titlepage"></div><div class="toc"><dl><dt><span class="section"><a href="#reading_password">Reading a password from the console</a></span></dt></dl></div><p>
+				This section discusses some common usages of the JLine API.
+				For in-depth usage of the JLine API, see the
+				<a href="javadoc" target="_top">javadoc</a>.
+			</p><div class="section" lang="en"><div class="titlepage"></div><p>
+					A common task that console applications need to do is
+					read in a password. While it is standard for software
+					to not echo password strings as they are typed,
+					the Java core APIs surprisingly do not provide any
+					means to do this.
+				</p><p>
+					JLine can read a password with the following code:
+					<pre class="programlisting">
+String password = new <a href="javadoc/jline/ConsoleReader.html" target="_top"><code class="classname">jline.ConsoleReader</code></a>().readLine(new Character('*'));
+					</pre>
+					This will replace every character types on the console
+					with a star character.
+				</p><p>
+					Alternately, you can have it not echo password
+					character at all:
+					<pre class="programlisting">
+String password = new <a href="javadoc/jline/ConsoleReader.html" target="_top"><code class="classname">jline.ConsoleReader</code></a>().readLine(new Character(0));
+					</pre>
+				</p><p>
+					The <code class="filename">jline-demo.jar</code> file contains
+					a sample application that reads the password. To run
+					the sample, execute:
+					<pre class="programlisting">
+java -cp jline-demo.jar jline.example.PasswordReader "*"
+					</pre>
+				</p></div></div><div class="chapter" lang="en"><div class="titlepage"></div><div class="toc"><dl><dt><span class="section"><a href="#faq_unsupported_platform">
+				Can I disable JLine if it isn't working on my platform?
+				</a></span></dt><dt><span class="section"><a href="#faq_custom_keybindings">
+				How do I customize the key bindings?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_as_default">
+				Can I use JLine as the default console input stream for
+				all applications?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_beanshell">
+				Can I use JLine as the input handler for BeanShell?
+				</a></span></dt><dt><span class="section"><a href="#faq_jline_jdb">
+				Can I use JLine as the input handler for jdb (the java debugger)?
+				</a></span></dt><dt><span class="section"><a href="#faq_pure_java">
+				Is JLine <span class="trademark">100% pure Java</span>&trade;?
+				</a></span></dt><dt><span class="section"><a href="#faq_password">
+				How do I make it so password characters are no echoed
+				to the screen?
+				</a></span></dt><dt><span class="section"><a href="#faq_cursrs">
+				Is JLine a full-featured curses implementation?
+				</a></span></dt></dl></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				You can disable JLine by setting the System property
+				"<code class="computeroutput">jline.terminal</code>"
+				to
+				"<a href="javadoc/jline/UnsupportedTerminal.html" target="_top"><code class="classname">jline.UnsupportedTerminal</code></a>". For example:
+				<pre class="programlisting">
+java -Djline.terminal=jline.UnsupportedTerminal jline.example.Example simple
+				</pre>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				You can create your own keybindings by creating a
+				<code class="filename">HOME/.jlinebindings.properties"</code>
+				file. You can override the location of this file with
+				the "<code class="computeroutput">jline.keybindings</code>"
+				system property. To examine the format to use, see the
+				<code class="filename">src/jline/keybindings.properties</code>
+				file in the source distribution.
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				No, but you can use the <a href="javadoc/jline/ConsoleRunner.html" target="_top"><code class="classname">jline.ConsoleRunner</code></a> application
+				to set up the system input stream and continue on
+				the launch another program. For example, to use JLine
+				as the input handler for the popular 
+				<a href="http://www.beanshell.org" target="_top">BeanShell</a>
+				console application, you can run:
+				<pre class="programlisting">
+java <a href="javadoc/jline/ConsoleRunner.html" target="_top"><code class="classname">jline.ConsoleRunner</code></a> <a href="http://www.beanshell.org/manual/standalonemode.html" target="_top">bsh.Interpreter</a>
+				</pre>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				Yes. Try running:
+				<pre class="programlisting">
+java <a href="javadoc/jline/ConsoleRunner.html" target="_top"><code class="classname">jline.ConsoleRunner</code></a> <a href="http://www.beanshell.org/manual/standalonemode.html" target="_top">bsh.Interpreter</a>
+				</pre>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				Yes. Try running:
+				<pre class="programlisting">
+java <a href="javadoc/jline/ConsoleRunner.html" target="_top"><code class="classname">jline.ConsoleRunner</code></a> com.sun.tools.example.debug.tty.TTY <span class="emphasis"><em>args</em></span>
+				</pre>
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				No: JLine uses a couple small native methods in the Windows
+				platform. On Unix, it is technically pure java, but relies
+				on the execution of external (non-java) programs. See the
+				<a href="#installation" title="">installation section</a>
+				for more details.
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				See <a href="#reading_password" title="">???</a>.
+				</p></div><div class="section" lang="en"><div class="titlepage"></div><p>
+				No: JLine has no ability to position the cursor on the
+				console. It might someday evolve into a plausible
+				Java curses implementation.
+				</p></div></div></div><div class="appendix" lang="en"><div class="titlepage"></div><div class="itemizedlist"><ul type="disc"><li><p>
+			Clearing the screen (CTRL-L) doesn't currently work on Windows.
+			</p></li></ul></div></div><div class="appendix" lang="en"><div class="titlepage"></div><div class="itemizedlist"><ul type="disc"><li><p>
+				Add localization for all strings.
+			</p></li><li><p>
+				Create a BNFCompletor that can handle any BNF.
+			</p></li><li><p>
+				Add support for arrow keys on Windows.
+			</p></li></ul></div></div><div class="appendix" lang="en"><div class="titlepage"></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Fixed problem with the 0.9.0 distribution that
+				failed to include the Windows jline.dll in the jline.jar,
+				rendering it inoperable on Windows.
+			</p></li><li><p>
+				Implemented proper interception or arrow keys on Windows,
+				meaning that history can now be navigated with the UP
+				and DOWN keys, and line editing can take place with
+				the LEFT and RIGHT arrow keys.
+			</p></li></ul></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Changed license from GPL to BSD.
+			</p></li><li><p>
+				Made "CTRL-L" map to clearing the screen.
+			</p></li></ul></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Fixed accidental dependency on JVM 1.4.
+			</p></li></ul></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Windows support using a native .dll
+			</p></li><li><p>
+				A new ClassNameCompletor
+			</p></li><li><p>
+				Many doc improvements
+			</p></li></ul></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Many bugfixes
+			</p></li><li><p>
+				Better release system
+			</p></li><li><p>
+				Automatically set terminal property by
+				issuing stty on UNIX systems
+			</p></li><li><p>
+				Additional tab-completion handlers
+			</p></li><li><p>
+				Tested on Debian Linux and Mac OS 10.2
+			</p></li><li><p>
+				Example includes dictionary, filename, and simple completion
+			</p></li></ul></div><div class="itemizedlist"><p class="title"><b></b></p><ul type="disc"><li><p>
+				Initial release
+			</p></li></ul></div></div></div></body></html>

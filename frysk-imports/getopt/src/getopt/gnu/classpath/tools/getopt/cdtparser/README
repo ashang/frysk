@@ -1,0 +1,3 @@
+This directory tree contains the CDT parser code from version 3.0.0 of the
+Eclipse CDT.  It is used by the Frysk source code window to provide syntax
+highlighting information.

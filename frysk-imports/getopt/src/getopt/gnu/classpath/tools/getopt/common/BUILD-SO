@@ -1,0 +1,61 @@
++@item gnu.gcj.precompiled.db.path
++This is a sequence of file names, each referring to a file created by
++@command{gcj-dbtool}.  These files will be used by @code{libgcj} to
++find shared libraries corresponding to classes that are loaded from
++bytecode.
+
+
+	cagney	Here's a 10 minute challenge; how do I build a .so that gij will load (ok, I've built a .so, it's just that gij appears to ignore it -> I'm missing a bit of info :-)
+	fche	the dreaded jit database?
+	overholt	cagney: are you here in Toronto?
+	overholt	cagney: are you trying to go .java -> .class -> .so?
+	cagney	overholt: ottawa
+	cagney	overholt: yea, I've got a .so but gij appears to ignore it (which suggests I've not got the .so I need :-)
+	cagney	overholt: perhaps I should be asking how gij knows to load /usr/lib/libFOO.jar.so when it's got a .class reference
+	walters	cagney: it computes a class signature and looks it up in the classmap DB, AIUI
+	cagney	walters: which means that the .so has to either be built from the .class (or .jar)?
+	walters	cagney: yeah
+	overholt	cagney: yes
+	cagney	walters: tks, I think I know my mistake then, off to the next talk ....
+	overholt	cagney: gcj-dbtool -n blah.db
+	overholt	cagney: gcj-dbtool -a blah.db blah.jar blah.jar.so
+	overholt	cagney: gij -Dgnu.gcj.precompiled.db.path=`pwd`/blah.db ...
+	overholt	cagney: I think that should be it
+
+	cagney	overholt: tks
+	overholt	cagney: np
+	bryce	cagney: "LD_PRELOAD=mylib.so gij MainClass" should also work if you want the quick & dirty solution
+	overholt	cagney: if you're looking for something more robust, we've got scripts
+	fche	red ones, blue ones, downers, uppers ...
+	cagney	bryce: yea, LD_PRELOAD works as well, my test just ran.
+	cagney	overholt: got some automake templates?
+	overholt	cagney: no
+	overholt	cagney: why are you bothering to go to bytecode in your case?
+	overholt	bryce: is the BC ABI not able to do any .java -> .o?
+	overholt	bryce: I thought it just wasn't 100% yet
+
+	cagney	overholt: eclipse
+	overholt	cagney: you shouldn't worry about that
+	overholt	cagney: your build system for people not using Eclipse should be independent
+	overholt	cagney: IMHO
+	cagney	overholt: it is
+	overholt	cagney: so then don't worry about the bytecode in that case
+	overholt	cagney: you should really have a talk with tromey, aph, bryce, gbenson, etc. about this
+	overholt	cagney: what we do for RPMs is quite different than what you want to do here
+	overholt	cagney: and thus my input is a little weaker OTTOMH
+	bryce	overholt: yeah, BC-ABI .java -> .o does mostly work, but there are some known bugs so its not recommended
+	cagney	overholt: the exception is one tinly little .so file sitting in the corner that contains the native code, I need to get that built in a way that it can be used from gij/eclipse
+	overholt	cagney: okay, but is this native code as in CNI or native code as in bytecode you want compiled to native but don't really need to be native?
+	cagney	overholt: CNI
+	overholt	cagney: you don't need the dbtool in that case
+	cagney	overholt: ... keep going
+	bryce	right, dbtool is only really needed for apps that assume they are shipped in bytecode form
+	overholt	I'll let bryce take over :)
+
+	cagney	so LD_LOAD is sufficient (and I know that works :-)
+	cagney	^LOAD^PRELOAD^
+	bryce	right, you can also do something like "gcj <bunch of .java files> -o myapp -lgij" which will give you a custom binary with your native classes linked in, with the gij command interpreter
+	bryce	or rather gcj <bunch of java and .o files> ...
+	cagney	gij should take a -preload flag :-)
+	cagney	So I guess the last question is how do I get either of those enabled from eclipse?
+-Dgnu.gcj.precompiled.db.path=/home/cagney/workspace/frysk-sys/frysk-sys.db

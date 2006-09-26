@@ -1,0 +1,7 @@
+NONE 0
+REL 1
+EXEC 2 EXEC (Executable file)
+DYN 3
+CORE 4
+LOPROC 0xff00
+HIPROC 0xffff

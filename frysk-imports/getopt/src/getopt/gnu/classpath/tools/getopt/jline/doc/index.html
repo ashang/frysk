@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta name="author" content="Marc Prud'hommeaux">
+<title>JLine - 100% java console input library</title>
+<style type="text/css">
+/*<![CDATA[*/
+<!--
+ .body{
+   text-decoration: none;
+   font-family: verdana, arial, helvetica, sans-serif;
+   color: #eeeeee;
+ }
+ .header{
+   text-decoration: none;
+   color: #000;
+ }
+ .justified{
+}
+ a:hover.adlink { color: #006699; }
+ a.adlink { color: #006699; }
+-->
+/*]]>*/
+</style>
+
+</head>
+<body>
+<h1>JLine<blink>_</blink> - 100% pure java console library</h1>
+<p>
+	JLine is a 100% pure java library for reading and editing
+	console input. It is similar in functionality to BSD editline and
+	GNU readline. People familiar with the readline/editline
+	capabilities for modern shells (such as bash and tcsh) will find
+	most of the command editing features of JLine to be familiar.
+</p>
+
+<p>
+	To run a quick demo of the functionality, download
+	<em>jline.jar</em> and <em>jline-demo.jar</em> from
+	the <a href="http://sourceforge.net/project/showfiles.php?group_id=64033"
+	>the SourceForge release page</a>, and then run:
+</p>
+<p>
+	<pre>java -jar jline-demo.jar dictionary</pre>
+</p>
+<p>
+	I am interested in hearing which platforms this works for and
+	which it does not: please let me know on the
+	<a href="https://sourceforge.net/tracker/?group_id=64033&atid=506056"
+	>bug page</a>.
+</p>
+
+<p>
+	The library is currently in beta,
+	but basic features like line editing, command history, and
+	customizable tab-completion work. See
+	the <a href="javadoc">javadoc</a> for usage details, then download
+	it <a href="http://sourceforge.net/project/showfiles.php?group_id=64033"
+	>here</a>. For project details, see the
+	<a href="http://www.sourceforge.net/projects/jline/">SourceForge
+	project page</a>. Simple example usage can be found in the
+	<em>jline.example.Example</em> class, included in the source jar.
+</p>
+
+<p>
+	If you want a more robust and complete console reading library,
+	take a look at the
+	<a href="http://java-readline.sourceforge.net/">java-readline</a>
+	wrapper for the native readline and editline libraries.
+</p>
+<p>
+	<strong>Important note:</strong> this library has only been tested 
+	on Linux and OSX, and relies on cbreak being turned
+	off. The method Terminal.setupTerminal will automatically
+	try to issue the appropriate stty commands to set up the console
+	correctly. This works well under Linux and Mac OS X. Other UNIX
+	platforms are untested. Windows XP is known to have some problems
+	with tab-completion, but other line editing functions appear to
+	work correctly. Feedback is greatly appreciated.
+</p>
+<hr>
+<p>
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=64033&amp;type=5" width="210" height="62" border="0" alt="SourceForge Logo"></a>
+</p>
+</body>
+</html>
+
