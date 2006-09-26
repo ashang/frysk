@@ -43,7 +43,6 @@ import java.io.*;
 
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import frysk.sys.SyscallNum;
 
 public class TestSyscallSignal
   extends TestLib
@@ -130,7 +129,7 @@ public class TestSyscallSignal
 
     final SignalObserver sigo = new SignalObserver(Sig.HUP_);
     task.requestAddSignaledObserver(sigo);
-    final SyscallObserver syso = new SyscallObserver(42);
+    final SyscallObserver syso = new SyscallObserver(42, task);
     task.requestAddSyscallObserver(syso);
 
     // Make sure the observers are properly installed.
@@ -294,17 +293,21 @@ public class TestSyscallSignal
     private boolean added;
     private boolean removed;
 
-    SyscallObserver(int stophits)
+    private final frysk.proc.Syscall opensys;
+    private final frysk.proc.Syscall closesys;
+
+    SyscallObserver(int stophits, Task task)
     {
       this.stophits = stophits;
+      this.opensys = frysk.proc.Syscall.syscallByName("open", task);
+      this.closesys = frysk.proc.Syscall.syscallByName("close", task);
     }
 
     public Action updateSyscallEnter(Task task)
     {
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      int syscallNum = syscallEventInfo.number (task);
-      if (syscallNum == SyscallNum.SYSopen
-	  || syscallNum == SyscallNum.SYSclose)
+      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+      if (opensys.equals(syscall) || closesys.equals(syscall))
 	{
 	  entered++;
 	  if (entered == stophits)
@@ -322,9 +325,11 @@ public class TestSyscallSignal
     public Action updateSyscallExit(Task task)
     {
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-      int syscallNum = syscallEventInfo.number (task);
-      if (syscallNum == SyscallNum.SYSopen
-	  || syscallNum == SyscallNum.SYSclose)
+      // XXX - workaround for broken syscall detection on exit
+      if (syscallEventInfo.number(task) == -1)
+	return Action.CONTINUE;
+      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+      if (opensys.equals(syscall) || closesys.equals(syscall))
 	{
 	  exited++;
 	}
