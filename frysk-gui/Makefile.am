@@ -92,11 +92,11 @@ GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 #TESTS_ENVIRONMENT = ( test $$tst != TestRunner || test -n "$$DISPLAY" || exit 77 ) && 
 # ... well, for now, skip dogtail tests unconditionally:
 TESTS_ENVIRONMENT = ( test $$tst = TestRunner && test -n "$$DISPLAY" || sh -c "exit 77" ) &&
-
+
 TESTS += frysk/gui/test/dogtail_scripts/frysk_suite.py
 EXTRA_DIST += frysk/gui/test/dogtail_scripts/frysk_suite.in
+noinst_PROGRAMS += frysk/gui/test/dogtail_scripts/frysk_suite.py
+CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.py
 frysk/gui/test/dogtail_scripts/frysk_suite.py: frysk/gui/test/dogtail_scripts/frysk_suite.in
 	$(SUBST)
 	chmod a+x $@
-
-CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.py

@@ -1,6 +1,12 @@
+2006-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add
+	frysk/gui/test/dogtail_scripts/frysk_suite.py so that it is
+	created during build, and not check.
+
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 
-	* Makefile.am: Added getopt
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Added getopt
 
 2006-09-19    <swagiaal@redhat.com>
 
