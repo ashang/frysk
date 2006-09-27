@@ -96,7 +96,7 @@ class viewerMarkers (unittest.TestCase):
 
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
-        createMinimalSession (self.frysk, self.theSession, False)
+        createMinimalSession (self.frysk, self.theSession, False, False)
 
     def tearDown(self):    
         # Exit Frysk
