@@ -1,5 +1,5 @@
 /*
-  frysk-imports/tests/frysk3231
+ * frysk-imports/tests/frysk3231
  */
 
 #include <stdlib.h>
@@ -15,47 +15,69 @@
 #include <linux/unistd.h>
 #include <linux/ptrace.h>
 
-int tid;
+volatile pid_t pid;
   
 void
 timeout (int sig)
 {
-  kill (tid, SIGKILL);
-  _exit (1);
+  fprintf (stderr, "test timeout, aborting\n");
+  ptrace (PTRACE_DETACH, pid, NULL, NULL);
+  kill (pid, SIGKILL);
+  exit (1);
 }
 
-static int
-clone_func (void *arg)
-{
-  pause();
-  return 56;
-}
-
+int
 main (int ac, char * av[])
 {
-  void ** newstack;
-  int pass_mode = 0;
+  fprintf (stderr, "Create a detached child\n");
+  pid = fork ();
+  switch (pid)
+    {
+    case -1: // Foobar
+      {
+	perror ("fork");
+	exit (1);
+      }
+    case 0: // Child; sleeps until attach
+      {
+	int timeout = 5;
+	do
+	  timeout -= sleep (timeout);
+	while (timeout > 0);
+	exit (1);
+      }
+    default: // Parent
+      {
+	fprintf (stderr, "Set up abort cleanup\n");
+	signal (SIGALRM, timeout);
+	alarm (1);	
 
-  signal (SIGALRM, timeout);
-  alarm (1);
+	fprintf (stderr, "Attach to child and wait for the stop\n");
+	if (ptrace (PTRACE_ATTACH, pid, NULL, NULL) < 0)
+	  {
+	    perror ("ptrace -- for attach");
+	    exit (1);
+	  }
+	if (waitpid (pid, NULL,  __WALL) < 0)
+	  {
+	    perror ("waitpid -- for attach");
+	    exit (1);
+	  }
 
-#define STACKSIZE 16384  
-  newstack = (void **) malloc(STACKSIZE);
-  newstack = (void **) (STACKSIZE + (char *) newstack);
-  
+	fprintf (stderr, "Detach from child with a SIGKILL\n");
+	if (ptrace (PTRACE_DETACH, pid, NULL, (void *)SIGKILL) < 0)
+	  {
+	    perror ("ptrace -- for detach with SIGKILL");
+	    exit (1);
+	  }
 
-  if (-1 != (tid = clone (clone_func,
-			  newstack,
-			  SIGCHLD,
-			  (void *)88))) {
-
-    if (-1 == ptrace (PTRACE_ATTACH, tid, NULL, NULL)) _exit (1);
-    if (-1 == waitpid (tid, NULL,  __WALL)) _exit (1);
-  
-    if (-1 == ptrace (PTRACE_DETACH, tid, NULL, (void *)SIGKILL)) _exit (1);
-    if (-1 == waitpid (tid, NULL,  __WALL)) _exit (1);
-
-    _exit (0);
-  }
-  else _exit (1);
+	fprintf (stderr, "Wait for the child's death\n");
+	if (waitpid (pid, NULL,  __WALL) < -1)
+	  {
+	    perror ("waitpid -- for detached SIGKILLed child");
+	    exit (1);
+	  }
+      }
+    }
+  return 0;
 }

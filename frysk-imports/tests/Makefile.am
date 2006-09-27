@@ -399,14 +399,19 @@ frysk2760/barriertest: $(frysk2760_FILES)
 	$(GCJ) -g -I. --main=frysk2760.TestBarrier -o frysk2760/barriertest \
 		$(srcdir)/frysk2760/TestBarrier.java \
 		frysk2760/barriertest.o
-
+
 TESTS += audit/test-audit-libs
 audit_test_audit_libs_SOURCES = audit/test-audit-libs.c
 audit_test_audit_libs_LDADD = -laudit
 noinst_PROGRAMS += audit/test-audit-libs
-
+
 XFAIL_TESTS += frysk3228/LoggerParent
 frysk3228_LoggerParent_SOURCES = frysk3228/LoggerParent.java
 frysk3228_LoggerParent_LDFLAGS = --main=LoggerParent
 noinst_PROGRAMS += frysk3228/LoggerParent
-
+
+# The FC-6 kernel screws up signal delivery during ptrace attach,
+# check this is fixed.
+TESTS += frysk3231/ptrace-test
+frysk3231_ptrace_test_SOURCES = frysk3231/ptrace-test.c
+noinst_PROGRAMS += frysk3231/ptrace-test
