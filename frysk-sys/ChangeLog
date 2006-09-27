@@ -1,3 +1,7 @@
+2006-09-27 Nurdin Premji <npremji@redhat.com>
+	
+	* Makefile.am: Added getopt.jar to GEN_CLASSPATH and GEN_GCJ_LDADD.
+
 2006-09-16    <swagiaal@redhat.com>
 
 	* Makefile.am: Added -laudit to GEN_GCJ_LADD.

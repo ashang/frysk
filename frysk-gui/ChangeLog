@@ -1,3 +1,7 @@
+2006-09-27  Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.am: Added getopt
+
 2006-09-19    <swagiaal@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Added -laudit
