@@ -107,9 +107,13 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
 		  if ((Elf_W (Addr)) (ip - val) < min_dist)
 		    {
 		      min_dist = (Elf_W (Addr)) (ip - val);
-		      strncpy (buf, strtab + sym->st_name, buf_len);
-		      buf[buf_len - 1] = '\0';
-		      if (strlen (strtab + sym->st_name) >= buf_len)
+		      buf_len--;
+		      if (buf)
+			{
+			  strncpy (buf, strtab + sym->st_name, buf_len);
+			  buf[buf_len] = '\0';
+			}
+		      if (strlen (strtab + sym->st_name) > buf_len)
 			ret = -UNW_ENOMEM;
 		    }
 		}

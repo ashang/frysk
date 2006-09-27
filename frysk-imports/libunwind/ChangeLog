@@ -1,3 +1,15 @@
+2006-09-27  Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Cope with NULL buf and zero buf_len.
+	* src/mi/Gget_proc_name.c (intern_string, get_proc_name): Likewise.
+	* src/hppa/Gget_proc_info.c (unw_get_proc_info): Use it.
+	* src/x86/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* src/x86_64/Gget_proc_info.c (unw_get_proc_info): Likewise.
+	* doc/unw_get_proc_name.tex: Document NULL buf and zero buf_len.
+	* doc/unw_create_addr_space.tex (get_proc_name): Likewise.
+	* doc/unw_get_proc_name.man: Rebuilt.
+	* doc/unw_create_addr_space.man: Likewise.
+
 2006-09-20	Arun Sharma	<arun.sharma@google.com>
 
 	* src/dwarf/Gparser.c (hash): Fixes the compiler warning on x86-32.

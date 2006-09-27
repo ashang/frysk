@@ -229,6 +229,12 @@ at address 0x40003000, then invoking \Func{get\_proc\_name}() with
 pointed to by \Var{offp} (assuming the procedure is at least 0x80
 bytes long).
 
+If \Var{bufp} is \Const{NULL}, \Var{buf\_len} is still verified to fit
+and \Var{offp} is set.  Passing \Var{buf\_len} as zero to indicate no
+limits on the buffer length is only safe if \Var{buf} is \Const{NULL},
+otherwise the callback is entitled and likely to scribble anywhere in
+the entire address space.
+
 On successful completion, the \Func{get\_proc\_name}() call-back must
 return zero.  Otherwise, the negative value of one of the
 \Type{unw\_error\_t} error-codes may be returned.
