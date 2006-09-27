@@ -1,6 +1,6 @@
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 	
-	* Fixed getopt Messages.properties resource problem.
+	* frysk-imports/getopt/Makefile.am(EXTRA_DIST, get_opt.jar): Fixed getopt Messages.properties resource problem.
 	
 2006-09-21  Nurdin Premji  <npremji@redhat.com>
 	

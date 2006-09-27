@@ -1,6 +1,6 @@
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 	
-	* Makefile.am: Added getopt.
+	* Makefile.am(GEN_CLASSPATH, GEN_GCJ_LDADD): Added getopt.
 
 2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
