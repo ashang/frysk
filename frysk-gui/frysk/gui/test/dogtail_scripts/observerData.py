@@ -517,6 +517,9 @@ class observerData ( unittest.TestCase ):
     def testterm(self):
         observerData.runTest(self, os.getenv('fryskDataDir') + 'new_task_term_custom_observer.xml')       
        
+    def testsignal(self):
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_signaled_custom_observer.xml')       
+       
     def runTest (self, theDataFileName):
         """Check that Observers can be created and read"""       
         observerData.createTheObserver(self, theDataFileName)
@@ -534,6 +537,7 @@ def suite():
         suite.addTest(observerData('testsyscall'))
         suite.addTest(observerData('testclone'))
         suite.addTest(observerData('testterm'))
+        suite.addTest(observerData('testsignal'))
         return suite
 
 if __name__ == '__main__':

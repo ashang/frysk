@@ -94,12 +94,9 @@ There are an infinite number of paths thru the GUI - this script will cover thes
                 h        open edit columns window
                 i     open memory window
                 j         open edit columns window
-            path 2 open blank session with terminal window
-                a open frysk monitor window
-                b   open help window
-                c      open about window
-
-            path 3 open run/manage session window
+                k     open dissambler window
+                l         open edit columns window
+            path 2 open run/manage session window
                 a open create a frysk debug session window
                 b open frysk monitor window
                 c     open manage custom observers window
@@ -288,6 +285,29 @@ class guiWalktest ( unittest.TestCase ):
         closeButton = memoryDialog.button( 'Close' )
         closeButton.click()
         
+        # TODO - move this to a function - as soon as the GUI supports editing columns 
+        # under the dissambler window
+        # k open disassembler window
+        view = sourceDialog.child( name='View', roleName='menu' )
+        view.click()                
+        disassemblerWindow = view.menuItem( 'Disassembly Window' )
+        disassemblerWindow.click()
+        
+        disassemblerDialogName = 'Frysk / Disassembler - ' + targetProcessName.name[0:15] + ' Task ' + targetPID.name
+        disassemblerDialog = self.frysk.child(disassemblerDialogName)
+        showChildren_new ( disassemblerDialog, "push button", "click" )
+        
+#        # l open edit columns window
+#        editColumns = disassemblerDialog.button('Edit Columns...')
+#        editColumns.click()
+#        editColumnsDialog = self.frysk.dialog('Frysk / Memory Formats')
+#        showChildren_new ( editColumnsDialog, "push button", "click" )
+#        closeButton = editColumnsDialog.button ('Close')
+#        closeButton.click()
+        
+        closeButton = disassemblerDialog.button( 'Close' )
+        closeButton.click()
+       
         stack = sourceDialog.child( name='Stack', roleName='menu' )
         stack.click()                
         stackList = stack.children
@@ -305,28 +325,71 @@ class guiWalktest ( unittest.TestCase ):
         closeItem = programClose.child (name='Close', roleName = 'menu item')
         closeItem.click()
 
+#    def testPath_2( self ):
+#        """Check that the GUI elements can be accessed and acted upon"""
+#
+#        # Start at the top level Frysk gui
+#        topFryskDialog = AbstractGuiClass()
+#        topFryskDialog.setCurrentGui(self.frysk)
+#        showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
+#
+#        # path 2 open blank session with terminal window
+#        # a. open frysk monitor window
+#        fryskStartupManager = self.frysk.child ( 'Frysk Startup Manager' )
+#
+#        terminalRadioButton = fryskStartupManager.child ( roleName='radio button', name='Open Blank Session with a Terminal' )
+#        terminalRadioButton.click()
+#        openButton = fryskStartupManager.child (roleName='push button', name = 'Open')
+#        openButton.click()
+#
+#        # Need to handle the delay in getting the Frysk Monitor frame to appear
+#        time.sleep ( 5 )
+#
+#        fryskMonitor = self.frysk.child ('Frysk Monitor')
+#        showChildren_new ( fryskMonitor, "menu item", "click" )
+#
+#        # Select the 'Help' menu item
+#        helpItem = fryskMonitor.menuItem('Help')
+#        helpItem.click()
+#
+#        # Select the 'About Frysk' Help menu item
+#        aboutItem = helpItem.menuItem('About')
+#        aboutItem.click() 
+#        aboutFrame = self.frysk.child(ABOUT_FRYSK)
+#        showChildren_new ( aboutFrame, "push button", "click" )
+#
+#        # Select the 'License' menu pick and click the button to open the license frame
+#        licenseButton = aboutFrame.button(LICENSE)
+#        licenseButton.click()
+#        licenseFrame = self.frysk.dialog(LICENSE)
+#        showChildren_new ( licenseFrame, "push button", "click" )
+#
+#        # Close the license text frame
+#        closeButton = licenseFrame.button('Close')
+#        closeButton.click()
+#
+#        # Select the 'Credits' menu pick and click the button to open the credits frame
+#        creditsButton = aboutFrame.button(CREDITS)
+#        creditsButton.click()
+#        creditsFrame = self.frysk.dialog(CREDITS)
+#        showChildren_new ( creditsFrame, "push button", "click" )
+#
+#        # Close the license text frame
+#        closeButton = creditsFrame.button('Close')
+#        closeButton.click()
+#        
+#        closeButton = aboutFrame.button('Close')
+#        closeButton.click()
+         
     def testPath_2( self ):
         """Check that the GUI elements can be accessed and acted upon"""
-
-        # Start at the top level Frysk gui
-        topFryskDialog = AbstractGuiClass()
-        topFryskDialog.setCurrentGui(self.frysk)
-        showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
-
-        # path 2 open blank session with terminal window
-        # a. open frysk monitor window
-        fryskStartupManager = self.frysk.child ( 'Frysk Startup Manager' )
-
-        terminalRadioButton = fryskStartupManager.child ( roleName='radio button', name='Open Blank Session with a Terminal' )
-        terminalRadioButton.click()
-        openButton = fryskStartupManager.child (roleName='push button', name = 'Open')
-        openButton.click()
-
-        # Need to handle the delay in getting the Frysk Monitor frame to appear
-        time.sleep ( 5 )
-
+        
+        # Create a Frysk session - param #3 = quit the FryskGui after
+        # creating the session, param #4 = walk thru all the GUI nodes 
+        createMinimalSession (self.frysk, self.theSession, False, True)
+        
         fryskMonitor = self.frysk.child ('Frysk Monitor')
-        showChildren_new ( fryskMonitor, "menu item", "click" )
+        #showChildren_new ( fryskMonitor, "menu item", "click" )
 
         # Select the 'Help' menu item
         helpItem = fryskMonitor.menuItem('Help')
@@ -360,14 +423,7 @@ class guiWalktest ( unittest.TestCase ):
         
         closeButton = aboutFrame.button('Close')
         closeButton.click()
-         
-    def testPath_3( self ):
-        """Check that the GUI elements can be accessed and acted upon"""
-        
-        # Create a Frysk session - param #3 = quit the FryskGui after
-        # creating the session, param #4 = walk thru all the GUI nodes 
-        createMinimalSession (self.frysk, self.theSession, False, True)
-        
+            
         # Select the 'Observers' menu item
         observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
@@ -393,25 +449,24 @@ class guiWalktest ( unittest.TestCase ):
         cancelButton = customObservers.button( 'Cancel' )
         cancelButton.click()
         
-        # And the menu pick to access Observers
-        programSelection = observersItem.menuItem( PROGRAM_OBSERVERS )
-        programSelection.click()   
-        theList = self.frysk.children
-        
-        # TODO Replace this hard-coded reference to a list element with a reference
-        # to the sourceDialog name - the problem is that the dialog name as of 20060922
-        # is not defined - the dialog is generated at runtime and has no AT information
-        programObservers = theList[1]     
-        showChildren_new ( programObservers, "table cell", "activate" )
-        
-        okButton = programObservers.button( 'OK' )
-        okButton.click()
+#        # And the menu pick to access Observers
+#        programSelection = observersItem.menuItem( PROGRAM_OBSERVERS )
+#        programSelection.click()   
+#        theList = self.frysk.children
+#        
+#        # TODO Replace this hard-coded reference to a list element with a reference
+#        # to the sourceDialog name - the problem is that the dialog name as of 20060922
+#        # is not defined - the dialog is generated at runtime and has no AT information
+#        programObservers = theList[1]     
+#        showChildren_new ( programObservers, "table cell", "activate" )
+#        
+#        okButton = programObservers.button( 'OK' )
+#        okButton.click()
         
 def suite():
     suite = unittest.TestSuite()
     suite.addTest( guiWalktest ( 'testPath_1' ) )
-    suite.addTest( guiWalktest ( 'testPath_2' ) )
-    suite.addTest( guiWalktest ( 'testPath_3' ) )    
+    suite.addTest( guiWalktest ( 'testPath_2' ) )   
     return suite
 
 if __name__ == '__main__':

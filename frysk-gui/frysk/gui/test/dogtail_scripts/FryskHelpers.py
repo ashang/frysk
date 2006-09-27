@@ -97,7 +97,8 @@ FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork O
                         'frysk.gui.monitor.observers.TaskExecObserver':'Exec Observer', 
                         'frysk.gui.monitor.observers.TaskTerminatingObserver':'Terminating Observer', 
                         'frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
-                        'frysk.gui.monitor.observers.TaskCloneObserver':'Clone Observer' }
+                        'frysk.gui.monitor.observers.TaskCloneObserver':'Clone Observer',
+                        'frysk.gui.monitor.observers.TaskSignaledObserver':'Signaled Observer' }
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name of forking thread',
