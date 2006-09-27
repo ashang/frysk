@@ -46,14 +46,12 @@ EXTRA_DIST += EggTrayIcon/ChangeLog org/gnu/gtk/frysk/ChangeLog
 
 
 GEN_CLASSPATH += ../frysk-imports/junit.jar 
-GEN_CLASSPATH += ../frysk-imports/jargs.jar
 GEN_CLASSPATH += ../frysk-imports/getopt.jar
 GEN_CLASSPATH += ../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += $(FRYSK_GTK_JARS)
 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-getopt.a
 GEN_GCJ_LDADD += $(FRYSK_GTK_LIBS)
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a

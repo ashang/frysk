@@ -1,3 +1,7 @@
+2006-09-27  Nurdin Premji <npremji@redhat.com>
+
+	* util/readelf.java: Changed to use getopt.
+
 2006-09-18  Stan Cox  <scox@redhat.com>
 
 	* eio/ByteOrdered.java (peekFloat): New.

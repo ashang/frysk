@@ -42,7 +42,6 @@ include Makefile.gen
 
 CHECK_SUBDIRS = \
 	jline \
-	jargs \
 	tests \
 	cdtparser \
 	junit \
@@ -72,10 +71,8 @@ EXTRA_DIST += \
 	lib/elf/tests/test-core.bz2.uu \
 	lib/elf/tests/helloworld.o.bz2.uu
 
-GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
-GEN_GCJ_LDADD += libfrysk-jargs.a
 GEN_GCJ_LDADD += libfrysk-getopt.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a

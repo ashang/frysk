@@ -1,5 +1,10 @@
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 	
+	* jargs: Removed.
+	* Makefile.am (CHECK_SUBDIRS, GEN_CLASSPATH, GEN_GCJ_LDADD): Removed jargs.
+	* bootstrap.sh (FILE_LIST): Ditto.
+	* configure.ac (AC_CONFIG_FILES): Ditto.	
+
 	* frysk-imports/getopt/Makefile.am(EXTRA_DIST, get_opt.jar): Fixed getopt Messages.properties resource problem.
 	
 2006-09-21  Nurdin Premji  <npremji@redhat.com>

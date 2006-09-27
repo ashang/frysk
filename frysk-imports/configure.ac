@@ -65,7 +65,6 @@ AC_FIND_FILE([libaudit.h], [/usr/include/], LIBAUDIT_H)
 AC_CONFIG_FILES([
 	Makefile
 	jline/Makefile
-	jargs/Makefile
 	getopt/Makefile
 	tests/Makefile
 	cdtparser/Makefile

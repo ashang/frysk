@@ -1,3 +1,7 @@
+2006-09-27  Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.am (SOURCEDIRS, javadoc): removed jargs.
+
 2006-09-21  Nurdin Premji <npremji@redhat.com>
 
 	* Makefile.am: Added getopt import, new command line parser.

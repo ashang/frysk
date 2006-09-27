@@ -45,7 +45,6 @@ FILE_LIST="frysk \
     cdtparser/cdtparser.jar \
     JDOM_JAR \
     jline/jline.jar \
-    jargs/jargs.jar \
     getopt/getopt.jar \
     lib/dw \
     lib/elf \

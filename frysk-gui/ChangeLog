@@ -1,3 +1,7 @@
+2006-09-27  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Removed jargs.
+
 2006-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add

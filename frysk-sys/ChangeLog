@@ -1,6 +1,8 @@
 2006-09-27 Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Removed jargs.
 	
-	* Makefile.am: Added getopt.jar to GEN_CLASSPATH and GEN_GCJ_LDADD.
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Added getopt.jar.
 
 2006-09-16    <swagiaal@redhat.com>
 

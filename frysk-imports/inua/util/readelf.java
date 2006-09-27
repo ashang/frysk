@@ -36,7 +36,14 @@
 // exception.
 package inua.util;
 
-import jargs.gnu.CmdLineParser;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
+
 import inua.dwarf.Elf;
 import inua.elf.PrintEhdr;
 import inua.elf.PrintShdr;
@@ -55,8 +62,113 @@ import inua.dwarf.PrintDebugAranges;
 import inua.dwarf.PrintDebugAbbrev;
 import inua.util.PrintWriter;
 
+
+
 class readelf
 {
+  
+  private static Parser parser;
+  protected static boolean help;
+  protected static boolean fileHeader;
+  protected static boolean programHeaders;
+  protected static boolean segments;
+  protected static boolean sectionHeaders;
+  protected static boolean section;
+  protected static boolean sectionGroups;
+  protected static boolean headers;
+  protected static boolean syms;
+  protected static boolean symbols;
+  protected static boolean notes;
+  protected static boolean wide;
+  protected static String arg;
+  
+  protected static LinkedList otherArgs;
+
+  
+  private static void addOptions (Parser parser)
+  {
+    parser.add(new Option ("help", 'H', "Print a help message") {
+      public void parsed (String arg0) throws OptionException {
+        help = true;
+      }
+    });
+    
+    parser.add(new Option ("file-header", 'h', "File header message") {
+      public void parsed (String arg0) throws OptionException {
+        fileHeader = true;
+      }
+    });
+    
+    parser.add(new Option ("program-headers", 'l', "Program header message") {
+      public void parsed (String arg0) throws OptionException {
+        programHeaders = true;
+      }
+    });
+    
+    parser.add(new Option ("segments", "segments message") {
+      public void parsed (String arg0) throws OptionException {
+        segments = true;
+        programHeaders = true;
+      }
+    });
+    
+    parser.add(new Option ("section-headers", 'S', "Section headers message") {
+      public void parsed (String arg0) throws OptionException {
+        sectionHeaders = true;
+      }
+    });
+    
+    parser.add(new Option ("section-headers", 'S', "Sections message") {
+      public void parsed (String arg0) throws OptionException {
+        section = true;
+        sectionHeaders = true;
+      }
+    });
+    
+    parser.add(new Option ("section-groups", 'g', "Section groups message") {
+      public void parsed (String arg0) throws OptionException {
+        sectionGroups = true;
+      }
+    });
+    
+    parser.add(new Option ("headers", 'e', "Headers message") {
+      public void parsed (String arg0) throws OptionException {
+        headers = true;
+      }
+    });
+    
+    parser.add(new Option ("syms", 's', "Syms message") {
+      public void parsed (String arg0) throws OptionException {
+        syms = true;
+      }
+    });
+
+    parser.add(new Option ("symbols", "Symbols message") {
+      public void parsed (String arg0) throws OptionException {
+        symbols = true;
+        syms = true;
+      }
+    });
+
+    parser.add(new Option ("notes", 'n', "Notes message") {
+      public void parsed (String arg0) throws OptionException {
+        notes = true;
+      }
+    });
+
+    parser.add(new Option ("wide", 'W', "Wide message") {
+      public void parsed (String arg0) throws OptionException {
+        wide = true;
+      }
+    });
+    
+    parser.add(new Option ("debug-dump", "Debug Dump Message", "<dump variable>") {
+      public void parsed (String arg0) throws OptionException {
+        arg = arg0;
+      }
+    });
+    
+  }
     static void usage (PrintWriter o)
     {
 	o.print ("Usage");
@@ -72,46 +184,18 @@ class readelf
 	    return;
 	}
 
-	CmdLineParser parser = new CmdLineParser ();
-	CmdLineParser.Option helpOption = parser.addBooleanOption ('H', "help");
-	CmdLineParser.Option fileHeaderOption = parser.addBooleanOption ('h', "file-header");
-	CmdLineParser.Option programHeadersOption = parser.addBooleanOption ('l', "program-headers");
-	CmdLineParser.Option segmentsOption = parser.addBooleanOption ("segments");
-	CmdLineParser.Option sectionHeadersOption = parser.addBooleanOption ('S', "section-headers");
-	CmdLineParser.Option sectionsOption = parser.addBooleanOption ('S', "sections");
-	CmdLineParser.Option sectionGroupsOption = parser.addBooleanOption ('g', "section-groups");
-	CmdLineParser.Option headersOption = parser.addBooleanOption ('e', "headers");
-	CmdLineParser.Option symsOption = parser.addBooleanOption ('s', "syms");
-	CmdLineParser.Option symbolsOption = parser.addBooleanOption ("symbols");
-	CmdLineParser.Option notesOption = parser.addBooleanOption ('n', "notes");
-	CmdLineParser.Option wideOption = parser.addBooleanOption ('W', "wide");
-	CmdLineParser.Option debugDumpOption = parser.addStringOption ("debug-dump");
+	parser = new Parser("readelf", "1.0", true);
+    addOptions(parser);
+	
 
-        try {
-            parser.parse (argv);
+    parser.parse (argv, new FileArgumentCallback() {
+        public void notifyFile(String arg) throws OptionException
+        {           
+            otherArgs.add(arg);
         }
-        catch (CmdLineParser.OptionException e) {
-            System.err.println (e.getMessage ());
-            usage (o);
-            System.exit (2);
-        }
-
-	// boolean help =
-	((Boolean)parser.getOptionValue (helpOption, Boolean.FALSE)).booleanValue ();
-	boolean fileHeader = ((Boolean)parser.getOptionValue (fileHeaderOption, Boolean.FALSE)).booleanValue ();
-	boolean programHeaders = (((Boolean) parser.getOptionValue (programHeadersOption, Boolean.FALSE)).booleanValue ()
-				  || ((Boolean) parser.getOptionValue (segmentsOption, Boolean.FALSE)).booleanValue ());
-	boolean sectionHeaders = (((Boolean) parser.getOptionValue (sectionHeadersOption, Boolean.FALSE)).booleanValue ()
-				  || ((Boolean) parser.getOptionValue (sectionsOption, Boolean.FALSE)).booleanValue ());
-	boolean sectionGroups = ((Boolean) parser.getOptionValue (sectionGroupsOption, Boolean.FALSE)).booleanValue ();
-	boolean headers = ((Boolean) parser.getOptionValue (headersOption, Boolean.FALSE)).booleanValue ();
-	boolean syms = (((Boolean) parser.getOptionValue (symsOption, Boolean.FALSE)).booleanValue ()
-			   || ((Boolean) parser.getOptionValue (symbolsOption, Boolean.FALSE)).booleanValue ());
-	// boolean wide = 
-	((Boolean) parser.getOptionValue (wideOption, Boolean.FALSE)).booleanValue ();
-	boolean notes = ((Boolean) parser.getOptionValue (notesOption, Boolean.FALSE)).booleanValue ();
-
-	String arg = (String) parser.getOptionValue (debugDumpOption, "");
+    });     
+         
+	
 	boolean debugDumpLine = arg.equals ("line");
 	boolean debugDumpInfo = arg.equals ("info");
 	boolean debugDumpAbbrev = arg.equals ("abbrev");
@@ -124,10 +208,9 @@ class readelf
 	boolean debugDumpStr = arg.equals ("str");
 	boolean debugDumpLoc = arg.equals ("loc");
 	// o.print ("Unrecognized debug-dump option " + arg);
+  
 
-	String[] otherArgs = parser.getRemainingArgs();
-
-	if (otherArgs.length == 0) {
+	if (otherArgs.size() == 0) {
 	    o.print  ("readelf: Warning: Nothing to do.");
 	    o.println ();
 	    usage (o);
@@ -135,8 +218,10 @@ class readelf
 	}
 
 	try {
-	    for (int j = 0; j < otherArgs.length; j++) {
-		Elf elf = new Elf (otherArgs[j]);
+      Iterator iter = otherArgs.listIterator();
+      while (iter.hasNext()) {
+	    String tempArg = (String) iter.next();
+		Elf elf = new Elf (tempArg);
 		if (headers || fileHeader)
 		    new PrintEhdr (elf).print (o);
 		if (headers || sectionHeaders)
