@@ -382,4 +382,13 @@ public class StackFrame
   {
     return this.isSignalFrame;
   }
+  
+  public long getReg(long reg)
+  {
+    // ??? Use something akin to Register interface?
+    return get_reg(reg);
+  }
+  
+  private native long get_reg (long reg);
 }
+

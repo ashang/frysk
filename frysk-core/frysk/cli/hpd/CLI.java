@@ -58,6 +58,8 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
@@ -76,6 +78,8 @@ public class CLI
     Task task;
     int pid = 0;
     SymTab symtab;
+    StackFrame frame = null;
+    int stackLevel = 0;
 
 	/*
 	 * Command handlers
@@ -320,7 +324,9 @@ public class CLI
               return;
             }          
           task = proc.getMainTask();
-          SymTab symtab = new SymTab(pid, proc, task);
+
+ 
+          symtab = new SymTab(pid, proc, task);
         }
     }
 
@@ -443,12 +449,72 @@ public class CLI
 		}
 	}
 
-	class WhatHandler implements CommandHandler
-	{
-		public void handle(Command cmd) throws ParseException {
-        if (cmd.getFullCommand().length() < 5)
+	class UpDownHandler implements CommandHandler
+    {
+      public void handle(Command cmd) throws ParseException {
+        int action;
+        int level = 1;
+        StackFrame tmpFrame = null;
+        
+        if (cmd.getParameters().size() != 0)
+          level = Integer.parseInt((String)cmd.getParameters().elementAt(0));
+
+        if (cmd.getAction().compareTo("up") == 0)
+          {
+            tmpFrame = symtab.setCurrentFrame(level);
+            stackLevel += 1;
+          }
+        else if (cmd.getAction().compareTo("down") == 0)
+          {
+            tmpFrame = symtab.setCurrentFrame(-level);
+            stackLevel -= 1;
+          }
+        cmd.getOut().print("#" + stackLevel);
+        cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
+        cmd.getOut().print(" in " + tmpFrame.getMethodName());
+        cmd.getOut().print(" at " + tmpFrame.getSourceFile());
+        cmd.getOut().println(":" + tmpFrame.getLineNumber());        
+      }
+    }
+  
+    class WhereHandler implements CommandHandler
+    {
+      public void handle(Command cmd) throws ParseException {
+        int action;
+        int level = 0;
+        StackFrame tmpFrame = null;
+        
+        if (cmd.getParameters().size() != 0)
+          level = Integer.parseInt((String)cmd.getParameters().elementAt(0));
+ 
+        int l = stackLevel;
+	int stopLevel;
+	if (level > 0)
+	  stopLevel = l + level;
+	else
+	  stopLevel = 0;
+	tmpFrame = symtab.getCurrentFrame();
+	while (tmpFrame != null)
+	    {
+              cmd.getOut().print("# " + l);
+	      cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
+	      cmd.getOut().print(" in " + tmpFrame.getMethodName());
+	      cmd.getOut().print(" at " + tmpFrame.getSourceFile());
+	      cmd.getOut().println(":" + tmpFrame.getLineNumber());
+	      tmpFrame = tmpFrame.getOuter();
+	      l += 1;
+	      if (l == stopLevel)
+                break;
+            }
+      }
+    }
+    
+    class WhatHandler implements CommandHandler
+    {
+      public void handle(Command cmd) throws ParseException {
+        if (cmd.getParameters().size() == 0)
           return;
-        String sInput = cmd.getFullCommand().substring(4).trim();
+        String sInput = ((String)cmd.getParameters().elementAt(0));
         try 
         {
           cmd.getOut().println(symtab.what(sInput));
@@ -458,7 +524,7 @@ public class CLI
           addMessage(new Message(nnfe.getMessage(),
                                  Message.TYPE_ERROR));
         }
-		}
+      }
 	}
     
     private static final int DECIMAL = 10;
@@ -603,6 +669,7 @@ public class CLI
         handlers.put("attach", new AttachHandler());
         handlers.put("defset", new DefsetHandler());
         handlers.put("detach", new DetachHandler());
+        handlers.put("down", new UpDownHandler());
 		handlers.put("focus", new FocusHandler());
         handlers.put("help", new HelpHandler());
 		handlers.put("print", new PrintHandler());
@@ -611,8 +678,10 @@ public class CLI
         handlers.put("unalias", new UnaliasHandler());
         handlers.put("undefset", new UndefsetHandler());
         handlers.put("unset", new UnsetHandler());
+        handlers.put("up", new UpDownHandler());
         handlers.put("viewset", new ViewsetHandler());
         handlers.put("what", new WhatHandler());
+        handlers.put("where", new WhereHandler());
         handlers.put("whichsets", new WhichsetsHandler());
 
 		// initialize PT set stuff

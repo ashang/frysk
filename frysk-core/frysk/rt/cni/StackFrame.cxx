@@ -62,3 +62,13 @@ frysk::rt::StackFrame::initialize()
 	}
 }
 
+jlong
+frysk::rt::StackFrame::get_reg(jlong reg)
+{
+	unw_word_t value;
+	int code;
+	unw_cursor_t *cursor = (unw_cursor_t *) this->unwind_data;
+	code = unw_get_reg(cursor, (unw_regnum_t)reg, &value);	
+	// ??? Handle code < 0	
+	return value;
+}

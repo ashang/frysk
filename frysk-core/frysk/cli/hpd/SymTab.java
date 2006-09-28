@@ -38,232 +38,56 @@
 // exception.
 package frysk.cli.hpd;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
-
-import java.io.PrintStream;
 import java.io.StringReader;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 import javax.naming.NameNotFoundException;
-
 
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
-
 import antlr.CommonAST;
-import frysk.lang.BaseTypes;
-import frysk.lang.DoubleType;
-import frysk.lang.FloatType;
-import frysk.lang.IntegerType;
-import frysk.lang.ShortType;
-import frysk.lang.Type;
 import frysk.lang.Variable;
+import frysk.proc.Proc;
+import frysk.proc.Task;
+import frysk.proc.TaskException;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
 import frysk.expr.CppTreeParser;
 
-import frysk.expr.CppSymTab;
-import frysk.proc.MachineType;
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
-import frysk.sys.Ptrace;
-import frysk.sys.PtraceByteBuffer;
-
-class symTab implements CppSymTab
-{
-  static Map symTab = new HashMap();
-  private DwarfDie getDie (String s)
-  {
-    Dwfl dwfl;
-    DwarfDie[] allDies;
-    long address;
-    long pc;
-    try
-    {
-      pc = SymTab.task.getIsa().pc(SymTab.task) - 1;
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
-  
-    dwfl = new Dwfl(SymTab.pid);
-    DwflLine line = null;
-    DwflDieBias bias = dwfl.getDie(pc);
-    DwarfDie die = bias.die;
-    allDies = die.getScopes(die.getLowPC() - bias.bias);
-
-    DwarfDie varDie = die.getScopeVar(allDies, s);
-    if (varDie == null)
-      return null;
-    return varDie;
-  }
-  
-  private long getBufferAddr(DwarfDie varDie)
-  {
-    long pc;
-    try
-    {
-      pc = SymTab.task.getIsa().pc(SymTab.task) - 1;
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
-    long addr = varDie.getAddr();
-    if (varDie.fbregVariable())
-    {
-      long regval = 0;
-      try
-      {
-        if (MachineType.getMachineType() == MachineType.X8664)
-          regval = SymTab.task.getIsa().getRegisterByName("rbp").get (SymTab.task);
-        else if (MachineType.getMachineType() == MachineType.IA32)
-          regval = SymTab.task.getIsa().getRegisterByName("ebp").get (SymTab.task);
-      }
-      catch (TaskException tte)
-      {
-        throw new RuntimeException(tte);
-      }
-      addr += varDie.getFrameBase (varDie.getScope(), pc);
-      addr += regval;
-    }
-    return addr;
-  }
-  
-  public void put (String s, Variable v)
-  {
-    DwarfDie varDie = getDie(s);
-    if (varDie == null)
-      return;
-
-    long addr = getBufferAddr(varDie);
-
-    ByteBuffer buffer;
-    buffer = new PtraceByteBuffer(SymTab.pid, PtraceByteBuffer.Area.DATA,
-                                  0xffffffffl);
-    try
-    {
-      buffer = buffer.order(SymTab.task.getIsa().getByteOrder());
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
-
-    if (varDie.getType().compareTo("int") == 0)
-      {
-        buffer.putInt(addr, v.getInt());
-      }
-    
-    else if (varDie.getType().compareTo("short int") == 0)
-      {
-        buffer.putShort(addr, v.getShort());
-      }
-    else if (varDie.getType().compareTo("char") == 0)
-      {
-        buffer.putByte(addr, (byte)v.getChar());
-      }
-    else if (varDie.getType().compareTo("float") == 0)
-      {
-        buffer.putFloat(addr, v.getFloat());
-      }
-    else if (varDie.getType().compareTo("double") == 0)
-      {
-        buffer.putDouble(addr, v.getDouble());
-      }
-  }
-  
-  public Variable get (String s)
-  {
-    ByteOrder byteorder;
-    DwarfDie varDie = getDie(s);
-    if (varDie == null)
-      return (null);
-
-    long addr = getBufferAddr(varDie);
-
-    ByteBuffer buffer;
-    buffer = new PtraceByteBuffer(SymTab.pid, PtraceByteBuffer.Area.DATA,
-                                  0xffffffffl);
-    
-    try 
-    {
-      byteorder = SymTab.task.getIsa().getByteOrder();
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
-    buffer = buffer.order(byteorder);
-
-    Variable v;
-    if (varDie.getType().compareTo("int") == 0)
-      {
-        int intVal;
-        intVal = buffer.getInt(addr);
-        IntegerType intType = new IntegerType(4, byteorder);
-        v = IntegerType.newIntegerVariable(intType, s, intVal); 
-        return v; 
-      }
-    
-    else if (varDie.getType().compareTo("short int") == 0)
-      {
-        short shortVal;
-        shortVal = buffer.getShort(addr);
-        ShortType shortType = new ShortType(2, byteorder);
-        v = ShortType.newShortVariable(shortType, s, shortVal); 
-        return v; 
-      }
-//    else if (varDie.getType().compareTo("char") == 0)
-//      {
-//        byte byteVal;
-//        byteVal = buffer.getByte(addr);
-//        ByteType byteType = new ByteType(2, byteorder);
-//        v = ByteType.newByteVariable(byteType, s, byteVal); 
-//        return v; 
-//      }
-    else if (varDie.getType().compareTo("float") == 0)
-      {
-        float floatVal;
-        floatVal = buffer.getFloat(addr);
-        FloatType floatType = new FloatType(4, byteorder);
-        v = FloatType.newFloatVariable(floatType, s, floatVal);
-        return v; 
-      }    
-    else if (varDie.getType().compareTo("double") == 0)
-      {
-        double doubleVal;
-        doubleVal = buffer.getDouble(addr);
-        DoubleType doubleType = new DoubleType(8, byteorder);
-        v = DoubleType.newDoubleVariable(doubleType, s, doubleVal); 
-        return v; 
-      }    
-    return null;
-  }
-}
 
 public class SymTab
 {
-    static Proc proc;
-    static Task task;
-    static int pid;
-    static symTab hpdsymTab = new symTab();
+  Proc proc;
+  Task task;
+  int pid;
+  static ExprSymTab exprSymTab;
 
+
+    /**
+     * Create a symbol table object.
+     * @param pid_p
+     * @param proc_p
+     * @param task_p
+     */
     public SymTab (int pid_p, Proc proc_p, Task task_p)
     {
       pid = pid_p;
       proc = proc_p;
       task = task_p;
+      exprSymTab = new ExprSymTab (task, pid);
     }
-    static public String what(String sInput) throws ParseException,NameNotFoundException    
+    /**
+     * Implement the cli what request
+     * @param sInput
+     * @return String
+     * @throws ParseException
+     * @throws NameNotFoundException
+     */
+    public String what(String sInput) throws ParseException,NameNotFoundException    
 
     {
       long pc;
@@ -295,7 +119,13 @@ public class SymTab
                          + " of " + varDie.getDeclFile();
     }
     
-     static public Variable print(String sInput) throws ParseException
+     /**
+     * Implement the cli print request.
+     * @param sInput
+     * @return Variable
+     * @throws ParseException
+     */
+    static public Variable print(String sInput) throws ParseException
     {
       Variable result = null;
 
@@ -313,7 +143,7 @@ public class SymTab
       {}
 
       CommonAST t = (CommonAST)parser.getAST();
-      CppTreeParser treeParser = new CppTreeParser(4, 2, hpdsymTab);
+      CppTreeParser treeParser = new CppTreeParser(4, 2, exprSymTab);
 
       try {
         Integer intResult;
@@ -330,4 +160,50 @@ public class SymTab
       {}
       return result;
     }
+    
+    /**
+     * Implement the cli up/down requests.
+     * @param level
+     * @return StackFrame
+     */
+     public StackFrame setCurrentFrame(int level)
+     {
+       boolean down;
+       StackFrame tmpFrame = exprSymTab.getCurrentFrame();
+       if (level < 0)
+         {
+           down = true;
+           level = -level;
+         }
+       else
+         down = false;
+       
+       while (tmpFrame != null && level != 0)
+         {
+           if (! down)
+             tmpFrame = tmpFrame.getOuter();
+           else
+             tmpFrame = tmpFrame.getInner();
+           level -= 1;;
+         }
+       exprSymTab.setCurrentFrame(tmpFrame);
+       return exprSymTab.getCurrentFrame();
+     }
+     
+     /**
+      * Get the current stack frame.
+      * @return
+      */
+     public StackFrame getCurrentFrame ()
+     {
+       return exprSymTab.getCurrentFrame();
+     }
+     /**
+      * Get the most recent stack frame.
+      * @return StackFrame
+      */
+     public StackFrame getInnerMostFrame ()
+     {
+       return exprSymTab.getInnerMostFrame();
+     }
 }
