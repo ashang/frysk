@@ -123,10 +123,14 @@ class fstack
             for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
               {
                 // FIXME: do valgrind-like '=== PID ===' ?
-                writer.println("#" + count + " 0x"
-                               + Long.toHexString(frame.getAddress()) + " in "
-                               + frame.getMethodName() + " from "
-                               + frame.getSourceFile());
+                String output = "#" + count + " 0x"
+                + Long.toHexString(frame.getAddress()) + " in "
+                + frame.getMethodName() + " ()";
+                
+                if (frame.getSourceFile() != null)
+                  output = output + " from " + frame.getSourceFile();
+                
+                writer.println(output);
                 count++;
               }
           }

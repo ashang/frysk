@@ -1,3 +1,7 @@
+2006-09-28  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk/bindir/fstack.java (handleTask): Don't print sourcefiles if they are null.
+
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Removed jargs.
