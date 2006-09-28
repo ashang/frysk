@@ -45,11 +45,11 @@ CHECK_SUBDIRS = \
 	tests \
 	cdtparser \
 	junit \
-	elfutils \ 
+	elfutils \
 	getopt
 
 SUBDIRS = $(CHECK_SUBDIRS)
-	
+
 # Add in libunwind only for certain arches
 if USE_LIBUNWIND
 SUBDIRS += libunwind
