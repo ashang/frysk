@@ -162,7 +162,7 @@ class guiWalktest ( unittest.TestCase ):
         self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  } )
    
     def testPath_1( self ):      
-        """Check that the GUI elements can be accessed and acted upon"""   
+        """test = guiWalkTest.testPath_1 - Check that the GUI elements can be accessed and acted upon"""   
         
         # Start at the top level Frysk gui
         topFryskDialog = AbstractGuiClass()
@@ -382,7 +382,7 @@ class guiWalktest ( unittest.TestCase ):
 #        closeButton.click()
          
     def testPath_2( self ):
-        """Check that the GUI elements can be accessed and acted upon"""
+        """test = guiWalkTest.testPath_1- Check that the GUI elements can be accessed and acted upon"""
         
         # Create a Frysk session - param #3 = quit the FryskGui after
         # creating the session, param #4 = walk thru all the GUI nodes 

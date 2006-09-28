@@ -104,7 +104,7 @@ class credits (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
 
     def testCredits(self):      
-        """Check that the credits text is correct"""   
+        """test = credits.testCredits - Check that the credits text is correct"""   
 
         # Define the expected credits string
         expectedCreditsString = 'TBD\n'

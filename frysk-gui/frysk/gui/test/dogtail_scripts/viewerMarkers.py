@@ -104,6 +104,7 @@ class viewerMarkers (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
         
     def testEVMarkers(self):  
+        """test = viewerMarkers.testEVMarkers - Check that GUI buttons can be acccessed""" 
         monitor = self.frysk.child(MONITOR)
         nautilus = self.frysk.child('funit-child')
         nautilus.grabFocus()

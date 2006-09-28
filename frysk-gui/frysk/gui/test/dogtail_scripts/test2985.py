@@ -103,6 +103,7 @@ class test2985 (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
    
     def testBug2985(self):  
+        """test = test2985.testBug2985 - Check that bug 2985 has been resolved"""  
         monitor = self.frysk.child(MONITOR)
         funitChild = self.frysk.child('funit-child')
         funitChild.grabFocus()

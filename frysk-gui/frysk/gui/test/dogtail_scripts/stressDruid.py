@@ -104,7 +104,7 @@ class stressDruid ( unittest.TestCase ):
         createBigSession (self.frysk, self.theSession, False)
 
    def testSessionFile( self ):      
-        """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+        """test = stressDruid.testSessionFile - Verify that the session object just created and presisted under $HOME/.frysk/Sessions
            matches the test input"""   
   
         # ---------------------

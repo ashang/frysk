@@ -39,14 +39,14 @@
 # exception.
 
 '''
-Script name:    TestEventViewerButtons.py
-Script author:  npremji
-Creation date:  July 2006
-Purpose:        Verify eventviewer buttons can be accessed
+Script name:    Test2866.py
+Script author:  ldimaggi
+Creation date:  June 2006
+Purpose:        Recreate the bug listed here: http://sourceware.org/bugzilla/show_bug.cgi?id=2866
 Summary:        Simple, demo/prototype dogtail test script for Fryske
 '''
 
-__author__ = 'Nurdin Premji <npremji@redhat.com>'
+__author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
@@ -67,30 +67,37 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class viewerButtons (unittest.TestCase):
+class TestCredits (unittest.TestCase):
 
     def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
-
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - param #3 = quit the FryskGui after
@@ -102,25 +109,70 @@ class viewerButtons (unittest.TestCase):
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
         
-    def testEVButtons(self):  
-        """test = viewerButtons.testEVButtons - Check that GUI buttons can be acccessed""" 
-        monitor = self.frysk.child(MONITOR)
-        nautilus = self.frysk.child('funit-child')
-        nautilus.grabFocus()
-        statusWidget = monitor.child('statusWidget')
-
-        #Select and press the hold button
-        holdButton = statusWidget.child('Auto-Updates')
-        holdButton.click()
-        holdButton.click()
         
-        #Select and press the center button.
-        centerButton = statusWidget.button('Center')
-        centerButton.click()
+        
+    def testEditObservers( self ):      
+        """Check that all Observers can be queried and updated"""   
+    
+        # Select the 'Observers' menu item
+        observersItem = self.frysk.menuItem( OBSERVERS )
+        observersItem.click()
+
+        # And the menu pick to access Observers
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
+        observersSelection.click()
+
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
+        
+        observerList = customTable.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+        for observerInGui in observerList:
+            try:
+                 # Correct, but not optimal: observerInGui.actions['activate'].do()
+                 observerInGui.doAction('activate')
+                 observerInGui.grabFocus()
+            except dogtail.tree.SearchError:
+                 self.fail ( 'Error - unable to locate Observer with name = ' + str(observerInGui) )
+                 sys.exit(1)
+
+            # Make a simple change
+            editButton = customObservers.button( 'Edit' )
+            editButton.click()
+            
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
+            observerDescription = observerDetails.child( name = 'observerDescriptionTextView', roleName = 'text' )
+            originalDescription = observerDescription.text
+            newDescription = originalDescription + ' updated'
+            observerDescription.text = newDescription
+
+            okButton = observerDetails.button( 'OK' )
+            okButton.click()
+            
+            # Query for the changed value - and restore the original value
+            editButton = customObservers.button( 'Edit' )
+            editButton.click()
+            
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
+            observerDescription = observerDetails.child( name = 'observerDescriptionTextView', roleName = 'text' )
+            
+            self.TestString.compare(self.theLogWriter.scriptName + '.testEditObservers()', observerDescription.text, newDescription)
+            self.assertEqual(observerDescription.text, newDescription)                
+            
+            observerDescription.text = originalDescription
+            okButton = observerDetails.button( 'OK' )
+            okButton.click()
+          
+ 
+        # Resturn to the Frysk main menu
+        okButton = customObservers.button( 'OK' )
+        okButton.click()
+
        
+
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(viewerButtons('testEVButtons'))
+    suite.addTest(unittest.makeSuite(TestCredits))
     return suite
 
 if __name__ == '__main__':

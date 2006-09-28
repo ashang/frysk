@@ -113,7 +113,7 @@ class druid ( unittest.TestCase ):
 
 
    def testSessionFile( self ):      
-        """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+        """test = druid.testSessionFile - Verify that the session object just created and presisted under $HOME/.frysk/Sessions
            matches the test input"""   
   
         # ---------------------

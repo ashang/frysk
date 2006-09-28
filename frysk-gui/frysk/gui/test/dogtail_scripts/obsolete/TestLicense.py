@@ -38,15 +38,13 @@
 # version and license this file solely under the GPL without
 # exception.
 
-'''
-Script name:    TestEventViewerButtons.py
-Script author:  npremji
-Creation date:  July 2006
-Purpose:        Verify eventviewer buttons can be accessed
-Summary:        Simple, demo/prototype dogtail test script for Fryske
-'''
-
-__author__ = 'Nurdin Premji <npremji@redhat.com>'
+"""
+Script name:    TestLicense.py
+Creation date:  April 2006
+Purpose:        Verify correct license text is displayed by Frysk gui
+Summary:        Simple, demo/prototype dogtail test script for Frysk
+"""
+__author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
@@ -67,30 +65,37 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class viewerButtons (unittest.TestCase):
+class TestLicense (unittest.TestCase):
 
     def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
-
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - param #3 = quit the FryskGui after
@@ -101,26 +106,48 @@ class viewerButtons (unittest.TestCase):
         # Exit Frysk
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-        
-    def testEVButtons(self):  
-        """test = viewerButtons.testEVButtons - Check that GUI buttons can be acccessed""" 
-        monitor = self.frysk.child(MONITOR)
-        nautilus = self.frysk.child('funit-child')
-        nautilus.grabFocus()
-        statusWidget = monitor.child('statusWidget')
 
-        #Select and press the hold button
-        holdButton = statusWidget.child('Auto-Updates')
-        holdButton.click()
-        holdButton.click()
-        
-        #Select and press the center button.
-        centerButton = statusWidget.button('Center')
-        centerButton.click()
+    def testLicense(self):      
+        """Check that the license text is correct"""   
        
+        # Define the expected license string
+        expectedLicenseString = EXPECTED_LICENSE
+    
+        # Select the 'Help' menu item
+        helpItem = self.frysk.menuItem('Help')
+        helpItem.click()
+    
+        # Select the 'About Frysk' Help menu item
+        aboutItem = helpItem.menuItem('About')
+        aboutItem.click()    
+    
+        # Open the 'About' dialog and its child filler dialog
+        aboutFrame = self.frysk.dialog(ABOUT_FRYSK)
+            
+        # Select the 'License' menu pick and click the button to open the license frame
+        licenseButton = aboutFrame.button(LICENSE)
+        licenseButton.click()
+    
+        # In the license frame, select the license text
+        licenseFrame = self.frysk.dialog(LICENSE)
+        licenseText = licenseFrame.child(roleName='text')
+    
+        # Compare the expected license string with the actual string, log the results
+        self.TestString.compare('TestLicense.py', licenseText.text, expectedLicenseString)
+        self.assertEqual(licenseText.text, expectedLicenseString)
+    
+        # Close the license text frame
+        closeButton = licenseFrame.button('Close')
+        # Correct, but not optimal: closeButton.actions['press'].do()
+        closeButton.doAction('press')
+  
+        # Close the 'about Frysk' filler dialog
+        closeButton = aboutFrame.button('Close')
+        closeButton.click()
+ 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(viewerButtons('testEVButtons'))
+    suite.addTest(unittest.makeSuite(TestLicense))
     return suite
 
 if __name__ == '__main__':

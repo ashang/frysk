@@ -102,8 +102,8 @@ class test2866 (unittest.TestCase):
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  }) 
         
-    def testEditObservers( self ):      
-        """Check that all Observers can be queried and updated"""   
+    def testEditObservers( self ): 
+        """test = test2866.testEditObservers - Check that bug 2866 has been resolved"""  
     
         # Select the 'Observers' menu item
         observersItem = self.frysk.menuItem( OBSERVERS )

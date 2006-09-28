@@ -67,30 +67,37 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class viewerButtons (unittest.TestCase):
+class TestEVButtons (unittest.TestCase):
 
     def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
-
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - param #3 = quit the FryskGui after
@@ -102,8 +109,8 @@ class viewerButtons (unittest.TestCase):
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
         
+
     def testEVButtons(self):  
-        """test = viewerButtons.testEVButtons - Check that GUI buttons can be acccessed""" 
         monitor = self.frysk.child(MONITOR)
         nautilus = self.frysk.child('funit-child')
         nautilus.grabFocus()
@@ -120,7 +127,7 @@ class viewerButtons (unittest.TestCase):
        
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(viewerButtons('testEVButtons'))
+    suite.addTest(unittest.makeSuite(TestEVButtons))
     return suite
 
 if __name__ == '__main__':

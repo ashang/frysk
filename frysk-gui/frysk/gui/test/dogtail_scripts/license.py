@@ -102,7 +102,7 @@ class license (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
 
     def testLicense(self):      
-        """Check that the license text is correct"""   
+        """test = license.testLicense - Check that the license text is correct"""   
        
         # Define the expected license string
         expectedLicenseString = EXPECTED_LICENSE

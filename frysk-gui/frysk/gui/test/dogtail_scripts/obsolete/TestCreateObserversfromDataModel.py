@@ -73,124 +73,46 @@ from Observer import Observer
 from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
 
-class observerData ( unittest.TestCase ):
-        
+class TestCreateObserversfromDataModel ( unittest.TestCase ):
+
     def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
-
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - param #3 = quit the FryskGui after
         # creating the session, param #4 = walk thru all the GUI nodes 
         createMinimalSession (self.frysk, self.theSession, False, False)
-
-    def tearDown( self ):    
-        # Exit Frysk
-        endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-
-    def deleteTheObserver(self):
-        observersItem = self.frysk.menuItem( OBSERVERS )
-        observersItem.click()
-
-        # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
-        observersSelection.click()
-
-        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
-        customScrollPane = customObservers.child( roleName='scroll pane' )
-        customTable = customScrollPane.child( roleName = 'table' )
-
-        for i in range( self.matrixLength ):
-            observerToVerify = self.theMatrix[i]
-            observerNameToVerify = observerToVerify.getName()
-  
-            try:
-                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
-               # Correct, but not optimal: observerInGui.actions['activate'].do()
-                observerInGui.doAction('activate')
-                #observerInGui.grabFocus()
-                observerInGui.grabFocus
-                deleteButton = customObservers.button( 'Delete' )
-                deleteButton.click()
-            except dogtail.tree.SearchError:
-                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
-            else:  
-                self.theLogWriter.writeResult({'INFO' :  'No error - successfully found ' + observerNameToVerify })
-                self.TestString.compare(self.theLogWriter.scriptName + '.teardown()', observerNameToVerify, observerNameToVerify)
-                self.assertEqual(observerNameToVerify, observerNameToVerify)
-                
-        # Resturn to the Frysk main menu
-        okButton = customObservers.button( 'OK' )
-        okButton.click()   
-
-    def updateTheObserver(self):
-        # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( OBSERVERS )
-        observersItem.click()
-
-        # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
-        observersSelection.click()
-
-        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
-        customScrollPane = customObservers.child( roleName='scroll pane' )
-        customTable = customScrollPane.child( roleName = 'table' )
-
-        for i in range( self.matrixLength ):
-            observerToVerify = self.theMatrix[i]
-            observerNameToVerify = observerToVerify.getName()
-  
-            try:
-                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
-                # Correct, but not optimal: observerInGui.actions['activate'].do()
-                observerInGui.doAction('activate')
-#               observerInGui.grabFocus()
-                observerInGui.grabFocus
-            except dogtail.tree.SearchError:
-                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
-            else:
-                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
-                self.assertEqual(observerNameToVerify, observerNameToVerify)                
-                
-            editButton = customObservers.button( 'Edit' )
-            editButton.click()
-            
-            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
-            observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
-                       
-            observerToVerify.setName( observerToVerify.getName() + ' updated' )
-            self.theMatrix[i] = observerToVerify
-            
-            observerName.text = observerToVerify.getName()
-            okButton = observerDetails.button( 'OK' )
-            okButton.click()
- 
-        # Resturn to the Frysk main menu
-        okButton = customObservers.button( 'OK' )
-        okButton.click()
         
-    def createTheObserver(self, theDataFileName):
-    # Load up some sample Observer objects         
+        ########################################################################################
+
+        # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
         self.handler = ObserverHandler.ObserverHandler(  )
         self.parser.setContentHandler(self.handler)    
@@ -202,7 +124,8 @@ class observerData ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(theDataFileName)
+        self.parser.parse(sys.argv[4])
+        #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
         #parser.parse(inputFile)
 
         self.theObserver = self.handler.theObserver
@@ -500,50 +423,105 @@ class observerData ( unittest.TestCase ):
         # Resturn to the Frysk main menu
         okButton = customObservers.button( 'OK' )
         okButton.click()  
-        
-    # The actual tests - one for each type of observer
-    def testexec(self):
-        """test = observerData.testexec - Check that exec Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_exec_custom_observer.xml')
 
-    def testfork(self):
-        """test = observerData.testfork - Check that fork Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_fork_custom_observer.xml')
-
-    def testsyscall(self):
-        """test = observerData.testsyscall - Check that syscall Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_syscall_custom_observer.xml')
-
-    def testclone(self):
-        """test = testclone - Check that task clone Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_task_clone_custom_observer.xml')
-        
-    def testterm(self):
-        """test = observerData.testterm - Check that task termination Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_task_term_custom_observer.xml')       
-       
-    def testsignal(self):
-        """test = observerData.testsignal - Check that task signal Observers can be created and read""" 
-        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_signaled_custom_observer.xml')       
-       
-    def runTest (self, theDataFileName):
-        """Check that Observers can be created and read"""       
-        observerData.createTheObserver(self, theDataFileName)
+    def tearDown( self ):    
  
-        """Check that the newly created Observers can be updated"""       
-        observerData.updateTheObserver(self)
-
-        """Check that the newly created Observers can be queried and deleted"""       
-        observerData.deleteTheObserver(self)
+        # Add test to delete the observers
         
+        """Check that the newly created Observers can be queried and deleted"""   
+    
+        # Select the 'Observers' menu item
+        observersItem = self.frysk.menuItem( OBSERVERS )
+        observersItem.click()
+
+        # And the menu pick to access Observers
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
+        observersSelection.click()
+
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
+
+        for i in range( self.matrixLength ):
+            observerToVerify = self.theMatrix[i]
+            observerNameToVerify = observerToVerify.getName()
+  
+            try:
+                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
+               # Correct, but not optimal: observerInGui.actions['activate'].do()
+                observerInGui.doAction('activate')
+                #observerInGui.grabFocus()
+                observerInGui.grabFocus
+                deleteButton = customObservers.button( 'Delete' )
+                deleteButton.click()
+            except dogtail.tree.SearchError:
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
+            else:  
+                self.theLogWriter.writeResult({'INFO' :  'No error - successfully found ' + observerNameToVerify })
+                self.TestString.compare(self.theLogWriter.scriptName + '.teardown()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)
+                
+        # Resturn to the Frysk main menu
+        okButton = customObservers.button( 'OK' )
+        okButton.click()
+
+    #def tearDown(self):    
+        # Exit Frysk
+        endFrysk (self.startObject)
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+       
+ 
+    def testUpdateObservers( self ):      
+        """Check that the newly created Observers can be queried and updated"""   
+    
+        # Select the 'Observers' menu item
+        observersItem = self.frysk.menuItem( OBSERVERS )
+        observersItem.click()
+
+        # And the menu pick to access Observers
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
+        observersSelection.click()
+
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
+
+        for i in range( self.matrixLength ):
+            observerToVerify = self.theMatrix[i]
+            observerNameToVerify = observerToVerify.getName()
+  
+            try:
+                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
+                # Correct, but not optimal: observerInGui.actions['activate'].do()
+                observerInGui.doAction('activate')
+#               observerInGui.grabFocus()
+                observerInGui.grabFocus
+            except dogtail.tree.SearchError:
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
+            else:
+                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)                
+                
+            editButton = customObservers.button( 'Edit' )
+            editButton.click()
+            
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
+            observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
+                       
+            observerToVerify.setName( observerToVerify.getName() + ' updated' )
+            self.theMatrix[i] = observerToVerify
+            
+            observerName.text = observerToVerify.getName()
+            okButton = observerDetails.button( 'OK' )
+            okButton.click()
+ 
+        # Resturn to the Frysk main menu
+        okButton = customObservers.button( 'OK' )
+        okButton.click()
+
 def suite():
         suite = unittest.TestSuite()
-        suite.addTest(observerData('testexec'))
-        suite.addTest(observerData('testfork'))
-        suite.addTest(observerData('testsyscall'))
-        suite.addTest(observerData('testclone'))
-        suite.addTest(observerData('testterm'))
-        suite.addTest(observerData('testsignal'))
+        suite.addTest( unittest.makeSuite( TestCreateObserversfromDataModel ) )
         return suite
 
 if __name__ == '__main__':

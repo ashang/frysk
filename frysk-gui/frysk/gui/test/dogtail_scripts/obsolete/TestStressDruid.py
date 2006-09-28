@@ -39,17 +39,17 @@
 # exception.
 
 '''
-Script name:    TestEventViewerButtons.py
-Script author:  npremji
-Creation date:  July 2006
-Purpose:        Verify eventviewer buttons can be accessed
-Summary:        Simple, demo/prototype dogtail test script for Fryske
+Script name:    TestDruid.py
+Creation date:  May 2006
+Purpose:        Verify creation of Frysk Debug Session Druid
+Summary:        Simple, demo/prototype dogtail test script for Frysk
 '''
 
-__author__ = 'Nurdin Premji <npremji@redhat.com>'
+__author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
+from dogtail.utils import run
 from dogtail import predicate
 
 # Setup to parse test input data (XML file)
@@ -64,66 +64,97 @@ import dogtail.tc
 # Set up for unit test framework
 import unittest
 
-# Test support functions
-from FryskHelpers import *
+# The Frysk test objects
+from Observer import Observer
+from DebugProcess import DebugProcess
+from DebugSession import DebugSession
 
-class viewerButtons (unittest.TestCase):
+# Support routines for Frysk GUI Dogtail test scripts
+from FryskHelpers import extractString
+from FryskHelpers import removeAfterTab
+from FryskHelpers import findProcessNames
+from FryskHelpers import createProcessDict
+from FryskHelpers import startFrysk
+from FryskHelpers import endFrysk
+from FryskHelpers import skipDruid
+from FryskHelpers import FRYSK_SESSION_FILES
+from FryskHelpers import createMinimalSession
+from FryskHelpers import createBigSession
 
-    def setUp(self):
+class TestDruid ( unittest.TestCase ):
+
+ 
+   def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
-
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
-        # Create a Frysk session - param #3 = quit the FryskGui after
-        # creating the session, param #4 = walk thru all the GUI nodes 
-        createMinimalSession (self.frysk, self.theSession, False, False)
-        
-    def tearDown(self):    
+        # Create a Frysk session - True = quit the FryskGui after
+        # creating the session
+        createBigSession (self.frysk, self.theSession, True)
+
+
+   def testSessionFile( self ):      
+        """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+           matches the test input"""   
+  
+        # ---------------------
+        # Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+        # matches the test input
+
+        newlyCreatedSessionFile =  FRYSK_SESSION_FILES + self.theSession.getName()
+        self.parser.parse(newlyCreatedSessionFile)
+        newlyCreatedSession = self.handler.theDebugSession
+
+        newlyCreatedSessionProcesses = newlyCreatedSession.getProcesses()
+        self.theSessionProcesses = self.theSession.getProcesses()
+
+        newlyCreatedSession.setProcessesDict(newlyCreatedSessionProcesses)
+        self.theSession.setProcessesDict(self.theSessionProcesses)
+
+        if self.theSession.isequal (newlyCreatedSession):
+            self.TestString.compare(self.theLogWriter.scriptName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
+            self.assertEqual(newlyCreatedSession.getName(), self.theSession.getName() )            
+        else:
+            self.fail ('FAIL - the session objects do not match')
+
+   def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-        
-    def testEVButtons(self):  
-        """test = viewerButtons.testEVButtons - Check that GUI buttons can be acccessed""" 
-        monitor = self.frysk.child(MONITOR)
-        nautilus = self.frysk.child('funit-child')
-        nautilus.grabFocus()
-        statusWidget = monitor.child('statusWidget')
-
-        #Select and press the hold button
-        holdButton = statusWidget.child('Auto-Updates')
-        holdButton.click()
-        holdButton.click()
-        
-        #Select and press the center button.
-        centerButton = statusWidget.button('Center')
-        centerButton.click()
-       
+  
+ 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(viewerButtons('testEVButtons'))
-    return suite
+        suite = unittest.TestSuite()
+        suite.addTest( unittest.makeSuite( TestDruid ) )
+        return suite
 
 if __name__ == '__main__':
   #unittest.main()
-  unittest.TextTestRunner(verbosity=2).run(suite())
-
+  unittest.TextTestRunner( verbosity=2 ).run( suite() )
