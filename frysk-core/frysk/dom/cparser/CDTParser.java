@@ -138,7 +138,8 @@ public class CDTParser implements StaticParser {
 				new NullLogService());
 		
 		if(!parser2.parse())
-		    System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine());
+		    System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine() +
+                               "\n                Char offset of error = " + parser2.getLastErrorOffset());
 		
 		/*
 		 * The CDT Parser does not parse out comments for some reason,
@@ -169,7 +170,7 @@ public class CDTParser implements StaticParser {
 //				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
 			}
 			// For some reason the CDTParser doesn't pick up this keyword either
-			else if(t.text.equals("return")){
+			else if(t.text.equals("return") | t.text.startsWith("exit(")) {
 				DOMLine line = this.source.getLine(t.lineNum + 1);
 				if(line == null)
 					return;
@@ -274,9 +275,8 @@ public class CDTParser implements StaticParser {
 			String nameText = nameLine.getText();
 			
 			String funcName = nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length());
-			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			nameLine.addTag(DOMTagTypes.FUNCTION, funcName, funcName.length());
+			nameLine.addTag(DOMTagTypes.FUNCTION, funcName, arg0.getNameOffset() - nameLine.getOffset());
 			
 			int endingLine = arg0.getEndingLine();
 			if(endingLine == 0)
@@ -311,7 +311,7 @@ public class CDTParser implements StaticParser {
 				}
 				
 				/*
-				 * Perform compairasons relative to the parameter type line, so that 
+				 * Perform comparisons relative to the parameter type line, so that 
 				 * if the parameters are both on the same line we still get a little
 				 * better performance.
 				 */

@@ -1,3 +1,7 @@
+2006-09-28  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Fix function name highlighting(bz #3275).
+
 2006-09-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFrysk.java: Fixed formatting of javadoc comments.
