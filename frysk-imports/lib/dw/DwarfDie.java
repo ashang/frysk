@@ -103,7 +103,7 @@ public class DwarfDie
         dies[i] = new DwarfDie(vals[i], this.parent);
       else
         dies[i] = null;
-    
+
     return dies;
   }
   
@@ -145,18 +145,10 @@ public class DwarfDie
     return this.pointer;
   }
  
-  public boolean fbregVariable ()
+  public void getFrameBase (long[] fbreg_and_disp, long scope, long pc)
   {
-    long is_fb = fbreg_variable (this.getPointer());
-    if (is_fb == 1)
-      return true;
-    else
-      return false;
-  }
-
-  public long getFrameBase (long scope, long pc)
-  {
-    return get_framebase(this.getPointer(), scope, pc);
+    get_framebase(fbreg_and_disp, this.getPointer(), scope, pc);
+    return;
   }
 
   /**
@@ -187,9 +179,7 @@ public class DwarfDie
   
   private native String get_type (long addr);
   
-  private native long fbreg_variable (long addr);
-  
-  private native long get_framebase (long addr, long scope, long pc);
+  private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
   
   private native boolean is_inline_func ();
 }

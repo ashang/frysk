@@ -58,6 +58,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import frysk.sys.Errno;
 import frysk.sys.PtraceByteBuffer;
 
 
@@ -144,24 +145,21 @@ class ExprSymTab implements CppSymTab
       throw new RuntimeException(tte);
     }
     long addr = varDie.getAddr();
-    if (varDie.fbregVariable())
+    long fbreg_and_disp [] = new long[2];
+    varDie.getFrameBase (fbreg_and_disp, varDie.getScope(), pc);
+    if (fbreg_and_disp[0] != -1)
     {
       long regval = 0;
       try
       {
         if (currentFrame == innerMostFrame)
           {
-            if (MachineType.getMachineType() == MachineType.X8664)
-              regval = task.getIsa().getRegisterByName("rbp").get (task);
-            else if (MachineType.getMachineType() == MachineType.IA32)
-              regval = task.getIsa().getRegisterByName("ebp").get (task);       
+            regval = task.getIsa().getRegisterByName
+            (task.getIsa().getRegisterNameByUnwindRegnum(fbreg_and_disp[0])).get(task);
           }
         else
           {
-            if (MachineType.getMachineType() == MachineType.X8664)
-              regval = currentFrame.getReg(6);
-            else if (MachineType.getMachineType() == MachineType.IA32)
-              regval = currentFrame.getReg(5);
+            regval = currentFrame.getReg(fbreg_and_disp[0]);
           }
       }
       catch (TaskException tte)
@@ -169,7 +167,7 @@ class ExprSymTab implements CppSymTab
         throw new RuntimeException(tte);
       }
  
-      addr += varDie.getFrameBase (varDie.getScope(), pc);
+      addr += fbreg_and_disp[1];
       addr += regval;
     }
     return addr;
@@ -198,27 +196,30 @@ class ExprSymTab implements CppSymTab
       throw new RuntimeException(tte);
     }
 
-    if (varDie.getType().compareTo("int") == 0)
-      {
-        buffer.putInt(addr, v.getInt());
-      }
-    
-    else if (varDie.getType().compareTo("short int") == 0)
-      {
-        buffer.putShort(addr, v.getShort());
-      }
-    else if (varDie.getType().compareTo("char") == 0)
-      {
-        buffer.putByte(addr, (byte)v.getChar());
-      }
-    else if (varDie.getType().compareTo("float") == 0)
-      {
-        buffer.putFloat(addr, v.getFloat());
-      }
-    else if (varDie.getType().compareTo("double") == 0)
-      {
-        buffer.putDouble(addr, v.getDouble());
-      }
+    try
+    {
+      if (varDie.getType().compareTo("int") == 0)
+        {
+          buffer.putInt(addr, v.getInt());
+        }
+      else if (varDie.getType().compareTo("short int") == 0)
+        {
+          buffer.putShort(addr, v.getShort());
+        }
+      else if (varDie.getType().compareTo("char") == 0)
+        {
+          buffer.putByte(addr, (byte)v.getChar());
+        }
+      else if (varDie.getType().compareTo("float") == 0)
+        {
+          buffer.putFloat(addr, v.getFloat());
+        }
+      else if (varDie.getType().compareTo("double") == 0)
+        {
+          buffer.putDouble(addr, v.getDouble());
+        }
+    }    
+    catch (Errno e) {} 
   }
   
   /* (non-Javadoc)
@@ -248,23 +249,24 @@ class ExprSymTab implements CppSymTab
     buffer = buffer.order(byteorder);
 
     Variable v;
-    if (varDie.getType().compareTo("int") == 0)
-      {
-        int intVal;
-        intVal = buffer.getInt(addr);
-        IntegerType intType = new IntegerType(4, byteorder);
-        v = IntegerType.newIntegerVariable(intType, s, intVal); 
-        return v; 
-      }
-    
-    else if (varDie.getType().compareTo("short int") == 0)
-      {
-        short shortVal;
-        shortVal = buffer.getShort(addr);
-        ShortType shortType = new ShortType(2, byteorder);
-        v = ShortType.newShortVariable(shortType, s, shortVal); 
-        return v; 
-      }
+    try
+    {
+      if (varDie.getType().compareTo("int") == 0)
+        {
+          int intVal;
+          intVal = buffer.getInt(addr);
+          IntegerType intType = new IntegerType(4, byteorder);
+          v = IntegerType.newIntegerVariable(intType, s, intVal); 
+          return v; 
+        }
+      else if (varDie.getType().compareTo("short int") == 0)
+        {
+          short shortVal;
+          shortVal = buffer.getShort(addr);
+          ShortType shortType = new ShortType(2, byteorder);
+          v = ShortType.newShortVariable(shortType, s, shortVal); 
+          return v; 
+        }
 //    else if (varDie.getType().compareTo("char") == 0)
 //      {
 //        byte byteVal;
@@ -273,22 +275,24 @@ class ExprSymTab implements CppSymTab
 //        v = ByteType.newByteVariable(byteType, s, byteVal); 
 //        return v; 
 //      }
-    else if (varDie.getType().compareTo("float") == 0)
-      {
-        float floatVal;
-        floatVal = buffer.getFloat(addr);
-        FloatType floatType = new FloatType(4, byteorder);
-        v = FloatType.newFloatVariable(floatType, s, floatVal);
-        return v; 
-      }    
-    else if (varDie.getType().compareTo("double") == 0)
-      {
-        double doubleVal;
-        doubleVal = buffer.getDouble(addr);
-        DoubleType doubleType = new DoubleType(8, byteorder);
-        v = DoubleType.newDoubleVariable(doubleType, s, doubleVal); 
-        return v; 
-      }    
+      else if (varDie.getType().compareTo("float") == 0)
+        {
+          float floatVal;
+          floatVal = buffer.getFloat(addr);
+          FloatType floatType = new FloatType(4, byteorder);
+          v = FloatType.newFloatVariable(floatType, s, floatVal);
+          return v; 
+        }    
+      else if (varDie.getType().compareTo("double") == 0)
+        {
+          double doubleVal;
+          doubleVal = buffer.getDouble(addr);
+          DoubleType doubleType = new DoubleType(8, byteorder);
+          v = DoubleType.newDoubleVariable(doubleType, s, doubleVal); 
+          return v; 
+        }    
+    }
+    catch (Errno e) {}
     return null;
   }
   

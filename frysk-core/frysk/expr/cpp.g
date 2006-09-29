@@ -869,14 +869,14 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {
             if((returnVar = ((Variable)cppSymTabRef.get(ident.getText()))) == null) {
-                returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
-                cppSymTabRef.put(ident.getText(), returnVar);
+                // returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
+                // cppSymTabRef.put(ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
             if((returnVar = ((Variable)cppSymTabRef.get(tident.getText()))) == null) {
-                returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
-                cppSymTabRef.put(tident.getText(), returnVar);
+                // returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
+                // cppSymTabRef.put(tident.getText(), returnVar);
             }
         }
     ;

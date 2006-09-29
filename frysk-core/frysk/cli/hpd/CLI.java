@@ -574,6 +574,11 @@ public class CLI
         }        
 
         Variable result = symtab.print(sInput);
+        if (result == null)
+          {
+            addMessage(new Message("Variable " + sInput + " not found in scope", Message.TYPE_ERROR));
+            return;
+          }
 
         try
         {
