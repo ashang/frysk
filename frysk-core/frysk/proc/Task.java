@@ -904,7 +904,7 @@ abstract public class Task
   /**
    * Set of Code observers.
    */
-  private TaskObservable codeObservers = new TaskObservable(this);
+  TaskObservable codeObservers = new TaskObservable(this);
   
   /**
    * Add TaskObserver.Code to the TaskObserver pool.

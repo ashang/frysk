@@ -892,6 +892,18 @@ class TaskState
 	    // Remove all tasks, retaining just this one.
 	    task.proc.retain (task);
 	    ((LinuxProc)task.proc).getStat ().refresh();
+
+	    // All breakpoints have been erased.  We need to explicitly
+	    // tell those attached to the current Task.
+	    task.proc.breakpoints.removeAllCodeObservers();
+	    Iterator it = task.codeObservers.iterator();
+	    while (it.hasNext())
+	      ((TaskObserver.Code) it.next()).deletedFrom(task);
+
+	    it = task.pendingCodeObservers.iterator();
+	    while (it.hasNext())
+	      ((PendingCodeObserver) it.next()).observer.deletedFrom(task);
+
 	    if (task.notifyExeced () > 0)
 	      {
 		return (syscalltracing

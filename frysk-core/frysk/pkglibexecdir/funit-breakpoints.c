@@ -65,8 +65,9 @@ second_breakpoint_function ()
 }
 
 int
-main ()
+main (int argc, char *argv[], char *envp[])
 {
+
   // The number of runs the tester wants us to do.
   // Zero when we should terminate.
   // Minus one when something went wrong.
@@ -115,5 +116,21 @@ main ()
       fflush(stdout);
     }
 
-  return runs;
+  // Finally re-exec ourselves to show breakpoints are gone.
+  // When called with an argument then we are execing ourselves just to
+  // do a little testrun (all breakpoints should be cleared now).
+  if (argc > 1)
+    return runs;
+  else
+    {
+      char *new_argv[3];
+      new_argv[0] = argv[0];
+      new_argv[1] = "restart";
+      new_argv[2] = NULL;
+      execve (argv[0], new_argv, envp);
+    }
+
+  // Should never be reached.
+  perror ("unreachable");
+  return -1;
 }

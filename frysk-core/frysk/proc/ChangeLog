@@ -1,3 +1,10 @@
+2006-09-29  Mark Wielaard  <mark@klomp.org>
+
+	* BreakpointAddresses.java (removeAllCodeObservers): New method.
+	* Task.java (codeObservers): Make package private.
+	* TaskState.java (Running.handleExecedEvent): Clean up breakpoints.
+	* TestBreakpoints.java: Check deletion of Code observers after exec.
+
 2006-09-28  Tim Moore  <timoore@redhat.com>
 
 	* UBigInteger.java: New class

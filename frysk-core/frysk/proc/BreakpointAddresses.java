@@ -152,4 +152,13 @@ public class BreakpointAddresses
     observers = (ArrayList) list.clone();
     return observers.iterator();
   }
+
+  /**
+   * Called from TaskState when the Task gets an execed event which
+   * clears the whole address space.
+   */
+  void removeAllCodeObservers()
+  {
+    map.clear();
+  }
 }

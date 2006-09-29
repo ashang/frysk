@@ -212,6 +212,27 @@ public class TestBreakpoints
     out.writeByte(0);
     out.flush();
 
+    // The process will now exec itself again.
+    // Make sure Code Observers have been notified.
+    synchronized (monitor)
+      {
+	while (! (code1.isRemoved() && code2.isRemoved()))
+	  {
+	    try
+	      {
+		monitor.wait();
+	      }
+	    catch (InterruptedException ie)
+	      {
+		// Ignored
+	      }
+	  }
+      }
+
+    // And let it go. We are really done.
+    out.writeByte(0);
+    out.flush();
+
     // So how did it all go, did it exit properly?
     synchronized (monitor)
       {
@@ -367,7 +388,32 @@ public class TestBreakpoints
     line = in.readLine();
     bp2 = Integer.decode(line).intValue();
 
+    // For fun (and to test exec) insert another one.
+    CodeObserver code3 = new CodeObserver(breakpoint1);
+    task.requestAddCodeObserver(code3, breakpoint1);
+    
     // And we are done.
+    out.writeByte(0);
+    out.flush();
+
+    // The process will now exec itself again.
+    // Make sure Code Observers have been notified.
+    synchronized (monitor)
+      {
+	while (! code3.isRemoved())
+	  {
+	    try
+	      {
+		monitor.wait();
+	      }
+	    catch (InterruptedException ie)
+	      {
+		// Ignored
+	      }
+	  }
+      }
+
+    // And let it go. We are really done.
     out.writeByte(0);
     out.flush();
 
@@ -486,6 +532,34 @@ public class TestBreakpoints
     assertEquals(42, bp2);
 
     // And we are done.
+    out.writeByte(0);
+    out.flush();
+
+    // The process will now exec itself again.
+    // Make sure all the observers are notified that they have been removed.
+    synchronized (monitor)
+      {
+	boolean allRemoved = true;
+	for (int i = 0; i < 1512 && allRemoved; i++)
+	  allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
+	while (! allRemoved)
+	  {
+	    try
+	      {
+		monitor.wait();
+	      }
+	    catch (InterruptedException ie)
+	      {
+		// ignored
+	      }
+	    
+	    allRemoved = true;
+	    for (int i = 0; i < 1512 && allRemoved; i++)
+	      allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
+	  }
+      }
+
+    // And let it go. We are really done.
     out.writeByte(0);
     out.flush();
 

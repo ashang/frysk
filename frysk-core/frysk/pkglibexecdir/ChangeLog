@@ -1,3 +1,7 @@
+2006-09-29  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c (main): Reexec at the end of the loop.
+
 2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* funit-ppc64-modify.S: New PPC64 specific test program.
