@@ -1,4 +1,4 @@
-/* Messages.java -- i18n support for getopt
+/* OptionException.java - when command-line processing fails
  Copyright (C) 2006 Free Software Foundation, Inc.
 
  This file is part of GNU Classpath.
@@ -38,30 +38,15 @@
 
 package gnu.classpath.tools.getopt;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
-class Messages
+/**
+ * An OptionException is thrown internally when an error is seen when parsing a
+ * command line.
+ */
+public class OptionException
+    extends Exception
 {
-  private static final String BUNDLE_NAME
-    = "gnu.classpath.tools.getopt.Messages"; //$NON-NLS-1$
-
-  private static final ResourceBundle RESOURCE_BUNDLE
-    = ResourceBundle.getBundle(BUNDLE_NAME);
-
-  private Messages()
+  public OptionException(String message)
   {
-  }
-
-  public static String getString(String key)
-  {
-    try
-      {
-        return RESOURCE_BUNDLE.getString(key);
-      }
-    catch (MissingResourceException e)
-      {
-        return '!' + key + '!';
-      }
+    super(message);
   }
 }
