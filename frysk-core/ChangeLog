@@ -8,7 +8,7 @@
 
 2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
 
-	* Makefile.am(GEN_CLASSPATH, GEN_GCJ_LDADD): Add the funit-child-alias for arch32 test.
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Add the funit-child-alias for arch32 test.
 
 2006-09-21  Nurdin Premji  <npremji@redhat.com>
 	
