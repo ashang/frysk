@@ -305,10 +305,21 @@ def endFrysk( testObject ):
     # Exit Frysk GUI
     # TODO - Need to generalize this to handle closing Frysk from any Frysk GUI
     # For now, exit via brute force killing of FryskGui process
-    #fryskObject = testObject.getFryskObject()
-    #closeItem = fryskObject.menuItem( 'Close' )
-    #closeItem.click()
-    killFrysk()
+    fryskObject = testObject.getFryskObject()
+    
+    # Need to handle multiple possible exit points     
+    try:
+        closeItem = fryskObject.menuItem( 'Quit' )
+        closeItem.click()
+        killFrysk()
+    except:
+       try:
+            quitButton = fryskObject.child( name='Quit', roleName='push button' )
+            print "found quit button"
+            quitButton.click()
+            killFrysk()
+       except:
+            killFrysk()
     
     # And, kill the funit-child process
     returnString = signalFunitChild2(str(testObject.getPID()), SIGALRM, testObject.getOutputFile() )

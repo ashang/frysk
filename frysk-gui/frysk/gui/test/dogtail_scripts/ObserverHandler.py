@@ -210,7 +210,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
   #-------------------------------
   def endElement(self, name):
     if name == 'Observer':
-        print 'END of Observer'
+        doNothing = True
+        #print 'END of Observer'
         #self.theObserver.dump()
               
     elif name == 'actionPoints':

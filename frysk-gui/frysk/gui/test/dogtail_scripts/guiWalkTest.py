@@ -325,64 +325,8 @@ class guiWalktest ( unittest.TestCase ):
         closeItem = programClose.child (name='Close', roleName = 'menu item')
         closeItem.click()
 
-#    def testPath_2( self ):
-#        """Check that the GUI elements can be accessed and acted upon"""
-#
-#        # Start at the top level Frysk gui
-#        topFryskDialog = AbstractGuiClass()
-#        topFryskDialog.setCurrentGui(self.frysk)
-#        showChildren_new ( topFryskDialog.getCurrentGui(), "table cell", "activate" )
-#
-#        # path 2 open blank session with terminal window
-#        # a. open frysk monitor window
-#        fryskStartupManager = self.frysk.child ( 'Frysk Startup Manager' )
-#
-#        terminalRadioButton = fryskStartupManager.child ( roleName='radio button', name='Open Blank Session with a Terminal' )
-#        terminalRadioButton.click()
-#        openButton = fryskStartupManager.child (roleName='push button', name = 'Open')
-#        openButton.click()
-#
-#        # Need to handle the delay in getting the Frysk Monitor frame to appear
-#        time.sleep ( 5 )
-#
-#        fryskMonitor = self.frysk.child ('Frysk Monitor')
-#        showChildren_new ( fryskMonitor, "menu item", "click" )
-#
-#        # Select the 'Help' menu item
-#        helpItem = fryskMonitor.menuItem('Help')
-#        helpItem.click()
-#
-#        # Select the 'About Frysk' Help menu item
-#        aboutItem = helpItem.menuItem('About')
-#        aboutItem.click() 
-#        aboutFrame = self.frysk.child(ABOUT_FRYSK)
-#        showChildren_new ( aboutFrame, "push button", "click" )
-#
-#        # Select the 'License' menu pick and click the button to open the license frame
-#        licenseButton = aboutFrame.button(LICENSE)
-#        licenseButton.click()
-#        licenseFrame = self.frysk.dialog(LICENSE)
-#        showChildren_new ( licenseFrame, "push button", "click" )
-#
-#        # Close the license text frame
-#        closeButton = licenseFrame.button('Close')
-#        closeButton.click()
-#
-#        # Select the 'Credits' menu pick and click the button to open the credits frame
-#        creditsButton = aboutFrame.button(CREDITS)
-#        creditsButton.click()
-#        creditsFrame = self.frysk.dialog(CREDITS)
-#        showChildren_new ( creditsFrame, "push button", "click" )
-#
-#        # Close the license text frame
-#        closeButton = creditsFrame.button('Close')
-#        closeButton.click()
-#        
-#        closeButton = aboutFrame.button('Close')
-#        closeButton.click()
-         
     def testPath_2( self ):
-        """test = guiWalkTest.testPath_1- Check that the GUI elements can be accessed and acted upon"""
+        """test = guiWalkTest.testPath_2 - Check that the GUI elements can be accessed and acted upon"""
         
         # Create a Frysk session - param #3 = quit the FryskGui after
         # creating the session, param #4 = walk thru all the GUI nodes 
@@ -449,20 +393,6 @@ class guiWalktest ( unittest.TestCase ):
         cancelButton = customObservers.button( 'Cancel' )
         cancelButton.click()
         
-#        # And the menu pick to access Observers
-#        programSelection = observersItem.menuItem( PROGRAM_OBSERVERS )
-#        programSelection.click()   
-#        theList = self.frysk.children
-#        
-#        # TODO Replace this hard-coded reference to a list element with a reference
-#        # to the sourceDialog name - the problem is that the dialog name as of 20060922
-#        # is not defined - the dialog is generated at runtime and has no AT information
-#        programObservers = theList[1]     
-#        showChildren_new ( programObservers, "table cell", "activate" )
-#        
-#        okButton = programObservers.button( 'OK' )
-#        okButton.click()
-        
 def suite():
     suite = unittest.TestSuite()
     suite.addTest( guiWalktest ( 'testPath_1' ) )
@@ -472,3 +402,4 @@ def suite():
 if __name__ == '__main__':
   #unittest.main()
   unittest.TextTestRunner( verbosity=2 ).run( suite() )
+
