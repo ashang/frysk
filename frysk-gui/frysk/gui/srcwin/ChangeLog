@@ -1,3 +1,19 @@
+2006-10-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (getVariable): Now uses frysk.lang.Variable and
+	SymTab.
+	* SourceBuffer.java (getVariable): Ditto.
+	* InlineSourceView.java (mouseEvent): Now shows the variable value
+	as an item within the right click menu, also rewired to use
+	frysk.lang.Variable.
+	* SourceView.java (clickedOnTextArea): Ditto.
+	(parent): Made protected.
+	* SourceWindow.java: Replaced references of frysk.gui.srcwin.Variable
+	with frysk.lang.Variable.
+	* VariableWatchView.java: Reformatted.
+	(addTrace): Now uses frysk.lang.Variable.
+	* Variable.java: Removed, frysk.lang.Variable should be used instead.
+
 2006-09-22  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (isLineExecutable): Check for a null StackFrame

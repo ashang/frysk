@@ -82,6 +82,8 @@ import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.lang.InvalidOperatorException;
+import frysk.lang.Variable;
 import frysk.rt.StackFrame;
 
 /**
@@ -107,7 +109,7 @@ public class SourceView
 
   protected TextChildAnchor anchor;
 
-  private SourceWindow parent;
+  protected SourceWindow parent;
 
   protected boolean expanded = false;
 
@@ -771,23 +773,24 @@ public class SourceView
         final Variable var = this.buf.getVariable(iter);
 
         Menu m = new Menu();
-        MenuItem mi = new MenuItem("Display variable value...", false);
-        MenuItem mi2 = new MenuItem("Add Trace", false);
-        m.append(mi);
-        m.append(mi2);
+        MenuItem traceItem = new MenuItem("Add Trace", false);
+        m.append(traceItem);
         if (var != null)
           {
-            mi.addListener(new MenuItemListener()
-            {
-              public void menuItemEvent (MenuItemEvent arg0)
+            MenuItem valueItem;
+            try
               {
-                org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
-                                                                  WindowType.TOPLEVEL);
-                popup.add(new Label(var.getName() + " = 0xfeedcalf"));
-                popup.showAll();
+                valueItem = new MenuItem("Value: " + var.getType().longValue(var), true);
+                valueItem.setSensitive(false);
+                m.append(valueItem);
               }
-            });
-            mi2.addListener(new MenuItemListener()
+            catch (InvalidOperatorException e)
+              {
+                // TODO: What to do if this fails?
+              }
+            
+            
+            traceItem.addListener(new MenuItemListener()
             {
               public void menuItemEvent (MenuItemEvent arg0)
               {
@@ -797,8 +800,7 @@ public class SourceView
           }
         else
           {
-            mi.setSensitive(false);
-            mi2.setSensitive(false);
+            traceItem.setSensitive(false);
           }
 
         m.showAll();

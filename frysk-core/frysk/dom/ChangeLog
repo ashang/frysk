@@ -1,3 +1,7 @@
+2006-10-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMSource.java: Reformatted.
+
 2006-09-28  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fix function name highlighting(bz #3275).

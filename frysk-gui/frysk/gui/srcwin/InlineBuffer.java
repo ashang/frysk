@@ -39,17 +39,21 @@
 
 package frysk.gui.srcwin;
 
+import java.text.ParseException;
 import java.util.Iterator;
 
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
+import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
+import frysk.lang.Variable;
+import frysk.proc.Task;
 import frysk.rt.StackFrame;
 
 /**
@@ -183,10 +187,22 @@ public class InlineBuffer extends SourceBuffer {
 		if(tag == null || !tag.getType().equals(DOMTagTypes.LOCAL_VAR))
 			return null;
 		
-		Variable var = new Variable(
-				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
-				this.scope.getSourceFile(),
-                iter.getLineNumber(), tag.getStart(), false);
+        Task myTask = this.scope.getMyTask();
+        SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask);
+        stab.toString();
+        Variable var;
+        try
+          {
+            var = SymTab.print(line.getText().substring(
+                                                           tag.getStart(),
+                                                           tag.getStart()
+                                                           + tag.getLength()));
+          }
+        catch (ParseException e)
+          {
+            return null;
+          }
+        
 		return var;
     }
     

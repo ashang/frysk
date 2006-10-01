@@ -48,7 +48,6 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextWindowType;
 import org.gnu.gtk.ToolTips;
-import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
@@ -59,6 +58,8 @@ import frysk.dom.DOMInlineInstance;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.lang.InvalidOperatorException;
+import frysk.lang.Variable;
 import frysk.rt.StackFrame;
 
 /**
@@ -236,25 +237,40 @@ public class InlineSourceView extends SourceView{
 			
 			final Variable var = this.buf.getVariable(iter);
 			
-			Menu m = new Menu();
-			MenuItem mi = new MenuItem("Display variable value...", false);
-			m.append(mi);
-			if(var != null){
-				mi.addListener(new MenuItemListener() {
-					public void menuItemEvent(MenuItemEvent arg0) {
-						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
-						popup.add(new Label(var.getName()+ " = 0xfeedcalf"));
-						popup.showAll();
-					}
-				});
-			}
-			else{
-				mi.setSensitive(false);
-			}
+            Menu m = new Menu();
+            MenuItem traceItem = new MenuItem("Add Trace", false);
+            m.append(traceItem);
+            if (var != null)
+              {
+                MenuItem valueItem;
+                try
+                  {
+                    valueItem = new MenuItem("Value: " + var.getType().longValue(var), true);
+                    valueItem.setSensitive(false);
+                    m.append(valueItem);
+                  }
+                catch (InvalidOperatorException e)
+                  {
+                    // TODO: What to do if this fails?
+                  }
+                
+                
+                traceItem.addListener(new MenuItemListener()
+                {
+                  public void menuItemEvent (MenuItemEvent arg0)
+                  {
+                    InlineSourceView.this.parent.addVariableTrace(var);
+                  }
+                });
+              }
+            else
+              {
+                traceItem.setSensitive(false);
+              }
 
-			m.showAll();
-			m.popup();
-			
+            m.showAll();
+            m.popup();
+            			
 			return true;
 		}
 		// clicked on the border

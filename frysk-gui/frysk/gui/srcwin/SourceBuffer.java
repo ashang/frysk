@@ -41,6 +41,7 @@
 package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -56,6 +57,7 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 import org.jdom.Element;
 
+import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -68,6 +70,8 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
+import frysk.lang.Variable;
+import frysk.proc.Task;
 import frysk.rt.StackFrame;
 
 /**
@@ -151,7 +155,7 @@ public class SourceBuffer
   protected TextChildAnchor anchor;
 
   private int mode = SOURCE_MODE;
-  
+
   private boolean firstLoad = true;
 
   /**
@@ -193,12 +197,12 @@ public class SourceBuffer
 
     if (this.scope == null || this.scope.getData() == null)
       return false;
-    
+
     DOMLine line = this.scope.getData().getLine(lineNo + 1);
-    
+
     if (line == null)
       return false;
-    
+
     return line.isExecutable();
   }
 
@@ -527,7 +531,7 @@ public class SourceBuffer
    * @param iter The location to look for a variable
    * @return The variable at that location, or null
    */
-  public Variable getVariable (TextIter iter)
+public Variable getVariable (TextIter iter)
   {
     if (this.scope == null)
       return null;
@@ -546,16 +550,24 @@ public class SourceBuffer
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Variable var = new Variable(
-                                line.getText().substring(
-                                                         tag.getStart(),
-                                                         tag.getStart()
-                                                             + tag.getLength()),
-                                this.scope.getSourceFile(),
-                                iter.getLineNumber(), tag.getStart(), false);
+    Task myTask = this.scope.getMyTask();
+    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask);
+    stab.toString();
+    Variable var;
+    try
+      {
+        var = SymTab.print(line.getText().substring(
+                                                       tag.getStart(),
+                                                       tag.getStart()
+                                                       + tag.getLength()));
+      }
+    catch (ParseException e)
+      {
+        return null;
+      }
+    
     return var;
   }
-
   /**
    * @return The list of functions found by the parser
    */
@@ -602,9 +614,9 @@ public class SourceBuffer
   {
     if (this.scope == null)
       return 0;
-    
+
     DOMSource source = this.scope.getData();
-    
+
     if (mode == SOURCE_MODE && source != null)
       return this.scope.getData().getLineCount();
     else
@@ -629,7 +641,7 @@ public class SourceBuffer
   {
     if (this.scope == null)
       return false;
-    
+
     DOMSource source = this.scope.getData();
     // TODO: Inline code with assembly?
     if (mode != SOURCE_MODE || source == null)
@@ -651,7 +663,7 @@ public class SourceBuffer
   {
     if (this.scope == null)
       return null;
-    
+
     Iterator iter = this.scope.getData().getLine(lineNumber + 1).getInlines();
     if (! iter.hasNext())
       return null;
@@ -872,13 +884,13 @@ public class SourceBuffer
   {
     if (this.scope == null)
       return;
-    
+
     DOMSource source = this.scope.getData();
     if (source == null)
       {
-        if (!this.firstLoad)
+        if (! this.firstLoad)
           return;
-        
+
         this.insertText("No debug information available for this stack frame");
         this.firstLoad = false;
         return;
