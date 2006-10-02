@@ -1,3 +1,9 @@
+2006-10-02  Nurdin Premji <npremji@redhat.com>
+
+	* frysk/bindir/fstack.java: Added command line parser + logging options.
+	Changed to print tasks in ascending order of TID.
+	(handleTask) changed to (storeTask)
+
 2006-09-28  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk/bindir/fstack.java (handleTask): Don't print sourcefiles if they are null.
