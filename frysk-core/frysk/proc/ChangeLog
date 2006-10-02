@@ -1,3 +1,10 @@
+2006-10-02  Nurdin Premji  <npremji@redhat.com>
+
+	* Observation.java (toString): Added.
+	* TaskCodeObservation.java (toString): Added.
+	* TaskSyscallObservation.java (toString): Added.
+	* TestTaskObserverDetach.java (testDetachSignal): Use RequestStopEvent 
+
 2006-09-29  Mark Wielaard  <mark@klomp.org>
 
 	* BreakpointAddresses.java (removeAllCodeObservers): New method.

@@ -94,4 +94,9 @@ abstract class Observation
      * Handle the deletion of the Observer from the Observable.
      */
     public abstract void handleDelete ();
+    
+    public String toString() 
+    {
+      return ("[Observation Event]");
+    }
 }

@@ -1,3 +1,10 @@
+2006-10-02  Nurdin Premji  <npremji@redhat.com>
+
+	* RequestEventLoopStop.java: Added, seems to be a common event.
+	* EventLoop (add): Added more detail to log, include event.
+	* TestEventLoop.java (DidExecute): Added toString.
+	(testScheduleBeforeRun) use RequestEventLoopStop Event.	
+
 2006-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TimerEvent.java: Pass just "frysk" to getLogger, work-around.

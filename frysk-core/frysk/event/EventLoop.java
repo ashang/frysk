@@ -239,7 +239,7 @@ public class EventLoop
      */
     public synchronized void add (Event e)
     {
-	logger.log (Level.FINEST, "{0} add Event\n", this); 
+	logger.log (Level.FINEST, "{0} add Event\n {1}", new Object[] {this, e}); 
 	pendingEvents.add (e);
 	wakeupIfBlocked ();
     }

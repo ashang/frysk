@@ -233,6 +233,11 @@ public class TestEventLoop
 	    {
 		ran = true;
 	    }
+        
+        public String toString()
+        {
+          return ("[DidExecute " + ran + " ]");
+        }
 	}
 
 	// Schedule an immediate event that sets a marker indicating
@@ -241,13 +246,7 @@ public class TestEventLoop
 	eventLoop.add (firstExecute);
 
 	// Schedule an immediate event that shuts down the event loop.
-	eventLoop.add (new Event ()
-	    {
-		public void execute ()
-		{
-		    eventLoop.requestStop ();
-		}
-	    });
+	eventLoop.add (new RequestStopEvent(eventLoop));
 
 
 	// Schedule a further immediate event that sets a marker
@@ -432,13 +431,7 @@ public class TestEventLoop
 	    catch (InterruptedException e) {
 		fail ("sleep interrupted");
 	    }
-	    eventLoop.add (new Event ()
-		{
-		    public void execute ()
-		    {
-			eventLoop.requestStop ();
-		    }
-		});
+	    eventLoop.add (new RequestStopEvent(eventLoop));
 	    Signal.tkill (eventTid, Sig.CHLD);
 	}
     }

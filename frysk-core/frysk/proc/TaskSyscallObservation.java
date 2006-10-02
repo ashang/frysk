@@ -64,4 +64,9 @@ abstract class TaskSyscallObservation
     {
 	task.handleDeleteSyscallObserver (observable, observer);
     }
+    
+    public String toString()
+    {
+      return ("[TaskSyscallObservation Event]");
+    }
 }

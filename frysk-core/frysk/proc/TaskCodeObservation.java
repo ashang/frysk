@@ -79,4 +79,9 @@ abstract class TaskCodeObservation
     task.handleDeleteCodeObserver(observable, (TaskObserver.Code) observer,
 				  address);
   }
+  
+  public String toString()
+  {
+    return ("[TaskCodeObservation Event" + address + "]");
+  }
 }

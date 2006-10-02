@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import frysk.event.Event;
+import frysk.event.RequestStopEvent;
 import frysk.sys.Sig;
 import frysk.sys.proc.Stat;
 import java.lang.Thread;
@@ -293,13 +293,7 @@ public class TestTaskObserverDetach
 	    boolean eventIsSignal () { return true; }
 	    void addEventObserver (Task task)
 	    {
-		Manager.eventLoop.add (new Event ()
-		    {
-			public void execute ()
-			{
-			    Manager.eventLoop.requestStop ();
-			}
-		    });
+		Manager.eventLoop.add (new RequestStopEvent(Manager.eventLoop));
 	    }
 	    void deleteEventObserver (Task task)
 	    {
