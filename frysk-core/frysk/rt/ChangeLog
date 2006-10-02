@@ -1,3 +1,11 @@
+2006-10-02  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackBacktrace.java (testBacktrace): Enabled test 
+	for x86_64, updated brokenXXX call to PPC/64 #3277.
+	(testThreadedBacktrace): Ditto.
+	(frameAssertions): Changed expected system call names for 
+	a couple x86_64 frames.
+
 2006-09-28  Stan Cox  <scox@redhat.com>
 
 	* StackFrame.java (getReg): New.

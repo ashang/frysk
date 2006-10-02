@@ -83,10 +83,11 @@ public class TestStackBacktrace
   public void testBacktrace () throws TaskException
   {
     
-    // Backtraces only work on x86 for now.
-    if (MachineType.getMachineType() != MachineType.IA32)
+    // Backtraces only work on x86 and x86_64 for now.
+    if (MachineType.getMachineType() == MachineType.PPC
+        || MachineType.getMachineType() == MachineType.PPC64)
       {
-        brokenXXX(2936);
+        brokenXXX(3277);
         return;
       }
 
@@ -204,10 +205,11 @@ public class TestStackBacktrace
   public synchronized void testThreadedBacktrace () throws TaskException
   {
     
-    // Backtraces only work on x86 for now.
-    if (MachineType.getMachineType() != MachineType.IA32)
+    // Backtraces only work on x86 and x86_64 for now.
+    if (MachineType.getMachineType() == MachineType.PPC
+        || MachineType.getMachineType() == MachineType.PPC64)
       {
-        brokenXXX(2936);
+        brokenXXX(3277);
         return;
       }
 
@@ -330,7 +332,10 @@ public class TestStackBacktrace
     assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
     
     assertNull(this.frameTracker[next][3][1]);
-    assertEquals("__clone", this.frameTracker[next][3][2]);
+    if (MachineType.getMachineType() == MachineType.IA32)
+      assertEquals("__clone", this.frameTracker[next][3][2]);
+    if (MachineType.getMachineType() == MachineType.X8664)
+      assertEquals("clone", this.frameTracker[next][3][2]);
     assertNotNull(this.frameTracker[next][3][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
     
@@ -376,7 +381,10 @@ public class TestStackBacktrace
     assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
     
     assertNull(this.frameTracker[next][3][1]);
-    assertEquals("__clone", this.frameTracker[next][3][2]);
+    if (MachineType.getMachineType() == MachineType.IA32)
+      assertEquals("__clone", this.frameTracker[next][3][2]);
+    if (MachineType.getMachineType() == MachineType.X8664)
+      assertEquals("clone", this.frameTracker[next][3][2]);
     assertNotNull(this.frameTracker[next][3][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
   }
