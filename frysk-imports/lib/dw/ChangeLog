@@ -1,3 +1,7 @@
+2006-10-02  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (get_scopevar): Check for DW_TAG_variable.
+
 2006-09-29  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getFrameBase): Simplify DW_AT_frame_base handling.

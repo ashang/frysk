@@ -116,6 +116,8 @@ class ExprSymTab implements CppSymTab
   
     dwfl = new Dwfl(pid);
     DwflDieBias bias = dwfl.getDie(pc);
+    if (bias == null)
+      return null;
     DwarfDie die = bias.die;
     
     allDies = die.getScopes(pc - bias.bias);
@@ -198,23 +200,26 @@ class ExprSymTab implements CppSymTab
 
     try
     {
-      if (varDie.getType().compareTo("int") == 0)
+      String type = varDie.getType();
+      if (type == null)
+        return;
+      if (type.compareTo("int") == 0)
         {
           buffer.putInt(addr, v.getInt());
         }
-      else if (varDie.getType().compareTo("short int") == 0)
+      else if (type.compareTo("short int") == 0)
         {
           buffer.putShort(addr, v.getShort());
         }
-      else if (varDie.getType().compareTo("char") == 0)
+      else if (type.compareTo("char") == 0)
         {
           buffer.putByte(addr, (byte)v.getChar());
         }
-      else if (varDie.getType().compareTo("float") == 0)
+      else if (type.compareTo("float") == 0)
         {
           buffer.putFloat(addr, v.getFloat());
         }
-      else if (varDie.getType().compareTo("double") == 0)
+      else if (type.compareTo("double") == 0)
         {
           buffer.putDouble(addr, v.getDouble());
         }
@@ -251,7 +256,10 @@ class ExprSymTab implements CppSymTab
     Variable v;
     try
     {
-      if (varDie.getType().compareTo("int") == 0)
+      String type = varDie.getType();
+      if (type == null)
+        return null;
+      if (type.compareTo("int") == 0)
         {
           int intVal;
           intVal = buffer.getInt(addr);
@@ -259,7 +267,7 @@ class ExprSymTab implements CppSymTab
           v = IntegerType.newIntegerVariable(intType, s, intVal); 
           return v; 
         }
-      else if (varDie.getType().compareTo("short int") == 0)
+      else if (type.compareTo("short int") == 0)
         {
           short shortVal;
           shortVal = buffer.getShort(addr);
@@ -267,7 +275,7 @@ class ExprSymTab implements CppSymTab
           v = ShortType.newShortVariable(shortType, s, shortVal); 
           return v; 
         }
-//    else if (varDie.getType().compareTo("char") == 0)
+//    else if (type.compareTo("char") == 0)
 //      {
 //        byte byteVal;
 //        byteVal = buffer.getByte(addr);
@@ -275,7 +283,7 @@ class ExprSymTab implements CppSymTab
 //        v = ByteType.newByteVariable(byteType, s, byteVal); 
 //        return v; 
 //      }
-      else if (varDie.getType().compareTo("float") == 0)
+      else if (type.compareTo("float") == 0)
         {
           float floatVal;
           floatVal = buffer.getFloat(addr);
@@ -283,7 +291,7 @@ class ExprSymTab implements CppSymTab
           v = FloatType.newFloatVariable(floatType, s, floatVal);
           return v; 
         }    
-      else if (varDie.getType().compareTo("double") == 0)
+      else if (type.compareTo("double") == 0)
         {
           double doubleVal;
           doubleVal = buffer.getDouble(addr);
