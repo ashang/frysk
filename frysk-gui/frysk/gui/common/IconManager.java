@@ -103,8 +103,13 @@ public class IconManager
                            + "getHostAddress()/getHostName()");
         return "Unable to get info";
         //e.printStackTrace();
-
       }
+    catch (NullPointerException npe)
+    {
+      System.err.println("Unable to get host name or ip address from "
+                         + "getHostAddress()/getHostName()");
+      return "Unable to get info";
+    }
     if (which.equals("hostname"))
       {
         return host_name;
