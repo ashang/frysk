@@ -294,7 +294,9 @@ public class fstack
     public void addFailed (Object observable, Throwable w)
     {
       // TODO Auto-generated method stub
-
+      System.err.println(w);
+      Manager.eventLoop.requestStop();
+      System.exit(2);
     }
 
     public void addedTo (Object observable)
