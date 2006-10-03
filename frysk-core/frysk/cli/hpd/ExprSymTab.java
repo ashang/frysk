@@ -135,6 +135,12 @@ class ExprSymTab implements CppSymTab
   private long getBufferAddr(DwarfDie varDie)
   {
     long pc;
+    // ??? Need an isa specific way to get x86 reg names and numbers
+    String[][] x86regnames = {
+                  {"eax", "rax"}, {"ecx", "rdx"}, {"edx", "rcx"}, {"ebx", "rbx"},
+                  {"esp", "rsi"}, {"ebp", "rdi"}, {"esi", "rbp"}, {"edi", "rsp"}
+                };
+    
     try
     {
       if (currentFrame == innerMostFrame)
@@ -156,8 +162,10 @@ class ExprSymTab implements CppSymTab
       {
         if (currentFrame == innerMostFrame)
           {
-            regval = task.getIsa().getRegisterByName
-            (task.getIsa().getRegisterNameByUnwindRegnum(fbreg_and_disp[0])).get(task);
+            if (MachineType.getMachineType() == MachineType.IA32)
+              regval = task.getIsa().getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
+            else if (MachineType.getMachineType() == MachineType.X8664)
+              regval = task.getIsa().getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][1]).get (task);
           }
         else
           {
