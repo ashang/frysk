@@ -1,3 +1,7 @@
+2006-10-03  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView (CurrentStackView): Enabled for x86_64.
+
 2006-10-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (getVariable): Now uses frysk.lang.Variable and

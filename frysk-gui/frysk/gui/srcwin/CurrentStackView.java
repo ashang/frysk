@@ -106,7 +106,8 @@ public class CurrentStackView
 //    DOMFunction func = frame.getFunction();
     String row = "";
     
-    if (MachineType.getMachineType() != MachineType.IA32)
+    if (MachineType.getMachineType() == MachineType.PPC
+        || MachineType.getMachineType() == MachineType.PPC64)
       {
         iter = listModel.appendRow();
         row = "Unknown file : Unknown function";
