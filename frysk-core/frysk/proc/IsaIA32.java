@@ -44,6 +44,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 import lib.unwind.RegisterX86;
+import inua.eio.ByteBuffer;
+import frysk.sys.Ptrace;
+
+import frysk.sys.RegisterSetBuffer;
 
 class IsaIA32 implements Isa
 {
@@ -51,6 +55,20 @@ class IsaIA32 implements Isa
   static final int DBG_OFFSET = 63 * 4;
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
+  
+  private ByteBuffer[] bankBuffers;
+  
+  public ByteBuffer[] getRegisterBankBuffers(int pid) 
+  {
+    bankBuffers = new ByteBuffer[3];
+    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS, Ptrace.FPXREGS };
+    for (int i = 0; i < 3; i++) 
+      {
+	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
+	bankBuffers[i].order(getByteOrder());
+      }
+    return bankBuffers;
+  }
   
   static class IA32Register 
     extends Register
@@ -73,7 +91,32 @@ class IsaIA32 implements Isa
       return 2;
     }
   }
+  
+  // The floating point registers can also be mmx registers. The
+  // normal x87 view of the registers is as a long float, because they
+  // are always saved to memory in that format.
+  static private RegisterView[] fpViews = 
+    {
+      new RegisterView(80, 80, RegisterView.LONGFLOAT),
+      new RegisterView(64, 32, RegisterView.FLOAT),
+      new RegisterView(64, 64, RegisterView.INTEGER),
+      new RegisterView(64, 32, RegisterView.INTEGER),
+      new RegisterView(64, 16, RegisterView.INTEGER),
+      new RegisterView(64, 8, RegisterView.INTEGER)
+    } ;
 
+  
+  // XXX Blow off the XMM registers for now
+  static class FPRegister 
+    extends Register
+  {
+    FPRegister(String name, int regNum) 
+    {
+      super(1, I387_OFFSET + 7*4 + regNum * 10, 10, name, fpViews);
+    }
+    
+  }
+  
   private static final IA32Register[] 
   regDefs = { new IA32Register("eax", 6),
 	      new IA32Register("ebx", 0),
@@ -97,19 +140,20 @@ class IsaIA32 implements Isa
 
   // No one is using the FP or debug registers yet, but here are
   // some definitions for them.
-  Register[] st = new Register[10];
+  // Register[] st = new Register[10];
   Register[] dbg = new Register[8];
 
   IsaIA32()
   {
     for (int i = 0; i < regDefs.length; i++) 
       {
-	registerMap.put(regDefs[i].name, regDefs[i]);
+	registerMap.put(regDefs[i].getName(), regDefs[i]);
       }
-    for (int i = 0; i < st.length; i++) 
-      {
-	st[i] = new Register(0, I387_OFFSET + 7*4 + i*8, 8, "st" + i);
-      }
+    //for (int i = 0; i < 8; i++) 
+    //{
+    //String name = "st" + i;
+    //registerMap.put(name, new FPRegister(name, i));
+    //}
     for (int i = 0; i < dbg.length; i++) 
       {
 	dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);

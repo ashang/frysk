@@ -39,88 +39,53 @@
 
 package frysk.proc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.math.BigInteger;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfEMachine;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-
-public class IsaFactory
+/**
+ * A class for examining the raw bits of a register as fields of
+ * different types.
+ */
+public class RegisterView extends BitfieldAccessor 
 {
-  private static IsaFactory factory;
-    static final Logger logger = Logger.getLogger ("frysk");//.proc");
-
-  static IsaFactory getFactory()
-  {
-    if (factory == null)
-      factory = new IsaFactory ();
-    return factory;
-  }
-
-  /** Obtain ISA of task via pid. 
-   */
-  private Isa getIsa(int pid, Task task) 
-    throws TaskException
-  {
-    Elf elfFile;
-    logger.log (Level.FINE, "{0} getIsa\n", this);
+  public final static int INTEGER = 0x1;
+  public final static int FLOAT = 0x2;
+  public final static int DOUBLE = 0x4;
+  public final static int LONGFLOAT = 0x8;
     
-    try 
-      {
-	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e) 
-      {
-	throw new TaskFileException(e.getMessage(), task, e.getFileName(), e);
-      }
-    catch (ElfException e) 
-      {
-	throw new TaskException("getting task's executable", e);
-      }
-    try
-      {
-	
-	ElfEHeader header = elfFile.getEHeader();
-
-	switch (header.machine) 
-	  {
-	  case ElfEMachine.EM_386:
-	    {
-	      if (frysk.core.Build.BUILD_ARCH.equals("i686"))
-		return LinuxIa32.isaSingleton ();
-	      else
-		return LinuxIa32On64.isaSingleton();
-	    }
-	  case ElfEMachine.EM_PPC:
-	    return LinuxPPC.isaSingleton ();
-	  case ElfEMachine.EM_PPC64:
-	    return LinuxPPC64.isaSingleton ();
-	  case ElfEMachine.EM_X86_64:
-	    return LinuxEMT64.isaSingleton ();
-	  default: 
-	    throw new TaskException("Unknown machine type " + header.machine);
-	  }
-      }
-    finally 
-      {
-	elfFile.close();
-      }
-  }
-
-  public  Isa getIsa(int pid) 
-    throws TaskException 
+  private final int type;
+  
+  /**
+   * Constructor. Similar to the superclass constructor in
+   * BitfieldAcessor, with the addition of a type flag.
+   * 
+   * @param length the register length in bytes (unlike
+   * <code>BitfieldAcessor</code>)
+   * @param fieldLength the field length in bytes
+   * @param type a static type constant
+   */
+  public RegisterView(int length, int fieldLength, int type) 
   {
-    return getIsa(pid, null);
+    super(length * 8, fieldLength * 8);
+    this.type = type;
   }
   
-  public Isa getIsa(Task task)
-    throws TaskException
+  /**
+   * The types that are valid to fetch in this view.
+   *
+   * @return the logical or of the type flags for valid types.
+   */
+  public int getType() 
   {
-    return getIsa(task.getTid(), task);
+    return type;
   }
-  
+
+  /**
+   * Get the value of the field as a LongFloat.
+   *
+   * @return the long float value
+   */
+  public LongFloat getLongFloatField(BigInteger value, int fieldNum) 
+  {
+    return new LongFloat(value.shiftRight(fieldNum * fieldLength)
+			 .and(fieldMask));}
 }

@@ -39,88 +39,99 @@
 
 package frysk.proc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.math.BigInteger;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfEMachine;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-
-public class IsaFactory
+/** Object representing 80 bit floating point value from x87 registers.
+ */
+public class LongFloat 
 {
-  private static IsaFactory factory;
-    static final Logger logger = Logger.getLogger ("frysk");//.proc");
-
-  static IsaFactory getFactory()
+  private static long mantissaMask = (1 << 52) - 1;
+  
+  private BigInteger bits;
+  
+  /**
+   * Constructor. Initialize object with the raw floating point bits.
+   * @param bits raw bits
+   */
+  public LongFloat(BigInteger bits) 
   {
-    if (factory == null)
-      factory = new IsaFactory ();
-    return factory;
+    this.bits = bits;
+  }
+  
+  /**
+   * Constructor using a double value. Convert the bits in the double
+   * to the corresponding long float bits.
+   *
+   * @param doubleVal double floating point value to convert
+   */
+  public LongFloat(double doubleVal) 
+  {
+    long doubleBits = Double.doubleToLongBits(doubleVal);
+    // Must use long float exponent bias
+    long exponent = (doubleBits >> 52) & 0x7ff - 1023;
+    
+    bits = BigInteger.valueOf(doubleBits & mantissaMask).shiftLeft(12)
+      .or(BigInteger.valueOf(exponent + 16383).shiftLeft(64));
+    if (doubleBits < 0)
+      bits = bits.or(BigInteger.ONE.shiftLeft(79));
+  }
+  
+  /**
+   * Return the bit representation of the long float.
+   *
+   * @return the bits
+   */
+  public BigInteger getBits()
+  {
+    return bits;
   }
 
-  /** Obtain ISA of task via pid. 
+  /**
+   * Return value as a double.
+   *
+   * @return the double value
    */
-  private Isa getIsa(int pid, Task task) 
-    throws TaskException
+  public double asDouble() 
   {
-    Elf elfFile;
-    logger.log (Level.FINE, "{0} getIsa\n", this);
-    
-    try 
+    long exponent = (bits.shiftRight(64).longValue() & 0x7fff) - 16383;
+    if (exponent > 127) 
       {
-	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e) 
-      {
-	throw new TaskFileException(e.getMessage(), task, e.getFileName(), e);
-      }
-    catch (ElfException e) 
-      {
-	throw new TaskException("getting task's executable", e);
-      }
-    try
-      {
-	
-	ElfEHeader header = elfFile.getEHeader();
-
-	switch (header.machine) 
+	if (bits.compareTo(BigInteger.ZERO) < 0) 
 	  {
-	  case ElfEMachine.EM_386:
-	    {
-	      if (frysk.core.Build.BUILD_ARCH.equals("i686"))
-		return LinuxIa32.isaSingleton ();
-	      else
-		return LinuxIa32On64.isaSingleton();
-	    }
-	  case ElfEMachine.EM_PPC:
-	    return LinuxPPC.isaSingleton ();
-	  case ElfEMachine.EM_PPC64:
-	    return LinuxPPC64.isaSingleton ();
-	  case ElfEMachine.EM_X86_64:
-	    return LinuxEMT64.isaSingleton ();
-	  default: 
-	    throw new TaskException("Unknown machine type " + header.machine);
+	    return Double.NEGATIVE_INFINITY;
+	  }
+	else 
+	  {
+	    return Double.POSITIVE_INFINITY;
 	  }
       }
-    finally 
+    else if (exponent < -128) 
       {
-	elfFile.close();
+	// underflow instead?
+	if (bits.compareTo(BigInteger.ZERO) < 0) 
+	  {
+	    return -0.0;
+	  }
+	else 
+	  {
+	    return 0.0;
+	  }
       }
+    long doubleBits = bits.shiftRight(12).longValue() & ((1 << 52) -1);
+    doubleBits |= (exponent + 1023) << 52;
+    if (bits.compareTo(BigInteger.ZERO) < 0)
+      doubleBits |= 1 << 63;
+    return Double.longBitsToDouble(doubleBits);
   }
-
-  public  Isa getIsa(int pid) 
-    throws TaskException 
-  {
-    return getIsa(pid, null);
-  }
-  
-  public Isa getIsa(Task task)
-    throws TaskException
-  {
-    return getIsa(task.getTid(), task);
-  }
-  
 }
+
+    
+    
+	
+    
+    
+
+
+  
+
+  

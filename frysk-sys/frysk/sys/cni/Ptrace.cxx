@@ -40,6 +40,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
+#include <sys/user.h>
 #include "linux.ptrace.h"
 #include <errno.h>
 #include <linux/unistd.h>
@@ -57,6 +58,21 @@
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
+
+struct RegisterSetParams
+{
+  int size;
+  int peekRequest;
+  int pokeRequest;
+};
+
+static RegisterSetParams regSetParams[] =
+  {{sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS},
+   {sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS},
+#if defined(__i386__)
+   {sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS},
+#endif
+  };
 
 int cpid;
 
@@ -189,6 +205,29 @@ frysk::sys::Ptrace::poke(jint peekRequest, jint pid, jstring paddr,
 {
   _callPtrace((enum __ptrace_request) peekRequest, pid, (char *)paddr,
                                         data, "ptrace.poke");
+}
+
+jint
+frysk::sys::Ptrace::registerSetSize(jint set)
+{
+  if (set < (jint)(sizeof(regSetParams) / sizeof(regSetParams[0])))
+    return regSetParams[set].size;
+  else
+    return 0;
+}
+
+void
+frysk::sys::Ptrace::peekRegisters(jint registerSet, jint pid, jbyteArray data)
+{
+  _callPtrace(regSetParams[registerSet].peekRequest, pid, 0,
+	      (long)elements(data), "ptrace.peekRegisters");
+}
+
+void
+frysk::sys::Ptrace::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
+{
+  _callPtrace(regSetParams[registerSet].pokeRequest, pid, 0,
+	      (long)elements(data), "ptrace.pokeRegisters");
 }
 
 void

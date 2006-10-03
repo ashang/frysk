@@ -44,6 +44,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+import frysk.sys.PtraceByteBuffer;
+
 
 class IsaPPC
   implements Isa
@@ -88,21 +91,21 @@ class IsaPPC
   {
     for (int i = 0; i < gpr.length; i++) 
       {
-	registerMap.put (gpr[i].name, gpr[i]);
+	registerMap.put (gpr[i].getName(), gpr[i]);
       }
 
-    registerMap.put(nip.name, nip);
-    registerMap.put(msr.name, msr);
-    registerMap.put(orig_r3.name, orig_r3);
-    registerMap.put(ctr.name, ctr);
-    registerMap.put(lnk.name, lnk);
-    registerMap.put(xer.name, xer);
-    registerMap.put(ccr.name, ccr);
-    registerMap.put(mq.name, mq);
-    registerMap.put(trap.name, trap);
-    registerMap.put(dar.name, dar);
-    registerMap.put(dsisr.name, dsisr);
-    registerMap.put(result.name, result);
+    registerMap.put(nip.getName(), nip);
+    registerMap.put(msr.getName(), msr);
+    registerMap.put(orig_r3.getName(), orig_r3);
+    registerMap.put(ctr.getName(), ctr);
+    registerMap.put(lnk.getName(), lnk);
+    registerMap.put(xer.getName(), xer);
+    registerMap.put(ccr.getName(), ccr);
+    registerMap.put(mq.getName(), mq);
+    registerMap.put(trap.getName(), trap);
+    registerMap.put(dar.getName(), dar);
+    registerMap.put(dsisr.getName(), dsisr);
+    registerMap.put(result.getName(), result);
   }
     
   public Iterator RegisterIterator ()
@@ -182,4 +185,13 @@ class IsaPPC
 
     return null;
   }
+
+  public ByteBuffer[] getRegisterBankBuffers(int pid) 
+  {
+    ByteBuffer[] result = new ByteBuffer[]
+      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
+    result[0].order(getByteOrder());
+    return result;
+  }
+
 }

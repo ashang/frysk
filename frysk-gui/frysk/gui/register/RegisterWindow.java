@@ -70,6 +70,7 @@ import frysk.gui.common.UBigInteger;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Register;
+import frysk.proc.RegisterView;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
@@ -100,15 +101,20 @@ public class RegisterWindow
 				new DataColumnString(), // binary be
 				new DataColumnObject(), // the Register object
 				new DataColumnDouble(), // alignment
-				new DataColumnObject ()}; // BigInteger value
+				new DataColumnObject (), // BigInteger value
+				new DataColumnObject() }; // current view object
+  
 
   protected static String[] colNames = { "Decimal (LE)", "Decimal (BE)",
                                         "Hexadecimal (LE)", "Hexadecimal (BE)",
                                         "Octal (LE)", "Octal (BE)",
                                         "Binary (LE)", "Binary (BE)" };
 
-  protected boolean[] colVisible = { false, false, true, false, false, false,
-                                    false, false };
+  protected boolean[] colVisible = new boolean[cols.length];
+  {
+    java.util.Arrays.fill(colVisible, false);
+    colVisible[2] = true;
+  }
 
   private TreeViewColumn[] columns = new TreeViewColumn[8];
 
@@ -184,6 +190,9 @@ public class RegisterWindow
         model.setValue(iter, (DataColumnString) cols[0], register.getName());
         model.setValue(iter, (DataColumnObject) cols[9], register);
         model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
+	model.setValue(iter, (DataColumnObject)cols[12], 
+		       register.getViews()[0]);
+	
 	saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
       }
 
@@ -323,6 +332,39 @@ public class RegisterWindow
     this.refreshList();
   }
 
+  private String stringUsingView(BigInteger value, RegisterView view, int base)
+  {
+    return stringUsingView(value, view, base, 0);
+  }
+  
+    
+  private String stringUsingView(BigInteger value, RegisterView view, int base,
+				 int field) 
+  {
+    int viewType = view.getType();
+    
+    if (viewType == RegisterView.INTEGER) 
+      {
+	BigInteger fieldVal = view.getIntField(value, field);
+	if (base == 10) 
+	  {
+	    return fieldVal.toString();
+	  }
+	else 
+	  {
+	    String val = UBigInteger.toString(fieldVal, view.getFieldLength() * 8,
+					base);
+	    return val;
+	  }
+      }
+    else if (viewType == RegisterView.LONGFLOAT)
+      {
+	return Double.toString(view.getLongFloatField(value, field).asDouble());
+      }
+    else
+      throw new RuntimeException("can't handle view type " + viewType + " yet");
+  }
+  
   /**
    * Refreshes the TreeView displayed to the user with values grabbed from
    * the Register Objects in the model.
@@ -346,29 +388,33 @@ public class RegisterWindow
 	int bitlength = register.getLength() * 8;
 	BigInteger value
 	  = (BigInteger)model.getValue(iter, (DataColumnObject)cols[11]);
+	RegisterView view = register.getViews()[0];
+	
 	// Binary little endian
 	model.setValue(iter, (DataColumnString)cols[7], 
-		       UBigInteger.toString(value, bitlength, 2));
+		       stringUsingView(value, view, 2));
 	// Decimal little endian
-	model.setValue(iter, (DataColumnString)cols[1], value.toString());
+	model.setValue(iter, (DataColumnString)cols[1], 
+		       stringUsingView(value, view, 10));
 	// Hex little endian
 	model.setValue(iter, (DataColumnString)cols[3], 
-		       "0x" + UBigInteger.toString(value, bitlength, 16));
+		       "0x" + stringUsingView(value, view, 16));
 	// Octal little endian
 	model.setValue(iter, (DataColumnString)cols[5], 
-		       UBigInteger.toString(value, bitlength, 8));
+		       stringUsingView(value, view, 16));
 	BigInteger bigEndValue = swizzleByteOrder(value, bitlength);
 	// Binary big endian
 	model.setValue(iter, (DataColumnString)cols[8], 
-		       UBigInteger.toString(bigEndValue, bitlength, 2));
+		       stringUsingView(bigEndValue, view, 2));
         // Decimal big-endian
-	model.setValue(iter, (DataColumnString)cols[2], bigEndValue.toString());
+	model.setValue(iter, (DataColumnString)cols[2],
+		       stringUsingView(bigEndValue, view, 10));
         // Hex big-endian
 	model.setValue(iter, (DataColumnString)cols[4], 
-		       "0x" + UBigInteger.toString(value, bitlength, 16));
+		       "0x" + stringUsingView(bigEndValue, view, 16));
         // Octal big-endian
-	model.setValue(iter, (DataColumnString)cols[6], 
-		       UBigInteger.toString(value, bitlength, 8));
+	model.setValue(iter, (DataColumnString)cols[6],
+		       stringUsingView(bigEndValue, view, 16));
 
         iter = iter.getNextIter();
       }

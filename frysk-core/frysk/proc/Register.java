@@ -49,8 +49,9 @@ public class Register
   // boolean readWrite;
   final int bank;
   final int offset;
-  final int length;
-  final String name;
+  private final int length;
+  private final String name;
+  private RegisterView[] views;
 
   // Does this really not exist somewhere else?
   private static void reverseArray(byte[] array) 
@@ -69,8 +70,32 @@ public class Register
     this.offset = offset;
     this.length = length;
     this.name = name;
+    views = new RegisterView[] 
+      {	new RegisterView(length, length, RegisterView.INTEGER) };
+  }
+
+  /**
+   * Constructor plus views array.
+   *
+   * @param bank The number of a bank (ByteBuffer) in the Task
+   * object's registerBank array 
+   * @param offset byte offset in the bank
+   * @param name name of the register
+   * @param views possible ways of interpreting the data in the register
+   */
+  Register(int bank, int offset, int length, String name, RegisterView[] views)
+  {
+    this(bank, offset, length, name);
+    this.views = views;
   }
   
+  /**
+   * Get the value of the register as a long.
+   *
+   * @param task the task object supplying the ByteBuffer for reading
+   * the register
+   * @return value of register
+   */
   public long get(frysk.proc.Task task)
   {
     ByteBuffer b = task.registerBank[bank];
@@ -101,6 +126,12 @@ public class Register
     return new BigInteger(bytes);
   }
 
+  /**
+   * Write a register value.
+   *
+   * @param task task in which to write the register
+   * @param val the value
+   */
   public void put(frysk.proc.Task task, long val)
   {
     ByteBuffer b = task.registerBank[bank];
@@ -132,7 +163,7 @@ public class Register
   }
 
   /**
-   * Write a register value.
+   * Write a BigInteger register value.
    *
    * @param task task in which to write the register
    * @param val the value
@@ -186,17 +217,33 @@ public class Register
       }
   }
 	    
-
+  /**
+   * Get the name of the register.
+   *
+   * @return the name
+   */
   public String getName()
   {
     return name;
   }
     
+  /**
+   * Get the length of the register in bytes.
+   *
+   * @return the length
+   */
   public int getLength()
   {
     return length;
   }
 
-  // void get(proc.Task task, byte[] bytes, int off, int len);
-  // void get(Task task, byte[] array);
+  /**
+   * Get the array of possible RegisterView objects for this register.
+   *
+   * @return the views
+   */
+  public RegisterView[] getViews() 
+  {
+    return views;
+  }
 }

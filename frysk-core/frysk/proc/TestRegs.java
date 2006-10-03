@@ -483,7 +483,11 @@ public class TestRegs
 
   public void testRegs()
   {
-    if (MachineType.getMachineType() == MachineType.IA32)
+    String prefix = getExecPrefix();
+    boolean doArch32 = prefix.indexOf("arch32") >= 0;
+    
+    if (MachineType.getMachineType() == MachineType.IA32
+	|| (MachineType.getMachineType() == MachineType.X8664 && doArch32))
       checkI386Regs();
     else if (MachineType.getMachineType() == MachineType.X8664)
       checkX8664Regs();

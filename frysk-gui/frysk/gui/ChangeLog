@@ -1,3 +1,10 @@
+2006-10-03  Tim Moore  <timoore@redhat.com>
+
+	* RegisterWindow.java (cols, colVisible, setTask): Add column for
+	view object.
+	(stringUsingView): new methods
+	(refreshList): Use stringUsingView to print register contents
+
 2006-09-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (openSession): Always

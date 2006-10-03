@@ -111,8 +111,10 @@ verify (jbyteArray buf, get_t *get)
     if (type > 1024 || type < 0)
       return false;
     // AT_NULL value only at end of buffer?
-    if (type == 0 && i + 2 * wordSize < buf->length)
-      return false;
+    // No, /proc/PID/auxv size is set by the architecture, but the
+    // auxv of a 32 bit process could be smaller.
+    if (type == 0)
+      return true;
   }
   return true;
 }

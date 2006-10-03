@@ -37,90 +37,81 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.sys;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import inua.eio.ByteBuffer;
 
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-import lib.elf.ElfEHeader;
-import lib.elf.ElfEMachine;
-import lib.elf.ElfException;
-import lib.elf.ElfFileException;
-
-public class IsaFactory
+/*
+ * A ByteBuffer interface to structures returned by ptrace which must
+ * be read or written all at once e.g., the registers or floating
+ * point registers.
+ */
+public class RegisterSetBuffer
+  extends ByteBuffer
 {
-  private static IsaFactory factory;
-    static final Logger logger = Logger.getLogger ("frysk");//.proc");
-
-  static IsaFactory getFactory()
-  {
-    if (factory == null)
-      factory = new IsaFactory ();
-    return factory;
-  }
-
-  /** Obtain ISA of task via pid. 
-   */
-  private Isa getIsa(int pid, Task task) 
-    throws TaskException
-  {
-    Elf elfFile;
-    logger.log (Level.FINE, "{0} getIsa\n", this);
+  
+  private int bank;
+  private int pid;
+  private int maxOffset;
     
-    try 
-      {
-	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);
-      }
-    catch (ElfFileException e) 
-      {
-	throw new TaskFileException(e.getMessage(), task, e.getFileName(), e);
-      }
-    catch (ElfException e) 
-      {
-	throw new TaskException("getting task's executable", e);
-      }
-    try
-      {
-	
-	ElfEHeader header = elfFile.getEHeader();
-
-	switch (header.machine) 
-	  {
-	  case ElfEMachine.EM_386:
-	    {
-	      if (frysk.core.Build.BUILD_ARCH.equals("i686"))
-		return LinuxIa32.isaSingleton ();
-	      else
-		return LinuxIa32On64.isaSingleton();
-	    }
-	  case ElfEMachine.EM_PPC:
-	    return LinuxPPC.isaSingleton ();
-	  case ElfEMachine.EM_PPC64:
-	    return LinuxPPC64.isaSingleton ();
-	  case ElfEMachine.EM_X86_64:
-	    return LinuxEMT64.isaSingleton ();
-	  default: 
-	    throw new TaskException("Unknown machine type " + header.machine);
-	  }
-      }
-    finally 
-      {
-	elfFile.close();
-      }
-  }
-
-  public  Isa getIsa(int pid) 
-    throws TaskException 
+  public int getBank() 
   {
-    return getIsa(pid, null);
+    return bank;
   }
   
-  public Isa getIsa(Task task)
-    throws TaskException
+  private byte[] bankBytes;
+  
+  public byte[] getBankBytes() 
   {
-    return getIsa(task.getTid(), task);
+    return bankBytes;
+  }
+    
+  public long getMaxOffset() 
+  {
+    return maxOffset;
+  }
+
+  public RegisterSetBuffer(int bank, int  pid) 
+  {
+    super(0, Ptrace.registerSetSize(bank));
+    this.bank = bank;
+    this.pid = pid;
+    int bankSize = maxOffset = Ptrace.registerSetSize(bank);
+  
+    if (bankSize == 0) 
+      {
+	throw new RuntimeException("invalid register bank " + bank
+				   + " for this architecture.");
+      }
+    bankBytes = new byte[bankSize];
+  }
+  
+  void refresh() 
+  {
+    Ptrace.peekRegisters(bank, pid, bankBytes);
+  }
+  
+  protected int peek (long index) 
+  {
+    refresh();
+    return (int)bankBytes[(int)index];
+  }
+  
+  protected void poke (long index, int value)
+  {
+    refresh();
+    bankBytes[(int)index] = (byte)value;
+    Ptrace.pokeRegisters(bank, pid, bankBytes);
+  }
+  
+  protected long peek (long index, byte[] bytes, long off, long len) 
+  {
+    refresh();
+    for (int i = 0; i < len; i++) 
+      {
+	bytes[(int)off + i] = bankBytes[(int)index + i];
+      }
+    return len;
   }
   
 }

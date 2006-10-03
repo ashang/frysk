@@ -44,209 +44,244 @@ package frysk.sys;
 
 public class Ptrace
 {
-	/* The thread explicitly used for ptrace calls */
-	static volatile PtraceThread pt;
+  /**
+   * Constants describing register sets that can be read and written by ptrace.
+   */
+  public static final int REGS = 0;
+  public static final int FPREGS = 1;
+  public static final int FPXREGS = 2;
+
+  /* The thread explicitly used for ptrace calls */
+  static volatile PtraceThread pt;
 	
-	/**
-	 * Return our PtraceThread
-	 */
-	static synchronized PtraceThread getPt ()
-	{
-		if (pt == null) {
-			pt = new PtraceThread();
-			pt.setDaemon(true);
-			pt.startThread();
-		}
-		return pt;
-	}
+  /**
+   * Return our PtraceThread
+   */
+  static synchronized PtraceThread getPt ()
+  {
+    if (pt == null) {
+      pt = new PtraceThread();
+      pt.setDaemon(true);
+      pt.startThread();
+    }
+    return pt;
+  }
 	
-	/**
-	 * Attach to the process specified by PID.
-	 */
-	public static native void attach (int pid);
-	/**
-	 * Detach from the process specified by PID.
-	 */
-	public static native void detach(int pid, int sig);
-	/**
-	 * Detach from the process specified by PID.
-	 */
-	public static void detach (int pid, Sig sig)
-	{
-		detach (pid, sig.hashCode ());
-	}
-	/**
-	 * Single-step (instruction step) the process specified by PID, if
-	 * SIG is non-zero, deliver the signal.
-	 */
-	public static native void singleStep(int pid, int sig);
-	/**
-	 * Continue the process specified by PID, if SIG is non-zero,
-	 * deliver the signal.
-	 */
-	public static native void cont(int pid, int sig);
-	/**
-	 * Continue the process specified by PID, stopping when there is a
-	 * system-call; if SIG is non-zero deliver the signal.
-	 */
-	public static native void sysCall(int pid, int sig);
-	/**
-	 * Fetch the auxilary information associated with PID's last WAIT
-	 * event.
-	 */ 
-	public static native long getEventMsg(int pid);
-	/**
-     * Fetch the word located at paddr.
-     */
-    public static native long peek(int peekRequest, int pid, String paddr);
+  /**
+   * Attach to the process specified by PID.
+   */
+  public static native void attach (int pid);
+  /**
+   * Detach from the process specified by PID.
+   */
+  public static native void detach(int pid, int sig);
+  /**
+   * Detach from the process specified by PID.
+   */
+  public static void detach (int pid, Sig sig)
+  {
+    detach (pid, sig.hashCode ());
+  }
+  /**
+   * Single-step (instruction step) the process specified by PID, if
+   * SIG is non-zero, deliver the signal.
+   */
+  public static native void singleStep(int pid, int sig);
+  /**
+   * Continue the process specified by PID, if SIG is non-zero,
+   * deliver the signal.
+   */
+  public static native void cont(int pid, int sig);
+  /**
+   * Continue the process specified by PID, stopping when there is a
+   * system-call; if SIG is non-zero deliver the signal.
+   */
+  public static native void sysCall(int pid, int sig);
+  /**
+   * Fetch the auxilary information associated with PID's last WAIT
+   * event.
+   */ 
+  public static native long getEventMsg(int pid);
+  /**
+   * Fetch the word located at paddr.
+   */
+  public static native long peek(int peekRequest, int pid, String paddr);
+  /**
+   * Copy the word in data to child's addr.
+   */
+  public static native void poke(int pokeRequest, int pid, String paddr,
+				 long data);
+  /**
+   * Return the size (in bytes) of a register set.
+   *
+   * @param set the register set
+   * @returns required size of buffer
+   */
+  public static native int registerSetSize(int set);
+  
+  /**
+   * Read the entire contents of a register set.
+   *
+   * @param registerSet the register set constant.
+   * @param pid pid of the task
+   * @param data buffer for the register set
+   */
+  public static native void peekRegisters(int registerSet, int pid, 
+					  byte[] data);
+
+  /**
+   * Write the entire contents of a register set.
+   *
+   * @param registerSet the register set constant.
+   * @param pid pid of the task
+   * @param data buffer for the register set
+   */
+  public static native void pokeRegisters(int registerSet, int pid, 
+					  byte[] data); 
+  
+  /**
+   * Create an attached child process.  Uses PT_TRACEME.
+   */
+  public static native int child (String in, String out, String err,
+				  String[] args);
+  /**
+   * Set PID's trace options.  OPTIONS is formed by or'ing the
+   * values returned by the option* methods below.
+   */
+  public static native void setOptions (int pid, long options);
+  /**
+   * Return the bitmask for enabling clone tracing.
+   */
+  public static native long optionTraceClone ();
+  /**
+   * Return the bitmask for enabling fork tracing.
+   */
+  public static native long optionTraceFork ();
+  /**
+   * Return the bitmask for enabling exit tracing.
+   */
+  public static native long optionTraceExit ();
+  /**
+   * Return the bitmask for enabling SYSGOOD(?} tracing.
+   */ 
+  public static native long optionTraceSysgood ();
+  /**
+   * Return the bitmask for enabling exec tracing.
+   */
+  public static native long optionTraceExec ();
+	
+	
+  /**************************************************************************
+   * The new ptrace thread class                                            *
+   *************************************************************************/
+  public static class PtraceThread extends Thread {
+		
+    volatile int request;	/* The ptrace operation request */
+    volatile int pid;		/* The pid of the target process */
+    volatile int error;		/* Error returned from the ptrace call */
+    volatile long addr;		/* Address used by ptrace (Not yet used) */
+    volatile long data;		/* Data or signals passed to the target */
+    volatile long result;	/* Result of the ptrace call */
+    volatile String in;		/* Standard in */
+    volatile String out;	/* Standard out */
+    volatile String err;	/* Standard error */
+    volatile String[] args;	/* Arguments to be executed */
+		
+    Integer lock = new Integer (0); 	/* Used as a locking object */
+		
+		
     /**
-     * Copy the word in data to child's addr.
+     * RUN - Main thread execution method
+     * Loop and wait for notification events, signalling that the core
+     * thread and relevant data are ready to have a ptrace call 
+     * executed and data returned.
      */
-    public static native void poke(int pokeRequest, int pid, String paddr,
-                    long data);
-	/**
-	 * Create an attached child process.  Uses PT_TRACEME.
-	 */
-	public static native int child (String in, String out, String err,
-			String[] args);
-	/**
-	 * Set PID's trace options.  OPTIONS is formed by or'ing the
-	 * values returned by the option* methods below.
-	 */
-	public static native void setOptions (int pid, long options);
-	/**
-	 * Return the bitmask for enabling clone tracing.
-	 */
-	public static native long optionTraceClone ();
-	/**
-	 * Return the bitmask for enabling fork tracing.
-	 */
-	public static native long optionTraceFork ();
-	/**
-	 * Return the bitmask for enabling exit tracing.
-	 */
-	public static native long optionTraceExit ();
-	/**
-	 * Return the bitmask for enabling SYSGOOD(?} tracing.
-	 */ 
-	public static native long optionTraceSysgood ();
-	/**
-	 * Return the bitmask for enabling exec tracing.
-	 */
-	public static native long optionTraceExec ();
-	
-	
-	/**************************************************************************
-	 * The new ptrace thread class                                            *
-	 *************************************************************************/
-	public static class PtraceThread extends Thread {
-		
-		volatile int request;	/* The ptrace operation request */
-		volatile int pid;		/* The pid of the target process */
-		volatile int error;		/* Error returned from the ptrace call */
-		volatile long addr;		/* Address used by ptrace (Not yet used) */
-		volatile long data;		/* Data or signals passed to the target */
-		volatile long result;	/* Result of the ptrace call */
-		volatile String in;		/* Standard in */
-		volatile String out;	/* Standard out */
-		volatile String err;	/* Standard error */
-		volatile String[] args;	/* Arguments to be executed */
-		
-		Integer lock = new Integer (0); 	/* Used as a locking object */
-		
-		
-		/**
-		 * RUN - Main thread execution method
-		 * Loop and wait for notification events, signalling that the core
-		 * thread and relevant data are ready to have a ptrace call 
-		 * executed and data returned.
-		 */
-		public void run() 
-		{
-			/* Critical section */
-			synchronized (this) 
-			{
-				notify ();
-				/* Continue serving requests */
-				while (true) {
-					try {
-						wait ();
-					}
-					catch (InterruptedException ie)
-					{
-						System.out.println(ie.getMessage());
-						System.exit(1);
-					}
-					/* The data is ready; call ptrace and let Core continue
-					 * when ptrace returns. */
-					callPtrace();
-					notify();
-				}
-			}
-		}
-		
-		/**
-		 * Setup the data variables and when ready, signal the ptrace thread
-		 * to continue while the core thread waits here for its completion.
-		 */
-		public long notifyPtraceThread(int request, int pid, long addr,
-				long data) {
-			
-			/* Critical section */
-			synchronized (lock) {
-				
-				this.request = request;
-				this.pid = pid;
-				this.addr = addr;
-				this.data = data;
-				this.error = 0;
-				
-				/* Critical section */
-				synchronized (this) {
-					
-					/* All the data has been set, let the ptrace thread
-					 * do its thing and Core will wait until its done. */
-					notify();
-					try {
-						wait();
-					} catch (InterruptedException ie) {
-						throw new RuntimeException (ie);
-					}
-				}
-				
-				if (error != 0)
-					Errno.throwErrno (error, "ptrace");
-				return result;
-			}
-		}
-		
-		/**
-		 * Assign variables representing standard in, out, and error
-		 */
-		public void assignFileDescriptors(String in, String out,
-				String err, String[] args) {
-			this.in = in;
-			this.out = out;
-			this.err = err;
-			this.args = args;
-		}
-		
-		/**
-		 * Hack-job thread starting synchronization method 
-		 */
-		public synchronized void startThread () {
-			pt.start();
-			try {
-				pt.wait();
-			} catch (InterruptedException ie) {
-				System.exit(1);
-			}
-		}
-		
-		/**
-		 * Make the actual call to ptrace 
-		 */
-		public native void callPtrace();
-		
+    public void run() 
+    {
+      /* Critical section */
+      synchronized (this) 
+	{
+	  notify ();
+	  /* Continue serving requests */
+	  while (true) {
+	    try {
+	      wait ();
+	    }
+	    catch (InterruptedException ie)
+	      {
+		System.out.println(ie.getMessage());
+		System.exit(1);
+	      }
+	    /* The data is ready; call ptrace and let Core continue
+	     * when ptrace returns. */
+	    callPtrace();
+	    notify();
+	  }
 	}
+    }
+		
+    /**
+     * Setup the data variables and when ready, signal the ptrace thread
+     * to continue while the core thread waits here for its completion.
+     */
+    public long notifyPtraceThread(int request, int pid, long addr,
+				   long data) {
+			
+      /* Critical section */
+      synchronized (lock) {
+				
+	this.request = request;
+	this.pid = pid;
+	this.addr = addr;
+	this.data = data;
+	this.error = 0;
+				
+	/* Critical section */
+	synchronized (this) {
+					
+	  /* All the data has been set, let the ptrace thread
+	   * do its thing and Core will wait until its done. */
+	  notify();
+	  try {
+	    wait();
+	  } catch (InterruptedException ie) {
+	    throw new RuntimeException (ie);
+	  }
+	}
+				
+	if (error != 0)
+	  Errno.throwErrno (error, "ptrace");
+	return result;
+      }
+    }
+		
+    /**
+     * Assign variables representing standard in, out, and error
+     */
+    public void assignFileDescriptors(String in, String out,
+				      String err, String[] args) {
+      this.in = in;
+      this.out = out;
+      this.err = err;
+      this.args = args;
+    }
+		
+    /**
+     * Hack-job thread starting synchronization method 
+     */
+    public synchronized void startThread () {
+      pt.start();
+      try {
+	pt.wait();
+      } catch (InterruptedException ie) {
+	System.exit(1);
+      }
+    }
+		
+    /**
+     * Make the actual call to ptrace 
+     */
+    public native void callPtrace();
+		
+  }
 }

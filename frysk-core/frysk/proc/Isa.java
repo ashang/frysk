@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.Iterator;
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
 
 /**
  * Instruction Set Architecture.
@@ -50,15 +51,43 @@ import inua.eio.ByteOrder;
 
 public interface Isa
 {
+  /**
+   * Return an iterator that will iterate over every user-visible
+   * register in the <code>Isa</code>.
+   *
+   * @return the iterator
+   */
   Iterator RegisterIterator();
 
   String getRegisterNameByUnwindRegnum(long regnum);
 
+  /**
+   * Get a <code>Register</code> object by name.
+   *
+   * @param name the register name
+   * @return a register object
+   */
   Register getRegisterByName(String name);
 
+  /**
+   * Get the value of the program counter in a task.
+   * @param task the task
+   * @return program counter, which might be negative!
+   */
   long pc(Task task);
-
+  
+  /**
+   * Get the word size.
+   *
+   * @return  word size in bytes.
+   */
   int getWordSize();
+
+  /**
+   * Get <code>ByteOrder</code> for this <code>Isa</code>.
+   *
+   * @return the byte order.
+   */
   ByteOrder getByteOrder();
   
   /**
@@ -79,6 +108,15 @@ public interface Isa
    * 
    */
   long getBreakpointAddress(Task task);
+
+  /**
+   * Return an array of ByteBuffers for accessing the register
+   * banks. It's possible for different elements of the array to be
+   * shared.
+   *
+   * @returns array of ByteBuffer objects.
+   */
+  ByteBuffer[] getRegisterBankBuffers(int pid);
   
   // int addressSize;
   // InstructionSet;

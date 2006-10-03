@@ -43,6 +43,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+import frysk.sys.PtraceByteBuffer;
+
 import lib.unwind.RegisterAMD64;
 
 class IsaEMT64 implements Isa
@@ -105,7 +108,7 @@ class IsaEMT64 implements Isa
   IsaEMT64()
   {
     for (int i = 0; i < regDefs.length; i++) {
-      registerMap.put(regDefs[i].name, regDefs[i]);
+      registerMap.put(regDefs[i].getName(), regDefs[i]);
     }
   }
 
@@ -187,4 +190,13 @@ class IsaEMT64 implements Isa
   {
     return Syscall.iterateSyscallByName (name, LinuxX8664Syscall.syscallList);
   }
+
+  public ByteBuffer[] getRegisterBankBuffers(int pid) 
+  {
+    ByteBuffer[] result = new ByteBuffer[]
+      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
+    result[0].order(getByteOrder());
+    return result;
+  }
+	
 }

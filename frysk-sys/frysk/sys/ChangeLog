@@ -1,3 +1,11 @@
+2006-10-03  Tim Moore  <timoore@redhat.com>
+
+	* Ptrace.java (REGS, FPREGS,FPXREGS): new constants
+	(registerSetSize, peekRegisters, pokeRegisters): new methods for
+	reading and writing blocks of registers.
+	* cni/Ptrace.cxx (registerSetSize, peekRegisters, pokeRegisters):
+	implementations of above methods.
+
 2006-09-16    <swagiaal@redhat.com>
 
 	* cni/AuditLibs.cxx: New file.

@@ -45,7 +45,6 @@ import frysk.sys.PtraceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 
-import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.logging.Level;
 
@@ -68,14 +67,7 @@ public class LinuxTask extends Task
     memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
 				  0xffffffffl);
     memory.order (byteOrder);
-    // XXX: For moment wire in a standard 32-bit little-endian
-    // register set.
-    registerBank = new ByteBuffer[] 
-      {
-	new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.USR)
-      };
-    
-    registerBank[0].order(byteOrder);
+    registerBank = getIsa().getRegisterBankBuffers(id.id);
   }
   
   /**

@@ -1,3 +1,42 @@
+2006-10-03  Tim Moore  <timoore@redhat.com>
+
+	* Isa.java (getRegisterBankBuffers): new method
+	* IsaEMT64.java (IsaEMT64): Use getName() method of Register.
+	instead of member.
+	* (getRegisterBankBuffers): New method.
+	* IsaFactory.java (getIsa): Return a LinuxIA32on64 object if
+	necessary.
+	* IsaIA32.java (getRegisterBankBuffers):New method.
+	(fpViews): new array of register views
+	(FPRegister): new inner class
+	(IsaIA32): Use getName() method of Register; create floating point
+	registers.
+	* IsaPPC.java (IsaPPC): Use getName method of Register.
+	(getRegisterBankBuffers): New method.
+	* IsaPPC64.java (IsaPPC64): Use getName method of Register.
+	(getRegisterBankBuffers): New method.
+	* LinuxIA32on64.java: New class for 32 bit processes on 64 bit machines.
+	* LinuxTask.java: (setupMapsXXX): use getRegisterBankBuffers
+	method to initialize registerBank.
+	* LongFloat.java: New class for x87 floating point registers.
+	* RegisterView.java: New class for alternative interpretations of
+	register bits.
+	* Register.java (views): New member.
+	(Register(int, int, String, RegisterView)): New constructor that
+	takes RegisterView argument.
+	(getViews): New method.
+	* TestRegs.java (testRegs): Maybe run i386 tests if running on
+	x8664.
+	* TestTaskSyscallObserver (execvesys, opensys, readsys): New
+	members for system call objects.
+	(SyscallObserver): Initialize them with new task argument..
+	(SyscallObserver.updateSyscallEnter): Workaround for exit system
+	call problem.
+	(testForkSyscall, testCloneSyscall, testSyscallLoop,
+	attachedObserver, SyscallInteruptObserver): Initialize
+	SyscallObserver with task; compare system call objects instead of
+	system call numbers.
+
 2006-10-02  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcAttachedObserver.java: Added.
