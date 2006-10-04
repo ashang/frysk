@@ -1,7 +1,12 @@
+2006-10-03  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (getBufferAddr): Add x86regnumbers to map x86
+	dwarf reg numbers to unwind reg numbers.
+
 2006-10-02  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (getBufferAddr):  Add x86regnames to map x86
-	dwarf reg numbers to names.
+	dwarf reg numbers to unwind reg names.
 
 2006-10-02  Stan Cox  <scox@redhat.com>
 

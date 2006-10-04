@@ -140,6 +140,7 @@ class ExprSymTab implements CppSymTab
                   {"eax", "rax"}, {"ecx", "rdx"}, {"edx", "rcx"}, {"ebx", "rbx"},
                   {"esp", "rsi"}, {"ebp", "rdi"}, {"esi", "rbp"}, {"edi", "rsp"}
                 };
+    int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
     
     try
     {
@@ -169,7 +170,10 @@ class ExprSymTab implements CppSymTab
           }
         else
           {
-            regval = currentFrame.getReg(fbreg_and_disp[0]);
+            if (MachineType.getMachineType() == MachineType.IA32)
+              regval = currentFrame.getReg(x86regnumbers[(int)fbreg_and_disp[0]]);
+            else if (MachineType.getMachineType() == MachineType.X8664)
+              regval = currentFrame.getReg(fbreg_and_disp[0]);
           }
       }
       catch (TaskException tte)
