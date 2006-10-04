@@ -1,3 +1,8 @@
+2006-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceBuffer.java: Fix off by one line number error for 
+	right-click variable values.
+
 2006-10-03  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView (CurrentStackView): Enabled for x86_64.

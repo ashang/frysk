@@ -541,7 +541,7 @@ public Variable getVariable (TextIter iter)
     if (mode != SOURCE_MODE || source == null)
       return null;
 
-    DOMLine line = source.getLine(iter.getLineNumber() + 1);
+    DOMLine line = source.getLine(iter.getLineNumber());
     if (line == null)
       return null;
     DOMTag tag = line.getTag(iter.getLineOffset());
