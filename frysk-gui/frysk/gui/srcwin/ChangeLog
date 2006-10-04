@@ -1,3 +1,32 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (procTable): Changd from taskTable.
+	(createSourceWindow): Updated to create a SourceWindow from a Proc
+	with multiple Tasks. Uses ProcAttachedObserver to block the Proc.
+	(finishSourceWin): Takes a proc. Iterates through each Task and
+	generates a StackFrame from it, pushing into an array. Sends 
+	StackFrame array into SourceWindow. Removed call to getDwflLineXXX.
+	(unblockProc): Refactored from unblockTask. Handles new Proc blocking
+	method.
+	(getFunctionXXX): Removed unnecessary print statements.
+	(SourceWinListener.lifeCycleQuery): Unblocks the Proc instead of Task.
+	(SourceWinBlocker): Added - implements ProcObserver.ProcTasks.
+	(handleTask): Added.
+	* SourceWindow.java (SourceWindow): Takes an array of StackFrames 
+	as a parameter.
+	(setMyProc): Added.
+	(getMyProc): Added.
+	(populateStackBrowser): Initializes the stack browser with an array
+	of StackFrames; one for each thread belonging to the Proc. Updates
+	shown stack frame.
+	(toggleRegisterWindow): Handles the RegisterWindow with a Proc.
+	(toggleMemoryWindow): Ditto.
+	(toggleDisassemblyWindow): Ditto.
+	* CurrentStackView.java (CurrentStackView): Initializes stackColumns
+	globally. Now takes an array of StackFrames as a parameter, builds
+	a TreeView out of them. Changed ListStore to TreeStore.
+	(getFirstFrameSelection): Added.
+
 2006-10-04  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceBuffer.java: Fix off by one line number error for 

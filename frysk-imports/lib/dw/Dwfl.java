@@ -102,7 +102,18 @@ public class Dwfl
 
   public DwflLine getSourceLine (long addr)
   {
-    long val = dwfl_getsrc(addr);
+    long val = 0;
+    
+    try
+      {
+        val = dwfl_getsrc(addr);
+      }
+    catch (NullPointerException npe)
+      {
+        System.out.println(npe.getMessage());
+        val = 0;
+      }
+    
     if (val == 0)
       return null;
 

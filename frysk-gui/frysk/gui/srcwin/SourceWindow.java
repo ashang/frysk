@@ -68,6 +68,7 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
+//import org.gnu.gtk.Notebook;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
@@ -108,6 +109,7 @@ import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
 import frysk.proc.MachineType;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
@@ -220,7 +222,7 @@ public class SourceWindow
   private Task myTask;
 
   private CurrentStackView stackView;
-
+  
   private VariableWatchView watchView;
   
   private ConsoleWindow conWin;
@@ -242,7 +244,7 @@ public class SourceWindow
    * @param stack The stack frame that represents the current state of execution
    */
   public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackFrame frame)
+                       StackFrame[] frames)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -260,7 +262,7 @@ public class SourceWindow
 
     this.tips = new ToolTips();
 
-    this.populateStackBrowser(frame);
+    this.populateStackBrowser(frames);
 
     this.createActions(ag);
     this.createMenus();
@@ -328,10 +330,23 @@ public class SourceWindow
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
                   + this.myTask.getName());
   }
+  
+  private Proc myProc;
+  
+  public void setMyProc (Proc myProc)
+  {
+    this.myProc = myProc;
+  }
+  
+  public Proc getMyProc ()
+  {
+    return this.myProc;
+  }
 
   /*****************************************************************************
    * PRIVATE METHODS
    ****************************************************************************/
+  
   /**
    * 
    */
@@ -346,24 +361,26 @@ public class SourceWindow
    * 
    * @param top
    */
-  private void populateStackBrowser (StackFrame frame)
+  private void populateStackBrowser (StackFrame[] frames)
   {
-    stackView = new CurrentStackView(frame);
-
-    //StackLevel lastStack = stackView.getCurrentLevel();
-
+    
+    StackFrame frame = null;
+    stackView = new CurrentStackView(frames);
+    
     if (this.view != null)
       ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
 
-    //this.view = new SourceView(lastStack, this);
     this.view = new SourceView(frame, this);
     ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
     this.view.showAll();
 
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
+    
     sw.add(stackView);
+    updateShownStackFrame(stackView.getFirstFrameSelection());
 
     stackView.showAll();
+    stackView.expandAll();
   }
 
   /**
@@ -1304,8 +1321,8 @@ public class SourceWindow
     RegisterWindow regWin = RegisterWindowFactory.regWin;
     if (regWin == null)
       {
-        RegisterWindowFactory.createRegisterWindow(myTask);
-        RegisterWindowFactory.setRegWin(myTask);
+        RegisterWindowFactory.createRegisterWindow(myProc);
+        RegisterWindowFactory.setRegWin(myProc);
       }
     else
       {
@@ -1329,8 +1346,8 @@ public class SourceWindow
     MemoryWindow memWin = MemoryWindowFactory.memWin;
     if (memWin == null)
       {
-        MemoryWindowFactory.createMemoryWindow(myTask);
-        MemoryWindowFactory.setMemWin(myTask);
+        MemoryWindowFactory.createMemoryWindow(myProc);
+        MemoryWindowFactory.setMemWin(myProc);
       }
     else
       {
@@ -1354,8 +1371,8 @@ public class SourceWindow
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
     if (disWin == null)
       {
-        DisassemblyWindowFactory.createDisassemblyWindow(myTask);
-        DisassemblyWindowFactory.setDisWin(myTask);
+        DisassemblyWindowFactory.createDisassemblyWindow(myProc);
+        DisassemblyWindowFactory.setDisWin(myProc);
       }
     else
       {

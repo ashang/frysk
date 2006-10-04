@@ -1,3 +1,10 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowSourceWin.java (execute): Updated to create 
+	SourceWindow with a Proc instead of Task
+	* actions/ShowRegWin.java (execute): Ditto.
+	* actions/ShowMemWin.java (execute): Ditto..
+
 2006-09-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionProcTreeView.java (procDataModel): Change visibility

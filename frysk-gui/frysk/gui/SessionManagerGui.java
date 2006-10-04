@@ -157,7 +157,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 					final Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
 					if (response == ResponseType.OK.getValue()) {
 						if (chosenProc != null) {
-							SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
+							SourceWindowFactory.createSourceWindow(chosenProc);
 						}
 					}
 				}

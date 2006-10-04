@@ -1,3 +1,36 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* disassembler/DisassemblyWindowFactory.java (createDisassemblyWindow): 
+	Takes a Proc instead of a Task. If blocking is needed, does so with a 
+	ProcAttachedObserver.
+	(finishDisWin): Takes a Proc instead of a Task. Creates a 
+	DisassemblyWindow off of Proc's mainTask for now.
+	(setDisWin): Sets to a Proc.
+	(unblockProc): Refactored from unblockTask. Unblocks a 
+	ProcAttachedObserver.
+	(DisWinListener.lifeCycleQuery): Handles Procs instead of Tasks.
+	(DisWinBlocker): Added new methods for ProcObserver.ProcTasks.
+	(handleTask): Added.
+	* memory/MemoryWindowFactory.java (createMemoryWindow): (Same per-method
+	changes as above).
+	(finishMemWin): Ditto.
+	(setMemWin): Ditto.
+	(unblockProc): Ditto.
+	(MemWinListener.lifeCycleQuery): Ditto.
+	(MemWinBlocker): Ditto.
+	(handleTask): Ditto.
+	* register/RegisterWindowFactory.java (createRegisterWindow): Ditto.
+	(finishRegWin): Ditto.
+	(setRegWin): Ditto.
+	(unblockProc): Ditto.
+	(RegWinListener.lifeCycleQuery): Ditto.
+	(RegWinBlocker): Ditto.
+	(handleTask): Ditto..
+	* SessionManagerGui.java (getDebugSingleProcess): Creates 
+	SourceWindow from chosenProc instead of its main task.
+	* DummySourceWindow.java (DummySourceWin): Changed to send a Proc
+	to SourceWindowFactory instead of a Task.
+
 2006-10-03  Tim Moore  <timoore@redhat.com>
 
 	* RegisterWindow.java (cols, colVisible, setTask): Add column for

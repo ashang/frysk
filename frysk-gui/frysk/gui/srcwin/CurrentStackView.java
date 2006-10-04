@@ -48,11 +48,12 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.ListStore;
+//import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreeModel;
+//import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -62,6 +63,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMLine;
 //import frysk.dom.DOMSource;
 import frysk.proc.MachineType;
+import frysk.proc.Task;
 import frysk.rt.StackFrame;
 
 public class CurrentStackView
@@ -74,13 +76,18 @@ public class CurrentStackView
     void currentStackChanged (StackFrame newFrame);
   }
 
-  private DataColumn[] stackColumns;
+  private DataColumn[] stackColumns = new DataColumn[] { new DataColumnString(),
+                                                        new DataColumnObject() };
 
   private static StackFrame currentFrame;
 
   private Vector observers;
+  
+  private StackFrame head = null;
+  
+  private TreeStore treeModel = new TreeStore(stackColumns);
 
-  public CurrentStackView (StackFrame frame)
+  public CurrentStackView (StackFrame[] frames)
   {
     super();
 
@@ -93,99 +100,88 @@ public class CurrentStackView
 
     this.observers = new Vector();
 
-    stackColumns = new DataColumn[] { new DataColumnString(),
-                                     new DataColumnObject() };
-    ListStore listModel = new ListStore(stackColumns);
-
     TreeIter iter = null;
-    TreeIter last = null;
-
-    boolean hasInlinedCode = false;
+    TreeIter parent = null;
     
-//    DOMSource source = frame.getData();
-//    DOMFunction func = frame.getFunction();
-    String row = "";
-    
-    if (MachineType.getMachineType() == MachineType.PPC
-        || MachineType.getMachineType() == MachineType.PPC64)
+    for (int j = frames.length - 1; j >= 0; j--)
       {
-        iter = listModel.appendRow();
-        row = "Unknown file : Unknown function";
-        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-        listModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
-      }
+        StackFrame frame = frames[j];
 
-    else
-      {
-        int level = 0;
-        while (frame != null)
+        parent = null;
+        iter = null;
+        
+        Task task = frame.getTask();
+        boolean hasInlinedCode = false;
+
+        String row = "";
+
+        if (MachineType.getMachineType() == MachineType.PPC
+            || MachineType.getMachineType() == MachineType.PPC64)
           {
-            hasInlinedCode = false;
+            iter = treeModel.appendRow(null);
+            row = "Unknown file : Unknown function";
+            treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+            treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+          }
+
+        else
+          {
+            int level = 0;
+            parent = treeModel.appendRow(null);
+
+            treeModel.setValue(parent, (DataColumnString) stackColumns[0],
+                               "tid: " + task.getTid());
+            treeModel.setValue(parent, (DataColumnObject) stackColumns[1], frame);
             
-            // Go through each segment of the current line, but once we've found
-            // one stop checking
-            // StackFrame curr =
-            // while (current != null && ! hasInlinedCode)
-            // {
-            // // Go through each line of the segment
-            // for (int i = current.getStartLine(); i <
-            // current.getEndLine(); i++)
-            // {
-            // Check for inlined code
-            if (frame.getData() != null) {
-            DOMLine line = frame.getData().getLine(frame.getLineNumber());
-            if (line != null && line.hasInlinedCode())
+            if (task.equals(task.getProc().getMainTask()))
               {
-                hasInlinedCode = true;
-              }
-            }
-
-            // current = current.getNextSection();
-
-            iter = listModel.appendRow();
-
-            if (frame.getData() != null)
-              {
-                row = "#" + (++level) + " 0x"
-                      + Long.toHexString(frame.getAddress()) + " in "
-                      + frame.getMethodName() + " (): line #"
-                      + frame.getLineNumber();
-              }
-            else
-              {
-                row = "#" + (++level) + " 0x"
-                      + Long.toHexString(frame.getAddress()) + " in " 
-                      + frame.getMethodName() + " ()";
+                currentFrame = frame;
+                head = frame;
               }
 
-            if (hasInlinedCode)
-              row += " (i)";
+            while (frame != null)
+              {
+                hasInlinedCode = false;
 
-            listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-            listModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+                // Check for inlined code
+                if (frame.getData() != null)
+                  {
+                    DOMLine line = frame.getData().getLine(frame.getLineNumber());
+                    if (line != null && line.hasInlinedCode())
+                      {
+                        hasInlinedCode = true;
+                      }
+                  }
 
-            frame = frame.getOuter();
-            row = "";
+                iter = treeModel.appendRow(parent);
+
+                if (frame.getLineNumber() != 0)
+                  {
+                    row = "#" + (++level) + " 0x"
+                          + Long.toHexString(frame.getAddress()) + " in "
+                          + frame.getMethodName() + " (): line #"
+                          + frame.getLineNumber();
+                  }
+                else
+                  {
+                    row = "#" + (++level) + " 0x"
+                          + Long.toHexString(frame.getAddress()) + " in "
+                          + frame.getMethodName() + " ()";
+                  }
+
+                if (hasInlinedCode)
+                  row += " (i)";
+
+                treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+                treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+
+                frame = frame.getOuter();
+                row = "";
+              }
           }
       }
-      
 
-    //CurrentLineSection current = topLevel.getCurrentLine();
-    //hasInlinedCode = false;
-    
-    /* Current frame is the top one */
-    
-    
-    currentFrame = frame;
-    
-    
-
-
-    last = iter;
-    /* For now - its always null anyway */
-    //currentLevel = topLevel; // remove
-
-    this.setModel(listModel);
+    this.setModel(treeModel);
 
     TreeViewColumn column = new TreeViewColumn();
     CellRenderer renderer = new CellRendererText();
@@ -195,7 +191,8 @@ public class CurrentStackView
     this.appendColumn(column);
 
     this.getSelection().setMode(SelectionMode.SINGLE);
-    this.getSelection().select(last);
+    //this.getSelection().select(head);
+    //this.getSelection().select(this.treeModel.getFirstIter().getFirstChild());
 
     this.getSelection().addListener(this);
   }
@@ -222,17 +219,21 @@ public class CurrentStackView
         ((StackViewListener) iter.next()).currentStackChanged(newStack);
       }
   }
+  
+  public StackFrame getFirstFrameSelection()
+  {
+    return this.head;
+  }
 
   public void selectionChangedEvent (TreeSelectionEvent arg0)
   {
-    TreeModel model = this.getModel();
-
+    
     TreePath[] paths = this.getSelection().getSelectedRows();
     if (paths.length == 0)
       return;
 
-     StackFrame selected = (StackFrame) model.getValue(
-                                                      model.getIter(paths[0]),
+     StackFrame selected = (StackFrame) treeModel.getValue(
+                                                      treeModel.getIter(paths[0]),
                                                       (DataColumnObject) stackColumns[1]);
 
     this.notifyObservers(selected);

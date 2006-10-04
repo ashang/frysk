@@ -61,7 +61,7 @@ public class ShowSourceWin
 
   public void execute (Task task)
   {
-    SourceWindowFactory.createSourceWindow(task);
+    SourceWindowFactory.createSourceWindow(task.getProc());
   }
 
   public GuiObject getCopy ()

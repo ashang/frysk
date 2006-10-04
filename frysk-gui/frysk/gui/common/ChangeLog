@@ -1,3 +1,10 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcBlockCounter.java: Refactored from TaskBlockCounter.
+	* ProcBlockCounter.java (getBlockCount): Updated to use procs.
+	(incBlockCount): Ditto.
+	(decBlockCount): Ditto.
+
 2006-10-02  Mike Cvet  <mcvet@redhat.com>
 
 	* IconManager.java (getHostInfo): Added a NullPointerException

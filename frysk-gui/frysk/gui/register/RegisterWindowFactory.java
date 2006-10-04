@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
@@ -51,17 +52,20 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.Gui;
-import frysk.gui.common.TaskBlockCounter;
+import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
+import frysk.proc.Proc;
+import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
+//import frysk.proc.TaskObserver;
 
 /**
  * Factory for creating RegisterWindows - allows multiple RegisterWindows to be
  * instantiated for different processes, and disallows multiple windows on the
- * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
+ * same process. Uses a ProcBlockCounter to co-ordinate the un-blocking of the
  * process between the Memory and SourceWindows if the other two are also 
  * running on that process. A singleton class dynamically creating RegisterWindows.
  *  
@@ -74,9 +78,9 @@ public class RegisterWindowFactory
   public static RegisterWindow regWin = null;
 
   /* Keeps track of which RegisterWindows belong to which Task. */
-  private static Hashtable taskTable;
+  private static Hashtable procTable;
 
-  /* Keeps track of which TaskBlockCounter belongs to the Task. */
+  /* Keeps track of which ProcBlockCounter belongs to the Task. */
   private static Hashtable blockerTable;
 
   /* Used to instantiate the glade file multiple times */
@@ -85,6 +89,10 @@ public class RegisterWindowFactory
   /* Bad hack to tell if we've been called from the Monitor or SourceWindow */
   /* TODO: Get rid of this when the BlockedObserver becomes a reality */
   private static boolean monitor = false;
+  
+  private static int task_count;
+  
+  private static Task myTask;
   
   private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
   
@@ -99,20 +107,20 @@ public class RegisterWindowFactory
   public static void setPaths (String[] paths)
   {
     gladePaths = paths;
-    taskTable = new Hashtable();
+    procTable = new Hashtable();
     blockerTable = new Hashtable();
   }
 
   /**
    * Performs checks to ensure no other RegisterWindow is running on this Task;
-   * if not, assigns a TaskBlockCounter and attaches an Observer if there is
+   * if not, assigns a ProcBlockCounter and attaches an Observer if there is
    * no other Window already running on this Task.
    * 
-   * @param task    The Task to be examined by the new RegisterWindow.
+   * @param proc    The Proc to be examined by the new RegisterWindow.
    */
-  public static void createRegisterWindow (Task task)
+  public static void createRegisterWindow (Proc proc)
   {
-    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+    RegisterWindow rw = (RegisterWindow) procTable.get(proc);
 
     /* Check if there is already a RegisterWindow running on this task */
     if (rw != null)
@@ -121,35 +129,42 @@ public class RegisterWindowFactory
         return;
       }
 
-    RegWinBlocker blocker = new RegWinBlocker();
-    blocker.myTask = task;
+//    RegWinBlocker blocker = new RegWinBlocker();
+//    blocker.myProc = proc;
     
-     if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
+//  If it's already blocked, keep on moving
+//    if (proc.getMainTask().getBlockers().length != 0)
+//      finishRegWin(rw, proc);
+
+    // else block it
+    ProcAttachedObserver pao = null;
+    
+     if (ProcBlockCounter.getBlockCount(proc) != 0 || monitor == true)
        {
          /* If this Task is already blocked, don't try to block it again */
-         rw = finishRegWin(rw, task);
+         rw = finishRegWin(rw, proc);
        }
      else 
        {
          /* Otherwise it is not blocked, and we should go about doing it */
-         task.requestAddAttachedObserver(blocker);
-         blockerTable.put(task, blocker);
+         pao = new ProcAttachedObserver(proc, new RegWinBlocker());
+         blockerTable.put(proc, pao);
        }
 
     /* Indicate that there is another window on this Task */
-    TaskBlockCounter.incBlockCount(task);
+    ProcBlockCounter.incBlockCount(proc);
 
     return;
   }
 
   /**
    * Initializes the Glade file, the RegisterWindow itself, adds listeners and
-   * Assigns the Task.
+   * Assigns the Proc.
    * 
    * @param rw  The RegisterWindow to be initialized.
-   * @param task    The Task to be examined by mw.
+   * @param proc  The Proc to be examined by mw.
    */
-  public static RegisterWindow finishRegWin (RegisterWindow rw, Task task)
+  public static RegisterWindow finishRegWin (RegisterWindow rw, Proc proc)
   {
     LibGlade glade = null;
 
@@ -188,7 +203,7 @@ public class RegisterWindowFactory
     try
       {
         rw = new RegisterWindow(glade);
-        taskTable.put(task, rw);
+        procTable.put(proc, rw);
       }
     catch (Exception e)
       {
@@ -203,7 +218,7 @@ public class RegisterWindowFactory
     if (! rw.hasTaskSet())
       {
         rw.setIsRunning(false);
-        rw.setTask(task);
+        rw.setTask(proc.getMainTask());
       }
     else
       rw.showAll();
@@ -215,11 +230,11 @@ public class RegisterWindowFactory
    * Used by the SourceWindow to assign the static regWin object which it uses
    * to ensure there is only one RegisterWindow running for its Task.
    * 
-   * @param task    The Task used to find the RegisterWindow representing it.
+   * @param proc    The Proc used to find the RegisterWindow representing it.
    */
-  public static void setRegWin (Task task)
+  public static void setRegWin (Proc proc)
   {
-    regWin = (RegisterWindow) taskTable.get(task);
+    regWin = (RegisterWindow) procTable.get(proc);
   }
   
   /**
@@ -231,38 +246,49 @@ public class RegisterWindowFactory
   }
 
   /**
-   * Check to see if this instance is the last one blocking the Task - if so,
+   * Check to see if this instance is the last one blocking the Proc - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
    * 
    * @param task    The Task to be unblocked.
    */
-  private static void unblockTask (Task task)
+  private static void unblockProc (Proc proc)
   {
-    if (taskTable.get(task) != null)
+    if (procTable.get(proc) != null)
       {
-        if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
+        if (ProcBlockCounter.getBlockCount(proc) == 1 && monitor != true)
           {
-            try
+            
+            ProcAttachedObserver pao = (ProcAttachedObserver) blockerTable.get(proc);
+            Iterator i = proc.getTasks().iterator();
+            while (i.hasNext())
               {
-                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-                task.requestUnblock(o);
-                task.requestDeleteAttachedObserver(o);
-                blockerTable.remove(task);
+                Task t = (Task) i.next();
+                t.requestUnblock(pao);
+                t.requestDeleteAttachedObserver(pao);
               }
-            catch (Exception e)
-              {
-                Preferences prefs = PreferenceManager.getPrefs();
-                RegisterWindow rw = (RegisterWindow) taskTable.get(task);
-                rw.save(prefs);
-                return;
-              }
+
+            blockerTable.remove(proc);
+//            try
+//              {
+//                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+//                task.requestUnblock(o);
+//                task.requestDeleteAttachedObserver(o);
+//                blockerTable.remove(task);
+//              }
+//            catch (Exception e)
+//              {
+//                Preferences prefs = PreferenceManager.getPrefs();
+//                RegisterWindow rw = (RegisterWindow) procTable.get(task);
+//                rw.save(prefs);
+//                return;
+//              }
           }
-        TaskBlockCounter.decBlockCount(task);
+        ProcBlockCounter.decBlockCount(proc);
         Preferences prefs = PreferenceManager.getPrefs();
-        RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+        RegisterWindow rw = (RegisterWindow) procTable.get(proc);
         rw.save(prefs);
-        taskTable.remove(task);
+        procTable.remove(proc);
       }
   }
 
@@ -298,7 +324,7 @@ public class RegisterWindowFactory
           RegisterWindow rw = (RegisterWindow) arg0.getSource();
           Task t = rw.getMyTask();
 
-          unblockTask(t);
+          unblockProc(t.getProc());
 
           if (!rw.equals(regWin))
             WindowManager.theManager.mainWindow.showAll();
@@ -317,10 +343,8 @@ public class RegisterWindowFactory
    * upon call, and blocks the task it is to examine.
    */
   private static class RegWinBlocker
-      implements TaskObserver.Attached
+      implements ProcObserver.ProcTasks
   {
-
-    private Task myTask;
 
     /**
      * Finish the RegisterWindow initialization and block the task.
@@ -329,20 +353,13 @@ public class RegisterWindowFactory
      */
     public Action updateAttached (Task task)
     {
-      // TODO Auto-generated method stub
-      System.out.println("blocking");
-      CustomEvents.addEvent(new Runnable()
-      {
-
-        public void run ()
-        {
-          RegisterWindow mw = (RegisterWindow) taskTable.get(myTask);
-          finishRegWin(mw, myTask);
-        }
-
-      });
-
+      myTask = task;
       return Action.BLOCK;
+    }
+    
+    public void taskAdded(final Task task)
+    {
+
     }
 
     public void addedTo (Object observable)
@@ -362,7 +379,41 @@ public class RegisterWindowFactory
       // TODO Auto-generated method stub
 
     }
+    
+    public void taskRemoved (Task task)
+    {   
+      // TODO Auto-generated method stub
+    }
+    
+    public void existingTask (Task task)
+    {
+        myTask = task;
+        CustomEvents.addEvent(new Runnable()
+        {
+          public void run()
+          {
+            handleTask(myTask);
+          }
 
+        });
+    }
+  }
+  
+  public static synchronized void handleTask (Task task)
+  {
+    myTask = task;
+    CustomEvents.addEvent(new Runnable()
+    {
+      public void run ()
+      {
+        --task_count;
+        if (task_count == 0)
+          {
+            RegisterWindow rw = (RegisterWindow) procTable.get(myTask.getProc());
+            finishRegWin(rw, myTask.getProc());
+          }
+      }
+    }); 
   }
 
 }

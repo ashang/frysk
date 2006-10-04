@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
@@ -51,17 +52,19 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.Gui;
-import frysk.gui.common.TaskBlockCounter;
+import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
+import frysk.proc.Proc;
+import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 
 /**
  * Factory for creating MemoryWindows - allows multiple MemoryWindows to be
  * instantiated for different processes, and disallows multiple windows on the
- * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
+ * same process. Uses a ProcBlockCounter to co-ordinate the un-blocking of the
  * process between the Register and SourceWindows if the other two are also 
  * running on that process. A singleton class dynamically creating MemoryWindows.
  *  
@@ -74,9 +77,9 @@ public class MemoryWindowFactory
   public static MemoryWindow memWin = null;
   
   /* Keeps track of which MemoryWindows belong to which Task. */
-  private static Hashtable taskTable;
+  private static Hashtable procTable;
   
-  /* Keeps track of which TaskBlockCounter belongs to the Task. */
+  /* Keeps track of which ProcBlockCounter belongs to the Task. */
   private static Hashtable blockerTable;
   
   /* Used to instantiate the glade file multiple times */
@@ -85,6 +88,10 @@ public class MemoryWindowFactory
   /* Bad hack to tell if we've been called from the Monitor or SourceWindow */
   /* TODO: Get rid of this when the BlockedObserver becomes a reality */
   private static boolean monitor = false;
+  
+  private static int task_count;
+  
+  private static Task myTask;
   
   private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
   
@@ -99,20 +106,20 @@ public class MemoryWindowFactory
   public static void setPaths(String[] paths)
   {
     gladePaths = paths;
-    taskTable = new Hashtable();
+    procTable = new Hashtable();
     blockerTable = new Hashtable();
   }
 
   /**
    * Performs checks to ensure no other MemoryWindow is running on this Task;
-   * if not, assigns a TaskBlockCounter and attaches an Observer if there is
+   * if not, assigns a ProcBlockCounter and attaches an Observer if there is
    * no other Window already running on this Task.
    * 
-   * @param task    The Task to be examined by the new MemoryWindow.
+   * @param proc    The Proc to be examined by the new MemoryWindow.
    */
-  public static void createMemoryWindow (Task task)
+  public static void createMemoryWindow (Proc proc)
   {
-    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+    MemoryWindow mw = (MemoryWindow) procTable.get(proc);
 
     /* Check if there is already a MemoryWindow running on this task */
     if (mw != null)
@@ -121,35 +128,36 @@ public class MemoryWindowFactory
         return;
       }
 
-    MemWinBlocker blocker = new MemWinBlocker();
-    blocker.myTask = task;
+//    MemWinBlocker blocker = new MemWinBlocker();
+//    blocker.myTask = proc;
+    ProcAttachedObserver pao = null;
     
-     if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
+     if (ProcBlockCounter.getBlockCount(proc) != 0 || monitor == true)
        {
          /* If this Task is already blocked, don't try to block it again */
-         mw = finishMemWin(mw, task);
+         mw = finishMemWin(mw, proc);
        }
      else 
        {
          /* Otherwise it is not blocked, and we should go about doing it */
-         task.requestAddAttachedObserver(blocker);
-         blockerTable.put(task, blocker);
+         pao = new ProcAttachedObserver(proc, new MemWinBlocker());
+         blockerTable.put(proc, pao);
        }
 
     /* Indicate that there is another window on this Task */
-    TaskBlockCounter.incBlockCount(task);
+    ProcBlockCounter.incBlockCount(proc);
 
     return;
   }
 
   /**
    * Initializes the Glade file, the MemoryWindow itself, adds listeners and
-   * Assigns the Task.
+   * Assigns the Proc.
    * 
    * @param mw  The MemoryWindow to be initialized.
-   * @param task    The Task to be examined by mw.
+   * @param proc  The Proc to be examined by mw.
    */
-  public static MemoryWindow finishMemWin (MemoryWindow mw, Task task)
+  public static MemoryWindow finishMemWin (MemoryWindow mw, Proc proc)
   {
     LibGlade glade = null;
 
@@ -188,7 +196,7 @@ public class MemoryWindowFactory
     try
       {
         mw = new MemoryWindow(glade);
-        taskTable.put(task, mw);
+        procTable.put(proc, mw);
       }
     catch (Exception e)
       {
@@ -203,7 +211,7 @@ public class MemoryWindowFactory
     if (! mw.hasTaskSet())
       {
         mw.setIsRunning(false);
-        mw.setTask(task);
+        mw.setTask(proc.getMainTask());
       }
     else
       mw.showAll();
@@ -215,11 +223,11 @@ public class MemoryWindowFactory
    * Used by the SourceWindow to assign the static memWin object which it uses
    * to ensure there is only one MemoryWindow running for its Task.
    * 
-   * @param task    The Task used to find the MemoryWindow representing it.
+   * @param proc  The Proc used to find the MemoryWindow representing it.
    */
-  public static void setMemWin(Task task)
+  public static void setMemWin(Proc proc)
   {
-    memWin = (MemoryWindow) taskTable.get(task);
+    memWin = (MemoryWindow) procTable.get(proc);
   }
   
   /**
@@ -231,38 +239,49 @@ public class MemoryWindowFactory
   }
   
   /**
-   * Check to see if this instance is the last one blocking the Task - if so,
+   * Check to see if this instance is the last one blocking the Proc - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
    * 
-   * @param task    The Task to be unblocked.
+   * @param proc    The Proc to be unblocked.
    */
-  private static void unblockTask (Task task)
+  private static void unblockProc (Proc proc)
   {
-    if (taskTable.get(task) != null)
+    if (procTable.get(proc) != null)
       {
-        if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
+        if (ProcBlockCounter.getBlockCount(proc) == 1 && monitor != true)
           {
-            try
+            
+            ProcAttachedObserver pao = (ProcAttachedObserver) blockerTable.get(proc);
+            Iterator i = proc.getTasks().iterator();
+            while (i.hasNext())
               {
-                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-                task.requestUnblock(o);
-                task.requestDeleteAttachedObserver(o);
-                blockerTable.remove(task);
+                Task t = (Task) i.next();
+                t.requestUnblock(pao);
+                t.requestDeleteAttachedObserver(pao);
               }
-            catch (Exception e)
-              {
-                Preferences prefs = PreferenceManager.getPrefs();
-                MemoryWindow mw = (MemoryWindow) taskTable.get(task);
-                mw.save(prefs);
-                return;
-              }
+            
+            blockerTable.remove(proc);
+//            try
+//              {
+//                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+//                task.requestUnblock(o);
+//                task.requestDeleteAttachedObserver(o);
+//                blockerTable.remove(task);
+//              }
+//            catch (Exception e)
+//              {
+//                Preferences prefs = PreferenceManager.getPrefs();
+//                MemoryWindow mw = (MemoryWindow) procTable.get(task);
+//                mw.save(prefs);
+//                return;
+//              }
           }
-        TaskBlockCounter.decBlockCount(task);
+        ProcBlockCounter.decBlockCount(proc);
         Preferences prefs = PreferenceManager.getPrefs();
-        MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+        MemoryWindow mw = (MemoryWindow) procTable.get(proc);
         mw.save(prefs);
-        taskTable.remove(task);
+        procTable.remove(proc);
       }
   }
   
@@ -298,7 +317,7 @@ public class MemoryWindowFactory
           MemoryWindow mw = (MemoryWindow) arg0.getSource();
           Task t = mw.getMyTask();
 
-          unblockTask(t);
+          unblockProc(t.getProc());
 
           if (!mw.equals(memWin))
             WindowManager.theManager.mainWindow.showAll();
@@ -317,7 +336,7 @@ public class MemoryWindowFactory
    * upon call, and blocks the task it is to examine.
    */
   private static class MemWinBlocker
-      implements TaskObserver.Attached
+      implements ProcObserver.ProcTasks
   {
 
     private Task myTask;
@@ -329,22 +348,15 @@ public class MemoryWindowFactory
      */
     public Action updateAttached (Task task)
     {
-      // TODO Auto-generated method stub
-      System.out.println("blocking");
-      CustomEvents.addEvent(new Runnable()
-      {
-
-        public void run ()
-        {
-          MemoryWindow mw = (MemoryWindow) taskTable.get(myTask);
-          finishMemWin(mw, myTask);
-        }
-
-      });
-
+      myTask = task;
       return Action.BLOCK;
     }
 
+    public void taskAdded(final Task task)
+    {
+
+    }
+    
     public void addedTo (Object observable)
     {
       // TODO Auto-generated method stub
@@ -362,7 +374,42 @@ public class MemoryWindowFactory
       // TODO Auto-generated method stub
 
     }
+    
+    public void taskRemoved (Task task)
+    {   
+      // TODO Auto-generated method stub
+    }
+    
+    public void existingTask (Task task)
+    {
+        myTask = task;
+        CustomEvents.addEvent(new Runnable()
+        {
+          public void run()
+          {
+            handleTask(myTask);
+          }
 
+        });
+    }
+
+  }
+  
+  public static synchronized void handleTask (Task task)
+  {
+    myTask = task;
+    CustomEvents.addEvent(new Runnable()
+    {
+      public void run ()
+      {
+        --task_count;
+        if (task_count == 0)
+          {
+            MemoryWindow mw = (MemoryWindow) procTable.get(myTask.getProc());
+            finishMemWin(mw, myTask.getProc());
+          }
+      }
+    }); 
   }
 
 }

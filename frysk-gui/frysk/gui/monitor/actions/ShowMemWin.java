@@ -79,7 +79,7 @@ public class ShowMemWin
       }
 
     MemoryWindowFactory.setMonitor();
-    MemoryWindowFactory.createMemoryWindow(task);
+    MemoryWindowFactory.createMemoryWindow(task.getProc());
   }
 
   public GuiObject getCopy ()

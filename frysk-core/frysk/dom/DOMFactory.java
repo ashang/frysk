@@ -54,10 +54,10 @@ public class DOMFactory
         String taskName = task.getName();
         dom = new DOMFrysk("Task"
                            + taskName.substring(0, taskName.indexOf(" ")));
-        dom.addImage(task.getName(), path, path);
+        dom.addImage(task.getProc().getMainTask().getName(), path, path);
       }
 
-    DOMSource source = dom.getImage(task.getName()).getSource(filename);
+    DOMSource source = dom.getImage(task.getProc().getMainTask().getName()).getSource(filename);
 
     /*
      * If this source file has not previously been incorporated into the dom, so
@@ -65,7 +65,7 @@ public class DOMFactory
      */
     if (source == null)
       {
-        DOMImage image = dom.getImage(task.getName());
+        DOMImage image = dom.getImage(task.getProc().getMainTask().getName());
         source = new DOMSource(filename, path);
 
         // Read the file lines from disk
@@ -87,16 +87,13 @@ public class DOMFactory
 
             offset += text.length() + 1;
           }
-
         image.addSource(source);
 
         // Parse the file and populate the DOM
         StaticParser parser = new CDTParser();
         parser.parse(source, image);
       }
-
     hashmap.put(proc, dom);
-
     return dom;
   }
 

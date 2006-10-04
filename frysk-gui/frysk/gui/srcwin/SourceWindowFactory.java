@@ -63,21 +63,24 @@ import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
 import frysk.gui.Gui;
 import frysk.gui.common.dialogs.WarnDialog;
-import frysk.gui.common.TaskBlockCounter;
+import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Proc;
+import frysk.proc.ProcObserver;
+//import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcAttachedObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
-import frysk.proc.TaskObserver;
+//import frysk.proc.TaskException;
+//import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
  * in frysk should be created. It takes care of setting paths to resource files
- * as well as making sure that at most one window is opened per Task. A singleton 
- * class dynamically creating SourceWindows.
+ * as well as making sure that at most one window is opened per Task. A
+ * singleton class dynamically creating SourceWindows.
  * 
  * @author ajocksch
  */
@@ -89,12 +92,16 @@ public class SourceWindowFactory
   private static HashMap map;
 
   private static Hashtable blockerTable;
+
+  private static Hashtable procTable;
   
-  private static Hashtable taskTable;
-  
+  private static int task_count;
+
   public static SourceWindow srcWin = null;
   
-  private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+  public static Task myTask;
+
+  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   /**
    * Sets the paths to look in to find the .glade files needed for the gui
@@ -110,7 +117,7 @@ public class SourceWindowFactory
     {
       map = new HashMap();
       blockerTable = new Hashtable();
-      taskTable = new Hashtable();
+      procTable = new Hashtable();
     }
 
   /**
@@ -120,12 +127,13 @@ public class SourceWindowFactory
    * that one will be brought to the forefront rather than creating a new
    * window.
    * 
-   * @param task The Task to open a SourceWindow for.
+   * @param proc The Proc to open a SourceWindow for.
    */
-  public static void createSourceWindow (Task task)
+  public static void createSourceWindow (Proc proc)
   {
+    task_count = proc.getTasks().size();
+    SourceWindow sw = (SourceWindow) procTable.get(proc);
     
-    SourceWindow sw = (SourceWindow) taskTable.get(task);
     if (sw != null)
       {
         sw.showAll();
@@ -133,99 +141,62 @@ public class SourceWindowFactory
       }
 
     // If it's already blocked, keep on moving
-    if(task.getBlockers().length != 0)
-      finishSourceWin(task);
-    
+    //if (proc.getMainTask().getBlockers().length != 0)
+     // finishSourceWin(proc);
+
     // else block it
-    SourceWinBlocker blocker = new SourceWinBlocker();
-    blocker.myTask = task;
-    
-    if (taskTable.get(task) == null || TaskBlockCounter.getBlockCount(task) == 0)
-        task.requestAddAttachedObserver(blocker);
+    ProcAttachedObserver pao = null;
 
-    TaskBlockCounter.incBlockCount(task);
-    blockerTable.put(task, blocker);
-  }
+//    if (ProcBlockCounter.getBlockCount(proc) != 0 || monitor == true)
+//      {
+//        /* If this Task is already blocked, don't try to block it again */
+//        rw = finishRegWin(rw, proc);
+//      }
+    if (procTable.get(proc) == null
+        || ProcBlockCounter.getBlockCount(proc) == 0)
+      pao = new ProcAttachedObserver(proc, new SourceWinBlocker());
 
-  /**
-   * Same behavior as {@see SourceWindowFactory#createSourceWindow(Task)},
-   * except the task is expected to be blocked
-   * 
-   * @param task The blocked task to display the source for
-   * @throws NoDebugInfoException
-   */
-  public static void createSourceWinFromBlockedTask (Task task)
-  {
-    finishSourceWin(task);
-  }
-
-  private static class SourceWinBlocker
-      implements TaskObserver.Attached
-  {
-
-    private Task myTask;
-
-    public Action updateAttached (Task task)
-    {
-      // TODO Auto-generated method stub
-      System.out.println("blocking");
-      CustomEvents.addEvent(new Runnable()
-      {
-
-        public void run ()
-        {
-          finishSourceWin(myTask);
-        }
-
-      });
-
-      return Action.BLOCK;
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)", w);
-      throw new RuntimeException(w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
+    ProcBlockCounter.incBlockCount(proc);
+    blockerTable.put(proc, pao);
   }
 
   /**
    * Initializes the Glade file, the SourceWindow itself, adds listeners and
-   * Assigns the Task. Sets up the DOM information and the Stack information.
+   * Assigns the Proc. Sets up the DOM information and the Stack information.
    * 
-   * @param mw  The MemoryWindow to be initialized.
-   * @param task    The Task to be examined by mw.
+   * @param mw The MemoryWindow to be initialized.
+   * @param proc The Proc to be examined by mw.
    */
-  private static void finishSourceWin (Task task)
+  private static void finishSourceWin (Proc proc)
   {
-    Proc proc = task.getProc();
+    // Proc proc = task.getProc();
+
+    int size;
+    Task[] tasks;
+    DOMFrysk dom = null;
+    StackFrame[] frames;
+
     if (map.containsKey(proc))
       {
         // Do something here to revive the existing window
         srcWin = (SourceWindow) map.get(proc);
         srcWin.showAll();
         srcWin.grabFocus();
-//        WindowManager.theManager.sessionManager.hide();
       }
     else
       {
-        DOMFrysk dom = null;
+        size = proc.getTasks().size();
+        tasks = new Task[size];
+        frames = new StackFrame[size];
+
+        Iterator iter = proc.getTasks().iterator();
+
         try
           {
-            dom = DOMFactory.createDOM(task);
+            for (int k = 0; k < size; k++)
+              tasks[k] = (Task) iter.next();
+
+            dom = DOMFactory.createDOM(proc.getMainTask());
           }
 
         // If we don't have a dom, tell the task to continue
@@ -241,7 +212,7 @@ public class SourceWindowFactory
           }
         catch (IOException e)
           {
-            unblockTask(task);
+            unblockProc(proc);
             WarnDialog dialog = new WarnDialog("File not found",
                                                "Error loading source code: "
                                                    + e.getMessage());
@@ -285,57 +256,52 @@ public class SourceWindowFactory
             return;
           }
 
-        DwflLine line;
-        DOMFunction f = null;
-        
-        /** Create the stack frame **/
-        
-        StackFrame frame = null;
-        StackFrame curr = null;
-        try
+        for (int j = 0; j < size; j++)
           {
-            frame = StackFactory.createStackFrame(task);
-            curr = frame;
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        
-        /** Stack frame created **/
-        
-        while (curr != null)    /* Iterate and initialize information
-                                 * for all frames, not just the top one */
-          {
+
+            DwflLine line;
+            DOMFunction f = null;
+
+            /** Create the stack frame * */
+
+            StackFrame curr = null;
             try
               {
-                line = task.getDwflLineXXX(curr.getAddress());
+                frames[j] = StackFactory.createStackFrame(tasks[j]);
+                curr = frames[j];
               }
-            catch (TaskException e)
+            catch (Exception e)
               {
-                line = null;
+                System.out.println(e.getMessage());
               }
 
-            if (line != null)
-              {
-                String filename = line.getSourceFile();
-                filename = filename.substring(filename.lastIndexOf("/") + 1);
-                f = getFunctionXXX(dom.getImage(task.getName()), filename,
-                                   line.getLineNum());
-//                stack1 = new StackLevel(f, line.getLineNum());
-              }
-//            else
-//              {
-//                stack1 = new StackLevel(f, StackLevel.NO_LINE);
-//              }
+            /** Stack frame created * */
 
-            curr.setFunction(f);
-            curr = curr.getOuter();
+            while (curr != null) /*
+                                   * Iterate and initialize information for all
+                                   * frames, not just the top one
+                                   */
+              {
+
+                line = curr.getDwflLine();
+
+                if (line != null)
+                  {
+                    String filename = line.getSourceFile();
+                    filename = filename.substring(filename.lastIndexOf("/") + 1);
+                    f = getFunctionXXX(
+                                       dom.getImage(tasks[j].getProc().getMainTask().getName()),
+                                       filename, line.getLineNum());
+                  }
+
+                curr.setDOMFunction(f);
+                curr = curr.getOuter();
+              }
           }
 
-        srcWin = new SourceWindow(glade, gladePaths[i], dom, frame);
-        taskTable.put(task, srcWin);
-        srcWin.setMyTask(task);
+        srcWin = new SourceWindow(glade, gladePaths[i], dom, frames);
+        procTable.put(proc, srcWin);
+        srcWin.setMyProc(proc);
         srcWin.addListener(new SourceWinListener());
         srcWin.grabFocus();
 
@@ -343,7 +309,7 @@ public class SourceWindowFactory
         map.put(proc, srcWin);
       }
   }
-  
+
   /**
    * Print out the DOM in XML format
    * 
@@ -363,32 +329,39 @@ public class SourceWindowFactory
   }
 
   /**
-   * Unblocks the Task being examined and removes all Observers on it, and removes
-   * it from the tables watching it.
+   * Unblocks the Task being examined and removes all Observers on it, and
+   * removes it from the tables watching it.
    * 
-   * @param task    The Task to be unblocked.
+   * @param task The Task to be unblocked.
    */
-  private static void unblockTask (Task task)
+  private static void unblockProc (Proc proc)
   {
-    if (blockerTable.containsKey(task) && TaskBlockCounter.getBlockCount(task) == 1)
+    if (blockerTable.containsKey(proc)
+        && ProcBlockCounter.getBlockCount(proc) == 1)
       {
-        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-        task.requestUnblock(o);
-        task.requestDeleteAttachedObserver(o);
-        taskTable.remove(task);
-        blockerTable.remove(task);
+        ProcAttachedObserver pao = (ProcAttachedObserver) blockerTable.get(proc);
+        Iterator i = proc.getTasks().iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            t.requestUnblock(pao);
+            t.requestDeleteAttachedObserver(pao);
+          }
+
+        procTable.remove(proc);
+        blockerTable.remove(proc);
       }
-    TaskBlockCounter.decBlockCount(task);
+    ProcBlockCounter.decBlockCount(proc);
   }
 
   /**
-   * Returns a DOMFunction matching the incoming function information from 
-   * the DOMImage.
+   * Returns a DOMFunction matching the incoming function information from the
+   * DOMImage.
    * 
-   * @param image   The DOMImage containing the source information.
-   * @param filename    The name of the source file.
-   * @param linenum     The line number of the function.
-   * @return    The found DOMFunction.
+   * @param image The DOMImage containing the source information.
+   * @param filename The name of the source file.
+   * @param linenum The line number of the function.
+   * @return The found DOMFunction.
    */
   private static DOMFunction getFunctionXXX (DOMImage image, String filename,
                                              int linenum)
@@ -402,9 +375,9 @@ public class SourceWindowFactory
     while (functions.hasNext())
       {
         DOMFunction function = (DOMFunction) functions.next();
-        System.out.println("\t" + function.getSource().getFileName() + ": "
-                           + function.getStartingLine() + " - "
-                           + function.getEndingLine());
+//        System.out.println("\t" + function.getSource().getFileName() + ": "
+//                           + function.getStartingLine() + " - "
+//                           + function.getEndingLine());
         if (function.getSource().getFileName().equals(filename)
             && function.getStartingLine() <= linenum)
           {
@@ -443,10 +416,10 @@ public class SourceWindowFactory
           if (map.containsValue(arg0.getSource()))
             {
               SourceWindow s = (SourceWindow) arg0.getSource();
-              Task t = s.getMyTask();
-              map.remove(t);
+              Proc proc = s.getMyProc();
+              map.remove(proc);
 
-              unblockTask(t);
+              unblockProc(proc);
 
               WindowManager.theManager.sessionManager.show();
               s.hideAll();
@@ -456,5 +429,74 @@ public class SourceWindowFactory
       return true;
     }
 
+  }
+
+  /**
+   * A wrapper for TaskObserver.Attached which initializes the MemoryWindow 
+   * upon call, and blocks the task it is to examine.
+   */
+  private static class SourceWinBlocker
+      implements ProcObserver.ProcTasks
+  {
+
+    public Action updateAttached (Task task)
+    {
+      myTask = task;
+      return Action.BLOCK;
+    }
+    
+    public void existingTask (Task task)
+    {
+        myTask = task;
+        CustomEvents.addEvent(new Runnable()
+        {
+          public void run()
+          {
+            handleTask(myTask);
+          }
+
+        });
+    }
+    
+    public void taskRemoved (Task task)
+    {   
+      // TODO Auto-generated method stub
+    }
+    
+    public void taskAdded(final Task task)
+    {
+
+    }
+
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
+                   w);
+      throw new RuntimeException(w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+    }
+  }
+  
+  public static synchronized void handleTask (Task task)
+  {
+    myTask = task;
+    CustomEvents.addEvent(new Runnable()
+    {
+      public void run ()
+      {
+        --task_count;
+        if (task_count == 0)
+          finishSourceWin(myTask.getProc());
+      }
+    }); 
   }
 }

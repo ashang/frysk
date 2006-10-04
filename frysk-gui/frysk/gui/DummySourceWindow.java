@@ -151,7 +151,7 @@ public class DummySourceWindow {
 		DummyProc proc = new DummyProc();
 		DummyTask task = new DummyTask(proc);
 		
-		SourceWindowFactory.createSourceWindow(task);
+		SourceWindowFactory.createSourceWindow(task.getProc());
 		
 		Gtk.main();
 	}

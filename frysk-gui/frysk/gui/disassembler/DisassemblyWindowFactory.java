@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
@@ -51,17 +52,19 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.Gui;
-import frysk.gui.common.TaskBlockCounter;
+import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
+import frysk.proc.Proc;
+import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 
 /**
  * Factory for creating DisassemblyWindows - allows multiple DisassemblyWindows to be
  * instantiated for different processes, and disallows multiple windows on the
- * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
+ * same process. Uses a ProcBlockCounter to co-ordinate the un-blocking of the
  * process between the Register and SourceWindows if the other two are also 
  * running on that process. A singleton class dynamically creating DisassemblyWindows.
  *  
@@ -74,9 +77,9 @@ public class DisassemblyWindowFactory
   public static DisassemblyWindow disWin = null;
   
   /* Keeps track of which DisassemblerWindows belong to which Task. */
-  private static Hashtable taskTable;
+  private static Hashtable procTable;
   
-  /* Keeps track of which TaskBlockCounter belongs to the Task. */
+  /* Keeps track of which ProcBlockCounter belongs to the Task. */
   private static Hashtable blockerTable;
   
   /* Used to instantiate the glade file multiple times */
@@ -87,6 +90,10 @@ public class DisassemblyWindowFactory
   private static boolean monitor = false;
   
   private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+  
+  private static int task_count;
+  
+  private static Task myTask;
   
   private final static String DIS_GLADE = "disassemblywindow.glade";
   
@@ -99,20 +106,20 @@ public class DisassemblyWindowFactory
   public static void setPaths(String[] paths)
   {
     gladePaths = paths;
-    taskTable = new Hashtable();
+    procTable = new Hashtable();
     blockerTable = new Hashtable();
   }
 
   /**
    * Performs checks to ensure no other DisassemblyWindow is running on this Task;
-   * if not, assigns a TaskBlockCounter and attaches an Observer if there is
-   * no other Window already running on this Task.
+   * if not, assigns a ProcBlockCounter and attaches an Observer if there is
+   * no other Window already running on this Proc.
    * 
-   * @param task    The Task to be examined by the new DisassemblyWindow.
+   * @param proc    The Proc to be examined by the new DisassemblyWindow.
    */
-  public static void createDisassemblyWindow (Task task)
+  public static void createDisassemblyWindow (Proc proc)
   {
-    DisassemblyWindow dw = (DisassemblyWindow) taskTable.get(task);
+    DisassemblyWindow dw = (DisassemblyWindow) procTable.get(proc);
 
     /* Check if there is already a DisassemblyWindow running on this task */
     if (dw != null)
@@ -121,35 +128,37 @@ public class DisassemblyWindowFactory
         return;
       }
 
-    DisWinBlocker blocker = new DisWinBlocker();
-    blocker.myTask = task;
+//    DisWinBlocker blocker = new DisWinBlocker();
+//    blocker.myTask = proc;
     
-     if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
+     ProcAttachedObserver pao = null;
+    
+     if (ProcBlockCounter.getBlockCount(proc) != 0 || monitor == true)
        {
          /* If this Task is already blocked, don't try to block it again */
-         dw = finishDisWin(dw, task);
+         dw = finishDisWin(dw, proc);
        }
      else 
        {
          /* Otherwise it is not blocked, and we should go about doing it */
-         task.requestAddAttachedObserver(blocker);
-         blockerTable.put(task, blocker);
+         pao = new ProcAttachedObserver(proc, new DisWinBlocker());
+         blockerTable.put(proc, pao);
        }
 
     /* Indicate that there is another window on this Task */
-    TaskBlockCounter.incBlockCount(task);
+    ProcBlockCounter.incBlockCount(proc);
 
     return;
   }
 
   /**
    * Initializes the Glade file, the DisassemblyWindow itself, adds listeners and
-   * Assigns the Task.
+   * Assigns the Proc.
    * 
    * @param dw  The DisassemblyWindow to be initialized.
-   * @param task    The Task to be examined by mw.
+   * @param proc    The Proc to be examined by mw.
    */
-  public static DisassemblyWindow finishDisWin (DisassemblyWindow dw, Task task)
+  public static DisassemblyWindow finishDisWin (DisassemblyWindow dw, Proc proc)
   {
 
     LibGlade glade = null;
@@ -191,7 +200,7 @@ public class DisassemblyWindowFactory
     try
       {
         dw = new DisassemblyWindow(glade);
-        taskTable.put(task, dw);
+        procTable.put(proc, dw);
       }
     catch (Exception e)
       {
@@ -206,7 +215,7 @@ public class DisassemblyWindowFactory
     if (! dw.hasTaskSet())
       {
         dw.setIsRunning(false);
-        dw.setTask(task);
+        dw.setTask(proc.getMainTask());
       }
     else
       dw.showAll();
@@ -216,13 +225,13 @@ public class DisassemblyWindowFactory
   
   /**
    * Used by the SourceWindow to assign the static memWin object which it uses
-   * to ensure there is only one DisassemblyWindow running for its Task.
+   * to ensure there is only one DisassemblyWindow running for its Proc.
    * 
-   * @param task    The Task used to find the DisassemblyWindow representing it.
+   * @param proc    The Proc used to find the DisassemblyWindow representing it.
    */
-  public static void setDisWin(Task task)
+  public static void setDisWin(Proc proc)
   {
-    disWin = (DisassemblyWindow) taskTable.get(task);
+    disWin = (DisassemblyWindow) procTable.get(proc);
   }
   
   /**
@@ -234,38 +243,49 @@ public class DisassemblyWindowFactory
   }
   
   /**
-   * Check to see if this instance is the last one blocking the Task - if so,
+   * Check to see if this instance is the last one blocking the Proc - if so,
    * request to unblock it. If not, then just decrement the block count and
    * clean up.
    * 
-   * @param task    The Task to be unblocked.
+   * @param proc    The Proc to be unblocked.
    */
-  private static void unblockTask (Task task)
+  private static void unblockTask (Proc proc)
   {
-    if (taskTable.get(task) != null)
+    if (procTable.get(proc) != null)
       {
-        if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
+        if (ProcBlockCounter.getBlockCount(proc) == 1 && monitor != true)
           {
-            try
+            ProcAttachedObserver pao = (ProcAttachedObserver) blockerTable.get(proc);
+            Iterator i = proc.getTasks().iterator();
+            while (i.hasNext())
               {
-                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-                task.requestUnblock(o);
-                task.requestDeleteAttachedObserver(o);
-                blockerTable.remove(task);
+                Task t = (Task) i.next();
+                t.requestUnblock(pao);
+                t.requestDeleteAttachedObserver(pao);
               }
-            catch (Exception e)
-              {
-                Preferences prefs = PreferenceManager.getPrefs();
-                DisassemblyWindow dw = (DisassemblyWindow) taskTable.get(task);
-                dw.save(prefs);
-                return;
-              }
+            
+            blockerTable.remove(proc);
+            
+//            try
+//              {
+//                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+//                task.requestUnblock(o);
+//                task.requestDeleteAttachedObserver(o);
+//                blockerTable.remove(task);
+//              }
+//            catch (Exception e)
+//              {
+//                Preferences prefs = PreferenceManager.getPrefs();
+//                DisassemblyWindow dw = (DisassemblyWindow) procTable.get(task);
+//                dw.save(prefs);
+//                return;
+//              }
           }
-        TaskBlockCounter.decBlockCount(task);
+        ProcBlockCounter.decBlockCount(proc);
         Preferences prefs = PreferenceManager.getPrefs();
-        DisassemblyWindow dw = (DisassemblyWindow) taskTable.get(task);
+        DisassemblyWindow dw = (DisassemblyWindow) procTable.get(proc);
         dw.save(prefs);
-        taskTable.remove(task);
+        procTable.remove(proc);
       }
   }
   
@@ -301,7 +321,7 @@ public class DisassemblyWindowFactory
           DisassemblyWindow dw = (DisassemblyWindow) arg0.getSource();
           Task t = dw.getMyTask();
 
-          unblockTask(t);
+          unblockTask(t.getProc());
 
           if (!dw.equals(disWin))
             WindowManager.theManager.mainWindow.showAll();
@@ -320,7 +340,7 @@ public class DisassemblyWindowFactory
    * upon call, and blocks the task it is to examine.
    */
   private static class DisWinBlocker
-      implements TaskObserver.Attached
+      implements ProcObserver.ProcTasks
   {
 
     private Task myTask;
@@ -332,26 +352,18 @@ public class DisassemblyWindowFactory
      */
     public Action updateAttached (Task task)
     {
-      // TODO Auto-generated method stub
-      System.out.println("blocking");
-      CustomEvents.addEvent(new Runnable()
-      {
-
-        public void run ()
-        {
-          DisassemblyWindow dw = (DisassemblyWindow) taskTable.get(myTask);
-          finishDisWin(dw, myTask);
-        }
-
-      });
-
+      myTask = task;
       return Action.BLOCK;
+    }
+    
+    public void taskAdded(final Task task)
+    {
+      // TODO Auto-generated method stub
     }
 
     public void addedTo (Object observable)
     {
       // TODO Auto-generated method stub
-
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -363,9 +375,42 @@ public class DisassemblyWindowFactory
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
-
     }
+    
+    public void taskRemoved (Task task)
+    {   
+      // TODO Auto-generated method stub
+    }
+    
+    public void existingTask (Task task)
+    {
+        myTask = task;
+        CustomEvents.addEvent(new Runnable()
+        {
+          public void run()
+          {
+            handleTask(myTask);
+          }
 
+        });
+    }
+  }
+  
+  public static synchronized void handleTask (Task task)
+  {
+    myTask = task;
+    CustomEvents.addEvent(new Runnable()
+    {
+      public void run ()
+      {
+        --task_count;
+        if (task_count == 0)
+          {
+            DisassemblyWindow dw = (DisassemblyWindow) procTable.get(myTask.getProc());
+            finishDisWin(dw, myTask.getProc());
+          }
+      }
+    }); 
   }
 
 }

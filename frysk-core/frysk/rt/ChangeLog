@@ -1,3 +1,12 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (getTask): Refactored from getMyTask().
+	(getDwflLine): Added.
+	(StackFrame): Uses task instead of myTask.
+	(getDOMFunction): Refactored from getFunction (confused with 
+	getMethod).
+	(setDOMFunction): Refactored from setFunction 
+
 2006-10-02  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackBacktrace.java (testBacktrace): Enabled test 

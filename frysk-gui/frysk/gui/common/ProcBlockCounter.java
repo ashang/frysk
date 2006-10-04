@@ -41,30 +41,30 @@ package frysk.gui.common;
 
 import java.util.Hashtable;
 
-import frysk.proc.Task;
+import frysk.proc.Proc;
 
 /**
- * Used as kind of semaphore to co-ordinate the un-blocking of a Task between
- * different Objects which may be using the same blocked Task - the Register/
+ * Used as kind of semaphore to co-ordinate the un-blocking of a Proc between
+ * different Objects which may be using the same blocked Proc - the Register/
  * Memory/Disassembly/SourceWindows.
  * 
  * @author mcvet
  */
-public class TaskBlockCounter
+public class ProcBlockCounter
 {
   
   /* Keep track how many Objects are watching each Task */
   public static Hashtable blockTable = new Hashtable();
   
   /**
-   * Return the number of blockers on this incoming Task.
+   * Return the number of blockers on this incoming Proc.
    * 
-   * @param task    The task to check for blockers.
+   * @param proc    The Proc to check for blockers.
    * @return    The number of blockers.
    */
-  public static int getBlockCount(Task task)
+  public static int getBlockCount(Proc proc)
   {
-    Integer i = (Integer)blockTable.get(task);
+    Integer i = (Integer)blockTable.get(proc);
     if (i == null)
       return 0;
     else
@@ -72,31 +72,31 @@ public class TaskBlockCounter
   }
   
   /**
-   * Increment the number of blockers for the incoming Task - called when a
+   * Increment the number of blockers for the incoming Proc - called when a
    * new window has been created by a factory.
    * 
-   * @param task    The Task whose number of blockers is incremented by one.
+   * @param proc    The Proc whose number of blockers is incremented by one.
    */
-  public static void incBlockCount(Task task)
+  public static void incBlockCount(Proc proc)
   {
-    Integer i = (Integer)blockTable.get(task);
+    Integer i = (Integer)blockTable.get(proc);
     if (i == null)
-      blockTable.put(task, new Integer(1));
+      blockTable.put(proc, new Integer(1));
     else
-      blockTable.put(task, new Integer(i.intValue() + 1));
+      blockTable.put(proc, new Integer(i.intValue() + 1));
   }
   
   /**
-   * Decrement the number of blockers for the incoming Task - called when a 
+   * Decrement the number of blockers for the incoming Proc - called when a 
    * window has been destroyed.
    * 
-   * @param task    The Task whose number of blockers is decremented by one.
+   * @param proc    The Proc whose number of blockers is decremented by one.
    */
-  public static void decBlockCount(Task task)
+  public static void decBlockCount(Proc proc)
   {
-    Integer i = (Integer)blockTable.get(task);
+    Integer i = (Integer)blockTable.get(proc);
     if (i != null)
-      blockTable.put(task, new Integer(i.intValue() - 1));
+      blockTable.put(proc, new Integer(i.intValue() - 1));
   }
   
 }

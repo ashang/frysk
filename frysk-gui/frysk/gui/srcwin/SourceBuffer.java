@@ -550,7 +550,7 @@ public Variable getVariable (TextIter iter)
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Task myTask = this.scope.getMyTask();
+    Task myTask = this.scope.getTask();
     SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask);
     stab.toString();
     Variable var;

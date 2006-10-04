@@ -1,3 +1,7 @@
+2006-10-04  Mike Cvet  <mcvet@redhat.com>
+
+	* Dwfl.java (getSourceLine): Added try/catch around dwfl call.
+
 2006-10-02  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (get_scopevar): Check for DW_TAG_variable.

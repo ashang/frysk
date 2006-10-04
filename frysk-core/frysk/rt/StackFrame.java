@@ -79,8 +79,10 @@ public class StackFrame
   private DOMFunction func;
   
   private DOMSource data;
+  
+  private DwflLine dwflLine;
 
-  private Task myTask;
+  private Task task;
   
   private boolean isSignalFrame = false;
   
@@ -88,7 +90,7 @@ public class StackFrame
    * Create a new StackFrame without knowing the inner frame ahead of time.
    * 
    * @param current The FrameCursor representing the current frame.
-   * @param myTask  The Task this StackFrame belongs to.
+   * @param task  The Task this StackFrame belongs to.
    */
   public StackFrame (FrameCursor current, Task myTask)
   {
@@ -104,12 +106,12 @@ public class StackFrame
    * object is decremented.
    * 
    * @param current The FrameCursor representing the current frame.
-   * @param myTask  The Task this StackFrame belongs to.
+   * @param task  The Task this StackFrame belongs to.
    * @param inner   This StackFrame's inner StackFrame.
    */
   public StackFrame (FrameCursor current, Task myTask, StackFrame inner)
   {
-    this.myTask = myTask;
+    this.task = myTask;
     unwind_data = current.getNativeCursor();
     initialize();
     this.inner = inner;
@@ -138,6 +140,7 @@ public class StackFrame
             this.sourceFile = line.getSourceFile();
             this.column = line.getColumn();
           }
+        this.dwflLine = line;
       }
   }
   
@@ -155,7 +158,7 @@ public class StackFrame
    * 
    * @param f   The DOMFunction for this StackFrame.
    */
-  public void setFunction(DOMFunction f)
+  public void setDOMFunction(DOMFunction f)
   {
     this.func = f;
     if (f != null)
@@ -181,7 +184,7 @@ public class StackFrame
    * 
    * @return This StackFrame's function.
    */
-  public DOMFunction getFunction()
+  public DOMFunction getDOMFunction()
   {
     return this.func;
   }
@@ -250,9 +253,9 @@ public class StackFrame
    * 
    * @return The Task this StackFrame belongs to.
    */
-  public Task getMyTask ()
+  public Task getTask ()
   {
-    return myTask;
+    return task;
   }
 
   /**
@@ -296,7 +299,7 @@ public class StackFrame
     // Pad the address based on the task's word size.
     try
       {
-	int padding = 2 * myTask.getIsa().getWordSize() - addr.length();
+	int padding = 2 * task.getIsa().getWordSize() - addr.length();
 	for (int i = 0; i < padding; ++i)
 	  builder.append('0');
       }
@@ -359,6 +362,11 @@ public class StackFrame
   public int getStartOffset ()
   {
     return startOffset;
+  }
+  
+  public DwflLine getDwflLine ()
+  {
+    return this.dwflLine;
   }
   
   /**
