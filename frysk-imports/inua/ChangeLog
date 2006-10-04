@@ -1,3 +1,9 @@
+2006-10-02  Nurdin Premji <npremji@redhat.com>
+
+	* util/readelf.java (main): Initialized LinkedList to avoid null pointer exception.
+	Initialized arg string for same reason.
+	(addOptions): Removed unused help option, use generic getopt help.
+
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 
 	* util/readelf.java: Changed to use getopt.

@@ -62,13 +62,10 @@ import inua.dwarf.PrintDebugAranges;
 import inua.dwarf.PrintDebugAbbrev;
 import inua.util.PrintWriter;
 
-
-
 class readelf
 {
   
   private static Parser parser;
-  protected static boolean help;
   protected static boolean fileHeader;
   protected static boolean programHeaders;
   protected static boolean segments;
@@ -86,13 +83,7 @@ class readelf
 
   
   private static void addOptions (Parser parser)
-  {
-    parser.add(new Option ("help", 'H', "Print a help message") {
-      public void parsed (String arg0) throws OptionException {
-        help = true;
-      }
-    });
-    
+  {    
     parser.add(new Option ("file-header", 'h', "File header message") {
       public void parsed (String arg0) throws OptionException {
         fileHeader = true;
@@ -188,6 +179,8 @@ class readelf
     addOptions(parser);
 	
 
+    otherArgs = new LinkedList();
+    
     parser.parse (argv, new FileArgumentCallback() {
         public void notifyFile(String arg) throws OptionException
         {           
@@ -195,7 +188,8 @@ class readelf
         }
     });     
          
-	
+	if (null == arg)
+		arg = "";
 	boolean debugDumpLine = arg.equals ("line");
 	boolean debugDumpInfo = arg.equals ("info");
 	boolean debugDumpAbbrev = arg.equals ("abbrev");
@@ -208,7 +202,6 @@ class readelf
 	boolean debugDumpStr = arg.equals ("str");
 	boolean debugDumpLoc = arg.equals ("loc");
 	// o.print ("Unrecognized debug-dump option " + arg);
-  
 
 	if (otherArgs.size() == 0) {
 	    o.print  ("readelf: Warning: Nothing to do.");
