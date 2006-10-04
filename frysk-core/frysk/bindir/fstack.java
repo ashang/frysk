@@ -42,6 +42,8 @@
 import inua.util.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TreeMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -49,15 +51,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
+import frysk.event.RequestStopEvent;
+
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcAttachedObserver;
 import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
-import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
@@ -66,13 +71,14 @@ import gnu.classpath.tools.getopt.Parser;
 public class fstack
 {
   private PrintWriter writer;
+
   private TreeMap sortedTasks;
 
   private Proc proc;
 
   private static int pid = 0;
 
-  private ProcTasksObserver procTasksObserver;
+  public ProcAttachedObserver procAttachedObserver;
 
   private static Parser parser;
 
@@ -94,7 +100,7 @@ public class fstack
                           "console",
                           'c',
                           "Set the console level. The console-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]",
+                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
                           "<console-level>")
     {
       public void parsed (String consoleValue) throws OptionException
@@ -124,7 +130,7 @@ public class fstack
                           "level",
                           'l',
                           "Set the log level. The log-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]",
+                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
                           "<log-level>")
     {
       public void parsed (String arg0) throws OptionException
@@ -158,25 +164,42 @@ public class fstack
         System.exit(1);
       }
 
-    procTasksObserver = new ProcTasksObserver(proc,
-                                              new StackTasksObserver(proc));
+    procAttachedObserver = new ProcAttachedObserver(
+                                                    proc,
+                                                    new StackTasksObserver(proc));
     Manager.eventLoop.start();
   }
 
-  private final void removeObservers (Task task)
+  private final void requestDeletes (Proc proc)
   {
-    task.requestDeleteClonedObserver(procTasksObserver);
-    // task.requestDeleteTerminatedObserver(procTasksObserver);
+    Iterator iter = proc.getTasks().iterator();
+    while (iter.hasNext())
+      {
+        ((Task) iter.next()).requestDeleteAttachedObserver(procAttachedObserver);
+      }
+  }
+
+  private final void removeObservers (Proc proc)
+  {
+    requestDeletes(proc);
+    proc.observableDetached.addObserver(new Observer()
+    {
+
+      public void update (Observable o, Object arg)
+      {
+        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
+      }
+    });
   }
 
   public final void storeTask (Task task)
   {
     if (null != task)
-      {  
+      {
         try
           {
             LinkedList list = new LinkedList();
-		list.add(new String("Task #" + task.getTid()));
+            list.add(new String("Task #" + task.getTid()));
             int count = 0;
             for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
               {
@@ -187,14 +210,15 @@ public class fstack
 
                 if (frame.getSourceFile() != null)
                   output = output + " from " + frame.getSourceFile();
-                
+
                 list.add(output);
                 count++;
               }
 
-		if (null == sortedTasks)
-			sortedTasks = new TreeMap();
-            sortedTasks.put(task.getName(), list);
+            if (null == sortedTasks)
+              sortedTasks = new TreeMap();
+
+            sortedTasks.put(new Integer(task.getTid()), list);
           }
         catch (TaskException _)
           {
@@ -204,23 +228,22 @@ public class fstack
       }
   }
 
-  public final void printTasks () 
+  public final void printTasks ()
   {
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
-    {      
-      LinkedList output = (LinkedList) iter.next();
-      Iterator i = output.iterator();
-      while (i.hasNext())
-        {
-          String s = (String) i.next();
-          writer.println(s);
-        }
-    }
-    
-  
+      {
+        LinkedList output = (LinkedList) iter.next();
+        Iterator i = output.iterator();
+        while (i.hasNext())
+          {
+            String s = (String) i.next();
+            writer.println(s);
+          }
+      }
+
   }
-  
+
   private class StackTasksObserver
       implements ProcObserver.ProcTasks
   {
@@ -244,51 +267,23 @@ public class fstack
 
       if (0 == taskList.size())
         {
-          //Print all the tasks in order.
+          // Print all the tasks in order.
           printTasks();
-          //Remove the observer from this proc.
-          removeObservers(task);
-    	}
+          // Remove the observer from this proc.
+          removeObservers(task.getProc());
+        }
     }
+
     public void taskAdded (Task task)
     {
       // TODO Auto-generated method stub
 
-      // Bonus task:
-      storeTask(task);
-      removeObservers(task);
-
-      if (taskList.contains(task))
-        {
-          taskList.remove(task);
-        }
-
-      if (0 == taskList.size())
-        {
-          removeObservers(task);
-        }
     }
 
     public void taskRemoved (Task task)
     {
       // TODO Auto-generated method stub
-      if (taskList.contains(task))
-        {
-          System.out.println("Task was removed before stack trace could occur");
 
-          taskList.remove(task);
-        }
-
-      if (0 == taskList.size())
-        {
-          removeObservers(task);
-        }
-
-      // Should I be able to print a stack frame here?
-      storeTask(task);
-
-      // Do I need to remove the observer from a dead task?
-      removeObservers(task);
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -306,9 +301,7 @@ public class fstack
     }
 
     public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-      Manager.eventLoop.requestStop();
+    {      
     }
 
   }
@@ -318,10 +311,12 @@ public class fstack
 
     parser = new Parser("fstack", "1.0", true)
     {
-      protected void validate() throws OptionException{
-        if (0 == pid) {
-          throw new OptionException ("no pid provided");
-        }
+      protected void validate () throws OptionException
+      {
+        if (0 == pid)
+          {
+            throw new OptionException("no pid provided");
+          }
       }
     };
     addOptions(parser);

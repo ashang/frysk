@@ -1311,6 +1311,24 @@ class TaskState
 	observable.delete(observer);
 	return this;
       }
+      
+      TaskState handleDeleteObserver (Task task, Observable observable,
+                                      Observer observer)
+      {
+        logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+        observable.delete (observer);
+        return this;
+      }
+      
+      TaskState handleDetach (Task task)
+      {
+        
+        logger.log (Level.FINE, "{0} handleDetach\n", task);
+        
+        task.sendDetach (0);
+        task.proc.performTaskDetachCompleted (task);
+        return detached;
+      }
     }
     
     /**

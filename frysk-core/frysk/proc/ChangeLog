@@ -1,3 +1,22 @@
+2006-10-04  Nurdin Premji <npremji@redhat.com>
+
+	* Proc.java: made observations set private and gave accessor methods.
+	(addObservation): New.
+	(removeObservation): New.
+	(observationsIterator): New.
+	(observationsSize): New.
+	(requestUnblock): New.
+	(toString): If newState is null (during transition), print out that we are using the oldstate.
+	* ProcState.java (Attaching: ToMainTask:handleAddObservation): Changed methods to use accessor functions rather than directly modify proc's observation set.
+	(Attaching:ToMainTask:handleDeleteObservation): Ditto.
+	(Attaching:ToOtherTasks:handleAddObservation): Ditto.
+	(Attaching:ToOtherTasks: handleDeleteObservation): Ditto.
+	(Attaching:allAttached): Ditto.
+	(Attaching:initialState): Added error if observation not added to observations set.
+	(Attaching: running): Added log messages.
+	* TaskState.java (BlockedSignal:handleDeleteObserver): Added.
+	(BlockedSignal:handleDetach): Added.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcAttachedObserver.java (deletedFrom): Removed debug print statements.

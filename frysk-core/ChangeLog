@@ -1,3 +1,13 @@
+2006-10-04  Nurdin Premji <npremji@redhat.com>
+
+	* frysk/bindir/fstack.java: 
+	Ran gnu styler.
+	Used procAttachedObserver rather than procTasksObserver
+	(addOptions): Added information about ALL logging option.
+	(removeObservers): Changed to use the process not the task.
+	(requestDeletes): Added, removes the attachedObserver from all of the tasks.
+	(storeTasks): Used integer tid as key rather than string tid as key so sorted in ascending trace number order. Fixes issue with traces printing out weird orders like 21 22 3021 42.
+
 2006-10-03  Nurdin Premji <npremji@redhat.com>
 	
 	* frysk/bindir/fstack.java(addFailed): Implemented, fixes evolution hanging issue.

@@ -157,7 +157,8 @@ abstract class ProcState
 	static ProcState initialState (Proc proc, Observation observation)
 	{
 	    logger.log (Level.FINE, "{0} state\n", proc); 
-	    proc.observations.add (observation);
+	    if (!proc.addObservation (observation))
+           observation.fail(new RuntimeException("not actually added"));
 	    // Grab the main task; only bother with the refresh if the
 	    // Proc has no clue as to its task list.
 	    if (proc.taskPool.size () == 0)
@@ -181,7 +182,7 @@ abstract class ProcState
 	private static ProcState allAttached (Proc proc)
 	{
 	    logger.log (Level.FINE, "{0} allAttached\n", proc); 
-	    for (Iterator i = proc.observations.iterator ();
+	    for (Iterator i = proc.observationsIterator();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
 		observation.handleAdd ();
@@ -240,7 +241,7 @@ abstract class ProcState
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
 		// An extra observation, just add it to the list.
-		proc.observations.add (observation);
+		proc.addObservation (observation);
 		return this;
 	    }
 	    ProcState handleDeleteObservation (Proc proc,
@@ -249,9 +250,9 @@ abstract class ProcState
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
 		// If the observation was never added, this will
 		// return false, but that is ok.
-		proc.observations.remove (observation);
+		proc.removeObservation (observation);
 		observation.fail (new RuntimeException ("canceled"));
-		if (proc.observations.size () == 0) {
+		if (proc.observationsSize() == 0) {
 		    // None of the other tasks are attached, just need
 		    // to detach the main one.
 		    mainTask.performDetach ();
@@ -295,16 +296,16 @@ abstract class ProcState
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
-		proc.observations.add (observation);
+		proc.addObservation (observation);
 		return this;
 	    }
 	    ProcState handleDeleteObservation (Proc proc,
 					       Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-		proc.observations.remove (observation);
+		proc.removeObservation (observation);
 		observation.fail (new RuntimeException ("canceled"));
-		if (proc.observations.size () == 0)
+		if (proc.observationsSize () == 0)
 		    return new Detaching (proc);
 		return this;
 	    }
@@ -403,7 +404,7 @@ abstract class ProcState
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
-		proc.observations.add (observation);
+		proc.addObservation(observation);
 		observation.handleAdd ();
 		return running;
 	    }
@@ -411,13 +412,17 @@ abstract class ProcState
 					       Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-		if (proc.observations.remove (observation)) {
+		if (proc.removeObservation (observation)) {
+          logger.log(Level.FINEST, "handleDeleteObservation remove succeeded\n");
 		    observation.handleDelete ();
-		    if (proc.observations.size () == 0)
+		    if (proc.observationsSize () == 0) {
+              logger.log(Level.FINEST, "handleDeleteObservation size == 0, detaching\n");
 			return new Detaching (proc);
+            }
 		}
-		else
+		else 
 		    observation.fail (new RuntimeException ("not added"));
+        
 		return running;
 	    }
 	};

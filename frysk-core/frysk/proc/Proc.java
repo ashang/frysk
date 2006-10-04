@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -324,8 +325,38 @@ public abstract class Proc
     /**
      * The set of observations that currently apply to this task.
      */
-    Set observations = new HashSet ();
+    private Set observations = new HashSet ();
+    
+    public boolean addObservation(Object o)
+    {
+      return observations.add(o);
+    }
 
+    public boolean removeObservation (Object o)
+    {
+      return observations.remove(o);
+    }
+    
+    public int observationsSize()
+    {
+      return observations.size();
+    }
+    
+    public Iterator observationsIterator()
+    {
+      return observations.iterator();
+    }
+    
+    public void requestUnblock(TaskObserver observerArg)
+    {
+      Iterator iter = getTasks().iterator();
+      while (iter.hasNext())
+        {
+          Task task = (Task) iter.next();
+          task.requestUnblock(observerArg);
+        }
+    }
+    
     /**
      * (internal) Tell the process to add the specified Observation,
      * attaching the process if necessary.
@@ -577,9 +608,15 @@ public abstract class Proc
 
     public String toString ()
     {
+      if (null != newState) {
 	return ("{" + super.toString ()
 		+ ",pid=" + getPid ()
-		+ ",state=" + getState ()
+		+ ",state=" + getState ()       
 		+ "}");
+      }
+      return ("{" + super.toString()
+          + ",pid=" + getPid()
+          + ",oldState=" + getState()
+          + "}");
     }
 }
