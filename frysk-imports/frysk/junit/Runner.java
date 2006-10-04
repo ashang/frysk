@@ -315,7 +315,7 @@ public class Runner
     private void addOptions(Parser parser) 
     {
 	    parser.add(new Option("console", 'c', "Set the console level. The console-level can be "
-		+ "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]", "<console-level>") {
+		+ "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]", "<console-level>") {
 			public void parsed (String consoleValue) throws OptionException
 			{			
 				 try
@@ -341,7 +341,7 @@ public class Runner
 			}
 		});
 	    parser.add(new Option("level", 'l', "Set the log level. The log-level can be " +
-			    "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]", "<log-level>") {
+			    "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]", "<log-level>") {
 			public void parsed(String arg0) throws OptionException
 			{
 				levelValue = arg0;				
