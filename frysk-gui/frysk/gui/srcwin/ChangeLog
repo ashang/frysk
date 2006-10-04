@@ -1,5 +1,6 @@
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceBuffer.java (isLineBroken): Added a null check.
 	* SourceWindowFactory.java (procTable): Changd from taskTable.
 	(createSourceWindow): Updated to create a SourceWindow from a Proc
 	with multiple Tasks. Uses ProcAttachedObserver to block the Proc.

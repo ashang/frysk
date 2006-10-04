@@ -218,6 +218,9 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return false;
 
+    if (this.scope == null || this.scope.getData() == null)
+      return false;
+    
     DOMLine line = this.scope.getData().getLine(lineNo + 1);
     if (line == null)
       return false;
