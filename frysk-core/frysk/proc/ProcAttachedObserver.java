@@ -118,7 +118,6 @@ public final class ProcAttachedObserver
 
   public void addedTo (Object observable)
   {
-    System.out.println("=> addedTo");
   }
 
   public void addFailed (Object observable, Throwable w)
@@ -129,7 +128,6 @@ public final class ProcAttachedObserver
 
   public void deletedFrom (Object observable)
   {
-    System.out.println("=> deletedFrom");
     procAttachedObserver.deletedFrom(observable);
   }
 }
