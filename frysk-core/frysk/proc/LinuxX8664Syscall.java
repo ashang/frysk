@@ -373,8 +373,32 @@ public class LinuxX8664Syscall
     new X8664Syscall ("ioprio_get", 252),
     new X8664Syscall ("inotify_init", 253),
     new X8664Syscall ("inotify_add_watch", 254),
-    new X8664Syscall ("inotify_rm_watch", 255)
-    };
+    new X8664Syscall ("inotify_rm_watch", 255),
+    new X8664Syscall ("migrate_pages", 256),
+    new X8664Syscall ("openat", 257),
+    new X8664Syscall ("mkdirat", 258),
+    new X8664Syscall ("mknodat", 259),
+    new X8664Syscall ("fchownat", 260),
+    new X8664Syscall ("futimesat", 261),
+    new X8664Syscall ("newfstatat", 262),
+    new X8664Syscall ("unlinkat", 263),
+    new X8664Syscall ("renameat", 264),
+    new X8664Syscall ("linkat", 265),
+    new X8664Syscall ("symlinkat", 266),
+    new X8664Syscall ("readlinkat", 267),
+    new X8664Syscall ("fchmodat", 268),
+    new X8664Syscall ("faccessat", 269),
+    new X8664Syscall ("pselect6", 270),
+    new X8664Syscall ("ppoll", 271),
+    new X8664Syscall ("unshare", 272),
+    new X8664Syscall ("set_robust_list", 273),
+    new X8664Syscall ("get_robust_list", 274),
+    new X8664Syscall ("splice", 275),
+    new X8664Syscall ("tee", 276),
+    new X8664Syscall ("sync_file_range", 277),
+    new X8664Syscall ("vmsplice", 278),
+    new X8664Syscall ("move_pages", 279)
+  };
 
   public static Syscall syscallByNum (Task task, int number)
   {
