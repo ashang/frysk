@@ -1,5 +1,15 @@
 2006-10-05  Mark Wielaard  <mark@klomp.org>
 
+	* TaskState.java (transitionToRunningState): Remove syscalltracing
+	argument, use task.syscallObservers.numberOfObservers().
+	(WaitForContinueOrUnblock.syscallObserverAdded): Remove field.
+	(WaitForUnblock.syscallObserverAdded): Likewise.
+	(StartClonedTask.syscallObserverAdded): Likewise.
+	(BlockedSignal.syscallObserverAdded): Likewise.
+	(syscallBlockedContinue): Removed.
+
+2006-10-05  Mark Wielaard  <mark@klomp.org>
+
 	* Breakpoint.java (getAddress): New method.
 	* BreakpointAddresses.java (getCodeObservers): Return null when
 	no observers installed on the specified address.
