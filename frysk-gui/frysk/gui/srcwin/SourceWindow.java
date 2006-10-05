@@ -336,6 +336,8 @@ public class SourceWindow
   public void setMyProc (Proc myProc)
   {
     this.myProc = myProc;
+    this.setTitle(this.getTitle() + this.myProc.getCommand() + " - process "
+                + this.myProc.getPid());
   }
   
   public Proc getMyProc ()

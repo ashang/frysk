@@ -1,3 +1,8 @@
+2006-10-05  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (setMyProc): Fixed to update window title.
+	Fixes #3309.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (isLineBroken): Added a null check.
