@@ -131,12 +131,12 @@ public class SourceView
   private InlineSourceView child;
 
   private SourceViewListener listener;
-  
+
   private Variable hoveredVar;
-  
-//  private int hoverX;
-//  
-//  private int hoverY;
+
+  // private int hoverX;
+  //  
+  // private int hoverY;
 
   /**
    * Constructs a new SourceViewWidget. If you don't specify a buffer before
@@ -194,14 +194,17 @@ public class SourceView
   {
     // Ignore events that aren't expose events or don't have anything
     // to do with the sidebar
-    if (!event.isOfType(ExposeEvent.Type.NO_EXPOSE)){
-       if(event.getWindow().equals(this.getWindow(TextWindowType.LEFT)))
-         this.drawMargin();
-       else if(event.getWindow().equals(this.getWindow(TextWindowType.TEXT)) && this.hoveredVar != null){
-         // Do mouse-over-variable drawing stuff here
-       }
-      
-    }
+    if (! event.isOfType(ExposeEvent.Type.NO_EXPOSE))
+      {
+        if (event.getWindow().equals(this.getWindow(TextWindowType.LEFT)))
+          this.drawMargin();
+        else if (event.getWindow().equals(this.getWindow(TextWindowType.TEXT))
+                 && this.hoveredVar != null)
+          {
+            // Do mouse-over-variable drawing stuff here
+          }
+
+      }
 
     return false;
   }
@@ -324,7 +327,10 @@ public class SourceView
 
         DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
 
-        InlineSourceView nested = new InlineSourceView(this.parent, instance, CurrentStackView.getCurrentFrame());
+        InlineSourceView nested = new InlineSourceView(
+                                                       this.parent,
+                                                       instance,
+                                                       CurrentStackView.getCurrentFrame());
         this.setSubscopeAtCurrentLine(nested);
       }
     else
@@ -414,7 +420,8 @@ public class SourceView
     for (int i = firstLine; i <= lastLine && i < this.buf.getLineCount(); i++)
       {
 
-        // Make adjustments if we are after the current line - there may have been inline code
+        // Make adjustments if we are after the current line - there may have
+        // been inline code
         if (i > this.buf.getCurrentLine())
           {
             drawingHeight = currentHeight + gapHeight;
@@ -433,7 +440,8 @@ public class SourceView
 
         int iconStart = lineHeight / 2;
 
-        // skipNextLine is true when we're on a line containing the inlined code, do nothing
+        // skipNextLine is true when we're on a line containing the inlined
+        // code, do nothing
         if (skipNextLine)
           {
             skipNextLine = false;
@@ -478,7 +486,8 @@ public class SourceView
                                          actualFirstStart + drawingHeight, lo);
                 this.myContext.setRGBForeground(lineColor);
 
-                // We don't want to draw anything in the margin next to the inlined code
+                // We don't want to draw anything in the margin next to the
+                // inlined code
                 if (this.expanded)
                   skipNextLine = true;
               }
@@ -771,18 +780,25 @@ public class SourceView
         TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                      (int) event.getY());
         final Variable var = this.buf.getVariable(iter);
-
-        Menu m = new Menu();
-        MenuItem traceItem = new MenuItem("Add Trace", false);
-        m.append(traceItem);
         
-        if (!var.equals(null))
+        Menu m = new Menu();
+        
+        /*
+         * If the variable comes back non-null, set up the right-click
+         * menu stuff where the variable value is shown as one item in the
+         * menu and the ability to add the item to the Variable Watch
+         * window is another item.
+         */
+        if (! var.equals(null))
           {
             MenuItem valueItem;
-                valueItem = new MenuItem("Value: " + var.toString(), true);
-                valueItem.setSensitive(false);
-                m.append(valueItem);
-                        
+            valueItem = new MenuItem("Value of " + var.getText() +
+                                     ": " + var.toString(), true);
+            valueItem.setSensitive(false);
+            m.append(valueItem);
+            MenuItem traceItem = new MenuItem("Add to Variable Watches", false);
+            m.append(traceItem);
+            traceItem.setSensitive(true);
             traceItem.addListener(new MenuItemListener()
             {
               public void menuItemEvent (MenuItemEvent arg0)
@@ -790,14 +806,9 @@ public class SourceView
                 SourceView.this.parent.addVariableTrace(var);
               }
             });
+            m.showAll();
+            m.popup();
           }
-        else
-          {
-            traceItem.setSensitive(false);
-          }
-
-        m.showAll();
-        m.popup();
 
         return true;
       }
@@ -826,26 +837,27 @@ public class SourceView
                                                  (int) event.getY());
     // Check to see if we've moused over a variable
     Variable var = this.buf.getVariable(iter);
-    
+
     if (var != null)
       {
         event.getWindow().setCursor(new Cursor(CursorType.HAND1));
-//        this.hoverX = (int) event.getX();
-//        this.hoverY = (int) event.getY();
+        // this.hoverX = (int) event.getX();
+        // this.hoverY = (int) event.getY();
       }
     else
       {
         event.getWindow().setCursor(new Cursor(CursorType.XTERM));
       }
-    
+
     // If that status changed, we need to redraw
-    boolean refresh = (this.hoveredVar == null || var == null)  && this.hoveredVar != var;
-    
+    boolean refresh = (this.hoveredVar == null || var == null)
+                      && this.hoveredVar != var;
+
     this.hoveredVar = var;
 
-    if(refresh)
+    if (refresh)
       this.draw();
-    
+
     return false;
   }
 
