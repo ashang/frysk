@@ -155,8 +155,9 @@ public class TestStackBacktrace
                                               "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("baz", frame.getMethodName());
     assertNull(frame.getInner());
-    /* XXX: this should be 62 */
-    assertEquals(61, frame.getLineNumber());
+    
+    if (!brokenXXX(3295))
+      assertEquals(61, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(

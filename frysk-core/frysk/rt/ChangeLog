@@ -1,3 +1,8 @@
+2006-10-05  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Added a brokenXXX
+	call in regards to #3259.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (getTask): Refactored from getMyTask().
