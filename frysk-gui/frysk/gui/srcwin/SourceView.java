@@ -82,7 +82,7 @@ import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.lang.InvalidOperatorException;
+//import frysk.lang.InvalidOperatorException;
 import frysk.lang.Variable;
 import frysk.rt.StackFrame;
 
@@ -775,21 +775,14 @@ public class SourceView
         Menu m = new Menu();
         MenuItem traceItem = new MenuItem("Add Trace", false);
         m.append(traceItem);
-        if (var != null)
+        
+        if (!var.equals(null))
           {
             MenuItem valueItem;
-            try
-              {
-                valueItem = new MenuItem("Value: " + var.getType().longValue(var), true);
+                valueItem = new MenuItem("Value: " + var.toString(), true);
                 valueItem.setSensitive(false);
                 m.append(valueItem);
-              }
-            catch (InvalidOperatorException e)
-              {
-                // TODO: What to do if this fails?
-              }
-            
-            
+                        
             traceItem.addListener(new MenuItemListener()
             {
               public void menuItemEvent (MenuItemEvent arg0)
