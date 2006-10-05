@@ -157,7 +157,7 @@ public class TestStackBacktrace
     assertNull(frame.getInner());
     
     if (!brokenXXX(3295))
-      assertEquals(61, frame.getLineNumber());
+      assertEquals(62, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
