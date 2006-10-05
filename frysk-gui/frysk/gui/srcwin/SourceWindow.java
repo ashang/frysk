@@ -78,6 +78,7 @@ import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
@@ -1263,16 +1264,32 @@ public class SourceWindow
    */
   private void doStackUp ()
   {
-    int selected = this.stackView.getSelection().getSelectedRows()[0].getIndices()[0];
+    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
 
+    if (path.getDepth() == 1)
+      {
+        int selected = path.getIndices()[0];
+        
     // Can't move above top stack
     if (selected == 0)
       return;
 
     this.stackView.getSelection().select(
-                                         this.stackView.getModel().getIter(
-                                                                           ""
-                                                                               + (selected - 1)));
+         this.stackView.getModel().getIter("" + (selected - 1)));
+      }
+    else
+      {
+        
+        int selected = path.getIndices()[1];
+        
+        // Can't move above top stack
+        if (selected == 0)
+          return;
+
+        this.stackView.getSelection().select(
+        this.stackView.getModel().getIter("" + path.getIndices()[0] + 
+                                          ":" + (selected - 1)));
+      }
   }
 
   /**
@@ -1280,21 +1297,37 @@ public class SourceWindow
    */
   private void doStackDown ()
   {
-    int selected = this.stackView.getSelection().getSelectedRows()[0].getIndices()[0];
+    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
 
-    int max = 0;
-    TreeIter iter = this.stackView.getModel().getIter("" + max);
-    while (iter != null)
-      iter = this.stackView.getModel().getIter("" + max++);
+    if (path.getDepth() == 1)
+      {
+        int selected = path.getIndices()[0];
 
-    // Can't move below bottom stack
-    if (selected == max - 2)
-      return;
-
-    this.stackView.getSelection().select(
-                                         this.stackView.getModel().getIter(
-                                                                           ""
-                                                                               + (selected + 1)));
+        try
+          {
+            this.stackView.getSelection().select(
+              this.stackView.getModel().getIter("" + (selected + 1)));
+          }
+        catch (NullPointerException npe)
+          {
+            return;
+          }
+      }
+    else
+      {
+        int selected = path.getIndices()[1];
+        
+        try
+        {
+          this.stackView.getSelection().select(
+            this.stackView.getModel().getIter("" + path.getIndices()[0] + 
+                                           ":" + (selected + 1)));
+        }
+        catch (NullPointerException npe)
+        {
+          return;
+        }
+      }
   }
 
   /**
@@ -1302,15 +1335,13 @@ public class SourceWindow
    */
   private void doStackBottom ()
   {
-    int max = 0;
-    TreeIter iter = this.stackView.getModel().getIter("" + max);
-    while (iter != null)
-      iter = this.stackView.getModel().getIter("" + max++);
-
-    this.stackView.getSelection().select(
-                                         this.stackView.getModel().getIter(
-                                                                           ""
-                                                                               + (max - 2)));
+    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
+    
+    if (path.getDepth() != 1)
+        path.up();
+    
+    TreeIter iter = this.stackView.getModel().getIter(path);
+    this.stackView.getSelection().select(iter.getFirstChild());
   }
 
   private void doJumpToFunction (String name)
