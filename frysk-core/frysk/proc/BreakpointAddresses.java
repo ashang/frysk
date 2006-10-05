@@ -136,7 +136,7 @@ public class BreakpointAddresses
   /**
    * Called by the Proc when it has trapped a breakpoint.  Returns an
    * Iterator of TaskObserver.Code observers interested in the given
-   * address.
+   * address or null when no Code observer was installed on this address.
    */
   Iterator getCodeObservers(long address)
   {
@@ -144,7 +144,7 @@ public class BreakpointAddresses
     Breakpoint breakpoint = Breakpoint.create(address, proc);
     ArrayList list = (ArrayList) map.get(breakpoint);
     if (list == null)
-      throw new IllegalArgumentException();
+      return null;
     
     // Return the cloned list of observers in case the Code observer
     // wants to add or remove itself or a new observer to that same

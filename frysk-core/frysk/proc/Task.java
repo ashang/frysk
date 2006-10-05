@@ -924,9 +924,15 @@ abstract public class Task
     proc.requestDeleteCodeObserver(this, codeObservers, o, a);
   }
   
+  // Whether we are currently stepping over a breakpoint.
+  // Used in the running task state when a trap event occurs after
+  // a step has been issued. Null when no step is being performed.
+  Breakpoint steppingBreakpoint;
+
   /**
    * Notify all Code observers of the breakpoint. Return the number of
-   * blocking observers.
+   * blocking observers or -1 if no Code observer were installed on this
+   * address.
    */
   int notifyCodeBreakpoint (long address)
   {
@@ -934,6 +940,9 @@ abstract public class Task
 	       new Object[] { this, Long.valueOf(address) });
     
     Iterator i = proc.breakpoints.getCodeObservers(address);
+    if (i == null)
+      return -1;
+
     while (i.hasNext())
       {
 	TaskObserver.Code observer = (TaskObserver.Code) i.next();

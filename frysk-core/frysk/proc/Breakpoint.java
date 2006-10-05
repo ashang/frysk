@@ -96,6 +96,11 @@ public class Breakpoint
     return breakpoint;
   }
 
+  public long getAddress()
+  {
+    return address;
+  }
+
   /**
    * Installs breakpoint. Caller must make sure there is no breakpoint set
    * at that address yet and that install() is not called again till remove()

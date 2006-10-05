@@ -1,3 +1,9 @@
+2006-10-05  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c (trap_handler): New function.
+	(dummy): Send trap signal and generate trap event.
+	(main): Install trap signal handler.
+
 2006-09-29  Mark Wielaard  <mark@klomp.org>
 
 	* funit-breakpoints.c (main): Reexec at the end of the loop.

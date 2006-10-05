@@ -42,13 +42,51 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
 
 // Counters for how many times the breakpoint functions have been called.
 // Used as sanity check to tell the tester the functions have actually ran.
 static int bp1;
 static int bp2;
 
-static void dummy() { /* nop */ }
+static pid_t pid;
+
+// Counters to check whether real and received Trap signals match
+// and don't interfere with the breakpoints inserted by frysk.
+static int send_trap;
+static int received_trap;
+
+static void
+trap_handler(int sig)
+{
+  if (sig != SIGTRAP)
+    {
+      fprintf (stderr, "Wrong signal recieved %d\n", sig);
+      exit (-1);
+    }
+
+  received_trap++;
+}
+
+// Tries to trick frysk by sending trap signals and by having its
+// own trap instruction.
+static void
+dummy()
+{
+  // Sending ourselves a trap signal.
+  kill (pid, SIGTRAP);
+  send_trap++;
+
+  // Generating a trap event ourselves.
+#if defined(__i386__) || defined(__x86_64__)
+  asm("int3");
+#elif defined(__powerpc64__)
+  asm(".long 0x7d821008");
+#else
+   #error unsuported architecture
+#endif
+}
 
 static void
 first_breakpoint_function ()
@@ -67,6 +105,10 @@ second_breakpoint_function ()
 int
 main (int argc, char *argv[], char *envp[])
 {
+  pid = getpid();
+  received_trap = 0;
+  send_trap = 0;
+  signal (SIGTRAP, &trap_handler);
 
   // The number of runs the tester wants us to do.
   // Zero when we should terminate.
@@ -114,6 +156,13 @@ main (int argc, char *argv[], char *envp[])
       printf("%d\n", bp1);
       printf("%d\n", bp2);
       fflush(stdout);
+    }
+
+  // Have our own trap signals and trap instructions triggered?
+  if (2 * send_trap != received_trap)
+    {
+      fprintf (stderr, "send: %d, recv: %d\n", send_trap, received_trap);
+      exit (-1);
     }
 
   // Finally re-exec ourselves to show breakpoints are gone.
