@@ -48,7 +48,7 @@ import frysk.sys.PtraceByteBuffer;
 
 import lib.unwind.RegisterAMD64;
 
-class IsaEMT64 implements Isa
+class IsaX8664 implements Isa
 {
   static final int FPREGS_OFFSET = 28 * 8;
   static final int DBG_OFFSET = 32 * 8;
@@ -105,7 +105,7 @@ class IsaEMT64 implements Isa
 
   private LinkedHashMap registerMap = new LinkedHashMap();
 
-  IsaEMT64()
+  IsaX8664()
   {
     for (int i = 0; i < regDefs.length; i++) {
       registerMap.put(regDefs[i].getName(), regDefs[i]);
@@ -152,10 +152,10 @@ class IsaEMT64 implements Isa
   {
     byte[] instruction = null;
     
-    instruction = new byte[IsaEMT64.BREAKPOINT_INSTRUCTION.length];
+    instruction = new byte[IsaX8664.BREAKPOINT_INSTRUCTION.length];
     
-    System.arraycopy(IsaEMT64.BREAKPOINT_INSTRUCTION, 0, 
-                     instruction, 0, IsaEMT64.BREAKPOINT_INSTRUCTION.length);
+    System.arraycopy(IsaX8664.BREAKPOINT_INSTRUCTION, 0, 
+                     instruction, 0, IsaX8664.BREAKPOINT_INSTRUCTION.length);
     
     return instruction;
   }
@@ -171,7 +171,7 @@ class IsaEMT64 implements Isa
     long pcValue = 0;
 
     pcValue = this.pc(task);
-    pcValue = pcValue - IsaEMT64.BREAKPOINT_INSTRUCTION.length;
+    pcValue = pcValue - IsaX8664.BREAKPOINT_INSTRUCTION.length;
     
     return pcValue;
   }

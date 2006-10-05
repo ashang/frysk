@@ -77,7 +77,7 @@ extends LinuxIa32
     return isa;
   }
   // The Isa object used to actually access registers in the target.
-  private final IsaEMT64 isa64 = new IsaEMT64();
+  private final IsaX8664 isa64 = new IsaX8664();
 
   /**
    * Get the buffers used to access registers in the different

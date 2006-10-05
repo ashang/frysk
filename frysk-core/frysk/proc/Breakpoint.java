@@ -206,7 +206,7 @@ public class Breakpoint
     Register pc;
     if (isa instanceof LinuxIa32)
       pc = isa.getRegisterByName("eip");
-    else if (isa instanceof LinuxEMT64)
+    else if (isa instanceof LinuxX8664)
       pc = isa.getRegisterByName("rip");
     else if (isa instanceof LinuxPPC64)
       pc = isa.getRegisterByName("nip");

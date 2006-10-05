@@ -1,4 +1,4 @@
-#Mon Aug 14 13:32:45 EDT 2006
+#Thu Oct 05 11:00:45 GMT+02:00 2006
 org.eclipse.jdt.core.formatter.insert_new_line_at_end_of_file_if_missing=insert
 org.eclipse.jdt.core.formatter.brace_position_for_enum_constant=next_line
 org.eclipse.jdt.core.formatter.insert_space_before_postfix_operator=do not insert

@@ -191,11 +191,11 @@ public class TestRegs
       {
         super.updateSyscallEnter(task);
         SyscallEventInfo syscall;
-        LinuxEMT64 isa;
+        LinuxX8664 isa;
         try 
           {
             syscall = task.getSyscallEventInfo ();
-            isa = (LinuxEMT64)task.getIsa ();
+            isa = (LinuxX8664)task.getIsa ();
           }
         catch (TaskException e)
           {
@@ -251,7 +251,7 @@ public class TestRegs
           {
             isa = null;
           }
-        if (isa instanceof LinuxEMT64) 
+        if (isa instanceof LinuxX8664) 
           {
             EMT64Isa = true;
             task.requestAddSyscallObserver(taskEventObserver);

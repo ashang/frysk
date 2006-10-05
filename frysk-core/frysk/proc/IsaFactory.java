@@ -100,7 +100,7 @@ public class IsaFactory
 	  case ElfEMachine.EM_PPC64:
 	    return LinuxPPC64.isaSingleton ();
 	  case ElfEMachine.EM_X86_64:
-	    return LinuxEMT64.isaSingleton ();
+	    return LinuxX8664.isaSingleton ();
 	  default: 
 	    throw new TaskException("Unknown machine type " + header.machine);
 	  }

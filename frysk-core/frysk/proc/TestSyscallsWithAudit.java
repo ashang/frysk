@@ -116,7 +116,7 @@ public class TestSyscallsWithAudit
 
   public void testLinuxEMT64(){
     int machine = AuditLibs.MACH_86_64;
-    Isa isa = LinuxEMT64.isaSingleton();
+    Isa isa = LinuxX8664.isaSingleton();
     
     String auditName;
     String fryskName;

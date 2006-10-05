@@ -41,14 +41,14 @@ package frysk.proc;
 
 import java.util.HashMap;
 
-class LinuxEMT64
-  extends IsaEMT64 implements SyscallEventDecoder
+class LinuxX8664
+  extends IsaX8664 implements SyscallEventDecoder
 {
-  private static LinuxEMT64 isa;
-  static LinuxEMT64 isaSingleton ()
+  private static LinuxX8664 isa;
+  static LinuxX8664 isaSingleton ()
   {
     if (isa == null)
-      isa = new LinuxEMT64 ();
+      isa = new LinuxX8664 ();
     return isa;
   }
 

@@ -254,11 +254,11 @@ public class TestRegMemModify
       {
     syscallState = 1;
     SyscallEventInfo syscall;
-    LinuxEMT64 isa;
+    LinuxX8664 isa;
     try 
       {
         syscall = task.getSyscallEventInfo();
-        isa = (LinuxEMT64)task.getIsa();             
+        isa = (LinuxX8664)task.getIsa();             
       }
     catch (TaskException e)
       {
@@ -303,11 +303,11 @@ public class TestRegMemModify
         syscallState = 0;
         
         SyscallEventInfo syscall;
-        LinuxEMT64 isa;
+        LinuxX8664 isa;
         try 
           {
             syscall = task.getSyscallEventInfo();
-            isa = (LinuxEMT64)task.getIsa();             
+            isa = (LinuxX8664)task.getIsa();             
           }
         catch (TaskException e)
           {
@@ -379,7 +379,7 @@ public class TestRegMemModify
           {
         isa = null;
           }
-        if (isa instanceof LinuxEMT64) {
+        if (isa instanceof LinuxX8664) {
           EMT64Isa = true;
           task.requestAddSyscallObserver (taskEventObserver);
           task.requestAddSignaledObserver (taskEventObserver);

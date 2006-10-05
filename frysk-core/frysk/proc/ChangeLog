@@ -1,3 +1,13 @@
+2006-10-05  Tim Moore  <timmore@redhat.com>
+
+	* IsaX8664.java: New file, renamed from IsaEMT64.java
+	* IsaEMT64.java: Delete.
+	* LinuxX8664.java: New file, renamed from LinuxEMT64.java
+	* LinuxEMT64.java: Delete.
+	* Breakpoint.java, IsaFactory.java, LinuxIA32on64.java,
+	TestRegMemModify.java, TestRegs.java, TestSyscallsWithAudit.java:
+	Refactoring renamed classes.
+
 2006-10-04  Nurdin Premji <npremji@redhat.com>
 
 	* Proc.java: made observations set private and gave accessor methods.
