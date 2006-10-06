@@ -326,7 +326,7 @@ public class CLI
           task = proc.getMainTask();
 
  
-          symtab = new SymTab(pid, proc, task);
+          symtab = new SymTab(pid, proc, task, null);
         }
     }
 

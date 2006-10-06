@@ -554,7 +554,7 @@ public Variable getVariable (TextIter iter)
       return null;
 
     Task myTask = this.scope.getTask();
-    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask);
+    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
     stab.toString();
     Variable var;
     try

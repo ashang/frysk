@@ -67,18 +67,22 @@ public class SymTab
   static ExprSymTab exprSymTab;
 
 
+    public SymTab (int pid_p, Proc proc_p, Task task_p)
+    {
+      this(pid_p, proc_p, task_p, null);
+    }
     /**
      * Create a symbol table object.
      * @param pid_p
      * @param proc_p
      * @param task_p
      */
-    public SymTab (int pid_p, Proc proc_p, Task task_p)
+    public SymTab (int pid_p, Proc proc_p, Task task_p, StackFrame frame)
     {
       pid = pid_p;
       proc = proc_p;
       task = task_p;
-      exprSymTab = new ExprSymTab (task, pid);
+      exprSymTab = new ExprSymTab (task, pid, frame);
     }
     /**
      * Implement the cli what request

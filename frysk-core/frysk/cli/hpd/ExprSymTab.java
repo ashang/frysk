@@ -66,7 +66,6 @@ class ExprSymTab implements CppSymTab
 {
   private Task task;
   private int pid;
-  private StackFrame innerMostFrame;
   private StackFrame currentFrame;  
   Map symTab;
 
@@ -75,20 +74,34 @@ class ExprSymTab implements CppSymTab
    * SymTab and CppTreeParser, the expression parser.
    * @param task_p
    * @param pid_p
+   * @param frame
    */
-  ExprSymTab (Task task_p, int pid_p)
+  ExprSymTab (Task task_p, int pid_p, StackFrame frame)
   {
     task = task_p;
     pid = pid_p;
-    try
-    {
-      innerMostFrame = StackFactory.createStackFrame(task);
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
-    currentFrame = innerMostFrame;    
+    
+    if (frame == null)
+      {
+        try
+          {
+            currentFrame = StackFactory.createStackFrame(task);
+          }
+        catch (TaskException tte)
+          {
+            throw new RuntimeException(tte);
+          }
+      }
+    
+    else
+      {
+        while (frame.getInner() != null)
+          frame = frame.getInner();
+
+        /* currentFrame is now the innermost StackFrame */
+        currentFrame = frame;
+      }
+    
     symTab = new HashMap();
   }
   
@@ -104,7 +117,7 @@ class ExprSymTab implements CppSymTab
     long pc;
     try
     {
-      if (currentFrame == innerMostFrame)
+      if (currentFrame.getInner() == null)
         pc = task.getIsa().pc(task) - 1;
       else
         pc = currentFrame.getAddress();
@@ -144,7 +157,7 @@ class ExprSymTab implements CppSymTab
     
     try
     {
-      if (currentFrame == innerMostFrame)
+      if (currentFrame.getInner() == null)
         pc = task.getIsa().pc(task) - 1;
       else
         pc = currentFrame.getAddress();
@@ -161,7 +174,7 @@ class ExprSymTab implements CppSymTab
       long regval = 0;
       try
       {
-        if (currentFrame == innerMostFrame)
+        if (currentFrame.getInner() == null)
           {
             if (MachineType.getMachineType() == MachineType.IA32)
               regval = task.getIsa().getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
@@ -340,6 +353,11 @@ class ExprSymTab implements CppSymTab
    */
   StackFrame getInnerMostFrame ()
   {
-    return innerMostFrame;
+    StackFrame curr = currentFrame;
+    
+    while (curr.getInner() != null)
+      curr = curr.getInner();
+    
+    return curr;
   }
 }

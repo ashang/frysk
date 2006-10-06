@@ -1,3 +1,20 @@
+2006-10-06  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/ExprSymTab.java (ExprSymTab): New StackFrame parameter.Sets
+	currentFrame to the inner most frame of the incoming stack trace 
+	if non-null; generates new stack trace otherwise. Got rid of 
+	innermostFrame field. Fixes #3312.
+	(getBufferAddr): Checks currentFrame.getInner() null-ness instead
+	of innermostFrame.
+	(getDie): Ditto.
+	(getInnerMostFrame): Iterates a pointer to currentFrame's innermost
+	and returns it.
+	* hpd/SymTab.java (SymTab): Added a new constructor with 
+	an extra parameter - a StackFrame. Calls ExprSymTab with new
+	StackFrame argument; null if no StackFrame was given.
+	* hpd/CLI.java (AttachHandler.handle): Sends in an extra null
+	argument to the new SymTab.
+
 2006-10-03  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (getBufferAddr): Add x86regnumbers to map x86

@@ -1,3 +1,9 @@
+2006-10-06  Mike Cvet  <mcvet@redhat.com>
+
+	* InlineBuffer.java (getVariable): Sends scope argument into new
+	SymTab.
+	* SourceBuffer.java (getVariable): Ditto.
+
 2006-10-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doStackUp): Fixed up to work with multithreaded
