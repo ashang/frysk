@@ -1,3 +1,7 @@
+2006-10-06  Nurdin Premji  <npremji@redhat.com>
+
+	*TestProcStopped.java: Added
+
 2006-10-05  Mark Wielaard  <mark@klomp.org>
 
 	* LinuxX8664Syscall.java (syscallList): Add entries 256 till 279.

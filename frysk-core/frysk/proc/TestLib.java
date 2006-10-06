@@ -266,6 +266,7 @@ public class TestLib
     protected final Sig parentAck = Sig.USR2;
     protected final Sig addCloneSig = Sig.USR1;
     protected final Sig delCloneSig = Sig.USR2;
+    protected final Sig stopSig = Sig.STOP;
     protected final Sig addForkSig = Sig.HUP;
     protected final Sig delForkSig = Sig.INT;
     protected final Sig zombieForkSig = Sig.URG;
@@ -494,6 +495,11 @@ public class TestLib
 	    signal (delCloneSig);
 	    ack.await ();
 	}
+    /** Stop a Task. */
+    public void assertSendStop ()
+    {
+      signal (stopSig);
+    }
 	/** Add a child Proc.  */
 	public void assertSendAddForkWaitForAcks ()
 	{
