@@ -1,7 +1,15 @@
+2006-10-06  Tom Tromey  <tromey@redhat.com>
+
+	* frysk/util/Ftrace.java: Added.
+	* frysk/util/StracePrinter.java: Added.
+	* frysk/util/SyscallHandler.java: Added.
+	* frysk/util/Util: Added.
+	* frysk/bindir/ftrace.java: Refactored to use frysk/util/Ftrace.java. Added command line options.
+
 2006-10-06  Nurdin Premji <npremji@redhat.com>
 
 	* frysk/util/FStack.java: Added.
-	* frysk/bindir/fstack.java: Moved most methods (except main and command line parsing) to frysk/util/FStack.java.
+	* frysk/bindir/fstack.java: Moved most methods (except main and command line parsing) to frysk/util/FStack.java.	
 
 2006-10-04  Nurdin Premji <npremji@redhat.com>
 

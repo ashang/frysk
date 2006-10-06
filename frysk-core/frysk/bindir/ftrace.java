@@ -39,156 +39,135 @@
 
 import inua.util.PrintWriter;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.StringTokenizer;
 
-import frysk.proc.Action;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.SyscallEventInfo;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
-import frysk.proc.TaskObserver;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import frysk.util.Ftrace;
+import frysk.util.StracePrinter;
+
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
+
+
 
 class ftrace
 {
-  private static Proc proc;
+//Where to send output.
+    PrintWriter writer;
 
-  public static void main (String[] args)
-  {
-    final PrintWriter out = new PrintWriter(System.out, true);
+    // Set of all Syscalls we want to trace.
+    // This is null if the user hasn't specified any.
+    HashSet tracedCalls;
+    // True if a PID was requested.
+    boolean requestedPid;
+    // Command and arguments to exec.
+    ArrayList commandAndArguments;
 
-//    Logger logger = EventLogger.get ("logs/", "frysk_core_event.log");
-//    Handler handler = new ConsoleHandler ();
-//    handler.setLevel(Level.FINEST);
-//    logger.addHandler(handler);
-//    logger.setLevel(Level.ALL);
-//    LogManager.getLogManager().addLogger(logger);
-     
-    if (args.length == 0)
-      {
-        out.println("Usage: ftrace <command [arg ...]>");
-        return;
-      }
-    
-    
-    Manager.host.requestCreateAttachedProc(args, new AttachedObserver());
-    Manager.eventLoop.start();
-  }
+    Ftrace tracer = new Ftrace();
 
-  protected static void setProc (Proc myProc)
-  {
-    proc = myProc;
-    Manager.host.observableProcRemovedXXX.addObserver (new ProcRemovedObserver(proc));
-    System.out.println("ftrace.main() Proc.getPid() " + proc.getPid());
-    System.out.println("ftrace.main() Proc.getPid() " + proc.getExe());
-  }
-  
-  /**
-   * An observer to stop the eventloop when the traced process
-   * exits.
-   */
-  private static class ProcRemovedObserver implements Observer{
-    int pid;
-    
-    ProcRemovedObserver(Proc proc){
-      this.pid = proc.getPid();
-    }
-    
-    public void update (Observable o, Object object)
+    private void addOptions(Parser parser)
     {
-      Proc proc = (Proc) object;
-      if (proc.getPid() == this.pid) {
-        Manager.eventLoop.requestStop ();
-      }
+        parser.add(new Option('o', "output file name", "FILE") {
+            public void parsed(String filename) throws OptionException
+            {
+                // FIXME: strace supports '|' and '!' here for piping.
+                try {
+                    writer = new PrintWriter(new FileOutputStream(filename));
+                } catch (FileNotFoundException fnfe) {
+                    OptionException oe = new OptionException(fnfe.getMessage());
+                    oe.initCause(fnfe);
+                    throw oe;
+                }
+            }
+        });
+        parser.add(new Option('c', "trace children as well") {
+            public void parsed(String arg0) throws OptionException
+            {
+                tracer.setTraceChildren();
+            }
+        });
+        parser.add(new Option("trace", 't', "syscalls to trace", "CALL[,CALL]...") {
+            public void parsed(String arg) throws OptionException
+            {
+                StringTokenizer st = new StringTokenizer(arg, ",");
+                while (st.hasMoreTokens())
+                {
+                    String name = st.nextToken();
+                    // FIXME: there's no good way to error out if the
+                    // syscall is unknown.
+                    if (tracedCalls == null)
+                        tracedCalls = new HashSet();
+                    tracedCalls.add(name);
+                }
+            }
+        });
+        parser.add(new Option('p', "pid to trace", "PID") {
+            public void parsed(String arg) throws OptionException
+            {
+                try {
+                    int pid = Integer.parseInt(arg);
+                    // FIXME: we have no good way of giving the user an
+                    // error message if the PID is not available.
+                    tracer.addTracePid(pid);
+                    requestedPid = true;
+                } catch (NumberFormatException _) {
+                    OptionException oe = new OptionException("couldn't parse pid: " + arg);
+                    oe.initCause(_);
+                    throw oe;
+                }
+            }
+        });
     }
-  }
-  
-  /**
-   * An observer that sets up things once frysk has set up
-   * the requested proc and attached to it.
-   */
-  private static class AttachedObserver implements TaskObserver.Attached{
-    public Action updateAttached (Task task)
+
+    public void run(String[] args)
     {
-      task.requestAddSyscallObserver(new SyscallObserver());
-      setProc(task.getProc());
-      task.requestUnblock(this);
-      return Action.BLOCK;
+        Parser parser = new Parser("ftrace", "0.0", true) {
+            protected void validate() throws OptionException {
+                if (! requestedPid && commandAndArguments == null)
+                    throw new OptionException("no command or PID specified");
+            }
+        };
+        addOptions(parser);
+        parser.setHeader("usage: ftrace [OPTIONS] COMMAND ARGS...");
+        
+        parser.parse(args, new FileArgumentCallback() {
+            public void notifyFile(String arg) throws OptionException
+            {
+                if (commandAndArguments == null)
+                    commandAndArguments = new ArrayList();
+                commandAndArguments.add(arg);
+            }
+        });
+        if (writer == null)
+            writer = new PrintWriter(System.out);
+        StracePrinter printer = new StracePrinter(writer, tracedCalls);
+
+        tracer.setWriter(writer);
+        tracer.setEnterHandler(printer);
+        tracer.setExitHandler(printer);
+
+        if (commandAndArguments != null)
+        {
+            String[] cmd = (String[]) commandAndArguments.toArray(new String[0]);
+            tracer.trace(cmd);
+        }
+        else
+            tracer.trace();
     }
 
-    public void addedTo (Object observable){}
-
-    public void addFailed (Object observable, Throwable w){
-      throw new RuntimeException("Failed to attach to created proc", w);
-    }
-
-    public void deletedFrom (Object observable){}
-  }
-  
-  /**
-   * The syscallObserver added to the traced proc.
-   */
-  private static class SyscallObserver implements TaskObserver.Syscall{
-
-    public Action updateSyscallEnter (Task task)
+    public ftrace()
     {
-      SyscallEventInfo syscallEventInfo;
-      try
-	{
-	  syscallEventInfo = task.getSyscallEventInfo ();
-	}
-      catch (TaskException e) 
-	{
-	  // XXX Abort? or what?
-	  System.out.println("Got task exception " + e);
-	  return Action.CONTINUE;
-	}
-
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-
-      PrintWriter printWriter = new PrintWriter(System.out);
-      printWriter.print(task.getProc().getPid() + "." + task.getTid() + " ");
-      syscall.printCall(printWriter, task, syscallEventInfo);
-      printWriter.flush();
-      return Action.CONTINUE;
     }
 
-    public Action updateSyscallExit (Task task)
+    public static void main(String[] args)
     {
-      SyscallEventInfo syscallEventInfo;
-      try
-	{
-	  syscallEventInfo = task.getSyscallEventInfo ();
-	}
-      catch (TaskException e) 
-	{
-	  // XXX Abort? or what?
-	  System.out.println("Got task exception " + e);
-	  return Action.CONTINUE;
-	}
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-
-      PrintWriter printWriter = new PrintWriter(System.out);
-      syscall.printReturn(printWriter, task, syscallEventInfo);
-      printWriter.flush();
-      return Action.CONTINUE;
+        ftrace m = new ftrace();
+        m.run(args);
     }
-
-    public void addedTo (Object observable)
-    {
-      
-    }
-
-    public void addFailed (Object observable, Throwable w)  {
-      throw new RuntimeException("Failed to add a Systemcall observer to the process",w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      throw new RuntimeException("This has not yet been implemented");
-    }
-    
-  }
-  
 }
