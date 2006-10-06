@@ -37,49 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-//package frysk.bindir;
-
 import inua.util.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.TreeMap;
+
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
-import frysk.event.RequestStopEvent;
-
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.ProcAttachedObserver;
-import frysk.proc.ProcId;
-import frysk.proc.ProcObserver;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
-import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+import frysk.util.FStack;
+
 public class fstack
 {
-  private PrintWriter writer;
-
-  private TreeMap sortedTasks;
-
-  private Proc proc;
-
-  private static int pid = 0;
-
-  public ProcAttachedObserver procAttachedObserver;
-
+	
+  private static int pid;
+  
   private static Parser parser;
 
   protected static final Logger logger = EventLogger.get("logs/",
@@ -88,11 +66,6 @@ public class fstack
   private static String levelValue;
 
   private static Level level;
-
-  public void setWriter (PrintWriter writer)
-  {
-    this.writer = writer;
-  }
 
   private static void addOptions (Parser parser)
   {
@@ -149,163 +122,6 @@ public class fstack
     });
   }
 
-  public void run (int pid)
-  {
-    Manager.host.requestRefreshXXX(true);
-
-    // XXX: Should get a message back when the refresh has finished and the
-    // proc has been found.
-    Manager.eventLoop.runPending();
-    proc = Manager.host.getProc(new ProcId(pid));
-
-    if (null == proc)
-      {
-        System.out.println("Couldn't get the proc");
-        System.exit(1);
-      }
-
-    procAttachedObserver = new ProcAttachedObserver(
-                                                    proc,
-                                                    new StackTasksObserver(proc));
-    Manager.eventLoop.start();
-  }
-
-  private final void requestDeletes (Proc proc)
-  {
-    Iterator iter = proc.getTasks().iterator();
-    while (iter.hasNext())
-      {
-        ((Task) iter.next()).requestDeleteAttachedObserver(procAttachedObserver);
-      }
-  }
-
-  private final void removeObservers (Proc proc)
-  {
-    requestDeletes(proc);
-    proc.observableDetached.addObserver(new Observer()
-    {
-
-      public void update (Observable o, Object arg)
-      {
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
-  }
-
-  public final void storeTask (Task task)
-  {
-    if (null != task)
-      {
-        try
-          {
-            LinkedList list = new LinkedList();
-            list.add(new String("Task #" + task.getTid()));
-            int count = 0;
-            for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
-              {
-                // FIXME: do valgrind-like '=== PID ===' ?
-                String output = "#" + count + " 0x"
-                                + Long.toHexString(frame.getAddress()) + " in "
-                                + frame.getMethodName() + " ()";
-
-                if (frame.getSourceFile() != null)
-                  output = output + " from " + frame.getSourceFile();
-
-                list.add(output);
-                count++;
-              }
-
-            if (null == sortedTasks)
-              sortedTasks = new TreeMap();
-
-            sortedTasks.put(new Integer(task.getTid()), list);
-          }
-        catch (TaskException _)
-          {
-            // FIXME: log exception, or rethrow?
-            writer.println("... couldn't print stack trace");
-          }
-      }
-  }
-
-  public final void printTasks ()
-  {
-    Iterator iter = sortedTasks.values().iterator();
-    while (iter.hasNext())
-      {
-        LinkedList output = (LinkedList) iter.next();
-        Iterator i = output.iterator();
-        while (i.hasNext())
-          {
-            String s = (String) i.next();
-            writer.println(s);
-          }
-      }
-
-  }
-
-  private class StackTasksObserver
-      implements ProcObserver.ProcTasks
-  {
-    private LinkedList taskList;
-
-    public StackTasksObserver (Proc proc)
-    {
-      taskList = proc.getTasks();
-    }
-
-    public void existingTask (Task task)
-    {
-
-      // Print the stack frame for this stack.
-      storeTask(task);
-      // Remove this task from the list of tasks.
-      if (taskList.contains(task))
-        {
-          taskList.remove(task);
-        }
-
-      if (0 == taskList.size())
-        {
-          // Print all the tasks in order.
-          printTasks();
-          // Remove the observer from this proc.
-          removeObservers(task.getProc());
-        }
-    }
-
-    public void taskAdded (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void taskRemoved (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      // TODO Auto-generated method stub
-      System.err.println(w);
-      Manager.eventLoop.requestStop();
-      System.exit(2);
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void deletedFrom (Object observable)
-    {      
-    }
-
-  }
-
   public static void main (String[] args)
   {
 
@@ -350,7 +166,7 @@ public class fstack
         logger.setLevel(level);
       }
 
-    fstack stacker = new fstack();
+    FStack stacker = new FStack();
 
     stacker.setWriter(new PrintWriter(System.out, true));
     stacker.run(pid);
