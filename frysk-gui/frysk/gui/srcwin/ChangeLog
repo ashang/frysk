@@ -1,3 +1,7 @@
+2006-10-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceView.java: Fix only one digit of line #'s being displayed.
+
 2006-10-06  Mike Cvet  <mcvet@redhat.com>
 
 	* InlineBuffer.java (getVariable): Sends scope argument into new

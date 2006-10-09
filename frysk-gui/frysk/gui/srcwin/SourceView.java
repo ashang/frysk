@@ -506,9 +506,10 @@ public class SourceView
           }
 
         // Draw line numbers
-        if (showingLineNums)
+        if (showingLineNums) {
           drawLineNumber(drawingArea, this.myContext, actualFirstStart
                                                       + drawingHeight, i);
+        }
 
         // draw breakpoints
         if (this.buf.isLineBroken(i))
@@ -544,9 +545,8 @@ public class SourceView
                                  int drawingHeight, int number)
   {
     Layout lo = this.createLayout("" + (number + 1));
-    lo.setAlignment(Alignment.RIGHT);
+    lo.setAlignment(Alignment.LEFT);
     lo.setWidth(this.marginWriteOffset);
-
     drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
   }
 
@@ -780,9 +780,9 @@ public class SourceView
         TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                      (int) event.getY());
         final Variable var = this.buf.getVariable(iter);
-        
+
         Menu m = new Menu();
-        
+
         /*
          * If the variable comes back non-null, set up the right-click
          * menu stuff where the variable value is shown as one item in the
@@ -792,8 +792,8 @@ public class SourceView
         if (! var.equals(null))
           {
             MenuItem valueItem;
-            valueItem = new MenuItem("Value of " + var.getText() +
-                                     ": " + var.toString(), true);
+            valueItem = new MenuItem("Value of " + var.getText() + ": "
+                                     + var.toString(), true);
             valueItem.setSensitive(false);
             m.append(valueItem);
             MenuItem traceItem = new MenuItem("Add to Variable Watches", false);
