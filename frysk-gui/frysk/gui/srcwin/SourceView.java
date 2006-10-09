@@ -789,7 +789,7 @@ public class SourceView
          * menu and the ability to add the item to the Variable Watch
          * window is another item.
          */
-        if (! var.equals(null))
+        if (!(var == null))
           {
             MenuItem valueItem;
             valueItem = new MenuItem("Value of " + var.getText() + ": "

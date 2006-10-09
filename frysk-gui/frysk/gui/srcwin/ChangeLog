@@ -1,6 +1,7 @@
 2006-10-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceView.java: Fix only one digit of line #'s being displayed.
+	Fix backtrace that is generated when clicking on non-variable area.
 
 2006-10-06  Mike Cvet  <mcvet@redhat.com>
 
