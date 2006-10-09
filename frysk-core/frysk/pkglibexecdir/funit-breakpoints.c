@@ -81,7 +81,7 @@ dummy()
   // Generating a trap event ourselves.
 #if defined(__i386__) || defined(__x86_64__)
   asm("int3");
-#elif defined(__powerpc64__)
+#elif defined(__powerpc64__) || defined(__powerpc__)
   asm(".long 0x7d821008");
 #else
    #error unsuported architecture
