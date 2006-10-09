@@ -38,16 +38,8 @@
 // exception.
 package frysk.proc;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import inua.eio.ByteBuffer;
-import frysk.sys.PtraceByteBuffer;
-
-import inua.eio.ByteOrder;
-
 class IsaPPC64
-  implements Isa
+  extends IsaPowerPC
 {
   static class PPC64Register 
     extends Register
@@ -95,12 +87,7 @@ class IsaPPC64
   private static final PPC64Register dsisr = new PPC64Register("dsisr", 42);
   private static final PPC64Register result = new PPC64Register("result", 43);
 
-  private LinkedHashMap registerMap = new LinkedHashMap();
 
-  // the illegal instruction for ppc64: 0x7d821008.
-  // the default order is BIG_ENDIAN
-  private static byte[] BREAKPOINT_INSTRUCTION = { (byte)0x7d, (byte)0x82, 
-                                                   (byte)0x10, (byte)0x08 };
   
   IsaPPC64()
   {
@@ -122,105 +109,9 @@ class IsaPPC64
     registerMap.put(dsisr.getName(), dsisr);
     registerMap.put(result.getName(), result);
   }
-    
-  public Iterator RegisterIterator ()
-  {
-    return registerMap.values().iterator();
-  }
-
-  public String getRegisterNameByUnwindRegnum(long regnum)
-  {
-    /* FIXME: needs implementation.  */
-    return null;
-  }
-
-  public Register getRegisterByName (String name)
-  {
-    return (Register)registerMap.get(name);
-  }
-
-  public long pc (Task task)
-  {
-    return getRegisterByName("nip").get(task);
-  }
-
+  
   public int getWordSize ()
   {
     return 8;
   }
-
-  public ByteOrder getByteOrder ()
-  {
-    return ByteOrder.BIG_ENDIAN;
-  }
-  
-  /**
-   * Get the breakpoint instruction of the PPC64 platform.
-   * 
-   * @return bytes[] the breakpoint instruction
-   */
-  public final byte[] getBreakpointInstruction()
-  {
-    byte[] instruction = null;
-    
-    instruction = new byte[IsaPPC64.BREAKPOINT_INSTRUCTION.length];
-    
-    System.arraycopy(IsaPPC64.BREAKPOINT_INSTRUCTION, 0, 
-                     instruction, 0, IsaPPC64.BREAKPOINT_INSTRUCTION.length);
-    
-    return instruction;
-  }
-  
-  /**
-   * Get the true breakpoint address according to PC register after hitting 
-   * one breakpoint set in task. In PPC64, the PC register's value will 
-   * remain unchanged. 
-   * 
-   */
-  public final long getBreakpointAddress(Task task)
-  {
-    long pcValue = 0;
-
-    pcValue = this.pc(task);
-    
-    return pcValue;
-  }
-
-  public Syscall[] getSyscallList ()
-  {
-    return LinuxPowerPCSyscall.syscallList;
-  }
-
-  public HashMap getUnknownSyscalls ()
-  {
-    return LinuxPowerPCSyscall.unknownSyscalls;
-  }
-
-  public Syscall syscallByName (String name)
-  {
-    Syscall syscall;
-
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.syscallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.socketSubcallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.ipcSubcallList);
-    if (syscall != null)
-      return syscall;
-
-    return null;
-  }
-
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-    ByteBuffer[] result = new ByteBuffer[]
-      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
-    result[0].order(getByteOrder());
-    return result;
-  }
-
 }

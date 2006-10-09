@@ -1,3 +1,11 @@
+2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* IsaPowerPC.java : New file.
+
+	* IsaPPC64.java: Refactor it.  Merge the common code to
+	IsaPowerPC.
+	* IsaPPC.java: Likewise.
+
 2006-10-06  Nurdin Premji  <npremji@redhat.com>
 
 	*TestProcStopped.java: Added

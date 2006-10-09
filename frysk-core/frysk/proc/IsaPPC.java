@@ -39,17 +39,10 @@
 
 package frysk.proc;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import frysk.sys.PtraceByteBuffer;
-
-
 class IsaPPC
-  implements Isa
+  extends IsaPowerPC
 {
   static class PPCRegister
     extends Register
@@ -108,90 +101,8 @@ class IsaPPC
     registerMap.put(result.getName(), result);
   }
     
-  public Iterator RegisterIterator ()
-  {
-    return registerMap.values().iterator();
-  }
-
-  public String getRegisterNameByUnwindRegnum(long regnum)
-  {
-    /* FIXME: needs implementation.  */
-    return null;
-  }
-
-  public Register getRegisterByName (String name)
-  {
-    return (Register)registerMap.get(name);
-  }
-
-  public long pc (Task task)
-  {
-    return getRegisterByName("nip").get(task);
-  }
-
   public int getWordSize ()
   {
     return 4;
   }
-  
-  public ByteOrder getByteOrder ()
-  {
-    return ByteOrder.BIG_ENDIAN;
-  }
-  
-  /**
-   * Not support now.
-   * 
-   * @return bytes[] the instruction of the ISA.
-   */
-  public byte[] getBreakpointInstruction()
-  {
-    throw new RuntimeException("unsupported architecture: " + this);
-  }
-  
-  /**
-   * Not support now.
-   */
-  public long getBreakpointAddress(Task task)
-  {
-    throw new RuntimeException("unsupported architecture: " + this);
-  }
-
-  public Syscall[] getSyscallList ()
-  {
-    return LinuxPowerPCSyscall.syscallList;
-  }
-
-  public HashMap getUnknownSyscalls ()
-  {
-    return LinuxPowerPCSyscall.unknownSyscalls;
-  }
-
-  public Syscall syscallByName (String name)
-  {
-    Syscall syscall;
-
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.syscallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.socketSubcallList);
-    if (syscall != null)
-      return syscall;
-    
-    syscall = Syscall.iterateSyscallByName (name, LinuxPowerPCSyscall.ipcSubcallList);
-    if (syscall != null)
-      return syscall;
-
-    return null;
-  }
-
-  public ByteBuffer[] getRegisterBankBuffers(int pid) 
-  {
-    ByteBuffer[] result = new ByteBuffer[]
-      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
-    result[0].order(getByteOrder());
-    return result;
-  }
-
 }
