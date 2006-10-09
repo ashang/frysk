@@ -38,6 +38,16 @@ public class DOMFactory
                                      "Could not find debug information for task "
                                          + task.getName());
     String fullPath = line.getSourceFile();
+    
+    /*
+     * If we have a relative path to the source, use the compilation directory instead
+     */
+    if(fullPath.indexOf(".") == 0)
+      {
+        String compDir = line.getCompilationDir();
+        fullPath = compDir + "/" + fullPath;
+      }
+    
     String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
     String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
 

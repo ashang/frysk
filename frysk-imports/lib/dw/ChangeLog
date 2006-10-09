@@ -1,3 +1,9 @@
+2006-10-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwflLine.java: Reformatted.
+	(getCompilationDir): Added.
+	* cni/DwflLine.cxx (dwfl_linecomp_dir): Added.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* Dwfl.java (getSourceLine): Added try/catch around dwfl call.

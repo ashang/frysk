@@ -36,44 +36,65 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+
 package lib.dw;
 
-public class DwflLine {
+public class DwflLine
+{
 
-	private long pointer;
-	private Dwfl parent;
-	
-	protected DwflLine(long pointer, Dwfl parent){
-		this.pointer = pointer;
-		this.parent = parent;
-	}
-	
-	public String getSourceFile(){
-		return dwfl_lineinfo_source();
-	}
-	
-	public long getAddress(){
-		return dwfl_lineinfo_addr();
-	}
-	
-	public int getLineNum(){
-		return dwfl_lineinfo_linenum();
-	}
-	
-	public int getColumn(){
-		return dwfl_lineinfo_col();
-	}
-	
-	protected long getPointer(){
-		return pointer;
-	}
-	
-	protected Dwfl getParent(){
-		return this.parent;
-	}
-	
-	protected native String dwfl_lineinfo_source();
-	protected native long dwfl_lineinfo_addr();
-	protected native int dwfl_lineinfo_linenum();
-	protected native int dwfl_lineinfo_col();
+  private long pointer;
+
+  private Dwfl parent;
+
+  protected DwflLine (long pointer, Dwfl parent)
+  {
+    this.pointer = pointer;
+    this.parent = parent;
+  }
+
+  public String getSourceFile ()
+  {
+    return dwfl_lineinfo_source();
+  }
+
+  public long getAddress ()
+  {
+    return dwfl_lineinfo_addr();
+  }
+
+  public int getLineNum ()
+  {
+    return dwfl_lineinfo_linenum();
+  }
+
+  public int getColumn ()
+  {
+    return dwfl_lineinfo_col();
+  }
+
+  public String getCompilationDir ()
+  {
+    return dwfl_linecomp_dir();
+  }
+
+  protected long getPointer ()
+  {
+    return pointer;
+  }
+
+  protected Dwfl getParent ()
+  {
+    return this.parent;
+  }
+
+  protected native String dwfl_lineinfo_source ();
+
+  protected native long dwfl_lineinfo_addr ();
+
+  protected native int dwfl_lineinfo_linenum ();
+
+  protected native int dwfl_lineinfo_col ();
+
+  protected native String dwfl_linecomp_dir ();
 }

@@ -1,3 +1,9 @@
+2006-10-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFactory.java (createDOM): Now checks for a relative path to the
+	source file and uses the compilation directory instead if a relative
+	path is found.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java (createDOM): Gets the image associated with the 
