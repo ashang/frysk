@@ -1,3 +1,8 @@
+2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* cni/Ptrace.cxx: Compile regSetParams conditionally for i386 and
+	x86_64.
+
 2006-10-03  Tim Moore  <timoore@redhat.com>
 
 	* Ptrace.java (REGS, FPREGS,FPXREGS): new constants

@@ -66,11 +66,15 @@ struct RegisterSetParams
   int pokeRequest;
 };
 
+/* There structures and constants are x86-specific.  */
 static RegisterSetParams regSetParams[] =
-  {{sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS},
+  {
+#if defined(__i386__)|| defined(__x86_64__)
+   {sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS},
    {sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS},
 #if defined(__i386__)
    {sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS},
+#endif
 #endif
   };
 
