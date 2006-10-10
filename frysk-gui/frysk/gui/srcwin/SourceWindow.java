@@ -1269,22 +1269,30 @@ public class SourceWindow
   private void doStackUp ()
   {
     TreePath path = this.stackView.getSelection().getSelectedRows()[0];
+    int selected;
 
     if (path.getDepth() == 1)
       {
-        int selected = path.getIndices()[0];
+        selected = path.getIndices()[0];
         
     // Can't move above top stack
     if (selected == 0)
-      return;
+      {
+        this.stackUp.setSensitive(false);
+        return;
+      }
 
     this.stackView.getSelection().select(
          this.stackView.getModel().getIter("" + (selected - 1)));
+    
+    if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
+      this.stackUp.setSensitive(false);
       }
+    
     else
       {
         
-        int selected = path.getIndices()[1];
+        selected = path.getIndices()[1];
         
         // Can't move above top stack
         if (selected == 0)
@@ -1293,7 +1301,13 @@ public class SourceWindow
         this.stackView.getSelection().select(
         this.stackView.getModel().getIter("" + path.getIndices()[0] + 
                                           ":" + (selected - 1)));
+        
+        if (this.stackView.getModel().getIter("" + path.getIndices()[0] +
+                                   ":" + (selected - 1)) == null)
+          this.stackUp.setSensitive(false);
       }
+    
+    this.stackDown.setSensitive(true);
   }
 
   /**
@@ -1302,36 +1316,48 @@ public class SourceWindow
   private void doStackDown ()
   {
     TreePath path = this.stackView.getSelection().getSelectedRows()[0];
-
+    int selected;
+    
     if (path.getDepth() == 1)
       {
-        int selected = path.getIndices()[0];
+        selected = path.getIndices()[0];
 
         try
           {
             this.stackView.getSelection().select(
               this.stackView.getModel().getIter("" + (selected + 1)));
+            
+            if (this.stackView.getModel().getIter("" + (selected + 1)) == null)
+              this.stackDown.setSensitive(false);
           }
         catch (NullPointerException npe)
           {
+            this.stackDown.setSensitive(false);
             return;
           }
       }
     else
       {
-        int selected = path.getIndices()[1];
+        selected = path.getIndices()[1];
         
         try
         {
           this.stackView.getSelection().select(
             this.stackView.getModel().getIter("" + path.getIndices()[0] + 
                                            ":" + (selected + 1)));
+          
+          if (this.stackView.getModel().getIter("" + path.getIndices()[0] +
+                                            ":" + (selected + 1)) == null)
+            this.stackDown.setSensitive(false);
         }
         catch (NullPointerException npe)
         {
+          this.stackDown.setSensitive(false);
           return;
         }
       }
+    
+    this.stackUp.setSensitive(true);
   }
 
   /**
@@ -1346,6 +1372,7 @@ public class SourceWindow
     
     TreeIter iter = this.stackView.getModel().getIter(path);
     this.stackView.getSelection().select(iter.getFirstChild());
+    this.stackUp.setSensitive(false);
   }
 
   private void doJumpToFunction (String name)
@@ -1534,6 +1561,17 @@ public class SourceWindow
 
     public void currentStackChanged (StackFrame newFrame)
     {
+//      TreePath path = stackView.getSelection().getSelectedRows()[0];
+//      int selected = path.getIndices()[0];
+      
+//      if (stackView.getModel().getIter("" + path.getIndices()[0] +
+//                                       ":" + (selected + 1)) != null)
+            stackDown.setSensitive(true);
+      
+//      else if (stackView.getModel().getIter("" + path.getIndices()[0] +
+//                                            ":" + (selected - 1)) != null)
+            stackUp.setSensitive(true);
+      
       target.updateShownStackFrame(newFrame);
     }
 

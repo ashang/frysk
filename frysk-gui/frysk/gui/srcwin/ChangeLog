@@ -11,6 +11,10 @@
 	(removeVariableTrace): Added - removes the Variable trace from the 
 	VariableWatchView.
 	(getView): Added. 
+	(doStackUp): Fixed up for #3327.
+	(doStackDown): Ditto.
+	(doStackBottom): Ditto.
+	(currentStackChanged): Ditto.
 	* VariableWatchView.java: (VariableWatchView): Sets incoming 
 	SourceWindow as parent, initializes new TreeStore and Listener.
 	(removeTrace): Added. Removes the row from the TreeView.
