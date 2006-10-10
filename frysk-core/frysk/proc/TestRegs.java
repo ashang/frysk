@@ -299,11 +299,16 @@ public class TestRegs
     long gpr3;
     long gpr4;
     long gpr5;
+    int gpr0Length;
     int ccrLength;
     int xerLength;
     
     int syscallNum;
-    boolean isPPC64Isa;
+
+    static final int unknown = 0;
+    static final int isaPPC32 = 1;
+    static final int  isaPPC64 = 2;
+    int isaType;
     
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
@@ -315,7 +320,7 @@ public class TestRegs
     {
       public Action updateSyscallEnter (Task task)
       {
-        LinuxPPC64 isaPPC64;
+	Isa isaPPC64;
         SyscallEventInfo syscall;
         
         logger.entering("TestPPC64Regs.TaskEventObserver", 
@@ -325,7 +330,7 @@ public class TestRegs
         try
           {
             syscall = task.getSyscallEventInfo ();
-            isaPPC64 = (LinuxPPC64)task.getIsa ();
+            isaPPC64 = task.getIsa ();
           }
         catch (TaskException e)
           {
@@ -344,6 +349,7 @@ public class TestRegs
           gpr3 = isaPPC64.getRegisterByName ("gpr3").get (task);
           gpr4 = isaPPC64.getRegisterByName ("gpr4").get (task);
           gpr5 = isaPPC64.getRegisterByName ("gpr5").get (task);
+          gpr0Length = isaPPC64.getRegisterByName("gpr0").getLength();
 	  ccrLength = isaPPC64.getRegisterByName("ccr").getLength();
 	  xerLength = isaPPC64.getRegisterByName("xer").getLength();
         }
@@ -375,16 +381,19 @@ public class TestRegs
             isa = null;
           }
         
-        if (isa instanceof LinuxPPC64) 
+        if ((isa instanceof LinuxPPC64) || isa instanceof LinuxPPC)
         {
-          isPPC64Isa = true;
+          if (isa instanceof LinuxPPC64)
+            isaType = TestPPC64RegsInternals.isaPPC64;
+          else
+            isaType = TestPPC64RegsInternals.isaPPC32;
           task.requestAddSyscallObserver(taskEventObserver);
           task.requestAddSignaledObserver(taskEventObserver);
         }
         else 
         {
-          //If not PPC64, stop immediately
-          isPPC64Isa = false;
+          //If not PPC or PPC64, stop immediately
+          isaType = TestPPC64RegsInternals.unknown;
           Manager.eventLoop.requestStop();
         }
       }
@@ -466,14 +475,24 @@ public class TestRegs
     child.resume();
     assertRunUntilStop ("run \"ppc64regs\" until exit");
 
-    if (t.isPPC64Isa)
+    if (t.isaType == TestPPC64RegsInternals.isaPPC32 || 
+	t.isaType == TestPPC64RegsInternals.isaPPC64)
       {
         assertEquals ("syscall", SyscallNum.SYSexit, t.syscallNum);
         assertEquals ("gpr0 register", 1, t.gpr0);
         assertEquals ("gpr3 register", 1, t.gpr3);
         assertEquals ("gpr4 register", 4, t.gpr4);
-        // Left shift 36bits from 0x1
-        assertEquals ("gpr5 register", 0x1000000000L, t.gpr5);
+        if (t.isaType == TestPPC64RegsInternals.isaPPC64)
+	  {
+	    // Left shift 36bits from 0x1
+	    assertEquals ("gpr5 register", 0x1000000000L, t.gpr5);
+	    assertEquals ("gpr0 length", 8, t.gpr0Length);
+	  }
+	else
+	  {
+	    assertEquals ("gpr5 register", 0x0, t.gpr5);
+	    assertEquals ("gpr0 length", 4, t.gpr0Length);
+	  }
 	assertEquals ("ccr length", 4, t.ccrLength);
 	assertEquals ("xer length", 4, t.xerLength);
         

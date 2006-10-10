@@ -85,7 +85,6 @@ public class IsaFactory
       {
 	
 	ElfEHeader header = elfFile.getEHeader();
-
 	switch (header.machine) 
 	  {
 	  case ElfEMachine.EM_386:
@@ -96,7 +95,13 @@ public class IsaFactory
 		return LinuxIa32On64.isaSingleton();
 	    }
 	  case ElfEMachine.EM_PPC:
-	    return LinuxPPC.isaSingleton ();
+	    {
+	      // Assume we do not build 32-bit frysk on ppc64.
+	      if (frysk.core.Build.BUILD_ARCH.equals("powerpc64"))
+		return LinuxPPC32On64.isaSingleton ();
+	      else
+		return LinuxPPC.isaSingleton ();
+	    }
 	  case ElfEMachine.EM_PPC64:
 	    return LinuxPPC64.isaSingleton ();
 	  case ElfEMachine.EM_X86_64:

@@ -1,3 +1,7 @@
+2006-10-10  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* funit-ppc64-regs.S: Add 32-bit asm code.
+
 2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* funit-breakpoints.c (dummy): Generate trap event for

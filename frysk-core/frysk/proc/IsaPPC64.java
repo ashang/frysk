@@ -87,8 +87,6 @@ class IsaPPC64
   private static final PPC64Register dsisr = new PPC64Register("dsisr", 42);
   private static final PPC64Register result = new PPC64Register("result", 43);
 
-
-  
   IsaPPC64()
   {
     for (int i = 0; i < gpr.length; i++) 

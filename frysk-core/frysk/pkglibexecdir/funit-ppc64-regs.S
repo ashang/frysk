@@ -43,6 +43,8 @@
 #ifdef	__powerpc64__
 	.section        ".opd","aw"
 	.align 3
+#else
+	.align 2
 #endif
 
 main:
@@ -53,7 +55,7 @@ main:
 
 	.global  ._main
 ._main:
-
+#endif
 	li      0,1         # syscall number (sys_exit)
 	li      3,1         # first argument: exit code
 	li      4,4         # gpr4=4
@@ -64,7 +66,4 @@ main:
 	sldi    5,5,36
 	sc                  # call kernel
 
-#endif
-
 .section        .note.GNU-stack,"",@progbits
-

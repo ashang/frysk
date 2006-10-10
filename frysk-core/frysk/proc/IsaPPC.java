@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import java.util.LinkedHashMap;
-
 class IsaPPC
   extends IsaPowerPC
 {
@@ -77,8 +75,6 @@ class IsaPPC
   private static final PPCRegister dar = new PPCRegister("dar", 41);
   private static final PPCRegister dsisr = new PPCRegister("dsisr", 42);
   private static final PPCRegister result = new PPCRegister("result", 43);
-
-  private LinkedHashMap registerMap = new LinkedHashMap ();
 
   IsaPPC ()
   {

@@ -1,3 +1,17 @@
+2006-10-10  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* IsaFactory.java: Return a LinuxPPC32On64 object in a bi-arch
+	condition.
+
+	* LinuxPPC32On64.java: New file.
+
+	* TestRegs.java: Add bi-arch test for ppc64.
+
+	* LinuxPPC.java: Add licence header.
+	* LinuxPPC64.java: Likewise.
+
+	* IsaPPC.java: Merge registerMap to its parent.
+
 2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* IsaPowerPC.java : New file.
