@@ -112,7 +112,7 @@ class IsaIA32 implements Isa
   {
     FPRegister(String name, int regNum) 
     {
-      super(1, I387_OFFSET + 7*4 + regNum * 10, 10, name, fpViews);
+      super(1, 7*4 + regNum * 10, 10, name, fpViews);
     }
     
   }
@@ -147,16 +147,16 @@ class IsaIA32 implements Isa
   {
     for (int i = 0; i < regDefs.length; i++) 
       {
-	registerMap.put(regDefs[i].getName(), regDefs[i]);
+        registerMap.put(regDefs[i].getName(), regDefs[i]);
       }
-    //for (int i = 0; i < 8; i++) 
-    //{
-    //String name = "st" + i;
-    //registerMap.put(name, new FPRegister(name, i));
-    //}
+    for (int i = 0; i < 8; i++) 
+      {
+        String name = "st" + i;
+        registerMap.put(name, new FPRegister(name, i));
+      }
     for (int i = 0; i < dbg.length; i++) 
       {
-	dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
+         dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
       }
   }
     

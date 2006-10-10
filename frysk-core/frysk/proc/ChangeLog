@@ -1,3 +1,9 @@
+2006-10-10  Tim Moore  <timoore@redhat.com>
+
+	* IsaIA32.java (FPRegister): Don't use I387_OFFSET when using the 
+	register bank.
+	(IsaIA32): Put floating point registers in registerMap.
+
 2006-10-10  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* IsaFactory.java: Return a LinuxPPC32On64 object in a bi-arch
