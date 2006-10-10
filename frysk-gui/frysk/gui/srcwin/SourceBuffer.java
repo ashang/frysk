@@ -534,19 +534,21 @@ public class SourceBuffer
    * @param iter The location to look for a variable
    * @return The variable at that location, or null
    */
-public Variable getVariable (TextIter iter)
+  public Variable getVariable (TextIter iter)
   {
-    if (this.scope == null)
+    if (this.scope == null || this.scope.getData() == null)
       return null;
-    
+
     DOMSource source = this.scope.getData();
-    
+
     if (mode != SOURCE_MODE || source == null)
       return null;
 
     DOMLine line = source.getLine(iter.getLineNumber());
+    
     if (line == null)
       return null;
+    
     DOMTag tag = line.getTag(iter.getLineOffset());
 
     // No var (or no tag), do nothing
@@ -560,15 +562,16 @@ public Variable getVariable (TextIter iter)
     try
       {
         var = SymTab.print(line.getText().substring(
-                                                       tag.getStart(),
-                                                       tag.getStart()
-                                                       + tag.getLength()));
+                                                    tag.getStart(),
+                                                    tag.getStart()
+                                                        + tag.getLength()));
       }
     catch (ParseException e)
       {
+        System.out.println(e.getMessage());
         return null;
       }
-    
+
     return var;
   }
   /**

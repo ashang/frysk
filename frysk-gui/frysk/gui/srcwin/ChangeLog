@@ -1,3 +1,27 @@
+2006-10-10  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java: (getVariable): Cleaned up a bit.
+	* SourceView.java: Added a new HashMap to uniquely identify
+	Variables.
+	(removeVar): Added. Removes variable from the HashMap and calls
+	to remove the variable trace from the GUI.
+	(clickedOnTextArea): Added new menu option for removing Variables.
+	* SourceWindow.java: (SourceWindow): New VariableWatchView with
+	this as a parameter. 
+	(removeVariableTrace): Added - removes the Variable trace from the 
+	VariableWatchView.
+	(getView): Added. 
+	* VariableWatchView.java: (VariableWatchView): Sets incoming 
+	SourceWindow as parent, initializes new TreeStore and Listener.
+	(removeTrace): Added. Removes the row from the TreeView.
+	(selectionChangedEvent): Added catch for index exception.
+	(clickedOnVariable): Added. Creates new menu when a row is clicked
+	from the TreeView.
+	(handleClick): Added. Tells the parent to remove the clicked Variable.
+	(mouseEvent): Added. Determines whether the mouse event is worth
+	pursuing.
+	
+
 2006-10-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceView.java: Fix only one digit of line #'s being displayed.

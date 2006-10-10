@@ -274,7 +274,7 @@ public class SourceWindow
 
     this.attachEvents();
 
-    this.watchView = new VariableWatchView();
+    this.watchView = new VariableWatchView(this);
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
     sw.add(this.watchView);
 
@@ -307,6 +307,11 @@ public class SourceWindow
   public void addVariableTrace (Variable var)
   {
     this.watchView.addTrace(var);
+  }
+  
+  public void removeVariableTrace (Variable var)
+  {
+    this.watchView.removeTrace(var);
   }
 
   /**
@@ -367,13 +372,12 @@ public class SourceWindow
   private void populateStackBrowser (StackFrame[] frames)
   {
     
-    StackFrame frame = null;
     stackView = new CurrentStackView(frames);
     
     if (this.view != null)
       ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
 
-    this.view = new SourceView(frame, this);
+    this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
     ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
     this.view.showAll();
 
@@ -1419,6 +1423,11 @@ public class SourceWindow
         this.conWin = new ConsoleWindow();
     else
         this.conWin.showAll();
+  }
+  
+  public View getView ()
+  {
+    return this.view;
   }
 
   private class SourceWindowListener

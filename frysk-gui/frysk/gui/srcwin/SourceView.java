@@ -40,6 +40,7 @@
 
 package frysk.gui.srcwin;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.gnu.gdk.Color;
@@ -133,6 +134,8 @@ public class SourceView
   private SourceViewListener listener;
 
   private Variable hoveredVar;
+  
+  private HashMap varMap = new HashMap();
 
   // private int hoverX;
   //  
@@ -549,6 +552,16 @@ public class SourceView
     lo.setWidth(this.marginWriteOffset);
     drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
   }
+  
+  public void removeVar(Variable var)
+  {
+    if (varMap.containsKey(var.toString()))
+      varMap.remove(var.toString());
+    else
+      return;
+    
+    SourceView.this.parent.removeVariableTrace(var);
+  }
 
   /*---------------------------*
    * PRIVATE METHODS           *
@@ -789,6 +802,7 @@ public class SourceView
          * menu and the ability to add the item to the Variable Watch
          * window is another item.
          */
+
         if (!(var == null))
           {
             MenuItem valueItem;
@@ -798,14 +812,32 @@ public class SourceView
             m.append(valueItem);
             MenuItem traceItem = new MenuItem("Add to Variable Watches", false);
             m.append(traceItem);
+            MenuItem removeItem = new MenuItem("Remove from Variable Watches", false);
+            m.append(removeItem);
+            
             traceItem.setSensitive(true);
             traceItem.addListener(new MenuItemListener()
             {
               public void menuItemEvent (MenuItemEvent arg0)
               {
+                if (varMap.containsKey(var.toString()))
+                  return;
+                else
+                  varMap.put(var.toString(), var);
+                
                 SourceView.this.parent.addVariableTrace(var);
               }
             });
+            
+            removeItem.setSensitive(true);
+            removeItem.addListener(new MenuItemListener()
+            {
+              public void menuItemEvent (MenuItemEvent arg0)
+              {
+                removeVar(var);
+              }
+            });
+            
             m.showAll();
             m.popup();
           }
