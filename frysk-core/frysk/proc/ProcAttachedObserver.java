@@ -75,7 +75,12 @@ public final class ProcAttachedObserver
     proc = theProc;
     procAttachedObserver = theProcAttachedObserver;
 
-    // The rest of the construction must be done synchronous to
+    iterateAttach();
+  }
+  
+  public void iterateAttach()
+  {
+    //  The rest of the construction must be done synchronous to
     // the EventLoop, schedule it.
     Manager.eventLoop.add(new Event()
     {
@@ -118,6 +123,7 @@ public final class ProcAttachedObserver
 
   public void addedTo (Object observable)
   {
+    procAttachedObserver.addedTo(observable);
   }
 
   public void addFailed (Object observable, Throwable w)
