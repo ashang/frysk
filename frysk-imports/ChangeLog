@@ -1,5 +1,15 @@
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* lib/elf/tests/test-core.bz2.uu: Move ...
+	* frysk/pkgdatadir/test-core.bz2.uu: .. to here.
+	* lib/elf/tests/helloworld.o.bz2.uu: Move ...
+	* frysk/pkgdatadir/helloworld.o.bz2.uu: ... to here.
+	* EXTRA_DIST: Update.
+	* Makefile.am (EXTRA_DIST, frysk/pkgdatadir/test-core) 
+	(frysk/pkgdatadir/helloworld.o): Update rules.
+	(pkgdata_DATA): Add helloworld.o, and test-core.
+	(all-local): Delete rule specifying helloworld.o, and test-core.
+
 	* bootstrap.sh: Pass -Werror to automake.
 
 2006-09-28  Andrew Cagney  <cagney@redhat.com>

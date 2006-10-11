@@ -1,5 +1,8 @@
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPaths.java: Add setup and tear down code to save/restore the
+	original prefixes.
+	
 	* TestPaths.java: New file.
 	* Paths.java (getDataPrefix): New method.
 	(dataPrefix): New static local variable.

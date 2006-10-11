@@ -1,5 +1,7 @@
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (pkgdata_DATA): Set to empty.
+
 	* TestRunner.javain: Set Paths.setPrefixes, including the
 	pkgdatadir.
 

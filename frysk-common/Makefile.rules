@@ -49,6 +49,7 @@ noinst_DATA =
 bin_PROGRAMS =
 sbin_PROGRAMS =
 libexec_PROGRAMS =
+pkgdata_DATA =
 pkglibexec_PROGRAMS =
 pkglibexecdir = $(libexecdir)/@PACKAGE@
 

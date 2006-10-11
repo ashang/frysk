@@ -68,8 +68,8 @@ EXTRA_DIST += \
 	lib/dw/ChangeLog \
 	lib/elf/ChangeLog \
 	lib/opcodes/ChangeLog \
-	lib/elf/tests/test-core.bz2.uu \
-	lib/elf/tests/helloworld.o.bz2.uu
+	frysk/pkgdatadir/test-core.bz2.uu \
+	frysk/pkgdatadir/helloworld.o.bz2.uu
 
 GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
@@ -91,20 +91,19 @@ endif
 noinst_LIBRARIES += lib/opcodes/libbfd_get.a
 GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
 
-all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o
+pkgdata_DATA += frysk/pkgdatadir/test-core frysk/pkgdatadir/helloworld.o
+frysk/pkgdatadir/test-core: frysk/pkgdatadir/test-core.bz2.uu
+	mkdir -p frysk/pkgdatadir
+	uudecode -o frysk/pkgdatadir/test-core.bz2 $(srcdir)/frysk/pkgdatadir/test-core.bz2.uu
+	bzip2 -d < frysk/pkgdatadir/test-core.bz2 > frysk/pkgdatadir/test-core
 
-lib/elf/tests/test-core: lib/elf/tests/test-core.bz2.uu
-	mkdir -p lib/elf/tests
-	uudecode -o lib/elf/tests/test-core.bz2 $(srcdir)/lib/elf/tests/test-core.bz2.uu
-	bzip2 -d < lib/elf/tests/test-core.bz2 > lib/elf/tests/test-core
+frysk/pkgdatadir/helloworld.o: frysk/pkgdatadir/helloworld.o.bz2.uu
+	mkdir -p frysk/pkgdatadir
+	uudecode -o frysk/pkgdatadir/helloworld.o.bz2 $(srcdir)/frysk/pkgdatadir/helloworld.o.bz2.uu
+	bzip2 -d < frysk/pkgdatadir/helloworld.o.bz2 > frysk/pkgdatadir/helloworld.o
 
-lib/elf/tests/helloworld.o: lib/elf/tests/helloworld.o.bz2.uu
-	mkdir -p lib/elf/tests
-	uudecode -o lib/elf/tests/helloworld.o.bz2 $(srcdir)/lib/elf/tests/helloworld.o.bz2.uu
-	bzip2 -d < lib/elf/tests/helloworld.o.bz2 > lib/elf/tests/helloworld.o
-
-CLEANFILES += lib/elf/tests/test-core.bz2 lib/elf/tests/test-core
-CLEANFILES += lib/elf/tests/helloworld.o.bz2 lib/elf/tests/helloworld.o
+CLEANFILES += frysk/pkgdatadir/test-core.bz2 frysk/pkgdatadir/test-core
+CLEANFILES += frysk/pkgdatadir/helloworld.o.bz2 frysk/pkgdatadir/helloworld.o
 
 
 # we need to get this into the distribution
