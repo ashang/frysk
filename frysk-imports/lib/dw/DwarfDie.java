@@ -130,9 +130,9 @@ public class DwarfDie
       return this.scope;
   }
   
-  public long getAddr ()
+  public void getAddr (long[] fbreg_and_disp)
   {
-    return get_addr(this.getPointer());
+    get_addr(fbreg_and_disp, this.getPointer());
   }
 
   public String getType ()
@@ -148,7 +148,11 @@ public class DwarfDie
   public void getFrameBase (long[] fbreg_and_disp, long scope, long pc)
   {
     get_framebase(fbreg_and_disp, this.getPointer(), scope, pc);
-    return;
+  }
+
+  public void getFormData (long[] fbreg_and_disp, long scope, long pc)
+  {
+    get_formdata(fbreg_and_disp, this.getPointer(), scope, pc);
   }
 
   /**
@@ -175,11 +179,13 @@ public class DwarfDie
 
   private native long get_scopevar (long[] die_scope, long[] scopes, String variable);
 
-  private native long get_addr (long addr);
+  private native void get_addr (long[] fbreg_and_disp, long addr);
   
   private native String get_type (long addr);
-  
+
   private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
+
+  private native void get_formdata (long[] fbreg_and_disp, long addr, long scope, long pc);
   
   private native boolean is_inline_func ();
 }

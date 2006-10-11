@@ -72,3 +72,12 @@ frysk::rt::StackFrame::get_reg(jlong reg)
 	// ??? Handle code < 0	
 	return value;
 }
+
+jlong
+frysk::rt::StackFrame::set_reg(jlong reg, jlong val)
+{
+	int code;
+	unw_cursor_t *cursor = (unw_cursor_t *) this->unwind_data;
+	code = unw_set_reg(cursor, (unw_regnum_t)reg, (unw_word_t)val);
+	return code;
+}

@@ -1,3 +1,8 @@
+2006-10-11  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getFormData): New.
+	* cni/DwarfDie.cxx (get_formdata): New.
+
 2006-10-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DwflLine.java: Reformatted.

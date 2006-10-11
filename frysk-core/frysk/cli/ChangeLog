@@ -1,3 +1,11 @@
+2006-10-11  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (VariableAccessor): New.
+	(AccessDW_FORM_block): New.
+	(AccessDW_FORM_data): New.
+	(put): Use VariableAccessor.
+	(get): Use VariableAccessor.
+
 2006-10-06  Mike Cvet  <mcvet@redhat.com>
 
 	* hpd/ExprSymTab.java (ExprSymTab): New StackFrame parameter.Sets

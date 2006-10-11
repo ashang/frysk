@@ -397,6 +397,13 @@ public class StackFrame
     return get_reg(reg);
   }
   
+  public long setReg(long reg, long val)
+  {
+    // ??? Use something akin to Register interface?
+    return set_reg(reg, val);
+  }
+  
   private native long get_reg (long reg);
+  private native long set_reg (long reg, long val);
 }
 
