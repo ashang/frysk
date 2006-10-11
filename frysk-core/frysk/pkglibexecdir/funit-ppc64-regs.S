@@ -37,6 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
+# Asm code both for 32-bit and 64-bit.  Make sure this test case could
+# be built in both 32-bit and 64-bit on ppc64.
+
 .text                       # section declaration - begin code
 
 	.global main
@@ -56,14 +59,18 @@ main:
 	.global  ._main
 ._main:
 #endif
+
+#if defined(__powerpc64__) || defined(__powerpc__)
 	li      0,1         # syscall number (sys_exit)
 	li      3,1         # first argument: exit code
 	li      4,4         # gpr4=4
 
 	# shift left 36-bits for the value: 0x1
-	# test whether the low 32-bits and high 32-bits can be accessed right	
+	# test whether the low 32-bits and high 32-bits can be accessed 
+	# right	in 64-bit mode.
 	li      5,1         # gpr5=1
 	sldi    5,5,36
 	sc                  # call kernel
+#endif
 
 .section        .note.GNU-stack,"",@progbits

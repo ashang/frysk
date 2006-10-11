@@ -1,3 +1,8 @@
+2006-10-11  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* funit-ppc64-regs.S (main): Conditional compile to avoid breaking
+	build on platforms other than powerpc.
+
 2006-10-10  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* funit-ppc64-regs.S: Add 32-bit asm code.
