@@ -375,7 +375,8 @@ public abstract class Proc
 			     TaskObserver observer)
     {
 	logger.log (Level.FINE, "{0} requestAddObservation\n", this); 
-	Manager.eventLoop.add (new TaskObservation (task, observable, observer)
+	Manager.eventLoop.add (new TaskObservation (task, observable, observer,
+						    true)
 	    {
 		public void execute ()
 		{
@@ -385,23 +386,62 @@ public abstract class Proc
     }
     
     /**
+     * Class describing the action to take on the suspended Task before
+     * adding or deleting a Syscall observer.
+     */
+    final class SyscallAction implements Runnable
+    {
+      private final Task task;
+      private final boolean addition;
+      
+      SyscallAction(Task task, boolean addition)
+      {
+	this.task = task;
+	this.addition = addition;
+      }
+
+      public void run()
+      {
+	int syscallobs = task.syscallObservers.numberOfObservers();
+	if (addition)
+	  {
+	    if (syscallobs == 0)
+	      task.startTracingSyscalls();
+	  }
+	else
+	  {
+	    if (syscallobs == 0)
+	      task.stopTracingSyscalls();
+	  }
+      }
+    }
+
+    /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
      * Adds a syscallObserver which changes the task to syscall
      * tracing mode of necessary.
      */
-    void requestAddSyscallObserver (Task task,
+    void requestAddSyscallObserver (final Task task,
 			     TaskObservable observable,
 			     TaskObserver observer)
     {
 	logger.log (Level.FINE, "{0} requestAddSyscallObserver\n", this); 
-	Manager.eventLoop.add (new TaskSyscallObservation (task, observable, observer)
+        SyscallAction sa = new SyscallAction(task, true);
+        TaskObservation to = new TaskObservation(task, observable,
+						 observer, sa, true)
 	    {
 		public void execute ()
 		{
 		    handleAddObservation (this);
 		}
-	    });
+
+	        public boolean needsSuspendedAction()
+	        {
+		  return task.syscallObservers.numberOfObservers() == 0;
+		}
+	    };
+	Manager.eventLoop.add(to);
     }
     
     /**
@@ -414,7 +454,8 @@ public abstract class Proc
 				TaskObservable observable,
 				TaskObserver observer)
     {
-	Manager.eventLoop.add (new TaskObservation (task, observable, observer)
+        Manager.eventLoop.add (new TaskObservation (task, observable, observer,
+						    false)
 	    {
 		public void execute ()
 		{
@@ -428,18 +469,74 @@ public abstract class Proc
      * (Internal) Tell the process to delete the specified
      * Observation, detaching from the process if necessary.
      */
-    void requestDeleteSyscallObserver (Task task,
+    void requestDeleteSyscallObserver (final Task task,
 				TaskObservable observable,
 				TaskObserver observer)
     {
-	Manager.eventLoop.add (new TaskSyscallObservation (task, observable, observer)
+	logger.log (Level.FINE, "{0} requestDeleteSyscallObserver\n", this); 
+        SyscallAction sa = new SyscallAction(task, false);
+        TaskObservation to = new TaskObservation(task, observable,
+						 observer, sa, false)
 	    {
 		public void execute ()
 		{
 		    newState = oldState ().handleDeleteObservation
 			(Proc.this, this);
 		}
-	    });
+
+	        public boolean needsSuspendedAction()
+	        {
+		  return task.syscallObservers.numberOfObservers() == 1;
+		}
+	    };
+	Manager.eventLoop.add(to);
+    }
+
+    /**
+     * Class describing the action to take on the suspended Task before
+     * adding or deleting a Code observer.
+     */
+    final class BreakpointAction implements Runnable
+    {
+      private final TaskObserver.Code code;
+      private final Task task;
+      private final long address;
+      private final boolean addition;
+      
+      BreakpointAction(TaskObserver.Code code,
+		       Task task,
+		       long address,
+		       boolean addition)
+      {
+	this.code = code;
+	this.task = task;
+	this.address = address;
+	this.addition = addition;
+      }
+
+      public void run()
+      {
+	if (addition)
+	  {
+	    boolean mustInstall = breakpoints.addBreakpoint(code, address);
+	    if (mustInstall)
+	      {
+		Breakpoint breakpoint;
+		breakpoint = Breakpoint.create(address, Proc.this);
+		breakpoint.install(task);
+	      }
+	  }
+	else
+	  {
+	    boolean mustRemove = breakpoints.removeBreakpoint(code, address);
+	    if (mustRemove)
+	      {
+		Breakpoint breakpoint;
+		breakpoint = Breakpoint.create(address, Proc.this);
+		breakpoint.remove(task);
+	      }
+	  }
+      }
     }
 
     /**
@@ -451,18 +548,25 @@ public abstract class Proc
     void requestAddCodeObserver (Task task,
 				 TaskObservable observable,
 				 TaskObserver.Code observer,
-				 long address)
+				 final long address)
     {
 	logger.log (Level.FINE, "{0} requestAddCodeObserver\n", this); 
-	TaskCodeObservation tco;
-	tco = new TaskCodeObservation(task, observable, observer, address)
+	BreakpointAction bpa = new BreakpointAction(observer, task, address,
+						    true);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, true)
 	  {
 	    public void execute ()
 	    {
 	      handleAddObservation (this);
 	    }
+
+	    public boolean needsSuspendedAction()
+	    {
+	      return breakpoints.getCodeObservers(address) == null;
+	    }
 	  };
-	Manager.eventLoop.add(tco);
+	Manager.eventLoop.add(to);
     }
     
     /**
@@ -472,18 +576,26 @@ public abstract class Proc
     void requestDeleteCodeObserver (Task task,
 				    TaskObservable observable,
 				    TaskObserver.Code observer,
-				    long address)
+				    final long address)
     {
-      TaskCodeObservation tco;
-      tco = new TaskCodeObservation(task, observable, observer, address)
+        logger.log (Level.FINE, "{0} requestDeleteCodeObserver\n", this); 
+	BreakpointAction bpa = new BreakpointAction(observer, task, address,
+						    false);
+	TaskObservation to;
+	to = new TaskObservation(task, observable, observer, bpa, false)
 	{
 	  public void execute()
 	  {
 	    newState = oldState().handleDeleteObservation(Proc.this, this);
 	  }
+
+	  public boolean needsSuspendedAction()
+	  {
+	    return breakpoints.getCodeObservers(address).size() == 1;
+	  }
 	};
 
-      Manager.eventLoop.add(tco);
+      Manager.eventLoop.add(to);
     }
 
     /**

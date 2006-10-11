@@ -255,6 +255,10 @@ public class TestBreakpoints
 
   public void testInsertRemove() throws IOException
   {
+
+    if (brokenXXX (3240))
+      return;
+
     String line;
 
     // Request addresses to put breakpoints on.

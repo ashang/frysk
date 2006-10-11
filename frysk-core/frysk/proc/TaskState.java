@@ -149,37 +149,14 @@ class TaskState
     {
 	throw unhandled (task, "handleUnblock");
     }
-    TaskState handleAddObserver (Task task, Observable observable,
-				 Observer observer)
+    TaskState handleAddObservation (Task task, TaskObservation observation)
     {
-	throw unhandled (task, "handleAddObserver");
+	throw unhandled (task, "handleAddObservation");
     }
-    TaskState handleDeleteObserver (Task task, Observable observable, Observer observer)
+    TaskState handleDeleteObservation (Task task, TaskObservation observation)
     {
-	throw unhandled (task, "handleDeleteObserver");
+	throw unhandled (task, "handleDeleteObservation");
     }
-    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-    {
-	throw unhandled (task, "handleAddSyscallObserver");
-    }
-    TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
-    {
-	throw unhandled (task, "handleDeleteSyscallObserver");
-    }
-    TaskState handleAddCodeObserver(Task task, Observable observable,
-				    TaskObserver.Code observer,
-				    long address)
-    {
-      throw unhandled (task, "handleAddCodeObserver");
-    } 
-    TaskState handleDeleteCodeObserver(Task task, Observable observable,
-				       TaskObserver.Code observer,
-				       long address)
-    {
-      throw unhandled (task, "handleDeleteCodeObserver");
-    } 
-
-
     
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -293,21 +270,20 @@ class TaskState
 	/**
 	 * In all Attached states, addObservation is allowed.
 	 */
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
+        TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-	    observable.add (observer);
+	    observation.add();
 	    return this;
 	}
 	/**
 	 * In all Attached states, deleteObservation is allowed.
 	 */
-	TaskState handleDeleteObserver (Task task, Observable observable,
-					Observer observer)
+        TaskState handleDeleteObservation(Task task,
+					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-	    observable.delete (observer);
+	    observation.delete();
 	    return this;
 	}
 	/**
@@ -359,25 +335,6 @@ class TaskState
 		else
 		  return new Attached.WaitForUnblock (signal);
 	    }
-	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-	    {
-		logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-		if (task.syscallObservers.numberOfObservers() == 0)
-		  task.startTracingSyscalls();
-		observable.add(observer);
-		return this;
-	    }	    
-	    TaskState handleDeleteSyscallObserver(Task task,
-						  Observable observable,
-						  Observer observer)
-	    {
-	      logger.log (Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-	      observable.delete(observer);
-	      if (task.syscallObservers.numberOfObservers() == 0)
-		task.stopTracingSyscalls();
-	      return this;
-	    }
-
 	}
 	private static final TaskState waitForContinueOrUnblock =
 	    new Attached.WaitForContinueOrUnblock (0);
@@ -411,28 +368,6 @@ class TaskState
 		  return transitionToRunningState(task, signal);
 		return this;
 	    }
-	    TaskState handleAddSyscallObserver(Task task,
-					       Observable observable,
-					       Observer observer)
-	    {
-	      logger.log (Level.FINE, "{0} handleAddSyscallObserver\n",
-			  task);
-	      if (task.syscallObservers.numberOfObservers() == 0)
-		task.startTracingSyscalls();
-	      observable.add(observer);
-	      return this;
-	    }	    
-	  TaskState handleDeleteSyscallObserver(Task task,
-						Observable observable,
-						Observer observer)
-	  {
-	    logger.log (Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-	    observable.delete(observer);
-	    if (task.syscallObservers.numberOfObservers() == 0)
-	      task.stopTracingSyscalls();
-	    return this;
-	  }
-
 	}
     }
 
@@ -535,11 +470,12 @@ class TaskState
 	private static TaskState wantToAttach =
 	    new StartMainTask ("wantToAttach")
 	    {
-		TaskState handleAddObserver (Task task, Observable observable,
-					     Observer observer)
+		TaskState handleAddObservation(Task task,
+					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-		    observable.add (observer);
+		    // XXX - This should most likely test needsSuspendedAction
+		    observation.add();
 		    return this;
 		}
 		TaskState blockOrAttach (Task task)
@@ -600,11 +536,11 @@ class TaskState
 	private static TaskState attachBlocked =
 	    new StartMainTask ("attachBlocked")
 	    {
-		TaskState handleAddObserver (Task task, Observable observable,
-					     Observer observer)
+		TaskState handleAddObservation(Task task,
+					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-		    observable.add (observer);
+		    observation.add();
 		    return this;
                 }
 		TaskState handleUnblock (Task task,
@@ -631,11 +567,11 @@ class TaskState
 	private static TaskState attachContinueBlocked =
 	    new StartMainTask ("attachContinueBlocked")
 	    {
-		TaskState handleAddObserver (Task task, Observable observable,
-					     Observer observer)
+		TaskState handleAddObservation(Task task,
+					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-		    observable.add (observer);
+		    observation.add();
 		    return this;
 		}
 		TaskState handleUnblock (Task task,
@@ -673,18 +609,19 @@ class TaskState
 	    task.sendContinue (0);
 	    return running;
 	}
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
+	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-	    observable.add (observer);
+	    // XXX most likely need to check needsSuspendedAction
+	    observation.add();
 	    return this;
 	}
-	TaskState handleDeleteObserver (Task task, Observable observable,
-					Observer observer)
+	TaskState handleDeleteObservation(Task task,
+					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-	    observable.delete (observer);
+	    // XXX most likely need to check needsSuspendedAction
+	    observation.delete();
 	    return this;
 	}
 
@@ -738,15 +675,6 @@ class TaskState
 		      }
 		}
 	    };
-      TaskState handleAddSyscallObserver (Task task,
-					  Observable observable,
-					  Observer observer)
-      {
-	if (task.syscallObservers.numberOfObservers() == 0)
-	  task.startTracingSyscalls();
-	observable.add(observer);
-	return this;
-      }
     }
 
     /**
@@ -804,70 +732,30 @@ class TaskState
 	}
 	TaskState handleStoppedEvent (Task task)
 	{
-	  // Should we turn on or off syscall tracing?
-	  int syscallobs = task.syscallObservers.numberOfObservers();
-	  boolean start_trace = ! syscalltracing && syscallobs > 0 ;
-	  boolean stop_trace = syscalltracing && syscallobs == 0;
+	  Collection pendingObservations = task.pendingObservations;
+	  if (pendingObservations.isEmpty())
+	    throw new RuntimeException("Whoa!");
 
-	  Collection pendingCodeObservers = task.pendingCodeObservers;
-
-	  if (pendingCodeObservers.isEmpty() && ! start_trace && ! stop_trace)
-	    {
-	      // From time to time bogus stop events appear, for
-	      // instance when the kernel simultaneously receives both
-	      // an attach and signal for an identical process.  Just
-	      // discard them.
-	      logger.log (Level.FINE,
-			  "{0} spurious handleStoppedEvent\n", task); 
-	      return this;
-	    }
-
-	  logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-	  Iterator it = pendingCodeObservers.iterator();
+	  Iterator it = pendingObservations.iterator();
 	  while (it.hasNext())
 	    {
-	      PendingCodeObserver pco = (PendingCodeObserver) it.next();
-	      if (pco.addition)
-		{
-		  if (task.proc.breakpoints.addBreakpoint(pco.observer,
-							  pco.address))
-		    {
-		      Breakpoint breakpoint;
-		      breakpoint = Breakpoint.create(pco.address, task.proc);
-		      breakpoint.install(task);
-		    }
-		  pco.observable.add(pco.observer);
-		}
+	      TaskObservation observation = (TaskObservation) it.next();
+	      if (observation.isAddition())
+		observation.add();
 	      else
-		{
-		  if (task.proc.breakpoints.removeBreakpoint(pco.observer,
-							     pco.address))
-		    {
-		      Breakpoint breakpoint;
-		      breakpoint = Breakpoint.create(pco.address, task.proc);
-		      breakpoint.remove(task);
-		    }
-		  pco.observable.delete(pco.observer);
-		}
+		observation.delete();
 	      it.remove();
 	    }
 
-	  if (start_trace)
+	  if (task.syscallObservers.numberOfObservers() > 0)
 	    {
-	      task.startTracingSyscalls();
 	      task.sendSyscallContinue(0);
 	      return insyscall ? inSyscallRunningTraced : syscallRunning;
 	    }
-	  else if (stop_trace)
-	    {
-	      task.stopTracingSyscalls();
-	      task.sendContinue(0);
-	      return insyscall ? inSyscallRunning : running;
-	    }
 	  else
 	    {
-	      sendContinue(task, 0);
-	      return this;
+	      task.sendContinue(0);
+	      return insyscall ? inSyscallRunning : running;
 	    }
 	}
 
@@ -912,9 +800,11 @@ class TaskState
 	    while (it.hasNext())
 	      ((TaskObserver.Code) it.next()).deletedFrom(task);
 
-	    it = task.pendingCodeObservers.iterator();
+	    // XXX - Do we really need to remove all?
+	    // Remove just the code observers?
+	    it = task.pendingObservations.iterator();
 	    while (it.hasNext())
-	      ((PendingCodeObserver) it.next()).observer.deletedFrom(task);
+	      ((TaskObservation) it.next()).delete();
 
 	    if (task.notifyExeced () > 0)
 	      {
@@ -1032,50 +922,33 @@ class TaskState
 	  return blockedContinue();
       }
 
-      TaskState handleAddCodeObserver(Task task, Observable observable,
-				      TaskObserver.Code observer,
-				      long address)
-      {
-	// We cannot add or delete when running, push it on the queue
-	// and stop the task.
-	PendingCodeObserver pco = new PendingCodeObserver();
-	pco.addition = true;
-	pco.observer = observer;
-	pco.observable = observable;
-	pco.address = address;
-	task.pendingCodeObservers.add(pco);
-	task.sendStop();
-	return this;
-      }
-
-      TaskState handleDeleteCodeObserver(Task task, Observable observable,
-					 TaskObserver.Code observer,
-					 long address)
-      {
-	// We cannot add or delete when running, push it on the queue
-	// and stop the task.
-	PendingCodeObserver pco = new PendingCodeObserver();
-	pco.addition = false;
-	pco.observer = observer;
-	pco.observable = observable;
-	pco.address = address;
-	task.pendingCodeObservers.add(pco);
-	task.sendStop();
-	return this;
-      }
-
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
+	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-	    observable.add (observer);
+	    if (! observation.needsSuspendedAction())
+	      observation.add();
+	    else
+	      {
+		Collection pending = task.pendingObservations;
+		if (pending.isEmpty())
+		  task.sendStop();
+		pending.add(observation);
+	      }
 	    return this;
 	}
-	TaskState handleDeleteObserver (Task task, Observable observable,
-					Observer observer)
+	TaskState handleDeleteObservation(Task task,
+					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-	    observable.delete (observer);
+	    if (! observation.needsSuspendedAction())
+	      observation.delete();
+	    else
+	      {
+		Collection pending = task.pendingObservations;
+		if (pending.isEmpty())
+		  task.sendStop();
+		pending.add(observation);
+	      }
 	    return this;
 	}
 	TaskState handleUnblock (Task task,
@@ -1086,28 +959,6 @@ class TaskState
 	    // observer.fail (new RuntimeException (task, "not blocked");
 	    return this;
 	}
-	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-	{
-	  observable.add(observer);
-	  if (! syscalltracing)
-	    task.sendStop();
-	  return this;
-	}
-      TaskState handleDeleteSyscallObserver(Task task,
-					    Observable observable,
-					    Observer observer)
-      {
-	logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-	observable.delete(observer);
-	if (syscalltracing && observable.numberOfObservers() == 0)
-	  {
-	    logger.log(Level.FINE,
-		       "{0} handleDeleteSyscallObserver no observers left\n",
-		       task);
-	    task.sendStop();
-	  }
-	return this;
-      }
 
       TaskState handleSyscalledEvent(Task task)
       {
@@ -1264,11 +1115,10 @@ class TaskState
 	{
 	    return "BlockedSignal,sig=" + sig;
 	}
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
+	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-	    observable.add (observer);
+	    observation.add();
 	    return this;
 	}
 	TaskState handleUnblock (Task task, TaskObserver observer)
@@ -1289,58 +1139,10 @@ class TaskState
 	      }
 	}
 	
-	TaskState handleAddSyscallObserver (Task task, Observable observable,
-					    Observer observer)
-          {
-	    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-	    if (task.syscallObservers.numberOfObservers() == 0)
-	      task.startTracingSyscalls();
-	    observable.add(observer);
-	    return this;
-  	  }
-
-	TaskState handleDeleteSyscallObserver(Task task,
-					      Observable observable,
-					      Observer observer)
-        {
-	  logger.log (Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-	  observable.delete(observer);
-	  if (task.syscallObservers.numberOfObservers() == 0)
-	    task.stopTracingSyscalls();
-	  return this;
-	}
-
-      TaskState handleAddCodeObserver(Task task, Observable observable,
-				      TaskObserver.Code observer,
-				      long address)
-      {
-	if (task.proc.breakpoints.addBreakpoint(observer, address))
-	  {
-	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
-	    breakpoint.install(task);
-	  }
-	observable.add(observer);
-	return this;
-      }
-
-      TaskState handleDeleteCodeObserver(Task task, Observable observable,
-					 TaskObserver.Code observer,
-					 long address)
-      {
-	if (task.proc.breakpoints.removeBreakpoint(observer, address))
-	  {
-	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
-	    breakpoint.remove(task);
-	  }
-	observable.delete(observer);
-	return this;
-      }
-      
-      TaskState handleDeleteObserver (Task task, Observable observable,
-                                      Observer observer)
+      TaskState handleDeleteObservation(Task task, TaskObservation observation)
       {
         logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-        observable.delete (observer);
+        observation.delete();
         return this;
       }
       
@@ -1448,21 +1250,23 @@ class TaskState
 		task.proc.performTaskAttachCompleted (task);
 		return destroyed;
 	    }
-	    TaskState handleAddObserver (Task task, Observable observable,
-					 Observer observer)
+	    TaskState handleAddObservation(Task task,
+					   TaskObservation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		Observable observable = observation.getTaskObservable();
+		Observer observer = observation.getTaskObserver();
 		observer.addFailed (task, new RuntimeException ("detached"));
 		task.proc.requestDeleteObserver (task,
 						 (TaskObservable) observable,
 						 (TaskObserver) observer);
 		return destroyed;
 	    }
-	    TaskState handleDeleteObserver (Task task, Observable observable,
-					    Observer observer)
+	    TaskState handleDeleteObservation(Task task,
+					      TaskObservation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-		observable.delete (observer);
+		observation.delete();
 		return destroyed;
 	    }
 	};

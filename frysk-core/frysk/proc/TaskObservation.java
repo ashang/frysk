@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,28 +46,111 @@ package frysk.proc;
 abstract class TaskObservation
     extends Observation
 {
-    protected Task task;
+    private final Task task;
+    private final Runnable action;
+    private final boolean adding;
+
+    public TaskObservation (Task task, TaskObservable observable,
+			    TaskObserver observer, boolean adding)
+    {
+      this(task, observable, observer, null, adding);
+    }
+
     /**
      * Create a new Observer binding.
+     *
+     * @param task The Task the observer will be added to.
+     * @param observable The TaskObservable (of the specified task)
+     * that the observer should be added to.
+     * @param observer The TaskObserver to add.
+     * @param action An action to run, or null if none, before adding
+     * or after deletion while the Task is (temporarily) suspended.
      */
-    public TaskObservation (Task task, Observable observable,
-			    Observer observer)
+    public TaskObservation (Task task, TaskObservable observable,
+			    TaskObserver observer, Runnable action,
+			    boolean adding)
     {
 	super (observable, observer);
 	this.task = task;
+	this.action = action;
+	this.adding = adding;
     }
     /**
      * Handle adding the Observer to the Observable.
+     * The Task should call <code>add()</code> when it is actually
+     * ready to bind the observer to the observable.
+     *
+     * @see TaskObservation#needsSuspendedAction()
      */
     public void handleAdd ()
     {
-	task.handleAddObserver (observable, observer);
+	task.handleAddObservation(this);
     }
     /**
      * Handle deleting the Observer from the Observable.
+     * The Task should call <code>delete()</code> when it is actually
+     * ready to bind the observer to the observable.
+     *
+     * @see TaskObservation#needsSuspendedAction()
      */
     public void handleDelete ()
     {
-	task.handleDeleteObserver (observable, observer);
+	task.handleDeleteObservation(this);
+    }
+
+    public TaskObservable getTaskObservable()
+    {
+      return (TaskObservable) observable;
+    }
+
+    public TaskObserver getTaskObserver()
+    {
+      return (TaskObserver) observer;
+    }
+
+    /**
+     * Returns true if this is an addition, false if it is a deletion.
+     */
+    public boolean isAddition()
+    {
+      return adding;
+    }
+
+    /**
+     * Returns true if an action was supplied to the constructor to be
+     * run when the Task is (temporarily) suspended. If this method
+     * returns true then the Task should be suspended before calling
+     * <code>add()</code> or <code>delete()</code> on this
+     * TaskObservation.
+     */
+    public boolean needsSuspendedAction()
+    {
+      return action != null;
+    }
+
+    /**
+     * Runs any action (if suplied) and then adds the observer to the
+     * observable. If <code>needsSuspendedAction()</code> returns true
+     * then this method should only be called if the Task is
+     * (temporarily) suspended.
+     */
+    public void add()
+    {
+      if (action != null)
+	action.run();
+      observable.add(observer);
+    }
+
+    /**
+     * Deletes the observer from the observable and then runs any
+     * action (if suplied). If <code>needsSuspendedAction()</code>
+     * returns true then this method should only be called if the Task
+     * is (temporarily) suspended.
+     */
+    public void delete()
+    {
+      observable.delete(observer);
+      if (action != null)
+	action.run();
     }
 }

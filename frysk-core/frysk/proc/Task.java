@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -203,7 +204,7 @@ abstract public class Task
     if (attached != null)
       {
         TaskObservation ob = new TaskObservation(this, attachedObservers,
-                                                 attached)
+                                                 attached, true)
         {
           public void execute ()
           {
@@ -268,32 +269,17 @@ abstract public class Task
   /**
    * (Internal) Add the specified observer to the observable.
    */
-  void handleAddObserver (Observable observable, Observer observer)
+  void handleAddObservation(TaskObservation observation)
   {
-    newState = oldState().handleAddObserver(Task.this, observable, observer);
+    newState = oldState().handleAddObservation(this, observation);
   }
 
   /**
    * (Internal) Delete the specified observer from the observable.
    */
-  void handleDeleteObserver (Observable observable, Observer observer)
+  void handleDeleteObservation(TaskObservation observation)
   {
-    newState = oldState().handleDeleteObserver(Task.this, observable, observer);
-  }
-
-  void handleAddSyscallObserver (Observable observable, Observer observer)
-  {
-    newState = oldState().handleAddSyscallObserver(Task.this, observable,
-                                                   observer);
-  }
-
-  /**
-   * (Internal) Delete the specified observer from the observable.
-   */
-  void handleDeleteSyscallObserver (Observable observable, Observer observer)
-  {
-    newState = oldState().handleDeleteSyscallObserver(Task.this, observable,
-                                                      observer);
+    newState = oldState().handleDeleteObservation(this, observation);
   }
 
   /**
@@ -302,28 +288,6 @@ abstract public class Task
   void performContinue ()
   {
     newState = oldState().handleContinue(Task.this);
-  }
-
-  /**
-   * Called by <code>TaskCodeObservation</code> when added through the
-   * event loop.
-   */
-  void handleAddCodeObserver (Observable observable,
-			      TaskObserver.Code observer, long address)
-  {
-    newState = oldState().handleAddCodeObserver(this, observable, observer,
-						address);
-  }
-
-  /**
-   * Called by <code>TaskCodeObservation</code> when deleted through the
-   * event loop.
-   */
-  void handleDeleteCodeObserver (Observable observable,
-				 TaskObserver.Code observer, long address)
-  {
-    newState = oldState().handleDeleteCodeObserver(this, observable, observer,
-						   address);
   }
 
   /**
@@ -939,10 +903,11 @@ abstract public class Task
     logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
 	       new Object[] { this, Long.valueOf(address) });
     
-    Iterator i = proc.breakpoints.getCodeObservers(address);
-    if (i == null)
+    Collection observers = proc.breakpoints.getCodeObservers(address);
+    if (observers == null)
       return -1;
 
+    Iterator i = observers.iterator();
     while (i.hasNext())
       {
 	TaskObserver.Code observer = (TaskObserver.Code) i.next();
@@ -952,8 +917,8 @@ abstract public class Task
     return blockers.size();
   }
 
-  // List containing the CodeObservers that are pending addition
-  // or deletion (in order that they were requested). Will be inserted
+  // List containing the TaskObservations that are pending addition
+  // or deletion (in order that they were requested). Will be dealt with
   // as soon as a stop event is received during one of the running states.
-  LinkedList pendingCodeObservers = new LinkedList();
+  LinkedList pendingObservations = new LinkedList();
 }

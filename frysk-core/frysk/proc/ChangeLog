@@ -1,3 +1,56 @@
+2006-10-11  Mark Wielaard  <mark@klomp.org>
+
+	* BreakpointAddresses.java (getCodeObservers): Return the Collection
+	of Code Observers, not just an Iterator.
+	* Observable.java (observable): Make protected final for use in
+	subclasses.
+	* PendingCodeObserver.java: Removed.
+	* Proc.java (requestAddObservation): Create TaskObservation with
+	adding true.
+	(requestDeleteObserver): Likewise with adding false.
+	(SyscallAction): New inner class.
+	(requestAddSyscallObserver): Create TaskObservation with
+	SyscallAction.
+	(requestDeleteSyscallObserver): Likewise.
+	(BreakpointAction): New inner class.
+	(requestAddCodeObserver): Create TaskObservation with 
+	BreakpointAction.
+	(requestDeleteCodeObserver): Likewise.
+	* Task.java (Task): Create TaskObservation with adding true.
+	(handleAddObserver): Renamed to handleAddObservation().
+	(handleDeleteObserver): Renamed to handleDeleteObservation().
+	(handleAddSyscallObserver): Removed.
+	(handleDeleteSyscallObserver): Removed.
+	(handleAddCodeObserver): Removed.
+	(handleDeleteCodeObserver): Removed.
+	(notifyCodeBreakpoint): Use observers Collections.
+	(pendingCodeObservers): Removed.
+	(pendingObservations): New field.
+	* TaskCodeObservation.java: Removed.
+	* TaskObservation.java (TaskObservation): Add arguments for whether
+	we are adding and whether any action is needed before adding or
+	after deletion.
+	(getTaskObservable): New method.
+	(getTaskObserver): New method.
+	(isAddition): New method.
+	(needsSuspendedAction): New method.
+	(add): New method.
+	(delete): New method.
+	* TaskState.java (handleAddObserver): Renamed to
+	handleAddObservation().
+	(handleDeleteObserver): Renamed to handleDeleteObservation().
+	(handleAddSyscallObserver): Removed.
+	(handleDeleteSyscallObserver): Removed.
+	(handleAddCodeObserver): Removed.
+	(handleDeleteCodeObserver): Removed.
+	(Running.handleStoppedEvent): Go through pendingObservations.
+	(Running.handleAddObservation): If needsSuspendedAction() queue
+	and sendStop() if necessary.
+	(Running.handleDeleteObservation): Likewise.
+	* TaskSyscallObservation.java: Removed.
+
+	* TestBreakpoints.java (testInsertRemove): Mark broken #3240.
+
 2006-10-10  Tim Moore  <timoore@redhat.com>
 
 	* IsaIA32.java (FPRegister): Don't use I387_OFFSET when using the 

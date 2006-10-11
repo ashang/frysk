@@ -49,7 +49,7 @@ import java.util.Iterator;
 
 class Observable
 {
-    private Object observable;
+    final protected Object observable;
     /**
      * Create an observable bound to Object.
      */
