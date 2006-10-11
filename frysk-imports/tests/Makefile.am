@@ -419,6 +419,6 @@ noinst_PROGRAMS += frysk3231/ptrace-test
 # Legacy ptrace inhibits some ptrace requests (PTRACE_DETACH, possibly
 # PTRACE_CONT, and maybe others) if the accompanying signal is invalid.
 # This test makes sure that behaviour hasn't been "fixed."
-TESTS += frysk3205/ptrace-test-3205
-frysk3205_ptrace_test_3205_SOURCES = frysk3205/ptrace-test-3205.c
-noinst_PROGRAMS += frysk3205/ptrace-test-3205
+TESTS += frysk3205/ptrace-test
+frysk3205_ptrace_test_SOURCES = frysk3205/ptrace-test.c
+noinst_PROGRAMS += frysk3205/ptrace-test
