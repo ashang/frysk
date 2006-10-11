@@ -1,5 +1,8 @@
 2006-10-11  Nurdin Premji  <npremji@redhat.com>
 
+	* LinuxTask.java (sendAttach): Changed comment to explain reasoning for below.
+	Applied gnu format.
+
 	* LinuxTask.java (sendAttach): Manually tell the thread that the process
 	has been attached Fixes 3316.
 	* TestProcStopped.java: Added license.

@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import frysk.sys.Errno;
@@ -52,178 +53,194 @@ import java.util.logging.Level;
  * Linux implementation of Task.
  */
 
-public class LinuxTask extends Task
+public class LinuxTask
+    extends Task
 {
-  private long ptraceOptions = 0;	
-  
+  private long ptraceOptions = 0;
+
   // XXX: For moment wire in standard 32-bit memory
-  // map.  This will be replaced by a memory map created using
+  // map. This will be replaced by a memory map created using
   // information from /proc/PID/maps.
-  private void setupMapsXXX() throws TaskException
+  private void setupMapsXXX () throws TaskException
   {
     ByteOrder byteOrder = getIsa().getByteOrder();
     // XXX: For writing at least, PTRACE must be used as /proc/mem
     // cannot be written to.
     memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-				  0xffffffffl);
-    memory.order (byteOrder);
+                                  0xffffffffl);
+    memory.order(byteOrder);
     registerBank = getIsa().getRegisterBankBuffers(id.id);
   }
-  
+
   /**
    * Create a new unattached Task.
    */
   LinuxTask (Proc proc, TaskId id) throws TaskException
   {
-    super (proc, id);
-    setupMapsXXX ();
+    super(proc, id);
+    setupMapsXXX();
   }
-  
+
   /**
    * Create a new attached clone of Task.
    */
-  LinuxTask (Task task, TaskId clone)
-    throws TaskException
+  LinuxTask (Task task, TaskId clone) throws TaskException
   {
-    super (task, clone);
-    setupMapsXXX ();
+    super(task, clone);
+    setupMapsXXX();
   }
 
   /**
    * Create a new attached main Task of Proc.
    */
-  LinuxTask (Proc proc, TaskObserver.Attached attached)
-    throws TaskException
+  LinuxTask (Proc proc, TaskObserver.Attached attached) throws TaskException
   {
-    super (proc, attached);
-    setupMapsXXX ();
+    super(proc, attached);
+    setupMapsXXX();
   }
-  
+
   /**
-   * Must inject disappeared events back into the event loop so that
-   * they can be processed in sequence.  Calling
-   * receiveDisappearedEvent directly would cause a recursive state
-   * transition.
+   * Must inject disappeared events back into the event loop so that they can be
+   * processed in sequence. Calling receiveDisappearedEvent directly would cause
+   * a recursive state transition.
    */
   private void postDisappearedEvent (final Throwable arg)
   {
-    logger.log (Level.FINE, "{0} postDisappearedEvent\n", this);
-    Manager.eventLoop.add (new TaskEvent () 
+    logger.log(Level.FINE, "{0} postDisappearedEvent\n", this);
+    Manager.eventLoop.add(new TaskEvent()
+    {
+      Throwable w = arg;
+
+      public void execute ()
       {
-        Throwable w = arg;
-        public void execute ()
-        {
-          processDisappearedEvent (w);
-        }
-      });
+        processDisappearedEvent(w);
+      }
+    });
   }
-  
+
   protected void sendContinue (int sig)
   {
-    logger.log (Level.FINE, "{0} sendContinue\n", this); 
-    try 
+    logger.log(Level.FINE, "{0} sendContinue\n", this);
+    try
       {
-	Ptrace.cont (getTid (), sig);
+        Ptrace.cont(getTid(), sig);
       }
-    catch (Errno.Esrch e) 
+    catch (Errno.Esrch e)
       {
-	postDisappearedEvent (e);
+        postDisappearedEvent(e);
       }
   }
 
-  protected void sendSyscallContinue(int sig)
+  protected void sendSyscallContinue (int sig)
   {
     logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
-    try 
+    try
       {
-        Ptrace.sysCall (getTid (), sig);
+        Ptrace.sysCall(getTid(), sig);
       }
-    catch (Errno.Esrch e) 
+    catch (Errno.Esrch e)
       {
-	postDisappearedEvent (e);
+        postDisappearedEvent(e);
       }
   }
+
   protected void sendStepInstruction (int sig)
   {
-    logger.log (Level.FINE, "{0} sendStepInstruction\n", this);
-    try 
+    logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
+    try
       {
-        Ptrace.singleStep (getTid (), sig);
+        Ptrace.singleStep(getTid(), sig);
       }
-    catch (Errno.Esrch e) 
+    catch (Errno.Esrch e)
       {
-        postDisappearedEvent (e);
+        postDisappearedEvent(e);
       }
   }
+
   protected void sendStop ()
   {
-    logger.log (Level.FINE, "{0} sendStop\n", this); 
-    Signal.tkill (id.hashCode (), Sig.STOP);
+    logger.log(Level.FINE, "{0} sendStop\n", this);
+    Signal.tkill(id.hashCode(), Sig.STOP);
   }
+
   protected void sendSetOptions ()
   {
-    logger.log (Level.FINE, "{0} sendSetOptions\n", this); 
-    try 
+    logger.log(Level.FINE, "{0} sendSetOptions\n", this);
+    try
       {
-	// XXX: Should be selecting the trace flags based on the
-	// contents of .observers.
-	ptraceOptions |= Ptrace.optionTraceClone ();
-	ptraceOptions |= Ptrace.optionTraceFork ();
-	ptraceOptions |= Ptrace.optionTraceExit ();
-	// ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
-	ptraceOptions |= Ptrace.optionTraceExec ();
-	Ptrace.setOptions (getTid (), ptraceOptions);
+        // XXX: Should be selecting the trace flags based on the
+        // contents of .observers.
+        ptraceOptions |= Ptrace.optionTraceClone();
+        ptraceOptions |= Ptrace.optionTraceFork();
+        ptraceOptions |= Ptrace.optionTraceExit();
+        // ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
+        ptraceOptions |= Ptrace.optionTraceExec();
+        Ptrace.setOptions(getTid(), ptraceOptions);
       }
-    catch (Errno.Esrch e) 
+    catch (Errno.Esrch e)
       {
-	postDisappearedEvent (e);
+        postDisappearedEvent(e);
       }
   }
+
   protected void sendAttach ()
   {
-    logger.log (Level.FINE, "{0} sendAttach\n", this);
-    try 
+    logger.log(Level.FINE, "{0} sendAttach\n", this);
+    try
       {
-	Ptrace.attach (getTid ());
-    
-    //To fake a signal if the process is stopped.
-    frysk.sys.Signal.tkill(frysk.sys.Tid.get(), Sig.CHLD);
+        Ptrace.attach(getTid());
+
+        /*
+         * XXX: Linux kernel has a 'feature' that if a process is already
+         * stopped and ptrace requests that it be stopped (again) in order to
+         * attach to it, the signal (SIGCHLD) notifying frysk of the attach's
+         * pending waitpid event isn't generated.
+         */
+
+        /*
+         * XXX: This line sends another signal to frysk notifying about the
+         * attach's pending waitpid regardless of whether the task is running or
+         * stopped. This avoids hangs on attaching to a stopped process. Bug
+         * 3316.
+         */
+        frysk.sys.Signal.tkill(frysk.sys.Tid.get(), Sig.CHLD);
       }
-    catch (Errno.Eperm e) 
+    catch (Errno.Eperm e)
       {
-	logger.log (Level.FINE, "{" + e.toString ()
-		    + "} Cannot attach to process\n");
+        logger.log(Level.FINE, "{" + e.toString()
+                               + "} Cannot attach to process\n");
       }
-    catch (Errno.Esrch e) 
+    catch (Errno.Esrch e)
       {
-	postDisappearedEvent (e);
+        postDisappearedEvent(e);
       }
   }
+
   protected void sendDetach (int sig)
   {
-    logger.log (Level.FINE, "{0} sendDetach\n", this);
-    Ptrace.detach (getTid (), sig);
+    logger.log(Level.FINE, "{0} sendDetach\n", this);
+    Ptrace.detach(getTid(), sig);
   }
-    
+
   protected Isa sendrecIsa () throws TaskException
   {
-    logger.log (Level.FINE, "{0} sendrecIsa\n", this);
+    logger.log(Level.FINE, "{0} sendrecIsa\n", this);
     IsaFactory factory = IsaFactory.getFactory();
-    
+
     return factory.getIsa(id.id);
   }
 
-  protected void startTracingSyscalls()
+  protected void startTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
-    ptraceOptions |= Ptrace.optionTraceSysgood ();
+    ptraceOptions |= Ptrace.optionTraceSysgood();
     this.sendSetOptions();
   }
 
-  protected void stopTracingSyscalls()
+  protected void stopTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
-    ptraceOptions &= ~(Ptrace.optionTraceSysgood ());
+    ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
     this.sendSetOptions();
   }
 }
