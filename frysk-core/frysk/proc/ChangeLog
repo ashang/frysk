@@ -1,3 +1,18 @@
+2006-10-11  Nurdin Premji  <npremji@redhat.com>
+
+	* LinuxTask.java (sendAttach): Manually tell the thread that the process
+	has been attached Fixes 3316.
+	* TestProcStopped.java: Added license.
+	(stopped): Added.
+	(running): Ditto.
+	(testStoppedDetached):
+	(testStoppedAttached):
+	(testRunningAckDaemon): 
+	(testRunningDetached): 
+	(testRunningAttached): Ditto.
+	(testStoppedAckDaemon): Changed to use stopped.
+	(MyTester): Changed to stop eventloop after an attach.
+
 2006-10-11  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcAttachedObserver.java (ProcAttachedObserver): Call iterateAttach()

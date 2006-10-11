@@ -185,6 +185,9 @@ public class LinuxTask extends Task
     try 
       {
 	Ptrace.attach (getTid ());
+    
+    //To fake a signal if the process is stopped.
+    frysk.sys.Signal.tkill(frysk.sys.Tid.get(), Sig.CHLD);
       }
     catch (Errno.Eperm e) 
       {
