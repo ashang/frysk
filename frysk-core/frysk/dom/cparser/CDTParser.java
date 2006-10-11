@@ -113,28 +113,32 @@ public class CDTParser implements StaticParser {
 		this.image = image;
 		
 		String filename = source.getFilePath() + "/" + source.getFileName();
+        ParserLanguage language = ParserLanguage.C;
+        if (filename.endsWith("cpp")) {
+          language = ParserLanguage.CPP;
+        }
 		
-		ParserCallBack callback = new ParserCallBack();
-		IParser parser = ParserFactory.createParser(
-				ParserFactory.createScanner(filename,
-						new ScannerInfo(), ParserMode.QUICK_PARSE,
-						ParserLanguage.CPP, callback, new NullLogService(), null),
-				callback,
-				ParserMode.QUICK_PARSE,
-				ParserLanguage.CPP,
-				new NullLogService());
+//		ParserCallBack callback = new ParserCallBack();
+//		IParser parser = ParserFactory.createParser(
+//				ParserFactory.createScanner(filename,
+//						new ScannerInfo(), ParserMode.QUICK_PARSE,
+//						ParserLanguage.CPP, callback, new NullLogService(), null),
+//				callback,
+//				ParserMode.QUICK_PARSE,
+//				ParserLanguage.CPP,
+//				new NullLogService());
 		
-		if(!parser.parse())
-			System.err.println("Quick Parse: Error found on line " + parser.getLastErrorLine());
+//		if(!parser.parse())
+//			System.err.println("Quick Parse: Error found on line " + parser.getLastErrorLine());
 		
 		ParserCallBack callback2 = new ParserCallBack();
 		IParser parser2 = ParserFactory.createParser(
 				ParserFactory.createScanner(filename,
 						new ScannerInfo(), ParserMode.COMPLETE_PARSE,
-						ParserLanguage.CPP, callback, new NullLogService(), null),
+						language, callback2, new NullLogService(), null),
 				callback2,
 				ParserMode.COMPLETE_PARSE,
-				ParserLanguage.CPP,
+				language,
 				new NullLogService());
 		
 		if(!parser2.parse())
@@ -184,6 +188,8 @@ public class CDTParser implements StaticParser {
 	class ParserCallBack implements ISourceElementRequestor{
 
 		public void acceptVariable(IASTVariable arg0) {
+          System.out.println("Made it to acceptVariable" +
+                             ".....arg0 = " + arg0.getName());
 			// Don't assume the type is on the same line as the name
 			DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
 			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
@@ -198,6 +204,8 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void acceptFunctionDeclaration(IASTFunction arg0) {
+          System.out.println("Made it to acceptFunctionDeclaration" +
+                             ".....arg0 = " + arg0.getName());
 			// The return type of the function may not be on the same line as the name
 			DOMLine line = source.getLine(arg0.getStartingLine());
 			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
@@ -264,6 +272,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void enterFunctionBody(IASTFunction arg0) {
+          System.out.println("Made it to enterFunctionBody" +
+                             ".....arg0 = " + arg0.getName());
 			// The return type of the function may not be on the same line as the name
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
@@ -273,6 +283,7 @@ public class CDTParser implements StaticParser {
 			
 			String lineText = line.getText();
 			String nameText = nameLine.getText();
+            System.out.println("..... " + line.getText());
 			
 			String funcName = nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length());
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
@@ -341,19 +352,32 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptFunctionReference(IASTFunctionReference arg0) {
+          System.out.println("Made it to acceptFunctionReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
-
+			
 			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 		
-		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {}
-		public void acceptTypedefReference(IASTTypedefReference arg0) {}
+		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {
+          System.out.println("Made it to acceptTypedefDeclaration" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void acceptTypedefReference(IASTTypedefReference arg0) {
+          System.out.println("Made it to acceptTypedefReference" +
+                             ".....arg0 = " + arg0.getName());
+        }
 		
-		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {}	
+		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {
+          System.out.println("Made it to acceptEnumerationSpecifier" +
+                             ".....arg0 = " + arg0.getName());      
+        }	
 
 		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {
+          System.out.println("Made it to enterNamespaceDefinition" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -365,6 +389,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptNamespaceReference(IASTNamespaceReference arg0) {
+          System.out.println("Made it to acceptNamespaceReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -373,6 +399,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptUsingDirective(IASTUsingDirective arg0) {
+          System.out.println("Made it to acceptUsingDirective" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -384,6 +412,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {
+          System.out.println("Made it to acceptUsingDeclaration" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -395,6 +425,8 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void enterClassSpecifier(IASTClassSpecifier arg0) {
+          System.out.println("Made it to enterClassSpecifier" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -406,6 +438,8 @@ public class CDTParser implements StaticParser {
 		}	
 
 		public void acceptField(IASTField arg0) {
+          System.out.println("Made it to acceptField" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -417,6 +451,8 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void acceptClassReference(IASTClassReference arg0) {
+          System.out.println("Made it to acceptClassReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -425,6 +461,8 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void acceptVariableReference(IASTVariableReference arg0) {
+          System.out.println("Made it to acceptVariableReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -432,9 +470,14 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
-		public void acceptFieldReference(IASTFieldReference arg0) {}
+		public void acceptFieldReference(IASTFieldReference arg0) {
+          System.out.println("Made it to acceptFieldReference" +
+                             ".....arg0 = " + arg0.getName());
+        }
 
 		public void acceptParameterReference(IASTParameterReference arg0) {
+          System.out.println("Made it to acceptParameterReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -443,6 +486,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptAbstractTypeSpecDeclaration(IASTAbstractTypeSpecifierDeclaration arg0) {
+          System.out.println("Made it to acceptAbstractTypeSpecDeclaration" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -453,6 +498,8 @@ public class CDTParser implements StaticParser {
 		/* METHODS */
 		
 		public void acceptMethodDeclaration(IASTMethod arg0) {
+          System.out.println("Made it to acceptMethodDeclaration" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -477,6 +524,8 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void acceptMethodReference(IASTMethodReference arg0) {
+          System.out.println("Made it to enterMethodReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -485,6 +534,8 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void enterMethodBody(IASTMethod arg0) {
+          System.out.println("Made it to enterMethodBody" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -517,15 +568,23 @@ public class CDTParser implements StaticParser {
 		
 		/* TEMPLATES */
 		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {
+          System.out.println("Made it to enterTemplateDeclaration" +
+                             ".....arg0 = " + arg0.getFilename().toString());
 			
 		}
 		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {
+          System.out.println("Made it to enterTemplateInstantiation" +
+                             ".....arg0 = " + arg0.getFilename().toString());
 			
 		}
 		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {
+          System.out.println("Made it to enterTemplateSpecialization" +
+                             ".....arg0 = " + arg0.getFilename().toString());
 			
 		}
 		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {
+          System.out.println("Made it to acceptTemplateParameterReference" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
@@ -535,6 +594,8 @@ public class CDTParser implements StaticParser {
 		
 		/* PREPROCESSOR STUFF */
 		public void enterInclusion(IASTInclusion arg0) {
+          System.out.println("Made it to enterInclusion" +
+                             ".....arg0 = " + arg0.getName());
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
@@ -545,42 +606,109 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.INCLUDE, lineText.substring(arg0.getNameOffset()-line.getOffset()-1, arg0.getNameEndOffset()-line.getOffset()+1), arg0.getNameOffset() - line.getOffset()-1);
 		}
 		public void acceptMacro(IASTMacro arg0) {
+          System.out.println("Made it to acceptMacro" +
+                             ".....arg0 = " + arg0.getName());
+            
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
 				return;
 			
 			String lineText = line.getText();
+            System.out.println("     lineText = " + lineText);
 			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
 			line.addTag(DOMTagTypes.MACRO, lineText.substring(arg0.getNameOffset()-line.getOffset(), arg0.getNameEndOffset()-line.getOffset()), arg0.getNameOffset() - line.getOffset());
 		}
 		
 		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
-		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {}
-		public void acceptEnumerationReference(IASTEnumerationReference arg0) {}
-		public void acceptFriendDeclaration(IASTDeclaration arg0) {}
-		public void acceptASMDefinition(IASTASMDefinition arg0) {}
+		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {
+		  System.out.println("Made it to acceptEnumeratorReference" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void acceptEnumerationReference(IASTEnumerationReference arg0) {
+          System.out.println("Made it to acceptEnumerationReference" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void acceptFriendDeclaration(IASTDeclaration arg0) {
+          System.out.println("Made it to acceptFriendDeclaration" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void acceptASMDefinition(IASTASMDefinition arg0) {
+          System.out.println("Made it to acceptASMDefinition" +
+                             ".....arg0 = " + arg0.getFilename().toString());
+        }
 		
 		/* Probably not useful */
-		public void enterCodeBlock(IASTCodeScope arg0) {}
-		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {}
-		public void exitFunctionBody(IASTFunction arg0) {}
-		public void exitCodeBlock(IASTCodeScope arg0) {}
-		public void enterCompilationUnit(IASTCompilationUnit arg0) {}
-		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {}
-		public void exitMethodBody(IASTMethod arg0) {}
-		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {}
-		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {}
-		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {}
-		public void exitLinkageSpecification(IASTLinkageSpecification arg0) {}
-		public void exitClassSpecifier(IASTClassSpecifier arg0) {}
-		public void exitNamespaceDefinition(IASTNamespaceDefinition arg0) {}
-		public void exitInclusion(IASTInclusion arg0) {}
-		public void exitCompilationUnit(IASTCompilationUnit arg0) {}
+		public void enterCodeBlock(IASTCodeScope arg0) {
+          System.out.println("Made it to enterCodeScope" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {
+          System.out.println("Made it to acceptElaboratedForwardDeclaration" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitFunctionBody(IASTFunction arg0) {
+          System.out.println("Made it to exitFunctionBody" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitCodeBlock(IASTCodeScope arg0) {
+          System.out.println("Made it to exitCodeBlock" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void enterCompilationUnit(IASTCompilationUnit arg0) {
+          System.out.println("Made it to enterCompilationUnit" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {
+          System.out.println("Made it to enterLinkageSpecification" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void exitMethodBody(IASTMethod arg0) {
+          System.out.println("Made it to exitMethodBody" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {
+          System.out.println("Made it to exitTemplateDeclaration" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {
+          System.out.println("Made it to exitTemplateSpecialization" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {
+          System.out.println("Made it to exitTemplateExplicitInstantiation" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void exitLinkageSpecification(IASTLinkageSpecification arg0) {
+          System.out.println("Made it to exitLinkageSpecification" +
+                             ".....arg0 = " + arg0.toString());
+        }
+		public void exitClassSpecifier(IASTClassSpecifier arg0) {
+          System.out.println("Made it to exitClassSpecifier" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitNamespaceDefinition(IASTNamespaceDefinition arg0) {
+          System.out.println("Made it to exitNamespaceDefinition" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitInclusion(IASTInclusion arg0) {
+          System.out.println("Made it to exitInclusion" +
+                             ".....arg0 = " + arg0.getName());
+        }
+		public void exitCompilationUnit(IASTCompilationUnit arg0) {
+          System.out.println("Made it to exitCompliationUnit" +
+                             ".....arg0 = " + arg0.toString());
+        }
 		public CodeReader createReader(String arg0, Iterator arg1) {
+          System.out.println("Made it to createReader" +
+                             ".....arg0 = " + arg0.toString());
 			return null;
 		}
 		public boolean acceptProblem(IProblem arg0) {
+          System.out.println("Made it to acceptProblem" +
+                             ".....error = " + arg0.getMessage() +
+                             ".....line # = " + arg0.getSourceLineNumber() +
+                             ".....ID# = " + arg0.getSourceStart());
 			return false;
 		}
 	}
