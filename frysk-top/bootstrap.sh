@@ -46,7 +46,14 @@ cd `dirname $0`
 for s in */bootstrap.sh
 do
   d=`dirname $s`
-  ( test -d $d -a x"$d" != x"frysk-top" && cd $d && ./bootstrap.sh )
+  if test -d $d -a x"$d" != x"frysk-top"; then
+      if ( cd $d && ./bootstrap.sh ) ; then
+	  :
+      else
+	  echo "Problem in directory $d" 1>&2
+	  exit 1
+      fi
+  fi
 done
 
 # Generate everything (always run with --add-missing).
@@ -58,4 +65,4 @@ echo "Running autoconf ..."
 autoconf -f
 
 echo "Running automake ..."
-automake --add-missing
+automake -Werror --add-missing

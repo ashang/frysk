@@ -51,4 +51,4 @@ echo "Running autoconf ..."
 autoconf -f
 
 echo "Running automake ..."
-automake --add-missing
+automake -Werror --add-missing

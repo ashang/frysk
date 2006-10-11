@@ -82,7 +82,7 @@ echo "Running autoconf ... for frysk-imports"
 autoconf -f
 
 echo "Running automake ... for frysk-imports"
-automake --add-missing
+automake -Werror --add-missing
 
 # Now run a separate aclocal/autoconf/automake for elfutils
 cd elfutils
@@ -98,5 +98,3 @@ cd ../antlr
 echo "Running autoconf ... for antlr"
 autoconf -f
 cd ..
-
-
