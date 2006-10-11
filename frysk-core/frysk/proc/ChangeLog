@@ -3,7 +3,7 @@
 	* ProcAttachedObserver.java (ProcAttachedObserver): Call iterateAttach()
 	instead of doing the attaching here.
 	(iterateAttach): Added.
-	(addedTo): Makes a call to the local ProcObserver.ProcTasks obserer.
+	(addedTo): Makes a call to the local ProcObserver.ProcTasks observer.
 
 2006-10-11  Mark Wielaard  <mark@klomp.org>
 
