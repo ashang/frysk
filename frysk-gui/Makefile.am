@@ -93,7 +93,7 @@ TESTS_ENVIRONMENT = ( test $$tst = TestRunner && test -n "$$DISPLAY" || sh -c "e
 
 TESTS += frysk/gui/test/dogtail_scripts/frysk_suite.py
 EXTRA_DIST += frysk/gui/test/dogtail_scripts/frysk_suite.in
-noinst_PROGRAMS += frysk/gui/test/dogtail_scripts/frysk_suite.py
+noinst_SCRIPTS += frysk/gui/test/dogtail_scripts/frysk_suite.py
 CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.py
 frysk/gui/test/dogtail_scripts/frysk_suite.py: frysk/gui/test/dogtail_scripts/frysk_suite.in
 	$(SUBST)
