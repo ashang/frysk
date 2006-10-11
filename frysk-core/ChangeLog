@@ -1,3 +1,8 @@
+2006-10-11  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (frysk_pkglibexecdir_arch32_funit_child_alias_SOURCES):
+	New variable, to fix `make dist'.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass -Werror to automake.

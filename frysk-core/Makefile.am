@@ -101,8 +101,6 @@ frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_chi
 	$(COMPILE) -o $@ -c $^
 
 MOSTLYCLEANFILES += frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
-EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
-EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
 
 if DO_ARCH32_TEST
 frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_arch32_funit_child_SOURCES)
@@ -114,9 +112,13 @@ frysk/pkglibexecdir/arch32/funit-child-alias$(EXEEXT): frysk/pkglibexecdir/arch3
 	@ARCH32_LINK=`echo "$(LINK) " | sed -e 's, -m64 , ,g'`; \
 	$$ARCH32_LINK -m32 -g -pthread frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT)
 pkglibexec_arch32_PROGRAMS += frysk/pkglibexecdir/arch32/funit-child-alias
+frysk_pkglibexecdir_arch32_funit_child_alias_SOURCES =
 
 MOSTLYCLEANFILES += frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT)
 endif
+
+EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
+EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.
