@@ -1,3 +1,12 @@
+2006-10-11  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (createTags): Strip spaces from the function
+	string.
+	* SourceView.java (scrollToFunction): Get rid of newlines and 
+	spaces in the incoming string.
+	* SourceWindow.java (updateShownStackFrame): Upon call, send the
+	function string to the SourceView to scroll to. Fixes #3327.
+
 2006-10-10  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java: (getVariable): Cleaned up a bit.

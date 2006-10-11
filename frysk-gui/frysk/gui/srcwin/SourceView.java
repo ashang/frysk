@@ -346,6 +346,15 @@ public class SourceView
 
   public void scrollToFunction (String markName)
   {
+    markName = markName.split("\n")[0];
+    String[] nameArray = markName.split("\\s+");
+    StringBuffer buffer = new StringBuffer();
+    
+    for (int i = 1; i < nameArray.length; i++)
+        buffer.append(nameArray[i]);
+    
+    markName = buffer.toString();
+
     if (this.buf.getFunctions().contains(markName))
       {
         TextMark mark = this.buf.getMark(markName);

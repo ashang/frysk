@@ -972,6 +972,15 @@ public class SourceBuffer
               {
                 String funcName = tag.getToken();
                 this.functions.add(funcName);
+                
+                String[] nameArray = funcName.split("\\s*");
+                StringBuffer buffer = new StringBuffer();
+                
+                for (int i = 0; i < nameArray.length; i++)
+                  buffer.append(nameArray[i]);
+                
+                funcName = buffer.toString();
+                
                 this.createMark(funcName, this.getLineIter(line.getLineNum()),
                                 true);
               }

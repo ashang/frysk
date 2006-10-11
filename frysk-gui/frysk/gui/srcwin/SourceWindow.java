@@ -1145,6 +1145,10 @@ public class SourceWindow
                                                           + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     this.view.load(selected);
+    
+    this.view.scrollToFunction(selected.getDOMFunction().getSource().getLine(
+                               selected.getDOMFunction().getStartingLine() - 1).getText());
+    
     this.view.showAll();
   }
 
@@ -1532,6 +1536,7 @@ public class SourceWindow
           else
             {
               target.doJumpToFunction(text);
+              System.out.println("entryEvent text: " + text);
             }
         }
     }
