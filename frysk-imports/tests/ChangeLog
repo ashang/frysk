@@ -1,3 +1,8 @@
+2006-10-11  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (frysk3205_ptrace_test_SOURCES): Rename...
+	(frysk3205_ptrace_test_3205_SOURCES): ...to the right name.
+
 2006-10-04  Chris Moller  <moller@mollerware.com>
 
 	* frysk3205/ptrace-test-3205.c: Added test to demonstrate that

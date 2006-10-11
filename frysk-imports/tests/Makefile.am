@@ -420,5 +420,5 @@ noinst_PROGRAMS += frysk3231/ptrace-test
 # PTRACE_CONT, and maybe others) if the accompanying signal is invalid.
 # This test makes sure that behaviour hasn't been "fixed."
 TESTS += frysk3205/ptrace-test-3205
-frysk3205_ptrace_test_SOURCES = frysk3205/ptrace-test-3205.c
+frysk3205_ptrace_test_3205_SOURCES = frysk3205/ptrace-test-3205.c
 noinst_PROGRAMS += frysk3205/ptrace-test-3205
