@@ -58,12 +58,14 @@ public class TestRunner
 
         testRunner.setBuildArch(Build.BUILD_ARCH);
 	
-	// Set the execPrefix path and then do the common test.
-	Paths.setExecPrefix (Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/");
+	// Set the path prefixes and then do the common test.
+	Paths.setPrefixes (Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/",
+			   Build.ABS_BUILDDIR + "/frysk/pkgdatadir/");
 	testRunner.runArchCases(JUnitTests.get ());
 	
 	// Set the execPrefix of arch32 and then do the arch32 test.
-	Paths.setExecPrefix(Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/");
+	Paths.setPrefixes (Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/",
+			   Build.ABS_BUILDDIR + "/frysk/pkgdatadir/");
 	ret = testRunner.runArch32Cases(JUnitTests.get ());
 	System.exit(ret);
     }

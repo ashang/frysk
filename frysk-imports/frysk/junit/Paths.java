@@ -47,20 +47,31 @@ package frysk.junit;
 public class Paths
 {
     static private String execPrefix;
+    static private String dataPrefix;
     /**
-     * Set the TestRunner's executable working directory.  Tests
-     * should prefix any executable paths paths with this.
+     * Set the TestRunner's working directories.  Tests should prefix
+     * any paths paths with these.
      */
-    static public void setExecPrefix (String wd)
+    static public void setPrefixes (String execPrefix, String dataPrefix)
     {
-	execPrefix = wd;
+	Paths.execPrefix = execPrefix;
+	Paths.dataPrefix = dataPrefix;
     }
     /**
-     * Get the TestRunner's working directory.  Tests should prefix
-     * any file paths with this.
+     * Get the TestRunner's executable working directory.  Tests
+     * requriing external executables should prefix any programs with
+     * this path.
      */
     static public String getExecPrefix ()
     {
 	return execPrefix;
+    }
+    /**
+     * Get the TestRunner's data working directory.  Tests requiring
+     * external data files should prefix those files with this path.
+     */
+    static public String getDataPrefix ()
+    {
+	return dataPrefix;
     }
 }

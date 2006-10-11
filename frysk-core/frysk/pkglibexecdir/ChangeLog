@@ -1,3 +1,7 @@
+2006-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Set the frysk.junit.Patsh data path to PKGDATADIR.
+
 2006-10-11  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* funit-ppc64-regs.S (main): Conditional compile to avoid breaking

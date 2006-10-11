@@ -65,9 +65,10 @@ public class funit
       Runner testRunner = new Runner (args);   
       testRunner.setBuildArch(Build.BUILD_ARCH);
  
-      // Set the pkglibexec's directroy according to configuration 
-      // and then do the test.
-      Paths.setExecPrefix (Config.PKGLIBEXECDIR + "/");
+      // Point the TestRunner paths to the exec and data directories
+      // at the installed PKGLIBEXECDIR and PKGDATADIR respectively.
+      Paths.setPrefixes (Config.PKGLIBEXECDIR + "/",
+			 Config.PKGDATADIR + "/");
       testRunner.runArchCases(list);
     
       // It's unnecessary for other modules(such as frysk-import) to 
@@ -75,7 +76,8 @@ public class funit
       LinkedList arch32List = new LinkedList();
       arch32List.addAll(frysk.core.JUnitTests.get ());
 
-      Paths.setExecPrefix(Config.PKGLIBEXEC_ARCH32DIR + File.separator);
+      Paths.setPrefixes (Config.PKGLIBEXEC_ARCH32DIR + File.separator,
+			 Config.PKGDATADIR + "/");
       ret = testRunner.runArch32Cases(arch32List);
       System.exit(ret);
     }

@@ -1,3 +1,10 @@
+2006-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java: New file.
+	* Paths.java (getDataPrefix): New method.
+	(dataPrefix): New static local variable.
+	(setPrefixes): Replace setExecPrefix.
+
 2006-10-04  Nurdin Premji <npremji@redhat.com>
 
 	* Runner.java: Added getopt information about ALL logging option.
