@@ -405,34 +405,33 @@ public class Runner
 	// command line options.
 	parser = new Parser ("Runner", "1.0", true)
 	    {
-		    protected void validate() throws OptionException {
-			}
+		protected void validate()
+		    throws OptionException
+		{
+		}
 	    };
     
-	    addOptions(parser);
+	addOptions(parser);
 	    
-	    parser.setHeader("Usage: [ -c <console-level> ] [ -l <log-level> ]" +
-			    " [ -r <repeat-count> ] [--arch <arch>] [ class ... ]");
+	parser.setHeader("Usage: [ -c <console-level> ] [ -l <log-level> ]" +
+			 " [ -r <repeat-count> ] [--arch <arch>] [ class ... ]");
 	
-	    otherArgs = new LinkedList();
+	otherArgs = new LinkedList();
 	    
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
-	    parser.parse(args, new FileArgumentCallback() {
-			public void notifyFile(String arg) throws OptionException
-			{			
-				otherArgs.add(arg);
-				System.out.println(arg);
-			}
-		});
-	
-
-	
+	parser.parse(args, new FileArgumentCallback()
+	    {
+		public void notifyFile(String arg) throws OptionException
+		{			
+		    otherArgs.add(arg);
+		}
+	    });
 	  
 	// Create the file logger, and then set it's level to that
 	// specified on the command line.
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	if (levelValue != null)
-	  logger.setLevel (level);
+	    logger.setLevel (level);
 
     }
 
