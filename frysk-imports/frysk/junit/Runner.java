@@ -84,7 +84,7 @@ public class Runner
     private  Level level = null;
 	    
 
-	LinkedList otherArgs;
+    private LinkedList otherArgs;
     
     public final static String ARCH64 = "64";
     public final static String ARCH32 = "32";
@@ -226,7 +226,7 @@ public class Runner
      * @param testClasses
      * @return int the value of exit.
      */
-    public int runArchCases(Collection testClasses)
+    public int runArchCases (Collection testClasses)
     {
       // Check whether we should continue.
       if ((null != this.archTarget) &&
@@ -435,4 +435,45 @@ public class Runner
 	  logger.setLevel (level);
 
     }
+
+    /**
+     * Merge two TestRunner results returning the most fatal.
+     */
+    private int worstResult (int lhs, int rhs)
+    {
+	if (lhs == SUCCESS_EXIT)
+	    return rhs;
+	else if (lhs == FAILURE_EXIT) {
+	    if (rhs == SUCCESS_EXIT)
+		return FAILURE_EXIT;
+	    else
+		return rhs;
+	}
+	else
+	    return EXCEPTION_EXIT;
+    }
+
+    public int runArchCases (String[] args,
+			     Collection archTests,
+			     Collection arch32Tests,
+			     String execPrefix,
+			     String exec32Prefix,
+			     String dataPrefix)
+    {
+	Runner testRunner = new Runner (args);
+	int result = SUCCESS_EXIT;
+
+        testRunner.setBuildArch(Build.BUILD_ARCH);
+	
+	// Set the path prefixes and then do the common test.
+	Paths.setPrefixes (execPrefix, dataPrefix);
+	result = worstResult (testRunner.runArchCases (archTests), result);
+	
+	// Set the execPrefix of arch32 and then do the arch32 test.
+	Paths.setPrefixes (exec32Prefix, dataPrefix);
+	result = worstResult (testRunner.runArch32Cases (arch32Tests), result);
+
+	return result;
+    }
+
 }

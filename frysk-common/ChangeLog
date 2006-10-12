@@ -1,3 +1,8 @@
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.javain (main): 32- and 64-bit code moved to
+	frysk.junit.Runner, update.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (pkgdata_DATA): Set to empty.

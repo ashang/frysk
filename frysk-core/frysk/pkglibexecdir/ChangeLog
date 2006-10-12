@@ -1,3 +1,7 @@
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Move 32- and 64- logic to frysk.junit.Runner.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Set the frysk.junit.Patsh data path to PKGDATADIR.
