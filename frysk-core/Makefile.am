@@ -95,26 +95,14 @@ GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 # For TestExec.java
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-child-alias
 frysk_pkglibexecdir_funit_child_alias_SOURCES =
-frysk_pkglibexecdir_funit_child_alias_LDADD = frysk/pkglibexecdir/funit-child-alias.o
-frysk_pkglibexecdir_funit_child_alias_LDFLAGS = -pthread
-frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_child_SOURCES)
-	$(COMPILE) -o $@ -c $^
-
-MOSTLYCLEANFILES += frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
+frysk/pkglibexecdir/funit-child-alias: frysk/pkglibexecdir/funit-child
+	cp -p frysk/pkglibexecdir/funit-child $@
 
 if DO_ARCH32_TEST
-frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_arch32_funit_child_SOURCES)
-	@ARCH32_COMPILE=`echo "$(ARCH32_COMPILE) " | sed -e 's, -m64 , ,g'`; \
-	$$ARCH32_COMPILE $(frysk_pkglibexecdir_arch32_CFLAGS) -c -o $@ $<
-
-frysk/pkglibexecdir/arch32/funit-child-alias$(EXEEXT): frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT) frysk/pkglibexecdir/arch32/$(am__dirstamp)
-	@rm -f $@
-	@ARCH32_LINK=`echo "$(LINK) " | sed -e 's, -m64 , ,g'`; \
-	$$ARCH32_LINK -m32 -g -pthread frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT)
 pkglibexec_arch32_PROGRAMS += frysk/pkglibexecdir/arch32/funit-child-alias
 frysk_pkglibexecdir_arch32_funit_child_alias_SOURCES =
-
-MOSTLYCLEANFILES += frysk/pkglibexecdir/arch32/funit-child-alias.$(OBJEXT)
+frysk/pkglibexecdir/arch32/funit-child-alias: frysk/pkglibexecdir/arch32/funit-child
+	cp -p frysk/pkglibexecdir/arch32/funit-child $@
 endif
 
 EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png

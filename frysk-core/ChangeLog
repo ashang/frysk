@@ -1,3 +1,8 @@
+2006-10-12  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (funit-child-alias): Do not build, just cp funit-alias.
+	(arch32/funit-child-alias): Likewise.
+
 2006-10-11  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (frysk_pkglibexecdir_arch32_funit_child_alias_SOURCES):
