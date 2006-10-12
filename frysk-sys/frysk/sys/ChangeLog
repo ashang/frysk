@@ -1,5 +1,8 @@
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCallPtrace.java: Emacs indent.
+	* TestPtraceByteBuffer.java: Emacs indent.
+
 	* StressMapRead.java (setUp): Delete, code merged into test
 	proper.  Add broken due to 3360 - does not drain pending events.
 

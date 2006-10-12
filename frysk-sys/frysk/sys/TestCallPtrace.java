@@ -43,29 +43,28 @@ import junit.framework.TestCase;
 
 public class TestCallPtrace extends TestCase {
 
-	private int pid;
+    private int pid;
 	
-	public void testChildContinue () {
+    public void testChildContinue () {
 		
-		String[] args = {"/bin/true"};
-		pid = Ptrace.child(null, null, null, args);
-		assertTrue(pid > 0);
-		int temp = TestLib.waitIt(pid);
-		assertEquals("Return from waitpid()", temp, pid);
-		Ptrace.singleStep(pid, 0);
-		int temp1 = TestLib.waitIt(pid);
-		assertEquals("Return from waitpid()", temp1, pid);
-		Ptrace.cont(pid, 0);
-	}
+	String[] args = {"/bin/true"};
+	pid = Ptrace.child(null, null, null, args);
+	assertTrue(pid > 0);
+	int temp = TestLib.waitIt(pid);
+	assertEquals("Return from waitpid()", temp, pid);
+	Ptrace.singleStep(pid, 0);
+	int temp1 = TestLib.waitIt(pid);
+	assertEquals("Return from waitpid()", temp1, pid);
+	Ptrace.cont(pid, 0);
+    }
 	
-	public void testAttach () {
+    public void testAttach () {
 
-		pid = TestLib.forkIt();
-		assertTrue(pid > 0);
-		Ptrace.attach(pid);
-		int temp = TestLib.waitIt(pid);
-		assertEquals("Return from waitpid()", temp, pid);
-		Ptrace.detach(pid, 15);
-	    }
+	pid = TestLib.forkIt();
+	assertTrue(pid > 0);
+	Ptrace.attach(pid);
+	int temp = TestLib.waitIt(pid);
+	assertEquals("Return from waitpid()", temp, pid);
+	Ptrace.detach(pid, 15);
+    }
 }
-
