@@ -1,3 +1,15 @@
+2006-10-12  Nurdin Premji  <npremji@redhat.com>
+
+	* TestProcStopped.java (MyTester): Changed to exit after all threads are seen.
+	(running): Changed to have counter with number of threads.
+	(stopped): Ditto.
+	(testMultiThreadedRunningAckDaemon): Added.
+	(testMultiThreadedRunningDetached): Ditto.
+	(testMultiThreadedStoppedAckDaemon): 
+	(testMultiThreadedStoppedDetached): Ditto.
+	(testRunningAttached): Removed, attached observer not designed for this kind of work.
+	(testStoppedAttached): Ditto.
+	
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java (setUp): Move code creating event loop from
