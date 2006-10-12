@@ -8,3 +8,4 @@ depcomp
 install-sh
 config.guess
 config.sub
+compile

@@ -1,3 +1,7 @@
+2006-10-12  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore (compile): added.
+
 2006-10-11  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Move
