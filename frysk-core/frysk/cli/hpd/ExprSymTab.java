@@ -193,8 +193,6 @@ class ExprSymTab implements CppSymTab
           throw new RuntimeException(tte);
         }
    
-        System.out.println("regval " + regval + fbreg_and_disp[0] + " " + fbreg_and_disp[1] + 
-                           currentFrame.getReg(4) + currentFrame.getReg(5) + currentFrame.getReg(6) + currentFrame.getReg(7));
         addr += fbreg_and_disp[1];
         addr += regval;
       }
@@ -319,8 +317,6 @@ class ExprSymTab implements CppSymTab
           reg = fbreg_and_disp[0];
       }
    
-      System.out.println("regval " + reg + fbreg_and_disp[0] + " " + fbreg_and_disp[1] + 
-                         currentFrame.getReg(4) + currentFrame.getReg(5) + currentFrame.getReg(6) + currentFrame.getReg(7));
       return reg;
     }    
 
