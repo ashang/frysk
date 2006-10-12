@@ -57,7 +57,7 @@ public class TestPtraceByteBuffer extends TestCase
 
     protected void tearDown()
     {
-	Ptrace.detach(pid, 15);
+	TestLib.tearDown (pid);
     }
 
     /**

@@ -1,5 +1,13 @@
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/TestLib.cxx (drainSignal): New.
+	* TestLib.java (tearDown): New.
+	(drainSignal): New.
+	* StressMapRead.java (tearDown): Use TestLib.tearDown, remove
+	broken due to 3360.
+	* TestCallPtrace.java (tearDown): New.  Use TestLib.tearDown.
+	* TestPtraceByteBuffer.java: Use TestLib.tearDown.
+	
 	* TestCallPtrace.java: Emacs indent.
 	* TestPtraceByteBuffer.java: Emacs indent.
 

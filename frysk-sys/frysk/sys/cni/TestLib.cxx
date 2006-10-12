@@ -80,6 +80,13 @@ frysk::sys::TestLib::waitIt(jint pid) {
   return waitpid(pid, NULL, __WALL);
 }
 
+void
+frysk::sys::TestLib::drainSignal (jint sig)
+{
+  sighandler_t old_handler = signal (sig, SIG_IGN);
+  signal (sig, old_handler);
+}
+
 /* Dummy static function for use by getFuncAddr. */
 static void
 dummyfunc ()

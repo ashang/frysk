@@ -39,25 +39,51 @@
 
 package frysk.sys;
 
-public class TestLib {
+public class TestLib
+{
 
-  /* Values for inspection with ptrace peek. */
-  static int intVal = 42;
-  static byte byteVal = 43;
-  static long longVal = 44;
+    /* Values for inspection with ptrace peek. */
+    static int intVal = 42;
+    static byte byteVal = 43;
+    static long longVal = 44;
 
-	public static native int forkIt ();
-	
-	public static native int waitIt (int pid);
-	
-  /* Returns the address of a variable for inspection. */
-  public static native long getIntValAddr();
-  public static native long getLongValAddr();
-  public static native long getByteValAddr();
+    public static native int forkIt ();
+    public static native int waitIt (int pid);
+    public static native void drainSignal (int sig);
+    
+    /* Returns the address of a variable for inspection. */
+    public static native long getIntValAddr();
+    public static native long getLongValAddr();
+    public static native long getByteValAddr();
 
-  /* Returns the address of a function for inspection. */
-  public static native long getFuncAddr();
+    /* Returns the address of a function for inspection. */
+    public static native long getFuncAddr();
 
-  /* Returns the first 4 instruction bytes of the getFuncAddr(). */
-  public static native byte[] getFuncBytes();
+    /* Returns the first 4 instruction bytes of the getFuncAddr(). */
+    public static native byte[] getFuncBytes();
+
+    static void tearDown (int pid)
+    {
+	if (pid == 0)
+	    return;
+	// Continue to the death.
+	try {
+	    Ptrace.cont (pid, Sig.KILL_);
+	} catch (Exception e) {
+	    // toss it.
+	}
+	// Kill it!!!
+	try {
+	    Signal.kill (pid, Sig.KILL);
+	} catch (Exception e) {
+	    // toss it.
+	}
+	// Reap any waitpids
+	int status;
+	do {
+	    status = TestLib.waitIt (pid);
+	} while (status > 0);
+	// Reap any pending signals
+	drainSignal (Sig.CHLD_);
+    }
 }

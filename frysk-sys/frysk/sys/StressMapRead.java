@@ -49,9 +49,7 @@ public class StressMapRead
 
     protected void tearDown ()
     {
-	if (pid != 0) {
-	    Ptrace.detach (pid, Sig.TERM);
-	}
+	TestLib.tearDown (pid);
     }
 
     /*
@@ -94,9 +92,6 @@ public class StressMapRead
     {
 	if (brokenXXX(3043))
 	    return;
-	if (brokenXXX (3360))
-	    return;
-
 	pid = TestLib.forkIt ();
 	Ptrace.attach (pid);
 	TestLib.waitIt (pid);
