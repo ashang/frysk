@@ -53,7 +53,7 @@ public class TestBreakpoints
   DataOutputStream out;
 
   // The thread that handles the event loop.
-  EventLoopRunner eventloop;
+  EventLoopRunner eventLoop;
 
   // Whether we are attached (the AttachedObserver has triggered).
   boolean attached;
@@ -71,7 +71,7 @@ public class TestBreakpoints
 
   /**
    * Launch our test program and setup clean environment with a runner
-   * eventloop.
+   * eventLoop.
    */
   public void setUp()
   {
@@ -95,10 +95,6 @@ public class TestBreakpoints
     attached = false;
     terminating = false;
     procTerminated = false;
-
-    // Start an EventLoop so we don't have to poll for events all the time.
-    eventloop = new EventLoopRunner();
-    eventloop.start();
   }
 
   /**
@@ -108,29 +104,36 @@ public class TestBreakpoints
    */
   public void tearDown()
   {
-    // Make sure event loop is gone.
-    eventloop.requestStop();
-    synchronized (monitor)
-      {
-	while (!eventloop.isStopped())
-	  {
-	    try
+      if (eventLoop != null) {
+	  // Make sure event loop is gone.
+	  eventLoop.requestStop();
+	  synchronized (monitor)
 	      {
-		monitor.wait();
+		  while (!eventLoop.isStopped())
+		      {
+			  try
+			      {
+				  monitor.wait();
+			      }
+			  catch (InterruptedException ie)
+			      {
+				  // Ignored
+			      }
+		      }
 	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
       }
 
-    // And kill off any remaining processes we spawned
-    super.tearDown();
+      // And kill off any remaining processes we spawned
+      super.tearDown();
   }
 
   public void testHitAndRun() throws IOException
   {
+    // Start an EventLoop so there's no need to poll for events all
+    // the time.
+    eventLoop = new EventLoopRunner();
+    eventLoop.start();
+
     String line;
     
     // Request addresses to put breakpoints on.
@@ -255,9 +258,13 @@ public class TestBreakpoints
 
   public void testInsertRemove() throws IOException
   {
-
     if (brokenXXX (3240))
       return;
+
+    // Start an EventLoop so there's no need to poll for events all
+    // the time.
+    eventLoop = new EventLoopRunner();
+    eventLoop.start();
 
     String line;
 
@@ -448,6 +455,11 @@ public class TestBreakpoints
 
   public void testAddLots() throws IOException
   {
+    // Start an EventLoop so there's no need to poll for events all
+    // the time.
+    eventLoop = new EventLoopRunner();
+    eventLoop.start();
+
     String line;
 
     // Request addresses to put breakpoints on.

@@ -1,3 +1,10 @@
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java (setUp): Move code creating event loop from
+	here ...
+	(testHitAndRun, testInsertRemove, testAddLots): ... to here.
+	(tearDown): Only shutdown the eventLoop when it is running.
+	
 2006-10-11  Nurdin Premji  <npremji@redhat.com>
 
 	* LinuxTask.java (sendAttach): Changed comment to explain reasoning for below.
