@@ -1,3 +1,8 @@
+2006-10-12  Andrew Cagney  <cagney@redhat.com>
+
+	* StressMapRead.java (setUp): Delete, code merged into test
+	proper.  Add broken due to 3360 - does not drain pending events.
+
 2006-10-09  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* cni/Ptrace.cxx: Compile regSetParams conditionally for i386 and

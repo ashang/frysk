@@ -45,18 +45,13 @@ import frysk.sys.proc.MapsBuilder;
 public class StressMapRead
     extends TestCase
 {
-    private int pid;
-
-    protected void setUp ()
-    {
-	pid = TestLib.forkIt();
-	Ptrace.attach(pid);
-	TestLib.waitIt(pid);
-    }
+    private int pid = 0;
 
     protected void tearDown ()
     {
-	Ptrace.detach(pid, 15);
+	if (pid != 0) {
+	    Ptrace.detach (pid, Sig.TERM);
+	}
     }
 
     /*
@@ -99,6 +94,12 @@ public class StressMapRead
     {
 	if (brokenXXX(3043))
 	    return;
+	if (brokenXXX (3360))
+	    return;
+
+	pid = TestLib.forkIt ();
+	Ptrace.attach (pid);
+	TestLib.waitIt (pid);
 
 	PtraceByteBuffer buffer = new PtraceByteBuffer(pid,
 						       PtraceByteBuffer.Area.DATA);
