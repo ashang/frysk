@@ -1,5 +1,7 @@
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java: Emacs indent.
+	
 	* Runner.java (Runner): Do not print each arg.
 	
 	* Runner.java (runArchCases (String, String)): New.

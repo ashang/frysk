@@ -53,24 +53,24 @@ public class funit
 {  
     public static void main (String[] args)
     {
-      Runner testRunner = new Runner (args);   
+	Runner testRunner = new Runner (args);   
 
-      LinkedList list = new LinkedList ();
-      list.addAll (frysk.imports.JUnitTests.get ());
-      list.addAll (frysk.sys.JUnitTests.get ());
-      list.addAll (frysk.core.JUnitTests.get ());
+	LinkedList list = new LinkedList ();
+	list.addAll (frysk.imports.JUnitTests.get ());
+	list.addAll (frysk.sys.JUnitTests.get ());
+	list.addAll (frysk.core.JUnitTests.get ());
 	
-      // It's unnecessary for other modules(such as frysk-import) to
-      // do arch32 test, so just add the frysk-core's JUnitTests.
-      LinkedList arch32List = new LinkedList();
-      arch32List.addAll (frysk.core.JUnitTests.get ());
+	// It's unnecessary for other modules(such as frysk-import) to
+	// do arch32 test, so just add the frysk-core's JUnitTests.
+	LinkedList arch32List = new LinkedList();
+	arch32List.addAll (frysk.core.JUnitTests.get ());
 
-      Paths.setPrefixes (Config.PKGLIBEXEC_ARCH32DIR + File.separator,
-			 Config.PKGDATADIR + "/");
+	Paths.setPrefixes (Config.PKGLIBEXEC_ARCH32DIR + File.separator,
+			   Config.PKGDATADIR + "/");
 
-      System.exit (testRunner.runArchCases (args, list, arch32List,
-					    Config.PKGLIBEXECDIR + "/",
-					    Config.PKGLIBEXEC_ARCH32DIR + "/",
-					    Config.PKGDATADIR + "/"));
+	System.exit (testRunner.runArchCases (args, list, arch32List,
+					      Config.PKGLIBEXECDIR + "/",
+					      Config.PKGLIBEXEC_ARCH32DIR + "/",
+					      Config.PKGDATADIR + "/"));
     }
 }
