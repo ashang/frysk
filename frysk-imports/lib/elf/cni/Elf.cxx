@@ -59,17 +59,22 @@ extern "C"
 {
 #endif
 
+
 void
-lib::elf::Elf::elf_begin (jstring file, jint command){
+lib::elf::Elf::elf_begin (jstring file, jint command, jboolean write){
 	int fileNameLen = JvGetStringUTFLength(file);
 	char fileName[fileNameLen + 1];
+	
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
 	fileName[fileNameLen]='\0';
 
 	errno = 0;
-	fd = open (fileName, O_RDONLY);
+    if (write == false)
+  	    fd = open (fileName, O_RDONLY);
+    else
+	    fd = open (fileName, O_RDWR | O_CREAT,00644);
 	if(errno != 0){
-		char* message = "Could not open %s for reading";
+		char* message = "Could not open %s";
 		char error[strlen(fileName) + strlen(message) - 2];
 		sprintf(error, message, fileName);
 		throw new lib::elf::ElfFileException(JvNewStringUTF(error),
@@ -130,6 +135,8 @@ lib::elf::Elf::elf_end()
     }
 }
 
+
+
 jlong
 lib::elf::Elf::elf_update (jint command){
 	return (jlong) ::elf_update((::Elf*) this->pointer, (Elf_Cmd) command);
@@ -150,6 +157,17 @@ lib::elf::Elf::elf_getident (){
 	size_t length;
 	char* ident = ::elf_getident((::Elf*) pointer, &length);
 	return JvNewString((const jchar*) ident, length);
+}
+
+jstring
+lib::elf::Elf::elf_get_last_error_msg (){
+	const char *error = ::elf_errmsg(elf_errno());
+	return JvNewStringLatin1(error, strlen(error));
+}
+
+jint 
+lib::elf::Elf::elf_get_last_error_no (){
+	return elf_errno();
 }
 
 void fillEHeader(lib::elf::ElfEHeader *header, GElf_Ehdr *ehdr){
@@ -191,6 +209,63 @@ lib::elf::Elf::elf_newehdr (){
 	return (jint) ::gelf_newehdr(elf, gelf_getclass(elf));
 }
 
+jint
+lib::elf::Elf::elf_updatehdr(ElfEHeader *phdr) {
+	::Elf* elf = (::Elf*) this->pointer;
+	GElf_Ehdr hdr;
+
+	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
+		return elf_get_last_error_no();
+
+	jbyte *bytes = elements(phdr->ident);	
+	for(int i = 0; i < EI_NIDENT; i++)
+		hdr.e_ident[i] = (jbyte) bytes[i];
+	
+	hdr.e_type = (int) phdr->type;
+	hdr.e_machine = (int) phdr->machine;
+	hdr.e_version = (int) phdr->version;
+	hdr.e_entry = (long) phdr->entry;
+	hdr.e_phoff = (long) phdr->phoff;
+	hdr.e_shoff = (long) phdr->shoff;
+	hdr.e_flags = (int) phdr->flags;
+	hdr.e_ehsize = (int) phdr->ehsize;
+	hdr.e_phentsize = (int) phdr->phentsize;
+	hdr.e_phnum = (int) phdr->phnum;
+	hdr.e_shentsize = (int) phdr->shentsize;
+	hdr.e_shnum = (int) phdr->shnum;
+	hdr.e_shstrndx = (int) phdr->shstrndx;
+
+	return gelf_update_ehdr (elf,&hdr);
+} 
+
+jint
+lib::elf::Elf::elf_init_core_header(jint order) {
+	GElf_Ehdr hdr;
+	::Elf* elf = (::Elf*) this->pointer;
+
+	// Need to have create a header first.
+	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
+		return -1;
+
+	// This needs to be fixed. gelf_getclass will return 64 bit here
+	// because elf = entry. Need to find size from task.Isa.
+	hdr.e_ident[4] = gelf_getclass(elf);
+
+	if (order == 2)
+		hdr.e_ident[5] = ELFDATA2MSB;
+	else
+		hdr.e_ident[5] = ELFDATA2LSB;
+
+	
+	hdr.e_ident[6] = EV_CURRENT;
+	
+	// should be ET_CORE, but elfutils = funky about program headers	
+	hdr.e_type = ET_EXEC; 
+	hdr.e_version = EV_CURRENT;
+	
+	return gelf_update_ehdr(elf,&hdr);
+}
+
 void fillPHeader(lib::elf::ElfPHeader *header, GElf_Phdr *phdr){
 	header->type = (jint) phdr->p_type;
 	header->flags = (jint) phdr->p_flags;
@@ -213,6 +288,26 @@ lib::elf::Elf::elf_getphdr (jint index){
 	
 	return header;
 }
+
+jint
+lib::elf::Elf::elf_updatephdr(jint index, lib::elf::ElfPHeader *phdr) {
+	GElf_Phdr header;
+	if (::gelf_getphdr((::Elf*) this->pointer, index, &header) == NULL)
+		return -1;
+	::Elf* elf = (::Elf*) this->pointer;
+
+	header.p_type = (jint) phdr->type;
+        header.p_flags = (jint) phdr->flags;
+        header.p_offset = (jlong) phdr->offset;
+        header.p_vaddr = (jlong) phdr->vaddr;
+        header.p_paddr = (jlong) phdr->paddr;
+        header.p_filesz = (jlong) phdr->filesz;
+        header.p_memsz = (jlong) phdr->memsz;
+        header.p_align = (jlong) phdr->align;
+	
+	return gelf_update_phdr (elf, index, &header);
+} 
+
 
 jint
 lib::elf::Elf::elf_newphdr (jlong cnt){

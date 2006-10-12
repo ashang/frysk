@@ -40,6 +40,7 @@
 
 package lib.elf;
 
+import inua.eio.ByteOrder;
 import java.io.File;
 import java.io.IOException;
 
@@ -67,7 +68,24 @@ public class Elf
   public Elf (String file, ElfCommand command) throws ElfFileException,
       ElfException
   {
-    elf_begin(file, command.getValue());
+
+    elf_begin(file, command.getValue(),false);
+  }
+
+  /**
+   * Creates a new elf object, on a new file
+   * 
+   * @param file The file to create the elf object too
+   * @param command The appropriate {@see ElfCommand}
+   */
+  public Elf(String file, ElfCommand command,  boolean write) throws ElfFileException,
+      ElfException
+  {
+
+    if (write)	
+       elf_begin(file, command.getValue(),true);
+    else
+       elf_begin(file, command.getValue(),false);
   }
 
   /**
@@ -95,7 +113,7 @@ public class Elf
   {
     try 
       {
-	elf_begin("/proc/" + pid + "/exe", command.getValue());
+	elf_begin("/proc/" + pid + "/exe", command.getValue(),false);
       }
     catch (ElfFileException e)
       {
@@ -195,12 +213,49 @@ public class Elf
     return elf_newehdr();
   }
 
+ /**
+   * Update the ELF header
+   * 
+   * @param header
+   * @return success/fail
+   */
+  public int updateEHeader(ElfEHeader header) {
+	return elf_updatehdr(header);
+  }
+
+  /** 
+   * Initialize Elf Header to CoreFile
+   *
+   * @return success/fail
+   *
+   */
+   public int initializeCoreHeader(ByteOrder order) {
+	if (order == inua.eio.ByteOrder.BIG_ENDIAN)
+		return elf_init_core_header(2);
+	else
+		return elf_init_core_header(1);
+   }
+
+
   /**
    * @return The program header table
    */
   public ElfPHeader getPHeader (int index)
   {
     return elf_getphdr(index);
+  }
+
+  /**
+   * Update the program header
+   * 
+   * @param index
+   * @param header
+   * @return success/fail
+   */
+
+  public int updatePHeader(int index, ElfPHeader header)
+  {
+	return elf_updatephdr(index, header);
   }
 
   /**
@@ -322,7 +377,7 @@ public class Elf
    * 
    * @param index The index
    * @param offset The offset from index
-   * @return The string at index + offset
+   e* @return The string at index + offset
    */
   public String getStringAtOffset (long index, long offset)
   {
@@ -386,18 +441,36 @@ public class Elf
     return this.pointer;
   }
 
+  /**
+   * 
+   * @return The descriptive last error message elf returned.
+   */
+  public String getLastErrorMsg()
+  {
+	return elf_get_last_error_msg();
+  }
+
+  /**
+   * @return The descriptive last error message elf returned.
+   */
+  public int getLastErrorNo()
+  {
+    return elf_get_last_error_no();
+  }
+
   protected void finalize () throws Throwable
   {
     elf_end();
   }
 
-  protected native void elf_begin (String file, int __cmd) throws ElfException,
+  protected native void elf_begin (String file, int __cmd, boolean write) throws ElfException,
       ElfFileException;
 
   protected native long elf_clone (int __cmd);
 
   // protected native void elf_memory(String __image, long __size);
   protected native int elf_next ();
+
 
   protected native int elf_end ();
 
@@ -413,7 +486,13 @@ public class Elf
 
   protected native int elf_newehdr ();
 
+  protected native int elf_updatehdr(ElfEHeader header);
+	
+  protected native int elf_init_core_header(int order);
+
   protected native ElfPHeader elf_getphdr (int index);
+
+  protected native int elf_updatephdr(int index, ElfPHeader header);
 
   protected native int elf_newphdr (long __cnt);
 
@@ -448,5 +527,9 @@ public class Elf
   protected native int elf_cntl (int __cmd);
 
   protected native String elf_rawfile (long __ptr);
+
+  protected native String elf_get_last_error_msg();
+
+  protected native int elf_get_last_error_no();
 
 }

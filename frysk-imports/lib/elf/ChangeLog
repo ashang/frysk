@@ -1,3 +1,25 @@
+2006-10-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/Elf.cxx: (elf_begin): Check args to allow writing to
+	elf files.
+	(elf_get_last_error_msg): New.
+	(elf_get_last_error_no): New.
+	(elf_updatehdr): New.
+	(elf_init_core_header): New. Temporary.
+	(elf_updatephdr): New.
+	
+	* Elf.java (Elf): Add a boolean constructor switch
+	for write/read.
+	(updateEHeader): New. Write Elf header back to native
+	structure.
+	(initializeCoreHeader): Temporary. Convienience function.
+	(updatePHeader): New. Write the program segment back to native
+	structure.
+	(getLastErrorMsg): New. Get the error message corresponding to
+	entry below.
+	(getLastErrorNo): New. Get the error number set if the last
+	elf function failed.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestElf.java: Use frysk.funit.Paths.getDataPrefix.
