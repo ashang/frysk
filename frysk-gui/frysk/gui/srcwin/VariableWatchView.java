@@ -63,7 +63,6 @@ import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.lang.InvalidOperatorException;
 import frysk.lang.Variable;
 
 public class VariableWatchView
@@ -142,15 +141,8 @@ public class VariableWatchView
     this.treeSize++;
     
     this.model.setValue(iter, (DataColumnString) this.traceColumns[0], var.getText());
-    try
-      {
-        this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
-                       "" + var.getType().longValue(var));
-      }
-    catch (InvalidOperatorException e)
-      {
-        // TODO: what to do if this doesn't work?
-      }
+    this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
+                       "" + var.toString());
     this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
     this.showAll();
   }
