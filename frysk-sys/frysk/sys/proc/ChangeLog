@@ -1,3 +1,9 @@
+2006-10-09  Yong Zheng  <zhengyzy@cn.ibm.com>
+
+	* frysk-sys/frysk/sys/proc/cni/AuxvBuilder.cxx (verify): Check
+	whether one or three AT_NULL entries are followed at the end of
+	vector.
+
 2006-10-03  Tim Moore  <timoore@redhat.com>
 
 	* cni/AuxvBuilder.cxx (verify): Don't error out if AT_NULL doesn't
