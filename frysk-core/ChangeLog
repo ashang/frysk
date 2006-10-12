@@ -1,3 +1,8 @@
+2006-10-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java: Added. Initial, experimental and incomplete utility to
+	dump process core in frysk.
+
 2006-10-12  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (funit-child-alias): Do not build, just cp funit-alias.
