@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,9 +40,6 @@
 
 package frysk.rt.tests;
 
-//import java.util.Iterator;
-//import java.util.LinkedList;
-
 import inua.eio.ByteBuffer;
 import frysk.proc.Action;
 import frysk.proc.MachineType;
@@ -59,7 +56,7 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.Sig;
-import frysk.core.Build;
+import frysk.junit.Paths;
 
 public class TestStackBacktrace
     extends TestLib
@@ -92,11 +89,12 @@ public class TestStackBacktrace
       }
 
     TaskCreatedObserver obs = new TaskCreatedObserver();
-    AckDaemonProcess process = new AckDaemonProcess(
-                            Sig.POLL, new String[] {
-                            Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/funit-rt-looper",
-                            "" + frysk.rt.tests.TestLib.getMyPid(),
-                            "" + Sig.POLL_ });
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.POLL, new String[] {
+	    Paths.getExecPrefix () + "/funit-rt-looper",
+	    "" + frysk.rt.tests.TestLib.getMyPid(),
+	    "" + Sig.POLL_
+	});
     
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
@@ -214,11 +212,12 @@ public class TestStackBacktrace
         return;
       }
 
-    AckDaemonProcess process = new AckDaemonProcess(
-                     Sig.POLL, new String[] { Build.ABS_BUILDDIR
-                     + "/frysk/pkglibexecdir/funit-rt-threader", "" 
-                     + frysk.rt.tests.TestLib.getMyPid(), ""
-                     + Sig.POLL_ });
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.POLL, new String[] {
+	    Paths.getExecPrefix () + "/funit-rt-threader",
+	    "" + frysk.rt.tests.TestLib.getMyPid(),
+	    "" + Sig.POLL_
+	});
     
     myTask = process.findTaskUsingRefresh(true);
     
