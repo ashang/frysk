@@ -1,3 +1,28 @@
+2006-10-12  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (populateStackBrowser): Don't rebuild the 
+	StackView from scratch on subsequent calls (via stop/start). 
+	Made public. Now called from global ProcAttachedObserver on 
+	Proc re-block. Addresses #3346.
+	(getDOM): Added.
+	(SourceWindow): Create a new global ProcAttachedObserver object.
+	(doRun): Makes a call to unblockProc() - runs the process from 
+	the blocked state.
+	(unblockProc): Added - Deletes the blocking observer from each of
+	the Proc's Tasks.
+	(doStop): Moved individual de/sensitization of widgets to 
+	procReblocked(). Calls iterateAttach() from the global 
+	ProcAttachedObserver to block all Tasks. Desensitizes SourceWindow.
+	(procReblocked): Re-de/sensitizes widgets after the Proc being
+	observed has been re-blocked by the observer.
+	* SourceWindowFactory.java (generateProcStackTrace): Added. Creates
+	a new DOMFrysk if necessary; handles stack trace re/generation.
+	(finishSourceWin): Calls generateProcStackTrace() for stack trace
+	generation.
+	(handleTask): Added code to determine whether or not the event is 
+	a SourceWindow creation or a Stop/Continue; creates or generates
+	information as necessary.
+
 2006-10-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* VariableWatchView.java: Now are able to view float/double values.

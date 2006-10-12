@@ -42,6 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.gnu.gdk.Color;
@@ -95,6 +96,7 @@ import org.gnu.gtk.event.MouseListener;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
+//import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
@@ -111,6 +113,7 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;
+import frysk.proc.ProcAttachedObserver;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
@@ -218,7 +221,7 @@ public class SourceWindow
   
   private ToggleAction toggleConsoleWindow;
 
-  // private DOMFrysk dom;
+   private DOMFrysk dom;
 
   private Task myTask;
 
@@ -227,6 +230,10 @@ public class SourceWindow
   private VariableWatchView watchView;
   
   private ConsoleWindow conWin;
+  
+  private ProcAttachedObserver pao;
+  
+  public boolean runningState = false;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -245,7 +252,7 @@ public class SourceWindow
    * @param stack The stack frame that represents the current state of execution
    */
   public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackFrame[] frames)
+                       StackFrame[] frames, ProcAttachedObserver pao)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -254,7 +261,8 @@ public class SourceWindow
     this.listener = new SourceWindowListener(this);
     this.glade = glade;
     this.gladePath = gladePath;
-    // this.dom = dom;
+    this.dom = dom;
+    this.pao = pao;
 
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 
@@ -280,6 +288,9 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
+    
+    this.run.setSensitive(true);
+    this.stop.setSensitive(false);
 
     this.hideAll();
     this.showAll();
@@ -350,6 +361,38 @@ public class SourceWindow
   {
     return this.myProc;
   }
+  
+  public DOMFrysk getDOM()
+  {
+    return this.dom;
+  }
+  
+  /**
+   * Populates the stack browser window
+   * 
+   * @param frames  An array of StackFrames
+   */
+  public void populateStackBrowser (StackFrame[] frames)
+  {
+    stackView = new CurrentStackView(frames);
+    
+//    if (this.view != null)
+//      ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
+    
+    if (this.view == null)
+      {
+        this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
+        ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
+        ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
+        sw.add(stackView);
+      }
+    
+    updateShownStackFrame(stackView.getFirstFrameSelection());
+
+    stackView.showAll();
+    this.view.showAll();
+    stackView.expandAll();
+  }
 
   /*****************************************************************************
    * PRIVATE METHODS
@@ -362,32 +405,6 @@ public class SourceWindow
   {
     this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL,
                                                               Color.WHITE);
-  }
-
-  /**
-   * Populates the stack browser window
-   * 
-   * @param top
-   */
-  private void populateStackBrowser (StackFrame[] frames)
-  {
-    
-    stackView = new CurrentStackView(frames);
-    
-    if (this.view != null)
-      ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
-
-    this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
-    ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
-    this.view.showAll();
-
-    ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
-    
-    sw.add(stackView);
-    updateShownStackFrame(stackView.getFirstFrameSelection());
-
-    stackView.showAll();
-    stackView.expandAll();
   }
 
   /**
@@ -1163,6 +1180,8 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
+    
+    this.runningState = true;
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -1181,13 +1200,43 @@ public class SourceWindow
     this.copy.setSensitive(false);
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
+    
+    unblockProc(this.myProc);
+  }
+  
+  private void unblockProc (Proc proc)
+  {
+    Iterator i = this.myProc.getTasks().iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) i.next();
+        t.requestUnblock(pao);
+        t.requestDeleteAttachedObserver(pao);
+      }
   }
 
   private void doStop ()
   {
-    // Set status of toolbar buttons
+    //  Set status of toolbar buttons
+    this.glade.getWidget("toolbarGotoBox").setSensitive(false);
+    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+    
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
+    
+    this.pao.iterateAttach();
+  }
+  
+  public void procReblocked()
+  {
+    //  Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
+    
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+    //this.glade.getWidget(SourceWindow.TEXT_WINDOW).setSensitive(true);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");

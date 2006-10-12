@@ -90,7 +90,6 @@ public class CurrentStackView
   public CurrentStackView (StackFrame[] frames)
   {
     super();
-
     this.setName("currentStackView");
     this.getAccessible().setName("currentStackView_showsCurrentStack");
     this.getAccessible().setDescription(
@@ -102,7 +101,6 @@ public class CurrentStackView
 
     TreeIter iter = null;
     TreeIter parent = null;
-    
     for (int j = frames.length - 1; j >= 0; j--)
       {
         StackFrame frame = frames[j];
@@ -180,7 +178,7 @@ public class CurrentStackView
               }
           }
       }
-
+    
     this.setModel(treeModel);
 
     TreeViewColumn column = new TreeViewColumn();
@@ -191,8 +189,6 @@ public class CurrentStackView
     this.appendColumn(column);
 
     this.getSelection().setMode(SelectionMode.SINGLE);
-    //this.getSelection().select(head);
-    //this.getSelection().select(this.treeModel.getFirstIter().getFirstChild());
 
     this.getSelection().addListener(this);
   }

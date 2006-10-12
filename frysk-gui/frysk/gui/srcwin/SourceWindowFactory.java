@@ -100,6 +100,8 @@ public class SourceWindowFactory
   public static SourceWindow srcWin = null;
   
   public static Task myTask;
+  
+  protected static boolean SW_active = false;
 
   private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
@@ -174,7 +176,6 @@ public class SourceWindowFactory
     int size;
     Task[] tasks;
     DOMFrysk dom = null;
-    StackFrame[] frames;
 
     if (map.containsKey(proc))
       {
@@ -187,7 +188,6 @@ public class SourceWindowFactory
       {
         size = proc.getTasks().size();
         tasks = new Task[size];
-        frames = new StackFrame[size];
 
         Iterator iter = proc.getTasks().iterator();
 
@@ -256,50 +256,11 @@ public class SourceWindowFactory
             return;
           }
 
-        for (int j = 0; j < size; j++)
-          {
+        StackFrame[] frames = new StackFrame[size];
+        frames = generateProcStackTrace(frames, tasks, dom, proc, size);
 
-            DwflLine line;
-            DOMFunction f = null;
-
-            /** Create the stack frame * */
-
-            StackFrame curr = null;
-            try
-              {
-                frames[j] = StackFactory.createStackFrame(tasks[j]);
-                curr = frames[j];
-              }
-            catch (Exception e)
-              {
-                System.out.println(e.getMessage());
-              }
-
-            /** Stack frame created * */
-
-            while (curr != null) /*
-                                   * Iterate and initialize information for all
-                                   * frames, not just the top one
-                                   */
-              {
-
-                line = curr.getDwflLine();
-
-                if (line != null)
-                  {
-                    String filename = line.getSourceFile();
-                    filename = filename.substring(filename.lastIndexOf("/") + 1);
-                    f = getFunctionXXX(
-                                       dom.getImage(tasks[j].getProc().getMainTask().getName()),
-                                       filename, line.getLineNum());
-                  }
-
-                curr.setDOMFunction(f);
-                curr = curr.getOuter();
-              }
-          }
-
-        srcWin = new SourceWindow(glade, gladePaths[i], dom, frames);
+        srcWin = new SourceWindow(glade, gladePaths[i], dom,
+                            frames, (ProcAttachedObserver)blockerTable.get(proc));
         procTable.put(proc, srcWin);
         srcWin.setMyProc(proc);
         srcWin.addListener(new SourceWinListener());
@@ -308,6 +269,93 @@ public class SourceWindowFactory
         // Store the reference to the source window
         map.put(proc, srcWin);
       }
+  }
+  
+  public static StackFrame[] generateProcStackTrace(StackFrame[] frames, 
+                                        Task[] tasks, DOMFrysk dom, Proc proc, int size)
+  {
+    if ((frames == null || tasks == null || dom == null) && proc != null)
+      {
+        Iterator iter = null;
+        
+        if (proc != null)
+          iter = proc.getTasks().iterator();
+        else
+          return null;
+        
+        size = proc.getTasks().size();
+        tasks = new Task[size];
+        frames = new StackFrame[size];
+        
+        try
+        {
+          for (int k = 0; k < size; k++)
+            {
+              tasks[k] = (Task) iter.next();
+            }
+
+          if (dom == null)
+            dom = DOMFactory.createDOM(proc.getMainTask());
+        }
+
+      // If we don't have a dom, tell the task to continue
+      catch (NoDebugInfoException e)
+        {
+        }
+      catch (IOException e)
+        {
+          unblockProc(proc);
+          WarnDialog dialog = new WarnDialog("File not found",
+                                             "Error loading source code: "
+                                                 + e.getMessage());
+          dialog.showAll();
+          dialog.run();
+          return null;
+        }
+      }
+    
+    for (int j = 0; j < size; j++)
+      {
+        DwflLine line;
+        DOMFunction f = null;
+
+        /** Create the stack frame * */
+
+        StackFrame curr = null;
+        try
+          {
+            frames[j] = StackFactory.createStackFrame(tasks[j]);
+            curr = frames[j];
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+
+        /** Stack frame created * */
+
+        while (curr != null) /*
+                               * Iterate and initialize information for all
+                               * frames, not just the top one
+                               */
+          {
+
+            line = curr.getDwflLine();
+
+            if (line != null)
+              {
+                String filename = line.getSourceFile();
+                filename = filename.substring(filename.lastIndexOf("/") + 1);
+                f = getFunctionXXX(
+                                   dom.getImage(tasks[j].getProc().getMainTask().getName()),
+                                   filename, line.getLineNum());
+              }
+            
+            curr.setDOMFunction(f);
+            curr = curr.getOuter();
+          }
+      }
+    return frames;
   }
 
   /**
@@ -447,15 +495,16 @@ public class SourceWindowFactory
     
     public void existingTask (Task task)
     {
-        myTask = task;
-        CustomEvents.addEvent(new Runnable()
-        {
-          public void run()
-          {
-            handleTask(myTask);
-          }
+      myTask = task;
 
-        });
+      CustomEvents.addEvent(new Runnable()
+      {
+        public void run ()
+        {
+          handleTask(myTask);
+        }
+
+      });
     }
     
     public void taskRemoved (Task task)
@@ -489,14 +538,36 @@ public class SourceWindowFactory
   public static synchronized void handleTask (Task task)
   {
     myTask = task;
-    CustomEvents.addEvent(new Runnable()
-    {
-      public void run ()
+
+    if (SW_active == false)
+      {
+
+        CustomEvents.addEvent(new Runnable()
+        {
+          public void run ()
+          {
+            --task_count;
+            if (task_count == 0)
+              {
+                SW_active = true;
+                task_count = myTask.getProc().getTasks().size();
+                finishSourceWin(myTask.getProc());
+              }
+          }
+        });
+      }
+    else
       {
         --task_count;
         if (task_count == 0)
-          finishSourceWin(myTask.getProc());
+          {
+            StackFrame[] frames = generateProcStackTrace(null, null,
+                                                         srcWin.getDOM(),
+                                                         task.getProc(), 0);
+            srcWin.populateStackBrowser(frames);
+            srcWin.procReblocked();
+            task_count = myTask.getProc().getTasks().size();
+          }
       }
-    }); 
   }
 }
