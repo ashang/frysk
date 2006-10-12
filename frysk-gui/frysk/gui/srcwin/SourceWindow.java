@@ -1233,7 +1233,7 @@ public class SourceWindow
   {
     //  Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
+    //this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
     
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
     //this.glade.getWidget(SourceWindow.TEXT_WINDOW).setSensitive(true);
