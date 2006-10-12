@@ -1,7 +1,13 @@
+2006-10-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Add obvious include paths.
+	Remove debug statements.
+
 2006-10-11  Rick Moseley  <rmoseley@redhat.com>
 
-	* cparser/CDTparser.java: Remove QUICK parser(at least for now).
+	* cparser/CDTParser.java: Remove QUICK parser(at least for now).
 	Check for which language we are parsing(C or CPP).
+	Format.
 
 2006-10-09  Adam Jocksch  <ajocksch@redhat.com>
 

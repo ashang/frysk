@@ -41,6 +41,8 @@
  * CDTParser uses the parser from the Eclipse CDT to generate static information
  * about the source file
  */
+
+
 package frysk.dom.cparser;
 
 import java.io.IOException;
@@ -55,6 +57,7 @@ import org.eclipse.cdt.core.parser.ParserFactory;
 import org.eclipse.cdt.core.parser.ParserLanguage;
 import org.eclipse.cdt.core.parser.ParserMode;
 import org.eclipse.cdt.core.parser.ScannerInfo;
+import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.parser.ast.IASTASMDefinition;
 import org.eclipse.cdt.core.parser.ast.IASTAbstractTypeSpecifierDeclaration;
 import org.eclipse.cdt.core.parser.ast.IASTClassReference;
@@ -98,618 +101,808 @@ import frysk.dom.StaticParser;
 
 /**
  * @author ajocksch
- *
  */
-public class CDTParser implements StaticParser {
+public class CDTParser
+    implements StaticParser
+{
 
-	private DOMImage image;
-	private DOMSource source;
-	
-	/* (non-Javadoc)
-	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, frysk.gui.srcwin.SourceBuffer)
-	 */
-	public void parse(DOMSource source, DOMImage image) throws IOException {
-		this.source = source;
-		this.image = image;
-		
-		String filename = source.getFilePath() + "/" + source.getFileName();
-        ParserLanguage language = ParserLanguage.C;
-        if (filename.endsWith("cpp")) {
-          language = ParserLanguage.CPP;
+  private DOMImage image;
+
+  private DOMSource source;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String,
+   *      frysk.gui.srcwin.SourceBuffer)
+   */
+  public void parse (DOMSource source, DOMImage image) throws IOException
+  {
+    this.source = source;
+    this.image = image;
+    String[] incPaths = { "/usr/local/include", 
+                          "/usr/include"};
+
+    String filename = source.getFilePath() + "/" + source.getFileName();
+    ParserLanguage language = ParserLanguage.C;
+    if (filename.endsWith("cpp"))
+      {
+        language = ParserLanguage.CPP;
+      }
+    IScannerInfo buildScanInfo = new ScannerInfo(null, incPaths);
+    IScannerInfo scanInfo = new ScannerInfo(buildScanInfo.getDefinedSymbols(),
+                                            buildScanInfo.getIncludePaths());
+
+    // ParserCallBack callback = new ParserCallBack();
+    // IParser parser = ParserFactory.createParser(
+    // ParserFactory.createScanner(filename,
+    // new ScannerInfo(), ParserMode.QUICK_PARSE,
+    // ParserLanguage.CPP, callback, new NullLogService(), null),
+    // callback,
+    // ParserMode.QUICK_PARSE,
+    // ParserLanguage.CPP,
+    // new NullLogService());
+
+    // if(!parser.parse())
+    // System.err.println("Quick Parse: Error found on line " +
+    // parser.getLastErrorLine());
+
+    ParserCallBack callback2 = new ParserCallBack();
+    IParser parser2 = ParserFactory.createParser(
+                                                 ParserFactory.createScanner(
+                                                                             filename,
+                                                                             scanInfo,
+                                                                             ParserMode.COMPLETE_PARSE,
+                                                                             language,
+                                                                             callback2,
+                                                                             new NullLogService(),
+                                                                             null),
+                                                 callback2,
+                                                 ParserMode.COMPLETE_PARSE,
+                                                 language, new NullLogService());
+
+    if (! parser2.parse())
+      System.err.println("Complete Parse: Error found on line "
+                         + parser2.getLastErrorLine()
+                         + "\n                Char offset of error = "
+                         + parser2.getLastErrorOffset());
+
+    /*
+     * The CDT Parser does not parse out comments for some reason, do a second
+     * parsing run and pick them out
+     */
+    Tokenizer tokenMaker = new Tokenizer(filename);
+
+    while (tokenMaker.hasMoreTokens())
+      {
+        Token t = tokenMaker.nextToken();
+
+        // C++ style comments
+        if (t.text.equals("//"))
+          {
+            Token t2 = t;
+            while (tokenMaker.hasMoreTokens()
+                   && tokenMaker.peek().lineNum == t.lineNum)
+              {
+                t2 = tokenMaker.nextToken();
+              }
+            t2.toString();
+            // buffer.addComment(t.lineNum, t.colNum, t.lineNum,
+            // t2.colNum+t2.text.length());
+          }
+        // C Style comments
+        else if (t.text.equals("/*"))
+          {
+            Token t2 = t;
+            while (tokenMaker.hasMoreTokens()
+                   && ! tokenMaker.peek().text.equals("*/"))
+              {
+                t2 = tokenMaker.nextToken();
+              }
+            t2 = tokenMaker.nextToken();
+            t2.toString();
+            // buffer.addComment(t.lineNum, t.colNum, t2.lineNum,
+            // t2.colNum+t2.text.length());
+          }
+        // For some reason the CDTParser doesn't pick up this keyword either
+        else if (t.text.equals("return") | t.text.startsWith("exit("))
+          {
+            DOMLine line = this.source.getLine(t.lineNum + 1);
+            if (line == null)
+              return;
+
+            line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
+          }
+      }
+  }
+
+  class ParserCallBack
+      implements ISourceElementRequestor
+  {
+
+    public void acceptVariable (IASTVariable arg0)
+    {
+      
+      // Don't assume the type is on the same line as the name
+      DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
+      DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+      if (typeLine == null || nameLine == null)
+        return;
+
+      String typeText = typeLine.getText();
+      String nameText = nameLine.getText();
+
+      typeLine.addTag(DOMTagTypes.KEYWORD,
+                      typeText.substring(arg0.getStartingOffset()
+                                         - typeLine.getOffset(),
+                                         arg0.getNameOffset()
+                                             - typeLine.getOffset()),
+                      arg0.getStartingOffset() - typeLine.getOffset());
+      nameLine.addTag(DOMTagTypes.LOCAL_VAR,
+                      nameText.substring(arg0.getNameOffset()
+                                         - nameLine.getOffset(),
+                                         arg0.getNameOffset()
+                                             - nameLine.getOffset()
+                                             + arg0.getName().length()),
+                      arg0.getNameOffset() - nameLine.getOffset());
+    }
+
+    public void acceptFunctionDeclaration (IASTFunction arg0)
+    {
+      
+      // The return type of the function may not be on the same line as the name
+      DOMLine line = source.getLine(arg0.getStartingLine());
+      DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+      if (line == null || nameLine == null)
+        return;
+
+      String lineText = line.getText();
+      String nameText = nameLine.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      nameLine.addTag(DOMTagTypes.FUNCTION,
+                      nameText.substring(arg0.getNameOffset()
+                                         - nameLine.getOffset(),
+                                         arg0.getNameOffset()
+                                             - nameLine.getOffset()
+                                             + arg0.getName().length()),
+                      arg0.getNameOffset() - nameLine.getOffset());
+
+      Iterator iter = arg0.getParameters();
+      while (iter.hasNext())
+        {
+          IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
+
+          DOMLine typeLine = null, paramLine = null;
+          String typeText = "";
+
+          /*
+           * Just like we didn't assume that the return type and name were on
+           * the same line, we don't assume that the param types and names are
+           * on the same line or that all the parameters are on the same line.
+           * At the same time though we want to be reasonably efficient if they
+           * are.
+           */
+          if (param.getStartingLine() != nameLine.getLineNum())
+            {
+              typeLine = source.getLine(param.getStartingLine());
+              typeText = typeLine.getText();
+            }
+          else
+            {
+              typeLine = nameLine;
+              typeText = nameText;
+            }
+
+          // There may not be a parameter name in a function delcaration
+          if (param.getNameOffset() != - 1)
+            {
+              /*
+               * Perform compairasons relative to the parameter type line, so
+               * that if the parameters are both on the same line we still get a
+               * little better performance.
+               */
+              if (param.getNameLineNumber() != typeLine.getLineNum())
+                {
+                  paramLine = source.getLine(param.getNameLineNumber());
+                }
+              else
+                {
+                  paramLine = typeLine;
+                }
+
+              typeLine.addTag(DOMTagTypes.KEYWORD,
+                              typeText.substring(param.getStartingOffset()
+                                                 - typeLine.getOffset(),
+                                                 param.getNameOffset()
+                                                     - typeLine.getOffset()),
+                              param.getStartingOffset() - typeLine.getOffset());
+              paramLine.addTag(DOMTagTypes.LOCAL_VAR, param.getName(),
+                               param.getNameOffset() - paramLine.getOffset());
+            }
+          // There is no parameter name, so only make a tag for the keyword
+          else
+            {
+              /*
+               * TODO: As of right now, it seems that whenever the parameter
+               * name doesn't exist, param.getEndingOffset() is 0, which makes
+               * it impossible to determine the end of this tag. When this is
+               * fixed uncommment this line
+               */
+              // typeLine.addTag(DOMTagTypes.KEYWORD,
+              // typeText.substring(param.getStartingOffset() -
+              // typeLine.getOffset(), param.getEndingOffset() -
+              // typeLine.getOffset()), param.getStartingOffset() -
+              // typeLine.getOffset());
+            }
         }
-		
-//		ParserCallBack callback = new ParserCallBack();
-//		IParser parser = ParserFactory.createParser(
-//				ParserFactory.createScanner(filename,
-//						new ScannerInfo(), ParserMode.QUICK_PARSE,
-//						ParserLanguage.CPP, callback, new NullLogService(), null),
-//				callback,
-//				ParserMode.QUICK_PARSE,
-//				ParserLanguage.CPP,
-//				new NullLogService());
-		
-//		if(!parser.parse())
-//			System.err.println("Quick Parse: Error found on line " + parser.getLastErrorLine());
-		
-		ParserCallBack callback2 = new ParserCallBack();
-		IParser parser2 = ParserFactory.createParser(
-				ParserFactory.createScanner(filename,
-						new ScannerInfo(), ParserMode.COMPLETE_PARSE,
-						language, callback2, new NullLogService(), null),
-				callback2,
-				ParserMode.COMPLETE_PARSE,
-				language,
-				new NullLogService());
-		
-		if(!parser2.parse())
-		    System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine() +
-                               "\n                Char offset of error = " + parser2.getLastErrorOffset());
-		
-		/*
-		 * The CDT Parser does not parse out comments for some reason,
-		 * do a second parsing run and pick them out
-		 */
-		Tokenizer tokenMaker = new Tokenizer(filename);
-		
-		while(tokenMaker.hasMoreTokens()){
-			Token t = tokenMaker.nextToken();
-			
-			// C++ style comments
-			if(t.text.equals("//")){
-				Token t2 = t;
-				while(tokenMaker.hasMoreTokens() && tokenMaker.peek().lineNum == t.lineNum){
-					t2 = tokenMaker.nextToken();
-				}
-				t2.toString();
-//				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
-			}
-			// C Style comments
-			else if(t.text.equals("/*")){
-				Token t2 = t;
-				while(tokenMaker.hasMoreTokens() && !tokenMaker.peek().text.equals("*/")){
-					t2 = tokenMaker.nextToken();
-				}
-				t2 = tokenMaker.nextToken();
-				t2.toString();
-//				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
-			}
-			// For some reason the CDTParser doesn't pick up this keyword either
-			else if(t.text.equals("return") | t.text.startsWith("exit(")) {
-				DOMLine line = this.source.getLine(t.lineNum + 1);
-				if(line == null)
-					return;
-				
-				line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
-			}
-		}
-	}
+    }
 
-	
-	class ParserCallBack implements ISourceElementRequestor{
-
-		public void acceptVariable(IASTVariable arg0) {
-          System.out.println("Made it to acceptVariable" +
-                             ".....arg0 = " + arg0.getName());
-			// Don't assume the type is on the same line as the name
-			DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
-			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
-			if(typeLine == null || nameLine == null)
-				return;
-			
-			String typeText = typeLine.getText();
-			String nameText = nameLine.getText();
-			
-			typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(arg0.getStartingOffset() - typeLine.getOffset(), arg0.getNameOffset() - typeLine.getOffset()), arg0.getStartingOffset() - typeLine.getOffset());
-			nameLine.addTag(DOMTagTypes.LOCAL_VAR, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
-		}
-
-		public void acceptFunctionDeclaration(IASTFunction arg0) {
-          System.out.println("Made it to acceptFunctionDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-			// The return type of the function may not be on the same line as the name
-			DOMLine line = source.getLine(arg0.getStartingLine());
-			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
-			if(line == null || nameLine == null)
-				return;
-			
-			String lineText = line.getText();
-			String nameText = nameLine.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			nameLine.addTag(DOMTagTypes.FUNCTION, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
-			
-			Iterator iter = arg0.getParameters();
-			while(iter.hasNext()){
-				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				
-				DOMLine typeLine = null, paramLine = null;
-				String typeText = "";
-				
-				/*
-				 * Just like we didn't assume that the return type and name were on the
-				 * same line, we don't assume that the param types and names are on the
-				 * same line or that all the parameters are on the same line.
-				 * 
-				 * At the same time though we want to be reasonably efficient if they are.
-				 */
-				if(param.getStartingLine() != nameLine.getLineNum()){
-					typeLine = source.getLine(param.getStartingLine());
-					typeText = typeLine.getText();
-				}
-				else{
-					typeLine = nameLine;
-					typeText = nameText;
-				}
-	
-				// There may not be a parameter name in a function delcaration
-				if(param.getNameOffset() != -1){
-					/*
-					 * Perform compairasons relative to the parameter type line, so that 
-					 * if the parameters are both on the same line we still get a little
-					 * better performance.
-					 */
-					if(param.getNameLineNumber() != typeLine.getLineNum()){
-						paramLine = source.getLine(param.getNameLineNumber());
-					}
-					else{
-						paramLine = typeLine;
-					}
-					
-					typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getNameOffset() - typeLine.getOffset()), param.getStartingOffset() - typeLine.getOffset());
-					paramLine.addTag(DOMTagTypes.LOCAL_VAR, param.getName(), param.getNameOffset() - paramLine.getOffset());
-				}
-				// There is no parameter name, so only make a tag for the keyword
-				else{
-					/*
-					 * TODO: As of right now, it seems that whenever the parameter
-					 * name doesn't exist, param.getEndingOffset() is 0, which makes
-					 * it impossible to determine the end of this tag. When this is 
-					 * fixed uncommment this line
-					 */
-//					typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getEndingOffset() - typeLine.getOffset()), param.getStartingOffset() - typeLine.getOffset());
-				}
-			}
-		}
-		
-		public void enterFunctionBody(IASTFunction arg0) {
-          System.out.println("Made it to enterFunctionBody" +
-                             ".....arg0 = " + arg0.getName());
-			// The return type of the function may not be on the same line as the name
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
-			if(line == null || nameLine == null){
-				return;
-			}
-			
-			String lineText = line.getText();
-			String nameText = nameLine.getText();
-            System.out.println("..... " + line.getText());
-			
-			String funcName = nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length());
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			nameLine.addTag(DOMTagTypes.FUNCTION, funcName, arg0.getNameOffset() - nameLine.getOffset());
-			
-			int endingLine = arg0.getEndingLine();
-			if(endingLine == 0)
-				endingLine = arg0.getStartingLine();
-			
-			image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(), endingLine, arg0.getStartingOffset(), arg0.getEndingOffset());
-			
-			// start building the full name of the function for jump-to purposes
-			String functionName = arg0.getName() + "(";
-			
-			Iterator iter = arg0.getParameters();
-			while(iter.hasNext()){
-				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				
-				DOMLine typeLine = null, paramLine = null;
-				String typeText = "";
-				
-				/*
-				 * Just like we didn't assume that the return type and name were on the
-				 * same line, we don't assume that the param types and names are on the
-				 * same line or that all the parameters are on the same line.
-				 * 
-				 * At the same time though we want to be reasonably efficient if they are.
-				 */
-				if(param.getStartingLine() != nameLine.getLineNum()){
-					typeLine = source.getLineSpanningOffset(param.getStartingOffset());
-					typeText = typeLine.getText();
-				}
-				else{
-					typeLine = nameLine;
-					typeText = nameText;
-				}
-				
-				/*
-				 * Perform comparisons relative to the parameter type line, so that 
-				 * if the parameters are both on the same line we still get a little
-				 * better performance.
-				 */
-				if(param.getEndingLine() != typeLine.getLineNum()){
-					paramLine = source.getLineSpanningOffset(param.getEndingOffset());
-				}
-				else{
-					paramLine = typeLine;
-				}
-				
-				String type = typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getNameOffset() - typeLine.getOffset());
-				String name = param.getName();
-				
-				typeLine.addTag(DOMTagTypes.KEYWORD, type, param.getStartingOffset() - typeLine.getOffset());
-				paramLine.addTag(DOMTagTypes.LOCAL_VAR, name, param.getNameOffset() - paramLine.getOffset());
-				
-				functionName += type + " " + name + ", ";
-			}
-			
-			// Trim the trailing ',' off the function name if it's there
-			if(functionName.indexOf(",") != -1)
-				functionName = functionName.substring(0, functionName.length() - 2);
-			
-			functionName += ")";
-			
-			line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
-		}
-		
-		public void acceptFunctionReference(IASTFunctionReference arg0) {
-          System.out.println("Made it to acceptFunctionReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-			
-			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-		
-		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {
-          System.out.println("Made it to acceptTypedefDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void acceptTypedefReference(IASTTypedefReference arg0) {
-          System.out.println("Made it to acceptTypedefReference" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		
-		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {
-          System.out.println("Made it to acceptEnumerationSpecifier" +
-                             ".....arg0 = " + arg0.getName());      
-        }	
-
-		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {
-          System.out.println("Made it to enterNamespaceDefinition" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.NAMESPACE, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-		}
-		
-		public void acceptNamespaceReference(IASTNamespaceReference arg0) {
-          System.out.println("Made it to acceptNamespaceReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-			
-			line.addTag(DOMTagTypes.NAMESPACE, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-		
-		public void acceptUsingDirective(IASTUsingDirective arg0) {
-          System.out.println("Made it to acceptUsingDirective" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-//			line.addTag(DOMTagTypes.NAMESPACE, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-		}
-		
-		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {
-          System.out.println("Made it to acceptUsingDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-//			line.addTag(DOMTagTypes.CLASS_DECL, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-		}
-
-		public void enterClassSpecifier(IASTClassSpecifier arg0) {
-          System.out.println("Made it to enterClassSpecifier" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.CLASS_DECL, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-		}	
-
-		public void acceptField(IASTField arg0) {
-          System.out.println("Made it to acceptField" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-		}
-
-		public void acceptClassReference(IASTClassReference arg0) {
-          System.out.println("Made it to acceptClassReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-
-			line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-
-		public void acceptVariableReference(IASTVariableReference arg0) {
-          System.out.println("Made it to acceptVariableReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-
-			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-
-		public void acceptFieldReference(IASTFieldReference arg0) {
-          System.out.println("Made it to acceptFieldReference" +
-                             ".....arg0 = " + arg0.getName());
+    public void enterFunctionBody (IASTFunction arg0)
+    {
+    
+      // The return type of the function may not be on the same line as the name
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+      if (line == null || nameLine == null)
+        {
+          return;
         }
 
-		public void acceptParameterReference(IASTParameterReference arg0) {
-          System.out.println("Made it to acceptParameterReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
+      String lineText = line.getText();
+      String nameText = nameLine.getText();
 
-			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());			
-		}
-		
-		public void acceptAbstractTypeSpecDeclaration(IASTAbstractTypeSpecifierDeclaration arg0) {
-          System.out.println("Made it to acceptAbstractTypeSpecDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
+      String funcName = nameText.substring(arg0.getNameOffset()
+                                           - nameLine.getOffset(),
+                                           arg0.getNameOffset()
+                                               - nameLine.getOffset()
+                                               + arg0.getName().length());
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      nameLine.addTag(DOMTagTypes.FUNCTION, funcName, arg0.getNameOffset()
+                                                      - nameLine.getOffset());
 
-			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getStartingOffset() - line.getOffset());
-		}
+      int endingLine = arg0.getEndingLine();
+      if (endingLine == 0)
+        endingLine = arg0.getStartingLine();
 
-		/* METHODS */
-		
-		public void acceptMethodDeclaration(IASTMethod arg0) {
-          System.out.println("Made it to acceptMethodDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+      image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(),
+                        endingLine, arg0.getStartingOffset(),
+                        arg0.getEndingOffset());
 
-			Iterator iter = arg0.getParameters();
-			while(iter.hasNext()){
-				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				int nameOffset = param.getNameOffset();
-				if(nameOffset != -1){
-					line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
-					line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
-				}
-				else{
-					// Figure out how to do function declarations of type "foo(int)" here
-				}
-			}
-		}
+      // start building the full name of the function for jump-to purposes
+      String functionName = arg0.getName() + "(";
 
-		public void acceptMethodReference(IASTMethodReference arg0) {
-          System.out.println("Made it to enterMethodReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
+      Iterator iter = arg0.getParameters();
+      while (iter.hasNext())
+        {
+          IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 
-			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-		
-		public void enterMethodBody(IASTMethod arg0) {
-          System.out.println("Made it to enterMethodBody" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-			
-			String functionName = arg0.getName() + "(";
-			
-			Iterator iter = arg0.getParameters();
-			
-			while(iter.hasNext()){
-				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				
-				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
-				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
-				
-				functionName += lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()) + ", ";
-			}
-			
-			if(functionName.indexOf(",") != -1)
-				functionName = functionName.substring(0, functionName.length() - 2);
-			
-			functionName += ")";
-			
-			line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
-		}
-		
-		/* TEMPLATES */
-		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {
-          System.out.println("Made it to enterTemplateDeclaration" +
-                             ".....arg0 = " + arg0.getFilename().toString());
-			
-		}
-		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {
-          System.out.println("Made it to enterTemplateInstantiation" +
-                             ".....arg0 = " + arg0.getFilename().toString());
-			
-		}
-		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {
-          System.out.println("Made it to enterTemplateSpecialization" +
-                             ".....arg0 = " + arg0.getFilename().toString());
-			
-		}
-		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {
-          System.out.println("Made it to acceptTemplateParameterReference" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-			
-			line.addTag(DOMTagTypes.TEMPLATE, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-		
-		/* PREPROCESSOR STUFF */
-		public void enterInclusion(IASTInclusion arg0) {
-          System.out.println("Made it to enterInclusion" +
-                             ".....arg0 = " + arg0.getName());
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()-2), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.INCLUDE, lineText.substring(arg0.getNameOffset()-line.getOffset()-1, arg0.getNameEndOffset()-line.getOffset()+1), arg0.getNameOffset() - line.getOffset()-1);
-		}
-		public void acceptMacro(IASTMacro arg0) {
-          System.out.println("Made it to acceptMacro" +
-                             ".....arg0 = " + arg0.getName());
-            
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
-				return;
-			
-			String lineText = line.getText();
-            System.out.println("     lineText = " + lineText);
-			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.MACRO, lineText.substring(arg0.getNameOffset()-line.getOffset(), arg0.getNameEndOffset()-line.getOffset()), arg0.getNameOffset() - line.getOffset());
-		}
-		
-		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
-		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {
-		  System.out.println("Made it to acceptEnumeratorReference" +
-                             ".....arg0 = " + arg0.getName());
+          DOMLine typeLine = null, paramLine = null;
+          String typeText = "";
+
+          /*
+           * Just like we didn't assume that the return type and name were on
+           * the same line, we don't assume that the param types and names are
+           * on the same line or that all the parameters are on the same line.
+           * At the same time though we want to be reasonably efficient if they
+           * are.
+           */
+          if (param.getStartingLine() != nameLine.getLineNum())
+            {
+              typeLine = source.getLineSpanningOffset(param.getStartingOffset());
+              typeText = typeLine.getText();
+            }
+          else
+            {
+              typeLine = nameLine;
+              typeText = nameText;
+            }
+
+          /*
+           * Perform comparisons relative to the parameter type line, so that if
+           * the parameters are both on the same line we still get a little
+           * better performance.
+           */
+          if (param.getEndingLine() != typeLine.getLineNum())
+            {
+              paramLine = source.getLineSpanningOffset(param.getEndingOffset());
+            }
+          else
+            {
+              paramLine = typeLine;
+            }
+
+          String type = typeText.substring(param.getStartingOffset()
+                                           - typeLine.getOffset(),
+                                           param.getNameOffset()
+                                               - typeLine.getOffset());
+          String name = param.getName();
+
+          typeLine.addTag(DOMTagTypes.KEYWORD, type, param.getStartingOffset()
+                                                     - typeLine.getOffset());
+          paramLine.addTag(DOMTagTypes.LOCAL_VAR, name, param.getNameOffset()
+                                                        - paramLine.getOffset());
+
+          functionName += type + " " + name + ", ";
         }
-		public void acceptEnumerationReference(IASTEnumerationReference arg0) {
-          System.out.println("Made it to acceptEnumerationReference" +
-                             ".....arg0 = " + arg0.getName());
+
+      // Trim the trailing ',' off the function name if it's there
+      if (functionName.indexOf(",") != - 1)
+        functionName = functionName.substring(0, functionName.length() - 2);
+
+      functionName += ")";
+
+      line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
+    }
+
+    public void acceptFunctionReference (IASTFunctionReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
+                                                        - line.getOffset());
+    }
+
+    public void acceptTypedefDeclaration (IASTTypedefDeclaration arg0)
+    {
+    }
+
+    public void acceptTypedefReference (IASTTypedefReference arg0)
+    {
+    }
+
+    public void acceptEnumerationSpecifier (IASTEnumerationSpecifier arg0)
+    {
+    }
+
+    public void enterNamespaceDefinition (IASTNamespaceDefinition arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(DOMTagTypes.NAMESPACE,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameOffset() - line.getOffset()
+                                         + arg0.getName().length()),
+                  arg0.getNameOffset() - line.getOffset());
+    }
+
+    public void acceptNamespaceReference (IASTNamespaceReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.NAMESPACE, arg0.getName(), arg0.getOffset()
+                                                         - line.getOffset());
+    }
+
+    public void acceptUsingDirective (IASTUsingDirective arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      // line.addTag(DOMTagTypes.NAMESPACE,
+      // lineText.substring(arg0.getNameOffset() - line.getOffset(),
+      // arg0.getNameOffset() - line.getOffset() + arg0.getName().length()),
+      // arg0.getNameOffset() - line.getOffset());
+    }
+
+    public void acceptUsingDeclaration (IASTUsingDeclaration arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      // line.addTag(DOMTagTypes.CLASS_DECL,
+      // lineText.substring(arg0.getNameOffset() - line.getOffset(),
+      // arg0.getNameOffset() - line.getOffset() + arg0.getName().length()),
+      // arg0.getNameOffset() - line.getOffset());
+    }
+
+    public void enterClassSpecifier (IASTClassSpecifier arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(DOMTagTypes.CLASS_DECL,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameOffset() - line.getOffset()
+                                         + arg0.getName().length()),
+                  arg0.getNameOffset() - line.getOffset());
+    }
+
+    public void acceptField (IASTField arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(DOMTagTypes.LOCAL_VAR,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameOffset() - line.getOffset()
+                                         + arg0.getName().length()),
+                  arg0.getNameOffset() - line.getOffset());
+    }
+
+    public void acceptClassReference (IASTClassReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset()
+                                                          - line.getOffset());
+    }
+
+    public void acceptVariableReference (IASTVariableReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
+                                                         - line.getOffset());
+    }
+
+    public void acceptFieldReference (IASTFieldReference arg0)
+    {
+    }
+
+    public void acceptParameterReference (IASTParameterReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
+                                                         - line.getOffset());
+    }
+
+    public void acceptAbstractTypeSpecDeclaration (
+                                                   IASTAbstractTypeSpecifierDeclaration arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(),
+                  arg0.getStartingOffset() - line.getOffset());
+    }
+
+    /* METHODS */
+
+    public void acceptMethodDeclaration (IASTMethod arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(DOMTagTypes.FUNCTION,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameOffset() - line.getOffset()
+                                         + arg0.getName().length()),
+                  arg0.getNameOffset() - line.getOffset());
+
+      Iterator iter = arg0.getParameters();
+      while (iter.hasNext())
+        {
+          IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
+          int nameOffset = param.getNameOffset();
+          if (nameOffset != - 1)
+            {
+              line.addTag(DOMTagTypes.KEYWORD,
+                          lineText.substring(param.getStartingOffset()
+                                             - line.getOffset(),
+                                             param.getNameOffset()
+                                                 - line.getOffset()),
+                          param.getStartingOffset() - line.getOffset());
+              line.addTag(DOMTagTypes.LOCAL_VAR,
+                          lineText.substring(param.getNameOffset()
+                                             - line.getOffset(),
+                                             param.getNameOffset()
+                                                 - line.getOffset()
+                                                 + param.getName().length()),
+                          param.getNameOffset() - line.getOffset());
+            }
+          else
+            {
+              // Figure out how to do function declarations of type "foo(int)"
+              // here
+            }
         }
-		public void acceptFriendDeclaration(IASTDeclaration arg0) {
-          System.out.println("Made it to acceptFriendDeclaration" +
-                             ".....arg0 = " + arg0.toString());
+    }
+
+    public void acceptMethodReference (IASTMethodReference arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
+                                                        - line.getOffset());
+    }
+
+    public void enterMethodBody (IASTMethod arg0)
+    {
+      
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(arg0.getStartingOffset()
+                                     - line.getOffset(), arg0.getNameOffset()
+                                                         - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(DOMTagTypes.FUNCTION,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameOffset() - line.getOffset()
+                                         + arg0.getName().length()),
+                  arg0.getNameOffset() - line.getOffset());
+
+      String functionName = arg0.getName() + "(";
+
+      Iterator iter = arg0.getParameters();
+
+      while (iter.hasNext())
+        {
+          IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
+
+          line.addTag(DOMTagTypes.KEYWORD,
+                      lineText.substring(param.getStartingOffset()
+                                         - line.getOffset(),
+                                         param.getNameOffset()
+                                             - line.getOffset()),
+                      param.getStartingOffset() - line.getOffset());
+          line.addTag(DOMTagTypes.LOCAL_VAR,
+                      lineText.substring(param.getNameOffset()
+                                         - line.getOffset(),
+                                         param.getNameOffset()
+                                             - line.getOffset()
+                                             + param.getName().length()),
+                      param.getNameOffset() - line.getOffset());
+
+          functionName += lineText.substring(param.getStartingOffset()
+                                             - line.getOffset(),
+                                             param.getNameOffset()
+                                                 - line.getOffset()
+                                                 + param.getName().length())
+                          + ", ";
         }
-		public void acceptASMDefinition(IASTASMDefinition arg0) {
-          System.out.println("Made it to acceptASMDefinition" +
-                             ".....arg0 = " + arg0.getFilename().toString());
-        }
-		
-		/* Probably not useful */
-		public void enterCodeBlock(IASTCodeScope arg0) {
-          System.out.println("Made it to enterCodeScope" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {
-          System.out.println("Made it to acceptElaboratedForwardDeclaration" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitFunctionBody(IASTFunction arg0) {
-          System.out.println("Made it to exitFunctionBody" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitCodeBlock(IASTCodeScope arg0) {
-          System.out.println("Made it to exitCodeBlock" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void enterCompilationUnit(IASTCompilationUnit arg0) {
-          System.out.println("Made it to enterCompilationUnit" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {
-          System.out.println("Made it to enterLinkageSpecification" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void exitMethodBody(IASTMethod arg0) {
-          System.out.println("Made it to exitMethodBody" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {
-          System.out.println("Made it to exitTemplateDeclaration" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {
-          System.out.println("Made it to exitTemplateSpecialization" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {
-          System.out.println("Made it to exitTemplateExplicitInstantiation" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void exitLinkageSpecification(IASTLinkageSpecification arg0) {
-          System.out.println("Made it to exitLinkageSpecification" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public void exitClassSpecifier(IASTClassSpecifier arg0) {
-          System.out.println("Made it to exitClassSpecifier" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitNamespaceDefinition(IASTNamespaceDefinition arg0) {
-          System.out.println("Made it to exitNamespaceDefinition" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitInclusion(IASTInclusion arg0) {
-          System.out.println("Made it to exitInclusion" +
-                             ".....arg0 = " + arg0.getName());
-        }
-		public void exitCompilationUnit(IASTCompilationUnit arg0) {
-          System.out.println("Made it to exitCompliationUnit" +
-                             ".....arg0 = " + arg0.toString());
-        }
-		public CodeReader createReader(String arg0, Iterator arg1) {
-          System.out.println("Made it to createReader" +
-                             ".....arg0 = " + arg0.toString());
-			return null;
-		}
-		public boolean acceptProblem(IProblem arg0) {
-          System.out.println("Made it to acceptProblem" +
-                             ".....error = " + arg0.getMessage() +
-                             ".....line # = " + arg0.getSourceLineNumber() +
-                             ".....ID# = " + arg0.getSourceStart());
-			return false;
-		}
-	}
+
+      if (functionName.indexOf(",") != - 1)
+        functionName = functionName.substring(0, functionName.length() - 2);
+
+      functionName += ")";
+
+      line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
+    }
+
+    /* TEMPLATES */
+    public void enterTemplateDeclaration (IASTTemplateDeclaration arg0)
+    {
+    }
+
+    public void enterTemplateInstantiation (IASTTemplateInstantiation arg0)
+    {
+    }
+
+    public void enterTemplateSpecialization (IASTTemplateSpecialization arg0)
+    {
+    }
+
+    public void acceptTemplateParameterReference (
+                                                  IASTTemplateParameterReference arg0)
+    {
+   
+      DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+      if (line == null)
+        return;
+
+      line.addTag(DOMTagTypes.TEMPLATE, arg0.getName(), arg0.getOffset()
+                                                        - line.getOffset());
+    }
+
+    /* PREPROCESSOR STUFF */
+    public void enterInclusion (IASTInclusion arg0)
+    {
+
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(DOMTagTypes.KEYWORD,
+                  lineText.substring(0, arg0.getNameOffset() - line.getOffset()
+                                        - 2), arg0.getStartingOffset()
+                                              - line.getOffset());
+      line.addTag(DOMTagTypes.INCLUDE,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset()
+                                     - 1, arg0.getNameEndOffset()
+                                          - line.getOffset() + 1),
+                  arg0.getNameOffset() - line.getOffset() - 1);
+    }
+
+    public void acceptMacro (IASTMacro arg0)
+    {
+
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      if (line == null)
+        return;
+
+      String lineText = line.getText();
+
+      line.addTag(
+                  DOMTagTypes.KEYWORD,
+                  lineText.substring(0, arg0.getNameOffset() - line.getOffset()),
+                  arg0.getStartingOffset() - line.getOffset());
+      line.addTag(
+                  DOMTagTypes.MACRO,
+                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
+                                     arg0.getNameEndOffset() - line.getOffset()),
+                  arg0.getNameOffset() - line.getOffset());
+    }
+
+    /* UNIMPLEMENTED INTERFACE FUNCTIIONS */
+    public void acceptEnumeratorReference (IASTEnumeratorReference arg0)
+    {
+    }
+
+    public void acceptEnumerationReference (IASTEnumerationReference arg0)
+    {
+    }
+
+    public void acceptFriendDeclaration (IASTDeclaration arg0)
+    {
+    }
+
+    public void acceptASMDefinition (IASTASMDefinition arg0)
+    {
+    }
+
+    /* Probably not useful */
+    public void enterCodeBlock (IASTCodeScope arg0)
+    {
+    }
+
+    public void acceptElaboratedForewardDeclaration (
+                                                     IASTElaboratedTypeSpecifier arg0)
+    {
+    }
+
+    public void exitFunctionBody (IASTFunction arg0)
+    {
+    }
+
+    public void exitCodeBlock (IASTCodeScope arg0)
+    {
+    }
+
+    public void enterCompilationUnit (IASTCompilationUnit arg0)
+    {
+    }
+
+    public void enterLinkageSpecification (IASTLinkageSpecification arg0)
+    {
+    }
+
+    public void exitMethodBody (IASTMethod arg0)
+    {
+    }
+
+    public void exitTemplateDeclaration (IASTTemplateDeclaration arg0)
+    {
+    }
+
+    public void exitTemplateSpecialization (IASTTemplateSpecialization arg0)
+    {
+    }
+
+    public void exitTemplateExplicitInstantiation (
+                                                   IASTTemplateInstantiation arg0)
+    {
+    }
+
+    public void exitLinkageSpecification (IASTLinkageSpecification arg0)
+    {
+    }
+
+    public void exitClassSpecifier (IASTClassSpecifier arg0)
+    {
+    }
+
+    public void exitNamespaceDefinition (IASTNamespaceDefinition arg0)
+    {
+    }
+
+    public void exitInclusion (IASTInclusion arg0)
+    {
+    }
+
+    public void exitCompilationUnit (IASTCompilationUnit arg0)
+    {
+    }
+
+    public CodeReader createReader (String arg0, Iterator arg1)
+    {
+      return null;
+    }
+
+    public boolean acceptProblem (IProblem arg0)
+    {
+      return false;
+    }
+  }
 }
