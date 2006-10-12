@@ -917,6 +917,52 @@ abstract public class Task
     return blockers.size();
   }
 
+  /**
+   * Set of Instruction observers.
+   */
+  TaskObservable instructionObservers = new TaskObservable(this);
+  
+  /**
+   * Request the addition of a Instruction observer that will be
+   * notified as soon as the task executes an instruction.
+   * <code>o.updateExecuted</code> is called as soon as the Task
+   * starts running again (is not blocked or stopped) and executes the
+   * next instruction.
+   */
+  public void requestAddInstructionObserver(TaskObserver.Instruction o)
+  {
+    logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
+    proc.requestAddInstructionObserver(this, instructionObservers, o);
+  }
+
+  /**
+   * Delete TaskObserver.Instruction from the TaskObserver pool.
+   */
+  public void requestDeleteInstructionObserver (TaskObserver.Instruction o)
+  {
+    logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
+    proc.requestDeleteInstructionObserver(this, instructionObservers, o);
+  }
+  
+  /**
+   * Notify all Instruction observers. Returns the total number of
+   * blocking observers.
+   */
+  int notifyInstruction()
+  {
+    logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
+    
+    Iterator i = instructionObservers.iterator();
+    while (i.hasNext())
+      {
+	TaskObserver.Instruction observer;
+	observer = (TaskObserver.Instruction) i.next();
+	if (observer.updateExecuted(this) == Action.BLOCK)
+	  blockers.add(observer);
+      }
+    return blockers.size();
+  }
+
   // List containing the TaskObservations that are pending addition
   // or deletion (in order that they were requested). Will be dealt with
   // as soon as a stop event is received during one of the running states.

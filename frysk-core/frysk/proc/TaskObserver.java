@@ -177,7 +177,9 @@ public interface TaskObserver
 
     /**
      * Interface used to notify that a Task has executed a single
-     * instruction.
+     * instruction. <code>updateExecuted</code> is called as soon after
+     * the Instruction observer is added to the Task and the Task starts
+     * running again (isn't blocked or suspended).
      */
     public interface Instruction
 	extends TaskObserver

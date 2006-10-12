@@ -1,3 +1,19 @@
+2006-10-12  Mark Wielaard  <mark@klomp.org>
+
+	* Proc.java (InstructionAction): New static inner class.
+	(requestAddInstructionObserver): New method.
+	(requestDeleteInstructionObserver): New method.
+	* Task.java (instructionObservers): New field.
+	(requestAddInstructionObserver): New method.
+	(requestDeleteInstructionObserver): New method.
+	(notifyInstruction): New method.
+	* TaskObserver.java (Instruction): Update documentation.
+	* TaskState.java: Check whether instruction observers are installed
+	and do a sendStepInstruction() instead of a sendContinue() or
+	sendSyscallContinue().
+	(Running.handleTrappedEvent): Also check for instruction observer
+	steps.
+
 2006-10-12  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcStopped.java (MyTester): Changed to exit after all threads are seen.

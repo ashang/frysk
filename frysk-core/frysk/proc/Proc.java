@@ -598,6 +598,80 @@ public abstract class Proc
       Manager.eventLoop.add(to);
     }
 
+
+    /**
+     * Class describing the action to take on the suspended Task
+     * before adding or deleting an Instruction observer. No
+     * particular actions are needed, but we must make sure the Task
+     * is suspended.
+     */
+    final static class InstructionAction implements Runnable
+    {
+      public void run()
+      {
+	// There is nothing in particular we need to do.  We just want
+	// to make sure the Task is stopped so we can send it a step
+	// instruction or, when deleted, start resuming the process
+	// normally.
+      }
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Instruction
+     * Observation, attaching and/or suspending the process if
+     * necessary.  As soon as the observation is added and the task
+     * isn't blocked it will inform the Instruction observer of every
+     * step of the task.
+     */
+    void requestAddInstructionObserver (final Task task,
+					TaskObservable observable,
+					TaskObserver.Instruction observer)
+    {
+      logger.log (Level.FINE, "{0} requestAddInstructionObserver\n", this); 
+      TaskObservation to;
+      InstructionAction ia = new InstructionAction();
+      to = new TaskObservation(task, observable, observer, ia, true)
+	{
+	  public void execute ()
+	  {
+	    handleAddObservation (this);
+	  }
+	  
+	  public boolean needsSuspendedAction()
+	  {
+	    return task.instructionObservers.numberOfObservers() == 0;
+	  }
+	};
+      Manager.eventLoop.add(to);
+    }
+    
+    /**
+     * (Internal) Tell the process to delete the specified Instruction
+     * Observation, detaching and/or suspending from the process if
+     * necessary.
+     */
+    void requestDeleteInstructionObserver (final Task task,
+					   TaskObservable observable,
+					   TaskObserver.Instruction observer)
+    {
+      logger.log (Level.FINE, "{0} requestDeleteInstructionObserver\n", this); 
+      TaskObservation to;
+      InstructionAction ia = new InstructionAction();
+      to = new TaskObservation(task, observable, observer, ia, false)
+	{
+	  public void execute ()
+	  {
+	    handleAddObservation (this);
+	  }
+	  
+	  public boolean needsSuspendedAction()
+	  {
+	    return task.instructionObservers.numberOfObservers() == 1;
+	  }
+	};
+      Manager.eventLoop.add(to);
+    }
+
     /**
      * Table of this processes child processes.
      */
