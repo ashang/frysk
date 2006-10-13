@@ -1,3 +1,7 @@
+2006-10-13  Nurdin Premji  <npremji@redhat.com>
+
+	* TestProcForceDetach.java: Added. Tests proc.requestRemoveAllObservations
+
 2006-10-13  Mike Cvet <mcvet@redhat.com>
 	
 	* Host.java (getName): Catch a NullPointerException.
