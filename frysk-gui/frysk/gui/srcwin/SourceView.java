@@ -346,7 +346,7 @@ public class SourceView
 
   public void scrollToFunction (String markName)
   {
-    markName = markName.split("\n")[0];
+    markName = markName.split("{")[0];
     String[] nameArray = markName.split("\\s+");
     StringBuffer buffer = new StringBuffer();
     

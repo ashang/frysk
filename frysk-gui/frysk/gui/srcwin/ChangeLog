@@ -1,7 +1,9 @@
 2006-10-13  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (updateShownStackFrame): Check for a null
-	DOMFunction and DOMSource in selected StackFrame.
+	DOMFunction and DOMSource in selected StackFrame. Made more
+	robust for function definitions.
+	* SourceView.java (scrollToFunction): Checks for open brace.
 
 2006-10-12  Rick Moseley  <rmoseley@redhat.com>
 
