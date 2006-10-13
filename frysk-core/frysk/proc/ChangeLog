@@ -1,3 +1,7 @@
+2006-10-13  Mike Cvet <mcvet@redhat.com>
+	
+	* Host.java (getName): Catch a NullPointerException.
+
 2006-10-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Coding nit, remove false== and null==.

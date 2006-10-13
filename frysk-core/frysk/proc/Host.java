@@ -300,12 +300,19 @@ public abstract class Host
     /**
      * Returns the name of the host 
      */
-    public String getName()
-    {
-	try {
-	    return java.net.InetAddress.getLocalHost().getHostName();
-	} catch (UnknownHostException e) {
-	    return "Unknown Host";
-	}
-    }
+    public String getName ()
+  {
+    try
+      {
+        return java.net.InetAddress.getLocalHost().getHostName();
+      }
+    catch (UnknownHostException e)
+      {
+        return "Unknown Host";
+      }
+    catch (NullPointerException npe)
+      {
+        return "Problem reading network address";
+      }
+  }
 }
