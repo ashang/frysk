@@ -229,13 +229,12 @@ public class Runner
     public int runArchCases (Collection testClasses)
     {
 	// Check whether we should continue.
-	if ((null != this.archTarget) &&
-	    (false == this.archTarget.equals(Runner.ARCH64)))
+	if (this.archTarget != null && !this.archTarget.equals(Runner.ARCH64))
 	    return SUCCESS_EXIT;
      
 	boolean testArch64 = false;
       
-	if (null == this.archBuild)
+	if (this.archBuild == null)
 	    this.archBuild = Build.BUILD_ARCH;
 
 	// Check whether --arch=64 is given on 32-bit machine.
@@ -246,8 +245,7 @@ public class Runner
 		testArch64 = true;
 	    }
 
-	if ((null != this.archTarget) && 
-	    (false == testArch64))
+	if (this.archTarget != null && !testArch64)
 	    {
 		System.out.println ("It's unsupported "+
 				    "to do arch test in " + archBuild +". ");
@@ -273,12 +271,12 @@ public class Runner
     {
 	//XXX: if all 32-bit cases pass, we should comment 
 	//the following instruction.
-	if (null == this.archTarget)
+	if (this.archTarget == null)
 	    return SUCCESS_EXIT;
       
 	boolean testArch32 = false;
 
-	if (null == this.archBuild)
+	if (this.archBuild == null)
 	    this.archBuild = Build.BUILD_ARCH;
 
 	if (archBuild.equalsIgnoreCase("x86_64") || 
@@ -288,19 +286,19 @@ public class Runner
 		testArch32 = true;
 	    }
 	  
-	if (false == testArch32)
+	if (!testArch32)
 	    {
 		System.out.println("It's unnecessary or unsupported "+ 
 				   "to do arch test in " + archBuild +". Exit...");
 		System.exit (SUCCESS_EXIT);
 	    }
-	else if (false == this.archTarget.equals(Runner.ARCH32))
+	else if (!this.archTarget.equals(Runner.ARCH32))
 	    return SUCCESS_EXIT;
       
 	/**
 	 * Output some prompt message when we run both 64-bit and 32-bit cases.
 	 */
-	if (null == this.archTarget)
+	if (this.archTarget == null)
 	    {
 		System.out.println("+====================================================+");
 		System.out.println("|                                                    |");

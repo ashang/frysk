@@ -89,7 +89,7 @@ public class FStack
     Manager.eventLoop.runPending();
     proc = Manager.host.getProc(new ProcId(pid));
 
-    if (null == proc)
+    if (proc == null)
       {
         System.out.println("Couldn't get the proc");
         System.exit(1);
@@ -116,7 +116,7 @@ public class FStack
 
   public final void storeTask (Task task)
   {
-    if (null != task)
+    if (task != null)
       {
         try
           {
@@ -137,7 +137,7 @@ public class FStack
                 count++;
               }
 
-            if (null == sortedTasks)
+            if (sortedTasks == null)
               sortedTasks = new TreeMap();
 
             sortedTasks.put(new Integer(task.getTid()), list);

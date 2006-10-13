@@ -188,7 +188,7 @@ class readelf
         }
     });     
          
-	if (null == arg)
+	if (arg == null)
 		arg = "";
 	boolean debugDumpLine = arg.equals ("line");
 	boolean debugDumpInfo = arg.equals ("info");

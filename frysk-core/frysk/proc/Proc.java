@@ -828,7 +828,7 @@ public abstract class Proc
 
     public String toString ()
     {
-      if (null != newState) {
+      if (newState != null) {
 	return ("{" + super.toString ()
 		+ ",pid=" + getPid ()
 		+ ",state=" + getState ()       

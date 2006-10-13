@@ -44,7 +44,7 @@ public class VtePtyTest {
 			is[i] = Character.toUpperCase (cc);
 		    }
 		    
-		    if ((null != lfw) && (0 < ic)) {
+		    if ((lfw != null) && (0 < ic)) {
 			lfw.write (is, 0, ic);
 			lfw.flush();
 		    }

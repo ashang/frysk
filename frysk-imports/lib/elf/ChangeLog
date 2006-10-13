@@ -1,3 +1,7 @@
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Elf.java: Coding nit, remove false== and null==.
+
 2006-10-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPHeader.java: Checked in a patch by Yong Zheng  

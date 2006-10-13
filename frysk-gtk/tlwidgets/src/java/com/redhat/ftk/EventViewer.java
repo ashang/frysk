@@ -150,10 +150,10 @@ public class EventViewer extends VBox
     */
     public HScale getInterval() {
 	    Handle hndl = ftk_eventviewer_get_interval_slider(getHandle());
-	    if (null == hndl)
+	    if (hndl == null)
 		    return null;
 	    GObject obj = getGObjectFromHandle(hndl);
-	    if (null != obj)
+	    if (obj != null)
 		    return (HScale) obj;
 	    return new HScale(hndl);
     }

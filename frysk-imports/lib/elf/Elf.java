@@ -119,7 +119,7 @@ public class Elf
       {
 	// Try to find the real name of problem executable.
 	String badFileName = e.getFileName();
-	if (null == badFileName) 
+	if (badFileName == null) 
 	  {
 	    throw e;
 	  }

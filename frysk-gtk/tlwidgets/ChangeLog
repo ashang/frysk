@@ -1,3 +1,10 @@
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* test/wrapper/VtePtyTest.java: 
+
+	* src/java/com/redhat/ftk/EventViewer.java: 
+	
+
 2006-09-18  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Added api to change alpha values externally.
 	* src/widgets/ftkeventviewer.h: Ditto.

@@ -161,7 +161,7 @@ public class fstack
       }
     });
 
-    if (null != levelValue)
+    if (levelValue != null)
       {
         logger.setLevel(level);
       }
