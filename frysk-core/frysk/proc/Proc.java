@@ -235,6 +235,40 @@ public abstract class Proc
     }
 
     /**
+     * Request that the Proc remove all of its observations.
+     * Should cause a detach.
+     */
+    public synchronized void requestRemoveAllObservations()
+    {
+      Iterator iter = observationsIterator();
+      while (iter.hasNext())
+        {
+          Observation observation = (Observation) iter.next();         
+          Manager.eventLoop.add (new Observation (observation.observable, 
+                                                      observation.observer)
+                                {
+                                public void execute ()
+                                {
+                                    newState = oldState ().handleDeleteObservation
+                                    (Proc.this, this);
+                                }
+
+                                public void handleAdd ()
+                                {
+                                  // TODO Auto-generated method stub
+                                  
+                                }
+
+                                public void handleDelete ()
+                                {
+                                  // TODO Auto-generated method stub
+                                  
+                                }
+                                });
+        }
+    }
+    
+    /**
      * Request that the Proc's task list be refreshed using system
      * tables.
      */
@@ -327,12 +361,12 @@ public abstract class Proc
      */
     private Set observations = new HashSet ();
     
-    public boolean addObservation(Object o)
+    public synchronized boolean addObservation(Object o)
     {
       return observations.add(o);
     }
 
-    public boolean removeObservation (Object o)
+    public synchronized boolean removeObservation (Object o)
     {
       return observations.remove(o);
     }

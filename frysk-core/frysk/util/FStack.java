@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.util;
 
 import inua.util.PrintWriter;
@@ -78,7 +79,7 @@ public class FStack
   {
     this.writer = writer;
   }
-  
+
   public void run (int pid)
   {
     Manager.host.requestRefreshXXX(true);
@@ -100,18 +101,9 @@ public class FStack
     Manager.eventLoop.start();
   }
 
-  private final void requestDeletes (Proc proc)
-  {
-    Iterator iter = proc.getTasks().iterator();
-    while (iter.hasNext())
-      {
-        ((Task) iter.next()).requestDeleteAttachedObserver(procAttachedObserver);
-      }
-  }
-
   private final void removeObservers (Proc proc)
   {
-    requestDeletes(proc);
+    proc.requestRemoveAllObservations();
     proc.observableDetached.addObserver(new Observer()
     {
 
@@ -231,7 +223,13 @@ public class FStack
     }
 
     public void deletedFrom (Object observable)
-    {      
+    {
+       Iterator iter = proc.observationsIterator();
+       while (iter.hasNext())
+       {
+       System.out.println(iter.next());
+       }
+       System.out.println();
     }
 
   }

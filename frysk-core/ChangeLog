@@ -1,3 +1,8 @@
+2006-10-13  Nurdin Premji  <npremji@redhat.com>
+
+	* frysk/util/FStack.java (removeObservers): Changed to use 
+	proc.removeAllObservations.
+
 2006-10-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	FCore.java: Added a patch by Yong Zheng  <zhengyo@cn.ibm.com> 
