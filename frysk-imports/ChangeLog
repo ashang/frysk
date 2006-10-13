@@ -1,3 +1,7 @@
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh (FILE_LIST): Do not use +=.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* lib/elf/tests/test-core.bz2.uu: Move ...
