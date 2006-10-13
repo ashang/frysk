@@ -1163,8 +1163,9 @@ public class SourceWindow
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     this.view.load(selected);
     
-    this.view.scrollToFunction(selected.getDOMFunction().getSource().getLine(
-                               selected.getDOMFunction().getStartingLine() - 1).getText());
+    if (selected.getDOMFunction() != null && selected.getData() != null)
+      this.view.scrollToFunction(selected.getDOMFunction().getSource().getLine(
+                                    selected.getDOMFunction().getStartingLine() - 1).getText());
     
     this.view.showAll();
   }
