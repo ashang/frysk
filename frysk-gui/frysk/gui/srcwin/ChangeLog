@@ -2,6 +2,8 @@
 
 	* VariableWatchView.java: Fixed stacktrace when last item in 
 	window is deleted.
+	* SourceView.java: Only show "Add to Variable Watches/
+	Remove from Variable Watches" when necessary.
 
 2006-10-12  Mike Cvet  <mcvet@redhat.com>
 

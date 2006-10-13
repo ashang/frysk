@@ -819,33 +819,48 @@ public class SourceView
                                      + var.toString(), true);
             valueItem.setSensitive(false);
             m.append(valueItem);
-            MenuItem traceItem = new MenuItem("Add to Variable Watches", false);
-            m.append(traceItem);
-            MenuItem removeItem = new MenuItem("Remove from Variable Watches", false);
-            m.append(removeItem);
-            
-            traceItem.setSensitive(true);
-            traceItem.addListener(new MenuItemListener()
-            {
-              public void menuItemEvent (MenuItemEvent arg0)
+            /*
+             * Only show this item in the menu if the variable is not already there
+             */
+            if (! varMap.containsKey(var.toString()))
               {
-                if (varMap.containsKey(var.toString()))
-                  return;
-                else
-                  varMap.put(var.toString(), var);
-                
-                SourceView.this.parent.addVariableTrace(var);
+                MenuItem traceItem = new MenuItem("Add to Variable Watches",
+                                                  false);
+                m.append(traceItem);
+                traceItem.setSensitive(true);
+                traceItem.addListener(new MenuItemListener()
+                {
+                  public void menuItemEvent (MenuItemEvent arg0)
+                  {
+                    if (varMap.containsKey(var.toString()))
+                      return;
+                    else
+                      varMap.put(var.toString(), var);
+
+                    SourceView.this.parent.addVariableTrace(var);
+                  }
+                });
               }
-            });
-            
-            removeItem.setSensitive(true);
-            removeItem.addListener(new MenuItemListener()
-            {
-              public void menuItemEvent (MenuItemEvent arg0)
+            /*
+             * Only show this item if the variable is indeed in the list
+             */
+            if (varMap.containsKey(var.toString()))
               {
-                removeVar(var);
+
+                MenuItem removeItem = new MenuItem(
+                                                   "Remove from Variable Watches",
+                                                   false);
+                m.append(removeItem);
+
+                removeItem.setSensitive(true);
+                removeItem.addListener(new MenuItemListener()
+                {
+                  public void menuItemEvent (MenuItemEvent arg0)
+                  {
+                    removeVar(var);
+                  }
+                });
               }
-            });
             
             m.showAll();
             m.popup();
