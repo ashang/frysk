@@ -812,7 +812,7 @@ public class SourceView
          * window is another item.
          */
 
-        if (!(var == null))
+        if (var != null)
           {
             MenuItem valueItem;
             valueItem = new MenuItem("Value of " + var.getText() + ": "
@@ -820,7 +820,8 @@ public class SourceView
             valueItem.setSensitive(false);
             m.append(valueItem);
             /*
-             * Only show this item in the menu if the variable is not already there
+             * Only show this item in the menu if the variable is not already
+             * there
              */
             if (! varMap.containsKey(var.toString()))
               {
@@ -861,7 +862,15 @@ public class SourceView
                   }
                 });
               }
-            
+
+            m.showAll();
+            m.popup();
+          }
+        else
+          {
+            MenuItem scopeItem = new MenuItem("Variable out of scope", false);
+            m.append(scopeItem);
+            scopeItem.setSensitive(false);
             m.showAll();
             m.popup();
           }
@@ -911,7 +920,7 @@ public class SourceView
 
     this.hoveredVar = var;
 
-    if (refresh)
+    if (refresh) 
       this.draw();
 
     return false;
