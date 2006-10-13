@@ -49,6 +49,20 @@ class IsaPPC
     {
       super (0, wordOffset * 4, 4, name);
     }
+    PPCRegister (String name, int offset, int wordSize)
+    {
+      super (0, offset, wordSize, name);
+    }
+  }
+  static class PPCFPRegister
+    extends PPCRegister
+  {
+    // Since on ppc, the word size is still 32-bit, even if FP is 
+    // 64-bit in width.
+    PPCFPRegister (String name, int wordOffset)
+    {
+      super (name, wordOffset * 4, 8);
+    }
   }
   
   private static PPCRegister[] gprs ()
@@ -59,6 +73,18 @@ class IsaPPC
 	gprs[i] = new PPCRegister ("gpr" + i, i);
       }
     return gprs;
+  }
+
+  private static PPCRegister[] fprs ()
+  {
+    PPCRegister[] fprs = new PPCFPRegister[32];
+    for (int i = 0; i < fprs.length; i++) 
+      {
+	// Please reference /usr/include/asm/ptrace.h, in which PT_FPR8
+	// is 48, and every FP occupies 2 slots.
+	fprs[i] = new PPCFPRegister ("fpr" + i, 48 + 2 * i);
+      }
+    return fprs;
   }
 
   private static final PPCRegister[] gpr = gprs();
@@ -75,6 +101,8 @@ class IsaPPC
   private static final PPCRegister dar = new PPCRegister("dar", 41);
   private static final PPCRegister dsisr = new PPCRegister("dsisr", 42);
   private static final PPCRegister result = new PPCRegister("result", 43);
+
+  private static final PPCRegister[] fpr = fprs();
 
   IsaPPC ()
   {
@@ -95,6 +123,12 @@ class IsaPPC
     registerMap.put(dar.getName(), dar);
     registerMap.put(dsisr.getName(), dsisr);
     registerMap.put(result.getName(), result);
+
+    for (int i = 0; i < fpr.length; i++)
+      {
+	// FP Register Map needed here?
+	registerMap.put (fpr[i].getName(), fpr[i]);
+      }
   }
     
   public int getWordSize ()

@@ -72,6 +72,18 @@ class IsaPPC64
     return gprs;
   }
 
+  private static PPC64Register[] fprs ()
+  {
+    PPC64Register[] fprs = new PPC64Register[32];
+    for (int i = 0; i < fprs.length; i++)
+      {
+	// Please reference /usr/include/asm/ptrace.h, in which PT_FPR8
+	// is 48, and every FP occupies 1 slot.
+	fprs[i] = new PPC64Register ("fpr" + i, 48 + i);
+      }
+    return fprs;
+  }
+
   private static final PPC64Register[] gpr = gprs();
  
   private static final PPC64Register nip = new PPC64Register("nip", 32);
@@ -81,11 +93,13 @@ class IsaPPC64
   private static final PPC64Register lnk = new PPC64Register("lnk", 36);
   private static final PPC64Register xer = new PPC6432BitRegister("xer", 37);
   private static final PPC64Register ccr = new PPC6432BitRegister("ccr", 38);
-  private static final PPC64Register mq = new PPC64Register("mq", 39);
+  private static final PPC64Register softe = new PPC64Register("softe", 39);
   private static final PPC64Register trap = new PPC64Register("trap", 40);
   private static final PPC64Register dar = new PPC64Register("dar", 41);
   private static final PPC64Register dsisr = new PPC64Register("dsisr", 42);
   private static final PPC64Register result = new PPC64Register("result", 43);
+
+  private static final PPC64Register[] fpr = fprs();
 
   IsaPPC64()
   {
@@ -101,11 +115,17 @@ class IsaPPC64
     registerMap.put(lnk.getName(), lnk);
     registerMap.put(xer.getName(), xer);
     registerMap.put(ccr.getName(), ccr);
-    registerMap.put(mq.getName(), mq);
+    registerMap.put(softe.getName(), softe);
     registerMap.put(trap.getName(), trap);
     registerMap.put(dar.getName(), dar);
     registerMap.put(dsisr.getName(), dsisr);
     registerMap.put(result.getName(), result);
+
+    for (int i = 0; i < fpr.length; i++) 
+      {
+	// FP Register Map needed here?
+	registerMap.put (fpr[i].getName(), fpr[i]);
+      }
   }
   
   public int getWordSize ()

@@ -1,3 +1,7 @@
+2006-10-13  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* funit-ppc64-regs.S: Set FPRs for the check in TestRegs. 
+
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Emacs indent.

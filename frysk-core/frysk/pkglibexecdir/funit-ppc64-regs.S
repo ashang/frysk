@@ -39,6 +39,11 @@
 
 # Asm code both for 32-bit and 64-bit.  Make sure this test case could
 # be built in both 32-bit and 64-bit on ppc64.
+.section        .rodata
+        .align 2
+.LCFloat:
+        .long   1072693248
+        .long   0
 
 .text                       # section declaration - begin code
 
@@ -61,15 +66,22 @@ main:
 #endif
 
 #if defined(__powerpc64__) || defined(__powerpc__)
-	li      0,1         # syscall number (sys_exit)
-	li      3,1         # first argument: exit code
-	li      4,4         # gpr4=4
-
 	# shift left 36-bits for the value: 0x1
 	# test whether the low 32-bits and high 32-bits can be accessed 
 	# right	in 64-bit mode.
 	li      5,1         # gpr5=1
 	sldi    5,5,36
+
+	fsub    0,2,2 	    # fpr0 = 0 
+        lis 9,.LCFloat@ha
+        lfd 1,.LCFloat@l(9) # fpr1 = 1
+
+        fadd    2,1,1       # fpr2 = 2
+
+
+	li      0,1         # syscall number (sys_exit)
+	li      3,1         # first argument: exit code
+	li      4,4         # gpr4=4
 	sc                  # call kernel
 #endif
 

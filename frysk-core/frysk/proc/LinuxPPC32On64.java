@@ -177,7 +177,8 @@ class LinuxPPC32On64
       new IndirectRegister("lnk"),
       new IndirectRegister("xer"),
       new IndirectRegister("ccr"),
-      new IndirectRegister("mq"),
+      // No such register on ppc64.
+      // new IndirectRegister("mq"),
       new IndirectRegister("trap"),
       new IndirectRegister("dar"),
       new IndirectRegister("dsisr"),
@@ -185,6 +186,13 @@ class LinuxPPC32On64
     
     for (int i = 0; i < regDefs.length; i++)
       registerMap.put(regDefs[i].getName(), regDefs[i]);
+
+    IndirectRegister[] fprs = new IndirectRegister[32];
+    for (int i = 0; i < fprs.length; i++) 
+      {
+	fprs[i] = new IndirectRegister ("fpr" + i);
+	registerMap.put(fprs[i].getName(), fprs[i]);
+      }
   }
 
   public Iterator RegisterIterator()

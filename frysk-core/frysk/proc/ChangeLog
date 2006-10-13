@@ -1,3 +1,12 @@
+2006-10-13  Yao Qi  <qiyaoltc@cn.ibm.com>
+	
+	* IsaPPC.java: New class PPCFPRegister. 
+
+	* IsaPPC64.java: Setup Register object for FPRs.
+	* LinuxPPC32On64.java: Likewise.
+	
+	* TestRegs.java: Check FPR value.
+
 2006-10-12  Mark Wielaard  <mark@klomp.org>
 
 	* Proc.java (InstructionAction): New static inner class.

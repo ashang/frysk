@@ -299,6 +299,9 @@ public class TestRegs
     long gpr3;
     long gpr4;
     long gpr5;
+    double fpr0;
+    double fpr1;
+    double fpr2;
     int gpr0Length;
     int ccrLength;
     int xerLength;
@@ -345,10 +348,19 @@ public class TestRegs
         
         if (syscallNum == SyscallNum.SYSexit)
         {
+          long l;
           gpr0 = isaPPC64.getRegisterByName ("gpr0").get (task);
           gpr3 = isaPPC64.getRegisterByName ("gpr3").get (task);
           gpr4 = isaPPC64.getRegisterByName ("gpr4").get (task);
           gpr5 = isaPPC64.getRegisterByName ("gpr5").get (task);
+
+          l = isaPPC64.getRegisterByName ("fpr0").get (task);
+          fpr0 = Double.longBitsToDouble(l);
+	  l = isaPPC64.getRegisterByName ("fpr1").get (task);
+          fpr1 = Double.longBitsToDouble(l);
+	  l = isaPPC64.getRegisterByName ("fpr2").get (task);
+          fpr2 = Double.longBitsToDouble(l);
+
           gpr0Length = isaPPC64.getRegisterByName("gpr0").getLength();
 	  ccrLength = isaPPC64.getRegisterByName("ccr").getLength();
 	  xerLength = isaPPC64.getRegisterByName("xer").getLength();
@@ -493,6 +505,9 @@ public class TestRegs
 	    assertEquals ("gpr5 register", 0x0, t.gpr5);
 	    assertEquals ("gpr0 length", 4, t.gpr0Length);
 	  }
+	assertEquals ("fpr0 register", (double)0.0, t.fpr0, 0);
+	assertEquals ("fpr1 register", (double)1.0, t.fpr1, 0);
+	assertEquals ("fpr2 register", (double)2.0, t.fpr2, 0);
 	assertEquals ("ccr length", 4, t.ccrLength);
 	assertEquals ("xer length", 4, t.xerLength);
         
