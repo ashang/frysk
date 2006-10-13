@@ -1,3 +1,8 @@
+2006-10-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* VariableWatchView.java: Fixed stacktrace when last item in 
+	window is deleted.
+
 2006-10-12  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Don't rebuild the 

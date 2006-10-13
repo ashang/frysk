@@ -167,6 +167,7 @@ public class VariableWatchView
               {
                 this.model.removeRow(iter);
                 this.treeSize--;
+                break;
               }
           }
         if (this.treeSize != 0)
