@@ -1,23 +1,3 @@
-2006-10-13  Andrew Cagney  <cagney@redhat.com>
-
-	* frysk/util/FStack.java: Coding nit, remove false== and null==.
-	* frysk/bindir/fstack.java: Coding nit, remove false== and null==.
-
-2006-10-13  Nurdin Premji  <npremji@redhat.com>
-
-	* frysk/util/FStack.java (removeObservers): Changed to use 
-	proc.removeAllObservations.
-
-2006-10-13  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* frysk/util/FCore.java: Added a patch by Yong Zheng  <zhengyo@cn.ibm.com> 
-	that writes out p_flags/p_filez for each entry.
-
-2006-10-12  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* frysk/util/FCore.java: Added. Initial, experimental and incomplete utility to
-	dump process core in frysk.
-
 2006-10-12  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (funit-child-alias): Do not build, just cp funit-alias.
@@ -32,43 +12,6 @@
 
 	* bootstrap.sh: Pass -Werror to automake.
 
-2006-10-06  Tom Tromey  <tromey@redhat.com>
-
-	* frysk/util/Ftrace.java: Added.
-	* frysk/util/StracePrinter.java: Added.
-	* frysk/util/SyscallHandler.java: Added.
-	* frysk/util/Util: Added.
-	* frysk/bindir/ftrace.java: Refactored to use frysk/util/Ftrace.java. Added command line options.
-
-2006-10-06  Nurdin Premji <npremji@redhat.com>
-
-	* frysk/util/FStack.java: Added.
-	* frysk/bindir/fstack.java: Moved most methods (except main and command line parsing) to frysk/util/FStack.java.	
-
-2006-10-04  Nurdin Premji <npremji@redhat.com>
-
-	* frysk/bindir/fstack.java: 
-	Ran gnu styler.
-	Used procAttachedObserver rather than procTasksObserver
-	(addOptions): Added information about ALL logging option.
-	(removeObservers): Changed to use the process not the task.
-	(requestDeletes): Added, removes the attachedObserver from all of the tasks.
-	(storeTasks): Used integer tid as key rather than string tid as key so sorted in ascending trace number order. Fixes issue with traces printing out weird orders like 21 22 3021 42.
-
-2006-10-03  Nurdin Premji <npremji@redhat.com>
-	
-	* frysk/bindir/fstack.java(addFailed): Implemented, fixes evolution hanging issue.
-
-2006-10-02  Nurdin Premji <npremji@redhat.com>
-
-	* frysk/bindir/fstack.java: Added command line parser + logging options.
-	Changed to print tasks in ascending order of TID.
-	(handleTask) changed to (storeTask)
-
-2006-09-28  Mike Cvet  <mcvet@redhat.com>
-
-	* frysk/bindir/fstack.java (handleTask): Don't print sourcefiles if they are null.
-
 2006-09-27  Nurdin Premji <npremji@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Removed jargs.
@@ -81,26 +24,9 @@
 	
 	* Makefile.am: Added support for getopt option parser.
 
-2006-09-20  Nurdin Premji  <npremji@redhat.com>
-
-	* frysk/bindir/fstack.java: Made some variables less static.
-	Changed to stop eventloop after observer detaches have finished.
-	
-	* frysk/bindir/ftrace.xml: Added fstack to See also.
-	* frysk/pkglibexecdir/funit.xml: Ditto.	
-	* frysk/bindir/fstack.java: 
-	Added code to remove observers when finished.
-	Renamed was:
-	* frysk/bindir/FStack.java: Removed.
-	* frysk/bindir/fstack.xml: Added
-
 2006-09-19    <swagiaal@redhat.com>
 
 	* Makefile.am: Added -laudit to GEN_GCJ_LDADD.
-
-2006-09-19  Nurdin Premji  <npremji@redhat.com>
-
-	* frysk/bindir/FStack.java: Added
 
 2006-09-19  Yong Zheng <zhengyo@cn.ibm.com>
 
@@ -139,26 +65,11 @@
 
 	* Makefile.am: Add funit-x8664-regs test program.
 
-2006-07-24  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* frysk/bindir/ftrace.java (updateAttached): Attached observer now
-	blocks the task while observers are being added.
-
 2006-07-21  Nurdin Premji  <npremji@redhat.com>
 
 	* .cvsignore: Ignoring
 	config.guess
 	config.sub
-
-2006-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* frysk/bindir/ftrace.java: Now prints the pid of the proc
-	and thread making the syscall.
-
-2006-07-18  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* frysk/bindir/ftrace.xml: New file.
-	* frysk/bindir/ftrace.java: Moved to here.
 
 2006-07-12  Rick Moseley  <rmoseley@redhat.com>
 

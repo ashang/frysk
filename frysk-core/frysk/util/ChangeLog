@@ -1,0 +1,37 @@
+2006-10-13  Andrew Cagney  <cagney@redhat.com>
+
+	* FStack.java: Coding nit, remove false== and null==.
+
+2006-10-13  Nurdin Premji  <npremji@redhat.com>
+
+	* FStack.java (removeObservers): Changed to use 
+	proc.removeAllObservations.
+
+2006-10-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java: Added a patch by Yong Zheng  <zhengyo@cn.ibm.com> 
+	that writes out p_flags/p_filez for each entry.
+
+2006-10-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java: Added. Initial, experimental and incomplete utility to
+	dump process core in frysk.
+
+2006-10-06  Tom Tromey  <tromey@redhat.com>
+
+	* Ftrace.java: Added.
+	* StracePrinter.java: Added.
+	* SyscallHandler.java: Added.
+	* Util: Added.
+
+2006-10-06  Nurdin Premji <npremji@redhat.com>
+
+	* FStack.java: Added.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
