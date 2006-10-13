@@ -117,7 +117,7 @@ public class StatusWidget extends VBox {
 		buildEventViewer();
 		
 		// XXX: Change "Additional information to something more meaningfull.
-		this.initialTrace = this.viewer.addTrace(procname, "Additional information.");
+		this.initialTrace = this.viewer.addTrace(procname, null);
 		this.procMap.put(new Integer(initialTrace), guiProc);
 		initEventViewer(guiProc);
 		
@@ -153,7 +153,7 @@ public class StatusWidget extends VBox {
 
 		// XXX: Change "other usefull..." to something more meaningfull.
 		int trace = this.newTrace(guiTask.getTask().getName(),
-				"Other useful per-trace information.");
+				null);
 		guiTask.setWidget(this, trace);
 
 		this.procMap.put(new Integer(trace), guiTask);
@@ -312,7 +312,7 @@ public class StatusWidget extends VBox {
 	      if (guiData instanceof GuiTask)
 	    	  if (task.getTid() == ((GuiTask)guiData).getTask().getTid()) {
 	    		  viewer.appendEvent(guiData.getTrace(), i,
-                  "Other useful per-event information.");
+                  null);
 	    	  }
 	      else
 	      {
@@ -320,7 +320,7 @@ public class StatusWidget extends VBox {
 	    	  {
 	    		  if (task.getProc().getPid() == ((GuiProc)guiData).getProc().getPid()) {
 		    		  viewer.appendEvent(guiData.getTrace(), i,
-	                  "Other useful per-event information.");
+	                  null);
 	    		  }
 	    	  }
 	      }
