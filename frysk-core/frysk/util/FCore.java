@@ -296,6 +296,21 @@ public class FCore {
 				pheader.type = 1;
 				pheader.vaddr = addressLow;
 				pheader.memsz = addressHigh - addressLow;
+               
+				pheader.flags = ElfPHeader.PHFLAG_NONE;
+				if (true == permRead)
+					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_READABLE;
+            
+				if (true == permWrite)
+					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_WRITABLE;
+                
+				if (true == permExecute)
+					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_EXECUTABLE;
+                
+				pheader.filesz = 0;
+				if (ElfPHeader.PHFLAG_WRITABLE == (pheader.flags & ElfPHeader.PHFLAG_WRITABLE))
+					pheader.filesz = pheader.memsz;
+                
 				local_elf.updatePHeader(numW, pheader);
 				numW++;
 			}
