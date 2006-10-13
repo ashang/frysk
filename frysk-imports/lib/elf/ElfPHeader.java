@@ -45,6 +45,11 @@ package lib.elf;
  */
 public class ElfPHeader {
 
+	public static final int PHFLAG_NONE = 0x0;
+	public static final int PHFLAG_EXECUTABLE = 0x01;
+	public static final int PHFLAG_WRITABLE = 0x02;
+	public static final int PHFLAG_READABLE = 0x04;
+    
 	public int type;
 	public int flags;
 	public long offset;

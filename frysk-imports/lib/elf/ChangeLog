@@ -1,3 +1,8 @@
+2006-10-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPHeader.java: Checked in a patch by Yong Zheng  
+	<zhengyo@cn.ibm.com> that enumerates some PHFLAG types.
+
 2006-10-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/Elf.cxx: (elf_begin): Check args to allow writing to
