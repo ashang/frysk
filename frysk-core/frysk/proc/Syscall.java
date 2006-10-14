@@ -173,6 +173,13 @@ public abstract class Syscall
 	return writer;
     }
     
+  public String toString()
+  {
+    return (this.getClass()
+	    +"[name=" + getName()
+	    + ",number=" + getNumber() + "]");
+  }
+
     /**
      * Print a textual representation of the return result of a system
      * call.

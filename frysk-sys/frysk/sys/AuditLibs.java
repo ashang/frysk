@@ -50,5 +50,6 @@ public final class AuditLibs
     public static final int MACH_S390  = 6;
     public static final int MACH_ALPHA = 7;
 
-    public static native String SyscallToName(int syscall, int machine);
+    public static native String syscallToName(int syscall, int machine);
+    public static native int nameToSyscall(String name, int machine);
 }

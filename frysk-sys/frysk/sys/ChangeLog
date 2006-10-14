@@ -1,3 +1,10 @@
+2006-10-14  Mark Wielaard  <mark@klomp.org>
+
+	* AuditLibs.java (SyscallToName): Renamed to...
+	(syscallToName): Renamed to not start with a Capital.
+	(nameToSyscall): New native method.
+	* cni/AuditLibs.cxx: (nameToSyscall): New method.
+
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/TestLib.cxx (drainSignal): New.

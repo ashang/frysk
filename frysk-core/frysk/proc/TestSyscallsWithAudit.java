@@ -45,95 +45,88 @@ public class TestSyscallsWithAudit
   extends TestLib
 {
   
-  public void testLinuxIa32(){
-//    if (brokenXXX (3218))
-//      return;
-
+  public void testLinuxIa32()
+  {
     int machine = AuditLibs.MACH_X86;
     Isa isa = LinuxIa32.isaSingleton();
-    
-    String auditName;
-    String fryskName;
-    
-    int i = 0;
-    auditName = AuditLibs.SyscallToName(i, machine);
-    fryskName = isa.getSyscallList()[i].getName();
-    assertNotNull(auditName);
-    
-    for(i = i+1; auditName != null; i++){
-//        System.out.println(i + ": " + auditName + " " + fryskName);
-        assertEquals(auditName, fryskName);
-        auditName = AuditLibs.SyscallToName(i, machine);
-        fryskName = isa.getSyscallList()[i].getName();
-    }
+    syscallTest(machine, isa);
   }
 
-  public void testLinuxPPC(){
-//    if (brokenXXX (3218))
-//      return;
-    
+  public void testLinuxPPC()
+  {
     int machine = AuditLibs.MACH_PPC;
     Isa isa = LinuxPPC.isaSingleton();
-    
-    String auditName;
-    String fryskName;
-    
-    int i = 1; //XXX: There is no syscall 0 in PPC ??
-    auditName = AuditLibs.SyscallToName(i, machine);
-    fryskName = isa.getSyscallList()[i].getName();
-    assertNotNull(auditName);
-    
-    for(i = i+1; auditName != null; i++){
-    //    System.out.println(i + ": " + auditName + " " + fryskName);
-        assertEquals(auditName, fryskName);
-        auditName = AuditLibs.SyscallToName(i, machine);
-        fryskName = isa.getSyscallList()[i].getName();
-    }
+    syscallTest(machine, isa);
   }
 
-  public void testLinuxPPC64(){
-//    if (brokenXXX (3218))
-//      return;
-    
-    int machine = AuditLibs.MACH_PPC;
+  public void testLinuxPPC64()
+  {
+    int machine = AuditLibs.MACH_PPC64;
     Isa isa = LinuxPPC64.isaSingleton();
-    
-    String auditName;
-    String fryskName;
-    
-    int i = 1; //XXX: There is no syscall 0 in PPC ??
-    auditName = AuditLibs.SyscallToName(i, machine);
-    fryskName = isa.getSyscallList()[i].getName();
-    assertNotNull(auditName);
-    
-    for(i = i+1; auditName != null; i++){
-        // System.out.println(i + ": " + auditName + " " + fryskName);
-        assertEquals(auditName, fryskName);
-        auditName = AuditLibs.SyscallToName(i, machine);
-        fryskName = isa.getSyscallList()[i].getName();
-    }
+    syscallTest(machine, isa);
   }
 
-  public void testLinuxEMT64(){
+  public void testLinuxX86_64()
+  {
     int machine = AuditLibs.MACH_86_64;
     Isa isa = LinuxX8664.isaSingleton();
-    
-    String auditName;
-    String fryskName;
-    
-    int i = 0;
-    auditName = AuditLibs.SyscallToName(i, machine);
-    fryskName = isa.getSyscallList()[i].getName();
-    assertNotNull(auditName);
-    
-    for(i = i+1; auditName != null; i++){
-        // System.out.println(i - 1 + ": " + auditName + " " + fryskName);
-        assertEquals(auditName, fryskName);
-        auditName = AuditLibs.SyscallToName(i, machine);
-        if (auditName != null)
-          fryskName = isa.getSyscallList()[i].getName();
-    }
+    syscallTest(machine, isa);
   }
 
+  private void syscallTest(int machine, Isa isa)
+  {
+    Syscall[] syscallList = isa.getSyscallList();
+    int highestNum = 0;
 
+    // We assume there are at most this many syscall numbers
+    int MAX_SYSCALL_NUM = 1024;
+    for (int i = 0; i < MAX_SYSCALL_NUM; i++)
+      {
+	String auditName = AuditLibs.syscallToName(i, machine);
+	if (auditName != null)
+	  {
+	    highestNum = i;
+	    int auditNum = AuditLibs.nameToSyscall(auditName, machine);
+	    // XXX There are a couple of syscalls with the same name...
+	    // Below we test for auditNum, which is the lowest number.
+	    // assertEquals("auditlib sanity", i, auditNum);
+
+	    Syscall syscall = syscallList[i];
+	    String fryskName = syscall.getName();
+	    int fryskNum = syscall.getNumber();
+	    
+	    assertEquals("number", i, fryskNum);
+	    assertEquals("name (" + i + ")", auditName, fryskName);
+
+	    Syscall syscallByName = isa.syscallByName(auditName);
+	    // XXX There are a couple of syscalls with the same name
+	    // Below we test for auditNum, not i.
+	    // assertEquals("byName", syscall, syscallByName);
+	    assertEquals("byName-name (" + i + ")",
+			 auditName, syscallByName.getName());
+	    assertEquals("byName-number",
+			 auditNum, syscallByName.getNumber());
+	  }
+	else
+	  {
+	    if (i < syscallList.length)
+	      {
+		Syscall syscall = syscallList[i];
+		int fryskNum = syscall.getNumber();
+		assertEquals("number", i, fryskNum);
+
+		// Unfortunately auditlib doesn't seem to know all the names.
+		String fryskName = syscall.getName();
+		assertEquals("no-name", "<" + i + ">", fryskName);
+	      }
+	  }
+      }
+
+    // Extra sanity check of MAX_SYSCALL_NUM assumption.
+    assertNull("MAX_SYSCALL_NUM", AuditLibs.syscallToName(MAX_SYSCALL_NUM,
+							  machine));
+
+    // We should have names up to the highest number auditlib knows about.
+    assertEquals("max-syscall-num", highestNum, syscallList.length - 1);
+  }
 }

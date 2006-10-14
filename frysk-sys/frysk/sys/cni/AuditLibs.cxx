@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdlib.h>
+
 #include <gcj/cni.h>
 
 #include <libaudit.h>
@@ -44,7 +46,7 @@
 #include "frysk/sys/AuditLibs.h"
 
 jstring
-frysk::sys::AuditLibs::SyscallToName(jint syscall, jint machine)
+frysk::sys::AuditLibs::syscallToName(jint syscall, jint machine)
 {
   jstring jname;
   const char* syscall_name = audit_syscall_to_name(syscall, machine);
@@ -53,4 +55,16 @@ frysk::sys::AuditLibs::SyscallToName(jint syscall, jint machine)
   }
   jname = JvNewStringLatin1 (syscall_name, strlen (syscall_name));
   return jname;
+}
+
+jint
+frysk::sys::AuditLibs::nameToSyscall(jstring name, jint machine)
+{
+  jsize len = JvGetStringUTFLength (name);
+  char *syscall_name = (char *) malloc (len + 1);
+  JvGetStringUTFRegion (name, 0, name->length(), syscall_name);
+  syscall_name[len] = '\0';
+  int num = audit_name_to_syscall (syscall_name, machine);
+  free (syscall_name);
+  return num;
 }
