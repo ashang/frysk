@@ -39,6 +39,11 @@
 
 package frysk.util;
 
+
+
+//import java.nio.ByteBuffer;
+import inua.eio.ByteOrder;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -50,11 +55,18 @@ import java.util.logging.Logger;
 
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
+import lib.elf.ElfData;
+import lib.elf.ElfEHeader;
+import lib.elf.ElfEMachine;
 import lib.elf.ElfException;
 import lib.elf.ElfFileException;
 import lib.elf.ElfPHeader;
+import lib.elf.ElfSection;
+import lib.elf.ElfSectionHeader;
+import lib.elf.ElfSectionHeaderTypes;
 import frysk.EventLogger;
 import frysk.event.RequestStopEvent;
+import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcAttachedObserver;
@@ -146,11 +158,9 @@ public class FCore {
 		public CoreDumpTasksObserver(final Proc proc) {
 			taskList = proc.getTasks();
 			taskArray = new Task[taskList.size()];
-
 		}
 
 		public void existingTask(final Task task) {
-
 			if (proc.getMainTask() == task) {
 				taskArray[0] = task;
 			} else {
@@ -183,24 +193,19 @@ public class FCore {
 		}
 
 		public void taskAdded(final Task task) {
-			// TODO Auto-generated method stub
 		}
 
 		public void taskRemoved(final Task task) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void addFailed(final Object observable, final Throwable w) {
-			// TODO Auto-generated method stub
 			System.err.println(w);
 			Manager.eventLoop.requestStop();
 			System.exit(2);
 		}
 
 		public void addedTo(final Object observable) {
-			// TODO Auto-generated method stub
-
 		}
 
 		public void deletedFrom(final Object observable) {
@@ -229,36 +234,113 @@ public class FCore {
 	private void write_elf_file(final Task[] tasks, final Proc proc)
 			throws ElfFileException, ElfException, TaskException {
 
-		local_elf = new Elf(System.getProperty("user.home") + "/Core."
+		// Start new elf file
+		local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
 				+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
 
+		// Create the elf header
 		local_elf.createNewEHeader();
-		local_elf.initializeCoreHeader(tasks[0].getIsa().getByteOrder());
+		ElfEHeader elf_header = local_elf.getEHeader();
+		
+		Isa arch = proc.getMainTask().getIsa();		
+		ByteOrder order = arch.getByteOrder();
+		
+		if (order == inua.eio.ByteOrder.BIG_ENDIAN)
+			elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2MSB;
+		else
+			elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2LSB;
+		
+		// Version
+		elf_header.ident[6] = (byte) local_elf.getElfVersion();
+		
+		// EXEC for now, ET_CORE later
+		elf_header.type = ElfEHeader.PHEADER_ET_EXEC;
+		
+		// Version
+		elf_header.version = local_elf.getElfVersion();
+		
+		// String Index
+		elf_header.shstrndx = 1;
+		
+		// XXX: I hate this, there must be a better way to get architecture than this ugly, ugly hack
+		String arch_test = arch.toString();
+		String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
+		
+		if (type.equals("frysk.proc.LinuxIa32")) {
+			elf_header.machine = ElfEMachine.EM_386;
+			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS32;
+		}
+		if (type.equals("frysk.proc.LinuxPPC64")) {
+			elf_header.machine = ElfEMachine.EM_PPC64;
+			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
+		}
+		if (type.equals("frysk.proc.LinuxX8664")) {
+			elf_header.machine = ElfEMachine.EM_X86_64;
+			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
+		}
+		
+		elf_header.shstrndx = 1;
+		local_elf.updateEHeader(elf_header);
 
-		final MyCounter counter = new MyCounter();
-		counter.construct(tasks[0].getTid());
-		local_elf.createNewPHeader(counter.numW);
-		System.out.println("XXX: UNCOMPLETED, maps not written. Number of writeable maps: " + counter.numW);
+		// Count maps
+		final MapsCounter counter = new MapsCounter();
+		counter.construct(proc.getMainTask().getTid());
+		
+		// Build initial Program segment header
+		local_elf.createNewPHeader(counter.numOfMaps);
+		System.out.println("XXX: UNCOMPLETED, maps not written. Number of writeable maps: " + counter.numOfMaps);
+		
+		final CoreMapsBuilder builder = new CoreMapsBuilder();
+		builder.construct(proc.getMainTask().getTid());
 
-		final MyBuilder builder = new MyBuilder();
-		builder.construct(tasks[0].getTid());
+		// Make a static string table. XXX: Should be dynamically generated in the future?
+		// even though we know that core string tables are always the same thing.
+		String a = "\0"+"load"+"\0"+".shstrtab"+"\0"+"note"+ "\0";
+		byte[] bytes = a.getBytes();
+		
+		// Create a very small static string section. This is needed as the actual program segment data
+		// needs to be placed into Elf_Data, and that is section function, and therefore needs a section table and 
+		// a section string table. This is how gcore does it (and the only way using libelf).
+		//
+		// The kernel just dumps the segments right after the segment table. We *might* do
+		// that in the future, but for right now, let's do it as much as possible within libelf.
+		// and gcore
+		
+		//Sections need a string lookup table
+		ElfSection stringSection = local_elf.createNewSection();
+		ElfData data = stringSection.createNewElfData();
+		ElfSectionHeader stringSectionHeader = stringSection.getSectionHeader();	
+		stringSectionHeader.type = ElfSectionHeaderTypes.SHTYPE_STRTAB;
+		stringSectionHeader.nameAsNum = 6; // offset of .shrstrtab;
 
-		final ElfPHeader pheader = local_elf.getPHeader(0);
-		local_elf.updatePHeader(0, pheader);
+		// Set elf data
+		data.setBuffer(bytes);
+		data.setSize(bytes.length);
 
+		// Update the section table back to elf structures.
+		stringSection.update(stringSectionHeader);
+		elf_header = local_elf.getEHeader();
+		elf_header.shstrndx = (int) stringSection.getIndex();
+		local_elf.updateEHeader(elf_header);
+
+		
 		final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
 		if (i < 0) {
-			throw new ElfException("elf.update failed with " + i);
+			throw new ElfException("LibElf elf_update failed with " + local_elf.getLastErrorMsg());
 		}
 		local_elf.close();
 		local_elf = null;
-
-		//write_elf(name);
 	}
 
-	class MyCounter extends MapsBuilder {
+	/**
+	 * 
+	 * Very basic Builder that forward counts the number of maps
+	 * we have to construct later, and dump to core.
+	 * 
+	 */
+	class MapsCounter extends MapsBuilder {
 
-		int numW = 0;
+		int numOfMaps = 0;
 
 		public void buildBuffer(final byte[] maps) {
 			maps[maps.length - 1] = 0;
@@ -268,17 +350,26 @@ public class FCore {
 				final boolean permRead, final boolean permWrite, final boolean permExecute,
 				final boolean permPrivate, final long offset, final int devMajor, final int devMinor,
 				final int inode, final int pathnameOffset, final int pathnameLength) {
-			// ByteBuffer buffer = myTask.getMemory();
-			if (permRead == true) {
-				numW++;
-			}
+				if (permRead == true)
+					numOfMaps++;
 		}
 	}
 
-	class MyBuilder extends MapsBuilder {
+	/**
+	 * 
+	 * Core map file builder. Parse each map, build the section header.
+	 * 
+	 * Once section header is completed, copy the data from the mapped
+	 * task memory according to the parameter from the builder:
+	 * 
+	 * addressLow -> addressHigh
+	 * 
+	 * and place in an Elf_Data section.
+	 * 
+	 */
+	class CoreMapsBuilder extends MapsBuilder {
 
-		int numW = 0;
-
+		int numOfMaps = 0;
 		Elf elf;
 
 		public void buildBuffer(final byte[] maps) {
@@ -289,31 +380,81 @@ public class FCore {
 				final boolean permRead, final boolean permWrite, final boolean permExecute,
 				final boolean permPrivate, final long offset, final int devMajor, final int devMinor,
 				final int inode, final int pathnameOffset, final int pathnameLength) {
-			//ByteBuffer buffer = proc.getMainTask().getMemory();
+			
 			if (permRead == true) {
-				final ElfPHeader pheader = local_elf.getPHeader(numW);
+				
+				
+				// Get empty progam segment header corresponding to this entry.
+				final ElfPHeader pheader = local_elf.getPHeader(numOfMaps);
 				//pheader.offset = offset;
-				pheader.type = 1;
+				pheader.type = ElfPHeader.PTYPE_LOAD;
 				pheader.vaddr = addressLow;
 				pheader.memsz = addressHigh - addressLow;
-               
 				pheader.flags = ElfPHeader.PHFLAG_NONE;
-				if (true == permRead)
+				
+				// Set initial section flags (always ALLOC).
+				long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC; // SHF_ALLOC;
+
+				// Build flags
+				if (permRead == true)
 					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_READABLE;
             
-				if (true == permWrite)
+				if (permWrite == true)
+				{
 					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_WRITABLE;
+					sectionFlags = sectionFlags |  ElfSectionHeaderTypes.SHFLAG_WRITE; 
+				}
                 
-				if (true == permExecute)
+				if (permExecute == true)
+				{
 					pheader.flags = pheader.flags | ElfPHeader.PHFLAG_EXECUTABLE;
-                
+					sectionFlags = sectionFlags |  ElfSectionHeaderTypes.SHFLAG_EXECINSTR; 
+				}
+
+				// Construct file size, if any
 				pheader.filesz = 0;
 				if (ElfPHeader.PHFLAG_WRITABLE == (pheader.flags & ElfPHeader.PHFLAG_WRITABLE))
 					pheader.filesz = pheader.memsz;
-                
-				local_elf.updatePHeader(numW, pheader);
-				numW++;
+
+				// Write back Segment header to elf structure
+				local_elf.updatePHeader(numOfMaps, pheader);
+				
+				// Update section header
+				ElfSection section = local_elf.createNewSection();
+				ElfSectionHeader sectionHeader = section.getSectionHeader();
+
+				// sectionHeader.Name holds the string value. We also need to store the offset into the 
+				// string table when we write data back;
+				sectionHeader.nameAsNum = 1; // String offset of load string
+				
+				// Set the rest of the header
+				sectionHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
+				sectionHeader.flags = sectionFlags;
+				sectionHeader.addr = pheader.vaddr;
+				sectionHeader.offset = pheader.offset;
+				sectionHeader.size = pheader.memsz;
+				sectionHeader.link = 0;
+				sectionHeader.info = 0;
+				sectionHeader.addralign = 0;
+				sectionHeader.entsize = 0;		
+
+				// New data section
+				ElfData data = section.createNewElfData();
+				
+				// Load data. How to fail here?
+				byte[] memory = new byte[(int) (addressHigh-addressLow)];
+				proc.getMainTask().getMemory().get(addressLow, memory, 0, (int) (addressHigh-addressLow));
+				
+				// Set and update back to native elf section
+				data.setBuffer(memory);
+				data.setSize(memory.length);
+				
+				// Fix this
+				data.setType(0);
+				section.update(sectionHeader);
+				
 			}
+			numOfMaps++;
 
 		}
 	}

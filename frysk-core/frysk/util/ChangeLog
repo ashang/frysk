@@ -1,3 +1,17 @@
+2006-10-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* frysk/util/FCore.java (write_elf_file): Rewritten with these changes:
+	- Build elf header manually with full complement of data. 
+	- Build string table section/section header and update to disk. 
+	- (Still) Ugly arch test hack.
+	* frysk/util/FCore.java (FCore.MapsCounter): Renamed.
+	* frysk/util/FCore.java (FCore.CoreMapsBuilder): Renamed.
+	(buildMap):Rewritten with these changes: 
+	- build section headers
+	- define section headers in concert with program headers.
+	- build section from header, create contextual Elf_Data class, and 
+	byte copy maps data.
+
 2006-10-13  Andrew Cagney  <cagney@redhat.com>
 
 	* FStack.java: Coding nit, remove false== and null==.
