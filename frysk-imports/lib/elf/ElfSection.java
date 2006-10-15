@@ -48,7 +48,7 @@ public class ElfSection {
 	private long pointer;
 	private Elf parent;
 	
-	protected ElfSection(long ptr, Elf parent){
+	public ElfSection(long ptr, Elf parent){
 		this.pointer = ptr;
 		this.parent = parent;
 	}
@@ -122,7 +122,20 @@ public class ElfSection {
 	protected Elf getParent(){
 		return this.parent;
 	}
+
+
 	
+	/**
+	 * 
+	 * Updates the class data back to the native elf
+	 * data structures.
+	 *
+	 */
+	public int update(ElfSectionHeader header) {
+		return elf_updateshdr (header);
+	}
+	
+	protected native int elf_updateshdr(ElfSectionHeader header);
 	protected native long elf_ndxscn();
 	protected native ElfSectionHeader elf_getshdr();
 	protected native int elf_flagscn(int __cmd, int __flags);

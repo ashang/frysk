@@ -45,6 +45,28 @@ package lib.elf;
  */
 public class ElfPHeader {
 
+	public static final int PTYPE_NULL = 0;
+	public static final int PTYPE_LOAD = 1;
+	public static final int PTYPE_DYNAMIC = 2;
+	public static final int PTYPE_INTERP = 3;
+	public static final int PTYPE_NOTE = 4;
+	public static final int PTYPE_SHLIB = 5;
+	public static final int PTYPE_PHDR = 6;
+	public static final int PTYPE_TLS = 7;
+	public static final int PTYPE_NUM  = 8;
+	public static final int PTYPE_LOOS = 0x60000000;
+	public static final int PTYPE_GNU_EH_FRAME = 0x6474e550;
+	public static final int PTYPE_GNU_STACK = 0x6474e551;
+	public static final int PTYPE_GNU_RELRO = 0x6474e552;
+	public static final int PTYPE_LOSUNW = 0x6ffffffa;
+	public static final int PTYPE_SUNWBSS = 0x6ffffffa;
+	public static final int PTYPE_SUNWSTACK = 0x6ffffffb;
+	public static final int PTYPE_HISUNW = 0x6fffffff;
+	public static final int PTYPE_HIOS = 0x6fffffff;
+	public static final int PTYPE_LOPROC = 0x70000000;
+	public static final int PTYPE_HIPROC = 0x7fffffff;
+
+
 	public static final int PHFLAG_NONE = 0x0;
 	public static final int PHFLAG_EXECUTABLE = 0x01;
 	public static final int PHFLAG_WRITABLE = 0x02;

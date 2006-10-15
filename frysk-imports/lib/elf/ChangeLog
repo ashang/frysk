@@ -1,3 +1,31 @@
+2006-10-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Elf.java (getElfVersion): New function.
+	(initializeCoreHeader): Remove. Deprecated.
+	* ElfData.java (setBuffer): New function. Set elf buffer.
+	(setType): New.  
+	(setSize): New.
+	(setOffset): New.
+	* ElfEHeader.java: Added Data, Class and Type constants.
+	* ElfPHeader.java : Added Type constants.
+	* ElfSection (update):  New Function. Update class
+	back to native elf header.
+	* ElfSectionHeader.java: Changed constructor access to public.
+	* ElfSectionHeaderTypes.java : New.
+
+	* cni/Elf.cxx (elf_init_core_header): Removed. Deprecated.
+	* cni/ElfData.cxx (elf_data_set_buff): New function.
+	(elf_data_set_type): Ditto.
+	(elf_data_set_version): Ditto.
+	(elf_data_set_size): Ditto.
+	(elf_data_set_off): Ditto.
+	(elf_data_set_align): Ditto.
+	* cni/ElfSection.cxx:
+	(ElfSection): Check if ehdr->e_shstrndx exists before
+	attempting to calculate name from string table.
+	(elf_updateshdr): New.
+
+
 2006-10-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Elf.java: Coding nit, remove false== and null==.

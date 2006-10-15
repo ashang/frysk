@@ -39,7 +39,7 @@
 #include <gcj/cni.h>
 #include <stdlib.h>
 #include <gelf.h>
-
+#include <stdio.h>
 #include "lib/elf/ElfSection.h"
 #include "lib/elf/ElfSectionHeader.h"
 #include "lib/elf/Elf.h"
@@ -57,17 +57,17 @@ lib::elf::ElfSection::elf_ndxscn (){
 lib::elf::ElfSectionHeader*
 lib::elf::ElfSection::elf_getshdr (){
 	GElf_Shdr tmp;
+
 	if(::gelf_getshdr((Elf_Scn*) this->pointer, &tmp) == NULL)
 		return NULL;
 		
 	lib::elf::ElfSectionHeader *header = new lib::elf::ElfSectionHeader(this->parent);
-	
 	GElf_Ehdr *ehdr = (GElf_Ehdr *) alloca(sizeof(GElf_Ehdr));
 	ehdr = gelf_getehdr((::Elf *) this->parent->getPointer(), ehdr);
-	header->name = JvNewStringUTF(
-						::elf_strptr((::Elf *) this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name)
-						); 
-	
+	char *str = ::elf_strptr((::Elf *) this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name);
+	if (str != NULL)
+		header->name = JvNewStringUTF(::elf_strptr((::Elf *) 
+		this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name)); 
 	header->type = (jint) tmp.sh_type;
 	header->flags = (jlong) tmp.sh_flags;
 	header->addr = (jlong) tmp.sh_addr;
@@ -79,6 +79,27 @@ lib::elf::ElfSection::elf_getshdr (){
 	header->entsize = (jlong) tmp.sh_entsize;
 	
 	return header;
+}
+
+jint
+lib::elf::ElfSection::elf_updateshdr (lib::elf::ElfSectionHeader *section){
+	GElf_Shdr header;
+
+	if(::gelf_getshdr((Elf_Scn*) this->pointer, &header) == NULL)
+		return -1;
+		
+        header.sh_name = section->nameAsNum;
+	header.sh_type = (int) section->type;
+	header.sh_flags = (long) section->flags;
+	header.sh_addr = (long) section->addr;
+	header.sh_offset = (long) section->offset;
+	header.sh_size = (long) section->size;
+	header.sh_link = (int) section->link;
+	header.sh_info = (int) section->info;
+	header.sh_addralign = (long) section->addralign;
+	header.sh_entsize = (long) section->entsize;
+	
+	return gelf_update_shdr((Elf_Scn*) this->pointer,&header);
 }
 
 jint

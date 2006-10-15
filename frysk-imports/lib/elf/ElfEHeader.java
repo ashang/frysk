@@ -45,7 +45,33 @@ package lib.elf;
  *
  */
 public class ElfEHeader {
-	
+
+	// Data class
+	public static final int PHEADER_ELFDATANONE = 0;
+	public static final int PHEADER_ELFDATA2LSB = 1;
+	public static final int PHEADER_ELFDATA2MSB = 2;
+	public static final int PHEADER_ELFDATANUM = 3;
+
+	// Version
+	//public static final int PHEADER_EV_VERSION = parent.getElfVersion();
+
+	// Size
+	public static final int PHEADER_ELFCLASSNONE = 0;
+	public static final int PHEADER_ELFCLASS32 = 1;
+	public static final int PHEADER_ELFCLASS64 = 2;
+
+	// Type
+	public static final int PHEADER_ET_NONE = 0;
+	public static final int PHEADER_ET_REL = 1;
+	public static final int PHEADER_ET_EXEC = 2;
+	public static final int PHEADER_ET_DYN = 3;
+	public static final int PHEADER_ET_CORE = 4;
+	public static final int PHEADER_ET_NUM = 5;
+	public static final int PHEADER_ET_LOOS = 0xfe00;
+	public static final int PHEADER_ET_HIOS = 0xfeff;
+	public static final int PHEADER_ET_LOPROC =  0xff00;
+	public static final int PHEADER_ET_HIPROC = 0xffff;
+
 	public byte[] ident;
 	public int type;
 	public int machine;

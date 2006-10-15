@@ -236,34 +236,11 @@ lib::elf::Elf::elf_updatehdr(ElfEHeader *phdr) {
 	hdr.e_shstrndx = (int) phdr->shstrndx;
 
 	return gelf_update_ehdr (elf,&hdr);
-} 
+}
 
 jint
-lib::elf::Elf::elf_init_core_header(jint order) {
-	GElf_Ehdr hdr;
-	::Elf* elf = (::Elf*) this->pointer;
-
-	// Need to have create a header first.
-	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
-		return -1;
-
-	// This needs to be fixed. gelf_getclass will return 64 bit here
-	// because elf = entry. Need to find size from task.Isa.
-	hdr.e_ident[4] = gelf_getclass(elf);
-
-	if (order == 2)
-		hdr.e_ident[5] = ELFDATA2MSB;
-	else
-		hdr.e_ident[5] = ELFDATA2LSB;
-
-	
-	hdr.e_ident[6] = EV_CURRENT;
-	
-	// should be ET_CORE, but elfutils = funky about program headers	
-	hdr.e_type = ET_EXEC; 
-	hdr.e_version = EV_CURRENT;
-	
-	return gelf_update_ehdr(elf,&hdr);
+lib::elf::Elf::elf_get_version() {
+	return EV_CURRENT;
 }
 
 void fillPHeader(lib::elf::ElfPHeader *header, GElf_Phdr *phdr){

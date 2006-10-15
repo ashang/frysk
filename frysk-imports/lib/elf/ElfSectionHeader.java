@@ -43,9 +43,12 @@ package lib.elf;
  * @author ajocksch
  *
  */
+
+
 public  class ElfSectionHeader {
 
 	public String name;
+	public long nameAsNum;
 	public int type;
 	public long flags;
 	public long addr;
@@ -58,7 +61,7 @@ public  class ElfSectionHeader {
 	
 	private Elf parent;
 	
-	protected ElfSectionHeader(Elf parent){
+	public ElfSectionHeader(Elf parent){
 		this.parent = parent;
 	}
 	

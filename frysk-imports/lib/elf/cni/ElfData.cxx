@@ -51,7 +51,7 @@ extern "C"
 
 void
 lib::elf::ElfData::elf_data_finalize (){
-	free((Elf_Data*) this->pointer);
+//	free((Elf_Data*) this->pointer);
 }
 
 jbyte
@@ -66,9 +66,26 @@ lib::elf::ElfData::elf_data_get_byte (jlong offset)
   return (jbyte) data[offset];
 }
 
+extern jbyteArray internal_buffer;
+
+void
+lib::elf::ElfData::elf_data_set_buff (){
+
+        jbyte *bytes = elements(internal_buffer);
+	((Elf_Data*) this->pointer)->d_buf = bytes;
+}
+
+
 jint
 lib::elf::ElfData::elf_data_get_type (){
 	return (int) ((Elf_Data*) this->pointer)->d_type;
+}
+
+void
+lib::elf::ElfData::elf_data_set_type (jint type){
+
+	if (type == 0)
+		((Elf_Data*) this->pointer)->d_type = ELF_T_BYTE;
 }
 
 jint
@@ -76,19 +93,40 @@ lib::elf::ElfData::elf_data_get_version (){
 	return ((Elf_Data*) this->pointer)->d_version;
 }
 
+void
+lib::elf::ElfData::elf_data_set_version (jint version){
+	((Elf_Data*) this->pointer)->d_version = version;
+}
+
 jlong
 lib::elf::ElfData::elf_data_get_size (){
 	return ((Elf_Data*) this->pointer)->d_size;
 }
+
+void
+lib::elf::ElfData::elf_data_set_size (jlong size){
+	((Elf_Data*) this->pointer)->d_size = size;
+}
+
 
 jint
 lib::elf::ElfData::elf_data_get_off (){
 	return ((Elf_Data*) this->pointer)->d_off;
 }
 
+void
+lib::elf::ElfData::elf_data_set_off (jint offset){
+	((Elf_Data*) this->pointer)->d_off = offset;
+}
+
 jlong
 lib::elf::ElfData::elf_data_get_align (){
 	return ((Elf_Data*) this->pointer)->d_align;
+}
+
+void
+lib::elf::ElfData::elf_data_set_align (jlong align){
+	((Elf_Data*) this->pointer)->d_align = align;
 }
 
 jint

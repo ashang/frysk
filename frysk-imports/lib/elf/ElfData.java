@@ -38,6 +38,7 @@
 // exception.
 package lib.elf;
 
+
 /**
  * An ElfData is a descriptor of data that will be converted to or from memory format
  * @author ajocksch
@@ -47,6 +48,7 @@ public class ElfData {
 
 	private long pointer;
 	private Elf parent;
+	public byte[] internal_buffer;
 	
 	protected ElfData(long ptr, Elf parent){
 		this.pointer = ptr;
@@ -54,16 +56,37 @@ public class ElfData {
 	}
 	
 	/**
-	 * Returns tghe byte at the provided offset into the data
+	* Sets the buffer to point to the byte[] array
+	*
+	* This will then be written to disk on elf_update
+	**/
+	public void setBuffer(byte[] e_buffer) {
+		internal_buffer = e_buffer;
+		if (internal_buffer != null)
+			elf_data_set_buff();
+	}
+	/**
+	 * Returns the byte at the provided offset into the data
 	 * @param offset The offset from which to get the byte
 	 * @return The data at offset
 	 */
 	public byte getByte(long offset){
 		return elf_data_get_byte(offset);
 	}
-	
+
+	/**
+	 * Sets the Elf Data Type 
+	 *
+	 * @param The type of the data
+	 */
+	public void setType(int type) {
+		elf_data_set_type (type);
+	}
+
 	/**
 	 * 
+	 * Returns the Elf Data type
+	 *
 	 * @return The type of the data
 	 */
 	public ElfType getType(){
@@ -77,6 +100,14 @@ public class ElfData {
 	public long getSize(){
 		return elf_data_get_size();
 	}
+
+	/**
+	 * 
+	 * @param The size of the data in bytes
+	 */
+	public void setSize(long size){
+		elf_data_set_size(size);
+	}
 	
 	/**
 	 * 
@@ -85,6 +116,14 @@ public class ElfData {
 	public int getOffset(){
 		return elf_data_get_off();
 	}
+
+	/**
+	 * 
+	 * @param The offset into the section of the data
+	 */
+	public void setOffset(int offset){
+		elf_data_set_off(offset);
+	}
 	
 	/**
 	 * 
@@ -92,6 +131,14 @@ public class ElfData {
 	 */
 	public long getAlignment(){
 		return elf_data_get_align();
+	}
+
+	/**
+	 * 
+	 * @param The alignment of the data in the section
+	 */
+	public void setAlignment(long align){
+		elf_data_set_align(align);
 	}
 	
 	/**
@@ -143,12 +190,18 @@ public class ElfData {
 	}
 	
 	native protected void elf_data_finalize();
+	native protected void elf_data_set_buff();
 	native protected byte elf_data_get_byte(long offset);
 	native protected int elf_data_get_type();
+	native protected void elf_data_set_type(int type);
 	native protected int elf_data_get_version();
+	native protected void elf_data_set_version(int version);
 	native protected long elf_data_get_size();
+	native protected void elf_data_set_size(long size);
 	native protected int elf_data_get_off();
+	native protected void elf_data_set_off(int offset);
 	native protected long elf_data_get_align();
+	native protected void elf_data_set_align(long align);
 	native protected int elf_flagdata(int __cmd, int __flags);
 	native protected long elf_xlatetom(int __encode);
 	native protected long elf_xlatetof(int __encode);

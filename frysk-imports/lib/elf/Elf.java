@@ -40,7 +40,7 @@
 
 package lib.elf;
 
-import inua.eio.ByteOrder;
+//import inua.eio.ByteOrder;
 import java.io.File;
 import java.io.IOException;
 
@@ -159,6 +159,15 @@ public class Elf
     return ElfCommand.intern(elf_next());
   }
 
+
+  /**
+   * @return version
+   */
+  public int getElfVersion()
+  {
+    return elf_get_version();
+  }
+
   /**
    * Update the Elf descriptor and write the file to disk
    * 
@@ -223,20 +232,7 @@ public class Elf
 	return elf_updatehdr(header);
   }
 
-  /** 
-   * Initialize Elf Header to CoreFile
-   *
-   * @return success/fail
-   *
-   */
-   public int initializeCoreHeader(ByteOrder order) {
-	if (order == inua.eio.ByteOrder.BIG_ENDIAN)
-		return elf_init_core_header(2);
-	else
-		return elf_init_core_header(1);
-   }
-
-
+ 
   /**
    * @return The program header table
    */
@@ -471,6 +467,7 @@ public class Elf
   // protected native void elf_memory(String __image, long __size);
   protected native int elf_next ();
 
+  protected native int elf_get_version ();
 
   protected native int elf_end ();
 
@@ -488,8 +485,6 @@ public class Elf
 
   protected native int elf_updatehdr(ElfEHeader header);
 	
-  protected native int elf_init_core_header(int order);
-
   protected native ElfPHeader elf_getphdr (int index);
 
   protected native int elf_updatephdr(int index, ElfPHeader header);
