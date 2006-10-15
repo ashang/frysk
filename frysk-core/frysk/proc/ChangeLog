@@ -1,5 +1,16 @@
 2006-10-14  Mark Wielaard  <mark@klomp.org>
 
+	* Proc.java (requestAddInstructionObserver): Call updateExecuted()
+	when observation is added.
+	(requestDeleteInstructionObserver): Delete don't add the observer.
+	* TaskObserver.java (Instruction): Update documentation.
+	* TaskState.java (Running.handleStoppedEvent): Check for blockers.
+
+	* TestLib (AckDaemonProcess(boolean)): New constructor.
+	* TestTaskObserverInstruction.java: New tests.
+
+2006-10-14  Mark Wielaard  <mark@klomp.org>
+
 	* LinuxIa32Syscall.java (syscallList): Add entries 273 till 317.
 	* LinuxPowerPCSyscall.java (syscallList): Add entries 278 till 300.
 	* Syscall.java (toString): New method.

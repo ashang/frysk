@@ -177,16 +177,28 @@ public interface TaskObserver
 
     /**
      * Interface used to notify that a Task has executed a single
-     * instruction. <code>updateExecuted</code> is called as soon after
-     * the Instruction observer is added to the Task and the Task starts
-     * running again (isn't blocked or suspended).
+     * instruction. <code>updateExecuted</code> is called as soon as
+     * the Instruction observer is added to the Task. And whenever the
+     * Task starts running again (isn't blocked or suspended) it will
+     * be called on each instruction being executed.
+     * <p>
+     * This TaskObserver can also be used for executing code that
+     * needs the Task to be (temporarily) blocked or suspended as soon
+     * as possible. <code>updateExecuted()</code> will be called as
+     * soon as this observer has been properly added, and at that time
+     * the Task is suspended to make it possible to inspect the Task
+     * state. If no other action is request, the method can then just
+     * delete the observer from the Task again.
      */
     public interface Instruction
 	extends TaskObserver
     {
 	/**
-	 * The task has executed one instruction.  Return Action.BLOCK
-	 * to block the task's further execution.
+	 * The task has started executing or has executed another
+	 * instruction.  Return Action.BLOCK to block the task's
+	 * further execution.  When Action.CONTINUE is returned
+	 * this method will be called as soon as one instruction
+	 * has been executed.
 	 */
 	Action updateExecuted (Task task);
     }

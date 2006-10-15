@@ -599,6 +599,10 @@ public class TestLib
 	{
 	    super ();
 	}
+	AckDaemonProcess (boolean busy)
+	{
+	    super (busy);
+	}
 	AckDaemonProcess (int count)
 	{
 	    super (count);

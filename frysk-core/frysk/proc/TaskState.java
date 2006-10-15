@@ -762,6 +762,10 @@ class TaskState
 	      it.remove();
 	    }
 
+	  // the observation.add() could have added a block.
+	  if (task.blockers.size () > 0)
+	    return blockedContinue();
+
 	  // See how to continue depending on the kind of observers.
 	  if (task.instructionObservers.numberOfObservers() > 0)
 	    {

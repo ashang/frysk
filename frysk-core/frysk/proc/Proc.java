@@ -647,6 +647,11 @@ public abstract class Proc
 	// to make sure the Task is stopped so we can send it a step
 	// instruction or, when deleted, start resuming the process
 	// normally.
+
+	// We do want an explicit updateExecuted() call, after adding
+	// the observer, but while still suspended. This is done by
+	// overriding the add() method in the TaskObservation
+	// below. No such action is required on deletion.
       }
     }
 
@@ -675,6 +680,18 @@ public abstract class Proc
 	  {
 	    return task.instructionObservers.numberOfObservers() == 0;
 	  }
+
+	  // Makes sure that the observer is properly added and then,
+	  // while the Task is still suspended, updateExecuted() is
+	  // called. Giving the observer a chance to inspect and
+	  // possibly block the Task.
+	  public void add()
+	  {
+	    super.add();
+	    TaskObserver.Instruction i = (TaskObserver.Instruction) observer;
+	    if (i.updateExecuted(task) == Action.BLOCK)
+	      task.blockers.add(observer);
+	  }
 	};
       Manager.eventLoop.add(to);
     }
@@ -695,7 +712,7 @@ public abstract class Proc
 	{
 	  public void execute ()
 	  {
-	    handleAddObservation (this);
+	    newState = oldState().handleDeleteObservation(Proc.this, this);
 	  }
 	  
 	  public boolean needsSuspendedAction()
