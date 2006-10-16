@@ -1,3 +1,10 @@
+2006-10-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/MapsBuilder.cxx (construct): Don't terminate end of map line
+	as a space, instead use \n.
+	* cni/slurp.cxx (uslurp): New function. Read /proc/$$/{file} 4K chunks 
+	until len of last read = 0
+
 2006-10-09  Yong Zheng  <zhengyzy@cn.ibm.com>
 
 	* frysk-sys/frysk/sys/proc/cni/AuxvBuilder.cxx (verify): Check

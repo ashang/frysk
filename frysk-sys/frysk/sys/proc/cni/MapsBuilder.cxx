@@ -51,7 +51,7 @@
 jboolean
 frysk::sys::proc::MapsBuilder::construct (jint pid)
 {
-  jbyteArray buf = slurp (pid, "maps");
+  jbyteArray buf = uslurp (pid, "maps");
   if (buf == NULL)
     return false;
   buildBuffer (buf);
@@ -95,7 +95,7 @@ frysk::sys::proc::MapsBuilder::construct (jbyteArray buf)
       while (isblank (*p))
 	p++;
       jint pathnameOffset = p - start;
-      while (*p != '\0' && !isspace (*p)) {
+      while (*p != '\0' && *p != '\n') {
 	p++;
       }
       int pathnameLength = p - start - pathnameOffset;

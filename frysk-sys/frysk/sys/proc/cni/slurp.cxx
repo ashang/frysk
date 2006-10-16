@@ -50,6 +50,72 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/cni/slurp.hxx"
 
+jbyteArray
+uslurp(int pid, const char* name) 
+{
+  // Get the file name.
+  char file[FILENAME_MAX];
+  if (::snprintf (file, sizeof file, "/proc/%d/%s", (int) pid, name)
+      >= FILENAME_MAX)
+    throwRuntimeException ("snprintf: buffer overflow");
+
+   // This implementation unfortunatly double buffers the data.
+  int len = 0;
+  long current_offset = 0;
+   
+  // Malloc one page size for first read
+  char * buf = (char*)::malloc(sizeof(char)*BUFSIZ);
+
+  // Check malloc ok
+  if (buf == NULL) {
+    throwRuntimeException ("cannot malloc initial slurp buffer");
+    return NULL;
+  }
+
+  // Open the file file.
+  errno = 0;
+  int fd = ::open (file, O_RDONLY);
+  if (errno != 0) {
+     ::free(buf);
+     return NULL;
+  }
+
+  do  {
+    // Reads upto BUFSIZ bytes from /proc. It appears reading maps and possibly
+    // other files from /proc you can only read the file at 4096 max bytes per time. 
+    // Hence the read * n, realloc *n dance. Ref SW #3370
+    errno = 0;
+    len = ::read (fd, buf+current_offset, (BUFSIZ-1));
+    if (errno != 0) {
+      ::close (fd);
+      ::free(buf);
+      return NULL;
+    }
+    current_offset+=len;
+
+    // Don't trust realloc with my pointer, I want to free it if something goes 
+    // wrong.
+    char *tmp = (char*)::realloc(buf, sizeof(char) * (current_offset + BUFSIZ));
+    if (tmp == NULL) {
+      ::close(fd);
+      ::free(buf);
+      throwRuntimeException ("slurp realloc failed");
+      return NULL;
+    } else
+       buf = tmp;
+  } while (len > 0);
+
+  ::close(fd);
+
+  // Null terminate the buffer.
+  buf[current_offset] = '\0';
+
+  jbyteArray jbuf = JvNewByteArray (current_offset);
+  ::memcpy (elements (jbuf), buf, current_offset);
+  ::free(buf);
+  
+  return jbuf;
+}
 
 int
 slurp (int pid, const char* name, char buf[], long sizeof_buf)
