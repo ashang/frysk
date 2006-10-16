@@ -1,3 +1,10 @@
+2006-10-16  Mike Cvet  <mcvet@redhat.com>
+
+	* glade/disassemblywindow.glade: Resized.
+	* disassembler/DisassemblyWindow.java (refreshList): Prepend hexadecimal
+	identifier to hex memory addresses.
+	(setUpColumns): Set column names properly.
+
 2006-10-06  Mike Cvet  <mcvet@redhat.com>
 
 	* glade/frysk_source.glade: Resized. Bigger with more room for

@@ -102,7 +102,7 @@ public class DisassemblyWindow
   new DataColumnObject(), /* memory object */
   };
 
-  protected static String[] colNames = { "Function offset", "Instruction" };
+  protected static String[] colNames = { "Location", "PC offset", "Instruction" };
 
   protected boolean[] colVisible = { true, true };
 
@@ -306,7 +306,7 @@ public class DisassemblyWindow
       rowAppend(i, null);
 
     TreeViewColumn col = new TreeViewColumn();
-    col.setTitle("Location");
+    col.setTitle(colNames[LOC]);
     CellRenderer renderer = new CellRendererText();
     col.packStart(renderer, true);
     col.setReorderable(false);
@@ -317,6 +317,7 @@ public class DisassemblyWindow
     for (int i = 0; i < this.columns.length - 1; i++)
       {
         col = new TreeViewColumn();
+        col.setTitle(colNames[i + 1]);
 
         col.setReorderable(true);
         renderer = new CellRendererText();
@@ -371,7 +372,7 @@ public class DisassemblyWindow
           {
 	    model.setValue(iter, (DataColumnString) cols[1], "<pc+" 
 			   + (ins.address - this.pc) + ">: ");
-            model.setValue(iter, (DataColumnString) cols[0], Long.toHexString(ins.address));
+            model.setValue(iter, (DataColumnString) cols[0], "0x" + Long.toHexString(ins.address));
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             if (li.hasNext())
               ins = (Instruction) li.next();
@@ -386,7 +387,7 @@ public class DisassemblyWindow
         iter = iter.getNextIter();
       }
 
-    for (int i = 0; i < DisassemblyWindow.colNames.length; i++)
+    for (int i = 0; i < DisassemblyWindow.colNames.length - 1; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
                                                        DisassemblyWindow.colNames[i],
                                                        this.colVisible[i]));

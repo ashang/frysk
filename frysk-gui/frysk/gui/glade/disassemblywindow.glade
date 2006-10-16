@@ -148,7 +148,7 @@
 
 <widget class="GtkWindow" id="disassemblyWindow">
   <property name="border_width">12</property>
-  <property name="width_request">450</property>
+  <property name="width_request">500</property>
   <property name="height_request">450</property>
   <property name="title" translatable="yes">Frysk / Disassembler</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
