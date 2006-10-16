@@ -1,9 +1,13 @@
 2006-10-15  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* frysk/util/FCore.java ((FCore.CoreMapsBuilder): Fixed program segment
+	alignments and offsets (match sections).
+
 	* frysk/util/FCore.java (write_elf_file): Rewritten with these changes:
 	- Build elf header manually with full complement of data. 
 	- Build string table section/section header and update to disk. 
 	- (Still) Ugly arch test hack.
+	(CoreMapsBuilder.buildMap): 
 	* frysk/util/FCore.java (FCore.MapsCounter): Renamed.
 	* frysk/util/FCore.java (FCore.CoreMapsBuilder): Renamed.
 	(buildMap):Rewritten with these changes: 

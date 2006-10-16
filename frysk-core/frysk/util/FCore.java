@@ -319,6 +319,8 @@ public class FCore {
 
 		// Update the section table back to elf structures.
 		stringSection.update(stringSectionHeader);
+		
+		// Repoint shstrndx to string segment number
 		elf_header = local_elf.getEHeader();
 		elf_header.shstrndx = (int) stringSection.getIndex();
 		local_elf.updateEHeader(elf_header);
@@ -386,7 +388,7 @@ public class FCore {
 				
 				// Get empty progam segment header corresponding to this entry.
 				final ElfPHeader pheader = local_elf.getPHeader(numOfMaps);
-				//pheader.offset = offset;
+				pheader.offset = offset;
 				pheader.type = ElfPHeader.PTYPE_LOAD;
 				pheader.vaddr = addressLow;
 				pheader.memsz = addressHigh - addressLow;
@@ -415,10 +417,7 @@ public class FCore {
 				pheader.filesz = 0;
 				if (ElfPHeader.PHFLAG_WRITABLE == (pheader.flags & ElfPHeader.PHFLAG_WRITABLE))
 					pheader.filesz = pheader.memsz;
-
-				// Write back Segment header to elf structure
-				local_elf.updatePHeader(numOfMaps, pheader);
-				
+			
 				// Update section header
 				ElfSection section = local_elf.createNewSection();
 				ElfSectionHeader sectionHeader = section.getSectionHeader();
@@ -452,6 +451,18 @@ public class FCore {
 				// Fix this
 				data.setType(0);
 				section.update(sectionHeader);
+				
+				
+				// inefficient to do this for each map, but alternative is to rerun another builder
+				// so for right now, less of two evil. Needs a rethinks.
+				final long i = local_elf.update(ElfCommand.ELF_C_NULL);
+				if (i < 0)
+					System.err.println("update in memory failed with message " + local_elf.getLastErrorMsg());
+				sectionHeader = section.getSectionHeader();
+				pheader.offset = sectionHeader.offset;
+				pheader.align = sectionHeader.addralign;
+				// Write back Segment header to elf structure
+				local_elf.updatePHeader(numOfMaps, pheader);
 				
 			}
 			numOfMaps++;
