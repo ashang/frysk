@@ -1,3 +1,8 @@
+2006-10-16  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (SourceWinListener.lifeCycleQuery):
+	Set SW_active to false after the window closes.
+
 2006-10-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceView.java: Popup "Variable out of scope" when variable

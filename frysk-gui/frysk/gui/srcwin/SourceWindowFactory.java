@@ -471,6 +471,7 @@ public class SourceWindowFactory
 
               WindowManager.theManager.sessionManager.show();
               s.hideAll();
+              SW_active = false;
             }
         }
 
