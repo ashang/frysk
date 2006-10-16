@@ -1,3 +1,8 @@
+2006-10-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (CoreMapsBuilder.buildMap): Fix numOfMaps incorrect count.
+	(write_elf_file): Removed stray shtrndx assignment.
+
 2006-10-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* frysk/util/FCore.java ((FCore.CoreMapsBuilder): Fixed program segment

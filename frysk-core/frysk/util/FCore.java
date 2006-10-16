@@ -279,7 +279,6 @@ public class FCore {
 			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
 		}
 		
-		elf_header.shstrndx = 1;
 		local_elf.updateEHeader(elf_header);
 
 		// Count maps
@@ -304,7 +303,7 @@ public class FCore {
 		//
 		// The kernel just dumps the segments right after the segment table. We *might* do
 		// that in the future, but for right now, let's do it as much as possible within libelf.
-		// and gcore
+		
 		
 		//Sections need a string lookup table
 		ElfSection stringSection = local_elf.createNewSection();
@@ -384,8 +383,7 @@ public class FCore {
 				final int inode, final int pathnameOffset, final int pathnameLength) {
 			
 			if (permRead == true) {
-				
-				
+								
 				// Get empty progam segment header corresponding to this entry.
 				final ElfPHeader pheader = local_elf.getPHeader(numOfMaps);
 				pheader.offset = offset;
@@ -463,9 +461,9 @@ public class FCore {
 				pheader.align = sectionHeader.addralign;
 				// Write back Segment header to elf structure
 				local_elf.updatePHeader(numOfMaps, pheader);
-				
+				numOfMaps++;
 			}
-			numOfMaps++;
+			
 
 		}
 	}
