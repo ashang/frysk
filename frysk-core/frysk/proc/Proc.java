@@ -238,7 +238,7 @@ public abstract class Proc
      * Request that the Proc remove all of its observations.
      * Should cause a detach.
      */
-    public synchronized void requestRemoveAllObservations()
+    public void requestRemoveAllObservations()
     {
       Iterator iter = observationsIterator();
       while (iter.hasNext())
@@ -361,12 +361,12 @@ public abstract class Proc
      */
     private Set observations = new HashSet ();
     
-    public synchronized boolean addObservation(Object o)
+    public boolean addObservation(Object o)
     {
       return observations.add(o);
     }
 
-    public synchronized boolean removeObservation (Object o)
+    public boolean removeObservation (Object o)
     {
       return observations.remove(o);
     }
