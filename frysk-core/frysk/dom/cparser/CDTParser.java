@@ -361,10 +361,14 @@ public class CDTParser
                                            arg0.getNameOffset()
                                                - nameLine.getOffset()
                                                + arg0.getName().length());
+      // On functions that are pointers(have an "*" in front of the name) the CDTParser handles
+      // them weirdly so when that occurs we must adjust the length of the substring parameters
+      int startingcharindex = arg0.getStartingOffset() - line.getOffset();
+      int endingcharindex = arg0.getNameOffset() - line.getOffset();
+      if (endingcharindex > lineText.length())
+        endingcharindex = lineText.length();
       line.addTag(DOMTagTypes.KEYWORD,
-                  lineText.substring(arg0.getStartingOffset()
-                                     - line.getOffset(), arg0.getNameOffset()
-                                                         - line.getOffset()),
+                  lineText.substring(startingcharindex, endingcharindex),
                   arg0.getStartingOffset() - line.getOffset());
       nameLine.addTag(DOMTagTypes.FUNCTION, funcName, arg0.getNameOffset()
                                                       - nameLine.getOffset());
