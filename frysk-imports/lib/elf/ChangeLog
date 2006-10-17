@@ -1,3 +1,11 @@
+2006-10-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Elf.java (createNewEHeader): Require a wordsize. 
+
+	* cni/Elf.cxx (elf_newehdr): Specify wordsize.
+	gelf_getclass() for wordsize won't work on an empty elf struct.
+	* cni/ElfSection.cxx (elf_updateshdr): Fixed casts.
+
 2006-10-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Elf.java (getElfVersion): New function.

@@ -204,9 +204,12 @@ lib::elf::Elf::elf_getehdr(){
 }
 
 jint
-lib::elf::Elf::elf_newehdr (){
+lib::elf::Elf::elf_newehdr (int word_size){
 	::Elf* elf = (::Elf*) this->pointer;
-	return (jint) ::gelf_newehdr(elf, gelf_getclass(elf));
+        if (word_size == 4)
+	  return (jint) ::gelf_newehdr(elf, ELFCLASS32);
+	else
+	  return (jint) ::gelf_newehdr(elf, ELFCLASS64);
 }
 
 jint
@@ -261,7 +264,8 @@ lib::elf::Elf::elf_getphdr (jint index){
 		return NULL;
 		
 	lib::elf::ElfPHeader *header = new lib::elf::ElfPHeader(this);
-	fillPHeader(header, &phdr);
+	
+fillPHeader(header, &phdr);
 	
 	return header;
 }

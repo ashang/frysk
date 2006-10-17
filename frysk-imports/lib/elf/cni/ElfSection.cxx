@@ -89,15 +89,15 @@ lib::elf::ElfSection::elf_updateshdr (lib::elf::ElfSectionHeader *section){
 		return -1;
 		
         header.sh_name = section->nameAsNum;
-	header.sh_type = (int) section->type;
-	header.sh_flags = (long) section->flags;
-	header.sh_addr = (long) section->addr;
-	header.sh_offset = (long) section->offset;
-	header.sh_size = (long) section->size;
-	header.sh_link = (int) section->link;
-	header.sh_info = (int) section->info;
-	header.sh_addralign = (long) section->addralign;
-	header.sh_entsize = (long) section->entsize;
+	header.sh_type = (jint) section->type;
+	header.sh_flags = (jlong) section->flags;
+	header.sh_addr = (jlong) section->addr;
+	header.sh_offset = (jlong) section->offset;
+	header.sh_size = (jlong) section->size;
+	header.sh_link = (jint) section->link;
+	header.sh_info = (jint) section->info;
+	header.sh_addralign = (jlong) section->addralign;
+	header.sh_entsize = (jlong) section->entsize;
 	
 	return gelf_update_shdr((Elf_Scn*) this->pointer,&header);
 }

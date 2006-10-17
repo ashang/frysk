@@ -217,10 +217,10 @@ public class Elf
    * 
    * @return A new ElfHeader
    */
-  public int createNewEHeader ()
-  {
-    return elf_newehdr();
-  }
+    public int createNewEHeader (int wordSize)
+    {
+	return elf_newehdr(wordSize);
+    }
 
  /**
    * Update the ELF header
@@ -481,7 +481,7 @@ public class Elf
 
   protected native ElfEHeader elf_getehdr ();
 
-  protected native int elf_newehdr ();
+  protected native int elf_newehdr (int word_size);
 
   protected native int elf_updatehdr(ElfEHeader header);
 	
