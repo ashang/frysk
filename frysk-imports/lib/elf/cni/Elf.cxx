@@ -204,11 +204,12 @@ lib::elf::Elf::elf_getehdr(){
 }
 
 jint
-lib::elf::Elf::elf_newehdr (int word_size){
+lib::elf::Elf::elf_newehdr (jint word_size){
 	::Elf* elf = (::Elf*) this->pointer;
         if (word_size == 4)
 	  return (jint) ::gelf_newehdr(elf, ELFCLASS32);
 	else
+	  // if work_size != 4 chooise 64 bits seems wrong.
 	  return (jint) ::gelf_newehdr(elf, ELFCLASS64);
 }
 
