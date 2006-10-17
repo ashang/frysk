@@ -1,3 +1,9 @@
+2006-10-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (write_elf_file): Specify wordsize on elf header creation.
+	Call postProcess to change elf core file.
+	(postProcessElfFile): New. Change ET_EXEC -> ET_CORE. See bz sw 3373.
+
 2006-10-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (CoreMapsBuilder.buildMap): Fix numOfMaps incorrect count.

@@ -44,6 +44,9 @@ package frysk.util;
 //import java.nio.ByteBuffer;
 import inua.eio.ByteOrder;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
@@ -238,13 +241,15 @@ public class FCore {
 		local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
 				+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
 
-		// Create the elf header
-		local_elf.createNewEHeader();
-		ElfEHeader elf_header = local_elf.getEHeader();
+
 		
 		Isa arch = proc.getMainTask().getIsa();		
 		ByteOrder order = arch.getByteOrder();
 		
+		// Create the elf header
+		local_elf.createNewEHeader(arch.getWordSize());
+		ElfEHeader elf_header = local_elf.getEHeader();
+
 		if (order == inua.eio.ByteOrder.BIG_ENDIAN)
 			elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2MSB;
 		else
@@ -280,7 +285,7 @@ public class FCore {
 		}
 		
 		local_elf.updateEHeader(elf_header);
-
+		
 		// Count maps
 		final MapsCounter counter = new MapsCounter();
 		counter.construct(proc.getMainTask().getTid());
@@ -323,6 +328,7 @@ public class FCore {
 		elf_header = local_elf.getEHeader();
 		elf_header.shstrndx = (int) stringSection.getIndex();
 		local_elf.updateEHeader(elf_header);
+		
 
 		
 		final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
@@ -331,12 +337,47 @@ public class FCore {
 		}
 		local_elf.close();
 		local_elf = null;
+		
+		// Ugly post process. Libelf will not let us write program segment when class type is 
+		// set to ET_CORE. Bit confusing. SeeSee bz sw 3373.
+		
+		// Open the file
+		boolean postProcess = postProcessElfFile(System.getProperty("user.dir") + "/fcore."
+				+ proc.getPid());
+		if (!postProcess) {
+			throw new ElfException("Could not post process elf core file. Stucj as ET_EXEC");
+		}
+		
 	}
+
+	private boolean postProcessElfFile(String file_string) {
+
+		// temporary
+		final int EI_NIDENT = 16;
+
+		File elf_file = new File(file_string);
+		if (!elf_file.canRead())
+			return false;
+
+		RandomAccessFile raf = null;
+		try {
+			raf = new RandomAccessFile(elf_file, "rw");
+			raf.seek(EI_NIDENT);
+			raf.write(ElfEHeader.PHEADER_ET_CORE);
+			raf.close();
+		} catch (IOException ec) {
+			ec.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * 
-	 * Very basic Builder that forward counts the number of maps
-	 * we have to construct later, and dump to core.
+	 * Very basic Builder that forward counts the number of maps we have to
+	 * construct later, and dump to core.
 	 * 
 	 */
 	class MapsCounter extends MapsBuilder {
@@ -570,4 +611,5 @@ public class FCore {
 			}
 		});
 	}
+	
 }
