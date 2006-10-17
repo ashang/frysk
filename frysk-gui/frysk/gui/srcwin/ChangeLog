@@ -1,5 +1,8 @@
 2006-10-17  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceWindow.java (doStackUp): Catch null TreePath selection.
+	(doStackDown): Ditto.
+	(doStackBottom): Ditto.
 	* SourceBuffer.java (setCurrentLine): Only highlight currently
 	selected stack frame. Addresses #3327.
 

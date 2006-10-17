@@ -1329,7 +1329,16 @@ public class SourceWindow
    */
   private void doStackUp ()
   {
-    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
+    TreePath path = null;
+    try
+      {
+        path = this.stackView.getSelection().getSelectedRows()[0];
+      }
+    catch (ArrayIndexOutOfBoundsException ae)
+      {
+        return;
+      }
+    
     int selected;
 
     if (path.getDepth() == 1)
@@ -1376,7 +1385,16 @@ public class SourceWindow
    */
   private void doStackDown ()
   {
-    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
+    TreePath path = null;
+    try
+      {
+        path = this.stackView.getSelection().getSelectedRows()[0];
+      }
+    catch (ArrayIndexOutOfBoundsException ae)
+      {
+        return;
+      }
+  
     int selected;
     
     if (path.getDepth() == 1)
@@ -1426,7 +1444,15 @@ public class SourceWindow
    */
   private void doStackBottom ()
   {
-    TreePath path = this.stackView.getSelection().getSelectedRows()[0];
+    TreePath path = null;
+    try
+      {
+        path = this.stackView.getSelection().getSelectedRows()[0];
+      }
+    catch (ArrayIndexOutOfBoundsException ae)
+      {
+        return;
+      }
     
     if (path.getDepth() != 1)
         path.up();
