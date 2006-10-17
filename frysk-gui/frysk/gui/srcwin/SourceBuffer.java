@@ -146,6 +146,8 @@ public class SourceBuffer
 
   // Hashmap of comments for each file
   protected static HashMap comments = new HashMap();
+  
+  private int tagFlag = 0;
 
   // Since conceptually each sourcebuffer will only be viewing one file, we
   // don't
@@ -308,13 +310,19 @@ public class SourceBuffer
                                               true);
       }
 
-    this.applyTag(this.currentLine, this.getIter(this.startCurrentLine),
-                  this.getIter(this.endCurrentLine));
+    if (this.tagFlag == 0)
+      {
+        this.applyTag(this.currentLine, this.getIter(this.startCurrentLine),
+                      this.getIter(this.endCurrentLine));
+        this.tagFlag = 1;
+      }
 
     // Apply the next sections of the 'current line'
     frame = frame.getOuter();
     if (frame != null)
       setCurrentLine(frame);
+    else
+      tagFlag = 0;
   }
 
   /**
