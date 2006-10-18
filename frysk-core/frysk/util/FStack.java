@@ -224,12 +224,6 @@ public class FStack
 
     public void deletedFrom (Object observable)
     {
-       Iterator iter = proc.observationsIterator();
-       while (iter.hasNext())
-       {
-       System.out.println(iter.next());
-       }
-       System.out.println();
     }
 
   }

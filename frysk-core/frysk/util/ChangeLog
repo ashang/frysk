@@ -2,6 +2,8 @@
 
 	* FStack.java (removeObservers): Refactored proc.requestRemoveAllObservers to proc.requestAbandon.
 
+	* FStack.java (StackTasksObserver.deletedFrom):  Removed hidden print statements.
+
 2006-10-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (write_elf_file): Specify wordsize on elf header creation.
