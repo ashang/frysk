@@ -123,8 +123,10 @@ public final class ProcAttachedObserver
     while (t != null)
       {
         t.requestAddAttachedObserver(ProcAttachedObserver.this);
-        t = (Task) tasks.removeFirst();
+        if (tasks.size() > 0)
+          t = (Task) tasks.removeFirst();
       }
+    System.out.println("Leaving attachTask");
   }
 
   public Action updateAttached (Task task)
