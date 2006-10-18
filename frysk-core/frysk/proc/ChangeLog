@@ -1,3 +1,7 @@
+2006-10-18  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcAttachedObserver.java (attachTask): Added.
+
 2006-10-18  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcForceDetach.java (MyObserver.existingTask): Refactored proc.requestRemoveAllObservers to proc.requestAbandon.

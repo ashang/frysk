@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.event.Event;
@@ -61,6 +62,8 @@ public final class ProcAttachedObserver
   private final ProcObserver.ProcTasks procAttachedObserver;
 
   private Task mainTask;
+  
+  private int numTasks = 0;
 
   /**
    * An observer that monitors all Tasks of a process notifying the caller of
@@ -103,12 +106,25 @@ public final class ProcAttachedObserver
             return;
           }
 
+        numTasks = proc.getTasks().size();
         for (Iterator iterator = proc.getTasks().iterator(); iterator.hasNext();)
           {
             ((Task) iterator.next()).requestAddAttachedObserver(ProcAttachedObserver.this);
           }
       }
     });
+  }
+  
+  public void attachTask (LinkedList tasks)
+  {
+    numTasks = tasks.size();
+    System.out.println("in AttachTask");
+    Task t = (Task) tasks.removeFirst();
+    while (t != null)
+      {
+        t.requestAddAttachedObserver(ProcAttachedObserver.this);
+        t = (Task) tasks.removeFirst();
+      }
   }
 
   public Action updateAttached (Task task)
@@ -135,5 +151,10 @@ public final class ProcAttachedObserver
   public void deletedFrom (Object observable)
   {
     procAttachedObserver.deletedFrom(observable);
+  }
+  
+  public int getNumTasks ()
+  {
+    return this.numTasks;
   }
 }
