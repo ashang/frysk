@@ -45,6 +45,7 @@
 
 package frysk.dom.cparser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -121,7 +122,8 @@ public class CDTParser
     this.source = source;
     this.image = image;
     String[] incPaths = { "/usr/local/include", 
-                          "/usr/include"};
+                          "/usr/include",
+                          "/usr/lib/gcc/i386-redhat-linux/4.1.1/include"};
 
     String filename = source.getFilePath() + "/" + source.getFileName();
     ParserLanguage language = ParserLanguage.C;
@@ -787,6 +789,9 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
+      // Only get includes that are local to this file
+      if ( !lineText.startsWith("#include") )
+        return;
 
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(0, arg0.getNameOffset() - line.getOffset()
@@ -806,7 +811,11 @@ public class CDTParser
       if (line == null)
         return;
 
+//    Check to see if the macro we have found is in this source file
+//    Not in some #include file
       String lineText = line.getText();
+      if (lineText.indexOf(arg0.getName()) == -1)
+        return;
 
       line.addTag(
                   DOMTagTypes.KEYWORD,
@@ -901,6 +910,20 @@ public class CDTParser
 
     public CodeReader createReader (String arg0, Iterator arg1)
     {
+      File f1 = new File(arg0.toString());
+      if (f1.exists())
+        {
+          try
+            {
+              CodeReader cr = new CodeReader(arg0.toString());
+              return cr;
+            }
+          catch (IOException ex)
+            {
+              System.err.println("Cannot create FileInputStream for "
+                                 + f1.toString());
+            }
+        }
       return null;
     }
 

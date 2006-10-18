@@ -1,3 +1,11 @@
+2006-10-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser: Add CodeREader so #include files get processed
+	properly.
+	Fix acceptMacro so it only processes macros from the source file.
+	Fix enterInclusion so it only processes #includes from the source
+	file.
+
 2006-10-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fix substring error for line.addTag call.
