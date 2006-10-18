@@ -95,7 +95,7 @@ public class SourceWindowFactory
 
   private static Hashtable procTable;
   
-  private static int task_count;
+  private static int task_count = 0;
 
   public static SourceWindow srcWin = null;
   
@@ -133,7 +133,7 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Proc proc)
   {
-    task_count = proc.getTasks().size();
+    //task_count = proc.getTasks().size();
     SourceWindow sw = (SourceWindow) procTable.get(proc);
     
     if (sw != null)
@@ -495,8 +495,10 @@ public class SourceWindowFactory
     }
     
     public void existingTask (Task task)
-    {
+    {//System.out.println("Existing Task");
       myTask = task;
+      if (task_count == 0)
+        task_count = ((ProcAttachedObserver) blockerTable.get(task.getProc())).getNumTasks();
 
       CustomEvents.addEvent(new Runnable()
       {
@@ -539,6 +541,7 @@ public class SourceWindowFactory
   public static synchronized void handleTask (Task task)
   {
     myTask = task;
+    //System.out.println("in HandleTask");
 
     if (SW_active == false)
       {
@@ -559,9 +562,11 @@ public class SourceWindowFactory
       }
     else
       {
+        //System.out.println("In else");
         --task_count;
         if (task_count == 0)
           {
+            //System.out.println("Pass if");
             StackFrame[] frames = generateProcStackTrace(null, null,
                                                          srcWin.getDOM(),
                                                          task.getProc(), 0);

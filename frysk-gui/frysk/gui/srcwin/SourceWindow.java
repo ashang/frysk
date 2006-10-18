@@ -43,6 +43,7 @@ package frysk.gui.srcwin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -812,6 +813,8 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
+    //mi = (MenuItem) this.toggleMainThread.createMenuItem();
+    //tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.next.createMenuItem();
@@ -1588,9 +1591,22 @@ public class SourceWindow
       {
         t.requestUnblock(this.pao);
         t.requestDeleteAttachedObserver(this.pao);
+        System.out.println("Finished calling for unblock");
+        this.runningState = true;
       }
     else
-      this.pao.attachTask(t);
+      {
+        this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
+        LinkedList l = new LinkedList();
+        l.add(t);
+        this.pao.attachTask(l);
+        System.out.println("Finished calling for block");
+      }
+  }
+  
+  public void mainThreadReblocked()
+  {
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
   }
 
   public View getView ()

@@ -1,10 +1,12 @@
 2006-10-18  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceWindowFactory.java (SourceWinBlocker.existingTask):
+	Update number of Tasks before proceding with blocks.
 	* SourceWindow.java (SourceWindow): Changed all references to
 	Action to org.gnu.gtk.Action. Similarly for ActionListener.
 	Imported frysk.proc.Action; new references to Action refer 
 	to this import.
-	(toggleMainThread): Added.
+	(toggleMainThread): Added.	Unblocks and re-blocks the main task.
 	(InstructionObserver): Added.
 
 2006-10-17  Mike Cvet  <mcvet@redhat.com>
