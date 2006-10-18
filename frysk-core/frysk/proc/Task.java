@@ -313,12 +313,34 @@ abstract public class Task
    * (Internal) Tell the task to detach itself (if it isn't already). Notify the
    * containing process once the operation has been processed; the task is
    * allowed to run free.
+   * @param shouldRemoveObservers whether to remove the observers as well.
    */
-  void performDetach ()
+  void performDetach (boolean shouldRemoveObservers)
   {
-    newState = oldState().handleDetach(Task.this);
+    newState = oldState().handleDetach(Task.this, shouldRemoveObservers);
   }
 
+  /**
+   *  (Internal) Request that all observers from this task be removed.
+   *  Warning, should also be removed from the proc's observations.
+  */
+  void removeObservers()
+  {
+	  logger.log(Level.FINE, "{0} abandon", this);	 
+		
+	  attachedObservers.removeAllObservers();
+	  clonedObservers.removeAllObservers();
+      forkedObservers.removeAllObservers();
+      terminatedObservers.removeAllObservers();
+      terminatingObservers.removeAllObservers();
+      execedObservers.removeAllObservers();
+      syscallObservers.removeAllObservers();
+      signaledObservers.removeAllObservers();
+      instructionObservers.removeAllObservers();
+      blockers.clear();
+      pendingObservations.clear();
+  }
+  
   /**
    * (internal) This task cloned creating the new Task cloneArg.
    */

@@ -1,3 +1,23 @@
+2006-10-18  Nurdin Premji  <npremji@redhat.com>
+
+	* TestProcForceDetach.java (MyObserver.existingTask): Refactored proc.requestRemoveAllObservers to proc.requestAbandon.
+	* ProcState.java (running.handleDetach): Added
+	(Detaching.Detaching): Added new boolean parameter to decide whether to remove the observers from a task during detach.
+	(initial): Call to Detaching changed.
+	(handleDetach): Added.
+	(Attaching.ToOtherTasks.handleDeleteObservation): Call to mainTask.performDetach changed.
+	(Attaching.ToMainTask.handleDeleteObservation): Ditto.
+	(running.handleDeleteObservation): 	Call to Detaching changed..
+	* Observable.java (removeAllObservers): Added.
+	* TaskState.java (BlockedSignal.handleDetach): Added new boolean parameter to decide whether to remove the observers from a task during detach.
+	(Running.handleDetach): Ditto.
+	(attaching.handleDetach): Ditto.
+	(handleDetach): Ditto.
+	* Task.java (performDetach): Added new boolean parameter to decide whether to remove the observers from a task during detach.
+	(removeObservers): Added.	
+	* Proc.java (performDetach): Added.
+	(requestAbandon): 	Renamed, was requestRemoveAllObservations.
+
 2006-10-16  Nurdin Premji  <npremji@redhat.com>
 
 	* Proc.java (requestRemoveAllObservations): Removed synchronized.

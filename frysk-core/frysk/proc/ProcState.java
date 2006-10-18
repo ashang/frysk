@@ -64,7 +64,7 @@ abstract class ProcState
     {
 	logger.log (Level.FINEST, "{0} initial\n", proc); 
 	if (starting)
-	    return new Detaching (proc);
+	    return new Detaching (proc, false);
 	else
 	    return detached;
     }
@@ -104,7 +104,11 @@ abstract class ProcState
     {
 	throw unhandled (proc, "handleDeleteObservation");
     }
-
+    ProcState handleDetach(Proc proc)
+    {
+      throw unhandled (proc, "handleDetach");
+    }
+    
     /**
      * The process is running free (or at least was the last time its
      * status was checked).
@@ -255,7 +259,7 @@ abstract class ProcState
 		if (proc.observationsSize() == 0) {
 		    // None of the other tasks are attached, just need
 		    // to detach the main one.
-		    mainTask.performDetach ();
+		    mainTask.performDetach (false);
 		    return new Detaching (proc, mainTask);
 		}
 		return this;
@@ -306,7 +310,7 @@ abstract class ProcState
 		proc.removeObservation (observation);
 		observation.fail (new RuntimeException ("canceled"));
 		if (proc.observationsSize () == 0)
-		    return new Detaching (proc);
+		    return new Detaching (proc, false);
 		return this;
 	    }
 	}
@@ -322,15 +326,17 @@ abstract class ProcState
 	private Collection attachedTasks;
 	/**
 	 * Start detaching the entire process.
+	 * @param shouldRemoveObservers whether the observers on each task should 
+     * be removed.
 	 */
-	Detaching (Proc proc)
+	Detaching (Proc proc, boolean shouldRemoveObservers)
 	{
 	    super ("Detaching");
 	    attachedTasks = proc.getTasks ();
 	    for (Iterator i = attachedTasks.iterator ();
 		 i.hasNext (); ) {
 		Task t = (Task) i.next ();
-		t.performDetach ();
+		t.performDetach (shouldRemoveObservers);
 	    }
 	}
 	/**
@@ -417,7 +423,7 @@ abstract class ProcState
 		    observation.handleDelete ();
 		    if (proc.observationsSize () == 0) {
               logger.log(Level.FINEST, "handleDeleteObservation size == 0, detaching\n");
-			return new Detaching (proc);
+			return new Detaching (proc, false);
             }
 		}
 		else 
@@ -425,5 +431,10 @@ abstract class ProcState
         
 		return running;
 	    }
+         ProcState handleDetach(Proc proc)
+            {
+              logger.log(Level.FINE, "{0} handleDetach\n", proc);
+              return new Detaching (proc, true);
+            }        
 	};
 }

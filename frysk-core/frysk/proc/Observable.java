@@ -97,4 +97,18 @@ class Observable
     int numberOfObservers(){
       return this.observers.size();
     }
+    
+    /**
+     * Clear the set of observers.
+     */
+    void removeAllObservers()
+    {
+      Iterator iter = observers.iterator();
+      while (iter.hasNext())
+        {
+          Observer observer = (Observer) iter.next();
+          observer.deletedFrom(observers);
+        }
+      this.observers.clear();
+    }
 }

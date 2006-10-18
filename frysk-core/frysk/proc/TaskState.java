@@ -133,7 +133,7 @@ class TaskState
     {
 	throw unhandled (task, "handleAttach");
     }
-    TaskState handleDetach (Task task)
+    TaskState handleDetach (Task task, boolean shouldRemoveObservers)
     {
 	throw unhandled (task, "handleDetach");
     }
@@ -247,7 +247,7 @@ class TaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
-	    TaskState handleDetach (Task task)
+	    TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	    {
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
 		return detaching;
@@ -866,10 +866,15 @@ class TaskState
 	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
 	    return this;
 	}
-	TaskState handleDetach (Task task)
+	TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	{
 	    logger.log (Level.FINE, "{0} handleDetach\n", task); 
-	    // Can't detach a running task, first need to stop it.
+	    
+        if (shouldRemoveObservers)
+          task.removeObservers();  
+        // XXX: Otherwise check if there are still observers and panic?
+        
+        // Can't detach a running task, first need to stop it.                
 	    task.sendStop ();
 	    return detaching;
 	}
@@ -1198,10 +1203,14 @@ class TaskState
         return this;
       }
       
-      TaskState handleDetach (Task task)
+      TaskState handleDetach (Task task, boolean shouldRemoveObservers)
       {
         
         logger.log (Level.FINE, "{0} handleDetach\n", task);
+        
+        if (shouldRemoveObservers)
+          task.removeObservers();
+        // XXX: Otherwise check that observers are empty?
         
         task.sendDetach (0);
         task.proc.performTaskDetachCompleted (task);

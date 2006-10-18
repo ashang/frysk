@@ -103,7 +103,7 @@ public class FStack
 
   private final void removeObservers (Proc proc)
   {
-    proc.requestRemoveAllObservations();
+    proc.requestAbandon();
     proc.observableDetached.addObserver(new Observer()
     {
 

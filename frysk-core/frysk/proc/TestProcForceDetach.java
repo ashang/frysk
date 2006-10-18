@@ -69,7 +69,7 @@ public class TestProcForceDetach
       count--;
       // TODO Auto-generated method stub
       if (0 == count)
-        task.getProc().requestRemoveAllObservations();
+        task.getProc().requestAbandon();
     }
 
     public void taskAdded (Task task)

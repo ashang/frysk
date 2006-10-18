@@ -234,40 +234,16 @@ public abstract class Proc
 	return oldState;
     }
 
-    /**
-     * Request that the Proc remove all of its observations.
-     * Should cause a detach.
-     */
-    public void requestRemoveAllObservations()
-    {
-      Iterator iter = observationsIterator();
-      while (iter.hasNext())
-        {
-          Observation observation = (Observation) iter.next();         
-          Manager.eventLoop.add (new Observation (observation.observable, 
-                                                      observation.observer)
-                                {
-                                public void execute ()
-                                {
-                                    newState = oldState ().handleDeleteObservation
-                                    (Proc.this, this);
-                                }
+  /**
+   * Request that the Proc be forcefully detached. Quickly.
+   */
+  public void requestAbandon ()
+  {
+    logger.log(Level.FINE, "{0} abandon", this);
+    performDetach();
+    observations.clear();
+  }
 
-                                public void handleAdd ()
-                                {
-                                  // TODO Auto-generated method stub
-                                  
-                                }
-
-                                public void handleDelete ()
-                                {
-                                  // TODO Auto-generated method stub
-                                  
-                                }
-                                });
-        }
-    }
-    
     /**
      * Request that the Proc's task list be refreshed using system
      * tables.
@@ -356,6 +332,18 @@ public abstract class Proc
 	    });
     }
 
+  void performDetach()
+  {
+    logger.log(Level.FINE, "{0} performDetach\n", this);
+    Manager.eventLoop.add(new ProcEvent()
+    {
+      public void execute ()
+      {
+        newState = oldState().handleDetach(Proc.this);
+      }
+    });
+  }
+  
     /**
      * The set of observations that currently apply to this task.
      */
