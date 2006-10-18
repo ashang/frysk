@@ -1,3 +1,12 @@
+2006-10-18  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Changed all references to
+	Action to org.gnu.gtk.Action. Similarly for ActionListener.
+	Imported frysk.proc.Action; new references to Action refer 
+	to this import.
+	(toggleMainThread): Added.
+	(InstructionObserver): Added.
+
 2006-10-17  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doStackUp): Catch null TreePath selection.

@@ -44,6 +44,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -52,7 +54,6 @@ import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
-import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
@@ -83,7 +84,6 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
-import org.gnu.gtk.event.ActionListener;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
@@ -95,6 +95,7 @@ import org.gnu.gtk.event.MouseListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
+import frysk.gui.Gui;
 import frysk.gui.common.IconManager;
 //import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.dialogs.WarnDialog;
@@ -111,10 +112,13 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
+import frysk.proc.Action;
 import frysk.proc.MachineType;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcAttachedObserver;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
 
@@ -181,62 +185,66 @@ public class SourceWindow
   // private PreferenceWindow prefWin;
 
   // ACTIONS
-  private Action close;
+  private org.gnu.gtk.Action close;
 
-  private Action copy;
+  private org.gnu.gtk.Action copy;
 
   private ToggleAction find;
 
-  private Action prefsLaunch;
+  private org.gnu.gtk.Action prefsLaunch;
 
-  private Action run;
+  private org.gnu.gtk.Action run;
 
-  private Action stop;
+  private org.gnu.gtk.Action stop;
 
-  private Action step;
+  private org.gnu.gtk.Action step;
 
-  private Action next;
+  private org.gnu.gtk.Action next;
 
-  private Action cont;
+  private org.gnu.gtk.Action cont;
 
-  private Action finish;
+  private org.gnu.gtk.Action finish;
 
-  private Action terminate;
+  private org.gnu.gtk.Action terminate;
 
-  private Action stepAsm;
+  private org.gnu.gtk.Action stepAsm;
 
-  private Action nextAsm;
+  private org.gnu.gtk.Action nextAsm;
 
-  private Action stackUp;
+  private org.gnu.gtk.Action stackUp;
 
-  private Action stackDown;
+  private org.gnu.gtk.Action stackDown;
 
-  private Action stackBottom;
+  private org.gnu.gtk.Action stackBottom;
 
   private ToggleAction toggleRegisterWindow;
 
   private ToggleAction toggleMemoryWindow;
-  
+
   private ToggleAction toggleDisassemblyWindow;
-  
+
   private ToggleAction toggleConsoleWindow;
 
-   private DOMFrysk dom;
+  private ToggleAction toggleMainThread;
+
+  private DOMFrysk dom;
 
   private Task myTask;
 
   private CurrentStackView stackView;
-  
+
   private VariableWatchView watchView;
-  
+
   private ConsoleWindow conWin;
-  
+
   private ProcAttachedObserver pao;
-  
+
   public boolean runningState = false;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
+
+  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
@@ -288,7 +296,7 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-    
+
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
 
@@ -319,7 +327,7 @@ public class SourceWindow
   {
     this.watchView.addTrace(var);
   }
-  
+
   public void removeVariableTrace (Variable var)
   {
     this.watchView.removeTrace(var);
@@ -347,38 +355,39 @@ public class SourceWindow
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
                   + this.myTask.getName());
   }
-  
+
   private Proc myProc;
-  
+
   public void setMyProc (Proc myProc)
   {
     this.myProc = myProc;
     this.setTitle(this.getTitle() + this.myProc.getCommand() + " - process "
-                + this.myProc.getPid());
+                  + this.myProc.getPid());
   }
-  
+
   public Proc getMyProc ()
   {
     return this.myProc;
   }
-  
-  public DOMFrysk getDOM()
+
+  public DOMFrysk getDOM ()
   {
     return this.dom;
   }
-  
+
   /**
    * Populates the stack browser window
    * 
-   * @param frames  An array of StackFrames
+   * @param frames An array of StackFrames
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
     stackView = new CurrentStackView(frames);
-    
-//    if (this.view != null)
-//      ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
-    
+
+    // if (this.view != null)
+    // ((Container) ((Widget) this.view).getParent()).remove((Widget)
+    // this.view);
+
     if (this.view == null)
       {
         this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
@@ -386,7 +395,7 @@ public class SourceWindow
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
       }
-    
+
     updateShownStackFrame(stackView.getFirstFrameSelection());
 
     stackView.showAll();
@@ -397,7 +406,7 @@ public class SourceWindow
   /*****************************************************************************
    * PRIVATE METHODS
    ****************************************************************************/
-  
+
   /**
    * 
    */
@@ -414,11 +423,11 @@ public class SourceWindow
   {
 
     // Close action
-    this.close = new Action("close", "Close", "Close Window",
-                            GtkStockItem.CLOSE.getString());
+    this.close = new org.gnu.gtk.Action("close", "Close", "Close Window",
+                                        GtkStockItem.CLOSE.getString());
     this.close.setAccelGroup(ag);
     this.close.setAccelPath("<sourceWin>/File/Close");
-    this.close.addListener(new ActionListener()
+    this.close.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -430,10 +439,10 @@ public class SourceWindow
     this.close.connectAccelerator();
 
     // Copy action
-    this.copy = new Action("copy", "Copy",
-                           "Copy Selected Text to the Clipboard",
-                           GtkStockItem.COPY.getString());
-    this.copy.addListener(new ActionListener()
+    this.copy = new org.gnu.gtk.Action("copy", "Copy",
+                                       "Copy Selected Text to the Clipboard",
+                                       GtkStockItem.COPY.getString());
+    this.copy.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -451,7 +460,7 @@ public class SourceWindow
     this.find = new ToggleAction("find", "Find",
                                  "Find Text in the Current Buffer",
                                  GtkStockItem.FIND.getString());
-    this.find.addListener(new ActionListener()
+    this.find.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -468,10 +477,12 @@ public class SourceWindow
     this.find.connectAccelerator();
 
     // Launch preference window action
-    this.prefsLaunch = new Action("prefs", "Frysk Preferences",
-                                  "Edit Preferences",
-                                  GtkStockItem.PREFERENCES.getString());
-    this.prefsLaunch.addListener(new ActionListener()
+    this.prefsLaunch = new org.gnu.gtk.Action(
+                                              "prefs",
+                                              "Frysk Preferences",
+                                              "Edit Preferences",
+                                              GtkStockItem.PREFERENCES.getString());
+    this.prefsLaunch.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -480,8 +491,8 @@ public class SourceWindow
     });
 
     // Run program action
-    this.run = new Action("run", "Run", "Run Program", "frysk-run");
-    this.run.addListener(new ActionListener()
+    this.run = new org.gnu.gtk.Action("run", "Run", "Run Program", "frysk-run");
+    this.run.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -496,9 +507,9 @@ public class SourceWindow
     this.run.setSensitive(false);
 
     // Stop program action
-    this.stop = new Action("stop", "Stop", "Stop Program execution",
-                           "frysk-stop");
-    this.stop.addListener(new ActionListener()
+    this.stop = new org.gnu.gtk.Action("stop", "Stop",
+                                       "Stop Program execution", "frysk-stop");
+    this.stop.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
       {
@@ -508,8 +519,8 @@ public class SourceWindow
     this.stop.setSensitive(false);
 
     // Step action
-    this.step = new Action("step", "Step", "Step", "frysk-step");
-    this.step.addListener(new ActionListener()
+    this.step = new org.gnu.gtk.Action("step", "Step", "Step", "frysk-step");
+    this.step.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -524,8 +535,8 @@ public class SourceWindow
     this.step.setSensitive(false);
 
     // Next action
-    this.next = new Action("next", "Next", "Next", "frysk-next");
-    this.next.addListener(new ActionListener()
+    this.next = new org.gnu.gtk.Action("next", "Next", "Next", "frysk-next");
+    this.next.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -540,9 +551,9 @@ public class SourceWindow
     this.next.setSensitive(false);
 
     // Finish action
-    this.finish = new Action("finish", "Finish", "Finish Function Call",
-                             "frysk-finish");
-    this.finish.addListener(new ActionListener()
+    this.finish = new org.gnu.gtk.Action("finish", "Finish",
+                                         "Finish Function Call", "frysk-finish");
+    this.finish.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -557,9 +568,9 @@ public class SourceWindow
     this.finish.setSensitive(false);
 
     // Continue action
-    this.cont = new Action("continue", "Continue", "Continue Execution",
-                           "frysk-continue");
-    this.cont.addListener(new ActionListener()
+    this.cont = new org.gnu.gtk.Action("continue", "Continue",
+                                       "Continue Execution", "frysk-continue");
+    this.cont.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -574,9 +585,10 @@ public class SourceWindow
     this.cont.setSensitive(false);
 
     // Terminate action
-    this.terminate = new Action("terminate", "Terminate",
-                                "Kill Currently Executing Program", "");
-    this.terminate.addListener(new ActionListener()
+    this.terminate = new org.gnu.gtk.Action("terminate", "Terminate",
+                                            "Kill Currently Executing Program",
+                                            "");
+    this.terminate.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -590,9 +602,11 @@ public class SourceWindow
     this.terminate.setSensitive(false);
 
     // Step assembly instruction action
-    this.stepAsm = new Action("stepAsm", "Step Assembly Instruction",
-                              "Step Assembly Instruction", "frysk-stepAI");
-    this.stepAsm.addListener(new ActionListener()
+    this.stepAsm = new org.gnu.gtk.Action("stepAsm",
+                                          "Step Assembly Instruction",
+                                          "Step Assembly Instruction",
+                                          "frysk-stepAI");
+    this.stepAsm.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -608,9 +622,11 @@ public class SourceWindow
     this.stepAsm.setSensitive(false);
 
     // Next assembly instruction action
-    this.nextAsm = new Action("nextAsm", "Next Assembly Instruction",
-                              "Next Assembly Instruction", "frysk-nextAI");
-    this.nextAsm.addListener(new ActionListener()
+    this.nextAsm = new org.gnu.gtk.Action("nextAsm",
+                                          "Next Assembly Instruction",
+                                          "Next Assembly Instruction",
+                                          "frysk-nextAI");
+    this.nextAsm.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -626,9 +642,11 @@ public class SourceWindow
     this.nextAsm.setSensitive(false);
 
     // Bottom of stack action
-    this.stackBottom = new Action("stackBottom", "To Bottom of Stack",
-                                  "To Bottom of Stack", "frysk-bottom");
-    this.stackBottom.addListener(new ActionListener()
+    this.stackBottom = new org.gnu.gtk.Action("stackBottom",
+                                              "To Bottom of Stack",
+                                              "To Bottom of Stack",
+                                              "frysk-bottom");
+    this.stackBottom.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -643,9 +661,11 @@ public class SourceWindow
     this.stackBottom.connectAccelerator();
 
     // Stack down action
-    this.stackDown = new Action("stackDown", "Down One Stack Frame",
-                                "Down One Stack Frame", "frysk-down");
-    this.stackDown.addListener(new ActionListener()
+    this.stackDown = new org.gnu.gtk.Action("stackDown",
+                                            "Down One Stack Frame",
+                                            "Down One Stack Frame",
+                                            "frysk-down");
+    this.stackDown.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -659,9 +679,9 @@ public class SourceWindow
     this.stackDown.connectAccelerator();
 
     // Stack up action
-    this.stackUp = new Action("stackUp", "Up One Stack Frame",
-                              "Up One Stack Frame", "frysk-up");
-    this.stackUp.addListener(new ActionListener()
+    this.stackUp = new org.gnu.gtk.Action("stackUp", "Up One Stack Frame",
+                                          "Up One Stack Frame", "frysk-up");
+    this.stackUp.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
@@ -677,7 +697,7 @@ public class SourceWindow
     toggleRegisterWindow = new ToggleAction("toggleRegWindow",
                                             "Register Window",
                                             "Toggle the Register Window", "");
-    toggleRegisterWindow.addListener(new ActionListener()
+    toggleRegisterWindow.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
       {
@@ -688,35 +708,45 @@ public class SourceWindow
     this.toggleMemoryWindow = new ToggleAction("toggleMemWindow",
                                                "Memory Window",
                                                "Toggle the Memory Window", "");
-    this.toggleMemoryWindow.addListener(new ActionListener()
+    this.toggleMemoryWindow.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
       {
         SourceWindow.this.toggleMemoryWindow();
       }
     });
-    
-    this.toggleDisassemblyWindow = new ToggleAction("toggleDisWindow",
-                                               "Disassembly Window",
-                                               "Toggle the Disassembly Window", "");
-    this.toggleDisassemblyWindow.addListener(new ActionListener()
+
+    this.toggleDisassemblyWindow = new ToggleAction(
+                                                    "toggleDisWindow",
+                                                    "Disassembly Window",
+                                                    "Toggle the Disassembly Window",
+                                                    "");
+    this.toggleDisassemblyWindow.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
       {
         SourceWindow.this.toggleDisassemblyWindow();
       }
     });
-    
-    this.toggleConsoleWindow = new ToggleAction(
-                                                    "toggleConWindow",
-                                                    "Console Window",
-                                                    "Toggle the Console Window",
-                                                    "");
-    this.toggleConsoleWindow.addListener(new ActionListener()
+
+    this.toggleConsoleWindow = new ToggleAction("toggleConWindow",
+                                                "Console Window",
+                                                "Toggle the Console Window", "");
+    this.toggleConsoleWindow.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
       {
         SourceWindow.this.toggleConsoleWindow();
+      }
+    });
+
+    this.toggleMainThread = new ToggleAction("toggleMainThread", "Main thread",
+                                             "Toggle the main thread off", "");
+    this.toggleMainThread.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent arg0)
+      {
+        SourceWindow.this.toggleMainThread();
       }
     });
   }
@@ -758,16 +788,16 @@ public class SourceWindow
     // View Menu
     menu = new MenuItem("View", false);
     tmp = new Menu();
-    
-//    mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
-//    tmp.append(mi);
+
+    // mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
+    // tmp.append(mi);
 
     mi = (MenuItem) this.toggleRegisterWindow.createMenuItem();
     tmp.append(mi);
 
     mi = (MenuItem) this.toggleMemoryWindow.createMenuItem();
     tmp.append(mi);
-    
+
     mi = (MenuItem) this.toggleDisassemblyWindow.createMenuItem();
     tmp.append(mi);
 
@@ -1162,7 +1192,7 @@ public class SourceWindow
                                                           + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     this.view.load(selected);
-    
+
     if (source != null && selected.getDOMFunction() != null)
       {
         int line = (selected.getDOMFunction().getStartingLine());
@@ -1170,10 +1200,10 @@ public class SourceWindow
         String ret = source.getLine(line - 1).getText();
         if (ret != "")
           declaration = ret.split("\n")[0] + " " + declaration;
-        
+
         this.view.scrollToFunction(declaration);
       }
-    
+
     this.view.showAll();
   }
 
@@ -1188,7 +1218,7 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
-    
+
     this.runningState = true;
 
     // Set status of actions
@@ -1208,10 +1238,10 @@ public class SourceWindow
     this.copy.setSensitive(false);
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
-    
+
     unblockProc(this.myProc);
   }
-  
+
   private void unblockProc (Proc proc)
   {
     Iterator i = this.myProc.getTasks().iterator();
@@ -1225,26 +1255,26 @@ public class SourceWindow
 
   private void doStop ()
   {
-    //  Set status of toolbar buttons
+    // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
-    
+
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-    
+
     this.pao.iterateAttach();
   }
-  
-  public void procReblocked()
+
+  public void procReblocked ()
   {
-    //  Set status of toolbar buttons
+    // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    //this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
-    
+    // this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
+
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
-    //this.glade.getWidget(SourceWindow.TEXT_WINDOW).setSensitive(true);
+    // this.glade.getWidget(SourceWindow.TEXT_WINDOW).setSensitive(true);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
@@ -1338,45 +1368,51 @@ public class SourceWindow
       {
         return;
       }
-    
+
     int selected;
 
     if (path.getDepth() == 1)
       {
         selected = path.getIndices()[0];
-        
-    // Can't move above top stack
-    if (selected == 0)
-      {
-        this.stackUp.setSensitive(false);
-        return;
+
+        // Can't move above top stack
+        if (selected == 0)
+          {
+            this.stackUp.setSensitive(false);
+            return;
+          }
+
+        this.stackView.getSelection().select(
+                                             this.stackView.getModel().getIter(
+                                                                               ""
+                                                                                   + (selected - 1)));
+
+        if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
+          this.stackUp.setSensitive(false);
       }
 
-    this.stackView.getSelection().select(
-         this.stackView.getModel().getIter("" + (selected - 1)));
-    
-    if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
-      this.stackUp.setSensitive(false);
-      }
-    
     else
       {
-        
+
         selected = path.getIndices()[1];
-        
+
         // Can't move above top stack
         if (selected == 0)
           return;
 
         this.stackView.getSelection().select(
-        this.stackView.getModel().getIter("" + path.getIndices()[0] + 
-                                          ":" + (selected - 1)));
-        
-        if (this.stackView.getModel().getIter("" + path.getIndices()[0] +
-                                   ":" + (selected - 1)) == null)
+                                             this.stackView.getModel().getIter(
+                                                                               ""
+                                                                                   + path.getIndices()[0]
+                                                                                   + ":"
+                                                                                   + (selected - 1)));
+
+        if (this.stackView.getModel().getIter(
+                                              "" + path.getIndices()[0] + ":"
+                                                  + (selected - 1)) == null)
           this.stackUp.setSensitive(false);
       }
-    
+
     this.stackDown.setSensitive(true);
   }
 
@@ -1394,9 +1430,9 @@ public class SourceWindow
       {
         return;
       }
-  
+
     int selected;
-    
+
     if (path.getDepth() == 1)
       {
         selected = path.getIndices()[0];
@@ -1404,8 +1440,10 @@ public class SourceWindow
         try
           {
             this.stackView.getSelection().select(
-              this.stackView.getModel().getIter("" + (selected + 1)));
-            
+                                                 this.stackView.getModel().getIter(
+                                                                                   ""
+                                                                                       + (selected + 1)));
+
             if (this.stackView.getModel().getIter("" + (selected + 1)) == null)
               this.stackDown.setSensitive(false);
           }
@@ -1418,24 +1456,28 @@ public class SourceWindow
     else
       {
         selected = path.getIndices()[1];
-        
+
         try
-        {
-          this.stackView.getSelection().select(
-            this.stackView.getModel().getIter("" + path.getIndices()[0] + 
-                                           ":" + (selected + 1)));
-          
-          if (this.stackView.getModel().getIter("" + path.getIndices()[0] +
-                                            ":" + (selected + 1)) == null)
-            this.stackDown.setSensitive(false);
-        }
+          {
+            this.stackView.getSelection().select(
+                                                 this.stackView.getModel().getIter(
+                                                                                   ""
+                                                                                       + path.getIndices()[0]
+                                                                                       + ":"
+                                                                                       + (selected + 1)));
+
+            if (this.stackView.getModel().getIter(
+                                                  "" + path.getIndices()[0]
+                                                      + ":" + (selected + 1)) == null)
+              this.stackDown.setSensitive(false);
+          }
         catch (NullPointerException npe)
-        {
-          this.stackDown.setSensitive(false);
-          return;
-        }
+          {
+            this.stackDown.setSensitive(false);
+            return;
+          }
       }
-    
+
     this.stackUp.setSensitive(true);
   }
 
@@ -1453,10 +1495,10 @@ public class SourceWindow
       {
         return;
       }
-    
+
     if (path.getDepth() != 1)
-        path.up();
-    
+      path.up();
+
     TreeIter iter = this.stackView.getModel().getIter(path);
     this.stackView.getSelection().select(iter.getFirstChild());
     this.stackUp.setSensitive(false);
@@ -1493,7 +1535,7 @@ public class SourceWindow
         dialog.run();
         return;
       }
-    
+
     MemoryWindow memWin = MemoryWindowFactory.memWin;
     if (memWin == null)
       {
@@ -1505,7 +1547,7 @@ public class SourceWindow
         MemoryWindowFactory.memWin.showAll();
       }
   }
-  
+
   private void toggleDisassemblyWindow ()
   {
     if (MachineType.getMachineType() == MachineType.X8664
@@ -1518,7 +1560,7 @@ public class SourceWindow
         dialog.run();
         return;
       }
-    
+
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
     if (disWin == null)
       {
@@ -1530,15 +1572,27 @@ public class SourceWindow
         DisassemblyWindowFactory.disWin.showAll();
       }
   }
-  
+
   private void toggleConsoleWindow ()
   {
     if (this.conWin == null)
-        this.conWin = new ConsoleWindow();
+      this.conWin = new ConsoleWindow();
     else
-        this.conWin.showAll();
+      this.conWin.showAll();
   }
-  
+
+  private void toggleMainThread ()
+  {
+    Task t = this.myProc.getMainTask();
+    if (this.runningState == false)
+      {
+        t.requestUnblock(this.pao);
+        t.requestDeleteAttachedObserver(this.pao);
+      }
+    else
+      this.pao.attachTask(t);
+  }
+
   public View getView ()
   {
     return this.view;
@@ -1649,19 +1703,53 @@ public class SourceWindow
 
     public void currentStackChanged (StackFrame newFrame)
     {
-//      TreePath path = stackView.getSelection().getSelectedRows()[0];
-//      int selected = path.getIndices()[0];
-      
-//      if (stackView.getModel().getIter("" + path.getIndices()[0] +
-//                                       ":" + (selected + 1)) != null)
-            stackDown.setSensitive(true);
-      
-//      else if (stackView.getModel().getIter("" + path.getIndices()[0] +
-//                                            ":" + (selected - 1)) != null)
-            stackUp.setSensitive(true);
-      
+      // TreePath path = stackView.getSelection().getSelectedRows()[0];
+      // int selected = path.getIndices()[0];
+
+      // if (stackView.getModel().getIter("" + path.getIndices()[0] +
+      // ":" + (selected + 1)) != null)
+      stackDown.setSensitive(true);
+
+      // else if (stackView.getModel().getIter("" + path.getIndices()[0] +
+      // ":" + (selected - 1)) != null)
+      stackUp.setSensitive(true);
+
       target.updateShownStackFrame(newFrame);
     }
 
+  }
+
+  public class InstructionObserver
+      implements TaskObserver.Instruction
+  {
+    boolean added;
+
+    boolean deleted;
+
+    int hit;
+
+    public Action updateExecuted (Task task)
+    {
+      hit++;
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+
+    public void addedTo (Object o)
+    {
+      added = true;
+    }
+
+    public void deletedFrom (Object o)
+    {
+      deleted = true;
+    }
+
+    public void addFailed (Object o, Throwable w)
+    {
+      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
+                   w);
+      throw new RuntimeException(w);
+    }
   }
 }
