@@ -1,3 +1,14 @@
+2006-10-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (write_elf_file): Request a elf section notes update
+	after NOTES section data is complete. Refetch the notes section header
+	after elf_update. Reformat to GNU Style.
+	(postProcessElfFile): Reformat to GNU Style.
+	(fillENoteSection): Rename sectionDate -> sectionData.
+	(fillENotePrpsinfo): Use Proc.get{UID|PID} instead of Stat.get{UID|GID}
+	Use Proc.getParent().getPid() to find parent instead of Stat.ppid.
+	Use Proc.getCommand() instead of Stat.comm.
+	
 2006-10-19  Nurdin Premji  <npremji@redhat.com>
 	
 	* FStack.java (StackTasksObserver.addFailed): Removed TODO message.
@@ -6,7 +17,7 @@
 
 2006-10-19  Yong Zheng  <zhengyo@cn.ibm.com>
 
-	* (fillENoteSection): New function to construct PT_NOTE section).
+	* FCore.java (fillENoteSection): New function to construct PT_NOTE section).
 	(constructSectionData): New function to construct PT_NOTE data.
 	(fillENotePrpsinfo): New function to fill elf_prpsinfo info.
 

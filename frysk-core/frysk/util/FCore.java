@@ -85,7 +85,6 @@ import frysk.proc.TaskException;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Stat;
-import frysk.sys.proc.Status;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
@@ -269,16 +268,31 @@ public class FCore {
       //prpsInfo.setPrNice(processStat.nice);
       
       prpsInfo.setPrFlag(processStat.flags);
-      prpsInfo.setPrUid(Status.getUID(pid));
-      prpsInfo.setPrGid(Status.getGID(pid));
+      //prpsInfo.setPrUid(Status.getUID(pid));
+      //prpsInfo.setPrGid(Status.getGID(pid));
+      
+      // For some reason Stat does not work here in all
+      // cases, but proc.getUID/GID does.
+      
+      prpsInfo.setPrUid(proc.getUID());
+      prpsInfo.setPrGid(proc.getGID());
       
       prpsInfo.setPrPid(pid);
-      prpsInfo.setPrPpid(processStat.ppid);
+      
+      //prpsInfo.setPrPpid(processStat.ppid);
+      
+      // Stat problem same here. Stat produces 0 here. Ask proc
+      // for it's parent.
+      prpsInfo.setPrPpid(proc.getParent().getPid());
       prpsInfo.setPrPgrp(processStat.pgrp);
       
       prpsInfo.setPrSid(processStat.session);
       
-      prpsInfo.setPrFname(processStat.comm);
+      // Stat problem same here. Stat seems broken :/
+      // Use proc.getCommand for now.
+      prpsInfo.setPrFname(proc.getCommand());
+
+      //prpsInfo.setPrFname(processStat.comm);
       
       class BuildCmdLine extends CmdLineBuilder
       {
@@ -294,7 +308,7 @@ public class FCore {
       }
       BuildCmdLine cmdLine = new BuildCmdLine();
       cmdLine.construct(pid);
-      prpsInfo.setPrPsargs(cmdLine.args.toString());
+      prpsInfo.setPrPsargs(new String(cmdLine.args).toString());
       
       nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRPSINFO, prpsInfo);
       return 0;
@@ -379,176 +393,207 @@ public class FCore {
       if (list.size() <= 0)
         return;
       
-      ElfData sectionDate = noteSection.createNewElfData();
-      constructSectionData(sectionDate, list);
-      sectionDate.setType(0);
+      ElfData sectionData = noteSection.createNewElfData();
+      constructSectionData(sectionData, list);
+      sectionData.setType(0);
     }
     
-	private void write_elf_file(final Task[] tasks, final Proc proc)
-			throws ElfFileException, ElfException, TaskException {
+  private void write_elf_file (final Task[] tasks, final Proc proc)
+      throws ElfFileException, ElfException, TaskException
+  {
 
-		// Start new elf file
-		local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
-				+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
-		
-		Isa arch = proc.getMainTask().getIsa();		
-		ByteOrder order = arch.getByteOrder();
-		
-		// Create the elf header
-		local_elf.createNewEHeader(arch.getWordSize());
-		ElfEHeader elf_header = local_elf.getEHeader();
+    // Start new elf file
+    local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
+                        + proc.getPid(), ElfCommand.ELF_C_WRITE, true);
 
-		if (order == inua.eio.ByteOrder.BIG_ENDIAN)
-			elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2MSB;
-		else
-			elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2LSB;
-		
-		// Version
-		elf_header.ident[6] = (byte) local_elf.getElfVersion();
-		
-		// EXEC for now, ET_CORE later
-		elf_header.type = ElfEHeader.PHEADER_ET_EXEC;
-		
-		// Version
-		elf_header.version = local_elf.getElfVersion();
-		
-		// String Index
-		elf_header.shstrndx = 1;
-		
-		// XXX: I hate this, there must be a better way to get architecture than this ugly, ugly hack
-		String arch_test = arch.toString();
-		String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
-		
-		if (type.equals("frysk.proc.LinuxIa32")) {
-			elf_header.machine = ElfEMachine.EM_386;
-			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS32;
-		}
-		if (type.equals("frysk.proc.LinuxPPC64")) {
-			elf_header.machine = ElfEMachine.EM_PPC64;
-			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
-		}
-		if (type.equals("frysk.proc.LinuxX8664")) {
-			elf_header.machine = ElfEMachine.EM_X86_64;
-			elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
-		}
-		
-		local_elf.updateEHeader(elf_header);
+    Isa arch = proc.getMainTask().getIsa();
+    ByteOrder order = arch.getByteOrder();
 
-		//Dump out PT_NOTE
-		ElfSection noteSection = local_elf.createNewSection();
-		ElfSectionHeader noteSectHeader = noteSection.getSectionHeader();
-		ElfPHeader noteProgramHeader = null;
-        
-		// Count maps
-		final MapsCounter counter = new MapsCounter();
-		counter.construct(proc.getMainTask().getTid());
-		
-		// Build initial Program segment header including PT_NOTE program header.
-		local_elf.createNewPHeader(counter.numOfMaps + 1);
-		System.out.println("XXX: UNCOMPLETED, maps not written. Number of writeable maps: " + counter.numOfMaps);
-		
-		this.fillENoteSection(noteSection);
-		// Modify PT_NOTE section header
-		noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
-		noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
-		noteSectHeader.nameAsNum = 16;
-		//XXX: Must fix the value of offset! Maybe we neednot set it. when dumping out,
-		//     the elfutils will modify its value according the ELF object.
-		noteSectHeader.offset = 0;
-		noteSectHeader.size = noteSection.getData().getSize();
-		noteSection.update(noteSectHeader);
-        
-		// Modify PT_NOTE program header
-		noteProgramHeader = local_elf.getPHeader(0);
-		noteProgramHeader.type = ElfPHeader.PTYPE_NOTE;
-        
-		noteProgramHeader.offset = noteSectHeader.offset;
-		noteProgramHeader.filesz = noteSectHeader.size;
-		local_elf.updatePHeader(0, noteProgramHeader);
-        
-		final CoreMapsBuilder builder = new CoreMapsBuilder();
-		builder.construct(proc.getMainTask().getTid());
+    // Create the elf header
+    local_elf.createNewEHeader(arch.getWordSize());
+    ElfEHeader elf_header = local_elf.getEHeader();
 
-		// Make a static string table. XXX: Should be dynamically generated in the future?
-		// even though we know that core string tables are always the same thing.
-		String a = "\0"+"load"+"\0"+".shstrtab"+"\0"+"note"+ "\0";
-		byte[] bytes = a.getBytes();
-		
-		// Create a very small static string section. This is needed as the actual program segment data
-		// needs to be placed into Elf_Data, and that is section function, and therefore needs a section table and 
-		// a section string table. This is how gcore does it (and the only way using libelf).
-		//
-		// The kernel just dumps the segments right after the segment table. We *might* do
-		// that in the future, but for right now, let's do it as much as possible within libelf.
-		
-		
-		//Sections need a string lookup table
-		ElfSection stringSection = local_elf.createNewSection();
-		ElfData data = stringSection.createNewElfData();
-		ElfSectionHeader stringSectionHeader = stringSection.getSectionHeader();	
-		stringSectionHeader.type = ElfSectionHeaderTypes.SHTYPE_STRTAB;
-		stringSectionHeader.nameAsNum = 6; // offset of .shrstrtab;
+    if (order == inua.eio.ByteOrder.BIG_ENDIAN)
+      elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2MSB;
+    else
+      elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2LSB;
 
-		// Set elf data
-		data.setBuffer(bytes);
-		data.setSize(bytes.length);
-		// Update the section table back to elf structures.
-		stringSection.update(stringSectionHeader);
-		
-		// Repoint shstrndx to string segment number
-		elf_header = local_elf.getEHeader();
-		elf_header.shstrndx = (int) stringSection.getIndex();
-		local_elf.updateEHeader(elf_header);
-		        
-		final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
-		if (i < 0) {
-			throw new ElfException("LibElf elf_update failed with " + local_elf.getLastErrorMsg());
-		}
-		local_elf.close();
-		local_elf = null;
-		
-		// Ugly post process. Libelf will not let us write program segment when class type is 
-		// set to ET_CORE. Bit confusing. SeeSee bz sw 3373.
-		
-		// Open the file
-		boolean postProcess = postProcessElfFile(System.getProperty("user.dir") + "/fcore."
-				+ proc.getPid());
-		if (!postProcess) {
-			throw new ElfException("Could not post process elf core file. Stucj as ET_EXEC");
-		}
-		
-	}
+    // Version
+    elf_header.ident[6] = (byte) local_elf.getElfVersion();
 
-	private boolean postProcessElfFile(String file_string) {
+    // EXEC for now, ET_CORE later
+    elf_header.type = ElfEHeader.PHEADER_ET_EXEC;
 
-		// temporary
-		final int EI_NIDENT = 16;
+    // Version
+    elf_header.version = local_elf.getElfVersion();
 
-		File elf_file = new File(file_string);
-		if (!elf_file.canRead())
-			return false;
+    // String Index
+    elf_header.shstrndx = 1;
 
-		RandomAccessFile raf = null;
-		try {
-			raf = new RandomAccessFile(elf_file, "rw");
-			raf.seek(EI_NIDENT);
-			raf.write(ElfEHeader.PHEADER_ET_CORE);
-			raf.close();
-		} catch (IOException ec) {
-			ec.printStackTrace();
-			return false;
-		}
+    // XXX: I hate this, there must be a better way to get architecture than
+    // this ugly, ugly hack
+    String arch_test = arch.toString();
+    String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
 
-		return true;
-	}
+    if (type.equals("frysk.proc.LinuxIa32"))
+      {
+        elf_header.machine = ElfEMachine.EM_386;
+        elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS32;
+      }
+    if (type.equals("frysk.proc.LinuxPPC64"))
+      {
+        elf_header.machine = ElfEMachine.EM_PPC64;
+        elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
+      }
+    if (type.equals("frysk.proc.LinuxX8664"))
+      {
+        elf_header.machine = ElfEMachine.EM_X86_64;
+        elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
+      }
+
+    local_elf.updateEHeader(elf_header);
+
+    // Dump out PT_NOTE
+    ElfSection noteSection = local_elf.createNewSection();
+    ElfSectionHeader noteSectHeader = noteSection.getSectionHeader();
+    ElfPHeader noteProgramHeader = null;
+
+    // Count maps
+    final MapsCounter counter = new MapsCounter();
+    counter.construct(proc.getMainTask().getTid());
+
+    // Build initial Program segment header including PT_NOTE program header.
+    local_elf.createNewPHeader(counter.numOfMaps + 1);
+    System.out.println("XXX: UNCOMPLETED, maps not written. Number of writeable maps: "
+                       + counter.numOfMaps);
+
+    this.fillENoteSection(noteSection);
+    // Modify PT_NOTE section header
+    noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
+    noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
+    noteSectHeader.nameAsNum = 16;
+    // XXX: Must fix the value of offset! Maybe we neednot set it. when dumping
+    // out,
+    // the elfutils will modify its value according the ELF object.
+    noteSectHeader.offset = 0;
+    noteSectHeader.size = noteSection.getData().getSize();
+    noteSection.update(noteSectHeader);
+
+    // Must first ask libelf to construct offset location before
+    // adding offset back to program header. Otherwise program offset
+    // will be 0.
+    if (local_elf.update(ElfCommand.ELF_C_NULL) < 0)
+      {
+        throw new ElfException("Cannot calculate note section offset");
+      }
+
+    // Then re-fetch the elf modified header from section. Now offset
+    // is calculated and correct.
+    noteSectHeader = noteSection.getSectionHeader();
+
+    // Modify PT_NOTE program header
+    noteProgramHeader = local_elf.getPHeader(0);
+    noteProgramHeader.type = ElfPHeader.PTYPE_NOTE;
+
+    noteProgramHeader.offset = noteSectHeader.offset;
+    noteProgramHeader.filesz = noteSectHeader.size;
+    local_elf.updatePHeader(0, noteProgramHeader);
+
+    final CoreMapsBuilder builder = new CoreMapsBuilder();
+    builder.construct(proc.getMainTask().getTid());
+
+    // Make a static string table. XXX: Should be dynamically generated in the
+    // future?
+    // even though we know that core string tables are always the same thing.
+    String a = "\0" + "load" + "\0" + ".shstrtab" + "\0" + "note" + "\0";
+    byte[] bytes = a.getBytes();
+
+    // Create a very small static string section. This is needed as the actual
+    // program segment data
+    // needs to be placed into Elf_Data, and that is section function, and
+    // therefore needs a section table and
+    // a section string table. This is how gcore does it (and the only way using
+    // libelf).
+    //
+    // The kernel just dumps the segments right after the segment table. We
+    // *might* do
+    // that in the future, but for right now, let's do it as much as possible
+    // within libelf.
+
+    // Sections need a string lookup table
+    ElfSection stringSection = local_elf.createNewSection();
+    ElfData data = stringSection.createNewElfData();
+    ElfSectionHeader stringSectionHeader = stringSection.getSectionHeader();
+    stringSectionHeader.type = ElfSectionHeaderTypes.SHTYPE_STRTAB;
+    stringSectionHeader.nameAsNum = 6; // offset of .shrstrtab;
+
+    // Set elf data
+    data.setBuffer(bytes);
+    data.setSize(bytes.length);
+    // Update the section table back to elf structures.
+    stringSection.update(stringSectionHeader);
+
+    // Repoint shstrndx to string segment number
+    elf_header = local_elf.getEHeader();
+    elf_header.shstrndx = (int) stringSection.getIndex();
+    local_elf.updateEHeader(elf_header);
+
+    final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
+    if (i < 0)
+      {
+        throw new ElfException("LibElf elf_update failed with "
+                               + local_elf.getLastErrorMsg());
+      }
+    local_elf.close();
+    local_elf = null;
+
+    // Ugly post process. Libelf will not let us write program segment when
+    // class type is
+    // set to ET_CORE. Bit confusing. SeeSee bz sw 3373.
+
+    // Open the file
+    boolean postProcess = postProcessElfFile(System.getProperty("user.dir")
+                                             + "/fcore." + proc.getPid());
+    if (! postProcess)
+      {
+        throw new ElfException(
+                               "Could not post process elf core file. Stucj as ET_EXEC");
+      }
+
+  }
+
+  private boolean postProcessElfFile (String file_string)
+  {
+
+    // temporary
+    final int EI_NIDENT = 16;
+
+    File elf_file = new File(file_string);
+    if (! elf_file.canRead())
+      return false;
+
+    RandomAccessFile raf = null;
+    try
+      {
+        raf = new RandomAccessFile(elf_file, "rw");
+        raf.seek(EI_NIDENT);
+        raf.write(ElfEHeader.PHEADER_ET_CORE);
+        raf.close();
+      }
+    catch (IOException ec)
+      {
+        ec.printStackTrace();
+        return false;
+      }
+
+    return true;
+  }
 
 
 	/**
-	 * 
-	 * Very basic Builder that forward counts the number of maps we have to
-	 * construct later, and dump to core.
-	 * 
-	 */
+   * Very basic Builder that forward counts the number of maps we have to
+   * construct later, and dump to core.
+   */
 	class MapsCounter extends MapsBuilder {
 
 		int numOfMaps = 0;
