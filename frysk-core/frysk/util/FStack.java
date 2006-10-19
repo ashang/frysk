@@ -80,15 +80,19 @@ public class FStack
     this.writer = writer;
   }
 
-  public void run (int pid)
+  public void scheduleStack (int pid)
   {
     Manager.host.requestRefreshXXX(true);
 
     // XXX: Should get a message back when the refresh has finished and the
     // proc has been found.
     Manager.eventLoop.runPending();
-    proc = Manager.host.getProc(new ProcId(pid));
-
+    scheduleStack(Manager.host.getProc(new ProcId(pid)));    
+  }
+  
+  public void scheduleStack (Proc p)
+  {
+    proc = p;
     if (proc == null)
       {
         System.out.println("Couldn't get the proc");
@@ -98,7 +102,6 @@ public class FStack
     procAttachedObserver = new ProcAttachedObserver(
                                                     proc,
                                                     new StackTasksObserver(proc));
-    Manager.eventLoop.start();
   }
 
   private final void removeObservers (Proc proc)
@@ -210,7 +213,6 @@ public class FStack
 
     public void addFailed (Object observable, Throwable w)
     {
-      // TODO Auto-generated method stub
       System.err.println(w);
       Manager.eventLoop.requestStop();
       System.exit(2);

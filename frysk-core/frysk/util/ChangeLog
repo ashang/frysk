@@ -1,3 +1,9 @@
+2006-10-19  Nurdin Premji  <npremji@redhat.com>
+	
+	* FStack.java (StackTasksObserver.addFailed): Removed TODO message.
+	(scheduleStack (int)): Renamed, was run.
+	(scheduleStack (Proc)): Added. 	Don't start eventLoop here.
+
 2006-10-19  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* (fillENoteSection): New function to construct PT_NOTE section).

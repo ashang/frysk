@@ -51,6 +51,7 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+import frysk.proc.Manager;
 import frysk.util.FStack;
 
 public class fstack
@@ -169,7 +170,8 @@ public class fstack
     FStack stacker = new FStack();
 
     stacker.setWriter(new PrintWriter(System.out, true));
-    stacker.run(pid);
+    stacker.scheduleStack(pid);
 
+    Manager.eventLoop.run();
   }
 }
