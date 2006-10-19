@@ -47,8 +47,10 @@ import inua.eio.ByteOrder;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.ConsoleHandler;
@@ -63,7 +65,10 @@ import lib.elf.ElfEHeader;
 import lib.elf.ElfEMachine;
 import lib.elf.ElfException;
 import lib.elf.ElfFileException;
+import lib.elf.ElfNhdr;
+import lib.elf.ElfNhdrType;
 import lib.elf.ElfPHeader;
+import lib.elf.ElfPrpsinfo;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfSectionHeaderTypes;
@@ -77,7 +82,10 @@ import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
+import frysk.sys.proc.Stat;
+import frysk.sys.proc.Status;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
@@ -234,14 +242,154 @@ public class FCore {
 		});
 	}
 
+
+    /**
+     * Fill the ElfNhdr object according to Proc object.
+     * 
+     * @param nhdrEntry
+     * @param proc
+     * @return less than zero when error occurs, or return one value 
+     *         that is equal to zero or more than zero.
+     */
+    protected int fillENotePrpsinfo(ElfNhdr nhdrEntry, Proc proc)
+    {
+      //XXX: fill the elf_prpsinfo here.
+      int pid = proc.getPid();
+      
+      ElfPrpsinfo prpsInfo = new ElfPrpsinfo();
+      
+      Stat processStat = new Stat();
+      
+      processStat.refresh();
+      
+      prpsInfo.setPrState(processStat.state);
+      prpsInfo.setPrSname(processStat.state);
+      
+      //prpsInfo.setPrZomb(processStat.zero);
+      //prpsInfo.setPrNice(processStat.nice);
+      
+      prpsInfo.setPrFlag(processStat.flags);
+      prpsInfo.setPrUid(Status.getUID(pid));
+      prpsInfo.setPrGid(Status.getGID(pid));
+      
+      prpsInfo.setPrPid(pid);
+      prpsInfo.setPrPpid(processStat.ppid);
+      prpsInfo.setPrPgrp(processStat.pgrp);
+      
+      prpsInfo.setPrSid(processStat.session);
+      
+      prpsInfo.setPrFname(processStat.comm);
+      
+      class BuildCmdLine extends CmdLineBuilder
+      {
+          byte[] args;
+          public void buildBuffer (byte[] buf)
+          {
+            args = buf;  
+          }
+          public void buildArgv (String[] argv)
+          {
+            //Do nothing.
+          }
+      }
+      BuildCmdLine cmdLine = new BuildCmdLine();
+      cmdLine.construct(pid);
+      prpsInfo.setPrPsargs(cmdLine.args.toString());
+      
+      nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRPSINFO, prpsInfo);
+      return 0;
+    }
+    
+    /**
+     * Transform all information carried by list into ElfData object.
+     * 
+     * @param noteSectionData
+     * @param list ElfNhdr list.
+     * @return the number of invalid ElfNhdr objects.
+     */
+    protected int constructSectionData(ElfData noteSectionData, List nhdrList)
+    {
+      int size = 0;
+      
+      long secSize = 0;
+      long entrySize = 0;
+      
+      size = nhdrList.size();
+      if (size <= 0)
+        return 0;
+      
+      // Count the size of the whole PT_NOTE section.
+      for (int index = 0; index < size; index++)
+        {
+          ElfNhdr entry = (ElfNhdr)nhdrList.get(index);
+          
+          entrySize = entry.getNhdrEntrySize();
+          if (entrySize <= 0)
+            {
+              //One invalid entry, ignore it.
+              nhdrList.remove(index);
+              size--;
+              index--;
+              continue;
+            }
+          
+          secSize += entrySize;
+        }
+      //XXX: in the operation "new byte[count]", count must be "int". 
+      // If secSize is bigger than the max of "int' type, how can we do?
+      byte[] noteSecBuffer = new byte[(int)secSize];
+      long startAddress = 0;
+      
+      // Begin to fill the noteSection memory region.
+      size = nhdrList.size();
+      for (int index = 0; index < size; index++)
+        {
+          ElfNhdr entry = (ElfNhdr)nhdrList.get(index);
+          
+          entry.fillMemRegion(noteSecBuffer, startAddress);
+          
+          startAddress += entry.getNhdrEntrySize();
+        }
+      
+      noteSectionData.setBuffer(noteSecBuffer);
+      noteSectionData.setSize(noteSecBuffer.length);
+      
+      return size;
+    }
+    
+    public void fillENoteSection(ElfSection noteSection)
+    {
+      int ret = -1;
+      int entryCount = 0;
+      
+      ArrayList list = new ArrayList();
+      
+      ElfNhdr prpsinfoNhdr = new ElfNhdr();
+      ret = this.fillENotePrpsinfo(prpsinfoNhdr, this.proc);
+      if (ret >= 0)
+        {
+          // Fill PRPSINFO correctly.
+          list.add(entryCount, prpsinfoNhdr);
+          entryCount++;
+        }
+      
+      //XXX: Continue to fill other ElfNhdr object, such as NT_PRSTATUS info.
+      // ElfNhdr psstatusNhdr = new ...
+      
+      if (list.size() <= 0)
+        return;
+      
+      ElfData sectionDate = noteSection.createNewElfData();
+      constructSectionData(sectionDate, list);
+      sectionDate.setType(0);
+    }
+    
 	private void write_elf_file(final Task[] tasks, final Proc proc)
 			throws ElfFileException, ElfException, TaskException {
 
 		// Start new elf file
 		local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
 				+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
-
-
 		
 		Isa arch = proc.getMainTask().getIsa();		
 		ByteOrder order = arch.getByteOrder();
@@ -285,15 +433,39 @@ public class FCore {
 		}
 		
 		local_elf.updateEHeader(elf_header);
-		
+
+		//Dump out PT_NOTE
+		ElfSection noteSection = local_elf.createNewSection();
+		ElfSectionHeader noteSectHeader = noteSection.getSectionHeader();
+		ElfPHeader noteProgramHeader = null;
+        
 		// Count maps
 		final MapsCounter counter = new MapsCounter();
 		counter.construct(proc.getMainTask().getTid());
 		
-		// Build initial Program segment header
-		local_elf.createNewPHeader(counter.numOfMaps);
+		// Build initial Program segment header including PT_NOTE program header.
+		local_elf.createNewPHeader(counter.numOfMaps + 1);
 		System.out.println("XXX: UNCOMPLETED, maps not written. Number of writeable maps: " + counter.numOfMaps);
 		
+		this.fillENoteSection(noteSection);
+		// Modify PT_NOTE section header
+		noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
+		noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
+		noteSectHeader.nameAsNum = 16;
+		//XXX: Must fix the value of offset! Maybe we neednot set it. when dumping out,
+		//     the elfutils will modify its value according the ELF object.
+		noteSectHeader.offset = 0;
+		noteSectHeader.size = noteSection.getData().getSize();
+		noteSection.update(noteSectHeader);
+        
+		// Modify PT_NOTE program header
+		noteProgramHeader = local_elf.getPHeader(0);
+		noteProgramHeader.type = ElfPHeader.PTYPE_NOTE;
+        
+		noteProgramHeader.offset = noteSectHeader.offset;
+		noteProgramHeader.filesz = noteSectHeader.size;
+		local_elf.updatePHeader(0, noteProgramHeader);
+        
 		final CoreMapsBuilder builder = new CoreMapsBuilder();
 		builder.construct(proc.getMainTask().getTid());
 
@@ -320,7 +492,6 @@ public class FCore {
 		// Set elf data
 		data.setBuffer(bytes);
 		data.setSize(bytes.length);
-
 		// Update the section table back to elf structures.
 		stringSection.update(stringSectionHeader);
 		
@@ -328,9 +499,7 @@ public class FCore {
 		elf_header = local_elf.getEHeader();
 		elf_header.shstrndx = (int) stringSection.getIndex();
 		local_elf.updateEHeader(elf_header);
-		
-
-		
+		        
 		final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
 		if (i < 0) {
 			throw new ElfException("LibElf elf_update failed with " + local_elf.getLastErrorMsg());
@@ -426,8 +595,9 @@ public class FCore {
 			if (permRead == true) {
 								
 				// Get empty progam segment header corresponding to this entry.
-				final ElfPHeader pheader = local_elf.getPHeader(numOfMaps);
-				pheader.offset = offset;
+                // PT_NOTE's program header entry takes the index: 0. So we should begin from 1.
+				final ElfPHeader pheader = local_elf.getPHeader(numOfMaps + 1);
+                pheader.offset = offset;
 				pheader.type = ElfPHeader.PTYPE_LOAD;
 				pheader.vaddr = addressLow;
 				pheader.memsz = addressHigh - addressLow;
@@ -501,7 +671,7 @@ public class FCore {
 				pheader.offset = sectionHeader.offset;
 				pheader.align = sectionHeader.addralign;
 				// Write back Segment header to elf structure
-				local_elf.updatePHeader(numOfMaps, pheader);
+				local_elf.updatePHeader(numOfMaps + 1, pheader);
 				numOfMaps++;
 			}
 			
