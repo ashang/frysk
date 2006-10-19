@@ -190,17 +190,22 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
       return;
     
     int length = fname.length();
+    
     if (length < ELF_PRPSINFO_FNAME_MAXLEN)
     {
+   
+      // Cannot use toCharArray, as it will return a new instance of char array[]
+      // the exact length of the String (replace whatever was previously in the
+      // this.prfname.
+            
       this.pr_fname = fname.toCharArray();
-      this.pr_fname[length] = '0';
+      //this.pr_fname[length] = '\0';
     }
     else
       {
         String name = fname.substring(0, ELF_PRPSINFO_FNAME_MAXLEN);
-        
         this.pr_fname = name.toCharArray();
-        this.pr_fname[ELF_PRPSINFO_FNAME_MAXLEN] = '0';  
+        //this.pr_fname[ELF_PRPSINFO_FNAME_MAXLEN] = '\0';  
       }
   }
   public char[] getPrFname()
