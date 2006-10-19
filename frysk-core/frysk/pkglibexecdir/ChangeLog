@@ -1,3 +1,13 @@
+2006-10-19  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c :Do the same for all architectures.
+
+2006-10-19  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* funit-breakpoints.c (trap_handler): Call siglongjmp to return.
+	(dummy): Call sigsetjmp to skip the invalid instruction after
+	it is executed for the first time on PPC64.
+
 2006-10-13  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* funit-ppc64-regs.S: Set FPRs for the check in TestRegs. 

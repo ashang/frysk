@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <setjmp.h>
 
 // Counters for how many times the breakpoint functions have been called.
 // Used as sanity check to tell the tester the functions have actually ran.
@@ -57,6 +58,8 @@ static pid_t pid;
 static int send_trap;
 static int received_trap;
 
+static sigjmp_buf env;
+
 static void
 trap_handler(int sig)
 {
@@ -67,6 +70,11 @@ trap_handler(int sig)
     }
 
   received_trap++;
+
+  // Trap handler is triggered by inline invalide instruction in
+  // dummy().
+  if (received_trap % 2 == 0)
+    siglongjmp(env, SIGTRAP);
 }
 
 // Tries to trick frysk by sending trap signals and by having its
@@ -78,14 +86,26 @@ dummy()
   kill (pid, SIGTRAP);
   send_trap++;
 
-  // Generating a trap event ourselves.
+  // Generating a trap event ourselves, simulating "bad code".  Setup
+  // a sigsetjump so we can handle it and return from this function
+  // safely when the signal handler uses longjmp. On some
+  // architectures the PC isn't incremented on invallid/trapping
+  // instructions. So this makes sure we skip it when we return.
+  if (sigsetjmp (env, 1) == 0)
+    {
 #if defined(__i386__) || defined(__x86_64__)
-  asm("int3");
+      asm("int3");
 #elif defined(__powerpc64__) || defined(__powerpc__)
-  asm(".long 0x7d821008");
+      asm(".long 0x7d821008");
 #else
-   #error unsuported architecture
+      #error unsuported architecture
 #endif
+    }
+  else
+    {
+      // Returned from signal handler through longjmp.
+      return;
+    }
 }
 
 static void
