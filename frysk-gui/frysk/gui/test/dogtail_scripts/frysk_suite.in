@@ -68,6 +68,7 @@ import viewerButtons
 import viewerMarkers
 import test2866
 import test2985
+import test3380
 import stressDruid
 import guiWalkTest
 
@@ -86,6 +87,7 @@ viewerButtonsSuite = viewerButtons.suite()
 viewerMarkersSuite = viewerMarkers.suite()
 test2866Suite = test2866.suite()
 test2985Suite = test2985.suite()
+test3380Suite = test3380.suite()
 stressDruidSuite = stressDruid.suite()
 guiWalkTestSuite = guiWalkTest.suite()
 
@@ -102,6 +104,8 @@ suite.addTest(test2985Suite)
 # Commented out - test aborts as of 20060926 - bug #2807
 # suite.addTest(stressDruidSuite)
 suite.addTest(guiWalkTestSuite)
+# Commented out - test aborts as of 20061019 - bug #3380
+# suite.addTest(test3380Suite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)

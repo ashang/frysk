@@ -188,7 +188,7 @@ class guiWalktest ( unittest.TestCase ):
         OKbutton.click()
 
         # b open frysk source window - need to wait for it to be displayed
-        time.sleep ( 30 )
+        time.sleep ( 15 )
         sourceDialogName = 'Frysk Source Window for: ' + targetProcessName.name[0:15] + ' - process ' + targetPID.name
         sourceDialog = self.frysk.child (sourceDialogName)        
         
