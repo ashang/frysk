@@ -1,3 +1,9 @@
+2006-10-20  Yong Zheng  <zhengyong@cn.ibm.com>
+
+	* (fillENotePrpsinfo): Pass pid as one parameter when refreshing Stat.
+	(postProcessElfFile): Support modifications of the e_type in ELF 
+	header on big-endian platform.
+
 2006-10-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (write_elf_file): Request a elf section notes update

@@ -85,6 +85,7 @@ import frysk.proc.TaskException;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Stat;
+import frysk.sys.proc.Status;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
@@ -259,40 +260,37 @@ public class FCore {
       
       Stat processStat = new Stat();
       
-      processStat.refresh();
+      processStat.refresh(pid);
       
       prpsInfo.setPrState(processStat.state);
       prpsInfo.setPrSname(processStat.state);
       
-      //prpsInfo.setPrZomb(processStat.zero);
-      //prpsInfo.setPrNice(processStat.nice);
+      String midStr = null;
+      // Transform processStat.zero(int) into char.
+      if ((processStat.zero >= 0) && (processStat.zero < 10))
+      {
+        midStr = String.valueOf(processStat.zero);
+        
+        prpsInfo.setPrZomb(midStr.charAt(0));
+      }
+      
+      if ((processStat.nice >= 0) && (processStat.nice < 10))
+      {
+        midStr = String.valueOf(processStat.nice);
+        
+        prpsInfo.setPrNice(midStr.charAt(0));
+      }
       
       prpsInfo.setPrFlag(processStat.flags);
-      //prpsInfo.setPrUid(Status.getUID(pid));
-      //prpsInfo.setPrGid(Status.getGID(pid));
-      
-      // For some reason Stat does not work here in all
-      // cases, but proc.getUID/GID does.
-      
-      prpsInfo.setPrUid(proc.getUID());
-      prpsInfo.setPrGid(proc.getGID());
+      prpsInfo.setPrUid(Status.getUID(pid));
+      prpsInfo.setPrGid(Status.getGID(pid));
       
       prpsInfo.setPrPid(pid);
-      
-      //prpsInfo.setPrPpid(processStat.ppid);
-      
-      // Stat problem same here. Stat produces 0 here. Ask proc
-      // for it's parent.
-      prpsInfo.setPrPpid(proc.getParent().getPid());
+      prpsInfo.setPrPpid(processStat.ppid);
       prpsInfo.setPrPgrp(processStat.pgrp);
       
       prpsInfo.setPrSid(processStat.session);
-      
-      // Stat problem same here. Stat seems broken :/
-      // Use proc.getCommand for now.
-      prpsInfo.setPrFname(proc.getCommand());
-
-      //prpsInfo.setPrFname(processStat.comm);
+      prpsInfo.setPrFname(processStat.comm);
       
       class BuildCmdLine extends CmdLineBuilder
       {
@@ -401,7 +399,8 @@ public class FCore {
   private void write_elf_file (final Task[] tasks, final Proc proc)
       throws ElfFileException, ElfException, TaskException
   {
-
+    int endianType = 0;
+    
     // Start new elf file
     local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
                         + proc.getPid(), ElfCommand.ELF_C_WRITE, true);
@@ -417,7 +416,9 @@ public class FCore {
       elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2MSB;
     else
       elf_header.ident[5] = ElfEHeader.PHEADER_ELFDATA2LSB;
-
+    
+    endianType = elf_header.ident[5];
+    
     // Version
     elf_header.ident[6] = (byte) local_elf.getElfVersion();
 
@@ -553,7 +554,7 @@ public class FCore {
 
     // Open the file
     boolean postProcess = postProcessElfFile(System.getProperty("user.dir")
-                                             + "/fcore." + proc.getPid());
+                                             + "/fcore." + proc.getPid(), endianType);
     if (! postProcess)
       {
         throw new ElfException(
@@ -562,7 +563,7 @@ public class FCore {
 
   }
 
-  private boolean postProcessElfFile (String file_string)
+  private boolean postProcessElfFile (String file_string, int endianType)
   {
 
     // temporary
@@ -577,7 +578,17 @@ public class FCore {
       {
         raf = new RandomAccessFile(elf_file, "rw");
         raf.seek(EI_NIDENT);
+        //Clean EI_DATA flag, 16-bit size.
+        raf.write(0);
+        raf.write(0);
+        
+        if (endianType == ElfEHeader.PHEADER_ELFDATA2LSB)
+          raf.seek(EI_NIDENT);
+        else
+          raf.seek(EI_NIDENT + 1);
+        
         raf.write(ElfEHeader.PHEADER_ET_CORE);
+        
         raf.close();
       }
     catch (IOException ec)

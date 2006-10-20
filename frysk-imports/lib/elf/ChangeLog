@@ -1,3 +1,7 @@
+2006-10-20  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* ElfPrpsinfo.java (setPrPgrp): Rename to getPrPgrp.
+
 2006-10-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrpsinfo.java (setPrFname): Use String instead of char[].

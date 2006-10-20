@@ -170,7 +170,7 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
     this.pr_pgrp = pgrp;
   }
   
-  public int setPrPgrp()
+  public int getPrPgrp()
   {
     return this.pr_pgrp;
   }
