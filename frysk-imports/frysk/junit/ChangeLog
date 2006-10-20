@@ -1,3 +1,10 @@
+2006-10-20  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java: (runArchCases): Removed extra Runner, fixes issue with double logging.
+	(addOptions.level.parsed): Moved level variables here so they don't hang around globally.
+	(Runner): Only set the logger once on creation.
+	
+
 2006-10-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java: Coding nit, remove false== and null==.

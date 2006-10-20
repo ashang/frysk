@@ -69,7 +69,7 @@ import java.util.LinkedList;
 public class Runner
     extends TestRunner
 {
-    static Logger logger;
+    static Logger logger = EventLogger.get ("logs/", "frysk_core_event.log");
     
     // Reapeat onece by default.
     private int repeatValue = 1;
@@ -77,12 +77,7 @@ public class Runner
     private String archBuild = null; 
     private Collection testCases = null;
     
-    private Parser parser = null;
-	    
-    private String levelValue = null;
-	
-    private  Level level = null;
-	    
+    private Parser parser = null;	    
 
     private LinkedList otherArgs;
     
@@ -322,7 +317,6 @@ public class Runner
 			    // Need to set both the console and the main logger as
 			    // otherwize the console won't see the log messages.		
 
-	  
 			    System.out.println ("console " + consoleLevel);	   
 			    Handler consoleHandler = new ConsoleHandler ();
 			    consoleHandler.setLevel (consoleLevel);
@@ -340,12 +334,13 @@ public class Runner
 	    });
 	parser.add(new Option("level", 'l', "Set the log level. The log-level can be " +
 			      "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]", "<log-level>") {
-		public void parsed(String arg0) throws OptionException
-		{
-		    levelValue = arg0;				
+		public void parsed(String levelValue) throws OptionException
+		{				
 		    try
 			{
-			    level = Level.parse (levelValue);
+			    Level level = Level.parse (levelValue);
+                if (levelValue != null)
+                    logger.setLevel (level);                
 			}
 		    catch (IllegalArgumentException e)
 			{
@@ -401,13 +396,7 @@ public class Runner
 
 	// Create the command line parser, and use it to parse all
 	// command line options.
-	parser = new Parser ("Runner", "1.0", true)
-	    {
-		protected void validate()
-		    throws OptionException
-		{
-		}
-	    };
+	parser = new Parser ("Runner", "1.0", true);
     
 	addOptions(parser);
 	    
@@ -416,20 +405,13 @@ public class Runner
 	
 	otherArgs = new LinkedList();
 	    
-	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	parser.parse(args, new FileArgumentCallback()
 	    {
 		public void notifyFile(String arg) throws OptionException
 		{			
 		    otherArgs.add(arg);
 		}
-	    });
-	  
-	// Create the file logger, and then set it's level to that
-	// specified on the command line.
-	logger = EventLogger.get ("logs/", "frysk_core_event.log");
-	if (levelValue != null)
-	    logger.setLevel (level);
+	    });	  
 
     }
 
@@ -457,18 +439,17 @@ public class Runner
 			     String exec32Prefix,
 			     String dataPrefix)
     {
-	Runner testRunner = new Runner (args);
 	int result = SUCCESS_EXIT;
 
-        testRunner.setBuildArch(Build.BUILD_ARCH);
+    setBuildArch(Build.BUILD_ARCH);
 	
 	// Set the path prefixes and then do the common test.
 	Paths.setPrefixes (execPrefix, dataPrefix);
-	result = worstResult (testRunner.runArchCases (archTests), result);
+	result = worstResult (runArchCases (archTests), result);
 	
 	// Set the execPrefix of arch32 and then do the arch32 test.
 	Paths.setPrefixes (exec32Prefix, dataPrefix);
-	result = worstResult (testRunner.runArch32Cases (arch32Tests), result);
+	result = worstResult (runArch32Cases (arch32Tests), result);
 
 	return result;
     }
