@@ -104,7 +104,7 @@ public class FStack
     if (! isOwned)
       {
         System.err.println("Process " + proc
-                           + " is not owned by user/group. Cannot coredump.");
+                           + " is not owned by user/group. Cannot stacktrace.");
         System.exit(- 1);
       }
 
