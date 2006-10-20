@@ -36,14 +36,26 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+#include <alloca.h>
+#include <cstdlib>
 #include "libdwfl.h"
 #include <gcj/cni.h>
 
 #include "lib/dw/DwflModule.h"
+#include "lib/dw/DwflLine.h"
 #include "lib/dw/ModuleElfBias.h"
 #include "lib/elf/Elf.h"
 
 #define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
+
+jstring
+lib::dw::DwflModule::getName()
+{
+  if (!name)
+    name = JvNewStringUTF(dwfl_module_info(DWFL_MODULE_POINTER,
+					   0, 0, 0, 0, 0, 0, 0));
+  return name;
+}
 
 lib::dw::ModuleElfBias*
 lib::dw::DwflModule::module_getelf()
@@ -59,3 +71,35 @@ lib::dw::DwflModule::module_getelf()
 		
 	return ret;	
 }
+
+typedef JArray<lib::dw::DwflLine *> DwflLineArray;
+
+DwflLineArray *
+lib::dw::DwflModule::getLines(jstring filename, jint lineno, jint column)
+{
+  int fileNameLength =  JvGetStringUTFLength(filename);
+  char *fileName = (char *)alloca(fileNameLength + 1);
+  JvGetStringUTFRegion(filename, 0, fileNameLength, fileName);
+  ::Dwfl_Line **srcsp = 0;
+  size_t nsrcs = 0;
+  int result = ::dwfl_module_getsrc_file(DWFL_MODULE_POINTER, fileName, lineno,
+					 column, &srcsp, &nsrcs);
+  if (result >= 0)
+    {
+      DwflLineArray *array
+	= (DwflLineArray *)JvNewObjectArray(nsrcs,
+					    &lib::dw::DwflLine::class$,
+					    0);
+      for (size_t i = 0; i < nsrcs; i++)
+	{
+	  lib::dw::DwflLine *line = new lib::dw::DwflLine((jlong)srcsp[i],
+							  getParent());
+	  elements(array)[i] = line;
+	}
+      std::free(srcsp);
+      return array;
+    }
+  return 0;
+}
+
+  

@@ -1,3 +1,15 @@
+2006-10-20  Tim Moore  <timoore@redhat.com>
+
+	* Dwfl.java (getModules): New method.
+	(getModule): Move to CNI.
+	(getLineAddresses): New method.
+	* cni/Dwfl.cxx (getModule, dwfl_getmodules): New native methods.
+	* DwflModule.java (getName, getLines): New methods.
+	* cni/DwflModule.cxx (getName, getLines): Implementations.
+	* DwflLine.java (DwflLine): Make visible to package.
+	* tests/TestDwfl.java (testGetModules, testGetAddresses): New
+	tests for new methods. 
+
 2006-10-11  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getFormData): New.

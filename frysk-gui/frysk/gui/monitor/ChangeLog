@@ -226,7 +226,6 @@
 	(enterBottomHalf): Ditto.
 	* observers/SysCallUtilyInfo.java: New.
 	
->>>>>>> 1.370
 2006-08-31  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcTreeView.java (threadViewInit): Set the column header

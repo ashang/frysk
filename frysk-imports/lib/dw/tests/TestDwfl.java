@@ -40,11 +40,15 @@
 
 package lib.dw.tests;
 
+import java.util.Vector;
+import java.util.Iterator;
 import frysk.junit.TestCase;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
+import lib.dw.DwflModule;
+
 
 public class TestDwfl
     extends TestCase
@@ -103,4 +107,53 @@ public class TestDwfl
       }
   }
 
+  // Get all the modules of the test application; look for some that
+  // should be there. 
+  public void testGetModules() 
+  {
+    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    DwflModule[] modules = dwfl.getModules();
+    assertNotNull(modules);
+    // Look for some modules that should be there.
+    boolean foundTestRunner = false;
+    boolean foundlibc = false;
+    boolean foundlibgcj = false;
+    for (int i = 0; i < modules.length; i++) 
+      {
+	String modName = modules[i].getName();
+	if (modName.lastIndexOf("TestRunner") >= 0)
+	  foundTestRunner = true;
+	else if (modName.lastIndexOf("libc") >= 0)
+	  foundlibc = true;
+	else if (modName.lastIndexOf("libgcj") >= 0)
+	  foundlibgcj = true;
+      }
+    assertTrue(foundTestRunner && foundlibc && foundlibgcj);
+  }
+
+  // Get a line from an address, then see that the address is included
+  // in the DwflLine records returned for a line.
+  public void testGetAddresses() 
+  {
+    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    assertNotNull(dwfl);
+    long addr = TestLib.getFuncAddr();
+    DwflLine line = dwfl.getSourceLine(addr);
+    assertNotNull(line);
+    Vector lines = dwfl.getLineAddresses(line.getSourceFile(), 
+					 line.getLineNum(),
+					 0);
+    Iterator linesIterator = lines.iterator();
+    boolean foundAddress = false;
+    while (linesIterator.hasNext()) 
+      {
+	DwflLine addrLine = (DwflLine)linesIterator.next();
+	if (addrLine.getAddress() == addr) 
+	  {
+	    foundAddress = true;
+	    break;
+	  }
+      }
+    assertTrue(foundAddress);
+  }
 }

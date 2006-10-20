@@ -47,7 +47,7 @@ public class DwflLine
 
   private Dwfl parent;
 
-  protected DwflLine (long pointer, Dwfl parent)
+  DwflLine (long pointer, Dwfl parent)
   {
     this.pointer = pointer;
     this.parent = parent;

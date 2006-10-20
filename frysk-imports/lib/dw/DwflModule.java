@@ -39,7 +39,9 @@
 
 package lib.dw;
 
-
+/**
+ * A wrapper object around the libdwfl Dwfl_Module structure.
+ */
 public class DwflModule
 {
 
@@ -49,12 +51,21 @@ public class DwflModule
 
   private Dwfl parent;
 
-  protected DwflModule (long val, Dwfl parent)
+  protected String name;
+  
+  public DwflModule(long val, Dwfl parent) 
+  {
+    this(val, parent, null);
+  }
+  
+  DwflModule (long val, Dwfl parent, String name)
   {
     this.pointer = val;
     this.parent = parent;
     this.bias = 0;
+    this.name = name;
   }
+
 
   // public String getName(){
   // return dwfl_module_info_getname();
@@ -75,6 +86,23 @@ public class DwflModule
     return module_getelf();
   }
 
-  // protected native String dwfl_module_info_getname();
+  /**
+   * Get the name of the module.
+   *
+   * @return the name
+   */
+  public native String getName();
+    
   private native ModuleElfBias module_getelf();
+
+  /**
+   * Get all the line records for a source position in a file.
+   *
+   * @param filename the file
+   * @param lineno line number of source
+   * @param column column number, or 0
+   * @return array of DwflLine objects.
+   */
+  public native DwflLine[] getLines(String filename, int lineo, int column);
+  
 }

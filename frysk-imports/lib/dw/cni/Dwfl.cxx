@@ -46,6 +46,7 @@
 #include "lib/dw/Dwfl.h"
 #include "lib/dw/DwflDieBias.h"
 #include "lib/dw/DwarfDie.h"
+#include "lib/dw/DwflModule.h"
 
 #define DWFL_POINTER (::Dwfl *) this->pointer
 
@@ -77,6 +78,49 @@ lib::dw::Dwfl::dwfl_end(){
 	::dwfl_end(DWFL_POINTER);
 }
 
+
+extern "C" int moduleCounter(Dwfl_Module *, void **, const char *,
+			      Dwarf_Addr, void *arg)
+{
+  int *iarg = (int *)arg;
+  (*iarg)++;
+  return DWARF_CB_OK;
+}
+
+typedef JArray<lib::dw::DwflModule *> DwflModuleArray;
+struct ModuleAdderData
+{
+  lib::dw::Dwfl *dwfl;
+  DwflModuleArray *moduleArray;
+  int index;
+};
+
+extern "C" int moduleAdder(Dwfl_Module *module, void **, const char *name,
+			    Dwarf_Addr, void *arg)
+{
+  ModuleAdderData *adderData = (ModuleAdderData *)arg;
+  
+  elements(adderData->moduleArray)[adderData->index++]
+    = new lib::dw::DwflModule((jlong)module, adderData->dwfl, JvNewStringUTF(name));
+  return DWARF_CB_OK;
+}
+
+typedef JArray<lib::dw::DwflModule *> DwflModuleArray;
+void
+lib::dw::Dwfl::dwfl_getmodules()
+{
+  int numModules = 0;
+  
+  ::dwfl_getmodules(DWFL_POINTER, moduleCounter, &numModules, 0);
+  ModuleAdderData adderData
+    = {this,
+       (DwflModuleArray *)JvNewObjectArray(numModules,
+					   &lib::dw::DwflModule::class$,
+					   0),
+       0};
+  ::dwfl_getmodules(DWFL_POINTER, moduleAdder, &adderData, 0);
+  this->modules = adderData.moduleArray;
+}
 
 //jlong[]
 //lib::dw::Dwfl::dwfl_get_modules(){
@@ -111,4 +155,13 @@ lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 jlong
 lib::dw::Dwfl::dwfl_addrmodule(jlong addr){
 	return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
+}
+
+lib::dw::DwflModule *lib::dw::Dwfl::getModule(jlong addr)
+{
+  Dwfl_Module *module = ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);
+
+  if (!module)
+    return 0;
+  return new lib::dw::DwflModule((jlong)module, this);
 }

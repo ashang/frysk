@@ -40,6 +40,7 @@
 
 package lib.dw;
 
+import java.util.Vector;
 import gnu.gcj.RawDataManaged;
 
 public class Dwfl
@@ -49,6 +50,8 @@ public class Dwfl
 
   protected RawDataManaged callbacks;
 
+  private DwflModule[] modules;
+  
   public Dwfl (int pid)
   {
     dwfl_begin(pid);
@@ -59,21 +62,20 @@ public class Dwfl
     this.pointer = pointer;
   }
 
-  // public DwflModule[] getModules(){
-  // long[] vals = dwfl_get_modules();
-  // if(vals == null || vals.length == 0)
-  // return new DwflModule[0];
-  //		
-  // DwflModule[] modules = new DwflModule[vals.length];
-  // for(int i = 0; i < vals.length; i++){
-  // if(vals[i] == 0)
-  // modules[i] = null;
-  // else
-  // modules[i] = new DwflModule(vals[i]);
-  // }
-  //		
-  // return modules;
-  // }
+  /**
+   * Get all the DwflModule objects associated with this Dwfl.
+   *
+   * @return an array of DwflModule.
+   */
+  public DwflModule[] getModules() 
+  {
+    if (modules == null) 
+      {
+	dwfl_getmodules();
+      }
+    return modules;
+  }
+  
   //	
   // public Dwarf[] getModuleDwarfs(){
   // long[] vals = dwfl_getdwarf();
@@ -90,15 +92,13 @@ public class Dwfl
   //		
   // return dwarfs;
   // }
-  
-  public DwflModule getModule(long addr)
-  {
-    long val = dwfl_addrmodule(addr);
-    if(val == 0)
-      return null;
-    
-    return new DwflModule(addr, this);
-  }
+
+  /**
+   * Get the DwflModule associated with an address.
+   *
+   * @return The module
+   */
+  public native DwflModule getModule(long addr);
 
   public DwflLine getSourceLine (long addr)
   {
@@ -135,6 +135,33 @@ public class Dwfl
     dwfl_end();
   }
 
+  /**
+   * Get all the DwflLine objects associated with a line in a source file.
+   */
+  public Vector getLineAddresses(String fileName, int lineNo, int column) 
+  {
+    DwflModule[] modules = getModules();
+    if (modules == null) 
+      {
+	return null;
+      }
+    Vector result = new Vector();
+    for (int i = 0; i < modules.length; i++) 
+      {
+	DwflModule mod = modules[i];
+	DwflLine[] lines = mod.getLines(fileName, lineNo, column);
+	
+	if (lines != null) 
+	  {
+	    for (int j = 0; j < lines.length; j++) 
+	      {
+		result.add(lines[j]);
+	      }
+	  }
+      }
+    return result;
+  }
+  
   protected native void dwfl_begin (int pid);
 
   protected native void dwfl_end ();
@@ -146,4 +173,6 @@ public class Dwfl
   protected native DwflDieBias dwfl_addrdie (long addr);
   
   protected native long dwfl_addrmodule (long addr);
+
+  protected native void dwfl_getmodules();
 }
