@@ -1,3 +1,8 @@
+2006-10-20  Nurdin Premji  <npremji@redhat.com>
+
+	* TestLib.java (DetachedAckProcess.DetachedAckProcess): Made public so can be used in frysk-core/frysk/util tests.
+	(AckDaemonProcess.AckDaemonProcess): Ditto.
+	
 2006-10-18  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcAttachedObserver.java (attachTask): Added.

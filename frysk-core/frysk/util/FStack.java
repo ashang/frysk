@@ -87,9 +87,9 @@ public class FStack
     // XXX: Should get a message back when the refresh has finished and the
     // proc has been found.
     Manager.eventLoop.runPending();
-    scheduleStack(Manager.host.getProc(new ProcId(pid)));    
+    scheduleStack(Manager.host.getProc(new ProcId(pid)));
   }
-  
+
   public void scheduleStack (Proc p)
   {
     proc = p;
@@ -97,6 +97,15 @@ public class FStack
       {
         System.out.println("Couldn't get the proc");
         System.exit(1);
+      }
+
+    boolean isOwned = (this.proc.getUID() == Manager.host.getSelf().getUID() || this.proc.getGID() == Manager.host.getSelf().getGID());
+
+    if (! isOwned)
+      {
+        System.err.println("Process " + proc
+                           + " is not owned by user/group. Cannot coredump.");
+        System.exit(- 1);
       }
 
     procAttachedObserver = new ProcAttachedObserver(

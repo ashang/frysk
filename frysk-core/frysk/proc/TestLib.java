@@ -595,7 +595,7 @@ public class TestLib
 	{
 	    super (ack, argv);
 	}
-	AckDaemonProcess ()
+	public AckDaemonProcess ()
 	{
 	    super ();
 	}
@@ -624,7 +624,7 @@ public class TestLib
     protected class DetachedAckProcess
 	extends AckProcess
     {
-	DetachedAckProcess ()
+	public DetachedAckProcess ()
 	{
 	    super ();
 	}
