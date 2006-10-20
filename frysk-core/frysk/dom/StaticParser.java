@@ -56,5 +56,5 @@ public interface StaticParser {
 	 * @param buffer The source buffer to put the resulting data in
 	 * @param filename TODO
 	 */
-	void parse(DOMSource source, DOMImage image) throws IOException;
+	void parse(DOMFrysk dom, DOMSource source, DOMImage image) throws IOException;
 }

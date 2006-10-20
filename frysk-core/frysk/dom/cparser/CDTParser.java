@@ -94,11 +94,15 @@ import org.eclipse.cdt.core.parser.ast.IASTUsingDirective;
 import org.eclipse.cdt.core.parser.ast.IASTVariable;
 import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+
 import frysk.dom.DOMImage;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
+import frysk.dom.DOMFrysk;
 
 /**
  * @author ajocksch
@@ -110,6 +114,10 @@ public class CDTParser
   private DOMImage image;
 
   private DOMSource source;
+  
+  private DOMFrysk dom;
+  
+  private final boolean debug = false;
 
   /*
    * (non-Javadoc)
@@ -117,10 +125,11 @@ public class CDTParser
    * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String,
    *      frysk.gui.srcwin.SourceBuffer)
    */
-  public void parse (DOMSource source, DOMImage image) throws IOException
+  public void parse (DOMFrysk dom, DOMSource source, DOMImage image) throws IOException
   {
     this.source = source;
     this.image = image;
+    this.dom = dom;
     String[] incPaths = { "/usr/local/include", 
                           "/usr/include",
                           "/usr/lib/gcc/i386-redhat-linux/4.1.1/include"};
@@ -238,7 +247,7 @@ public class CDTParser
                       typeText.substring(arg0.getStartingOffset()
                                          - typeLine.getOffset(),
                                          arg0.getNameOffset()
-                                             - typeLine.getOffset()),
+                                             - typeLine.getOffset() - 1),
                       arg0.getStartingOffset() - typeLine.getOffset());
       nameLine.addTag(DOMTagTypes.LOCAL_VAR,
                       nameText.substring(arg0.getNameOffset()
@@ -906,6 +915,17 @@ public class CDTParser
 
     public void exitCompilationUnit (IASTCompilationUnit arg0)
     {
+      if (debug) {
+        Document doc = dom.getDOMFrysk();
+        try {
+          XMLOutputter serializer = new XMLOutputter();
+          serializer.getFormat();
+          serializer.output(doc, System.out);
+        }
+        catch (IOException e) {
+          System.err.println(e);
+        }
+      }
     }
 
     public CodeReader createReader (String arg0, Iterator arg1)

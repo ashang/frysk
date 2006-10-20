@@ -61,9 +61,8 @@ public class DOMFactory
     else
       {
         // create a new dom and associate it with the given task
-        String taskName = task.getName();
-        dom = new DOMFrysk("Task"
-                           + taskName.substring(0, taskName.indexOf(" ")));
+        // XXX create a fake name for now, must create unique names later
+        dom = new DOMFrysk("TaskTask");
         dom.addImage(task.getProc().getMainTask().getName(), path, path);
       }
 
@@ -101,10 +100,36 @@ public class DOMFactory
 
         // Parse the file and populate the DOM
         StaticParser parser = new CDTParser();
-        parser.parse(source, image);
+        parser.parse(dom, source, image);
       }
     hashmap.put(proc, dom);
     return dom;
   }
+  
+  /*
+   * remove the spaces from the DOM ID 'cause JDOM don't like spaces there
+   * 
+   * @param name of the task
+   */
+  
+/*  private static String removeSpace(String name) {
+    // if there are no spaces, just return the name
+    if (name.lastIndexOf(" ") == -1)
+      return name;
+    
+    char[] newname = new char[name.length()];
+    char[] namechararray = name.toCharArray();
+    int i = 0;
+    for(int j=0; j<name.length(); j++) {
+      if (Character.isSpaceChar(namechararray[j]))
+        continue;
+      newname[i] = namechararray[j];
+      i++;
+    }
+    String str = new String(newname);
+    if (str.length() <= 8)
+      return str;
+    return str.substring(0,8);
+  }  */
 
 }

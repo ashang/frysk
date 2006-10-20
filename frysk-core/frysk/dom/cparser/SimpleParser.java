@@ -46,6 +46,7 @@ import java.io.IOException;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
 import frysk.dom.StaticParser;
+import frysk.dom.DOMFrysk;
 
 /**
  * @author ajocksch
@@ -59,7 +60,7 @@ public class SimpleParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source, DOMImage image) throws IOException {
+	public void parse(DOMFrysk dom, DOMSource source, DOMImage image) throws IOException {
 		this.tokenMaker = new Tokenizer(source.getFilePath() +"/" +  source.getFileName());
 		
 		while(this.tokenMaker.hasMoreTokens()){
