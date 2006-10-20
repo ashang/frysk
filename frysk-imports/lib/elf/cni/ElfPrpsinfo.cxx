@@ -95,8 +95,7 @@ lib::elf::ElfPrpsinfo::getEntrySize()
 jlong 
 lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 {
-	int size = 0;
-	
+
 	jbyte *bs = elements(buffer);
 	struct elf_prpsinfo *prpsinfo = NULL;
 	
@@ -118,19 +117,13 @@ lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	prpsinfo->pr_pgrp = this->pr_pgrp;
 	
 	prpsinfo->pr_sid = this->pr_sid;
-	
-	jchar *fname = elements(this->pr_fname);		
-	jchar *args = elements(this->pr_psargs);
-	
-	size = JvGetArrayLength(this->pr_fname);
-	memcpy(prpsinfo->pr_fname, fname, size);
-	prpsinfo->pr_fname[size] = '\0';
-	
-	size = JvGetArrayLength(this->pr_psargs);
-	memcpy(prpsinfo->pr_psargs, args, size);
-	prpsinfo->pr_psargs[size] = '\0';
-	
-	
+
+	JvGetStringUTFRegion (this->pr_fname, 0, this->pr_fname->length (), prpsinfo->pr_fname);
+	prpsinfo->pr_fname[this->pr_fname->length()] = '\0';
+
+	JvGetStringUTFRegion (this->pr_psargs, 0, this->pr_psargs->length (), prpsinfo->pr_psargs);
+	prpsinfo->pr_psargs[this->pr_psargs->length()] = '\0';
+
 	memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo));
 	
 	return sizeof(prpsinfo);

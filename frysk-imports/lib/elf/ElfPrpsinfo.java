@@ -59,14 +59,15 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   private int pr_sid;
   
   //XXX: the following two value must keep the same with the elfutils package.
-  public static int ELF_PRPSINFO_FNAME_MAXLEN = 16;
-  public static int ELF_PRPSINFO_ARGS_MAXLEN = 80;
+  // -1 to allow for null terminator
+  public static int ELF_PRPSINFO_FNAME_MAXLEN = 16 - 1;
+  public static int ELF_PRPSINFO_ARGS_MAXLEN = 80 - 1;
   
   // filename of executable
-  private char[] pr_fname = new char[ELF_PRPSINFO_FNAME_MAXLEN];
+  private String  pr_fname;
   
   // initial part of arg list
-  private char[] pr_psargs = new char[ELF_PRPSINFO_ARGS_MAXLEN];
+  private String pr_psargs;
   
   //private int pid;
   
@@ -186,55 +187,35 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   
   public void setPrFname(String fname)
   {
-    if (null == fname)
+    if (fname == null)
       return;
     
     int length = fname.length();
     
-    if (length < ELF_PRPSINFO_FNAME_MAXLEN)
-    {
-   
-      // Cannot use toCharArray, as it will return a new instance of char array[]
-      // the exact length of the String (replace whatever was previously in the
-      // this.prfname.
-            
-      this.pr_fname = fname.toCharArray();
-      //this.pr_fname[length] = '\0';
-    }
+    if (length <ELF_PRPSINFO_FNAME_MAXLEN)
+      this.pr_fname = fname.substring(0,length);
     else
-      {
-        String name = fname.substring(0, ELF_PRPSINFO_FNAME_MAXLEN);
-        this.pr_fname = name.toCharArray();
-        //this.pr_fname[ELF_PRPSINFO_FNAME_MAXLEN] = '\0';  
-      }
+      this.pr_fname = fname.substring(0,ELF_PRPSINFO_FNAME_MAXLEN);
   }
-  public char[] getPrFname()
+
+  public String getPrFname()
   {
     return this.pr_fname;
   }
 
   public void setPrPsargs(String args)
   {
-    if (null == args)
+    if (args == null)
       return;
-    
-    char[] argChars = null;
+
     int length = args.length();
     if (length < ELF_PRPSINFO_ARGS_MAXLEN)
-    {
-      argChars = args.toCharArray();
-      System.arraycopy(argChars, 0, this.pr_psargs, 0, length);
-      this.pr_psargs[length] = '0';
-    }
+      this.pr_psargs = args.substring(0,length);
     else
-      {
-        String name = args.substring(0, ELF_PRPSINFO_ARGS_MAXLEN);
-        
-        this.pr_psargs = name.toCharArray();
-        this.pr_psargs[ELF_PRPSINFO_ARGS_MAXLEN] = '0';  
-      }
+      this.pr_psargs = args.substring(0, ELF_PRPSINFO_ARGS_MAXLEN);
   }
-  public char[] getPrPsargs()
+
+  public String getPrPsargs()
   {
     return this.pr_psargs;
   }

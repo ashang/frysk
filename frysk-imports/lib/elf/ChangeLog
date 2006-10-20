@@ -1,5 +1,12 @@
 2006-10-19  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ElfPrpsinfo.java (setPrFname): Use String instead of char[].
+	(getPrFname): Return String instead of char[].
+	(setPrPsarg): Use String instead of char[].
+	(getPrPsarg): Return String instead of char[].
+	* cni/ElfPrpsinfo.cxx (fillMemRegion): Use JvGetStringUTFRegion
+	to calculate char[] array instead of jchar elements
+
 	* ElfPrpsinfo.java(setPrFname): Do not
 	set null termination in Java. String.toCharArray
 	returns a char[] array of size of String.
