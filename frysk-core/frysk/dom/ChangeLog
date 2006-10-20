@@ -1,7 +1,17 @@
+2006-10-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Add "debug" boolean to print DOM if wanted.
+	Fix indexing when variable definitions are found.
+	* cparser/CTagsParser.java: Pass DOMFrysk as a parameter.
+	* cparser/SimpleParser.java: Ditto.
+	* StaticParser.java: Ditto.
+	* DOMFactory.java: Ditto.
+	Add ability to print the DOM for debugging.
+
 2006-10-18  Rick Moseley  <rmoseley@redhat.com>
 
-	* cparser/CDTParser: Add CodeREader so #include files get processed
-	properly.
+	* cparser/CDTParser.java: Add CodeREader so #include files get 
+	processed properly.
 	Fix acceptMacro so it only processes macros from the source file.
 	Fix enterInclusion so it only processes #includes from the source
 	file.

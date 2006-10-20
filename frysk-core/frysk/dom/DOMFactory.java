@@ -15,8 +15,12 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+
 public class DOMFactory
 {
+  private static boolean debug = false;
 
   private static HashMap hashmap = new HashMap();
 
@@ -97,6 +101,18 @@ public class DOMFactory
             offset += text.length() + 1;
           }
         image.addSource(source);
+        // if we are debugging the DOM, print it out now
+        if (debug) {
+          Document doc = dom.getDOMFrysk();
+          try {
+            XMLOutputter serializer = new XMLOutputter();
+            serializer.getFormat();
+            serializer.output(doc, System.out);
+          }
+          catch (IOException e) {
+            System.err.println(e);
+          }
+        }
 
         // Parse the file and populate the DOM
         StaticParser parser = new CDTParser();
