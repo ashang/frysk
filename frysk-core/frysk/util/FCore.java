@@ -148,11 +148,22 @@ public class FCore {
 		// Get the requested pid, and return a Proc object.
 		proc = Manager.host.getProc(new ProcId(pid));
 
-		if (proc == null) {
-			System.err.println("Couldn't get the process " + pid
-					+ ". It might have disappeared.");
-			System.exit(-1);
-		}
+		if (proc == null) 
+		  {
+		    System.err.println("Couldn't get the process " + pid
+				       + ". It might have disappeared.");
+		    System.exit(-1);
+		  }
+
+		boolean isOwned = (this.proc.getUID() == Manager.host.getSelf().getUID() ||
+				   this.proc.getGID() == Manager.host.getSelf().getGID());
+
+
+		if (!isOwned)
+		  {
+		    System.err.println("Process " + pid +" is not owned by user/group. Cannot coredump.");
+		    System.exit(-1);
+		  }
 
 		// Attach to the proc, and when tasks stopped, do 
 		// core dump.

@@ -1,6 +1,10 @@
+2006-10-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (run): Add permission check, before core dumping.
+
 2006-10-20  Yong Zheng  <zhengyong@cn.ibm.com>
 
-	* (fillENotePrpsinfo): Pass pid as one parameter when refreshing Stat.
+	* FCore.jav (fillENotePrpsinfo): Pass pid as one parameter when refreshing Stat.
 	(postProcessElfFile): Support modifications of the e_type in ELF 
 	header on big-endian platform.
 
