@@ -62,6 +62,65 @@ lib::dw::Dwarf::dwarf_begin(jstring file, jint command){
 	this->pointer = (jlong) ::dwarf_begin(fd, (::Dwarf_Cmd) command);
 }
 
+JArray<jstring>*
+lib::dw::Dwarf::get_source_files()
+{
+  Dwarf_Off offset = 0;
+  Dwarf_Off old_offset;
+  Dwarf_Die cudie_mem;
+  size_t hsize;
+  Dwarf_Files **files;
+  size_t *nfiles;
+  size_t cu_cnt;
+  
+  using namespace java::lang;
+  JArray<String *> *jfiles;
+  jstring * jfile;
+
+  // Allocate Dwarf_Files for each compile unit
+  cu_cnt = 0;
+  while (dwarf_nextcu ((::Dwarf *)this->pointer, old_offset = offset, &offset, 
+                       &hsize, NULL, NULL, NULL) == 0)
+    cu_cnt += 1;
+  files = (Dwarf_Files**)alloca (cu_cnt * sizeof (Dwarf_Files*));
+  nfiles = (size_t*)alloca (cu_cnt * sizeof (size_t));
+
+  // Fill Dwarf_Files
+  cu_cnt = 0;
+  offset = 0;
+  while (dwarf_nextcu ((::Dwarf *)this->pointer, old_offset = offset, &offset, 
+                       &hsize, NULL, NULL, NULL) == 0)
+    {
+      size_t fcnt = 0;
+      Dwarf_Die *cudie = dwarf_offdie ((::Dwarf *)this->pointer, old_offset + hsize, &cudie_mem);
+      if (dwarf_getsrcfiles (cudie, &files[cu_cnt], &fcnt) != 0)
+	continue;
+      nfiles[cu_cnt] = fcnt;
+      cu_cnt += 1;
+    }
+  
+  // Allocate JArray for each source file
+  size_t entry_cnt = 0;
+  for (size_t cu = 0 ; cu < cu_cnt; cu += 1)
+    for (size_t f = 0; f < nfiles[cu]; f += 1)
+      entry_cnt += 1;
+  jfiles = (JArray<String *>*) JvNewObjectArray(entry_cnt, &String::class$, NULL);
+  jfile = elements(jfiles);
+
+  // Fill JArray
+  size_t j = 0;
+  for (size_t cu = 0 ; cu < cu_cnt; cu += 1)
+    for (size_t f = 0; f < nfiles[cu]; f += 1)
+      {
+	const char *file = dwarf_filesrc (files[cu], f, NULL, NULL);
+	jfile[j] = JvNewStringLatin1 (file);
+	j += 1;
+      }
+
+  return jfiles;
+}
+
+
 jint 
 lib::dw::Dwarf::dwarf_end(){
 	return ::dwarf_end(DWARF_POINTER);

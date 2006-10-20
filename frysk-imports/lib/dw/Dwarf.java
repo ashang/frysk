@@ -46,7 +46,7 @@ public class Dwarf {
 	private long pointer;
 	
 	public Dwarf(Elf elf, DwarfCommand cmd, ElfSection section){
-		dwarf_begin_elf(elf.getPointer(), cmd.getValue(), section.getPointer());
+		dwarf_begin_elf(elf.getPointer(), cmd.getValue(), (section == null) ? 0 : section.getPointer());
 	}
 	
 	public Dwarf(String file, DwarfCommand cmd){
@@ -89,8 +89,12 @@ public class Dwarf {
 		dwarf_end();
 	}
 	
+    public String[] getSourceFiles(){
+      return get_source_files();
+    }
 	protected native void dwarf_begin_elf(long elf, int command, long section);
 	protected native void dwarf_begin(String file, int command);
+    protected native String[] get_source_files();
 	protected native int dwarf_end();
 //	protected native long[] dwarf_get_functions();
 //	protected native long dwarf_addrdie(long addr);
