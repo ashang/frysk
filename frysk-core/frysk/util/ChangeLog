@@ -1,3 +1,7 @@
+2006-10-20  Mike Cvet  <mcvet@redhat.com>
+
+	* FCrash.java: Added.
+
 2006-10-20  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java: Added.

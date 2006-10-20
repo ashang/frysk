@@ -1,3 +1,7 @@
+2006-10-20  Mike Cvet  <mcvet@redhat.com>
+	
+	* fcrash.java: Added.
+
 2006-10-19  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java (main): Changed to run the eventloop here rather than in 
