@@ -108,7 +108,6 @@ public class CurrentStackView
         parent = null;
         iter = null;
         
-        Task task = frame.getTask();
         boolean hasInlinedCode = false;
 
         String row = "";
@@ -126,6 +125,7 @@ public class CurrentStackView
           {
             int level = 0;
             parent = treeModel.appendRow(null);
+            Task task = frame.getTask();
 
             treeModel.setValue(parent, (DataColumnString) stackColumns[0],
                                "tid: " + task.getTid());

@@ -1188,6 +1188,8 @@ public class SourceWindow
 
   private void updateShownStackFrame (StackFrame selected)
   {
+    if (selected == null)
+      return;
     DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                           + (source == null ? "Unknown File"
