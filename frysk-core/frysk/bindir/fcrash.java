@@ -6,7 +6,7 @@ import frysk.util.FCrash;
 //import frysk.util.StracePrinter;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
-//import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.Parser;
 import gnu.classpath.tools.getopt.OptionException;
 
@@ -19,7 +19,7 @@ public class fcrash
   
   //private static Parser parser;
 
-  private static int pid;
+  //private static int pid;
   
   private static boolean requestedPid;
   
@@ -27,7 +27,7 @@ public class fcrash
 
   private void run (String[] args)
   {
-    Parser parser = new Parser("ftrace", "0.0", true)
+    Parser parser = new Parser("fcrash", "0.1", true)
     {
       protected void validate () throws OptionException
       {
@@ -37,29 +37,6 @@ public class fcrash
     };
     addOptions(parser);
     parser.setHeader("Usage: fcrash [OPTIONS] -- PATH ARGS || fcrash [OPTIONS] PID");
-
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-        try
-          {
-            if (0 == pid)
-              {
-                pid = Integer.parseInt(arg);
-              }
-            else
-              {
-                throw new OptionException("too many pids");
-              }
-
-          }
-        catch (Exception _)
-          {
-            throw new OptionException("couldn't parse pid");
-          }
-      }
-    });
 
     parser.parse(args, new FileArgumentCallback()
     {
@@ -83,11 +60,28 @@ public class fcrash
       String[] cmd = (String[]) arguments.toArray(new String[0]);
       crash.trace(cmd);
   }
+  else
+    crash.trace();
   }
   
   public void addOptions (Parser p)
   {
-    
+    p.add(new Option('p', "pid to trace", "PID") {
+      public void parsed(String arg) throws OptionException
+      {
+          try {
+              int pid = Integer.parseInt(arg);
+              // FIXME: we have no good way of giving the user an
+              // error message if the PID is not available.
+              crash.addTracePid(pid);
+              requestedPid = true;
+          } catch (NumberFormatException _) {
+              OptionException oe = new OptionException("couldn't parse pid: " + arg);
+              oe.initCause(_);
+              throw oe;
+          }
+      }
+  });
   }
     
     

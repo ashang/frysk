@@ -1,3 +1,8 @@
+2006-10-22  Mike Cvet  <mcvet@redhat.com>
+
+	* fcrash.java (run): Removed unnecessary checks.
+	(addOptions) Added -p option for tracing PIDs.
+
 2006-10-20  Mike Cvet  <mcvet@redhat.com>
 	
 	* fcrash.java: Added.
