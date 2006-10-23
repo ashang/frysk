@@ -1,3 +1,10 @@
+
+2006-10-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (fillENotePrstatus): New. Write PRSTATUS note
+	for i386/x86_64. 
+	(fillENoteSection): Add in PRSTATUS, and loop for each thread.
+
 2006-10-20  Mike Cvet  <mcvet@redhat.com>
 
 	* FCrash.java: Added.
@@ -7,6 +14,7 @@
 	* TestFStack.java: Added.
 	* FStack.java (scheduleStack): Added permission check.
 	* TestLib.java: Added.	
+
 
 2006-10-20  Phil Muldoon  <pmuldoon@redhat.com>
 

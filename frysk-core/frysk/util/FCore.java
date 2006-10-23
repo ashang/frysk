@@ -47,6 +47,7 @@ import inua.eio.ByteOrder;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+//import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -69,6 +70,7 @@ import lib.elf.ElfNhdr;
 import lib.elf.ElfNhdrType;
 import lib.elf.ElfPHeader;
 import lib.elf.ElfPrpsinfo;
+import lib.elf.ElfPrstatus;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfSectionHeaderTypes;
@@ -254,6 +256,77 @@ public class FCore {
 	}
 
 
+     /**
+     * Fill the ElfNhdr object according to Proc object.
+     * 
+     * @param nhdrEntry
+     * @param proc
+     * @return less than zero when error occurs, or return one value 
+     *         that is equal to zero or more than zero.
+     */
+    protected int fillENotePrstatus (ElfNhdr nhdrEntry, Task task)
+    {
+  
+      ElfPrstatus prStatus = new ElfPrstatus();
+  
+      Stat processStat = new Stat();
+      Isa register = null;
+      processStat.refresh(task.getTid());
+  
+      prStatus.setPrPid(task.getTid());
+      prStatus.setPrPpid(processStat.ppid);
+      prStatus.setPrPgrp(processStat.pgrp);
+      prStatus.setPrSid(processStat.session);
+      prStatus.setPrSigPending(processStat.signal);
+  
+      try
+        {
+          register = task.getIsa();
+        }
+      catch (TaskException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+  
+      // Fill register info. There is no generic way to do this.
+      if (getArch().equals("frysk.proc.LinuxIa32"))
+        {
+          // Order for these registers is found in /usr/include/asm/user.h
+          // This is not the same order that frysk iterators print out, nor
+          // are the names are the same. Create a string[] map to bridge
+          // gap between frysk and core file register order.
+  
+          String regMap[] = { "ebx", "ecx", "edx", "esi", "edi", "ebp", "eax",
+                             "ds", "es", "fs", "gs", "orig_eax", "eip", "cs",
+                             "efl", "esp", "ss" };
+  
+          for (int i = 0; i < regMap.length; i++)
+            prStatus.setPrGPReg(
+                                i,
+                                register.getRegisterByName(
+                                regMap[i]).getBigInteger(task));
+        }
+      if (getArch().equals("frysk.proc.LinuxX8664"))
+        {
+          String regMap[] = { "r15","r14","r13","r12","rbp","rbx","r11","r10",
+                              "r9","r8","rax","rcx","rdx","rsi","rdi","orig_rax", "rip","cs","eflags",
+                              "rsp","ss", "fs_base", "gs_base", "ds","es","fs","gs"};
+          for (int i = 0; i < regMap.length; i++)
+            {
+            prStatus.setPrGPReg(
+                                i,register.getRegisterByName(
+                                regMap[i]).getBigInteger(task));
+  
+            }
+          
+        }
+  
+  
+      nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
+      return 0;
+    }
+
     /**
      * Fill the ElfNhdr object according to Proc object.
      * 
@@ -395,7 +468,19 @@ public class FCore {
           list.add(entryCount, prpsinfoNhdr);
           entryCount++;
         }
-      
+
+      for (int i = 0; i < taskArray.length; i++)
+        {
+
+          ElfNhdr prStatusNhdr = new ElfNhdr();
+          ret = this.fillENotePrstatus(prStatusNhdr, taskArray[i]);
+          if (ret >= 0)
+            {
+              list.add(entryCount, prStatusNhdr);
+              entryCount++;
+            }
+        }
+
       //XXX: Continue to fill other ElfNhdr object, such as NT_PRSTATUS info.
       // ElfNhdr psstatusNhdr = new ...
       
@@ -574,6 +659,16 @@ public class FCore {
 
   }
 
+  /**
+   * 
+   * Libelf barfs on setting type to ET_CORE, and then adding program segments.
+   * 
+   * So after done with libelf, change it to ET_CORE from ET_EXEC.
+   * 
+   * @param file_string - File location
+   * @param endianType - Endian type
+   * @return - Success or fail
+   */
   private boolean postProcessElfFile (String file_string, int endianType)
   {
 
@@ -745,6 +840,34 @@ public class FCore {
 
 		}
 	}
+	
+  /**
+   * 
+   * Function to return a string denoting architecture name.
+   * 
+   * @return String describe architecture.
+   * 
+   */
+  public String getArch ()
+  {
+    Isa arch = null;
+    try
+      {
+        arch = proc.getMainTask().getIsa();
+      }
+    catch (TaskException e)
+      {
+        return "";
+      }
+
+    // XXX: I hate this, there must be a better way to get architecture than
+    // this ugly, ugly hack
+    String arch_test = arch.toString();
+    String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
+
+    return type;
+  }
+	
 	
 	/**
 	 * Entry function. Starts the fcore dump process.
