@@ -1,3 +1,8 @@
+2006-10-23  Chris Moller  <moller@mollerware.com>
+
+	* frysk3381/retrace.c: Added test for frysk bug 3381 (RHEL bug 210693).
+	* Makefile.am: Included the test.
+
 2006-10-11  Chris Moller  <moller@mollerware.com>
 
 	* frysk3205/ptrace-test-3205.c: Renamed to:
