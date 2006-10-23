@@ -95,6 +95,33 @@ public class FCrash
         tracedParents.add(new ProcId(id));
     }
 
+  private void generateStackTrace (Task task)
+  {
+    int i = 0;
+    frames = new StackFrame[proc.getTasks().size()];
+    Iterator iter = proc.getTasks().iterator();
+    while (iter.hasNext())
+      {
+        try
+          {
+            frames[i] = StackFactory.createStackFrame((Task) iter.next());
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+            System.exit(1);
+          }
+        StackFrame curr = frames[i];
+
+        while (curr != null)
+          {
+            System.out.println(curr.toString());
+            curr = curr.getOuter();
+          }
+        i++;
+      }
+  }
+  
   public final void removeObservers (Proc proc)
   {
     proc.requestAbandon();
@@ -205,7 +232,7 @@ public class FCrash
     private class AttachedObserver implements TaskObserver.Attached{
         public Action updateAttached (Task task)
         {
-            SignalObserver sigo = new SignalObserver(15);
+            SignalObserver sigo = new SignalObserver();
             task.requestAddSignaledObserver(sigo);
             handleTask(task);
             task.requestUnblock(this);
@@ -226,7 +253,7 @@ public class FCrash
     class SignalObserver
       implements TaskObserver.Signaled
   {
-    private final int sig;
+//    private final int sig;
 
     private int triggered;
 
@@ -234,43 +261,44 @@ public class FCrash
 
     private boolean removed;
 
-    SignalObserver (int sig)
-    {//System.out.println("creating signal observer");
-      this.sig = sig;
-    }
-
     public Action updateSignaled (Task task, int signal)
     {
-      //System.out.println("updateSignaled");
-      if (signal == sig)
+
+      switch (signal)
         {
-          //System.out.println("signa == sig");
-          int i = 0;
-          frames = new StackFrame[proc.getTasks().size()];
-          Iterator iter = proc.getTasks().iterator();
-          System.out.println("Exit detected: dumping stack trace");
-          while (iter.hasNext())
-            { 
-              try
-              {
-                frames[i] = StackFactory.createStackFrame((Task) iter.next());
-              }
-              catch (Exception e)
-              {
-                System.out.println(e.getMessage());
-                System.exit(1);
-              }
-              StackFrame curr = frames[i];
-              
-              while (curr != null)
-                {
-                  System.out.println(curr.toString());
-                  curr = curr.getOuter();
-                }
-              i++;
-            }
-          System.exit(1);
+        case 2:
+          System.out.println("SIGHUP detected: dumping stack trace");
+          generateStackTrace(task);
+          break;
+        case 3:
+          System.out.println("SIGQUIT detected: dumping stack trace");
+          generateStackTrace(task);
+          //System.exit(0);
+          break;
+        case 6:
+          System.out.println("SIGABRT detected: dumping stack trace");
+          generateStackTrace(task);
+          //System.exit(0);
+          break;
+        case 9:
+          System.out.println("SIGKILL detected: dumping stack trace");
+          generateStackTrace(task);
+          //System.exit(0);
+          break;
+        case 11:
+          System.out.println("SIGSEGV detected: dumping stack trace");
+          generateStackTrace(task);
+          //System.exit(0);
+          break;
+        case 15:
+          System.out.println("SIGTERM detected: dumping stack trace");
+          //System.exit(0);
+          break;
+        default:
+          System.out.println("Signal detected: dumping stack trace");
+          generateStackTrace(task);
         }
+
       return Action.CONTINUE;
     }
 
