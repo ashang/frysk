@@ -1,3 +1,7 @@
+2006-10-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (echo_MANS): Make bindir require man pages.
+
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.javain (main): 32- and 64-bit code moved to

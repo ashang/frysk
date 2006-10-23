@@ -100,6 +100,15 @@ EOF
 
 echo_MANS ()
 {
+    # bin/ directories require a man page.
+    case "$1" in
+	*bindir/* )
+          if test ! -r $1.xml ; then
+	      echo "error: no $(basename $(dirname $1))/$(basename $1).xml man page" 1>&2
+	      exit 1
+	  fi
+	  ;;
+    esac
     case "$1" in
       *dir/* )
           # Only programs in bindir, pkglibexecdir et.al. get man pages.
@@ -440,7 +449,7 @@ for suffix in .java ; do
 	else
 	    echo "${sources} += ${file}"
 	fi
-    done
+    done || exit 1
 done
 
 # output the compile for arch32
