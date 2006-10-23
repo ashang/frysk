@@ -43,6 +43,12 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include <asm/types.h>
+#ifdef __x86_64__
+typedef __u64 u64;
+typedef __u32 u32;
+#endif
+
 #include "lib/elf/ElfPrstatus.h"
 #include "asm/elf.h"
 
