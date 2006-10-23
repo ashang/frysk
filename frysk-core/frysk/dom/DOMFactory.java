@@ -15,6 +15,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
+//import org.jdom.Element;
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
 
@@ -80,7 +81,8 @@ public class DOMFactory
       {
         DOMImage image = dom.getImage(task.getProc().getMainTask().getName());
         source = new DOMSource(filename, path);
-
+        printDOM(dom);
+        
         // Read the file lines from disk
         // XXX: Remote file access?
         BufferedReader reader = new BufferedReader(
@@ -103,15 +105,7 @@ public class DOMFactory
         image.addSource(source);
         // if we are debugging the DOM, print it out now
         if (debug) {
-          Document doc = dom.getDOMFrysk();
-          try {
-            XMLOutputter serializer = new XMLOutputter();
-            serializer.getFormat();
-            serializer.output(doc, System.out);
-          }
-          catch (IOException e) {
-            System.err.println(e);
-          }
+          printDOM(dom);
         }
 
         // Parse the file and populate the DOM
@@ -122,6 +116,21 @@ public class DOMFactory
     return dom;
   }
   
+  /*
+   * Print out the DOM
+   */
+  
+  public static void printDOM(DOMFrysk dom) {
+    Document doc = dom.getDOMFrysk();
+    try {
+      XMLOutputter serializer = new XMLOutputter();
+      serializer.getFormat();
+      serializer.output(doc, System.out);
+    }
+    catch (IOException e) {
+      System.err.println(e);
+    }
+  }
   /*
    * remove the spaces from the DOM ID 'cause JDOM don't like spaces there
    * 

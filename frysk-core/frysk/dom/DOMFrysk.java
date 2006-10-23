@@ -167,7 +167,7 @@ public class DOMFrysk
    */
   public boolean addImage (String image_name, String CCPATH, String source_path)
   {
-    return this.addImage(new DOMImage(image_name, source_path, CCPATH));
+    return this.addImage(new DOMImage(image_name, source_path, CCPATH, this.data.getRootElement()));
   }
 
   /**

@@ -58,6 +58,7 @@ public class DOMImage {
 	public static final String IMAGE_NODE = "image";
 	public static final String NAME_ATTR = "filename";
 	public static final String PATH_ATTR = "filepath";
+    public DOMFrysk dom;
 	
 	/**
 	 * Creates a new DOMImage from the given Element. Data must be of name "image".
@@ -73,11 +74,12 @@ public class DOMImage {
 	 * @param path the path to the image
 	 * @param ccpath The CCPATH for the image
 	 */
-	public DOMImage(String name, String path, String ccpath){
+	public DOMImage(String name, String path, String ccpath, Element rootElement){
 		myElement = new Element(DOMImage.IMAGE_NODE);
 		myElement.setAttribute(NAME_ATTR, name);
 		myElement.setAttribute(PATH_ATTR, path);
 		myElement.setAttribute(CCPATH_ATTR, ccpath);
+        rootElement.addContent(myElement);
 	}
 	
 	/**

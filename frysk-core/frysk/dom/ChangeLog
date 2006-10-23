@@ -1,3 +1,10 @@
+2006-10-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFactory.java: Add new printDOM method.
+	* DOMFrysk.java: Return the root JDOM Element.
+	* DOMImage.java: Accept the root JDOM Element.
+	Add the image to the root JDOM Element.
+
 2006-10-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Add "debug" boolean to print DOM if wanted.
