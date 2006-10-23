@@ -47,6 +47,7 @@ import inua.eio.ByteOrder;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.math.BigInteger;
 //import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -307,7 +308,7 @@ public class FCore {
                                 register.getRegisterByName(
                                 regMap[i]).getBigInteger(task));
         }
-      if (getArch().equals("frysk.proc.LinuxX8664"))
+      else if (getArch().equals("frysk.proc.LinuxX8664"))
         {
           String regMap[] = { "r15","r14","r13","r12","rbp","rbx","r11","r10",
                               "r9","r8","rax","rcx","rdx","rsi","rdi","orig_rax", "rip","cs","eflags",
@@ -321,8 +322,66 @@ public class FCore {
             }
           
         }
+      else if (getArch().equals("frysk.proc.LinuxPPC") ||
+               getArch().equals("frysk.proc.LinuxPPC64") ||
+               getArch().equals("frysk.proc.LinuxPPC32On64"))
+        {
+          // the number of general purpose regiser.
+          int gprSize = 32;
+          // The number of total common registers in PPC/PPC64 including nip, msr, etc.
+          // Defined in the asm-ppc64/elf.h.
+          int elfNGREG = 48;
+          
+          int blankRegisterIndex = elfNGREG;
+          
+          String ppcRegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", 
+                                 "xer", "ccr", "mq", "trap", "dar", "dsisr", "result"};
+          String ppc64RegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", 
+                                   "xer", "ccr", "softe", "trap", "dar", "dsisr", "result"};
+          
+          //Set the general purpose registers.
+          for (int index = 0; index < gprSize; index++)
+            {
+              prStatus.setPrGPReg(index, 
+                                  register.getRegisterByName("gpr" + index).getBigInteger(task));
+            }
+          
+          if (getArch().equals("frysk.proc.LinuxPPC") ||
+              getArch().equals("frysk.proc.LinuxPPC32On64"))
+            {
+              for (int index = 0; index < ppcRegMap.length; index++)
+                {
+                  prStatus.setPrGPReg(
+                                    index + gprSize, register.getRegisterByName(
+                                    ppcRegMap[index]).getBigInteger(task));
+      
+                }
+              
+              //On ppc, some register indexes are not defined in asm-<ISA>/ptrace.h.
+              blankRegisterIndex = gprSize + ppcRegMap.length;
+            }
+          else
+            {
+              //Must be 64-bit application on PPC64.
+              for (int index = 0; index < ppc64RegMap.length; index++)
+                {
+                  prStatus.setPrGPReg(
+                                    index + gprSize, register.getRegisterByName(
+                                    ppc64RegMap[index]).getBigInteger(task));
+      
+                }         
+              
+              blankRegisterIndex = gprSize + ppc64RegMap.length;
+            }
+          //On ppc64, some register indexes are not defined in asm-<ISA>/ptrace.h.
+          byte[] zeroVal = new byte[] {0};
+          BigInteger bigInt = new BigInteger(zeroVal);
+          
+          for (int index = blankRegisterIndex; index < elfNGREG; index++)
+              prStatus.setPrGPReg(index, bigInt);
   
-  
+        }
+      
       nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRSTATUS, prStatus);
       return 0;
     }
@@ -390,8 +449,18 @@ public class FCore {
       }
       BuildCmdLine cmdLine = new BuildCmdLine();
       cmdLine.construct(pid);
-      prpsInfo.setPrPsargs(new String(cmdLine.args).toString());
-      
+      //XXX: if the byte[3] = { 'l', 'o', 'o','p', 0}, then we will get one string with length of 5!
+      //     However, the length is expected to be 4!
+      int tailZeroChars = 0;
+      int index = cmdLine.args.length;
+      for (; index >=0; index--)
+        {
+          if (cmdLine.args[index - 1] != 0)
+             break;
+          
+          tailZeroChars++;
+        }
+      prpsInfo.setPrPsargs(new String(cmdLine.args, 0, cmdLine.args.length - tailZeroChars).toString());
       nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRPSINFO, prpsInfo);
       return 0;
     }

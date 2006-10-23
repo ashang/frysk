@@ -1,3 +1,8 @@
+2006-10-23  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* FCore.java (fillENotePrstatus): Set registers for PPC/PPC64.
+	(fillENotePrpsinfo): Modify the end index of the byte[]. 
+
 2006-10-22  Mike Cvet  <mcvet@redhat.com>
 
 	* FCrash.java (trace): Create the new proc with an 
