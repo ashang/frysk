@@ -8,10 +8,7 @@ import java.util.Observable;
 import java.util.Observer;
 //import java.util.logging.Level;
 
-//import org.gnu.glib.CustomEvents;
-
 import frysk.event.RequestStopEvent;
-import frysk.event.SignalEvent;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -22,10 +19,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
 import frysk.rt.StackFactory;
-
-//import org.gnu.glib.CustomEvents;
-
-import frysk.sys.Sig;
 
 public class FCrash
 {
@@ -81,21 +74,10 @@ public class FCrash
           {
             // In case we're tracing a new child, add it.
             tracedParents.add(proc.getId());
-            // Weird API... unfortunately we can't fetch the
-            // Proc's main task here, as it will be null. Instead
-            // we have to request it and handle it in a callback.
-            
             new ProcAttachedObserver(proc, new TasksCrashObserver());
           }
       }
     });
-
-  //  CustomEvents.addEvent(new Runnable() {
-  //      public void run() {
-            //InterruptEvent ie = new InterruptEvent();
-            //Manager.eventLoop.add(ie);
-  //      }
-  //  });
   }
   
   synchronized void handleTask (Task task)
@@ -105,18 +87,7 @@ public class FCrash
       {
         firstCall = false;
         proc = task.getProc();
-        //CustomEvents.addEvent(new Runnable() {
-        //        public void run() {
-        InterruptEvent ie = new InterruptEvent();
-        Manager.eventLoop.add(ie);
-        //        }
-        //});
       }
-//        Proc proc = task.getProc();
-//        if (traceChildren)
-//            tracedParents.add(proc.getId());
-//        writer.flush();
-//        ++numProcesses;
     }
   
   public void addTracePid(int id)
@@ -227,44 +198,6 @@ public class FCrash
     }
   }
   
-  class InterruptEvent
-      extends SignalEvent
-  {
-
-    public InterruptEvent ()
-    {
-      super(Sig.INT);
-      // logger.log(Level.FINE, "{0} InterruptEvent\n", this);
-    }
-
-    public final void execute ()
-    {
-      // logger.log(Level.FINE, "{0} execute\n", this);
-      int i = 0;
-      frames = new StackFrame[proc.getTasks().size()];
-      Iterator iter = proc.getTasks().iterator();
-      while (iter.hasNext())
-        { 
-          try
-          {
-            frames[i] = StackFactory.createStackFrame((Task) iter.next());
-          }
-          catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-            System.exit(1);
-          }
-          StackFrame curr = frames[i];
-          while (curr != null)
-            {
-              System.out.println(curr.toString());
-              curr = curr.getOuter();
-            }
-        }
-      System.exit(1);
-    }
-  }
-  
   /**
      * An observer that sets up things once frysk has set up
      * the requested proc and attached to it.
@@ -272,6 +205,8 @@ public class FCrash
     private class AttachedObserver implements TaskObserver.Attached{
         public Action updateAttached (Task task)
         {
+            SignalObserver sigo = new SignalObserver(15);
+            task.requestAddSignaledObserver(sigo);
             handleTask(task);
             task.requestUnblock(this);
             return Action.BLOCK;
@@ -285,5 +220,100 @@ public class FCrash
         
         public void deletedFrom (Object observable){}
     }
+    
+    private Object monitor = new Object();
+    
+    class SignalObserver
+      implements TaskObserver.Signaled
+  {
+    private final int sig;
+
+    private int triggered;
+
+    private boolean added;
+
+    private boolean removed;
+
+    SignalObserver (int sig)
+    {//System.out.println("creating signal observer");
+      this.sig = sig;
+    }
+
+    public Action updateSignaled (Task task, int signal)
+    {
+      //System.out.println("updateSignaled");
+      if (signal == sig)
+        {
+          //System.out.println("signa == sig");
+          int i = 0;
+          frames = new StackFrame[proc.getTasks().size()];
+          Iterator iter = proc.getTasks().iterator();
+          System.out.println("Exit detected: dumping stack trace");
+          while (iter.hasNext())
+            { 
+              try
+              {
+                frames[i] = StackFactory.createStackFrame((Task) iter.next());
+              }
+              catch (Exception e)
+              {
+                System.out.println(e.getMessage());
+                System.exit(1);
+              }
+              StackFrame curr = frames[i];
+              
+              while (curr != null)
+                {
+                  System.out.println(curr.toString());
+                  curr = curr.getOuter();
+                }
+              i++;
+            }
+          System.exit(1);
+        }
+      return Action.CONTINUE;
+    }
+
+    int getTriggered ()
+    {
+      return triggered;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      w.printStackTrace();
+    }
+
+    public void addedTo (Object observable)
+    {
+      // Hurray! Lets notify everybody.
+      synchronized (monitor)
+        {
+          added = true;
+          removed = false;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isAdded ()
+    {
+      return added;
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      synchronized (monitor)
+        {
+          removed = true;
+          added = true;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isRemoved ()
+    {
+      return removed;
+    }
+  }
 
 }

@@ -3,10 +3,11 @@
 	* FCrash.java (trace): Create the new proc with an 
 	AttachedObserver rather than a ProcAttachedObserver.
 	(handleTask): Listen for signals to fcrash.
-	(TasksCrashObserver): Removed unneeded constructor.
-	(updateAttached): Added.
-	(AttachedObserver): Ditto.
-	(InterruptEvent): Ditto.
+	(TasksCrashObserver): Removed unneeded constructor..
+	(AttachedObserver): Added.
+	(AttachedObserver.updateAttached): Create new SignalObserver
+	for task.
+	(SignalObserver): Added.
 	
 2006-10-22  Phil Muldoon  <pmuldoon@redhat.com>
 
