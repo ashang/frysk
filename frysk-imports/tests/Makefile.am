@@ -423,9 +423,9 @@ TESTS += frysk3205/ptrace-test
 frysk3205_ptrace_test_SOURCES = frysk3205/ptrace-test.c
 noinst_PROGRAMS += frysk3205/ptrace-test
 
-# # ptrace-using-utrace doesn't seem to deliver child proc exit signals
-# # to frysk if the child has been reparented to init.
-# # check this is fixed.
-# TESTS += frysk3381/reparent
-# frysk3381 = frysk3381/reparent.c
-# noinst_PROGRAMS += frysk3381/reparent
+# ptrace-using-utrace doesn't seem to deliver child proc exit signals
+# to frysk if the child has been reparented to init.
+# check this is fixed.
+TESTS += frysk3381/reparent
+frysk3381 = frysk3381/reparent.c
+noinst_PROGRAMS += frysk3381/reparent
