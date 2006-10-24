@@ -40,6 +40,16 @@
 
 package frysk.util;
 
+import frysk.EventLogger;
+import frysk.event.RequestStopEvent;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcBlockObserver;
+import frysk.proc.ProcId;
+import frysk.proc.Task;
+import frysk.proc.TaskException;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 import inua.util.PrintWriter;
 
 import java.util.Iterator;
@@ -49,19 +59,6 @@ import java.util.Observer;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import frysk.EventLogger;
-
-import frysk.event.RequestStopEvent;
-import frysk.proc.Manager;
-import frysk.proc.Proc;
-import frysk.proc.ProcAttachedObserver;
-import frysk.proc.ProcId;
-import frysk.proc.ProcObserver;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
-import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
-
 public class FStack
 {
   private PrintWriter writer;
@@ -70,7 +67,7 @@ public class FStack
 
   private Proc proc;
 
-  public ProcAttachedObserver procAttachedObserver;
+  public StackTasksObserver procObserver;
 
   protected static final Logger logger = EventLogger.get("logs/",
                                                          "frysk_core_event.log");
@@ -108,9 +105,7 @@ public class FStack
         System.exit(- 1);
       }
 
-    procAttachedObserver = new ProcAttachedObserver(
-                                                    proc,
-                                                    new StackTasksObserver(proc));
+    procObserver = new StackTasksObserver(proc);
   }
 
   private final void removeObservers (Proc proc)
@@ -179,12 +174,13 @@ public class FStack
   }
 
   private class StackTasksObserver
-      implements ProcObserver.ProcTasks
+      extends ProcBlockObserver
   {
     private LinkedList taskList;
 
     public StackTasksObserver (Proc proc)
     {
+      super(proc);
       taskList = proc.getTasks();
     }
 
@@ -204,20 +200,9 @@ public class FStack
           // Print all the tasks in order.
           printTasks();
           // Remove the observer from this proc.
+
           removeObservers(task.getProc());
         }
-    }
-
-    public void taskAdded (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void taskRemoved (Task task)
-    {
-      // TODO Auto-generated method stub
-
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -225,12 +210,6 @@ public class FStack
       System.err.println(w);
       Manager.eventLoop.requestStop();
       System.exit(2);
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-
     }
 
     public void deletedFrom (Object observable)

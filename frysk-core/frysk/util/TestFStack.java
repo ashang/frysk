@@ -14,21 +14,65 @@ public class TestFStack
     extends TestLib
 {
 
+  String[] mainThread = new String[] {
+                                      "^Task #\\d+$",
+                                      "^#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)$",
+                                      "^#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)$",
+                                      "^#2 0x[\\da-f]+ in server \\(\\) from .*",
+                                      "^#3 0x[\\da-f]+ in main \\(\\) from .*",
+                                      "^#4 0x[\\da-f]+ in __libc_start_main \\(\\)$",
+                                      "^#5 0x[\\da-f]+ in _start \\(\\)$" };
+
+  String[] secondaryThread = new String[] {
+                                           "^Task #\\d+$",
+                                           "^#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)$",
+                                           "^#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)$",
+                                           "^#2 0x[\\da-f]+ in server \\(\\) from .*",
+                                           "^#3 0x[\\da-f]+ in start_thread \\(\\)$",
+                                           "^#4 0x[\\da-f]+ in (__)?clone \\(\\)$" };
+
   public void testSingleThreadedDetached () throws IOException
   {
+    if (brokenXXX(3420))
+      return;
     AckProcess ackProc = new DetachedAckProcess();
-    singleThreaded(ackProc);
+    multiThreaded(ackProc, 1);
   }
 
   public void testSingleThreadedAckDaemon () throws IOException
   {
-      if (brokenXXX (3420))
-	  return;
+    if (brokenXXX(3420))
+      return;
     AckProcess ackProc = new AckDaemonProcess();
-    singleThreaded(ackProc);
+    multiThreaded(ackProc, 1);
   }
 
-  public void singleThreaded (AckProcess ackProc) throws IOException
+  public void testMultiThreadedDetached () throws IOException
+  {
+    if (brokenXXX(3420))
+      return;
+    AckProcess ackProc = new DetachedAckProcess(2);
+    multiThreaded(ackProc, 3);
+  }
+
+  public void testMultiThreadedAckDaemon () throws IOException
+  {
+    if (brokenXXX(3420))
+      return;
+    AckProcess ackProc = new AckDaemonProcess(2);
+    multiThreaded(ackProc, 3);
+  }
+
+  public void testStressMultiThreadedDetach () throws IOException
+  {
+    if (brokenXXX(3420))
+      return;
+    AckProcess ackProc = new DetachedAckProcess(7);
+    multiThreaded(ackProc, 8);
+  }
+
+  public void multiThreaded (AckProcess ackProc, int threads)
+      throws IOException
   {
     FStack stacker = new FStack();
 
@@ -42,22 +86,21 @@ public class TestFStack
 
     BufferedReader br = new BufferedReader(input);
 
-    String[] matches = new String[] {
-                                     "^Task #\\d+$",
-                                     "^#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)",
-                                     "^#1 0x[\\da-f]+ in [_]*sigsuspend \\(\\)",
-                                     "^#2 0x[\\da-f]+ in server \\(\\) from .*",
-                                     "^#3 0x[\\da-f]+ in main \\(\\) from .*",
-                                     "^#4 0x[\\da-f]+ in __libc_start_main \\(\\)",
-                                     "^#5 0x[\\da-f]+ in _start \\(\\)" };
-
-    for (int i = 0; i < matches.length; i++)
+    for (int i = 0; i < mainThread.length; i++)
       {
         String line = br.readLine();
-        assertTrue(line + " did not match: " + matches[i],
-                   line.matches(matches[i]));
+        assertTrue(line + " did not match: " + mainThread[i],
+                   line.matches(mainThread[i]));
       }
-    
+    for (int j = 1; j < threads; j++)
+      {
+        for (int i = 0; i < secondaryThread.length; i++)
+          {
+            String line = br.readLine();
+            assertTrue(line + " did not match: " + secondaryThread[i],
+                       line.matches(secondaryThread[i]));
+          }
+      }
     input.close();
     output.close();
     br.close();
