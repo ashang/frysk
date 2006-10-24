@@ -22,6 +22,8 @@ public class TestFStack
 
   public void testSingleThreadedAckDaemon () throws IOException
   {
+      if (brokenXXX (3420))
+	  return;
     AckProcess ackProc = new AckDaemonProcess();
     singleThreaded(ackProc);
   }
