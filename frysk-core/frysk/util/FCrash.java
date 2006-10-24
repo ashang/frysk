@@ -1,3 +1,43 @@
+// This file is part of the program FRYSK.
+//
+// Copyright 2005, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
+
+
 package frysk.util;
 
 import inua.util.PrintWriter;
@@ -14,7 +54,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcAttachedObserver;
 import frysk.proc.ProcId;
-import frysk.proc.ProcObserver;
+//import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
@@ -36,6 +76,8 @@ public class FCrash
   
   boolean firstCall = true;
   
+  private Object monitor = new Object();
+  
   //Set of ProcId objects we trace; if traceChildren is set, we also
   // look for their children.
   HashSet tracedParents = new HashSet();
@@ -50,12 +92,13 @@ public class FCrash
     Manager.eventLoop.start();
   }
   
-  public void trace()
-    {
-        init();
-        Manager.host.requestRefreshXXX(true);
-        Manager.eventLoop.start();
-    }
+  public void trace ()
+  {
+    System.out.println("trace");
+    init();
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.start();
+  }
 
   private void init ()
   {
@@ -68,13 +111,22 @@ public class FCrash
       public void update (Observable observable, Object arg)
       {
         proc = (Proc) arg;
+        //proc.sendRefresh();
         ProcId id = proc.getId();
         if (tracedParents.contains(id)
             || (traceChildren && tracedParents.contains(proc.getParent().getId())))
           {
+            //System.out.println("manager.update");
             // In case we're tracing a new child, add it.
             tracedParents.add(proc.getId());
-            new ProcAttachedObserver(proc, new TasksCrashObserver());
+
+            Iterator i = proc.getTasks().iterator();
+            //System.out.println("proc: " + proc + " tasks.size: " + proc.getTasks().size());
+            while (i.hasNext())
+              {
+                System.out.println("iterating tasks");
+                ((Task) i.next()).requestAddAttachedObserver(new AttachedObserver());
+              }
           }
       }
     });
@@ -92,6 +144,7 @@ public class FCrash
   
   public void addTracePid(int id)
     {
+      System.out.println("addtracepid");
         tracedParents.add(new ProcId(id));
     }
 
@@ -134,104 +187,15 @@ public class FCrash
     });
   }
   
-  public void setWriter (PrintWriter pw)
-  {
-    
-  }
-  
-  public void setEnterHandler (StracePrinter sp)
-  {
-    
-  }
-  
-  public void setExitHandler (StracePrinter sp)
-  {
-    
-  }
-
-  private class TasksCrashObserver
-      implements ProcObserver.ProcTasks
-  {
-
-    public void existingTask (Task task)
-    {
-      handleTask(task);
-    }
-
-    public void taskAdded (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void taskRemoved (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      // TODO Auto-generated method stub
-      System.err.println(w);
-      Manager.eventLoop.requestStop();
-      System.exit(2);
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-  }
-  
-  class WaitForTask
-      implements ProcObserver.ProcTasks
-  {
-    public void addedTo (Object arg0)
-    {
-    }
-
-    public void addFailed (Object arg0, Throwable arg1)
-    {
-    }
-
-    public Action updateAttached (Task task)
-    {
-      return Action.CONTINUE;
-    }
-    
-    public void deletedFrom (Object arg0)
-    {
-    }
-
-    public void existingTask (Task task)
-    {
-      handleTask(task);
-    }
-
-    public void taskAdded (Task task)
-    {
-      
-    }
-
-    public void taskRemoved (Task arg0)
-    {
-    }
-  }
-  
   /**
      * An observer that sets up things once frysk has set up
      * the requested proc and attached to it.
      */
-    private class AttachedObserver implements TaskObserver.Attached{
+    class AttachedObserver implements TaskObserver.Attached
+    {
         public Action updateAttached (Task task)
         {
+          //System.out.println("attached.updateattached");
             SignalObserver sigo = new SignalObserver();
             task.requestAddSignaledObserver(sigo);
             handleTask(task);
@@ -239,22 +203,28 @@ public class FCrash
             return Action.BLOCK;
         }
         
-        public void addedTo (Object observable){}
+        public void addedTo (Object observable)
+        {
+          
+        }
         
-        public void addFailed (Object observable, Throwable w){
+        public void addFailed (Object observable, Throwable w)
+        {
             throw new RuntimeException("Failed to attach to created proc", w);
         }
         
-        public void deletedFrom (Object observable){}
+        public void deletedFrom (Object observable)
+        {
+          
+        }
     }
     
-    private Object monitor = new Object();
+    
+    
     
     class SignalObserver
       implements TaskObserver.Signaled
   {
-//    private final int sig;
-
     private int triggered;
 
     private boolean added;
@@ -264,6 +234,7 @@ public class FCrash
     public Action updateSignaled (Task task, int signal)
     {
 
+      System.out.println("From PID: " + task.getProc().getPid() + " TID: " + task.getTid());
       switch (signal)
         {
         case 2:
@@ -314,9 +285,11 @@ public class FCrash
 
     public void addedTo (Object observable)
     {
+      System.out.println("sig.addedTo");
       // Hurray! Lets notify everybody.
       synchronized (monitor)
         {
+          System.out.println("--> In sync");
           added = true;
           removed = false;
           monitor.notifyAll();
