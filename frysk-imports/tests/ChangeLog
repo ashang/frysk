@@ -1,3 +1,8 @@
+2006-10-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Change frysk3381/retrace.c to XFAIL, also fails on
+	FC-5.
+
 2006-10-23  Chris Moller  <moller@mollerware.com>
 
 	* Makefile.am: Re-enabled.  It helps if I actually cvs add the stuff.
