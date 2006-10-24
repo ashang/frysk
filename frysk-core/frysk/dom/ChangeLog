@@ -1,3 +1,10 @@
+2006-10-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestDOM.java: Import frysk.junit.TestCase.
+	(testDOMImage, testDOMsource, testDOMLine)
+	(testDOMInlineInstance): Mark as broken; 3417.
+	(testDOMFrysk): Mark as broken; 3418.
+
 2006-10-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Add new printDOM method.

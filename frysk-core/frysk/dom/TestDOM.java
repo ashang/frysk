@@ -41,7 +41,7 @@ package frysk.dom;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -72,6 +72,8 @@ public class TestDOM extends TestCase {
 	 *************************************************************************/
 	
 	public static void testDOMFrysk() {
+	    if (brokenXXX (3418))
+		return;
 
 		pc = new BigInteger("25");
 		dom.setPC(pc);
@@ -103,6 +105,8 @@ public class TestDOM extends TestCase {
 	 * 
 	 *************************************************************************/
 	public static void testDOMImage() {
+	    if (brokenXXX (3417))
+		return;
 		DOMImage testDOMImage = dom.getImage("test_image_2");
 		assertEquals("testing DOMImage.getName()", 
 				testDOMImage.getName(), "test_image_2");
@@ -230,6 +234,8 @@ public class TestDOM extends TestCase {
 	 * test the DOMSource class methods
 	 *************************************************************************/
 	public static void testDOMsource() {
+	    if (brokenXXX (3417))
+		return;
 
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
 		final DOMSource testDOMSource = testDOMImage.getSource("test_source2");
@@ -281,6 +287,8 @@ public class TestDOM extends TestCase {
 	 * Test the DOMLine class
 	 *************************************************************************/
 	public static void testDOMLine() {
+	    if (brokenXXX (3417))
+		return;
 		final int line_no = 2;
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
 		final DOMSource testDOMSource = testDOMImage
@@ -380,6 +388,8 @@ public class TestDOM extends TestCase {
 	 **************************************************************************/
 	
 	public static void testDOMInlineInstance() {
+	    if (brokenXXX (3417))
+		return;
 		
 		final String inst = "do_something";
 		final int line_no = 2;
