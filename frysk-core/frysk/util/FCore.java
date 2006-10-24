@@ -75,9 +75,8 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.ProcId;
-import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.sys.proc.CmdLineBuilder;
@@ -126,8 +125,7 @@ public class FCore
 
   protected static final Logger logger = EventLogger.get("logs/",
   "frysk_core_event.log");
-  
-  private static Parser parser;
+    private static Parser parser;
 
   private static String levelValue;
 
@@ -135,7 +133,7 @@ public class FCore
 
   private static int pid = 0;
 
-  public ProcAttachedObserver procAttachedObserver;
+  public CoreDumpTasksObserver procAttachedObserver;
   
   private Proc proc;
 
@@ -189,8 +187,7 @@ public class FCore
 
     // Attach to the proc, and when tasks stopped, do
     // core dump.
-    procAttachedObserver = new ProcAttachedObserver(proc,
-                                                    new CoreDumpTasksObserver(proc));
+    procAttachedObserver = new CoreDumpTasksObserver(proc);
 
     // Start the event loop, not pending events.
     Manager.eventLoop.start();
@@ -204,12 +201,14 @@ public class FCore
    *
    */
   private class CoreDumpTasksObserver
-  implements ProcObserver.ProcTasks
+  extends ProcBlockObserver
   {
     private LinkedList taskList;
-
+    Proc proc = null;
     public CoreDumpTasksObserver (final Proc proc)
     {
+      super(proc);
+      this.proc = proc;
       taskList = proc.getTasks();
       taskArray = new Task[taskList.size()];
     }
@@ -258,22 +257,12 @@ public class FCore
         }
     }
 
-    public void taskAdded (final Task task)
-    {
-    }
-
-    public void taskRemoved (final Task task)
-    {
-    }
 
     public void addFailed (final Object observable, final Throwable w)
     {
       abandonCoreDump((Exception)w);
     }
 
-    public void addedTo (final Object observable)
-    {
-    }
 
     public void deletedFrom (final Object observable)
     {
