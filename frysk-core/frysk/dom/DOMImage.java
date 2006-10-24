@@ -79,7 +79,6 @@ public class DOMImage {
 		myElement.setAttribute(NAME_ATTR, name);
 		myElement.setAttribute(PATH_ATTR, path);
 		myElement.setAttribute(CCPATH_ATTR, ccpath);
-        rootElement.addContent(myElement);
 	}
 	
 	/**

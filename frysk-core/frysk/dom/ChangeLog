@@ -1,3 +1,7 @@
+2006-10-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java:  Fix bz's 3417, 3418.
+
 2006-10-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestDOM.java: Import frysk.junit.TestCase.
