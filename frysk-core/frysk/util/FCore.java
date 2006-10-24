@@ -384,27 +384,31 @@ public class FCore
         || getArch().equals("frysk.proc.LinuxPPC64")
         || getArch().equals("frysk.proc.LinuxPPC32On64"))
       {
-        // the number of general purpose regiser.
+        // The number of general purpose regiser.
         int gprSize = 32;
         
         // The number of total common registers in PPC/PPC64 including nip, msr,
         // etc. Defined in the asm-ppc64/elf.h.
         int elfNGREG = 48;
         int blankRegisterIndex = elfNGREG;
-
+        
+        byte[] zeroVal = new byte[] { 0 };
+        
+        //XXX: if one register's offset is not defined in asm-ppc/ptrace.h or asm-ppc64/ptrace.h,
+        //     we didnot dump it out and fill give the null Name.
         String ppcRegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", "xer",
                                "ccr", "mq", "trap", "dar", "dsisr", "result" };
         String ppc64RegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", "xer",
                                  "ccr", "softe", "trap", "dar", "dsisr","result" };
-
+        String ppc32On64RegMap[] = { "nip", "msr", "orig_r3", "ctr", "lnk", "xer",
+                                 "ccr", null, "trap", "dar", "dsisr","result" };
         // Set the general purpose registers.
         for (int index = 0; index < gprSize; index++)
             prStatus.setPrGPReg(index,
                                 register.getRegisterByName("gpr" + index).
                                 getBigInteger(task));
 
-        if (getArch().equals("frysk.proc.LinuxPPC")
-            || getArch().equals("frysk.proc.LinuxPPC32On64"))
+        if (getArch().equals("frysk.proc.LinuxPPC"))
           {
             for (int index = 0; index < ppcRegMap.length; index++)
                 prStatus.setPrGPReg(index + gprSize, 
@@ -414,6 +418,27 @@ public class FCore
             // On ppc, some register indexes are not defined in
             // asm-<ISA>/ptrace.h.
             blankRegisterIndex = gprSize + ppcRegMap.length;
+          }
+        else if (getArch().equals("frysk.proc.LinuxPPC32On64"))
+          {
+            BigInteger registerVal = null;
+            BigInteger zeroBigInt = new BigInteger(zeroVal);
+            
+            for (int index = 0; index < ppcRegMap.length; index++)
+             {
+               if ((ppc32On64RegMap[index] == null) || ppc32On64RegMap[index].equals(""))
+                 {
+                   //Some registers which is defined on PPC, such as mq, are not defined on PPC64.
+                   registerVal = zeroBigInt;
+                 }
+               else
+                 registerVal = register.getRegisterByName(ppc32On64RegMap[index]).getBigInteger(task);
+               
+               prStatus.setPrGPReg(index + gprSize, registerVal);
+             }
+          // On ppc, some register indexes are not defined in
+          // asm-<ISA>/ptrace.h.
+          blankRegisterIndex = gprSize + ppcRegMap.length;
           }
         else
           {
@@ -428,7 +453,6 @@ public class FCore
         
         // On ppc64, some register indexes are not defined in
         // asm-<ISA>/ptrace.h.
-        byte[] zeroVal = new byte[] { 0 };
         BigInteger bigInt = new BigInteger(zeroVal);
 
         for (int index = blankRegisterIndex; index < elfNGREG; index++)
