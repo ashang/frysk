@@ -603,7 +603,7 @@ public class TestLib
 	{
 	    super (busy);
 	}
-	AckDaemonProcess (int count)
+	public AckDaemonProcess (int count)
 	{
 	    super (count);
 	}
@@ -636,7 +636,7 @@ public class TestLib
 	{
 	    super (filename, argv);
 	}
-	DetachedAckProcess (int count)
+	public DetachedAckProcess (int count)
 	{
 	    super (count);
 	}

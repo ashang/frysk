@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 /**
@@ -45,27 +46,28 @@ package frysk.proc;
 public interface ProcObserver
     extends Observer
 {
-	
+
+  /**
+   * Called to deliver a list of existing tasks to the client.
+   */
+  void existingTask (Task task);
+
+  /**
+   * An interface for clients to correctly know about all tasks of a Proc.
+   */
+  public interface ProcTasks
+      extends ProcObserver
+  {
+
     /**
-     * An interface for clients to correctly know about all tasks of a
-     * Proc.
+     * Called when the observed process clones a new task.
      */
-    public interface ProcTasks extends ProcObserver{
-		
-	/**
-	 * Called when the observed process clones a new task.
-	 */
-	void taskAdded(Task task);
-	
-	/**
-	 * Called when one of the tasks of a process exits.
-	 */
-	void taskRemoved(Task task);
-		
-	/**
-	 * Called to deliver a list of existing tasks to the client.
-	 */
-	void existingTask(Task task);
-		
-    }
+    void taskAdded (Task task);
+
+    /**
+     * Called when one of the tasks of a process exits.
+     */
+    void taskRemoved (Task task);
+
+  }
 }

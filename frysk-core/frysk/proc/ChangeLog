@@ -1,3 +1,11 @@
+2006-10-24  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcBlockObserver.java: Added.	
+	* ProcObserver.java (existingTask): Moved here from: ProcTasks.existingTask	
+	* TestLib.java (AckDaemonProcess.AckDaemonProcess): Made public so frysk-core/util/TestFStack can use.
+	(DetachedAckProcess.DetachedAckProcess): Ditto.
+	* TaskState.java (Attached.WaitForUnblock.handleDetach): Added.
+
 2006-10-24  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* LinuxTask.java (Task): Enlarge the boundary of PtraceByteBuffer
