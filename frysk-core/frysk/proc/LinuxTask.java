@@ -54,7 +54,7 @@ import java.util.logging.Level;
  */
 
 public class LinuxTask
-    extends Task
+  extends Task
 {
   private long ptraceOptions = 0;
 
@@ -66,7 +66,14 @@ public class LinuxTask
     ByteOrder byteOrder = getIsa().getByteOrder();
     // XXX: For writing at least, PTRACE must be used as /proc/mem
     // cannot be written to.
-    memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+    // For 64-bit address space.  Here is only a workaround, and still
+    // not cover all 64-bit address.  UBigInteger is needed here?
+    if (getIsa().getWordSize() == 8)
+      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+				    0x7fffffffffffffffl);
+    // For 32-bit address space.
+    else
+      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
                                   0xffffffffl);
     memory.order(byteOrder);
     registerBank = getIsa().getRegisterBankBuffers(id.id);
