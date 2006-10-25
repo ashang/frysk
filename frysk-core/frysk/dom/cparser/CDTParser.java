@@ -257,7 +257,8 @@ public class CDTParser
                 && ! files[i].startsWith("/usr/include")
                 && ! files[i].startsWith("/usr/local/include"))
               {
-                incfiles[numberfiles] = files[i];
+                int j = files[i].lastIndexOf("/");
+                incfiles[numberfiles] = files[i].substring(0,j);
                 numberfiles++;
               }
           }

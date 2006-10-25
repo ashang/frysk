@@ -1,5 +1,9 @@
 2006-10-25  Rick Moseley  <rmoseley@redhat.com>
 
+	* cparser/CDTParser.java: Fix the include path.
+
+2006-10-25  Rick Moseley  <rmoseley@redhat.com>
+
 	* cparser/CDTParser.java: Add method getIncPaths to get the
 	include paths from the ELF header.
 	Add new parameter to pass executable path.
