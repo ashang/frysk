@@ -1,3 +1,8 @@
+2006-10-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Add method getIncPaths to get the
+	include paths from the ELF header.
+
 2006-10-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMImage.java:  Fix bz's 3417, 3418.

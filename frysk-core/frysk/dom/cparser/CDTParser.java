@@ -104,6 +104,11 @@ import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
 
+import lib.dw.Dwarf;
+import lib.dw.DwarfCommand;
+import lib.elf.Elf;
+import lib.elf.ElfCommand;
+
 /**
  * @author ajocksch
  */
@@ -125,14 +130,12 @@ public class CDTParser
    * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String,
    *      frysk.gui.srcwin.SourceBuffer)
    */
-  public void parse (DOMFrysk dom, DOMSource source, DOMImage image) throws IOException
+  public void parse (DOMFrysk dom, DOMSource source, DOMImage image, String executable)
+    throws IOException
   {
     this.source = source;
     this.image = image;
     this.dom = dom;
-    String[] incPaths = { "/usr/local/include", 
-                          "/usr/include",
-                          "/usr/lib/gcc/i386-redhat-linux/4.1.1/include"};
 
     String filename = source.getFilePath() + "/" + source.getFileName();
     ParserLanguage language = ParserLanguage.C;
@@ -140,6 +143,7 @@ public class CDTParser
       {
         language = ParserLanguage.CPP;
       }
+    String [] incPaths = getIncPaths(executable);
     IScannerInfo buildScanInfo = new ScannerInfo(null, incPaths);
     IScannerInfo scanInfo = new ScannerInfo(buildScanInfo.getDefinedSymbols(),
                                             buildScanInfo.getIncludePaths());
@@ -224,6 +228,50 @@ public class CDTParser
 
             line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
           }
+      }
+  }
+  
+  /*
+   * getIncPaths gets the "include" paths from the ELF header
+   * 
+   * @return returns an array of strings with the include paths,
+   *                    null if there are none
+   */
+  
+  private String[] getIncPaths (String executable)
+  {
+    
+    try
+      {
+        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
+        Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
+        String [] files = dw.getSourceFiles();
+
+        // Since this call returns a lot of non-include file info, we must parse
+        // it and glean the include paths from it
+        String[] incfiles = new String[files.length];
+        int numberfiles = 0;
+        for (int i = 0; i < files.length; i++)
+          {
+            if (files[i].endsWith(".h")
+                && ! files[i].startsWith("/usr/include")
+                && ! files[i].startsWith("/usr/local/include"))
+              {
+                incfiles[numberfiles] = files[i];
+                numberfiles++;
+              }
+          }
+        // Add the default includes used for all systems
+        incfiles[numberfiles] = "/usr/local/include";
+        numberfiles++;
+        incfiles[numberfiles] = "/usr/include";
+        return incfiles;
+      }
+
+    catch (lib.elf.ElfException ee)
+      {
+        System.err.println("Error getting include paths: " + ee.getMessage());
+        return null;
       }
   }
 
