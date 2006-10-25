@@ -84,3 +84,8 @@ TESTS += frysk2333/TestGlibTimerGC
 noinst_PROGRAMS += frysk2333/TestGlibTimerGC
 frysk2333_TestGlibTimerGC_SOURCES = frysk2333/TestGlibTimerGC.java
 frysk2333_TestGlibTimerGC_LDFLAGS = --main=frysk2333.TestGlibTimerGC
+
+TESTS += frysk3116/RegionAndGCFailure
+noinst_PROGRAMS += frysk3116/RegionAndGCFailure
+frysk3116_RegionAndGCFailure_SOURCES = frysk3116/RegionAndGCFailure.java
+frysk3116_RegionAndGCFailure_LDFLAGS = --main=frysk3116.RegionAndGCFailure

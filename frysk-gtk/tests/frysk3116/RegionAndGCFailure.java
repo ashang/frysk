@@ -37,9 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.test;
-
-import frysk.junit.TestCase;
+package frysk3116;
 
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.ScrolledWindow;
@@ -50,7 +48,6 @@ import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
 
 /**
- * 
  * Creates a testcase for BZ 3116. 
  * 
  * Use of Regions and GC (Graphics Context) 
@@ -59,54 +56,48 @@ import org.gnu.gdk.GC;
  * @author pmuldoon
  *
  */
-public class TestRegionAndGCFailure extends TestCase {
 
-  public void setUp() 
-  {
-    Gtk.init(new String[] {});
-  }
+public class RegionAndGCFailure
+{
 
-  public void testRegionAndGCFailure()
-  {
+    public static void main (String[] args)
+    {
+	Gtk.init (new String[] {});
 	
-	// Don't want it to bust testsuite, so remove
-    // below to see crash.
-    if (brokenXXX (3116))
-      return;
+	// Top level window.
+	org.gnu.gtk.Window parent = new org.gnu.gtk.Window();
+	VBox box = new VBox(false,0);
+	parent.add(box);
+	
+	// Scrolled window to hold our TextView.
+	ScrolledWindow sw = new ScrolledWindow();
+	box.add(sw);
     
-    // Top level window.
-    org.gnu.gtk.Window parent = new org.gnu.gtk.Window();
-    VBox box = new VBox(false,0);
-    parent.add(box);
+	// TextView.
+	TextView tv = new TextView();
+	sw.addWithViewport(tv);
     
-    // Scrolled window to hold our TextView.
-    ScrolledWindow sw = new ScrolledWindow();
-    box.add(sw);
+	// Have to do this show() so GC will work.
+	parent.showAll();
     
-    // TextView.
-    TextView tv = new TextView();
-    sw.addWithViewport(tv);
+	// Get our org.gnu.gdk.Window from the textview.
+	// This is simply the easiest way to get a workable
+	// instance of a GDK window, which is critical to the test.
+	Window drawingArea = tv.getWindow();
     
-    // Have to do this show() so GC will work.
-    parent.showAll();
-    
-    // Get our org.gnu.gdk.Window from the textview.
-    // This is simply the easiest way to get a workable
-    // instance of a GDK window, which is critical to the test.
-    Window drawingArea = tv.getWindow();
-    
-    // Get Graphical Context.
-    GC myContext = new GC((Drawable) drawingArea);
+	// Get Graphical Context.
+	GC myContext = new GC((Drawable) drawingArea);
 
-    // Draw rectangle.
-    drawingArea.drawRectangle(myContext, true, 0, 0,
-				drawingArea.getWidth(), drawingArea.getHeight());
+	// Draw rectangle.
+	drawingArea.drawRectangle(myContext, true, 0, 0,
+				  drawingArea.getWidth(), drawingArea.getHeight());
 
-    int minY = 0, maxY = 0;
+	int minY = 0, maxY = 0;
     
-    // Get the y coordinates for the top and bottom of the window. This creates
-    // an anonymous Region object, that will be scheduled for GC after these 
-    // operations complete. It should be the final piece to get the smash.
+	// Get the y coordinates for the top and bottom of the
+	// window. This creates an anonymous Region object, that will
+	// be scheduled for GC after these operations complete. It
+	// should be the final piece to get the smash.
    	minY = drawingArea.getClipRegion().getClipbox().getY();
    	maxY = minY + drawingArea.getClipRegion().getClipbox().getHeight();
    	
@@ -115,13 +106,13 @@ public class TestRegionAndGCFailure extends TestCase {
    	
    	// Create an idle situation.
    	try {
-		Thread.sleep(1000);
+	    Thread.sleep(1000);
 	} catch (InterruptedException e) {
-		fail(e.getMessage());
+	    throw new RuntimeException (e);
 	}
  
-    // have to do this so ecj does not barf
-    maxY = minY + maxY;
+	// have to do this so ecj does not barf
+	maxY = minY + maxY;
 
-  }
+    }
 }
