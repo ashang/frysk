@@ -1,3 +1,8 @@
+2006-10-25  Nurdin Premji  <npremji@redhat.com>
+
+	* fstack.java: Changed to find the proc rather than passing a pid to FStack.
+	(main): used new methods Fstack.scheduleStackAndRunEvent and Proc.requestAbandonAndRunEvent.	
+
 2006-10-22  Mike Cvet  <mcvet@redhat.com>
 
 	* fcrash.java (run): Removed unnecessary checks.

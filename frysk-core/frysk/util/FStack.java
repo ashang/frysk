@@ -41,21 +41,19 @@
 package frysk.util;
 
 import frysk.EventLogger;
-import frysk.event.RequestStopEvent;
+import frysk.event.Event;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+
 import inua.util.PrintWriter;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -77,17 +75,7 @@ public class FStack
     this.writer = writer;
   }
 
-  public void scheduleStack (int pid)
-  {
-    Manager.host.requestRefreshXXX(true);
-
-    // XXX: Should get a message back when the refresh has finished and the
-    // proc has been found.
-    Manager.eventLoop.runPending();
-    scheduleStack(Manager.host.getProc(new ProcId(pid)));
-  }
-
-  public void scheduleStack (Proc p)
+  public void scheduleStackAndRunEvent (Proc p, Event theEvent)
   {
     proc = p;
     if (proc == null)
@@ -105,20 +93,7 @@ public class FStack
         System.exit(- 1);
       }
 
-    procObserver = new StackTasksObserver(proc);
-  }
-
-  private final void removeObservers (Proc proc)
-  {
-    proc.requestAbandon();
-    proc.observableDetached.addObserver(new Observer()
-    {
-
-      public void update (Observable o, Object arg)
-      {
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
+    procObserver = new StackTasksObserver(proc, theEvent);
   }
 
   public final void storeTask (Task task)
@@ -178,10 +153,13 @@ public class FStack
   {
     private LinkedList taskList;
 
-    public StackTasksObserver (Proc proc)
+    private Event event;
+
+    public StackTasksObserver (Proc proc, Event theEvent)
     {
       super(proc);
       taskList = proc.getTasks();
+      event = theEvent;
     }
 
     public void existingTask (Task task)
@@ -199,9 +177,9 @@ public class FStack
         {
           // Print all the tasks in order.
           printTasks();
-          // Remove the observer from this proc.
 
-          removeObservers(task.getProc());
+          // Run the given Event.
+          Manager.eventLoop.add(event);
         }
     }
 

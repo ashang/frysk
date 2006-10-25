@@ -1,3 +1,15 @@
+2006-10-25  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java (multiThreaded): Changed to use methods FStack.scheduleStackAndRunEvent
+	and Proc.requestAbandonAndRunEvent.	
+	* FStack.java (StackTasksObserver.StackTasksObserver): Added event parameter, to run an event after
+	stack trace is printed. 
+	(StackTasksObserver.existingTask): 	Changed to run a given event rather than abandon the process.
+	(scheduleStackAndRunEvent): Added.
+	(scheduleStack): Removed.
+	(removeObservers): Removed, should be handled elsewhere since fstack might want a quick detach.
+	While other programs might want a simple removal.
+
 2006-10-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (run): Convert to using ProcBlockObserver.

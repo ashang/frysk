@@ -39,15 +39,18 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import frysk.event.Event;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -242,6 +245,26 @@ public abstract class Proc
     logger.log(Level.FINE, "{0} abandon", this);
     performDetach();
     observations.clear();
+  }
+  
+  /**
+   * Request that the Proc be forcefully detached.
+   * Upon detach run the given event.  
+   * @param e The event to run upon successfull detach.
+   */
+  public void requestAbandonAndRunEvent(final Event e)
+  {
+    logger.log(Level.FINE, "{0} abandonAndRunEvent", this);
+    performDetach();
+    observations.clear();
+    observableDetached.addObserver(new Observer()
+    {
+
+      public void update (Observable o, Object arg)
+      {
+        Manager.eventLoop.add(e);
+      }
+    });
   }
 
     /**

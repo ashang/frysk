@@ -40,13 +40,17 @@
 
 package frysk.util;
 
+import inua.util.PrintWriter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 
-import inua.util.PrintWriter;
-import frysk.util.FStack;
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
 
 public class TestFStack
     extends TestLib
@@ -117,8 +121,15 @@ public class TestFStack
     PipedReader input = new PipedReader();
     PipedWriter output = new PipedWriter(input);
     stacker.setWriter(new PrintWriter(output, true));
+    
+    final Proc proc = ackProc.findProcUsingRefresh(true);
 
-    stacker.scheduleStack(ackProc.getPid());
+    stacker.scheduleStackAndRunEvent(proc, new Event() {
+     
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }});
 
     assertRunUntilStop("test");
 

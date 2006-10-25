@@ -46,18 +46,24 @@ import java.util.logging.Logger;
 
 import frysk.EventLogger;
 
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+
+import frysk.util.FStack;
+
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
-import frysk.proc.Manager;
-import frysk.util.FStack;
-
 public class fstack
 {
 	
-  private static int pid;
+  private static Proc proc;
   
   private static Parser parser;
 
@@ -130,7 +136,7 @@ public class fstack
     {
       protected void validate () throws OptionException
       {
-        if (0 == pid)
+        if (null == proc)
           {
             throw new OptionException("no pid provided");
           }
@@ -145,9 +151,16 @@ public class fstack
       {
         try
           {
-            if (0 == pid)
+            if (null == proc)
               {
-                pid = Integer.parseInt(arg);
+                Manager.host.requestRefreshXXX(true);
+
+                // XXX: Should get a message back when the refresh has finished and the
+                // proc has been found.
+                Manager.eventLoop.runPending();
+                
+                int pid = Integer.parseInt(arg);
+                proc = Manager.host.getProc(new ProcId(pid));
               }
             else
               {
@@ -170,8 +183,13 @@ public class fstack
     FStack stacker = new FStack();
 
     stacker.setWriter(new PrintWriter(System.out, true));
-    stacker.scheduleStack(pid);
-
+    stacker.scheduleStackAndRunEvent(proc, new Event() {
+     
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }});
+       
     Manager.eventLoop.run();
   }
 }

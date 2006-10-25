@@ -358,7 +358,7 @@ public class TestLib
 	/**
 	 * Find/return the child's Proc, polling /proc if necessary.
 	 */
-	Proc findProcUsingRefresh (boolean refreshTasks)
+	public Proc findProcUsingRefresh (boolean refreshTasks)
 	{
 	    // Try polling /proc.
 	    Manager.host.requestRefreshXXX (refreshTasks);
