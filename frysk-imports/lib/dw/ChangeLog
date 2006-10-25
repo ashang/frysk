@@ -1,3 +1,11 @@
+2006-10-25  Tim Moore  <moore@redhat.com>
+
+	* cni/Dwfl.cxx (dwfl_begin): Declare flags variable static; its
+	address is stashed in callbacks structure.
+	* cni/DwflModule.cxx (getLines): fix broken use of
+	JvGetStringUTFRegion and lack of terminating null.
+	* tests/TestDwfl.java (testGetAddresses): re-enable.
+
 2006-10-24  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java (testGetAddresses): Mark as broken, 3416.

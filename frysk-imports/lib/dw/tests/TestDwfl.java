@@ -135,9 +135,6 @@ public class TestDwfl
   // in the DwflLine records returned for a line.
   public void testGetAddresses() 
   {
-      if (brokenXXX (3416))
-	  return;
-
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
     long addr = TestLib.getFuncAddr();

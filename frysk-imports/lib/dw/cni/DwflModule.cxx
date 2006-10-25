@@ -79,7 +79,8 @@ lib::dw::DwflModule::getLines(jstring filename, jint lineno, jint column)
 {
   int fileNameLength =  JvGetStringUTFLength(filename);
   char *fileName = (char *)alloca(fileNameLength + 1);
-  JvGetStringUTFRegion(filename, 0, fileNameLength, fileName);
+  JvGetStringUTFRegion(filename, 0, filename->length(), fileName);
+  fileName[fileNameLength] = 0;
   ::Dwfl_Line **srcsp = 0;
   size_t nsrcs = 0;
   int result = ::dwfl_module_getsrc_file(DWFL_MODULE_POINTER, fileName, lineno,

@@ -53,7 +53,7 @@
 void
 lib::dw::Dwfl::dwfl_begin(jint pid){
 	
-	char * flags = "-:.debug:/usr/bin/debug";
+	static char *flags = "-:.debug:/usr/bin/debug";
 	
 	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
 	
