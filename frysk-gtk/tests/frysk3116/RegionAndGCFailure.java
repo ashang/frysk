@@ -53,7 +53,6 @@ import org.gnu.gdk.GC;
  * Use of Regions and GC (Graphics Context) 
  * can cause pointer smash.
  * 
- * @author pmuldoon
  *
  */
 

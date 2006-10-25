@@ -1,3 +1,8 @@
+2006-10-25  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* frysk3116/RegionAndGCFailure.java: Remove auto-generated
+	@author comment from java-doc (it's inaccurate).
+
 2006-10-25  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3116/RegionAndGCFailure.java: Written by pmuldoon, coppied
