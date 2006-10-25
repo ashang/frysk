@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,19 +54,25 @@ abstract public class ProcBlockObserver
   private final Proc proc;
   
   private Task mainTask;
+  
+  private int numTasks;
+  
+  boolean isAdded = false;
+  
+  private LinkedList tasks;
 
   public ProcBlockObserver (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
 
-    // The rest of the construction must be done synchronous to
-    // the EventLoop, schedule it.
+    /* The rest of the construction must be done synchronous to the 
+     * EventLoop, schedule it. */
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
       {
-        // Get a preliminary list of tasks - XXX: hack really.
+        /* XXX: deprecated hack. */
         proc.sendRefresh();
 
         mainTask = Manager.host.get(new TaskId(proc.getPid()));
@@ -73,57 +80,85 @@ abstract public class ProcBlockObserver
           {
             logger.log(Level.FINE, "Could not get main thread of "
                                    + "this process\n {0}", proc);
-            addFailed(
-                      proc,
-                      new RuntimeException(
-                                           "Process lost: could not "
-                                               + "get the main thread of this process.\n"
-                                               + proc));
+            addFailed(proc, new RuntimeException(
+                      "Process lost: could not "
+                    + "get the main thread of this process.\n" + proc));
             return;
           }
 
+        numTasks = proc.getTasks().size();
         requestAddObservers(mainTask);
       }
     });
   }
-
-  private void requestAddObservers (Task task)
-  {
-
-    task.requestAddInstructionObserver(this);
-  }
-
-  public Action updateExecuted (Task task)
-  {
-    existingTask(task);
-    return Action.BLOCK;
-  }
-
+  
   abstract public void existingTask (Task task);
 
   abstract public void addFailed (Object observable, Throwable w);
+  
+  abstract public void deletedFrom (Object observable);
 
-  boolean isAdded = false;
-
-  public void addedTo (Object observable)
+  
+  public void requestAddObservers (Task task)
   {
-    if (! isAdded)
+    task.requestAddInstructionObserver(this);
+  }
+  
+  public Action updateExecuted (Task task)
+  {
+    if (isAdded)
+      existingTask(task);
+    
+    return Action.BLOCK;
+  }
+
+  public final void addedTo (Object observable)
+  {
+    if (!isAdded)
       {
         isAdded = true;
-        // XXX: Is there a race here with a rapidly cloning task?
+        
+        /* XXX: Race condition - rapidly cloning tasks. */
         for (Iterator iterator = proc.getTasks().iterator(); iterator.hasNext();)
           {
-            Task task = (Task) iterator.next();
-            //existingTask(task);
-            if (task != mainTask)
+            Task t = (Task) iterator.next();
+            if (t != mainTask)
               {
                 logger.log(Level.FINE, "{0} Inside if not mainTask\n", this);
-                requestAddObservers(task);
+                requestAddObservers(t);
               }
           }
       }
   }
-
-  abstract public void deletedFrom (Object observable);
-
+  
+  public void blockTask (LinkedList tasks)
+  {
+    this.tasks = tasks;
+    numTasks = tasks.size();
+    Manager.eventLoop.add(new Event()
+    {
+      public void execute ()
+      {
+        Task t = (Task) ProcBlockObserver.this.tasks.removeFirst();
+        while (t != null)
+          {
+            t.requestAddInstructionObserver(ProcBlockObserver.this);
+            if (ProcBlockObserver.this.tasks.size() > 0)
+              t = (Task) ProcBlockObserver.this.tasks.removeFirst();
+            else
+              break;
+          }
+      }
+    });
+  }
+  
+  public int getNumTasks ()
+  {
+    return this.numTasks;
+  }
+  
+  public void resetIsAdded ()
+  {
+    this.isAdded = false;
+  }
 }

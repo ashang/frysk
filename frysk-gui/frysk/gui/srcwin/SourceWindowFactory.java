@@ -67,12 +67,8 @@ import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Proc;
-import frysk.proc.ProcObserver;
-//import frysk.proc.ProcTasksObserver;
-import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
-//import frysk.proc.TaskException;
-//import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 
@@ -142,24 +138,14 @@ public class SourceWindowFactory
         return;
       }
 
-    // If it's already blocked, keep on moving
-    //if (proc.getMainTask().getBlockers().length != 0)
-     // finishSourceWin(proc);
+    ProcBlockObserver pbo = null;
 
-    // else block it
-    ProcAttachedObserver pao = null;
-
-//    if (ProcBlockCounter.getBlockCount(proc) != 0 || monitor == true)
-//      {
-//        /* If this Task is already blocked, don't try to block it again */
-//        rw = finishRegWin(rw, proc);
-//      }
     if (procTable.get(proc) == null
         || ProcBlockCounter.getBlockCount(proc) == 0)
-      pao = new ProcAttachedObserver(proc, new SourceWinBlocker());
+      pbo = new SourceWinBlocker(proc);
 
     ProcBlockCounter.incBlockCount(proc);
-    blockerTable.put(proc, pao);
+    blockerTable.put(proc, pbo);
   }
 
   /**
@@ -171,8 +157,6 @@ public class SourceWindowFactory
    */
   private static void finishSourceWin (Proc proc)
   {
-    // Proc proc = task.getProc();
-
     int size;
     Task[] tasks;
     DOMFrysk dom = null;
@@ -260,7 +244,7 @@ public class SourceWindowFactory
         frames = generateProcStackTrace(frames, tasks, dom, proc, size);
 
         srcWin = new SourceWindow(glade, gladePaths[i], dom,
-                            frames, (ProcAttachedObserver)blockerTable.get(proc));
+                            frames, (SourceWinBlocker)blockerTable.get(proc));
         procTable.put(proc, srcWin);
         srcWin.setMyProc(proc);
         srcWin.addListener(new SourceWinListener());
@@ -387,13 +371,13 @@ public class SourceWindowFactory
     if (blockerTable.containsKey(proc)
         && ProcBlockCounter.getBlockCount(proc) == 1)
       {
-        ProcAttachedObserver pao = (ProcAttachedObserver) blockerTable.get(proc);
+        SourceWinBlocker swb = (SourceWinBlocker) blockerTable.get(proc);
         Iterator i = proc.getTasks().iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            t.requestUnblock(pao);
-            t.requestDeleteAttachedObserver(pao);
+            t.requestUnblock(swb);
+            t.requestDeleteInstructionObserver(swb);
           }
 
         procTable.remove(proc);
@@ -485,8 +469,13 @@ public class SourceWindowFactory
    * upon call, and blocks the task it is to examine.
    */
   private static class SourceWinBlocker
-      implements ProcObserver.ProcTasks
+      extends ProcBlockObserver
   {
+
+    public SourceWinBlocker (Proc theProc)
+    {
+      super(theProc);
+    }
 
     public Action updateAttached (Task task)
     {
@@ -495,10 +484,10 @@ public class SourceWindowFactory
     }
     
     public void existingTask (Task task)
-    {//System.out.println("Existing Task");
+    {
       myTask = task;
       if (task_count == 0)
-        task_count = ((ProcAttachedObserver) blockerTable.get(task.getProc())).getNumTasks();
+        task_count = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
 
       CustomEvents.addEvent(new Runnable()
       {
@@ -508,21 +497,6 @@ public class SourceWindowFactory
         }
 
       });
-    }
-    
-    public void taskRemoved (Task task)
-    {   
-      // TODO Auto-generated method stub
-    }
-    
-    public void taskAdded(final Task task)
-    {
-
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -541,15 +515,14 @@ public class SourceWindowFactory
   public static synchronized void handleTask (Task task)
   {
     myTask = task;
-    //System.out.println("in HandleTask");
 
     if (SW_active == false)
       {
-
         CustomEvents.addEvent(new Runnable()
         {
           public void run ()
           {
+            System.out.println("I am in run()");
             --task_count;
             if (task_count == 0)
               {
@@ -562,14 +535,13 @@ public class SourceWindowFactory
       }
     else
       {
-        //System.out.println("In else");
         --task_count;
         if (task_count == 0)
           {
-            //System.out.println("Pass if");
             StackFrame[] frames = generateProcStackTrace(null, null,
                                                          srcWin.getDOM(),
                                                          task.getProc(), 0);
+            System.out.println(frames[0]);
             srcWin.populateStackBrowser(frames);
             srcWin.procReblocked();
             task_count = myTask.getProc().getTasks().size();

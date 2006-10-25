@@ -1,3 +1,12 @@
+2006-10-25  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcBlockObserver.java (ProcBlockObserver): General clean up.
+	(updateExecuted): Added check to make sure existingTask () isn't 
+	called more than once.
+	(blockTask): Added. Blocks a separate Task.
+	(getNumTasks): Added.
+	(resetIsAdded): Added.
+
 2006-10-25  Nurdin Premji  <npremji@redhat.com>
 
 	* TestLib.java (Child.findProcUsingRefresh): Made public so util tests can use this function as well.

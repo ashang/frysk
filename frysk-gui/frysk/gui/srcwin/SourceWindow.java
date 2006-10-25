@@ -117,7 +117,7 @@ import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcAttachedObserver;
+import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
@@ -238,7 +238,7 @@ public class SourceWindow
 
   private ConsoleWindow conWin;
 
-  private ProcAttachedObserver pao;
+  private ProcBlockObserver pbo;
 
   public boolean runningState = false;
 
@@ -261,7 +261,7 @@ public class SourceWindow
    * @param stack The stack frame that represents the current state of execution
    */
   public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackFrame[] frames, ProcAttachedObserver pao)
+                       StackFrame[] frames, ProcBlockObserver pbo)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -271,7 +271,7 @@ public class SourceWindow
     this.glade = glade;
     this.gladePath = gladePath;
     this.dom = dom;
-    this.pao = pao;
+    this.pbo = pbo;
 
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 
@@ -813,8 +813,8 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
-    //mi = (MenuItem) this.toggleMainThread.createMenuItem();
-    //tmp.append(mi);
+    mi = (MenuItem) this.toggleMainThread.createMenuItem();
+    tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.next.createMenuItem();
@@ -1253,8 +1253,9 @@ public class SourceWindow
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        t.requestUnblock(pao);
-        t.requestDeleteAttachedObserver(pao);
+        this.pbo.resetIsAdded();
+        //t.requestUnblock(this.pbo);
+        t.requestDeleteInstructionObserver(this.pbo);
       }
   }
 
@@ -1269,7 +1270,7 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    this.pao.iterateAttach();
+    this.pbo.requestAddObservers(this.myProc.getMainTask());
   }
 
   public void procReblocked ()
@@ -1591,8 +1592,8 @@ public class SourceWindow
     Task t = this.myProc.getMainTask();
     if (this.runningState == false)
       {
-        t.requestUnblock(this.pao);
-        t.requestDeleteAttachedObserver(this.pao);
+        t.requestUnblock(this.pbo);
+        t.requestDeleteInstructionObserver(this.pbo);
         System.out.println("Finished calling for unblock");
         this.runningState = true;
       }
@@ -1601,7 +1602,7 @@ public class SourceWindow
         this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
         LinkedList l = new LinkedList();
         l.add(t);
-        this.pao.attachTask(l);
+        this.pbo.blockTask(l);
         System.out.println("Finished calling for block");
       }
   }

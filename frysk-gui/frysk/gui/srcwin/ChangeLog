@@ -1,3 +1,17 @@
+2006-10-25  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Changed ProcAttachedObserver
+	to ProcBlockObserver.
+	(unblockProc): Reset the boolean in ProcBlockObserver, remove
+	the call to Task.requestUnblock () since it's handled by the
+	next call to delete.
+	(doStop): Update to work with ProcBlockObserver - call to 
+	block the main task.
+	* SourceWindowFactory.java (createSourceWindow): Changed 
+	ProcAttachedObserver to ProcBlockObserver.
+	(SourceWinBlocker.existingTask): Update to work with
+	ProcBlockObserver.
+
 2006-10-20  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* SourceWindow.java (updateShownStackFrame): Check null 
