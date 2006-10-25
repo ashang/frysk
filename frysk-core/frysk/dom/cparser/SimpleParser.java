@@ -60,7 +60,7 @@ public class SimpleParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMFrysk dom, DOMSource source, DOMImage image) throws IOException {
+	public void parse(DOMFrysk dom, DOMSource source, DOMImage image, String executable) throws IOException {
 		this.tokenMaker = new Tokenizer(source.getFilePath() +"/" +  source.getFileName());
 		
 		while(this.tokenMaker.hasMoreTokens()){

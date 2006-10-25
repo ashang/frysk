@@ -2,6 +2,12 @@
 
 	* cparser/CDTParser.java: Add method getIncPaths to get the
 	include paths from the ELF header.
+	Add new parameter to pass executable path.
+	* cparser/CTagsParser.java: Add new parameter to pass executable
+	path.
+	* cparser/SimpleParser.java: Ditto.
+	* DOMFactory.java: Ditto.
+	* StaticParser.java: Ditto.
 
 2006-10-24  Rick Moseley  <rmoseley@redhat.com>
 

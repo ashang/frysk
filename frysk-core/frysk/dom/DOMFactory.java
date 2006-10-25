@@ -110,7 +110,7 @@ public class DOMFactory
 
         // Parse the file and populate the DOM
         StaticParser parser = new CDTParser();
-        parser.parse(dom, source, image);
+        parser.parse(dom, source, image, proc.getExe());
       }
     hashmap.put(proc, dom);
     return dom;
