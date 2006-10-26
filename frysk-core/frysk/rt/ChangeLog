@@ -1,3 +1,10 @@
+2006-10-26  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Fixed << broken >> number
+	to correct bug.
+	(frameAssertions): Added some regex to catch what appears to be new 
+	clone function name in FC6.
+
 2006-10-12  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace)

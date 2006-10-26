@@ -154,7 +154,7 @@ public class TestStackBacktrace
     assertEquals("baz", frame.getMethodName());
     assertNull(frame.getInner());
     
-    if (!brokenXXX(3295))
+    if (!brokenXXX(3259))
       assertEquals(62, frame.getLineNumber());
 
     frame = frame.getOuter();
@@ -332,10 +332,11 @@ public class TestStackBacktrace
     assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
     
     assertNull(this.frameTracker[next][3][1]);
-    if (MachineType.getMachineType() == MachineType.IA32)
-      assertEquals("__clone", this.frameTracker[next][3][2]);
-    if (MachineType.getMachineType() == MachineType.X8664)
-      assertEquals("clone", this.frameTracker[next][3][2]);
+//    if (MachineType.getMachineType() == MachineType.IA32)
+//      assertEquals("__clone", this.frameTracker[next][3][2]);
+//    if (MachineType.getMachineType() == MachineType.X8664)
+//      assertEquals("(__)?clone", this.frameTracker[next][3][2]);
+    assertTrue(this.frameTracker[next][3][2].matches("(__)?clone"));
     assertNotNull(this.frameTracker[next][3][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
     
@@ -381,10 +382,11 @@ public class TestStackBacktrace
     assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
     
     assertNull(this.frameTracker[next][3][1]);
-    if (MachineType.getMachineType() == MachineType.IA32)
-      assertEquals("__clone", this.frameTracker[next][3][2]);
-    if (MachineType.getMachineType() == MachineType.X8664)
-      assertEquals("clone", this.frameTracker[next][3][2]);
+//    if (MachineType.getMachineType() == MachineType.IA32)
+//      assertEquals("__clone", this.frameTracker[next][3][2]);
+//    if (MachineType.getMachineType() == MachineType.X8664)
+//      assertEquals("(__)?clone", this.frameTracker[next][3][2]);
+    assertTrue(this.frameTracker[next][3][2].matches("(__)?clone"));
     assertNotNull(this.frameTracker[next][3][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
   }
