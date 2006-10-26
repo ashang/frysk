@@ -85,11 +85,7 @@ public class RegionAndGCFailure
 	Window drawingArea = tv.getWindow();
     
 	// Get Graphical Context.
-	GC myContext = new GC((Drawable) drawingArea);
-
-	// Draw rectangle.
-	drawingArea.drawRectangle(myContext, true, 0, 0,
-				  drawingArea.getWidth(), drawingArea.getHeight());
+	GC myContext = new GC((Drawable)drawingArea);
 
 	int minY = 0, maxY = 0;
     
@@ -99,17 +95,29 @@ public class RegionAndGCFailure
 	// should be the final piece to get the smash.
    	minY = drawingArea.getClipRegion().getClipbox().getY();
    	maxY = minY + drawingArea.getClipRegion().getClipbox().getHeight();
-   	
+
+        final Thread gtkLoop = new Thread(new Runnable() 
+	  {
+	    public void run() 
+	    {			  
+	      Gtk.main();
+	    }
+
+	  });
+
+	gtkLoop.start();
+
    	// GC .. should go BOOM!
    	System.gc();
    	
    	// Create an idle situation.
    	try {
-	    Thread.sleep(1000);
+	    Thread.sleep(3000);
 	} catch (InterruptedException e) {
 	    throw new RuntimeException (e);
 	}
- 
+
+	Gtk.mainQuit();
 	// have to do this so ecj does not barf
 	maxY = minY + maxY;
 

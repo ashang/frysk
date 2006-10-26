@@ -1,3 +1,8 @@
+2006-10-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* frysk3116/RegionAndGCFailure.java: Add a thread to start
+	the gtk event loop.
+
 2006-10-25  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* frysk3116/RegionAndGCFailure.java: Remove auto-generated
