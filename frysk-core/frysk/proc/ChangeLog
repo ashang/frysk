@@ -1,3 +1,8 @@
+2006-10-26  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcBlockObserver.java (addFailed): Added, default behaviour for commandline utilities.
+	
+
 2006-10-26  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcBlockObserver.java (addedTo): Update numTasks from here rather

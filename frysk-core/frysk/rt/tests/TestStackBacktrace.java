@@ -227,16 +227,7 @@ public class TestStackBacktrace
     Proc proc = Manager.host.getProc(new ProcId(process.getPid()));
     new ProcTasksObserver(proc, new StackTasksObserver());
     
-    Manager.eventLoop.start();
-    
-    try
-      {
-        wait(); /* Wait for all thread information to be collected */
-      }
-    catch (InterruptedException ie)
-      {
-        System.out.println(ie.getMessage());
-      }
+    assertRunUntilStop("testThreadedBackTrac");    
   
   frameAssertions();
   }
@@ -504,7 +495,7 @@ public class TestStackBacktrace
         /* All three tasks have gone through - wake the test and finish up */
         if (task_count == 3)
           {
-            notify();
+            Manager.eventLoop.requestStop();
             return;
           }
       }

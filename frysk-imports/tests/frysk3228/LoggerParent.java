@@ -14,7 +14,7 @@ public class LoggerParent
     System.out.println("ac parent: " + ac.getParent());
     if (ab.getParent () != a)
 	throw new RuntimeException ("ab's parent is not a");
-    if (ab.getParent () != a)
-	throw new RuntimeException ("ab's parent is not a");
+    if (ac.getParent () != a)
+	throw new RuntimeException ("ac's parent is not a");
   }
 }

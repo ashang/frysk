@@ -92,8 +92,27 @@ abstract public class ProcBlockObserver
   }
   
   abstract public void existingTask (Task task);
+  
+    public void addFailed (Object observable, Throwable w)
+  {
+    System.err.println(w);
+   proc.requestAbandonAndRunEvent(new Event() {
 
-  abstract public void addFailed (Object observable, Throwable w);
+    public void execute ()
+    {
+      Manager.eventLoop.requestStop();
+      try
+        {
+          //Wait 5 seconds for eventLoop to finish.
+          Manager.eventLoop.join(5000);
+        }
+      catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+      System.exit (-1);
+    }});
+  }
   
   abstract public void deletedFrom (Object observable);
 

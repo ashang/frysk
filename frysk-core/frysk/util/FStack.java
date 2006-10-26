@@ -55,6 +55,7 @@ import inua.util.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FStack
@@ -90,7 +91,7 @@ public class FStack
       {
         System.err.println("Process " + proc
                            + " is not owned by user/group. Cannot stacktrace.");
-        System.exit(- 1);
+        System.exit(1);
       }
 
     procObserver = new StackTasksObserver(proc, theEvent);
@@ -134,6 +135,7 @@ public class FStack
 
   public final void printTasks ()
   {
+    logger.log(Level.FINE, "{0} printTasks", this);
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
       {
@@ -145,7 +147,7 @@ public class FStack
             writer.println(s);
           }
       }
-
+    logger.log(Level.FINE, "{0} exiting printTasks", this);
   }
 
   private class StackTasksObserver
@@ -165,6 +167,7 @@ public class FStack
     public void existingTask (Task task)
     {
 
+      logger.log(Level.FINE, "{0} existingTask", this);
       // Print the stack frame for this stack.
       storeTask(task);
       // Remove this task from the list of tasks.
@@ -181,13 +184,6 @@ public class FStack
           // Run the given Event.
           Manager.eventLoop.add(event);
         }
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      System.err.println(w);
-      Manager.eventLoop.requestStop();
-      System.exit(2);
     }
 
     public void deletedFrom (Object observable)

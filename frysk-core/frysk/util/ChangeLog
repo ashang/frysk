@@ -9,6 +9,17 @@
 	(multiThreaded): Changed to use Analyzer thread to analyze output, avoids hangs due to
 	full PipedWriter.
 	
+	* FStack.java:
+	(printTasks): Added logging.
+	(StackTasksObserver.addFailed): Removed, use default ProcBlockObserver addFailed method.
+	(scheduleStackAndRunEvent): Changed system exit from -1 to +1.
+	(StackTasksObserver.existingTask): Added logging.
+	* TestFStack.java:
+	(testStressMultiThreadedDetach): Removed broken's, caused by TestStackBacktrace.
+	(testMultiThreadedAckDaemon): Ditto.
+	(testSingleThreadedDetached): Ditto.
+	(testSingleThreadedAckDaemon): Ditto.
+	(testMultiThreadedDetached): Ditto.
 
 2006-10-25  Nurdin Premji  <npremji@redhat.com>
 

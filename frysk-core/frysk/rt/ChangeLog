@@ -1,3 +1,9 @@
+2006-10-26  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/TestStackBacktrace.java (testThreadedBacktrace): Changed to run the eventLoop, 
+	not create a new one. Fixes bug causing tests after this to fail.
+	(handleTask): Changed to stop eventLoop on completion. 
+
 2006-10-26  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Fixed << broken >> number

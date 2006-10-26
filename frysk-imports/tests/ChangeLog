@@ -1,3 +1,7 @@
+2006-10-26  Nurdin Premji  <npremji@redhat.com>
+
+	* frysk3228/LoggerParent.java (main): Fixed typo, second ab reference should be ac.
+
 2006-10-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Change frysk3381/retrace.c to XFAIL, also fails on

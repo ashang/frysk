@@ -76,40 +76,30 @@ public class TestFStack
 
   public void testSingleThreadedDetached () throws IOException
   {
-    if (brokenXXX(3421))
-      return;
     AckProcess ackProc = new DetachedAckProcess();
     multiThreaded(ackProc, 1);
   }
 
   public void testSingleThreadedAckDaemon () throws IOException
   {
-    if (brokenXXX(3421))
-      return;
     AckProcess ackProc = new AckDaemonProcess();
     multiThreaded(ackProc, 1);
   }
 
   public void testMultiThreadedDetached () throws IOException
   {
-    if (brokenXXX(3421))
-      return;
     AckProcess ackProc = new DetachedAckProcess(2);
     multiThreaded(ackProc, 3);
   }
 
   public void testMultiThreadedAckDaemon () throws IOException
   {
-    if (brokenXXX(3421))
-      return;
     AckProcess ackProc = new AckDaemonProcess(2);
     multiThreaded(ackProc, 3);
   }
 
   public void testStressMultiThreadedDetach () throws IOException
   {
-    if (brokenXXX(3421))
-      return;
     int clones = 7;
     AckProcess ackProc = new DetachedAckProcess(clones);
     multiThreaded(ackProc, clones + 1);
