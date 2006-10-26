@@ -87,14 +87,12 @@ public class RegionAndGCFailure
 	// Get Graphical Context.
 	GC myContext = new GC((Drawable)drawingArea);
 
-	int minY = 0, maxY = 0;
-    
 	// Get the y coordinates for the top and bottom of the
 	// window. This creates an anonymous Region object, that will
 	// be scheduled for GC after these operations complete. It
 	// should be the final piece to get the smash.
-   	minY = drawingArea.getClipRegion().getClipbox().getY();
-   	maxY = minY + drawingArea.getClipRegion().getClipbox().getHeight();
+   	drawingArea.getClipRegion();
+   	drawingArea.getClipRegion();
 
         final Thread gtkLoop = new Thread(new Runnable() 
 	  {
@@ -118,8 +116,5 @@ public class RegionAndGCFailure
 	}
 
 	Gtk.mainQuit();
-	// have to do this so ecj does not barf
-	maxY = minY + maxY;
-
     }
 }
