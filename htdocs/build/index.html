@@ -83,7 +83,8 @@ Just note the following:
 
 <li>You will need to install a number of packages vis:
 <pre>
-sudo yum install antlr jdom junit gcc-java gcc-c++ \
+sudo yum install -y
+    antlr jdom junit gcc-java gcc-c++ dejagnu \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
     sharutils cvs audit-libs-devel binutils-devel
@@ -113,7 +114,8 @@ behave weird; and <tt>/proc</tt> is not accessible</li>
 
 <li>You will need to install a number of packages vis:
 <pre>
-sudo yum install antlr jdom junit gcc-java gcc-c++ \
+sudo yum install -y
+    antlr jdom junit gcc-java gcc-c++ dejagnu \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
     sharutils cvs audit-libs-devel
@@ -143,7 +145,7 @@ and <tt><em>frysk</em></tt> RPMs that contain everything needed to
 build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
 
 <pre>
-transfig xmlto passivetex xmltex \
+transfig xmlto passivetex xmltex dejagnu \
 gcc4 gcc4-c++ gcc4-java libgcj4-devel \
 sharutils frysk automake ghostscript
 </pre>
