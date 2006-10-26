@@ -94,27 +94,25 @@ public class RegionAndGCFailure
    	drawingArea.getClipRegion();
    	drawingArea.getClipRegion();
 
-        final Thread gtkLoop = new Thread(new Runnable() 
-	  {
-	    public void run() 
-	    {			  
-	      Gtk.main();
-	    }
+        new Thread (new Runnable() 
+	    {
+		public void run() 
+		{			  
+		    // Create an idle situation.
+		    try {
+			Thread.sleep(1000);
+		    } catch (InterruptedException e) {
+			throw new RuntimeException (e);
+		    }
+		    Gtk.mainQuit();
+		}
+	    }).start ();
 
-	  });
-
-	gtkLoop.start();
-
-   	// GC .. should go BOOM!
+   	// GC stuff; should finalize things.
    	System.gc();
-   	
-   	// Create an idle situation.
-   	try {
-	    Thread.sleep(3000);
-	} catch (InterruptedException e) {
-	    throw new RuntimeException (e);
-	}
 
-	Gtk.mainQuit();
+	// Free up corresponding GTK objects.
+        Gtk.main();
+   	
     }
 }

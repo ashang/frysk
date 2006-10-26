@@ -1,3 +1,8 @@
+2006-10-26  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3116/RegionAndGCFailure.java: Call Gtk.main from main loop;
+	sleep for only one second.
+
 2006-10-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* frysk3116/RegionAndGCFailure.java: Add a thread to start
