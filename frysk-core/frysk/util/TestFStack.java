@@ -43,6 +43,7 @@ package frysk.util;
 import inua.util.PrintWriter;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
@@ -75,7 +76,7 @@ public class TestFStack
 
   public void testSingleThreadedDetached () throws IOException
   {
-    if (brokenXXX(3420))
+    if (brokenXXX(3421))
       return;
     AckProcess ackProc = new DetachedAckProcess();
     multiThreaded(ackProc, 1);
@@ -83,7 +84,7 @@ public class TestFStack
 
   public void testSingleThreadedAckDaemon () throws IOException
   {
-    if (brokenXXX(3420))
+    if (brokenXXX(3421))
       return;
     AckProcess ackProc = new AckDaemonProcess();
     multiThreaded(ackProc, 1);
@@ -91,7 +92,7 @@ public class TestFStack
 
   public void testMultiThreadedDetached () throws IOException
   {
-    if (brokenXXX(3420))
+    if (brokenXXX(3421))
       return;
     AckProcess ackProc = new DetachedAckProcess(2);
     multiThreaded(ackProc, 3);
@@ -99,7 +100,7 @@ public class TestFStack
 
   public void testMultiThreadedAckDaemon () throws IOException
   {
-    if (brokenXXX(3420))
+    if (brokenXXX(3421))
       return;
     AckProcess ackProc = new AckDaemonProcess(2);
     multiThreaded(ackProc, 3);
@@ -107,10 +108,11 @@ public class TestFStack
 
   public void testStressMultiThreadedDetach () throws IOException
   {
-    if (brokenXXX(3420))
+    if (brokenXXX(3421))
       return;
-    AckProcess ackProc = new DetachedAckProcess(7);
-    multiThreaded(ackProc, 8);
+    int clones = 7;
+    AckProcess ackProc = new DetachedAckProcess(clones);
+    multiThreaded(ackProc, clones + 1);
   }
 
   public void multiThreaded (AckProcess ackProc, int threads)
@@ -120,38 +122,85 @@ public class TestFStack
 
     PipedReader input = new PipedReader();
     PipedWriter output = new PipedWriter(input);
-    stacker.setWriter(new PrintWriter(output, true));
-    
+
+    stacker.setWriter(new PrintWriter(new BufferedWriter(output), true));
     final Proc proc = ackProc.findProcUsingRefresh(true);
 
-    stacker.scheduleStackAndRunEvent(proc, new Event() {
-     
+    stacker.scheduleStackAndRunEvent(proc, new Event()
+    {
+
       public void execute ()
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }});
+      }
+    });
+
+    BufferedReader br = new BufferedReader(input);
+    Analyzer analyzer = new Analyzer(br, threads);
+    analyzer.start();
 
     assertRunUntilStop("test");
 
-    BufferedReader br = new BufferedReader(input);
-
-    for (int i = 0; i < mainThread.length; i++)
+    try
       {
-        String line = br.readLine();
-        assertTrue(line + " did not match: " + mainThread[i],
-                   line.matches(mainThread[i]));
+        analyzer.join();
       }
-    for (int j = 1; j < threads; j++)
+    catch (InterruptedException e)
       {
-        for (int i = 0; i < secondaryThread.length; i++)
-          {
-            String line = br.readLine();
-            assertTrue(line + " did not match: " + secondaryThread[i],
-                       line.matches(secondaryThread[i]));
-          }
+        e.printStackTrace();
       }
-    input.close();
     output.close();
+    input.close();
     br.close();
+
   }
+
+  final class Analyzer
+      extends Thread
+  {
+    BufferedReader br;
+
+    int threads;
+
+    public Analyzer (BufferedReader theBufferedReader, int t)
+    {
+      br = theBufferedReader;
+      threads = t;
+    }
+
+    public void run ()
+    {
+
+      try
+        {
+          for (int i = 0; i < mainThread.length; i++)
+            {
+              while (! br.ready())
+                Thread.yield();
+              String line = br.readLine();
+              assertTrue(line + " did not match: " + mainThread[i],
+                         line.matches(mainThread[i]));
+            }
+          for (int j = 1; j < threads; j++)
+            {
+              for (int i = 0; i < secondaryThread.length; i++)
+                {
+
+                  while (! br.ready())
+                    Thread.yield();
+                  String line = br.readLine();
+                  assertTrue(line + " did not match: " + secondaryThread[i],
+                             line.matches(secondaryThread[i]));
+                }
+            }
+        }
+      catch (IOException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
+    }
+  }
+
 }
