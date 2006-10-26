@@ -813,8 +813,8 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
-    mi = (MenuItem) this.toggleMainThread.createMenuItem();
-    tmp.append(mi);
+//    mi = (MenuItem) this.toggleMainThread.createMenuItem();
+//    tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.next.createMenuItem();
