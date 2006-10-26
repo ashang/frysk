@@ -101,17 +101,6 @@ lib::elf::Elf::elf_clone (jint command){
 	return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
-#if 0
-void
-lib::elf::Elf::elf_memory (jstring image, jlong size){
-	int len = JvGetStringUTFLength (image);
-	char imageName[len + 1];
-	JvGetStringUTFRegion (image, 0, image->length (), imageName);
-
-	this->pointer = (jlong) ::elf_memory(imageName, (size_t) size);
-}
-#endif
-    
 jint
 lib::elf::Elf::elf_next (){
 	return (jint) ::elf_next((::Elf*) this->pointer);

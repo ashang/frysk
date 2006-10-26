@@ -54,7 +54,7 @@ inua::eio::MmapByteBuffer$Mmap::mmap (jstring file, jlong length)
 {
   int pathlength = JvGetStringUTFLength (file);
   char *pathname = (char *) alloca (pathlength + 1);
-  JvGetStringUTFRegion (file, 0, pathlength, pathname);
+  JvGetStringUTFRegion (file, 0, file->length(), pathname);
   pathname[pathlength] = '\0';
 
   errno = 0;

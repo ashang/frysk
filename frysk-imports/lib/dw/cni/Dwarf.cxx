@@ -54,12 +54,14 @@ lib::dw::Dwarf::dwarf_begin_elf(jlong elf, jint command, jlong section){
 
 void
 lib::dw::Dwarf::dwarf_begin(jstring file, jint command){
-	char *fileName = (char *) alloca (file->length() + 1);
-	JvGetStringUTFRegion (file, 0, file->length (), fileName);
-	errno = 0;
-	int fd = open (fileName, O_RDONLY);
+  int fileNameLength = file->length();
+  char fileName[fileNameLength + 1];
+  JvGetStringUTFRegion (file, 0, file->length (), fileName);
+  fileName[fileNameLength] = 0;
+  errno = 0;
+  int fd = open (fileName, O_RDONLY);
 	
-	this->pointer = (jlong) ::dwarf_begin(fd, (::Dwarf_Cmd) command);
+  this->pointer = (jlong) ::dwarf_begin(fd, (::Dwarf_Cmd) command);
 }
 
 JArray<jstring>*

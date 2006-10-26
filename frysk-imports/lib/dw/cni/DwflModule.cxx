@@ -36,7 +36,6 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-#include <alloca.h>
 #include <cstdlib>
 #include "libdwfl.h"
 #include <gcj/cni.h>
@@ -78,7 +77,7 @@ DwflLineArray *
 lib::dw::DwflModule::getLines(jstring filename, jint lineno, jint column)
 {
   int fileNameLength =  JvGetStringUTFLength(filename);
-  char *fileName = (char *)alloca(fileNameLength + 1);
+  char fileName[fileNameLength + 1];
   JvGetStringUTFRegion(filename, 0, filename->length(), fileName);
   fileName[fileNameLength] = 0;
   ::Dwfl_Line **srcsp = 0;
