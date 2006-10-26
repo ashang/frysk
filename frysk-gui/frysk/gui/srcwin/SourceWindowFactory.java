@@ -488,6 +488,7 @@ public class SourceWindowFactory
       myTask = task;
       if (task_count == 0)
         task_count = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
+        
 
       CustomEvents.addEvent(new Runnable()
       {
@@ -522,12 +523,10 @@ public class SourceWindowFactory
         {
           public void run ()
           {
-            System.out.println("I am in run()");
             --task_count;
             if (task_count == 0)
               {
                 SW_active = true;
-                task_count = myTask.getProc().getTasks().size();
                 finishSourceWin(myTask.getProc());
               }
           }
@@ -541,11 +540,9 @@ public class SourceWindowFactory
             StackFrame[] frames = generateProcStackTrace(null, null,
                                                          srcWin.getDOM(),
                                                          task.getProc(), 0);
-            System.out.println(frames[0]);
             srcWin.populateStackBrowser(frames);
             srcWin.procReblocked();
-            task_count = myTask.getProc().getTasks().size();
-          }
+            }
       }
   }
 }

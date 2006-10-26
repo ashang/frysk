@@ -1257,6 +1257,7 @@ public class SourceWindow
         //t.requestUnblock(this.pbo);
         t.requestDeleteInstructionObserver(this.pbo);
       }
+    this.runningState = true;
   }
 
   private void doStop ()
@@ -1302,6 +1303,8 @@ public class SourceWindow
     this.copy.setSensitive(true);
     this.find.setSensitive(true);
     this.prefsLaunch.setSensitive(true);
+    
+    this.runningState = false;
   }
 
   /**
@@ -1594,7 +1597,6 @@ public class SourceWindow
       {
         t.requestUnblock(this.pbo);
         t.requestDeleteInstructionObserver(this.pbo);
-        System.out.println("Finished calling for unblock");
         this.runningState = true;
       }
     else
@@ -1603,7 +1605,7 @@ public class SourceWindow
         LinkedList l = new LinkedList();
         l.add(t);
         this.pbo.blockTask(l);
-        System.out.println("Finished calling for block");
+        this.runningState = false;
       }
   }
   
@@ -1692,7 +1694,6 @@ public class SourceWindow
           else
             {
               target.doJumpToFunction(text);
-              System.out.println("entryEvent text: " + text);
             }
         }
     }

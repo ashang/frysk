@@ -86,7 +86,6 @@ abstract public class ProcBlockObserver
             return;
           }
 
-        numTasks = proc.getTasks().size();
         requestAddObservers(mainTask);
       }
     });
@@ -117,6 +116,7 @@ abstract public class ProcBlockObserver
     if (!isAdded)
       {
         isAdded = true;
+        numTasks = proc.getTasks().size();
         
         /* XXX: Race condition - rapidly cloning tasks. */
         for (Iterator iterator = proc.getTasks().iterator(); iterator.hasNext();)

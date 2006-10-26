@@ -1,3 +1,10 @@
+2006-10-26  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (handleTask): Cleaned up, no longer
+	updates task_count from here.
+	* SourceWindow.java (procReblocked): Update new running state.
+	(unblockProc): Ditto.
+
 2006-10-25  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Changed ProcAttachedObserver
