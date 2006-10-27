@@ -1,3 +1,21 @@
+2006-10-27  Mike Cvet <mcvet@redhat.com>
+
+	* SourceBuffer.java (loadFile): Check all StackFrames during
+	the first initialization for debuginfo.
+	* SourceWindow.java (createActions): Create the toggleAction
+	for the thread dialog.
+	(toggleThreadDialog): Added.
+	(executeThreads): Added. Handles independant thread stopping
+	and starting.
+	* SourceWindowFactory (finishSourceWin): Removed DOMFrysk 
+	initialization code. Moved to generateProcStackTrace.
+	(generateProcStackTrace): Re-arranged DOMFrysk initialization
+	and stack backtrace generation. DOMFrysk now takes a StackFrame.
+	Better handling of traces with some frames missing debuginfo.
+	Fixes #212434.
+	* ThreadSelectionDialog.java: New class. Dialog window for thread
+	stopping and starting.
+
 2006-10-26  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (handleTask): Cleaned up, no longer

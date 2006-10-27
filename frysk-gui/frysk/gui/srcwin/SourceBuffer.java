@@ -900,14 +900,40 @@ public class SourceBuffer
       return;
 
     DOMSource source = this.scope.getData();
+    
     if (source == null)
       {
         if (! this.firstLoad)
           return;
 
-        this.insertText("No debug information available for this stack frame");
-        this.firstLoad = false;
-        return;
+        StackFrame curr = this.scope;
+        while (curr != null)
+          {
+          if (curr.getData() != null)
+            {
+              source = curr.getData();
+              break;
+            }
+          curr = curr.getOuter();
+          }
+        
+        /* There really were no frames with debuginfo */
+        if (curr == null)
+          {
+            this.insertText("No debug information available for this stack frame");
+            this.firstLoad = false;
+            return;
+          }
+        else
+          {
+            Iterator lines = source.getLines();
+
+            String bufferText = loadLines(lines);
+
+            this.deleteText(this.getStartIter(), this.getEndIter());
+            this.insertText(bufferText);
+            return;
+          }
       }
 
     Iterator lines = source.getLines();

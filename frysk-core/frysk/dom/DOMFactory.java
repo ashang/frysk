@@ -12,8 +12,7 @@ import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.proc.TaskException;
+import frysk.rt.StackFrame;
 
 //import org.jdom.Element;
 import org.jdom.Document;
@@ -25,23 +24,14 @@ public class DOMFactory
 
   private static HashMap hashmap = new HashMap();
 
-  public static DOMFrysk createDOM (Task task) throws NoDebugInfoException,
+  public static DOMFrysk createDOM (StackFrame frame, Proc proc) throws NoDebugInfoException,
       IOException
   {
     DOMFrysk dom;
     DwflLine line;
-    try
-      {
-        line = task.getDwflLineXXX();
-      }
-    catch (TaskException e)
-      {
-        throw new NoDebugInfoException("Couldn't access task " + task.getName());
-      }
-    if (line == null)
-      throw new NoDebugInfoException(
-                                     "Could not find debug information for task "
-                                         + task.getName());
+    
+    line = frame.getDwflLine();
+    System.out.println("getting sourcefile");
     String fullPath = line.getSourceFile();
     
     /*
@@ -56,8 +46,7 @@ public class DOMFactory
     String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
     String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
 
-    Proc proc = task.getProc();
-
+    System.out.println("checking hashmap");
     if (hashmap.containsKey(proc))
       {
         // retrieve the previously created dom
@@ -67,11 +56,13 @@ public class DOMFactory
       {
         // create a new dom and associate it with the given task
         // XXX create a fake name for now, must create unique names later
+        System.out.println("Creating new image");
         dom = new DOMFrysk("TaskTask");
-        dom.addImage(task.getProc().getMainTask().getName(), path, path);
+        dom.addImage(proc.getMainTask().getName(), path, path);
       }
 
-    DOMSource source = dom.getImage(task.getProc().getMainTask().getName()).getSource(filename);
+    System.out.println("creating source");
+    DOMSource source = dom.getImage(proc.getMainTask().getName()).getSource(filename);
 
     /*
      * If this source file has not previously been incorporated into the dom, so
@@ -79,7 +70,7 @@ public class DOMFactory
      */
     if (source == null)
       {
-        DOMImage image = dom.getImage(task.getProc().getMainTask().getName());
+        DOMImage image = dom.getImage(proc.getMainTask().getName());
         source = new DOMSource(filename, path);
         printDOM(dom);
         

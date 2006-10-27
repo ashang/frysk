@@ -42,6 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -91,6 +92,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
@@ -227,6 +230,10 @@ public class SourceWindow
   private ToggleAction toggleConsoleWindow;
 
   private ToggleAction toggleMainThread;
+  
+  private ToggleAction toggleThreadDialog;
+  
+  private ThreadSelectionDialog threadDialog = null;
 
   private DOMFrysk dom;
 
@@ -239,6 +246,8 @@ public class SourceWindow
   private ConsoleWindow conWin;
 
   private ProcBlockObserver pbo;
+  
+  private HashMap runningThreads;
 
   public boolean runningState = false;
 
@@ -304,6 +313,8 @@ public class SourceWindow
     this.hideAll();
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
+    
+    
   }
 
   /**
@@ -384,10 +395,6 @@ public class SourceWindow
   public void populateStackBrowser (StackFrame[] frames)
   {
     stackView = new CurrentStackView(frames);
-
-    // if (this.view != null)
-    // ((Container) ((Widget) this.view).getParent()).remove((Widget)
-    // this.view);
 
     if (this.view == null)
       {
@@ -518,6 +525,17 @@ public class SourceWindow
       }
     });
     this.stop.setSensitive(false);
+    
+    //  Thread-specific starting and stopping
+    this.toggleThreadDialog = new ToggleAction("threads", "Start/Stop Threads",
+                              "Start or Stop thread execution", "frysk-thread");
+    this.toggleThreadDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent arg0)
+      {
+        SourceWindow.this.toggleThreadDialog();
+      }
+    });
 
     // Step action
     this.step = new org.gnu.gtk.Action("step", "Step", "Step", "frysk-step");
@@ -814,6 +832,8 @@ public class SourceWindow
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
 //    mi = (MenuItem) this.toggleMainThread.createMenuItem();
+//    tmp.append(mi);
+//    mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
 //    tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
@@ -1306,6 +1326,34 @@ public class SourceWindow
     
     this.runningState = false;
   }
+  
+  private void toggleThreadDialog ()
+  {
+    if (this.threadDialog == null)
+      {
+        this.threadDialog = new ThreadSelectionDialog(glade, this);
+        this.threadDialog.addListener(new LifeCycleListener()
+        {
+
+          public boolean lifeCycleQuery (LifeCycleEvent arg0)
+          {
+            return false;
+          }
+
+          public void lifeCycleEvent (LifeCycleEvent arg0)
+          {
+            if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
+              SourceWindow.this.executeThreads(threadDialog.getBlockTasks());
+          }
+
+        });
+        this.runningThreads = new HashMap();
+        this.threadDialog.showAll();
+      }
+    else
+      this.threadDialog.showAll();
+  }
+ 
 
   /**
    * Tells the debugger to step the program
@@ -1612,6 +1660,98 @@ public class SourceWindow
   public void mainThreadReblocked()
   {
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+  }
+  
+  private void executeThreads (LinkedList threads)
+  {
+    // if (this.runningState == false)
+    // {
+    System.out.println("In executeThreads with thread size " + threads.size()
+                       + " and runningthreads size " + this.runningThreads.size());
+    if (threads.size() == 0 && this.runningThreads.size() == 0)
+      return;
+    else if (threads.size() == 0 && this.runningThreads.size() != 0)
+      {
+        LinkedList l = new LinkedList();
+        Iterator i = this.runningThreads.values().iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            l.add(t);
+            this.runningThreads.remove(t);
+            System.out.println("Blocking " + t);
+          }
+        this.pbo.blockTask(l);
+        this.runningState = false;
+        return;
+      }
+
+    if (this.runningThreads.size() == 0)
+      {
+        Iterator i = threads.iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            System.out.println("(0) Running " + t);
+            this.runningThreads.put(t, t);
+            t.requestUnblock(this.pbo);
+            t.requestDeleteInstructionObserver(this.pbo);
+          }
+        this.runningState = true;
+        return;
+      }
+    else    /* There are threads already running */
+      {
+        HashMap temp = new HashMap();
+        //this.runningThreads.clear();
+        Iterator i = threads.iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            System.out.println("Iterating running thread" + t);
+            /* If this thread has not already been unblocked, do it */
+            if (this.runningThreads.remove(t) == null)
+              {
+                System.out.println("unBlocking " + t);
+                t.requestUnblock(this.pbo);
+                t.requestDeleteInstructionObserver(this.pbo);
+              }
+            else
+              System.out.println("Already Running");
+            /* Put all threads back into a master list */
+            temp.put(t, t);
+          }
+
+        /* Now catch the threads which have a block request */
+        if (this.runningThreads.size() != 0)
+          {
+            System.out.println("temp size not zero");
+            LinkedList l = new LinkedList();
+            i = temp.values().iterator();
+            while (i.hasNext())
+              {
+                Task t = (Task) i.next();
+                l.add(t);
+                System.out.println("Blocking from runningThreads " + t);
+              }
+            this.pbo.blockTask(l);
+          }
+        else
+          this.runningState = false;
+        
+        this.runningThreads = temp;
+        System.out.println("rt temp" + this.runningThreads.size() + " " + temp.size());
+      }
+
+    // }
+    // else
+    // {
+    // this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
+    // LinkedList l = new LinkedList();
+    // l.add(t);
+    // this.pbo.blockTask(l);
+    // this.runningState = false;
+    // }
   }
 
   public View getView ()

@@ -158,7 +158,7 @@ public class SourceWindowFactory
   private static void finishSourceWin (Proc proc)
   {
     int size;
-    Task[] tasks;
+    //Task[] tasks;
     DOMFrysk dom = null;
 
     if (map.containsKey(proc))
@@ -170,40 +170,6 @@ public class SourceWindowFactory
       }
     else
       {
-        size = proc.getTasks().size();
-        tasks = new Task[size];
-
-        Iterator iter = proc.getTasks().iterator();
-
-        try
-          {
-            for (int k = 0; k < size; k++)
-              tasks[k] = (Task) iter.next();
-
-            dom = DOMFactory.createDOM(proc.getMainTask());
-          }
-
-        // If we don't have a dom, tell the task to continue
-        catch (NoDebugInfoException e)
-          {
-            // unblockTask(task);
-            //
-            // NoDebugInfoDialog dialog = new NoDebugInfoDialog(
-            // "No debug information was found for the given process");
-            // dialog.showAll();
-            // dialog.run();
-            // return;
-          }
-        catch (IOException e)
-          {
-            unblockProc(proc);
-            WarnDialog dialog = new WarnDialog("File not found",
-                                               "Error loading source code: "
-                                                   + e.getMessage());
-            dialog.showAll();
-            dialog.run();
-            return;
-          }
         LibGlade glade = null;
 
         // Look for the right path to load the glade file from
@@ -240,8 +206,9 @@ public class SourceWindowFactory
             return;
           }
 
+        size = proc.getTasks().size();
         StackFrame[] frames = new StackFrame[size];
-        frames = generateProcStackTrace(frames, tasks, dom, proc, size);
+        frames = generateProcStackTrace(frames, null, dom, proc, size);
 
         srcWin = new SourceWindow(glade, gladePaths[i], dom,
                             frames, (SourceWinBlocker)blockerTable.get(proc));
@@ -258,44 +225,22 @@ public class SourceWindowFactory
   public static StackFrame[] generateProcStackTrace(StackFrame[] frames, 
                                         Task[] tasks, DOMFrysk dom, Proc proc, int size)
   {
-    if ((frames == null || tasks == null || dom == null) && proc != null)
+    if (proc == null)
+      return null;
+    
+    
+    if (frames == null || tasks == null)
       {
-        Iterator iter = null;
-        
-        if (proc != null)
-          iter = proc.getTasks().iterator();
-        else
-          return null;
-        
-        size = proc.getTasks().size();
-        tasks = new Task[size];
-        frames = new StackFrame[size];
-        
-        try
-        {
-          for (int k = 0; k < size; k++)
-            {
+        if (tasks == null)
+          {
+            tasks = new Task[size];
+            Iterator iter = proc.getTasks().iterator();
+            for (int k = 0; k < size; k++)
               tasks[k] = (Task) iter.next();
-            }
+          }
 
-          if (dom == null)
-            dom = DOMFactory.createDOM(proc.getMainTask());
-        }
-
-      // If we don't have a dom, tell the task to continue
-      catch (NoDebugInfoException e)
-        {
-        }
-      catch (IOException e)
-        {
-          unblockProc(proc);
-          WarnDialog dialog = new WarnDialog("File not found",
-                                             "Error loading source code: "
-                                                 + e.getMessage());
-          dialog.showAll();
-          dialog.run();
-          return null;
-        }
+        size = tasks.length;
+        frames = new StackFrame[size];
       }
     
     for (int j = 0; j < size; j++)
@@ -323,16 +268,49 @@ public class SourceWindowFactory
                                * frames, not just the top one
                                */
           {
+            
+            if (dom == null && tasks[j].equals(proc.getMainTask())
+                && curr.getDwflLine() != null)
+              {
+                try
+                  {
+                    //dom = DOMFactory.createDOM(proc.getMainTask());
+                    dom = DOMFactory.createDOM(curr, proc);
+                  }
+
+                // If we don't have a dom, tell the task to continue
+                catch (NoDebugInfoException e)
+                  {
+                  }
+                catch (IOException e)
+                  {
+                    unblockProc(proc);
+                    WarnDialog dialog = new WarnDialog("File not found",
+                                                       "Error loading source code: "
+                                                           + e.getMessage());
+                    dialog.showAll();
+                    dialog.run();
+                    return null;
+                  }
+              }
 
             line = curr.getDwflLine();
-
+            
             if (line != null)
               {
                 String filename = line.getSourceFile();
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
-                f = getFunctionXXX(
+                
+                try
+                {
+                  f = getFunctionXXX(
                                    dom.getImage(tasks[j].getProc().getMainTask().getName()),
                                    filename, line.getLineNum());
+                }
+                catch (NullPointerException npe)
+                {
+                  f = null;
+                }
               }
             
             curr.setDOMFunction(f);
