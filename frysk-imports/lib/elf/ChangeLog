@@ -1,3 +1,8 @@
+2006-10-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/ElfPrAuxv.cxx: New File.
+	* ElfPrAuxv.java: New File.
+
 2006-10-26  Tim Moore  <moore@redhat.com>
 
 	* cni/Elf.cxx (elf_memory): Removed function; it was ifdefed out
