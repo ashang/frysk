@@ -1,3 +1,8 @@
+2006-10-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (fillENoteAuxv): New.
+	(fillENoteSection): Added AuxV call.
+
 2006-10-26  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (Analyzer): Added, new thread to analyze the output from fstack.

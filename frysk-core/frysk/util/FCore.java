@@ -70,6 +70,7 @@ import lib.elf.ElfPrstatus;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfSectionHeaderTypes;
+import lib.elf.ElfPrAuxv;
 import frysk.EventLogger;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
@@ -79,6 +80,7 @@ import frysk.proc.ProcBlockObserver;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Stat;
@@ -304,6 +306,40 @@ public class FCore
       }
     });
     System.exit(- 1);
+  }
+  
+  /**
+   * Fill the ElfNhdr object according to Proc object.
+   * 
+   * @param nhdrEntry
+   * @param proc
+   * @return less than zero when error occurs, or return one value that is
+   *         equal to zero or more than zero.
+   */
+  protected int fillENoteAuxv (final ElfNhdr nhdrEntry, Proc proc)
+  {
+    final ElfPrAuxv prAuxv = new ElfPrAuxv();
+
+    AuxvBuilder builder = new AuxvBuilder()
+    {
+      
+      public void buildBuffer (byte[] auxv)
+      {
+        prAuxv.setAuxvBuffer(auxv);
+      }
+
+      public void buildDimensions (int wordSize, boolean bigEndian, int length)
+      {
+      }
+
+      public void buildAuxiliary (int index, int type, long val)
+      {
+      }
+    };
+    builder.construct (proc.getPid());
+    nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
+    return 0;
+  
   }
   
   /**
@@ -627,6 +663,15 @@ public class FCore
             list.add(entryCount, prStatusNhdr);
             entryCount++;
           }
+      }
+    
+    ElfNhdr prAuxVNhdr = new ElfNhdr();
+    ret = this.fillENoteAuxv(prAuxVNhdr, this.proc);
+    if (ret >= 0)
+      {
+        // Fill AuxV correctly.
+        list.add(entryCount, prAuxVNhdr);
+        entryCount++;
       }
 
     //XXX: Continue to fill other ElfNhdr object, such as NT_PRSTATUS info.
