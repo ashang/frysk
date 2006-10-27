@@ -51,7 +51,7 @@ abstract public class ProcBlockObserver
 {
   protected static final Logger logger = Logger.getLogger("frysk");
 
-  private final Proc proc;
+  protected final Proc proc;
   
   private Task mainTask;
   
@@ -64,9 +64,13 @@ abstract public class ProcBlockObserver
   public ProcBlockObserver (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
-    proc = theProc;
-
-    /* The rest of the construction must be done synchronous to the 
+    proc = theProc;    
+    requestAdd();
+  }
+  
+  public void requestAdd()
+  {
+	  /* The rest of the construction must be done synchronous to the 
      * EventLoop, schedule it. */
     Manager.eventLoop.add(new Event()
     {
@@ -86,6 +90,22 @@ abstract public class ProcBlockObserver
             return;
           }
 
+	      if (proc == null)
+      {
+        System.out.println("Couldn't get the proc");
+        System.exit(1);
+      }
+
+    boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
+      proc.getGID() == Manager.host.getSelf().getGID());
+
+    if (! isOwned)
+      {
+        System.err.println("Process " + proc
+                           + " is not owned by user/group.");
+        System.exit(1);
+      }
+	  
         requestAddObservers(mainTask);
       }
     });

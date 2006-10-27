@@ -46,6 +46,7 @@ EXTRA_DIST += \
 	frysk/cli/ChangeLog \
 	frysk/event/ChangeLog \
 	frysk/proc/ChangeLog \
+	frysk/util/ChangeLog \
 	frysk/pkglibexecdir/ChangeLog \
 	frysk/model/ChangeLog \
 	frysk/lang/ChangeLog \

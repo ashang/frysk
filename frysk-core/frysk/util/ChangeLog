@@ -1,3 +1,9 @@
+2006-10-27  Nurdin Premji <npremji@redhat.com>
+
+	* StacktraceObserver: Added, replaces:
+	* FStack.java: Removed.
+	* TestFStack: Changed to use StacktraceObserver.
+
 2006-10-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (fillENoteAuxv): New.

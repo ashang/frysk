@@ -53,7 +53,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 
-import frysk.util.FStack;
+import frysk.util.StacktraceObserver;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -62,9 +62,9 @@ import gnu.classpath.tools.getopt.Parser;
 
 public class fstack
 {
-	
+
   private static Proc proc;
-  
+
   private static Parser parser;
 
   protected static final Logger logger = EventLogger.get("logs/",
@@ -155,10 +155,11 @@ public class fstack
               {
                 Manager.host.requestRefreshXXX(true);
 
-                // XXX: Should get a message back when the refresh has finished and the
+                // XXX: Should get a message back when the refresh has finished
+                // and the
                 // proc has been found.
                 Manager.eventLoop.runPending();
-                
+
                 int pid = Integer.parseInt(arg);
                 proc = Manager.host.getProc(new ProcId(pid));
               }
@@ -180,16 +181,14 @@ public class fstack
         logger.setLevel(level);
       }
 
-    FStack stacker = new FStack();
-
-    stacker.setWriter(new PrintWriter(System.out, true));
-    stacker.scheduleStackAndRunEvent(proc, new Event() {
-     
+    new StacktraceObserver(proc, new Event()
+    {
       public void execute ()
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }});
-       
+      }
+    }, new PrintWriter(System.out, true));
+
     Manager.eventLoop.run();
   }
 }

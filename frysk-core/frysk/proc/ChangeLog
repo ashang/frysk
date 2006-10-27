@@ -1,3 +1,8 @@
+2006-10-27  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcBlockObserver.java: Changed proc to protected so child classes can access.
+	(requestAdd): Added. Contains synchronized add and error checking.
+
 2006-10-26  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockObserver.java (addFailed): Added, default behaviour for commandline utilities.

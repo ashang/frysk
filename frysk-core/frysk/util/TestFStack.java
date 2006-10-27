@@ -107,23 +107,21 @@ public class TestFStack
 
   public void multiThreaded (AckProcess ackProc, int threads)
       throws IOException
-  {
-    FStack stacker = new FStack();
+  {    
 
     PipedReader input = new PipedReader();
-    PipedWriter output = new PipedWriter(input);
+    PipedWriter  output = new PipedWriter(input);
 
-    stacker.setWriter(new PrintWriter(new BufferedWriter(output), true));
     final Proc proc = ackProc.findProcUsingRefresh(true);
-
-    stacker.scheduleStackAndRunEvent(proc, new Event()
+    
+    new StacktraceObserver(proc, new Event()
     {
 
       public void execute ()
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    });
+    }, new PrintWriter(new BufferedWriter(output), true));
 
     BufferedReader br = new BufferedReader(input);
     Analyzer analyzer = new Analyzer(br, threads);
