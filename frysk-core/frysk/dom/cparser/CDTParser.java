@@ -122,7 +122,7 @@ public class CDTParser
   
   private DOMFrysk dom;
   
-  private final boolean debug = false;
+  private final boolean debug = true;
 
   /*
    * (non-Javadoc)
@@ -275,6 +275,21 @@ public class CDTParser
         return null;
       }
   }
+  
+  /*
+   * Print the DOM 
+   */
+  public void printDOM() {
+    Document doc = dom.getDOMFrysk();
+    try {
+      XMLOutputter serializer = new XMLOutputter();
+      serializer.getFormat();
+      serializer.output(doc, System.out);
+    }
+    catch (IOException e) {
+      System.err.println(e);
+    }
+  }
 
   class ParserCallBack
       implements ISourceElementRequestor
@@ -282,6 +297,7 @@ public class CDTParser
 
     public void acceptVariable (IASTVariable arg0)
     {
+      System.out.println("acceptVariable = " + arg0.getName());
       
       // Don't assume the type is on the same line as the name
       DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
@@ -631,7 +647,11 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
-
+      
+//    Let's see if the field we are talking about is in this source file
+      if (lineText.indexOf(arg0.getName()) == -1)
+        return;
+      
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(arg0.getStartingOffset()
                                      - line.getOffset(), arg0.getNameOffset()
@@ -964,17 +984,8 @@ public class CDTParser
 
     public void exitCompilationUnit (IASTCompilationUnit arg0)
     {
-      if (debug) {
-        Document doc = dom.getDOMFrysk();
-        try {
-          XMLOutputter serializer = new XMLOutputter();
-          serializer.getFormat();
-          serializer.output(doc, System.out);
-        }
-        catch (IOException e) {
-          System.err.println(e);
-        }
-      }
+      if (debug) 
+        printDOM();
     }
 
     public CodeReader createReader (String arg0, Iterator arg1)

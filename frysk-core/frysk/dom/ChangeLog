@@ -1,3 +1,8 @@
+2006-10-30  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java:  Fix problem with accessField callback
+	processing files other than the intended source file.
+
 2006-10-27  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java (createDOM): Remove the Task parameter and instead
