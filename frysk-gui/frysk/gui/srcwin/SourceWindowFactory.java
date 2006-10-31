@@ -255,6 +255,7 @@ public class SourceWindowFactory
           {
             frames[j] = StackFactory.createStackFrame(tasks[j]);
             curr = frames[j];
+            //System.out.println(curr.getMethodName());
           }
         catch (Exception e)
           {
@@ -294,11 +295,15 @@ public class SourceWindowFactory
                   }
               }
 
+            //System.out.println(curr.getMethodName());
+            //System.out.println("getting dwflline");
             line = curr.getDwflLine();
             
             if (line != null)
               {
+                //System.out.println("Line not null");
                 String filename = line.getSourceFile();
+                //System.out.println("got filename");
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
                 
                 try
@@ -378,7 +383,7 @@ public class SourceWindowFactory
   {
     Iterator functions = image.getFunctions();
 
-    System.out.println("Looking for " + filename + ": " + linenum);
+    //System.out.println("Looking for " + filename + ": " + linenum);
 
     DOMFunction found = null;
 
@@ -494,6 +499,7 @@ public class SourceWindowFactory
   public static synchronized void handleTask (Task task)
   {
     myTask = task;
+    //System.out.println("handletask " + task);
 
     if (SW_active == false)
       {
@@ -512,9 +518,11 @@ public class SourceWindowFactory
       }
     else
       {
+        //System.out.println("SW false " + task_count);
         --task_count;
         if (task_count == 0)
           {
+            //System.out.println("Task count zero");
             StackFrame[] frames = generateProcStackTrace(null, null,
                                                          srcWin.getDOM(),
                                                          task.getProc(), 0);

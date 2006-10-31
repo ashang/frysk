@@ -1,3 +1,21 @@
+2006-10-31  Mike Cvet  <mcvet@redhat.com>
+
+	* ThreadSelectionDialog.java (ThreadSelectionDialog): Created
+	new SourceWindow variable.
+	(.buttonEvent): Call SourceWindow callbacks upon button events
+	and window closure.
+	* SourceWindowFactory.java (getFunctionXXX): Removed debug
+	printing.
+	* SourceWindow.java (runningThreads): Changed from a HashMap
+	to a HashSet.
+	(unblockProc): Moved observer boolean reset call out of the loop.
+	(doStop): Calls requestAdd() instead of requestAddObservers().
+	(toggleThreadDialog): Removed LifeCycleListener, handled now by
+	the ThreadSelectionDialog.
+	(executeThreads): Cleaned up to work with HashSet. Fixed iterator
+	removal problem. Added check to see if all Tasks are being blocked
+	to avoid non-blocking problem.
+
 2006-10-27  Mike Cvet <mcvet@redhat.com>
 
 	* SourceBuffer.java (loadFile): Check all StackFrames during

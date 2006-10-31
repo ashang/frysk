@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import java.util.Iterator;
@@ -47,35 +48,44 @@ import java.util.logging.Logger;
 import frysk.event.Event;
 
 abstract public class ProcBlockObserver
-    implements  TaskObserver.Instruction, ProcObserver
+    implements TaskObserver.Instruction, ProcObserver
 {
   protected static final Logger logger = Logger.getLogger("frysk");
 
   protected final Proc proc;
-  
+
   private Task mainTask;
-  
+
   private int numTasks;
-  
+
   boolean isAdded = false;
-  
+
   private LinkedList tasks;
 
   public ProcBlockObserver (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
-    proc = theProc;    
+    proc = theProc;
     requestAdd();
   }
-  
-  public void requestAdd()
+
+  public void requestAdd ()
   {
-	  /* The rest of the construction must be done synchronous to the 
-     * EventLoop, schedule it. */
+    /*
+     * The rest of the construction must be done synchronous to the EventLoop,
+     * schedule it.
+     */
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
       {
+
+        if (proc == null)
+          {
+            System.out.println("Couldn't get the proc");
+            System.exit(1);
+          }
+
         /* XXX: deprecated hack. */
         proc.sendRefresh();
 
@@ -84,118 +94,105 @@ abstract public class ProcBlockObserver
           {
             logger.log(Level.FINE, "Could not get main thread of "
                                    + "this process\n {0}", proc);
-            addFailed(proc, new RuntimeException(
-                      "Process lost: could not "
-                    + "get the main thread of this process.\n" + proc));
+            addFailed(proc, new RuntimeException("Process lost: could not "
+                                + "get the main thread of this process.\n"
+                                + proc));
             return;
           }
 
-	      if (proc == null)
-      {
-        System.out.println("Couldn't get the proc");
-        System.exit(1);
-      }
+        boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID()
+            || proc.getGID() == Manager.host.getSelf().getGID());
 
-    boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
-      proc.getGID() == Manager.host.getSelf().getGID());
+        if (!isOwned)
+          {
+            System.err.println("Process " + proc
+                               + " is not owned by user/group.");
+            System.exit(1);
+          }
 
-    if (! isOwned)
-      {
-        System.err.println("Process " + proc
-                           + " is not owned by user/group.");
-        System.exit(1);
-      }
-	  
-        requestAddObservers(mainTask);
+        numTasks = proc.getTasks().size();
+        Iterator i = proc.getTasks().iterator();
+        isAdded = true;
+        while (i.hasNext())
+          {
+            requestAddObservers((Task) i.next());
+          }
+
       }
     });
   }
-  
-  abstract public void existingTask (Task task);
-  
-    public void addFailed (Object observable, Throwable w)
-  {
-    System.err.println(w);
-   proc.requestAbandonAndRunEvent(new Event() {
 
-    public void execute ()
-    {
-      Manager.eventLoop.requestStop();
-      try
-        {
-          //Wait 5 seconds for eventLoop to finish.
-          Manager.eventLoop.join(5000);
-        }
-      catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        }
-      System.exit (-1);
-    }});
-  }
-  
+  abstract public void existingTask (Task task);
+
   abstract public void deletedFrom (Object observable);
 
-  
+  public void addFailed (Object observable, Throwable w)
+  {
+    System.err.println(w);
+    proc.requestAbandonAndRunEvent(new Event()
+    {
+
+      public void execute ()
+      {
+        Manager.eventLoop.requestStop();
+        try
+          {
+            // Wait 5 seconds for eventLoop to finish.
+            Manager.eventLoop.join(5000);
+          }
+        catch (InterruptedException e)
+          {
+            e.printStackTrace();
+          }
+        System.exit(- 1);
+      }
+    });
+  }
+
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(this);
   }
-  
+
   public Action updateExecuted (Task task)
   {
-    if (isAdded)
-      existingTask(task);
-    
+    // //System.out.println("updateExecuted");
+    // if (isAdded)
+    existingTask(task);
+
     return Action.BLOCK;
   }
 
-  public final void addedTo (Object observable)
+  public void addedTo (Object observable)
   {
-    if (!isAdded)
-      {
-        isAdded = true;
-        numTasks = proc.getTasks().size();
-        
-        /* XXX: Race condition - rapidly cloning tasks. */
-        for (Iterator iterator = proc.getTasks().iterator(); iterator.hasNext();)
-          {
-            Task t = (Task) iterator.next();
-            if (t != mainTask)
-              {
-                logger.log(Level.FINE, "{0} Inside if not mainTask\n", this);
-                requestAddObservers(t);
-              }
-          }
-      }
+
   }
-  
+
   public void blockTask (LinkedList tasks)
   {
+    ////System.out.println("in blockTask - setting numTasks to " + tasks.size());
     this.tasks = tasks;
     numTasks = tasks.size();
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
       {
-        Task t = (Task) ProcBlockObserver.this.tasks.removeFirst();
-        while (t != null)
+        Iterator i = ProcBlockObserver.this.tasks.iterator();
+        while (i.hasNext())
           {
+            Task t = (Task) i.next();
+            //System.out.println("blockTask -> " + t);
             t.requestAddInstructionObserver(ProcBlockObserver.this);
-            if (ProcBlockObserver.this.tasks.size() > 0)
-              t = (Task) ProcBlockObserver.this.tasks.removeFirst();
-            else
-              break;
           }
       }
     });
   }
-  
+
   public int getNumTasks ()
   {
     return this.numTasks;
   }
-  
+
   public void resetIsAdded ()
   {
     this.isAdded = false;

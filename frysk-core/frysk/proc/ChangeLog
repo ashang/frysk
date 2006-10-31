@@ -1,3 +1,11 @@
+2006-10-31  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcBlockObserver.java (.execute): Added null proc check properly. 
+	Iterate through all tasks to add this observer rather than just letting
+	the main task propagate to the others.
+	(addedTo): Removed observer handling code.
+	(updateExecuted): Removed isAdded check.
+
 2006-10-31  Tim Moore  <timoore@redhat.com>
 
 	* FPRegister.java: New file.

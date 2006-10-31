@@ -42,7 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -92,8 +92,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
+//import org.gnu.gtk.event.LifeCycleEvent;
+//import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
@@ -247,7 +247,7 @@ public class SourceWindow
 
   private ProcBlockObserver pbo;
   
-  private HashMap runningThreads;
+  private HashSet runningThreads;
 
   public boolean runningState = false;
 
@@ -409,6 +409,11 @@ public class SourceWindow
     stackView.showAll();
     this.view.showAll();
     stackView.expandAll();
+  }
+  
+  public void updateThreads()
+  {
+    executeThreads(this.threadDialog.getBlockTasks());
   }
 
   /*****************************************************************************
@@ -1270,10 +1275,10 @@ public class SourceWindow
   private void unblockProc (Proc proc)
   {
     Iterator i = this.myProc.getTasks().iterator();
+    this.pbo.resetIsAdded();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        this.pbo.resetIsAdded();
         //t.requestUnblock(this.pbo);
         t.requestDeleteInstructionObserver(this.pbo);
       }
@@ -1291,7 +1296,8 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    this.pbo.requestAddObservers(this.myProc.getMainTask());
+    //this.pbo.requestAddObservers(this.myProc.getMainTask());
+    this.pbo.requestAdd();
   }
 
   public void procReblocked ()
@@ -1332,22 +1338,7 @@ public class SourceWindow
     if (this.threadDialog == null)
       {
         this.threadDialog = new ThreadSelectionDialog(glade, this);
-        this.threadDialog.addListener(new LifeCycleListener()
-        {
-
-          public boolean lifeCycleQuery (LifeCycleEvent arg0)
-          {
-            return false;
-          }
-
-          public void lifeCycleEvent (LifeCycleEvent arg0)
-          {
-            if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-              SourceWindow.this.executeThreads(threadDialog.getBlockTasks());
-          }
-
-        });
-        this.runningThreads = new HashMap();
+        this.runningThreads = new HashSet();
         this.threadDialog.showAll();
       }
     else
@@ -1662,24 +1653,28 @@ public class SourceWindow
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
   }
   
-  private void executeThreads (LinkedList threads)
+  private synchronized void executeThreads (LinkedList threads)
   {
-    // if (this.runningState == false)
-    // {
-    System.out.println("In executeThreads with thread size " + threads.size()
-                       + " and runningthreads size " + this.runningThreads.size());
+
+//    System.out.println("In executeThreads with thread size " + threads.size()
+//                       + " and runningthreads size "
+//                       + this.runningThreads.size());
+
+    boolean all = (this.runningThreads.size() + threads.size()) == myProc.getTasks().size();
+
     if (threads.size() == 0 && this.runningThreads.size() == 0)
-      return;
+      return;   /* runningState should already be false */
+    
     else if (threads.size() == 0 && this.runningThreads.size() != 0)
       {
         LinkedList l = new LinkedList();
-        Iterator i = this.runningThreads.values().iterator();
+        Iterator i = this.runningThreads.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
             l.add(t);
-            this.runningThreads.remove(t);
-            System.out.println("Blocking " + t);
+            i.remove();
+            //System.out.println("Blocking " + t);
           }
         this.pbo.blockTask(l);
         this.runningState = false;
@@ -1689,69 +1684,64 @@ public class SourceWindow
     if (this.runningThreads.size() == 0)
       {
         Iterator i = threads.iterator();
+        this.pbo.resetIsAdded();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            System.out.println("(0) Running " + t);
-            this.runningThreads.put(t, t);
-            t.requestUnblock(this.pbo);
+            //System.out.println("(0) Running " + t);
+            this.runningThreads.add(t);
+
+            if (!all)
+              t.requestUnblock(this.pbo);
             t.requestDeleteInstructionObserver(this.pbo);
           }
         this.runningState = true;
         return;
       }
-    else    /* There are threads already running */
+    else
       {
-        HashMap temp = new HashMap();
-        //this.runningThreads.clear();
+       
+        this.runningState = true;
+        HashSet temp = new HashSet();
+        // this.runningThreads.clear();
         Iterator i = threads.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            System.out.println("Iterating running thread" + t);
+            //System.out.println("Iterating running thread" + t);
             /* If this thread has not already been unblocked, do it */
-            if (this.runningThreads.remove(t) == null)
+            if (!this.runningThreads.remove(t))
               {
-                System.out.println("unBlocking " + t);
-                t.requestUnblock(this.pbo);
+                //System.out.println("unBlocking " + t);
+                if (!all)
+                  t.requestUnblock(this.pbo);
                 t.requestDeleteInstructionObserver(this.pbo);
               }
             else
-              System.out.println("Already Running");
+              //System.out.println("Already Running");
             /* Put all threads back into a master list */
-            temp.put(t, t);
+            temp.add(t);
           }
 
         /* Now catch the threads which have a block request */
         if (this.runningThreads.size() != 0)
           {
-            System.out.println("temp size not zero");
+            //System.out.println("temp size not zero");
             LinkedList l = new LinkedList();
-            i = temp.values().iterator();
+            i = this.runningThreads.iterator();
             while (i.hasNext())
               {
                 Task t = (Task) i.next();
                 l.add(t);
-                System.out.println("Blocking from runningThreads " + t);
+                //System.out.println("Blocking from runningThreads " + t);
               }
             this.pbo.blockTask(l);
           }
-        else
-          this.runningState = false;
-        
-        this.runningThreads = temp;
-        System.out.println("rt temp" + this.runningThreads.size() + " " + temp.size());
-      }
 
-    // }
-    // else
-    // {
-    // this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
-    // LinkedList l = new LinkedList();
-    // l.add(t);
-    // this.pbo.blockTask(l);
-    // this.runningState = false;
-    // }
+        this.runningThreads = temp;
+        //System.out.println("rt temp" + this.runningThreads.size() + " "
+ //                         + temp.size());
+      }
   }
 
   public View getView ()

@@ -88,6 +88,8 @@ public class ThreadSelectionDialog
   private LinkedList tasks;
   
   private LinkedList blockTasks;
+  
+  private SourceWindow sw;
 
   /**
    * On initialization, set the glade file, the titles for CheckBox options,
@@ -100,6 +102,7 @@ public class ThreadSelectionDialog
     super(glade.getWidget("threadSelectionDialog").getHandle());
     this.glade = glade;
     this.proc = sw.getMyProc();
+    this.sw = sw;
     this.tasks = this.proc.getTasks();
     this.blockTasks = new LinkedList();
 
@@ -156,6 +159,7 @@ public class ThreadSelectionDialog
             //ThreadSelectionDialog.this.save(ThreadSelectionDialog.this.prefs);
             grabTasks();
             ThreadSelectionDialog.this.hideAll();
+            ThreadSelectionDialog.this.sw.updateThreads();
           }
       }
     });
@@ -169,6 +173,7 @@ public class ThreadSelectionDialog
             //ThreadSelectionDialog.this.save(ThreadSelectionDialog.this.prefs);
             grabTasks();
             //ThreadSelectionDialog.this.hideAll();
+            ThreadSelectionDialog.this.sw.updateThreads();
           }
       }
     });
@@ -218,7 +223,10 @@ public class ThreadSelectionDialog
         Task task = (Task) taskIter.next();
         boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
         if (val)
+          {
+            System.out.println("DIALOG: Adding to blockers: "  + task);
             this.blockTasks.add(task);
+          }
         iter = iter.getNextIter();
       }
   }
