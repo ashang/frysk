@@ -107,10 +107,10 @@ class IsaIA32 implements Isa
 
   
   // XXX Blow off the XMM registers for now
-  static class FPRegister 
-    extends Register
+  static class IA32FPRegister 
+    extends FPRegister
   {
-    FPRegister(String name, int regNum) 
+    IA32FPRegister(String name, int regNum) 
     {
       super(1, 7*4 + regNum * 10, 10, name, fpViews);
     }
@@ -152,7 +152,7 @@ class IsaIA32 implements Isa
     for (int i = 0; i < 8; i++) 
       {
         String name = "st" + i;
-        registerMap.put(name, new FPRegister(name, i));
+        registerMap.put(name, new IA32FPRegister(name, i));
       }
     for (int i = 0; i < dbg.length; i++) 
       {

@@ -1,3 +1,10 @@
+2006-10-31  Tim Moore  <timoore@redhat.com>
+
+	* ULong.java: New file.
+	* TestUlong.java: New file.
+	* ByteBuffer.java (get): Use ULong class to do comparisons on
+	buffer indexes. Addresses http://sourceware.org/bugzilla/show_bug.cgi?id=1537
+
 2006-10-26  Tim Moore  <moore@redhat.com>
 
 	* cni/MmapByteBuffer.cxx ($Mmap::mmap): Fix bug in use of

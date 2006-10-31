@@ -41,6 +41,7 @@
 package frysk.rt.tests;
 
 import inua.eio.ByteBuffer;
+import inua.eio.ULong;
 import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
@@ -119,7 +120,7 @@ public class TestStackBacktrace
       {
         ByteBuffer buffer = myTask.getMemory();
 
-        for (long i = addressLow; i < addressHigh; i++)
+        for (long i = addressLow; ULong.LT(i, addressHigh); i++)
           {
             System.err.println(Long.toHexString(i) + " is in the Mmap!");
             buffer.getByte(i);

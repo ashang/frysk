@@ -1,3 +1,9 @@
+2006-10-31  Tim Moore  <timoore@redhat.com>
+
+	* FPRegister.java: New file.
+	* IsaIA32.java (IA32FPRegister): Rename from FPRegister; use new
+	FPRegister class as superclass.
+
 2006-10-27  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockObserver.java: Changed proc to protected so child classes can access.

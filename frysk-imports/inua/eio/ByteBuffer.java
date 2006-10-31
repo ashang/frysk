@@ -347,10 +347,8 @@ public abstract class ByteBuffer
   public ByteBuffer get (long index, byte[] dst, int off, int len)
       throws BufferUnderflowException
   {
-    if (index + len > remaining())
+    if (ULong.GT(index + len, remaining()))
       throw new BufferUnderflowException();
-    if (index < 0)
-      throw new BufferOverflowException();
     peek(lowWater + index, dst, off, len);
     return this;
   }
@@ -358,7 +356,7 @@ public abstract class ByteBuffer
   public ByteBuffer get (byte[] dst, int off, int len)
       throws BufferUnderflowException
   {
-    if (len > remaining())
+    if (ULong.GT((long)len, remaining()))
       throw new BufferUnderflowException();
     peek(cursor, dst, off, len);
     cursor += len;
@@ -623,7 +621,7 @@ public abstract class ByteBuffer
   {
     string.setLength(0);
     long offset = lowWater + index;
-    while (offset < bound)
+    while (ULong.LT(offset, bound))
       {
         byte b = (byte) peek(offset);
         if (b == 0)
@@ -638,7 +636,7 @@ public abstract class ByteBuffer
   {
     string.setLength(0);
     long offset = lowWater + index;
-    while (offset < bound && len-- > 0)
+    while (ULong.LT(offset, bound) && len-- > 0)
       {
         byte b = (byte) peek(offset);
         if (b == 0)

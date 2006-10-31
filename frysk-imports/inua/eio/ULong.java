@@ -1,4 +1,4 @@
-// This file is part of INUA.  Copyright 2004, 2005, Andrew Cagney
+// This file is part of INUA.  Copyright 2006 Red Hat Inc.
 //
 // INUA is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,88 +37,57 @@
 package inua.eio;
 
 /**
- * Note: Buffer addresses are unsigned. Use inua.eio.ULong to perform
- * comparisons on them.
+ * Class for doing operations on Java long values as if they were
+ * unsigned. If you know Fortran, you're all set with the method names
+ * :).
  */
-public abstract class Buffer
+public class ULong 
 {
-    // 0 <= lowWater <= caret <= bound <= highWater
-    protected long lowWater;
-    protected long mark;
-    protected long cursor;
-    protected long bound;
-    protected long highWater;
-  
-    protected Buffer (long theLowWater, long theHighWater)
-    {
-	lowWater = theLowWater;
-	highWater = theHighWater;
-	cursor = theLowWater;
-	mark = -1;
-	bound = highWater;
-    }
+  public static final boolean EQ(long x1, long x2)
+  {
+    return x1 == x2;
+  }
 
-    // public final long tare ();
-    public final long capacity ()
-    {
-	return highWater - lowWater;
-    }
-    public final long position ()
-    {
-	return cursor - lowWater;
-    }
-    public final Buffer position (long position)
-    {
-	cursor = position + lowWater;
-	return this;
-    }
-    public final long limit ()
-    {
-	return bound - lowWater;
-    }
-    public final Buffer limit (long limit)
-    {
-	bound = limit + lowWater;
-	return this;
-    }
-    public final Buffer mark ()
-    {
-	mark = cursor;
-	return this;
-    }
-    public final Buffer reset ()
-    {
-	cursor = mark;
-	return this;
-    }
-    public final Buffer clear ()
-    {
-	cursor = lowWater;
-	bound = highWater;
-	mark = -1;
-	return this;
-    }
-    public final Buffer flip ()
-    {
-	bound = cursor;
-	cursor = lowWater;
-	return this;
-    }
-    public final Buffer rewind ()
-    {
-	cursor = lowWater;
-	mark = -1;
-	return this;
-    }
-    public final long remaining ()
-    {
-      if (ULong.GT(bound, cursor))
-	return bound - cursor;
-      else
-	return 0;
-    }
-    public final boolean hasRemaining ()
-    {
-	return remaining () > 0;
-    }
+  public static final boolean NE(long x1, long x2)
+  {
+    return x1 != x2;
+  }
+
+  // Subtracting BIAS flips the sign bit. If the two values have the
+  // same sign bit, then the sense of the comparison is preserved
+  // without it. Otherwise, the sense of the signed comparison will
+  // be reversed, which is what we want if the values are in fact
+  // unsigned. Values with the sign bit set are <= 2^63 and are of
+  // course greater than those without the sign bit set.
+  private static final long BIAS = (1L << 63);
+  
+  public static final boolean LT(long x1, long x2) 
+  {
+    return (x1 - BIAS) < (x2 - BIAS);
+  }
+
+  public static final int compare(long x1, long x2) 
+  {
+    if (x1 == x2)
+      return 0;
+    else if (LT(x1, x2))
+      return -1;
+    else
+      return 1;
+  }
+  
+  public static final boolean LE(long x1, long x2) 
+  {
+    return (x1 - BIAS) <= (x2 - BIAS);
+  }
+  
+  public static final boolean GT(long x1, long x2) 
+  {
+    return (x1 - BIAS) > (x2 - BIAS);
+  }
+  
+  public static final boolean GE(long x1, long x2) 
+  {
+    return (x1 - BIAS) >= (x2 - BIAS);
+  }
 }

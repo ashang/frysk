@@ -64,6 +64,14 @@ public class Register
       }
   }
   
+  /**
+   * Constructor. The register views defaults to an integer view.
+   *
+   * @param bank The number of a bank (ByteBuffer) in the Task
+   * object's registerBank array 
+   * @param offset byte offset in the bank
+   * @param name name of the register
+   */
   Register(int bank, int offset, int length, String name)
   {
     this.bank = bank;
