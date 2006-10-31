@@ -1,3 +1,9 @@
+2006-10-31  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (toPrint): Added. Returns a neat string representing this
+	StackFrame suitable for displaying backtraces in the SourceWindow or other
+	utilities.
+
 2006-10-31  Tim Moore  <timoore@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Use ULong for

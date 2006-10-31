@@ -1,5 +1,7 @@
 2006-10-31  Mike Cvet  <mcvet@redhat.com>
 
+	* CurrentStackView.java (CurrentStackView): Updated to use
+	StackFrame.toPrint().
 	* ThreadSelectionDialog.java (ThreadSelectionDialog): Created
 	new SourceWindow variable.
 	(.buttonEvent): Call SourceWindow callbacks upon button events

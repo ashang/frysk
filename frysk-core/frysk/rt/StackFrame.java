@@ -299,39 +299,62 @@ public class StackFrame
     // Pad the address based on the task's word size.
     try
       {
-	int padding = 2 * task.getIsa().getWordSize() - addr.length();
-	for (int i = 0; i < padding; ++i)
-	  builder.append('0');
+        int padding = 2 * task.getIsa().getWordSize() - addr.length();
+        for (int i = 0; i < padding; ++i)
+          builder.append('0');
       }
     catch (TaskException _)
       {
-	// We couldn't get the task's ISA.  But, we don't care, since
-	// all it means is that we can't properly pad the address.
+        // We couldn't get the task's ISA. But, we don't care, since
+        // all it means is that we can't properly pad the address.
       }
     builder.append(addr);
     String mn = getMethodName();
     if (mn != null && ! "".equals(mn))
       {
-	builder.append(" in function: ");
-	builder.append(getMethodName());
+        builder.append(" in function: ");
+        builder.append(getMethodName());
       }
     String sf = getSourceFile();
     int line = getLineNumber();
     if (sf != null || line != 0)
       {
-	builder.append(" (");
-	if (sf != null)
-	  builder.append(sf);
-	else
-	  builder.append("Unknown source");
-	if (line != 0)
-	  {
-	    builder.append(":");
-	    builder.append(line);
-	  }
-	builder.append(")");
+        builder.append(" (");
+        if (sf != null)
+          builder.append(sf);
+        else
+          builder.append("Unknown source");
+        if (line != 0)
+          {
+            builder.append(":");
+            builder.append(line);
+          }
+        builder.append(")");
       }
     return builder.toString();
+  }
+  
+  /**
+   * Return a simple string representation of this stack frame.
+   */
+  public String toPrint ()
+  {
+    String ret = "";
+    if (this.dwflLine != null)
+      {
+        ret = "0x"
+              + Long.toHexString(this.address) + " in "
+              + this.methodName + " (): line #"
+              + this.lineNum;
+      }
+    else
+      {
+        ret = "0x"
+          + Long.toHexString(this.address) + " in "
+          + this.methodName + " ()";
+      }
+    
+    return ret;
   }
   
   public int getEndLine ()

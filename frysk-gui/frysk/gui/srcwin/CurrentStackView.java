@@ -154,18 +154,9 @@ public class CurrentStackView
                 iter = treeModel.appendRow(parent);
 
                 if (frame.getLineNumber() != 0)
-                  {
-                    row = "#" + (++level) + " 0x"
-                          + Long.toHexString(frame.getAddress()) + " in "
-                          + frame.getMethodName() + " (): line #"
-                          + frame.getLineNumber();
-                  }
+                  row = "# " + (++level) + " " + frame.toPrint();
                 else
-                  {
-                    row = "#" + (++level) + " 0x"
-                          + Long.toHexString(frame.getAddress()) + " in "
-                          + frame.getMethodName() + " ()";
-                  }
+                  row = "# " + (++level) + " " + frame.toPrint(); 
 
                 if (hasInlinedCode)
                   row += " (i)";
