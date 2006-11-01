@@ -1,7 +1,7 @@
 2006-11-01  Mike Cvet  <mcvet@redhat.com>
 
-	* ProcBlockObserver.java (ProcBlockObserver): Removed the ProcTasks inerface.
-	Also removed unnecessary boolean flag. 
+	* ProcBlockObserver.java (ProcBlockObserver): Removed unnecessary boolean flag. 
+	(existingTask): Removed.
 
 2006-10-31  Mike Cvet  <mcvet@redhat.com>
 

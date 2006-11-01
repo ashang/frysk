@@ -47,7 +47,8 @@ import java.util.logging.Logger;
 
 import frysk.event.Event;
 
-abstract public class ProcBlockObserver implements TaskObserver.Instruction
+abstract public class ProcBlockObserver
+    implements TaskObserver.Instruction, ProcObserver
 {
   protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -119,7 +120,7 @@ abstract public class ProcBlockObserver implements TaskObserver.Instruction
     });
   }
 
-  abstract public void existingTask (Task task);
+  //abstract public void existingTask (Task task);
 
   abstract public void deletedFrom (Object observable);
 
