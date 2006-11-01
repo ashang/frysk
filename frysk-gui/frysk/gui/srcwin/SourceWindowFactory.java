@@ -468,10 +468,22 @@ public class SourceWindowFactory
     
     public void existingTask (Task task)
     {
+      //System.out.println("existingTask");
       myTask = task;
+
+      if (SW_active)
+        {
+          if (srcWin.steppingState)
+            {
+              //System.out.println("Zomg stepping!");
+              //Manager.eventLoop.requestStop ();
+              srcWin.stepped();
+              return;
+            }
+        }
+      
       if (task_count == 0)
         task_count = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
-        
 
       CustomEvents.addEvent(new Runnable()
       {

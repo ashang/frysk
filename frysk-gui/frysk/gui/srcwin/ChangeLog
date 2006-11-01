@@ -1,11 +1,20 @@
 2006-11-01  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceWindowFactory.java (SourceWinBlocker.existingTask): 
+	Checks to see if this request is from an instruction step,
+	and handles that case appropriately.
 	* SourceWindow.java (toggleThreadDialog): Removed HashSet
 	intialization and moved it to the constructor.
 	(doStop): Remove all threads from the runningThreads
 	HashSet and then block them.
 	(unblockProc): Add all threads to runningThreads, unless
 	they're already running via other means.
+	(InstructionObserver): Removed. Handled in 
+	SourceWindowFactory.SourceWinBlocker instead.
+	(getSteppingState): Added.
+	(stepped): Added.
+	(stepMainThread): Added.
+	(toggleMainThread): Removed.
 
 2006-10-31  Mike Cvet  <mcvet@redhat.com>
 

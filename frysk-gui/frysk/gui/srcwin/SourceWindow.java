@@ -46,8 +46,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -99,7 +98,7 @@ import org.gnu.gtk.event.MouseListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
-import frysk.gui.Gui;
+//import frysk.gui.Gui;
 import frysk.gui.common.IconManager;
 //import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.dialogs.WarnDialog;
@@ -116,13 +115,12 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
-import frysk.proc.Action;
+//import frysk.proc.Action;
 import frysk.proc.MachineType;
-import frysk.proc.Manager;
+//import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
 
@@ -250,11 +248,11 @@ public class SourceWindow
   private HashSet runningThreads;
 
   public boolean runningState = false;
+  
+  public boolean steppingState = false;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
-
-  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
@@ -412,9 +410,19 @@ public class SourceWindow
     stackView.expandAll();
   }
   
-  public void updateThreads()
+  public void updateThreads ()
   {
     executeThreads(this.threadDialog.getBlockTasks());
+  }
+  
+  public boolean getSteppingState ()
+  {
+    return this.steppingState;
+  }
+  
+  public void stepped ()
+  {
+    doStep();
   }
 
   /*****************************************************************************
@@ -771,7 +779,7 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent arg0)
       {
-        SourceWindow.this.toggleMainThread();
+        SourceWindow.this.stepMainThread();
       }
     });
   }
@@ -1276,7 +1284,6 @@ public class SourceWindow
   private void unblockProc (Proc proc)
   {
     Iterator i = this.myProc.getTasks().iterator();
-    this.pbo.resetIsAdded();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
@@ -1378,6 +1385,7 @@ public class SourceWindow
   private void doStep ()
   {
     System.out.println("Step");
+    
   }
 
   /**
@@ -1655,24 +1663,32 @@ public class SourceWindow
       this.conWin.showAll();
   }
 
-  private void toggleMainThread ()
+  private void stepMainThread ()
   {
     Task t = this.myProc.getMainTask();
-    if (this.runningState == false)
-      {
-        t.requestUnblock(this.pbo);
-        t.requestDeleteInstructionObserver(this.pbo);
-        this.runningState = true;
-      }
-    else
-      {
-        this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
-        LinkedList l = new LinkedList();
-        l.add(t);
-        this.pbo.blockTask(l);
-        this.runningState = false;
-      }
+    this.steppingState = true;
+    //System.out.println("Requesting unblock");
+    t.requestUnblock(this.pbo);
   }
+  
+//  private void toggleMainThread ()
+//  {
+//    Task t = this.myProc.getMainTask();
+//    if (this.runningState == false)
+//      {
+//        t.requestUnblock(this.pbo);
+//        t.requestDeleteInstructionObserver(this.pbo);
+//        this.runningState = true;
+//      }
+//    else
+//      {
+//        this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
+//        LinkedList l = new LinkedList();
+//        l.add(t);
+//        this.pbo.blockTask(l);
+//        this.runningState = false;
+//      }
+//  }
   
   public void mainThreadReblocked()
   {
@@ -1710,7 +1726,6 @@ public class SourceWindow
     if (this.runningThreads.size() == 0)
       {
         Iterator i = threads.iterator();
-        this.pbo.resetIsAdded();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
@@ -1893,39 +1908,5 @@ public class SourceWindow
       target.updateShownStackFrame(newFrame);
     }
 
-  }
-
-  public class InstructionObserver
-      implements TaskObserver.Instruction
-  {
-    boolean added;
-
-    boolean deleted;
-
-    int hit;
-
-    public Action updateExecuted (Task task)
-    {
-      hit++;
-      Manager.eventLoop.requestStop();
-      return Action.BLOCK;
-    }
-
-    public void addedTo (Object o)
-    {
-      added = true;
-    }
-
-    public void deletedFrom (Object o)
-    {
-      deleted = true;
-    }
-
-    public void addFailed (Object o, Throwable w)
-    {
-      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
-                   w);
-      throw new RuntimeException(w);
-    }
   }
 }
