@@ -301,6 +301,7 @@ public class SourceWindow
     this.attachEvents();
 
     this.watchView = new VariableWatchView(this);
+    this.runningThreads = new HashSet();
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
     sw.add(this.watchView);
 
@@ -1279,8 +1280,11 @@ public class SourceWindow
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        //t.requestUnblock(this.pbo);
-        t.requestDeleteInstructionObserver(this.pbo);
+        if (!this.runningThreads.contains(t))
+          {
+            this.runningThreads.add(t);
+            t.requestDeleteInstructionObserver(this.pbo);
+          }
       }
     this.runningState = true;
   }
@@ -1297,7 +1301,30 @@ public class SourceWindow
     sbar.push(0, "Stopped");
 
     //this.pbo.requestAddObservers(this.myProc.getMainTask());
-    this.pbo.requestAdd();
+    
+    if (this.threadDialog == null)
+      {
+        this.runningThreads.clear();
+        this.pbo.requestAdd();
+        return;
+      }
+    
+    LinkedList l = this.threadDialog.getBlockTasks();
+    if (l.size() == 0)
+        this.pbo.requestAdd();
+    else
+      {
+        LinkedList tasks = myProc.getTasks();
+        Iterator i = this.runningThreads.iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            if (tasks.contains(t))
+              tasks.remove(t);
+          }
+        this.pbo.blockTask(tasks);
+      }
+    this.runningThreads.clear();
   }
 
   public void procReblocked ()
@@ -1338,7 +1365,6 @@ public class SourceWindow
     if (this.threadDialog == null)
       {
         this.threadDialog = new ThreadSelectionDialog(glade, this);
-        this.runningThreads = new HashSet();
         this.threadDialog.showAll();
       }
     else

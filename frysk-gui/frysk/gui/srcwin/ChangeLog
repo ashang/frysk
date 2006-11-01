@@ -1,3 +1,12 @@
+2006-11-01  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (toggleThreadDialog): Removed HashSet
+	intialization and moved it to the constructor.
+	(doStop): Remove all threads from the runningThreads
+	HashSet and then block them.
+	(unblockProc): Add all threads to runningThreads, unless
+	they're already running via other means.
+
 2006-10-31  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView.java (CurrentStackView): Updated to use

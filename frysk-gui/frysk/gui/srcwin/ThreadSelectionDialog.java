@@ -224,7 +224,7 @@ public class ThreadSelectionDialog
         boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
         if (val)
           {
-            System.out.println("DIALOG: Adding to blockers: "  + task);
+            //System.out.println("DIALOG: Adding to blockers: "  + task);
             this.blockTasks.add(task);
           }
         iter = iter.getNextIter();
