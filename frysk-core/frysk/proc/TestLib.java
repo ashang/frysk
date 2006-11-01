@@ -722,6 +722,38 @@ public class TestLib
 	}
     }
 
+    
+    protected class AckDaemonCloneProcess
+      extends AckDaemonProcess
+  {
+    public AckDaemonCloneProcess (int threads)
+    {
+      super(childAck, funitThreadsCommand(threads));
+    }
+
+  }
+
+  /**
+   * Build an funit-child command to run.
+   */
+  private static String[] funitThreadsCommand (int threads)
+  {
+    List command = new LinkedList();
+    final String sleepTime = "10";
+
+    final String sigToSend = "" + Sig.USR1_;
+
+    command.add(getExecPrefix() + "funit-threads");
+    // Use getpid as this testsuite always runs the event loop
+    // from the main thread (which has tid==pid).
+    command.add(Integer.toString(Pid.get()));
+    command.add(sigToSend);
+    command.add(sleepTime);
+    command.add("" + threads);
+    return (String[]) command.toArray(new String[0]);
+  }
+    
+    
     /**
      * Creates an attached process halted at it's first instruction
      * (just after the exec call to start it running).

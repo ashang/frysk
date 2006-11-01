@@ -46,9 +46,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
+import frysk.event.RequestStopEvent;
 
 abstract public class ProcBlockObserver
-    implements TaskObserver.Instruction, ProcObserver
+    implements TaskObserver.Instruction, TaskObserver.Terminated,
+    ProcObserver.ProcTasks
 {
   protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -120,36 +122,28 @@ abstract public class ProcBlockObserver
     });
   }
 
-  //abstract public void existingTask (Task task);
-
-  abstract public void deletedFrom (Object observable);
-
   public void addFailed (Object observable, Throwable w)
   {
-    System.err.println(w);
-    proc.requestAbandonAndRunEvent(new Event()
-    {
+    w.printStackTrace();
+    proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
 
-      public void execute ()
+    try
       {
-        Manager.eventLoop.requestStop();
-        try
-          {
-            // Wait 5 seconds for eventLoop to finish.
-            Manager.eventLoop.join(5000);
-          }
-        catch (InterruptedException e)
-          {
-            e.printStackTrace();
-          }
-        System.exit(- 1);
+        // Wait for eventLoop to finish.
+        Manager.eventLoop.join();
       }
-    });
+    catch (InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+    System.exit(1);
+
   }
 
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(this);
+    task.requestAddTerminatedObserver(this);
   }
 
   public Action updateExecuted (Task task)
@@ -159,6 +153,16 @@ abstract public class ProcBlockObserver
     existingTask(task);
 
     return Action.BLOCK;
+  }
+
+  public void taskAdded (Task task)
+  {
+
+  }
+
+  public void taskRemoved (Task task)
+  {
+
   }
 
   public void addedTo (Object observable)
@@ -189,5 +193,11 @@ abstract public class ProcBlockObserver
   public int getNumTasks ()
   {
     return this.numTasks;
+  }
+  public Action updateTerminated (Task task, boolean signal, int value)
+  {
+
+    taskRemoved(task);
+    return Action.CONTINUE;
   }
 }

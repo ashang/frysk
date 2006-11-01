@@ -1,3 +1,17 @@
+2006-11-01  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcBlockObserver.java: Implemented TaskObserver.Terminated and ProcObserver.ProcTasks
+	for tasks that get removed. 
+	(requestAddObservers): Added TaskObserver.Terminated.
+	(taskAdded): Added.
+	(addFailed): Moved eventLoop join out of the eventLoop event. Changed event to common
+	requestStopEvent.
+	(taskRemoved): Added.
+	(updateTerminated): Added.
+	* TestLib.java (AckDaemonCloneProcess.AckDaemonCloneProcess): Added.
+	(AckDaemonCloneProcess): Added.
+	(funitThreadsCommand): Added.	
+
 2006-11-01  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcBlockObserver.java (ProcBlockObserver): Removed unnecessary boolean flag. 
