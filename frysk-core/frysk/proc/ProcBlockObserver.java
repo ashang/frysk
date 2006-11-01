@@ -47,8 +47,7 @@ import java.util.logging.Logger;
 
 import frysk.event.Event;
 
-abstract public class ProcBlockObserver
-    implements TaskObserver.Instruction, ProcObserver
+abstract public class ProcBlockObserver implements TaskObserver.Instruction
 {
   protected static final Logger logger = Logger.getLogger("frysk");
 
@@ -57,8 +56,6 @@ abstract public class ProcBlockObserver
   private Task mainTask;
 
   private int numTasks;
-
-  boolean isAdded = false;
 
   private LinkedList tasks;
 
@@ -112,7 +109,7 @@ abstract public class ProcBlockObserver
 
         numTasks = proc.getTasks().size();
         Iterator i = proc.getTasks().iterator();
-        isAdded = true;
+        
         while (i.hasNext())
           {
             requestAddObservers((Task) i.next());
@@ -191,10 +188,5 @@ abstract public class ProcBlockObserver
   public int getNumTasks ()
   {
     return this.numTasks;
-  }
-
-  public void resetIsAdded ()
-  {
-    this.isAdded = false;
   }
 }
