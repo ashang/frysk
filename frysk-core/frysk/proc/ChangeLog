@@ -1,5 +1,7 @@
 2006-11-01  Nurdin Premji  <npremji@redhat.com>
 
+	* Host.java (getProc): Added ProcID logging info.
+	
 	* ProcBlockObserver.java: Implemented TaskObserver.Terminated and ProcObserver.ProcTasks
 	for tasks that get removed. 
 	(requestAddObservers): Added TaskObserver.Terminated.

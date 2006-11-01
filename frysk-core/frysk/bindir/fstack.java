@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import inua.util.PrintWriter;
-
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -181,14 +179,15 @@ public class fstack
         logger.setLevel(level);
       }
 
-    new StacktraceObserver(proc, new Event()
+    final StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
     {
       public void execute ()
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    }, new PrintWriter(System.out, true));
+    });
 
     Manager.eventLoop.run();
+    System.out.print(stacker.toPrint());
   }
 }

@@ -1,3 +1,8 @@
+2006-11-01  Nurdin Premji  <npremji@redhat.com>
+
+	* fstack.java (main): Changed to reflect StacktraceObserver using a StringBuffer instead
+	of a PrintWriter.	
+
 2006-10-27  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java: Changed to use  frysk.util.StacktraceObserver.

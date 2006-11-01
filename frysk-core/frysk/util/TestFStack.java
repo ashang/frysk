@@ -40,13 +40,7 @@
 
 package frysk.util;
 
-import inua.util.PrintWriter;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.PipedReader;
-import java.io.PipedWriter;
 
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
@@ -57,22 +51,20 @@ public class TestFStack
     extends TestLib
 {
 
-  String[] mainThread = new String[] {
-                                      "^Task #\\d+$",
-                                      "^#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)$",
-                                      "^#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)$",
-                                      "^#2 0x[\\da-f]+ in server \\(\\) from .*",
-                                      "^#3 0x[\\da-f]+ in main \\(\\) from .*",
-                                      "^#4 0x[\\da-f]+ in __libc_start_main \\(\\)$",
-                                      "^#5 0x[\\da-f]+ in _start \\(\\)$" };
+  String mainThread = "Task #\\d+\\n"
+                      + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                      + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                      + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                      + "#3 0x[\\da-f]+ in main \\(\\): line #505\\n"
+                      + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                      + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
 
-  String[] secondaryThread = new String[] {
-                                           "^Task #\\d+$",
-                                           "^#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)$",
-                                           "^#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)$",
-                                           "^#2 0x[\\da-f]+ in server \\(\\) from .*",
-                                           "^#3 0x[\\da-f]+ in start_thread \\(\\)$",
-                                           "^#4 0x[\\da-f]+ in (__)?clone \\(\\)$" };
+  String secondaryThread = "Task #\\d+\\n"
+                           + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                           + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                           + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                           + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                           + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
 
   public void testSingleThreadedDetached () throws IOException
   {
@@ -107,88 +99,32 @@ public class TestFStack
 
   public void multiThreaded (AckProcess ackProc, int threads)
       throws IOException
-  {    
-
-    PipedReader input = new PipedReader();
-    PipedWriter  output = new PipedWriter(input);
+  {
 
     final Proc proc = ackProc.findProcUsingRefresh(true);
-    
-    new StacktraceObserver(proc, new Event()
+
+    StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
     {
 
       public void execute ()
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    }, new PrintWriter(new BufferedWriter(output), true));
-
-    BufferedReader br = new BufferedReader(input);
-    Analyzer analyzer = new Analyzer(br, threads);
-    analyzer.start();
+    });
 
     assertRunUntilStop("test");
 
-    try
+    String regex = new String();
+    regex += mainThread;
+
+    for (int i = 1; i < threads; i++)
       {
-        analyzer.join();
+        regex += secondaryThread;
       }
-    catch (InterruptedException e)
-      {
-        e.printStackTrace();
-      }
-    output.close();
-    input.close();
-    br.close();
 
-  }
+    assertTrue(stacker.toPrint() + "did not match: " + regex,
+               stacker.toPrint().matches(regex));
 
-  final class Analyzer
-      extends Thread
-  {
-    BufferedReader br;
-
-    int threads;
-
-    public Analyzer (BufferedReader theBufferedReader, int t)
-    {
-      br = theBufferedReader;
-      threads = t;
-    }
-
-    public void run ()
-    {
-
-      try
-        {
-          for (int i = 0; i < mainThread.length; i++)
-            {
-              while (! br.ready())
-                Thread.yield();
-              String line = br.readLine();
-              assertTrue(line + " did not match: " + mainThread[i],
-                         line.matches(mainThread[i]));
-            }
-          for (int j = 1; j < threads; j++)
-            {
-              for (int i = 0; i < secondaryThread.length; i++)
-                {
-
-                  while (! br.ready())
-                    Thread.yield();
-                  String line = br.readLine();
-                  assertTrue(line + " did not match: " + secondaryThread[i],
-                             line.matches(secondaryThread[i]));
-                }
-            }
-        }
-      catch (IOException e)
-        {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-
-    }
   }
 
 }

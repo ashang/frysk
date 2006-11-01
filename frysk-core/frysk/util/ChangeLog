@@ -1,3 +1,19 @@
+2006-11-01  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java (multiThreaded): Changed to reflect StacktraceObserver using a StringBuffer
+	rather than a PrintWriter.
+	(mainThread): Ditto.
+	(secondaryThread): 	Ditto.
+	* StacktraceObserver.java: Added (C).
+	(StacktraceObserver): Changed to use StringBuffer rather than PrintWriter. 
+	(printTasks): Ditto.
+	(existingTask): Changed to append tasks to an empty list instead of removing them 
+	from a full list.
+	(taskRemoved): Added
+	(storeTask): Used StackFrame.toPrint() method.
+	(toPrint): Added
+	(InterruptEvent): Added, allows Ctrl-C exiting.
+
 2006-10-27  Nurdin Premji <npremji@redhat.com>
 
 	* StacktraceObserver: Added, replaces:

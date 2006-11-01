@@ -118,7 +118,7 @@ public abstract class Host
     }
     public Proc getProc (ProcId id)
     {
-	logger.log (Level.FINE, "{0} getProc ProcId\n", this); 
+	logger.log (Level.FINE, "{0} getProc ProcId {1} \n", new Object[] {this, id}); 
 	return (Proc) procPool.get (id);
     }
 
