@@ -296,6 +296,7 @@ public class StackFrame
   {
     StringBuffer builder = new StringBuffer("0x");
     String addr = Long.toHexString(getAddress());
+    
     // Pad the address based on the task's word size.
     try
       {
@@ -308,15 +309,19 @@ public class StackFrame
         // We couldn't get the task's ISA. But, we don't care, since
         // all it means is that we can't properly pad the address.
       }
+    
     builder.append(addr);
     String mn = getMethodName();
+    
     if (mn != null && ! "".equals(mn))
       {
         builder.append(" in function: ");
         builder.append(getMethodName());
       }
+    
     String sf = getSourceFile();
     int line = getLineNumber();
+    
     if (sf != null || line != 0)
       {
         builder.append(" (");
@@ -324,13 +329,16 @@ public class StackFrame
           builder.append(sf);
         else
           builder.append("Unknown source");
+        
         if (line != 0)
           {
             builder.append(":");
             builder.append(line);
           }
+        
         builder.append(")");
       }
+    
     return builder.toString();
   }
   
@@ -387,6 +395,12 @@ public class StackFrame
     return startOffset;
   }
   
+  /**
+   * Return the DwflLine Object for this StackFrame. If this is null, it is
+   * an excellent indication that this frame has no debuginfo.
+   * 
+   * @return    dwflLine    The DwflLine Object for this StackFrame
+   */
   public DwflLine getDwflLine ()
   {
     return this.dwflLine;
