@@ -244,7 +244,7 @@ echo_LDFLAGS ()
 has_main ()
 {
     case "$1" in
-		*.java ) grep ' main[ ]*[(]' $1 > /dev/null 2>&1 ;;
+		*.java ) jv-scan --print-main $1 | grep .  > /dev/null 2>&1 ;;
         *.c|*.cxx ) grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1 ;;
 		* ) false ;; 
     esac

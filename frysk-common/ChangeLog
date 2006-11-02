@@ -1,3 +1,8 @@
+2006-11-02  Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.gen.sh (has_main): Use jv-scan to find java files with
+	main functions rather than grep.
+
 2006-10-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (echo_MANS): Make bindir require man pages.
