@@ -91,7 +91,9 @@ public class SourceWindowFactory
 
   private static Hashtable procTable;
   
-  private static int task_count = 0;
+  private static int taskCount = 0;
+  
+  private static int taskStepCount = 0;
 
   public static SourceWindow srcWin = null;
   
@@ -129,7 +131,7 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Proc proc)
   {
-    //task_count = proc.getTasks().size();
+    //taskCount = proc.getTasks().size();
     SourceWindow sw = (SourceWindow) procTable.get(proc);
     
     if (sw != null)
@@ -475,14 +477,34 @@ public class SourceWindowFactory
         {
           if (srcWin.getSteppingState())
             {
-              //System.out.println("Zomg stepping!");
-              srcWin.stepCompleted();
+              if (taskStepCount == 0)
+                {
+                  taskStepCount = srcWin.getNumSteppingThreads();
+                }
+              
+              --taskStepCount;
+              if (taskStepCount == 0)
+                {
+                  CustomEvents.addEvent(new Runnable()
+                  {
+                    public void run ()
+                    {
+                      StackFrame[] frames = generateProcStackTrace(
+                                           null, null, srcWin.getDOM(), 
+                                           myTask.getProc(), 0);
+                      
+                      srcWin.populateStackBrowser(frames);
+                      srcWin.stepCompleted();
+                    }
+                  });
+                }
+              
               return;
             }
         }
       
-      if (task_count == 0)
-        task_count = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
+      if (taskCount == 0)
+        taskCount = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
 
       CustomEvents.addEvent(new Runnable()
       {
@@ -509,37 +531,29 @@ public class SourceWindowFactory
   
   public static synchronized void handleTask (Task task)
   {
-    myTask = task;
-    //System.out.println("handletask " + task);
 
     if (SW_active == false)
       {
-        CustomEvents.addEvent(new Runnable()
-        {
-          public void run ()
+        --taskCount;
+        if (taskCount == 0)
           {
-            --task_count;
-            if (task_count == 0)
-              {
-                SW_active = true;
-                finishSourceWin(myTask.getProc());
-              }
+            SW_active = true;
+            finishSourceWin(task.getProc());
           }
-        });
       }
     else
       {
-        //System.out.println("SW false " + task_count);
-        --task_count;
-        if (task_count == 0)
+        // System.out.println("SW false " + taskCount);
+        --taskCount;
+        if (taskCount == 0)
           {
-            //System.out.println("Task count zero");
+            // System.out.println("Task count zero");
             StackFrame[] frames = generateProcStackTrace(null, null,
                                                          srcWin.getDOM(),
                                                          task.getProc(), 0);
             srcWin.populateStackBrowser(frames);
             srcWin.procReblocked();
-            }
+          }
       }
   }
 }

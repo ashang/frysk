@@ -303,11 +303,9 @@ public class SourceWindow
 
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
-
-    //this.hideAll();
-    this.glade.getWidget(FIND_BOX).hideAll();
     
     this.showAll();
+    this.glade.getWidget(FIND_BOX).hideAll();
   }
 
   /**
@@ -373,12 +371,39 @@ public class SourceWindow
    * 
    * @param tasks   The list of tasks to step.
    */
-  public void step (LinkedList tasks)
+  protected void step (LinkedList tasks)
   {
-    System.out.println("Instruction Step");
+
+    this.glade.getWidget("toolbarGotoBox").setSensitive(false);
+    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping");
+
+    this.runningState = true;
+    this.steppingState = false;
+
+    // Set status of actions
+    this.run.setSensitive(false);
+    this.stop.setSensitive(true);
+    this.step.setSensitive(false);
+    this.next.setSensitive(false);
+    this.finish.setSensitive(false);
+    this.cont.setSensitive(false);
+    this.nextAsm.setSensitive(false);
+    this.stepAsm.setSensitive(false);
+
+    this.stackBottom.setSensitive(false);
+    this.stackUp.setSensitive(false);
+    this.stackDown.setSensitive(false);
+
+    this.copy.setSensitive(false);
+    this.find.setSensitive(false);
+    this.prefsLaunch.setSensitive(false);
     
     this.steppingState = true;
     this.numSteppingThreads = tasks.size();
+    
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
@@ -390,15 +415,35 @@ public class SourceWindow
   /**
    * Thread stepping has completed, clean up. 
    */
-  public void stepCompleted ()
+  protected void stepCompleted ()
   {
-    if (this.numSteppingThreads == 1)
-      System.out.println("Stepping completed");
-    else
-      {
-        this.numSteppingThreads--;
-        System.out.println("step done");
-      }
+
+//  Set status of toolbar buttons
+    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
+
+    // Set status of actions
+    this.run.setSensitive(true);
+    this.stop.setSensitive(false);
+    this.step.setSensitive(true);
+    this.next.setSensitive(true);
+    this.finish.setSensitive(true);
+    this.cont.setSensitive(true);
+    this.nextAsm.setSensitive(true);
+    this.stepAsm.setSensitive(true);
+
+    this.stackBottom.setSensitive(true);
+    this.stackUp.setSensitive(true);
+    this.stackDown.setSensitive(true);
+
+    this.copy.setSensitive(true);
+    this.find.setSensitive(true);
+    this.prefsLaunch.setSensitive(true);
+    
+    this.steppingState = false;
   }
   
   /**
@@ -407,7 +452,7 @@ public class SourceWindow
    * the StackView has been re-populated, allowing the SourceWindow to be 
    * sensitive again. 
    */
-  public void procReblocked ()
+  protected void procReblocked ()
   {
     // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
@@ -466,6 +511,11 @@ public class SourceWindow
   public boolean getSteppingState ()
   {
     return this.steppingState;
+  }
+  
+  public int getNumSteppingThreads ()
+  {
+    return this.numSteppingThreads;
   }
 
   /*****************************************************************************

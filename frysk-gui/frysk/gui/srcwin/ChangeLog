@@ -1,17 +1,22 @@
 2006-11-02  Mike Cvet  <mcvet@redhat.com>
 
 	* ThreadSelectionDialog.java (ThreadSelectionDialog): Calls
-	update getSwProc().
+	updated getSwProc().
 	* StepDialog.java: Added.
 	* SourceWindowFactory.java (SourceWinBlocker.existingTask): 
-	Calls SourceWindow.stepComplete().
+	Built in ability to handle step events and re-generate 
+	SourceWindow content upon completion of stepping for all 
+	Tasks.
 	(finishSourceWin): Calls update getSwProc().
 	(SourceWinListener.lifeCycleQuery): Ditto.
+	(handleTask): Taken out of a second unnecessary CustomEvents
+	 event.
 	* SourceWindow.java (unblockProc): Added a 
 	requestDeleteTerminatingObserver call to handle the update 
 	to ProcBlockObserver.
 	(step): Added. Unblocks tasks under an InstructionObserver.
-	(stepCompleted): Added. Finalizes the window after stepping.
+	(stepCompleted): Added. Re-sensitizes the SourceWindow after
+	step completion.
 	(executeTasks): Refactored from executeThreads(). Removed
 	obsolete boolean checks.
 	(SourceWindow): Added a StepDialog reference. General clean-up
@@ -26,6 +31,7 @@
 	(setSwProc): Refactored from setMyProc().
 	(stepMainThread): Removed.
 	(createActions): Removed toggleMainThread Action.
+	(procReblocked): Changed to protected.
 
 2006-11-01  Mike Cvet  <mcvet@redhat.com>
 
