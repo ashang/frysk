@@ -1259,6 +1259,7 @@ public class SourceWindow
     sbar.push(0, "Running");
 
     this.runningState = true;
+    this.steppingState = false;
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -1291,6 +1292,7 @@ public class SourceWindow
           {
             this.runningThreads.add(t);
             t.requestDeleteInstructionObserver(this.pbo);
+            t.requestDeleteTerminatingObserver(this.pbo);
           }
       }
     this.runningState = true;

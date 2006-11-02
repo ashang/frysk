@@ -1,3 +1,9 @@
+2006-11-02  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (unblockProc): Added a 
+	requestDeleteTerminatingObserver call to handle the update 
+	to ProcBlockObserver.
+
 2006-11-01  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (SourceWinBlocker.existingTask): 

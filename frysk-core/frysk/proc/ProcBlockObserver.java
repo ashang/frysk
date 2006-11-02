@@ -49,7 +49,7 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
 abstract public class ProcBlockObserver
-    implements TaskObserver.Instruction, TaskObserver.Terminated,
+    implements TaskObserver.Instruction, TaskObserver.Terminating,
     ProcObserver.ProcTasks
 {
   protected static final Logger logger = Logger.getLogger("frysk");
@@ -143,7 +143,7 @@ abstract public class ProcBlockObserver
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(this);
-    task.requestAddTerminatedObserver(this);
+    task.requestAddTerminatingObserver(this);
   }
 
   public Action updateExecuted (Task task)
@@ -194,7 +194,7 @@ abstract public class ProcBlockObserver
   {
     return this.numTasks;
   }
-  public Action updateTerminated (Task task, boolean signal, int value)
+  public Action updateTerminating (Task task, boolean signal, int value)
   {
 
     taskRemoved(task);

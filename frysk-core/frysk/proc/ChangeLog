@@ -1,3 +1,10 @@
+2006-11-02  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcBlockObserver.java (ProcBlockObserver): Changed 
+	TaskObserver.Terminated to TaskObserver.Terminating.
+	(updateTerminated): Removed.
+	(updateTerminating): Added.
+
 2006-11-01  Nurdin Premji  <npremji@redhat.com>
 
 	* Host.java (getProc): Added ProcID logging info.
