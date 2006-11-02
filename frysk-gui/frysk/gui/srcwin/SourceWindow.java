@@ -231,7 +231,11 @@ public class SourceWindow
   
   private ToggleAction toggleThreadDialog;
   
+  private ToggleAction toggleStepDialog;
+  
   private ThreadSelectionDialog threadDialog = null;
+  
+  private StepDialog stepDialog = null;
 
   private DOMFrysk dom;
 
@@ -247,9 +251,11 @@ public class SourceWindow
   
   private HashSet runningThreads;
 
-  public boolean runningState = false;
+  protected boolean runningState = false;
   
-  public boolean steppingState = false;
+  private boolean steppingState = false;
+  
+  private int numSteppingThreads = 0;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -412,7 +418,7 @@ public class SourceWindow
   
   public void updateThreads ()
   {
-    executeThreads(this.threadDialog.getBlockTasks());
+    executeTasks(this.threadDialog.getBlockTasks());
   }
   
   public boolean getSteppingState ()
@@ -420,9 +426,29 @@ public class SourceWindow
     return this.steppingState;
   }
   
-  public void stepped ()
+  public void step (LinkedList tasks)
   {
-    doStep();
+    System.out.println("Instruction Step");
+    
+    this.steppingState = true;
+    this.numSteppingThreads = tasks.size();
+    Iterator i = tasks.iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) i.next();
+        t.requestUnblock(this.pbo);
+      }
+  }
+  
+  public void stepCompleted ()
+  {
+    if (this.numSteppingThreads == 1)
+      System.out.println("Stepping completed");
+    else
+      {
+        this.numSteppingThreads--;
+        System.out.println("step done");
+      }
   }
 
   /*****************************************************************************
@@ -548,6 +574,16 @@ public class SourceWindow
       public void actionEvent (ActionEvent arg0)
       {
         SourceWindow.this.toggleThreadDialog();
+      }
+    });
+    
+    this.toggleStepDialog = new ToggleAction("step", "Instruction Stepping",
+                                               "Instruction stepping multiple threads", "frysk-thread");
+    this.toggleStepDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent arg0)
+      {
+        SourceWindow.this.toggleStepDialog();
       }
     });
 
@@ -849,6 +885,8 @@ public class SourceWindow
 //    tmp.append(mi);
 //    mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
 //    tmp.append(mi);
+    mi = (MenuItem) this.toggleStepDialog.createMenuItem();
+    tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.next.createMenuItem();
@@ -1379,6 +1417,17 @@ public class SourceWindow
     else
       this.threadDialog.showAll();
   }
+  
+  private void toggleStepDialog ()
+  {
+    if (this.stepDialog == null)
+      {
+        this.stepDialog = new StepDialog(glade, this);
+        this.stepDialog.showAll();
+      }
+    else
+      this.stepDialog.showAll();
+  }
  
 
   /**
@@ -1387,7 +1436,6 @@ public class SourceWindow
   private void doStep ()
   {
     System.out.println("Step");
-    
   }
 
   /**
@@ -1697,14 +1745,12 @@ public class SourceWindow
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
   }
   
-  private synchronized void executeThreads (LinkedList threads)
+  private synchronized void executeTasks (LinkedList threads)
   {
 
 //    System.out.println("In executeThreads with thread size " + threads.size()
 //                       + " and runningthreads size "
 //                       + this.runningThreads.size());
-
-    boolean all = (this.runningThreads.size() + threads.size()) == myProc.getTasks().size();
 
     if (threads.size() == 0 && this.runningThreads.size() == 0)
       return;   /* runningState should already be false */
@@ -1734,8 +1780,6 @@ public class SourceWindow
             //System.out.println("(0) Running " + t);
             this.runningThreads.add(t);
 
-            if (!all)
-              t.requestUnblock(this.pbo);
             t.requestDeleteInstructionObserver(this.pbo);
           }
         this.runningState = true;
@@ -1756,8 +1800,6 @@ public class SourceWindow
             if (!this.runningThreads.remove(t))
               {
                 //System.out.println("unBlocking " + t);
-                if (!all)
-                  t.requestUnblock(this.pbo);
                 t.requestDeleteInstructionObserver(this.pbo);
               }
             else

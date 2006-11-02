@@ -473,11 +473,10 @@ public class SourceWindowFactory
 
       if (SW_active)
         {
-          if (srcWin.steppingState)
+          if (srcWin.getSteppingState())
             {
               //System.out.println("Zomg stepping!");
-              //Manager.eventLoop.requestStop ();
-              srcWin.stepped();
+              srcWin.stepCompleted();
               return;
             }
         }
