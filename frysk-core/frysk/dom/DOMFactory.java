@@ -29,6 +29,10 @@ public class DOMFactory
     DwflLine line;
     
     line = frame.getDwflLine();
+    
+    if (line == null)
+      return null;
+    
     String fullPath = line.getSourceFile();
     
     /*
