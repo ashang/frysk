@@ -40,8 +40,6 @@
 
 package frysk.util;
 
-import java.io.IOException;
-
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
@@ -66,39 +64,38 @@ public class TestFStack
                            + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
                            + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
 
-  public void testSingleThreadedDetached () throws IOException
+  public void testSingleThreadedDetached () 
   {
     AckProcess ackProc = new DetachedAckProcess();
     multiThreaded(ackProc, 1);
   }
 
-  public void testSingleThreadedAckDaemon () throws IOException
+  public void testSingleThreadedAckDaemon () 
   {
     AckProcess ackProc = new AckDaemonProcess();
     multiThreaded(ackProc, 1);
   }
 
-  public void testMultiThreadedDetached () throws IOException
+  public void testMultiThreadedDetached () 
   {
     AckProcess ackProc = new DetachedAckProcess(2);
     multiThreaded(ackProc, 3);
   }
 
-  public void testMultiThreadedAckDaemon () throws IOException
+  public void testMultiThreadedAckDaemon () 
   {
     AckProcess ackProc = new AckDaemonProcess(2);
     multiThreaded(ackProc, 3);
   }
 
-  public void testStressMultiThreadedDetach () throws IOException
+  public void testStressMultiThreadedDetach () 
   {
     int clones = 7;
     AckProcess ackProc = new DetachedAckProcess(clones);
     multiThreaded(ackProc, clones + 1);
   }
 
-  public void multiThreaded (AckProcess ackProc, int threads)
-      throws IOException
+  public void multiThreaded (AckProcess ackProc, int threads)      
   {
 
     final Proc proc = ackProc.findProcUsingRefresh(true);

@@ -1,3 +1,13 @@
+2006-11-02  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java (testStressMultiThreadedDetach): Removed thrown IOException
+	(testMultiThreadedAckDaemon): Ditto.
+	(testSingleThreadedDetached): Ditto.
+	(multiThreaded): Ditto.
+	(testSingleThreadedAckDaemon): Ditto.
+	(testMultiThreadedDetached): Ditto.
+	
+
 2006-11-01  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (multiThreaded): Changed to reflect StacktraceObserver using a StringBuffer
