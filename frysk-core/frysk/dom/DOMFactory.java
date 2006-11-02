@@ -1,5 +1,3 @@
-
-
 package frysk.dom;
 
 import java.io.BufferedReader;
@@ -31,7 +29,6 @@ public class DOMFactory
     DwflLine line;
     
     line = frame.getDwflLine();
-    System.out.println("getting sourcefile");
     String fullPath = line.getSourceFile();
     
     /*
@@ -46,7 +43,6 @@ public class DOMFactory
     String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
     String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
 
-    System.out.println("checking hashmap");
     if (hashmap.containsKey(proc))
       {
         // retrieve the previously created dom
@@ -56,12 +52,10 @@ public class DOMFactory
       {
         // create a new dom and associate it with the given task
         // XXX create a fake name for now, must create unique names later
-        System.out.println("Creating new image");
         dom = new DOMFrysk("TaskTask");
         dom.addImage(proc.getMainTask().getName(), path, path);
       }
 
-    System.out.println("creating source");
     DOMSource source = dom.getImage(proc.getMainTask().getName()).getSource(filename);
 
     /*
@@ -72,7 +66,6 @@ public class DOMFactory
       {
         DOMImage image = dom.getImage(proc.getMainTask().getName());
         source = new DOMSource(filename, path);
-        printDOM(dom);
         
         // Read the file lines from disk
         // XXX: Remote file access?
@@ -94,16 +87,16 @@ public class DOMFactory
             offset += text.length() + 1;
           }
         image.addSource(source);
-        // if we are debugging the DOM, print it out now
-        if (debug) {
-          printDOM(dom);
-        }
 
         // Parse the file and populate the DOM
         StaticParser parser = new CDTParser();
         parser.parse(dom, source, image, proc.getExe());
       }
     hashmap.put(proc, dom);
+//  if we are debugging the DOM, print it out now
+    if (debug) {
+      printDOM(dom);
+    }
     return dom;
   }
   

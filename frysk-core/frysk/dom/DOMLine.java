@@ -248,13 +248,20 @@ public class DOMLine {
 	 * @param start - the starting character within the line
 	 */
 	public void addTag(String type, String token, int start) {
+      // Don't add blank tokens
+      if (token.equals("")) 
+        return;
+      // Sometimes the CDT Parser returns a token with a space on the end, nip it
+      if (token.endsWith(" "))
+      {
+        token = token.substring(0, token.length() - 1);
+      }
 		// Check for duplicate tags
 		Iterator elements = this.myElement.getChildren().iterator();
 		while(elements.hasNext()){
 			Element element = (Element) elements.next();
 			
-			int elStart = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
-			int elLength = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
+			int elStart = Integer.parseInt(element.getAttributeValue(DOMTag.START_ATTR));
 			String elType = element.getAttributeValue(DOMTag.TYPE_ATTR);
 			
 			// only one function body per line
@@ -263,7 +270,7 @@ public class DOMLine {
 			
 			// we're more particular with the other tags, only one of each tag
 			// at a given point on the line.
-			if(start == elStart && token.length() == elLength && type.equals(elType))
+            if(start == elStart && type.equals(elType))
 				return;
 		}
 

@@ -122,7 +122,7 @@ public class CDTParser
   
   private DOMFrysk dom;
   
-  private final boolean debug = true;
+  private final boolean debug = false;
 
   /*
    * (non-Javadoc)
@@ -176,7 +176,7 @@ public class CDTParser
                                                  ParserMode.COMPLETE_PARSE,
                                                  language, new NullLogService());
 
-    if (! parser2.parse())
+    if (! parser2.parse() && debug)
       System.err.println("Complete Parse: Error found on line "
                          + parser2.getLastErrorLine()
                          + "\n                Char offset of error = "
@@ -297,8 +297,6 @@ public class CDTParser
 
     public void acceptVariable (IASTVariable arg0)
     {
-      System.out.println("acceptVariable = " + arg0.getName());
-      
       // Don't assume the type is on the same line as the name
       DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
       DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
@@ -441,8 +439,11 @@ public class CDTParser
       // them weirdly so when that occurs we must adjust the length of the substring parameters
       int startingcharindex = arg0.getStartingOffset() - line.getOffset();
       int endingcharindex = arg0.getNameOffset() - line.getOffset();
+      // Chop off any characters that might be tagged on the end such as CR/LF
       if (endingcharindex > lineText.length())
-        endingcharindex = lineText.length();
+        {
+          endingcharindex = lineText.length() - 1;
+        }
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(startingcharindex, endingcharindex),
                   arg0.getStartingOffset() - line.getOffset());

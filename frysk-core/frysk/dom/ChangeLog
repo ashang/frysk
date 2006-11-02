@@ -1,3 +1,13 @@
+2006-11-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java:  Remove redundant tagging in acceptParameter.
+	Fix the tag length that was being calculated in enterFunctionBody.
+	Change debug variable from true to false to prevent debug spewing.
+	* DOMLine.java: Fix adding of duplicate tags calculation.
+	Do not add null tags.
+	Remove superfluous spaces at the end of some tokens.
+	* DOMFactory.java: Remove debug statements.
+
 2006-10-30  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java:  Fix problem with accessField callback
