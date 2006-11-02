@@ -57,6 +57,16 @@ public class TestFStack
                       + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                       + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
 
+  String mainThreadB = "Task #\\d+\\n"
+                       + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                       + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
+                       + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
+                       + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
+                       + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
+                       + "#5 0x[\\da-f]+ in main \\(\\): line #505\\n"
+                       + "#6 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                       + "#7 0x[\\da-f]+ in _start \\(\\)\\n";
+
   String secondaryThread = "Task #\\d+\\n"
                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                            + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
@@ -64,38 +74,60 @@ public class TestFStack
                            + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
                            + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
 
-  public void testSingleThreadedDetached () 
+  String secondaryThreadB = "Task #\\d+\\n"
+                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                            + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
+                            + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
+                            + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
+                            + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
+                            + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                            + "#6 0x[\\da-f]+ in __clone \\(\\)\\n";
+
+  String mainClone = "Task #\\d+\\n"
+                     + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                     + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
+                     + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
+                     + "#3 0x[\\da-f]+ in main (): line #177\\n"
+                     + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                     + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
+
+  String secondaryClone = "Task #\\d+\\n" + "#0 0x[\\da-f]+ in clone \\(\\)\\n"
+                          + "#1 0x[\\da-f]+ in op_clone \\(\\): line #105\\n"
+                          + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                          + "#3 0x[\\da-f]+ in clone \\(\\)\\n";
+
+  public void testSingleThreadedDetached ()
   {
     AckProcess ackProc = new DetachedAckProcess();
-    multiThreaded(ackProc, 1);
+    multiThreaded(ackProc, 0);
   }
 
-  public void testSingleThreadedAckDaemon () 
+  public void testSingleThreadedAckDaemon ()
   {
     AckProcess ackProc = new AckDaemonProcess();
-    multiThreaded(ackProc, 1);
+    multiThreaded(ackProc, 0);
   }
 
-  public void testMultiThreadedDetached () 
+  public void testMultiThreadedDetached ()
   {
     AckProcess ackProc = new DetachedAckProcess(2);
-    multiThreaded(ackProc, 3);
+    multiThreaded(ackProc, 2);
   }
 
-  public void testMultiThreadedAckDaemon () 
+  public void testMultiThreadedAckDaemon ()
   {
     AckProcess ackProc = new AckDaemonProcess(2);
-    multiThreaded(ackProc, 3);
+    multiThreaded(ackProc, 2);
   }
 
-  public void testStressMultiThreadedDetach () 
+  public void testStressMultiThreadedDetach ()
   {
     int clones = 7;
     AckProcess ackProc = new DetachedAckProcess(clones);
-    multiThreaded(ackProc, clones + 1);
+    multiThreaded(ackProc, clones);
   }
 
-  public void multiThreaded (AckProcess ackProc, int threads)      
+  public void multiThreaded (AckProcess ackProc, int secondaryThreads)
   {
 
     final Proc proc = ackProc.findProcUsingRefresh(true);
@@ -112,16 +144,47 @@ public class TestFStack
     assertRunUntilStop("test");
 
     String regex = new String();
-    regex += mainThread;
+    regex += "(" + mainThread + "|" + mainThreadB + ")";
 
-    for (int i = 1; i < threads; i++)
-      {
-        regex += secondaryThread;
-      }
+    regex += "(" + secondaryThread + "|" + secondaryThreadB + "){"
+             + secondaryThreads + "}";
 
     assertTrue(stacker.toPrint() + "did not match: " + regex,
                stacker.toPrint().matches(regex));
 
   }
+
+  // public void testClone ()
+  // {
+  // int threads = 2;
+  // AckProcess ackProc = new AckDaemonCloneProcess(threads);
+  //
+  // final Proc proc = ackProc.findProcUsingRefresh(true);
+  //
+  // StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
+  // {
+  //
+  // public void execute ()
+  // {
+  // proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+  // }
+  // });
+  // assertRunUntilStop("test");
+  //
+  // String regex = new String();
+  //
+  // // Add DOTALL since we never really know how many threads we will get.
+  // regex += "(?s)";
+  //    
+  // regex += "((";
+  // regex += mainClone;
+  //
+  // regex +=")|(";
+  // regex += secondaryClone;
+  // regex +=("))*");
+  // regex += ".*";
+  // assertTrue(stacker.toPrint() + "did not match: " + regex,
+  // stacker.toPrint().toString().matches(regex));
+  // }
 
 }

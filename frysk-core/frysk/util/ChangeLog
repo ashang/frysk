@@ -7,6 +7,16 @@
 	(testSingleThreadedAckDaemon): Ditto.
 	(testMultiThreadedDetached): Ditto.
 	
+	(testMultiThreadedAckDaemon): Changed regex.
+	(testStressMultiThreadedDetach): Ditto.
+	(testSingleThreadedDetached): Ditto.
+	(testSingleThreadedAckDaemon): Ditto.
+	(testMultiThreadedDetached): Ditto.
+	(mainThreadB): Added.
+	(multiThreaded): Changed regex
+	(mainClone): Added.
+	(secondaryClone): Added.
+	(secondaryThreadB): Added.
 
 2006-11-01  Nurdin Premji  <npremji@redhat.com>
 
