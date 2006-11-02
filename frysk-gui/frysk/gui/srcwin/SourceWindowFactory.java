@@ -228,8 +228,7 @@ public class SourceWindowFactory
                                         Task[] tasks, DOMFrysk dom, Proc proc, int size)
   {
     if (proc == null)
-      return null;
-    
+      return null; 
     
     if (frames == null || tasks == null)
       {
@@ -257,7 +256,6 @@ public class SourceWindowFactory
           {
             frames[j] = StackFactory.createStackFrame(tasks[j]);
             curr = frames[j];
-            //System.out.println(curr.getMethodName());
           }
         catch (Exception e)
           {
@@ -277,7 +275,6 @@ public class SourceWindowFactory
               {
                 try
                   {
-                    //dom = DOMFactory.createDOM(proc.getMainTask());
                     dom = DOMFactory.createDOM(curr, proc);
                   }
 
@@ -489,9 +486,13 @@ public class SourceWindowFactory
                   {
                     public void run ()
                     {
-                      StackFrame[] frames = generateProcStackTrace(
-                                           null, null, srcWin.getDOM(), 
-                                           myTask.getProc(), 0);
+//                      StackFrame[] frames = generateProcStackTrace(
+//                                           null, null, srcWin.getDOM(), 
+//                                           myTask.getProc(), 0);
+                      
+                      StackFrame[] frames = generateProcStackTrace(null, null,
+                                                                   null,
+                                                                   myTask.getProc(), 0);
                       
                       srcWin.populateStackBrowser(frames);
                       srcWin.stepCompleted();
@@ -548,9 +549,13 @@ public class SourceWindowFactory
         if (taskCount == 0)
           {
             // System.out.println("Task count zero");
-            StackFrame[] frames = generateProcStackTrace(null, null,
-                                                         srcWin.getDOM(),
-                                                         task.getProc(), 0);
+//            StackFrame[] frames = generateProcStackTrace(null, null,
+//                                                         srcWin.getDOM(),
+//                                                         task.getProc(), 0);
+            
+          StackFrame[] frames = generateProcStackTrace(null, null,
+          null,
+          task.getProc(), 0);
             srcWin.populateStackBrowser(frames);
             srcWin.procReblocked();
           }

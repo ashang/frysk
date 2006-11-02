@@ -356,9 +356,9 @@ public class SourceWindow
 
     updateShownStackFrame(stackView.getFirstFrameSelection());
 
+    stackView.expandAll();
     stackView.showAll();
     this.view.showAll();
-    stackView.expandAll();
   }
   
   public void updateThreads ()

@@ -11,6 +11,8 @@
 	(SourceWinListener.lifeCycleQuery): Ditto.
 	(handleTask): Taken out of a second unnecessary CustomEvents
 	 event.
+	(generateProcStackTrace): Make sure dom is re-generated
+	each call.
 	* SourceWindow.java (unblockProc): Added a 
 	requestDeleteTerminatingObserver call to handle the update 
 	to ProcBlockObserver.
