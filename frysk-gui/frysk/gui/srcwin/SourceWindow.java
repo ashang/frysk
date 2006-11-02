@@ -46,7 +46,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
-//import java.util.logging.Logger;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -71,7 +70,6 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
-//import org.gnu.gtk.Notebook;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
@@ -91,16 +89,12 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
-//import org.gnu.gtk.event.LifeCycleEvent;
-//import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
-//import frysk.gui.Gui;
 import frysk.gui.common.IconManager;
-//import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
@@ -115,9 +109,7 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
-//import frysk.proc.Action;
 import frysk.proc.MachineType;
-//import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
@@ -226,8 +218,6 @@ public class SourceWindow
   private ToggleAction toggleDisassemblyWindow;
 
   private ToggleAction toggleConsoleWindow;
-
-  private ToggleAction toggleMainThread;
   
   private ToggleAction toggleThreadDialog;
   
@@ -238,8 +228,8 @@ public class SourceWindow
   private StepDialog stepDialog = null;
 
   private DOMFrysk dom;
-
-  private Task myTask;
+  
+  private Proc swProc;
 
   private CurrentStackView stackView;
 
@@ -280,18 +270,21 @@ public class SourceWindow
 
     this.setIcon(IconManager.windowIcon);
 
-    this.listener = new SourceWindowListener(this);
     this.glade = glade;
     this.gladePath = gladePath;
     this.dom = dom;
     this.pbo = pbo;
-
+    this.listener = new SourceWindowListener(this);
+    this.runningThreads = new HashSet();
+    this.watchView = new VariableWatchView(this);
+    this.tips = new ToolTips();
+    
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
-
+    
     AccelGroup ag = new AccelGroup();
     ((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
-
-    this.tips = new ToolTips();
+    
+    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
 
     this.populateStackBrowser(frames);
 
@@ -299,13 +292,9 @@ public class SourceWindow
     this.createMenus();
     this.createToolBar();
     this.createSearchBar();
-
-    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
-
+    
     this.attachEvents();
 
-    this.watchView = new VariableWatchView(this);
-    this.runningThreads = new HashSet();
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
     sw.add(this.watchView);
 
@@ -315,11 +304,10 @@ public class SourceWindow
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
 
-    this.hideAll();
-    this.showAll();
+    //this.hideAll();
     this.glade.getWidget(FIND_BOX).hideAll();
     
-    
+    this.showAll();
   }
 
   /**
@@ -349,48 +337,7 @@ public class SourceWindow
   {
     this.watchView.removeTrace(var);
   }
-
-  /**
-   * @return The Task being shown by this SourceWindow
-   */
-  public Task getMyTask ()
-  {
-    return myTask;
-  }
-
-  /**
-   * Sets the task that is being displayed by the SourceWindow
-   * 
-   * @param myTask The new task TODO: This doesn't actually update the display,
-   *          all it will do (if called more than once) is screw up the removal
-   *          of this SourceWindow from SourceWindowFactory's HashMap. Maybe
-   *          integrate into constructor?
-   */
-  public void setMyTask (Task myTask)
-  {
-    this.myTask = myTask;
-    this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
-                  + this.myTask.getName());
-  }
-
-  private Proc myProc;
-
-  public void setMyProc (Proc myProc)
-  {
-    this.myProc = myProc;
-    this.setTitle(this.getTitle() + this.myProc.getCommand() + " - process "
-                  + this.myProc.getPid());
-  }
-
-  public Proc getMyProc ()
-  {
-    return this.myProc;
-  }
-
-  public DOMFrysk getDOM ()
-  {
-    return this.dom;
-  }
+  
 
   /**
    * Populates the stack browser window
@@ -421,11 +368,11 @@ public class SourceWindow
     executeTasks(this.threadDialog.getBlockTasks());
   }
   
-  public boolean getSteppingState ()
-  {
-    return this.steppingState;
-  }
-  
+  /**
+   * A request for an instruction step on one or more tasks.
+   * 
+   * @param tasks   The list of tasks to step.
+   */
   public void step (LinkedList tasks)
   {
     System.out.println("Instruction Step");
@@ -440,6 +387,9 @@ public class SourceWindow
       }
   }
   
+  /**
+   * Thread stepping has completed, clean up. 
+   */
   public void stepCompleted ()
   {
     if (this.numSteppingThreads == 1)
@@ -449,6 +399,73 @@ public class SourceWindow
         this.numSteppingThreads--;
         System.out.println("step done");
       }
+  }
+  
+  /**
+   * Called from SourceWindowFactory when all Tasks have notified that they are
+   * blocked and new stack traces have been generated. This is called after
+   * the StackView has been re-populated, allowing the SourceWindow to be 
+   * sensitive again. 
+   */
+  public void procReblocked ()
+  {
+    // Set status of toolbar buttons
+    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
+
+    // Set status of actions
+    this.run.setSensitive(true);
+    this.stop.setSensitive(false);
+    this.step.setSensitive(true);
+    this.next.setSensitive(true);
+    this.finish.setSensitive(true);
+    this.cont.setSensitive(true);
+    this.nextAsm.setSensitive(true);
+    this.stepAsm.setSensitive(true);
+
+    this.stackBottom.setSensitive(true);
+    this.stackUp.setSensitive(true);
+    this.stackDown.setSensitive(true);
+
+    this.copy.setSensitive(true);
+    this.find.setSensitive(true);
+    this.prefsLaunch.setSensitive(true);
+    
+    this.runningState = false;
+  }
+  
+  /***************************************
+   * Getters and Setters
+   ***************************************/
+
+  public void setSwProc (Proc myProc)
+  {
+    this.swProc = myProc;
+    this.setTitle(this.getTitle() + this.swProc.getCommand() + " - process "
+                  + this.swProc.getPid());
+  }
+
+  public Proc getSwProc ()
+  {
+    return this.swProc;
+  }
+
+  public DOMFrysk getDOM ()
+  {
+    return this.dom;
+  }
+  
+  public View getView ()
+  {
+    return this.view;
+  }
+  
+  public boolean getSteppingState ()
+  {
+    return this.steppingState;
   }
 
   /*****************************************************************************
@@ -806,16 +823,6 @@ public class SourceWindow
       public void actionEvent (ActionEvent arg0)
       {
         SourceWindow.this.toggleConsoleWindow();
-      }
-    });
-
-    this.toggleMainThread = new ToggleAction("toggleMainThread", "Main thread",
-                                             "Toggle the main thread off", "");
-    this.toggleMainThread.addListener(new org.gnu.gtk.event.ActionListener()
-    {
-      public void actionEvent (ActionEvent arg0)
-      {
-        SourceWindow.this.stepMainThread();
       }
     });
   }
@@ -1317,12 +1324,12 @@ public class SourceWindow
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
 
-    unblockProc(this.myProc);
+    unblockProc(this.swProc);
   }
 
   private void unblockProc (Proc proc)
   {
-    Iterator i = this.myProc.getTasks().iterator();
+    Iterator i = this.swProc.getTasks().iterator();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
@@ -1361,7 +1368,7 @@ public class SourceWindow
         this.pbo.requestAdd();
     else
       {
-        LinkedList tasks = myProc.getTasks();
+        LinkedList tasks = swProc.getTasks();
         Iterator i = this.runningThreads.iterator();
         while (i.hasNext())
           {
@@ -1372,39 +1379,6 @@ public class SourceWindow
         this.pbo.blockTask(tasks);
       }
     this.runningThreads.clear();
-  }
-
-  public void procReblocked ()
-  {
-    // Set status of toolbar buttons
-    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    // this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
-
-    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
-    // this.glade.getWidget(SourceWindow.TEXT_WINDOW).setSensitive(true);
-
-    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Stopped");
-
-    // Set status of actions
-    this.run.setSensitive(true);
-    this.stop.setSensitive(false);
-    this.step.setSensitive(true);
-    this.next.setSensitive(true);
-    this.finish.setSensitive(true);
-    this.cont.setSensitive(true);
-    this.nextAsm.setSensitive(true);
-    this.stepAsm.setSensitive(true);
-
-    this.stackBottom.setSensitive(true);
-    this.stackUp.setSensitive(true);
-    this.stackDown.setSensitive(true);
-
-    this.copy.setSensitive(true);
-    this.find.setSensitive(true);
-    this.prefsLaunch.setSensitive(true);
-    
-    this.runningState = false;
   }
   
   private void toggleThreadDialog ()
@@ -1646,8 +1620,8 @@ public class SourceWindow
     RegisterWindow regWin = RegisterWindowFactory.regWin;
     if (regWin == null)
       {
-        RegisterWindowFactory.createRegisterWindow(myProc);
-        RegisterWindowFactory.setRegWin(myProc);
+        RegisterWindowFactory.createRegisterWindow(swProc);
+        RegisterWindowFactory.setRegWin(swProc);
       }
     else
       {
@@ -1671,8 +1645,8 @@ public class SourceWindow
     MemoryWindow memWin = MemoryWindowFactory.memWin;
     if (memWin == null)
       {
-        MemoryWindowFactory.createMemoryWindow(myProc);
-        MemoryWindowFactory.setMemWin(myProc);
+        MemoryWindowFactory.createMemoryWindow(swProc);
+        MemoryWindowFactory.setMemWin(swProc);
       }
     else
       {
@@ -1696,8 +1670,8 @@ public class SourceWindow
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
     if (disWin == null)
       {
-        DisassemblyWindowFactory.createDisassemblyWindow(myProc);
-        DisassemblyWindowFactory.setDisWin(myProc);
+        DisassemblyWindowFactory.createDisassemblyWindow(swProc);
+        DisassemblyWindowFactory.setDisWin(swProc);
       }
     else
       {
@@ -1711,38 +1685,6 @@ public class SourceWindow
       this.conWin = new ConsoleWindow();
     else
       this.conWin.showAll();
-  }
-
-  private void stepMainThread ()
-  {
-    Task t = this.myProc.getMainTask();
-    this.steppingState = true;
-    //System.out.println("Requesting unblock");
-    t.requestUnblock(this.pbo);
-  }
-  
-//  private void toggleMainThread ()
-//  {
-//    Task t = this.myProc.getMainTask();
-//    if (this.runningState == false)
-//      {
-//        t.requestUnblock(this.pbo);
-//        t.requestDeleteInstructionObserver(this.pbo);
-//        this.runningState = true;
-//      }
-//    else
-//      {
-//        this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(false);
-//        LinkedList l = new LinkedList();
-//        l.add(t);
-//        this.pbo.blockTask(l);
-//        this.runningState = false;
-//      }
-//  }
-  
-  public void mainThreadReblocked()
-  {
-    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
   }
   
   private synchronized void executeTasks (LinkedList threads)
@@ -1827,11 +1769,6 @@ public class SourceWindow
         //System.out.println("rt temp" + this.runningThreads.size() + " "
  //                         + temp.size());
       }
-  }
-
-  public View getView ()
-  {
-    return this.view;
   }
 
   private class SourceWindowListener

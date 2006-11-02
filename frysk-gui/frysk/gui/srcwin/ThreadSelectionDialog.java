@@ -101,7 +101,7 @@ public class ThreadSelectionDialog
   {
     super(glade.getWidget("threadSelectionDialog").getHandle());
     this.glade = glade;
-    this.proc = sw.getMyProc();
+    this.proc = sw.getSwProc();
     this.sw = sw;
     this.tasks = this.proc.getTasks();
     this.blockTasks = new LinkedList();

@@ -101,7 +101,7 @@ public class StepDialog
   {
     super(glade.getWidget("stepDialog").getHandle());
     this.glade = glade;
-    this.proc = sw.getMyProc();
+    this.proc = sw.getSwProc();
     this.sw = sw;
     this.tasks = this.proc.getTasks();
     this.stepTasks = new LinkedList();

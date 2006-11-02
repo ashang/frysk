@@ -213,7 +213,7 @@ public class SourceWindowFactory
         srcWin = new SourceWindow(glade, gladePaths[i], dom,
                             frames, (SourceWinBlocker)blockerTable.get(proc));
         procTable.put(proc, srcWin);
-        srcWin.setMyProc(proc);
+        srcWin.setSwProc(proc);
         srcWin.addListener(new SourceWinListener());
         srcWin.grabFocus();
 
@@ -431,7 +431,7 @@ public class SourceWindowFactory
           if (map.containsValue(arg0.getSource()))
             {
               SourceWindow s = (SourceWindow) arg0.getSource();
-              Proc proc = s.getMyProc();
+              Proc proc = s.getSwProc();
               map.remove(proc);
 
               unblockProc(proc);
