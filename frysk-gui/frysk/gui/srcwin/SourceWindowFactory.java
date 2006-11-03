@@ -206,8 +206,8 @@ public class SourceWindowFactory
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            t.requestDeleteInstructionObserver(swb);
-            t.requestDeleteTerminatingObserver(swb);
+            swb.requestDeleteInstructionObserver(t);
+            swb.requestDeleteTerminatingObserver(t);
           }
 
         procTable.remove(proc);

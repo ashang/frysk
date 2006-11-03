@@ -83,7 +83,7 @@ public class StacktraceObserver
   public StacktraceObserver (Proc theProc, Event theEvent)
   {
     super(theProc);
-    taskList = new LinkedList();
+    taskList = proc.getTasks();
     event = theEvent;
 
     Manager.eventLoop.add(new InterruptEvent(proc));
@@ -94,19 +94,18 @@ public class StacktraceObserver
 
     logger.log(Level.FINE, "{0} existingTask", this);
     
-    // Add this task to the list of tasks.
-    taskList.add(task);   
+    // Remove this task from the list of tasks we have to deal with.
+    taskList.remove(task);   
     
     // Print the stack frame for this stack.
     storeTask(task);
 
     /*
-     * If the processes taskList is a subset of this taskList everything has
-     * been handled (this taskList might have deleted tasks).
+      If the taskList is empty we have dealt with all the necessary tasks.
      */
     logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList",
                new Object[] { taskList, proc.getTasks() });
-    if (taskList.containsAll(proc.getTasks()))
+    if (taskList.isEmpty())
       {
         // Print all the tasks in order.
         printTasks();
@@ -118,7 +117,8 @@ public class StacktraceObserver
   
   public void taskRemoved(Task task)
   {
-    taskList.add(task);
+    //Remove this task from the list of tasks we have to deal with.
+    taskList.remove(task);
     if (taskList.containsAll(proc.getTasks()))
       {
         // Print all the tasks in order.

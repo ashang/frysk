@@ -1330,7 +1330,7 @@ class TaskState
 		logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 		Observable observable = observation.getTaskObservable();
 		Observer observer = observation.getTaskObserver();
-		observer.addFailed (task, new RuntimeException ("detached"));
+		observer.addFailed (task, new RuntimeException ("destroyed"));
 		task.proc.requestDeleteObserver (task,
 						 (TaskObservable) observable,
 						 (TaskObserver) observer);

@@ -1,3 +1,18 @@
+2006-11-03  Nurdin Premji  <npremji@edhat.com>
+
+	* TestFStack.java (secondaryThread): Changed to array to hold all different
+	regexs of a secondary thread.
+	(testClone): Added.
+	(secondaryCloneB): Added.
+	(mainThread): Changed to array to hold multiple regexs.
+	(multiThreaded): Changed to use arrays.
+	(mainClone): Changed.
+	(secondaryClone): Changed.	
+	* StacktraceObserver.java (existingTask): Changed back to use full list of tasks and 
+	remove as tasks are handled.
+	(taskRemoved): Ditto.
+	(StacktraceObserver): Ditto. 
+
 2006-11-02  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (testStressMultiThreadedDetach): Removed thrown IOException

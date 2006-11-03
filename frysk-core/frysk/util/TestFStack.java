@@ -49,52 +49,69 @@ public class TestFStack
     extends TestLib
 {
 
-  String mainThread = "Task #\\d+\\n"
-                      + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                      + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                      + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
-                      + "#3 0x[\\da-f]+ in main \\(\\): line #505\\n"
-                      + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                      + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
+  String[] mainThread = {
+                         "Task #\\d+\\n"
+                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                             + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                             + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                             + "#3 0x[\\da-f]+ in main \\(\\): line #505\\n"
+                             + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                             + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
 
-  String mainThreadB = "Task #\\d+\\n"
-                       + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                       + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
-                       + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
-                       + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
-                       + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
-                       + "#5 0x[\\da-f]+ in main \\(\\): line #505\\n"
-                       + "#6 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                       + "#7 0x[\\da-f]+ in _start \\(\\)\\n";
+                         "Task #\\d+\\n"
+                             + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                             + "#1 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                             + "#2 0x[\\da-f]+ in main \\(\\): line #505\\n"
+                             + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                             + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
 
-  String secondaryThread = "Task #\\d+\\n"
-                           + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                           + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                           + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
-                           + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                           + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
+                         "Task #\\d+\\n"
+                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                             + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
+                             + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
+                             + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
+                             + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
+                             + "#5 0x[\\da-f]+ in main \\(\\): line #505\\n"
+                             + "#6 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                             + "#7 0x[\\da-f]+ in _start \\(\\)\\n" };
 
-  String secondaryThreadB = "Task #\\d+\\n"
-                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                            + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
-                            + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
-                            + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
-                            + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
-                            + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                            + "#6 0x[\\da-f]+ in __clone \\(\\)\\n";
+  String[] secondaryThread = {
+                              "Task #\\d+\\n"
+                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                                  + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                                  + "#2 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                                  + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                  + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
+
+                              "Task #\\d+\\n"
+                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                                  + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
+                                  + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
+                                  + "#3 0x[\\da-f]+ in notify_manager \\(\\): line #126\\n"
+                                  + "#4 0x[\\da-f]+ in server \\(\\): line #235\\n"
+                                  + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                  + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
 
   String mainClone = "Task #\\d+\\n"
                      + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                      + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
                      + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
-                     + "#3 0x[\\da-f]+ in main (): line #177\\n"
+                     + "#3 0x[\\da-f]+ in main \\(\\): line #177\\n"
                      + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                      + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
 
-  String secondaryClone = "Task #\\d+\\n" + "#0 0x[\\da-f]+ in clone \\(\\)\\n"
+  String secondaryClone = "Task #\\d+\\n"
+                          + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
                           + "#1 0x[\\da-f]+ in op_clone \\(\\): line #105\\n"
                           + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                          + "#3 0x[\\da-f]+ in clone \\(\\)\\n";
+                          + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
+
+  String secondaryCloneB = "Task #\\d+\\n"
+                           + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                           + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
+                           + "#2 0x[\\da-f]+ in op_clone \\(\\): line #100\\n"
+                           + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                           + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
 
   public void testSingleThreadedDetached ()
   {
@@ -127,7 +144,7 @@ public class TestFStack
     multiThreaded(ackProc, clones);
   }
 
-  public void multiThreaded (AckProcess ackProc, int secondaryThreads)
+  public void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
 
     final Proc proc = ackProc.findProcUsingRefresh(true);
@@ -144,47 +161,57 @@ public class TestFStack
     assertRunUntilStop("test");
 
     String regex = new String();
-    regex += "(" + mainThread + "|" + mainThreadB + ")";
+    regex += "(" + mainThread[0];
+    for (int i = 1; i < mainThread.length; i++)
+      {
+        regex += "|" + mainThread[i];
+      }
 
-    regex += "(" + secondaryThread + "|" + secondaryThreadB + "){"
-             + secondaryThreads + "}";
+    regex += ")";
+    regex += "(" + secondaryThread[0];
+    
+    for (int i = 1; i < secondaryThread.length; i++)
+      {
+        regex += "|" + secondaryThread[i];
+      }
+    
+    regex+="){"
+             + numSecondaryThreads + "}";
 
-    assertTrue(stacker.toPrint() + "did not match: " + regex,
-               stacker.toPrint().matches(regex));
+    String result = stacker.toPrint();
+    assertTrue(result + "did not match: " + regex, result.matches(regex));
 
   }
 
-  // public void testClone ()
-  // {
-  // int threads = 2;
-  // AckProcess ackProc = new AckDaemonCloneProcess(threads);
-  //
-  // final Proc proc = ackProc.findProcUsingRefresh(true);
-  //
-  // StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
-  // {
-  //
-  // public void execute ()
-  // {
-  // proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-  // }
-  // });
-  // assertRunUntilStop("test");
-  //
-  // String regex = new String();
-  //
-  // // Add DOTALL since we never really know how many threads we will get.
-  // regex += "(?s)";
-  //    
-  // regex += "((";
-  // regex += mainClone;
-  //
-  // regex +=")|(";
-  // regex += secondaryClone;
-  // regex +=("))*");
-  // regex += ".*";
-  // assertTrue(stacker.toPrint() + "did not match: " + regex,
-  // stacker.toPrint().toString().matches(regex));
-  // }
+  public void testClone ()
+  {
+    int threads = 2;
+    AckProcess ackProc = new AckDaemonCloneProcess(threads);
+
+    final Proc proc = ackProc.findProcUsingRefresh(true);
+
+    StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
+    {
+
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }
+    });
+    assertRunUntilStop("test");
+
+    String regex = new String();
+
+    // Add DOTALL since we never really know how many threads we will get.
+    // regex += "(?s)";
+
+    regex += mainClone;
+
+    regex += "(" + secondaryClone + "|" + secondaryCloneB + ")*";
+    // regex += ".*";
+
+    String result = stacker.toPrint();
+    assertTrue(result + "did not match: " + regex, result.matches(regex));
+  }
 
 }

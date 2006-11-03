@@ -444,7 +444,7 @@ public class SourceWindow
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        t.requestUnblock(this.pbo);
+        this.pbo.requestUnblock(t);
       }
   }
   
@@ -1412,8 +1412,8 @@ public class SourceWindow
         if (!this.runningThreads.contains(t))
           {
             this.runningThreads.add(t);
-            t.requestDeleteInstructionObserver(this.pbo);
-            t.requestDeleteTerminatingObserver(this.pbo);
+            this.pbo.requestDeleteInstructionObserver(t);
+            this.pbo.requestDeleteTerminatingObserver(t);
           }
       }
   }
@@ -1826,7 +1826,7 @@ public class SourceWindow
             //System.out.println("(0) Running " + t);
             this.runningThreads.add(t);
 
-            t.requestDeleteInstructionObserver(this.pbo);
+            this.pbo.requestDeleteInstructionObserver(t);
           }
         this.SW_state = RUNNING;
         return;
@@ -1846,7 +1846,7 @@ public class SourceWindow
             if (!this.runningThreads.remove(t))
               {
                 //System.out.println("unBlocking " + t);
-                t.requestDeleteInstructionObserver(this.pbo);
+                this.pbo.requestDeleteInstructionObserver(t);
               }
             else
               //System.out.println("Already Running");

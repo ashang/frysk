@@ -1,5 +1,16 @@
 2006-11-03  Nurdin Premji  <npremji@edhat.com>
 
+	* ProcBlockObserver.java: Split the observer into a main Proc observer and a private
+	Task Observer which gets added to each task individually. Allows for better separation
+	of addfails between tasks and procs.
+	(ProcBlockTaskObserver): Added.
+	(requestDeleteInstructionObserver): Added. 
+	(requestAddObservers): Changed to add the task Observer rather than the proc Observer to each task.
+	(requestDeleteTerminatingObserver): Added.
+	(requestUnblock): Changed to unblock task obsever rather than proc observer.
+	(blockTask): Ditto.
+	* TaskState.java (.handleAddObservation): Fixed typo, "destroyed" instead of "detached".
+	
 	* TestProcStopped.java (testRunningAttached): Changed to use a ProcBlockObserver.
 	(MyTester.MyTester): Ditto.
 	(testMultiThreadedStoppedAttached): Ditto.

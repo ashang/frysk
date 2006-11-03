@@ -49,9 +49,47 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
 abstract public class ProcBlockObserver
-    implements TaskObserver.Instruction, TaskObserver.Terminating,
-    ProcObserver.ProcTasks
+    implements ProcObserver.ProcTasks
 {
+  private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
+
+  private class ProcBlockTaskObserver
+      implements TaskObserver.Instruction, TaskObserver.Terminating
+  {
+    public Action updateExecuted (Task task)
+    {
+      existingTask(task);
+      return Action.BLOCK;
+    }
+
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+      taskRemoved(task);
+      return Action.CONTINUE;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      w.printStackTrace();
+      taskRemoved((Task) observable);
+      logger.log(Level.SEVERE, "{0} could not be added to {1}",
+                 new Object[] { this, observable });
+    }
+
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+  }
+
   protected static final Logger logger = Logger.getLogger("frysk");
 
   protected final Proc proc;
@@ -94,16 +132,18 @@ abstract public class ProcBlockObserver
           {
             logger.log(Level.FINE, "Could not get main thread of "
                                    + "this process\n {0}", proc);
-            addFailed(proc, new RuntimeException("Process lost: could not "
-                                + "get the main thread of this process.\n"
-                                + proc));
+            addFailed(
+                      proc,
+                      new RuntimeException(
+                                           "Process lost: could not "
+                                               + "get the main thread of this process.\n"
+                                               + proc));
             return;
           }
 
-        boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID()
-            || proc.getGID() == Manager.host.getSelf().getGID());
+        boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || proc.getGID() == Manager.host.getSelf().getGID());
 
-        if (!isOwned)
+        if (! isOwned)
           {
             System.err.println("Process " + proc
                                + " is not owned by user/group.");
@@ -112,7 +152,7 @@ abstract public class ProcBlockObserver
 
         numTasks = proc.getTasks().size();
         Iterator i = proc.getTasks().iterator();
-        
+
         while (i.hasNext())
           {
             requestAddObservers((Task) i.next());
@@ -142,17 +182,8 @@ abstract public class ProcBlockObserver
 
   public void requestAddObservers (Task task)
   {
-    task.requestAddInstructionObserver(this);
-    task.requestAddTerminatingObserver(this);
-  }
-
-  public Action updateExecuted (Task task)
-  {
-    // //System.out.println("updateExecuted");
-    // if (isAdded)
-    existingTask(task);
-
-    return Action.BLOCK;
+    task.requestAddInstructionObserver(taskObserver);
+    task.requestAddTerminatingObserver(taskObserver);
   }
 
   public void taskAdded (Task task)
@@ -172,7 +203,8 @@ abstract public class ProcBlockObserver
 
   public void blockTask (LinkedList tasks)
   {
-    ////System.out.println("in blockTask - setting numTasks to " + tasks.size());
+    // //System.out.println("in blockTask - setting numTasks to " +
+    // tasks.size());
     this.tasks = tasks;
     numTasks = tasks.size();
     Manager.eventLoop.add(new Event()
@@ -183,21 +215,31 @@ abstract public class ProcBlockObserver
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            //System.out.println("blockTask -> " + t);
-            t.requestAddInstructionObserver(ProcBlockObserver.this);
+            // System.out.println("blockTask -> " + t);
+            t.requestAddInstructionObserver(taskObserver);
           }
       }
     });
   }
 
+  public void requestUnblock(Task task)
+  {
+    task.requestUnblock(taskObserver);
+  }
+  
+  public void requestDeleteInstructionObserver(Task task)
+  {
+    task.requestDeleteInstructionObserver(taskObserver);
+  }
+  
+  public void requestDeleteTerminatingObserver(Task task)
+  {
+    task.requestDeleteTerminatingObserver(taskObserver);
+  }
+  
   public int getNumTasks ()
   {
     return this.numTasks;
   }
-  public Action updateTerminating (Task task, boolean signal, int value)
-  {
 
-    taskRemoved(task);
-    return Action.CONTINUE;
-  }
 }
