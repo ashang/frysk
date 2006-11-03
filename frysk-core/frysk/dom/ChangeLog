@@ -3,6 +3,7 @@
 	* DOMImage.java: Added capability to add multiple source files to
 	the DOM.
 	* TestDOM.java: Ditto.
+	* DOMFactory.java: Turn off debugging.
 
 2006-11-03  Rick Moseley  <rmoseley@redhat.com>
 

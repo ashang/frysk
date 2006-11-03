@@ -21,7 +21,7 @@ import org.jdom.output.XMLOutputter;
 
 public class DOMFactory
 {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
   
   private static final String globalinclude = "/usr/include";
   
