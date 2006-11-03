@@ -1,3 +1,59 @@
+2006-11-03  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: Moved lots of SourceWindow work to the 
+	SourceWindow itself. Removed most imports.
+	(createSourceWindow):Initializes the LibGlade for the SourceWindow, 
+	keeps track of all SourceWindows and their observers. Now calls
+	SourceWinBlocker from the SourceWindow itself.
+	(SourceWinListener): Removed setting of SW_active.
+	(unblockProc): Updated SourceWindowBlocker. Removed unnecessary call
+	to Task.unBlock(InstructionObserver). Added call to 
+	Task.requestDeleteTerminatingObserver.
+	(SW_active): Removed.
+	(taskCount): Removed.
+	(taskStepCount): Removed.
+	(errorLog): Removed.
+	(SourceWinBlocker): Moved to SourceWindow.
+	(getFunctionXXX): Ditto.
+	(generateProcStackTrace): Ditto.
+	(finishSourceWin): Ditto.
+	(handleTask): Ditto.
+	* SourceWindow.java (getFunctionXXX): Moved over from 
+	SourceWindowFactory.
+	(SW_active): Added.
+	(runningState): Removed.
+	(steppingState): Removed.
+	(errorLog): Added.
+	(unblockProc): Removed unnecessary boolean set.
+	(SourceWinBlocker.existingTask): Moved to SourceWindow. Switch 
+	statement to catch which state the SourceWindow is in at call time:
+	instruction stepping, stepping in, over, out, or running. Updated
+	calls to generateProcStackTrace().
+	(SourceWinBlocker.updateAttached): 
+	(SourceWinBlocker.existingTask.run): Update call to 
+	generateProcStackTrace().
+	(SourceWinBlocker.SourceWinBlocker): Set the ProcBlockObserver for
+	the SourceWindow to this.
+	(handleTask): Moved to SourceWindow.
+	(step): Updates SW_state to INSTRUCTION_STEP. Returns for empty list.
+	(stepIn): Added.
+	(stepOver): Added.
+	(SourceWinBlocker): 
+	(SourceWindow): Initializes glade and swProc. Most of work moved to
+	finishSourceWin().
+	(getState): Added. Returns SourceWindow state.
+	(getSteppingState): Removed.
+	(stepOut): Added.
+	(procReblocked): Updated to use SW_state to find the state of the 
+	SourceWindow.
+	(stepCompleted): Ditto.
+	(executeTasks): Ditto.
+	(doRun): Ditto.
+	(finishSourceWin): Moved from SourceWindowFactory. Initializes most
+	fields of this class; took the work from the constructor.
+	(generateProcStackTrace): Moved over from SourceWindowFacotory.
+	Replaces most parameters by using global variables from this class.
+
 2006-11-02  Mike Cvet  <mcvet@redhat.com>
 
 	* ThreadSelectionDialog.java (ThreadSelectionDialog): Calls

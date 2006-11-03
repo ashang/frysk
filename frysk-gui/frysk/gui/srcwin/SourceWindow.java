@@ -46,12 +46,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import lib.dw.DwflLine;
+import lib.dw.NoDebugInfoException;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
 import org.gnu.gtk.Button;
@@ -92,8 +98,12 @@ import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
+import frysk.dom.DOMFunction;
+import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
+import frysk.gui.Gui;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
@@ -109,10 +119,12 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.lang.Variable;
+import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
+import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
 
@@ -241,14 +253,31 @@ public class SourceWindow
   
   private HashSet runningThreads;
 
-  protected boolean runningState = false;
+  //protected boolean runningState = false;
   
-  private boolean steppingState = false;
+  //private boolean steppingState = false;
+  
+  protected boolean SW_active = false;
+  
+  private static int taskCount = 0;
+  
+  private static int taskStepCount = 0;
   
   private int numSteppingThreads = 0;
+  
+  private int SW_state = 0;
+  
+  private final int STOPPED = 0;
+  private final int RUNNING = 1;
+  private final int INSTRUCTION_STEP = 2;
+  protected final int STEP_IN = 3;
+  protected final int STEP_OVER = 4;
+  private final int STEP_OUT = 5;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
+  
+  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
@@ -263,8 +292,7 @@ public class SourceWindow
    * @param dom The DOM that describes the executable being debugged
    * @param stack The stack frame that represents the current state of execution
    */
-  public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackFrame[] frames, ProcBlockObserver pbo)
+  public SourceWindow (LibGlade glade, String gladePath, Proc proc, ProcBlockObserver pbo)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -272,8 +300,22 @@ public class SourceWindow
 
     this.glade = glade;
     this.gladePath = gladePath;
-    this.dom = dom;
+    this.swProc = proc;
     this.pbo = pbo;
+  }
+  
+  /**
+   * Initializes the Glade file, the SourceWindow itself, adds listeners and
+   * Assigns the Proc. Sets up the DOM information and the Stack information.
+   * 
+   * @param mw The MemoryWindow to be initialized.
+   * @param proc The Proc to be examined by mw.
+   */
+  private void finishSourceWin (Proc proc)
+  {
+    
+    StackFrame[] frames = generateProcStackTrace(null, null);
+
     this.listener = new SourceWindowListener(this);
     this.runningThreads = new HashSet();
     this.watchView = new VariableWatchView(this);
@@ -306,6 +348,7 @@ public class SourceWindow
     
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
+    
   }
 
   /**
@@ -374,14 +417,14 @@ public class SourceWindow
   protected void step (LinkedList tasks)
   {
 
+    if (tasks.size() == 0)
+      return;
+    
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping");
-
-    this.runningState = true;
-    this.steppingState = false;
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -401,7 +444,7 @@ public class SourceWindow
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
     
-    this.steppingState = true;
+    this.SW_state = INSTRUCTION_STEP;
     this.numSteppingThreads = tasks.size();
     
     Iterator i = tasks.iterator();
@@ -443,7 +486,7 @@ public class SourceWindow
     this.find.setSensitive(true);
     this.prefsLaunch.setSensitive(true);
     
-    this.steppingState = false;
+    this.SW_state = STOPPED;
   }
   
   /**
@@ -479,7 +522,7 @@ public class SourceWindow
     this.find.setSensitive(true);
     this.prefsLaunch.setSensitive(true);
     
-    this.runningState = false;
+    this.SW_state = STOPPED;
   }
   
   /***************************************
@@ -508,9 +551,9 @@ public class SourceWindow
     return this.view;
   }
   
-  public boolean getSteppingState ()
+  public int getState ()
   {
-    return this.steppingState;
+    return this.SW_state;
   }
   
   public int getNumSteppingThreads ()
@@ -1353,8 +1396,7 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
 
-    this.runningState = true;
-    this.steppingState = false;
+    this.SW_state = RUNNING;
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -1390,7 +1432,6 @@ public class SourceWindow
             t.requestDeleteTerminatingObserver(this.pbo);
           }
       }
-    this.runningState = true;
   }
 
   private void doStop ()
@@ -1759,7 +1800,7 @@ public class SourceWindow
             //System.out.println("Blocking " + t);
           }
         this.pbo.blockTask(l);
-        this.runningState = false;
+        this.SW_state = STOPPED;
         return;
       }
 
@@ -1774,13 +1815,13 @@ public class SourceWindow
 
             t.requestDeleteInstructionObserver(this.pbo);
           }
-        this.runningState = true;
+        this.SW_state = RUNNING;
         return;
       }
     else
       {
        
-        this.runningState = true;
+        this.SW_state = RUNNING;
         HashSet temp = new HashSet();
         // this.runningThreads.clear();
         Iterator i = threads.iterator();
@@ -1819,6 +1860,178 @@ public class SourceWindow
         //System.out.println("rt temp" + this.runningThreads.size() + " "
  //                         + temp.size());
       }
+  }
+  
+  private void stepIn (Task task)
+  {
+    
+  }
+  
+  private void stepOver (Task task)
+  {
+    
+  }
+  
+  private void stepOut (Task task)
+  {
+    
+  }
+  
+  private synchronized void handleTask (Task task)
+  {
+
+    if (SW_active == false)
+      {
+        --taskCount;
+        if (taskCount == 0)
+          {
+            SW_active = true;
+            finishSourceWin(task.getProc());
+          }
+      }
+    else
+      {
+        // System.out.println("SW false " + taskCount);
+        --taskCount;
+        if (taskCount == 0)
+          {
+            StackFrame[] frames = generateProcStackTrace(null, null);
+            populateStackBrowser(frames);
+            procReblocked();
+          }
+      }
+  }
+
+  private StackFrame[] generateProcStackTrace (StackFrame[] frames, Task[] tasks)
+  {
+    
+    int size = this.swProc.getTasks().size();
+    if (frames == null || tasks == null)
+      {
+        if (tasks == null)
+          {
+            tasks = new Task[size];
+            Iterator iter = this.swProc.getTasks().iterator();
+            for (int k = 0; k < size; k++)
+              tasks[k] = (Task) iter.next();
+          }
+
+        frames = new StackFrame[size];
+      }
+
+    for (int j = 0; j < size; j++)
+      {
+        DwflLine line;
+        DOMFunction f = null;
+
+        /** Create the stack frame * */
+
+        StackFrame curr = null;
+        try
+          {
+            frames[j] = StackFactory.createStackFrame(tasks[j]);
+            curr = frames[j];
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+
+        /** Stack frame created * */
+
+        while (curr != null) /*
+                               * Iterate and initialize information for all
+                               * frames, not just the top one
+                               */
+          {
+
+            //XXX: I hate myself for this hack.
+            this.dom = null;
+            if (this.dom == null && tasks[j].equals(this.swProc.getMainTask())
+                && curr.getDwflLine() != null)
+              {
+                try
+                  {
+                    this.dom = DOMFactory.createDOM(curr, this.swProc);
+                  }
+
+                // If we don't have a dom, tell the task to continue
+                catch (NoDebugInfoException e)
+                  {
+                  }
+                catch (IOException e)
+                  {
+                    unblockProc(this.swProc);
+                    WarnDialog dialog = new WarnDialog("File not found",
+                                                       "Error loading source code: "
+                                                           + e.getMessage());
+                    dialog.showAll();
+                    dialog.run();
+                    return null;
+                  }
+              }
+
+            // System.out.println(curr.getMethodName());
+            // System.out.println("getting dwflline");
+            line = curr.getDwflLine();
+
+            if (line != null)
+              {
+                // System.out.println("Line not null");
+                String filename = line.getSourceFile();
+                // System.out.println("got filename");
+                filename = filename.substring(filename.lastIndexOf("/") + 1);
+
+                try
+                  {
+                    f = getFunctionXXX(
+                                       this.dom.getImage(tasks[j].getProc().getMainTask().getName()),
+                                       filename, line.getLineNum());
+                  }
+                catch (NullPointerException npe)
+                  {
+                    f = null;
+                  }
+              }
+
+            curr.setDOMFunction(f);
+            curr = curr.getOuter();
+          }
+      }
+    return frames;
+  }
+
+  /**
+   * Returns a DOMFunction matching the incoming function information from the
+   * DOMImage.
+   * 
+   * @param image The DOMImage containing the source information.
+   * @param filename The name of the source file.
+   * @param linenum The line number of the function.
+   * @return The found DOMFunction.
+   */
+  private static DOMFunction getFunctionXXX (DOMImage image, String filename,
+                                             int linenum)
+  {
+    Iterator functions = image.getFunctions();
+
+    // System.out.println("Looking for " + filename + ": " + linenum);
+
+    DOMFunction found = null;
+
+    while (functions.hasNext())
+      {
+        DOMFunction function = (DOMFunction) functions.next();
+        if (function.getSource().getFileName().equals(filename)
+            && function.getStartingLine() <= linenum)
+          {
+            if (found == null
+                || function.getStartingLine() > found.getStartingLine())
+              found = function;
+          }
+      }
+
+    return found;
   }
 
   private class SourceWindowListener
@@ -1940,4 +2153,92 @@ public class SourceWindow
     }
 
   }
+  
+  /**
+   * A wrapper for TaskObserver.Attached which initializes the MemoryWindow 
+   * upon call, and blocks the task it is to examine.
+   */
+  protected class SourceWinBlocker
+      extends ProcBlockObserver
+  {
+    Task myTask;
+
+    public SourceWinBlocker (Proc theProc)
+    {
+      super(theProc);
+      pbo = this;
+    }
+
+    public Action updateAttached (Task task)
+    {
+      myTask = task;
+      return Action.BLOCK;
+    }
+    
+    public void existingTask (Task task)
+    {
+       myTask = task;
+
+       /* The source window has been properly initialized and there is a step
+        * request in progress. */
+      if (SW_active && (SW_state >= INSTRUCTION_STEP 
+          && SW_state <= STEP_OUT))
+        {
+          
+          if (taskStepCount == 0)
+            {
+              taskStepCount = numSteppingThreads;
+            }
+          
+          switch (SW_state)
+          {
+            case 2:  --taskStepCount; break;
+            case 3: stepIn(task); break;
+            case 4: stepOver(task); break;
+            case 5: stepOut(task); break;
+          }
+          
+          if (taskStepCount == 0)
+            {
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  StackFrame[] frames = generateProcStackTrace(null, null);
+
+                  populateStackBrowser(frames);
+                  stepCompleted();
+                }
+              });
+            }
+
+          return;
+        }
+      
+      if (taskCount == 0)
+        taskCount = swProc.getTasks().size();
+
+      CustomEvents.addEvent(new Runnable()
+      {
+        public void run ()
+        {
+          handleTask(myTask);
+        }
+
+      });
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
+                   w);
+      throw new RuntimeException(w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+    }
+  }
+  
 }

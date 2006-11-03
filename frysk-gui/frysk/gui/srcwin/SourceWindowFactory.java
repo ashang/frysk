@@ -44,33 +44,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import lib.dw.DwflLine;
-import lib.dw.NoDebugInfoException;
 
 import org.gnu.glade.LibGlade;
-import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
-import frysk.dom.DOMFunction;
-import frysk.dom.DOMImage;
-import frysk.gui.Gui;
-import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.monitor.WindowManager;
-import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
-import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -90,18 +76,10 @@ public class SourceWindowFactory
   private static Hashtable blockerTable;
 
   private static Hashtable procTable;
-  
-  private static int taskCount = 0;
-  
-  private static int taskStepCount = 0;
 
   public static SourceWindow srcWin = null;
   
   public static Task myTask;
-  
-  protected static boolean SW_active = false;
-
-  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   /**
    * Sets the paths to look in to find the .glade files needed for the gui
@@ -131,198 +109,68 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Proc proc)
   {
-    //taskCount = proc.getTasks().size();
+    // taskCount = proc.getTasks().size();
     SourceWindow sw = (SourceWindow) procTable.get(proc);
-    
+
     if (sw != null)
       {
         sw.showAll();
         return;
       }
 
+    int i = 0;
+    LibGlade glade = null;
+
+    for (; i < gladePaths.length; i++)
+      {
+        try
+          {
+            glade = new LibGlade(gladePaths[i] + "/" + SourceWindow.GLADE_FILE,
+                                 null);
+          }
+        catch (Exception e)
+          {
+            if (i < gladePaths.length - 1)
+              // If we don't find the glade file, look at the next file
+              continue;
+            else
+              {
+                e.printStackTrace();
+                System.exit(1);
+              }
+
+          }
+
+        // If we've found it, break
+        break;
+      }
+    // If we don't have a glade file by this point, bail
+    if (glade == null)
+      {
+        System.err.println("Could not file source window glade file in path "
+                           + gladePaths[gladePaths.length - 1] + "! Exiting.");
+        return;
+      }
+
     ProcBlockObserver pbo = null;
+    sw = new SourceWindow(glade, gladePaths[i], proc, pbo);
+
+    procTable.put(proc, sw);
+    sw.addListener(new SourceWinListener());
+    sw.grabFocus();
+
+    // Store the reference to the source window
+    map.put(proc, sw);
 
     if (procTable.get(proc) == null
         || ProcBlockCounter.getBlockCount(proc) == 0)
-      pbo = new SourceWinBlocker(proc);
+      pbo = sw.new SourceWinBlocker(proc);
 
     ProcBlockCounter.incBlockCount(proc);
     blockerTable.put(proc, pbo);
   }
-
-  /**
-   * Initializes the Glade file, the SourceWindow itself, adds listeners and
-   * Assigns the Proc. Sets up the DOM information and the Stack information.
-   * 
-   * @param mw The MemoryWindow to be initialized.
-   * @param proc The Proc to be examined by mw.
-   */
-  private static void finishSourceWin (Proc proc)
-  {
-    int size;
-    //Task[] tasks;
-    DOMFrysk dom = null;
-
-    if (map.containsKey(proc))
-      {
-        // Do something here to revive the existing window
-        srcWin = (SourceWindow) map.get(proc);
-        srcWin.showAll();
-        srcWin.grabFocus();
-      }
-    else
-      {
-        LibGlade glade = null;
-
-        // Look for the right path to load the glade file from
-        int i = 0;
-        for (; i < gladePaths.length; i++)
-          {
-            try
-              {
-                glade = new LibGlade(gladePaths[i] + "/"
-                                     + SourceWindow.GLADE_FILE, null);
-              }
-            catch (Exception e)
-              {
-                if (i < gladePaths.length - 1)
-                  // If we don't find the glade file, look at the next file
-                  continue;
-                else
-                  {
-                    e.printStackTrace();
-                    System.exit(1);
-                  }
-
-              }
-
-            // If we've found it, break
-            break;
-          }
-        // If we don't have a glade file by this point, bail
-        if (glade == null)
-          {
-            System.err.println("Could not file source window glade file in path "
-                               + gladePaths[gladePaths.length - 1]
-                               + "! Exiting.");
-            return;
-          }
-
-        size = proc.getTasks().size();
-        StackFrame[] frames = new StackFrame[size];
-        frames = generateProcStackTrace(frames, null, dom, proc, size);
-
-        srcWin = new SourceWindow(glade, gladePaths[i], dom,
-                            frames, (SourceWinBlocker)blockerTable.get(proc));
-        procTable.put(proc, srcWin);
-        srcWin.setSwProc(proc);
-        srcWin.addListener(new SourceWinListener());
-        srcWin.grabFocus();
-
-        // Store the reference to the source window
-        map.put(proc, srcWin);
-      }
-  }
   
-  public static StackFrame[] generateProcStackTrace(StackFrame[] frames, 
-                                        Task[] tasks, DOMFrysk dom, Proc proc, int size)
-  {
-    if (proc == null)
-      return null; 
-    
-    if (frames == null || tasks == null)
-      {
-        if (tasks == null)
-          {
-            tasks = new Task[size];
-            Iterator iter = proc.getTasks().iterator();
-            for (int k = 0; k < size; k++)
-              tasks[k] = (Task) iter.next();
-          }
-
-        size = tasks.length;
-        frames = new StackFrame[size];
-      }
-    
-    for (int j = 0; j < size; j++)
-      {
-        DwflLine line;
-        DOMFunction f = null;
-
-        /** Create the stack frame * */
-
-        StackFrame curr = null;
-        try
-          {
-            frames[j] = StackFactory.createStackFrame(tasks[j]);
-            curr = frames[j];
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-
-        /** Stack frame created * */
-
-        while (curr != null) /*
-                               * Iterate and initialize information for all
-                               * frames, not just the top one
-                               */
-          {
-            
-            if (dom == null && tasks[j].equals(proc.getMainTask())
-                && curr.getDwflLine() != null)
-              {
-                try
-                  {
-                    dom = DOMFactory.createDOM(curr, proc);
-                  }
-
-                // If we don't have a dom, tell the task to continue
-                catch (NoDebugInfoException e)
-                  {
-                  }
-                catch (IOException e)
-                  {
-                    unblockProc(proc);
-                    WarnDialog dialog = new WarnDialog("File not found",
-                                                       "Error loading source code: "
-                                                           + e.getMessage());
-                    dialog.showAll();
-                    dialog.run();
-                    return null;
-                  }
-              }
-
-            //System.out.println(curr.getMethodName());
-            //System.out.println("getting dwflline");
-            line = curr.getDwflLine();
-            
-            if (line != null)
-              {
-                //System.out.println("Line not null");
-                String filename = line.getSourceFile();
-                //System.out.println("got filename");
-                filename = filename.substring(filename.lastIndexOf("/") + 1);
-                
-                try
-                {
-                  f = getFunctionXXX(
-                                   dom.getImage(tasks[j].getProc().getMainTask().getName()),
-                                   filename, line.getLineNum());
-                }
-                catch (NullPointerException npe)
-                {
-                  f = null;
-                }
-              }
-            
-            curr.setDOMFunction(f);
-            curr = curr.getOuter();
-          }
-      }
-    return frames;
-  }
+  
 
   /**
    * Print out the DOM in XML format
@@ -353,55 +201,19 @@ public class SourceWindowFactory
     if (blockerTable.containsKey(proc)
         && ProcBlockCounter.getBlockCount(proc) == 1)
       {
-        SourceWinBlocker swb = (SourceWinBlocker) blockerTable.get(proc);
+        SourceWindow.SourceWinBlocker swb = (SourceWindow.SourceWinBlocker) blockerTable.get(proc);
         Iterator i = proc.getTasks().iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            t.requestUnblock(swb);
             t.requestDeleteInstructionObserver(swb);
+            t.requestDeleteTerminatingObserver(swb);
           }
 
         procTable.remove(proc);
         blockerTable.remove(proc);
       }
     ProcBlockCounter.decBlockCount(proc);
-  }
-
-  /**
-   * Returns a DOMFunction matching the incoming function information from the
-   * DOMImage.
-   * 
-   * @param image The DOMImage containing the source information.
-   * @param filename The name of the source file.
-   * @param linenum The line number of the function.
-   * @return The found DOMFunction.
-   */
-  private static DOMFunction getFunctionXXX (DOMImage image, String filename,
-                                             int linenum)
-  {
-    Iterator functions = image.getFunctions();
-
-    //System.out.println("Looking for " + filename + ": " + linenum);
-
-    DOMFunction found = null;
-
-    while (functions.hasNext())
-      {
-        DOMFunction function = (DOMFunction) functions.next();
-//        System.out.println("\t" + function.getSource().getFileName() + ": "
-//                           + function.getStartingLine() + " - "
-//                           + function.getEndingLine());
-        if (function.getSource().getFileName().equals(filename)
-            && function.getStartingLine() <= linenum)
-          {
-            if (found == null
-                || function.getStartingLine() > found.getStartingLine())
-              found = function;
-          }
-      }
-
-    return found;
   }
 
   /*
@@ -437,7 +249,6 @@ public class SourceWindowFactory
 
               WindowManager.theManager.sessionManager.show();
               s.hideAll();
-              SW_active = false;
             }
         }
 
@@ -446,119 +257,5 @@ public class SourceWindowFactory
 
   }
 
-  /**
-   * A wrapper for TaskObserver.Attached which initializes the MemoryWindow 
-   * upon call, and blocks the task it is to examine.
-   */
-  private static class SourceWinBlocker
-      extends ProcBlockObserver
-  {
-
-    public SourceWinBlocker (Proc theProc)
-    {
-      super(theProc);
-    }
-
-    public Action updateAttached (Task task)
-    {
-      myTask = task;
-      return Action.BLOCK;
-    }
-    
-    public void existingTask (Task task)
-    {
-      //System.out.println("existingTask");
-      myTask = task;
-
-      if (SW_active)
-        {
-          if (srcWin.getSteppingState())
-            {
-              if (taskStepCount == 0)
-                {
-                  taskStepCount = srcWin.getNumSteppingThreads();
-                }
-              
-              --taskStepCount;
-              if (taskStepCount == 0)
-                {
-                  CustomEvents.addEvent(new Runnable()
-                  {
-                    public void run ()
-                    {
-//                      StackFrame[] frames = generateProcStackTrace(
-//                                           null, null, srcWin.getDOM(), 
-//                                           myTask.getProc(), 0);
-                      
-                      StackFrame[] frames = generateProcStackTrace(null, null,
-                                                                   null,
-                                                                   myTask.getProc(), 0);
-                      
-                      srcWin.populateStackBrowser(frames);
-                      srcWin.stepCompleted();
-                    }
-                  });
-                }
-              
-              return;
-            }
-        }
-      
-      if (taskCount == 0)
-        taskCount = ((ProcBlockObserver) blockerTable.get(task.getProc())).getNumTasks();
-
-      CustomEvents.addEvent(new Runnable()
-      {
-        public void run ()
-        {
-          handleTask(myTask);
-        }
-
-      });
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
-                   w);
-      throw new RuntimeException(w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-    }
-  }
   
-  public static synchronized void handleTask (Task task)
-  {
-
-    if (SW_active == false)
-      {
-        --taskCount;
-        if (taskCount == 0)
-          {
-            SW_active = true;
-            finishSourceWin(task.getProc());
-          }
-      }
-    else
-      {
-        // System.out.println("SW false " + taskCount);
-        --taskCount;
-        if (taskCount == 0)
-          {
-            // System.out.println("Task count zero");
-//            StackFrame[] frames = generateProcStackTrace(null, null,
-//                                                         srcWin.getDOM(),
-//                                                         task.getProc(), 0);
-            
-          StackFrame[] frames = generateProcStackTrace(null, null,
-          null,
-          task.getProc(), 0);
-            srcWin.populateStackBrowser(frames);
-            srcWin.procReblocked();
-          }
-      }
-  }
 }
