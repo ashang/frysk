@@ -36,7 +36,9 @@
 	the SourceWindow to this.
 	(handleTask): Moved to SourceWindow.
 	(step): Updates SW_state to INSTRUCTION_STEP. Returns for empty list.
-	(stepIn): Added.
+	(stepIn): Added. Handles calls from InstructionObserver callbacks to check
+	and see if the latest instruction has changed the currently-executing line
+	in the source file.
 	(stepOver): Added.
 	(SourceWinBlocker): 
 	(SourceWindow): Initializes glade and swProc. Most of work moved to
@@ -45,14 +47,24 @@
 	(getSteppingState): Removed.
 	(stepOut): Added.
 	(procReblocked): Updated to use SW_state to find the state of the 
-	SourceWindow.
-	(stepCompleted): Ditto.
-	(executeTasks): Ditto.
+	SourceWindow. Removed setSensitive() calls and now calls resensitize().
+	(stepCompleted): Ditto. Removed setSensitive() calls and now calls desensitize().
 	(doRun): Ditto.
+	(executeTasks): Updated to use SW_state to find the state of the 
+	SourceWindow.
 	(finishSourceWin): Moved from SourceWindowFactory. Initializes most
 	fields of this class; took the work from the constructor.
 	(generateProcStackTrace): Moved over from SourceWindowFacotory.
-	Replaces most parameters by using global variables from this class.
+	Replaces most parameters by using global variables from this class. Don't
+	re-build the DOM after each call, unnecessary.
+	(doStep): Grabs all threads belonging to this Proc, checks to see if 
+	their line number is listed. If not, adds an entry into new HashMaps 
+	for them and unblocks them. Removed setSensitive() calls and now calls 
+	desensitize().
+	(dwflMap): Added.
+	(lineMap): Added.
+	(desensitize): Added.
+	(resensitize): Added.
 
 2006-11-02  Mike Cvet  <mcvet@redhat.com>
 

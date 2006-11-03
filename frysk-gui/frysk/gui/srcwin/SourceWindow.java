@@ -42,6 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
 
@@ -124,6 +126,7 @@ import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.vtecli.ConsoleWindow;
@@ -252,6 +255,10 @@ public class SourceWindow
   private ProcBlockObserver pbo;
   
   private HashSet runningThreads;
+  
+  private HashMap dwflMap;
+  
+  private HashMap lineMap;
 
   //protected boolean runningState = false;
   
@@ -265,14 +272,17 @@ public class SourceWindow
   
   private int numSteppingThreads = 0;
   
+  /* The state that the SourceWindow is current in. Critical for determining
+   * which operations can be performed at which time. */
   private int SW_state = 0;
   
-  private final int STOPPED = 0;
-  private final int RUNNING = 1;
-  private final int INSTRUCTION_STEP = 2;
-  protected final int STEP_IN = 3;
-  protected final int STEP_OVER = 4;
-  private final int STEP_OUT = 5;
+  /* Possible states this SourceWindow can be in. */
+  private static final int STOPPED = 0;
+  private static final int RUNNING = 1;
+  private static final int INSTRUCTION_STEP = 2;
+  protected static final int STEP_IN = 3;
+  protected static final int STEP_OVER = 4;
+  private static final int STEP_OUT = 5;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -318,6 +328,8 @@ public class SourceWindow
 
     this.listener = new SourceWindowListener(this);
     this.runningThreads = new HashSet();
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
     this.watchView = new VariableWatchView(this);
     this.tips = new ToolTips();
     
@@ -420,29 +432,10 @@ public class SourceWindow
     if (tasks.size() == 0)
       return;
     
-    this.glade.getWidget("toolbarGotoBox").setSensitive(false);
-    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
-
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping");
-
-    // Set status of actions
-    this.run.setSensitive(false);
-    this.stop.setSensitive(true);
-    this.step.setSensitive(false);
-    this.next.setSensitive(false);
-    this.finish.setSensitive(false);
-    this.cont.setSensitive(false);
-    this.nextAsm.setSensitive(false);
-    this.stepAsm.setSensitive(false);
-
-    this.stackBottom.setSensitive(false);
-    this.stackUp.setSensitive(false);
-    this.stackDown.setSensitive(false);
-
-    this.copy.setSensitive(false);
-    this.find.setSensitive(false);
-    this.prefsLaunch.setSensitive(false);
+    
+    desensitize();
     
     this.SW_state = INSTRUCTION_STEP;
     this.numSteppingThreads = tasks.size();
@@ -460,31 +453,11 @@ public class SourceWindow
    */
   protected void stepCompleted ()
   {
-
-//  Set status of toolbar buttons
-    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
-
+    //System.out.println("step completed");
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-
-    // Set status of actions
-    this.run.setSensitive(true);
-    this.stop.setSensitive(false);
-    this.step.setSensitive(true);
-    this.next.setSensitive(true);
-    this.finish.setSensitive(true);
-    this.cont.setSensitive(true);
-    this.nextAsm.setSensitive(true);
-    this.stepAsm.setSensitive(true);
-
-    this.stackBottom.setSensitive(true);
-    this.stackUp.setSensitive(true);
-    this.stackDown.setSensitive(true);
-
-    this.copy.setSensitive(true);
-    this.find.setSensitive(true);
-    this.prefsLaunch.setSensitive(true);
+    
+    resensitize();
     
     this.SW_state = STOPPED;
   }
@@ -497,30 +470,11 @@ public class SourceWindow
    */
   protected void procReblocked ()
   {
-    // Set status of toolbar buttons
-    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-
-    // Set status of actions
-    this.run.setSensitive(true);
-    this.stop.setSensitive(false);
-    this.step.setSensitive(true);
-    this.next.setSensitive(true);
-    this.finish.setSensitive(true);
-    this.cont.setSensitive(true);
-    this.nextAsm.setSensitive(true);
-    this.stepAsm.setSensitive(true);
-
-    this.stackBottom.setSensitive(true);
-    this.stackUp.setSensitive(true);
-    this.stackDown.setSensitive(true);
-
-    this.copy.setSensitive(true);
-    this.find.setSensitive(true);
-    this.prefsLaunch.setSensitive(true);
+    
+    resensitize();
     
     this.SW_state = STOPPED;
   }
@@ -711,7 +665,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Step", KeyValue.s,
                          ModifierType.MOD1_MASK, true);
     this.step.connectAccelerator();
-    this.step.setSensitive(false);
+    this.step.setSensitive(true);
 
     // Next action
     this.next = new org.gnu.gtk.Action("next", "Next", "Next", "frysk-next");
@@ -1072,6 +1026,55 @@ public class SourceWindow
     toolbar.showAll();
     toolbar.setToolTips(true);
   }
+  
+  private void desensitize ()
+  {
+    this.glade.getWidget("toolbarGotoBox").setSensitive(false);
+    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+    
+    //  Set status of actions
+    this.run.setSensitive(false);
+    this.stop.setSensitive(true);
+    this.step.setSensitive(false);
+    this.next.setSensitive(false);
+    this.finish.setSensitive(false);
+    this.cont.setSensitive(false);
+    this.nextAsm.setSensitive(false);
+    this.stepAsm.setSensitive(false);
+
+    this.stackBottom.setSensitive(false);
+    this.stackUp.setSensitive(false);
+    this.stackDown.setSensitive(false);
+
+    this.copy.setSensitive(false);
+    this.find.setSensitive(false);
+    this.prefsLaunch.setSensitive(false);
+  }
+  
+  private void resensitize ()
+  {
+    //  Set status of toolbar buttons
+    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+    
+    //  Set status of actions
+    this.run.setSensitive(true);
+    this.stop.setSensitive(false);
+    this.step.setSensitive(true);
+    this.next.setSensitive(true);
+    this.finish.setSensitive(true);
+    this.cont.setSensitive(true);
+    this.nextAsm.setSensitive(true);
+    this.stepAsm.setSensitive(true);
+
+    this.stackBottom.setSensitive(true);
+    this.stackUp.setSensitive(true);
+    this.stackDown.setSensitive(true);
+
+    this.copy.setSensitive(true);
+    this.find.setSensitive(true);
+    this.prefsLaunch.setSensitive(true);
+  }
 
   /**
    * Adds icons, text, and tooltips to the widgets in the search bar
@@ -1389,32 +1392,13 @@ public class SourceWindow
    */
   private void doRun ()
   {
-    // Set status of toolbar buttons
-    this.glade.getWidget("toolbarGotoBox").setSensitive(false);
-    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
+    
+    desensitize();
 
     this.SW_state = RUNNING;
-
-    // Set status of actions
-    this.run.setSensitive(false);
-    this.stop.setSensitive(true);
-    this.step.setSensitive(false);
-    this.next.setSensitive(false);
-    this.finish.setSensitive(false);
-    this.cont.setSensitive(false);
-    this.nextAsm.setSensitive(false);
-    this.stepAsm.setSensitive(false);
-
-    this.stackBottom.setSensitive(false);
-    this.stackUp.setSensitive(false);
-    this.stackDown.setSensitive(false);
-
-    this.copy.setSensitive(false);
-    this.find.setSensitive(false);
-    this.prefsLaunch.setSensitive(false);
 
     unblockProc(this.swProc);
   }
@@ -1500,7 +1484,36 @@ public class SourceWindow
    */
   private void doStep ()
   {
-    System.out.println("Step");
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping");
+    
+    desensitize();
+    
+    this.SW_state = STEP_IN;
+    this.numSteppingThreads = swProc.getTasks().size();
+    
+    Iterator i = this.swProc.getTasks().iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) i.next();
+        if (this.dwflMap.get(t) == null)
+          {
+            Dwfl d = new Dwfl(t.getTid());
+            DwflLine line = null;
+            try
+              {
+                line = d.getSourceLine(t.getIsa().pc(t));
+              }
+            catch (TaskException te)
+              {
+                continue;
+              }
+
+            this.dwflMap.put(t, d);
+            this.lineMap.put(t, new Integer(line.getLineNum()));
+          }
+        t.requestUnblock(this.pbo);
+      }
   }
 
   /**
@@ -1864,7 +1877,36 @@ public class SourceWindow
   
   private void stepIn (Task task)
   {
-    
+    //System.out.println("stepin " + task);
+    DwflLine line = null;
+    try
+      {
+        line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(task));
+      }
+    catch (TaskException te)
+      {
+        return;
+      }
+    catch (NullPointerException npe)
+      {
+        return;
+      }
+
+    if (line == null)
+      return;
+
+    int lineNum = line.getLineNum();
+    int prev = ((Integer) this.lineMap.get(task)).intValue();
+
+    if (lineNum != prev)
+      {
+        this.lineMap.put(task, new Integer(lineNum));
+        --taskStepCount;
+      }
+    else
+      {
+        task.requestUnblock(this.pbo);
+      }
   }
   
   private void stepOver (Task task)
@@ -1945,8 +1987,6 @@ public class SourceWindow
                                */
           {
 
-            //XXX: I hate myself for this hack.
-            this.dom = null;
             if (this.dom == null && tasks[j].equals(this.swProc.getMainTask())
                 && curr.getDwflLine() != null)
               {
@@ -2177,6 +2217,7 @@ public class SourceWindow
     
     public void existingTask (Task task)
     {
+      //System.out.println("existing task");
        myTask = task;
 
        /* The source window has been properly initialized and there is a step
@@ -2187,17 +2228,18 @@ public class SourceWindow
           
           if (taskStepCount == 0)
             {
+              //System.out.println("resetting taskstepcount");    
               taskStepCount = numSteppingThreads;
             }
           
           switch (SW_state)
           {
-            case 2:  --taskStepCount; break;
-            case 3: stepIn(task); break;
-            case 4: stepOver(task); break;
-            case 5: stepOut(task); break;
+            case INSTRUCTION_STEP:  --taskStepCount; break;
+            case STEP_IN: stepIn(task); break;
+            case STEP_OVER: stepOver(task); break;
+            case STEP_OUT: stepOut(task); break;
           }
-          
+          //System.out.println("taskstepcount " + taskStepCount);
           if (taskStepCount == 0)
             {
               CustomEvents.addEvent(new Runnable()
