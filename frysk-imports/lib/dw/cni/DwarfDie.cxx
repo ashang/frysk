@@ -39,8 +39,11 @@
 #include <libdw.h>
 #include <gcj/cni.h>
 #include <dwarf.h>
+#include <stdio.h>
+#include <alloca.h>
 
 #include "lib/dw/DwarfDie.h"
+#include "lib/dw/BaseTypes.h"
 
 #define DW_OP_fbreg 0x91
 #define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
@@ -156,25 +159,114 @@ lib::dw::DwarfDie::get_addr (jlongArray fbreg_and_disp, jlong var_die)
     }
 }
 
-jstring
+jlong
 lib::dw::DwarfDie::get_type (jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
-  Dwarf_Die *type_die, type_mem_die;
+  Dwarf_Die * type_mem_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
   Dwarf_Attribute type_attr;
   
   if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
     {
-      type_die = dwarf_formref_die (&type_attr, &type_mem_die);
-      if (dwarf_tag (type_die) == DW_TAG_base_type)
+      return (jlong)dwarf_formref_die (&type_attr, type_mem_die);
+    }
+  return 0;
+}
+
+jlong
+lib::dw::DwarfDie::get_child (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Die * child_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  
+  if (dwarf_child (die, child_die) == 0)
+    return (jlong)child_die;
+  return 0;
+}
+
+jlong
+lib::dw::DwarfDie::get_sibling (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Die * sibling_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  
+  if (dwarf_siblingof (die, sibling_die) == 0)
+    return (jlong)sibling_die;
+  return 0;
+}
+
+jint
+lib::dw::DwarfDie::get_base_type (jlong var_die)
+{
+  Dwarf_Die *type_die = (Dwarf_Die*) var_die;
+  if (dwarf_tag (type_die) == DW_TAG_base_type)
+    {
+      Dwarf_Word byte_size;
+      Dwarf_Word encoding;
+      Dwarf_Attribute type_attr;
+      if (dwarf_attr_integrate (type_die, DW_AT_byte_size, &type_attr))
+	dwarf_formudata (&type_attr, &byte_size);
+      else return 0;
+      if (dwarf_attr_integrate (type_die, DW_AT_encoding, &type_attr))
+	dwarf_formudata (&type_attr, &encoding);
+      switch (byte_size)
 	{
-	  return JvNewStringLatin1
-	    (dwarf_formstring (dwarf_attr_integrate
-			       (type_die, DW_AT_name, &type_attr)));
+	case 1:
+	  switch (encoding)
+	    {
+	    case DW_ATE_signed_char: return lib::dw::BaseTypes::baseTypeChar;
+	    case DW_ATE_unsigned_char: return lib::dw::BaseTypes::baseTypeUnsignedChar;
+	    }
+	case 2:
+	  switch (encoding)
+	    {
+	    case DW_ATE_signed: return lib::dw::BaseTypes::baseTypeShort;
+	    case DW_ATE_unsigned: return lib::dw::BaseTypes::baseTypeUnsignedShort;
+	    case DW_ATE_unsigned_char: return lib::dw::BaseTypes::baseTypeUnicode;
+	    }
+	case 4:
+	  switch (encoding)
+	    {
+	    case DW_ATE_signed: return lib::dw::BaseTypes::baseTypeInteger;
+	    case DW_ATE_unsigned: return lib::dw::BaseTypes::baseTypeUnsignedInteger;
+	    case DW_ATE_float: return lib::dw::BaseTypes::baseTypeFloat;
+	    }
+	case 8:
+	  switch (encoding)
+	    {
+	    case DW_ATE_signed: return lib::dw::BaseTypes::baseTypeLong;
+	    case DW_ATE_unsigned: return lib::dw::BaseTypes::baseTypeUnsignedLong;
+	    case DW_ATE_float: return lib::dw::BaseTypes::baseTypeDouble;
+	    }
 	}
     }
   return 0;
 }
+
+jint
+lib::dw::DwarfDie::get_upper_bound (jlong var_die)
+{
+  Dwarf_Die *type_die = (Dwarf_Die*) var_die;
+  Dwarf_Word byte_size;
+  Dwarf_Attribute type_attr;
+  if (dwarf_attr_integrate (type_die, DW_AT_upper_bound, &type_attr))
+    {
+      dwarf_formudata (&type_attr, &byte_size);
+      return byte_size;
+    }
+  return -1;
+}
+  
+jboolean
+lib::dw::DwarfDie::is_array_type (jlong type_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  if (dwarf_tag (die) == DW_TAG_array_type)
+    return 1;
+  else
+    return 0;
+}
+
 
 #define GETREGNO(r) (r == DW_OP_breg0) ? 0 : (r == DW_OP_breg1) ? 1     \
   : (r == DW_OP_breg2) ? 2 : (r == DW_OP_breg3) ? 3 : (r == DW_OP_breg4) ? 4 \

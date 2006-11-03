@@ -1,3 +1,15 @@
+2006-11-03  Stan Cox  <scox@redhat.com>
+
+	* ArrayType.java: New file.
+	* Type.java: Add BaseTypes.
+	* DoubleType.java: Add BaseTypes.
+	* FloatType.java: Add BaseTypes.
+	* IntegerType.java: Add BaseTypes.
+	* ShortType.java: Add BaseTypes.
+	* LocationType.java (getInt(int idx): New.  Likewise for
+	getChar,getShort,getLong,getFloat,getDouble
+	* Variable.java (Variable): New ArrayByteBuffer constructor.
+
 2006-09-18  Stan Cox  <scox@redhat.com>
 
 	* Variable.java (getFloat): New.

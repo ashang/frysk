@@ -50,7 +50,6 @@ import java.lang.RuntimeException;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.lang.BaseTypes;
 import frysk.lang.InvalidOperatorException;
 import frysk.lang.Variable;
 import frysk.proc.Manager;
@@ -64,7 +63,7 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 
-
+import lib.dw.BaseTypes;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
@@ -296,7 +295,7 @@ public class CLI
 
           if (params.size() < 2)
             {
-              cmd.getOut().println ("Usage " + cmd.getAction() + "Executable PID");
+              addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
               return;
             }
           if (params.size() == 3 && ((String)params.elementAt(2)).equals("-cli"))
@@ -339,8 +338,7 @@ public class CLI
 
           if (params.size() > 0)
             {
-              cmd.getOut().println ("Usage " + cmd.getAction());
-              return;
+              addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
             }
 
           Manager.eventLoop.requestStop();
@@ -560,7 +558,7 @@ public class CLI
           sInput = sInput.substring(0,sInput.indexOf("-format"));
 
         if (sInput.length() == 0) {
-          cmd.getOut().println ("Usage " + cmd.getAction() + " Expression [-format d|x|o]");
+          addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
           return;
         }
 
@@ -591,12 +589,16 @@ public class CLI
             cmd.getOut().print("0");
             break;
           }
-          if (result.getType().getTypeId() == BaseTypes.baseTypeFloat)
-            cmd.getOut().println(String.valueOf(result.getFloat()));
-          else if (result.getType().getTypeId() == BaseTypes.baseTypeDouble)
-            cmd.getOut().println(String.valueOf(result.getDouble()));
-          else
+          int resultType = result.getType().getTypeId();
+          if (resultType == BaseTypes.baseTypeFloat
+              || resultType == BaseTypes.baseTypeDouble)
+            cmd.getOut().println(result.toString());
+          else if (resultType == BaseTypes.baseTypeShort
+              || resultType == BaseTypes.baseTypeInteger
+              || resultType == BaseTypes.baseTypeLong)
             cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat));
+          else
+            cmd.getOut().println(result.toString());
         }
         catch (InvalidOperatorException ioe)
         {

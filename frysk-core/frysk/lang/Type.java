@@ -40,6 +40,7 @@
 package frysk.lang;
 
 import inua.eio.ByteOrder;
+import lib.dw.BaseTypes;
 
 /**
  * Holds the type of a Variable and also defines possible operations. 

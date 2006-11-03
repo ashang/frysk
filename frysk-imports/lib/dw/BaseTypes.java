@@ -1,3 +1,4 @@
+
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, Red Hat Inc.
@@ -40,48 +41,18 @@
 /**
  * Location of a variable.
  */
-
-package frysk.lang;
-
-import inua.eio.*;
-
-class Location
-{
-  ArrayByteBuffer _location;
-  int _index;
-
-  Location(long capacity)  {
-    this(new ArrayByteBuffer(capacity));
+package lib.dw;
+  public interface BaseTypes {
+      int baseTypeChar = 1,
+	  baseTypeUnsignedChar = 2,
+	  baseTypeShort = 3,
+	  baseTypeUnsignedShort = 4,
+	  baseTypeUnicode = 4,
+	  baseTypeInteger = 5,
+	  baseTypeUnsignedInteger = 6,
+	  baseTypeLong = 7,
+	  baseTypeUnsignedLong = 8,
+	  baseTypeFloat = 9,
+	  baseTypeDouble = 10,
+	  baseTypeLongDouble = 11;
   }
-
-  Location(ArrayByteBuffer location) {
-    this(location, 0);
-  }
-
-  Location(ArrayByteBuffer location, int index) {
-    _location = location;
-    _index = 0;
-  }
-
-  public ByteBuffer getByteBuffer() { return _location;}
-  double getDouble() { return _location.getDouble(_index); }
-  float getFloat() { return _location.getFloat(_index); }
-  long getLong() { return _location.getLong(_index); }
-  int getInt() { return _location.getInt(_index); }
-  short getShort() { return _location.getShort(_index); }
-  char getChar() { return (char)_location.getByte(_index); }
-
-  double getDouble(int idx) { return _location.getDouble(idx); }
-  float getFloat(int idx) { return _location.getFloat(idx); }
-  long getLong(int idx) { return _location.getLong(idx); }
-  int getInt(int idx) { return _location.getInt(idx); }
-  short getShort(int idx) { return _location.getShort(idx); }
-  char getChar(int idx) { return (char)_location.getByte(idx); }
-  
-  void putDouble(double value)  {_location.putDouble(_index, value);}
-  void putFloat(float value)  {_location.putFloat(_index, value);}
-  void putLong(long value)  {_location.putLong(_index, value);}
-  void putInt(int value)  {_location.putInt(_index, value);}
-  void putShort(short value)  {_location.putShort(_index, value);}
-  void putChar(char value)  {_location.putByte(_index, (byte)value);}
-}

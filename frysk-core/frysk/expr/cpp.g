@@ -82,6 +82,7 @@ header
 
     import frysk.lang.*;
     import java.util.*;
+    import lib.dw.BaseTypes;
     import inua.eio.ByteOrder;
 }
 
@@ -398,7 +399,8 @@ variable! throws TabException
   *	to press TAB whenever auto-completion is required
   */
 primary_expression throws TabException 
-    :   variable
+    :   (TAB {bTabPressed = true;}
+	    | variable)
     |   constant
     |   "this"
     |   LPAREN! expression RPAREN!
@@ -419,6 +421,9 @@ id_expression
     :   IDENT 
     ;
 
+tid_expression
+    :   TAB_IDENT 
+    ;
 
 /*----------------------------------------------------------------------------
    * The Lexer
@@ -868,15 +873,17 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {
-            if((returnVar = ((Variable)cppSymTabRef.get(ident.getText()))) == null) {
-                // returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
-                // cppSymTabRef.put(ident.getText(), returnVar);
+            if((returnVar = ((Variable)cppSymTabRef.get(ident.getText()))) == null
+		&& cppSymTabRef.putUndefined()) {
+                returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
+                cppSymTabRef.put(ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
-            if((returnVar = ((Variable)cppSymTabRef.get(tident.getText()))) == null) {
-                // returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
-                // cppSymTabRef.put(tident.getText(), returnVar);
+            if((returnVar = ((Variable)cppSymTabRef.get(tident.getText()))) == null
+		&& cppSymTabRef.putUndefined()) {
+                returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
+                cppSymTabRef.put(tident.getText(), returnVar);
             }
         }
     ;

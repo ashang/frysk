@@ -48,7 +48,7 @@ public class DwarfDie
   private long scope;
 
   private Dwfl parent;
-
+  
   protected DwarfDie (long pointer, Dwfl parent)
   {
     this.pointer = pointer;
@@ -103,10 +103,14 @@ public class DwarfDie
         dies[i] = new DwarfDie(vals[i], this.parent);
       else
         dies[i] = null;
-
     return dies;
   }
   
+  /**
+   * @param scopes
+   * @param variable
+   * @return Die of variable in scopes
+   */
   public DwarfDie getScopeVar (DwarfDie[] scopes, String variable)
   {
     long[] vals = new long[scopes.length];
@@ -119,7 +123,6 @@ public class DwarfDie
     if (val >= 0)
       {
         die = new DwarfDie(die_and_scope[0], this.parent);
-        // new DwarfDie(die_and_scope[1], this.parent);
         die.scope = die_and_scope[1];
       }
     return die;
@@ -130,14 +133,70 @@ public class DwarfDie
       return this.scope;
   }
   
+  /**
+   * @param fbreg_and_disp - Return ptr+disp.   Typically this is a static address or ptr+disp.
+   */
   public void getAddr (long[] fbreg_and_disp)
   {
     get_addr(fbreg_and_disp, this.getPointer());
   }
 
-  public String getType ()
+  /**
+   * @return The type die for the current die.
+   */
+  public DwarfDie getType ()
   {
-    return get_type(this.getPointer());
+    long type = get_type(this.getPointer());
+    DwarfDie die = new DwarfDie(type, this.parent);
+    return die;
+  }
+
+  /**
+   * @return the scalar type for this type die.
+   */
+  public int getBaseType ()
+  {
+    return get_base_type(this.getPointer());
+  }
+  
+  /**
+   * @return The upper bound for this subrange die.
+   */
+  public int getUpperBound ()
+  {
+    return get_upper_bound(this.getPointer());
+  }
+
+  /**
+   * @return True if die describes an array.
+   */
+  public boolean isArrayType()
+  {
+    return is_array_type(this.getPointer());
+  }
+  
+  /**
+   * @return The child for the current die.
+   */
+  public DwarfDie getChild ()
+  {
+    long child = get_child(this.getPointer());
+    DwarfDie die = null;
+    if (child != 0)
+      die = new DwarfDie(child, this.parent);
+    return die;
+  }
+
+  /**
+   * @return The sibling for the current die.
+   */
+  public DwarfDie getSibling ()
+  {
+    long sibling = get_sibling(this.getPointer());
+    DwarfDie die = null;
+    if (sibling != 0)
+      die = new DwarfDie(sibling, this.parent);
+    return die;
   }
   
   protected long getPointer ()
@@ -145,18 +204,28 @@ public class DwarfDie
     return this.pointer;
   }
  
+  /**
+   * @param fbreg_and_disp Base pointer and displacement (out).
+   * @param scope Scope DW_AT_frame_base is desired for.
+   * @param pc PC DW_AT_frame_base is desired for.
+   */
   public void getFrameBase (long[] fbreg_and_disp, long scope, long pc)
   {
     get_framebase(fbreg_and_disp, this.getPointer(), scope, pc);
   }
 
+  /**
+   * @param fbreg_and_disp Get DW_FORM_data for current die.
+   * Typically this is from a location list.
+   * @param scope - Scope of current die. 
+   * @param pc - PC
+   */
   public void getFormData (long[] fbreg_and_disp, long scope, long pc)
   {
     get_formdata(fbreg_and_disp, this.getPointer(), scope, pc);
   }
 
   /**
-   * 
    * @return True if this is an inlined instance of a function, false otherwise
    */
   public boolean isInlinedFunction ()
@@ -181,8 +250,18 @@ public class DwarfDie
 
   private native void get_addr (long[] fbreg_and_disp, long addr);
   
-  private native String get_type (long addr);
+  private native long get_type (long addr);
+  
+  private native long get_child (long addr);
+  
+  private native long get_sibling (long addr);
+  
+  private native int get_base_type (long addr);
 
+  private native int get_upper_bound (long addr);
+  
+  private native boolean is_array_type (long addr);
+  
   private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
 
   private native void get_formdata (long[] fbreg_and_disp, long addr, long scope, long pc);

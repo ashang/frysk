@@ -26,6 +26,8 @@
       { symTab.put(s, v);}
       public Variable get(String s)
       { return (Variable)symTab.get(s); }
+      public boolean putUndefined ()
+      { return true; }
     }
 
     

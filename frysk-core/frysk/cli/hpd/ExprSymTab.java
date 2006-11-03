@@ -38,16 +38,21 @@
 // exception.
 package frysk.cli.hpd;
 
+import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.Integer;
 import java.util.Map;
 
+import lib.dw.BaseTypes;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import frysk.expr.CppSymTab;
+import frysk.lang.ArrayType;
 import frysk.lang.DoubleType;
 import frysk.lang.FloatType;
 import frysk.lang.IntegerType;
@@ -67,19 +72,37 @@ class ExprSymTab implements CppSymTab
   private Task task;
   private int pid;
   private StackFrame currentFrame;  
+
   Map symTab;
+  ByteBuffer buffer;
+  public boolean putUndefined ()
+  {
+      return false;
+  }
 
   /**
    * Create an ExprSymTab object which is the interface between
    * SymTab and CppTreeParser, the expression parser.
-   * @param task_p
-   * @param pid_p
-   * @param frame
+   * @param task_p Task
+   * @param pid_p Pid
+   * @param frame StackFrame
    */
   ExprSymTab (Task task_p, int pid_p, StackFrame frame)
   {
     task = task_p;
     pid = pid_p;
+    // ??? 0x7fffffffffffffff
+    buffer = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.DATA, 0x7fffffffffffffffl);
+    ByteOrder byteorder;
+    try 
+    {
+      byteorder = task.getIsa().getByteOrder();
+    }
+    catch (TaskException tte)
+    {
+      throw new RuntimeException(tte);
+    }
+    buffer = buffer.order(byteorder);
     
     if (frame == null)
       {
@@ -105,12 +128,14 @@ class ExprSymTab implements CppSymTab
     symTab = new HashMap();
   }
   
+
   interface VariableAccessor {
     int DW_OP_addr = 0x03;
     int DW_OP_fbreg = 0x91;
     boolean isSuccessful();
     void setSuccessful(boolean b);
     DwarfDie varDie = null;
+    long getAddr (String s);
     int getInt (String s);
     void putInt (String s, Variable v);
     short getShort (String s);
@@ -121,6 +146,9 @@ class ExprSymTab implements CppSymTab
     void putDouble (String s, Variable v);
   }
   
+  /**
+   * Access by DW_FORM_block.  Typically this is a static address or ptr+disp.
+   */
   class AccessDW_FORM_block implements VariableAccessor
   {
     private boolean succeeded = false;
@@ -132,12 +160,13 @@ class ExprSymTab implements CppSymTab
     {
       succeeded = b;
     }
+
     /**
      * Given a variable's Die return its address.
      * @param varDie
      * @return
      */
-    private long getBufferAddr(DwarfDie varDie)
+    protected long getBufferAddr(DwarfDie varDie)
     {
       long pc;
       // ??? Need an isa specific way to get x86 reg names and numbers
@@ -149,7 +178,7 @@ class ExprSymTab implements CppSymTab
       
       try
       {
-	if (currentFrame.getInner() == null)
+      if (currentFrame.getInner() == null)
           pc = task.getIsa().pc(task) - 1;
         else
           pc = currentFrame.getAddress();
@@ -198,80 +227,66 @@ class ExprSymTab implements CppSymTab
       }
       return addr;
     }
-    private ByteBuffer getBuffer ()
+ 
+    public long getAddr (String s)
     {
-      ByteBuffer buffer;
-      buffer = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.DATA, 0xffffffffl);
-      ByteOrder byteorder;
-      try 
-      {
-        byteorder = task.getIsa().getByteOrder();
-      }
-      catch (TaskException tte)
-      {
-        throw new RuntimeException(tte);
-      }
-      buffer = buffer.order(byteorder);
-      return buffer;
+      DwarfDie varDie = getDie(s);
+      return getBufferAddr(varDie);
     }
+    
     public int getInt (String s)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       return buffer.getInt(addr);
     }
-    public void putInt (String s, Variable v)
+    public void putInt (String s, Variable v) 
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       buffer.putInt(addr, v.getInt());
     }
     public short getShort (String s)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       return buffer.getShort(addr);      
     }
     public void putShort (String s, Variable v)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       buffer.putShort(addr, v.getShort());
     }
     public float getFloat (String s)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       return buffer.getFloat(addr);      
     }
     public void putFloat (String s, Variable v)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       buffer.putFloat(addr, v.getFloat());
     }
     public double getDouble (String s)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       return buffer.getDouble(addr);      
     }
     public void putDouble (String s, Variable v)
     {
       DwarfDie varDie = getDie(s);
       long addr = getBufferAddr(varDie);
-      ByteBuffer buffer = getBuffer();
       buffer.putDouble(addr, v.getDouble());
     }
   }
   
+  /**
+   * Access by DW_FORM_data.  Typically this is a location list.
+   */
   class AccessDW_FORM_data implements VariableAccessor
   {
     private boolean succeeded = false;
@@ -284,14 +299,14 @@ class ExprSymTab implements CppSymTab
       succeeded = b;
     }
     
+    public long getAddr (String s)
+    {
+      return 0;
+    }
+    
     private long getReg(DwarfDie varDie)
     {
       long pc;
-      // ??? Need an isa specific way to get x86 reg names and numbers
-      String[][] x86regnames = {
-                    {"eax", "rax"}, {"ecx", "rdx"}, {"edx", "rcx"}, {"ebx", "rbx"},
-                    {"esp", "rsi"}, {"ebp", "rdi"}, {"esi", "rbp"}, {"edi", "rsp"}
-                  };
       int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
       long reg = 0;
       
@@ -425,24 +440,24 @@ class ExprSymTab implements CppSymTab
 
     try
     {
-      String type = varDie.getType();
+      DwarfDie type = varDie.getType();
       if (type == null)
         return;
       for(int i = 0; i < variableAccessor.length; i++) 
         {
-          if (type.compareTo("int") == 0)
+          if (type.getBaseType() == BaseTypes.baseTypeInteger)
             {
               variableAccessor[i].putInt(s, v);
             }
-          else if (type.compareTo("short int") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeShort)
             {
               variableAccessor[i].putShort(s, v);
             }
-          else if (type.compareTo("float") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeFloat)
             {
               variableAccessor[i].putFloat(s, v);
             }
-          else if (type.compareTo("double") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeDouble)
             {
               variableAccessor[i].putDouble(s, v);
             }
@@ -481,10 +496,10 @@ class ExprSymTab implements CppSymTab
       {
         try
         {
-          String type = varDie.getType();
+          DwarfDie type = varDie.getType();
           if (type == null)
             return null;      
-          if (type.compareTo("int") == 0)
+          if (type.getBaseType() == BaseTypes.baseTypeInteger)
             {
               int intVal = variableAccessor[i].getInt(s);
               if (variableAccessor[i].isSuccessful() == false)
@@ -493,7 +508,7 @@ class ExprSymTab implements CppSymTab
               v = IntegerType.newIntegerVariable(intType, s, intVal); 
               return v; 
             }
-          else if (type.compareTo("short int") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeShort)
             {
               short shortVal = variableAccessor[i].getShort(s);
               if (variableAccessor[i].isSuccessful() == false)
@@ -502,7 +517,7 @@ class ExprSymTab implements CppSymTab
               v = ShortType.newShortVariable(shortType, s, shortVal); 
               return v; 
             }
-          else if (type.compareTo("float") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeFloat)
             {
               float floatVal = variableAccessor[i].getFloat(s);
               if (variableAccessor[i].isSuccessful() == false)
@@ -511,7 +526,7 @@ class ExprSymTab implements CppSymTab
               v = FloatType.newFloatVariable(floatType, s, floatVal); 
               return v; 
             }
-          else if (type.compareTo("double") == 0)
+          else if (type.getBaseType() == BaseTypes.baseTypeDouble)
             {
               double doubleVal = variableAccessor[i].getDouble(s);
               if (variableAccessor[i].isSuccessful() == false)
@@ -520,6 +535,67 @@ class ExprSymTab implements CppSymTab
               v = DoubleType.newDoubleVariable(doubleType, s, doubleVal); 
               return v; 
             }    
+          else if (type.isArrayType())
+              {
+                DwarfDie subrange;
+                long addr = variableAccessor[0].getAddr(s);
+                if (addr == 0)
+                  continue;
+                DwarfDie die = getDie(s);
+                DwarfDie arrayTypeDie = die.getType();
+                ArrayList dims = new ArrayList();
+                subrange = arrayTypeDie.getChild();
+                int bufSize = 1;
+                while (subrange != null)
+                  {
+                    int arrDim = subrange.getUpperBound();
+                    dims.add(new Integer(arrDim));
+                    subrange = subrange.getSibling();
+                    bufSize *= arrDim + 1;
+                  }
+
+                ArrayType arrayType = null;
+                int typeSize = 0;
+                if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeShort)
+                  {
+                    typeSize = 2;
+                    ShortType shortType = new ShortType(2, byteorder);
+                    arrayType = new ArrayType (shortType, dims);
+                  }
+                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeInteger)
+                  {
+                    typeSize = 4;
+                    IntegerType intType = new IntegerType(4, byteorder);
+                    arrayType = new ArrayType (intType, dims);
+                  }
+                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeLong)
+                  {
+                    typeSize = 8;
+                    IntegerType longType = new IntegerType(8, byteorder);
+                    arrayType = new ArrayType (longType, dims);
+                  }
+                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeFloat)
+                  {
+                    typeSize = 4;
+                    IntegerType intType = new IntegerType(8, byteorder);
+                    arrayType = new ArrayType (intType, dims);
+                  }
+                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeDouble)
+                  {
+                    typeSize = 8;
+                    IntegerType intType = new IntegerType(8, byteorder);
+                    arrayType = new ArrayType (intType, dims);
+                  }
+                
+                byte buf []= new byte[bufSize * typeSize];
+                for (int j = 0 ; j < bufSize; j++)
+                  buffer.get(addr + j * typeSize, buf, j * typeSize, typeSize);  
+                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
+
+                abb.order(byteorder);
+                Variable arrVar = new Variable (arrayType, "", abb);
+                return arrVar;
+              }
         }
         catch (Errno e) {}
     }

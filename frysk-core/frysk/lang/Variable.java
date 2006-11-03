@@ -39,6 +39,8 @@
 
 package frysk.lang;
 
+import inua.eio.ArrayByteBuffer;
+
 /**
  * Stores the type and location of a variable
  */
@@ -57,6 +59,10 @@ public class Variable
       this(type, text, (new Location(type.getSize())));
     }
 
+    public Variable(Type type, String text, ArrayByteBuffer arrayByteBuffer) {
+      this(type, text, (new Location(arrayByteBuffer)));
+    }    
+    
     public Variable(Type type, String text, Location location)
     {
        _type = type;
@@ -101,6 +107,30 @@ public class Variable
 
     public double getDouble() {
       return _location.getDouble();
+    }
+
+    public char getChar(int idx) {
+      return _location.getChar(idx);
+    }
+
+    public short getShort(int idx) {
+      return _location.getShort(idx);
+    }
+
+    public int getInt(int idx) {
+      return _location.getInt(idx);
+    }
+
+    public long getLong(int idx) {
+      return _location.getInt(idx);
+    }
+
+    public float getFloat(int idx) {
+      return _location.getFloat(idx);
+    }
+
+    public double getDouble(int idx) {
+      return _location.getDouble(idx);
     }
 
     public void putChar(char val) {

@@ -40,6 +40,7 @@
   package frysk.lang;
 
   import inua.eio.ByteOrder;
+  import lib.dw.BaseTypes;
 
   public class DoubleType extends Type
   {

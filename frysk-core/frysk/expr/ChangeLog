@@ -1,3 +1,10 @@
+2006-11-03  Stan Cox  <scox@redhat.com>
+
+	* CppSymTab.java (putUndefined): New.
+	* RunCppParser.java (putUndefined): New.
+	* RunCppTreeParser.java (putUndefined): New.
+	* cpp.g (CppTreeParser): Use putUndefined.  Add BaseTypes.
+
 2006-09-29  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppTreeParser): Don't create "convenience" variables.

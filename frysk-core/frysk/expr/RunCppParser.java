@@ -51,6 +51,8 @@ import jline.*;
 import java.util.*;
 import antlr.*;
 import frysk.lang.*;
+import lib.dw.BaseTypes;
+
 
 /**
  * A Test framework for the C++ expression parser with tab auto completion.
@@ -69,6 +71,11 @@ class symTab
   public Variable get (String s)
   {
     return (Variable) symTab.get(s);
+  }
+
+  public boolean putUndefined ()
+  {
+      return true;
   }
 }
 
@@ -196,7 +203,7 @@ public class RunCppParser
                                                                                                                                         cursor,
                                                                                                                                         buffer.length())
                                                                                                                     : ""));
-
+      sInput += (char) 3;
       CppLexer lexer = new CppLexer(new StringReader(sInput));
       CppParser parser = new CppParser(lexer);
 

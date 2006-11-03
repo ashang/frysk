@@ -1,7 +1,8 @@
 
   package frysk.lang;
 
-import inua.eio.ByteOrder;
+  import inua.eio.ByteOrder;
+  import lib.dw.BaseTypes;
 
   //import inua.eio.*;
   //import java.lang.reflect.Constructor;

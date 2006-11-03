@@ -1,3 +1,9 @@
+2006-11-03  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (VariableAccessor.getAddr): New.
+	(get): Use BaseTypes. Add isArrayType support.
+	* hpd/CLI.java (PrintHandler.handle): Use BaseTypes.
+
 2006-10-11  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (VariableAccessor): New.
