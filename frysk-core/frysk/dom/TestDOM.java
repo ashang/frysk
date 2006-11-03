@@ -65,6 +65,8 @@ public class TestDOM extends TestCase {
 			"}\n" };
 
 	private static int[] offset_index = { 1, 12, 28 };
+    
+    private static String[] incpaths = { "/home/testing", "/home/testing2" };
 
 	/**************************************************************************
 	 * tests the DOMFrysk Class methods
@@ -117,12 +119,12 @@ public class TestDOM extends TestCase {
 		assertEquals("testing DOMImage.getName()", 
 				testDOMImage.getName(), "test_image_2");
 
-		testDOMImage.addSource("test_source1", "/home/xyz");
+		testDOMImage.addSource("test_source1", "/home/xyz", incpaths);
 		
 		assertNotNull("testing DOMImage.assSource- test_source1",
 				testDOMImage.getSource("test_source1"));
 		
-		testDOMImage.addSource("test_source2", "/var/tmp");
+		testDOMImage.addSource("test_source2", "/var/tmp", incpaths);
 		
 		assertNotNull("testing DOMImage.addSource() - test_source2",
 				testDOMImage.getSource("test_source2"));

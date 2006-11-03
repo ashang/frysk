@@ -87,8 +87,8 @@ public class DOMImage {
 	 * @param path
 	 * @return
 	 */
-	public void addSource(String source_name, String path) {
-		this.addSource(new DOMSource(source_name, path));
+	public void addSource(String source_name, String path, String[] incpaths) {
+		this.addSource(new DOMSource(source_name, path, incpaths));
 	}
 	
 	/**

@@ -1,3 +1,9 @@
+2006-11-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Added capability to add multiple source files to
+	the DOM.
+	* TestDOM.java: Ditto.
+
 2006-11-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Added capability to add multiple source files to 
