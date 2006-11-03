@@ -358,7 +358,7 @@ public class SourceView
     if (this.buf.getFunctions().contains(markName))
       {
         TextMark mark = this.buf.getMark(markName);
-        this.scrollToMark(mark, 0.35);
+        this.scrollToMark(mark, 0.49);
       }
   }
 
