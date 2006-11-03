@@ -77,6 +77,9 @@ public class DOMSource
 
   // text of the source line
   public static final String TEXT_ATTR = "text";
+  
+  // include paths of the source file
+  public static final String INCLUDES = "includepath";
 
   private Element myElement;
 
@@ -97,12 +100,18 @@ public class DOMSource
    * @param filename The name of the file
    * @param filepath The absolute path to the file
    */
-  public DOMSource (String filename, String filepath)
+  public DOMSource (String filename, String filepath, String[] includepaths)
   {
     this.myElement = new Element(DOMSource.SOURCE_NODE);
     myElement.setAttribute(DOMSource.FILENAME_ATTR, filename);
     myElement.setAttribute(DOMSource.FILEPATH_ATTR, filepath);
     myElement.setAttribute(DOMSource.IS_PARSED, "false");
+    int i = 0;
+    while (includepaths[i] != null)
+      {
+        myElement.setAttribute(DOMSource.INCLUDES, includepaths[i]);
+        i++;
+      }
   }
 
   /**
@@ -184,6 +193,17 @@ public class DOMSource
   public Iterator getLines ()
   {
     Iterator iter = this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
+    return iter;
+  }
+  
+  /**
+   * gets all the include paths for this source file
+   * 
+   * @return An interator over all of the include files
+   */
+  public Iterator getIncludePaths()
+  {
+    Iterator iter = this.myElement.getChildren(DOMSource.INCLUDES).iterator();
     return iter;
   }
 
