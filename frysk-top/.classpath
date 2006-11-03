@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry excluding="antlr/|cdtparser/|junit/|tests/|jargs/|elfutils/" kind="src" path="frysk-imports"/>
+	<classpathentry kind="src" path="frysk-sys"/>
 	<classpathentry kind="src" path="frysk-core"/>
 	<classpathentry kind="src" path="frysk-gtk/tlwidgets/src/java"/>
 	<classpathentry kind="src" path="frysk-gui"/>
-	<classpathentry excluding="antlr/|cdtparser/|junit/|tests/|jargs/|elfutils/" kind="src" path="frysk-imports"/>
-	<classpathentry kind="src" path="frysk-sys"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/share/java/antlr.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/glade2.12.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/glib0.2.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
-	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.2/cdtparser.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="/usr/share/java/vte0.12.jar"/>
+	<classpathentry kind="output" path="build"/>
 </classpath>

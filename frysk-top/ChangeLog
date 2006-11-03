@@ -1,3 +1,10 @@
+2006-11-03  Nurdin Premji <npremji@redhat.com>
+
+	* .classpath: Added libvte.jar to classpath, removed jars that are already in build path.
+	antlr, junit, jdom, etc.
+	*.project: added linked resource build linked to variable build for external build directories.
+	* .externalToolbuilders/* Changed to use build linked resource.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass -Werror to automake.  Abort if a
