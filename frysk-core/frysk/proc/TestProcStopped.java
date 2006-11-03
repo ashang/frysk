@@ -52,14 +52,14 @@ public class TestProcStopped
 
     Proc proc = ackProc.findProcUsingRefresh();
 
-    new ProcAttachedObserver(proc, new MyTester(count));
+    new  MyTester(proc, count);
   }
 
   public void running (AckProcess ackProc, int count)
   {
     Proc proc = ackProc.findProcUsingRefresh();
 
-    new ProcAttachedObserver(proc, new MyTester(count));
+    new  MyTester(proc, count);
   }
 
   public void testStoppedAckDaemon ()
@@ -76,12 +76,12 @@ public class TestProcStopped
     assertRunUntilStop("testStoppedDetached");
   }
 
-//  public void testStoppedAttached ()
-//  {
-//    AckProcess ackProc = new AttachedAckProcess();
-//    stopped(ackProc, 1);
-//    assertRunUntilStop("testStoppedAttached");
-//  }
+  public void testStoppedAttached ()
+  {
+    AckProcess ackProc = new AttachedAckProcess();
+    stopped(ackProc, 1);
+    assertRunUntilStop("testStoppedAttached");
+  }
 
   public void testRunningAckDaemon ()
   {
@@ -97,12 +97,12 @@ public class TestProcStopped
     assertRunUntilStop("testRunningDetached");
   }
 
-//  public void testRunningAttached ()
-//  {
-//    AckProcess ackProc = new AttachedAckProcess();
-//    running(ackProc, 1);
-//    assertRunUntilStop("testRunningAttached");
-//  }
+  public void testRunningAttached ()
+  {
+    AckProcess ackProc = new AttachedAckProcess();
+    running(ackProc, 1);
+    assertRunUntilStop("testRunningAttached");
+  }
   
   public void testMultiThreadedStoppedAckDaemon ()
   {
@@ -118,12 +118,12 @@ public class TestProcStopped
     assertRunUntilStop("testStoppedDetached");
   }
 
-//  public void testMultiThreadedStoppedAttached ()
-//  {
-//    AckProcess ackProc = new AttachedAckProcess(2);
-//    stopped(ackProc, 3);
-//    assertRunUntilStop("testStoppedAttached");
-//  }
+  public void testMultiThreadedStoppedAttached ()
+  {
+    AckProcess ackProc = new AttachedAckProcess(2);
+    stopped(ackProc, 3);
+    assertRunUntilStop("testStoppedAttached");
+  }
 
   public void testMultiThreadedRunningAckDaemon ()
   {
@@ -139,21 +139,22 @@ public class TestProcStopped
     assertRunUntilStop("testRunningDetached");
   }
 
-//  public void testMultiThreadedRunningAttached ()
-//  {
-//    AckProcess ackProc = new AttachedAckProcess(2);
-//    running(ackProc, 3);
-//    assertRunUntilStop("testRunningAttached");
-//  }
+  public void testMultiThreadedRunningAttached ()
+  {
+    AckProcess ackProc = new AttachedAckProcess(2);
+    running(ackProc, 3);
+    assertRunUntilStop("testRunningAttached");
+  }
 
   public class MyTester
-      implements ProcObserver.ProcTasks
+      extends ProcBlockObserver
   {
 
     int count;
     
-    public MyTester(int c)
+    public MyTester(Proc proc, int c)
     {
+      super(proc);
       count = c;
     }
     public void existingTask (Task task)
@@ -166,36 +167,13 @@ public class TestProcStopped
           Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop)); 
         }
     }
-
-    public void taskAdded (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void taskRemoved (Task task)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      // TODO Auto-generated method stub
-
-    }
-
-    public void addedTo (Object observable)
-    {
-      // TODO Auto-generated method stub
-     
-    }
-
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
-
+      
     }
+
+
 
   }
 }
