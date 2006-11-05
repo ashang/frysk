@@ -1512,7 +1512,7 @@ public class SourceWindow
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
-        t.requestUnblock(this.pbo);
+        this.pbo.requestUnblock(t);
       }
   }
 
@@ -1905,7 +1905,7 @@ public class SourceWindow
       }
     else
       {
-        task.requestUnblock(this.pbo);
+        this.pbo.requestUnblock(task);
       }
   }
   

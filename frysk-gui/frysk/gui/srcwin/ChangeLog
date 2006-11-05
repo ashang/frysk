@@ -1,3 +1,8 @@
+2006-11-05  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (stepIn): Updated ProcBlockObserver unblock call.
+	(step): Ditto.
+
 2006-11-03  Nurdin Premji  <npremji@edhat.com>
 
 	* SourceWindow.java (step): Changed to reflect ProcBlockObserver changes.
