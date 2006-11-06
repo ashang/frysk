@@ -52,10 +52,12 @@ public class TestRunner
     public static void main (String[] args)
     {
 	Runner testRunner = new Runner ("TestRunner", args);
-	System.exit (testRunner.runArchCases
-		     (args, JUnitTests.get (), JUnitTests.get (),
-		      Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/",
-		      Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/",
-		      Build.ABS_BUILDDIR + "/frysk/pkgdatadir/"));
+	int status = testRunner.runTestCases
+	    (Build.ABS_BUILDDIR + "/frysk/pkgdatadir/",
+	     JUnitTests.get (),
+	     Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/",
+	     JUnitTests.get (),
+	     Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/");
+	System.exit (status);
     }
 }

@@ -78,7 +78,10 @@
         <option>-l <replaceable>log-level</replaceable></option>
       </arg>
       <arg choice="opt">
-        <option>--arch=ARCH<replaceable>ARCH</replaceable></option>
+        <option>--arch <replaceable>arch</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>-n</option>
       </arg>
       <arg choice="opt">
         <option><replaceable>test-class</replaceable> ...</option>
@@ -119,12 +122,18 @@
       </varlistentry>
 
       <varlistentry>
-        <term>--arch=ARCH<replaceable>ARCH</replaceable></term>
+        <term>--arch <replaceable>arch</replaceable></term>
         <listitem>
           <para> Specify the test cases' arch. The ARCH can be 64 or 32. If no arch is specified, arch-64 cases will be run. When the arch-32 cases are ready, all cases will be run be default.The option will take no effect in 32-bit machine.  </para>
         </listitem>
       </varlistentry>
 
+      <varlistentry>
+        <term>-n/term>
+        <listitem>
+          <para> No not run any tests, instead list the classes that would have been tested. </para>
+        </listitem>
+      </varlistentry>
 
     </variablelist>
   </refsect1>

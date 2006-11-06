@@ -1,5 +1,10 @@
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java (runTestCases): Replace runArchCases.
+	(createCommandLineParser): Add -n / --list-classes-only option.
+	(listClassesOnly): New boolean variable.
+	(runCases): If .listClassesOnly, print, instead of run the tests.
+	
 	* Runner.java (createCommandLineParser): Replace addOptions.
 	(Runner): Add parameter programName.
 

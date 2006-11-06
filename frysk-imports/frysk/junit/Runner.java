@@ -48,6 +48,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Enumeration;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestResult;
@@ -76,6 +77,7 @@ public class Runner
     private String archTarget = null;
     private String archBuild = null; 
     private Collection testCases = null;
+    private boolean listClassesOnly = false;
     
     private LinkedList otherArgs;
     
@@ -160,13 +162,13 @@ public class Runner
 	return this.archBuild;
     }
 
-    private int runCases(Collection testClasses)
+    private int runCases (Collection testClasses)
     {
 	// Create the testsuite to be run, either as specified on the
 	// command line, or from the provided list of classes.  XXX:
 	// It would be good if individual tests from within a testcase
-	// could be identified and run.
-	//String[] otherArgs = parser.getRemainingArgs ();
+	// could be identified and run.  //String[] otherArgs =
+	// parser.getRemainingArgs ();
       
 	TestSuite testSuite = new TestSuite ();
       
@@ -192,6 +194,14 @@ public class Runner
 		    }
 	    }
   
+	if (listClassesOnly) {
+	    for (Enumeration e = testSuite.tests (); e.hasMoreElements (); ) {
+		Test test = (Test) e.nextElement ();
+		System.out.println (test.toString ());
+	    }
+	    return SUCCESS_EXIT;
+	}
+
 	// Run the TestSuite <<repeat>> times.
 	try
 	    {
@@ -405,11 +415,24 @@ public class Runner
 		    }
 		}
 	    });
+
+	parser.add (new Option ('n', "list-classes-only",
+				"Do not run any tests, instead list the"
+				+ " classes that would have been tested")
+	    {
+		public void parsed (String nullArgument)
+		    throws OptionException
+		{
+		    listClassesOnly = true;
+		}
+	    });
+
 	parser.setHeader ("Usage:"
 			  + " [ -c <console-level> ]"
 			  + " [ -l <log-level> ]"
 			  + " [ -r <repeat-count> ]"
 			  + " [ --arch <arch>]"
+			  + " [ -n ]"
 			  + " [ class ... ]");
 	return parser;
     }
@@ -456,16 +479,15 @@ public class Runner
 	    return EXCEPTION_EXIT;
     }
 
-    public int runArchCases (String[] args,
+    public int runTestCases (String dataPrefix,
 			     Collection archTests,
-			     Collection arch32Tests,
 			     String execPrefix,
-			     String exec32Prefix,
-			     String dataPrefix)
+			     Collection arch32Tests,
+			     String exec32Prefix)
     {
 	int result = SUCCESS_EXIT;
 
-    setBuildArch(Build.BUILD_ARCH);
+	setBuildArch (Build.BUILD_ARCH);
 	
 	// Set the path prefixes and then do the common test.
 	Paths.setPrefixes (execPrefix, dataPrefix);

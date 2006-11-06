@@ -1,5 +1,8 @@
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.javain: Assign exit status to local variable.  Call
+	Runner.runTestCases.
+
 	* TestRunner.javain: Pass "TestRunner" to Runner constructor.
 
 2006-11-02  Nurdin Premji <npremji@redhat.com>

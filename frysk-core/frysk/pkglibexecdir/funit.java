@@ -68,9 +68,10 @@ public class funit
 	Paths.setPrefixes (Config.PKGLIBEXEC_ARCH32DIR + File.separator,
 			   Config.PKGDATADIR + "/");
 
-	System.exit (testRunner.runArchCases (args, list, arch32List,
-					      Config.PKGLIBEXECDIR + "/",
-					      Config.PKGLIBEXEC_ARCH32DIR + "/",
-					      Config.PKGDATADIR + "/"));
+	int status = testRunner.runTestCases
+	    (Config.PKGDATADIR + "/",
+	     list, Config.PKGLIBEXECDIR + "/",
+	     arch32List, Config.PKGLIBEXEC_ARCH32DIR + "/");
+	System.exit (status);
     }
 }
