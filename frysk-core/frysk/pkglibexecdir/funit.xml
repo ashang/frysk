@@ -129,7 +129,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-n/term>
+        <term>-n</term>
         <listitem>
           <para> No not run any tests, instead list the classes that would have been tested. </para>
         </listitem>
