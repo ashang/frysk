@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.util;
 
 import java.util.Iterator;
@@ -93,15 +94,15 @@ public class StacktraceObserver
   {
 
     logger.log(Level.FINE, "{0} existingTask", this);
-    
+
     // Remove this task from the list of tasks we have to deal with.
-    taskList.remove(task);   
-    
+    taskList.remove(task);
+
     // Print the stack frame for this stack.
     storeTask(task);
 
     /*
-      If the taskList is empty we have dealt with all the necessary tasks.
+     * If the taskList is empty we have dealt with all the necessary tasks.
      */
     logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList",
                new Object[] { taskList, proc.getTasks() });
@@ -114,10 +115,15 @@ public class StacktraceObserver
         Manager.eventLoop.add(event);
       }
   }
-  
-  public void taskRemoved(Task task)
+
+  public void taskAddFailed (Object observable, Throwable w)
   {
-    //Remove this task from the list of tasks we have to deal with.
+    logger.log(Level.SEVERE, "{0} could not be added to {1}",
+               new Object[] { this, observable });
+
+    Task task = (Task) observable;
+
+    // Remove this task from the list of tasks we have to deal with.
     taskList.remove(task);
     if (taskList.containsAll(proc.getTasks()))
       {
@@ -144,18 +150,20 @@ public class StacktraceObserver
         while (i.hasNext())
           {
             String s = (String) i.next();
-            //writer.println(s);
+            // writer.println(s);
             buffer.append(s).append("\n");
           }
       }
     logger.log(Level.FINE, "{0} exiting printTasks", this);
   }
 
-  public final String toPrint()
+  public final String toPrint ()
   {
-    logger.log(Level.FINE, "{0} toPrint, buffer: {1}", new Object[] {this, buffer});
+    logger.log(Level.FINE, "{0} toPrint, buffer: {1}", new Object[] { this,
+                                                                     buffer });
     return buffer.toString();
   }
+
   public final void storeTask (Task task)
   {
     if (task != null)
@@ -186,7 +194,6 @@ public class StacktraceObserver
           }
       }
   }
-
 
   /**
    * @author mcvet If the user cntl-c interrupts, handle it cleanly

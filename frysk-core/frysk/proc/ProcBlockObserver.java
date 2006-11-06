@@ -54,7 +54,7 @@ abstract public class ProcBlockObserver
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
 
   private class ProcBlockTaskObserver
-      implements TaskObserver.Instruction, TaskObserver.Terminating
+      implements TaskObserver.Instruction
   {
     public Action updateExecuted (Task task)
     {
@@ -62,18 +62,9 @@ abstract public class ProcBlockObserver
       return Action.BLOCK;
     }
 
-    public Action updateTerminating (Task task, boolean signal, int value)
-    {
-      taskRemoved(task);
-      return Action.CONTINUE;
-    }
-
     public void addFailed (Object observable, Throwable w)
     {
-      w.printStackTrace();
-      taskRemoved((Task) observable);
-      logger.log(Level.SEVERE, "{0} could not be added to {1}",
-                 new Object[] { this, observable });
+      taskAddFailed(observable, w);
     }
 
     public void addedTo (Object observable)
@@ -183,7 +174,6 @@ abstract public class ProcBlockObserver
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(taskObserver);
-    task.requestAddTerminatingObserver(taskObserver);
   }
 
   public void taskAdded (Task task)
@@ -222,24 +212,24 @@ abstract public class ProcBlockObserver
     });
   }
 
-  public void requestUnblock(Task task)
+  public void requestUnblock (Task task)
   {
     task.requestUnblock(taskObserver);
   }
-  
-  public void requestDeleteInstructionObserver(Task task)
+
+  public void requestDeleteInstructionObserver (Task task)
   {
     task.requestDeleteInstructionObserver(taskObserver);
   }
-  
-  public void requestDeleteTerminatingObserver(Task task)
-  {
-    task.requestDeleteTerminatingObserver(taskObserver);
-  }
-  
+
   public int getNumTasks ()
   {
     return this.numTasks;
   }
 
+  public void taskAddFailed (Object observable, Throwable w)
+  {
+    // TODO Auto-generated method stub
+
+  }
 }

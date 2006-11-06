@@ -1,3 +1,11 @@
+2006-11-06  Nurdin Premji  <npremji@edhat.com>
+
+	* ProcBlockObserver.java: Ran GNU Formatter.
+	(taskAddFailed): Added.
+	(ProcBlockTaskObserver): Removed terminating implementation.
+	(ProcBlockTaskObserver.addFailed): call taskAddFailed.
+	(requestAddObservers): Removed requestAddTerminatingObserver.
+
 2006-11-06  Tim Moore  <timoore@redhat.com>
 
 	* IsaIA32.java (IsaIA32): Add floating point unit configuration 

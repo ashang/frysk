@@ -1,3 +1,11 @@
+2006-11-06  Nurdin Premji  <npremji@edhat.com>
+
+	* TestFStack.java: Ran GNU Formatter. 
+	(secondaryClone): Changed to use an array for easy updating of regex.
+	(testClone): Ditto.	
+	* StacktraceObserver.java: Ran gnu formatter
+	(taskAddFailed): Changed from taskRemoved.
+
 2006-11-03  Nurdin Premji  <npremji@edhat.com>
 
 	* TestFStack.java (secondaryThread): Changed to array to hold all different

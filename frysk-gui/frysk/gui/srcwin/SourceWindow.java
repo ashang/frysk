@@ -1413,7 +1413,6 @@ public class SourceWindow
           {
             this.runningThreads.add(t);
             this.pbo.requestDeleteInstructionObserver(t);
-            this.pbo.requestDeleteTerminatingObserver(t);
           }
       }
   }

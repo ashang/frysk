@@ -100,18 +100,25 @@ public class TestFStack
                      + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                      + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
 
-  String secondaryClone = "Task #\\d+\\n"
-                          + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
-                          + "#1 0x[\\da-f]+ in op_clone \\(\\): line #105\\n"
-                          + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                          + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
+  String[] secondaryClone = {
+                             "Task #\\d+\\n"
+                                 + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
+                                 + "#1 0x[\\da-f]+ in op_clone \\(\\): line #105\\n"
+                                 + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                 + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
 
-  String secondaryCloneB = "Task #\\d+\\n"
-                           + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                           + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
-                           + "#2 0x[\\da-f]+ in op_clone \\(\\): line #100\\n"
-                           + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                           + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
+                             "Task #\\d+\\n"
+                                 + "#0 0x[\\da-f] in (__)?clone ()\\n"
+                                 + "#1 0x[\\da-f] in main \\(\\): line #177\\n"
+                                 + "#2 0x[\\da-f] in __libc_start_main \\(\\)\\n"
+                                 + "#3 0x[\\da-f] in _start \\(\\)\\n",
+
+                             "Task #\\d+\\n"
+                                 + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                                 + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
+                                 + "#2 0x[\\da-f]+ in op_clone \\(\\): line #100\\n"
+                                 + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                 + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
 
   public void testSingleThreadedDetached ()
   {
@@ -169,14 +176,13 @@ public class TestFStack
 
     regex += ")";
     regex += "(" + secondaryThread[0];
-    
+
     for (int i = 1; i < secondaryThread.length; i++)
       {
         regex += "|" + secondaryThread[i];
       }
-    
-    regex+="){"
-             + numSecondaryThreads + "}";
+
+    regex += "){" + numSecondaryThreads + "}";
 
     String result = stacker.toPrint();
     assertTrue(result + "did not match: " + regex, result.matches(regex));
@@ -202,13 +208,16 @@ public class TestFStack
 
     String regex = new String();
 
-    // Add DOTALL since we never really know how many threads we will get.
-    // regex += "(?s)";
-
     regex += mainClone;
 
-    regex += "(" + secondaryClone + "|" + secondaryCloneB + ")*";
-    // regex += ".*";
+    regex += "(" + secondaryClone[0];
+
+    for (int i = 1; i < secondaryClone.length; i++)
+      {
+        regex += "|" + secondaryClone[i];
+      }
+
+    regex += ")*";
 
     String result = stacker.toPrint();
     assertTrue(result + "did not match: " + regex, result.matches(regex));
