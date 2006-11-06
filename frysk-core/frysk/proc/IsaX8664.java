@@ -44,7 +44,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
-import frysk.sys.PtraceByteBuffer;
+import frysk.sys.Ptrace;
+import frysk.sys.RegisterSetBuffer;
 
 import lib.unwind.RegisterAMD64;
 
@@ -71,6 +72,56 @@ class IsaX8664 implements Isa
     public int getLength()
     {
       return 4;
+    }
+  }
+
+  // The floating point registers can also be mmx registers. The
+  // normal x87 view of the registers is as a long float, because they
+  // are always saved to memory in that format.
+  static private RegisterView[] fpViews = 
+    {
+      new RegisterView(80, 80, RegisterView.LONGFLOAT),
+      new RegisterView(64, 32, RegisterView.FLOAT),
+      new RegisterView(64, 64, RegisterView.INTEGER),
+      new RegisterView(64, 32, RegisterView.INTEGER),
+      new RegisterView(64, 16, RegisterView.INTEGER),
+      new RegisterView(64, 8, RegisterView.INTEGER)
+    };
+
+  static class X8664FPRegister 
+    extends Register 
+  {
+    X8664FPRegister(String name, int regNum) 
+    {
+      super(1, 32 + regNum * 16, 10, name, fpViews);
+    }
+  }
+
+    static private RegisterView[] xmmViews =
+    {
+      new RegisterView(128, 64, RegisterView.DOUBLE),
+      new RegisterView(128, 32, RegisterView.FLOAT),
+      new RegisterView(128, 64, RegisterView.INTEGER),
+      new RegisterView(128, 32, RegisterView.INTEGER),
+      new RegisterView(128, 16, RegisterView.INTEGER),
+      new RegisterView(128, 8, RegisterView.INTEGER)
+    };
+
+  static class XMMRegister 
+    extends Register 
+  {
+    XMMRegister(String name, int regNum) 
+    {
+      super(1, 160 + regNum * 16, 16, name, xmmViews);
+    }
+  }
+
+  static class FPConfigRegister
+    extends Register
+  {
+    FPConfigRegister(String name, int wordOffset, int length) 
+    {
+      super(1, wordOffset, length, name);
     }
   }
 
@@ -103,6 +154,7 @@ class IsaX8664 implements Isa
       new EMT64Register("fs_base", 21),
       new EMT64Register("gs_base", 22) };
 
+
   private LinkedHashMap registerMap = new LinkedHashMap();
 
   IsaX8664()
@@ -110,6 +162,25 @@ class IsaX8664 implements Isa
     for (int i = 0; i < regDefs.length; i++) {
       registerMap.put(regDefs[i].getName(), regDefs[i]);
     }
+    registerMap.put("cwd", new FPConfigRegister("cwd", 0, 2));
+    registerMap.put("swd", new FPConfigRegister("swd", 2, 2));
+    registerMap.put("ftw", new FPConfigRegister("ftw", 4, 2));
+    registerMap.put("fop", new FPConfigRegister("fop", 6, 2));
+    registerMap.put("fprip", new FPConfigRegister("fprip", 8, 8));
+    registerMap.put("rdp", new FPConfigRegister("rdp", 16, 8));
+    registerMap.put("mxcsr", new FPConfigRegister("mxcsr", 24, 4));
+    registerMap.put("mxcsr_mask", new FPConfigRegister("mxcsr_mask", 28, 4));
+    for (int i = 0; i < 8; i++) 
+      {
+	String name = "st" + i;
+        registerMap.put(name, new X8664FPRegister(name, i));
+      }
+    for (int i = 0; i < 16; i++) 
+      {
+	String name = "xmm" + i;
+        registerMap.put(name, new XMMRegister(name, i));
+      }
+    
   }
 
   public Iterator RegisterIterator()
@@ -193,10 +264,13 @@ class IsaX8664 implements Isa
 
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    ByteBuffer[] result = new ByteBuffer[]
-      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
-    result[0].order(getByteOrder());
-    return result;
+    ByteBuffer[] bankBuffers = new ByteBuffer[2];
+    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS };
+    for (int i = 0; i < 2; i++) 
+      {
+	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
+	bankBuffers[i].order(getByteOrder());
+      }
+    return bankBuffers;
   }
-	
 }

@@ -1,3 +1,9 @@
+2006-11-06  Tim Moore  <timoore@redhat.com>
+
+	* IsaIA32.java (IsaIA32): Add floating point unit configuration 
+	registers.
+	* IsaX8664.java (IsaX8664): Add floating point and xmm registers.
+
 2006-11-03  Nurdin Premji  <npremji@edhat.com>
 
 	* ProcBlockObserver.java: Split the observer into a main Proc observer and a private

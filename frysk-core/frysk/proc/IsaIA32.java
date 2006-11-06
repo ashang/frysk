@@ -105,7 +105,15 @@ class IsaIA32 implements Isa
       new RegisterView(64, 8, RegisterView.INTEGER)
     } ;
 
-  
+  static class I387ConfigRegister
+    extends Register
+  {
+    I387ConfigRegister(String name, int wordOffset) 
+    {
+      super(1, wordOffset * 4, 4, name);
+    }
+  }
+    
   // XXX Blow off the XMM registers for now
   static class IA32FPRegister 
     extends FPRegister
@@ -149,6 +157,10 @@ class IsaIA32 implements Isa
       {
         registerMap.put(regDefs[i].getName(), regDefs[i]);
       }
+    String[] i387CntlNames = {"cwd", "swd", "twd", "fip", "fcs", "foo", "fos"};
+    for (int i = 0; i < i387CntlNames.length; i++) 
+      registerMap.put(i387CntlNames[i],
+		      new I387ConfigRegister(i387CntlNames[i], i));
     for (int i = 0; i < 8; i++) 
       {
         String name = "st" + i;
