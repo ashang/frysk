@@ -1,3 +1,7 @@
+2006-11-06  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Pass "funit" to Runner constructor.
+
 2006-10-19  Mark Wielaard  <mark@klomp.org>
 
 	* funit-breakpoints.c :Do the same for all architectures.

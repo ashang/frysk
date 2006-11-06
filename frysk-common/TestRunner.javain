@@ -51,7 +51,7 @@ public class TestRunner
 {
     public static void main (String[] args)
     {
-	Runner testRunner = new Runner (args);
+	Runner testRunner = new Runner ("TestRunner", args);
 	System.exit (testRunner.runArchCases
 		     (args, JUnitTests.get (), JUnitTests.get (),
 		      Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/",

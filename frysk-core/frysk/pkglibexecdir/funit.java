@@ -53,7 +53,7 @@ public class funit
 {  
     public static void main (String[] args)
     {
-	Runner testRunner = new Runner (args);   
+	Runner testRunner = new Runner ("funit", args);
 
 	LinkedList list = new LinkedList ();
 	list.addAll (frysk.imports.JUnitTests.get ());
