@@ -1986,8 +1986,7 @@ public class SourceWindow
                                */
           {
 
-            if (this.dom == null && tasks[j].equals(this.swProc.getMainTask())
-                && curr.getDwflLine() != null)
+            if (this.dom == null && curr.getDwflLine() != null)
               {
                 try
                   {
@@ -2010,8 +2009,6 @@ public class SourceWindow
                   }
               }
 
-            // System.out.println(curr.getMethodName());
-            // System.out.println("getting dwflline");
             line = curr.getDwflLine();
 
             if (line != null)
@@ -2052,6 +2049,7 @@ public class SourceWindow
   private static DOMFunction getFunctionXXX (DOMImage image, String filename,
                                              int linenum)
   {
+    
     Iterator functions = image.getFunctions();
 
     // System.out.println("Looking for " + filename + ": " + linenum);
@@ -2064,6 +2062,7 @@ public class SourceWindow
         if (function.getSource().getFileName().equals(filename)
             && function.getStartingLine() <= linenum)
           {
+        
             if (found == null
                 || function.getStartingLine() > found.getStartingLine())
               found = function;

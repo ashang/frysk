@@ -1,3 +1,8 @@
+2006-11-06  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Made sure the DOMFrysk gets
+	generated before every Task is stack-traced.
+
 2006-11-06  Nurdin Premji  <npremji@edhat.com>
 
 	* SourceWindow.java (unblockProc): Removed requestDeleteTerminatingObserver
