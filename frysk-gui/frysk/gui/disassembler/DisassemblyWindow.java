@@ -128,6 +128,10 @@ public class DisassemblyWindow
 
   private double lastKnownTo;
   
+  private int numInstructions;
+  
+  private long pcOffset = 0;
+  
   private long pc;
   
   /**
@@ -206,7 +210,8 @@ public class DisassemblyWindow
         e.printStackTrace();
         return;
       }
-    long end = pc_inc + 20;
+    //long end = pc_inc + 20;
+    this.numInstructions = 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -214,7 +219,8 @@ public class DisassemblyWindow
 
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setValue((double) pc_inc);
-    this.toSpin.setValue((double) end);
+    this.lastKnownFrom = pc_inc;
+    //this.toSpin.setValue((double) end);
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
@@ -288,10 +294,6 @@ public class DisassemblyWindow
    */
   public void setUpColumns ()
   {
-    long start = (long) this.fromSpin.getValue();
-    long end = (long) this.toSpin.getValue();
-    this.lastKnownFrom = (double) start;
-    this.lastKnownTo = (double) end;
     this.model.clear();
 
     disassemblerView.setModel(model);
@@ -302,8 +304,9 @@ public class DisassemblyWindow
         disassemblerView.removeColumn(tvc[i]);
       }
 
-    for (long i = start; i < end + 1; i++)
-      rowAppend(i, null);
+    for (long i = 0; i < this.numInstructions; i++)
+      this.model.appendRow();
+      //rowAppend(i, null);
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle(colNames[LOC]);
@@ -351,8 +354,7 @@ public class DisassemblyWindow
       {
         instructionsList = diss.disassembleInstructions(
                                                         (long) this.lastKnownFrom,
-                                                        (long) (this.lastKnownTo
-                                                                - this.lastKnownFrom + 1));
+                                                        numInstructions);
       }
     catch (OpcodesException oe)
       {
@@ -367,17 +369,25 @@ public class DisassemblyWindow
     TreeIter iter = model.getFirstIter();
 
     while (iter != null)
-      { 
+      {
         if (ins != null)
           {
-	    model.setValue(iter, (DataColumnString) cols[1], "<pc+" 
-			   + (ins.address - this.pc) + ">: ");
-            model.setValue(iter, (DataColumnString) cols[0], "0x" + Long.toHexString(ins.address));
+            model.setValue(iter, (DataColumnString) cols[1],
+                           "<pc+" + (ins.address - this.pc) + ">: ");
+            model.setValue(iter, (DataColumnString) cols[LOC],
+                           "0x" + Long.toHexString(ins.address));
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
+            
+            this.pcOffset += ins.address;
+            
             if (li.hasNext())
               ins = (Instruction) li.next();
             else
-              ins = null;
+              {
+                this.toSpin.setValue((double) ins.address);
+                this.lastKnownTo = ins.address;
+                ins = null;
+              }
           }
         else
           model.setValue(iter, (DataColumnString) cols[1], "");
@@ -405,12 +415,48 @@ public class DisassemblyWindow
    */
   public void rowAppend (long i, TreeIter iter)
   {
-    if (iter == null)
-      iter = model.appendRow();
+//    if (iter == null)
+//      iter = model.appendRow();
+    
+    LinkedList instructionsList = null;
 
-    model.setValue(iter, (DataColumnString) cols[LOC], "0x"
-                                                       + Long.toHexString(i));
+    try
+      {
+        instructionsList = diss.disassembleInstructions(
+                                                        (long) this.lastKnownTo,
+                                                        numInstructions);
+      }
+    catch (OpcodesException oe)
+      {
+        System.out.println(oe.getMessage());
+      }
 
+    Iterator li = instructionsList.listIterator(0);
+    Instruction ins = (Instruction) li.next();
+    
+    for (int j = 0; j < i; j++)
+      {
+        iter = model.appendRow();
+        if (ins != null)
+          {
+            model.setValue(iter, (DataColumnString) cols[1],
+                           "<pc+" + (ins.address - this.pc) + ">: ");
+            model.setValue(iter, (DataColumnString) cols[LOC],
+                           "0x" + Long.toHexString(ins.address));
+            model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
+            
+            if (li.hasNext())
+              ins = (Instruction) li.next();
+            else
+              {
+                this.toSpin.setValue((double) ins.address);
+                this.lastKnownTo = ins.address;
+                ins = null;
+              }
+          }
+        else
+          model.setValue(iter, (DataColumnString) cols[1], "");
+      }
   }
 
   /*****************************************************************************
@@ -423,7 +469,7 @@ public class DisassemblyWindow
    * 
    * @param val The new value of the SpinBox.
    */
-  public void handleFromSpin (double val)
+  public synchronized void handleFromSpin (double val)
   {
 
     if (val > this.lastKnownTo)
@@ -439,6 +485,7 @@ public class DisassemblyWindow
 
         for (int i = (int) lastKnownFrom; i < (int) val; i++)
           {
+            this.numInstructions--;
             model.removeRow(iter);
             iter = iter.getNextIter();
           }
@@ -447,11 +494,15 @@ public class DisassemblyWindow
       {
         for (long i = (long) val; i < lastKnownFrom; i++)
           {
-            TreeIter newRow = model.prependRow();
-            rowAppend(i, newRow);
+            //TreeIter newRow = model.prependRow();
+            //rowAppend(i, newRow);
+            this.numInstructions++;
+            model.prependRow();
+            //model.clear();
+            refreshList();
           }
       }
-    refreshList();
+    //refreshList();
     this.lastKnownFrom = val;
   }
 
@@ -461,7 +512,7 @@ public class DisassemblyWindow
    * 
    * @param val The new value of the SpinBox.
    */
-  public void handleToSpin (double val)
+  public synchronized void handleToSpin (double val)
   {
 
     if (val < this.lastKnownFrom)
@@ -474,28 +525,47 @@ public class DisassemblyWindow
     if (val > this.lastKnownTo)
       {
         for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          rowAppend(i, null);
+          {
+            //this.model.appendRow();
+            this.numInstructions++;
+          }
+        rowAppend((long) (val - lastKnownTo), null);
+        return;
       }
     else
       {
-        TreeIter i = model.getFirstIter();
-        while (i != null)
-          i = i.getNextIter();
-
-        TreeIter ii = model.getFirstIter();
-        long j;
-        for (j = (long) lastKnownFrom; j < (long) val; j++)
-          ii = ii.getNextIter();
-
-        for (; j < lastKnownTo; j++)
-          {
-            model.removeRow(ii);
-            ii = ii.getNextIter();
-          }
+        return;
+        /* We have a problem here because all the instructions are of a 
+         * different size and we won't know exactly how many rows to take off simply
+         * by the offset from the PC. */
+        
+//        TreeIter i = model.getFirstIter();
+//        while (i != null)
+//          i = i.getNextIter();
+        
+//        this.numInstructions--;
+//
+//        TreeIter i = this.model.getFirstIter();
+//        long j;
+//        int end = (int) ((val - 2) - this.lastKnownFrom);
+//        for (j = 0; j < end; j++)
+//          {
+//            System.out.println("iterating " + j);
+//            System.out.println("i is " + i);
+//            i = i.getNextIter();
+//          }
+//
+//        end = (int) (this.lastKnownTo - (val - 2));
+//        for (j = 0; j < end; j++)
+//          {
+//            System.out.println("de-iterating " + j);
+//            model.removeRow(i);
+//            i = i.getNextIter();
+//          }
+//        
+//        this.lastKnownTo = val;
+        //refreshList();
       }
-
-    this.lastKnownTo = val;
-    refreshList();
   }
 
   /****************************************************************************

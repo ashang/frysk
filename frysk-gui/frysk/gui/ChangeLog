@@ -1,3 +1,17 @@
+2006-11-06  Mike Cvet  <mcvet@redhat.com>
+
+	* disassembler/DisassemblyWindow.java (rowAppend): Fixed to properly
+	append rows more efficiently.
+	(numInstructions): Added. Used to figure out how many instructions are
+	displayed rather than using memory addressing offsets. Fixes #3461.
+	(setUpColumns): Fixed to use numInstructions. Removed some useless 
+	int values.
+	(refreshList): Makes better use of available information to generate
+	window information. Fixes #3461.
+	(handleFromSpin): Fixed a scrolling bug.
+	(handleToSpin): Ditto. Temporarily removed functionality for iterating 
+	back "down" memory space from bottom of window pending more bugfixing.
+
 2006-11-02  Mike Cvet  <mcvet@redhat.com>
 
 	* glade/frysk_source.glade: Added stepDialog.
