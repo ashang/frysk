@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,58 +37,53 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <dirent.h>
-#include <errno.h>
-#include <stdlib.h>
+package frysk.sys.proc;
 
-#include <gcj/cni.h>
-#include <gnu/gcj/RawData.h>
+import gnu.gcj.RawData;
 
-#include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/proc/IdBuilder.h"
-
-gnu::gcj::RawData*
-frysk::sys::proc::IdBuilder::open (jint pid)
+/**
+ * Scan the <tt>/proc</tt>, or <tt>/proc/</tt>pid<tt>/task</tt>
+ * directory for process/task IDs building each ID as it is
+ * encountered.
+ */
+public abstract class ProcBuilder
 {
-  // Get the file name.
-  const char *file;
-  char tmp[FILENAME_MAX];
-  if (pid > 0) {
-    if (::snprintf (tmp, sizeof tmp, "/proc/%d/task", (int) pid)
-	>= FILENAME_MAX)
-      throwRuntimeException ("snprintf: buffer overflow");
-    file = tmp;
-  }
-  else
-    file = "/proc";
-  return (gnu::gcj::RawData*)  opendir (file);
-}
-
-void
-frysk::sys::proc::IdBuilder::scan (gnu::gcj::RawData* rawData)
-{
-  DIR* proc = (DIR*) rawData;
-
-  while (true) {
-
-    // Get the dirent.
-    struct dirent *dirent = readdir (proc);
-    if (dirent == NULL)
-      break;
-
-    // Get the pid, skip if non-numeric.
-    char* end = NULL;
-    int id = strtol (dirent->d_name, &end, 10);
-    if (end == dirent->d_name)
-      continue;
-
-    buildId (id);
-  }
-}
-
-void
-frysk::sys::proc::IdBuilder::close (gnu::gcj::RawData* rawData)
-{
-  closedir ((DIR*) rawData);
+    /**
+     * Iterate over the <tt>/proc</tt>pid<tt>/task</tt> directory
+     * notifying ProcBuilder of each "interesting" entry.  Use
+     * "finally" to ensure that the directory is always closed.
+     */
+    public final boolean construct (int pid)
+    {
+	RawData dir = open (pid);
+	if (dir == null)
+	    return false;
+	try {
+	    scan (dir);
+	}
+	finally {
+	    close (dir);
+	}
+	return true;
+    }
+    /**
+     * Iterate over the <tt>/proc</tt> directory notifying TaskBuilder
+     * of each "interesting" entry.
+     */
+    public final boolean construct ()
+    {
+	return construct (0);
+    }
+    /**
+     * Called for each process or task ID in the <tt>/proc</tt>, or
+     * <tt>/proc/PID/task</tt> directory.
+     */
+    abstract public void buildId (int id);
+    /**
+     * Private native methods for manipulating the <tt>/proc</tt>
+     * directory.  Move to frysk.sys.Dir?
+     */
+    native RawData open (int pid);
+    native void scan (RawData dir);
+    native void close (RawData dir);
 }

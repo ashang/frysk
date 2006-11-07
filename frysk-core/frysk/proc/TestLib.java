@@ -51,7 +51,7 @@ import frysk.sys.Sig;
 import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
-import frysk.sys.proc.IdBuilder;
+import frysk.sys.proc.ProcBuilder;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1316,7 +1316,7 @@ public class TestLib
 	// their clones to the kill-list.  Do this after the initial
 	// kill as, hopefully, that has stopped many of the threads
 	// dead in their tracks.
-	IdBuilder missingChildren = new IdBuilder ()
+	ProcBuilder missingChildren = new ProcBuilder ()
 	    {
 		public void buildId (int id)
 		{

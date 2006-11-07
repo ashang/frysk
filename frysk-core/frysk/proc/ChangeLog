@@ -1,3 +1,9 @@
+2006-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java: Update, use frysk.sys.proc.ProcBuilder.
+	* LinuxProc.java: Ditto.
+	* TestLib.java: Ditto.
+
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (tearDown): For all children being killed, add

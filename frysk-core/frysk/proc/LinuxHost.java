@@ -53,7 +53,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import frysk.sys.proc.IdBuilder;
+import frysk.sys.proc.ProcBuilder;
 import java.util.logging.Level;
 
 /**
@@ -163,7 +163,7 @@ public class LinuxHost
     // Iterate (build) the /proc tree, passing each found PID to
     // procChanges where it can update the /proc tree.
     final ProcChanges procChanges = new ProcChanges();
-    IdBuilder pidBuilder = new IdBuilder()
+    ProcBuilder pidBuilder = new ProcBuilder()
     {
       public void buildId (int pid)
       {

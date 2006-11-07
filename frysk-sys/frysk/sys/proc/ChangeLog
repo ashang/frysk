@@ -1,3 +1,10 @@
+2006-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/IdBuilder.cxx: Rename ...
+	* cni/ProcBuilder.cxx: ... to this.
+	* IdBuilder.java: Rename ...
+	* ProcBuilder.java: ... to this.
+
 2006-10-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/MapsBuilder.cxx (construct): Don't terminate end of map line

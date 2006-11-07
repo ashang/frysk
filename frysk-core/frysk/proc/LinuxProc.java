@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.HashMap;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
-import frysk.sys.proc.IdBuilder;
+import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Exe;
@@ -99,7 +99,7 @@ public class LinuxProc
 	// removed, so that by the end it contains a set of
 	// removed tasks.
 	class TidBuilder
-	    extends IdBuilder
+	    extends ProcBuilder
 	{
 	    Map added = new HashMap ();
 	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
