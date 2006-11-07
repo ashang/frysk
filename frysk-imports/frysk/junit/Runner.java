@@ -78,6 +78,9 @@ public class Runner
     private String archBuild = null; 
     private Collection testCases = null;
     private boolean listClassesOnly = false;
+    // Put all tests through a filter; by default exclude all Stress.*
+    // classes.
+    private String testFilter = "^(|.*\\.)(?!Stress)[^\\.]*$";
     
     private LinkedList otherArgs;
     
@@ -172,27 +175,25 @@ public class Runner
       
 	TestSuite testSuite = new TestSuite ();
       
-	if (otherArgs.size() > 0)
-	    {
-		// Construct the testsuite from the list of names.
-		Iterator iter = otherArgs.listIterator(0);
-		while (iter.hasNext())
-		    {
-			String arg = (String) iter.next();
-			if (arg.charAt (0) == '-')
-			    this.repeatValue = -Integer.parseInt (arg);
-			else
-			    testSuite.addTest (getTest (arg));
-		    }
+	if (otherArgs.size() > 0) {
+	    // Construct the testsuite from the list of names.
+	    Iterator iter = otherArgs.listIterator(0);
+	    while (iter.hasNext()) {
+		String arg = (String) iter.next();
+		if (arg.charAt (0) == '-')
+		    this.repeatValue = -Integer.parseInt (arg);
+		else
+		    testSuite.addTest (getTest (arg));
 	    }
-	else
-	    {
-		for (Iterator i = testClasses.iterator (); i.hasNext (); )
-		    {
-			Class testClass = (Class) i.next ();
-			testSuite.addTest (new TestSuite (testClass));
-		    }
+	}
+	else {
+	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
+		Class testClass = (Class) i.next ();
+		// Only include tests that gets by both filters.
+		if (testClass.getName ().matches (testFilter))
+		    testSuite.addTest (new TestSuite (testClass));
 	    }
+	}
   
 	if (listClassesOnly) {
 	    for (Enumeration e = testSuite.tests (); e.hasMoreElements (); ) {
@@ -416,7 +417,7 @@ public class Runner
 		}
 	    });
 
-	parser.add (new Option ('n', "list-classes-only",
+	parser.add (new Option ("list-classes-only", 'n',
 				"Do not run any tests, instead list the"
 				+ " classes that would have been tested")
 	    {
@@ -427,12 +428,36 @@ public class Runner
 		}
 	    });
 
+	parser.add (new Option ("stress",
+				"Run only stress tests "
+				+ "(by default stress tests are excluded).")
+	    {
+		public void parsed (String nullArgument)
+		    throws OptionException
+		{
+		    testFilter = "^(|.*)Stress.*$";
+		}
+	    });
+
+	parser.add (new Option ("all",
+				"Run all tests "
+				+ "(by default stress tests are excluded).")
+	    {
+		public void parsed (String nullArgument)
+		    throws OptionException
+		{
+		    testFilter = "^.*$";
+		}
+	    });
+
 	parser.setHeader ("Usage:"
 			  + " [ -c <console-level> ]"
 			  + " [ -l <log-level> ]"
 			  + " [ -r <repeat-count> ]"
 			  + " [ --arch <arch>]"
 			  + " [ -n ]"
+			  + " [ --stress ]"
+			  + " [ --all ]"
 			  + " [ class ... ]");
 	return parser;
     }

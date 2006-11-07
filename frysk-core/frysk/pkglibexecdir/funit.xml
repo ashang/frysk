@@ -84,6 +84,12 @@
         <option>-n</option>
       </arg>
       <arg choice="opt">
+        <option>--stress</option>
+      </arg>
+      <arg choice="opt">
+        <option>--all</option>
+      </arg>
+      <arg choice="opt">
         <option><replaceable>test-class</replaceable> ...</option>
       </arg>
     </cmdsynopsis>
@@ -132,6 +138,20 @@
         <term>-n</term>
         <listitem>
           <para> No not run any tests, instead list the classes that would have been tested. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--stress</term>
+        <listitem>
+          <para> Run only stress tests (by default stress tests are excluded). </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--all</term>
+        <listitem>
+          <para> Run all tests (by default stress tests are excluded). </para>
         </listitem>
       </varlistentry>
 

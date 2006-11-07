@@ -1,5 +1,9 @@
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java (testFilter): New private variable.
+	(createCommandLineParser): Add --stress and --all.
+	(runCases): Only include tests that match testFilter.
+
 	* Runner.java (runTestCases): Replace runArchCases.
 	(createCommandLineParser): Add -n / --list-classes-only option.
 	(listClassesOnly): New boolean variable.

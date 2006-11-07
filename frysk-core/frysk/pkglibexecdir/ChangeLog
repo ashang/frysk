@@ -1,5 +1,7 @@
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* funit.xml: Mention --all and --stress.
+
 	* funit.java: Call runTestCases.
 	* funit.xml: Mention -n / --list-classes-only option.
 	
