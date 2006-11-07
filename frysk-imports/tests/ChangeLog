@@ -1,3 +1,11 @@
+2006-11-07  Chris Moller  <moller@mollerware.com>
+
+	* frysk3381/reparent.c: Revised test for frysk bug 3381 (RHEL bug
+	210693) 
+	* Makefile.am: Change frysk3381/reparent.c to PASS.  Also fixed
+	typo: TESTS += frysk33811/reparent--an extra trailing '1' in
+	frysk33811. 
+
 2006-10-26  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk3228/LoggerParent.java (main): Fixed typo, second ab reference should be ac.

@@ -26,6 +26,8 @@
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include <pthread.h>
 #include <alloca.h>
 #include <signal.h>
@@ -43,9 +45,7 @@ volatile pid_t parent_pid;
 volatile pid_t pid;
 volatile pid_t pid2;
 
-char * proc_fn[NR_CHILDREN];
-char * proc_ppid[NR_CHILDREN];
-char * proc_file[NR_CHILDREN];
+char * proc_file[NR_CHILDREN + 1];
 
 int pipes[] = {-1, -1};
 
@@ -68,11 +68,16 @@ make_grandkid()
     exit (1);
   case 0: // child
     {
+      while (1) {
+	usleep (250000);
+      }
+#if 0
       int timeout = 5;
       do 
 	timeout -= sleep (timeout);
       while (timeout > 0);
       exit (1);
+#endif
     }
     exit (0);
     break;
@@ -84,6 +89,161 @@ make_grandkid()
     break;
   }
 }
+
+typedef struct {
+  char * tag;
+  char * val;
+} stt_s;
+
+static stt_s *
+read_status (int idx)
+{
+  FILE * st;
+  stt_s * stt;
+  int stt_max;
+  int stt_nxt;
+#define STT_INCR 40
+
+  stt = NULL;
+  stt_max = 0;
+  stt_nxt = 0;
+  
+  if (NULL == (st = fopen (proc_file [idx], "r"))) return NULL;
+  else {
+#define IBFFR_LEN 256
+    char * ibffr = alloca (IBFFR_LEN);
+    while (NULL != fgets (ibffr, IBFFR_LEN, st)) {
+      if (strstr (ibffr, "Uid") || strstr (ibffr, "Gid")) continue;
+      char * cptr = strchr (ibffr, ':');
+      if (cptr) {
+	if (stt_max <= stt_nxt) {
+	  stt_max += STT_INCR;
+	  stt = realloc (stt, stt_max * sizeof(stt_s));
+	}
+	*cptr = 0;
+	stt[stt_nxt].tag = strdup (ibffr);
+	ibffr = cptr + 1;
+	cptr = strchr (ibffr, '\n');
+	*cptr = 0;
+	{
+	  int k;
+	  char * b = ibffr;
+	  int l = strlen (ibffr);
+	  for (k = 0; k < l; k++) if (!isspace ((int)ibffr[k])) break;
+	  b = &ibffr[k];
+	  l -= k;
+	  for (k = l-1; k >= 0; k--) if (!isspace ((int)b[k])) break;
+	  b[k+1] = 0;
+	  stt[stt_nxt++].val = strdup (b);
+	}
+      }
+    }
+    if (stt_max <= stt_nxt) {
+      stt_max += STT_INCR;
+      stt = realloc (stt, stt_max * sizeof(stt_s));
+    }
+    stt[stt_nxt].tag = NULL;
+    stt[stt_nxt++].val = NULL;
+    fclose (st);
+  }
+
+  return stt;
+}
+
+static void
+show_status (stt_s * sttv[])
+{
+  if (sttv) {
+    int i;
+    int j;
+    int max_tl = -1;
+    int max_vl[NR_CHILDREN + 1];
+    int max_idx;
+
+    for (i = 0; i < NR_CHILDREN + 1; i++) max_vl[i] = -1;
+
+    for (i = 0; sttv[0][i].tag; i++) {
+      int tl = strlen (sttv[0][i].tag);
+      if (max_tl < tl) max_tl = tl;
+    }
+    max_idx = i;
+
+    for (i = 0; i < NR_CHILDREN + 1; i++) max_vl[i] = -1;
+    
+    for (i = 0; i < max_idx; i++) {
+      for (j = 0; j < NR_CHILDREN + 1; j++) {
+	if ( sttv[j] && sttv[j][i].val) {
+	  int vl = strlen (sttv[j][i].val);
+	  if (max_vl[j] < vl) max_vl[j] = vl;
+	}
+      }
+    }
+
+    fprintf (stderr, "%*s | ", 2+max_tl, " ");
+    for (j = 0; j < NR_CHILDREN + 1; j++) 
+      fprintf (stderr, "%*s | ", 2+max_vl[j],
+	       (0 == j) ? "Parent" : "Child");
+    fprintf (stderr, "\n");
+
+    for(i = 0; i < max_idx; i++) {
+      fprintf (stderr, "%*s | ", 2+max_tl, sttv[0][i].tag);
+      for (j = 0; j < NR_CHILDREN + 1; j++) 
+	fprintf (stderr, "%*s | ", 2+max_vl[j],
+		 (sttv[j] && sttv[j][i].val) ? sttv[j][i].val : " ");
+      fprintf (stderr, "\n");
+    }
+  }
+}
+
+static void 
+dump_status()
+{
+  int i;
+  stt_s * sttv[NR_CHILDREN + 1];
+  
+  for (i = 0; i < NR_CHILDREN + 1; i++)
+    sttv[i] = read_status (i);
+  show_status(sttv);
+}
+
+static void
+decode_status (int status)
+{
+  if (0)
+    ;
+  else if (WIFEXITED (status))                // (s & 0x7f) == 0
+    fprintf (stderr, "WIFEXITED\n");
+  else if (WIFSTOPPED (status)) {     // (s & 0xff) == 0x7f
+    fprintf (stderr, "WIFSTOPPED with signal %d\n", WSTOPSIG(status));
+#if 0
+    switch (WSTOPEVENT (status)) {
+    case PTRACE_EVENT_CLONE:
+      fprintf (stderr, "\tPTRACE_EVENT_CLONE\n");
+      break;
+    case PTRACE_EVENT_FORK:
+      fprintf (stderr, "\tPTRACE_EVENT_FORK\n");
+      break;
+    case PTRACE_EVENT_EXIT:
+      fprintf (stderr, "\tPTRACE_EVENT_EXIT\n");
+      break;
+    case PTRACE_EVENT_EXEC:
+      fprintf (stderr, "\tPTRACE_EVENT_EXEC\n");
+      break;
+    case 0:
+      fprintf (stderr, "\t0\n");
+      break;
+    default:
+      fprintf (stderr, "\tUnknown\n");
+    }
+#endif
+  }
+  else if (WIFSIGNALED (status))      // (((s & 0x7f) + 1) >> 1) > 0
+    fprintf (stderr, "WIFSIGNALED with signal %d\n", WTERMSIG(status));
+  else if (WIFCONTINUED (status))             // (s == 0xffff) == 0
+    fprintf (stderr, "WIFEXITED\n");
+  else
+    fprintf (stderr, "Unknown\n");
+}	
   
 int
 main (int ac, char * av[])
@@ -131,60 +291,70 @@ main (int ac, char * av[])
   }
 
   parent_pid = getpid();
+  asprintf (&proc_file[0], "/proc/%d/status", (int)parent_pid);
+
+  for (i = 0; i < NR_CHILDREN; i++)
+    asprintf (&proc_file[i+1], "/proc/%d/status", (int)dpids[i]);
+
   signal (SIGALRM, timeout);
   alarm (1);
 
-  for (i = 0; i < NR_CHILDREN; i++) {
-    asprintf (&proc_file[i], "/proc/%d", (int)dpids[i]);
-    asprintf (&proc_fn[i], "cat /proc/%d/status | grep State:", (int)dpids[i]);
-    asprintf (&proc_ppid[i], "cat /proc/%d/status | grep PPid:", (int)dpids[i]);
-    fprintf (stderr, "[%d] Initial:\t\t\t\t", dpids[i]);
-    system (proc_fn[i]);
-    fprintf (stderr, "[%d]         \t\t\t\t", dpids[i]);
-    system (proc_ppid[i]);
-  }
+  fprintf (stderr, "INITIAL STATE\n");
+  dump_status();
   
-  fprintf (stderr, "\nAttach to grandchild and wait for the stop\n");
   for (i = 0; i < NR_CHILDREN; i++) {
+    int status;
+    
+    fprintf (stderr, "\n\nAttach to grandchild %d and wait.\n", (int)dpids[i]);
     if (ptrace (PTRACE_ATTACH, dpids[i], NULL, NULL) < 0) {
       perror ("ptrace -- for attach");
       exit (1);
     }
-    if (waitpid (dpids[i], NULL,  __WALL) < 0) {
+    if (waitpid (dpids[i], &status,  __WALL) < 0)
       perror ("waitpid -- for attach");
-      exit (1);
+    else {
+      fprintf (stderr, "wait status = %#08x  ", status);
+      decode_status (status);
     }
-    
-    fprintf (stderr, "[%d] After attach:\t\t\t\t", dpids[i]);
-    system (proc_fn[i]);
   }
 
-  fprintf (stderr, "\nsending SIGKILL\n");
+  fprintf (stderr, "\nAFTER ATTACH\n");
+  dump_status();
+
+  fprintf (stderr, "\n\nSTARTING tearDown EMULATION.\n");
+
   for (i = 0; i < NR_CHILDREN; i++) {
-    kill (dpids[i], SIGKILL);
-    fprintf (stderr, "[%d] After SIGKILL:\t\t\t\t", dpids[i]);
-    system (proc_fn[i]);
+    fprintf (stderr, "\nsending SIGKILL to %d\n", (int)dpids[i]);
+    if (kill (dpids[i], SIGKILL)) 
+      perror ("kill SIGKILL");
   }
 
-  fprintf (stderr, "\nsending SIGCONT\n");
+  usleep (250000);
+
+  fprintf (stderr, "\nAFTER kill SIGKILL\n");
+  dump_status();
+
   for (i = 0; i < NR_CHILDREN; i++) {
-    kill (dpids[i], SIGCONT);
-    fprintf (stderr, "[%d] After SIGCONT:\t\t\t\t", dpids[i]);
-    system (proc_fn[i]);
+    fprintf (stderr, "\nsending SIGCONT to %d\n", (int)dpids[i]);
+    if (kill (dpids[i], SIGCONT))
+      perror ("kill SIGCONT");
   }
+
+  usleep (250000);
+
+  fprintf (stderr, "\nAFTER kill SIGCONT\n");
+  dump_status();
   
-  fprintf (stderr, "\ndetaching with SIGCKILL\n");
   for (i = 0; i < NR_CHILDREN; i++) {
-    if (ptrace (PTRACE_DETACH, dpids[i], NULL, (void *)SIGKILL) < 0) {
-      perror ("ptrace -- for detach");
-      exit (1);
-    }
-    fprintf (stderr, "[%d] After detach:\t\t\t\t", dpids[i]);
-    if (0 == access (proc_file[i], R_OK))
-      system (proc_fn[i]);
-    else
-      fprintf (stderr, "No longer exists\n");
+    fprintf (stderr, "\ndetaching with SIGCKILL on %d\n", (int)dpids[i]);
+    if (ptrace (PTRACE_DETACH, dpids[i], NULL, (void *)SIGKILL) < 0)
+      perror ("ptrace PTRACE_DETACH(KILL)");
   }
+
+  usleep (250000);
+
+  fprintf (stderr, "\nAFTER PTRACE_DETACH/SIGKILL\n");
+  dump_status();
   
   fprintf (stderr, "\nwaiting for completion\n");
   {
@@ -192,14 +362,34 @@ main (int ac, char * av[])
     while (kids_remaining > 0) {
       int status;
       pid_t npid = waitpid (-1, &status, 0);
-      for (i = 0; i < NR_CHILDREN; i++) {
-	if ((npid == dpids[i]) && (WIFEXITED(status) || WIFSIGNALED(status))) {
-	  dpids[i] = -1;
-	  kids_remaining--;
+
+      if (-1 == npid) {
+	perror ("waitpid(-1, ...)");
+	if (errno == ECHILD) {
+	  if (0 != kids_remaining) {
+	    fprintf (stderr, "kill failure\n");
+	    exit (1);
+	  }
+	  break;
+	}
+      }
+      else {
+	fprintf (stderr, "process %d, waitpid returned %#08x  ",
+		 (int)npid, status);
+	decode_status (status);
+	for (i = 0; i < NR_CHILDREN; i++) {
+	  if ((npid == dpids[i]) &&
+	      (WIFEXITED(status) || WIFSIGNALED(status))) {
+	    dpids[i] = -1;
+	    kids_remaining--;
+	  }
 	}
       }
     }
   }
+
+  fprintf (stderr, "\nAFTER waitpid(-1, ...)\n");
+  dump_status();
   exit (0);
   
 }
