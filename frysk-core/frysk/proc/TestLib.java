@@ -51,6 +51,7 @@ import frysk.sys.Sig;
 import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
+import frysk.sys.proc.IdBuilder;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -495,11 +496,6 @@ public class TestLib
 	    signal (delCloneSig);
 	    ack.await ();
 	}
-    /** Stop a Task. */
-    public void assertSendStop ()
-    {
-      signal (stopSig);
-    }
 	/** Add a child Proc.  */
 	public void assertSendAddForkWaitForAcks ()
 	{
@@ -570,6 +566,16 @@ public class TestLib
 		}, "assertSendExecCloneWaitForAcks");
 	    signal (execCloneSig);
 	    ack.await ();
+	}
+	/**
+	 * Stop a Task.  XXX: Nothing confirming that the task
+	 * actually stopped.
+	 */
+	public void sendStopXXX ()
+	{
+	    signal (stopSig);
+	    // XXX: there is nothing confirming that this operation
+	    // completed!!!
 	}
     }
 
@@ -1237,7 +1243,7 @@ public class TestLib
 	assertFalse ("child is process one", pid == 1);
 	Integer i = new Integer (pid);
 	children.add (i);
-	logger.log (Level.FINE, "{0} killDuringTearDown {1}\n",
+	logger.log (Level.FINE, "{0} killDuringTearDown {1,number,integer}\n",
 		    new Object[] { this, i });
     }
 
@@ -1264,15 +1270,6 @@ public class TestLib
 			killDuringTearDown (proc.getPid ());
 		}
 	    });
-	host.observableTaskAddedXXX.addObserver (new Observer ()
-	    {
-		public void update (Observable o, Object obj)
-		{
-		    Task task = (Task) obj;
-		    if (isDescendantOfMine (task.proc))
-			killDuringTearDown (task.getTid ());
-		}
-	    });
 	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
     }
 
@@ -1293,9 +1290,9 @@ public class TestLib
 	}
 
 	// Kill off all the registered children.  Once that signal is
-	// processed the task will die.
-	// Make sure there are still children to kill. Someone else
-	// may have waited on their deaths already.
+	// processed the task will die.  Make sure there are still
+	// children to kill. Someone else may have waited on their
+	// deaths already.
 	
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
@@ -1313,11 +1310,32 @@ public class TestLib
 			  new Object[] { this, child });
 	      i.remove();
 	    }
-	    // There's a problem here with both stopped and attached
-	    // tasks.  The Sig.KILL won't be delivered, and
-	    // consequently the task won't exit, until that task has
-	    // been continued.  Work around this by first sending all
-	    // tasks a continue ...
+	}
+
+	// Go through the registered processes / threads adding any of
+	// their clones to the kill-list.  Do this after the initial
+	// kill as, hopefully, that has stopped many of the threads
+	// dead in their tracks.
+	IdBuilder missingChildren = new IdBuilder ()
+	    {
+		public void buildId (int id)
+		{
+		    killDuringTearDown (id);		
+		}
+	    };
+	for (Iterator i = children.iterator (); i.hasNext (); ) {
+	    Integer child = (Integer) i.next ();
+	    int pid = child.intValue ();
+	    missingChildren.construct (pid);
+	}
+
+	// There is a problem with both stopped and attached tasks.
+	// The Sig.KILL won't be delivered, and consequently the task
+	// won't exit, until that task has been continued.  Work
+	// around this by first sending all tasks a continue ...
+	for (Iterator i = children.iterator (); i.hasNext (); ) {
+	    Integer child = (Integer) i.next ();
+	    int pid = child.intValue ();
 	    try {
 		Signal.kill (pid, Sig.CONT);
 		logger.log (Level.FINE, "{0} kill -CONT {1,number,integer}\n",
@@ -1354,14 +1372,12 @@ public class TestLib
 	    while (!children.isEmpty()) {
 	    	Wait.waitAll (-1, new Wait.Observer ()
 		    {
-			private void detach (int pid)
+			private void detachThenKill (int pid)
 			{
 			    try {
-				// Detach with a KILL signal which
-				// will force the task to exit.
-				Ptrace.detach (pid, Sig.KILL);
+				Ptrace.detach (pid, 0);
 				logger.log (Level.FINE,
-					    "{0} detach -KILL {1,number,integer}\n",
+					    "{0} detach {1,number,integer}\n",
 					    new Object[] {
 						TestLib.this,
 						new Integer (pid)
@@ -1369,40 +1385,50 @@ public class TestLib
 			    }
 			    catch (Errno.Esrch e) {
 				logger.log (Level.FINE,
-					    "{0} detach -KILL {1,number,integer} (fail)\n",
+					    "{0} detach {1,number,integer} (fail)\n",
 					    new Object[] {
 						TestLib.this,
 						new Integer (pid)
 					    });
 			    }
+			    try {
+				Signal.kill (pid, Sig.KILL);
+				logger.log (Level.FINE, "{0} kill -KILL {1,number,integer}\n",
+					    new Object[] { TestLib.this, new Integer (pid) });
+			    }
+			    catch (Errno.Esrch e) {
+				logger.log (Level.FINE,
+					    "{0} kill -KILL {1,number,integer} (failed)\n",
+					    new Object[] { TestLib.this, new Integer (pid) });
+			    }
 			}
 			public void cloneEvent (int pid, int clone)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			}
 			public void forkEvent (int pid, int child)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			}
 			public void exitEvent (int pid, boolean signal,
 					       int value, boolean coreDumped)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			    // Do not remove PID from children list;
 			    // need to let the terminated event behind
 			    // it bubble up.
 			}
 			public void execEvent (int pid)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			}
 			public void syscallEvent (int pid)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			}
 			public void stopped (int pid, int signal)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			}
 			public void terminated (int pid, boolean signal,
 						int value, boolean coreDumped)
@@ -1411,7 +1437,7 @@ public class TestLib
 			    children.remove(new Integer(pid));
 			    // To be sure, again make certain that the
 			    // thread is detached.
-			    detach (pid);
+			    detachThenKill (pid);
 			    // True children can have a second exit
 			    // status behind this first one, drain
 			    // that also.  Give up when this PID has
@@ -1433,7 +1459,7 @@ public class TestLib
 			}
 			public void disappeared (int pid, Throwable w)
 			{
-			    detach (pid);
+			    detachThenKill (pid);
 			    children.remove(new Integer(pid));
 			}
 		    });

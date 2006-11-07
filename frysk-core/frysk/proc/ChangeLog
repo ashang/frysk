@@ -1,3 +1,13 @@
+2006-11-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (tearDown): For all children being killed, add
+	their tasks to the list.
+	(sendStopXXX): Rename assertSendStop.
+	(killDuringTearDown): Fix log formatting.
+	(setUp): Don't register a killDuringTearDown observer against
+	thread addeded.
+	* TestProcStopped.java (stopped): Use Child.sendStopXXX.
+	
 2006-11-06  Nurdin Premji  <npremji@edhat.com>
 
 	* ProcBlockObserver.java: Ran GNU Formatter.
