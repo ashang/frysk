@@ -45,7 +45,6 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.StringBuffer;
 
 import frysk.EventLogger;
 import frysk.event.Event;
@@ -65,7 +64,7 @@ public class StacktraceObserver
 {
   private LinkedList taskList;
 
-  protected StringBuffer buffer = new StringBuffer();
+  protected String stackTrace= new String();
 
   private TreeMap sortedTasks;
 
@@ -149,9 +148,7 @@ public class StacktraceObserver
         Iterator i = output.iterator();
         while (i.hasNext())
           {
-            String s = (String) i.next();
-            // writer.println(s);
-            buffer.append(s).append("\n");
+	   stackTrace = stackTrace.concat((String) i.next()+"\n");
           }
       }
     logger.log(Level.FINE, "{0} exiting printTasks", this);
@@ -159,9 +156,9 @@ public class StacktraceObserver
 
   public final String toPrint ()
   {
-    logger.log(Level.FINE, "{0} toPrint, buffer: {1}", new Object[] { this,
-                                                                     buffer });
-    return buffer.toString();
+    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}", new Object[] { this,
+                                                                     stackTrace });
+    return stackTrace;
   }
 
   public final void storeTask (Task task)
@@ -190,7 +187,7 @@ public class StacktraceObserver
         catch (TaskException _)
           {
             // FIXME: log exception, or rethrow?
-            buffer.append("... couldn't print stack trace");
+            stackTrace.concat("... couldn't print stack trace\n");
           }
       }
   }

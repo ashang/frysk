@@ -1,3 +1,8 @@
+2006-11-07  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceObserver: Switched to use String rather than StringBuffer.
+	Testcases show 40% improvement.
+
 2006-11-06  Nurdin Premji  <npremji@edhat.com>
 
 	* TestFStack.java: Ran GNU Formatter. 
