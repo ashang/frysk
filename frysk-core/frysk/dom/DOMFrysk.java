@@ -86,9 +86,17 @@ import org.jdom.Element;
  *          |--attr: name - name associated with this image 
  *          |--attr: filename - name of the executable 
  *          |--attr: CCPATH - path to the executable 
+ *      |--Function - element: function
+ *          |--attr: name - name associated with this function
+ *          |--attr: source name - nmae of the source file thsi comes from
+ *          |--attr: char start - starting character from beginning of source file
+ *          |--attr: char end - ending character from beginning of source file
+ *          |--attr: line start - starting line number
+ *          |--attr: end line - ending line number
  *        |--Source - element: source 
  *          |--attr: filename - name of the source file 
  *          |--attr: filepath - path to the source file 
+ *          |--attr: include paths - list of comma-separated include paths
  *          |--attr: parsed - boolean to indicate if the GUI has parsed this source 
  *            |--Line - element: line 
  *              |--attr: number - line number to be added 
