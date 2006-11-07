@@ -354,6 +354,9 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
+    
+    this.setTitle(this.getTitle() + this.swProc.getCommand() + " - process "
+                  + this.swProc.getPid());
 
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
@@ -1365,6 +1368,7 @@ public class SourceWindow
   {
     if (selected == null)
       return;
+    
     DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                           + (source == null ? "Unknown File"

@@ -75,6 +75,9 @@ import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMLine;
+import frysk.dom.DOMSource;
+import frysk.dom.DOMTag;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
@@ -137,6 +140,8 @@ public class SourceView
   
   private HashMap varMap = new HashMap();
 
+  private DOMTag lastTag;
+  
   // private int hoverX;
   //  
   // private int hoverY;
@@ -679,6 +684,8 @@ public class SourceView
         SourceView.this.calculateMargin();
       }
     });
+    
+    this.lastTag = null;
 
     this.showAll();
   }
@@ -900,9 +907,51 @@ public class SourceView
   {
     TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                  (int) event.getY());
-    // Check to see if we've moused over a variable
-    Variable var = this.buf.getVariable(iter);
 
+    if (this.buf.getScope() == null)
+      return false;
+
+    DOMSource source = this.buf.getScope().getData();
+
+    if (source == null)
+      return false;
+
+    DOMLine line = source.getLine(iter.getLineNumber());
+
+    if (line == null)
+      return false;
+
+    DOMTag tag = line.getTag(iter.getLineOffset());
+
+    if (tag == null)
+      {
+        event.getWindow().setCursor(new Cursor(CursorType.XTERM));
+        return false;
+      }
+
+    if (this.lastTag != null)
+      {
+        if (this.lastTag.getToken().equals(tag.getToken()))
+          return false;
+      }
+    
+    /* The two tags are not equal */
+    this.lastTag = tag;
+
+    // Check to see if we've moused over a variable
+    // Variable var = this.buf.getVariable(iter);
+    Variable var = this.buf.getVariable(tag, line);
+
+// TextIter end = this.getIterFromWindowCoords((int) event.getX(),
+//                                                (int) event.getY());
+//    
+//    System.out.println("Event X Y: " + event.getX() + " " + event.getY());
+//    iter.moveBackwardWordStart();
+//    end.moveBackwardWordStart();
+//    System.out.println(iter + " " + end + " |" + iter.getBuffer().getText(iter, end, false) + "| " + iter.getBuffer());
+//    iter.moveBackwardLine();
+//    end.moveForwardLine();
+//    System.out.println("Line: " + iter + " " + end + " |" + iter.getBuffer().getText(iter, end, false) + "| " + iter.getBuffer());
     if (var != null)
       {
         event.getWindow().setCursor(new Cursor(CursorType.HAND1));

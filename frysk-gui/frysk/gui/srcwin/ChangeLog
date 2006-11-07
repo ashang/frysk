@@ -1,3 +1,11 @@
+2006-11-07  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (finishSourceWin): Set the window title properly.
+	* SourceView.java (mousedOverText): Make sure that the mouse is over a
+	new tag in the source code before going off parsing trying to see if it
+	is a variable. Fixes #3472.
+	* SourceBuffer.java (getVariable): Added.
+
 2006-11-06  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (generateProcStackTrace): Made sure the DOMFrysk gets

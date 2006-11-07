@@ -582,6 +582,41 @@ public class SourceBuffer
 
     return var;
   }
+  
+  /**
+   * Searches for a variable at the location specified by tag and line and returns a
+   * VariableLocation if a variable was found there. Returns null otherwise
+   * 
+   * @param tag The DOMTag to examine for a variable
+   * @param line  The DOMLine containing Source information
+   * @return The variable at that location, or null
+   */
+  public Variable getVariable (DOMTag tag, DOMLine line)
+  {
+    // No var (or no tag), do nothing
+    if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
+      return null;
+
+    Task myTask = this.scope.getTask();
+    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
+    stab.toString();
+    Variable var;
+    try
+      {
+        var = SymTab.print(line.getText().substring(
+                                                    tag.getStart(),
+                                                    tag.getStart()
+                                                        + tag.getLength()));
+      }
+    catch (ParseException e)
+      {
+        System.out.println(e.getMessage());
+        return null;
+      }
+
+    return var;
+  }
+  
   /**
    * @return The list of functions found by the parser
    */
