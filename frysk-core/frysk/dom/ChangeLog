@@ -1,3 +1,9 @@
+2006-11-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMSource.java: Added getIncludes method.
+	* cparser/CDTParser.java: Use getIncludes method.
+	Add countCommas/getIncPaths methods.
+
 2006-11-04  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMImage.java: Added capability to add multiple source files to

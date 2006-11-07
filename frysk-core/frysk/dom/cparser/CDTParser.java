@@ -104,11 +104,6 @@ import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
 
-import lib.dw.Dwarf;
-import lib.dw.DwarfCommand;
-import lib.elf.Elf;
-import lib.elf.ElfCommand;
-
 /**
  * @author ajocksch
  */
@@ -143,7 +138,7 @@ public class CDTParser
       {
         language = ParserLanguage.CPP;
       }
-    String [] incPaths = getIncPaths(executable);
+    String [] incPaths = getIncPaths(source);
     IScannerInfo buildScanInfo = new ScannerInfo(null, incPaths);
     IScannerInfo scanInfo = new ScannerInfo(buildScanInfo.getDefinedSymbols(),
                                             buildScanInfo.getIncludePaths());
@@ -232,49 +227,58 @@ public class CDTParser
   }
   
   /*
-   * getIncPaths gets the "include" paths from the ELF header
+   * getIncPaths gets the "include" paths from the DOMSource Element
    * 
    * @return returns an array of strings with the include paths,
    *                    null if there are none
    */
   
-  private String[] getIncPaths (String executable)
+  public String[] getIncPaths (DOMSource source)
   {
-    
-    try
-      {
-        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
-        Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
-        String [] files = dw.getSourceFiles();
+    String includes;
+    includes = source.getIncludes();
+    if (includes.equals(""))
+      return null;
 
-        // Since this call returns a lot of non-include file info, we must parse
-        // it and glean the include paths from it
-        String[] incfiles = new String[files.length];
-        int numberfiles = 0;
-        for (int i = 0; i < files.length; i++)
-          {
-            if (files[i].endsWith(".h")
-                && ! files[i].startsWith("/usr/include")
-                && ! files[i].startsWith("/usr/local/include"))
-              {
-                int j = files[i].lastIndexOf("/");
-                incfiles[numberfiles] = files[i].substring(0,j);
-                numberfiles++;
-              }
-          }
-        // Add the default includes used for all systems
-        incfiles[numberfiles] = "/usr/local/include";
-        numberfiles++;
-        incfiles[numberfiles] = "/usr/include";
-        return incfiles;
-      }
-
-    catch (lib.elf.ElfException ee)
-      {
-        System.err.println("Error getting include paths: " + ee.getMessage());
-        return null;
-      }
+    // Allocate the correct size string array
+    String[] incpaths = new String[countCommas(includes)+1];
+    int pathctr = 0;
+    int ptr = 0;
+    int j = 0;
+    // Loop thru the provided string and pull out the comma-separated
+    // include paths with each path in its own string
+    while (j < includes.length()) {
+      j = includes.indexOf(",", ptr);
+      // If we've found the last comma, we have one more include path
+      if (j == -1)
+          j = includes.length();
+      incpaths[pathctr] = includes.substring(ptr,j);
+      ptr = includes.indexOf(",", ptr) + 1;
+      pathctr++;
+    }
+    return incpaths;
   }
+  
+  /**
+   * get the number of commas in the "includes" element of this source
+   * 
+   * @return an integet containing the number of commas
+   *
+   */
+  
+  public int countCommas(String includes) {
+    int ctr = 1;
+    int comma_index = 0;
+    int i = 0;
+    while (comma_index != -1) {
+        comma_index = includes.lastIndexOf(",", i);
+        if (i != -1) {
+            ctr++;
+            i = comma_index++;
+        }
+    }
+    return ctr;
+}
   
   /*
    * Print the DOM 
@@ -1010,6 +1014,11 @@ public class CDTParser
 
     public boolean acceptProblem (IProblem arg0)
     {
+      if (debug)
+        System.out.println("Made it to acceptProblem" + ".....error = "
+                           + arg0.getMessage() + ".....line # = "
+                           + arg0.getSourceLineNumber() + ".....ID# = "
+                           + arg0.getSourceStart());
       return false;
     }
   }

@@ -166,7 +166,17 @@ public class DOMSource
   {
     return this.myElement.getAttributeValue(FILEPATH_ATTR);
   }
-
+  
+  /**
+   * get the path to the source file
+   * 
+   * @return the path to the file
+   */
+  public String getIncludes ()
+  {
+    return this.myElement.getAttributeValue(INCLUDES);
+  }
+  
   /**
    * creates a line Element under this source Element
    * 
