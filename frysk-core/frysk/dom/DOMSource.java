@@ -97,8 +97,10 @@ public class DOMSource
   /**
    * Creates a new DOMSource
    * 
-   * @param filename The name of the file
-   * @param filepath The absolute path to the file
+   * @param filename is a String with the name of the file
+   * @param filepath is a String  with the path to the file
+   * @param include paths is a String array with the include paths used to
+   *         compile this source file 
    */
   public DOMSource (String filename, String filepath, String[] includepaths)
   {
@@ -107,11 +109,14 @@ public class DOMSource
     myElement.setAttribute(DOMSource.FILEPATH_ATTR, filepath);
     myElement.setAttribute(DOMSource.IS_PARSED, "false");
     int i = 0;
-    while (includepaths[i] != null)
+    String incpaths = "";
+    while (i < includepaths.length && includepaths[i] != null)
       {
-        myElement.setAttribute(DOMSource.INCLUDES, includepaths[i]);
+        incpaths = incpaths + includepaths[i] + ",";
         i++;
       }
+    myElement.setAttribute(DOMSource.INCLUDES, 
+                           incpaths.substring(0,incpaths.length()-1));
   }
 
   /**
@@ -206,17 +211,6 @@ public class DOMSource
     return iter;
   }
   
-  /**
-   * gets all the include paths for this source file
-   * 
-   * @return An interator over all of the include files
-   */
-  public Iterator getIncludePaths()
-  {
-    Iterator iter = this.myElement.getChildren(DOMSource.INCLUDES).iterator();
-    return iter;
-  }
-
   /**
    * Attempts to return the DOMLine corresponding to the given line in the file.
    * If no tags exist on that line then null is returned. (This is alternative

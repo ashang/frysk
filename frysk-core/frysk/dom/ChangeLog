@@ -1,3 +1,9 @@
+2006-11-08  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestDOM.java: Add test for method added to DOMSource.java.
+	* DOMSource.java: Remove unneeded method; update javadoc
+	for correct new parameters for constructor.
+
 2006-11-07  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFrysk.java: Correct docs at top of file.  Add recent
