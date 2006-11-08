@@ -1,3 +1,10 @@
+2006-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (log): New.
+	(capturedSendKill): New.
+	(capturedSendDetachContKill): New.
+	(tearDown): Use.
+
 2006-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxHost.java: Update, use frysk.sys.proc.ProcBuilder.

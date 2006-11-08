@@ -71,6 +71,19 @@ public class TestLib
     extends TestCase
 {
     protected final static Logger logger = Logger.getLogger ("frysk");//.proc");
+    /**
+     * Log the integer ARG squeezed between PREFIX and SUFFIX.
+     */
+    protected void log (String prefix, int arg, String suffix)
+    {
+	if (logger.isLoggable (Level.FINE))
+	    logger.log (Level.FINE,
+			"{0} " + prefix + "{1,number,integer}" + suffix,
+			new Object[] {
+			    this,
+			    new Integer (arg)
+			});
+    }
 
     /**
      * Return the exec prefix that should be prepended to all
@@ -1273,6 +1286,62 @@ public class TestLib
 	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
     }
 
+    /**
+     * Try to blow away the child, catch a failure.
+     */
+    private boolean capturedSendKill (int pid)
+    {
+	try {
+	    Signal.tkill (pid, Sig.KILL);
+	    log ("{0} tkill -KILL ", pid, "\n");
+	}
+	catch (Errno.Esrch e) {
+	    // Toss it.
+	    log ("tkill -KILL ", pid, " (failed - ESRCH)\n");
+	    return false;
+	}
+	return true;
+    }
+
+    /**
+     * Sequence a task through CONT, detach, and KILL.  Return false
+     * if it is suspected that the task no longer exists.
+     *
+     * Detaching with KILL on early utrace kernels has proven
+     * problematic - nothing happened (now fixed) - avoid any such
+     * issues by doing a simple detach followed by a KILL.
+     *
+     * There is a problem with both stopped and attached tasks.  The
+     * Sig.KILL won't be delivered, and consequently the task won't
+     * exit, until that task has been continued.  Work around this by
+     * first sending all tasks a continue ...
+     */
+    private boolean capturedSendDetachContKill (int pid)
+    {
+	boolean exists = true;
+	// Do the detach
+	try {
+	    Ptrace.detach (pid, 0);
+	    log ("detach ", pid, "\n");
+	}
+	catch (Errno.Esrch e) {
+	    // Toss it.
+	    log ("detach ", pid, " (failed - ESRCH)\n");
+	}
+	// Unblock the thread
+	try {
+	    Signal.tkill (pid, Sig.CONT);
+	    log ("tkill -CONT ", pid, "\n");
+	}
+	catch (Errno.Esrch e) {
+	    // Toss it.
+	    log ("tkill -CONT ", pid, " (failed - ESRCH)\n");
+	}
+	// Finally send it a kill to finish things off.
+	exists = capturedSendKill (pid) && exists;
+	return exists;
+    }
+
     public void tearDown ()
     {
 	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> start tearDown\n", this);
@@ -1289,32 +1358,18 @@ public class TestLib
 			 pendingSignals.contains (sig));
 	}
 
-	// Kill off all the registered children.  Once that signal is
-	// processed the task will die.  Make sure there are still
-	// children to kill. Someone else may have waited on their
-	// deaths already.
+	// Make a preliminary pass through all the registered children
+	// trying to simply kill each. Someone else may have waited on
+	// their deaths already.
 	
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
-	    int pid = child.intValue ();
-	    // Start with a basic kill.
-	    try {
-		Signal.kill (pid, Sig.KILL);
-		logger.log (Level.FINE, "{0} kill -KILL {1,number,integer}\n",
-			    new Object[] { this, child });
-	    }
-	    catch (Errno.Esrch e) {
-	      // Toss it.
-	      logger.log (Level.FINE,
-			  "{0} kill -KILL {1,number,integer} (failed)\n",
-			  new Object[] { this, child });
-	      i.remove();
-	    }
+	    capturedSendKill (child.intValue ());
 	}
 
-	// Go through the registered processes / threads adding any of
+	// Go through all registered processes / tasks adding any of
 	// their clones to the kill-list.  Do this after the initial
-	// kill as, hopefully, that has stopped many of the threads
+	// blast as, hopefully, that has stopped many of the threads
 	// dead in their tracks.
 	ProcBuilder missingChildren = new ProcBuilder ()
 	    {
@@ -1329,34 +1384,10 @@ public class TestLib
 	    missingChildren.construct (pid);
 	}
 
-	// There is a problem with both stopped and attached tasks.
-	// The Sig.KILL won't be delivered, and consequently the task
-	// won't exit, until that task has been continued.  Work
-	// around this by first sending all tasks a continue ...
+	// Blast all the processes for real.
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
-	    int pid = child.intValue ();
-	    try {
-		Signal.kill (pid, Sig.CONT);
-		logger.log (Level.FINE, "{0} kill -CONT {1,number,integer}\n",
-			    new Object[] { this, child });
-	    }
-	    catch (Errno.Esrch e) {
-		// Toss it.
-		logger.log (Level.FINE, "{0} kill -CONT {1,number,integer} (failed)\n",
-			    new Object[] { this, child });
-	    }
-	    // ... and then a detach.
-	    try {
-		Ptrace.detach (pid, Sig.KILL);
-		logger.log (Level.FINE, "{0} detach -KILL {1,number,integer}\n",
-			    new Object[] { this, child });
-	    }
-	    catch (Errno.Esrch e) {
-		// Toss it.
-		logger.log (Level.FINE, "{0} detach -KILL {1,number,integer} (failed)\n",
-			    new Object[] { this, child });
-	    }
+	    capturedSendDetachContKill (child.intValue ());
 	}
 
 	// Drain the wait event queue.  This ensures that: there are
@@ -1370,97 +1401,69 @@ public class TestLib
 	// Doing that frees up the task so that it can run to exit.
 	try {
 	    while (!children.isEmpty()) {
+		logger.log (Level.FINE, "{0} waitAll -1 ...\n", this);
 	    	Wait.waitAll (-1, new Wait.Observer ()
 		    {
-			private void detachThenKill (int pid)
-			{
-			    try {
-				Ptrace.detach (pid, 0);
-				logger.log (Level.FINE,
-					    "{0} detach {1,number,integer}\n",
-					    new Object[] {
-						TestLib.this,
-						new Integer (pid)
-					    });
-			    }
-			    catch (Errno.Esrch e) {
-				logger.log (Level.FINE,
-					    "{0} detach {1,number,integer} (fail)\n",
-					    new Object[] {
-						TestLib.this,
-						new Integer (pid)
-					    });
-			    }
-			    try {
-				Signal.kill (pid, Sig.KILL);
-				logger.log (Level.FINE, "{0} kill -KILL {1,number,integer}\n",
-					    new Object[] { TestLib.this, new Integer (pid) });
-			    }
-			    catch (Errno.Esrch e) {
-				logger.log (Level.FINE,
-					    "{0} kill -KILL {1,number,integer} (failed)\n",
-					    new Object[] { TestLib.this, new Integer (pid) });
-			    }
-			}
 			public void cloneEvent (int pid, int clone)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			}
 			public void forkEvent (int pid, int child)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			}
 			public void exitEvent (int pid, boolean signal,
 					       int value, boolean coreDumped)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			    // Do not remove PID from children list;
 			    // need to let the terminated event behind
 			    // it bubble up.
 			}
 			public void execEvent (int pid)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			}
 			public void syscallEvent (int pid)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			}
 			public void stopped (int pid, int signal)
 			{
-			    detachThenKill (pid);
+			    capturedSendDetachContKill (pid);
 			}
-			public void terminated (int pid, boolean signal,
-						int value, boolean coreDumped)
+			private void drainTerminated (int pid)
 			{
-			    // Hopefully done with this PID.
-			    children.remove(new Integer(pid));
-			    // To be sure, again make certain that the
-			    // thread is detached.
-			    detachThenKill (pid);
+			    // To be absolutly sure, again make
+			    // certain that the thread is detached.
+			    capturedSendDetachContKill (pid);
 			    // True children can have a second exit
 			    // status behind this first one, drain
 			    // that also.  Give up when this PID has
 			    // no outstanding events.
 			    try {
 				while (true) {
+				    log ("waitAll ", pid, " ...\n");
 				    Wait.waitAll (pid,
 						  new IgnoreWaitObserver ());
-				    logger.log (Level.FINE,
-						"{0} waitAll (pid) ok\n",
-						new Integer (pid));
+				    log ("{0} waitAll ", pid, " ok\n");
 				}
 			    }
 			    catch (Errno.Echild e) {
-				logger.log (Level.FINE,
-					    "{0} waitAll (ECHLD)\n",
-					    new Integer (pid));
+				log ("waitAll ", pid, " (failed - ECHLD)\n");
 			    }
+			    // Hopefully done with this PID.
+			    children.remove(new Integer(pid));
+			}
+			public void terminated (int pid, boolean signal,
+						int value, boolean coreDumped)
+			{
+			    drainTerminated (pid);
 			}
 			public void disappeared (int pid, Throwable w)
 			{
-			    detachThenKill (pid);
-			    children.remove(new Integer(pid));
+			    // The task vanished somehow, drain it.
+			    drainTerminated (pid);
 			}
 		    });
   	    }
