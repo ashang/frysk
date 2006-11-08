@@ -193,6 +193,59 @@ or the following <a
 href="http://sourceware.org/bugzilla/showdependencytree.cgi?maxdepth=2&id=3383&hide_resolved=1">Tracker
 Bugs</a>.
 
+<a name="faq"><h1>Bugzilla Questions, With Answers</h1></a>
+
+<dl>
+
+<dt>How do I submit a bug report?</dt> <dd> Please use this <a
+href="/bugzilla/enter_bug.cgi?product=frysk">form</a>. <br> Before
+accessing the bug database you will need to create a <a
+href="/bugzilla/createaccount.cgi">new account</a>. </dd>
+
+<dt>Before submitting a new bug must I first check for an existing
+bug?</dt> <dd>No. <br> Duplicate bug reports are helpful; for instance,
+when multiple people report the same bug there's a strong indicator of
+a more critical problem. </dd>
+
+<dt>Should I submit JUnit test failures? </dt> <dd>Yes. <br> Just one
+request.  When submitting the bug, please use the first line of the
+failure as the summary (and the entire trace back in the description).
+Doing this makes checking for duplicates easier.  For instance, given
+the failure:
+<pre>
+testClone(frysk.util.TestFStack)junit.framework.AssertionFailedError:
+event loop run explictly stopped (test)
+   at frysk.proc.TestLib.assertRunUntilStop(TestRunner)
+   at frysk.proc.TestLib.assertRunUntilStop(TestRunner)
+   at frysk.util.TestFStack.testClone(TestRunner)
+   at frysk.junit.Runner.runCases(TestRunner)
+   at frysk.junit.Runner.runArchCases(TestRunner)
+   at frysk.junit.Runner.runTestCases(TestRunner)
+   at TestRunner.main(TestRunner)
+</pre>
+The summary would be:
+<pre>
+testClone(frysk.util.TestFStack)junit.framework.AssertionFailedError:
+event loop run explictly stopped (test)
+</pre>
+</dd>
+
+<dt>Should I submit a bug when the root-cause is likely not
+<em>frysk</em>?  <br> (What happens when the root-cause is either the
+build (Java-GNOME, GCJ) or runtime (kernel) environment?)  </dt> <dd>
+Yes. <br> If the root cause of a bug is determined to be something
+other than <em>frysk</em>, then the following action is normally
+taken: <ul> <li> A bug report is filed against the root-cause, and
+cross referenced to the local bug. <li> A reproducer is found, and
+added to <tt>frysk-imports/tests</tt> under <tt>fryskNNNN</tt>. <br>
+PASS indicates that it must work. FAIL if a work around is
+available. <li> The local bug is closed; and the test case
+monitored. </ul> Doing this has proven to greatly simplify the task of
+monitoring for regressions in <em>frysk</em>'s build dependencies, and
+that is, unfortunatly, a relatively common occurance. </dd>
+
+</dl>
+
 <hr>
 
 <p>All frysk tasks (to-do items, features, change-requests, bugs) are
