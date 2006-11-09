@@ -1,4 +1,4 @@
-2006-11-09  Nurdin Premji  <npremji@edhat.com>
+2006-11-09  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceObserver.java: Changed back to StringBuffer, just as fast as String
 	and would be faster for very large stacktraces. (Previous 40% boost shown to be a fluke).
