@@ -1,3 +1,7 @@
+2006-11-09  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (get): Add isClassType support.
+
 2006-11-03  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (VariableAccessor.getAddr): New.

@@ -53,6 +53,7 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import frysk.expr.CppSymTab;
 import frysk.lang.ArrayType;
+import frysk.lang.ClassType;
 import frysk.lang.DoubleType;
 import frysk.lang.FloatType;
 import frysk.lang.IntegerType;
@@ -92,7 +93,7 @@ class ExprSymTab implements CppSymTab
     task = task_p;
     pid = pid_p;
     // ??? 0x7fffffffffffffff
-    buffer = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.DATA, 0x7fffffffffffffffl);
+    buffer = new PtraceByteBuffer(task.getTid(), PtraceByteBuffer.Area.DATA, 0x7fffffffffffffffl);
     ByteOrder byteorder;
     try 
     {
@@ -541,10 +542,8 @@ class ExprSymTab implements CppSymTab
                 long addr = variableAccessor[0].getAddr(s);
                 if (addr == 0)
                   continue;
-                DwarfDie die = getDie(s);
-                DwarfDie arrayTypeDie = die.getType();
                 ArrayList dims = new ArrayList();
-                subrange = arrayTypeDie.getChild();
+                subrange = type.getChild();
                 int bufSize = 1;
                 while (subrange != null)
                   {
@@ -556,35 +555,35 @@ class ExprSymTab implements CppSymTab
 
                 ArrayType arrayType = null;
                 int typeSize = 0;
-                if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeShort)
+                if (type.getType().getBaseType() == BaseTypes.baseTypeShort)
                   {
                     typeSize = 2;
                     ShortType shortType = new ShortType(2, byteorder);
                     arrayType = new ArrayType (shortType, dims);
                   }
-                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeInteger)
+                else if (type.getType().getBaseType() == BaseTypes.baseTypeInteger)
                   {
                     typeSize = 4;
                     IntegerType intType = new IntegerType(4, byteorder);
                     arrayType = new ArrayType (intType, dims);
                   }
-                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeLong)
+                else if (type.getType().getBaseType() == BaseTypes.baseTypeLong)
                   {
                     typeSize = 8;
                     IntegerType longType = new IntegerType(8, byteorder);
                     arrayType = new ArrayType (longType, dims);
                   }
-                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeFloat)
+                else if (type.getType().getBaseType() == BaseTypes.baseTypeFloat)
                   {
                     typeSize = 4;
-                    IntegerType intType = new IntegerType(8, byteorder);
-                    arrayType = new ArrayType (intType, dims);
+                    FloatType floatType = new FloatType(4, byteorder);
+                    arrayType = new ArrayType (floatType, dims);
                   }
-                else if (arrayTypeDie.getType().getBaseType() == BaseTypes.baseTypeDouble)
+                else if (type.getType().getBaseType() == BaseTypes.baseTypeDouble)
                   {
                     typeSize = 8;
-                    IntegerType intType = new IntegerType(8, byteorder);
-                    arrayType = new ArrayType (intType, dims);
+                    DoubleType doubleType = new DoubleType(8, byteorder);
+                    arrayType = new ArrayType (doubleType, dims);
                   }
                 
                 byte buf []= new byte[bufSize * typeSize];
@@ -596,6 +595,60 @@ class ExprSymTab implements CppSymTab
                 Variable arrVar = new Variable (arrayType, "", abb);
                 return arrVar;
               }
+          else if (type.isClassType())
+            {
+                DwarfDie subrange;
+                long addr = variableAccessor[0].getAddr(s);
+                if (addr == 0)
+                  continue;
+                subrange = type.getChild();
+                int bufSize = 1;
+                ClassType classType = new ClassType (byteorder);
+                int typeSize = 0;
+                while (subrange != null)
+                  {
+                    if (subrange.getType().getBaseType() == BaseTypes.baseTypeShort)
+                      {
+                        typeSize += 2;
+                        ShortType shortType = new ShortType(2, byteorder);
+                        classType.addMember (shortType, subrange.getName());
+                      }
+                    else if (subrange.getType().getBaseType() == BaseTypes.baseTypeInteger)
+                      {
+                        typeSize += 4;
+                        IntegerType intType = new IntegerType(4, byteorder);
+                        classType.addMember (intType, subrange.getName());
+                      }
+                    else if (subrange.getType().getBaseType() == BaseTypes.baseTypeLong)
+                      {
+                        typeSize += 8;
+                        IntegerType longType = new IntegerType(8, byteorder);
+                        classType.addMember (longType, subrange.getName());
+                      }
+                    else if (subrange.getType().getBaseType() == BaseTypes.baseTypeFloat)
+                      {
+                        typeSize += 4;
+                        FloatType floatType = new FloatType(4, byteorder);
+                        classType.addMember (floatType, subrange.getName());
+                      }
+                    else if (subrange.getType().getBaseType() == BaseTypes.baseTypeDouble)
+                      {
+                        typeSize += 8;
+                        DoubleType doubleType = new DoubleType(8, byteorder);
+                        classType.addMember (doubleType, subrange.getName());
+                      }
+                    subrange = subrange.getSibling();
+                  }
+                
+                byte buf []= new byte[typeSize];
+                for (int j = 0 ; j < typeSize; j++)
+                  buffer.get(addr + j, buf, j, 1);  
+                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
+
+                abb.order(byteorder);
+                Variable classVar = new Variable (classType, "", abb);
+                return classVar;
+            }
         }
         catch (Errno e) {}
     }

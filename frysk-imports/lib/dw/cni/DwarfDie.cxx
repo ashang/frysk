@@ -168,7 +168,13 @@ lib::dw::DwarfDie::get_type (jlong var_die)
   
   if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
     {
-      return (jlong)dwarf_formref_die (&type_attr, type_mem_die);
+      if (dwarf_formref_die (&type_attr, type_mem_die))
+	if (dwarf_tag (type_mem_die) == DW_TAG_typedef)
+	  {
+	    dwarf_attr_integrate (type_mem_die, DW_AT_type, &type_attr);
+	    dwarf_formref_die (&type_attr, type_mem_die);
+	  }
+      return (jlong) type_mem_die;
     }
   return 0;
 }
@@ -261,12 +267,23 @@ jboolean
 lib::dw::DwarfDie::is_array_type (jlong type_die)
 {
   Dwarf_Die *die = (Dwarf_Die*)type_die;
+
   if (dwarf_tag (die) == DW_TAG_array_type)
     return 1;
   else
     return 0;
 }
 
+jboolean
+lib::dw::DwarfDie::is_class_type (jlong type_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  
+  if (dwarf_tag (die) == DW_TAG_structure_type)
+    return 1;
+  else
+    return 0;
+}
 
 #define GETREGNO(r) (r == DW_OP_breg0) ? 0 : (r == DW_OP_breg1) ? 1     \
   : (r == DW_OP_breg2) ? 2 : (r == DW_OP_breg3) ? 3 : (r == DW_OP_breg4) ? 4 \

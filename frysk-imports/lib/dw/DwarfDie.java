@@ -176,6 +176,14 @@ public class DwarfDie
   }
   
   /**
+   * @return True if die describes a class.
+   */
+  public boolean isClassType()
+  {
+    return is_class_type(this.getPointer());
+  }
+  
+  /**
    * @return The child for the current die.
    */
   public DwarfDie getChild ()
@@ -261,6 +269,8 @@ public class DwarfDie
   private native int get_upper_bound (long addr);
   
   private native boolean is_array_type (long addr);
+  
+  private native boolean is_class_type (long addr);
   
   private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
 
