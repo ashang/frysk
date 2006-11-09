@@ -64,7 +64,7 @@ public class StacktraceObserver
 {
   private LinkedList taskList;
 
-  protected String stackTrace= new String();
+  protected StringBuffer stackTrace= new StringBuffer();
 
   private TreeMap sortedTasks;
 
@@ -148,7 +148,7 @@ public class StacktraceObserver
         Iterator i = output.iterator();
         while (i.hasNext())
           {
-	   stackTrace = stackTrace.concat((String) i.next()+"\n");
+	   stackTrace.append((String) i.next()+"\n");
           }
       }
     logger.log(Level.FINE, "{0} exiting printTasks", this);
@@ -158,7 +158,7 @@ public class StacktraceObserver
   {
     logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}", new Object[] { this,
                                                                      stackTrace });
-    return stackTrace;
+    return stackTrace.toString();
   }
 
   public final void storeTask (Task task)
@@ -187,7 +187,7 @@ public class StacktraceObserver
         catch (TaskException _)
           {
             // FIXME: log exception, or rethrow?
-            stackTrace.concat("... couldn't print stack trace\n");
+            stackTrace.append("... couldn't print stack trace\n");
           }
       }
   }
