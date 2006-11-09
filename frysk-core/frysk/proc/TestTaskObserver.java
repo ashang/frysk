@@ -120,7 +120,7 @@ public class TestTaskObserver
 	// to attach to the Task's Proc..  Run the event loop until
 	// the process reports back that the attach occurred.
 	for (int i = 0; i < tasks.length; i++)
-	    tasks[i].requestAddAttachedObserver (attachedObserver);
+	    tasks[i].requestAddTaskObserver (attachedObserver);
 	tasks[0].proc.observableAttached.addObserver (new Observer ()
 	    {
 		Proc proc = tasks[0].proc;
@@ -158,7 +158,7 @@ public class TestTaskObserver
 	// event loop until the Proc reports back that it has
 	// detached.
 	for (int i = 0; i < tasks.length; i++)
-	    tasks[i].requestDeleteAttachedObserver (attachedObserver);
+	    tasks[i].requestDeleteTaskObserver (attachedObserver);
 	tasks[0].proc.observableDetached.addObserver (new Observer ()
 	    {
 		Proc proc = tasks[0].proc;
@@ -275,7 +275,7 @@ public class TestTaskObserver
 	// Try to add the observer to the now defunct task.  Should
 	// successfully fail.
 	FailedObserver failedObserver = new FailedObserver ();
-	task.requestAddAttachedObserver (failedObserver);
+	task.requestAddTaskObserver (failedObserver);
 	assertRunUntilStop ("fail to add observer");
 	assertEquals ("added count", 1, failedObserver.addedCount);
     }
@@ -309,7 +309,7 @@ public class TestTaskObserver
 	// Try to add the observer to the now defunct task.  Should
 	// successfully fail.
 	FailedObserver failedObserver = new FailedObserver ();
-	task.requestAddAttachedObserver (failedObserver);
+	task.requestAddTaskObserver (failedObserver);
 	assertRunUntilStop ("fail to add observer");
 	assertEquals ("added count", 1, failedObserver.addedCount);
     }
@@ -352,7 +352,7 @@ public class TestTaskObserver
 	    }
 	}
 	Terminate terminate = new Terminate ();
-	task.requestAddTerminatingObserver (terminate);
+	task.requestAddTaskObserver (terminate);
 	assertRunUntilStop ("terminated");
     }
     /** {@link #attachToAttachedTask} */
@@ -377,12 +377,12 @@ public class TestTaskObserver
 
 	// .attach does an add, add a few more.
 	AttachedObserver extra = new AttachedObserver ();
-	task.requestAddAttachedObserver (extra);
+	task.requestAddTaskObserver (extra);
 	AttachedObserver attached = attach (new Task[] { task });
 	assertEquals ("extra attached count", 1, extra.attachedCount);
 	
 	// .detach does a few deletes, delete a few more.
-	task.requestDeleteAttachedObserver (extra);
+	task.requestDeleteTaskObserver (extra);
 	detach (new Task[] { task }, attached, true);
     }
     /** {@link #backToBackAttachAttachTask} */
@@ -417,8 +417,8 @@ public class TestTaskObserver
 		    super.addedTo (null); // A lie.
 		}
 	    };
-	task.requestAddAttachedObserver (extra);
-	task.requestDeleteAttachedObserver (extra);
+	task.requestAddTaskObserver (extra);
+	task.requestDeleteTaskObserver (extra);
 	AttachedObserver attached = attach (new Task[] { task });
 	
 	// .detach does a few deletes, delete a few more.
@@ -461,7 +461,7 @@ public class TestTaskObserver
 		    fail ("deletedFrom");
 		}
 	    };
-	task.requestAddAttachedObserver (extra);
+	task.requestAddTaskObserver (extra);
 	detach (new Task[] { task }, extra, true);
     }
     /** {@link #deletedAttachTask} */
@@ -502,7 +502,7 @@ public class TestTaskObserver
 		}
 	    };
 	Task task = child.findTaskUsingRefresh (main);
-	task.requestDeleteAttachedObserver (unattachedObserver);
+	task.requestDeleteTaskObserver (unattachedObserver);
 	assertRunUntilStop ("delete failing");
     }	    
     /** {@link #deleteUnattachedObserver} */

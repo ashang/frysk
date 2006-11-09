@@ -1,3 +1,22 @@
+2006-11-09  Nurdin Premji  <npremji@redhat.com>
+
+	* actions/RunExternal.java (execute): Changed to use new requestAddTaskObserver method.
+	(AttachedObserver.updateAttached): Ditto.
+	(TaskTerminatedObserver.updateTerminated): Changed to use new requestDeleteTaskObserver method.
+	* observers/TaskTerminatingObserver.java (apply): Changed to use new requestAddTaskObserver method.
+	(unapply): Changed to use new requestDeleteTaskObserver method.
+	* observers/ProgramObserver.java (updateForkedOffspring): Changed to use new requestAddTaskObserver method.
+	(apply): Ditto.
+	(unapply):  Changed to use new requestDeleteTaskObserver method.
+	* observers/TaskForkedObserver.java (apply): Changed to use new requestAddTaskObserver method.
+	(unapply): Changed to use new requestDeleteTaskObserver method.
+	* observers/TaskSignaledObserver.java (apply): Changed to use new requestAddTaskObserver method.
+	(unapply): Changed to use new requestDeleteTaskObserver method.
+	* observers/TaskCloneObserver.java (apply): Changed to use new requestAddTaskObserver method.
+	(unapply): Changed to use new requestDeleteTaskObserver method.
+	* observers/TaskExecObserver.java (apply): Changed to use new requestAddTaskObserver method.
+	(unapply): Changed to use new requestDeleteTaskObserver method.
+
 2006-10-13  Nurdin Premji <npremji@redhat.com>
 
 	* StatusWidget.java: Removed "additional information" strings.

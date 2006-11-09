@@ -176,7 +176,7 @@ public class TaskForkedObserver
 
   public void apply (Task task)
   {
-    task.requestAddForkedObserver(this);
+    task.requestAddTaskObserver(this);
   }
 
   public GuiObject getCopy ()
@@ -203,7 +203,7 @@ public class TaskForkedObserver
 
   public void unapply (Task task)
   {
-    task.requestDeleteForkedObserver(this);
+    task.requestDeleteTaskObserver(this);
   }
 
 }

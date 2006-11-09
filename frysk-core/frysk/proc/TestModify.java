@@ -178,8 +178,8 @@ public class TestModify
 			if (!isChildOfMine (task.proc))
 			    return;
 			killDuringTearDown (task.getTid ());
-			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
-			task.requestAddSignaledObserver (taskEventObserver);
+			task.requestAddTaskObserver (new TaskTerminatedObserver ());
+			task.requestAddTaskObserver (taskEventObserver);
 		    }
 		});
 	    host.observableProcRemovedXXX.addObserver

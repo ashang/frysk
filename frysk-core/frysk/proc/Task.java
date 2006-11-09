@@ -203,7 +203,7 @@ abstract public class Task
     newState = TaskState.mainState();
     if (attached != null)
       {
-        TaskObservation ob = new TaskObservation(this, attachedObservers,
+        TaskObservation ob = new TaskObservation(this, observers,
                                                  attached, true)
         {
           public void execute ()
@@ -321,24 +321,25 @@ abstract public class Task
   }
 
   /**
-   *  (Internal) Request that all observers from this task be removed.
-   *  Warning, should also be removed from the proc's observations.
-  */
-  void removeObservers()
+   * (Internal) Request that all observers from this task be removed.
+   */
+  void removeObservers ()
   {
-	  logger.log(Level.FINE, "{0} abandon", this);	 
-		
-	  attachedObservers.removeAllObservers();
-	  clonedObservers.removeAllObservers();
-      forkedObservers.removeAllObservers();
-      terminatedObservers.removeAllObservers();
-      terminatingObservers.removeAllObservers();
-      execedObservers.removeAllObservers();
-      syscallObservers.removeAllObservers();
-      signaledObservers.removeAllObservers();
-      instructionObservers.removeAllObservers();
-      blockers.clear();
-      pendingObservations.clear();
+    logger.log(Level.FINE, "{0} abandon", this);
+
+   observers.removeAllObservers();
+    blockers.clear();
+    pendingObservations.clear();
+
+    Iterator iter = proc.observationsIterator();
+    while (iter.hasNext())
+      {
+        Observation observation = (Observation) iter.next();
+        if (observation.observable == this.observers)
+          {
+            iter.remove();            
+          }
+      }
   }
   
   /**
@@ -478,35 +479,12 @@ abstract public class Task
   }
 
   /**
-   * Set of Cloned observers.
-   */
-  private TaskObservable clonedObservers = new TaskObservable(this);
-
-  /**
-   * Add a TaskObserver.Cloned observer.
-   */
-  public void requestAddClonedObserver (TaskObserver.Cloned o)
-  {
-    logger.log(Level.FINE, "{0} requestAddClonedObserver\n", this);
-    proc.requestAddObserver(this, clonedObservers, o);
-  }
-
-  /**
-   * Delete a TaskObserver.Cloned observer.
-   */
-  public void requestDeleteClonedObserver (TaskObserver.Cloned o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteClonedObserver\n", this);
-    proc.requestDeleteObserver(this, clonedObservers, o);
-  }
-
-  /**
    * Notify all cloned observers that this task cloned. Return the number of
    * blocking observers.
    */
   int notifyClonedParent (Task offspring)
   {
-    for (Iterator i = clonedObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Cloned.class); i.hasNext();)
       {
         TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
         if (observer.updateClonedParent(this, offspring) == Action.BLOCK)
@@ -524,7 +502,7 @@ abstract public class Task
   int notifyClonedOffspring ()
   {
     logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
-    for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();)
+    for (Iterator i = creator.observers.iterator(TaskObserver.Cloned.class); i.hasNext();)
       {
         TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
         if (observer.updateClonedOffspring(creator, this) == Action.BLOCK)
@@ -534,28 +512,30 @@ abstract public class Task
       }
     return blockers.size();
   }
+  
+  /**
+   * Set of observers.
+   */
+ TaskObservable observers = new TaskObservable(this);
 
   /**
-   * Set of Attached observers.
+   * Add a TaskObserver.
    */
-  private TaskObservable attachedObservers = new TaskObservable(this);
-
-  /**
-   * Add a TaskObserver.Attached observer.
-   */
-  public void requestAddAttachedObserver (TaskObserver.Attached o)
+  public void requestAddTaskObserver (TaskObserver o)
   {
-    logger.log(Level.FINE, "{0} requestAddAttachedObserver\n", this);
-    proc.requestAddObserver(this, attachedObservers, o);
+    logger.log(Level.FINE, "{0} requestAdd{1}Observer\n",
+               new Object[] { this, o.getClass().getName() });
+    proc.requestAddObserver(this, observers, o);
   }
-
+  
   /**
-   * Delete a TaskObserver.Attached observer.
+   * Remove a TaskObserver.
    */
-  public void requestDeleteAttachedObserver (TaskObserver.Attached o)
+  public void requestDeleteTaskObserver (TaskObserver o)
   {
-    logger.log(Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
-    proc.requestDeleteObserver(this, attachedObservers, o);
+    logger.log(Level.FINE, "{0} requestDelete{1}Observer\n",
+               new Object[] { this, o.getClass().getName() });
+    proc.requestDeleteObserver(this, observers, o);
   }
 
   /**
@@ -565,37 +545,17 @@ abstract public class Task
   int notifyAttached ()
   {
     logger.log(Level.FINE, "{0} notifyAttached\n", this);
-    for (Iterator i = attachedObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Attached.class); i.hasNext();)
       {
         TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
         if (observer.updateAttached(this) == Action.BLOCK)
           blockers.add(observer);
       }
+    logger.log(Level.FINE,
+               "{0} exiting notifyAttached, blockers.size is : {1}",
+               new Object[] { this, new Integer(blockers.size()) });
     return blockers.size();
-  }
-
-  /**
-   * Set of Forked observers.
-   */
-  private TaskObservable forkedObservers = new TaskObservable(this);
-
-  /**
-   * Add a TaskObserver.Forked observer.
-   */
-  public void requestAddForkedObserver (TaskObserver.Forked o)
-  {
-    logger.log(Level.FINE, "{0} requestAddForkedObserver\n", this);
-    proc.requestAddObserver(this, forkedObservers, o);
-  }
-
-  /**
-   * Delete a TaskObserver.Forked observer.
-   */
-  public void requestDeleteForkedObserver (TaskObserver.Forked o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteForkedObserver\n", this);
-    proc.requestDeleteObserver(this, forkedObservers, o);
-  }
+  }  
 
   /**
    * Notify all Forked observers that this task forked. Return the number of
@@ -603,7 +563,7 @@ abstract public class Task
    */
   int notifyForkedParent (Task offspring)
   {
-    for (Iterator i = forkedObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Forked.class); i.hasNext();)
       {
         TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
         if (observer.updateForkedParent(this, offspring) == Action.BLOCK)
@@ -620,7 +580,7 @@ abstract public class Task
    */
   int notifyForkedOffspring ()
   {
-    for (Iterator i = creator.forkedObservers.iterator(); i.hasNext();)
+    for (Iterator i = creator.observers.iterator(TaskObserver.Forked.class); i.hasNext();)
       {
         TaskObserver.Forked observer = (TaskObserver.Forked) i.next();
         if (observer.updateForkedOffspring(creator, this) == Action.BLOCK)
@@ -632,36 +592,13 @@ abstract public class Task
   }
 
   /**
-   * Set of Terminated observers.
-   */
-  private TaskObservable terminatedObservers = new TaskObservable(this);
-
-  /**
-   * Add a TaskObserver.Terminated observer.
-   */
-  public void requestAddTerminatedObserver (TaskObserver.Terminated o)
-  {
-    logger.log(Level.FINE, "{0} requestAddTerminatedObserver\n", this);
-    proc.requestAddObserver(this, terminatedObservers, o);
-  }
-
-  /**
-   * Delete a TaskObserver.Terminated observer.
-   */
-  public void requestDeleteTerminatedObserver (TaskObserver.Terminated o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
-    proc.requestDeleteObserver(this, terminatedObservers, o);
-  }
-
-  /**
    * Notify all Terminated observers, of this Task's demise. Return the number
    * of blocking observers. (Does this make any sense?)
    */
   int notifyTerminated (boolean signal, int value)
   {
     logger.log(Level.FINE, "{0} notifyTerminated\n", this);
-    for (Iterator i = terminatedObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Terminated.class); i.hasNext();)
       {
         TaskObserver.Terminated observer = (TaskObserver.Terminated) i.next();
         if (observer.updateTerminated(this, signal, value) == Action.BLOCK)
@@ -676,35 +613,12 @@ abstract public class Task
   }
 
   /**
-   * Set of Terminating observers.
-   */
-  private TaskObservable terminatingObservers = new TaskObservable(this);
-
-  /**
-   * Add TaskObserver.Terminating to the TaskObserver pool.
-   */
-  public void requestAddTerminatingObserver (TaskObserver.Terminating o)
-  {
-    logger.log(Level.FINE, "{0} requestAddTerminatingObserver\n", this);
-    proc.requestAddObserver(this, terminatingObservers, o);
-  }
-
-  /**
-   * Delete TaskObserver.Terminating.
-   */
-  public void requestDeleteTerminatingObserver (TaskObserver.Terminating o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
-    proc.requestDeleteObserver(this, terminatingObservers, o);
-  }
-
-  /**
    * Notify all Terminating observers, of this Task's demise. Return the number
    * of blocking observers.
    */
   int notifyTerminating (boolean signal, int value)
   {
-    for (Iterator i = terminatingObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Terminating.class); i.hasNext();)
       {
         TaskObserver.Terminating observer = (TaskObserver.Terminating) i.next();
         if (observer.updateTerminating(this, signal, value) == Action.BLOCK)
@@ -714,35 +628,12 @@ abstract public class Task
   }
 
   /**
-   * Set of Execed observers.
-   */
-  private TaskObservable execedObservers = new TaskObservable(this);
-
-  /**
-   * Add TaskObserver.Execed to the TaskObserver pool.
-   */
-  public void requestAddExecedObserver (TaskObserver.Execed o)
-  {
-    logger.log(Level.FINE, "{0} requestAddExecedObserver\n", this);
-    proc.requestAddObserver(this, execedObservers, o);
-  }
-
-  /**
-   * Delete TaskObserver.Execed.
-   */
-  public void requestDeleteExecedObserver (TaskObserver.Execed o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteExecedObserver\n", this);
-    proc.requestDeleteObserver(this, execedObservers, o);
-  }
-
-  /**
    * Notify all Execed observers, of this Task's demise. Return the number of
    * blocking observers.
    */
   int notifyExeced ()
   {
-    for (Iterator i = execedObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Execed.class); i.hasNext();)
       {
         TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
         if (observer.updateExeced(this) == Action.BLOCK)
@@ -750,19 +641,14 @@ abstract public class Task
       }
     return blockers.size();
   }
-
-  /**
-   * Set of Syscall observers. Checked in TaskState.
-   */
-  TaskObservable syscallObservers = new TaskObservable(this);
-
+ 
   /**
    * Add TaskObserver.Syscall to the TaskObserver pool.
    */
   public void requestAddSyscallObserver (TaskObserver.Syscall o)
   {
     logger.log(Level.FINE, "{0} requestAddSyscallObserver\n", this);
-    proc.requestAddSyscallObserver(this, syscallObservers, o);
+    proc.requestAddSyscallObserver(this, observers, o);
   }
 
   /**
@@ -770,7 +656,7 @@ abstract public class Task
    */
   public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
   {
-    proc.requestDeleteSyscallObserver(this, syscallObservers, o);
+    proc.requestDeleteSyscallObserver(this, observers, o);
     logger.log(Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
   }
 
@@ -795,7 +681,7 @@ abstract public class Task
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
 	throw new RuntimeException("caught TaskException", e);
       }
-    for (Iterator i = syscallObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Syscall.class); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
         if (observer.updateSyscallEnter(this) == Action.BLOCK)
@@ -824,37 +710,14 @@ abstract public class Task
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
 	throw new RuntimeException("caught TaskException", e);
       }
-    for (Iterator i = syscallObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Syscall.class); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
         if (observer.updateSyscallExit(this) == Action.BLOCK)
           blockers.add(observer);
       }
     return blockers.size();
-  }
-
-  /**
-   * Set of Signaled observers.
-   */
-  private TaskObservable signaledObservers = new TaskObservable(this);
-
-  /**
-   * Add TaskObserver.Signaled to the TaskObserver pool.
-   */
-  public void requestAddSignaledObserver (TaskObserver.Signaled o)
-  {
-    logger.log(Level.FINE, "{0} requestAddSignaledObserver\n", this);
-    proc.requestAddObserver(this, signaledObservers, o);
-  }
-
-  /**
-   * Delete TaskObserver.Signaled.
-   */
-  public void requestDeleteSignaledObserver (TaskObserver.Signaled o)
-  {
-    logger.log(Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
-    proc.requestDeleteObserver(this, signaledObservers, o);
-  }
+  } 
 
   /**
    * Notify all Signaled observers of the signal. Return the number of blocking
@@ -863,7 +726,7 @@ abstract public class Task
   int notifySignaled (int sig)
   {
     logger.log(Level.FINE, "{0} notifySignaled(int)\n", this);
-    for (Iterator i = signaledObservers.iterator(); i.hasNext();)
+    for (Iterator i = observers.iterator(TaskObserver.Signaled.class); i.hasNext();)
       {
         TaskObserver.Signaled observer = (TaskObserver.Signaled) i.next();
         if (observer.updateSignaled(this, sig) == Action.BLOCK)
@@ -887,18 +750,14 @@ abstract public class Task
    */
   protected abstract void stopTracingSyscalls ();
 
-  /**
-   * Set of Code observers.
-   */
-  TaskObservable codeObservers = new TaskObservable(this);
-  
+ 
   /**
    * Add TaskObserver.Code to the TaskObserver pool.
    */
   public void requestAddCodeObserver (TaskObserver.Code o, long a)
   {
     logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
-    proc.requestAddCodeObserver(this, codeObservers, o, a);
+    proc.requestAddCodeObserver(this, observers, o, a);
   }
 
   /**
@@ -907,7 +766,7 @@ abstract public class Task
   public void requestDeleteCodeObserver (TaskObserver.Code o, long a)
   {
     logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
-    proc.requestDeleteCodeObserver(this, codeObservers, o, a);
+    proc.requestDeleteCodeObserver(this, observers, o, a);
   }
   
   // Whether we are currently stepping over a breakpoint.
@@ -939,11 +798,7 @@ abstract public class Task
     return blockers.size();
   }
 
-  /**
-   * Set of Instruction observers.
-   */
-  TaskObservable instructionObservers = new TaskObservable(this);
-  
+ 
   /**
    * Request the addition of a Instruction observer that will be
    * notified as soon as the task executes an instruction.
@@ -954,7 +809,7 @@ abstract public class Task
   public void requestAddInstructionObserver(TaskObserver.Instruction o)
   {
     logger.log(Level.FINE, "{0} requestAddInstructionObserver\n", this);
-    proc.requestAddInstructionObserver(this, instructionObservers, o);
+    proc.requestAddInstructionObserver(this, observers, o);
   }
 
   /**
@@ -963,7 +818,7 @@ abstract public class Task
   public void requestDeleteInstructionObserver (TaskObserver.Instruction o)
   {
     logger.log(Level.FINE, "{0} requestDeleteInstructionObserver\n", this);
-    proc.requestDeleteInstructionObserver(this, instructionObservers, o);
+    proc.requestDeleteInstructionObserver(this, observers, o);
   }
   
   /**
@@ -974,7 +829,7 @@ abstract public class Task
   {
     logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
     
-    Iterator i = instructionObservers.iterator();
+    Iterator i = observers.iterator(TaskObserver.Instruction.class);
     while (i.hasNext())
       {
 	TaskObserver.Instruction observer;

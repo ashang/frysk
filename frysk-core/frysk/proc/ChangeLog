@@ -1,3 +1,133 @@
+2006-11-09  Nurdin Premji  <npremji@redhat.com>
+
+	* TestTaskObservable.java: Added.
+	* TestRegMemModify.java (TestX8664ModifyInternals..update): Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	(TestPPC64ModifyInternals..update): Ditto.
+	(TestI386ModifyInternals..update): Ditto.
+	* TaskState.java (Running.handleExecedEvent): Changed to use new numberOfObservers() and iterator() methods.
+	(Attached.transitionToRunningState): Changed to use new numberOfObservers() method.
+	(BlockedSignal.handleUnblock): Ditto.
+	(Running.sendContinue): Ditto.
+	(Running.handleTrappedEvent): Ditto.
+	(Running.handleStoppedEvent): Ditto.
+	(StartClonedTask..handleUnblock): Ditto.
+	* TestTaskClonedObserver.java (CloneCounter.updateClonedOffspring): Changed to use new requestAddTaskObserver method.
+	(testTaskCloneObserver): Ditto.
+	* TestTaskTerminateObserver.java (Terminating): Added new observer
+	(check): Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	(testBlockingWhileTerminating): Ditto.
+	(TerminatingCounter.updateTerminating): Ditto. 
+	(AttachCounter.updateAttached): Ditto.
+	(Terminating.updateTerminating): Ditto.
+	(Terminate): Ditto.
+	(testTerm): Ditto.
+	* TestSyscallSignal.java (testIt): Changed to use new requestAddTaskObserver method.
+	* TestModify.java (TestModifyInternals..update): Changed to use new requestAddTaskObserver method.
+	* StressAttachDetachRapidlyForkingMainTask.java (testTaskForkedObserver): Changed to use new requestAddTaskObserver method.
+	(ForkObserver.updateForkedOffspring): Ditto.
+	* TestTaskObserverBlocked.java 	(SpawnObserver.AttachedObserver): Added.
+	(SpawnObserver.requestAddAttachedObserver): Ditto.
+	(SpawnObserver.requestUnblockAttachedObserver): Ditto.
+	(CloneObserver.requestAddSpawnObserver): Changed to use new requestAddTaskObserver method.	
+	(ForkObserver.requestAddSpawnObserver): Ditto.
+	(testRefreshAfterUnblockedForkExits): Ditto.
+	(testUnblockRunning): Ditto.
+	(testAddObserverAfterUnblock): Ditto.
+	(testGetBlockers): Ditto.
+	(ForkFibonacci.addFirstObserver): Ditto.
+	(UnblockAdd.updateForkedOffspring): Ditto.
+	(ForkFibonacci.updateForkedOffspring): Ditto.
+	(CloneFibonacci.addFirstObserver): Ditto.
+	(CloneFibonacci.updateClonedOffspring): Ditto.
+	(SpawnObserver.assertUnblockOffspring): Remove both observers.	
+	* StressAttachDetachRapidlyCloningMainTask.java (test): 
+	Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	* TestRegs.java (TestPPC64RegsInternals.PPC64RegsTestObserver.update): Changed to use new requestAddTaskObserver method.
+	(TestX8664RegsInternals.X8664RegsTestObserver.update): Ditto.
+	(TestI386RegsInternals.I386RegsTestObserver.update): Ditto.
+	* TaskObservable.java (TaskIterator): Added.
+	(TaskIterator.hasInterface): Ditto.
+	(TaskIterator.getNext): Ditto.
+	(TaskIterator.remove): Ditto.
+	(TaskIterator.next): Ditto. 
+	(TaskIterator.TaskIterator): Ditto.
+	(TaskIterator.hasNext): Ditto.
+	(numberOfObservers): Ditto.
+	(iterator): Ditto.
+	* ProcTasksObserver.java (requestAddObservers): Changed to use new requestAddTaskObserver method.
+	* StressAttachDetachSignaledTask.java (Spawn.Spawn): 
+	Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	* TestTaskObserverDetach.java (Detach): Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	(testDetachClone): Added new observer.
+	(testDetachExec): Ditto.
+	(tesetDetachFork): Ditto.
+	* TestLib.java (AttachedDaemonProcess.AttachedDaemonProcess): Changed to use new requestAddTaskObserver method.
+	* TestBreakpoints.java (testInsertRemove): Changed to use new requestAddTaskObserver method.
+	(testHitAndRun): Ditto.
+	(testAddLots): Ditto.
+	* Task.java: Condensed all the TaskObservables into a single observable.
+	(requestAddTaskObserver): Added.
+	(requestAddAttachedObserver): Removed.
+	(requestAddClonedObserver): Removed.
+	(requestAddExecedObserver): Removed.	
+	(requestAddForkedObserver): Removed.	
+	(requestAddSignaledObserver): Removed.	
+	(requestAddTerminatedObserver): Removed.
+	(requestAddTerminatingObserver): Removed.	
+	(requestAddCodeOberver): Changed to use single observable.
+	(requestAddInstructionObserver): Ditto.
+	(requestAddSyscallObserver): Ditto.
+	(requestDeleteTaskObserver): Added.
+	(requestDeleteAttachedObserver): Removed.
+	(requestDeleteClonedObserver): Removed.
+	(requestDeleteExecedObserver): Removed.	
+	(requestDeleteForkedObserver): Removed.	
+	(requestDeleteSignaledObserver): Removed.	
+	(requestDeleteTerminatedObserver): Removed.
+	(requestDeleteTerminatingObserver): Removed.
+	(requestDeleteCodeOberver): Changed to use single observable.
+	(requestDeleteInstructionObserver): Ditto.
+	(requestDeleteSyscallObserver): Ditto.
+	(notifyAttached): Changed to use new observable.iterator() method.
+	(notifyClonedOffspring): Ditto.
+	(notifyClonedParent): Ditto.
+	(notifyExeced): Ditto.
+	(notifyForkedOffspring): Ditto.
+	(notifyForkedParent): Ditto.
+	(notifyInstruction): Ditto.
+	(notifySyscallEnter): Ditto.
+	(notifySyscallExit): Ditto.
+	(notifyTerminated): Ditto.
+	(notifyTerminating): Ditto.
+	(removeObservers): Only have to deal with one observable now.
+	* TestTaskForkedObserver.java (testTaskForkedObserver): Changed to use new requestAddTaskObserver method.
+	(ForkObserver.updateForkedOffspring): Ditto.
+	* TestExec.java (testAttachedSingleExec): Changed to use new requestAddTaskObserver method.
+	(ExecBlockCounter.ExecBlockCounter): Ditto.
+	(testAttachedMultipleChildExec): Ditto.
+	(testAttachedMultipleParentExec): Ditto.
+	* ProcAttachedObserver.java (iterateAttach.execute):Changed to use new requestAddTaskObserver method.
+	(attachTask): Ditto.
+	* TestTaskObserver.java (attachDieingTask): Changed to use new requestAddTaskObserver and requestDeleteTaskObserver methods.
+	(attachToAttachedTask): Ditto.
+	(backToBackAttachDetachTask): Ditto. 
+	(attach): Ditto.
+	(deletedAttachTask): Ditto.
+	(attachDeadTask): Ditto.
+	(deleteUnattachedObserver): Ditto.
+	(backToBackAttachAttachTask): Ditto.
+	(detach): Ditto.
+	* TestTaskSyscallObserver.java (TestSyscallInterruptInternals.TestSyscallInterruptInternals): Changed to use new requestAddTaskObserver method.
+	(testCloneSyscall): Ditto.
+	* Proc.java (requestAbandonAndRunEvent): Changed to use requestAbandon.
+	(SyscallAction.run): Changed to use new observable.numberOfObservers() method.
+	(requestAddInstructionObserver.needsSuspendedAction): Ditto.
+	(requestAddSyscallObserver.needsSuspendedAction): Ditto.	
+	(requestDeleteInstructionObserver.needsSuspendedAction): Ditto.
+	(requestDeleteSyscallObserver.needsSuspendedAction): Ditto.	
+	* StressAttachDetachManyTasks.java (AttachDetachObserver.updateAttached): Changed to use new requestDeleteTaskObserver method.
+	(test): Changed to use new requestAddTaskObserver method.
+
 2006-11-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (log): New.

@@ -138,7 +138,7 @@ public class TestRegs
           {
             ia32Isa = true;
             task.requestAddSyscallObserver(taskEventObserver);
-            task.requestAddSignaledObserver(taskEventObserver);
+            task.requestAddTaskObserver(taskEventObserver);
           }
         else
           {
@@ -255,7 +255,7 @@ public class TestRegs
           {
             EMT64Isa = true;
             task.requestAddSyscallObserver(taskEventObserver);
-            task.requestAddSignaledObserver(taskEventObserver);
+            task.requestAddTaskObserver(taskEventObserver);
           }
         else
           {
@@ -400,7 +400,7 @@ public class TestRegs
           else
             isaType = TestPPC64RegsInternals.isaPPC32;
           task.requestAddSyscallObserver(taskEventObserver);
-          task.requestAddSignaledObserver(taskEventObserver);
+          task.requestAddTaskObserver(taskEventObserver);
         }
         else 
         {

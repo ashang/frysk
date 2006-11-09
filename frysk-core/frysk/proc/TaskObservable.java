@@ -37,7 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
+
+import java.util.Iterator;
 
 /**
  * Observable element of Task.
@@ -46,8 +49,82 @@ package frysk.proc;
 class TaskObservable
     extends Observable
 {
-    TaskObservable (Task t)
+  TaskObservable (Task t)
+  {
+    super(t);
+  }
+
+  Iterator iterator (Class klass)
+  {
+    return new TaskIterator(this, klass);
+  }
+
+  public int numberOfObservers (Class klass)
+  {
+    int count = 0;
+
+    Iterator iter = new TaskIterator(this, klass);
+    while (iter.hasNext())
+      {
+        count++;
+        iter.next();
+      }
+
+    return count;
+  }
+
+  class TaskIterator
+      implements Iterator
+  {
+
+    private Class taskInterface;
+
+    private Observer nextObserver;
+
+    private Iterator observersIterator;
+
+    public TaskIterator (TaskObservable observable, Class klass)
     {
-	super (t);
+      taskInterface = klass;
+      observersIterator = observable.iterator();
+      getNext();
     }
+
+    private boolean hasInterface (Observer observer)
+    {     
+     return taskInterface.isInstance(observer);     
+    }
+
+    public boolean hasNext ()
+    {
+      return (null != nextObserver);
+    }
+
+    private void getNext ()
+    {
+
+      while (observersIterator.hasNext())
+        {
+          nextObserver = (Observer) observersIterator.next();
+          if (hasInterface(nextObserver))
+            return;
+        }
+      nextObserver = null;
+    }
+
+    public Object next ()
+    {
+      Observer tempObserver = nextObserver;
+      getNext();
+      return tempObserver;
+    }
+
+    public void remove ()
+    {
+      observersIterator.remove();
+
+    }
+
+  }
+
 }

@@ -87,14 +87,14 @@ public class StressAttachDetachSignaledTask
 		// event loop sufficiently for the attach request to
 		// be sent to the kernel.  Finally issue an operation
 		// which make a signal pending on that same task.
-		task.requestAddAttachedObserver (attachDetach);
+		task.requestAddTaskObserver (attachDetach);
 		runPending ();
 		op (child, i * 2 + 0);
 
 		// Ask for the observer to be attached, then run the event
 		// loop sufficiently for the attach request to be
 		// initiated but not completed.
-		task.requestDeleteAttachedObserver (attachDetach);
+		task.requestDeleteTaskObserver (attachDetach);
 		runPending ();
 		op (child, i * 2 + 1);
 	    }

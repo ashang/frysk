@@ -204,7 +204,7 @@ public class DebugProcess
   public void addProc (GuiProc guiProc)
   {
     // Add terminated observer to catch the procs exit
-    guiProc.getProc().getMainTask().requestAddTerminatedObserver(
+    guiProc.getProc().getMainTask().requestAddTaskObserver(
                                                                  new TaskObserver.Terminated()
                                                                  {
 

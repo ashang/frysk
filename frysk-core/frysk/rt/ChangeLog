@@ -1,3 +1,7 @@
+2006-11-09  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Changed to use new requestAddTaskObserver method.
+
 2006-11-02  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (getDwflLine): Added Javadoc.

@@ -125,7 +125,7 @@ public class FCrash
             while (i.hasNext())
               {
                 System.out.println("iterating tasks");
-                ((Task) i.next()).requestAddAttachedObserver(new AttachedObserver());
+                ((Task) i.next()).requestAddTaskObserver(new AttachedObserver());
               }
           }
       }
@@ -197,7 +197,7 @@ public class FCrash
         {
           //System.out.println("attached.updateattached");
             SignalObserver sigo = new SignalObserver();
-            task.requestAddSignaledObserver(sigo);
+            task.requestAddTaskObserver(sigo);
             handleTask(task);
             task.requestUnblock(this);
             return Action.BLOCK;

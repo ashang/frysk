@@ -100,7 +100,7 @@ public class TestTaskObserverDetach
 	{
 	    // Install a signaled observer so that signal delivery can
 	    // be seen (and possibly blocked).
-	    task.requestAddSignaledObserver (this);
+	    task.requestAddTaskObserver (this);
 	    assertRunUntilStop ("adding signaled observer");
 	    addEventObserver (task);
 	    assertRunUntilStop ("adding observer of requested event");
@@ -149,7 +149,7 @@ public class TestTaskObserverDetach
 	    // Remove all observers, this will cause the process to
 	    // start transitioning to the detached state.
 	    deleteEventObserver (task);
-	    task.requestDeleteSignaledObserver (this);
+	    task.requestDeleteTaskObserver (this);
 
 	    // Run the event-loop out waiting for the final detach.
 	    task.proc.observableDetached.addObserver (new Observer ()
@@ -173,34 +173,54 @@ public class TestTaskObserverDetach
     public void testDetachFork ()
     {
 	class DetachFork
-	    extends Detach
-	    implements TaskObserver.Forked
+	    extends Detach	  
 	{
 	    Sig eventSignal () { return addForkSig; }
 	    Sig[] eventAcks () { return spawnAck; }
 	    boolean eventIsSignal () { return false; }
+        TaskObserver.Forked that;
 	    DetachFork ()
 	    {
 		super ();
 	    }
 	    void addEventObserver (Task task)
 	    {
-		task.requestAddForkedObserver (this);
+          that = new ForkObserver();
+		task.requestAddTaskObserver (that);
 	    }
 	    void deleteEventObserver (Task task)
 	    {
-		task.requestDeleteForkedObserver (this);
+		task.requestDeleteTaskObserver (that);
 	    }
-	    public Action updateForkedParent (Task parent, Task offspring)
-	    {
-		fail ("updateForkedParent");
-		return null;
-	    }
-	    public Action updateForkedOffspring (Task parent, Task offspring)
-	    {
-		fail ("updateForkedOffspring");
-		return null;
-	    }
+	    
+        
+        class ForkObserver implements TaskObserver.Forked
+        {
+          public Action updateForkedParent (Task parent, Task offspring)
+        {
+        fail ("updateForkedParent");
+        return null;
+        }
+        public Action updateForkedOffspring (Task parent, Task offspring)
+        {
+        fail ("updateForkedOffspring");
+        return null;
+        }
+        public void addFailed (Object observable, Throwable w)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+        public void addedTo (Object observable)
+        {
+          Manager.eventLoop.requestStop ();
+        }
+        public void deletedFrom (Object observable)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+        }
 	}
 	new DetachFork ().assertDetach ();
     }
@@ -215,11 +235,11 @@ public class TestTaskObserverDetach
 
 	class DetachClone
 	    extends Detach
-	    implements TaskObserver.Cloned
 	{
 	    Sig eventSignal () { return addCloneSig; }
 	    Sig[] eventAcks () { return spawnAck; }
 	    boolean eventIsSignal () { return false; }
+        TaskObserver.Cloned that = new CloneObserver();
 	    DetachClone ()
 	    {
 		super ();
@@ -227,22 +247,42 @@ public class TestTaskObserverDetach
 	    }
 	    void addEventObserver (Task task)
 	    {
-		task.requestAddClonedObserver (this);
+          System.out.println("TaskObserver is:" + that);
+		task.requestAddTaskObserver (that);
 	    }
 	    void deleteEventObserver (Task task)
 	    {
-		task.requestDeleteClonedObserver (this);
+		task.requestDeleteTaskObserver (that);
 	    }
-	    public Action updateClonedParent (Task parent, Task offspring)
-	    {
-		fail ("cloned parent");
-		return null;
-	    }
-	    public Action updateClonedOffspring (Task parent, Task offspring)
-	    {
-		fail ("cloned offspring");
-		return null;
-	    }
+	    
+        
+        class CloneObserver implements TaskObserver.Cloned
+        {
+          public Action updateClonedParent (Task parent, Task offspring)
+        {
+        fail ("cloned parent");
+        return null;
+        }
+        public Action updateClonedOffspring (Task parent, Task offspring)
+        {
+        fail ("cloned offspring");
+        return null;
+        }
+        public void addFailed (Object observable, Throwable w)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+        public void addedTo (Object observable)
+        {
+          Manager.eventLoop.requestStop ();
+        }
+        public void deletedFrom (Object observable)
+        {
+          // TODO Auto-generated method stub
+          
+        }
+        }
 	}
 	new DetachClone ().assertDetach ();
     }
@@ -254,29 +294,56 @@ public class TestTaskObserverDetach
     {
 	class DetachExec
 	    extends Detach
-	    implements TaskObserver.Execed
 	{
 	    Sig eventSignal () { return execSig; }
 	    Sig[] eventAcks () { return execAck; }
 	    boolean eventIsSignal () { return false; }
+        TaskObserver.Execed that;
 	    DetachExec ()
 	    {
 		super ();
 	    }
 	    void addEventObserver (Task task)
 	    {
-		task.requestAddExecedObserver (this);
+          that = new ExecObserver();
+		task.requestAddTaskObserver (that);
 	    }
 	    void deleteEventObserver (Task task)
 	    {
-		task.requestDeleteExecedObserver (this);
+		task.requestDeleteTaskObserver (that);
 	    }
-	    public Action updateExeced (Task task)
-	    {
-		fail ("execed");
-		return null;
-	    }
+	    
+        class ExecObserver implements TaskObserver.Execed
+        {
+
+          public Action updateExeced (Task task)
+          {
+            fail ("execed");
+            return null;
+          }
+
+          public void addFailed (Object observable, Throwable w)
+          {
+            // TODO Auto-generated method stub
+            
+          }
+
+          public void addedTo (Object observable)
+          {
+            Manager.eventLoop.requestStop ();
+          }
+
+          public void deletedFrom (Object observable)
+          {
+            // TODO Auto-generated method stub
+            
+          }
+          
+        }
 	}
+    
+    
+    
 	new DetachExec ().assertDetach ();
     }
     /**

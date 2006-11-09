@@ -1,3 +1,12 @@
+2006-11-09  Nurdin Premji  <npremji@redhat.com>
+
+	* disassembler/DisassemblyWindowFactory.java (unblockTask): Changed to use new requestDeleteTaskObserver method.
+	* register/RegisterWindowFactory.java (unblockProc): Ditto.
+	* memory/MemoryWindowFactory.java (unblockProc): Ditto.
+	* test/GuiTestLib.java (TestProc..taskAdded): Changed to use new requestAddTaskObserver method.
+	(TestProc..existingTask): Ditto.
+	* sessions/DebugProcess.java (addProc): Ditto.
+
 2006-11-06  Mike Cvet  <mcvet@redhat.com>
 
 	* disassembler/DisassemblyWindow.java (rowAppend): Fixed to properly

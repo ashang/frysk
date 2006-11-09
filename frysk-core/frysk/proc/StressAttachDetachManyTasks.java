@@ -78,13 +78,13 @@ public class StressAttachDetachManyTasks
 	{
 	    public Action updateAttached (Task task)
 	    {
-		task.requestDeleteAttachedObserver (this);
+		task.requestDeleteTaskObserver (this);
 		return Action.CONTINUE;
 	    }
 	}
 	AttachDetachObserver attachDetachObserver
 	    = new AttachDetachObserver ();
-	task.requestAddAttachedObserver (attachDetachObserver);
+	task.requestAddTaskObserver (attachDetachObserver);
 
 	// The main task never dies so at least it will have been
 	// successfully attached.

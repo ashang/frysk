@@ -96,8 +96,7 @@ public final class ProcTasksObserver
 	
     private void requestAddObservers(Task task) 
     {
-	task.requestAddClonedObserver(ProcTasksObserver.this);
-	task.requestAddTerminatedObserver(ProcTasksObserver.this);
+	task.requestAddTaskObserver(ProcTasksObserver.this);
     }
 	
     // Never block the parent.

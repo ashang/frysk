@@ -109,7 +109,7 @@ public final class ProcAttachedObserver
         numTasks = proc.getTasks().size();
         for (Iterator iterator = proc.getTasks().iterator(); iterator.hasNext();)
           {
-            ((Task) iterator.next()).requestAddAttachedObserver(ProcAttachedObserver.this);
+            ((Task) iterator.next()).requestAddTaskObserver(ProcAttachedObserver.this);
           }
       }
     });
@@ -122,7 +122,7 @@ public final class ProcAttachedObserver
     Task t = (Task) tasks.removeFirst();
     while (t != null)
       {
-        t.requestAddAttachedObserver(ProcAttachedObserver.this);
+        t.requestAddTaskObserver(ProcAttachedObserver.this);
         if (tasks.size() > 0)
           t = (Task) tasks.removeFirst();
       }

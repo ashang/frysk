@@ -204,7 +204,7 @@ public class TestRegMemModify
             if (isa instanceof LinuxIa32) {
                 ia32Isa = true;
                 task.requestAddSyscallObserver (taskEventObserver);
-                task.requestAddSignaledObserver (taskEventObserver);
+                task.requestAddTaskObserver (taskEventObserver);
             }
             else {
                 // If not ia32, stop immediately
@@ -382,7 +382,7 @@ public class TestRegMemModify
         if (isa instanceof LinuxX8664) {
           EMT64Isa = true;
           task.requestAddSyscallObserver (taskEventObserver);
-          task.requestAddSignaledObserver (taskEventObserver);
+          task.requestAddTaskObserver (taskEventObserver);
         }
         else {
           // If not ia32, stop immediately
@@ -565,7 +565,7 @@ public class TestRegMemModify
           {
             isPPC64Isa = true;
             task.requestAddSyscallObserver (taskEventObserver);
-            task.requestAddSignaledObserver (taskEventObserver);
+            task.requestAddTaskObserver (taskEventObserver);
           }
           else
           {

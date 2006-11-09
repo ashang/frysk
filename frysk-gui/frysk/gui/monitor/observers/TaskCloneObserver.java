@@ -144,7 +144,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	}
 	
 	public void apply(Task task){
-		task.requestAddClonedObserver(this);
+		task.requestAddTaskObserver(this);
 	}
 	
 	public GuiObject getCopy(){
@@ -153,7 +153,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 
   public void unapply (Task task)
   {
-    task.requestDeleteClonedObserver(this);
+    task.requestDeleteTaskObserver(this);
   }
 	
 }

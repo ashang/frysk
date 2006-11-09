@@ -75,7 +75,7 @@ public class TestTaskForkedObserver
 		// XXX: Is this legit?  Like knowing that the request
 		// won't be processed until the event loop is run
 		// again so that there's no race condition.
-		offspring.requestAddForkedObserver (this);
+		offspring.requestAddTaskObserver (this);
 		offspring.requestUnblock (this);
 		return Action.BLOCK;
 	    }
@@ -88,7 +88,7 @@ public class TestTaskForkedObserver
 		getExecPrefix () + "funit-fib-fork",
 		Integer.toString (n)
 	    });
-	child.mainTask.requestAddForkedObserver (forkObserver);
+	child.mainTask.requestAddTaskObserver (forkObserver);
 	child.resume ();
 	assertRunUntilStop ("run \"fork\" until exit");
 

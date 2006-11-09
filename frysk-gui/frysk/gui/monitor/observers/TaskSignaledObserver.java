@@ -98,14 +98,14 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	 * @see frysk.gui.monitor.observers.TaskObserverRoot#apply(frysk.proc.Task)
 	 */
 	public void apply(final Task task) {
-		task.requestAddSignaledObserver(this);
+		task.requestAddTaskObserver(this);
 	}
 
 	/* (non-Javadoc)
 	 * @see frysk.gui.monitor.observers.TaskObserverRoot#unapply(frysk.proc.Task)
 	 */
 	public void unapply(final Task task) {
-		task.requestDeleteSignaledObserver(this);
+		task.requestDeleteTaskObserver(this);
 	}
 
 	/* (non-Javadoc)

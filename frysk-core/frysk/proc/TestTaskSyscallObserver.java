@@ -197,7 +197,7 @@ public class TestTaskSyscallObserver
     final SyscallObserver syscallObserver2 = new SyscallObserver (task);
     
     task.requestAddSyscallObserver (syscallObserver1);
-    task.requestAddClonedObserver(new TaskObserver.Cloned()
+    task.requestAddTaskObserver(new TaskObserver.Cloned()
       {
     
 	public void deletedFrom (Object observable){}
@@ -593,7 +593,7 @@ public class TestTaskSyscallObserver
 	    syscallObserver = new SyscallInterruptObserver (t);
 	    t.requestAddSyscallObserver (syscallObserver);
 	    assertRunUntilStop ("Add syscallObservers");
-	    t.requestAddSignaledObserver (syscallObserver);
+	    t.requestAddTaskObserver (syscallObserver);
 	    assertRunUntilStop ("Add signaledObservers");
 	  }
 	}

@@ -96,7 +96,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 
 	// Add the observer to all tasks.
 	for (int i = 0; i < tasks.length; i++) {
-	    tasks[i].requestAddAttachedObserver (canFailObserver);
+	    tasks[i].requestAddTaskObserver (canFailObserver);
 	}
 	proc.observableAttached.addObserver (new Observer ()
 	    {
@@ -114,7 +114,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 	assertTrue ("successful attach count greater than zero",
 		    canFailObserver.addedCount > 0);
 	for (int i = 0; i < tasks.length; i++) {
-	    tasks[i].requestDeleteAttachedObserver (canFailObserver);
+	    tasks[i].requestDeleteTaskObserver (canFailObserver);
 	}
 	proc.observableDetached.addObserver (new Observer ()
 	    {
