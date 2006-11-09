@@ -1,3 +1,7 @@
+2006-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFStack.java (testClone): Mark as broken, ref 3492.
+
 2006-11-07  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceObserver: Switched to use String rather than StringBuffer.

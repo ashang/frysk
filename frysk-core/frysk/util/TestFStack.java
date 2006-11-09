@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -191,6 +191,8 @@ public class TestFStack
 
   public void testClone ()
   {
+      if (brokenXXX (3492))
+	  return;
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
