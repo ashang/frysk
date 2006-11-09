@@ -1,3 +1,13 @@
+2006-11-09  Rick Moseley
+
+	* cparser/CDTParser.java: Fix bz 3496; remove unneeded
+	parameter from constructor.
+	* StaticParser.java: Remove unneeded parameter from
+	constructor.
+	* DOMFactory.java: Ditto.
+	* cparser/CTagsParser.java: Ditto.
+	* cparser/SimpleParser.java: Ditto.
+
 2006-11-08  Rick Moseley  <rmoseley@redhat.com>
 
 	* TestDOM.java: Add test for method added to DOMSource.java.

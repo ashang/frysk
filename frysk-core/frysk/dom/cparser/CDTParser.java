@@ -125,7 +125,7 @@ public class CDTParser
    * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String,
    *      frysk.gui.srcwin.SourceBuffer)
    */
-  public void parse (DOMFrysk dom, DOMSource source, DOMImage image, String executable)
+  public void parse (DOMFrysk dom, DOMSource source, DOMImage image)
     throws IOException
   {
     this.source = source;
@@ -872,8 +872,9 @@ public class CDTParser
         return;
 
       String lineText = line.getText();
+      
       // Only get includes that are local to this file
-      if ( !lineText.startsWith("#include") )
+      if ( !lineText.startsWith("#include") || (lineText.indexOf(arg0.getName()) == -1))
         return;
 
       line.addTag(DOMTagTypes.KEYWORD,
