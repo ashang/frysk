@@ -259,10 +259,6 @@ public class SourceWindow
   private HashMap dwflMap;
   
   private HashMap lineMap;
-
-  //protected boolean runningState = false;
-  
-  //private boolean steppingState = false;
   
   protected boolean SW_active = false;
   
@@ -272,17 +268,21 @@ public class SourceWindow
   
   private int numSteppingThreads = 0;
   
+  private StackFrame currentFrame;
+  
+  private StackFrame[] frames;
+  
   /* The state that the SourceWindow is current in. Critical for determining
    * which operations can be performed at which time. */
   private int SW_state = 0;
   
   /* Possible states this SourceWindow can be in. */
-  private static final int STOPPED = 0;
-  private static final int RUNNING = 1;
-  private static final int INSTRUCTION_STEP = 2;
+  protected static final int STOPPED = 0;
+  protected static final int RUNNING = 1;
+  protected static final int INSTRUCTION_STEP = 2;
   protected static final int STEP_IN = 3;
   protected static final int STEP_OVER = 4;
-  private static final int STEP_OUT = 5;
+  protected static final int STEP_OUT = 5;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -402,17 +402,137 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
-    stackView = new CurrentStackView(frames);
+    this.stackView = new CurrentStackView(frames);
+    this.frames = frames;
 
     if (this.view == null)
       {
-        this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
+        StackFrame curr = CurrentStackView.getCurrentFrame();
+        
+        if (curr.getDwflLine() == null)
+          {
+            while (curr != null && curr.getDwflLine() == null)
+              {
+                //System.out.println("first Iterating " + curr.getMethodName());
+                curr = curr.getOuter();
+              }
+          }
+        
+        if (curr != null)
+          {
+            this.currentFrame = curr;
+            this.view = new SourceView(curr, this);
+          }
+        else
+          this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
+
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
       }
 
-    updateShownStackFrame(stackView.getFirstFrameSelection());
+    SourceView sv = (SourceView) view;
+    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+    
+    //System.out.println("SW_state: " + SW_state);
+    
+    StackFrame temp = null;
+  if (this.SW_state != STEP_IN && this.SW_state != INSTRUCTION_STEP)
+      {
+        //System.out.println("NOT STEP");
+        StackFrame curr = null;
+        if (this.currentFrame == null)
+          {
+            curr = this.stackView.getFirstFrameSelection();
+
+            this.currentFrame = curr;
+
+            if (curr.getDwflLine() == null)
+              {
+                while (curr != null && curr.getDwflLine() == null)
+                  {
+                    //System.out.println("Iterating " + curr.getMethodName());
+                    curr = curr.getOuter();
+                  }
+              }
+
+            if (curr != null)
+              this.currentFrame = curr;
+          }
+        else
+          {
+            String currentMethodName = this.currentFrame.getMethodName();
+            boolean flag = true;
+            for (int j = 0; j < frames.length; j++)
+              {
+                temp = frames[j];
+                while (temp != null)
+                  {
+                    if (temp.getMethodName().equals(currentMethodName))
+                      {
+                        flag = false;
+                        break;
+                      }
+                    temp = temp.getOuter();
+                  }
+                if (!flag)
+                  break;
+              }
+          }
+        
+        //System.out.println("updating frame for " + this.currentFrame.getMethodName());
+        if (temp != null)
+          updateShownStackFrame(temp);
+        else
+          updateShownStackFrame(this.stackView.getFirstFrameSelection());
+          
+          //updateShownStackFrame(this.currentFrame);
+        
+        for (int j = 0; j < frames.length; j++)
+          {
+            if (! frames[j].getMethodName().equals(this.currentFrame.getMethodName()))
+              {
+                curr = frames[j];
+                if (curr.getDwflLine() != null)
+                  sb.highlightLine(curr, true);
+                else 
+                  sb.highlightLine(this.currentFrame, true);
+              }
+          }
+        
+        if (temp == null)
+          this.currentFrame = this.stackView.getFirstFrameSelection();
+        else
+          this.currentFrame = temp;
+        
+        //sb.setCurrentLine(this.currentFrame);
+        //sb.setScope(this.currentFrame);
+      }
+    else
+      {
+        String currentMethodName = this.currentFrame.getMethodName();
+        boolean flag = true;
+        
+        for (int j = 0; j < frames.length; j++)
+          {
+            StackFrame curr = frames[j];
+            sb.highlightLine(curr, true);
+            
+            while (flag == true && curr != null)
+              {
+                if (curr.getMethodName().equals(currentMethodName))
+                  {
+                    flag = false;
+                    sb.setCurrentLine(curr);
+                    this.currentFrame = curr;
+                    break;
+                  }
+                curr = curr.getOuter();
+              }
+          }
+        //updateShownStackFrame(this.currentFrame);
+      }
+//    updateShownStackFrame(stackView.getFirstFrameSelection());
 
     stackView.expandAll();
     stackView.showAll();
@@ -1133,6 +1253,13 @@ public class SourceWindow
         TreeIter iter = store.appendRow();
         store.setValue(iter, (DataColumnString) cols[0], (String) funcs.get(i));
       }
+    
+//    Iterator i = this.view.getFunctions().values().iterator();
+//    while (i.hasNext())
+//      {
+//        TreeIter iter = store.appendRow();
+//        store.setValue(iter, (DataColumnString) cols[0], (String) i.next());
+//      }
 
     completion.setModel(store);
     completion.setTextColumn(cols[0].getColumn());
@@ -1369,26 +1496,49 @@ public class SourceWindow
     if (selected == null)
       return;
     
+    //System.out.println("In updateshown for  " + selected.getMethodName());
+
     DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                           + (source == null ? "Unknown File"
                                                                            : source.getFileName())
                                                           + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-    this.view.load(selected);
 
-    if (source != null && selected.getDOMFunction() != null)
+        if (source != null && selected.getDOMFunction() != null)
       {
-        int line = (selected.getDOMFunction().getStartingLine());
-        String declaration = source.getLine(line).getText();
-        String ret = source.getLine(line - 1).getText();
-        if (ret != "")
-          declaration = ret.split("\n")[0] + " " + declaration;
 
-        this.view.scrollToFunction(declaration);
+        DOMSource oldSource = this.view.getScope().getData();
+        if (oldSource != null && !source.getFileName().equals(oldSource.getFileName())
+            || this.SW_state == RUNNING)
+          {
+            this.view.load(selected);
+
+            int line = (selected.getDOMFunction().getStartingLine());
+            String declaration = source.getLine(line).getText();
+            String ret = source.getLine(line - 1).getText();
+            if (ret != "")
+              declaration = ret.split("\n")[0] + " " + declaration;
+
+            this.view.scrollToFunction(declaration);
+          }
+        else
+          this.view.scrollToLine(selected.getLineNumber());
       }
+      
 
     this.view.showAll();
+  }
+  
+  private void removeTags()
+  {
+    SourceView sv = (SourceView) view;
+    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+    
+    for (int i = 0; i < this.frames.length; i++)
+      {
+        sb.highlightLine(frames[i], false);
+      }
   }
 
   /**
@@ -1405,6 +1555,7 @@ public class SourceWindow
     this.SW_state = RUNNING;
 
     unblockProc(this.swProc);
+    removeTags();
   }
 
   private void unblockProc (Proc proc)
@@ -1423,6 +1574,7 @@ public class SourceWindow
 
   private void doStop ()
   {
+
     // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
@@ -1517,6 +1669,7 @@ public class SourceWindow
           }
         this.pbo.requestUnblock(t);
       }
+    removeTags();
   }
 
   /**
@@ -2180,6 +2333,7 @@ public class SourceWindow
 
     public void currentStackChanged (StackFrame newFrame)
     {
+      currentFrame = newFrame;
       // TreePath path = stackView.getSelection().getSelectedRows()[0];
       // int selected = path.getIndices()[0];
 

@@ -147,6 +147,8 @@ public class SourceBuffer
   // Hashmap of comments for each file
   protected static HashMap comments = new HashMap();
   
+  //private HashMap MarkMap;
+  
   private int tagFlag = 0;
 
   // Since conceptually each sourcebuffer will only be viewing one file, we
@@ -159,6 +161,8 @@ public class SourceBuffer
   private int mode = SOURCE_MODE;
 
   private boolean firstLoad = true;
+  
+  private String fileName = "";
 
   /**
    * Creates a new SourceBuffer
@@ -177,12 +181,14 @@ public class SourceBuffer
   public SourceBuffer (StackFrame scope)
   {
     this();
+    this.functions = new Vector();
     this.setScope(scope, SOURCE_MODE);
   }
 
   public SourceBuffer (StackFrame scope, int mode)
   {
     this();
+    this.functions = new Vector();
     this.setScope(scope, mode);
   }
 
@@ -268,7 +274,7 @@ public class SourceBuffer
 
     return this.getIter(this.startCurrentLine).getLineNumber();
   }
-
+  
   /**
    * Sets the current 'line' to the given range
    * 
@@ -286,7 +292,7 @@ public class SourceBuffer
     int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
     int endCol = frame.getEndOffset();
-
+    
     this.startCurrentLine = this.createMark(
                                             "currentLineStart",
                                             this.getIter(this.getLineIter(
@@ -310,19 +316,65 @@ public class SourceBuffer
                                               true);
       }
 
+    if (frame.getInner() == null)
+      {
     if (this.tagFlag == 0)
       {
+        //System.out.println("currnetlineapplytag " + frame.getMethodName() + " " + frame.getLineNumber());
         this.applyTag(this.currentLine, this.getIter(this.startCurrentLine),
                       this.getIter(this.endCurrentLine));
         this.tagFlag = 1;
       }
-
+      }
+    
     // Apply the next sections of the 'current line'
     frame = frame.getOuter();
     if (frame != null)
       setCurrentLine(frame);
     else
-      tagFlag = 0;
+      this.tagFlag = 0;
+  }
+  
+  protected void highlightLine (StackFrame frame, boolean newFrame)
+  {
+    int startLine = frame.getStartLine();
+    int startCol = frame.getStartOffset();
+    int endLine = frame.getEndLine();
+    int endCol = frame.getEndOffset();
+
+    //System.out.println("HIghlighting " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
+    
+    TextMark start = this.createMark(
+                                     frame.getMethodName(),
+                                     this.getIter(this.getLineIter(
+                                                                   startLine - 1).getOffset()
+                                                  + startCol), true);
+    TextMark end = null;
+    if (endCol != StackLevel.EOL)
+      {
+        end = this.createMark(
+                              "end",
+                              this.getIter(this.getLineIter(endLine - 1).getOffset()
+                                           + endCol), false);
+      }
+    else
+      {
+        TextIter lineStart = this.getLineIter(endLine - 1);
+        end = this.createMark("end",
+                              this.getIter(lineStart.getOffset()
+                                           + lineStart.getCharsInLine()),
+                              true);
+      }
+    
+        if (newFrame == true)
+          {
+            this.applyTag(this.currentLine, this.getIter(start), this.getIter(end));
+          }
+        else
+          {
+            this.removeTag(this.currentLine, this.getIter(start),
+                                                          this.getIter(end));
+          }
   }
 
   /**
@@ -732,21 +784,37 @@ public class SourceBuffer
    */
   private void setScope (StackFrame scope, int mode)
   {
-    for (int i = 0; i < functions.size(); i++)
-      if (this.markExists((String) functions.get(i)))
-        this.deleteMark(((String) functions.get(i)));
-
+    Iterator i = this.functions.iterator();
+    while (i.hasNext())
+      {
+        String del = (String) i.next();
+        //System.out.println(">>> " + del);
+        this.deleteMark(del);
+      }
+    
     this.mode = mode;
 
     this.anchor = null;
-    this.functions = new Vector();
+    this.functions.clear();
     this.scope = scope;
+    DOMSource data = scope.getData();
+    String file = "";
+    
+    if (data != null)
+      file = data.getFileName();
+    
     try
       {
         switch (mode)
           {
           case SOURCE_MODE:
-            this.loadFile();
+            if (this.fileName.equals("") || ! this.fileName.equals(file))
+              {
+                this.firstLoad = true;
+                loadFile();
+              }
+            else
+              createTags();
             break;
           case ASM_MODE:
             this.loadAssembly();
@@ -762,7 +830,10 @@ public class SourceBuffer
       }
 
     if (scope != null)
-      this.setCurrentLine(scope);
+      {
+        this.fileName = file;
+        this.setCurrentLine(scope);
+      }
   }
 
   public void setMode (int mode)
@@ -944,14 +1015,14 @@ public class SourceBuffer
         StackFrame curr = this.scope;
         while (curr != null)
           {
-          if (curr.getData() != null)
-            {
-              source = curr.getData();
-              break;
-            }
-          curr = curr.getOuter();
+            if (curr.getData() != null)
+              {
+                source = curr.getData();
+                break;
+              }
+            curr = curr.getOuter();
           }
-        
+
         /* There really were no frames with debuginfo */
         if (curr == null)
           {
@@ -967,6 +1038,7 @@ public class SourceBuffer
 
             this.deleteText(this.getStartIter(), this.getEndIter());
             this.insertText(bufferText);
+            this.createTags();
             return;
           }
       }
@@ -1019,7 +1091,15 @@ public class SourceBuffer
    */
   protected void createTags ()
   {
+    //System.out.println("Creating tags for " + this.scope.getMethodName());
     Iterator lines = this.scope.getData().getLines();
+    
+//    StackFrame curr = this.scope;
+//    if (curr.getInner() != null)
+//      {
+//        while (curr.getInner() != null)
+//          curr = curr.getInner();
+//      }
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -1040,7 +1120,6 @@ public class SourceBuffer
             if (type.equals(DOMTagTypes.FUNCTION_BODY))
               {
                 String funcName = tag.getToken();
-                this.functions.add(funcName);
                 
                 String[] nameArray = funcName.split("\\s*");
                 StringBuffer buffer = new StringBuffer();
@@ -1049,9 +1128,10 @@ public class SourceBuffer
                   buffer.append(nameArray[i]);
                 
                 funcName = buffer.toString();
-                
+                this.functions.add(funcName);
                 this.createMark(funcName, this.getLineIter(line.getLineNum()),
                                 true);
+
               }
             else
               {
@@ -1059,7 +1139,6 @@ public class SourceBuffer
                               this.getIter(lineOffset + tag.getStart()
                                            + tag.getLength()));
               }
-
           }
 
         Iterator inlines = line.getInlines();

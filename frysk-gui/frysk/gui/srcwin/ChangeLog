@@ -1,3 +1,30 @@
+2006-11-10  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (setCurrentLine): Mark only the innermost frame.
+	(createTags): Strip spaces before creating TextMark. Fixes #3499.
+	Check for nulls before parsing.
+	(setScope): Use an iterator to iterate through Vector. Check to see if
+	the source file needs to be loaded. Fixes #3503.
+	(highlightLine): Added. Tags and unTags based on StackFrame.
+	(SourceBuffer): Initialize functions Vector.
+	(loadFile): Check for nulls in source. Call createTags() on frames
+	with debuginfo.
+	
+	* SourceWindow.java (doStep): Call removeTags() after unblocking.
+	(updateShownStackFrame): Won't load a file if not needed. Scrolls by
+	line number instead of TextMark when possible. Fixes #3470, #3471.
+	(SourceWindowListener.currentStackChanged): Update currentFrame.
+	(populateStackBrowser): Lots of new case handling. Makes sure that
+	currently selected frames are updated properly.
+	(removeTags): Added. Remove relevant StackFrame TextTags from the
+	source text.
+	(doStep): Call removeTags().
+	(doRun): Call removeTags().
+
+	* SourceView.java (mouseMotionEvent): Don't attempt a Variable reading
+	if the SourceWindow is not stopped. Fixes #3504.
+	
+
 2006-11-07  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (finishSourceWin): Set the window title properly.
