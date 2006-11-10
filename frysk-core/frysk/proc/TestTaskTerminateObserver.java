@@ -58,11 +58,19 @@ public class TestTaskTerminateObserver
      */
     class Terminate
 	extends TaskObserverBase
-	implements TaskObserver.Terminated
+	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
-
+	int terminating = INVALID;
 	int terminated = INVALID;
-	
+	public Action updateTerminating (Task task, boolean signal,
+					 int value)
+	{
+	    if (signal)
+		terminating = -value;
+	    else
+		terminating = value;
+	    return Action.CONTINUE;
+	}
 	public Action updateTerminated (Task task, boolean signal,
 					int value)
 	{
@@ -72,23 +80,6 @@ public class TestTaskTerminateObserver
 		terminated = value;
 	    return Action.CONTINUE;
 	}
-    }
-    
-    class Terminating
-    extends TaskObserverBase
-    implements TaskObserver.Terminating
-    {
-    int terminating = INVALID;
-    
-    public Action updateTerminating (Task task, boolean signal,
-                                     int value)
-                    {
-                        if (signal)
-                        terminating = -value;
-                        else
-                        terminating = value;
-                        return Action.CONTINUE;
-                    }
     }
 
     /**
@@ -109,15 +100,14 @@ public class TestTaskTerminateObserver
 	// Set up an observer that watches for both Terminating and
 	// Terminated events.
 	Terminate terminate = new Terminate ();
-    Terminating terminatingObserver = new Terminating();
 	if (terminated != INVALID)
-	    child.mainTask.requestAddTaskObserver (terminate);
+	    child.mainTask.requestAddTerminatedObserver (terminate);
 	if (terminating != INVALID)
-	    child.mainTask.requestAddTaskObserver (terminatingObserver);
+	    child.mainTask.requestAddTerminatingObserver (terminate);
 	child.resume ();
 	assertRunUntilStop ("run \"exit\" to exit");
 
-	assertEquals ("terminating value", terminating, terminatingObserver.terminating);
+	assertEquals ("terminating value", terminating, terminate.terminating);
 	assertEquals ("terminated value", terminated, terminate.terminated);
     }
 
@@ -171,7 +161,7 @@ public class TestTaskTerminateObserver
     public Action updateAttached (Task task)
     {
         count++;
-        task.requestAddTaskObserver (this);
+        task.requestAddAttachedObserver (this);
         task.requestUnblock (this);
         return Action.BLOCK;
     }
@@ -184,7 +174,7 @@ public class TestTaskTerminateObserver
     public Action updateTerminating (Task task, boolean signal, int value)
     {
         count++;
-        task.requestAddTaskObserver (this);
+        task.requestAddTerminatingObserver (this);
         task.requestUnblock (this);
         return Action.BLOCK;
     }
@@ -218,8 +208,8 @@ public class TestTaskTerminateObserver
             assertNotNull ("Finding funit-threadexit threads",
         	    task);
             if (task.getTid () == proc.getPid ()) {
-		task.requestAddTaskObserver (attachCounter);
-		task.requestAddTaskObserver (terminatingCounter);
+		task.requestAddAttachedObserver (attachCounter);
+		task.requestAddTerminatingObserver (terminatingCounter);
         	break;
 	    }
         }
@@ -251,7 +241,7 @@ public class TestTaskTerminateObserver
       }
     };
     
-    child.mainTask.requestAddTaskObserver(terminatingCounter);
+    child.mainTask.requestAddTerminatingObserver(terminatingCounter);
     child.resume();
 
     assertRunWhileProcNotRemoved(child.mainTask.getProc().getPid(), 5);

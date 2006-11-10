@@ -296,12 +296,12 @@ class TaskState
 	    task.sendSetOptions();
 	    if (task.notifyAttached () > 0)
 	      return new BlockedSignal(signal, false);
-	    if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+	    if (task.instructionObservers.numberOfObservers() > 0)
 	      {
 		task.sendStepInstruction(signal);
 		return running;
 	      }
-	    else if (task.observers.numberOfObservers(TaskObserver.Syscall.class) > 0)
+	    else if (task.syscallObservers.numberOfObservers() > 0)
 	      {
 		task.sendSyscallContinue(signal);
 		return syscallRunning;
@@ -682,12 +682,12 @@ class TaskState
 		      {
 			return blockedContinue;
 		      }
-		    if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+		    if (task.instructionObservers.numberOfObservers() > 0)
 		      {
 			task.sendStepInstruction(0);
 			return running;
 		      }
-		    else if (task.observers.numberOfObservers(TaskObserver.Syscall.class) > 0)
+		    else if (task.syscallObservers.numberOfObservers() > 0)
 		      {
 			task.sendSyscallContinue (0);
 			return syscallRunning;
@@ -726,7 +726,7 @@ class TaskState
 	 */
         private void sendContinue(Task task, int sig)
         {
-	  if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+	  if (task.instructionObservers.numberOfObservers() > 0)
 	    task.sendStepInstruction(sig);
 	  else if (syscalltracing)
 	    task.sendSyscallContinue(sig);
@@ -780,12 +780,12 @@ class TaskState
 	    return blockedContinue();
 
 	  // See how to continue depending on the kind of observers.
-	  if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+	  if (task.instructionObservers.numberOfObservers() > 0)
 	    {
 	      task.sendStepInstruction(0);
 	      return insyscall ? inSyscallRunning : running;
 	    }
-	  else if (task.observers.numberOfObservers(TaskObserver.Syscall.class) > 0)
+	  else if (task.syscallObservers.numberOfObservers() > 0)
 	    {
 	      task.sendSyscallContinue(0);
 	      return insyscall ? inSyscallRunningTraced : syscallRunning;
@@ -834,7 +834,7 @@ class TaskState
 	    // All breakpoints have been erased.  We need to explicitly
 	    // tell those attached to the current Task.
 	    task.proc.breakpoints.removeAllCodeObservers();
-	    Iterator it = task.observers.iterator(TaskObserver.Code.class);
+	    Iterator it = task.codeObservers.iterator();
 	    while (it.hasNext())
 	      ((TaskObserver.Code) it.next()).deletedFrom(task);
 
@@ -852,7 +852,7 @@ class TaskState
 	      }
 	    else
 	      {
-		if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+		if (task.instructionObservers.numberOfObservers() > 0)
 		  {
 		    task.sendStepInstruction(0);
 		    return inSyscallRunning;
@@ -951,7 +951,7 @@ class TaskState
 	if (blockers == -1)
 	  {
 	    // Maybe we were stepping this Task
-	    if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+	    if (task.instructionObservers.numberOfObservers() > 0)
 	      {
 		if (task.notifyInstruction() > 0)
 		  return blockedContinue();
@@ -1192,12 +1192,12 @@ class TaskState
 	    task.blockers.remove (observer);
 	    if (task.blockers.size () > 0)
 		return this; // Still blocked.
-	    if (task.observers.numberOfObservers(TaskObserver.Instruction.class) > 0)
+	    if (task.instructionObservers.numberOfObservers() > 0)
 	      {
 		task.sendStepInstruction(sig);
 		return running;
 	      }
-	    if (task.observers.numberOfObservers(TaskObserver.Syscall.class) > 0)
+	    if (task.syscallObservers.numberOfObservers() > 0)
 	      {
 		task.sendSyscallContinue(sig);
 		return insyscall ? inSyscallRunningTraced : syscallRunning;

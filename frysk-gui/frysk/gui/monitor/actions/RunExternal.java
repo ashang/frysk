@@ -95,7 +95,7 @@ public class RunExternal
     // AttachedObserver());
     this.blocker = new RunExBlocker();
     this.theTask = task;
-    task.requestAddTaskObserver(this.blocker);
+    task.requestAddAttachedObserver(this.blocker);
   }
 
   public GuiObject getCopy ()
@@ -148,7 +148,7 @@ public class RunExternal
 
     public Action updateAttached (Task task)
     {
-      task.requestAddTaskObserver(new TaskTerminatedObserver());
+      task.requestAddTerminatedObserver(new TaskTerminatedObserver());
       return Action.CONTINUE;
     }
 
@@ -176,7 +176,7 @@ public class RunExternal
     public Action updateTerminated (Task task, boolean signal, int value)
     {
       theTask.requestUnblock(blocker);
-      theTask.requestDeleteTaskObserver(blocker);
+      theTask.requestDeleteAttachedObserver(blocker);
       return Action.CONTINUE;
     }
 

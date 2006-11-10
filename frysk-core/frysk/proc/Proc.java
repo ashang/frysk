@@ -254,9 +254,9 @@ public abstract class Proc
    */
   public void requestAbandonAndRunEvent(final Event e)
   {
-
-    requestAbandon();
-
+    logger.log(Level.FINE, "{0} abandonAndRunEvent", this);
+    performDetach();
+    observations.clear();
     observableDetached.addObserver(new Observer()
     {
 
@@ -447,7 +447,7 @@ public abstract class Proc
 
       public void run()
       {
-	int syscallobs = task.observers.numberOfObservers(TaskObserver.Syscall.class);
+	int syscallobs = task.syscallObservers.numberOfObservers();
 	if (addition)
 	  {
 	    if (syscallobs == 0)
@@ -483,7 +483,7 @@ public abstract class Proc
 
 	        public boolean needsSuspendedAction()
 	        {
-		  return task.observers.numberOfObservers(TaskObserver.Syscall.class) == 0;
+		  return task.syscallObservers.numberOfObservers() == 0;
 		}
 	    };
 	Manager.eventLoop.add(to);
@@ -531,7 +531,7 @@ public abstract class Proc
 
 	        public boolean needsSuspendedAction()
 	        {
-		  return task.observers.numberOfObservers(TaskObserver.Syscall.class) == 1;
+		  return task.syscallObservers.numberOfObservers() == 1;
 		}
 	    };
 	Manager.eventLoop.add(to);
@@ -689,7 +689,7 @@ public abstract class Proc
 	  
 	  public boolean needsSuspendedAction()
 	  {
-	    return task.observers.numberOfObservers(TaskObserver.Instruction.class) == 0;
+	    return task.instructionObservers.numberOfObservers() == 0;
 	  }
 
 	  // Makes sure that the observer is properly added and then,
@@ -728,7 +728,7 @@ public abstract class Proc
 	  
 	  public boolean needsSuspendedAction()
 	  {
-	    return task.observers.numberOfObservers(TaskObserver.Instruction.class) == 1;
+	    return task.instructionObservers.numberOfObservers() == 1;
 	  }
 	};
       Manager.eventLoop.add(to);

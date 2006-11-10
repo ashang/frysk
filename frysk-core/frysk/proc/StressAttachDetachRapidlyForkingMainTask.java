@@ -106,7 +106,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 			   " belonging to parent: " + parent.getProc().getCommand() + 
 			   ". My child ID is: " + offspring.getTid());
 				
-		offspring.requestAddTaskObserver(ForkObserver.this);
+		offspring.requestAddForkedObserver(ForkObserver.this);
 		offspring.requestUnblock(ForkObserver.this);
 		if (count == numberOfForks)
 		    Manager.eventLoop.requestStop();
@@ -150,7 +150,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 			      );
 		
 	// Add the fork observer
-	child.mainTask.requestAddTaskObserver (forkObserver);
+	child.mainTask.requestAddForkedObserver (forkObserver);
 	
 	// Create a refresh time with a low refresh.
 	TimerEvent refreshTimer = new TimerEvent(0, 500){

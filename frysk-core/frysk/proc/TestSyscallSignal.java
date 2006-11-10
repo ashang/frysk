@@ -128,7 +128,7 @@ public class TestSyscallSignal
     final Task task = proc.getMainTask();
 
     final SignalObserver sigo = new SignalObserver(Sig.HUP_);
-    task.requestAddTaskObserver(sigo);
+    task.requestAddSignaledObserver(sigo);
     final SyscallObserver syso = new SyscallObserver(42, task);
     task.requestAddSyscallObserver(syso);
 

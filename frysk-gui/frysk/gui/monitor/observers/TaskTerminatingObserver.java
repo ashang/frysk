@@ -157,7 +157,7 @@ public class TaskTerminatingObserver
 
   public void apply (Task task)
   {
-    task.requestAddTaskObserver(this);
+    task.requestAddTerminatingObserver(this);
   }
 
   public GuiObject getCopy ()
@@ -167,7 +167,7 @@ public class TaskTerminatingObserver
 
   public void unapply (Task task)
   {
-    task.requestDeleteTaskObserver(this);
+    task.requestDeleteTerminatingObserver(this);
   }
 
 }

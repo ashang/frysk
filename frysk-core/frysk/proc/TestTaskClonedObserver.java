@@ -74,7 +74,7 @@ public class TestTaskClonedObserver
 	    public Action updateClonedOffspring (Task parent,
 						 Task offspring)
 	    {
-		offspring.requestAddTaskObserver (this);
+		offspring.requestAddClonedObserver (this);
 		offspring.requestUnblock (this);
 		return Action.BLOCK;
 	    }
@@ -86,7 +86,7 @@ public class TestTaskClonedObserver
 		getExecPrefix () + "funit-fib-clone",
 		Integer.toString (fibCount)
 	    });
-	child.mainTask.requestAddTaskObserver (cloneCounter);
+	child.mainTask.requestAddClonedObserver (cloneCounter);
 	child.resume ();
 	assertRunUntilStop ("run \"clone\" to exit");
 

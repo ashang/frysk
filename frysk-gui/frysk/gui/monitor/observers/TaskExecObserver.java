@@ -129,7 +129,7 @@ public class TaskExecObserver
 
   public void apply (Task task)
   {
-    task.requestAddTaskObserver(this);
+    task.requestAddExecedObserver(this);
   }
 
   public GuiObject getCopy ()
@@ -144,7 +144,7 @@ public class TaskExecObserver
 
   public void unapply (Task task)
   {
-    task.requestDeleteTaskObserver(this);
+    task.requestDeleteExecedObserver(this);
   }
 
 }

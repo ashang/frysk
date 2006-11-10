@@ -72,7 +72,7 @@ public class TestExec
 	}
 	ExecBlockCounter (Task task)
 	{
-	    task.requestAddTaskObserver (this);
+	    task.requestAddExecedObserver (this);
 	}
     }
 
@@ -187,7 +187,7 @@ public class TestExec
 	// loop is kept running until SingleExecObserver .addedTo is
 	// called indicating that the attach succeeded.
 	Task task = child.findTaskUsingRefresh (true);
-	task.requestAddTaskObserver (execObserver);
+	task.requestAddExecedObserver (execObserver);
 	assertRunUntilStop ("adding exec observer causing attach");
 
 	// Do the exec; this call keeps the event loop running until
@@ -237,7 +237,7 @@ public class TestExec
 	// loop is kept running until ExecParentObserver .addedTo is
 	// called indicating that the attach succeeded.
 	Task task = child.findTaskUsingRefresh (true);
-	task.requestAddTaskObserver (execParentObserver);
+	task.requestAddExecedObserver (execParentObserver);
 	assertRunUntilStop ("adding exec observer causing attach");
 
 	// Add the clones, then do the exec; this call keeps the event
@@ -296,7 +296,7 @@ public class TestExec
 	// loop is kept running until execObserverParent .addedTo is
 	// called indicating that the attach succeeded.
 	Task task = child.findTaskUsingRefresh (true);
-	task.requestAddTaskObserver (execObserverParent);
+	task.requestAddExecedObserver (execObserverParent);
 	assertRunUntilStop ("adding exec observer causing attach");
 
 	// Add the clones, then do the exec; this call keeps the event
@@ -315,7 +315,7 @@ public class TestExec
 	String beforeCommand = proc.getCommand ();
 	
 	Task childtask = child.findTaskUsingRefresh (false);
-	childtask.requestAddTaskObserver (execObserverChild);
+	childtask.requestAddExecedObserver (execObserverChild);
 	child.assertSendExecWaitForAcks (childtask.getTid ());
 
 	assertEquals ("task after attached multiple clone exec", proc,

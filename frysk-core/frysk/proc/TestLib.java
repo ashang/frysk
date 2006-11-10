@@ -807,7 +807,7 @@ public class TestLib
 		}
 	    }
 	    execBlockingObserver = new ExecBlockingObserver ();
-	    mainTask.requestAddTaskObserver (execBlockingObserver);
+	    mainTask.requestAddExecedObserver (execBlockingObserver);
 	    assertRunUntilStop ("add exec observer to AttachedDaemonProcess");
 	    // Run to the exec call.
 	    Signal.tkill (mainTask.getTid (), execSig);

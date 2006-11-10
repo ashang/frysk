@@ -150,10 +150,10 @@ public class TestBreakpoints
     Task task = proc.getMainTask();
 
     AttachedObserver ao = new AttachedObserver();
-    task.requestAddTaskObserver(ao);
+    task.requestAddAttachedObserver(ao);
 
     TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTaskObserver(to);
+    task.requestAddTerminatingObserver(to);
 
     // Wait till we are attached.
     synchronized (monitor)
@@ -278,9 +278,9 @@ public class TestBreakpoints
     Task task = proc.getMainTask();
 
     AttachedObserver ao = new AttachedObserver();
-    task.requestAddTaskObserver(ao);
+    task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTaskObserver(to);
+    task.requestAddTerminatingObserver(to);
 
     // Wait till we are attached.
     synchronized (monitor)
@@ -472,9 +472,9 @@ public class TestBreakpoints
     Task task = proc.getMainTask();
 
     AttachedObserver ao = new AttachedObserver();
-    task.requestAddTaskObserver(ao);
+    task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTaskObserver(to);
+    task.requestAddTerminatingObserver(to);
 
     // Wait till we are attached.
     synchronized (monitor)

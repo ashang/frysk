@@ -258,7 +258,7 @@ public class MemoryWindowFactory
               {
                 Task t = (Task) i.next();
                 t.requestUnblock(pao);
-                t.requestDeleteTaskObserver(pao);
+                t.requestDeleteAttachedObserver(pao);
               }
             
             blockerTable.remove(proc);

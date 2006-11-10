@@ -78,7 +78,7 @@ public class TestTaskObserverBlocked
 	// something to block.
 	AckProcess child = new DetachedAckProcess ();
 	Task mainTask = child.findTaskUsingRefresh (true);
-	mainTask.requestAddTaskObserver (blockAttached);
+	mainTask.requestAddAttachedObserver (blockAttached);
 	assertRunUntilStop ("run \"exit\" to exit");
 
 	// That one task was blocked.
@@ -101,49 +101,8 @@ public class TestTaskObserverBlocked
      */
     abstract class SpawnObserver
 	extends TaskObserverBase
+	implements TaskObserver.Attached
     {
-      private AttachedObserver attachedObserver;
-      
-      public void requestAddAttachedObserver(Task task)
-      {
-        attachedObserver = new AttachedObserver();
-        task.requestAddTaskObserver(attachedObserver);
-      }
-      
-      public void requestUnblockAttachedObserver(Task task)
-      {
-        task.requestUnblock(attachedObserver);
-      }
-      
-      private class AttachedObserver extends TaskObserverBase implements TaskObserver.Attached
-      {
-        /**
-         * This observer has been added to Object.
-         */
-        public void addedTo (final Object o)
-        {
-            if (currentState == UNATTACHED)
-            nextState (OBSERVER_ADDED_TO_PARENT);
-            else if (currentState == SPAWN_OFFSPRING)
-            nextState (OBSERVER_ADDED_TO_CHILD);
-            else
-            fail ("in wrong state <" + currentState + "> when adding to "
-                  + o);
-            super.addedTo (o);
-            Manager.eventLoop.requestStop ();
-        }
-        /**
-         * Officially attached to Task.
-         */
-        public Action updateAttached (Task task)
-        {
-            assertInState (OBSERVER_ADDED_TO_CHILD);
-            nextState (CHILD_ATTACHED);
-            Manager.eventLoop.requestStop ();
-            return Action.BLOCK;
-        }
-     
-      }
 	/**
 	 * Possible states of the spawn observer.
 	 */
@@ -219,6 +178,16 @@ public class TestTaskObserverBlocked
 	    return Action.BLOCK;
 	}
 	/**
+	 * Officially attached to Task.
+	 */
+	public Action updateAttached (Task task)
+	{
+	    assertInState (OBSERVER_ADDED_TO_CHILD);
+	    nextState (CHILD_ATTACHED);
+	    Manager.eventLoop.requestStop ();
+	    return Action.BLOCK;
+	}
+	/**
 	 * Create a new daemon process, attach to it's spawn observer
 	 * (forked or clone), and then wait for it to perform the
 	 * spawn.  The spawn observer will leave both the parent and
@@ -246,18 +215,14 @@ public class TestTaskObserverBlocked
 	{
 	    logger.log (Level.FINE, "{0} assertUnblockOffspring\n", this);
 
-        this.requestAddAttachedObserver(offspring);
-        //offspring.requestAddTaskObserver (this);       
-
+	    offspring.requestAddAttachedObserver (this);
 	    assertRunUntilStop ("add observer to child");
 	    assertInState (OBSERVER_ADDED_TO_CHILD);
 	    
 	    // Remove this from the blockers list, is preventing the
 	    // spawned offspring from running.  The child will then
 	    // notify any attached observers.
-	    offspring.requestUnblock (this); 
-        this.requestUnblockAttachedObserver(offspring);
-        
+	    offspring.requestUnblock (this);
 	    assertRunUntilStop ("allow child to attach");
 	    assertInState (CHILD_ATTACHED);
 	    
@@ -265,7 +230,6 @@ public class TestTaskObserverBlocked
 	    // observer.
 	    AckHandler ack = new AckHandler (childAck, "childAck");
 	    offspring.requestUnblock (this);
-        this.requestUnblockAttachedObserver(offspring);
 	    ack.await ();
 	}
 	/**
@@ -295,7 +259,7 @@ public class TestTaskObserverBlocked
 	}
 	void requestAddSpawnObserver (Task task)
 	{
-	    task.requestAddTaskObserver (this);
+	    task.requestAddClonedObserver (this);
 	}
 	/**
 	 * The parent Task cloned.
@@ -349,7 +313,7 @@ public class TestTaskObserverBlocked
 	}
 	void requestAddSpawnObserver (Task task)
 	{
-	    task.requestAddTaskObserver (this);
+	    task.requestAddForkedObserver (this);
 	}
 	/**
 	 * The parent Task forked.
@@ -419,7 +383,7 @@ public class TestTaskObserverBlocked
 	    }
 	}
 	ForkUnblock forkUnblock = new ForkUnblock ();
-	task.requestAddTaskObserver (forkUnblock);
+	task.requestAddForkedObserver (forkUnblock);
 	assertRunUntilStop ("adding fork observer");
 
 	// Create a child process, will transition through to
@@ -465,12 +429,12 @@ public class TestTaskObserverBlocked
 	    public Action updateForkedOffspring (Task parent, Task offspring)
 	    {
 		offspring.requestUnblock (this);
-		offspring.requestAddTaskObserver (this);
+		offspring.requestAddForkedObserver (this);
 		return Action.BLOCK;
 	    }
 	}
 	UnblockAdd observer = new UnblockAdd ();
-	task.requestAddTaskObserver (observer);
+	task.requestAddForkedObserver (observer);
 	assertRunUntilStop ("adding fork observer");
 
 	// Create a child process, will transition through to
@@ -561,14 +525,14 @@ public class TestTaskObserverBlocked
 	    public Action updateClonedOffspring (Task parent, Task offspring)
 	    {
 		killDuringTearDown (offspring.getTid ());
-		offspring.requestAddTaskObserver (this);
+		offspring.requestAddClonedObserver (this);
 		childTasks.add (offspring);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
 	    void addFirstObserver (Task task)
 	    {
-		task.requestAddTaskObserver (this);
+		task.requestAddClonedObserver (this);
 	    }
 	    String fibonacciProgram ()
 	    {
@@ -596,13 +560,13 @@ public class TestTaskObserverBlocked
 	    {
 		killDuringTearDown (offspring.getTid ());
 		childTasks.add (offspring);
-		offspring.requestAddTaskObserver (this);
+		offspring.requestAddForkedObserver (this);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
 	    void addFirstObserver (Task task)
 	    {
-		task.requestAddTaskObserver (this);
+		task.requestAddForkedObserver (this);
 	    }
 	    String fibonacciProgram ()
 	    {
@@ -636,13 +600,13 @@ public class TestTaskObserverBlocked
 	}
 	UnblockRunning unblockRunning = new UnblockRunning ();
 
-	task.requestAddTaskObserver (unblockRunning);
+	task.requestAddAttachedObserver (unblockRunning);
 	assertRunUntilStop ("attach then block");
 
 	// Queue up three actions, the middle unblock is stray.
 	task.requestUnblock (unblockRunning);
 	task.requestUnblock (unblockRunning);
-	task.requestDeleteTaskObserver (unblockRunning);
+	task.requestDeleteAttachedObserver (unblockRunning);
 	assertRunUntilStop ("unblock then detach");
     }
 }

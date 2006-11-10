@@ -79,7 +79,7 @@ public class ProgramObserver extends TaskObserverRoot implements TaskObserver.Fo
     // child created event
     // Add exec observer so the name of the child proc can
     // be checked
-    offspring.requestAddTaskObserver(this);
+    offspring.requestAddExecedObserver(this);
     offspring.requestUnblock(this);
     return Action.BLOCK;
   }
@@ -118,12 +118,12 @@ public class ProgramObserver extends TaskObserverRoot implements TaskObserver.Fo
 
   public void apply (Task task)
   {
-    task.requestAddTaskObserver(this);
+    task.requestAddForkedObserver(this);
   }
 
   public void unapply (Task task)
   {
-    task.requestDeleteTaskObserver(this);
+    task.requestDeleteForkedObserver(this);
   }
   
   /**

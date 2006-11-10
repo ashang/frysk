@@ -180,14 +180,14 @@ public class GuiTestLib extends TestCase{
 
 			    public void existingTask(Task task) {
 				logger.log(Level.FINER,"{0} listenForSignals adding SignaledObserver to existing task\n", this);
-				task.requestAddTaskObserver(TestProc.this);
+				task.requestAddSignaledObserver(TestProc.this);
 			    }
 			
 			    public void taskRemoved(Task task) {
 			    }
 			
 			    public void taskAdded(Task task) {
-				task.requestAddTaskObserver(TestProc.this);
+				task.requestAddSignaledObserver(TestProc.this);
 			    }
 			});
 		}

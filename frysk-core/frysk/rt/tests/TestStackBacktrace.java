@@ -99,7 +99,7 @@ public class TestStackBacktrace
     
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
-    myTask.requestAddTaskObserver(obs);
+    myTask.requestAddAttachedObserver(obs);
 
     assertRunUntilStop("Attempting to add observer");
 
