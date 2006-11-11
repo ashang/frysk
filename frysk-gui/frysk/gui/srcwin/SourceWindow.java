@@ -268,6 +268,9 @@ public class SourceWindow
   
   private int numSteppingThreads = 0;
   
+  /* What happens when we line step over a single looping line? */
+  private int lineLoopCount = 0;
+  
   private StackFrame currentFrame;
   
   private StackFrame[] frames;
@@ -1523,7 +1526,12 @@ public class SourceWindow
             this.view.scrollToFunction(declaration);
           }
         else
-          this.view.scrollToLine(selected.getLineNumber());
+          {
+            if (selected.getLineNumber() == 0)
+              return;
+            else
+              this.view.scrollToLine(selected.getLineNumber());
+          }
       }
       
 
@@ -2041,26 +2049,39 @@ public class SourceWindow
       }
     catch (TaskException te)
       {
+        //System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
       {
+        //System.out.println("NPE");
         return;
       }
 
     if (line == null)
       return;
 
+    //System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(task)).intValue();
 
+
     if (lineNum != prev)
       {
+        //System.out.println("new line");
         this.lineMap.put(task, new Integer(lineNum));
         --taskStepCount;
       }
     else
       {
+        this.lineLoopCount++;
+        if ((this.lineLoopCount / this.numSteppingThreads) > 8)
+          {
+            this.lineMap.put(task, new Integer(lineNum));
+            --taskStepCount;
+            return;
+          }
+        
         this.pbo.requestUnblock(task);
       }
   }
@@ -2382,6 +2403,8 @@ public class SourceWindow
           && SW_state <= STEP_OUT))
         {
           
+          //System.out.println("In existingTask with taskstepcount " + taskStepCount);
+          
           if (taskStepCount == 0)
             {
               //System.out.println("resetting taskstepcount");    
@@ -2405,6 +2428,7 @@ public class SourceWindow
                   StackFrame[] frames = generateProcStackTrace(null, null);
 
                   populateStackBrowser(frames);
+                  lineLoopCount = 0;
                   stepCompleted();
                 }
               });

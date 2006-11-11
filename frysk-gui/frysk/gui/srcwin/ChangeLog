@@ -1,3 +1,12 @@
+2006-11-11  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (lineLoopCount): Added. Keeps track of the
+	number of instructions executed by each thread.
+	(stepIn): If lineLoopCount reaches a certain level, we should assume
+	that the line just won't change, and re-block everything.
+	(updateShownStackFrame): If the selected frame has line number equal
+	to zero, don't do anything.
+
 2006-11-10  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (setCurrentLine): Mark only the innermost frame.
