@@ -42,15 +42,13 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
 
@@ -126,9 +124,9 @@ import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import frysk.rt.StateModel;
 import frysk.vtecli.ConsoleWindow;
 
 /**
@@ -252,24 +250,15 @@ public class SourceWindow
 
   private ConsoleWindow conWin;
 
-  private ProcBlockObserver pbo;
-  
-  private HashSet runningThreads;
-  
-  private HashMap dwflMap;
-  
-  private HashMap lineMap;
+  protected ProcBlockObserver pbo;
   
   protected boolean SW_active = false;
   
   private static int taskCount = 0;
   
-  private static int taskStepCount = 0;
+  //private static int taskStepCount = 0;
   
   private int numSteppingThreads = 0;
-  
-  /* What happens when we line step over a single looping line? */
-  private int lineLoopCount = 0;
   
   private StackFrame currentFrame;
   
@@ -286,6 +275,8 @@ public class SourceWindow
   protected static final int STEP_IN = 3;
   protected static final int STEP_OVER = 4;
   protected static final int STEP_OUT = 5;
+  
+  private StateModel stateModel;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -330,9 +321,7 @@ public class SourceWindow
     StackFrame[] frames = generateProcStackTrace(null, null);
 
     this.listener = new SourceWindowListener(this);
-    this.runningThreads = new HashSet();
-    this.dwflMap = new HashMap();
-    this.lineMap = new HashMap();
+    //this.runningThreads = new HashSet();
     this.watchView = new VariableWatchView(this);
     this.tips = new ToolTips();
     
@@ -557,7 +546,7 @@ public class SourceWindow
    * 
    * @param tasks   The list of tasks to step.
    */
-  protected void step (LinkedList tasks)
+  protected void stepInstruction (LinkedList tasks)
   {
 
     if (tasks.size() == 0)
@@ -571,26 +560,7 @@ public class SourceWindow
     this.SW_state = INSTRUCTION_STEP;
     this.numSteppingThreads = tasks.size();
     
-    Iterator i = tasks.iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        this.pbo.requestUnblock(t);
-      }
-  }
-  
-  /**
-   * Thread stepping has completed, clean up. 
-   */
-  protected void stepCompleted ()
-  {
-    //System.out.println("step completed");
-    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Stopped");
-    
-    resensitize();
-    
-    this.SW_state = STOPPED;
+    this.stateModel.stepInstruction(tasks);
   }
   
   /**
@@ -601,7 +571,6 @@ public class SourceWindow
    */
   protected void procReblocked ()
   {
-
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
     
@@ -1066,8 +1035,6 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
-//    mi = (MenuItem) this.toggleMainThread.createMenuItem();
-//    tmp.append(mi);
 //    mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
 //    tmp.append(mi);
     mi = (MenuItem) this.toggleStepDialog.createMenuItem();
@@ -1559,7 +1526,6 @@ public class SourceWindow
    */
   private void doRun ()
   {
-
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
     
@@ -1567,22 +1533,9 @@ public class SourceWindow
 
     this.SW_state = RUNNING;
 
-    unblockProc(this.swProc);
+    this.stateModel.run(this.swProc.getTasks());
+    
     removeTags();
-  }
-
-  private void unblockProc (Proc proc)
-  {
-    Iterator i = this.swProc.getTasks().iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        if (!this.runningThreads.contains(t))
-          {
-            this.runningThreads.add(t);
-            this.pbo.requestDeleteInstructionObserver(t);
-          }
-      }
   }
 
   private void doStop ()
@@ -1599,29 +1552,15 @@ public class SourceWindow
 
     //this.pbo.requestAddObservers(this.myProc.getMainTask());
     
+    
     if (this.threadDialog == null)
       {
-        this.runningThreads.clear();
-        this.pbo.requestAdd();
-        return;
+        this.stateModel.stop(null);
       }
-    
-    LinkedList l = this.threadDialog.getBlockTasks();
-    if (l.size() == 0)
-        this.pbo.requestAdd();
     else
       {
-        LinkedList tasks = swProc.getTasks();
-        Iterator i = this.runningThreads.iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            if (tasks.contains(t))
-              tasks.remove(t);
-          }
-        this.pbo.blockTask(tasks);
+        this.stateModel.stop(this.threadDialog.getBlockTasks());
       }
-    this.runningThreads.clear();
   }
   
   private void toggleThreadDialog ()
@@ -1660,28 +1599,8 @@ public class SourceWindow
     this.SW_state = STEP_IN;
     this.numSteppingThreads = swProc.getTasks().size();
     
-    Iterator i = this.swProc.getTasks().iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        if (this.dwflMap.get(t) == null)
-          {
-            Dwfl d = new Dwfl(t.getTid());
-            DwflLine line = null;
-            try
-              {
-                line = d.getSourceLine(t.getIsa().pc(t));
-              }
-            catch (TaskException te)
-              {
-                continue;
-              }
-
-            this.dwflMap.put(t, d);
-            this.lineMap.put(t, new Integer(line.getLineNum()));
-          }
-        this.pbo.requestUnblock(t);
-      }
+    this.stateModel.setUpStep(this.swProc.getTasks());
+    
     removeTags();
   }
 
@@ -1960,145 +1879,25 @@ public class SourceWindow
       this.conWin.showAll();
   }
   
-  private synchronized void executeTasks (LinkedList threads)
+  private synchronized void executeTasks (LinkedList tasks)
   {
-
-//    System.out.println("In executeThreads with thread size " + threads.size()
-//                       + " and runningthreads size "
-//                       + this.runningThreads.size());
-
-    if (threads.size() == 0 && this.runningThreads.size() == 0)
-      return;   /* runningState should already be false */
-    
-    else if (threads.size() == 0 && this.runningThreads.size() != 0)
-      {
-        LinkedList l = new LinkedList();
-        Iterator i = this.runningThreads.iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            l.add(t);
-            i.remove();
-            //System.out.println("Blocking " + t);
-          }
-        this.pbo.blockTask(l);
-        this.SW_state = STOPPED;
-        return;
-      }
-
-    if (this.runningThreads.size() == 0)
-      {
-        Iterator i = threads.iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            //System.out.println("(0) Running " + t);
-            this.runningThreads.add(t);
-
-            this.pbo.requestDeleteInstructionObserver(t);
-          }
-        this.SW_state = RUNNING;
-        return;
-      }
-    else
-      {
-       
-        this.SW_state = RUNNING;
-        HashSet temp = new HashSet();
-        // this.runningThreads.clear();
-        Iterator i = threads.iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            //System.out.println("Iterating running thread" + t);
-            /* If this thread has not already been unblocked, do it */
-            if (!this.runningThreads.remove(t))
-              {
-                //System.out.println("unBlocking " + t);
-                this.pbo.requestDeleteInstructionObserver(t);
-              }
-            else
-              //System.out.println("Already Running");
-            /* Put all threads back into a master list */
-            temp.add(t);
-          }
-
-        /* Now catch the threads which have a block request */
-        if (this.runningThreads.size() != 0)
-          {
-            //System.out.println("temp size not zero");
-            LinkedList l = new LinkedList();
-            i = this.runningThreads.iterator();
-            while (i.hasNext())
-              {
-                Task t = (Task) i.next();
-                l.add(t);
-                //System.out.println("Blocking from runningThreads " + t);
-              }
-            this.pbo.blockTask(l);
-          }
-
-        this.runningThreads = temp;
-        //System.out.println("rt temp" + this.runningThreads.size() + " "
- //                         + temp.size());
-      }
+    this.SW_state = this.stateModel.executeTasks(tasks);
   }
   
-  private void stepIn (Task task)
+  /**
+   * Thread stepping has completed, clean up. 
+   */
+  private void stepCompleted ()
   {
-    //System.out.println("stepin " + task);
-    DwflLine line = null;
-    try
-      {
-        line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(task));
-      }
-    catch (TaskException te)
-      {
-        //System.out.println("task execption");
-        return;
-      }
-    catch (NullPointerException npe)
-      {
-        //System.out.println("NPE");
-        return;
-      }
-
-    if (line == null)
-      return;
-
-    //System.out.println("Nothing is null");
-    int lineNum = line.getLineNum();
-    int prev = ((Integer) this.lineMap.get(task)).intValue();
-
-
-    if (lineNum != prev)
-      {
-        //System.out.println("new line");
-        this.lineMap.put(task, new Integer(lineNum));
-        --taskStepCount;
-      }
-    else
-      {
-        this.lineLoopCount++;
-        if ((this.lineLoopCount / this.numSteppingThreads) > 8)
-          {
-            this.lineMap.put(task, new Integer(lineNum));
-            --taskStepCount;
-            return;
-          }
-        
-        this.pbo.requestUnblock(task);
-      }
-  }
-  
-  private void stepOver (Task task)
-  {
+    //System.out.println("step completed");
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
     
-  }
-  
-  private void stepOut (Task task)
-  {
+    this.stateModel.stepCompleted();
     
+    resensitize();
+    
+    this.SW_state = STOPPED;
   }
   
   private synchronized void handleTask (Task task)
@@ -2182,7 +1981,7 @@ public class SourceWindow
                   }
                 catch (IOException e)
                   {
-                    unblockProc(this.swProc);
+                    this.stateModel.run(this.swProc.getTasks());
                     WarnDialog dialog = new WarnDialog("File not found",
                                                        "Error loading source code: "
                                                            + e.getMessage());
@@ -2385,6 +2184,7 @@ public class SourceWindow
     {
       super(theProc);
       pbo = this;
+      stateModel = new StateModel(this);
     }
 
     public Action updateAttached (Task task)
@@ -2406,21 +2206,21 @@ public class SourceWindow
           
           //System.out.println("In existingTask with taskstepcount " + taskStepCount);
           
-          if (taskStepCount == 0)
+          if (stateModel.getTaskStepCount() == 0)
             {
               //System.out.println("resetting taskstepcount");    
-              taskStepCount = numSteppingThreads;
+              stateModel.setTaskStepCount(numSteppingThreads);
             }
           
           switch (SW_state)
           {
-            case INSTRUCTION_STEP:  --taskStepCount; break;
-            case STEP_IN: stepIn(task); break;
-            case STEP_OVER: stepOver(task); break;
-            case STEP_OUT: stepOut(task); break;
+            case INSTRUCTION_STEP:  stateModel.decTaskStepCount(); break;
+            case STEP_IN: stateModel.stepIn(task); break;
+            case STEP_OVER: stateModel.stepOver(task); break;
+            case STEP_OUT: stateModel.stepOut(task); break;
           }
           //System.out.println("taskstepcount " + taskStepCount);
-          if (taskStepCount == 0)
+          if (stateModel.getTaskStepCount() == 0)
             {
               CustomEvents.addEvent(new Runnable()
               {
@@ -2429,7 +2229,6 @@ public class SourceWindow
                   StackFrame[] frames = generateProcStackTrace(null, null);
 
                   populateStackBrowser(frames);
-                  lineLoopCount = 0;
                   stepCompleted();
                 }
               });

@@ -1,3 +1,23 @@
+2006-11-12  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (procReblocked): Moved work to StateModel.
+	(doStep): Ditto.
+	(doStop): Ditto.
+	(stepCompleted): Ditto. 
+	(doRun):  Ditto.
+	(stepInstruction): Ditto.
+	(executeTasks): Ditto.
+	(SourceWinBlocker..run): Ditto.
+	(finishSourceWin): Removed some initializations.
+	(SourceWinBlocker.SourceWinBlocker): Updated to call methods in
+	StateModel.
+	(generateProcStackTrace): Ditto.
+	(numSteppingThreads): Ditto.
+	(SourceWinBlocker.existingTask): Ditto.
+	
+	* StepDialog.java (.buttonEvent): Updated to call refactored SourceWindow
+	methods.
+
 2006-11-11  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (lineLoopCount): Added. Keeps track of the

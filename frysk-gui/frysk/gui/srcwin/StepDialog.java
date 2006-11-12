@@ -158,7 +158,7 @@ public class StepDialog
           {
             grabTasks();
             StepDialog.this.hideAll();
-            StepDialog.this.sw.step(stepTasks);
+            StepDialog.this.sw.stepInstruction(stepTasks);
           }
       }
     });
@@ -170,7 +170,7 @@ public class StepDialog
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             grabTasks();
-            StepDialog.this.sw.step(stepTasks);
+            StepDialog.this.sw.stepInstruction(stepTasks);
           }
       }
     });

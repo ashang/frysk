@@ -1,3 +1,22 @@
+2006-11-12  Mike Cvet  <mcvet@redhat.com>
+
+	* StateModel.java (StateModel): Added. Handles SourceWindow and HPD 
+	stop/continue/stepping. Addresses #3510.
+	(stepIn): Moved over from SourceWindow.
+	(stepOver): Ditto.
+	(lineMap): Ditto.
+	(stepCompleted): Ditto.
+	(run): Ditto.
+	(runningTasks): Ditto. 
+	(executeTasks): Ditto.
+	(stepOut): Ditto.
+	(stop): Ditto.
+	(setUpStep): Ditto.
+	(lineLoopCount): Ditto.
+	(dwflMap): Ditto.
+	(pbo): Ditto.
+	(stepInstruction): Ditto.
+
 2006-10-31  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (toPrint): Added. Returns a neat string representing this
