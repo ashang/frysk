@@ -6,6 +6,7 @@
 	that the line just won't change, and re-block everything.
 	(updateShownStackFrame): If the selected frame has line number equal
 	to zero, don't do anything.
+	(populateStackView): Commented.
 
 2006-11-10  Mike Cvet  <mcvet@redhat.com>
 

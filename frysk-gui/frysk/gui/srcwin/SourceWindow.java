@@ -408,6 +408,7 @@ public class SourceWindow
     this.stackView = new CurrentStackView(frames);
     this.frames = frames;
 
+    /* Initialization */
     if (this.view == null)
       {
         StackFrame curr = CurrentStackView.getCurrentFrame();
@@ -415,10 +416,8 @@ public class SourceWindow
         if (curr.getDwflLine() == null)
           {
             while (curr != null && curr.getDwflLine() == null)
-              {
-                //System.out.println("first Iterating " + curr.getMethodName());
-                curr = curr.getOuter();
-              }
+              curr = curr.getOuter();
+              
           }
         
         if (curr != null)
@@ -437,35 +436,40 @@ public class SourceWindow
     SourceView sv = (SourceView) view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
     
-    //System.out.println("SW_state: " + SW_state);
-    
     StackFrame temp = null;
-  if (this.SW_state != STEP_IN && this.SW_state != INSTRUCTION_STEP)
+    
+    /* Not stepping */
+  if (this.SW_state == RUNNING || this.SW_state == STOPPED)
       {
         //System.out.println("NOT STEP");
         StackFrame curr = null;
+        
+        /* If the currentFrame is null for some reason. Unlikely, but possible */
         if (this.currentFrame == null)
           {
             curr = this.stackView.getFirstFrameSelection();
 
             this.currentFrame = curr;
 
+            /* Assume the first frame in the stack has debuginfo. If not, try
+             * to find one that does. */
             if (curr.getDwflLine() == null)
               {
                 while (curr != null && curr.getDwflLine() == null)
-                  {
-                    //System.out.println("Iterating " + curr.getMethodName());
-                    curr = curr.getOuter();
-                  }
+                  curr = curr.getOuter();
               }
 
             if (curr != null)
               this.currentFrame = curr;
           }
         else
-          {
+          { /* We have a previously set currentFrame */
+            
             String currentMethodName = this.currentFrame.getMethodName();
             boolean flag = true;
+            
+            /* Try to find the new StackFrame representing the same frame from
+             * before the reset */
             for (int j = 0; j < frames.length; j++)
               {
                 temp = frames[j];
@@ -482,15 +486,15 @@ public class SourceWindow
                   break;
               }
           }
-        
-        //System.out.println("updating frame for " + this.currentFrame.getMethodName());
-        if (temp != null)
+
+        /* Need to re-load (if necessary) the source and set up the window */
+        if (temp != null)   /* We found an updated StackFrame */
           updateShownStackFrame(temp);
-        else
+        else    /* The StackFrame selected before the re-generation is no longer represented */
           updateShownStackFrame(this.stackView.getFirstFrameSelection());
-          
-          //updateShownStackFrame(this.currentFrame);
         
+        /* Now highlight the currently-executing StackFrame lines belonging to
+         * the other threads in this process. */
         for (int j = 0; j < frames.length; j++)
           {
             if (! frames[j].getMethodName().equals(this.currentFrame.getMethodName()))
@@ -503,19 +507,19 @@ public class SourceWindow
               }
           }
         
+        /* So if we never ended up actually finding a new frame to represent
+         * the old StackFrame, just default to the first frame in the list */
         if (temp == null)
           this.currentFrame = this.stackView.getFirstFrameSelection();
         else
           this.currentFrame = temp;
-        
-        //sb.setCurrentLine(this.currentFrame);
-        //sb.setScope(this.currentFrame);
       }
     else
       {
         String currentMethodName = this.currentFrame.getMethodName();
         boolean flag = true;
-        
+       
+        /* Update the highlighted lines for all the stepped threads */
         for (int j = 0; j < frames.length; j++)
           {
             StackFrame curr = frames[j];
@@ -526,6 +530,9 @@ public class SourceWindow
                 if (curr.getMethodName().equals(currentMethodName))
                   {
                     flag = false;
+                    
+                    /* If this is the selected StackFrame, update the 
+                     * SourceBuffer with it. */
                     sb.setCurrentLine(curr);
                     this.currentFrame = curr;
                     break;
@@ -533,9 +540,7 @@ public class SourceWindow
                 curr = curr.getOuter();
               }
           }
-        //updateShownStackFrame(this.currentFrame);
       }
-//    updateShownStackFrame(stackView.getFirstFrameSelection());
 
     stackView.expandAll();
     stackView.showAll();
@@ -2371,10 +2376,6 @@ public class SourceWindow
 
   }
   
-  /**
-   * A wrapper for TaskObserver.Attached which initializes the MemoryWindow 
-   * upon call, and blocks the task it is to examine.
-   */
   protected class SourceWinBlocker
       extends ProcBlockObserver
   {
