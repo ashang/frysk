@@ -1,3 +1,7 @@
+2006-11-13  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (RUNTESTDEFAULTFLAGS): Use $(srcdir).
+
 2006-10-27  Nurdin Premji <npremji@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): added frysk/util/ChangeLog
