@@ -39,6 +39,7 @@
 
 package frysk.util;
 
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.io.File;
@@ -65,6 +66,7 @@ import lib.elf.ElfFileException;
 import lib.elf.ElfNhdr;
 import lib.elf.ElfNhdrType;
 import lib.elf.ElfPHeader;
+import lib.elf.ElfPrFPRegSet;
 import lib.elf.ElfPrpsinfo;
 import lib.elf.ElfPrstatus;
 import lib.elf.ElfSection;
@@ -340,6 +342,40 @@ public class FCore
     nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
     return 0;
   
+  }
+
+  /**
+   * Fill the ElfNhdr object according to Proc object.
+   * 
+   * @param nhdrEntry
+   * @param proc
+   * @return less than zero when error occurs, or return one value that is
+   *         equal to zero or more than zero.
+   */
+  protected int fillENoteFPRegSet (ElfNhdr nhdrEntry, Task task)
+  {
+    //New PRSTATUS Note Entry.
+    ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
+	Isa register = null;
+
+    try
+    {
+      register = task.getIsa();
+    }
+    catch (TaskException e)
+    {
+      abandonCoreDump(e);
+    }
+
+    ByteBuffer registerMaps[] = register.getRegisterBankBuffers(task.getProc().getPid());
+    if (registerMaps[1].capacity() <= 0)
+      abandonCoreDump(new RuntimeException("FP Register bank is <=0"));
+    byte[] regBuffer = new byte[(int)registerMaps[1].capacity()];
+    registerMaps[1].get(regBuffer);
+    
+    fpRegSet.setFPRegisterBuffer(regBuffer);
+    nhdrEntry.setNhdrDesc(ElfNhdrType.NT_FPREGSET, fpRegSet);
+    return 0;
   }
   
   /**
@@ -656,6 +692,7 @@ public class FCore
     for (int i = 0; i < taskArray.length; i++)
       {
 
+    	// prstatus
         ElfNhdr prStatusNhdr = new ElfNhdr();
         ret = this.fillENotePrstatus(prStatusNhdr, taskArray[i]);
         if (ret >= 0)
@@ -663,8 +700,19 @@ public class FCore
             list.add(entryCount, prStatusNhdr);
             entryCount++;
           }
+        
+        // FP registers
+        ElfNhdr prFPRegSet = new ElfNhdr();
+        ret = this.fillENoteFPRegSet(prFPRegSet, taskArray[i]);
+        ret = this.fillENotePrstatus(prStatusNhdr, taskArray[i]);
+        if (ret >= 0)
+          {
+            list.add(entryCount, prFPRegSet);
+            entryCount++;
+          }
       }
     
+
     ElfNhdr prAuxVNhdr = new ElfNhdr();
     ret = this.fillENoteAuxv(prAuxVNhdr, this.proc);
     if (ret >= 0)
@@ -958,7 +1006,7 @@ public class FCore
                          final boolean permRead, final boolean permWrite, final boolean permExecute,
                          final boolean permPrivate, final long offset, final int devMajor, final int devMinor,
                          final int inode, final int pathnameOffset, final int pathnameLength) {
-                           if (permRead == true)
+                         if (permRead == true)
                              numOfMaps++;
     }
   }
@@ -974,7 +1022,8 @@ public class FCore
   {
 
     int numOfMaps = 0;
-
+    int totalSize = 0;
+    
     Elf elf;
 
     public void buildBuffer (final byte[] maps)
@@ -990,7 +1039,7 @@ public class FCore
                           final int pathnameOffset, final int pathnameLength)
     {
 
-      if (permRead == true)
+    if (permRead == true)
         {
 
           // Get empty progam segment header corresponding to this entry.
@@ -1047,23 +1096,35 @@ public class FCore
           sectionHeader.info = 0;
           sectionHeader.addralign = 0;
           sectionHeader.entsize = 0;
-
+          
           // XXX: New data section. Need to decide what maps to write
           ElfData data = section.createNewElfData();
 
-          // Load data. How to fail here?
-          byte[] memory = new byte[(int) (addressHigh - addressLow)];
-          proc.getMainTask().getMemory().get(addressLow, memory, 0,
-                                             (int) (addressHigh - addressLow));
-
-          // Set and update back to native elf section
-          data.setBuffer(memory);
-          data.setSize(memory.length);
+          // Segment writing strategy
+          //if ((inode == 0) || ((inode > 0) && permWrite) || ((permRead) && (permPrivate) && (!permWrite) && (!permExecute)))
+          //	{
+        	  // Load data. How to fail here?
+        	  byte[] memory = new byte[(int) (addressHigh - addressLow)];
+        	  proc.getMainTask().getMemory().get(addressLow, memory, 0,
+        			  (int) (addressHigh - addressLow));
+ 
+          	  // Set and update back to native elf section
+        	  data.setBuffer(memory);
+        	  data.setSize(memory.length);
+        	  
+          	//} 
+//          else 
+//          	{
+//        	  data.setBuffer(new byte[] {});
+//        	  data.setSize(0);
+//          	}
 
           // Fix this
           data.setType(0);
+            
           section.update(sectionHeader);
 
+       
           // inefficient to do this for each map, but alternative is to rerun
           // another builder
           // so for right now, less of two evil. Needs a rethinks.
@@ -1076,6 +1137,7 @@ public class FCore
           pheader.align = sectionHeader.addralign;
           // Write back Segment header to elf structure
           local_elf.updatePHeader(numOfMaps + 1, pheader);
+          
           numOfMaps++;
         }
 

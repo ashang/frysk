@@ -1,3 +1,13 @@
+2006-11-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (CoreMapsBuilder.buildMap): Comment out maps writing
+	strategy for now.
+
+2006-11-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (fillENoteFPRegSet): New.
+	(fillENoteSection): Add fillENoteFPRegSet call.
+
 2006-11-09  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceObserver.java: Changed back to StringBuffer, just as fast as String
