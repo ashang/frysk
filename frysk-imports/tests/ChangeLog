@@ -1,3 +1,7 @@
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3381/reparent.c (main): Permit ECHILD waitpid status.
+
 2006-11-07  Chris Moller  <moller@mollerware.com>
 
 	* frysk3381/reparent.c: Revised test for frysk bug 3381 (RHEL bug
