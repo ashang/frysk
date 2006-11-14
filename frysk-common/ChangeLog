@@ -3,6 +3,8 @@
 	* acinclude.m4: The file name is confusing, as it is special for
 	aclocal; rename it to ...
 	* frysk-common.ac: ... this.
+	* Makefile.rules (EXTRA_DIST): Remove common/*.m4, there are no
+	longer any; remove the `$(srcdir)/' prefix from the other ones.
 
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 

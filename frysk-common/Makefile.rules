@@ -473,13 +473,12 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 # the reg-ex expansion occurs there.
 
 EXTRA_DIST += \
-	$(srcdir)/common/ChangeLog \
-	$(srcdir)/common/EXCEPTION \
-	$(srcdir)/common/*.sh \
-	$(srcdir)/common/*.m4 \
-	$(srcdir)/common/version.in \
-	$(srcdir)/common/m4/*.m4 \
-	$(srcdir)/bootstrap.sh
+	common/ChangeLog \
+	common/EXCEPTION \
+	common/*.sh \
+	common/version.in \
+	common/m4/*.m4 \
+	bootstrap.sh
 
 # .Po files contain generated build dependencies.  Automake has no way
 # to efficiently detect a file rename or remove, and consequently, the
