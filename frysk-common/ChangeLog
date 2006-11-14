@@ -1,3 +1,9 @@
+2006-11-14  Stepan Kasal  <skasal@redhat.com>
+
+	* acinclude.m4: The file name is confusing, as it is special for
+	aclocal; rename it to ...
+	* frysk-common.ac: ... this.
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (checked-import-junit-framework): Print brief

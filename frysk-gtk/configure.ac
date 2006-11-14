@@ -42,7 +42,7 @@ AC_PREREQ(2.59)
 sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
-sinclude(common/acinclude.m4)
+m4_include([common/frysk-common.ac])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile tlwidgets/Makefile tests/Makefile])

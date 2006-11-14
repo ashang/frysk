@@ -1,5 +1,8 @@
 2006-11-14  Stepan Kasal  <skasal@redhat.com>
 
+	* configure.ac: The included file `common/acinclude.m4' was renamed
+	to `common/frysk-common.ac'.
+
 	* configure.ac: Put the jars reported by pkg-config to
 	CONFIG_STATUS_DEPENDENCIES, so that the project gets reconfigured
 	if the java-gnome packages are upraded later.
