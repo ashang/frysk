@@ -1,3 +1,9 @@
+2006-11-14  Chris Moller  <moller@mollerware.com>
+
+	* frysk3381/reparent-r.c: Added a variation of the test that more
+	clearly differences in kernel behaviour by eliminating possible
+	race conditions.  This variation is not included in Makefile.am.
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3381/reparent.c (main): Permit ECHILD waitpid status.
