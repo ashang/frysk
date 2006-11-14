@@ -244,6 +244,22 @@ monitored. </ul> Doing this has proven to greatly simplify the task of
 monitoring for regressions in <em>frysk</em>'s build dependencies, and
 that is, unfortunatly, a relatively common occurance. </dd>
 
+<dt>Why are tracker bugs <a
+href="/bugzilla/buglist.cgi?product=frysk&bug_status=SUSPENDED&&order=bugs.priority,bugs.bug_id">SUSPENDED</a>?
+</dt> <dd> It is a kludge.<br> Tracker bugs are put into the SUSPENDED
+state once any initial work as come to a halt.  Remaining tasks and
+problems are then identified by creating new bugs that block the
+tracker.  A tracker is closed when it is no longer applicable, for
+instance, an operating system tracker would be closed when it's
+support is no longer being pursued. </dd>
+
+<dt>When closing a bug, what should I do? </dt> <dd>Here's a useful
+check list: <ul> <li> Assign the bug to who ever fixed it (may not be
+you ;-). <li> Credit others that helped with the bug (adding them to
+the bugzilla CC) or fix (adding them to the ChangeLog entry).  <li>
+Add the ChangeLog entry to the bug (so what was changed is easy to
+see) <li> Close the bug. </ul> </dd>
+
 </dl>
 
 <hr>
