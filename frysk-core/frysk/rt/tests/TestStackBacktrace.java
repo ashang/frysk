@@ -138,18 +138,6 @@ public class TestStackBacktrace
 
     assertNotNull(frame);
 
-    // int level = 0;
-    // while (frame != null)
-    // {
-    // System.out.println("Frame " + (++level));
-    // System.out.println("\tFile: " + frame.getSourceFile());
-    // System.out.println("\tFunc: " + frame.getMethodName());
-    // System.out.println("\tLine: " + frame.getLineNumber());
-    // System.out.println("\tCol: " + frame.getColumn());
-    // System.out.println("\tAddr: " + frame.getAddress());
-    // frame = frame.getOuter();
-    // }
-
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibexecdir/funit-rt-looper.c"));
     assertEquals("baz", frame.getMethodName());
@@ -228,9 +216,9 @@ public class TestStackBacktrace
     Proc proc = Manager.host.getProc(new ProcId(process.getPid()));
     new ProcTasksObserver(proc, new StackTasksObserver());
     
-    assertRunUntilStop("testThreadedBackTrac");    
+    assertRunUntilStop("testThreadedBackTrace");    
   
-  frameAssertions();
+    frameAssertions();
   }
   
   /**

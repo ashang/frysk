@@ -1,3 +1,9 @@
+2006-11-14  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBackTrace): Cleaned up.
+	* tests/TestStateModel.java (testInstructionStepping): Added.
+	(stepAssertions): Added assertions for instruction stepping.
+
 2006-11-13  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStateModel.java: Added.

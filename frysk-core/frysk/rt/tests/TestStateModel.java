@@ -77,7 +77,7 @@ public class TestStateModel extends TestLib
 
   private HashMap lineMap = new HashMap();
   
-  private boolean initial = true;
+  private boolean initial;
   
   private int count = 0;
   
@@ -88,6 +88,46 @@ public class TestStateModel extends TestLib
   protected static final int STEP_IN = 1;
   protected static final int STEP_OVER = 2;
   protected static final int STEP_OUT = 3;
+  
+  
+  public void testInstructionStepping ()
+  {
+    if (MachineType.getMachineType() == MachineType.PPC
+        || MachineType.getMachineType() == MachineType.PPC64)
+      {
+        brokenXXX(3277);
+        return;
+      }
+    
+    initial = true;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL, new String[] {
+        Paths.getExecPrefix () + "/funit-rt-stepper",
+        "" + frysk.rt.tests.TestLib.getMyPid(),
+        "" + Sig.POLL_
+    });
+    
+    //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&");
+    
+    testState = INSTRUCTION_STEP;
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    stepper = new StepObserver(myProc);
+    
+    stateModel = new StateModel(stepper);
+
+    //setUpTest();
+    //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&^^^^^^^^^^^^^");
+    assertRunUntilStop("Attempting to add observer");
+    //setUpTest();
+  }
   
   public void testLineStepping ()
   {
@@ -100,6 +140,8 @@ public class TestStateModel extends TestLib
     
     //TaskCreatedObserver obs = new TaskCreatedObserver();
 
+    initial = true;
+    
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
         Paths.getExecPrefix () + "/funit-rt-stepper",
@@ -125,8 +167,9 @@ public class TestStateModel extends TestLib
 
     //setUpTest();
     assertRunUntilStop("Attempting to add observer");
-    setUpTest();
+    //setUpTest();
   }
+  
   
   public void setUpTest ()
   {
@@ -155,6 +198,7 @@ public class TestStateModel extends TestLib
         //stepper.requestUnblock(t);
         //t.requestUnblock(this.stepper);
       }
+    count = 0;
     stateModel.setUpStep(myProc.getTasks());
   }
   
@@ -183,24 +227,168 @@ public class TestStateModel extends TestLib
     // //System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
-    //frame.toString();
-    switch (prev)
-    {
-      case 58: assertEquals(lineNum, 59); break;
-      case 59: assertEquals(lineNum, 60); break;
-      case 60: assertEquals(lineNum, 61); break;
-      case 61: assertEquals(lineNum, 62); break;
-      case 62: assertEquals(lineNum, 64); break;
-      case 64: assertEquals(lineNum, 66); break;
-      case 66: assertEquals(lineNum, 67); break;
-      case 67: assertEquals(lineNum, 68); break;
-      case 68: assertEquals(lineNum, 69); break;
-      case 69: assertEquals(lineNum, 70); break;
-      case 70: assertEquals(lineNum, 71); break;
-      case 71: assertEquals(lineNum, 74); break;
-      default: break;
-    }
-    count++;
+
+    if (testState == INSTRUCTION_STEP)
+      {
+        switch (prev)
+        {
+        case 58:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 59);
+              count++;
+            }
+          break;
+        case 59:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 60);
+              count++;
+            }
+          break;
+        case 60:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 61);
+              count++;
+            }
+          break;
+        case 61:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 62);
+              count++;
+            }
+          break;
+        case 62:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 64);
+              count++;
+            }
+          break;
+        case 64:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 66);
+              count++;
+            }
+          break;
+        case 66:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 67);
+              count++;
+            }
+          break;
+        case 67:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 68);
+              count++;
+            }
+          break;
+        case 68:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 69);
+              count++;
+            }
+          break;
+        case 69:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 70);
+              count++;
+            }
+          break;
+        case 70:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 71);
+              count++;
+            }
+          break;
+        case 71:
+          if (prev == lineNum)
+            break;
+          else
+            {
+              assertEquals(lineNum, 58);
+              count++;
+            }
+          break;
+        default:
+          break;
+        }
+      }
+    else if (testState == STEP_IN)
+      {
+        switch (prev)
+          {
+          case 58:
+            assertEquals(lineNum, 59);
+            break;
+          case 59:
+            assertEquals(lineNum, 60);
+            break;
+          case 60:
+            assertEquals(lineNum, 61);
+            break;
+          case 61:
+            assertEquals(lineNum, 62);
+            break;
+          case 62:
+            assertEquals(lineNum, 64);
+            break;
+          case 64:
+            assertEquals(lineNum, 66);
+            break;
+          case 66:
+            assertEquals(lineNum, 67);
+            break;
+          case 67:
+            assertEquals(lineNum, 68);
+            break;
+          case 68:
+            assertEquals(lineNum, 69);
+            break;
+          case 69:
+            assertEquals(lineNum, 70);
+            break;
+          case 70:
+            assertEquals(lineNum, 71);
+            break;
+          case 71:
+            assertEquals(lineNum, 74);
+            break;
+          default:
+            break;
+          }
+        count++;
+      }
     
     if (count == 20)
       {
@@ -210,7 +398,6 @@ public class TestStateModel extends TestLib
     else
       stepper.requestUnblock(myTask);
       //myTask.requestUnblock(stepper);
-
   }
   
   
