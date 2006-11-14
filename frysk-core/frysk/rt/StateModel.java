@@ -135,6 +135,12 @@ public class StateModel
               {
                 continue;
               }
+            catch (NullPointerException npe)
+            {
+              //System.out.println("ZOMG! Null.");
+              //System.out.println(npe.getMessage());
+              continue;
+            }
 
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
@@ -187,8 +193,7 @@ public class StateModel
 
     if (line == null)
       {
-        //System.out.println("null line");
-      return;
+        return;
       }
 
     // System.out.println("Nothing is null");

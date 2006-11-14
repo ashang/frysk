@@ -73,9 +73,9 @@ public class TestStateModel extends TestLib
   
   //private StackFrame frame;
   
-  private HashMap dwflMap = new HashMap();
+  private HashMap dwflMap;
 
-  private HashMap lineMap = new HashMap();
+  private HashMap lineMap;
   
   private boolean initial;
   
@@ -99,8 +99,6 @@ public class TestStateModel extends TestLib
         return;
       }
     
-    initial = true;
-    
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
         Paths.getExecPrefix () + "/funit-rt-stepper",
@@ -108,7 +106,9 @@ public class TestStateModel extends TestLib
         "" + Sig.POLL_
     });
     
-    //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&");
+    initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
     
     testState = INSTRUCTION_STEP;
     
@@ -124,7 +124,6 @@ public class TestStateModel extends TestLib
     stateModel = new StateModel(stepper);
 
     //setUpTest();
-    //System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&^^^^^^^^^^^^^");
     assertRunUntilStop("Attempting to add observer");
     //setUpTest();
   }
@@ -141,6 +140,8 @@ public class TestStateModel extends TestLib
     //TaskCreatedObserver obs = new TaskCreatedObserver();
 
     initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
@@ -190,6 +191,11 @@ public class TestStateModel extends TestLib
               {
                 continue;
               }
+            
+            if (line == null)
+              {
+                continue;
+              }
 
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
@@ -233,116 +239,45 @@ public class TestStateModel extends TestLib
         switch (prev)
         {
         case 58:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 59);
-              count++;
-            }
+          assertTrue(lineNum == 58 || lineNum == 59);
           break;
         case 59:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 60);
-              count++;
-            }
+          assertTrue(lineNum == 59 || lineNum == 60);
           break;
         case 60:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 61);
-              count++;
-            }
+          assertTrue(lineNum == 60 || lineNum == 61);
           break;
         case 61:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 62);
-              count++;
-            }
+          assertTrue(lineNum == 61 || lineNum == 62);
           break;
         case 62:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 64);
-              count++;
-            }
+          assertTrue(lineNum == 62 || lineNum == 64);
           break;
         case 64:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 66);
-              count++;
-            }
+          assertTrue(lineNum == 64 || lineNum == 66);
           break;
         case 66:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 67);
-              count++;
-            }
+          assertTrue(lineNum == 66 || lineNum == 67);
           break;
         case 67:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 68);
-              count++;
-            }
+          assertTrue(lineNum == 67 || lineNum == 68);
           break;
         case 68:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 69);
-              count++;
-            }
+          assertTrue(lineNum == 68 || lineNum == 69);
           break;
         case 69:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 70);
-              count++;
-            }
+          assertTrue(lineNum == 69 || lineNum == 70);
           break;
         case 70:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 71);
-              count++;
-            }
+          assertTrue(lineNum == 70 || lineNum == 71);
           break;
         case 71:
-          if (prev == lineNum)
-            break;
-          else
-            {
-              assertEquals(lineNum, 58);
-              count++;
-            }
+          assertTrue(lineNum == 71 || lineNum == 58);
           break;
         default:
           break;
         }
+        count++;
       }
     else if (testState == STEP_IN)
       {
@@ -389,9 +324,10 @@ public class TestStateModel extends TestLib
           }
         count++;
       }
-    
+    //System.out.println("checking count");
     if (count == 20)
       {
+        //System.out.println("Manager.eventLoop.requestStop();");
         Manager.eventLoop.requestStop();
         return;
       }
@@ -411,13 +347,11 @@ public class TestStateModel extends TestLib
       super(theProc);
     }
     
-    public void existingTask (Task task)
+    public synchronized void existingTask (Task task)
     {
-      //System.out.println("(*&^*()&^)*&%^)&*%^)*&%^)&DF");
       if (initial == true)
         {
           initial = false;
-          //System.out.println("Returning");
           setUpTest();
           
           return;

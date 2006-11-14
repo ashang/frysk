@@ -2,7 +2,8 @@
 
 	* tests/TestStackBacktrace.java (testBackTrace): Cleaned up.
 	* tests/TestStateModel.java (testInstructionStepping): Added.
-	(stepAssertions): Added assertions for instruction stepping.
+	(stepAssertions): Added assertions for instruction stepping. 
+	Fixed to avoid race conditions.
 
 2006-11-13  Mike Cvet  <mcvet@redhat.com>
 

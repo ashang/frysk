@@ -38,13 +38,23 @@
 // exception.
 
 #include <stdio.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <pthread.h>
 
+volatile int lock;
 volatile pid_t pid;
 volatile int sig;
+
+void *signal_parent(void* args)
+{
+  while(lock == 1);
+  kill(pid, sig);
+  pthread_exit(NULL);
+}
 
 void foo()
 {
@@ -52,7 +62,7 @@ void foo()
   int b = 0;
   int c = 0;
   long d = 0;
-  kill(pid, sig);
+  lock = 0;
   while (1)
     {
       a++;
@@ -79,7 +89,7 @@ int main(int argc, char ** argv)
 
   if(argc < 3)
     {
-      printf("Usage: looper2 <pid> <signal>\n");
+      printf("Usage: funit-rt-stepper <pid> <signal>\n");
       exit(0);
     }
 
@@ -101,6 +111,11 @@ int main(int argc, char ** argv)
   
   pid = target_pid;
   sig = signal;
+  
+  lock = 1;
+
+  pthread_t thread;
+  pthread_create( &thread, NULL, signal_parent, NULL);
 
   foo();
   
