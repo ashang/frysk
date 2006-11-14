@@ -1,7 +1,7 @@
 package frysk.event;
 
 import frysk.sys.Sig;
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 /**
  * Frysk, and the GCJ runtime, when it comes to SIGCHLD, can interact

@@ -1,3 +1,8 @@
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSigChild.java: Use frysk.junit.TestCase.
+	* TestEventLoop.java: Ditto.
+
 2006-10-02  Nurdin Premji  <npremji@redhat.com>
 
 	* RequestEventLoopStop.java: Added, seems to be a common event.

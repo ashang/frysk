@@ -1,5 +1,8 @@
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-import-junit-framework): Print brief
+	reason message; make robust against -e.
+
 	* Makefile.rules (checked-import-junit-framework): New.
 	(checked-glade-xml): Rename glade.check.
 	(checked-ecj-compile): Rename ecj/check.

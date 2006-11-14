@@ -39,7 +39,7 @@
 
 package frysk.gui.test;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.actions.LogAction;

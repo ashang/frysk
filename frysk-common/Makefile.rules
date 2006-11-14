@@ -622,11 +622,17 @@ glade.catalog:
 all-local: checked-import-junit-framework
 CLEANFILES += checked-import-junit-framework
 checked-import-junit-framework:  $(GEN_DIRNAME).jar
-	for dir in $(GEN_DIRS) ; do \
+	if for dir in $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir ./$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
-	done | xargs grep -H -n -e 'import *junit\.framework' ; \
-	test $$? != 0 # success is failure
+	   done | xargs grep -H -n -e 'import *junit\.framework' ; \
+	then \
+		echo 1>&2 "" ; \
+		echo 1>&2 "***** frysk code should use frysk.junit," ; \
+		echo 1>&2 "***** and not junit.framework." ; \
+		echo 1>&2 "" ; \
+		exit 1 ; \
+	fi
 	touch $@

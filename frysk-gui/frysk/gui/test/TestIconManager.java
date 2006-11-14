@@ -41,7 +41,7 @@
 package frysk.gui.test;
 
 import frysk.gui.Build;
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import frysk.gui.common.IconManager;
 import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.Gtk;

@@ -44,7 +44,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import frysk.junit.Paths;
 import frysk.proc.Action;
 import frysk.proc.Manager;

@@ -2,7 +2,7 @@
 
 package frysk.gui.test;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 import frysk.proc.Task;
 import frysk.gui.common.IconManager;

@@ -39,7 +39,7 @@
 
 package frysk.gui.test;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import frysk.gui.monitor.filters.FilterManager;
 import frysk.gui.monitor.filters.IntFilter;
 import frysk.gui.monitor.filters.ProcFilter;

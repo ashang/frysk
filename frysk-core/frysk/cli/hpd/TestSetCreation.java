@@ -38,7 +38,7 @@
 // exception.
 package frysk.cli.hpd;
 import frysk.proc.*;
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import java.text.ParseException;
 
 public class TestSetCreation extends TestCase

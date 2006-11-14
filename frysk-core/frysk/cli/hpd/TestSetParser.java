@@ -39,7 +39,7 @@
 package frysk.cli.hpd;
 
 import java.text.ParseException;
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 public class TestSetParser extends TestCase
 {

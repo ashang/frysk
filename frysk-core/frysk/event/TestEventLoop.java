@@ -43,7 +43,7 @@ import frysk.sys.Itimer;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Tid;
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 /**
  * Test the EventLoop object.

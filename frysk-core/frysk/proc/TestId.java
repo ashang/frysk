@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 /**
  * Test that Id compares actually work as expected.

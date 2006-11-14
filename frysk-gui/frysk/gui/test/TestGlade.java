@@ -42,7 +42,7 @@ package frysk.gui.test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;

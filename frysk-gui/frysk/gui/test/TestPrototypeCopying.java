@@ -41,7 +41,7 @@ package frysk.gui.test;
 
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 import org.gnu.gtk.Gtk;
 
