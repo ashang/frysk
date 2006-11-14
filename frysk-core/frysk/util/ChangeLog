@@ -1,3 +1,10 @@
+2006-11-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FCore.java (fillENoteSection): Fix double PRSTATUS
+	writes on FP Registers. Clean up, and comment.
+	(buildElfHeader): Added missed arch classes.
+	(fillENotePrstatus): Added LinuxIa32On64 case for registers.
+
 2006-11-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (CoreMapsBuilder.buildMap): Comment out maps writing

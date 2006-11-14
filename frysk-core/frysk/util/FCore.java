@@ -415,7 +415,8 @@ public class FCore
     }
 
     // Fill register info. There is no generic way to do this.
-    if (getArch().equals("frysk.proc.LinuxIa32"))
+    if (getArch().equals("frysk.proc.LinuxIa32") 
+        || getArch().equals("frysk.proc.LinuxIa32On64"))
       {
         // Order for these registers is found in /usr/include/asm/user.h
         // This is not the same order that frysk iterators print out, nor
@@ -573,7 +574,7 @@ public class FCore
 
     prpsInfo.setPrSid(processStat.session);
     prpsInfo.setPrFname(processStat.comm);
-
+    
     class BuildCmdLine
     extends CmdLineBuilder
     {
@@ -680,19 +681,21 @@ public class FCore
 
     ArrayList list = new ArrayList();
 
+    // Fill PRPSINFO correctly.
     ElfNhdr prpsinfoNhdr = new ElfNhdr();
     ret = this.fillENotePrpsinfo(prpsinfoNhdr, this.proc);
     if (ret >= 0)
       {
-        // Fill PRPSINFO correctly.
+        
         list.add(entryCount, prpsinfoNhdr);
         entryCount++;
       }
 
+    // Loop tasks for PRSTATUS and FPREGISTERS
     for (int i = 0; i < taskArray.length; i++)
       {
 
-    	// prstatus
+    	// PRSTATUS
         ElfNhdr prStatusNhdr = new ElfNhdr();
         ret = this.fillENotePrstatus(prStatusNhdr, taskArray[i]);
         if (ret >= 0)
@@ -701,10 +704,9 @@ public class FCore
             entryCount++;
           }
         
-        // FP registers
+        // FP REGISTERS
         ElfNhdr prFPRegSet = new ElfNhdr();
         ret = this.fillENoteFPRegSet(prFPRegSet, taskArray[i]);
-        ret = this.fillENotePrstatus(prStatusNhdr, taskArray[i]);
         if (ret >= 0)
           {
             list.add(entryCount, prFPRegSet);
@@ -712,7 +714,7 @@ public class FCore
           }
       }
     
-
+    // Process Auxillary (AuxV)
     ElfNhdr prAuxVNhdr = new ElfNhdr();
     ret = this.fillENoteAuxv(prAuxVNhdr, this.proc);
     if (ret >= 0)
@@ -722,12 +724,12 @@ public class FCore
         entryCount++;
       }
 
-    //XXX: Continue to fill other ElfNhdr object, such as NT_PRSTATUS info.
-    // ElfNhdr psstatusNhdr = new ...
-
+ 
     if (list.size() <= 0)
       return;
 
+    // Now all note sections are filled, write it out to
+    // to section data.
     ElfData sectionData = noteSection.createNewElfData();
     constructSectionData(sectionData, list);
     sectionData.setType(0);
@@ -848,10 +850,20 @@ public class FCore
         elf_header.machine = ElfEMachine.EM_PPC64;
         elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
       }
+    if (arch_test.equals("frysk.proc.LinuxPPC32On64"))
+      {
+        elf_header.machine = ElfEMachine.EM_PPC;
+        elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS32;
+      }
     if (arch_test.equals("frysk.proc.LinuxX8664"))
       {
         elf_header.machine = ElfEMachine.EM_X86_64;
         elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS64;
+      }
+    if (arch_test.equals("frysk.proc.LinuxIa32On64"))
+      {
+        elf_header.machine = ElfEMachine.EM_386;
+        elf_header.ident[4] = ElfEHeader.PHEADER_ELFCLASS32;
       }
 
     // Elf Header is completed
