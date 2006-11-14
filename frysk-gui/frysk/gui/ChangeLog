@@ -1,3 +1,7 @@
+2006-11-14  Nurdin Premji <npremji@redhat.com>
+
+	* tests/dogtail_scripts/.cvsignore: Added *.pyc.
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* test/GuiTestLib.java: Use frysk.junit.TestCase.
