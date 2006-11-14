@@ -1,3 +1,7 @@
+2006-11-13  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStateModel.java: Added.
+
 2006-11-12  Mike Cvet  <mcvet@redhat.com>
 
 	* StateModel.java (StateModel): Added. Handles SourceWindow and HPD 

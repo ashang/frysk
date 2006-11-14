@@ -37,89 +37,72 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
 
-package frysk.gui.srcwin;
+volatile pid_t pid;
+volatile int sig;
 
-public class CurrentLineSection
+void foo()
 {
-  private int startLine;
+  int a = 0;
+  int b = 0;
+  int c = 0;
+  long d = 0;
+  kill(pid, sig);
+  while (1)
+    {
+      a++;
+      b++;
+      c++;
+      d = a;
+      if (a + b == 2)
+		{
+	 	 if (b + d == 2)
+	  	  {
+	 	     a = 0;
+	 	     b = 0;
+		     c = 0;
+		     d = 0;
+	 		 if (d == 0)
+				d = 1;
+	    	}
+		}
+    }
+}
 
-  private int endLine;
+int main(int argc, char ** argv)
+{
 
-  private int startOffset;
+  if(argc < 3)
+    {
+      printf("Usage: looper2 <pid> <signal>\n");
+      exit(0);
+    }
 
-  private int endOffset;
+  errno = 0;
+  pid_t target_pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
+  if(errno)
+    {
+      perror("Invalid pid");
+      exit(1);
+    }
+  
+  errno = 0;
+  int signal = (int) strtoul(argv[2], (char **) NULL, 10);
+  if(errno)
+    {
+      perror("Invalid signal");
+      exit(1);
+    }
+  
+  pid = target_pid;
+  sig = signal;
 
-  private CurrentLineSection nextSection;
-
-  private CurrentLineSection prevSection;
-
-  public CurrentLineSection (int lineStart, int lineEnd, int colStart,
-                             int colEnd)
-  {
-    startLine = lineStart;
-    endLine = lineEnd;
-    startOffset = colStart;
-    endOffset = colEnd;
-  }
-
-  public int getEndLine ()
-  {
-    return endLine;
-  }
-
-  public void setEndLine (int endLine)
-  {
-    this.endLine = endLine;
-  }
-
-  public int getEndOffset ()
-  {
-    return endOffset;
-  }
-
-  public void setEndOffset (int endOffset)
-  {
-    this.endOffset = endOffset;
-  }
-
-  public CurrentLineSection getNextSection ()
-  {
-    return nextSection;
-  }
-
-  public void setNextSection (CurrentLineSection nextSection)
-  {
-    this.nextSection = nextSection;
-  }
-
-  public CurrentLineSection getPrevSection ()
-  {
-    return prevSection;
-  }
-
-  public void setPrevSection (CurrentLineSection prevSection)
-  {
-    this.prevSection = prevSection;
-  }
-
-  public int getStartLine ()
-  {
-    return startLine;
-  }
-
-  public void setStartLine (int startLine)
-  {
-    this.startLine = startLine;
-  }
-
-  public int getStartOffset ()
-  {
-    return startOffset;
-  }
-
-  public void setStartOffset (int startOffset)
-  {
-    this.startOffset = startOffset;
-  }
+  foo();
+  
+  return 0;
 }

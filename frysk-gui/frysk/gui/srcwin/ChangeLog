@@ -1,3 +1,10 @@
+2006-11-13  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentLineSection.java: Removed.
+	* StackLevel.java: Removed.
+	* SourceBuffer.java (setCurrentLine): Removed reference to StackLevel.
+	(highlightLine): Ditto.
+
 2006-11-12  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (procReblocked): Moved work to StateModel.

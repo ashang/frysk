@@ -167,26 +167,29 @@ public class StateModel
    */
   public void stepIn (Task task)
   {
-    // System.out.println("stepin " + task);
     DwflLine line = null;
     try
       {
         line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(
                                                                               task));
+        //System.out.println()
       }
     catch (TaskException te)
       {
-        // System.out.println("task execption");
+         //System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
       {
-        // System.out.println("NPE");
+         //System.out.println("NPE");
         return;
       }
 
     if (line == null)
+      {
+        //System.out.println("null line");
       return;
+      }
 
     // System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
@@ -194,7 +197,6 @@ public class StateModel
 
     if (lineNum != prev)
       {
-        // System.out.println("new line");
         this.lineMap.put(task, new Integer(lineNum));
         --taskStepCount;
       }

@@ -298,7 +298,7 @@ public class SourceBuffer
                                             this.getIter(this.getLineIter(
                                                                           startLine - 1).getOffset()
                                                          + startCol), true);
-    if (endCol != StackLevel.EOL)
+    if (endCol != -1)
       {
         this.endCurrentLine = this.createMark(
                                               "currentLineEnd",
@@ -350,7 +350,7 @@ public class SourceBuffer
                                                                    startLine - 1).getOffset()
                                                   + startCol), true);
     TextMark end = null;
-    if (endCol != StackLevel.EOL)
+    if (endCol != -1)
       {
         end = this.createMark(
                               "end",

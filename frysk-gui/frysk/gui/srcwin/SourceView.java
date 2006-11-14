@@ -276,7 +276,7 @@ public class SourceView
   }
 
   /**
-   * Loads the contents of the provided StackLevel into this view
+   * Loads the contents of the provided StackFrame into this view
    * 
    * @param data The new stack frame to load.
    */
