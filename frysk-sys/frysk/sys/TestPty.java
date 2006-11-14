@@ -39,7 +39,7 @@
 
 package frysk.sys;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 /**
  * Test manipulation of the pty stuff

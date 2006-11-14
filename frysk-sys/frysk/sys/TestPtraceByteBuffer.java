@@ -39,7 +39,7 @@
 
 package frysk.sys;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import inua.eio.*;
 import java.util.Arrays;
 

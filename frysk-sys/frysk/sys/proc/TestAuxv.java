@@ -39,7 +39,7 @@
 
 package frysk.sys.proc;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
 /**
  * Test the AuxvBuilder against a predefined set of <tt>auxv</tt>

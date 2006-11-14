@@ -39,9 +39,11 @@
 
 package frysk.sys;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 
-public class TestCallPtrace extends TestCase {
+public class TestCallPtrace
+    extends TestCase
+{
 
     private int pid;
 

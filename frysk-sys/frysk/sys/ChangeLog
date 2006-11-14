@@ -1,3 +1,10 @@
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCallPtrace.java: Use frysk.junit.TestCase.
+	* TestPtraceByteBuffer.java: Ditto.
+	* TestSigSet.java: Ditto.
+	* TestPty.java: Ditto.
+
 2006-10-26  Tim Moore  <moore@redhat.com>
 
 	* cni/Errno.cxx (throwErrno): Fix bug in use of JvGetStringUTFRegion.

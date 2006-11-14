@@ -1,3 +1,10 @@
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestAuxv.java: Use frysk.junit.
+	* TestMaps.java: Ditto.
+	* TestCmdLine.java: Ditto.
+	* TestStatus.java: Ditto.
+
 2006-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/IdBuilder.cxx: Rename ...

@@ -1,3 +1,9 @@
+2006-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (checked-import-junit-framework): New.
+	(checked-glade-xml): Rename glade.check.
+	(checked-ecj-compile): Rename ecj/check.
+
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.javain: Assign exit status to local variable.  Call
