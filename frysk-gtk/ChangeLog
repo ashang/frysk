@@ -1,3 +1,12 @@
+2006-11-14  Stepan Kasal  <skasal@redhat.com>
+
+	* configure.ac: Put the jars reported by pkg-config to
+	CONFIG_STATUS_DEPENDENCIES, so that the project gets reconfigured
+	if the java-gnome packages are upraded later.
+	* Makefile.am (FRYSK_GTK_JARS): Add fake rules for the installed jars.
+	* tlwidgets/Makefile (FRYSK_GTK_JARS): Likewise.
+	* tests/Makefile (FRYSK_GTK_JARS): Likewise.
+
 2006-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass -Werror to automake.

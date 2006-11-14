@@ -98,3 +98,7 @@ CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.py
 frysk/gui/test/dogtail_scripts/frysk_suite.py: frysk/gui/test/dogtail_scripts/frysk_suite.in
 	$(SUBST)
 	chmod a+x $@
+
+# Fake rules for CONFIG_STATUS_DEPENDENCIES:
+$(FRYSK_GUI_JARS):
+	: no-op

@@ -63,6 +63,9 @@ gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2
 cairo-java >= 1.0 vte-java 
 >= 0.11.11 pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >= 1.10.0])
 
+# Rerun configure if the jars disappear.
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES], [$FRYSK_GUI_JARS])
+
 # Do after PKG_CHECK_MODULES, which sets PKG_CONFIG.
 RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)

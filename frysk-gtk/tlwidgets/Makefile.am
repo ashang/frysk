@@ -172,3 +172,7 @@ GENMARSHAL_COMMAND = glib-genmarshal --prefix=_ftk_marshal
 	(echo '/* This file has been automatically generated.  Do not edit. */' && \
 	echo '#include "$*.h"' && \
 	$(GENMARSHAL_COMMAND) --body $< ) >$@
+
+# Fake rules for CONFIG_STATUS_DEPENDENCIES:
+$(FRYSK_GTK_JARS):
+	: no-op

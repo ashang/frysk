@@ -89,3 +89,7 @@ TESTS += frysk3116/RegionAndGCFailure
 noinst_PROGRAMS += frysk3116/RegionAndGCFailure
 frysk3116_RegionAndGCFailure_SOURCES = frysk3116/RegionAndGCFailure.java
 frysk3116_RegionAndGCFailure_LDFLAGS = --main=frysk3116.RegionAndGCFailure
+
+# Fake rules for CONFIG_STATUS_DEPENDENCIES:
+$(FRYSK_GTK_JARS):
+	: no-op

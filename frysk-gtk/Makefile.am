@@ -79,3 +79,7 @@ EggTrayIcon_libEggTrayIcon_a_SOURCES = \
 	EggTrayIcon/eggtrayicon.c \
 	EggTrayIcon/libEggTrayIcon.c \
 	EggTrayIcon/eggtrayicon.h
+
+# Fake rules for CONFIG_STATUS_DEPENDENCIES:
+$(FRYSK_GTK_JARS):
+	: no-op
