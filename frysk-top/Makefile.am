@@ -122,13 +122,12 @@ $(DOXYFILE): Doxyfile.in
 CLEANFILES += doxygen
 
 # Add some needed files to the distribution, include $(srcdir) so that
-# the reg-ex expansion occures there.
+# the wildcard expansion occures there.
 
 EXTRA_DIST =
 EXTRA_DIST += \
 	$(srcdir)/common/ChangeLog \
 	$(srcdir)/common/*.sh \
-	$(srcdir)/common/*.m4 \
 	$(srcdir)/common/version.in \
 	$(srcdir)/common/m4/*.m4 \
 	$(srcdir)/bootstrap.sh \

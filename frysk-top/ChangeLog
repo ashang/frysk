@@ -1,3 +1,8 @@
+2006-11-14  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Remove $(srcdir)/common/*.m4, there is
+	no longer any.
+
 2006-11-03  Nurdin Premji <npremji@redhat.com>
 
 	* .classpath: Added libvte.jar to classpath, removed jars that are already in build path.

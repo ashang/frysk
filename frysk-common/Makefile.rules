@@ -470,15 +470,15 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 
 
 # Add some needed files to the distribution, include $(srcdir) so that
-# the reg-ex expansion occurs there.
+# the wildcard expansion occurs there.
 
 EXTRA_DIST += \
-	common/ChangeLog \
-	common/EXCEPTION \
-	common/*.sh \
-	common/version.in \
-	common/m4/*.m4 \
-	bootstrap.sh
+	$(srcdir)/common/ChangeLog \
+	$(srcdir)/common/EXCEPTION \
+	$(srcdir)/common/*.sh \
+	$(srcdir)/common/version.in \
+	$(srcdir)/common/m4/*.m4 \
+	$(srcdir)/bootstrap.sh
 
 # .Po files contain generated build dependencies.  Automake has no way
 # to efficiently detect a file rename or remove, and consequently, the
