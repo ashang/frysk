@@ -53,6 +53,7 @@ GEN_CLASSPATH += ../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
+GEN_CLASSPATH += ../frysk-imports/cdtparser.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar 
 GEN_CLASSPATH += ../frysk-imports/getopt.jar
 GEN_CLASSPATH += ../frysk-imports/jline.jar

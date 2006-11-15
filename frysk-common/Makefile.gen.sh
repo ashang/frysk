@@ -632,14 +632,23 @@ do
   echo EXTRA_DIST += ${file}
 done
 
-# Form a list of all the .fig files, they need to be compiled into
-# .jpg
-print_header "... sample_DATA"
-echo "sampledir = \$(pkgdatadir)/samples"
-echo "sample_DATA ="
-find ${dirs} -type f -name 'test*.cpp' | while read file
+# Form a list of all the .cpp files
+#print_header "... sample_DATA"
+#echo "sampledir = \$(pkgdatadir)/samples"
+#echo "sample_DATA ="
+#find ${dirs} -type f -name 'test*.cpp' | while read file
+#do
+#  echo sample_DATA += ${file}
+#  echo EXTRA_DIST += ${file}
+#done
+
+# Form a list of the test files needed to run funit
+print_header "... test_DATA"
+echo "testdir = \$(pkgdatadir)/test"
+echo "test_DATA ="
+find ${dirs} -type f -name 'test*' | while read file
 do
-  echo sample_DATA += ${file}
+  echo test_DATA += ${file}
   echo EXTRA_DIST += ${file}
 done
 

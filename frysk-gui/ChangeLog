@@ -1,3 +1,8 @@
+2006-11-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Add cdtparser.jar to the linking process.
+	* common/Makefile.gen.sh: Add test_DATA for unit testing.
+
 2006-11-14  Stepan Kasal  <skasal@redhat.com>
 
 	* configure.ac: The included file `common/acinclude.m4' was renamed
