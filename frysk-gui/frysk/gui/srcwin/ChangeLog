@@ -1,3 +1,8 @@
+2006-11-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* testfiles/test_looper.xml: New for unit testing.
+	* testfiles/test_main_looper.c: New for unit testing.
+
 2006-11-15  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (stackTop): Changed from stackBottom.
