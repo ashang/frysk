@@ -1,3 +1,20 @@
+2006-11-15  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* TestFCore.java: New.
+
+	* CoredumpAction.java: New. Refactored from FCore.
+	(CoredumpObserver): Added interrupt event,
+	and allow the user to pass an event on termination.
+	(InterruptEvent): New.
+	(existingTask):Run event on last task processed.
+	(buildNotes): Set header type and notes, no prog bits.
+	
+	* Fcore.java: Deleted.
+	
+	* Fcore.java (main): Deleted.
+	(addOptions): Deleted.
+	(CoredumpObserver): Renamed.
+
 2006-11-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FCore.java (fillENoteSection): Fix double PRSTATUS

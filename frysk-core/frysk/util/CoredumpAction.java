@@ -51,8 +51,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,31 +64,29 @@ import lib.elf.ElfFileException;
 import lib.elf.ElfNhdr;
 import lib.elf.ElfNhdrType;
 import lib.elf.ElfPHeader;
+import lib.elf.ElfPrAuxv;
 import lib.elf.ElfPrFPRegSet;
 import lib.elf.ElfPrpsinfo;
 import lib.elf.ElfPrstatus;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfSectionHeaderTypes;
-import lib.elf.ElfPrAuxv;
 import frysk.EventLogger;
+import frysk.event.Event;
 import frysk.event.RequestStopEvent;
+import frysk.event.SignalEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.sys.Sig;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
-import gnu.classpath.tools.getopt.FileArgumentCallback;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
 
 /**
  * @author pmuldoon
@@ -124,22 +120,12 @@ import gnu.classpath.tools.getopt.Parser;
  * @author pmuldoon
  *
  */
-public class FCore
+public class CoredumpAction
+extends ProcBlockObserver
 {
 
   protected static final Logger logger = EventLogger.get("logs/",
   "frysk_core_event.log");
-    private static Parser parser;
-
-  private static String levelValue;
-
-  private static Level level;
-
-  private static int pid = 0;
-
-  public CoreDumpTasksObserver procAttachedObserver;
-  
-  private Proc proc;
 
   private Elf local_elf = null;
 
@@ -147,78 +133,26 @@ public class FCore
 
   Task[] taskArray;
 
+  private LinkedList taskList;
+  Proc proc = null;
 
-  /**
-   * 
-   * Worker function to: start the event loop; create a Proc object; check if
-   * owned/permissions are ok; attach to the Proc and stop all its tasks; and
-   * do the core dump.
-   * 
-   * @param pid - pid to operate on.
-   * 
-   */
-  public void run (final int pid)
+  private Event event;
+  
+  
+  public CoredumpAction (Proc proc, Event theEvent)
   {
-
-    // Start refreshing
-    Manager.host.requestRefreshXXX(true);
-
-    // Wait here until refresh is done. It will take n amount of time to
-    // finish.The amount of time is undetermined.
-    Manager.eventLoop.runPending();
-
-    // Get the requested pid, and return a Proc object.
-    proc = Manager.host.getProc(new ProcId(pid));
-
-    // if proc is null, the process does not exist or disappeared. Error.
-    if (proc == null)
-      {
-        System.err.println("Couldn't get the process " + pid
-                           + ". It might have disappeared.");
-        System.exit(- 1);
-      }
-
-    boolean isOwned = (this.proc.getUID() == Manager.host.getSelf().getUID() || 
-        this.proc.getGID() == Manager.host.getSelf().getGID());
-
-    // Do we have permission to work on this process?
-    if (! isOwned)
-      {
-        System.err.println("Process " + pid
-                           + " is not owned by user/group. Cannot coredump.");
-        System.exit(- 1);
-      }
-
-    // Attach to the proc, and when tasks stopped, do
-    // core dump.
-    procAttachedObserver = new CoreDumpTasksObserver(proc);
-
-    // Start the event loop, not pending events.
-    Manager.eventLoop.start();
+    super(proc);
+    this.proc = proc;
+    this.event = theEvent;
+    taskList = proc.getTasks();
+    taskArray = new Task[taskList.size()];
+    
+    Manager.eventLoop.add(new InterruptEvent(proc));
   }
+ 
 
-  /**
-   * 
-   * Private class that implements ProcTasks. As the tasks come in
-   * order them (main task first), and when last task is stopped
-   * call the core dump utility function.
-   *
-   */
-  private class CoreDumpTasksObserver
-  extends ProcBlockObserver
-  {
-    private LinkedList taskList;
-    Proc proc = null;
-    public CoreDumpTasksObserver (final Proc proc)
-    {
-      super(proc);
-      this.proc = proc;
-      taskList = proc.getTasks();
-      taskArray = new Task[taskList.size()];
-    }
-
-    public void existingTask (final Task task)
-    {
+  public void existingTask (Task task)
+     {
       
       // Add task to our list. Special case for 
       // main task.
@@ -243,6 +177,8 @@ public class FCore
           try
           {
             write_elf_file(taskArray, proc);
+            // Run the given Event.
+            Manager.eventLoop.add(event);
           }
           catch (final ElfFileException e)
           {
@@ -256,8 +192,6 @@ public class FCore
           {
             abandonCoreDump(e);
           }
-          // Have all the tasks.
-          removeObservers(task.getProc());
         }
     }
 
@@ -272,20 +206,7 @@ public class FCore
     {
     }
     
-    private final void removeObservers (final Proc proc)
-    {
-      proc.requestAbandon();
-      proc.observableDetached.addObserver(new Observer()
-      {
-
-        public void update (final Observable o, final Object arg)
-        {
-          Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-        }
-      });
-    }
-  }
-
+ 
   /**
    * 
    * Abandon the core dump. Print out error message, then as quickly as possible
@@ -753,8 +674,7 @@ public class FCore
   {
  
     // Start new elf file
-    local_elf = new Elf(System.getProperty("user.dir") + "/fcore."
-                        + proc.getPid(), ElfCommand.ELF_C_WRITE, true);
+    local_elf = new Elf("fcore."+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
 
     // Build elf header
     int endianType = buildElfHeader(local_elf);
@@ -891,7 +811,7 @@ public class FCore
     this.fillENoteSection(noteSection);
     
     // Modify PT_NOTE section header
-    noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_PROGBITS;
+    noteSectHeader.type = ElfSectionHeaderTypes.SHTYPE_NOTE;
     noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
     noteSectHeader.nameAsNum = 16;
     noteSectHeader.offset = 0;
@@ -1183,118 +1103,41 @@ public class FCore
 
     return type;
   }
-	
-	
-  /**
-   * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
-   * here for now.
-   * 
-   * @param args - pid of the process to core dump
-   */
-  public static void main (String[] args)
+
+  public String getConstructedFileName()
   {
-
-    System.out.println("Experimental do not use for 'real life' core file generation.");
-
-    // Parse command line. Check pid provided.
-    parser = new Parser("fcore", "1.0", true)
-    {
-      protected void validate () throws OptionException
-      {
-        if (pid == 0)
-            throw new OptionException("no pid provided");
-      }
-    };
-    addOptions(parser);
-
-    parser.setHeader("Usage: fcore <PID>");
-
-    // XXX: should support > 1 pid, but for now, just one pid.
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-        try
-          {
-            if (pid == 0)
-                pid = Integer.parseInt(arg);
-            else
-                throw new OptionException("too many pids");
-          }
-        catch (Exception _)
-          {
-            throw new OptionException("couldn't parse pid");
-          }
-      }
-    });
-
-    // Set log level.
-    if (levelValue != null)
-      {
-        logger.setLevel(level);
-      }
-
-    // Do core dump.
-    FCore core_dumper = new FCore();
-    core_dumper.run(pid);
-
+    return "fcore."+proc.getPid();
   }
 
-  /**
-   * Add options ot the the option parser. Belongs in bindir/fcore but here for
-   * now
-   * 
-   * @param parser - the parser that is to be worked on.
-  */
-  private static void addOptions (Parser parser)
+  static class InterruptEvent
+      extends SignalEvent
   {
-    parser.add(new Option(
-                          "console",
-                          'c',
-                          "Set the console level. The console-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<console-level>")
-    {
-      public void parsed (String consoleValue) throws OptionException
-      {
-        try
-          {
-            Level consoleLevel = Level.parse(consoleValue);
-            Handler consoleHandler = new ConsoleHandler();
-            consoleHandler.setLevel(consoleLevel);
-            logger.addHandler(consoleHandler);
-            logger.setLevel(consoleLevel);
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log console: " + consoleValue);
-          }
+    Proc proc;
 
-      }
-    });
-    
-    parser.add(new Option(
-                          "level",
-                          'l',
-                          "Set the log level. The log-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<log-level>")
+    public InterruptEvent (Proc theProc)
     {
 
-      public void parsed (String logLevel) throws OptionException
-      {
-        levelValue = logLevel;
-        try
-          {
-            level = Level.parse(levelValue);
-            logger.setLevel(level);
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log level: " + levelValue);
-          }
-      }
-    });
+      super(Sig.INT);
+      proc = theProc;
+      logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+    }
+
+    public final void execute ()
+    {
+      logger.log(Level.FINE, "{0} execute\n", this);
+      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      try
+        {
+          Manager.eventLoop.join(5);
+        }
+      catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+      System.exit(1);
+
+    }
   }
-	
+
+ 
 }
