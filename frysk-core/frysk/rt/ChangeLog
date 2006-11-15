@@ -1,6 +1,6 @@
 2006-11-15  Mike Cvet  <mcvet@redhat.com>
 
-	* StackFrame.java (cfa): Added. Cannonical fram address.
+	* StackFrame.java (cfa): Added. Cannonical frame address.
 	(getCFA): Added.
 	
 	* StackFrame.cxx (initialize): Added code to initialize the cfa.
