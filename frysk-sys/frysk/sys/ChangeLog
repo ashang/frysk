@@ -1,3 +1,9 @@
+2006-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx: Revert 2006-09-04 Chris Moller
+	<moller@mollerware.com> change, in particular the silent switch to
+	malloc from alloc.
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCallPtrace.java: Use frysk.junit.TestCase.

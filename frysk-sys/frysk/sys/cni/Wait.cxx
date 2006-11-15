@@ -44,7 +44,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <alloca.h>
-#include <stdlib.h>
 #include "linux.ptrace.h"
 
 #include <gcj/cni.h>
@@ -168,7 +167,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
     int status;
     WaitResult* next;
   };
-  WaitResult* head = (WaitResult* ) malloc (sizeof (WaitResult));
+  WaitResult* head = (WaitResult* ) alloca (sizeof (WaitResult));
   WaitResult* tail = head;
 
   // Drain the waitpid queue of all its events storing each in a list
@@ -177,37 +176,22 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   // getting its next event back on the queue resulting in live lock.
 
   int myErrno = 0;
-  int unset_status = 0;
-  pid_t unset_status_pid = 0;
   int i = 0;
   while (true) {
     // Keep fetching the wait status until there are none left.  If
     // there are no children ECHILD is returned which is ok.
     errno = 0;
-    // It's a long shot, but since the status int is pass-by-reference, it's
-    // possible that if the kernel is munged up the waitpid could returrn
-    // without having set the int.  This will check for that.  Assumes that
-    // 0xaaaaaaaa is not a possible value for the status, which I don't know
-    // for sure, but it seems unlikely.
-    tail->status = 0xaaaaaaaa;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
-    if ((tail->pid > 0) && (unsigned int)(tail->status) == 0xaaaaaaaa) {
-      unset_status = 1;
-      unset_status_pid = tail->pid;
-    }
     myErrno = errno;
     log (tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
-    tail->next = (WaitResult*) malloc (sizeof (WaitResult));
+    tail->next = (WaitResult*) alloca (sizeof (WaitResult));
     tail = tail->next;
     i++;
   }
   if (i > 2001)
     printf ("\tYo! There were %d simultaneous pending waitpid's!\n", i);
-  if (unset_status)
-    printf ("\tYo! waitpid failed to set status on pid %d!\n",
-	    (int)unset_status_pid);
   // Check the reason for exiting.
   switch (myErrno) {
   case 0:
@@ -224,16 +208,12 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   pid_t old_pid = -2;
   int old_status = 0;
   while (head != tail) {
-    WaitResult * this_head;
     // Process the result - check for a duplicate entry
-    if (old_pid != head->pid || old_status != head->status) 
+    if (old_pid != head->pid || old_status != head->status)
       processStatus (head->pid, head->status, observer);
     old_pid = head->pid; old_status = head->status;
-    this_head = head;
     head = head->next;
-    free (this_head);
   }
-  free (tail);
 }
 
 /* Do a blocking wait.  */
