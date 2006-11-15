@@ -1,3 +1,8 @@
+2006-11-15  Mike Cvet  <mcvet@redhat.com>
+
+	* IconManager.java (TOP_PNG): Changed from BOTTOM_PNG
+	(loadIcons): Changed bottomset to topset; updated to use TOP_PNG.
+
 2006-10-04  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcBlockCounter.java: Refactored from TaskBlockCounter.

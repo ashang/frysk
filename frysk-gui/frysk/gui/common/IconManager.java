@@ -46,7 +46,7 @@ public class IconManager
 
   private static final String UP_PNG = "up.png"; //$NON-NLS-1$
 
-  private static final String BOTTOM_PNG = "bottom.png"; //$NON-NLS-1$
+  private static final String TOP_PNG = "top.png"; //$NON-NLS-1$
 
   // Tray Icon prefix
   private static final String TRAY_PREFIX = "fryskTrayIcon";
@@ -172,11 +172,11 @@ public class IconManager
                                                  new FryskIconSet("frysk-down") };
     FryskIconSet[] upSet = new FryskIconSet[] { new FryskIconSet("frysk-up"),
                                                new FryskIconSet("frysk-up") };
-    FryskIconSet[] bottomSet = new FryskIconSet[] {
+    FryskIconSet[] topSet = new FryskIconSet[] {
                                                    new FryskIconSet(
-                                                                    "frysk-bottom"),
+                                                                    "frysk-top"),
                                                    new FryskIconSet(
-                                                                    "frysk-bottom") };
+                                                                    "frysk-top") };
 
     for (int i = 0; i < IMAGES_DIR.length; i++)
       {
@@ -194,7 +194,7 @@ public class IconManager
                 addIconSet(finishSet[j], IMAGES_DIR[i], j, FINISH_PNG);
                 addIconSet(downSet[j], IMAGES_DIR[i], j, DOWN_PNG);
                 addIconSet(upSet[j], IMAGES_DIR[i], j, UP_PNG);
-                addIconSet(bottomSet[j], IMAGES_DIR[i], j, BOTTOM_PNG);
+                addIconSet(topSet[j], IMAGES_DIR[i], j, TOP_PNG);
 
                 // The only other image we need is the highlight image
                 IconSet set = new IconSet();

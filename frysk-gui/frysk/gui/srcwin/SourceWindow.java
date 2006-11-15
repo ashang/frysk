@@ -222,7 +222,7 @@ public class SourceWindow
 
   private org.gnu.gtk.Action stackDown;
 
-  private org.gnu.gtk.Action stackBottom;
+  private org.gnu.gtk.Action stackTop;
 
   private ToggleAction toggleRegisterWindow;
 
@@ -872,26 +872,26 @@ public class SourceWindow
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
     this.nextAsm.connectAccelerator();
-    this.nextAsm.setSensitive(false);
+    this.nextAsm.setSensitive(true);
 
-    // Bottom of stack action
-    this.stackBottom = new org.gnu.gtk.Action("stackBottom",
-                                              "To Bottom of Stack",
-                                              "To Bottom of Stack",
-                                              "frysk-bottom");
-    this.stackBottom.addListener(new org.gnu.gtk.event.ActionListener()
+    // top of stack action
+    this.stackTop = new org.gnu.gtk.Action("stackTop",
+                                              "To top of Stack",
+                                              "To top of Stack",
+                                              "frysk-top");
+    this.stackTop.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
-        SourceWindow.this.doStackBottom();
+        SourceWindow.this.doStackTop();
       }
     });
-    this.stackBottom.setAccelGroup(ag);
-    this.stackBottom.setAccelPath("<sourceWin>/Stack/Bottom");
+    this.stackTop.setAccelGroup(ag);
+    this.stackTop.setAccelPath("<sourceWin>/Stack/Bottom");
     AccelMap.changeEntry("<sourceWin>/Stack/Bottom", KeyValue.Down,
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
-    this.stackBottom.connectAccelerator();
+    this.stackTop.connectAccelerator();
 
     // Stack down action
     this.stackDown = new org.gnu.gtk.Action("stackDown",
@@ -1067,7 +1067,7 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.stackDown.createMenuItem();
     tmp.append(mi);
-    mi = (MenuItem) this.stackBottom.createMenuItem();
+    mi = (MenuItem) this.stackTop.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);
@@ -1117,7 +1117,7 @@ public class SourceWindow
     item = (ToolItem) this.stackDown.createToolItem();
     item.setToolTip(this.tips, "Down One Stack Frame", "");
     toolbar.insert(item, 11);
-    item = (ToolItem) this.stackBottom.createToolItem();
+    item = (ToolItem) this.stackTop.createToolItem();
     item.setToolTip(this.tips, "To Bottom of Stack", "");
     toolbar.insert(item, 12);
 
@@ -1140,7 +1140,7 @@ public class SourceWindow
     this.nextAsm.setSensitive(false);
     this.stepAsm.setSensitive(false);
 
-    this.stackBottom.setSensitive(false);
+    this.stackTop.setSensitive(false);
     this.stackUp.setSensitive(false);
     this.stackDown.setSensitive(false);
 
@@ -1159,13 +1159,13 @@ public class SourceWindow
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-    this.next.setSensitive(true);
-    this.finish.setSensitive(true);
-    this.cont.setSensitive(true);
+    //this.next.setSensitive(true);
+    //this.finish.setSensitive(true);
+    //this.cont.setSensitive(true);
     this.nextAsm.setSensitive(true);
-    this.stepAsm.setSensitive(true);
+    //this.stepAsm.setSensitive(true);
 
-    this.stackBottom.setSensitive(true);
+    this.stackTop.setSensitive(true);
     this.stackUp.setSensitive(true);
     this.stackDown.setSensitive(true);
 
@@ -1649,7 +1649,13 @@ public class SourceWindow
    */
   private void doAsmNext ()
   {
-    System.out.println("Asm Next");
+    if (this.stepDialog == null)
+      {
+        this.stepDialog = new StepDialog(glade, this);
+        this.stepDialog.showAll();
+      }
+    else
+      this.stepDialog.showAll();
   }
 
   /**
@@ -1782,7 +1788,7 @@ public class SourceWindow
   /**
    * Tells the debugger to move to the newest stack frame
    */
-  private void doStackBottom ()
+  private void doStackTop ()
   {
     TreePath path = null;
     try

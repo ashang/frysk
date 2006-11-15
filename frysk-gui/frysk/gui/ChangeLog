@@ -1,3 +1,12 @@
+2006-11-15  Mike Cvet  <mcvet@redhat.com>
+
+	* images/16/top.png: Added.
+	* images/24/top.png: Added.
+	* images/32/top.png: Added.
+	* images/__MACOSX/16/._top.png: Added.
+	* images/__MACOSX/24/._top.png: Added.
+	* images/__MACOSX/32/._top.png: Added.
+	
 2006-11-14  Nurdin Premji <npremji@redhat.com>
 
 	* tests/dogtail_scripts/.cvsignore: Added *.pyc.

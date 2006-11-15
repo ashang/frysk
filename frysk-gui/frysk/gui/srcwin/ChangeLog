@@ -1,3 +1,12 @@
+2006-11-15  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (stackTop): Changed from stackBottom.
+	(createActions): Edited to use new stackTop instead of stackBottom.
+	(createMenus): Ditto.
+	(createToolBar): Ditto.
+	(resensitize): Ditto. Removed code to re-sensitize unused buttons.
+	(doAsmNext): Brings up the instruction stepping dialog.
+
 2006-11-13  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentLineSection.java: Removed.
