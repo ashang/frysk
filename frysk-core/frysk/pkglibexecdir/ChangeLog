@@ -1,3 +1,11 @@
+2006-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-exit.xml: New.
+	* funit.xml: Cross reference funit-exit(8).
+	* funit-child.xml: Ditto.
+	* funit-exec.xml: Ditto.
+	* funit-threads.xml: Ditto.
+
 2006-11-14  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-stepper.c (signal_parent): Added, fixes race condition.

@@ -51,37 +51,28 @@
 <refentry id="funit">
 
   <refentryinfo>
-    <title>funit-exec</title>
-    <date>14 April 2006</date>
+    <title>funit-exit</title>
+    <date>15 November 2006</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit-exec</refentrytitle>
+    <refentrytitle>funit-exit</refentrytitle>
     <manvolnum>8</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>funit-exec</refname>
-    <refpurpose>Slave program for frysk's JUnit tests</refpurpose>
+    <refname>funit-exit</refname> <refpurpose>exits with specified
+    status, or terminates with the specified signal</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>@pkglibexecdir@/funit-exec</command>
+      <command>funit-exit</command>
       <arg choice="opt">
-        <option>-<replaceable>N</replaceable></option>
+        <option>-<replaceable>signal</replaceable></option>
       </arg>
-      <arg choice="req">
-        <replaceable>tid</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>signal</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>seconds</replaceable>
-      </arg>
-      <arg choice="req">
-        <replaceable>program ...</replaceable>
+      <arg choice="opt">
+        <option><replaceable>status</replaceable></option>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -89,53 +80,29 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para>Creates the specified number of threads, sends the
-    <replaceable>signal</replaceable> to thread
-    <replaceable>tid</replaceable>, and then sleeps for
-    <replaceable>seconds</replaceable>.  Sending the signal SIGUSR1 to
-    a thread will cause that thread to execute
-    <replaceable>program</replaceable> using exec.  Sending the signal
-    SIGUSR2 will cause a random non-main thread to exec
-    <replaceable>program</replaceable></para>
-
-    <para>This program is used by <function>funit</function>, as part
-    of frysk's JUnit testsuite.</para>
+    <para> <function>funit-exit</function> exits with the specified
+    <replaceable>status</replaceable> or terminates with the specified
+    <replaceable>signal</replaceable>. </para>
 
     <variablelist>
-      <varlistentry>
-	<term><option>-<replaceable>N</replaceable></option></term>
-	<listitem><para>Number of threads to create (default none).</para></listitem>
-      </varlistentry>
-    </variablelist>
 
-    <variablelist>
       <varlistentry>
-	<term><replaceable>tid</replaceable></term>
-	<listitem><para>Thread ID to send <replaceable>signal</replaceable> to once all threads have been created.</para></listitem>
+	<term>-<replaceable>signal</replaceable></term>
+	<listitem>
+          <para> Terminate with the specified.
+          <replaceable>signal</replaceable>. </para>
+        </listitem>
       </varlistentry>
-    </variablelist>
 
-    <variablelist>
       <varlistentry>
-	<term><replaceable>signal</replaceable></term>
-	<listitem><para>The signal to send to <replaceable>tid</replaceable> once all threads have been started.</para></listitem>
+        <term><replaceable>status</replaceable></term>
+        <listitem>
+          <para> Exit with the specified
+          <replaceable>status</replaceable>. </para>
+        </listitem>
       </varlistentry>
-    </variablelist>
 
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>seconds</replaceable></term>
-	<listitem><para>Number of seconds to wait before the program exits.</para></listitem>
-      </varlistentry>
     </variablelist>
-
-    <variablelist>
-      <varlistentry>
-	<term><replaceable>program ...</replaceable></term>
-	<listitem><para>Program to execute on receipt of SIGUSR1.</para></listitem>
-      </varlistentry>
-    </variablelist>
-
   </refsect1>
   
   <!-- refsect1>
@@ -160,9 +127,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <para>Create a process that, on receipt of SIGUSR1, will exec
-    <function>/bin/echo</function>.</para>
-    <screen>@pkglibexecdir@/funit-child $$ 0 100 /bin/echo hello</screen>
+    <screen>@pkglibexecdir@/funit</screen>
   </refsect1>
    
   <!-- refsect1>

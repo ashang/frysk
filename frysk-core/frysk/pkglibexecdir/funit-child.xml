@@ -124,7 +124,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>frysk(1) funit(8)</para>
+    <para>frysk(1) funit(8) funit-child(8) funit-exec(8) funit-exit(8) funit-threads(8)</para>
   </refsect1>
   
   <!-- refsect1>
