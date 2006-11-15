@@ -46,7 +46,6 @@
 void
 frysk::rt::StackFrame::initialize()
 {
-	fprintf(stderr, "in initialize()\n");
 	unw_cursor_t *cursor = (unw_cursor_t *) this->unwind_data;
 	unw_proc_info_t proc_info;
 	int result = unw_get_proc_info(cursor, &proc_info);
