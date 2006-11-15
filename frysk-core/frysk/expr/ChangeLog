@@ -12,6 +12,10 @@
 2006-09-27  Nurdin Premji  <npremji@redhat.com>
 
 	* RunCppParser.java: Changed to use getopt command line parser.
+2006-09-18  Stan Cox  <scox@redhat.com>
+
+	* RunCppParser.java (put): Don't add duplicate symbols.
+	(ParserCompletor): Tab complete using symTab entries.
 
 2006-09-18  Stan Cox  <scox@redhat.com>
 

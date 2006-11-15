@@ -1,3 +1,10 @@
+2005-11-15  Stan Cox  <scox@redhat.com>
+
+	* lib/frysk.exp: New file.
+	* expr/CppParser.exp: Use it.
+	* expr/20061115-1.c: New file.
+	* expr/20061115-2.c: New file.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* expr/CppParser.exp: Update to match com.redhat.fedora.frysk to

@@ -65,7 +65,20 @@ class symTab
 
   public void put (String s, Variable v)
   {
-    symTab.put(s, v);
+    LinkedList lCandidates = new LinkedList();
+
+    Iterator it = symTab.entrySet().iterator();
+    boolean match = false;
+    while(it.hasNext()) {
+      Map.Entry me = (Map.Entry)(it.next());
+      if (me.getKey().toString().equals(s))
+        {
+          match = true;
+          break;
+        }
+    }
+    if (match == false) 
+      symTab.put(s, v);
   }
 
   public Variable get (String s)
@@ -158,21 +171,16 @@ public class RunCppParser
   {
     public String[] TabCompletion (AST astExpr, String sPartialExpr)
     {
-      String arrCandidates[] = (new String[] { "print", "prind", "hello" });
-
-      if (sPartialExpr.equals(""))
-        return arrCandidates;
-
       LinkedList lCandidates = new LinkedList();
 
-      for (int i = 0; i < arrCandidates.length; i++)
-        {
-          if (arrCandidates[i].startsWith(sPartialExpr))
-            {
-              lCandidates.add(arrCandidates[i]);
-            }
+      Iterator it = symTab.symTab.entrySet().iterator();
+      while(it.hasNext()) {
+        Map.Entry me = (Map.Entry)(it.next());
+        if (me.toString().startsWith(sPartialExpr))
+          lCandidates.add(me.getKey().toString());
         }
 
+      String [] arrCandidates = new String[lCandidates.size()];  
       arrCandidates = (String[]) lCandidates.toArray(new String[lCandidates.size()]);
       return arrCandidates;
     }
@@ -231,7 +239,7 @@ public class RunCppParser
               out.write(re.getMessage());
               out.write(System.getProperty("line.separator"));
               out.write(System.getProperty("line.separator"));
-              out.write("$" + buffer);
+              out.write("$ " + buffer);
               char arrBackSpace[] = new char[buffer.length() - cursor];
               Arrays.fill(arrBackSpace, '\b');
               out.write(arrBackSpace);
@@ -316,16 +324,15 @@ public class RunCppParser
         Map symTab = new HashMap();
         try
           {
-            while (! ((sInput = consReader.readLine("$")).equalsIgnoreCase("exit")))
+            while (! ((sInput = consReader.readLine("$ ")).equalsIgnoreCase("exit")))
               {
-                if (sInput.equals("help") || sInput.equals("h"))
+                if (sInput.equals("help") || sInput.equals("h") || sInput.equals("?"))
                   {
                     System.out.println("Variable=Expression\nExpression\nhelp, h\nquit, exit, q");
                     continue;
                   }
                 if (sInput.equals("quit") || sInput.equals("q"))
                   {
-                    System.out.println("V=Expression\nExpression\nhelp[h]\nquit[q]");
                     break;
                   }
 

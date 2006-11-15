@@ -1,7 +1,7 @@
 #!/usr/bin/expect --
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006 Red Hat Inc.
+# Copyright 2006 Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -38,48 +38,36 @@
 # version and license this file solely under the GPL without
 # exception.
 
-global objdir
-global srcdir
-global frysk_testsuite
+proc frysk_init {} {
+    global frysk_testsuite
+    global objdir
+    load_lib site.exp
+    if ![file exists testsuite] {
+	file mkdir testsuite
+    }
+    set frysk_testsuite ${objdir}/testsuite
+}
 
-load_lib frysk.exp
-set pwd [eval pwd]
-puts $pwd
-frysk_init
-set CC_FOR_TARGET cc
-set CFLAGS_FOR_TARGET "-O0 -g -c"
-target_compile ${srcdir}/testsuite/expr/20061115-1.c ${frysk_testsuite}/20061115-1.o c "" 
-target_compile ${srcdir}/testsuite/expr/20061115-2.c ${frysk_testsuite}/20061115-2.o c "" 
-set LD_FOR_TARGET cc
-default_link "" "${frysk_testsuite}/20061115-1.o ${frysk_testsuite}/20061115-2.o" ${frysk_testsuite}/20061115.x ""
-set loop_sid [tool_start "${frysk_testsuite}/20061115.x"]
-set hpd_sid [tool_start "$pwd/frysk/cli/hpd/hpd"]
+proc frysk_term {} {
+    exec rm -r testsuite
+}
 
-tool_send $hpd_sid "" "(hpd)" "prompt"
-tool_send $hpd_sid "print 2+2\n" "\r\n4\r\n" "add"
-tool_send $hpd_sid "attach loop.x [exp_pid -i $loop_sid] loop_pid -cli" "attach.*(hpd)" "attach"
-tool_send $hpd_sid "where\n" "where.*# 0.*(hpd)" "where"
-tool_send $hpd_sid "print int_21\n" "print.*2.*(hpd)" "int_21"
-tool_send $hpd_sid "up\n" "up.*#1.*(hpd)" "up"
-tool_send $hpd_sid "print int_21\n" "print.*21.*(hpd)" "int_21"
-tool_send $hpd_sid "down\n" "down.*#0.*(hpd)" "down"
-tool_send $hpd_sid "print float_21\n" "print.*1\.1.*(hpd)" "float_21"
-tool_send $hpd_sid "print double_21\n" "print.*1\.2.*(hpd)" "double_21"
-tool_send $hpd_sid "print static_int\n" "print.*4.*(hpd)" "static_int"
-tool_send $hpd_sid "print static_class\n" "print.*12\.34.*(hpd)" "static_class"
-tool_send $hpd_sid "print class\n" "print.*15.*(hpd)" "class"
-tool_send $hpd_sid "print arr_1\n" "print.*30.=1.31.=2.*(hpd)" "arr_1"
-tool_send $hpd_sid "print arr_2\n" "print.*4,4.=9.4,5.=0.*(hpd)" "arr_2"
-tool_send $hpd_sid "print arr_3\n" "print.*3,3.=10\.8.3,4.=1.9.*(hpd)" "arr_3"
-tool_exit $hpd_sid
+proc tool_start {executable} {
+    spawn $executable
+    return $spawn_id
+}
 
-set rcp_sid [tool_start "$pwd/frysk/expr/RunCppParser"]
-set prompt "\\\$"
+proc tool_exit {sid} {
+    send -i $sid "quit\n"
+}
 
-tool_send $rcp_sid "" "$prompt" "rcp prompt"
-tool_send $rcp_sid "xyz=3" "xyz=3.*${prompt}" "rcp assign"
-tool_send $rcp_sid "xya=4" "xya=4.*${prompt}" "rcp assign"
-tool_send $rcp_sid "xy\t" "xyz.*xya.*${prompt}" "rcp tab"
-tool_exit $rcp_sid
-
-frysk_term
+proc tool_send {sid command response test} {
+    set timeout 10
+    send -i $sid "$command\n"
+    expect { 
+	-i $sid -re "$response" {
+	    pass "$test"
+	}
+	default {fail "$test"}
+    }
+}
