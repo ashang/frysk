@@ -310,39 +310,44 @@ $ frysk
 </ul></dd>
 
 <dt>How do I add a Java program that should be installed into
-<tt>bin/</tt>?</dt> <dd> <ul> <li>In the <tt>frysk/pkgbindir</tt>
+<tt>bin/</tt>?</dt> <dd> <ul> <li>in the <tt>frysk/pkgbindir/</tt>
 directory, create <tt>.java</tt> and <tt>.xml</tt> files named to
-match the installed binary.</li> <li>>Run
-<tt>./bootstrap.sh</tt>.</li> </ul> For instance, the files
-<tt>frysk/pkgbindir/ftrace.java</tt> and
+match the installed binary</li> <li>run <tt>./bootstrap.sh</tt></li>
+</ul> For instance, the files <tt>frysk/pkgbindir/ftrace.java</tt> and
 <tt>frysk/pkgbindir/ftrace.xml</tt> are installed into <tt>bin/</tt>
 and <tt>share/man/</tt> respectively.</dd>
 
 <dt>How do I add a JUnit test-case?</dt> <dd>Following the JUnit
-convention: <ul> <li>Create the test file named
-<tt>Test<em>BLAH</em>.java</tt>.</li> <li>Add a test method with
-signature <tt>public void test<em>BLAH</em> ()</tt> for each
-test.</li> <li>Run <tt>./bootstrap.sh</tt>.</li> </ul></dd>
+convention: <ul> <li>create the test file named
+<tt>Test<em>BLAH</em>.java</tt></li> <li>add a test method with
+signature <tt>public void test<em>BLAH</em> ()</tt> for each test</li>
+<li>run <tt>./bootstrap.sh</tt></li> </ul></dd>
 
 <dt>Why do JUnit test-cases live in the same directory as the
 code?</dt> <dd>The JUnit documentation may discuss this, but anyway:
-<ul> <li>So that the test is in the same package as the code being
-tested giving fuller access to the packages methods and classes.</li>
-<li>So that the tests are not missed or burried in a completly
-separate source tree.</li> </ul> </dd>
+<ul> <li>so that the test is in the same package as the code being
+tested giving fuller access to the packages methods and classes</li>
+<li>so that the tests are not missed or burried in a completly
+separate source tree</li> </ul> </dd>
 
 <dt>How do I blah blah blah the <tt>TestRunner</tt>?<dt> <dd>The
 command line options accepted by installed program <tt>funit</tt>, and
 described in <tt>funit</tt>'s man page, are also accepted by the
-build-tree program <tt>TestRunner</tt>.  For instance, <tt>TestRunner
--c frysk.proc.TestClass</tt> runs just the tests from
-<tt>frysk.proc.TestClass</tt> with trace logging written to the
-screen.</dd>
+build-tree program <tt>TestRunner</tt>.  For instance:
+<pre>
+TestRunner -c frysk.proc.TestClass
+</pre>
+runs just the tests from <tt>frysk.proc.TestClass</tt> with trace
+logging written to the screen.</dd>
 
-<dt>How do I refer to a an external executable or data file in a
-test?<dt> <dd>Good question, I'm glad you asked it.  I don't have the
-answer to hand but I'm sure <tt>rmoseley</tt> will soon have the
-answer.</dd>
+<dt>How do I refer to an external executable or data file in a
+test?<dt> <dd>Use:<dl>
+<dt><tt>frysk.junit.Paths.getExecPrefix()</tt></dt> <dd>Which will
+refer to either the installed <tt>libexec/frysk/</tt> or build tree
+<tt>frysk/pkglibexecdir</tt></dd>
+<dt><tt>frysk.junit.Paths.getDataPrefix()</tt></dt> <dd>Which will
+refer to either the installed <tt>share/frysk/</tt> or build tree
+<tt>frysk/pkgdatadirdir</tt></dd> </dl> </dd>
 
 </dl>
 
