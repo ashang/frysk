@@ -68,28 +68,40 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>fcore</command>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
+      <arg choice="opt">
+        <option>-c <replaceable>console-log-level</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>-l <replaceable>log-level</replaceable></option>
+      </arg>
+     <arg choice="plain">
+        <replaceable>pid</replaceable>
+      </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fcore</function>Executes the frysk core dump utility.</para>
+    <para><function>fcore</function> Executes the frysk core dump utility.</para>
 
     <para>fcore is a utility that constructs a core-file from a running process, and writes it to disk. </para>
 
-    <!-- variablelist>
+    <variablelist>
       <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
+	<term>-c <replaceable>console-log-level</replaceable></term>
 	<listitem>
-          <para> Description of option. </para>
+          <para> Enable logging to the console and at the specified
+          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
         </listitem>
       </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
+      <varlistentry>
+	<term>-l <replaceable>log-level</replaceable></term>
+	<listitem>
+          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </refsect1>
   
   <!-- refsect1>
@@ -149,8 +161,8 @@
   
   <refsect1>
     <title>BUGS</title>
-    <para>Report bugs to <ulink url="http:/sources.redhat.com/">
-    http://sources.redhat.com/frysk </ulink>. </para>
+    <para>Report bugs to <ulink url="http://sources.redhat.com/frysk">
+    http://sources.redhat.com/frysk </ulink></para>
   </refsect1>
   
   <!-- refsect1>

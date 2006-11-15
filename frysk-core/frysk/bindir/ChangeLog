@@ -1,5 +1,9 @@
 2006-11-14  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* fcore.xml: Cleaned up the man file. Added options explanation.
+
+2006-11-14  Phil Muldoon  <pmuldoon@redhat.com>
+
 	* fcore.java: New.
 	* fcore.xml: New.
 
