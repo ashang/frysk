@@ -123,6 +123,8 @@ public class DOMFactory
   
   /*
    * Print out the DOM
+   * 
+   * @param dom is the DOMFrysk object to print out
    */
   
   public static void printDOM(DOMFrysk dom) {
@@ -140,43 +142,52 @@ public class DOMFactory
   /*
    * get the source files for this image
    * 
+   * @param executable is a String containing the path to the executable
    * @return a String[] with the name(s) of the source file(s)
    */
-  public static String[] getSrcFiles(String executable) {
+  public static String[] getSrcFiles (String executable)
+  {
 
-    try
+    if (pathFound(executable))
       {
-        Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
-        Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
-        String [] files = dw.getSourceFiles();
-
-        // Since this call returns a lot of non-source file info, we must parse
-        // it and glean the source paths from it
-        String[] sourcefiles = new String[files.length];
-        int numberfiles = 0;
-        for (int i = 0; i < files.length; i++)
+        try
           {
-            if (files[i].endsWith(".c") ||
-                files[i].endsWith(".cpp"))
+            Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
+            Dwarf dw = new Dwarf(elf, DwarfCommand.READ, null);
+            String[] files = dw.getSourceFiles();
+
+            // Since this call returns a lot of non-source file info, we must
+            // parse it and glean the source paths from it
+            String[] sourcefiles = new String[files.length];
+            int numberfiles = 0;
+            for (int i = 0; i < files.length; i++)
               {
-                if (pathFound(files[i])) {
-                sourcefiles[numberfiles] = files[i];
-                numberfiles++;
-                }
+                if (files[i].endsWith(".c") || files[i].endsWith(".cpp"))
+                  {
+                    if (pathFound(files[i]))
+                      {
+                        sourcefiles[numberfiles] = files[i];
+                        numberfiles++;
+                      }
+                  }
               }
+            return sourcefiles;
           }
-        return sourcefiles;
+        catch (lib.elf.ElfException ee)
+          {
+            System.err.println("Error getting sourcefile paths: "
+                               + ee.getMessage());
+            return null;
+          }
       }
-    catch (lib.elf.ElfException ee)
-      {
-        System.err.println("Error getting sourcefile paths: " + ee.getMessage());
-        return null;
-      }
+    else
+      return null;
   }
   
   /*
    * get a list of the include files for this source file
    * 
+   * @param executable is a String containing the path to the executable
    * @return a String[] containing a list of the include path(s)
    */
   public static String[] getIncludePaths (String executable)
@@ -227,6 +238,7 @@ public class DOMFactory
   /**
    * pathFound checks to be sure the source file is where the executable thinks it is
    * 
+   * @param path contains a String of the path to check to see if it exists
    * @return true if the file is found, false if not
    * 
    */

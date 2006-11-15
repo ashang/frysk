@@ -1,4 +1,9 @@
-2006-11-09  Rick Moseley
+2006-11-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFactory.java: Add more comments, javadoc; add more
+	error checking.
+
+2006-11-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fix bz 3496; remove unneeded
 	parameter from constructor.
