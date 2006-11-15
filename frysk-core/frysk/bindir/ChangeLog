@@ -1,3 +1,8 @@
+2006-11-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.java: New.
+	* fcore.xml: New.
+
 2006-11-01  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java (main): Changed to reflect StacktraceObserver using a StringBuffer instead
