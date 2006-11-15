@@ -43,7 +43,7 @@
 	    </td>
             <td valign="bottom">
 <!-- start title -->
-        <h1>Building <em>frysk</em> From Source</h1>
+        <h1>Build and Test <em>frysk</em> From Source</h1>
 	      <!-- end title -->
             </td>
           </tr>
@@ -57,6 +57,7 @@
 <a href="#rhel5">RHEL 5</a><br>
 <a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
 <a href="#ubuntu-breezy">Ubuntu - Breezy</a><br>
+<a href="#faq">Build and Test Questions?</a><br>
 </p>
 	      <!-- end logo -->
 	    </td>
@@ -299,6 +300,53 @@ $ ./build/frysk-gui/frysk/gui/FryskGui
 $ ( cd build && sudo make install )
 $ frysk
 </pre>
+
+<a name="faq"><h2>Build and Test Questions, with Answers</h2></a>
+
+<dl>
+
+<dt>How do I add, rename, or delete a Java file?</dt> <dd> <ul>
+<li>Add, rename, or delete the file. <li>Run <tt>./bootstrap.sh</tt>
+</ul></dd>
+
+<dt>How do I add a Java program that should be installed into
+<tt>bin/</tt>?</dt> <dd> <ul> <li>In the <tt>frysk/pkgbindir</tt>
+directory, create <tt>.java</tt> and <tt>.xml</tt> files named to
+match the installed binary.</li> <li>>Run
+<tt>./bootstrap.sh</tt>.</li> </ul> For instance, the files
+<tt>frysk/pkgbindir/ftrace.java</tt> and
+<tt>frysk/pkgbindir/ftrace.xml</tt> are installed into <tt>bin/</tt>
+and <tt>share/man/</tt> respectively.</dd>
+
+<dt>How do I add a JUnit test-case?</dt> <dd>Following the JUnit
+convention: <ul> <li>Create the test file named
+<tt>Test<em>BLAH</em>.java</tt>.</li> <li>Add a test method with
+signature <tt>public void test<em>BLAH</em> ()</tt> for each
+test.</li> <li>Run <tt>./bootstrap.sh</tt>.</li> </ul></dd>
+
+<dt>Why do JUnit test-cases live in the same directory as the
+code?</dt> <dd>The JUnit documentation may discuss this, but anyway:
+<ul> <li>So that the test is in the same package as the code being
+tested giving fuller access to the packages methods and classes.</li>
+<li>So that the tests are not missed or burried in a completly
+separate source tree.</li> </ul> </dd>
+
+<dt>How do I blah blah blah the <tt>TestRunner</tt>?<dt> <dd>The
+command line options accepted by installed program <tt>funit</tt>, and
+described in <tt>funit</tt>'s man page, are also accepted by the
+build-tree program <tt>TestRunner</tt>.  For instance, <tt>TestRunner
+-c frysk.proc.TestClass</tt> runs just the tests from
+<tt>frysk.proc.TestClass</tt> with trace logging written to the
+screen.</dd>
+
+<dt>How do I refer to a an external executable or data file in a
+test?<dt> <dd>Good question, I'm glad you asked it.  I don't have the
+answer to hand but I'm sure <tt>rmoseley</tt> will soon have the
+answer.</dd>
+
+</dl>
+
+
 
               <!-- end text -->
               <p>&nbsp;</p>
