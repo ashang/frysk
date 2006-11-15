@@ -57,7 +57,7 @@ set hpd_sid [tool_start "$pwd/frysk/cli/hpd/hpd"]
 
 tool_send $hpd_sid "" "(hpd)" "prompt"
 tool_send $hpd_sid "print 2+2\n" "\r\n4\r\n" "add"
-tool_send $hpd_sid "attach loop.x [exp_pid -i $loop_sid] loop_pid -cli" "attach.*(hpd)" "attach"
+tool_send $hpd_sid "attach loop.x [exp_pid -i $loop_sid] -cli" "attach.*(hpd)" "attach"
 tool_send $hpd_sid "where\n" "where.*# 0.*(hpd)" "where"
 tool_send $hpd_sid "print int_21\n" "print.*2.*(hpd)" "int_21"
 tool_send $hpd_sid "up\n" "up.*#1.*(hpd)" "up"
