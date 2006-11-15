@@ -423,9 +423,10 @@ TESTS += frysk3205/ptrace-test
 frysk3205_ptrace_test_SOURCES = frysk3205/ptrace-test.c
 noinst_PROGRAMS += frysk3205/ptrace-test
 
-# ptrace-using-utrace doesn't seem to deliver child proc exit signals
-# to frysk if the child has been reparented to init.
-# check this is fixed.
-TESTS += frysk3381/reparent
-frysk3381 = frysk3381/reparent.c
-noinst_PROGRAMS += frysk3381/reparent
+# In buggy kernels, kill(pid, SIGKILL) doesn't seem to deliver the signal to
+# attached processes.  This test checks for this condition--if the kill() 
+# results in a waitpid event, the kernel is presumed to be working
+# 
+TESTS += frysk3381/f3381
+frysk3381 = frysk3381/f3381.c
+noinst_PROGRAMS += frysk3381/f3381

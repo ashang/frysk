@@ -1,5 +1,11 @@
 2006-11-14  Chris Moller  <moller@mollerware.com>
 
+	* frysk3381/f3381.c: Added a testcase that checks for a kernel bug
+	that inhibits kill(pid, SIGKILL) signal delivery to attached
+	processes.
+	* Makefile.am: Removed frysk3381/reparent.c from TESTS and
+	replaced it with frysk3381/f3381.c.
+
 	* frysk3381/reparent-r.c: Added a variation of the test that more
 	clearly differences in kernel behaviour by eliminating possible
 	race conditions.  This variation is not included in Makefile.am.
