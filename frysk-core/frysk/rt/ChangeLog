@@ -1,3 +1,10 @@
+2006-11-15  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (cfa): Added. Cannonical fram address.
+	(getCFA): Added.
+	
+	* StackFrame.cxx (initialize): Added code to initialize the cfa.
+
 2006-11-14  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBackTrace): Cleaned up.

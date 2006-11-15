@@ -84,6 +84,8 @@ public class StackFrame
 
   private Task task;
   
+  protected long cfa;
+  
   private boolean isSignalFrame = false;
   
   /**
@@ -432,6 +434,17 @@ public class StackFrame
   {
     // ??? Use something akin to Register interface?
     return get_reg(reg);
+  }
+  
+  /**
+   * Returns the Cannonical Frame Address of this StackFrame. Used in
+   * conjunction with methodName to provide a unique identifier.
+   * 
+   * @return cfa    The cannonical frame address of this StackFrame
+   */
+  public long getCFA()
+  {
+    return this.cfa;
   }
   
   public long setReg(long reg, long val)

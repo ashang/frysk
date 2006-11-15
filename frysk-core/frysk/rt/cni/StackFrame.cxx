@@ -46,6 +46,7 @@
 void
 frysk::rt::StackFrame::initialize()
 {
+	fprintf(stderr, "in initialize()\n");
 	unw_cursor_t *cursor = (unw_cursor_t *) this->unwind_data;
 	unw_proc_info_t proc_info;
 	int result = unw_get_proc_info(cursor, &proc_info);
@@ -60,6 +61,10 @@ frysk::rt::StackFrame::initialize()
 		if(result == 0)
 			this->address = (jlong) offset + proc_info.start_ip;
 	}
+	
+	unw_word_t tmp;
+	unw_get_reg (cursor, UNW_REG_SP, &tmp);
+	this -> cfa = tmp;
 }
 
 jlong
