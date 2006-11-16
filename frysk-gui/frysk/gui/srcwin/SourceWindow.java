@@ -124,6 +124,7 @@ import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.rt.StateModel;
@@ -262,6 +263,8 @@ public class SourceWindow
   
   private StackFrame currentFrame;
   
+  private Task currentTask;
+  
   private StackFrame[] frames;
   
   /* The state that the SourceWindow is current in. Critical for determining
@@ -277,6 +280,8 @@ public class SourceWindow
   protected static final int STEP_OUT = 5;
   
   private StateModel stateModel;
+  
+  private Object monitor;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -394,13 +399,17 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
-    this.stackView = new CurrentStackView(frames);
     this.frames = frames;
+    StackFrame taskMatch = null;
 
     /* Initialization */
     if (this.view == null)
       {
-        StackFrame curr = CurrentStackView.getCurrentFrame();
+        this.stackView = new CurrentStackView(frames);
+        StackFrame temp = null;
+        
+        temp = CurrentStackView.getCurrentFrame();
+        StackFrame curr = temp;
         
         if (curr.getDwflLine() == null)
           {
@@ -412,128 +421,113 @@ public class SourceWindow
         if (curr != null)
           {
             this.currentFrame = curr;
+            this.currentTask = curr.getTask();
             this.view = new SourceView(curr, this);
           }
         else
-          this.view = new SourceView(CurrentStackView.getCurrentFrame(), this);
-
+          {
+            this.view = new SourceView(temp, this);
+            this.currentTask = temp.getTask();
+          }
+        
+        SourceView v = (SourceView) view;
+        SourceBuffer b = (SourceBuffer) v.getBuffer();
+        
+        for (int j = 0; j < frames.length; j++)
+          {
+            if (!frames[j].getMethodName().equals(this.currentFrame.getMethodName()))
+              b.highlightLine(frames[j], true);
+          }
+        
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
+        stackView.expandAll();
+        stackView.showAll();
+        this.view.showAll();
+        return;
       }
-
+    
     SourceView sv = (SourceView) view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
     
-    StackFrame temp = null;
-    
-    /* Not stepping */
-  if (this.SW_state == RUNNING || this.SW_state == STOPPED)
-      {
-        //System.out.println("NOT STEP");
-        StackFrame curr = null;
-        
-        /* If the currentFrame is null for some reason. Unlikely, but possible */
-        if (this.currentFrame == null)
-          {
-            curr = this.stackView.getFirstFrameSelection();
+    StackFrame curr = null;
 
+    /* If the currentFrame is null for some reason. Unlikely, but possible */
+    if (this.currentFrame == null)
+      {
+        curr = this.stackView.getFirstFrameSelection();
+
+        this.currentFrame = curr;
+        this.currentTask = curr.getTask();
+
+        /*
+         * Assume the first frame in the stack has debuginfo. If not, try to
+         * find one that does.
+         */
+        if (curr.getDwflLine() == null)
+          {
+            while (curr != null && curr.getDwflLine() == null)
+              curr = curr.getOuter();
+          }
+
+        if (curr != null)
+          {
             this.currentFrame = curr;
-
-            /* Assume the first frame in the stack has debuginfo. If not, try
-             * to find one that does. */
-            if (curr.getDwflLine() == null)
-              {
-                while (curr != null && curr.getDwflLine() == null)
-                  curr = curr.getOuter();
-              }
-
-            if (curr != null)
-              this.currentFrame = curr;
+            this.currentTask = curr.getTask();
           }
-        else
-          { /* We have a previously set currentFrame */
-            
-            String currentMethodName = this.currentFrame.getMethodName();
-            boolean flag = true;
-            
-            /* Try to find the new StackFrame representing the same frame from
-             * before the reset */
-            for (int j = 0; j < frames.length; j++)
-              {
-                temp = frames[j];
-                while (temp != null)
-                  {
-                    if (temp.getMethodName().equals(currentMethodName))
-                      {
-                        flag = false;
-                        break;
-                      }
-                    temp = temp.getOuter();
-                  }
-                if (!flag)
-                  break;
-              }
-          }
-
-        /* Need to re-load (if necessary) the source and set up the window */
-        if (temp != null)   /* We found an updated StackFrame */
-          updateShownStackFrame(temp);
-        else    /* The StackFrame selected before the re-generation is no longer represented */
-          updateShownStackFrame(this.stackView.getFirstFrameSelection());
-        
-        /* Now highlight the currently-executing StackFrame lines belonging to
-         * the other threads in this process. */
-        for (int j = 0; j < frames.length; j++)
-          {
-            if (! frames[j].getMethodName().equals(this.currentFrame.getMethodName()))
-              {
-                curr = frames[j];
-                if (curr.getDwflLine() != null)
-                  sb.highlightLine(curr, true);
-                else 
-                  sb.highlightLine(this.currentFrame, true);
-              }
-          }
-        
-        /* So if we never ended up actually finding a new frame to represent
-         * the old StackFrame, just default to the first frame in the list */
-        if (temp == null)
-          this.currentFrame = this.stackView.getFirstFrameSelection();
-        else
-          this.currentFrame = temp;
       }
-    else
+
+    String currentMethodName = this.currentFrame.getMethodName();
+    boolean flag = false;
+    curr = null;
+
+    /*
+     * Try to find the new StackFrame representing the same frame from before
+     * the reset
+     */
+    for (int j = 0; j < frames.length; j++)
       {
-        String currentMethodName = this.currentFrame.getMethodName();
-        boolean flag = true;
-       
-        /* Update the highlighted lines for all the stepped threads */
-        for (int j = 0; j < frames.length; j++)
+        curr = frames[j];
+        if (curr.getTask().getTid() == this.currentTask.getTid())
           {
-            StackFrame curr = frames[j];
-            sb.highlightLine(curr, true);
-            
-            while (flag == true && curr != null)
+            this.currentTask = curr.getTask();
+            taskMatch = curr;
+          }
+
+        if (! curr.getMethodName().equals(this.currentFrame.getMethodName()))
+          sb.highlightLine(curr, true);
+
+        while (curr != null)
+          {
+            if (curr.getMethodName().equals(currentMethodName))
               {
-                if (curr.getMethodName().equals(currentMethodName))
-                  {
-                    flag = false;
-                    
-                    /* If this is the selected StackFrame, update the 
-                     * SourceBuffer with it. */
-                    sb.setCurrentLine(curr);
-                    this.currentFrame = curr;
-                    break;
-                  }
-                curr = curr.getOuter();
+                flag = true;
+                sb.setCurrentLine(curr);
+                this.currentFrame = curr;
               }
+
+            curr = curr.getOuter();
           }
       }
 
+    if (! flag)
+      {
+        if (taskMatch != null)
+          {
+            this.stackView.resetView(frames);
+            this.currentFrame = taskMatch;
+            updateShownStackFrame(taskMatch);
+          }
+        else
+          {
+            this.currentFrame = this.stackView.getFirstFrameSelection();
+            updateShownStackFrame(this.currentFrame);
+          }
+      }
+
+    this.stackView.resetView(frames);
     stackView.expandAll();
-    stackView.showAll();
-    this.view.showAll();
   }
   
   public void updateThreads ()
@@ -544,7 +538,7 @@ public class SourceWindow
   /**
    * A request for an instruction step on one or more tasks.
    * 
-   * @param tasks   The list of tasks to step.
+   * @param tasks The list of tasks to step.
    */
   protected void stepInstruction (LinkedList tasks)
   {
@@ -1484,6 +1478,7 @@ public class SourceWindow
       {
 
         DOMSource oldSource = this.view.getScope().getData();
+        
         if (oldSource != null && !source.getFileName().equals(oldSource.getFileName())
             || this.SW_state == RUNNING)
           {
@@ -1605,11 +1600,22 @@ public class SourceWindow
   }
 
   /**
-   * Tells the debugger to execute next
+   * "Step-over"
    */
   private void doNext ()
   {
     System.out.println("Next");
+    
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping");
+    
+    desensitize();
+    
+    this.SW_state = STEP_OVER;
+    
+    this.numSteppingThreads = swProc.getTasks().size();
+    
+    //task.requestAddCodeObserver(code, breakpoint1);
   }
 
   /**
@@ -1815,6 +1821,18 @@ public class SourceWindow
 
   private void toggleRegisterWindow ()
   {
+    
+    if (MachineType.getMachineType() == MachineType.X8664
+        || MachineType.getMachineType() == MachineType.PPC64)
+      {
+        WarnDialog dialog = new WarnDialog(
+                                           " The Memory Window is yet not supported\n"
+                                               + " on 64-bit architectures! ");
+        dialog.showAll();
+        dialog.run();
+        return;
+      }
+    
     RegisterWindow regWin = RegisterWindowFactory.regWin;
     if (regWin == null)
       {
@@ -2266,6 +2284,76 @@ public class SourceWindow
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
+    }
+  }
+  
+  protected class Breakpoint implements TaskObserver.Code
+  {
+    private long address;
+
+    private int triggered;
+
+    private boolean added;
+
+    private boolean removed;
+
+    Breakpoint (long address)
+    {
+      this.address = address;
+      if (monitor == null)
+        monitor = new Object();
+    }
+
+    public Action updateHit (Task task, long address)
+    {
+      if (address != this.address)
+        {
+          System.out.println("Hit wrong address!");
+          return Action.CONTINUE;
+        }
+
+      triggered++;
+      return Action.CONTINUE;
+    }
+
+    int getTriggered ()
+    {
+      return triggered;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      w.printStackTrace();
+    }
+
+    public void addedTo (Object observable)
+    {
+      synchronized (monitor)
+        {
+          added = true;
+          removed = false;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isAdded ()
+    {
+      return added;
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      synchronized (monitor)
+        {
+          removed = true;
+          added = false;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isRemoved ()
+    {
+      return removed;
     }
   }
   

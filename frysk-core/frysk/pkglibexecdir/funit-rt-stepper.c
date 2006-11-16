@@ -49,14 +49,24 @@ volatile int lock;
 volatile pid_t pid;
 volatile int sig;
 
-void *signal_parent(void* args)
+void *signal_parent (void* args)
 {
-  while(lock == 1);
-  kill(pid, sig);
-  pthread_exit(NULL);
+  while (lock == 1);
+  kill (pid, sig);
+  pthread_exit (NULL);
 }
 
-void foo()
+void jump ()
+{
+	int z = 1;
+	int y = 2;
+	int x = 3;
+	int w = (((((x + y + z) * 20) / 10) - 0) + 1);
+	w++;
+	return;
+}
+
+void foo ()
 {
   int a = 0;
   int b = 0;
@@ -81,32 +91,33 @@ void foo()
 				d = 1;
 	    	}
 		}
+		jump ();
     }
 }
 
-int main(int argc, char ** argv)
+int main (int argc, char ** argv)
 {
 
   if(argc < 3)
     {
-      printf("Usage: funit-rt-stepper <pid> <signal>\n");
-      exit(0);
+      printf ("Usage: funit-rt-stepper <pid> <signal>\n");
+      exit (0);
     }
 
   errno = 0;
-  pid_t target_pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
-  if(errno)
+  pid_t target_pid = (pid_t) strtoul (argv[1], (char **) NULL, 10);
+  if (errno)
     {
-      perror("Invalid pid");
-      exit(1);
+      perror ("Invalid pid");
+      exit (1);
     }
   
   errno = 0;
-  int signal = (int) strtoul(argv[2], (char **) NULL, 10);
-  if(errno)
+  int signal = (int) strtoul (argv[2], (char **) NULL, 10);
+  if (errno)
     {
-      perror("Invalid signal");
-      exit(1);
+      perror ("Invalid signal");
+      exit (1);
     }
   
   pid = target_pid;
@@ -115,9 +126,9 @@ int main(int argc, char ** argv)
   lock = 1;
 
   pthread_t thread;
-  pthread_create( &thread, NULL, signal_parent, NULL);
+  pthread_create (&thread, NULL, signal_parent, NULL);
 
-  foo();
+  foo ();
   
   return 0;
 }

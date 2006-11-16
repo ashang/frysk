@@ -99,6 +99,12 @@ public class TestStateModel extends TestLib
         return;
       }
     
+    if (count == 0)
+      {
+    brokenXXX(3529);
+    return;
+      }
+    
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
         Paths.getExecPrefix () + "/funit-rt-stepper",
@@ -135,6 +141,12 @@ public class TestStateModel extends TestLib
       {
         brokenXXX(3277);
         return;
+      }
+    
+    if (count == 0)
+      {
+    brokenXXX(3529);
+    return;
       }
     
     //TaskCreatedObserver obs = new TaskCreatedObserver();
@@ -238,41 +250,62 @@ public class TestStateModel extends TestLib
       {
         switch (prev)
         {
-        case 58:
-          assertTrue(lineNum == 58 || lineNum == 59);
+        case 78:
+          assertTrue(lineNum == 78 || lineNum == 79);
+          break;
+        case 79:
+          assertTrue(lineNum == 79 || lineNum == 80);
+          break;
+        case 80:
+          assertTrue(lineNum == 80 || lineNum == 81);
+          break;
+        case 81:
+          assertTrue(lineNum == 81 || lineNum == 82);
+          break;
+        case 82:
+          assertTrue(lineNum == 82 || lineNum == 84);
+          break;
+        case 84:
+          assertTrue(lineNum == 84 || lineNum == 86);
+          break;
+        case 86:
+          assertTrue(lineNum == 86 || lineNum == 87);
+          break;
+        case 87:
+          assertTrue(lineNum == 87 || lineNum == 88);
+          break;
+        case 88:
+          assertTrue(lineNum == 88 || lineNum == 89);
+          break;
+        case 89:
+          assertTrue(lineNum == 89 || lineNum == 90);
+          break;
+        case 90:
+          assertTrue(lineNum == 90 || lineNum == 91);
+          break;
+        case 94:
+          assertTrue(lineNum == 94 || lineNum == 59);
           break;
         case 59:
-          assertTrue(lineNum == 59 || lineNum == 60);
-          break;
-        case 60:
-          assertTrue(lineNum == 60 || lineNum == 61);
+          assertTrue(lineNum == 59 || lineNum == 61);
           break;
         case 61:
           assertTrue(lineNum == 61 || lineNum == 62);
           break;
         case 62:
-          assertTrue(lineNum == 62 || lineNum == 64);
+          assertTrue(lineNum == 62 || lineNum == 63);
+          break;
+        case 63:
+          assertTrue(lineNum == 63 || lineNum == 64);
           break;
         case 64:
           assertTrue(lineNum == 64 || lineNum == 66);
           break;
         case 66:
-          assertTrue(lineNum == 66 || lineNum == 67);
+          assertTrue(lineNum == 66 || lineNum == 95);
           break;
-        case 67:
-          assertTrue(lineNum == 67 || lineNum == 68);
-          break;
-        case 68:
-          assertTrue(lineNum == 68 || lineNum == 69);
-          break;
-        case 69:
-          assertTrue(lineNum == 69 || lineNum == 70);
-          break;
-        case 70:
-          assertTrue(lineNum == 70 || lineNum == 71);
-          break;
-        case 71:
-          assertTrue(lineNum == 71 || lineNum == 58);
+        case 95:
+          assertTrue(lineNum == 95 || lineNum == 78);
           break;
         default:
           break;
@@ -283,41 +316,65 @@ public class TestStateModel extends TestLib
       {
         switch (prev)
           {
-          case 58:
+          case 78:
+            assertEquals(lineNum, 79);
+            break;
+          case 79:
+            assertEquals(lineNum, 80);
+            break;
+          case 80:
+            assertEquals(lineNum, 81);
+            break;
+          case 81:
+            assertEquals(lineNum, 82);
+            break;
+          case 82:
+            assertEquals(lineNum, 84);
+            break;
+          case 84:
+            assertEquals(lineNum, 86);
+            break;
+          case 86:
+            assertEquals(lineNum, 87);
+            break;
+          case 87:
+            assertEquals(lineNum, 88);
+            break;
+          case 88:
+            assertEquals(lineNum, 89);
+            break;
+          case 89:
+            assertEquals(lineNum, 90);
+            break;
+          case 90:
+            assertEquals(lineNum, 91);
+            break;
+          case 91:
+            assertEquals(lineNum, 94);
+            break;
+          case 94:
             assertEquals(lineNum, 59);
             break;
-          case 59:
-            assertEquals(lineNum, 60);
+          case 95:
+            assertEquals(lineNum, 78);
             break;
-          case 60:
+          case 59:
             assertEquals(lineNum, 61);
             break;
           case 61:
             assertEquals(lineNum, 62);
             break;
           case 62:
+            assertEquals(lineNum, 63);
+            break;
+          case 63:
             assertEquals(lineNum, 64);
             break;
           case 64:
             assertEquals(lineNum, 66);
             break;
           case 66:
-            assertEquals(lineNum, 67);
-            break;
-          case 67:
-            assertEquals(lineNum, 68);
-            break;
-          case 68:
-            assertEquals(lineNum, 69);
-            break;
-          case 69:
-            assertEquals(lineNum, 70);
-            break;
-          case 70:
-            assertEquals(lineNum, 71);
-            break;
-          case 71:
-            assertEquals(lineNum, 74);
+            assertEquals(lineNum, 95);
             break;
           default:
             break;
@@ -325,7 +382,7 @@ public class TestStateModel extends TestLib
         count++;
       }
     //System.out.println("checking count");
-    if (count == 20)
+    if (count == 50)
       {
         //System.out.println("Manager.eventLoop.requestStop();");
         Manager.eventLoop.requestStop();

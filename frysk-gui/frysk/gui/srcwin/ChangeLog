@@ -1,3 +1,15 @@
+2006-11-16  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java: (resetView): Added.
+	(buildTree): Added.
+	(CurrentStackView): Updated to use buildTree.
+
+	* SourceWindow.java: (populateStackBrowser): Big cleanup;
+	removed unnecessary optimizations, simplified. Rebuilds
+	the CurrentStackView after every call, for now.
+	(doNext): Added some code in preparation for step-out.
+	(BreakPoint): Added. Breakpoint class.
+
 2006-11-16  Stan Cox  <scox@redhat.com>
 
 	* SourceWindow.java: Rename frysk.lang to frysk.value.

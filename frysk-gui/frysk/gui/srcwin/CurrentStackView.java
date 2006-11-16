@@ -99,6 +99,30 @@ public class CurrentStackView
 
     this.observers = new Vector();
 
+    buildTree(frames);
+    
+    this.setModel(treeModel);
+
+    TreeViewColumn column = new TreeViewColumn();
+    CellRenderer renderer = new CellRendererText();
+    column.packStart(renderer, true);
+    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                               stackColumns[0]);
+    this.appendColumn(column);
+
+    this.getSelection().setMode(SelectionMode.SINGLE);
+
+    this.getSelection().addListener(this);
+  }
+
+  public void resetView (StackFrame[] frames)
+  {
+    treeModel.clear();
+    buildTree(frames);
+  }
+  
+  private void buildTree (StackFrame[] frames)
+  {
     TreeIter iter = null;
     TreeIter parent = null;
     for (int j = frames.length - 1; j >= 0; j--)
@@ -169,21 +193,8 @@ public class CurrentStackView
               }
           }
       }
-    
-    this.setModel(treeModel);
-
-    TreeViewColumn column = new TreeViewColumn();
-    CellRenderer renderer = new CellRendererText();
-    column.packStart(renderer, true);
-    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                               stackColumns[0]);
-    this.appendColumn(column);
-
-    this.getSelection().setMode(SelectionMode.SINGLE);
-
-    this.getSelection().addListener(this);
   }
-
+  
   /**
    * @return The currently selected stack frame
    */
