@@ -1,3 +1,8 @@
+2006-11-16  Mike Cvet  <mcvet@redhat.com>
+
+	* test/TestIconManager.java (testIconLookups): Updated to look 
+	for new frysk-top icon instead of frysk-bottom. Fixes #3527.
+
 2006-11-15  Rick Moseley  <rmoseley@redhat.com>
 
 	* test/TestParser.java: New for testing parser output.

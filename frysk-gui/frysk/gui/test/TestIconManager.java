@@ -110,7 +110,7 @@ public class TestIconManager
     assertNotNull("Testing frysk-up icon set lookup",
                   defaultSet.lookupIconSet("frysk-up"));
     assertNotNull("Testing frysk-bottom icon set lookup",
-                  defaultSet.lookupIconSet("frysk-bottom"));
+                  defaultSet.lookupIconSet("frysk-top"));
 
     assertNotNull("Testing frysk-highlight icon set lookup",
                   defaultSet.lookupIconSet("frysk-highlight"));
