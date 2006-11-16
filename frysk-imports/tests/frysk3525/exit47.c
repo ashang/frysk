@@ -160,19 +160,6 @@ main (int argc, char *argv[], char *envp[])
   // Stop any buffering
   setbuf (stdout, NULL);
 
-  if (argc > 2) {
-    printf ("%d argc %d %s %s\n", getpid (), argc, argv[1], argv[2]);
-    if (argv[1][0] > '0') {
-      argv[1][0]--;
-      execl (argv[0], argv[0], argv[1], argv[2], NULL);
-      abort ();
-    }
-    else {
-      printf ("exiting %d with %s\n", getpid (), argv[2]);
-      exit (atol (argv[2]));
-    }
-  }
-
   printf ("%d installing signal handler and mask\n", getpid ());
   signal (SIGUSR1, print_signal);
   sigset_t signal_mask;
@@ -199,15 +186,14 @@ main (int argc, char *argv[], char *envp[])
       errno = 0;
       send_signal (ppid, SIGUSR1);
       wait_for_signals (&old_mask);
-      execl (argv[0], argv[0], "0", "47", NULL);
-      assert_perror (errno);
+      exit (47);
     default:
       exit (0);
     }
 
   default: // parent
-    // Wait for daemon to exit.
-    waitstatus (v, "child for daemon exits", wifexited, 0);
+    // Wait for the child to exit, creating a daemon below that.
+    waitstatus (v, "child exit creating daemon", wifexited, 0);
 
     // Wait for for the daemon to report that it is ready.
     wait_for_signals (&old_mask);
@@ -215,16 +201,9 @@ main (int argc, char *argv[], char *envp[])
     // Attach, wait, config and continue with signal.
     ptracer (PTRACE_ATTACH, pid, 0);
     waitstatus (pid, "daemon attached", wifstopped, SIGSTOP);
-    ptracer (PTRACE_SETOPTIONS, pid, PTRACE_O_TRACEEXEC|PTRACE_O_TRACEEXIT);
     ptracer (PTRACE_CONT, pid, SIGUSR1);
 
-    // Wait for the exec
-    waitstatus (pid, "daemon stops at exec", wifstopped, 5);
-    ptracer (PTRACE_CONT, pid, 0);
-
     // Wait for termination
-    waitstatus (pid, "daemon stops at exit(47)", wifstopped, 5);
-    ptracer (PTRACE_CONT, pid, 0);
     waitstatus (pid, "daemon does exit(47)", wifexited, 47);
 
     // And nothing else

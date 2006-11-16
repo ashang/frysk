@@ -1,5 +1,7 @@
 2006-11-16  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk3525/exit47.c (main): Simplify, remove exec and SETOPTIONS.
+	
 	* frysk3525/exit47.c (waitstatus): Clean up messages, abort when
 	fail.
 	(ptracer, print_signal, wait_for_signals, send_signal): New.
