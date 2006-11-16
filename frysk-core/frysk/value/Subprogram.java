@@ -38,12 +38,15 @@
 // exception.
 
 /**
- * The language of the current program.
+ * A concrete instance of a subprogram.
  */
 
-package frysk.lang;
+package frysk.value;
 
-class Language
+class Subprogram
 {
-
+    Language language;
+    Subprogram outer;
+    LexicalBlock block;
+    Variable[] parameters;
 }

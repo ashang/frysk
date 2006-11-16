@@ -86,8 +86,8 @@ import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-//import frysk.lang.InvalidOperatorException;
-import frysk.lang.Variable;
+//import frysk.value.InvalidOperatorException;
+import frysk.value.Variable;
 import frysk.rt.StackFrame;
 
 /**

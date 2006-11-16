@@ -80,7 +80,7 @@ header
 // exception.
     package frysk.expr;
 
-    import frysk.lang.*;
+    import frysk.value.*;
     import java.util.*;
     import lib.dw.BaseTypes;
     import inua.eio.ByteOrder;

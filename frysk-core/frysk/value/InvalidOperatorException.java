@@ -39,16 +39,17 @@
 // exception.
 
 /**
- * Location of a variable.
+ * Exception thrown when some operation is performed for an invalid type. 
  */
 
-  package frysk.lang;
-  public class BaseTypes {
-    public static int baseTypeChar = 0;
-    public static int baseTypeShort = 1;
-    public static int baseTypeInteger = 2;
-    public static int baseTypeLong = 3;
-    public static int baseTypeFloat = 4;
-    public static int baseTypeDouble = 5;
-    public static int baseTypeLongDouble = 6;
+package frysk.value;
+  public class InvalidOperatorException extends Exception
+  {
+    static final long serialVersionUID = 1;
+    String sExceptionString;
+
+    public InvalidOperatorException() { sExceptionString = ""; }
+    public InvalidOperatorException(String str) { sExceptionString = str; }
+
+    public String toString() { return sExceptionString; }
   }

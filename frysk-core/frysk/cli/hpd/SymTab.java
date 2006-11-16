@@ -48,7 +48,7 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 import antlr.CommonAST;
-import frysk.lang.Variable;
+import frysk.value.Variable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
@@ -158,9 +158,9 @@ public class SymTab
       }
       catch (antlr.RecognitionException r)
       {}
-      catch (frysk.lang.InvalidOperatorException i)
+      catch (frysk.value.InvalidOperatorException i)
       {}
-      catch (frysk.lang.OperationNotDefinedException o)
+      catch (frysk.value.OperationNotDefinedException o)
       {}
       return result;
     }

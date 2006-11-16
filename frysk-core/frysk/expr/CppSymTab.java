@@ -1,6 +1,6 @@
 package frysk.expr;
 
-import frysk.lang.Variable;
+import frysk.value.Variable;
 
 public interface CppSymTab
 {

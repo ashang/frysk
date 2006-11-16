@@ -1,5 +1,5 @@
 
-  package frysk.lang;
+  package frysk.value;
 
   import inua.eio.ByteOrder;
   import lib.dw.BaseTypes;

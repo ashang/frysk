@@ -1,3 +1,12 @@
+2006-11-16  Stan Cox  <scox@redhat.com>
+
+	* SourceWindow.java: Rename frysk.lang to frysk.value.
+	* SourceView.java: Rename frysk.lang to frysk.value.
+	* InlineSourceView.java: Rename frysk.lang to frysk.value.
+	* SourceBuffer.java: Rename frysk.lang to frysk.value.
+	* VariableWatchView.java: Rename frysk.lang to frysk.value.
+	* InlineBuffer.java: Rename frysk.lang to frysk.value.
+
 2006-11-15  Rick Moseley  <rmoseley@redhat.com>
 
 	* testfiles/test_looper.xml: New for unit testing.

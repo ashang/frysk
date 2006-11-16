@@ -2,7 +2,7 @@
   package frysk.expr;
 
   import java.util.*;
-  import frysk.lang.*;
+  import frysk.value.*;
   import antlr.*;
   import java.io.*;
 

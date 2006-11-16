@@ -58,8 +58,8 @@ import frysk.dom.DOMInlineInstance;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.lang.InvalidOperatorException;
-import frysk.lang.Variable;
+import frysk.value.InvalidOperatorException;
+import frysk.value.Variable;
 import frysk.rt.StackFrame;
 
 /**

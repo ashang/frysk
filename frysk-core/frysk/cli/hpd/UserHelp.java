@@ -158,7 +158,7 @@ class UserHelp
         temp = "Attach to a running process.";
         commandHelp.put("attach", new CommandHelp("attach",
                                                     "Attach to a running process.",
-                                                    "attach executable pid { -cli }",
+                                                    "attach executable pid {-task tid} {-cli}",
                                                     temp));
         temp = "Detach from a running process.";
         commandHelp.put("detach", new CommandHelp("detach",

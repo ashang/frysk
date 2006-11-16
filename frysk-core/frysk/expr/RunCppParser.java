@@ -50,7 +50,7 @@ import antlr.collections.AST;
 import jline.*;
 import java.util.*;
 import antlr.*;
-import frysk.lang.*;
+import frysk.value.*;
 import lib.dw.BaseTypes;
 
 

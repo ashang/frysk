@@ -118,7 +118,7 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.lang.Variable;
+import frysk.value.Variable;
 import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;

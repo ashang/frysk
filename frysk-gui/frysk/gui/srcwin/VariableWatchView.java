@@ -63,7 +63,7 @@ import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.lang.Variable;
+import frysk.value.Variable;
 
 public class VariableWatchView
     extends TreeView

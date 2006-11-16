@@ -1,3 +1,10 @@
+2006-11-16  Stan Cox  <scox@redhat.com>
+
+	* hpd/CLI.java (PrintHandler.handle): Add -task.
+	Rename frysk.lang to frysk.value.
+	* hpd/ExprSymTab.java: Rename frysk.lang to frysk.value.
+	* hpd/SymTab.java: Rename frysk.lang to frysk.value.
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/TestSetCreation.java: Use frysk.junit.TestCase.

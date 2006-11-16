@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.lang;
+package frysk.value;
 
 import java.util.ArrayList;
 import lib.dw.BaseTypes;

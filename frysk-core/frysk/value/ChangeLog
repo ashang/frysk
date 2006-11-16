@@ -1,6 +1,22 @@
-2006-11-09  Stan Cox  <scox@redhat.com>
+2006-11-16  Stan Cox  <scox@redhat.com>
 
-	* ClassType.java: New file.
+	* Type.java: Rename frysk.lang to frysk.value.
+	* DoubleType.java: Rename frysk.lang to frysk.value.
+	* OperationNotDefinedException.java: Rename frysk.lang to frysk.value.
+	* Subprogram.java: Rename frysk.lang to frysk.value.
+	* FloatType.java: Rename frysk.lang to frysk.value.
+	* Thread.java: Rename frysk.lang to frysk.value.
+	* Frame.java: Rename frysk.lang to frysk.value.
+	* IntegerType.java: Rename frysk.lang to frysk.value.
+	* ArrayType.java: Rename frysk.lang to frysk.value.
+	* TypeTest.java: Rename frysk.lang to frysk.value.
+	* Variable.java: Rename frysk.lang to frysk.value.
+	* Location.java: Rename frysk.lang to frysk.value.
+	* LexicalBlock.java: Rename frysk.lang to frysk.value.
+	* ClassType.java: Rename frysk.lang to frysk.value.
+	* InvalidOperatorException.java: Rename frysk.lang to frysk.value.
+	* Language.java: Rename frysk.lang to frysk.value.
+	* ShortType.java: Rename frysk.lang to frysk.value.
 
 2006-11-03  Stan Cox  <scox@redhat.com>
 

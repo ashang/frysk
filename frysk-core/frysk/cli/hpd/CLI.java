@@ -50,8 +50,8 @@ import java.lang.RuntimeException;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.lang.InvalidOperatorException;
-import frysk.lang.Variable;
+import frysk.value.InvalidOperatorException;
+import frysk.value.Variable;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -76,6 +76,7 @@ public class CLI
     Proc proc;
     Task task;
     int pid = 0;
+    int tid = 0;
     SymTab symtab;
     StackFrame frame = null;
     int stackLevel = 0;
@@ -298,8 +299,18 @@ public class CLI
               addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
               return;
             }
-          if (params.size() == 3 && ((String)params.elementAt(2)).equals("-cli"))
-            cli = true;
+ 
+          for (int idx = 2; idx < params.size(); idx++)
+            {
+              if (((String)params.elementAt(idx)).equals("-cli"))
+                cli = true;
+              else if (((String)params.elementAt(idx)).equals("-task"))
+                {
+                  idx += 1;
+                  Integer i;
+                  tid = i.parseInt(((String)params.elementAt(idx)));
+                }
+            }
           executable = ((String)params.elementAt(0));
           pid = Integer.parseInt((String)params.elementAt(1));
 
@@ -321,10 +332,17 @@ public class CLI
             {
               addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
               return;
-            }          
-          task = proc.getMainTask();
+            }
+          
+          if (pid == tid || tid == 0)
+            task = proc.getMainTask();
+          else
+            for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+              task = (Task) i.next ();
+              if (task.getTid () == tid)
+                break;
+        }
 
- 
           symtab = new SymTab(pid, proc, task, null);
         }
     }

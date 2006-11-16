@@ -1,4 +1,3 @@
-
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, Red Hat Inc.
@@ -39,17 +38,14 @@
 // exception.
 
 /**
- * Exception thrown when some operation is not defined for a type. 
- * This happens when some operator opr is applied to objects of some type T but opr is not defined on T.
+ * Lexical Block
  */
 
-package frysk.lang;
-  public class OperationNotDefinedException extends Exception
-  {
-    static final long serialVersionUID = 1;
-    String sExceptionString;
+package frysk.value;
 
-    public OperationNotDefinedException(String str) { sExceptionString = str; }
-
-    public String toString() { return sExceptionString; }
-  }
+class LexicalBlock
+{
+    LexicalBlock outer;
+    Variable[] variables;
+    Type[] types;
+}

@@ -38,16 +38,12 @@
 // exception.
 
 /**
- * A programmer visible thread.
- *
+ * The language of the current program.
  */
 
-package frysk.lang;
+package frysk.value;
 
-import frysk.proc.Task;
-
-class Thread
+class Language
 {
-    Task task;
-    Frame innerMostFrame;
+
 }

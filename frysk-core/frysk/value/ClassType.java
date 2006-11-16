@@ -1,6 +1,6 @@
 
 
-package frysk.lang;
+package frysk.value;
 
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;

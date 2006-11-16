@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.lang;
+package frysk.value;
 
 import inua.eio.ByteOrder;
 import lib.dw.BaseTypes;

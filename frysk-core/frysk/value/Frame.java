@@ -41,7 +41,7 @@
  * An ABI stack frame.
  */
 
-package frysk.lang;
+package frysk.value;
 
 class Frame
 {

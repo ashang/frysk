@@ -39,17 +39,17 @@
 // exception.
 
 /**
- * Exception thrown when some operation is performed for an invalid type. 
+ * Exception thrown when some operation is not defined for a type. 
+ * This happens when some operator opr is applied to objects of some type T but opr is not defined on T.
  */
 
-package frysk.lang;
-  public class InvalidOperatorException extends Exception
+package frysk.value;
+  public class OperationNotDefinedException extends Exception
   {
     static final long serialVersionUID = 1;
     String sExceptionString;
 
-    public InvalidOperatorException() { sExceptionString = ""; }
-    public InvalidOperatorException(String str) { sExceptionString = str; }
+    public OperationNotDefinedException(String str) { sExceptionString = str; }
 
     public String toString() { return sExceptionString; }
   }

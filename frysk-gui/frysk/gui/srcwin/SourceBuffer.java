@@ -70,7 +70,7 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
-import frysk.lang.Variable;
+import frysk.value.Variable;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
 

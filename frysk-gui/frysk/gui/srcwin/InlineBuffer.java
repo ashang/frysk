@@ -52,7 +52,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
-import frysk.lang.Variable;
+import frysk.value.Variable;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
 
