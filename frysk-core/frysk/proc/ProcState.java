@@ -104,7 +104,7 @@ abstract class ProcState
     {
 	throw unhandled (proc, "handleDeleteObservation");
     }
-    ProcState handleDetach(Proc proc)
+    ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
     {
       throw unhandled (proc, "handleDetach");
     }
@@ -351,7 +351,7 @@ abstract class ProcState
 	}
 	ProcState handleTaskDetachCompleted (Proc proc, Task task)
 	{
-	    logger.log (Level.FINE, "{0} handleTaskDetachCompleted\n", proc);
+	    logger.log (Level.FINE, "{0} handleTaskDetachCompleted. Task {1}\n", new Object[] {proc, task});
 	    // As each task reports that it has detached, add it
 	    // to the detached list.
 	    attachedTasks.remove (task);
@@ -373,6 +373,14 @@ abstract class ProcState
 	    attachedTasks.add (clone);
 	    return this;
 	}
+    ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+    {
+      //Already detaching, don't have to do anything different.
+      if (shouldRemoveObservers)
+      return this;
+      
+      return super.handleDetach(proc, shouldRemoveObservers);
+    }
 	ProcState handleAddObservation (Proc proc,
 					Observation observation)
 	{
@@ -431,10 +439,10 @@ abstract class ProcState
         
 		return running;
 	    }
-         ProcState handleDetach(Proc proc)
+         ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
             {
               logger.log(Level.FINE, "{0} handleDetach\n", proc);
-              return new Detaching (proc, true);
+              return new Detaching (proc, shouldRemoveObservers);
             }        
 	};
 }

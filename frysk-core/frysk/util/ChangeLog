@@ -1,3 +1,15 @@
+2006-11-16  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java (testClone): Enabled, changed to use regex arrays for easy expansion of regex.
+	(mainClone): Changed to array, added more regex cases.
+	(secondaryClone): Added more regex cases.
+	(testMultiThreadedAckDaemon): 			
+	* StacktraceObserver.java (checkFinish): Added.
+	(taskAddFailed): Changed to call checkFinish.
+	(existingTask): Ditto.
+	(printTasks): Made private.
+	(storeTask): Ditto.
+	
 2006-11-15  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* TestFCore.java: New.

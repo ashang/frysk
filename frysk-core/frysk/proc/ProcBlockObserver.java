@@ -49,15 +49,31 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
 abstract public class ProcBlockObserver
-    implements ProcObserver.ProcTasks
+    implements ProcObserver
 {
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
 
+  private boolean isMainTaskAdded = false;
+
   private class ProcBlockTaskObserver
-      implements TaskObserver.Instruction
+      implements TaskObserver.Instruction, TaskObserver.Terminated
   {
     public Action updateExecuted (Task task)
     {
+
+      if (! isMainTaskAdded)
+        {
+          isMainTaskAdded = true;
+
+          Iterator i = proc.getTasks().iterator();
+       
+          while (i.hasNext())
+            {
+              Task t = (Task) i.next();              
+              requestAddObservers(t);
+            }
+        }
+
       existingTask(task);
       return Action.BLOCK;
     }
@@ -69,14 +85,18 @@ abstract public class ProcBlockObserver
 
     public void addedTo (Object observable)
     {
-      // TODO Auto-generated method stub
-
     }
 
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
 
+    }
+
+    public Action updateTerminated (Task task, boolean signal, int value)
+    {
+      taskAddFailed(task, new RuntimeException("Task terminated"));
+      return Action.BLOCK;
     }
 
   }
@@ -142,13 +162,8 @@ abstract public class ProcBlockObserver
           }
 
         numTasks = proc.getTasks().size();
-        Iterator i = proc.getTasks().iterator();
 
-        while (i.hasNext())
-          {
-            requestAddObservers((Task) i.next());
-          }
-
+        requestAddObservers(mainTask);
       }
     });
   }
@@ -174,16 +189,7 @@ abstract public class ProcBlockObserver
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(taskObserver);
-  }
-
-  public void taskAdded (Task task)
-  {
-
-  }
-
-  public void taskRemoved (Task task)
-  {
-
+    task.requestAddTerminatedObserver(taskObserver);
   }
 
   public void addedTo (Object observable)

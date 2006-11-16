@@ -1,3 +1,19 @@
+2006-11-16  Nurdin Premji  <npremji@redhat.com>
+
+	* Proc.java (performDetach.execute): Changed to use new parameter shouldRemoveObservers = false.
+	(requestAbandonAndRunEvent): Changed to call requestAbandon.
+	(requestAbandon): Added new line to log message.
+	* ProcBlockObserver.java (requestAdd.execute): Changed to add observer to the non-main tasks to...
+	(ProcBlockTaskObserver.updateExecuted): ... here.
+	(ProcBlockTaskObserver): Implemented TaskObserver.Terminated.
+	(requestAddObservers): Ditto.
+	(ProcBlockTaskObserver.updateTerminated): Added.  	
+	* ProcState.java (Detaching.handleTaskDetachCompleted): Added task to logging output.
+	(Detaching.handleDetach): Added.
+	(handleDetach): Added method parameters to use boolean shouldRemoveObservers.
+	* TaskState.java (getDestroyed): Added.		
+	* Task.java (isDestroyed): Added.	
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestId.java: Use frysk.junit.TestCase.

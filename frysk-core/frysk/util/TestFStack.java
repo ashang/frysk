@@ -92,13 +92,27 @@ public class TestFStack
                                   + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                   + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
 
-  String mainClone = "Task #\\d+\\n"
-                     + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                     + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
-                     + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
-                     + "#3 0x[\\da-f]+ in main \\(\\): line #177\\n"
-                     + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                     + "#5 0x[\\da-f]+ in _start \\(\\)\\n";
+  String[] mainClone = {
+                        "Task #\\d+\\n"
+                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                            + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
+                            + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
+                            + "#3 0x[\\da-f]+ in main \\(\\): line #177\\n"
+                            + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                            + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
+
+                        "Task #\\d+\\n"
+                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
+                            + "#1 0x[\\da-f]+ in kill \\(\\)\\n"
+                            + "#2 0x[\\da-f]+ in main \\(\\): line #175\\n"
+                            + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                            + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
+
+                        "Task  #\\d+\\n" + "#0 0x[\\da-f]+ in sleep \\(\\)\\n"
+                            + "#1 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                            + "#2 0x[\\da-f]+ in _start \\(\\)\\n"
+
+  };
 
   String[] secondaryClone = {
                              "Task #\\d+\\n"
@@ -108,48 +122,60 @@ public class TestFStack
                                  + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
 
                              "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f] in (__)?clone ()\\n"
-                                 + "#1 0x[\\da-f] in main \\(\\): line #177\\n"
-                                 + "#2 0x[\\da-f] in __libc_start_main \\(\\)\\n"
-                                 + "#3 0x[\\da-f] in _start \\(\\)\\n",
+                                 + "#0 0x[\\da-f]+ in memset \\(\\)\\n"
+                                 + "#1 0x[\\da-f]+ in op_clone \\(\\): line #105\\n"
+                                 + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                 + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
+
+                             "Task #\\d+\\n"
+                                 + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
+                                 + "#1 0x[\\da-f]+ in main \\(\\): line #177\\n"
+                                 + "#2 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                                 + "#3 0x[\\da-f]+ in _start \\(\\)\\n",
 
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
                                  + "#2 0x[\\da-f]+ in op_clone \\(\\): line #100\\n"
                                  + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                 + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
+                                 + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
 
-  public void testSingleThreadedDetached ()
-  {
-    AckProcess ackProc = new DetachedAckProcess();
-    multiThreaded(ackProc, 0);
-  }
+                             "Task #\\d+\\n"
+                                 + "#0 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                 + "#1 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
 
-  public void testSingleThreadedAckDaemon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess();
-    multiThreaded(ackProc, 0);
-  }
+  };
 
-  public void testMultiThreadedDetached ()
-  {
-    AckProcess ackProc = new DetachedAckProcess(2);
-    multiThreaded(ackProc, 2);
-  }
-
-  public void testMultiThreadedAckDaemon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess(2);
-    multiThreaded(ackProc, 2);
-  }
-
-  public void testStressMultiThreadedDetach ()
-  {
-    int clones = 7;
-    AckProcess ackProc = new DetachedAckProcess(clones);
-    multiThreaded(ackProc, clones);
-  }
+   public void testSingleThreadedDetached ()
+   {
+   AckProcess ackProc = new DetachedAckProcess();
+   multiThreaded(ackProc, 0);
+   }
+    
+   public void testSingleThreadedAckDaemon ()
+   {
+   AckProcess ackProc = new AckDaemonProcess();
+   multiThreaded(ackProc, 0);
+   }
+    
+   public void testMultiThreadedDetached ()
+   {
+   AckProcess ackProc = new DetachedAckProcess(2);
+   multiThreaded(ackProc, 2);
+   }
+    
+   public void testMultiThreadedAckDaemon ()
+   {
+   AckProcess ackProc = new AckDaemonProcess(2);
+   multiThreaded(ackProc, 2);
+   }
+    
+   public void testStressMultiThreadedDetach ()
+   {
+   int clones = 7;
+   AckProcess ackProc = new DetachedAckProcess(clones);
+   multiThreaded(ackProc, clones);
+   }
 
   public void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
@@ -191,8 +217,6 @@ public class TestFStack
 
   public void testClone ()
   {
-      if (brokenXXX (3492))
-	  return;
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
@@ -210,9 +234,14 @@ public class TestFStack
 
     String regex = new String();
 
-    regex += mainClone;
+    regex += "(" + mainClone[0];
 
-    regex += "(" + secondaryClone[0];
+    for (int i = 1; i < mainClone.length; i++)
+      {
+        regex += "|" + mainClone[i];
+      }
+
+    regex += ")(" + secondaryClone[0];
 
     for (int i = 1; i < secondaryClone.length; i++)
       {

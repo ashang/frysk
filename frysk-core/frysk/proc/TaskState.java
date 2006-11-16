@@ -1313,6 +1313,11 @@ class TaskState
     	    }
 	};
 
+    public static TaskState getDestroyed()
+    {
+      return destroyed;
+    }
+    
     private static final TaskState destroyed = new TaskState ("destroyed") 
 	{
 	    TaskState handleAttach (Task task)

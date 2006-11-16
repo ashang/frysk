@@ -242,7 +242,7 @@ public abstract class Proc
    */
   public void requestAbandon ()
   {
-    logger.log(Level.FINE, "{0} abandon", this);
+    logger.log(Level.FINE, "{0} abandon\n", this);
     performDetach();
     observations.clear();
   }
@@ -254,9 +254,8 @@ public abstract class Proc
    */
   public void requestAbandonAndRunEvent(final Event e)
   {
-    logger.log(Level.FINE, "{0} abandonAndRunEvent", this);
-    performDetach();
-    observations.clear();
+    logger.log(Level.FINE, "{0} abandonAndRunEvent\n", this);
+    requestAbandon();
     observableDetached.addObserver(new Observer()
     {
 
@@ -362,7 +361,7 @@ public abstract class Proc
     {
       public void execute ()
       {
-        newState = oldState().handleDetach(Proc.this);
+        newState = oldState().handleDetach(Proc.this, true);
       }
     });
   }

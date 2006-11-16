@@ -249,6 +249,14 @@ abstract public class Task
     else
       return oldState;
   }
+  
+  /**
+   * Return whether this task has been destroyed
+   */
+  public boolean isDestroyed()
+  {
+    return getState().equals(TaskState.getDestroyed());
+  }
 
   /**
    * Return the current state while at the same time marking that the state is

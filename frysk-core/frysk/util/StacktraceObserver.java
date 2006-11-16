@@ -92,53 +92,64 @@ public class StacktraceObserver
   public final void existingTask (Task task)
   {
 
-    logger.log(Level.FINE, "{0} existingTask", this);
-
-    // Remove this task from the list of tasks we have to deal with.
-    taskList.remove(task);
+    logger.log(Level.FINE, "{0} existingTask, Task : {1}", new Object[] {this, task});
 
     // Print the stack frame for this stack.
     storeTask(task);
-
-    /*
-     * If the taskList is empty we have dealt with all the necessary tasks.
-     */
-    logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList",
+  
+    checkFinish(task, event);
+   
+  }
+  
+  private boolean finished = false;
+  private void checkFinish (Task task, Event event)
+  {
+    
+    if (null != task)
+    taskList.remove(task);
+    
+    logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
                new Object[] { taskList, proc.getTasks() });
-    if (taskList.isEmpty())
+
+    //Check for destroyed tasks.
+    Iterator iter = taskList.iterator();
+    while (iter.hasNext())
       {
+        Task t = (Task) iter.next();
+        if (t.isDestroyed())
+          iter.remove();
+      }
+    
+   if (taskList.isEmpty())
+      {
+       if (!finished){
+         finished = true;
         // Print all the tasks in order.
         printTasks();
 
         // Run the given Event.
         Manager.eventLoop.add(event);
+       }
       }
+   
+
   }
 
   public void taskAddFailed (Object observable, Throwable w)
   {
-    logger.log(Level.SEVERE, "{0} could not be added to {1}",
+    logger.log(Level.SEVERE, "{0} could not be added to {1}\n",
                new Object[] { this, observable });
 
     Task task = (Task) observable;
-
-    // Remove this task from the list of tasks we have to deal with.
-    taskList.remove(task);
-    if (taskList.containsAll(proc.getTasks()))
-      {
-        // Print all the tasks in order.
-        printTasks();
-
-        // Run the given Event.
-        Manager.eventLoop.add(event);
-      }
+  
+    checkFinish(task, event);
   }
 
   public void deletedFrom (Object observable)
   {
   }
 
-  public final void printTasks ()
+  private final void printTasks ()
   {
     logger.log(Level.FINE, "{0} printTasks", this);
     Iterator iter = sortedTasks.values().iterator();
@@ -161,7 +172,7 @@ public class StacktraceObserver
     return stackTrace.toString();
   }
 
-  public final void storeTask (Task task)
+  private final void storeTask (Task task)
   {
     if (task != null)
       {
@@ -191,7 +202,7 @@ public class StacktraceObserver
           }
       }
   }
-
+  
   /**
    * @author mcvet If the user cntl-c interrupts, handle it cleanly
    */
