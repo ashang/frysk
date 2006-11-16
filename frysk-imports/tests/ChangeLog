@@ -1,5 +1,10 @@
 2006-11-16  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk3525/exit47.c (waitstatus): Clean up messages, abort when
+	fail.
+	(ptracer, print_signal, wait_for_signals, send_signal): New.
+	(main): Make child a detached daemon, synchronized with a signal.
+
 	* frysk3525/exit47.c: New file, work-in-progress.
 
 2006-11-14  Chris Moller  <moller@mollerware.com>

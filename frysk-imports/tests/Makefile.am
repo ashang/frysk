@@ -428,5 +428,10 @@ noinst_PROGRAMS += frysk3205/ptrace-test
 # results in a waitpid event, the kernel is presumed to be working
 # 
 TESTS += frysk3381/f3381
-frysk3381 = frysk3381/f3381.c
+frysk3381_f3381_SOURCES = frysk3381/f3381.c
 noinst_PROGRAMS += frysk3381/f3381
+
+# A daemon can produce double or plain wrong exit events.
+TESTS += frysk3525/exit47
+frysk3525_exit47_SOURCES = frysk3525/exit47.c
+noinst_PROGRAMS += frysk3525/exit47

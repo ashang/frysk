@@ -69,13 +69,13 @@ waitstatus (pid_t pid, const char *msg, int (*wif) (int), int reason)
   int rerrno;
 
   // Make the call
-  printf ("waitpid %d for << %s >>", pid, msg);
+  printf ("%d calling waitpid %d for << %s >>", getpid (), pid, msg);
   rpid = waitpid (pid, &rstatus, 0);
   rerrno = errno;
 
   // Dump the result
   if (rpid < 0) {
-    printf ("fails (%s)", strerror (errno));
+    printf (" fails (%s)", strerror (errno));
   }
   else {
     printf (" returns 0x%x ", rstatus);
@@ -93,7 +93,7 @@ waitstatus (pid_t pid, const char *msg, int (*wif) (int), int reason)
   if (rpid < 0) {
     if (wif != NULL || errno != reason) {
       printf ("\n");
-      exit (1);
+      abort ();
     }
   }
   else {
@@ -108,7 +108,7 @@ waitstatus (pid_t pid, const char *msg, int (*wif) (int), int reason)
     if (!wif (rstatus)
 	|| (reason >= 0 && wstatus (rstatus) != reason)) {
       printf (" -- %s %d expected\n", wifname, reason);
-      exit (1);
+      abort ();
     }
   }
 
@@ -116,9 +116,48 @@ waitstatus (pid_t pid, const char *msg, int (*wif) (int), int reason)
   return rstatus;
 }
 
+void
+ptracer (int op, pid_t pid, int sig)
+{
+  const char *what;
+  switch (op) {
+  case PTRACE_CONT: what = "CONT"; break;
+  case PTRACE_ATTACH: what = "ATTACH"; break;
+  case PTRACE_SETOPTIONS: what = "SETOPTIONS"; break;
+  default: what = "<unknown>"; break;
+  }
+  printf ("%d calling ptrace %d (%s) %d %d\n", getpid (), op, what, pid, sig);
+  errno = 0;
+  ptrace (op, pid, NULL, sig);
+  assert_perror (errno);
+}
+
+void
+print_signal (int sig)
+{
+  printf ("%d received %s\n", getpid (), strsignal (sig));
+}
+
+void
+wait_for_signals (sigset_t *mask)
+{
+  printf ("%d waiting for signals\n", getpid ());
+  sigsuspend (mask);
+}
+
+void
+send_signal (pid_t pid, int sig)
+{
+  printf ("%d signalling %d with %s\n", getpid (), pid, strsignal (sig));
+  errno = 0;
+  kill (pid, sig);
+  assert_perror (errno);
+}
+
 int
 main (int argc, char *argv[], char *envp[])
 {
+  // Stop any buffering
   setbuf (stdout, NULL);
 
   if (argc > 2) {
@@ -126,7 +165,7 @@ main (int argc, char *argv[], char *envp[])
     if (argv[1][0] > '0') {
       argv[1][0]--;
       execl (argv[0], argv[0], argv[1], argv[2], NULL);
-      exit (1);
+      abort ();
     }
     else {
       printf ("exiting %d with %s\n", getpid (), argv[2]);
@@ -134,38 +173,59 @@ main (int argc, char *argv[], char *envp[])
     }
   }
 
-  pid_t pid = fork ();
-  switch (pid) {
+  printf ("%d installing signal handler and mask\n", getpid ());
+  signal (SIGUSR1, print_signal);
+  sigset_t signal_mask;
+  sigset_t old_mask;
+  sigemptyset (&signal_mask);
+  sigaddset (&signal_mask, SIGUSR1);
+  sigprocmask (SIG_BLOCK, &signal_mask, &old_mask);
+
+  printf ("%d forking\n", getpid ());
+  pid_t ppid = getpid ();
+  volatile pid_t pid;
+  pid_t v = vfork ();
+  switch (v) {
 
   case -1: // Oops
     assert_perror (errno);
 
   case 0: // child
-    errno = 0;
-    ptrace (PTRACE_TRACEME, 0, NULL, NULL);
-    assert_perror (errno);
-    execl (argv[0], argv[0], "1", "47", NULL);
-    exit (1);
+    pid = fork ();
+    switch (pid) {
+    case -1:
+      assert_perror (errno);
+    case 0: // daemon
+      errno = 0;
+      send_signal (ppid, SIGUSR1);
+      wait_for_signals (&old_mask);
+      execl (argv[0], argv[0], "0", "47", NULL);
+      assert_perror (errno);
+    default:
+      exit (0);
+    }
 
   default: // parent
-    // Wait for for the daemon to exec
-    waitstatus (pid, "child stops at exec", wifstopped, -1);
-    errno = 0;
-    ptrace (PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACEEXEC|PTRACE_O_TRACEEXIT);
+    // Wait for daemon to exit.
+    waitstatus (v, "child for daemon exits", wifexited, 0);
 
-    // Run to the next exec.
-    errno = 0;
-    ptrace (PTRACE_CONT, pid, NULL, NULL);
-    assert_perror (errno);
-    waitstatus (pid, "child stops at next exec", wifstopped, -1);
+    // Wait for for the daemon to report that it is ready.
+    wait_for_signals (&old_mask);
 
-    // Run to the next exec.
-    errno = 0;
-    ptrace (PTRACE_CONT, pid, NULL, NULL);
-    assert_perror (errno);
-    waitstatus (pid, "child stops exiting", wifstopped, 5);
-    ptrace (PTRACE_CONT, pid, NULL, NULL);
-    waitstatus (pid, "child exit(47)", wifexited, 47);
+    // Attach, wait, config and continue with signal.
+    ptracer (PTRACE_ATTACH, pid, 0);
+    waitstatus (pid, "daemon attached", wifstopped, SIGSTOP);
+    ptracer (PTRACE_SETOPTIONS, pid, PTRACE_O_TRACEEXEC|PTRACE_O_TRACEEXIT);
+    ptracer (PTRACE_CONT, pid, SIGUSR1);
+
+    // Wait for the exec
+    waitstatus (pid, "daemon stops at exec", wifstopped, 5);
+    ptracer (PTRACE_CONT, pid, 0);
+
+    // Wait for termination
+    waitstatus (pid, "daemon stops at exit(47)", wifstopped, 5);
+    ptracer (PTRACE_CONT, pid, 0);
+    waitstatus (pid, "daemon does exit(47)", wifexited, 47);
 
     // And nothing else
     waitstatus (pid, "no children", NULL, ECHILD);
