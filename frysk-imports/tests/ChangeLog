@@ -1,3 +1,7 @@
+2006-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3525/exit47.c: New file, work-in-progress.
+
 2006-11-14  Chris Moller  <moller@mollerware.com>
 
 	* frysk3381/f3381.c: Added a testcase that checks for a kernel bug

@@ -1,3 +1,10 @@
+2006-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (log): New.
+	* cni/Errno.hxx (vajprintf): Add declaration.
+	* cni/Errno.cxx (vajprintf): Make public.
+	* Wait.java (log): Delete.
+
 2006-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Wait.cxx: Revert 2006-09-04 Chris Moller

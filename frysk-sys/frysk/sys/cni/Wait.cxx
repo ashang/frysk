@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@
 
 #include <gcj/cni.h>
 
+#include <java/util/logging/Logger.h>
+#include <java/util/logging/Level.h>
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
@@ -55,9 +57,7 @@
 #include "frysk/sys/Wait.h"
 #include "frysk/sys/Wait$Observer.h"
 
-/* Decode a wait status notification using the WIFxxx macros,
-   forwarding the decoded event, and its corresponding parameters, to
-   the applicable observer.
+/* Unpack the WSTOPEVENT status field.
 
    With one exception (WIFSTOPPED), the STATUS can be decoded using
    the standard WIFxxx macros described in wait(2).
@@ -65,15 +65,73 @@
    For WIFSTOPPED, there is an additional undocumented STOPEVENT field
    that when non-zero contains an event sub-category.  The kernel uses
    a call to ptrace_notify() to pack the status, and the packed format
-   is ((STOPEVENT << 16) | ((STOPSIG & 0xff) << 8) | (IFSTOPPED)).
-
-   In addition, for certain of the WIFSTOPPED sub-events, the kernel
-   will save an additional undocumented auxilary value (exit code,
-   ...) in the per-thread current->ptrace_message field, and the value
-   can be fetched using PTRACE_GETEVENTMSG.  The details of the
-   auxilary values are described below.  */
+   is ((STOPEVENT << 16) | ((STOPSIG & 0xff) << 8) | (IFSTOPPED)).  */
 
 #define WSTOPEVENT(STATUS) (((STATUS) & 0xff0000) >> 16)
+
+/* Decode and log a waitpid result, but only when logging.  */
+
+static void
+log (pid_t pid, int status, int err)
+{
+  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
+  if (logger == NULL)
+    return;
+  jstring message;
+  if (pid > 0) {
+    const char *wif_name = "<unknown>";
+    int sig = -1;
+    const char *sig_name = "<unknown>";
+    if (WIFEXITED (status)) {
+      wif_name = "WIFEXITED";
+      sig = WEXITSTATUS (status);
+      sig_name = "exit status";
+    }
+    if (WIFSTOPPED (status)) {
+      switch WSTOPEVENT (status) {
+      case PTRACE_EVENT_CLONE:
+	wif_name = "WIFSTOPPED/CLONE";
+	break;
+      case PTRACE_EVENT_FORK:
+	wif_name = "WIFSTOPPED/FORK";
+	break;
+      case PTRACE_EVENT_EXIT:
+	wif_name = "WIFSTOPPED/EXIT";
+	break;
+      case PTRACE_EVENT_EXEC:
+	wif_name = "WIFSTOPPED/EXEC";
+	break;
+      case 0:
+	wif_name = "WIFSTOPPED";
+	break;
+      }
+      sig = WSTOPSIG (status);
+      sig_name = strsignal (sig);
+    }
+    if (WIFSIGNALED (status)) {
+      wif_name = "WIFSIGNALED";
+      sig = WTERMSIG (status);
+      sig_name = strsignal (sig);
+    }
+    message = vajprintf ("frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
+			 pid, status, wif_name, sig, sig_name);
+  }
+  else
+    message = vajprintf ("frysk.sys.Wait pid %d errno %d (%s)\n",
+			 pid, err, strerror (err));
+  // Lacks "{0}"
+  logger->log (java::util::logging::Level::FINE, message);
+}
+
+/* Decode a wait status notification using the WIFxxx macros,
+   forwarding the decoded event, and its corresponding parameters, to
+   the applicable observer.
+
+   For certain of the WIFSTOPPED sub-events, the kernel will save an
+   additional undocumented auxilary value (exit code, ...) in the
+   per-thread current->ptrace_message field, and the value can be
+   fetched using PTRACE_GETEVENTMSG.  The details of the auxilary
+   values are described below.  */
 
 static void
 processStatus (int pid, int status,

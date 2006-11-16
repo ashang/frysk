@@ -49,37 +49,21 @@ import java.util.logging.Level;
 
 public final class Wait
 {
-    protected static Logger logger;
+    private static Logger logger;
     /**
-     * From static methods this isn't initialized; provide an init
-     * method.
+     * Finds, and returns the logger, but only when logging is
+     * enabled..
      */
-    protected static void log (int pid, int status, int errno)
+    static Logger getLogger ()
     {
 	// Seems that when calling static methods this isn't
 	// initialized, force it.
 	if (logger == null)
 	    logger = Logger.getLogger ("frysk");//.sys");
-	// Log everything, use isLoggable so as to avoid all the
-	// boxing when it isn't needed.
-	if (logger.isLoggable (Level.FINE)) {
-	    if (pid > 0)
-		logger.log (Level.FINE,
-			    "{0} pid {1,number,integer} status 0x{2}\n",
-			    new Object[] {
-				Wait.class.getName (),
-				new Integer (pid),
-				Integer.toHexString (status)
-			    });
-	    else
-		logger.log (Level.FINE,
-			    "{0} pid {1,number,integer} errno {2}\n",
-			    new Object[] {
-				Wait.class.getName (),
-				new Integer (pid),
-				new Integer (errno)
-			    });
-	}
+	if (logger.isLoggable (Level.FINE))
+	    return logger;
+	else
+	    return null;
     }
 
     /**

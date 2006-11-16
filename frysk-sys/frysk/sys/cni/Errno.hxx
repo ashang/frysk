@@ -49,3 +49,9 @@ extern void throwRuntimeException (const char *message);
 // <<message>> (<<suffix>> <<val>>)
 extern void throwRuntimeException (const char *message, const char *suffix,
 				   int val);
+
+/**
+ * Like asprintf, only it returns a java string.
+ */
+extern jstring vajprintf (const char *fmt, ...)
+  __attribute__ ((format (printf, 1, 2)));

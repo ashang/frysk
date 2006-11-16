@@ -57,9 +57,7 @@
 /**
  * Like vasprintf, only it returns a Java string.
  */
-static jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
-static jstring
+jstring
 vajprintf (const char *fmt, ...)
 {
   jstring jmessage;
