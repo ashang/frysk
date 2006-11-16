@@ -269,6 +269,12 @@ abstract class ProcState
         {
           return this;
         }
+        
+        ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+        {
+          logger.log(Level.FINE, "{0} handleDetach\n", proc);
+          return new Detaching (proc, shouldRemoveObservers);
+        } 
 
 	}
 	/**
