@@ -355,6 +355,16 @@ stability in the complex and emerging technologies on which
 <em>frysk</em> depends, the <em>frysk</em> build tree retains locally
 regression tests for bugs reported against those components.</dd>
 
+<dt>Are both <tt>gcj</tt> and <tt>ecj</tt> required when building
+<em>frysk</em>?  If so, why, or why not?</td> <dd>A <em>frysk</em>
+build only requires and always uses <tt>gcj</tt> when compiling Java
+code.<br>In addition, to maintaining a high level of code quality, and
+ensure that the <tt>gcj</tt> is only presented with correct Java
+source, <em>frysk</em>'s build system lints its Java code base using
+<tt>ecj</tt> when that compiler is also available.<br>Note that
+<em>frysk</em>'s build system does not use <tt>ecj</tt> as the build
+compiler as that would result in a non-deterministic build - one that
+changes dependant on the presence or absence of <tt>ecj</tt>.</dd>
 
 </dl>
 
