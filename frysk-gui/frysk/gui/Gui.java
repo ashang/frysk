@@ -398,8 +398,8 @@ public class Gui implements LifeCycleListener, Saveable {
 	}
 	
 	/**
-	 * Function to quit fryks. All requests to quit frysk should be funneled
-	 * though this function.
+	 * Function to quit frysk. All requests to quit frysk should be funneled
+	 * through this function.
 	 */
 	public static void quitFrysk() {
 		Gtk.mainQuit();
@@ -521,8 +521,8 @@ public class Gui implements LifeCycleListener, Saveable {
 	}
 
 	/**
-	 * Boostraps the coe logging according to the properties
-	 * found in loggin.properties
+	 * Bootstraps the core logging according to the properties
+	 * found in logging.properties
 	 */
 	private static void setupCoreLogging() {
 		// Get Core logger
