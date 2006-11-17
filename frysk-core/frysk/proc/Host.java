@@ -48,6 +48,7 @@ import java.util.Observable; // XXX: Temporary.
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  * A host machine.
  *
@@ -124,6 +125,9 @@ public abstract class Host
 
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
+    
+    abstract void sendRefresh (int pid, FindProc finder);
+    
     /**
      * Tell the host to create a running child process.
      *
@@ -187,6 +191,43 @@ public abstract class Host
 		}
 	    });
     }
+    
+    /**
+     * Find a specific process from its Id.
+     */
+    public void requestFindProc(final int procId, final FindProc finder)
+    {
+      Manager.eventLoop.add(new HostEvent("FindProc") {
+
+        public void execute ()
+        {
+          newState = oldState().handleRefresh (Host.this, procId, finder);
+        }});
+            
+    }
+    
+    /**
+     * Interface to be used with requestFindProc.
+     * 
+     * @author npremji
+     *
+     */
+    public interface FindProc
+  {
+    /**
+     * The process was successfully found and added to the host's procPool.
+     * @param proc
+     */
+    void procFound (Proc proc);
+
+    /**
+     * The process with the given ID was not found.
+     * @param procId
+     */
+    void procFoundFailed (int pid);
+  }
+    
+    
     /**
      * Request that a new attached and running process be created.
      */

@@ -193,6 +193,17 @@ public class LinuxHost
         remove(proc);
       }
   }
+  
+  void sendRefresh (int pid, FindProc finder)
+  {
+    //XXX: Should only refresh the pool with the given pid and possibly its parents.
+    sendRefresh(false);
+    
+    if (procPool.containsKey(new ProcId(pid)))
+      finder.procFound(getProc(new ProcId(pid)));
+    else
+      finder.procFoundFailed(pid);
+  }
 
   /**
    * Create an attached process that is a child of this process (and this task).

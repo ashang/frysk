@@ -1,3 +1,14 @@
+2006-11-17  Nurdin Premji  <npremji@redhat.com>
+
+	* Host.java (FindProc): Added, new interface for finding processes.
+	(requestFindProc): Added.
+	(sendRefresh): Added.
+	* TestFindProc.java: Added.
+	* DummyHost.java (sendRefresh): Added.
+	* LinuxHost.java (sendRefresh): Added.
+	* HostState.java (running.handleRefresh): Added.
+	(handleRefresh): Added.
+	
 2006-11-16  Nurdin Premji  <npremji@redhat.com>
 
 	* TestAbandon.java: Added.

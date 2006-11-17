@@ -63,6 +63,11 @@ class HostState
     {
 	throw unhandled (host, "handleRefresh");
     }
+    HostState handleRefresh (Host host, int pid, Host.FindProc finder)
+    {
+      throw unhandled (host, "handleRefresh");
+    }
+    
     HostState handleCreateAttachedProc (Host host,
 					String stdin, String stdout,
 					String stderr, String[] args,
@@ -91,5 +96,11 @@ class HostState
 					     attached);
 		return HostState.running;
 	    }
+        HostState handleRefresh (Host host, int pid, Host.FindProc finder)
+        {
+          logger.log (Level.FINE, "{0} handleRefresh\n", host); 
+        host.sendRefresh (pid, finder);
+        return running;
+        }
 	};
 }

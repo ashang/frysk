@@ -20,4 +20,10 @@ public class DummyHost extends Host {
 		return null;
 	}
 
+  void sendRefresh (int pid, FindProc finder)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
