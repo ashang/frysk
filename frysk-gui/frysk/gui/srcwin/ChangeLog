@@ -1,3 +1,8 @@
+2006-11-17  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (stepInstruction): Remove TextTags from
+	source code.
+
 2006-11-16  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView.java: (resetView): Added.

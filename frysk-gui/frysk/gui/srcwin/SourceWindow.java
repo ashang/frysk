@@ -542,7 +542,6 @@ public class SourceWindow
    */
   protected void stepInstruction (LinkedList tasks)
   {
-
     if (tasks.size() == 0)
       return;
     
@@ -555,6 +554,9 @@ public class SourceWindow
     this.numSteppingThreads = tasks.size();
     
     this.stateModel.stepInstruction(tasks);
+    //this.stateModel.setUpStep(this.swProc.getTasks());
+    
+    removeTags();
   }
   
   /**
@@ -1918,6 +1920,8 @@ public class SourceWindow
     sbar.push(0, "Stopped");
     
     this.stateModel.stepCompleted();
+    
+    //this.view.scrollToLine(this.currentFrame.getLineNumber());
     
     resensitize();
     
