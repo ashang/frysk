@@ -330,15 +330,13 @@ tested giving fuller access to the packages methods and classes</li>
 <li>so that the tests are not missed or burried in a completly
 separate source tree</li> </ul> </dd>
 
-<dt>How do I blah blah blah the <tt>TestRunner</tt>?<dt> <dd>The
-command line options accepted by installed program <tt>funit</tt>, and
-described in <tt>funit</tt>'s man page, are also accepted by the
-build-tree program <tt>TestRunner</tt>.  For instance:
-<pre>
-TestRunner -c frysk.proc.TestClass
-</pre>
-runs just the tests from <tt>frysk.proc.TestClass</tt> with trace
-logging written to the screen.</dd>
+<dt>How do I do blah blah blah with <tt>TestRunner</tt> or
+<tt>funit</tt>?<dt> <dd>The command line options accepted by installed
+program <tt>funit</tt>, and described in <tt>funit</tt>'s man page,
+are also accepted by the build-tree program <tt>TestRunner</tt>.  For
+instance: <pre> TestRunner -c frysk.proc.TestClass </pre> runs just
+the tests from <tt>frysk.proc.TestClass</tt> with trace logging
+written to the screen.</dd>
 
 <dt>How do I refer to an external executable or data file in a
 test?<dt> <dd>Use:<dl>
@@ -348,6 +346,15 @@ refer to either the installed <tt>libexec/frysk/</tt> or build tree
 <dt><tt>frysk.junit.Paths.getDataPrefix()</tt></dt> <dd>Which will
 refer to either the installed <tt>share/frysk/</tt> or build tree
 <tt>frysk/pkgdatadirdir</tt></dd> </dl> </dd>
+
+<dt>The tesets in the <tt>frysk-imports/tests/</tt> and
+<tt>frysk-gtk/tests/</tt> directories exercise bugs in components such
+as the kernel, GCJ and CLASSPATH, and Java-GNOME, and not
+<em>frysk</em>.  Why?</tt> <dd>Risk Management.</br>To ensure onging
+stability in the complex and emerging technologies on which
+<em>frysk</em> depends, the <em>frysk</em> build tree retains locally
+regression tests for bugs reported against those components.</dd>
+
 
 </dl>
 
