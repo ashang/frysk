@@ -1,3 +1,9 @@
+2006-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (javadoc): Replace getopt with gnu as getopt code
+	lives under the gnu package tree.
+	(SOURCEDIRS): Fix path to getopt sources.
+
 2006-11-14  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Remove $(srcdir)/common/*.m4, there is
