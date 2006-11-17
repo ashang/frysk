@@ -1,3 +1,8 @@
+2006-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3525/exit47.c (main): Use a signal to synchronise the
+	daemon's exit - avoids race with ptrace continue with signal.
+
 2006-11-16  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3525/exit47.c (main): Simplify, remove exec and SETOPTIONS.

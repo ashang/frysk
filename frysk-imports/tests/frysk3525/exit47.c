@@ -148,7 +148,7 @@ wait_for_signals (sigset_t *mask)
 void
 send_signal (pid_t pid, int sig)
 {
-  printf ("%d signalling %d with %s\n", getpid (), pid, strsignal (sig));
+  printf ("%d signaling %d with %s\n", getpid (), pid, strsignal (sig));
   errno = 0;
   kill (pid, sig);
   assert_perror (errno);
@@ -198,9 +198,18 @@ main (int argc, char *argv[], char *envp[])
     // Wait for for the daemon to report that it is ready.
     wait_for_signals (&old_mask);
 
-    // Attach, wait, config and continue with signal.
+    // Attach, wait, config and continue; so that the daemon can run
+    // up-to and block, enabling signal delivery.
     ptracer (PTRACE_ATTACH, pid, 0);
     waitstatus (pid, "daemon attached", wifstopped, SIGSTOP);
+    ptracer (PTRACE_CONT, pid, 0);
+
+    // Send the daemon an alert, the daemon will respond by exiting.
+    // Can't do this during the attach as the daemon may not be ready
+    // for the signal - leading to this process seeing an extra
+    // stop-with-sigusr1.
+    send_signal (pid, SIGUSR1);
+    waitstatus (pid, "daemon receives SIGUSR1", wifstopped, SIGUSR1);
     ptracer (PTRACE_CONT, pid, SIGUSR1);
 
     // Wait for termination
