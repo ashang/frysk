@@ -1,3 +1,9 @@
+2006-11-17  Stan Cox  <scox@redhat.com>
+
+	* hpd/CLI.java (CLIEventLoop): New.
+	(AttachedObserver): New.
+	(AttachHandler.handle): Attach to process using an attach observer.
+
 2006-11-16  Stan Cox  <scox@redhat.com>
 
 	* hpd/CLI.java (PrintHandler.handle): Add -task.

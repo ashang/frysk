@@ -52,11 +52,13 @@ import javax.naming.NameNotFoundException;
 
 import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
+import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Errno;
@@ -80,6 +82,8 @@ public class CLI
     SymTab symtab;
     StackFrame frame = null;
     int stackLevel = 0;
+    static Object monitor = new Object();
+    static boolean attached;
 
 	/*
 	 * Command handlers
@@ -179,7 +183,7 @@ public class CLI
 
 				for (Iterator iter = tempset.getTaskData(); iter.hasNext();)
 				{
-					//TODO this way of outputing is rather stoopid, but it's okay for now
+					// ??? this way of outputting is simple, but it's okay for now
 					temptd = (TaskData)iter.next();
 					output += "Set " + setname + " includes:\n";
 					output += "[" + temptd.getParentID() + "." + temptd.getID() + "]\n";
@@ -202,7 +206,7 @@ public class CLI
 			TaskData temptd = null;
 			String setname = null;
 
-			//TODO check builtin sets
+			// ??? check builtin sets
 			if (cmd.getParameters().size() <= 1)
 			{
 				if (cmd.getParameters().size() == 0)
@@ -210,7 +214,7 @@ public class CLI
 				else if (cmd.getParameters().size() == 1)
 					searchset = createSet((String)cmd.getParameters().elementAt(0));
 
-				//start iterating through availabe sets
+				// start iterating through available sets
 				for (Iterator it = searchset.getTaskData(); it.hasNext();)
 				{
 					temptd = (TaskData) it.next();
@@ -293,6 +297,7 @@ public class CLI
           Vector params = cmd.getParameters();
           String executable = "";
           boolean cli = false;
+          AttachedObserver ao = new AttachedObserver();
 
           if (params.size() < 2)
             {
@@ -316,15 +321,11 @@ public class CLI
 
           if (cli)
             {
-              Manager.eventLoop.runPolling (1000);
-              try {
-                Ptrace.attach(pid);
-              }
-              catch (Errno errno) {
-                addMessage(new Message("No such process.", Message.TYPE_ERROR));
-              }
-              Manager.host.requestRefreshXXX (true);
-              Manager.eventLoop.runPending ();
+              Manager.host.requestRefreshXXX(true);
+              Manager.eventLoop.runPending();
+              Proc proc = Manager.host.getProc(new ProcId(pid));
+              CLIEventLoop eventLoop = new CLIEventLoop();
+              eventLoop.start();
             }
 
           proc = Manager.host.getProc (new ProcId (pid));
@@ -333,7 +334,7 @@ public class CLI
               addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
               return;
             }
-          
+
           if (pid == tid || tid == 0)
             task = proc.getMainTask();
           else
@@ -341,7 +342,27 @@ public class CLI
               task = (Task) i.next ();
               if (task.getTid () == tid)
                 break;
-        }
+            }
+          
+          if (cli)
+            {
+              
+              task.requestAddAttachedObserver(ao);
+              // Wait till we are attached.
+              synchronized (monitor)
+                {
+                  while (! attached)
+                    {
+                      try
+                        {
+                          monitor.wait();
+                        }
+                      catch (InterruptedException ie)
+                        {
+                        }
+                    }
+                }
+            }
 
           symtab = new SymTab(pid, proc, task, null);
         }
@@ -719,13 +740,13 @@ public class CLI
 		builtinPTSets.put("all", allset);
 
 		namedPTSets = new Hashtable();
-		namedPTSets.toString(); // placeholder so compiler doesn't give unused variable warnings
+		namedPTSets.toString(); // avoid unused variable warnings
 
 		messages = new LinkedList();
 
 		//initialize alias table
 		aliases = new Hashtable();
-		aliases.toString(); // placeholder so compiler doesn't give unused variable warnings
+		aliases.toString(); // avoid unused variable warnings
 	}
 
 	public String getPrompt()
@@ -735,7 +756,7 @@ public class CLI
 
 	public String execCommand(String cmd)
 	{
-		String pcmd = ""; //preprocessed command
+		String pcmd = ""; // preprocessed command
 		Command command;
 		CommandHandler handler = null;
 
@@ -743,7 +764,7 @@ public class CLI
 		{
 			try
 			{
-				for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) //preprocess and iterate
+				for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) // preprocess and iterate
 				{
 					pcmd = (String)iter.next();
 					command = new Command(pcmd);
@@ -884,36 +905,68 @@ public class CLI
 
 		return result;
 	}
+    
+    private static class CLIEventLoop extends Thread
+    {
+      private boolean stopped;
 
-	/**
-	 * Main function, renamed to not get caught by the build system
-	 */
-	/*
-	public static void in(String[] args)
-	{
-		CLI dbg = new CLI("cli$ ");
-		ConsoleReader reader = null; // the jline reader
-		String line = "";
+      public void run()
+      {
+        stopped = false;
+        try
+        {
+          Manager.eventLoop.run();
+        }
+        finally
+        {
+          synchronized (monitor)
+          {
+            stopped = true;
+            monitor.notifyAll();
+          }
+        }
+      }
+      public void requestStop()
+      {
+        Manager.eventLoop.requestStop();
+      }
+    }
+    
+    class AttachedObserver implements TaskObserver.Attached
+    {
+      private boolean added;
 
-		try {
-			reader = new ConsoleReader();
-		}
-		catch (IOException ioe)	{
-			out.println("ERROR: Could not create a command line");
-			out.print(ioe.getMessage());
-		}
+      public Action updateAttached(Task task)
+      {
+        synchronized (monitor)
+          {
+            attached = true;
+            monitor.notifyAll();
+          }
+        return Action.BLOCK;
+      }
 
-		try {
-			while (line != null && !line.equals("quit")) {
-				line = reader.readLine(dbg.getPrompt());
-				dbg.execCommand(line);
-			}
+      public void addFailed(Object observable, Throwable w)
+      {
+        w.printStackTrace();
+      }
+      public void addedTo(Object observable)
+      {
+        synchronized (monitor)
+          {
+            added = true;
+            monitor.notifyAll();
+          }
+      }
 
-		}
-		catch (IOException ioe) {
-			out.println("ERROR: Could not read from command line");
-			out.print(ioe.getMessage());
-		}
-	}
-	*/
+      public boolean isAdded()
+      {
+        return added;
+      }
+
+      public void deletedFrom(Object observable)
+      {
+      }
+    }
 }
+
