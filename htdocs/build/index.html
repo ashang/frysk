@@ -258,10 +258,22 @@ $ ( cd frysk && cvs update -d )
 </pre>
 
 <h3>Configure and Build</h3>
-
+<dd>
+<li> On X86 or X86_64.
 <pre>
 $ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </pre>
+</li>
+
+<li> On PPC64.
+<pre>
+$ ( export PKG_CONFIG_PATH=/usr/lib64/pkgconfig )
+$ ( mkdir build && cd build )
+$ ( CC='gcc -m64' GCJ='gcj -m64' GCJLINK='gcj -m64' CXX='g++ -m64' ../frysk/autogen.sh )
+$ ( make -j2 )
+</pre>
+</li>
+</dd>
 
 <h3>Verify the build environment (optional)</h3>
 
