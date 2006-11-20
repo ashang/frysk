@@ -1,3 +1,9 @@
+2006-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (SOURCEPATH): Add paths to bindir/ and
+	pkglibexecdir/.
+	(javadoc): Include jline in external group.
+
 2006-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (javadoc): Replace getopt with gnu as getopt code

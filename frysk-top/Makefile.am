@@ -49,12 +49,20 @@ SUBDIRS = \
 empty=
 space=$(empty) $(empty)
 SOURCEDIRS = \
-	$(patsubst %,$(srcdir)/%,$(SUBDIRS)) \
-	$(patsubst %,$(top_builddir)/%,$(SUBDIRS)) \
-	$(srcdir)/frysk-imports/getopt/src/getopt \
-	$(srcdir)/frysk-imports/jline/src \
-	$(srcdir)/frysk-imports/junit/src
-SOURCEPATH = $(subst $(space),:,$(strip $(SOURCEDIRS)))
+	$(patsubst %,$(srcdir)/%/frysk,$(SUBDIRS)) \
+	$(patsubst %,$(top_builddir)/%/frysk,$(SUBDIRS)) \
+	$(srcdir)/frysk-imports/inua \
+	$(top_builddir)/frysk-imports/inua \
+	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
+	$(srcdir)/frysk-imports/jline/src/jline \
+	$(srcdir)/frysk-imports/junit/src/junit \
+	$(empty)
+SOURCEPATH = $(subst $(space),:,$(strip \
+		$(dir $(SOURCEDIRS)) \
+		$(srcdir)/frysk-core/frysk/pkglibexecdir/ \
+		$(srcdir)/frysk-core/frysk/bindir/ \
+		$(srcdir)/frysk-gui/frysk/bindir/ \
+		))
 
 
 
@@ -64,25 +72,25 @@ JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: all
 	for scope in public private ; do \
+		rm -rf javadoc/$$scope ; \
 		mkdir -p javadoc/$$scope ; \
-		CLASSPATH=$(JAVADOC_CLASSPATH) \
-		$(JAVADOC) \
-		-$$scope \
-		-link http://developer.classpath.org/doc/ \
-		-link http://java-gnome.sourceforge.net/docs/javadoc/ \
-		-validhtml \
-		-reflection \
-		-sourcepath $(SOURCEPATH) \
-		-overview $(srcdir)/overview.html \
-		-source 1.4 \
-		-d javadoc/$$scope \
-		-use \
-		-linksource \
-		-doctitle '<em>frysk</em> - Execution Analysis Technology' \
-		-windowtitle 'FRYSK' \
-		-group "<em>frysk</em> Packages" 'frysk*' \
-		-group "Imported Packages" 'jline*:gnu*:inua*' \
-		-subpackages 'frysk:inua:jline:gnu' ; \
+		CLASSPATH=$(JAVADOC_CLASSPATH) $(JAVADOC) \
+			-$$scope \
+			-link http://developer.classpath.org/doc/ \
+			-link http://java-gnome.sourceforge.net/docs/javadoc/ \
+			-validhtml \
+			-overview $(srcdir)/overview.html \
+			-source 1.4 \
+			-d javadoc/$$scope \
+			-use \
+			-linksource \
+			-doctitle '<em>frysk</em> - Execution Analysis Technology' \
+			-windowtitle 'FRYSK' \
+			-group "<em>frysk</em> Packages" 'frysk*' \
+			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
+			-sourcepath $(SOURCEPATH) \
+			-subpackages 'frysk:inua:jline:junit:gnu' \
+		; \
 	done
 
 # Since javadoc re-generates all the files, changing their

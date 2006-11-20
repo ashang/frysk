@@ -1,3 +1,8 @@
+2006-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* RunCppParser.java (SymTab): Rename .symTab; nest within
+	RunCppParser class.
+
 2006-11-16  Stan Cox  <scox@redhat.com>
 
 	* RunCppParser.java: Rename frysk.lang to frysk.value.
