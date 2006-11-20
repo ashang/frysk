@@ -1,3 +1,9 @@
+2006-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (checked-parameterless-junit-fail): New target;
+	check for fail with no parameters; add to check-local.
+	(checked-import-junit-framework): Add to check-local.
+
 2006-11-14  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.rules (EXTRA_DIST): Put the `$(srcdir)/' prefix back.
