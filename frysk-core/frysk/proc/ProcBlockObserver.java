@@ -58,7 +58,7 @@ abstract public class ProcBlockObserver
   private class ProcBlockTaskObserver
       implements TaskObserver.Instruction, TaskObserver.Terminated
   {
-    public Action updateExecuted (Task task)
+    public Action updateExecuted (final Task task)
     {
 
       if (! isMainTaskAdded)
@@ -74,7 +74,21 @@ abstract public class ProcBlockObserver
             }
         }
 
-      existingTask(task);
+      /*
+       * Must have existingTask called later so that there are no issues with 
+       * synchronization with going through the task list. 
+       * Happens in ProcState.allAttached, ConcurrentModificationException.
+       * 
+       */
+      Manager.eventLoop.add(new Event() {
+
+        public void execute ()
+        {
+          existingTask(task);     
+        }
+        
+      });
+     
       return Action.BLOCK;
     }
 

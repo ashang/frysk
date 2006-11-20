@@ -1,5 +1,9 @@
 2006-11-20  Nurdin Premji  <npremji@redhat.com>
 
+	* ProcBlockObserver.java (ProcBlockTaskObserver.updateExecuted): Changed to call existingTask in
+	a new event. Bug found by TestProcForceDetach. 
+	* TestProcForceDetach.java: Changed to use ProcBlockObserver. Added (C).
+	
 	* DummyHost.java (sendRefresh): Changed to use ProcId rather than int.
 	(requestFindProc): 	Ditto.
 	* TestFindProc.java (MyFinder): Changed to hold expected ProcId for assertion purposes.
