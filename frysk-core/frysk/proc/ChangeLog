@@ -1,5 +1,14 @@
 2006-11-20  Nurdin Premji  <npremji@redhat.com>
 
+	* Host.java (FindProc.procFound): Changed javadoc to be more general about process list.
+	(sendRefresh): Added boolean refreshAll to determine whether to refreshTasks.
+	(requestFindProc): Ditto.
+	* HostState.java (handleRefresh): Ditto.
+	* LinuxHost.java (sendRefresh): Ditto.
+	* DummyHost.java (sendRefresh): Ditto.
+	* TestFindProc.java (doFindProc): Changed to call requestFindProc with a boolean for refreshTasks.
+	(testFindFailed): Ditto.
+	
 	* ProcBlockObserver.java (ProcBlockTaskObserver.updateExecuted): Changed to call existingTask in
 	a new event. Bug found by TestProcForceDetach. 
 	* TestProcForceDetach.java: Changed to use ProcBlockObserver. Added (C).

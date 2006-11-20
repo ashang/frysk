@@ -126,7 +126,7 @@ public abstract class Host
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
     
-    abstract void sendRefresh (ProcId procId, FindProc finder);
+    abstract void sendRefresh (boolean refreshAll, ProcId procId, FindProc finder);
     
     /**
      * Tell the host to create a running child process.
@@ -195,13 +195,13 @@ public abstract class Host
     /**
      * Find a specific process from its Id.
      */
-    public void requestFindProc(final ProcId procId, final FindProc finder)
+    public void requestFindProc(final boolean refreshAll, final ProcId procId, final FindProc finder)
     {
       Manager.eventLoop.add(new HostEvent("FindProc") {
 
         public void execute ()
         {
-          newState = oldState().handleRefresh (Host.this, procId, finder);
+          newState = oldState().handleRefresh (Host.this, refreshAll, procId, finder);
         }});
             
     }
@@ -214,18 +214,19 @@ public abstract class Host
      */
     public interface FindProc
   {
+    
     /**
-     * The process was successfully found and added to the host's procPool.
-     * @param procId
+     * The process was successfully found and added to the Host's list of processes.
+     * @param procId the procId that was found.
      */
     void procFound (ProcId procId);
 
     /**
      * The process with the given ID was not found.
-     * @param procId
+     * @param procId the procId that was not found.
      * @param e The exception that occurred.
      */
-    void procNotFound (ProcId procId, Exception e);
+    void procNotFound (ProcId procId, Exception e);    
   }
     
     

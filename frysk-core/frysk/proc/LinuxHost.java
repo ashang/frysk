@@ -194,10 +194,10 @@ public class LinuxHost
       }
   }
   
-  void sendRefresh (ProcId procId, FindProc finder)
+  void sendRefresh (boolean refreshAll, ProcId procId, FindProc finder)
   {
     //XXX: Should only refresh the pool with the given pid and possibly its parents.
-    sendRefresh(false);
+    sendRefresh(refreshAll);
     
     if (procPool.containsKey(procId))
       finder.procFound(procId);

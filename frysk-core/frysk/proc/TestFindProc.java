@@ -130,7 +130,7 @@ public class TestFindProc
      * Should be just the one.
      */
     Host.FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
-    Manager.host.requestFindProc(new ProcId(ackProc.getPid()), finder);
+    Manager.host.requestFindProc(false, new ProcId(ackProc.getPid()), finder);
     assertRunUntilStop("testFindProc");
 
     int postFind = o.getCount();
@@ -158,7 +158,7 @@ public class TestFindProc
       }
     };
 
-    Manager.host.requestFindProc(new ProcId(0), finder);
+    Manager.host.requestFindProc(false, new ProcId(0), finder);
     assertRunUntilStop("testFindFailed");
 
   }
