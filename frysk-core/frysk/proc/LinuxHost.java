@@ -194,15 +194,15 @@ public class LinuxHost
       }
   }
   
-  void sendRefresh (int pid, FindProc finder)
+  void sendRefresh (ProcId procId, FindProc finder)
   {
     //XXX: Should only refresh the pool with the given pid and possibly its parents.
     sendRefresh(false);
     
-    if (procPool.containsKey(new ProcId(pid)))
-      finder.procFound(getProc(new ProcId(pid)));
+    if (procPool.containsKey(procId))
+      finder.procFound(procId);
     else
-      finder.procFoundFailed(pid);
+      finder.procNotFound(procId, new RuntimeException("Couldn't find the proc" + procId));
   }
 
   /**

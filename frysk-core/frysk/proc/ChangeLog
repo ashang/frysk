@@ -1,3 +1,18 @@
+2006-11-20  Nurdin Premji  <npremji@redhat.com>
+
+	* DummyHost.java (sendRefresh): Changed to use ProcId rather than int.
+	(requestFindProc): 	Ditto.
+	* TestFindProc.java (MyFinder): Changed to hold expected ProcId for assertion purposes.
+	(testFindFailed): Changed to use ProcId rather than int.
+	(doFindProc):  Ditto. Check that the pids are the same.
+	* LinuxHost.java (sendRefresh): Changed to use ProcId rather than int.
+	* HostState.java (running.handleRefresh): Changed to use ProcId rather than int.
+	(handleRefresh): Ditto.
+	* Host.java (FindProc.procFound): Changed to use ProcId rather than proc.
+	(FindProc.procNotFound): Renamed from procFoundFailed.
+	(requestFindProc): Changed to use ProcID rather than int.
+	(sendRefresh): Ditto.
+
 2006-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskSyscallObserver.java: Add message to fail call.

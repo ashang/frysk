@@ -68,18 +68,25 @@ public class TestFindProc
   class MyFinder
       implements Host.FindProc
   {
-    public void procFound (Proc proc)
+    ProcId expectedId;
+    
+    public MyFinder (ProcId pid)
     {
+      expectedId = pid;
+    }
+    public void procFound (ProcId procId)
+    {
+      Proc proc = Manager.host.getProc(procId);
       logger.log(Level.FINE, "proc: {0} proc parent: {1} \n",
                  new Object[] { proc, proc.getParent() });
+      assertEquals (expectedId, procId);
       Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
     }
 
-    public void procFoundFailed (int pid)
+    public void procNotFound (ProcId procId, Exception e)
     {
-      logger.log(Level.FINE, "{0} procId\n", new Integer(pid));
-      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-      fail();
+      logger.log(Level.FINE, "{0} procId\n", procId);
+      fail("Could not find process with ID" + procId.id);
     }
   }
 
@@ -122,8 +129,8 @@ public class TestFindProc
      * Find out how many processes are associated with the test process.
      * Should be just the one.
      */
-    Host.FindProc finder = new MyFinder();
-    Manager.host.requestFindProc(ackProc.getPid(), finder);
+    Host.FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
+    Manager.host.requestFindProc(new ProcId(ackProc.getPid()), finder);
     assertRunUntilStop("testFindProc");
 
     int postFind = o.getCount();
@@ -137,22 +144,21 @@ public class TestFindProc
   {
     Host.FindProc finder = new Host.FindProc()
     {
-      public void procFound (Proc proc)
+      public void procFound (ProcId procId)
       {
-        logger.log(Level.FINE, "{0} proc\n", proc);
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-        fail();
+        logger.log(Level.FINE, "{0} procId\n", procId);
+        fail("Found proc 0, should have failed.");
       }
 
-      public void procFoundFailed (int pid)
+      public void procNotFound (ProcId procId, Exception e)
       {
-        logger.log(Level.FINE, "{0} procId\n", new Integer(pid));
+        logger.log(Level.FINE, "{0} procId\n", procId);
         Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
 
       }
     };
 
-    Manager.host.requestFindProc(0, finder);
+    Manager.host.requestFindProc(new ProcId(0), finder);
     assertRunUntilStop("testFindFailed");
 
   }

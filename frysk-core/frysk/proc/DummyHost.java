@@ -20,7 +20,7 @@ public class DummyHost extends Host {
 		return null;
 	}
 
-  void sendRefresh (int pid, FindProc finder)
+  void sendRefresh (ProcId procId, FindProc finder)
   {
     // TODO Auto-generated method stub
     
