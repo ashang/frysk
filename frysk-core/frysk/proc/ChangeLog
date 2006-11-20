@@ -1,3 +1,7 @@
+2006-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskSyscallObserver.java: Add message to fail call.
+
 2006-11-17  Nurdin Premji  <npremji@redhat.com>
 
 	* Host.java (FindProc): Added, new interface for finding processes.

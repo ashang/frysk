@@ -201,7 +201,10 @@ public class TestTaskSyscallObserver
       {
     
 	public void deletedFrom (Object observable){}
-	public void addFailed (Object observable, Throwable w){ fail(); }
+	public void addFailed (Object observable, Throwable w)
+	{
+	    fail ("adding Cloned Observer to traced task");
+	}
 	public Action updateClonedParent (Task task, Task clone){ return Action.CONTINUE; }
 	public void addedTo (Object observable){}
     
