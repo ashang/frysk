@@ -43,12 +43,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
-import frysk.proc.ProcBlockObserver;
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+import frysk.proc.Action;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import frysk.proc.TaskObserver;
+
+import frysk.proc.ProcBlockObserver;
 
 /**
  * Model for state transitions in the SourceWindow and HPD classes. Currently
@@ -58,11 +67,8 @@ import frysk.proc.TaskException;
  * 
  * @author mcvet
  */
-public class StateModel
+public class RunState extends Observable implements TaskObserver.Instruction
 {
-
-  /* The InstructionObserver handling the process being examined. */
-  private ProcBlockObserver pbo;
 
   /* Keeps track of the Dwfl objects for teach Task; not necessary to
    * re-generate these each time a step is done. */
@@ -81,7 +87,9 @@ public class StateModel
 
   private int taskStepCount = 0;
 
-  private int numSteppingThreads = 0;
+  private int numSteppingTasks = 0;
+  
+  private int numRunningTasks = 0;
 
   protected static final int STOPPED = 0;
   protected static final int RUNNING = 1;
@@ -89,19 +97,25 @@ public class StateModel
   protected static final int STEP_IN = 3;
   protected static final int STEP_OVER = 4;
   protected static final int STEP_OUT = 5;
-
+  
+  private Proc stateProc;
+  
+  private LinkedList tasks;
+  
   /**
    * Constructor - sets the InstructionObserver for this model and initializes
    * the Maps and Set.
-   * 
-   * @param pbo The ProcBlockObserver this StateModel delegates to.
    */
-  public StateModel (ProcBlockObserver pbo)
+  public RunState ()
   {
-    this.pbo = pbo;
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     this.runningTasks = new HashSet();
+  }
+  
+  public RunState (ProcBlockObserver pbo)
+  {
+    
   }
 
   /*****************************************************************************
@@ -117,7 +131,7 @@ public class StateModel
    */
   public void setUpStep (LinkedList tasks)
   {
-    this.numSteppingThreads = tasks.size();
+    this.numSteppingTasks = tasks.size();
     Iterator i = tasks.iterator();
     
     while (i.hasNext())
@@ -145,7 +159,8 @@ public class StateModel
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
-        this.pbo.requestUnblock(t);
+        notifyNotBlocked();
+        t.requestUnblock(this);
       }
   }
 
@@ -158,10 +173,11 @@ public class StateModel
   public void stepInstruction (LinkedList tasks)
   {
     Iterator i = tasks.iterator();
+    notifyNotBlocked();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        this.pbo.requestUnblock(t);
+        t.requestUnblock(this);
       }
   }
 
@@ -208,25 +224,38 @@ public class StateModel
     else
       {
         this.lineLoopCount++;
-        if ((this.lineLoopCount / this.numSteppingThreads) > 8)
+        if ((this.lineLoopCount / this.numSteppingTasks) > 8)
           {
             this.lineMap.put(task, new Integer(lineNum));
             --taskStepCount;
             return;
           }
 
-        this.pbo.requestUnblock(task);
+        task.requestUnblock(this);
       }
   }
-
+  
   public void stepOver (Task task)
   {
-
+    
+  }
+  
+  public void setUpStepOut (LinkedList tasks, TaskObserver.Code breakpoint)
+  {
+    
   }
 
   public void stepOut (Task task)
   {
 
+  }
+  
+  /**
+   * Decrements the number of stepping Tasks
+   */
+  public void decTaskStepCount ()
+  {
+    this.taskStepCount--;
   }
 
   /**
@@ -236,7 +265,7 @@ public class StateModel
   {
     this.lineLoopCount = 0;
     this.taskStepCount = 0;
-    this.numSteppingThreads = 0;
+    this.numSteppingTasks = 0;
   }
 
   /*****************************************************************************
@@ -251,7 +280,8 @@ public class StateModel
    */
   public void run (LinkedList tasks)
   {
-    // System.out.println("In statemodel run " + proc.getTasks().size());
+    this.numRunningTasks = tasks.size();
+    notifyNotBlocked();
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
@@ -259,8 +289,7 @@ public class StateModel
         if (! this.runningTasks.contains(t))
           {
             this.runningTasks.add(t);
-            // System.out.println("deleting from " + t);
-            this.pbo.requestDeleteInstructionObserver(t);
+            t.requestDeleteInstructionObserver(this);
           }
       }
   }
@@ -277,12 +306,12 @@ public class StateModel
   {
     if (unblockTasks == null)
       {
-        this.pbo.requestAdd();
+        requestAdd();
       }
     else
       {
         if (unblockTasks.size() == 0)
-          this.pbo.requestAdd();
+          requestAdd();
         else
           {
             Iterator i = this.runningTasks.iterator();
@@ -296,7 +325,8 @@ public class StateModel
                     i.remove();
                   }
               }
-            this.pbo.blockTask(blockTasks);
+            //this.pbo.blockTask(blockTasks);
+            blockTask(blockTasks);
           }
       }
     this.runningTasks.clear();
@@ -344,13 +374,15 @@ public class StateModel
             i.remove();
             // System.out.println("Blocking " + t);
           }
-        this.pbo.blockTask(l);
+        //this.pbo.blockTask(l);
+        blockTask(l);
         return STOPPED;
       }
 
     /* There are incoming Tasks to be run, and no Tasks already running */
     if (this.runningTasks.size() == 0)
       {
+        notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
           {
@@ -358,7 +390,8 @@ public class StateModel
              //System.out.println("(0) Running " + t);
             this.runningTasks.add(t);
 
-            this.pbo.requestDeleteInstructionObserver(t);
+            //this.pbo.requestDeleteInstructionObserver(t);
+            t.requestDeleteInstructionObserver(this);
           }
         return RUNNING;
       }
@@ -369,6 +402,7 @@ public class StateModel
       {
         HashSet temp = new HashSet();
         // this.runningThreads.clear();
+        notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
           {
@@ -378,7 +412,8 @@ public class StateModel
             if (! this.runningTasks.remove(t))
               {
                 // System.out.println("unBlocking " + t);
-                this.pbo.requestDeleteInstructionObserver(t);
+                //this.pbo.requestDeleteInstructionObserver(t);
+                t.requestDeleteInstructionObserver(this);
               }
             else
               // System.out.println("Already Running");
@@ -398,7 +433,8 @@ public class StateModel
                 l.add(t);
                 // System.out.println("Blocking from runningTasks " + t);
               }
-            this.pbo.blockTask(l);
+            //this.pbo.blockTask(l);
+            blockTask(l);
           }
 
         this.runningTasks = temp;
@@ -406,6 +442,11 @@ public class StateModel
         // + temp.size());
       }
     return RUNNING;
+  }
+  
+  public void decNumRunningTasks ()
+  {
+    this.numRunningTasks--;
   }
 
   /*****************************************************************************
@@ -432,12 +473,154 @@ public class StateModel
     this.taskStepCount = count;
   }
 
-  /**
-   * Decrements the number of stepping Tasks
-   */
-  public void decTaskStepCount ()
+  public int getNumRunningTasks ()
   {
-    this.taskStepCount--;
+    return this.numRunningTasks;
+  }
+  
+  public void setNumRunningTasks (int num)
+  {
+    this.numRunningTasks = num;
+  }
+  
+  public int getNumObservers ()
+  {
+    return this.countObservers();
+  }
+  
+  /*****************************************************************************
+   * CENTRALIZED OBSERVABLE
+   ****************************************************************************/
+  
+  public int removeObserver (Observer o)
+  {
+    this.deleteObserver(o);
+    if (countObservers() == 0)
+      {
+        run(this.stateProc.getTasks());
+        return 1;
+      }
+    else
+      return 0;
+  }
+  
+  public void setProc (Proc proc)
+  {
+    this.stateProc = proc;
+    this.tasks = proc.getTasks();
+    requestAdd(tasks);
+  }
+
+  public void notifyNotBlocked ()
+  {
+    this.setChanged();
+    this.notifyObservers(null);
+  }
+
+  public Action updateExecuted (Task task)
+  {
+    this.setChanged();
+    this.notifyObservers(task);
+
+    return Action.BLOCK;
+  }
+
+  public void addedTo (Object o)
+  {
+
+  }
+
+  public void deletedFrom (Object o)
+  {
+
+  }
+
+  public void addFailed (Object o, Throwable w)
+  {
+    w.printStackTrace();
+    stateProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+    System.exit(1);
+  }
+
+  public void requestAdd ()
+  {
+    requestAdd(this.stateProc.getTasks());
+  }
+
+  public void requestAdd (LinkedList tasks)
+  { 
+    this.tasks = tasks;
+    
+    /*
+     * The rest of the construction must be done synchronous to the EventLoop,
+     * schedule it. */
+    Manager.eventLoop.add(new Event()
+    {
+      public void execute ()
+      {
+
+        if (RunState.this.tasks == null)
+          {
+            System.out.println("Couldn't get the tasks");
+            System.exit(1);
+          }
+
+        /* XXX: deprecated hack. */
+        // proc.sendRefresh();
+        if (stateProc.getMainTask() == null)
+          {
+            // logger.log(Level.FINE, "Could not get main thread of "
+            // + "this process\n {0}", proc);
+            addFailed(
+                      stateProc,
+                      new RuntimeException(
+                                           "Process lost: could not "
+                                               + "get the main thread of this process.\n"
+                                               + stateProc));
+            return;
+          }
+
+        if (!(stateProc.getUID() == Manager.host.getSelf().getUID()
+            || stateProc.getGID() == Manager.host.getSelf().getGID()))
+          {
+            System.err.println("Process " + stateProc + " is not owned by user/group.");
+            System.exit(1);
+          }
+
+        Iterator i = RunState.this.tasks.iterator();
+        while (i.hasNext())
+          requestAddObservers((Task) i.next());
+
+      }
+    });
+  }
+
+  public void requestAddObservers (Task task)
+  {
+    task.requestAddInstructionObserver(this);
+  }
+
+  public void blockTask (LinkedList tasks)
+  {
+    this.tasks = tasks;
+    Manager.eventLoop.add(new Event()
+    {
+      public void execute ()
+      {
+        Iterator i = RunState.this.tasks.iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            t.requestAddInstructionObserver(RunState.this);
+            requestAddObservers(t);
+          }
+      }
+    });
+  }
+
+  public int getNumTasks ()
+  {
+    return tasks.size();
   }
 
 }

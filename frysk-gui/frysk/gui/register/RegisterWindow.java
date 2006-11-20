@@ -41,10 +41,13 @@
 package frysk.gui.register;
 
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.prefs.Preferences;
 import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
@@ -67,8 +70,10 @@ import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.common.UBigInteger;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
+import frysk.proc.Proc;
 import frysk.proc.Register;
 import frysk.proc.RegisterView;
 import frysk.proc.Task;
@@ -121,6 +126,12 @@ public class RegisterWindow
   private RegisterFormatDialog formatDialog;
 
   private TreeView registerView;
+  
+  private boolean RW_active = false;
+  
+  private Observable observable;
+  
+  private LockObserver lock;
 
   /**
    * The RegisterWindow allows the display and editing of the names and values of
@@ -140,6 +151,34 @@ public class RegisterWindow
     this.formatDialog = new RegisterFormatDialog(this.glade);
 
     this.setIcon(IconManager.windowIcon);
+    this.lock = new LockObserver();
+  }
+  
+  /**
+   * Initializes the Glade file, the RegisterWindow itself, adds listeners and
+   * Assigns the Proc.
+   * 
+   * @param proc  The Proc to be examined by rw.
+   */
+  public void finishRegWin (Proc proc)
+  {
+    Preferences prefs = PreferenceManager.getPrefs();
+    load(prefs.node(prefs.absolutePath() + "/register"));
+
+    if (!hasTaskSet())
+      {
+        setIsRunning(false);
+        setTask(proc.getMainTask());
+      }
+    else
+      this.showAll();
+    
+    this.RW_active = true;
+  }
+  
+  public void setObservable (Observable o)
+  {
+    this.observable = o;
   }
 
   /**
@@ -273,7 +312,10 @@ public class RegisterWindow
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          RegisterWindow.this.hideAll();
+          {
+            RegisterWindow.this.observable.deleteObserver(lock);
+            RegisterWindow.this.hideAll();
+          }
       }
     });
 
@@ -512,6 +554,16 @@ public class RegisterWindow
     value = UBigInteger.signExtend(value, bitLength);
     writeBinaryValue(value, path);
   }
+  
+  private void desensitize ()
+  {
+    this.registerView.setSensitive(false);
+  }
+  
+  private void resensitize ()
+  {
+    this.registerView.setSensitive(true);
+  }
 
   class DecCellListener
       implements CellRendererTextListener
@@ -647,6 +699,52 @@ public class RegisterWindow
   public Task getMyTask()
   {
     return this.myTask;
+  }
+  
+  public LockObserver getLockObserver()
+  {
+    return this.lock;
+  }
+  
+  class LockObserver implements Observer
+  {
+    
+    public void update (Observable o, Object arg)
+    {
+//    only if we're actually done
+      if (arg != null)
+        {
+          System.out.println("MW.LO.update not null");
+          if (RW_active)
+            {
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  refreshList();
+                  resensitize();
+                }
+              });
+            }
+          else
+            {
+              Task t = (Task) arg;
+              RegisterWindow.this.observable = o;
+              finishRegWin(t.getProc());
+            }
+        }
+      else
+        {
+          System.out.println("MW.LO.update null");
+          CustomEvents.addEvent(new Runnable()
+          {
+            public void run ()
+            {
+              desensitize();
+            }
+          });
+        }
+    }
   }
   
 }

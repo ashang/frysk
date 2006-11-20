@@ -43,8 +43,11 @@ package frysk.gui.disassembler;
 import java.util.prefs.Preferences;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
@@ -66,7 +69,9 @@ import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
@@ -134,6 +139,12 @@ public class DisassemblyWindow
   
   private long pc;
   
+  private boolean DW_active = false;
+  
+  private Observable observable;
+  
+  private LockObserver lock;
+  
   /**
    * The DisassmblyWindow, given a Task, will disassemble the instructions
    * and parameters for that task in memory and display them, as well as their
@@ -152,8 +163,39 @@ public class DisassemblyWindow
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.model = new ListStore(cols);
+    
+    this.lock = new LockObserver();
+    this.DW_active = true;
 
     this.setIcon(IconManager.windowIcon);
+  }
+  
+  /**
+   * Initializes the Glade file, the DisassemblyWindow itself, adds listeners and
+   * Assigns the Proc.
+   * 
+   * @param dw  The DisassemblyWindow to be initialized.
+   * @param proc    The Proc to be examined by dw.
+   */
+  public void finishDisWin (Proc proc)
+  {
+    Preferences prefs = PreferenceManager.getPrefs();
+    load(prefs.node(prefs.absolutePath() + "/disassembler"));
+
+    if (!hasTaskSet())
+      {
+        setIsRunning(false);
+        setTask(proc.getMainTask());
+      }
+    else
+      this.showAll();
+    
+    return;
+  }
+  
+  public void setObservable (Observable o)
+  {
+    this.observable = o;
   }
 
   /**
@@ -249,7 +291,10 @@ public class DisassemblyWindow
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          DisassemblyWindow.this.hideAll();
+          {
+            DisassemblyWindow.this.observable.deleteObserver(lock);
+            DisassemblyWindow.this.hideAll();
+          }
       }
     });
 
@@ -458,6 +503,20 @@ public class DisassemblyWindow
           model.setValue(iter, (DataColumnString) cols[1], "");
       }
   }
+  
+  private void desensitize ()
+  {
+    this.disassemblerView.setSensitive(false);
+    this.fromSpin.setSensitive(false);
+    this.toSpin.setSensitive(false);
+  }
+  
+  private void resensitize ()
+  {
+    this.disassemblerView.setSensitive(true);
+    this.fromSpin.setSensitive(true);
+    this.toSpin.setSensitive(true);
+  }
 
   /*****************************************************************************
    * SpinBox callback methods
@@ -603,5 +662,52 @@ public class DisassemblyWindow
   {
     return this.myTask;
   }
+  
+  public LockObserver getLockObserver()
+  {
+    return this.lock;
+  }
+  
+  class LockObserver implements Observer
+  {
+    
+    public void update (Observable o, Object arg)
+    {
+//    only if we're actually done
+      if (arg != null)
+        {
+          System.out.println("MW.LO.update not null");
+          if (DW_active)
+            {
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  refreshList();
+                  resensitize();
+                }
+              });
+            }
+          else
+            {
+              Task t = (Task) arg;
+              DisassemblyWindow.this.observable = o;
+              finishDisWin(t.getProc());
+            }
+        }
+      else
+        {
+          System.out.println("MW.LO.update null");
+          CustomEvents.addEvent(new Runnable()
+          {
+            public void run ()
+            {
+              desensitize();
+            }
+          });
+        }
+    }
+  }
+
 
 }

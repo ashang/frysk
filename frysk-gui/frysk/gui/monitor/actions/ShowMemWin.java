@@ -78,7 +78,6 @@ public class ShowMemWin
         return;
       }
 
-    MemoryWindowFactory.setMonitor();
     MemoryWindowFactory.createMemoryWindow(task.getProc());
   }
 

@@ -43,9 +43,12 @@ package frysk.gui.memory;
 import java.util.prefs.Preferences;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
@@ -70,10 +73,12 @@ import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 
@@ -173,6 +178,12 @@ public class MemoryWindow
   private double lastKnownTo;
 
   protected static int currentFormat = 0;
+  
+  private boolean MW_active = false;
+  
+  private Observable observable;
+  
+  private LockObserver lock;
 
   /**
    * The MemoryWindow displays the information stored at various locations in
@@ -202,6 +213,34 @@ public class MemoryWindow
     this.bitsList = new ObservableLinkedList();
 
     this.setIcon(IconManager.windowIcon);
+    this.lock = new LockObserver();
+  }
+  
+  /**
+   * Initializes the Glade file, the MemoryWindow itself, adds listeners and
+   * Assigns the Proc.
+   * 
+   * @param proc  The Proc to be examined by mw.
+   */
+  public void finishMemWin (Proc proc)
+  {
+    Preferences prefs = PreferenceManager.getPrefs();
+    load(prefs.node(prefs.absolutePath() + "/memory"));
+
+    if (!hasTaskSet())
+      {
+        setIsRunning(false);
+        setTask(proc.getMainTask());
+      }
+    else
+      showAll();
+    
+    MW_active = true;
+  }
+  
+  public void setObservable (Observable o)
+  {
+    this.observable = o;
   }
 
   /**
@@ -328,7 +367,10 @@ public class MemoryWindow
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          MemoryWindow.this.hideAll();
+          {
+            MemoryWindow.this.observable.deleteObserver(lock);
+            MemoryWindow.this.hideAll();
+          }
       }
     });
 
@@ -613,6 +655,22 @@ public class MemoryWindow
       }
 
   }
+  
+  private void desensitize ()
+  {
+    this.memoryView.setSensitive(false);
+    this.bitsCombo.setSensitive(false);
+    this.fromSpin.setSensitive(false);
+    this.toSpin.setSensitive(false);
+  }
+  
+  private void resensitize ()
+  {
+    this.memoryView.setSensitive(true);
+    this.bitsCombo.setSensitive(true);
+    this.fromSpin.setSensitive(true);
+    this.toSpin.setSensitive(true);
+  }
 
   /*****************************************************************************
    * Endianness methods
@@ -784,6 +842,52 @@ public class MemoryWindow
   public Task getMyTask()
   {
     return this.myTask;
+  }
+  
+  public LockObserver getLockObserver()
+  {
+    return this.lock;
+  }
+  
+  class LockObserver implements Observer
+  {
+    
+    public void update (Observable o, Object arg)
+    {
+//    only if we're actually done
+      if (arg != null)
+        {
+          System.out.println("MW.LO.update not null");
+          if (MW_active)
+            {
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  refreshList();
+                  resensitize();
+                }
+              });
+            }
+          else
+            {
+              Task t = (Task) arg;
+              MemoryWindow.this.observable = o;
+              finishMemWin(t.getProc());
+            }
+        }
+      else
+        {
+          System.out.println("MW.LO.update null");
+          CustomEvents.addEvent(new Runnable()
+          {
+            public void run ()
+            {
+              desensitize();
+            }
+          });
+        }
+    }
   }
 
 }

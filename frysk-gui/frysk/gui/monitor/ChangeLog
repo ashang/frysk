@@ -1,3 +1,8 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowMemWin.java (execute): Remove call to setMonitor().
+	* actions/ShowRegWin.java (execute): Ditto.
+
 2006-10-13  Nurdin Premji <npremji@redhat.com>
 
 	* StatusWidget.java: Removed "additional information" strings.

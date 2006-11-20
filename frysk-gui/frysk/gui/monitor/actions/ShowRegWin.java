@@ -65,7 +65,6 @@ public class ShowRegWin
 
   public void execute (Task task)
   {
-    RegisterWindowFactory.setMonitor();
     RegisterWindowFactory.createRegisterWindow(task.getProc());
   }
 

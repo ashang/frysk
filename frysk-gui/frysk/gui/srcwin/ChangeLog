@@ -1,3 +1,22 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (createSourceWindow): Updated to make
+	better use of RunState and figure out when a new Window is needed.
+	(SourceWinListener.lifeCycleQuery): Figure out when to remove HashTable
+	reference to this Proc.
+	(SourceWinListener): Remove unnecessary field.
+	(unblockProc): Remove HashTable reference if needed.
+	(stateTable): Added. Global static table for referencing RunStates to
+	processes for all windows.
+	(map): Added. HashMap for mapping Procs to SourceWindows.
+	
+	* SourceWindow.java (LockObserver.update): Callback for Observer.
+	(getLockObserver): Added. Pokes the SourceWindow when threads have been
+	reblocked for whatever reason, prompting some sort of information 
+	re-generation depending on the window state.
+	(SourceWinBlocker): Removed. Obsoleted by RunState + LockObserver.
+	(lock): Added. The LockObserver for this window.
+
 2006-11-17  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (stepInstruction): Remove TextTags from

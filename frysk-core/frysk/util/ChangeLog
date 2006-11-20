@@ -1,3 +1,7 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* FCrash.java: Removed reference to frysk.proc.ProcAttachedObserver.
+
 2006-11-16  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (testClone): Enabled, changed to use regex arrays for easy expansion of regex.

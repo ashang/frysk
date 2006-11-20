@@ -43,7 +43,6 @@ package frysk.gui.srcwin;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -52,11 +51,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import frysk.dom.DOMFrysk;
-import frysk.gui.common.ProcBlockCounter;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
+import frysk.rt.RunState;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -73,9 +71,9 @@ public class SourceWindowFactory
 
   private static HashMap map;
 
-  private static Hashtable blockerTable;
+  //private static Hashtable blockerTable;
 
-  private static Hashtable procTable;
+  public static Hashtable stateTable;
 
   public static SourceWindow srcWin = null;
   
@@ -94,8 +92,7 @@ public class SourceWindowFactory
   static
     {
       map = new HashMap();
-      blockerTable = new Hashtable();
-      procTable = new Hashtable();
+      stateTable = new Hashtable();
     }
 
   /**
@@ -109,11 +106,13 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Proc proc)
   {
-    // taskCount = proc.getTasks().size();
-    SourceWindow sw = (SourceWindow) procTable.get(proc);
+    SourceWindow sw = (SourceWindow) map.get(proc);
 
     if (sw != null)
       {
+        sw = (SourceWindow) map.get(proc);
+        RunState rs = sw.getStateModel();
+        rs.addObserver(sw.getLockObserver());
         sw.showAll();
         return;
       }
@@ -152,22 +151,14 @@ public class SourceWindowFactory
         return;
       }
 
-    ProcBlockObserver pbo = null;
-    sw = new SourceWindow(glade, gladePaths[i], proc, pbo);
+    sw = new SourceWindow(glade, gladePaths[i], proc);
 
-    procTable.put(proc, sw);
+    stateTable.put(proc, sw.getStateModel());
     sw.addListener(new SourceWinListener());
     sw.grabFocus();
 
     // Store the reference to the source window
     map.put(proc, sw);
-
-    if (procTable.get(proc) == null
-        || ProcBlockCounter.getBlockCount(proc) == 0)
-      pbo = sw.new SourceWinBlocker(proc);
-
-    ProcBlockCounter.incBlockCount(proc);
-    blockerTable.put(proc, pbo);
   }
   
   
@@ -198,25 +189,15 @@ public class SourceWindowFactory
    */
   private static void unblockProc (Proc proc)
   {
-    if (blockerTable.containsKey(proc)
-        && ProcBlockCounter.getBlockCount(proc) == 1)
+    RunState rs = (RunState) stateTable.get(proc);
+    if (rs.getNumObservers() == 0)
       {
-        SourceWindow.SourceWinBlocker swb = (SourceWindow.SourceWinBlocker) blockerTable.get(proc);
-        Iterator i = proc.getTasks().iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            swb.requestDeleteInstructionObserver(t);
-          }
-
-        procTable.remove(proc);
-        blockerTable.remove(proc);
+        stateTable.remove(proc);
       }
-    ProcBlockCounter.decBlockCount(proc);
   }
 
   /*
-   * The responsability of this class that whever a SourceWindow is closed the
+   * The responsibility of this class that whenever a SourceWindow is closed the
    * corresponding task is removed from the HashMap. This tells
    * createSourceWindow to create a new window the next time that task is passed
    * to it.
@@ -241,10 +222,16 @@ public class SourceWindowFactory
           if (map.containsValue(arg0.getSource()))
             {
               SourceWindow s = (SourceWindow) arg0.getSource();
-              Proc proc = s.getSwProc();
-              map.remove(proc);
+              
+              RunState rs = s.getStateModel();
+              
+              if (rs.removeObserver(s.getLockObserver()) == 1)
+                {
+                  Proc proc = s.getSwProc();
+                  map.remove(proc);
 
-              unblockProc(proc);
+                  unblockProc(proc);
+                }
 
               WindowManager.theManager.sessionManager.show();
               s.hideAll();
@@ -253,8 +240,6 @@ public class SourceWindowFactory
 
       return true;
     }
-
   }
-
   
 }

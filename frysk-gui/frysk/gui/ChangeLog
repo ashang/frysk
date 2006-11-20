@@ -1,3 +1,81 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java (desensitize): Added. Sets TreeView and
+	other widgets to insensitive.
+	(LockObserver): Added. Determines when this window can become 
+	in/sensitive and re-draw.
+	(LockObserver.update): Callback for Observer.
+	(getLockObserver): Added.
+	(finishMemWin): Moved over from MemoryWindowFactory. Sets up 
+	preferences and sets the Proc for this MemoryWindow.
+	(.buttonEvent): Removes the LockObserver for this window from the 
+	RunState's list of Observers.
+	(MemoryWindow): Initialize a new LockObserver.
+	(setObservable): Sets this class' observable - representation of 
+	RunState.
+	(resensitize): Added. Sets TreeView and other widgets to sensitive.
+	* memory/MemoryWindowFactory.java (setPaths): Removed deprecated
+	Hashtables and their initializations.
+	(setMemWin): Updated to use new HashMap.
+	(createMemoryWindow): Moved glade initializations in here from 
+	finishDisWin(). Updated to use RunState objects and centralized list
+	of running Windows and Procs from SourceWindowFactory.
+	(MemWinListener.lifeCycleQuery): Updated to use RunState and handle
+	Proc unmapping cases properly.
+	(unblockProc): Use RunState to determine when to remove map reference
+	to the Proc.
+	(gladePaths): Updated to use new HashMap.
+	(MemWinBlocker): Removed.
+	* disassembler/DisassemblyWindow.java (finishDisWin): Moved over from
+	DisassemblyWindowFactory. Sets up preferences and sets the Proc for 
+	this DisassemblyWindow.
+	(desensitize): Added. Sets TreeView and other widgets to insensitive.
+	(LockObserver.update): Callback for Observer.
+	(getLockObserver): Added.
+	(LockObserver): Added. Determines when this window can become 
+	in/sensitive and re-draw.
+	(.buttonEvent): Removes the LockObserver for this window from the 
+	RunState's list of Observers.
+	(setObservable): Sets this class' observable - representation of 
+	RunState.
+	(DisassemblyWindow): Initialize a new LockObserver.
+	(resensitize): Added. Sets TreeView and other widgets to sensitive.
+	* disassembler/DisassemblyWindowFactory.java (setPaths): Updated to use
+	new HashMap.
+	(createDisassemblyWindow): Moved glade initializations in here from 
+	finishDisWin(). Updated to use RunState objects and centralized list
+	of running Windows and Procs from SourceWindowFactory.
+	(setDisWin): Updated to use new HashMap.
+	(DisWinListener.lifeCycleQuery): Updated to use RunState and handle
+	Proc unmapping cases properly.
+	(unblockProc): Use RunState to determine when to remove map reference
+	to the Proc.
+	(DisWinBlocker): Removed.
+	* register/RegisterWindowFactory.java (setPaths): Updated to use a
+	new HashMap.
+	(setRegWin): Updated to use new HashMap. 
+	(RegWinListener.lifeCycleQuery): Updated to use the RunState of the
+	RegisterWindow to determine when to remove map references.
+	(unblockProc): Use RunState to determine when to remove map reference
+	to the Proc.
+	(createRegisterWindow): Moved glade initializations in here from 
+	finishDisWin(). Updated to use RunState objects and centralized list
+	of running Windows and Procs from SourceWindowFactory.
+	(RegWinBlocker): Removed.
+	* register/RegisterWindow.java (desensitize): Added. Sets TreeView and
+	other widgets to insensitive.
+	(LockObserver.update): Callback for Observer.
+	(RegisterWindow): Initialize new LockObserver.
+	(getLockObserver): Added.
+	(finishRegWin): Moved over from RegisterWindowFactory. Sets up 
+	preferences and sets the Proc for this RegisterWindow.
+	(LockObserver): Added. Determines when this window can become 
+	in/sensitive and re-draw.
+	(.buttonEvent): Removes the LockObserver for this window from the 
+	RunState's list of Observers.
+	(setObservable): Added. Sets the Observable for this window.
+	(resensitize): Added. Sets TreeView and other widgets to sensitive.
+
 2006-11-16  Mike Cvet  <mcvet@redhat.com>
 
 	* test/TestIconManager.java (testIconLookups): Updated to look 

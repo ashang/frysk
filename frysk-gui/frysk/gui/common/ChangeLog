@@ -1,3 +1,7 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcBlockCounter.java: Removed. Obsoleted by RunState.
+
 2006-11-15  Mike Cvet  <mcvet@redhat.com>
 
 	* IconManager.java (TOP_PNG): Changed from BOTTOM_PNG

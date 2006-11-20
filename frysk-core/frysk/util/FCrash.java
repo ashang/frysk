@@ -52,7 +52,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcAttachedObserver;
+//import frysk.proc.ProcAttachedObserver;
 import frysk.proc.ProcId;
 //import frysk.proc.ProcObserver;
 import frysk.proc.Task;
@@ -67,7 +67,7 @@ public class FCrash
   
   //private int numProcesses = 0;
 
-  public ProcAttachedObserver pao;
+  //public ProcAttachedObserver pao;
   
   PrintWriter writer;
   

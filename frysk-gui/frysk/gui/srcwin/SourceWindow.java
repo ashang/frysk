@@ -39,15 +39,13 @@
 
 
 package frysk.gui.srcwin;
-
+import java.util.Observer;
+import java.util.Observable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-//import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
@@ -103,7 +101,6 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
-import frysk.gui.Gui;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
@@ -122,12 +119,11 @@ import frysk.value.Variable;
 import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
-import frysk.rt.StateModel;
+import frysk.rt.RunState;
 import frysk.vtecli.ConsoleWindow;
 
 /**
@@ -250,14 +246,8 @@ public class SourceWindow
   private VariableWatchView watchView;
 
   private ConsoleWindow conWin;
-
-  protected ProcBlockObserver pbo;
   
   protected boolean SW_active = false;
-  
-  private static int taskCount = 0;
-  
-  //private static int taskStepCount = 0;
   
   private int numSteppingThreads = 0;
   
@@ -279,17 +269,19 @@ public class SourceWindow
   protected static final int STEP_OVER = 4;
   protected static final int STEP_OUT = 5;
   
-  private StateModel stateModel;
+  private RunState runState;
   
   private Object monitor;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
   
-  private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+  //private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
+  
+  private LockObserver lock;
 
   /**
    * Creates a new source window with the given properties. This constructor
@@ -301,7 +293,7 @@ public class SourceWindow
    * @param dom The DOM that describes the executable being debugged
    * @param stack The stack frame that represents the current state of execution
    */
-  public SourceWindow (LibGlade glade, String gladePath, Proc proc, ProcBlockObserver pbo)
+  public SourceWindow (LibGlade glade, String gladePath, Proc proc)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -310,23 +302,25 @@ public class SourceWindow
     this.glade = glade;
     this.gladePath = gladePath;
     this.swProc = proc;
-    this.pbo = pbo;
+    this.runState = new RunState();
+    this.lock = new LockObserver();
+    this.runState.addObserver(lock);
+    this.runState.setProc(proc);
   }
   
+  
   /**
-   * Initializes the Glade file, the SourceWindow itself, adds listeners and
-   * Assigns the Proc. Sets up the DOM information and the Stack information.
+   * Initializes the rest of the members of the SourceWindow not handled by 
+   * the constructor. Most of these depend on the Tasks of the process
+   * being blocked.
    * 
-   * @param mw The MemoryWindow to be initialized.
    * @param proc The Proc to be examined by mw.
    */
   private void finishSourceWin (Proc proc)
   {
-    
     StackFrame[] frames = generateProcStackTrace(null, null);
 
     this.listener = new SourceWindowListener(this);
-    //this.runningThreads = new HashSet();
     this.watchView = new VariableWatchView(this);
     this.tips = new ToolTips();
     
@@ -360,7 +354,6 @@ public class SourceWindow
     
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
-    
   }
 
   /**
@@ -553,9 +546,7 @@ public class SourceWindow
     this.SW_state = INSTRUCTION_STEP;
     this.numSteppingThreads = tasks.size();
     
-    this.stateModel.stepInstruction(tasks);
-    //this.stateModel.setUpStep(this.swProc.getTasks());
-    
+    this.runState.stepInstruction(tasks);
     removeTags();
   }
   
@@ -609,6 +600,16 @@ public class SourceWindow
   public int getNumSteppingThreads ()
   {
     return this.numSteppingThreads;
+  }
+  
+  public RunState getStateModel ()
+  {
+    return this.runState;
+  }
+  
+  public LockObserver getLockObserver()
+  {
+    return this.lock;
   }
 
   /*****************************************************************************
@@ -777,7 +778,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(false);
+    this.next.setSensitive(true);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -1530,7 +1531,7 @@ public class SourceWindow
 
     this.SW_state = RUNNING;
 
-    this.stateModel.run(this.swProc.getTasks());
+    this.runState.run(this.swProc.getTasks());
     
     removeTags();
   }
@@ -1552,11 +1553,11 @@ public class SourceWindow
     
     if (this.threadDialog == null)
       {
-        this.stateModel.stop(null);
+        this.runState.stop(null);
       }
     else
       {
-        this.stateModel.stop(this.threadDialog.getBlockTasks());
+        this.runState.stop(this.threadDialog.getBlockTasks());
       }
   }
   
@@ -1596,7 +1597,7 @@ public class SourceWindow
     this.SW_state = STEP_IN;
     this.numSteppingThreads = swProc.getTasks().size();
     
-    this.stateModel.setUpStep(this.swProc.getTasks());
+    this.runState.setUpStep(this.swProc.getTasks());
     
     removeTags();
   }
@@ -1613,9 +1614,13 @@ public class SourceWindow
     
     desensitize();
     
-    this.SW_state = STEP_OVER;
+    this.SW_state = STEP_OUT;
     
     this.numSteppingThreads = swProc.getTasks().size();
+    
+    Breakpoint b = new Breakpoint(this.currentFrame.getOuter().getAddress());
+    
+    this.runState.setUpStepOut(this.swProc.getTasks(), b);
     
     //task.requestAddCodeObserver(code, breakpoint1);
   }
@@ -1823,18 +1828,6 @@ public class SourceWindow
 
   private void toggleRegisterWindow ()
   {
-    
-    if (MachineType.getMachineType() == MachineType.X8664
-        || MachineType.getMachineType() == MachineType.PPC64)
-      {
-        WarnDialog dialog = new WarnDialog(
-                                           " The Memory Window is yet not supported\n"
-                                               + " on 64-bit architectures! ");
-        dialog.showAll();
-        dialog.run();
-        return;
-      }
-    
     RegisterWindow regWin = RegisterWindowFactory.regWin;
     if (regWin == null)
       {
@@ -1907,7 +1900,7 @@ public class SourceWindow
   
   private synchronized void executeTasks (LinkedList tasks)
   {
-    this.SW_state = this.stateModel.executeTasks(tasks);
+    this.SW_state = this.runState.executeTasks(tasks);
   }
   
   /**
@@ -1919,38 +1912,11 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
     
-    this.stateModel.stepCompleted();
-    
-    //this.view.scrollToLine(this.currentFrame.getLineNumber());
+    this.runState.stepCompleted();
     
     resensitize();
     
     this.SW_state = STOPPED;
-  }
-  
-  private synchronized void handleTask (Task task)
-  {
-
-    if (SW_active == false)
-      {
-        --taskCount;
-        if (taskCount == 0)
-          {
-            SW_active = true;
-            finishSourceWin(task.getProc());
-          }
-      }
-    else
-      {
-        // System.out.println("SW false " + taskCount);
-        --taskCount;
-        if (taskCount == 0)
-          {
-            StackFrame[] frames = generateProcStackTrace(null, null);
-            populateStackBrowser(frames);
-            procReblocked();
-          }
-      }
   }
 
   private StackFrame[] generateProcStackTrace (StackFrame[] frames, Task[] tasks)
@@ -2009,7 +1975,7 @@ public class SourceWindow
                   }
                 catch (IOException e)
                   {
-                    this.stateModel.run(this.swProc.getTasks());
+                    this.runState.run(this.swProc.getTasks());
                     WarnDialog dialog = new WarnDialog("File not found",
                                                        "Error loading source code: "
                                                            + e.getMessage());
@@ -2203,52 +2169,43 @@ public class SourceWindow
 
   }
   
-  protected class SourceWinBlocker
-      extends ProcBlockObserver
+  class LockObserver
+      implements Observer
   {
-    Task myTask;
 
-    public SourceWinBlocker (Proc theProc)
-    {
-      super(theProc);
-      pbo = this;
-      stateModel = new StateModel(this);
-    }
-
-    public Action updateAttached (Task task)
-    {
-      myTask = task;
-      return Action.BLOCK;
-    }
+    private Task lockTask;
     
-    public void existingTask (Task task)
+    public void update (Observable o, Object arg)
     {
-      //System.out.println("existing task");
-       myTask = task;
-
-       /* The source window has been properly initialized and there is a step
-        * request in progress. */
+      if (arg == null)
+        return;
+      
+      Task task = (Task) arg;
+      this.lockTask = task;
+      
+      /** Stepping **/
+      
       if (SW_active && (SW_state >= INSTRUCTION_STEP 
           && SW_state <= STEP_OUT))
         {
           
           //System.out.println("In existingTask with taskstepcount " + taskStepCount);
           
-          if (stateModel.getTaskStepCount() == 0)
+          if (runState.getTaskStepCount() == 0)
             {
               //System.out.println("resetting taskstepcount");    
-              stateModel.setTaskStepCount(numSteppingThreads);
+              runState.setTaskStepCount(numSteppingThreads);
             }
           
           switch (SW_state)
           {
-            case INSTRUCTION_STEP:  stateModel.decTaskStepCount(); break;
-            case STEP_IN: stateModel.stepIn(task); break;
-            case STEP_OVER: stateModel.stepOver(task); break;
-            case STEP_OUT: stateModel.stepOut(task); break;
+            case INSTRUCTION_STEP:  runState.decTaskStepCount(); break;
+            case STEP_IN: runState.stepIn(task); break;
+            case STEP_OVER: runState.stepOver(task); break;
+            case STEP_OUT: runState.stepOut(task); break;
           }
           //System.out.println("taskstepcount " + taskStepCount);
-          if (stateModel.getTaskStepCount() == 0)
+          if (runState.getTaskStepCount() == 0)
             {
               CustomEvents.addEvent(new Runnable()
               {
@@ -2265,30 +2222,44 @@ public class SourceWindow
           return;
         }
       
-      if (taskCount == 0)
-        taskCount = swProc.getTasks().size();
+      /** Running **/
+      
+      if (runState.getNumRunningTasks() == 0){
+        runState.setNumRunningTasks(swProc.getTasks().size());
+        //System.out.println("Setting taskCount to " + taskCount);
+      }
 
       CustomEvents.addEvent(new Runnable()
       {
         public void run ()
         {
-          handleTask(myTask);
+          if (SW_active == false)
+            {
+              runState.decNumRunningTasks();
+              if (runState.getNumRunningTasks() == 0)
+                {
+                  //System.out.println("SW false, finishing");
+                  SW_active = true;
+                  finishSourceWin(lockTask.getProc());
+                }
+            }
+          else
+            {
+               //System.out.println("SW true " + taskCount);
+              runState.decNumRunningTasks();
+              if (runState.getNumRunningTasks() == 0)
+                {
+                  //System.out.println("Taskcount zero - rebuilding.");
+                  StackFrame[] frames = generateProcStackTrace(null, null);
+                  populateStackBrowser(frames);
+                  procReblocked();
+                }
+            }
         }
 
       });
     }
 
-    public void addFailed (Object observable, Throwable w)
-    {
-      errorLog.log(Level.WARNING, "addFailed (Object observable, Throwable w)",
-                   w);
-      throw new RuntimeException(w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-    }
   }
   
   protected class Breakpoint implements TaskObserver.Code

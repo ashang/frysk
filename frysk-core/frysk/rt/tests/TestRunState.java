@@ -54,14 +54,14 @@ import frysk.proc.TaskException;
 import frysk.proc.TestLib;
 //import frysk.rt.StackFactory;
 //import frysk.rt.StackFrame;
-import frysk.rt.StateModel;
+import frysk.rt.RunState;
 import frysk.sys.Sig;
 import frysk.junit.Paths;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 
-public class TestStateModel extends TestLib
+public class TestRunState extends TestLib
 {
   
   private Task myTask;
@@ -69,7 +69,7 @@ public class TestStateModel extends TestLib
   
   private int testState = 0;
   
-  private StateModel stateModel;
+  private RunState runState;
   
   //private StackFrame frame;
   
@@ -127,7 +127,7 @@ public class TestStateModel extends TestLib
     
     stepper = new StepObserver(myProc);
     
-    stateModel = new StateModel(stepper);
+    runState = new RunState(stepper);
 
     //setUpTest();
     assertRunUntilStop("Attempting to add observer");
@@ -176,7 +176,7 @@ public class TestStateModel extends TestLib
     
     stepper = new StepObserver(myProc);
     
-    stateModel = new StateModel(stepper);
+    runState = new RunState(stepper);
 
     //setUpTest();
     assertRunUntilStop("Attempting to add observer");
@@ -217,7 +217,7 @@ public class TestStateModel extends TestLib
         //t.requestUnblock(this.stepper);
       }
     count = 0;
-    stateModel.setUpStep(myProc.getTasks());
+    runState.setUpStep(myProc.getTasks());
   }
   
   public void stepAssertions ()
@@ -417,29 +417,29 @@ public class TestStateModel extends TestLib
       // //System.out.println("existing task");
       myTask = task;
 
-      if (stateModel.getTaskStepCount() == 0)
+      if (runState.getTaskStepCount() == 0)
         {
           // //System.out.println("resetting taskstepcount");
-          stateModel.setTaskStepCount(myProc.getTasks().size());
+          runState.setTaskStepCount(myProc.getTasks().size());
         }
 
       switch (testState)
         {
         case INSTRUCTION_STEP:
-          stateModel.decTaskStepCount();
+          runState.decTaskStepCount();
           break;
         case STEP_IN:
-          stateModel.stepIn(task);
+          runState.stepIn(task);
           break;
         case STEP_OVER:
-          stateModel.stepOver(task);
+          runState.stepOver(task);
           break;
         case STEP_OUT:
-          stateModel.stepOut(task);
+          runState.stepOut(task);
           break;
         }
       // //System.out.println("taskstepcount " + taskStepCount);
-      if (stateModel.getTaskStepCount() == 0)
+      if (runState.getTaskStepCount() == 0)
         {
 //          try
 //            {

@@ -1,3 +1,38 @@
+2006-11-20  Mike Cvet  <mcvet@redhat.com>
+
+	* StateModel.java: Refactored to RunState.java.
+	* RunState.java: Refactored from StateModel.java.
+	(pbo): Removed. ProcBlockObserver is no longer used.
+	(stateProc): Added. The Proc this RunState is responsible for.
+	(tasks): Added. LinkedList of Tasks belonging to stateProc.
+	(numRunningTasks): Number of Tasks belonging to stateProc in the
+	unblocked state.
+	(RunState): Removed reference to ProcBlockObserver. This class 
+	now extends Observable and implements TaskObserver.Instruction 
+	directly. Fixes #3538.
+	(getNumRunningTasks): Added.
+	(setNumRunningTasks): Added.
+	(getNumObservers): Added. Returns the number of Observers in this
+	Observable's Observer list.
+	(removeObserver): Added. Calls deleteObserver() with the additional 
+	stipulation of releasing all Tasks if there are no more Observers
+	watching them.
+	(setProc): Added. Sets stateProc and tasks, and blocks all tasks from
+	the incoming Proc.
+	(updateExecuted): Added. Callback for TaskObserver.Instruction. Notify
+	all watching observers that a task has been re-blocked.
+	(addedTo): Added. Callback for TaskObserver.Instruction.
+	(deletedFrom): Ditto.
+	(addFailed): Ditto.
+	(requestAdd): Schedules this Observer to be added to all Tasks.
+	(requestAddObservers): Adds this InstructionObserver to the incoming Task.
+	(blockTask): Schedules this InstructionObserver to be added to all
+	incoming Tasks.
+	(getNumTasks): Added.
+	* tests/TestStateModel: Refactored to TestRunState.
+	* tests/TestRunState: Refactored from TestStateModel. Updated to use 
+	RunState.
+	
 2006-11-16  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStateModel.java (testInstructionStepping): Updated for
