@@ -81,9 +81,21 @@ public class TestSyscallSignal
     out = new DataOutputStream(process.out);
 
     // Make sure the core knows about it.
-    Manager.host.requestRefreshXXX(true);
-    Manager.eventLoop.runPending();
-    proc = Manager.host.getProc(new ProcId(pid));
+    Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+
+      public void procFound (ProcId procId)
+      {
+        proc = Manager.host.getProc(procId);
+        Manager.eventLoop.requestStop();
+      }
+
+      public void procNotFound (ProcId procId, Exception e)
+      {
+        // TODO Auto-generated method stub
+        
+      }});
+    Manager.eventLoop.run();
+
 
     // Start an EventLoop so we don't have to poll for events all the time.
     eventloop = new EventLoopRunner();

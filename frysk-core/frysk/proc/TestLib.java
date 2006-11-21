@@ -375,9 +375,20 @@ public class TestLib
 	public Proc findProcUsingRefresh (boolean refreshTasks)
 	{
 	    // Try polling /proc.
-	    Manager.host.requestRefreshXXX (refreshTasks);
-	    Manager.eventLoop.runPending ();
-	    proc = Manager.host.getProc (new ProcId (pid));
+	    Manager.host.requestFindProc(refreshTasks, new ProcId(pid), new Host.FindProc() {
+
+        public void procFound (ProcId procId)
+        {
+          proc = Manager.host.getProc(procId);
+          Manager.eventLoop.requestStop();
+        }
+
+        public void procNotFound (ProcId procId, Exception e)
+        {
+          // TODO Auto-generated method stub
+          
+        }});
+	    Manager.eventLoop.run();
 	    return proc;
 	}
 	/**
