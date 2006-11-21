@@ -43,6 +43,7 @@ package frysk.rt.tests;
 import inua.eio.ByteBuffer;
 import inua.eio.ULong;
 import frysk.proc.Action;
+import frysk.proc.Host;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -210,11 +211,17 @@ public class TestStackBacktrace
     
     myTask = process.findTaskUsingRefresh(true);
     
-    Manager.host.requestRefreshXXX(true);
-    Manager.eventLoop.runPending();
-    
-    Proc proc = Manager.host.getProc(new ProcId(process.getPid()));
-    new ProcTasksObserver(proc, new StackTasksObserver());
+    Manager.host.requestFindProc(true, new ProcId(process.getPid()), new Host.FindProc() {
+
+      public void procFound (ProcId procId)
+      {
+        Proc proc = Manager.host.getProc(procId);
+        new ProcTasksObserver(proc, new StackTasksObserver());
+      }
+
+      public void procNotFound (ProcId procId, Exception e)
+      {
+      }});   
     
     assertRunUntilStop("testThreadedBackTrace");    
   

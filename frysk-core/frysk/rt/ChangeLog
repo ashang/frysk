@@ -1,3 +1,7 @@
+2006-11-21  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/TestStackBacktrace.java: Changed to use new FindProc interface.	
+
 2006-11-20  Mike Cvet  <mcvet@redhat.com>
 
 	* StateModel.java: Refactored to RunState.java.
