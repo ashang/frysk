@@ -1,3 +1,9 @@
+2006-11-21  Tim Moore  <timoore@redhat.com>
+
+	* IsaIA32.java (XMMRegister): New class.
+	(IsaIA32): Add XMM registers.
+	* RegisterView.java (getFloatField, getDoubleFloatField): New methods.
+
 2006-11-20  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcAttachedObserver.java: Removed.

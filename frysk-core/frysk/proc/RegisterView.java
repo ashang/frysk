@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import java.lang.Float;
+import java.lang.Double;
 import java.math.BigInteger;
 
 /**
@@ -79,6 +81,18 @@ public class RegisterView extends BitfieldAccessor
     return type;
   }
 
+  public float getFloatField(BigInteger value, int fieldNum)
+  {
+    return Float.intBitsToFloat(value.shiftRight(fieldNum * fieldLength)
+				.and(fieldMask).intValue());
+  }
+  
+  public double getDoubleFloatField(BigInteger value, int fieldNum)
+  {
+    return Double.longBitsToDouble(value.shiftRight(fieldNum * fieldLength)
+				   .and(fieldMask).longValue());
+  }
+  
   /**
    * Get the value of the field as a LongFloat.
    *
@@ -87,5 +101,6 @@ public class RegisterView extends BitfieldAccessor
   public LongFloat getLongFloatField(BigInteger value, int fieldNum) 
   {
     return new LongFloat(value.shiftRight(fieldNum * fieldLength)
-			 .and(fieldMask));}
+			 .and(fieldMask));
+  }
 }

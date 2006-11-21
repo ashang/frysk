@@ -114,7 +114,6 @@ class IsaIA32 implements Isa
     }
   }
     
-  // XXX Blow off the XMM registers for now
   static class IA32FPRegister 
     extends FPRegister
   {
@@ -123,6 +122,25 @@ class IsaIA32 implements Isa
       super(1, 7*4 + regNum * 10, 10, name, fpViews);
     }
     
+  }
+
+    static private RegisterView[] xmmViews =
+    {
+      new RegisterView(128, 64, RegisterView.DOUBLE),
+      new RegisterView(128, 32, RegisterView.FLOAT),
+      new RegisterView(128, 64, RegisterView.INTEGER),
+      new RegisterView(128, 32, RegisterView.INTEGER),
+      new RegisterView(128, 16, RegisterView.INTEGER),
+      new RegisterView(128, 8, RegisterView.INTEGER)
+    };
+
+  static class XMMRegister 
+    extends Register 
+  {
+    XMMRegister(String name, int regNum) 
+    {
+      super(2, 160 + regNum * 16, 16, name, xmmViews);
+    }
   }
   
   private static final IA32Register[] 
@@ -166,9 +184,18 @@ class IsaIA32 implements Isa
         String name = "st" + i;
         registerMap.put(name, new IA32FPRegister(name, i));
       }
-    for (int i = 0; i < dbg.length; i++) 
+    for (int i = 0; i < 8; i++) 
       {
-         dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
+	String name = "xmm" + i;
+	registerMap.put(name, new XMMRegister(name, i));
+      }
+    // don't print out debug registers for now
+    if (false) 
+      {
+	for (int i = 0; i < dbg.length; i++) 
+	  {
+	    dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
+	  }
       }
   }
     

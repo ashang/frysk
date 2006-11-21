@@ -44,6 +44,8 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.Preferences;
+import java.lang.Float;
+import java.lang.Double;
 import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
@@ -384,27 +386,32 @@ public class RegisterWindow
 				 int field) 
   {
     int viewType = view.getType();
-    
-    if (viewType == RegisterView.INTEGER) 
+    switch (viewType) 
       {
-	BigInteger fieldVal = view.getIntField(value, field);
-	if (base == 10) 
-	  {
-	    return fieldVal.toString();
-	  }
-	else 
-	  {
-	    String val = UBigInteger.toString(fieldVal, view.getFieldLength() * 8,
-					base);
-	    return val;
-	  }
-      }
-    else if (viewType == RegisterView.LONGFLOAT)
-      {
+      case RegisterView.INTEGER:
+	{
+	  BigInteger fieldVal = view.getIntField(value, field);
+	  if (base == 10) 
+	    {
+	      return fieldVal.toString();
+	    }
+	  else 
+	    {
+	      String val = UBigInteger.toString(fieldVal, view.getFieldLength() * 8,
+						base);
+	      return val;
+	    }
+	}
+      case RegisterView.FLOAT:
+	return Float.toString(view.getFloatField(value, field));
+      case RegisterView.DOUBLE:
+	return Double.toString(view.getDoubleFloatField(value, field));
+      case RegisterView.LONGFLOAT:
 	return Double.toString(view.getLongFloatField(value, field).asDouble());
+      default:
+	throw new RuntimeException("can't handle view type "
+				   + viewType + " yet");
       }
-    else
-      throw new RuntimeException("can't handle view type " + viewType + " yet");
   }
   
   /**
