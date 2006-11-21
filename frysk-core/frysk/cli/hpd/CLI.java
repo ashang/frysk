@@ -53,6 +53,7 @@ import javax.naming.NameNotFoundException;
 import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
 import frysk.proc.Action;
+import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -297,7 +298,7 @@ public class CLI
           Vector params = cmd.getParameters();
           String executable = "";
           boolean cli = false;
-          AttachedObserver ao = new AttachedObserver();
+          final AttachedObserver ao = new AttachedObserver();
 
           if (params.size() < 2)
             {
@@ -321,50 +322,58 @@ public class CLI
 
           if (cli)
             {
-              Manager.host.requestRefreshXXX(true);
-              Manager.eventLoop.runPending();
-              Proc proc = Manager.host.getProc(new ProcId(pid));
-              CLIEventLoop eventLoop = new CLIEventLoop();
-              eventLoop.start();
-            }
+              Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
 
-          proc = Manager.host.getProc (new ProcId (pid));
-          if (proc == null)
-            {
-              addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
-              return;
-            }
-
-          if (pid == tid || tid == 0)
-            task = proc.getMainTask();
-          else
-            for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
-              task = (Task) i.next ();
-              if (task.getTid () == tid)
-                break;
-            }
-          
-          if (cli)
-            {
-              
-              task.requestAddAttachedObserver(ao);
-              // Wait till we are attached.
-              synchronized (monitor)
+                public void procFound (ProcId procId)
                 {
-                  while (! attached)
+                  proc = Manager.host.getProc (procId);
+                  CLIEventLoop eventLoop = new CLIEventLoop();
+                  eventLoop.start();
+                  
+                  if (proc == null)
                     {
-                      try
-                        {
-                          monitor.wait();
-                        }
-                      catch (InterruptedException ie)
-                        {
-                        }
+                      addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
+                      return;
                     }
-                }
-            }
 
-          symtab = new SymTab(pid, proc, task, null);
+                  if (pid == tid || tid == 0)
+                    task = proc.getMainTask();
+                  else
+                    for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+                      task = (Task) i.next ();
+                      if (task.getTid () == tid)
+                        break;
+                    }
+                  
+              
+                      
+                      task.requestAddAttachedObserver(ao);
+                      // Wait till we are attached.
+                      synchronized (monitor)
+                        {
+                          while (! attached)
+                            {
+                              try
+                                {
+                                  monitor.wait();
+                                }
+                              catch (InterruptedException ie)
+                                {
+                                }
+                            }
+                        }
+                    
+
+                  symtab = new SymTab(pid, proc, task, null);
+                }
+
+                public void procNotFound (ProcId procId, Exception e)
+                {
+                  System.err.println("Couldn't find the proc with proc Id" + procId);
+                  System.exit(1);
+                }});
+
+            }
         }
     }
 
