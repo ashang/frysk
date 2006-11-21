@@ -47,8 +47,10 @@ import java.util.logging.Logger;
 import frysk.junit.TestCase;
 import frysk.junit.Paths;
 import frysk.proc.Action;
+import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.ProcTasksObserver;
@@ -120,10 +122,28 @@ public class GuiTestLib extends TestCase{
 			Signal.tkill (this.pid, addForkSig);
 		}
 		
-		public synchronized Proc getProc(){
+		public synchronized Proc getProc()
+        {
 			logger.log(Level.FINE, "{0} getProc\n", this);
-			if(proc == null){
-				Manager.host.requestRefreshXXX(true);
+			if(proc == null)
+              {
+				Manager.host.requestFindProc(true, new ProcId(pid),
+                                       new Host.FindProc()
+                                       {
+
+                                         public void procFound (ProcId procId)
+                                         {
+                                           proc = Manager.host.getProc(procId); 
+                                         }
+
+                                         public void procNotFound (
+                                                                   ProcId procId,
+                                                                   Exception e)
+                                         {
+                                           // TODO Auto-generated method stub
+
+                                         }
+                                       });
 			    try {
 					wait();
 				} catch (InterruptedException e) {
