@@ -50,6 +50,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
+import frysk.proc.Host;
 
 import frysk.util.CoredumpAction;
 
@@ -61,6 +62,10 @@ import gnu.classpath.tools.getopt.Parser;
 public class fcore
 {
 
+  private static boolean hasProc = false;
+  
+  private static CoredumpAction stacker;
+  
   protected static final Logger logger = EventLogger.get("logs/",
   "frysk_core_event.log");
     private static Parser parser;
@@ -87,7 +92,7 @@ public class fcore
     {
       protected void validate () throws OptionException
       {
-        if (proc == null)
+        if (!hasProc)
             throw new OptionException("no pid provided");
       }
     };
@@ -102,14 +107,49 @@ public class fcore
       {
         try
         {
-          if (proc == null)
+          if (!hasProc)
             {
-              Manager.host.requestRefreshXXX(true);
-
-              Manager.eventLoop.runPending();
-
+              hasProc = true;
               int pid = Integer.parseInt(arg);
-              proc = Manager.host.getProc(new ProcId(pid));
+              Manager.host.requestFindProc(true, new ProcId (pid), new Host.FindProc() {
+
+                public void procFound (ProcId procId)
+                {
+                  proc = Manager.host.getProc(procId);
+                  boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
+                      proc.getGID() == Manager.host.getSelf().getGID());
+
+                  // Do we have permission to work on this process?
+                  if (! isOwned)
+                    {
+                      System.err.println("Process " + proc.getPid()
+                                         + " is not owned by user/group. Cannot coredump.");
+                      System.exit(- 1);
+                    }
+                  
+                  if (proc == null)
+                    {
+                      System.err.println("Couldn't get the process " + proc.getPid()
+                                         + ". It might have disappeared.");
+                      System.exit(- 1);
+                    }
+
+                  stacker = new CoredumpAction(proc, new Event()
+                  {
+                    public void execute ()
+                    {
+                      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+                    }
+                  });
+                }
+
+                public void procNotFound (ProcId procId, Exception e)
+                {
+                  System.err.println("Couldn't get the process " + proc.getPid()
+                                     + ". It might have disappeared.");
+                  System.exit(- 1);
+                }});            
+              
             }
           else
             {
@@ -130,34 +170,10 @@ public class fcore
         logger.setLevel(level);
       }
     
-    boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
-        proc.getGID() == Manager.host.getSelf().getGID());
-
-    // Do we have permission to work on this process?
-    if (! isOwned)
-      {
-        System.err.println("Process " + proc.getPid()
-                           + " is not owned by user/group. Cannot coredump.");
-        System.exit(- 1);
-      }
-    
-    if (proc == null)
-      {
-        System.err.println("Couldn't get the process " + proc.getPid()
-                           + ". It might have disappeared.");
-        System.exit(- 1);
-      }
-
-    final CoredumpAction stacker = new CoredumpAction(proc, new Event()
-    {
-      public void execute ()
-      {
-        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
 
     Manager.eventLoop.run();
 
+    //XXX: What is this for?
     stacker.getClass();
   }
   

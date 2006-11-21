@@ -45,11 +45,11 @@ import java.util.logging.Logger;
 import frysk.EventLogger;
 
 import frysk.event.Event;
-import frysk.event.RequestStopEvent;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
+import frysk.proc.Host;
 
 import frysk.util.StacktraceObserver;
 
@@ -61,7 +61,9 @@ import gnu.classpath.tools.getopt.Parser;
 public class fstack
 {
 
-  private static Proc proc;
+  private static boolean hasProc = false;
+
+  private static StacktraceObserver stacker;
 
   private static Parser parser;
 
@@ -134,7 +136,7 @@ public class fstack
     {
       protected void validate () throws OptionException
       {
-        if (null == proc)
+        if (!hasProc)
           {
             throw new OptionException("no pid provided");
           }
@@ -149,17 +151,38 @@ public class fstack
       {
         try
           {
-            if (null == proc)
+            if (!hasProc)
               {
-                Manager.host.requestRefreshXXX(true);
-
-                // XXX: Should get a message back when the refresh has finished
-                // and the
-                // proc has been found.
-                Manager.eventLoop.runPending();
-
+                
+                hasProc = true;
                 int pid = Integer.parseInt(arg);
-                proc = Manager.host.getProc(new ProcId(pid));
+                Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+
+                  public void procFound (ProcId procId)
+                  {
+                    final Proc proc = Manager.host.getProc(procId);
+                    stacker = new StacktraceObserver(proc, new Event()
+                    {
+                      public void execute ()
+                      {
+                        proc.requestAbandonAndRunEvent(new Event(){
+
+                          public void execute ()
+                          {
+                            Manager.eventLoop.requestStop();
+                            System.out.print(stacker.toPrint());
+                          }});
+                      }
+                    });
+                  }
+
+                  public void procNotFound (ProcId procId, Exception e)
+                  {
+                   System.err.println("Couldn't find the proc with proc Id" + procId);
+                   System.exit(1);
+                  }});
+               
+                
               }
             else
               {
@@ -177,17 +200,8 @@ public class fstack
     if (levelValue != null)
       {
         logger.setLevel(level);
-      }
-
-    final StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
-    {
-      public void execute ()
-      {
-        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
+      }  
 
     Manager.eventLoop.run();
-    System.out.print(stacker.toPrint());
   }
 }
