@@ -194,16 +194,42 @@ public class LinuxHost
       }
   }
   
-  void sendRefresh (boolean refreshAll, ProcId procId, FindProc finder)
+  void sendRefresh (boolean refreshAll, final ProcId procId, final FindProc finder)
   {
-    //XXX: Should only refresh the pool with the given pid and possibly its parents.
-    sendRefresh(refreshAll);
+   
+    //Iterate (build) the /proc tree starting with the given procId.
+    final ProcChanges procChanges = new ProcChanges();
+    ProcBuilder pidBuilder = new ProcBuilder()
+    {
+      public void buildId (int pid)
+      {
+          procChanges.update(pid);
+      }
+    };
+    pidBuilder.construct(procId.id);
+    
+    if (refreshAll)
+      {
+        LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
+        proc.sendRefresh();
+      }          
     
     if (procPool.containsKey(procId))
-      finder.procFound(procId);
+      Manager.eventLoop.add(new Event() {
+
+        public void execute ()
+        {         
+          finder.procFound(procId);    
+        }});
+      
     else
-      finder.procNotFound(procId, new RuntimeException("Couldn't find the proc" + procId));
-  }
+      Manager.eventLoop.add(new Event() {
+
+        public void execute ()
+        {         
+          finder.procNotFound(procId, new RuntimeException("Couldn't find the proc" + procId));          
+        }});
+     }
 
   /**
    * Create an attached process that is a child of this process (and this task).
