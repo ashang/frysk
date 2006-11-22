@@ -5,7 +5,7 @@
 	* cparser/CDTParser.java: Check for each callback to make
 	sure we are marking up the local source file; added 
 	functionality to exitFunctionBody to set the ending line
-	and character numbers for the function.
+	and character numbers for the function; fix bz #3412.
 
 2006-11-15  Rick Moseley  <rmoseley@redhat.com>
 

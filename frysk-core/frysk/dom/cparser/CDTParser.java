@@ -870,7 +870,9 @@ public class CDTParser
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
-
+      // See if there is already a tag for this include on this line
+      if (line.getTag(0) != null)
+        return;
       String lineText = line.getText();
 
       line.addTag(DOMTagTypes.KEYWORD,
