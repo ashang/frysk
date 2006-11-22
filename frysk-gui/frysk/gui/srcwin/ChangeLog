@@ -1,3 +1,10 @@
+2006-11-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* testfiles/test_looper.xml: Update new base DOM for CDTParser code
+	changes.
+	* testfiles/test_main_looper.c: Added comments header for further
+	parser testing.
+
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWindow): Updated calls to 
