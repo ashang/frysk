@@ -1,3 +1,23 @@
+2006-11-22  Mike Cvet  <mcvet@redhat.com>
+
+	* register/RegisterWindow.java (LockObserver.update): No longer
+	relies on incoming argument to be either null or not-null; instead uses
+	nulls as toggles for sensitivity. Cleaned up.
+	(getLockObserver): Added Javadoc.
+	(LockObserver): Added Javadoc.
+	
+	* memory/MemoryWindow.java (LockObserver.update): No longer
+	relies on incoming argument to be either null or not-null; instead uses
+	nulls as toggles for sensitivity. Cleaned up.
+	(getLockObserver): Added Javadoc.
+	(LockObserver): Added Javadoc.
+	
+	* disassembler/DisassemblyWindow.java (LockObserver.update): No longer
+	relies on incoming argument to be either null or not-null; instead uses
+	nulls as toggles for sensitivity. Cleaned up.
+	(getLockObserver): Added Javadoc.
+	(LockObserver): Added Javadoc.
+
 2006-11-21  Nurdin Premji  <npremji@redhat.com>
 
 	* test/GuiTestLib.java: Changed to use new FindProc interface.

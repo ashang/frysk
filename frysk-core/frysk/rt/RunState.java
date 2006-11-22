@@ -46,6 +46,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+//import org.gnu.glib.CustomEvents;
+
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import frysk.event.Event;
@@ -90,6 +92,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   private int numSteppingTasks = 0;
   
   private int numRunningTasks = 0;
+  
+  private int state = 0;
 
   protected static final int STOPPED = 0;
   protected static final int RUNNING = 1;
@@ -131,6 +135,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void setUpStep (LinkedList tasks)
   {
+    this.state = STEP_IN;
     this.numSteppingTasks = tasks.size();
     Iterator i = tasks.iterator();
     
@@ -172,6 +177,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepInstruction (LinkedList tasks)
   {
+    this.state = INSTRUCTION_STEP;
     Iterator i = tasks.iterator();
     notifyNotBlocked();
     while (i.hasNext())
@@ -237,12 +243,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void stepOver (Task task)
   {
-    
+    this.state = STEP_OVER;
   }
   
   public void setUpStepOut (LinkedList tasks, TaskObserver.Code breakpoint)
   {
-    
+    this.state = STEP_OUT;
   }
 
   public void stepOut (Task task)
@@ -263,6 +269,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepCompleted ()
   {
+    this.state = STOPPED;
     this.lineLoopCount = 0;
     this.taskStepCount = 0;
     this.numSteppingTasks = 0;
@@ -280,6 +287,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void run (LinkedList tasks)
   {
+    this.state = RUNNING;
     this.numRunningTasks = tasks.size();
     notifyNotBlocked();
     Iterator i = tasks.iterator();
@@ -325,10 +333,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
                     i.remove();
                   }
               }
-            //this.pbo.blockTask(blockTasks);
             blockTask(blockTasks);
           }
       }
+    this.state = STOPPED;
     this.runningTasks.clear();
   }
 
@@ -347,11 +355,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * which state the calling class should be in after this method is executed.
    * 
    * @param tasks   The list of tasks to be run
-   * 
-   * @return 0  There are no running Tasks
-   * @return 1  There are Tasks running
    */
-  public synchronized int executeTasks (LinkedList tasks)
+  public synchronized void executeTasks (LinkedList tasks)
   {
 
      //System.out.println("In executeThreads with thread size " + tasks.size()
@@ -360,7 +365,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
     /* No incoming Tasks and no Tasks already running */
     if (tasks.size() == 0 && this.runningTasks.size() == 0)
-      return STOPPED;
+      {
+        this.state = STOPPED;
+        return;
+      }
 
     /* No incoming Tasks, but some Tasks are running. Block them. */
     else if (tasks.size() == 0 && this.runningTasks.size() != 0)
@@ -374,14 +382,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
             i.remove();
             // System.out.println("Blocking " + t);
           }
-        //this.pbo.blockTask(l);
         blockTask(l);
-        return STOPPED;
+        return;
       }
 
     /* There are incoming Tasks to be run, and no Tasks already running */
     if (this.runningTasks.size() == 0)
       {
+        this.state = RUNNING;
         notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
@@ -389,17 +397,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
             Task t = (Task) i.next();
              //System.out.println("(0) Running " + t);
             this.runningTasks.add(t);
-
-            //this.pbo.requestDeleteInstructionObserver(t);
             t.requestDeleteInstructionObserver(this);
           }
-        return RUNNING;
+        return;
       }
     else
       /* There are incoming Tasks to be run, and some Tasks are already running.
        * If they are not already running, unblock the incoming Tasks, and block
        * any running Task not in the incoming list. */
       {
+        this.state = RUNNING;
         HashSet temp = new HashSet();
         // this.runningThreads.clear();
         notifyNotBlocked();
@@ -412,7 +419,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
             if (! this.runningTasks.remove(t))
               {
                 // System.out.println("unBlocking " + t);
-                //this.pbo.requestDeleteInstructionObserver(t);
                 t.requestDeleteInstructionObserver(this);
               }
             else
@@ -433,7 +439,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
                 l.add(t);
                 // System.out.println("Blocking from runningTasks " + t);
               }
-            //this.pbo.blockTask(l);
             blockTask(l);
           }
 
@@ -441,9 +446,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
         // System.out.println("rt temp" + this.runningThreads.size() + " "
         // + temp.size());
       }
-    return RUNNING;
+    return;
   }
   
+  /**
+   * All Tasks have been reblocked after running.
+   */
+  public void runCompleted ()
+  {
+    this.state = STOPPED;
+  }
+  
+  /**
+   * Decrement the number of running Tasks.
+   */
   public void decNumRunningTasks ()
   {
     this.numRunningTasks--;
@@ -464,7 +480,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   }
 
   /**
-   * Sets the number of stepping Tasks
+   * Sets the number of stepping Tasks.
    * 
    * @param count   The number of stepping Tasks
    */
@@ -473,25 +489,101 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.taskStepCount = count;
   }
 
+  /**
+   * Get the number of running Tasks.
+   * 
+   * @return numRunningTasks The number of running Tasks
+   */
   public int getNumRunningTasks ()
   {
     return this.numRunningTasks;
   }
   
+  /**
+   * Set the number of running Tasks.
+   * 
+   * @param num The number of running Tasks
+   */
   public void setNumRunningTasks (int num)
   {
     this.numRunningTasks = num;
   }
   
+  /**
+   * Get the number of Observers watching this Observable.
+   * 
+   * @return this.countObservers() The number of Observers in this Observable's
+   * Observer list
+   */
   public int getNumObservers ()
   {
     return this.countObservers();
   }
   
+  /**
+   * Get the current state of this RunState.
+   * 
+   * @return state The current state of this RunState
+   */
+  public int getState ()
+  {
+    return this.state;
+  }
+  
+  /**
+   * Set the current state of this RunState.
+   * 
+   * @param s The new state for this RunState
+   */
+  public void setState (int s)
+  {
+    this.state = s;
+  }
+  
+  /**
+   * Return the Proc this RunState is controlling.
+   * 
+   * @return stateProc The Proc this RunState is controlling
+   */
+  public Proc getProc ()
+  {
+    return this.stateProc;
+  }
+  
+  /**
+   * Set the process for this RunState. Blocks the Process.
+   * 
+   * @param proc The Proc for this RunState to control
+   */
+  public void setProc (Proc proc)
+  {
+    this.stateProc = proc;
+    this.tasks = proc.getTasks();
+    requestAdd(tasks);
+  }
+  
+  /**
+   * Get the number of Tasks this RunState is concerned with.
+   * 
+   * @return tasks.size() The number of Tasks this RunState is concerned with
+   */
+  public int getNumTasks ()
+  {
+    return tasks.size();
+  }
+  
   /*****************************************************************************
-   * CENTRALIZED OBSERVABLE
+   * OBSERVER LIST MANIPULATION METHODS
    ****************************************************************************/
   
+  /**
+   * Remove the incoming Observer object from this Observable's list of 
+   * Observers to notify. If, after removing it, the list is empty, unblock
+   * the process and return 1. Otherwise return 0.
+   * 
+   * @return 0 This Observable's Observer list is not empty
+   * @return 1 This Observable's Observer list is empty
+   */
   public int removeObserver (Observer o)
   {
     this.deleteObserver(o);
@@ -503,38 +595,108 @@ public class RunState extends Observable implements TaskObserver.Instruction
     else
       return 0;
   }
-  
-  public void setProc (Proc proc)
-  {
-    this.stateProc = proc;
-    this.tasks = proc.getTasks();
-    requestAdd(tasks);
-  }
 
+  /**
+   * Notify certain classes observing this object's Proc that it will 
+   * immanently no longer be blocked.
+   */
   public void notifyNotBlocked ()
   {
     this.setChanged();
     this.notifyObservers(null);
   }
-
-  public Action updateExecuted (Task task)
+  
+  /**
+   * Nofity certain classes observing this object's Proc that it has finished
+   * becoming re-blocked.
+   */
+  public void notifyStopped ()
   {
     this.setChanged();
-    this.notifyObservers(task);
+    this.notifyObservers(null);
+  }
+  
+  
+  /*****************************************************************************
+   * TASKOBSERVER.INSTRUCTION CALLBACKS
+   ****************************************************************************/
+  
+  /**
+   * Callback for TaskObserver.Instruction. Each time a Task is blocked, either
+   * after this Observer was added to it for the first time, or it was
+   * unblocked to allow execution of a single instruction, it passes through
+   * here. 
+   * Depending on what the state of this object is at the time and how
+   * many Tasks are left to be blocked, we'll either do nothing and return 
+   * a blocking Action, or notify our Observers that this task came through,
+   * and they can perform the necessary operations.
+   * 
+   * @param task The Task which was just blocked
+   * @return Action.BLOCK Continue blocking this incoming Task
+   */
+  public Action updateExecuted (Task task)
+  {
+
+    if (state >= INSTRUCTION_STEP && state <= STEP_OUT)
+      {
+        switch (state)
+          {
+          case INSTRUCTION_STEP:
+            this.taskStepCount--;
+            break;
+          case STEP_IN:
+            stepIn(task);
+            break;
+          case STEP_OVER:
+            stepOver(task);
+            break;
+          case STEP_OUT:
+            stepOut(task);
+            break;
+          }
+
+        /* No more Tasks have to be blocked */
+        if (taskStepCount == 0)
+          {
+            RunState.this.setChanged();
+            RunState.this.notifyObservers(task);
+          }
+      }
+    else
+      {
+        this.numRunningTasks--;
+        
+        /* No more Tasks have to be blocked, or this RunState is already blocked
+         * and this is the first time this method has been called. */
+        if (numRunningTasks == 0 || state == STOPPED)
+          {
+            RunState.this.setChanged();
+            RunState.this.notifyObservers(task);
+          }
+      }
 
     return Action.BLOCK;
   }
 
+  /**
+   * This Observer has been added to the Object.
+   */
   public void addedTo (Object o)
   {
 
   }
 
+  /**
+   * This Observer has been deleted from the Object.
+   */
   public void deletedFrom (Object o)
   {
 
   }
 
+  /**
+   * The add to the Object failed
+   */
   public void addFailed (Object o, Throwable w)
   {
     w.printStackTrace();
@@ -542,11 +704,19 @@ public class RunState extends Observable implements TaskObserver.Instruction
     System.exit(1);
   }
 
+  /**
+   * Request the adding of this observer to all of this Object's Tasks.
+   */
   public void requestAdd ()
   {
     requestAdd(this.stateProc.getTasks());
   }
 
+  /**
+   * Add this Instruction Observer to each of the incoming Tasks.
+   * 
+   * @param tasks The tasks to be added to
+   */
   public void requestAdd (LinkedList tasks)
   { 
     this.tasks = tasks;
@@ -595,11 +765,21 @@ public class RunState extends Observable implements TaskObserver.Instruction
     });
   }
 
+  /**
+   * Adds the necessary Observers to the incoming Task.
+   * 
+   * @param task The Task to have Observers added to
+   */
   public void requestAddObservers (Task task)
   {
     task.requestAddInstructionObserver(this);
   }
 
+  /**
+   * Re-block only a certain set of Tasks.
+   * 
+   * @param tasks The Tasks to be reblocked
+   */
   public void blockTask (LinkedList tasks)
   {
     this.tasks = tasks;
@@ -616,11 +796,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
           }
       }
     });
-  }
-
-  public int getNumTasks ()
-  {
-    return tasks.size();
   }
 
 }

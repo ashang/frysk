@@ -1,3 +1,32 @@
+2006-11-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (createSourceWindow): Updated calls to 
+	getRunState() from getStateModel().
+	(SourceWinListener.lifeCycleQuery): Ditto. 
+	* SourceWindow.java (SW_state): No longer used.
+	(stepInstruction): Removed call to SW_state, update RunState instead.
+	(procReblocked): Ditto.
+	(doRun): Ditto.
+	(doStep): Ditto.
+	(doNext): Ditto.
+	(executeTasks): Ditto.
+	(updateShownStackFrame): Updated to use RunState's state instead of 
+	this window's SW_state.
+	(toggleDisassemblyWindow): Add the DisassemblyWindow's LockObserver to
+	RunState's Observer list.
+	(toggleRegisterWindow): Ditto for RegisterWindow.
+	(toggleMemoryWindow): Ditto for MemoryWindow.
+	(LockObserver.update):  Commented. Hugely simplified. Relies on
+	the RunState for all state manipulation. Only called when the last Task
+	to be blocked has been blocked. No longer differentiates stepping 
+	re-blocks from running re-blocks.
+	(getState): Removed.
+	(stepCompleted): Removed.
+	(getRunState): Refactored from getStateModel().
+	(LockObserver): Added Javadoc.
+	* SourceView.java (SourceViewListener.mouseMotionEvent): Updated call
+	to get the state from the RunState belonging to the SourceWindow.
+
 2006-11-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWindow): Updated to make

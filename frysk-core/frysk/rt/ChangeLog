@@ -1,3 +1,38 @@
+2006-11-22  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (state): Added. State representation of this RunState.
+	(updateExecuted): Added Javadoc. Handle all state transitions here, 
+	instead of in inferior windows. Only notifyObservers when all Tasks
+	have been blocked.
+	(getProc): Added.
+	(notifyStopped): Ditto.
+	(runCompleted): Ditto.
+	(setState): Ditto.
+	(getState): Ditto.
+	(executeTasks): Update state and removed returning ints.
+	(stepOver): Update state.
+	(stepCompleted): Ditto.
+	(setUpStepOut): Ditto.
+	(stop): Ditto.
+	(setUpStep): Ditto.
+	(stepInstruction): Ditto.
+	(run): Ditto.
+	(requestAdd): Added Javadoc.
+	(addedTo): Ditto.
+	(setTaskStepCount): Ditto.
+	(notifyNotBlocked): Ditto.
+	(blockTask): Ditto.
+	(deletedFrom): Ditto.
+	(getNumTasks): Ditto.
+	(decNumRunningTasks): Ditto.
+	(setProc): Ditto.
+	(requestAddObservers): Ditto.
+	(getNumObservers): Ditto.
+	(removeObserver): Ditto.
+	(getNumRunningTasks): Ditto.
+	(addFailed): Ditto.
+	(setNumRunningTasks): Ditto.
+
 2006-11-21  Nurdin Premji  <npremji@redhat.com>
 
 	* tests/TestStackBacktrace.java: Changed to use new FindProc interface.	

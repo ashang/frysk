@@ -259,7 +259,7 @@ public class SourceWindow
   
   /* The state that the SourceWindow is current in. Critical for determining
    * which operations can be performed at which time. */
-  private int SW_state = 0;
+  //private int SW_state = 0;
   
   /* Possible states this SourceWindow can be in. */
   protected static final int STOPPED = 0;
@@ -543,8 +543,9 @@ public class SourceWindow
     
     desensitize();
     
-    this.SW_state = INSTRUCTION_STEP;
+    //this.SW_state = INSTRUCTION_STEP;
     this.numSteppingThreads = tasks.size();
+    this.runState.setTaskStepCount(this.numSteppingThreads);
     
     this.runState.stepInstruction(tasks);
     removeTags();
@@ -561,9 +562,11 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
     
+    this.runState.runCompleted();
+    this.runState.stepCompleted();
     resensitize();
     
-    this.SW_state = STOPPED;
+    //this.SW_state = STOPPED;
   }
   
   /***************************************
@@ -592,17 +595,17 @@ public class SourceWindow
     return this.view;
   }
   
-  public int getState ()
-  {
-    return this.SW_state;
-  }
+//  public int getState ()
+//  {
+//    return this.SW_state;
+//  }
   
   public int getNumSteppingThreads ()
   {
     return this.numSteppingThreads;
   }
   
-  public RunState getStateModel ()
+  public RunState getRunState ()
   {
     return this.runState;
   }
@@ -1226,13 +1229,6 @@ public class SourceWindow
         store.setValue(iter, (DataColumnString) cols[0], (String) funcs.get(i));
       }
     
-//    Iterator i = this.view.getFunctions().values().iterator();
-//    while (i.hasNext())
-//      {
-//        TreeIter iter = store.appendRow();
-//        store.setValue(iter, (DataColumnString) cols[0], (String) i.next());
-//      }
-
     completion.setModel(store);
     completion.setTextColumn(cols[0].getColumn());
     ((Entry) this.glade.getWidget("toolbarGotoBox")).setCompletion(completion);
@@ -1483,7 +1479,7 @@ public class SourceWindow
         DOMSource oldSource = this.view.getScope().getData();
         
         if (oldSource != null && !source.getFileName().equals(oldSource.getFileName())
-            || this.SW_state == RUNNING)
+            || this.runState.getState() == RUNNING)
           {
             this.view.load(selected);
 
@@ -1529,7 +1525,7 @@ public class SourceWindow
     
     desensitize();
 
-    this.SW_state = RUNNING;
+//    this.SW_state = RUNNING;
 
     this.runState.run(this.swProc.getTasks());
     
@@ -1594,9 +1590,11 @@ public class SourceWindow
     
     desensitize();
     
-    this.SW_state = STEP_IN;
-    this.numSteppingThreads = swProc.getTasks().size();
+  //  this.SW_state = STEP_IN;
+    LinkedList taskList = swProc.getTasks();
+    this.numSteppingThreads = taskList.size();
     
+    this.runState.setTaskStepCount(this.numSteppingThreads);
     this.runState.setUpStep(this.swProc.getTasks());
     
     removeTags();
@@ -1614,7 +1612,7 @@ public class SourceWindow
     
     desensitize();
     
-    this.SW_state = STEP_OUT;
+    //this.SW_state = STEP_OUT;
     
     this.numSteppingThreads = swProc.getTasks().size();
     
@@ -1836,7 +1834,8 @@ public class SourceWindow
       }
     else
       {
-        RegisterWindowFactory.regWin.showAll();
+        this.runState.addObserver(regWin.getLockObserver());
+        regWin.showAll();
       }
   }
 
@@ -1861,7 +1860,8 @@ public class SourceWindow
       }
     else
       {
-        MemoryWindowFactory.memWin.showAll();
+        this.runState.addObserver(memWin.getLockObserver());
+        memWin.showAll();
       }
   }
 
@@ -1886,7 +1886,8 @@ public class SourceWindow
       }
     else
       {
-        DisassemblyWindowFactory.disWin.showAll();
+        this.runState.addObserver(disWin.getLockObserver());
+        disWin.showAll();
       }
   }
 
@@ -1900,24 +1901,24 @@ public class SourceWindow
   
   private synchronized void executeTasks (LinkedList tasks)
   {
-    this.SW_state = this.runState.executeTasks(tasks);
+    this.runState.executeTasks(tasks);
   }
   
   /**
    * Thread stepping has completed, clean up. 
    */
-  private void stepCompleted ()
-  {
-    //System.out.println("step completed");
-    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Stopped");
-    
-    this.runState.stepCompleted();
-    
-    resensitize();
-    
-    this.SW_state = STOPPED;
-  }
+//  private void stepCompleted ()
+//  {
+//    //System.out.println("step completed");
+//    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+//    sbar.push(0, "Stopped");
+//    
+//    this.runState.stepCompleted();
+//    
+//    resensitize();
+//    
+//    this.SW_state = STOPPED;
+//  }
 
   private StackFrame[] generateProcStackTrace (StackFrame[] frames, Task[] tasks)
   {
@@ -2169,97 +2170,64 @@ public class SourceWindow
 
   }
   
-  class LockObserver
+  /**
+   * Local Observer class used to poke this window from RunState when all the
+   * Tasks belonging to this window's Proc have been blocked. These Tasks could
+   * have ben running, stepping, or neither and were just blocked once to allow
+   * this window to finish building. This observer is synchronized between this
+   * windowand the Memory, Register, and Disassembly windows.
+   * 
+   * @author mcvet
+   */
+  private class LockObserver
       implements Observer
   {
 
     private Task lockTask;
     
+    /**
+     * Builtin Observer method - called whenever the Observable we're concerned
+     * with - in this case the RunState - has changed.
+     * 
+     * @param o The Observable we're watching
+     * @param arg An Object argument
+     */
     public void update (Observable o, Object arg)
     {
+      /* We don't need to worry about this case here */
       if (arg == null)
         return;
-      
-      Task task = (Task) arg;
-      this.lockTask = task;
-      
-      /** Stepping **/
-      
-      if (SW_active && (SW_state >= INSTRUCTION_STEP 
-          && SW_state <= STEP_OUT))
+
+      /* The very first time all the Tasks are blocked is when we're
+       * initializing this window. */
+      if (SW_active == false)
         {
-          
-          //System.out.println("In existingTask with taskstepcount " + taskStepCount);
-          
-          if (runState.getTaskStepCount() == 0)
-            {
-              //System.out.println("resetting taskstepcount");    
-              runState.setTaskStepCount(numSteppingThreads);
-            }
-          
-          switch (SW_state)
+          SW_active = true;
+          lockTask = (Task) arg;
+          CustomEvents.addEvent(new Runnable()
           {
-            case INSTRUCTION_STEP:  runState.decTaskStepCount(); break;
-            case STEP_IN: runState.stepIn(task); break;
-            case STEP_OVER: runState.stepOver(task); break;
-            case STEP_OUT: runState.stepOut(task); break;
-          }
-          //System.out.println("taskstepcount " + taskStepCount);
-          if (runState.getTaskStepCount() == 0)
+            public void run ()
             {
-              CustomEvents.addEvent(new Runnable()
-              {
-                public void run ()
-                {
-                  StackFrame[] frames = generateProcStackTrace(null, null);
-
-                  populateStackBrowser(frames);
-                  stepCompleted();
-                }
-              });
+              finishSourceWin(lockTask.getProc());
             }
-
+          });
           return;
         }
-      
-      /** Running **/
-      
-      if (runState.getNumRunningTasks() == 0){
-        runState.setNumRunningTasks(swProc.getTasks().size());
-        //System.out.println("Setting taskCount to " + taskCount);
-      }
 
+      /* Otherwise, this callback was called because all our Proc's Tasks were
+       * blocked because of some state change operation. Re-generate the stack
+       * trace information and refresh the window. */
       CustomEvents.addEvent(new Runnable()
       {
         public void run ()
         {
-          if (SW_active == false)
-            {
-              runState.decNumRunningTasks();
-              if (runState.getNumRunningTasks() == 0)
-                {
-                  //System.out.println("SW false, finishing");
-                  SW_active = true;
-                  finishSourceWin(lockTask.getProc());
-                }
-            }
-          else
-            {
-               //System.out.println("SW true " + taskCount);
-              runState.decNumRunningTasks();
-              if (runState.getNumRunningTasks() == 0)
-                {
-                  //System.out.println("Taskcount zero - rebuilding.");
-                  StackFrame[] frames = generateProcStackTrace(null, null);
-                  populateStackBrowser(frames);
-                  procReblocked();
-                }
-            }
+          StackFrame[] frames = generateProcStackTrace(null, null);
+          populateStackBrowser(frames);
+          SourceWindow.this.runState.notifyStopped();
+          procReblocked();
         }
-
       });
     }
-
   }
   
   protected class Breakpoint implements TaskObserver.Code

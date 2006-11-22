@@ -71,8 +71,6 @@ public class SourceWindowFactory
 
   private static HashMap map;
 
-  //private static Hashtable blockerTable;
-
   public static Hashtable stateTable;
 
   public static SourceWindow srcWin = null;
@@ -111,7 +109,7 @@ public class SourceWindowFactory
     if (sw != null)
       {
         sw = (SourceWindow) map.get(proc);
-        RunState rs = sw.getStateModel();
+        RunState rs = sw.getRunState();
         rs.addObserver(sw.getLockObserver());
         sw.showAll();
         return;
@@ -153,7 +151,7 @@ public class SourceWindowFactory
 
     sw = new SourceWindow(glade, gladePaths[i], proc);
 
-    stateTable.put(proc, sw.getStateModel());
+    stateTable.put(proc, sw.getRunState());
     sw.addListener(new SourceWinListener());
     sw.grabFocus();
 
@@ -223,7 +221,7 @@ public class SourceWindowFactory
             {
               SourceWindow s = (SourceWindow) arg0.getSource();
               
-              RunState rs = s.getStateModel();
+              RunState rs = s.getRunState();
               
               if (rs.removeObserver(s.getLockObserver()) == 1)
                 {

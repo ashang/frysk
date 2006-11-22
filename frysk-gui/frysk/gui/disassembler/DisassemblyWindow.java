@@ -145,6 +145,8 @@ public class DisassemblyWindow
   
   private LockObserver lock;
   
+  private boolean toggle = true;
+  
   /**
    * The DisassmblyWindow, given a Task, will disassemble the instructions
    * and parameters for that task in memory and display them, as well as their
@@ -663,48 +665,80 @@ public class DisassemblyWindow
     return this.myTask;
   }
   
+  /**
+   * Returns this DisassemblyWindow's LockObserver.
+   * 
+   * @return lock This DisassemblyWindow's LockObserver
+   */
   public LockObserver getLockObserver()
   {
     return this.lock;
   }
   
+  /**
+   * Local Observer class used to poke this window from RunState when all the
+   * Tasks belonging to this window's Proc have been blocked. These Tasks could
+   * have ben running, stepping, or neither and were just blocked once to allow
+   * this window to finish building. This observer is synchronized between this
+   * windowand the Register, Source, and Memory windows.
+   * 
+   * @author mcvet
+   */
   class LockObserver implements Observer
   {
     
-    public void update (Observable o, Object arg)
+    /**
+     * Builtin Observer method - called whenever the Observable we're concerned
+     * with - in this case the RunState - has changed.
+     * 
+     * @param o The Observable we're watching
+     * @param arg An Object argument
+     */
+    public synchronized void update (Observable o, Object arg)
     {
-//    only if we're actually done
+      /* The argument is not null. We're only concerned with it here the very
+       * first time we see it, because its used for this window's
+       * initialization. Otherwise, ignore it. */
       if (arg != null)
         {
-          System.out.println("MW.LO.update not null");
-          if (DW_active)
-            {
-              CustomEvents.addEvent(new Runnable()
-              {
-                public void run ()
-                {
-                  refreshList();
-                  resensitize();
-                }
-              });
-            }
-          else
+          if (! DW_active)
             {
               Task t = (Task) arg;
               DisassemblyWindow.this.observable = o;
               finishDisWin(t.getProc());
             }
+          else
+            return;
         }
       else
         {
-          System.out.println("MW.LO.update null");
-          CustomEvents.addEvent(new Runnable()
-          {
-            public void run ()
+          /* The argument is null; its used here as a toggle. If the toggle is
+           * true, the window is sensitive and we set the toggle to false and 
+           * desensitize the important widgets. Otherwise, set the toggle 
+           * back to true, refresh the window information and resensitize it. */
+          if (toggle)
             {
-              desensitize();
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  toggle = false;
+                  desensitize();
+                }
+              });
             }
-          });
+          else
+            {
+              CustomEvents.addEvent(new Runnable()
+              {
+                public void run ()
+                {
+                  toggle = true;
+                  refreshList();
+                  resensitize();
+                }
+              });
+            }
         }
     }
   }
