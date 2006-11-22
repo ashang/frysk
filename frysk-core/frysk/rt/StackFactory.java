@@ -53,27 +53,52 @@ public class StackFactory
    * @param task The task to get stack information for
    * @return The stack frames as a linked list
    */
-  public static StackFrame createStackFrame (Task task)
+  public static StackFrame createStackFrame (Task task, int num)
       throws TaskException
   {
     StackCallbacks callbacks = new StackCallbacks(task);
     FrameCursor innermost = StackTraceCreator.createStackTrace(callbacks);
     StackFrame toReturn = new StackFrame(innermost, task);
 
-    StackFrame current = toReturn;
-    FrameCursor currentCursor = innermost.getOuter();
-    while (currentCursor != null)
+    if (num == 0)
       {
-        StackFrame outerFrame = new StackFrame(currentCursor, task, current);
+        StackFrame current = toReturn;
+        FrameCursor currentCursor = innermost.getOuter();
+        while (currentCursor != null)
+          {
+            StackFrame outerFrame = new StackFrame(currentCursor, task, current);
 
-        if (currentCursor.getIsSignalFrame() == 1)
-          outerFrame.setIsSignalFrame(true);
+            if (currentCursor.getIsSignalFrame() == 1)
+              outerFrame.setIsSignalFrame(true);
 
-        current.outer = outerFrame;
-        current = outerFrame;
+            current.outer = outerFrame;
+            current = outerFrame;
 
-        currentCursor = currentCursor.getOuter();
+            currentCursor = currentCursor.getOuter();
+          }
+      }
+    else
+      {
+        StackFrame current = toReturn;
+        FrameCursor currentCursor = innermost.getOuter();
+        for (int i = 0; i < num - 1; i++)
+          {
+            StackFrame outerFrame = new StackFrame(currentCursor, task, current);
+
+            if (currentCursor.getIsSignalFrame() == 1)
+              outerFrame.setIsSignalFrame(true);
+
+            current.outer = outerFrame;
+            current = outerFrame;
+
+            currentCursor = currentCursor.getOuter();
+          }
       }
     return toReturn;
+  }
+  
+  public static StackFrame createStackFrame (Task task) throws TaskException
+  {
+    return createStackFrame(task, 0);
   }
 }

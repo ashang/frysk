@@ -101,6 +101,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   protected static final int STEP_IN = 3;
   protected static final int STEP_OVER = 4;
   protected static final int STEP_OUT = 5;
+  protected static final int STEP_OVER_LINE_STEP = 6;
   
   private Proc stateProc;
   
@@ -241,19 +242,96 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
   }
   
-  public void stepOver (Task task)
+  Breakpoint breakpoint;
+  StackFrame lastFrame;
+  
+  public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
+    System.out.println("Stepping over from runstate");
     this.state = STEP_OVER;
+    this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
+    this.lastFrame = lastFrame;
+    //this.numSteppingTasks = tasks.size();
+    this.taskStepCount =  1;
+    
+    Task t = lastFrame.getTask();
+    t.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
+    System.out.println("Unblock");
+    t.requestDeleteInstructionObserver(this);
+    //t.requestUnblock(this);
+    
+//    Iterator i = tasks.iterator();
+//    while (i.hasNext())
+//      ((Task) i.next()).requestUnblock(this);
   }
   
-  public void setUpStepOut (LinkedList tasks, TaskObserver.Code breakpoint)
+  public void stepOver (Task task)
+  {
+    StackFrame newFrame = null;
+    try
+    {
+      newFrame = StackFactory.createStackFrame(task, 2);
+    }
+    catch (TaskException te)
+    {
+//      LinkedList temp = new LinkedList();
+//      temp.add(task);
+//      setUpStep(temp);
+      /* Well this failed, so pretend it was a single step and let the 
+       * Observers deal with the problem. */
+      this.setChanged();
+      this.notifyObservers(task);
+    }
+    
+    /* The two frames are the same; treat this step-over as a line step. */
+    if (newFrame.getCFA() == this.lastFrame.getCFA())
+      {
+        this.setChanged();
+        this.notifyObservers(task);
+      }
+    else
+      {
+        /* There is a different innermost frame on the stack - run until
+         * it exits. */
+        this.state = STEP_OVER;
+        this.breakpoint = new Breakpoint(lastFrame.getAddress());
+        task.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
+        System.out.println("Unblock");
+        task.requestDeleteInstructionObserver(this);
+      }
+  }
+  
+  public void finishStepOver(Task task)
+  {
+    // do nothing.
+  }
+  
+  public void cleanUpBreakPoint (Task task)
+  {
+    System.out.println("Cleanupbreakpoint");
+    this.setChanged();
+    this.notifyObservers(task);
+  }
+  
+  public void setUpStepOut (LinkedList tasks, StackFrame lastFrame)
   {
     this.state = STEP_OUT;
+    System.out.println("Stepping out from runstate");
+    this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
+    this.lastFrame = lastFrame;
+    //this.numSteppingTasks = tasks.size();
+    this.taskStepCount =  1;
+    
+    Task t = lastFrame.getTask();
+    t.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
+    System.out.println("Unblock");
+    //t.requestDeleteInstructionObserver(this);
+    t.requestUnblock(this);
   }
 
   public void stepOut (Task task)
   {
-
+    
   }
   
   /**
@@ -637,7 +715,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public Action updateExecuted (Task task)
   {
 
-    if (state >= INSTRUCTION_STEP && state <= STEP_OUT)
+    if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
         switch (state)
           {
@@ -648,10 +726,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
             stepIn(task);
             break;
           case STEP_OVER:
-            stepOver(task);
+            finishStepOver(task);
+            //this.taskStepCount--;
+            //task.requestUnblock(this);
             break;
           case STEP_OUT:
             stepOut(task);
+            break;
+          case STEP_OVER_LINE_STEP:
+            stepOver(task);
             break;
           }
 
@@ -796,6 +879,86 @@ public class RunState extends Observable implements TaskObserver.Instruction
           }
       }
     });
+  }
+  
+  /*****************************************************************************
+   * TASKOBSERVER.CODE BREAKPOINT CLASS
+   ****************************************************************************/
+  
+  private Object monitor;
+  
+  protected class Breakpoint implements TaskObserver.Code
+  {
+    private long address;
+
+    private int triggered;
+
+    private boolean added;
+
+    private boolean removed;
+
+    Breakpoint (long address)
+    {
+      System.out.println("Setting address to " + address);
+      this.address = address;
+      if (monitor == null)
+        monitor = new Object();
+    }
+
+    public Action updateHit (Task task, long address)
+    {
+      System.out.println("Hit " + address + " | " + this.address);
+      if (address != this.address)
+        {
+          System.out.println("Hit wrong address!");
+          return Action.CONTINUE;
+        }
+      else
+        cleanUpBreakPoint(task);
+
+      triggered++;
+      return Action.CONTINUE;
+    }
+
+    int getTriggered ()
+    {
+      return triggered;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      w.printStackTrace();
+    }
+
+    public void addedTo (Object observable)
+    {
+      synchronized (monitor)
+        {
+          added = true;
+          removed = false;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isAdded ()
+    {
+      return added;
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      synchronized (monitor)
+        {
+          removed = true;
+          added = false;
+          monitor.notifyAll();
+        }
+    }
+
+    public boolean isRemoved ()
+    {
+      return removed;
+    }
   }
 
 }

@@ -33,6 +33,22 @@
 	(addFailed): Ditto.
 	(setNumRunningTasks): Ditto.
 
+	(breakpoint): Added. TaskObserver.Code object used as a breakpoint on
+	StackFrame return addresses for stepping.
+	(lastFrame): Added. Last StackFrame on the top of the stack before the
+	last step-out or step-over.
+	(setUpStepOver): Added. Sets up breakpoint and lastFrame, then
+	performs an instruction step on the Task.
+	(stepOver): Build a new, shortened, stacktrace and use the frames to
+	compare the innermost StackFrame to the previous one represented by 
+	lastFrame. Singlestep if they are the same, otherwise run the task.
+	(finishStepOver): Added.
+	(cleanUpBreakPoint): Added.
+	(setUpStepOut): Set up breakpoint on outer frame, set lastFrame and 
+	instruction step the Task.
+	(updateExecuted): Added functionality to switch for a new state.
+	(Breakpoint): Added. New class to implement TaskObserver.Code.
+
 2006-11-21  Nurdin Premji  <npremji@redhat.com>
 
 	* tests/TestStackBacktrace.java: Changed to use new FindProc interface.	

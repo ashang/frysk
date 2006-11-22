@@ -116,11 +116,11 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.value.Variable;
-import frysk.proc.Action;
+//import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
+//import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.rt.RunState;
@@ -270,8 +270,6 @@ public class SourceWindow
   protected static final int STEP_OUT = 5;
   
   private RunState runState;
-  
-  private Object monitor;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -781,7 +779,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(true);
+    this.next.setSensitive(false);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -1605,22 +1603,18 @@ public class SourceWindow
    */
   private void doNext ()
   {
-    System.out.println("Next");
+    System.out.println("Step Over");
     
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Stepping");
+    sbar.push(0, "Stepping Over");
     
     desensitize();
     
-    //this.SW_state = STEP_OUT;
+    //this.numSteppingThreads = swProc.getTasks().size();
+    this.numSteppingThreads = 1;
     
-    this.numSteppingThreads = swProc.getTasks().size();
-    
-    Breakpoint b = new Breakpoint(this.currentFrame.getOuter().getAddress());
-    
-    this.runState.setUpStepOut(this.swProc.getTasks(), b);
-    
-    //task.requestAddCodeObserver(code, breakpoint1);
+    this.runState.setUpStepOver(this.swProc.getTasks(), this.currentFrame);
+    removeTags();
   }
 
   /**
@@ -1633,10 +1627,22 @@ public class SourceWindow
 
   /**
    * Tells the debugger to finish executing the current function
+   * "Step out"
    */
   private void doFinish ()
   {
-    System.out.println("Finish");
+    System.out.println("Step Out");
+    
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping Out");
+    
+    desensitize();
+    
+    //this.numSteppingThreads = swProc.getTasks().size();
+    this.numSteppingThreads = 1;
+    
+    this.runState.setUpStepOut(this.swProc.getTasks(), this.currentFrame);
+    removeTags();
   }
 
   /**
@@ -2227,76 +2233,6 @@ public class SourceWindow
           procReblocked();
         }
       });
-    }
-  }
-  
-  protected class Breakpoint implements TaskObserver.Code
-  {
-    private long address;
-
-    private int triggered;
-
-    private boolean added;
-
-    private boolean removed;
-
-    Breakpoint (long address)
-    {
-      this.address = address;
-      if (monitor == null)
-        monitor = new Object();
-    }
-
-    public Action updateHit (Task task, long address)
-    {
-      if (address != this.address)
-        {
-          System.out.println("Hit wrong address!");
-          return Action.CONTINUE;
-        }
-
-      triggered++;
-      return Action.CONTINUE;
-    }
-
-    int getTriggered ()
-    {
-      return triggered;
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      w.printStackTrace();
-    }
-
-    public void addedTo (Object observable)
-    {
-      synchronized (monitor)
-        {
-          added = true;
-          removed = false;
-          monitor.notifyAll();
-        }
-    }
-
-    public boolean isAdded ()
-    {
-      return added;
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      synchronized (monitor)
-        {
-          removed = true;
-          added = false;
-          monitor.notifyAll();
-        }
-    }
-
-    public boolean isRemoved ()
-    {
-      return removed;
     }
   }
   

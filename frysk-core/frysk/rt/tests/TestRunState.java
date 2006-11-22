@@ -432,7 +432,7 @@ public class TestRunState extends TestLib
           runState.stepIn(task);
           break;
         case STEP_OVER:
-          runState.stepOver(task);
+          //runState.stepOver(task);
           break;
         case STEP_OUT:
           runState.stepOut(task);

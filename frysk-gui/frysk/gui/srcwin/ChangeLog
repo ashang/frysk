@@ -1,3 +1,8 @@
+2006-11-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (doFinish): Added code to prepare for step-over work.
+	(doNext): Ditto.
+
 2006-11-22  Rick Moseley  <rmoseley@redhat.com>
 
 	* testfiles/test_looper.xml: Update new base DOM for CDTParser code
@@ -15,8 +20,8 @@
 	(procReblocked): Ditto.
 	(doRun): Ditto.
 	(doStep): Ditto.
-	(doNext): Ditto.
 	(executeTasks): Ditto.
+	(doNext): Ditto.
 	(updateShownStackFrame): Updated to use RunState's state instead of 
 	this window's SW_state.
 	(toggleDisassemblyWindow): Add the DisassemblyWindow's LockObserver to
@@ -33,6 +38,9 @@
 	(LockObserver): Added Javadoc.
 	* SourceView.java (SourceViewListener.mouseMotionEvent): Updated call
 	to get the state from the RunState belonging to the SourceWindow.
+
+	* StackFactory.java (createStackFrame): Moved original to new method taking
+	an extra int parameter. Kept a delegate to new method with int being zero.
 
 2006-11-20  Mike Cvet  <mcvet@redhat.com>
 
