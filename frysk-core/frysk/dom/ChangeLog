@@ -1,3 +1,12 @@
+2006-11-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFunction.java: Added new methods to set ending line
+	and character numbers from th parser.
+	* cparser/CDTParser.java: Check for each callback to make
+	sure we are marking up the local source file; added 
+	functionality to exitFunctionBody to set the ending line
+	and character numbers for the function.
+
 2006-11-15  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Add more comments, javadoc; add more

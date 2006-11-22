@@ -100,6 +100,7 @@ import org.jdom.output.XMLOutputter;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
+import frysk.dom.DOMFunction;
 import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
@@ -138,7 +139,7 @@ public class CDTParser
       {
         language = ParserLanguage.CPP;
       }
-    String [] incPaths = getIncPaths(source);
+    String [] incPaths = getIncPaths(this.source);
     IScannerInfo buildScanInfo = new ScannerInfo(null, incPaths);
     IScannerInfo scanInfo = new ScannerInfo(buildScanInfo.getDefinedSymbols(),
                                             buildScanInfo.getIncludePaths());
@@ -181,49 +182,49 @@ public class CDTParser
      * The CDT Parser does not parse out comments for some reason, do a second
      * parsing run and pick them out
      */
-    Tokenizer tokenMaker = new Tokenizer(filename);
+//    Tokenizer tokenMaker = new Tokenizer(filename);
 
-    while (tokenMaker.hasMoreTokens())
-      {
-        Token t = tokenMaker.nextToken();
+//    while (tokenMaker.hasMoreTokens())
+//      {
+//        Token t = tokenMaker.nextToken();
 
         // C++ style comments
-        if (t.text.equals("//"))
-          {
-            Token t2 = t;
-            while (tokenMaker.hasMoreTokens()
-                   && tokenMaker.peek().lineNum == t.lineNum)
-              {
-                t2 = tokenMaker.nextToken();
-              }
-            t2.toString();
+//        if (t.text.equals("//"))
+//          {
+//            Token t2 = t;
+//            while (tokenMaker.hasMoreTokens()
+//                   && tokenMaker.peek().lineNum == t.lineNum)
+//              {
+//                t2 = tokenMaker.nextToken();
+//              }
+//            t2.toString();
             // buffer.addComment(t.lineNum, t.colNum, t.lineNum,
             // t2.colNum+t2.text.length());
-          }
+//          }
         // C Style comments
-        else if (t.text.equals("/*"))
-          {
-            Token t2 = t;
-            while (tokenMaker.hasMoreTokens()
-                   && ! tokenMaker.peek().text.equals("*/"))
-              {
-                t2 = tokenMaker.nextToken();
-              }
-            t2 = tokenMaker.nextToken();
-            t2.toString();
+//        else if (t.text.equals("/*"))
+//          {
+//            Token t2 = t;
+//            while (tokenMaker.hasMoreTokens()
+//                   && ! tokenMaker.peek().text.equals("*/"))
+//              {
+//                t2 = tokenMaker.nextToken();
+//              }
+//            t2 = tokenMaker.nextToken();
+//            t2.toString();
             // buffer.addComment(t.lineNum, t.colNum, t2.lineNum,
             // t2.colNum+t2.text.length());
-          }
+//          }
         // For some reason the CDTParser doesn't pick up this keyword either
-        else if (t.text.equals("return") | t.text.startsWith("exit("))
-          {
-            DOMLine line = this.source.getLine(t.lineNum + 1);
-            if (line == null)
-              return;
+//        else if (t.text.equals("return") | t.text.startsWith("exit("))
+//          {
+//            DOMLine line = this.source.getLine(t.lineNum + 1);
+//            if (line == null)
+//              return;
 
-            line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
-          }
-      }
+//            line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
+//          }
+//      }
   }
   
   /*
@@ -309,19 +310,25 @@ public class CDTParser
 
       String typeText = typeLine.getText();
       String nameText = nameLine.getText();
+      
+      // Check to see if the character string we are parsing is in one of the lines
+      if (!checkScope(arg0.getName(), typeText) || !checkScope(arg0.getName(), nameText))
+        return;
+      
+      String token = typeText.substring(arg0.getStartingOffset()
+                                        - typeLine.getOffset(),
+                                        arg0.getNameOffset()
+                                            - typeLine.getOffset()).trim();
 
       typeLine.addTag(DOMTagTypes.KEYWORD,
-                      typeText.substring(arg0.getStartingOffset()
-                                         - typeLine.getOffset(),
-                                         arg0.getNameOffset()
-                                             - typeLine.getOffset() - 1),
+                      token.trim(),
                       arg0.getStartingOffset() - typeLine.getOffset());
       nameLine.addTag(DOMTagTypes.LOCAL_VAR,
                       nameText.substring(arg0.getNameOffset()
                                          - nameLine.getOffset(),
                                          arg0.getNameOffset()
                                              - nameLine.getOffset()
-                                             + arg0.getName().length()),
+                                             + arg0.getName().length()).trim(),
                       arg0.getNameOffset() - nameLine.getOffset());
     }
 
@@ -336,18 +343,22 @@ public class CDTParser
 
       String lineText = line.getText();
       String nameText = nameLine.getText();
+      
+      // Check to see if the character string we are parsing is in one of the lines
+      if (!checkScope(arg0.getName(), lineText) || !checkScope(arg0.getName(), nameText))
+        return;
 
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(arg0.getStartingOffset()
                                      - line.getOffset(), arg0.getNameOffset()
-                                                         - line.getOffset()),
+                                                         - line.getOffset()).trim(),
                   arg0.getStartingOffset() - line.getOffset());
       nameLine.addTag(DOMTagTypes.FUNCTION,
                       nameText.substring(arg0.getNameOffset()
                                          - nameLine.getOffset(),
                                          arg0.getNameOffset()
                                              - nameLine.getOffset()
-                                             + arg0.getName().length()),
+                                             + arg0.getName().length()).trim(),
                       arg0.getNameOffset() - nameLine.getOffset());
 
       Iterator iter = arg0.getParameters();
@@ -427,18 +438,15 @@ public class CDTParser
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
       DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
       if (line == null || nameLine == null)
-        {
           return;
-        }
 
       String lineText = line.getText();
       String nameText = nameLine.getText();
-
-      String funcName = nameText.substring(arg0.getNameOffset()
-                                           - nameLine.getOffset(),
-                                           arg0.getNameOffset()
-                                               - nameLine.getOffset()
-                                               + arg0.getName().length());
+      
+      // Check to see if the character string we are parsing is in one of the lines
+      if (!checkScope(arg0.getName(), lineText) && !checkScope(arg0.getName(), nameText))
+        return;
+      
       // On functions that are pointers(have an "*" in front of the name) the CDTParser handles
       // them weirdly so when that occurs we must adjust the length of the substring parameters
       int startingcharindex = arg0.getStartingOffset() - line.getOffset();
@@ -451,16 +459,12 @@ public class CDTParser
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(startingcharindex, endingcharindex),
                   arg0.getStartingOffset() - line.getOffset());
-      nameLine.addTag(DOMTagTypes.FUNCTION, funcName, arg0.getNameOffset()
+      nameLine.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getNameOffset()
                                                       - nameLine.getOffset());
-
-      int endingLine = arg0.getEndingLine();
-      if (endingLine == 0)
-        endingLine = arg0.getStartingLine();
-
-      image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(),
-                        endingLine, arg0.getStartingOffset(),
-                        arg0.getEndingOffset());
+      
+      // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
+      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine() - 1,
+                        0, arg0.getStartingOffset(), 0);
 
       // start building the full name of the function for jump-to purposes
       String functionName = arg0.getName() + "(";
@@ -532,7 +536,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
@@ -555,7 +559,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(line.getText(), arg0.getName()))
         return;
 
       String lineText = line.getText();
@@ -576,7 +580,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.NAMESPACE, arg0.getName(), arg0.getOffset()
@@ -587,7 +591,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
@@ -607,7 +611,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
@@ -627,7 +631,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
@@ -648,14 +652,10 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
-      
-//    Let's see if the field we are talking about is in this source file
-      if (lineText.indexOf(arg0.getName()) == -1)
-        return;
       
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(arg0.getStartingOffset()
@@ -673,7 +673,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset()
@@ -684,7 +684,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
@@ -699,7 +699,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset()
@@ -711,7 +711,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(),
@@ -724,7 +724,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
@@ -773,7 +773,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
@@ -784,7 +784,7 @@ public class CDTParser
     {
       
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
@@ -856,7 +856,7 @@ public class CDTParser
     {
    
       DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       line.addTag(DOMTagTypes.TEMPLATE, arg0.getName(), arg0.getOffset()
@@ -868,14 +868,10 @@ public class CDTParser
     {
 
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
-      
-      // Only get includes that are local to this file
-      if ( !lineText.startsWith("#include") || (lineText.indexOf(arg0.getName()) == -1))
-        return;
 
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(0, arg0.getNameOffset() - line.getOffset()
@@ -892,14 +888,10 @@ public class CDTParser
     {
 
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null)
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
 
-//    Check to see if the macro we have found is in this source file
-//    Not in some #include file
       String lineText = line.getText();
-      if (lineText.indexOf(arg0.getName()) == -1)
-        return;
 
       line.addTag(
                   DOMTagTypes.KEYWORD,
@@ -941,6 +933,16 @@ public class CDTParser
 
     public void exitFunctionBody (IASTFunction arg0)
     {
+      DOMFunction func = image.getFunction(arg0.getName());
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+
+      if (line == null || !checkScope(arg0.getName(), line.getText()))
+          return;
+      
+      func.setEndingLine(arg0.getEndingLine() - 1);
+      DOMLine line2 = source.getLine(arg0.getEndingLine() - 1);
+      func.setEnd(line2.getOffset() + line.getLength());
+      
     }
 
     public void exitCodeBlock (IASTCodeScope arg0)
@@ -1021,6 +1023,24 @@ public class CDTParser
                            + arg0.getSourceLineNumber() + ".....ID# = "
                            + arg0.getSourceStart());
       return false;
+    }
+    
+    /**
+     * checkScope tests whether or not the token we are parsing is in the
+     *     source file we are parsing
+     *     
+     * @param token is the token passed back from the CDTParser
+     * @param linetext is the line of text from the source file that
+     *         triggered the callback
+     *         
+     * @return true if the token is found in the line, false if not
+     */
+    public boolean checkScope(String token, String linetext) 
+    {
+      if (linetext.indexOf(token) == -1) 
+        return false;
+      else
+        return true;
     }
   }
 }

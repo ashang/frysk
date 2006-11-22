@@ -154,6 +154,14 @@ public class DOMFunction {
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
+    /**
+     * gets the char offset from the start of the file of the last char of the function
+     * 
+     * @param The end of the function/inlined code as a char offset from the start of the file
+     */
+    public void setEnd(int endingchar){
+      this.myElement.setAttribute(END_ATTR, ""+endingchar);
+    }
 	/**
 	 * gets the name of the source that this function came from
 	 * 
@@ -182,6 +190,17 @@ public class DOMFunction {
 	public int getStartingLine(){
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 	}
+    
+    /**
+     * sets the ending line number in the source file for this function
+     * 
+     * @param an integer with the starting line number in the source file to set it to
+     */
+    public void setEndingLine(int linenum){
+      System.out.println("****************DOMFunction:setEndingLine = " + linenum);
+      this.myElement.setAttribute(LINE_END_ATTR, ""+linenum);
+      return;
+    }
 	
 	/**
 	 * gets the ending line number in the source file for this function
