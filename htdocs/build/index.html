@@ -269,18 +269,22 @@ $ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </li>
 
 <li> On a 32-bit-default 64-bit system, such as the PPC64, a 64-bit
-build environment is needed vis:
+build environment needs to be passed to <tt>autoconf</tt>'s
+<tt>configure</tt> as command line arguments, letting
+<tt>configure</tt> save them as part of the configuration process.
+This is done by specifying them on <tt>autogen.sh</tt>'s command line,
+vis:
 
 <pre>
-$ ( mkdir build && cd build && \
+$ ( mkdir build && cd build && ../frysk/autogen.sh \
   PKG_CONFIG_PATH=/usr/lib64/pkgconfig \
   CC='gcc -m64' \
   GCJ='gcj -m64' \
   GCJLINK='gcj -m64' \
   CXX='g++ -m64' \
-  ../frysk/autogen.sh && \
-  make -j2 )
+  && make -j2 )
 </pre>
+<tt>configure</tt> then saves them as part of the configuration
 </li>
 </dd>
 

@@ -103,3 +103,39 @@ frysk/gui/test/dogtail_scripts/frysk_suite.py: frysk/gui/test/dogtail_scripts/fr
 # Fake rules for CONFIG_STATUS_DEPENDENCIES:
 $(FRYSK_GUI_JARS):
 	: no-op
+
+# Run through the glade files and check to see that they don't contain
+# references to glade libraries.  Create a local catalog so that it
+# doesn't try to down load the XML definition stuff from the internet.
+
+# This is part of all-local, since, if this fails the build won't fly.
+
+all-local: checked-glade-xml
+CLEANFILES += checked-glade-xml
+checked-glade-xml: $(glade_DATA) glade.catalog
+	export SGML_CATALOG_FILES=glade.catalog ; \
+	for f in x $(glade_DATA) ; do \
+		test $$f = x && continue; \
+		echo checking $(srcdir)/$$f; \
+		if $(XMLLINT) --catalogs --nonet --noout --valid \
+			$(srcdir)/$$f ; then : ; \
+		else \
+			echo Malformed glade xml file: $(srcdir)/$$f; \
+			exit 1; \
+		fi; \
+		if grep 'lib="gnome"' $(srcdir)/$$f; then \
+			echo Gnome library found in $(srcdir)/$$f;\
+			exit 1; \
+		fi; \
+	done
+	touch $@
+CLEANFILES += glade.catalog
+GLADE_DTD_FILE = file://$(LIBGLADE_PREFIX)/share/xml/libglade/glade-2.0.dtd 
+glade.catalog:
+	rm -f $@.tmp
+	$(XMLCATALOG) --noout -v --create $@.tmp
+	$(XMLCATALOG) --noout -v --add rewriteURI \
+		http://glade.gnome.org/glade-2.0.dtd \
+		$(GLADE_DTD_FILE) \
+		$@.tmp
+	mv $@.tmp $@
