@@ -1843,6 +1843,7 @@ public class SourceWindow
     else
       {
         this.runState.addObserver(regWin.getLockObserver());
+        regWin.setClosed(false);
         regWin.showAll();
       }
   }
@@ -1869,6 +1870,7 @@ public class SourceWindow
     else
       {
         this.runState.addObserver(memWin.getLockObserver());
+        memWin.setClosed(false);
         memWin.showAll();
       }
   }
@@ -1895,6 +1897,7 @@ public class SourceWindow
     else
       {
         this.runState.addObserver(disWin.getLockObserver());
+        disWin.setClosed(false);
         disWin.showAll();
       }
   }
@@ -2161,6 +2164,24 @@ public class SourceWindow
 
     public void currentStackChanged (StackFrame newFrame)
     {
+      if (newFrame == null)
+        return;
+      
+      if (SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
+        {
+          DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
+          if (disWin != null && disWin.getClosed() == false)
+            disWin.resetTask(newFrame.getTask());
+
+          MemoryWindow memWin = MemoryWindowFactory.memWin;
+          if (memWin != null && memWin.getClosed() == false)
+            memWin.resetTask(newFrame.getTask());
+
+          RegisterWindow regWin = RegisterWindowFactory.regWin;
+          if (regWin != null && regWin.getClosed() == false)
+            regWin.resetTask(newFrame.getTask());
+        }
+      
       currentFrame = newFrame;
       // TreePath path = stackView.getSelection().getSelectedRows()[0];
       // int selected = path.getIndices()[0];

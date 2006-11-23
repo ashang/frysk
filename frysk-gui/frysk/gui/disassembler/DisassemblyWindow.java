@@ -147,6 +147,8 @@ public class DisassemblyWindow
   
   private boolean toggle = true;
   
+  private boolean closed = false;
+  
   /**
    * The DisassmblyWindow, given a Task, will disassemble the instructions
    * and parameters for that task in memory and display them, as well as their
@@ -295,6 +297,7 @@ public class DisassemblyWindow
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             DisassemblyWindow.this.observable.deleteObserver(lock);
+            DisassemblyWindow.this.closed = true;
             DisassemblyWindow.this.hideAll();
           }
       }
@@ -329,6 +332,42 @@ public class DisassemblyWindow
       }
     });
 
+  }
+  
+  public void resetTask (Task task)
+  {
+    this.myTask = task;
+    long pc_inc;
+    try
+      {
+        this.diss = new Disassembler(myTask.getMemory());
+
+        pc_inc = myTask.getIsa().pc(myTask);
+        this.pc = pc_inc;
+      }
+    catch (TaskException e)
+      {
+        // XXX What to do if there's an error?
+        e.printStackTrace();
+        return;
+      }
+    // long end = pc_inc + 20;
+    this.numInstructions = 20;
+    this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
+                  + " " + this.myTask.getName());
+
+    this.diss = new Disassembler(myTask.getMemory());
+    this.model.clear();
+    this.fromSpin.setValue((double) pc_inc);
+    this.lastKnownFrom = pc_inc;
+    // this.toSpin.setValue((double) end);
+    this.pcEntryDec.setText("" + pc_inc);
+    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    
+    for (long i = 0; i < this.numInstructions; i++)
+      this.model.appendRow();
+    
+    refreshList();
   }
 
   /*****************************************************************************
@@ -555,6 +594,9 @@ public class DisassemblyWindow
    */
   public synchronized void handleFromSpin (double val)
   {
+    
+    if (this.model.getFirstIter() == null)
+      return;
 
     if (val > this.lastKnownTo)
       {
@@ -599,6 +641,9 @@ public class DisassemblyWindow
   public synchronized void handleToSpin (double val)
   {
 
+    if (this.model.getFirstIter() == null)
+      return;
+    
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
@@ -683,9 +728,19 @@ public class DisassemblyWindow
    * 
    * @return myTask The Task being examined.
    */
-  public Task getMyTask()
+  public Task getMyTask ()
   {
     return this.myTask;
+  }
+  
+  public boolean getClosed ()
+  {
+    return this.closed;
+  }
+  
+  public void setClosed (boolean closed)
+  {
+    this.closed = closed;
   }
   
   /**
@@ -693,7 +748,7 @@ public class DisassemblyWindow
    * 
    * @return lock This DisassemblyWindow's LockObserver
    */
-  public LockObserver getLockObserver()
+  public LockObserver getLockObserver ()
   {
     return this.lock;
   }

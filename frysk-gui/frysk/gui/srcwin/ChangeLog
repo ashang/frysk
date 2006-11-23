@@ -3,6 +3,13 @@
 	* SourceWindow.java (populateStackBrowser): Moved some code around;
 	preventing redundant variable creation. Fixed a bug where mixed 
 	debuginfo/non-debuginfo programs didn't highlight properly.
+	(currentStackChanged): If the Task that the incoming StackFrame belongs
+	to has also changed from the last StackFrame's, then update the 
+	Register, Memory, and Disassembly windows with the new Task information
+	if they have been initialized and are open. Fixes #3302.
+	(toggleRegisterWindow): Set RegisterWindow closed boolean to false.
+	(toggleMemoryWindow): Set MemoryWindow closed boolean to false.
+	(toggleDisassemblyWindow): Set DisassemblyWindow closed boolean to false.
 
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 

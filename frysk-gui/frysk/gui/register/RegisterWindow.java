@@ -137,6 +137,8 @@ public class RegisterWindow
   private LockObserver lock;
   
   private boolean toggle = true;
+  
+  private boolean closed = false;
 
   /**
    * The RegisterWindow allows the display and editing of the names and values of
@@ -319,6 +321,7 @@ public class RegisterWindow
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             RegisterWindow.this.observable.deleteObserver(lock);
+            RegisterWindow.this.closed = true;
             RegisterWindow.this.hideAll();
           }
       }
@@ -334,6 +337,43 @@ public class RegisterWindow
     });
 
     this.refreshList();
+  }
+  
+  public void resetTask (Task task)
+  {
+    this.myTask = task;
+    Isa isa;
+    try
+      {
+        isa = this.myTask.getIsa();
+      }
+    catch (TaskException e)
+      {
+        e.printStackTrace();
+        return;
+      }
+    this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
+                  + this.myTask.getName());
+
+    ListStore model = (ListStore) this.registerView.getModel();
+    model.clear();
+
+    Iterator registers = isa.RegisterIterator();
+
+    while (registers.hasNext())
+      {
+        Register register = (Register) registers.next();
+        TreeIter iter = model.appendRow();
+
+        model.setValue(iter, (DataColumnString) cols[0], register.getName());
+        model.setValue(iter, (DataColumnObject) cols[9], register);
+        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
+        model.setValue(iter, (DataColumnObject) cols[12],
+                       register.getViews()[0]);
+
+        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
+      }
+    refreshList();
   }
 
   /**
@@ -743,6 +783,16 @@ public class RegisterWindow
   public Task getMyTask()
   {
     return this.myTask;
+  }
+  
+  public boolean getClosed ()
+  {
+    return this.closed;
+  }
+  
+  public void setClosed (boolean closed)
+  {
+    this.closed = closed;
   }
   
   /**

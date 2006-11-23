@@ -5,15 +5,41 @@
 	(resetList): Added. Updates register information after a Task re-block.
 	Fixes #3453.
 	(setTask): Fixed up a little.
+	(closed): Added. 
+	(buttonEvent): Set closed to true if close button is clicked.
+	(resetTask): Added. Sets a new task for the window and updates the
+	window information without having to touch columns and such.
+	Fixes #3302.
+	(getClosed): Added.
+	(setClosed): Added.
 	
 	* memory/MemoryWindow.java (LockObserver..run): Call resetPCAndList().
 	(resetPCAndList): Updates the Task program counter for the window and
 	resets the TreeView rows. Fixes #3453.
+	(closed): Added. 
+	(buttonEvent): Set closed to true if close button is clicked.
+	(setTask): Moved column initialization code here.
+	(resetTask): Added. Sets a new task for the window and updates the
+	window information without having to touch columns and such.
+	Fixes #3302.
+	(handleFromSpin): Exit if the model's first TreeIter is null.
+	(handleToSpin): Ditto.
+	(getClosed): Added.
+	(setClosed): Added.
 	
 	* disassembler/DisassemblyWindow.java (LockObserver..run): Call
 	resetPCAndList().
 	(resetPCAndList): Updates the Task program counter for the window and
 	resets the TreeView rows. Fixes #3453.
+	(closed): Added. 
+	(buttonEvent): Set closed to true if close button is clicked.
+	(resetTask): Added. Sets a new task for the window and updates the
+	window information without having to touch columns and such.
+	Fixes #3302.
+	(handleFromSpin): Exit if the model's first TreeIter is null.
+	(handleToSpin): Ditto.
+	(getClosed): Added.
+	(setClosed): Added.
 
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 

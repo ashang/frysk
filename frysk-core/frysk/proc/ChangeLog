@@ -1,3 +1,8 @@
+2006-11-23  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFindProc.java: Removed some debugging statements,
+	enabled some asserts.
+
 2006-11-22  Nurdin Premji  <npremji@redhat.com>
 
 	* TestRefresh.java (testRefreshZombie): Changed to use old requestRefreshXXX to find children.

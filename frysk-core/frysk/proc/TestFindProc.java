@@ -135,9 +135,8 @@ public class TestFindProc
 
     int postFind = o.getCount();
 
-    //assertEquals(expectedCount, postFind - preFind);
+    assertEquals(expectedCount, postFind - preFind);
     
-    System.out.println("The number of processes find added to the tree was: " + (postFind-preFind));
   }
 
   public void testFindFailed ()
@@ -178,6 +177,5 @@ public class TestFindProc
 
     assertNotNull(proc);
 
-    System.out.println("\nThe number of created Processes is: " + o.getCount());
   }
 }

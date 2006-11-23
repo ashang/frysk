@@ -186,6 +186,8 @@ public class MemoryWindow
   private LockObserver lock;
   
   private boolean toggle = true;
+  
+  private boolean closed = false;
 
   /**
    * The MemoryWindow displays the information stored at various locations in
@@ -328,6 +330,44 @@ public class MemoryWindow
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
+    TreeViewColumn col = new TreeViewColumn();
+    col.setTitle("Location");
+    CellRenderer renderer = new CellRendererText();
+    col.packStart(renderer, true);
+    col.setReorderable(false);
+    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                            cols[LOC]);
+    memoryView.appendColumn(col);
+
+    /* Replace the X in the title of the column with the bitsize to be displayed,
+     * and then append the columns into the view. */
+    for (int i = 0; i < this.columns.length - 1; i++)
+      {
+        col = new TreeViewColumn();
+        col.setTitle(colNames[i].replaceFirst(
+                                              "X",
+                                              ""
+                                                  + (int) Math.pow(
+                                                                   2,
+                                                                   currentFormat + 3)));
+
+        col.setReorderable(true);
+        renderer = new CellRendererText();
+        ((CellRendererText) renderer).setEditable(false);
+
+        col.packStart(renderer, false);
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                                cols[i + 1]);
+
+        memoryView.appendColumn(col);
+
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN,
+                                cols[11]);
+        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
+
+        columns[i] = col;
+      }
+    
     recalculate();
 
     memoryView.setAlternateRowColor(true);
@@ -371,6 +411,7 @@ public class MemoryWindow
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             MemoryWindow.this.observable.deleteObserver(lock);
+            MemoryWindow.this.closed = true;
             MemoryWindow.this.hideAll();
           }
       }
@@ -404,6 +445,39 @@ public class MemoryWindow
     });
 
   }
+  
+  public void resetTask (Task task)
+  {
+    this.myTask = task;
+    long pc_inc;
+    
+    try
+      {
+        this.diss = new Disassembler(myTask.getMemory());
+
+        pc_inc = myTask.getIsa().pc(myTask);
+      }
+    catch (TaskException e)
+      {
+        // XXX What to do if there's an error?
+        e.printStackTrace();
+        return;
+      }
+    
+    long end = pc_inc + 20;
+    this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
+                  + " " + this.myTask.getName());
+
+    this.diss = new Disassembler(myTask.getMemory());
+    this.model.clear();
+    this.fromSpin.setValue((double) pc_inc);
+    this.toSpin.setValue((double) end);
+    this.pcEntryDec.setText("" + pc_inc);
+    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+
+    recalculate();
+
+  }
 
   /*****************************************************************************
    * Calculation, memory reading, and information display methods
@@ -424,52 +498,15 @@ public class MemoryWindow
     memoryView.setModel(model);
 
     /* Remove the existing information because we have to change it anyway. */
-    TreeViewColumn[] tvc = memoryView.getColumns();
-    for (int i = 0; i < tvc.length; i++)
-      {
-        memoryView.removeColumn(tvc[i]);
-      }
+//    TreeViewColumn[] tvc = memoryView.getColumns();
+//    for (int i = 0; i < tvc.length; i++)
+//      {
+//        memoryView.removeColumn(tvc[i]);
+//      }
 
     for (long i = start; i < end + 1; i++)
       rowAppend(i, null);
 
-    TreeViewColumn col = new TreeViewColumn();
-    col.setTitle("Location");
-    CellRenderer renderer = new CellRendererText();
-    col.packStart(renderer, true);
-    col.setReorderable(false);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                            cols[LOC]);
-    memoryView.appendColumn(col);
-
-    /* Replace the X in the title of the column with the bitsize to be displayed,
-     * and then append the columns into the view. */
-    for (int i = 0; i < this.columns.length - 1; i++)
-      {
-        col = new TreeViewColumn();
-        col.setTitle(colNames[i].replaceFirst(
-                                              "X",
-                                              ""
-                                                  + (int) Math.pow(
-                                                                   2,
-                                                                   currentFormat + 3)));
-
-        col.setReorderable(true);
-        renderer = new CellRendererText();
-        ((CellRendererText) renderer).setEditable(false);
-
-        col.packStart(renderer, false);
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                                cols[i + 1]);
-
-        memoryView.appendColumn(col);
-
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN,
-                                cols[11]);
-        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
-
-        columns[i] = col;
-      }
     this.refreshList();
   }
   
@@ -765,6 +802,9 @@ public class MemoryWindow
   public void handleFromSpin (double val)
   {
 
+    if (this.model.getFirstIter() == null)
+      return;
+    
     if (val > this.lastKnownTo)
       {
         this.fromSpin.setValue(this.lastKnownTo);
@@ -802,6 +842,9 @@ public class MemoryWindow
    */
   public void handleToSpin (double val)
   {
+    
+    if (this.model.getFirstIter() == null)
+      return;
 
     if (val < this.lastKnownFrom)
       {
@@ -871,6 +914,16 @@ public class MemoryWindow
   public Task getMyTask()
   {
     return this.myTask;
+  }
+  
+  public boolean getClosed ()
+  {
+    return this.closed;
+  }
+  
+  public void setClosed (boolean closed)
+  {
+    this.closed = closed;
   }
   
   /**
