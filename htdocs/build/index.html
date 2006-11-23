@@ -265,12 +265,16 @@ $ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </pre>
 </li>
 
-<li> On PPC64.
+<li> On 32-bit-on-64-bit systems such as the PPC64, a 64-bit build
+environment is needed vis:
 <pre>
-$ ( export PKG_CONFIG_PATH=/usr/lib64/pkgconfig )
-$ ( mkdir build && cd build )
-$ ( CC='gcc -m64' GCJ='gcj -m64' GCJLINK='gcj -m64' CXX='g++ -m64' ../frysk/autogen.sh )
-$ ( make -j2 )
+$ export \
+  PKG_CONFIG_PATH=/usr/lib64/pkgconfig \
+  CC='gcc -m64' \
+  GCJ='gcj -m64' \
+  GCJLINK='gcj -m64' \
+  CXX='g++ -m64' \
+$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </pre>
 </li>
 </dd>
