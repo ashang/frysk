@@ -1,3 +1,20 @@
+2006-11-23  Mike Cvet  <mcvet@redhat.com>
+
+	* register/RegisterWindow.java (LockObserver..run): Call 
+	resetList() instead of refreshList().
+	(resetList): Added. Updates register information after a Task re-block.
+	Fixes #3453.
+	(setTask): Fixed up a little.
+	
+	* memory/MemoryWindow.java (LockObserver..run): Call resetPCAndList().
+	(resetPCAndList): Updates the Task program counter for the window and
+	resets the TreeView rows. Fixes #3453.
+	
+	* disassembler/DisassemblyWindow.java (LockObserver..run): Call
+	resetPCAndList().
+	(resetPCAndList): Updates the Task program counter for the window and
+	resets the TreeView rows. Fixes #3453.
+
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 
 	* register/RegisterWindow.java (LockObserver.update): No longer

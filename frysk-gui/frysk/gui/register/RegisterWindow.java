@@ -207,14 +207,14 @@ public class RegisterWindow
   {
     this.myTask = myTask;
     Isa isa;
-    try 
+    try
       {
-	isa  = this.myTask.getIsa();
+        isa = this.myTask.getIsa();
       }
     catch (TaskException e)
       {
-	e.printStackTrace();
-	return;
+        e.printStackTrace();
+        return;
       }
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -234,10 +234,10 @@ public class RegisterWindow
         model.setValue(iter, (DataColumnString) cols[0], register.getName());
         model.setValue(iter, (DataColumnObject) cols[9], register);
         model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
-	model.setValue(iter, (DataColumnObject)cols[12], 
-		       register.getViews()[0]);
-	
-	saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
+        model.setValue(iter, (DataColumnObject) cols[12],
+                       register.getViews()[0]);
+
+        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
       }
 
     TreeViewColumn col = new TreeViewColumn();
@@ -415,6 +415,40 @@ public class RegisterWindow
 	throw new RuntimeException("can't handle view type "
 				   + viewType + " yet");
       }
+  }
+  
+  private void resetList ()
+  {
+    Isa isa;
+    try
+      {
+        isa = this.myTask.getIsa();
+      }
+    catch (TaskException e)
+      {
+        e.printStackTrace();
+        return;
+      }
+    
+    ListStore model = (ListStore) this.registerView.getModel();
+    model.clear();
+    
+    Iterator registers = isa.RegisterIterator();
+
+    while (registers.hasNext())
+      {
+        Register register = (Register) registers.next();
+        TreeIter iter = model.appendRow();
+
+        model.setValue(iter, (DataColumnString) cols[0], register.getName());
+        model.setValue(iter, (DataColumnObject) cols[9], register);
+        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
+        model.setValue(iter, (DataColumnObject) cols[12],
+                       register.getViews()[0]);
+
+        saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
+      }
+    refreshList();
   }
   
   /**
@@ -780,7 +814,8 @@ public class RegisterWindow
                 public void run ()
                 {
                   toggle = true;
-                  refreshList();
+                  resetList();
+                  //refreshList();
                   resensitize();
                 }
               });

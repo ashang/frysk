@@ -386,6 +386,29 @@ public class DisassemblyWindow
     this.refreshList();
   }
 
+  private void resetPCAndList ()
+  {
+    long pc_inc = 0;
+    try
+    {
+      pc_inc = myTask.getIsa().pc(myTask);
+    }
+    catch (TaskException te)
+    {
+      refreshList();
+    }
+    
+    //this.pc = pc_inc;
+    this.pcEntryDec.setText("" + pc_inc);
+    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    this.model.clear();
+    
+    for (long i = 0; i < this.numInstructions; i++)
+      this.model.appendRow();
+    
+    refreshList();
+  }
+  
   /**
    * Grabs information out of the Disassembler and updates the display
    */
@@ -734,7 +757,8 @@ public class DisassemblyWindow
                 public void run ()
                 {
                   toggle = true;
-                  refreshList();
+                  resetPCAndList();
+                  //refreshList();
                   resensitize();
                 }
               });

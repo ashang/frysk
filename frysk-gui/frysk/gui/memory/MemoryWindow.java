@@ -472,6 +472,33 @@ public class MemoryWindow
       }
     this.refreshList();
   }
+  
+  private void resetPCAndList ()
+  {
+    long pc_inc = 0;
+    try
+    {
+      pc_inc = myTask.getIsa().pc(myTask);
+    }
+    catch (TaskException te)
+    {
+      refreshList();
+    }
+    this.pcEntryDec.setText("" + pc_inc);
+    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    
+    
+    long start = (long) this.fromSpin.getValue();
+    long end = (long) this.toSpin.getValue();
+    this.lastKnownFrom = (double) start;
+    this.lastKnownTo = (double) end;
+    this.model.clear();
+    
+    for (long i = start; i < end + 1; i++)
+      rowAppend(i, null);
+    
+    refreshList();
+  }
 
   /**
    * Refresh and update the display of addresses and values from what is 
@@ -915,7 +942,8 @@ public class MemoryWindow
                 public void run ()
                 {
                   toggle = true;
-                  refreshList();
+                  //refreshList();
+                  resetPCAndList();
                   resensitize();
                 }
               });

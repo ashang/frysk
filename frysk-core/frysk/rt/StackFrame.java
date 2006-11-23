@@ -294,8 +294,9 @@ public class StackFrame
    * Return a string representation of this stack frame.
    * The returned string is suitable for display to the user.
    */
-  public String toString ()
+  public String frameToString ()
   {
+    System.out.println("In Custom tostring");
     StringBuffer builder = new StringBuffer("0x");
     String addr = Long.toHexString(getAddress());
     

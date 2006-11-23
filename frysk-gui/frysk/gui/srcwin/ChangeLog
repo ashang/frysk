@@ -1,3 +1,9 @@
+2006-11-23  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (populateStackBrowser): Moved some code around;
+	preventing redundant variable creation. Fixed a bug where mixed 
+	debuginfo/non-debuginfo programs didn't highlight properly.
+
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doFinish): Added code to prepare for step-over work.

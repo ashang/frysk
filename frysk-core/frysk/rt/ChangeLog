@@ -1,3 +1,10 @@
+2006-11-23  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (setUpStep): If the DwflLine returned is null, perform
+	an instruction step. Handles line stepping within frames without debug
+	info. Temporary fix for #3575.
+	* StackFrame.java (frameToString): Renamed from toString().
+
 2006-11-22  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (state): Added. State representation of this RunState.

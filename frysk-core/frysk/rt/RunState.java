@@ -161,6 +161,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
               //System.out.println(npe.getMessage());
               continue;
             }
+            
+            if (line == null)
+              {
+                LinkedList temp = new LinkedList();
+                temp.add(t);
+                stepInstruction(temp);
+                return;
+              }
 
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));

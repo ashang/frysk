@@ -381,7 +381,6 @@ public class SourceWindow
   {
     this.watchView.removeTrace(var);
   }
-  
 
   /**
    * Populates the stack browser window
@@ -406,7 +405,6 @@ public class SourceWindow
           {
             while (curr != null && curr.getDwflLine() == null)
               curr = curr.getOuter();
-              
           }
         
         if (curr != null)
@@ -414,20 +412,25 @@ public class SourceWindow
             this.currentFrame = curr;
             this.currentTask = curr.getTask();
             this.view = new SourceView(curr, this);
+            
+            SourceView v = (SourceView) view;
+            SourceBuffer b = (SourceBuffer) v.getBuffer();
+            
+            for (int j = 0; j < frames.length; j++)
+              {
+                if (frames[j].getMethodName() != null)
+                  {
+                    if (! frames[j].getMethodName().equals(
+                                                           this.currentFrame.getMethodName()))
+                      b.highlightLine(frames[j], true);
+                  }
+              }
+            b.highlightLine(curr, true);
           }
         else
           {
             this.view = new SourceView(temp, this);
             this.currentTask = temp.getTask();
-          }
-        
-        SourceView v = (SourceView) view;
-        SourceBuffer b = (SourceBuffer) v.getBuffer();
-        
-        for (int j = 0; j < frames.length; j++)
-          {
-            if (!frames[j].getMethodName().equals(this.currentFrame.getMethodName()))
-              b.highlightLine(frames[j], true);
           }
         
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
@@ -489,6 +492,7 @@ public class SourceWindow
         if (! curr.getMethodName().equals(this.currentFrame.getMethodName()))
           sb.highlightLine(curr, true);
 
+        // Catch null pointers here
         while (curr != null)
           {
             if (curr.getMethodName().equals(currentMethodName))
@@ -1461,8 +1465,6 @@ public class SourceWindow
   {
     if (selected == null)
       return;
-    
-    //System.out.println("In updateshown for  " + selected.getMethodName());
 
     DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
@@ -1968,7 +1970,7 @@ public class SourceWindow
                                * frames, not just the top one
                                */
           {
-
+            
             if (this.dom == null && curr.getDwflLine() != null)
               {
                 try
