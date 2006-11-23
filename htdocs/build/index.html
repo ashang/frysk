@@ -79,11 +79,8 @@ that all its prerequisites are met.</p>
 
 <dd>
 
-Just note the following:
+You will need to install the following:
 
-<ul>
-
-<li>You will need to install a number of packages vis:
 <pre>
 sudo yum install -y \
     antlr jdom junit gcc-java gcc-c++ dejagnu \
@@ -91,9 +88,14 @@ sudo yum install -y \
     automake xmlto transfig eclipse-ecj dogtail \
     sharutils cvs audit-libs-devel binutils-devel
 </pre>
-</li>
 
-</ul>
+In addition, on the PowerPC, check that the following packages were
+installed::
+
+<pre>
+sudo yum install -y \
+    glibc-devel.ppc
+</pre>
 
 For additional updates, check Fedora Core 6's tracker bug's <a
 href="/bugzilla/showdependencytree.cgi?id=2654">dependency tree</a>
@@ -265,16 +267,18 @@ $ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </pre>
 </li>
 
-<li> On 32-bit-on-64-bit systems such as the PPC64, a 64-bit build
-environment is needed vis:
+<li> On a 32-bit-default 64-bit system, such as the PPC64, a 64-bit
+build environment is needed vis:
+
 <pre>
-$ export \
+$ ( mkdir build && cd build && \
   PKG_CONFIG_PATH=/usr/lib64/pkgconfig \
   CC='gcc -m64' \
   GCJ='gcj -m64' \
   GCJLINK='gcj -m64' \
-  CXX='g++ -m64'
-$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
+  CXX='g++ -m64' \
+  ../frysk/autogen.sh && \
+  make -j2 )
 </pre>
 </li>
 </dd>
