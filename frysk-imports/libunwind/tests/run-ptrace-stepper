@@ -1,0 +1,29 @@
+#!/bin/sh
+# 
+# 00000000080484ec jump                             (sp=00000000bfdfa32c)
+#         proc=00000000080484ec-000000000804851a
+#         handler=0 lsda=0
+# 000000000804855d foo+0x31                         (sp=00000000bfdfa330)
+#         proc=000000000804852c-00000000080485d5
+#         handler=0 lsda=0
+# 00000000009a8420 __kernel_sigreturn               (sp=00000000bfdfa350)
+#         proc=00000000009a841f-00000000009a8428
+#         handler=0 lsda=0
+# 00000000080485d5 lockup                           (sp=00000000bfdfa62c)
+#         proc=00000000080485d5-00000000080485da
+#         handler=0 lsda=0
+# 0000000008048632 prefoo+0x58                      (sp=00000000bfdfa630)
+#         proc=00000000080485da-0000000008048634
+#         handler=0 lsda=0
+# 0000000008048697 main+0x63                        (sp=00000000bfdfa660)
+#         proc=0000000008048634-00000000080486a5
+#         handler=0 lsda=0
+# 000000000082fdec __libc_start_main+0xdc           (sp=00000000bfdfa690)
+#         proc=000000000082fd10-000000000082fded
+#         handler=0 lsda=0
+# 0000000008048461 _start+0x21                      (sp=00000000bfdfa700)
+#         proc=0000000008048440-0000000008048462
+#         handler=0 lsda=0
+# ================
+
+./test-ptrace -t -b jump,foo+,__kernel_sigreturn,lockup,prefoo+,main+,__libc_start_main+,_start+ ./test-ptrace-stepper

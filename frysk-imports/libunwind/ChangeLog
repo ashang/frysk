@@ -1,3 +1,29 @@
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* include/dwarf.h (dwarf_cie_info): New `signal_frame' marker.
+	(dwarf_cursor): New `decrease_ip' marker.
+	* src/dwarf/Gfde.c (parse_cie): Set the `signal_frame' marker.
+	* src/dwarf/Gparser.c (run_cfi_program): Fixed occassionally offbyone
+	`ip' missed CFI instructions, related to `fetch_proc_info'.
+	(fetch_proc_info): Decrease parent `ip' only by `decrease_ip' marker.
+	(is_signal_frame): Detect signal frames by the `signal_frame' marker.
+	(uncached_dwarf_find_save_locs): Update the `decrease_ip' marker.
+	(dwarf_find_save_locs): Likewise.
+	* src/hppa/init.h (common_init): Initialize the `decrease_ip' marker.
+	* src/ppc64/init.h (common_init): Likewise.
+	* src/x86/init.h (common_init): Likewise.
+	* src/x86_64/init.h (common_init): Likewise.
+	* tests/Makefile.in: New `run-ptrace-stepper' and `test-ptrace-stepper'.
+	* tests/test-ptrace.c (backtrace_check): New for `-b'.
+	(do_exit): Variable to support breaking of the `main' mainloop.
+	(do_backtrace): Implemented `-b' based on `backtrace_check'.
+	Fixed compile warning for 32-bit platforms
+	(main): Fixed segfault for some `argv's.
+	Support backtrace option `-b' - `,'-delimited backtrace list to check.
+	Support `do_exit'.
+	* test-ptrace-stepper.c: New, test corner backtrace conditions.
+	* run-ptrace-stepper: New, test `test-ptrace' on `test-ptrace-stepper'.
+
 2006-09-27  Alexandre Oliva  <aoliva@redhat.com>
 
 	* src/elfxx.c (lookup_symbol): Cope with NULL buf and zero buf_len.

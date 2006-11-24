@@ -61,7 +61,7 @@ TESTS = test-proc-info test-static-link test-strerror run-check-namespace
 
 ifeq ($(host),$(target))
 
-TESTS += run-ptrace-mapper run-ptrace-misc \
+TESTS += run-ptrace-mapper run-ptrace-misc run-ptrace-stepper \
 	test-async-sig test-flush-cache test-init-remote \
 	test-mem test-setjmp test-ptrace
 TESTS_dual = Gtest-bt Gtest-exc Gtest-init Gtest-concurrent \
@@ -144,6 +144,13 @@ test-ptrace-misc: test-ptrace-misc.$(OBJEXT) ident.$(OBJEXT)
 	$(LINK)
 
 run-ptrace-mapper: mapper
+
+run-ptrace-stepper: test-ptrace-stepper
+test-ptrace-stepper: LDFLAGS += -pthread
+# FIXME: -fno-exceptions should not be needed, misses foo() with it now.
+test-ptrace-stepper.$(OBJEXT): CFLAGS += -g -fasynchronous-unwind-tables -fno-exceptions
+test-ptrace-stepper: test-ptrace-stepper.$(OBJEXT)
+	$(LINK)
 
 Gtest-bt: Gtest-bt.$(OBJEXT) ident.$(OBJEXT)
 	$(LINK)
