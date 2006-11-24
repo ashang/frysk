@@ -77,6 +77,7 @@ import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.common.dialogs.ErrorDialog;
+import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
@@ -596,7 +597,10 @@ public class Gui implements LifeCycleListener, Saveable {
 			logger.log(Level.FINE, "{0} execute\n", this);
 			CustomEvents.addEvent(new Runnable() {
 				public void run() {
-					WindowManager.theManager.mainWindow.showAll();
+                  WarnDialog dialog = new WarnDialog(
+                  " An instance of Frysk is already running! ");
+                  dialog.showAll();
+                  dialog.run();
 				}
 			});
 		}
