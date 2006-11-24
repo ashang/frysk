@@ -32,7 +32,7 @@ CFLAGS = @CFLAGS@
 DEPFLAGS = -MMD
 CCAS = @CCAS@
 CCASFLAGS = @CCASFLAGS@
-INCFLAGS = -I$(top_builddir)include -I$(top_srcdir)/include
+INCFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/include
 CPPFLAGS = @CPPFLAGS@ 
 DEFS = @DEFS@
 LDFLAGS = @LDFLAGS@
@@ -101,7 +101,7 @@ $(OBJS_localize):
 LD = $(CC)
 LINK = $(LD) $(LDFLAGS) -o $@ $^ $(LDADD) $(LIBUNWIND) $(LIBS) 
 
-LDFLAGS += -L$(top_builddir)src -Wl,-rpath=$(top_builddir)src
+LDFLAGS += -L$(top_builddir)/src -Wl,-rpath=$(top_builddir)/src
 
 LIBUNWIND = -lunwind-$(arch)
 ifeq ($(host),$(target))

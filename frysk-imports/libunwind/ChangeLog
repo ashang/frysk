@@ -1,5 +1,11 @@
 2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/Makefile.in (INCFLAGS): Backward compatible $(top_builddir) fix
+	for the autoconf-2.59c compatibility.
+	* tests/Makefile.in (INCFLAGS, LDFLAGS): Likewise.
+
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* include/dwarf.h (dwarf_cie_info): New `signal_frame' marker.
 	(dwarf_cursor): New `decrease_ip' marker.
 	* src/dwarf/Gfde.c (parse_cie): Set the `signal_frame' marker.
