@@ -1,5 +1,9 @@
 2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* tests/run-ptrace-stepper: Fixed signal frame name for x86_64.
+
+2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* src/Makefile.in (INCFLAGS): Backward compatible $(top_builddir) fix
 	for the autoconf-2.59c compatibility.
 	* tests/Makefile.in (INCFLAGS, LDFLAGS): Likewise.

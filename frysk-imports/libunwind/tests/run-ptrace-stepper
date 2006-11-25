@@ -26,4 +26,9 @@
 #         handler=0 lsda=0
 # ================
 
-./test-ptrace -t -b jump,foo+,__kernel_sigreturn,lockup,prefoo+,main+,__libc_start_main+,_start+ ./test-ptrace-stepper
+sigframe=__kernel_sigreturn
+if [ `uname -m` = x86_64 ]
+then
+	sigframe=__restore_rt
+fi
+./test-ptrace -t -b jump,foo+,$sigframe,lockup,prefoo+,main+,__libc_start_main+,_start+ ./test-ptrace-stepper
