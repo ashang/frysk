@@ -1,3 +1,7 @@
+2006-11-25  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-ptrace.c: Fixed `-b' to never leave a stale child process.
+
 2006-11-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* tests/run-ptrace-stepper: Fixed signal frame name for x86_64.

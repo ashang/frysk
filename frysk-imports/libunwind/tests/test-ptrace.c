@@ -67,7 +67,7 @@ static char *backtrace_check[64];
 static unw_addr_space_t as;
 static struct UPT_info *ui;
 
-static int do_exit;
+static int killed;
 
 void
 do_backtrace (pid_t target_pid)
@@ -192,7 +192,7 @@ do_backtrace (pid_t target_pid)
       if (*backtrace_ptr != NULL)
 	panic ("Too short backtrace on level==%d, want \"%s\"\n",
 	       n, *backtrace_ptr);
-      do_exit = 1;
+      killed = 1;
     }
 }
 
@@ -286,7 +286,7 @@ main (int argc, char **argv)
 
   ui = _UPT_create (target_pid);
 
-  while (do_exit == 0)
+  while (1)
     {
       pid = wait4 (-1, &status,  0, 0);
       if (pid == -1)
@@ -308,7 +308,8 @@ main (int argc, char **argv)
 	    }
 	  else if (WIFSIGNALED (status))
 	    {
-	      panic ("child terminated by signal %d\n", WTERMSIG (status));
+	      if (!killed)
+		panic ("child terminated by signal %d\n", WTERMSIG (status));
 	      break;
 	    }
 	  else
@@ -348,6 +349,8 @@ main (int argc, char **argv)
 	  ptrace (PTRACE_SINGLESTEP, target_pid, 0, pending_sig);
 	  break;
 	}
+      if (killed)
+        kill (target_pid, SIGKILL);
     }
 
   _UPT_destroy (ui);
