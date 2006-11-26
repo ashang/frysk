@@ -1,3 +1,10 @@
+2006-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (tidsToKillDuringTearDown): Rename children.
+	(capturedSendTkill): Rename capturedSendKill.
+	(tearDown): When scanning for stray TIDs, iterate over a copy of
+	tidsToKillDuringTearDown.
+
 2006-11-23  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFindProc.java: Removed some debugging statements,

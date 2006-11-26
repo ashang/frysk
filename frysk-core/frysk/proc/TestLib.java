@@ -1254,19 +1254,20 @@ public class TestLib
 	}
     }
 
-    // Maintain a set of children that are killed off after each test
-    // run.
-    private Set children;
     /**
-     * Add the pid to the set of children that should be killed off
-     * during tearDown.
+     * A set of children that are killed off after each test run.
+     */
+    private Set tidsToKillDuringTearDown;
+    /**
+     * Add the pid to the set of tidsToKillDuringTearDown that should
+     * be killed off during tearDown.
      */
     protected final void killDuringTearDown (int pid)
     {
 	// Had better not try to register process one.
 	assertFalse ("child is process one", pid == 1);
 	Integer i = new Integer (pid);
-	children.add (i);
+	tidsToKillDuringTearDown.add (i);
 	logger.log (Level.FINE, "{0} killDuringTearDown {1,number,integer}\n",
 		    new Object[] { this, i });
     }
@@ -1279,12 +1280,12 @@ public class TestLib
     public void setUp ()
     {
 	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< start setUp\n", this);
-	children = new HashSet ();
+	tidsToKillDuringTearDown = new HashSet ();
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX ();
 	// Add every descendant of this process, and all their tasks,
-	// to the set of children that should be killed off after the
-	// test has run.
+	// to the set of tidsToKillDuringTearDown that should be
+	// killed off after the test has run.
 	host.observableProcAddedXXX.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
@@ -1300,7 +1301,7 @@ public class TestLib
     /**
      * Try to blow away the child, catch a failure.
      */
-    private boolean capturedSendKill (int pid)
+    private boolean capturedSendTkill (int pid)
     {
 	try {
 	    Signal.tkill (pid, Sig.KILL);
@@ -1349,7 +1350,7 @@ public class TestLib
 	    log ("tkill -CONT ", pid, " (failed - ESRCH)\n");
 	}
 	// Finally send it a kill to finish things off.
-	exists = capturedSendKill (pid) && exists;
+	exists = capturedSendTkill (pid) && exists;
 	return exists;
     }
 
@@ -1369,34 +1370,41 @@ public class TestLib
 			 pendingSignals.contains (sig));
 	}
 
-	// Make a preliminary pass through all the registered children
-	// trying to simply kill each. Someone else may have waited on
-	// their deaths already.
-	
-	for (Iterator i = children.iterator (); i.hasNext (); ) {
+	// Make a preliminary pass through all the registered
+	// tidsToKillDuringTearDown trying to simply kill
+	// each. Someone else may have waited on their deaths already.
+	for (Iterator i = tidsToKillDuringTearDown.iterator ();
+	     i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
-	    capturedSendKill (child.intValue ());
+	    capturedSendTkill (child.intValue ());
 	}
 
 	// Go through all registered processes / tasks adding any of
 	// their clones to the kill-list.  Do this after the initial
 	// blast as, hopefully, that has stopped many of the threads
 	// dead in their tracks.
-	ProcBuilder missingChildren = new ProcBuilder ()
-	    {
-		public void buildId (int id)
+	{
+	    ProcBuilder missingTidsToKillDuringTearDown = new ProcBuilder ()
 		{
-		    killDuringTearDown (id);		
-		}
-	    };
-	for (Iterator i = children.iterator (); i.hasNext (); ) {
-	    Integer child = (Integer) i.next ();
-	    int pid = child.intValue ();
-	    missingChildren.construct (pid);
+		    public void buildId (int id)
+		    {
+			killDuringTearDown (id);		
+		    }
+		};
+	    // Iterate over a copy of the tids's collection as the
+	    // missingTidsToKillDuringTearDown may modify the
+	    // underlying collection.
+	    Object[] tidsToKill = tidsToKillDuringTearDown.toArray ();
+	    for (int i = 0; i < tidsToKill.length; i++) {
+		Integer child = (Integer) tidsToKill[i];
+		int pid = child.intValue ();
+		missingTidsToKillDuringTearDown.construct (pid);
+	    }
 	}
 
 	// Blast all the processes for real.
-	for (Iterator i = children.iterator (); i.hasNext (); ) {
+	for (Iterator i = tidsToKillDuringTearDown.iterator ();
+	     i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
 	    capturedSendDetachContKill (child.intValue ());
 	}
@@ -1411,7 +1419,7 @@ public class TestLib
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
 	try {
-	    while (!children.isEmpty()) {
+	    while (!tidsToKillDuringTearDown.isEmpty()) {
 		logger.log (Level.FINE, "{0} waitAll -1 ...\n", this);
 	    	Wait.waitAll (-1, new Wait.Observer ()
 		    {
@@ -1427,9 +1435,10 @@ public class TestLib
 					       int value, boolean coreDumped)
 			{
 			    capturedSendDetachContKill (pid);
-			    // Do not remove PID from children list;
-			    // need to let the terminated event behind
-			    // it bubble up.
+			    // Do not remove PID from
+			    // tidsToKillDuringTearDown list; need to
+			    // let the terminated event behind it
+			    // bubble up.
 			}
 			public void execEvent (int pid)
 			{
@@ -1448,10 +1457,10 @@ public class TestLib
 			    // To be absolutly sure, again make
 			    // certain that the thread is detached.
 			    capturedSendDetachContKill (pid);
-			    // True children can have a second exit
-			    // status behind this first one, drain
-			    // that also.  Give up when this PID has
-			    // no outstanding events.
+			    // True tidsToKillDuringTearDown can have
+			    // a second exit status behind this first
+			    // one, drain that also.  Give up when
+			    // this PID has no outstanding events.
 			    try {
 				while (true) {
 				    log ("waitAll ", pid, " ...\n");
@@ -1464,7 +1473,7 @@ public class TestLib
 				log ("waitAll ", pid, " (failed - ECHLD)\n");
 			    }
 			    // Hopefully done with this PID.
-			    children.remove(new Integer(pid));
+			    tidsToKillDuringTearDown.remove(new Integer(pid));
 			}
 			public void terminated (int pid, boolean signal,
 						int value, boolean coreDumped)
