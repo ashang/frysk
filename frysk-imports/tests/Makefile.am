@@ -435,3 +435,9 @@ noinst_PROGRAMS += frysk3381/f3381
 TESTS += frysk3525/exit47
 frysk3525_exit47_SOURCES = frysk3525/exit47.c
 noinst_PROGRAMS += frysk3525/exit47
+
+# A non-joined but exited thread should end up in state 'X'
+TESTS += frysk3491/x-state
+frysk3491_x_state_SOURCES = frysk3491/x-state.c
+frysk3491_x_state_LDFLAGS = -lpthread
+noinst_PROGRAMS += frysk3491/x-state

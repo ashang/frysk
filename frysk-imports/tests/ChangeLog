@@ -1,3 +1,9 @@
+2006-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3491/x-state.c: New file.
+	* Makefile.am (TESTS, noinst_PROGRAMS): Add frysk3491/x-state.
+	(frysk3491_x_state_SOURCES, frysk3491_x_state_LDFLAGS): Define.
+
 2006-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3525/exit47.c (main): Use a signal to synchronise the
