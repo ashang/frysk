@@ -1,3 +1,8 @@
+2006-11-27  Nurdin Premji  <npremji@redhat.com>
+
+	* hpd/CLI.java: Reverted to old refreshRequestXXX and reimplemented FindProc interface.
+	foundProc method just stops eventLoop rather than running everything after the runPending.
+
 2006-11-21  Nurdin Premji  <npremji@redhat.com>
 
 	* hpd/CLI.java: Changed to use FindProc interface.

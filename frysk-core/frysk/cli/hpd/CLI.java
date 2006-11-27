@@ -298,7 +298,7 @@ public class CLI
           Vector params = cmd.getParameters();
           String executable = "";
           boolean cli = false;
-          final AttachedObserver ao = new AttachedObserver();
+          AttachedObserver ao = new AttachedObserver();
 
           if (params.size() < 2)
             {
@@ -313,8 +313,7 @@ public class CLI
               else if (((String)params.elementAt(idx)).equals("-task"))
                 {
                   idx += 1;
-                  Integer i;
-                  tid = i.parseInt(((String)params.elementAt(idx)));
+                  tid = Integer.parseInt(((String)params.elementAt(idx)));
                 }
             }
           executable = ((String)params.elementAt(0));
@@ -326,54 +325,58 @@ public class CLI
 
                 public void procFound (ProcId procId)
                 {
-                  proc = Manager.host.getProc (procId);
-                  CLIEventLoop eventLoop = new CLIEventLoop();
-                  eventLoop.start();
                   
-                  if (proc == null)
-                    {
-                      addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
-                      return;
-                    }
-
-                  if (pid == tid || tid == 0)
-                    task = proc.getMainTask();
-                  else
-                    for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
-                      task = (Task) i.next ();
-                      if (task.getTid () == tid)
-                        break;
-                    }
-                  
-              
-                      
-                      task.requestAddAttachedObserver(ao);
-                      // Wait till we are attached.
-                      synchronized (monitor)
-                        {
-                          while (! attached)
-                            {
-                              try
-                                {
-                                  monitor.wait();
-                                }
-                              catch (InterruptedException ie)
-                                {
-                                }
-                            }
-                        }
-                    
-
-                  symtab = new SymTab(pid, proc, task, null);
+                  Manager.eventLoop.requestStop();
                 }
 
                 public void procNotFound (ProcId procId, Exception e)
                 {
-                  System.err.println("Couldn't find the proc with proc Id" + procId);
-                  System.exit(1);
+                  // TODO Auto-generated method stub
+                  
                 }});
-
+              Manager.eventLoop.run();
+              //Proc proc = Manager.host.getProc(new ProcId(pid));
+              CLIEventLoop eventLoop = new CLIEventLoop();
+              eventLoop.start();
             }
+
+          proc = Manager.host.getProc (new ProcId (pid));
+          if (proc == null)
+            {
+              addMessage(new Message("The event manager is not running.", Message.TYPE_ERROR));
+              return;
+            }
+
+          if (pid == tid || tid == 0)
+            task = proc.getMainTask();
+          else
+            for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+              task = (Task) i.next ();
+              if (task.getTid () == tid)
+                break;
+            }
+          
+          if (cli)
+            {
+              
+              task.requestAddAttachedObserver(ao);
+              // Wait till we are attached.
+              synchronized (monitor)
+                {
+                  while (! attached)
+                    {
+                      try
+                        {
+                          monitor.wait();
+                        }
+                      catch (InterruptedException ie)
+                        {
+                        }
+                    }
+                }
+            }
+
+          symtab = new SymTab(pid, proc, task, null);
         }
     }
 
@@ -619,7 +622,7 @@ public class CLI
           sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
         }        
 
-        Variable result = symtab.print(sInput);
+        Variable result = SymTab.print(sInput);
         if (result == null)
           {
             addMessage(new Message("Variable " + sInput + " not found in scope", Message.TYPE_ERROR));
