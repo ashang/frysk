@@ -314,7 +314,7 @@ public class LinuxHost
 	{
 	    if (fsckedOrderedKernelEvents == null)
 		fsckedOrderedKernelEvents = new LinkedList ();
-	    fsckedOrderedKernelEvents.add (new Event ()
+	    Event rescheduled = new Event ()
 		{
 		    final int pid = aPid;
 		    final int signal = aSignal;
@@ -322,8 +322,13 @@ public class LinuxHost
 		    {
 			waitObserver.stopped (pid, signal);
 		    }
-		});
-	    
+		    public String toString ()
+		    {
+			return "" + super.toString () + ",stopped,pid=" + pid;
+		    }
+		};
+	    logger.log (Level.FINE, "{0} rescheduled\n", rescheduled);
+	    fsckedOrderedKernelEvents.add (rescheduled);
 	}
 
       // Hold onto a scratch ID; avoids overhead of
@@ -360,6 +365,7 @@ public class LinuxHost
 	    throw new RuntimeException("caught TaskException", e);
 	  }
         task.processClonedEvent(clone);
+	attemptDeliveringFsckedKernelEvents ();
       }
 
       public void forkEvent (int pid, int childPid)

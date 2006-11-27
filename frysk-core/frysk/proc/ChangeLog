@@ -1,5 +1,10 @@
 2006-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java (PollWaitOnSigChild.waitObserver.cloneEvent):
+	Call attemptDeliveringFsckedKernelEvents to force re-delivery of
+	any stray waitpid events.
+	(attemptDeliveringFsckedKernelEvents): Add more logging.
+	
 	* TestLib.java (tidsToKillDuringTearDown): Rename children.
 	(capturedSendTkill): Rename capturedSendKill.
 	(tearDown): When scanning for stray TIDs, iterate over a copy of
