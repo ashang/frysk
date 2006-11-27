@@ -95,6 +95,8 @@ public class SourceBuffer
   protected static final String MEMBER_TAG = "MEMBER";
 
   protected static final String CURRENT_LINE = "currentLine";
+  
+  protected static final String OUTER_LINE = "outerLine";
 
   protected static final String FOUND_TEXT = "foundText";
 
@@ -117,6 +119,8 @@ public class SourceBuffer
   private TextIter endCurrentFind;
 
   private TextTag currentLine;
+  
+  private TextTag outerLine;
 
   private TextTag foundText;
 
@@ -318,13 +322,20 @@ public class SourceBuffer
 
     if (frame.getInner() == null)
       {
-    if (this.tagFlag == 0)
-      {
-        //System.out.println("currnetlineapplytag " + frame.getMethodName() + " " + frame.getLineNumber());
-        this.applyTag(this.currentLine, this.getIter(this.startCurrentLine),
-                      this.getIter(this.endCurrentLine));
-        this.tagFlag = 1;
+        if (this.tagFlag == 0)
+          {
+            // System.out.println("currnetlineapplytag " + frame.getMethodName()
+            // + " " + frame.getLineNumber());
+            this.applyTag(this.currentLine,
+                          this.getIter(this.startCurrentLine),
+                          this.getIter(this.endCurrentLine));
+            this.tagFlag = 1;
+          }
       }
+    else
+      {
+        this.applyTag(this.outerLine, this.getIter(this.startCurrentLine),
+                      this.getIter(this.endCurrentLine));
       }
     
     // Apply the next sections of the 'current line'
@@ -335,6 +346,15 @@ public class SourceBuffer
       this.tagFlag = 0;
   }
   
+  /**
+   * Perform various highlighting operations on the incoming stack trace.
+   * Differentiates between innermost and other frames. Depending on the
+   * incoming boolean parameter, will either add or remove highlights for
+   * all frames in the stack.
+   * 
+   * @param frame The StackFrame representing the new stack trace
+   * @param newFrame Whether this is a highlight or a de-highlight
+   */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
     int startLine = frame.getStartLine();
@@ -374,6 +394,52 @@ public class SourceBuffer
           {
             this.removeTag(this.currentLine, this.getIter(start),
                                                           this.getIter(end));
+          }
+        
+        StackFrame curr = frame.getOuter();
+        
+        while (curr != null)
+          {
+            startLine = curr.getStartLine();
+            startCol = curr.getStartOffset();
+            endLine = curr.getEndLine();
+            endCol = curr.getEndOffset();
+
+            //System.out.println("iterating" + curr.getMethodName() + " " + curr.getLineNumber() + " " + newFrame);
+            
+            start = this.createMark(
+                                             curr.getMethodName(),
+                                             this.getIter(this.getLineIter(
+                                                                           startLine - 1).getOffset()
+                                                          + startCol), true);
+            end = null;
+            if (endCol != -1)
+              {
+                end = this.createMark(
+                                      "end",
+                                      this.getIter(this.getLineIter(endLine - 1).getOffset()
+                                                   + endCol), false);
+              }
+            else
+              {
+                TextIter lineStart = this.getLineIter(endLine - 1);
+                end = this.createMark("end",
+                                      this.getIter(lineStart.getOffset()
+                                                   + lineStart.getCharsInLine()),
+                                      true);
+              }
+            
+                if (newFrame == true)
+                  {
+                    this.applyTag(this.outerLine, this.getIter(start), this.getIter(end));
+                  }
+                else
+                  {
+                    this.removeTag(this.outerLine, this.getIter(start),
+                                                                  this.getIter(end));
+                  }
+                
+                curr = curr.getOuter();
           }
   }
 
@@ -910,6 +976,9 @@ public class SourceBuffer
   {
     functions = new Vector();
     this.currentLine = this.createTag(CURRENT_LINE);
+    this.currentLine.setBackground(ColorConverter.colorToHexString(Color.GREEN));
+    this.outerLine = this.createTag(OUTER_LINE);
+    this.outerLine.setBackground(ColorConverter.colorToHexString(Color.ORANGE));
     this.foundText = this.createTag(FOUND_TEXT);
     this.commentTag = this.createTag(COMMENT_TAG);
 
@@ -1093,13 +1162,6 @@ public class SourceBuffer
   {
     //System.out.println("Creating tags for " + this.scope.getMethodName());
     Iterator lines = this.scope.getData().getLines();
-    
-//    StackFrame curr = this.scope;
-//    if (curr.getInner() != null)
-//      {
-//        while (curr.getInner() != null)
-//          curr = curr.getInner();
-//      }
 
     // Iterate through all the lines
     while (lines.hasNext())

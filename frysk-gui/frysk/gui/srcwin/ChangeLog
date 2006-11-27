@@ -1,3 +1,9 @@
+2006-11-27  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (highlightLine): Added additional code to take
+	care of earlier calls in the stack trace, for highlighting the
+	calling line of outer frames. Fixes #3582.
+
 2006-11-23  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Moved some code around;
