@@ -385,8 +385,7 @@ public class TestLib
 
         public void procNotFound (ProcId procId, Exception e)
         {
-          // TODO Auto-generated method stub
-          
+         fail("Couldn't find the given proc");
         }});
 	    Manager.eventLoop.run();
 	    return proc;

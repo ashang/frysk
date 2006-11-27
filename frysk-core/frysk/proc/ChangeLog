@@ -1,3 +1,9 @@
+2006-11-27  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFindProc.java (testFindAndRefreshFailed): Added, checks for bug 3600.
+	* LinuxHost.java (sendRefresh): Changed to throw procNotFound earlier. Fixes bug 3600.
+	* TestLib (findProcUsingRefresh.procNotFound): Changed to throw a fail.
+
 2006-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxHost.java (PollWaitOnSigChild.waitObserver.cloneEvent):

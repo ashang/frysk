@@ -194,42 +194,53 @@ public class LinuxHost
       }
   }
   
-  void sendRefresh (boolean refreshAll, final ProcId procId, final FindProc finder)
+  void sendRefresh (boolean refreshAll, final ProcId procId,
+                    final FindProc finder)
   {
-   
-    //Iterate (build) the /proc tree starting with the given procId.
+
+    // Iterate (build) the /proc tree starting with the given procId.
     final ProcChanges procChanges = new ProcChanges();
     ProcBuilder pidBuilder = new ProcBuilder()
     {
       public void buildId (int pid)
       {
-          procChanges.update(pid);
+        procChanges.update(pid);
       }
     };
     pidBuilder.construct(procId.id);
-    
+
+    if (!(procPool.containsKey(procId)))
+      {
+
+        Manager.eventLoop.add(new Event()
+        {
+
+          public void execute ()
+          {
+            finder.procNotFound(procId, new RuntimeException(
+                                                             "Couldn't find the proc"
+                                                                 + procId));
+          }
+        });
+        return;
+      }
+
     if (refreshAll)
       {
         LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
         proc.sendRefresh();
-      }          
-    
-    if (procPool.containsKey(procId))
-      Manager.eventLoop.add(new Event() {
+      }
 
-        public void execute ()
-        {         
-          finder.procFound(procId);    
-        }});
-      
-    else
-      Manager.eventLoop.add(new Event() {
+    Manager.eventLoop.add(new Event()
+    {
 
-        public void execute ()
-        {         
-          finder.procNotFound(procId, new RuntimeException("Couldn't find the proc" + procId));          
-        }});
-     }
+      public void execute ()
+      {
+        finder.procFound(procId);
+      }
+    });
+
+  } 
 
   /**
    * Create an attached process that is a child of this process (and this task).
