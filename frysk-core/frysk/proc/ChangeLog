@@ -1,5 +1,8 @@
 2006-11-27  Nurdin Premji  <npremji@redhat.com>
 
+	* TestProcTasksObserver.java (testDoCloneAckDaemon): Enabled. Bug fixed.
+	(testDoCloneDetached): Ditto.
+	
 	* TestFindProc.java (testFindAndRefreshFailed): Added, checks for bug 3600.
 	* LinuxHost.java (sendRefresh): Changed to throw procNotFound earlier. Fixes bug 3600.
 	* TestLib (findProcUsingRefresh.procNotFound): Changed to throw a fail.
