@@ -1,3 +1,10 @@
+2006-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskTerminateObserver.java (TerminatingCounter.addedTo):
+	Add; stop the event loop.
+	(testAttachToUnJoinedTask): Rename testTerm; simplify, explicitly
+	terminate the thread.
+
 2006-11-27  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcTasksObserver.java (testDoCloneAckDaemon): Enabled. Bug fixed.

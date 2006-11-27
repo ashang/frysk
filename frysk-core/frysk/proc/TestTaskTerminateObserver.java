@@ -39,8 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
-
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 
@@ -154,44 +152,45 @@ public class TestTaskTerminateObserver
     public void testTerminatedKillHUP () { terminated (-Sig.HUP_); }
 
     class AttachCounter
-    extends TaskObserverBase
-    implements TaskObserver.Attached
-{
-    int count;
-    public Action updateAttached (Task task)
+	extends TaskObserverBase
+	implements TaskObserver.Attached
     {
-        count++;
-        task.requestAddAttachedObserver (this);
-        task.requestUnblock (this);
-        return Action.BLOCK;
+	int count;
+	public Action updateAttached (Task task)
+	{
+	    count++;
+	    task.requestUnblock (this);
+	    return Action.BLOCK;
+	}
     }
-}
     class TerminatingCounter
-    extends TaskObserverBase
-    implements TaskObserver.Terminating
-{
-    int count;
-    public Action updateTerminating (Task task, boolean signal, int value)
+	extends TaskObserverBase
+	implements TaskObserver.Terminating
     {
-        count++;
-        task.requestAddTerminatingObserver (this);
-        task.requestUnblock (this);
-        return Action.BLOCK;
+	int count;
+	public void addedTo (Object o)
+	{
+	    Manager.eventLoop.requestStop ();
+	}
+	public Action updateTerminating (Task task, boolean signal, int value)
+	{
+	    count++;
+	    task.requestUnblock (this);
+	    return Action.BLOCK;
+	}
     }
-}
 
     
     /**
-     * Check that a terminating thread T is tracked properly.
+     * Check that a process with a task, that has exited, but not yet
+     * been joined (i.e., in the 'X' state) can be attached and than
+     * followed through to its termination.
      */
-   public void testTerm ()
+   public void testAttachToUnJoinedTask ()
     {
-	final int timeout = 3;
+	final int timeout = 5; // XXX: Should be constant in TestLib.
 
-	AttachCounter attachCounter = new AttachCounter ();
-	TerminatingCounter terminatingCounter = new TerminatingCounter ();
-	
-	AckProcess childTerm = new DetachedAckProcess (ackSignal, new String[]
+	AckProcess daemon = new DetachedAckProcess (ackSignal, new String[]
 	    {
 		getExecPrefix () + "funit-threadexit",
 		Integer.toString (Pid.get ()),
@@ -199,24 +198,24 @@ public class TestTaskTerminateObserver
 		Integer.toString (timeout), // Seconds
 	    });
 	
-	Proc proc = childTerm.findProcUsingRefresh (true);
- 	assertNotNull ("Finding funit-threadexit", proc);
-		
- 	Task task = null;
-        for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
-            task = (Task) i.next ();
-            assertNotNull ("Finding funit-threadexit threads",
-        	    task);
-            if (task.getTid () == proc.getPid ()) {
-		task.requestAddAttachedObserver (attachCounter);
-		task.requestAddTerminatingObserver (terminatingCounter);
-        	break;
-	    }
-        }
-        Manager.eventLoop.runPolling (timeout * 2 * 1000);
-        new StopEventLoopWhenProcRemoved(proc.getPid());
- 	assertTrue ("Number attached processes", attachCounter.count != 0);
-	assertTrue ("Number terminating processes", terminatingCounter.count != 0);
+	// Find the main task, and get a terminate observer bound to
+	// it; as a side effect it will pick up the terminated but not
+	// yet joined, thread also part of the process.
+	Task task = daemon.findTaskUsingRefresh (true);
+	TerminatingCounter terminatingCounter = new TerminatingCounter ();
+	task.requestAddTerminatingObserver (terminatingCounter);
+	assertRunUntilStop ("add terminatingCounter");
+
+	// Now terminate the main thread.  Trace the processes exit
+	// all the way through to being removed so that both
+	// terminating and terminated events are seen by this test.
+	daemon.signal (Sig.TERM);
+        new StopEventLoopWhenProcRemoved(task.getTid());
+	assertRunUntilStop ("terminate process");
+
+	// Check that there was a terminate event.
+	assertEquals ("Number of terminating processes", 1,
+		      terminatingCounter.count);
     }
    
    
