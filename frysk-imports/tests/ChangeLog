@@ -1,5 +1,7 @@
 2006-11-27  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk3491/x-state.c: Add #include <linux.syscall.h>.
+
 	* frysk3491/x-state.c: New file.
 	* Makefile.am (TESTS, noinst_PROGRAMS): Add frysk3491/x-state.
 	(frysk3491_x_state_SOURCES, frysk3491_x_state_LDFLAGS): Define.
