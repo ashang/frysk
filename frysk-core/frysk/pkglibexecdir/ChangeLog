@@ -1,3 +1,13 @@
+2006-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-threadexit.c (scan_thread): Delete
+	(main): Do the scan for thread in 'X' state here, instead of in
+	scan_thread.  Create only one thread.
+	(condition_cond, condition_mutex): Delete.
+	(thread_running_barrier): Rename "barrier".
+	(thread_id): Make volatile.
+	(op_thread): Simplify, use only one barrier.
+	
 2005-11-16  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-stepper.c (jump): Added.
