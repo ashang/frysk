@@ -1,5 +1,8 @@
 2006-11-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java (testBlockingWhileTerminating):
+	Disable, bug 3603.
+
 	* TestTaskTerminateObserver.java (TerminatingCounter.addedTo):
 	Add; stop the event loop.
 	(testAttachToUnJoinedTask): Rename testTerm; simplify, explicitly

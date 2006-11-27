@@ -224,6 +224,9 @@ public class TestTaskTerminateObserver
     */
   public void testBlockingWhileTerminating ()
    {
+       if (brokenXXX (3603))
+	   return;
+
      
      AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
      {
