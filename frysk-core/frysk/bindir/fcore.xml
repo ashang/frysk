@@ -74,8 +74,8 @@
       <arg choice="opt">
         <option>-l <replaceable>log-level</replaceable></option>
       </arg>
-     <arg choice="plain">
-        <replaceable>pid</replaceable>
+     <arg rep="repeat" choice="plain">
+        <replaceable>pids</replaceable>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>

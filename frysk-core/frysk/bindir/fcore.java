@@ -74,7 +74,7 @@ public class fcore
 
   private static Level level;
 
-  private static Proc proc;
+  
 
   /**
    * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
@@ -84,8 +84,6 @@ public class fcore
    */
   public static void main (String[] args)
   {
-
-    System.out.println("Experimental do not use for 'real life' core file generation.");
 
     // Parse command line. Check pid provided.
     parser = new Parser("fcore", "1.0", true)
@@ -100,22 +98,29 @@ public class fcore
 
     parser.setHeader("Usage: fcore <PID>");
 
-    // XXX: should support > 1 pid, but for now, just one pid.
     parser.parse(args, new FileArgumentCallback()
     {
       public void notifyFile (String arg) throws OptionException
       {
         try
         {
-          if (!hasProc)
-            {
               hasProc = true;
-              int pid = Integer.parseInt(arg);
+              int pid = 0;
+              try
+              {
+                pid = Integer.parseInt(arg);
+              } catch (NumberFormatException nfe)
+              {
+                System.err.println("Argument " + arg + " does not appear to be a valid pid");
+                System.err.println("Parsing pid provides the error message: " + nfe.getMessage());
+                nfe.printStackTrace(System.err);
+                return;
+              }
               Manager.host.requestFindProc(true, new ProcId (pid), new Host.FindProc() {
 
                 public void procFound (ProcId procId)
                 {
-                  proc = Manager.host.getProc(procId);
+                  final Proc proc = Manager.host.getProc(procId);
                   boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
                       proc.getGID() == Manager.host.getSelf().getGID());
 
@@ -123,21 +128,23 @@ public class fcore
                   if (! isOwned)
                     {
                       System.err.println("Process " + proc.getPid()
-                                         + " is not owned by user/group. Cannot coredump.");
-                      System.exit(- 1);
+                                         + " is not owned by user/group. Cannot dump core.");
+                      System.exit(2);
                     }
                   
                   if (proc == null)
                     {
-                      System.err.println("Couldn't get the process " + proc.getPid()
-                                         + ". It might have disappeared.");
-                      System.exit(- 1);
+                      System.err.println("Could not attach to the process " + procId.toString());                    
+                      System.exit(3);
                     }
 
+                 
+                  System.out.println("adding proc to dump action list: " + proc.getPid());
                   stacker = new CoredumpAction(proc, new Event()
                   {
                     public void execute ()
                     {
+                      System.out.println("Now detaching " + proc.getPid());
                       proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
                     }
                   });
@@ -145,21 +152,15 @@ public class fcore
 
                 public void procNotFound (ProcId procId, Exception e)
                 {
-                  System.err.println("Couldn't get the process " + proc.getPid()
-                                     + ". It might have disappeared.");
-                  System.exit(- 1);
+                  System.err.println("Could not find the process: " + procId.toString());
+                  System.exit(4);
                 }});            
               
-            }
-          else
-            {
-              throw new OptionException("too many pids");
-            }
 
         }
       catch (Exception _)
         {
-          throw new OptionException("couldn't parse pid");
+          throw new OptionException("Could not parse the PID list.");
         }
     }
     });
@@ -173,13 +174,12 @@ public class fcore
 
     Manager.eventLoop.run();
 
-    //XXX: What is this for?
     stacker.getClass();
   }
   
+ 
   /**
-   * Add options ot the the option parser. Belongs in bindir/fcore but here for
-   * now
+   * Add options to the the option parser. Belongs
    * 
    * @param parser - the parser that is to be worked on.
   */
