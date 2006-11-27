@@ -196,7 +196,7 @@ class ExprSymTab implements CppSymTab
           return fbreg_and_disp[1];
         }
       long addr = fbreg_and_disp[1];
-      varDie.getFrameBase (fbreg_and_disp, varDie.getScope(), pc);
+      varDie.getFrameBase (fbreg_and_disp, pc);
       if (fbreg_and_disp[0] != -1) // DW_OP_fbreg
       {
         long regval = 0;
@@ -323,7 +323,7 @@ class ExprSymTab implements CppSymTab
         throw new RuntimeException(tte);
       }
       long fbreg_and_disp [] = new long[2];
-      varDie.getFormData (fbreg_and_disp, varDie.getScope(), pc);
+      varDie.getFormData (fbreg_and_disp, pc);
       if (fbreg_and_disp[0] != -1)
       {
         setSuccessful(true);

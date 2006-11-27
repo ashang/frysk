@@ -134,7 +134,7 @@ lib::dw::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
 	return -1;
       jlong* longp = elements(die_scope);
       longp[0] = (jlong)var_die;    // Die for variable
-      longp[1] = (jlong)dies[code]; // Die for scope
+      longp[1] = code; // Die for scope
     }
   else if (dwarf_tag (var_die) != DW_TAG_variable)
     return -1;

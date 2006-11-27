@@ -45,7 +45,9 @@ public class DwarfDie
 
   private long pointer;
   
-  private long scope;
+  private DwarfDie[] scopes;
+  
+  private int scopeIndex;
 
   private Dwfl parent;
   
@@ -103,6 +105,7 @@ public class DwarfDie
         dies[i] = new DwarfDie(vals[i], this.parent);
       else
         dies[i] = null;
+
     return dies;
   }
   
@@ -123,14 +126,20 @@ public class DwarfDie
     if (val >= 0)
       {
         die = new DwarfDie(die_and_scope[0], this.parent);
-        die.scope = die_and_scope[1];
+        die.scopes = scopes;
+        die.scopeIndex = (int)die_and_scope[1];
       }
     return die;
   }
     
-  public long getScope ()
+  public long getScopeIndex ()
   {
-      return this.scope;
+      return this.scopeIndex;
+  }
+  
+  public long getScope (int index)
+  {
+      return this.scopes[index].pointer;
   }
   
   /**
@@ -217,9 +226,14 @@ public class DwarfDie
    * @param scope Scope DW_AT_frame_base is desired for.
    * @param pc PC DW_AT_frame_base is desired for.
    */
-  public void getFrameBase (long[] fbreg_and_disp, long scope, long pc)
+  public void getFrameBase (long[] fbreg_and_disp, long pc)
   {
-    get_framebase(fbreg_and_disp, this.getPointer(), scope, pc);
+    for (int i = this.scopeIndex; i < this.scopes.length; i++)
+      {
+        get_framebase(fbreg_and_disp, this.getPointer(), this.scopes[i].pointer, pc);
+        if (fbreg_and_disp[0] != -1)
+          break;
+      }
   }
 
   /**
@@ -228,9 +242,14 @@ public class DwarfDie
    * @param scope - Scope of current die. 
    * @param pc - PC
    */
-  public void getFormData (long[] fbreg_and_disp, long scope, long pc)
+  public void getFormData (long[] fbreg_and_disp, long pc)
   {
-    get_formdata(fbreg_and_disp, this.getPointer(), scope, pc);
+    for (int i = this.scopeIndex; i < this.scopes.length; i++)
+      {
+        get_formdata(fbreg_and_disp, this.getPointer(), this.scopes[i].pointer, pc);
+        if (fbreg_and_disp[0] != -1)
+          break;
+      }
   }
 
   /**

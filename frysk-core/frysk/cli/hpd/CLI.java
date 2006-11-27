@@ -85,6 +85,7 @@ public class CLI
     int stackLevel = 0;
     static Object monitor = new Object();
     static boolean attached;
+    AttachedObserver attachedObserver = null;
 
 	/*
 	 * Command handlers
@@ -298,7 +299,7 @@ public class CLI
           Vector params = cmd.getParameters();
           String executable = "";
           boolean cli = false;
-          AttachedObserver ao = new AttachedObserver();
+          attachedObserver = new AttachedObserver();
 
           if (params.size() < 2)
             {
@@ -359,7 +360,7 @@ public class CLI
           if (cli)
             {
               
-              task.requestAddAttachedObserver(ao);
+              task.requestAddAttachedObserver(attachedObserver);
               // Wait till we are attached.
               synchronized (monitor)
                 {
@@ -387,6 +388,8 @@ public class CLI
           Vector params = cmd.getParameters();
           String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
+          if (attachedObserver != null)
+            task.requestDeleteAttachedObserver(attachedObserver);
           if (params.size() > 0)
             {
               addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
@@ -660,7 +663,10 @@ public class CLI
 	class QuitHandler implements CommandHandler
     {
 		public void handle(Command cmd) throws ParseException {
-		       addMessage(new Message("Quitting...", Message.TYPE_NORMAL));
+		    DetachHandler detachHandler = new DetachHandler();
+		    Command command = new Command ("detach");
+		    detachHandler.handle(command);
+		    addMessage(new Message("Quitting...", Message.TYPE_NORMAL));
 		}
 	}
 	class HelpHandler implements CommandHandler
@@ -981,4 +987,3 @@ public class CLI
       }
     }
 }
-

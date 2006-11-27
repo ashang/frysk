@@ -1,4 +1,13 @@
-2006=11=09  Stan Cox  <scox@redhat.com>
+2006-11-24  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (scopes): New.
+	(getScopeVar): Set it.
+	(getFrameBase): Use it.
+	(getFormData): Use it.	
+	(getScopeIndex): New.
+	* cni/DwarfDie.cxx (get_scope_var): Return scope index.
+
+2006-11-09  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (isClassType): New.
 	* cni/DwarfDie.cxx (is_class_type): New.
