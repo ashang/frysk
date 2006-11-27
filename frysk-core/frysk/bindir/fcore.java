@@ -91,12 +91,12 @@ public class fcore
       protected void validate () throws OptionException
       {
         if (!hasProc)
-            throw new OptionException("no pid provided");
+            throw new OptionException("No pid(s) provided");
       }
     };
     addOptions(parser);
 
-    parser.setHeader("Usage: fcore <PID>");
+    parser.setHeader("Usage: fcore <pids>");
 
     parser.parse(args, new FileArgumentCallback()
     {
@@ -112,8 +112,6 @@ public class fcore
               } catch (NumberFormatException nfe)
               {
                 System.err.println("Argument " + arg + " does not appear to be a valid pid");
-                System.err.println("Parsing pid provides the error message: " + nfe.getMessage());
-                nfe.printStackTrace(System.err);
                 return;
               }
               Manager.host.requestFindProc(true, new ProcId (pid), new Host.FindProc() {
@@ -139,12 +137,10 @@ public class fcore
                     }
 
                  
-                  System.out.println("adding proc to dump action list: " + proc.getPid());
                   stacker = new CoredumpAction(proc, new Event()
                   {
                     public void execute ()
                     {
-                      System.out.println("Now detaching " + proc.getPid());
                       proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
                     }
                   });
