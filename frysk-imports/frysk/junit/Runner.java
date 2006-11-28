@@ -42,6 +42,8 @@ package frysk.junit;
 import frysk.EventLogger;
 import frysk.imports.Build;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.ConsoleHandler;
@@ -81,6 +83,8 @@ public class Runner
     // Put all tests through a filter; by default exclude all Stress.*
     // classes.
     private String testFilter = "^(|.*\\.)(?!Stress)[^\\.]*$";
+    private ArrayList omitTests = null;
+    private ArrayList includeTests = null;
     
     private LinkedList otherArgs;
     
@@ -190,8 +194,39 @@ public class Runner
 	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
 		Class testClass = (Class) i.next ();
 		// Only include tests that gets by both filters.
-		if (testClass.getName ().matches (testFilter))
-		    testSuite.addTest (new TestSuite (testClass));
+		if (testClass.getName ().matches (testFilter)) {
+		    boolean addit = true;
+		    if (null != omitTests) {
+			int size = omitTests.size();
+			for (int j = 0; j < size; j++) {
+			    try {
+				if (testClass.getName ().matches ((String)omitTests.get (j))) {
+				    addit = false;
+				    break;
+				}
+			    }
+			    catch (PatternSyntaxException p) {
+				System.out.println(p.getMessage());
+			    }
+			}
+		    }
+		    if (!addit && (null != includeTests)) {
+			int size = includeTests.size();
+			for (int j = 0; j < size; j++) {
+			    try {
+				if (testClass.getName ().matches ((String)includeTests.get (j))) {
+				    addit = true;
+				    break;
+				}
+			    }
+			    catch (PatternSyntaxException p) {
+				System.out.println(p.getMessage());
+			    }
+			}
+		    }
+		    if (addit) testSuite.addTest (new TestSuite (testClass));
+		    else System.out.println ("Omitting " + testClass.getName());
+		}
 	    }
 	}
   
@@ -449,6 +484,39 @@ public class Runner
 		    testFilter = "^.*$";
 		}
 	    });
+		
+	// Specify tests to omit.
+	parser.add (new Option ("omit",  'o',
+				"Specify a test to omit.  Each passed"
+				+ " option will be interpreted as the"
+				+ " regex specification of a test to omit."
+				+ "  This option may be used multiple"
+				+ " times.",
+				"<test-spec>")
+	    {
+		public void parsed (String arg0)
+		{
+		    if (null == omitTests) omitTests = new ArrayList();
+		    omitTests.add (arg0);
+		}
+	    });
+		
+	// Specify tests to include, overriding omit.
+	parser.add (new Option ("include",  'i',
+				"Specify a test to include, ovirriding an"
+				+ " omit specification.  Each passed"
+				+ " option will be interpreted as the"
+				+ " regex specification of a test to include."
+				+ "  This option may be used multiple"
+				+ " times.",
+				"<test-spec>")
+	    {
+		public void parsed (String arg0)
+		{
+		    if (null == includeTests) includeTests = new ArrayList();
+		    includeTests.add (arg0);
+		}
+	    });
 
 	parser.setHeader ("Usage:"
 			  + " [ -c <console-level> ]"
@@ -458,6 +526,8 @@ public class Runner
 			  + " [ -n ]"
 			  + " [ --stress ]"
 			  + " [ --all ]"
+			  + " [-o spec [-o spec [-o spec...]]]"
+			  + " [-i spec [-i spec [-i spec...]]]"
 			  + " [ class ... ]");
 	return parser;
     }

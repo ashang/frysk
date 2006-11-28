@@ -1,3 +1,14 @@
+2006-11-28  Chris Moller  <moller@mollerware.com>
+
+	* Runner.java: New private variables omitTests and includeTests
+
+	* Runner.java (createCommandLineParser): AAdd options -omit and
+	-include. 
+
+	* Runner.java (runCases): Add code to omit tests specified by
+	-omit and include tests specified by -include, overriding tests
+	omitted by -omit.
+
 2006-11-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java (testFilter): New private variable.
