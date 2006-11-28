@@ -50,14 +50,14 @@ public class TestProcStopped
   {
     ackProc.sendStopXXX ();
 
-    Proc proc = ackProc.findProcUsingRefresh();
+    Proc proc = ackProc.assertFindProcAndTasks();
 
     new  MyTester(proc, count);
   }
 
   public void running (AckProcess ackProc, int count)
   {
-    Proc proc = ackProc.findProcUsingRefresh();
+    Proc proc = ackProc.assertFindProcAndTasks();
 
     new  MyTester(proc, count);
   }

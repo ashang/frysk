@@ -1,5 +1,9 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestProcStopped.java (running): Changed to use assertFindProcAndTasks.
+	Used to just find task.
+	(stopped): Ditto.
+
 	* TestProcGet.java 	(testGetCommand): Changed to use assertFindProcAndTasks. 
 	Used to just find task		 
 	(testGetExe): Ditto.
