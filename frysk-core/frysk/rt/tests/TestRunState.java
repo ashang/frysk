@@ -41,19 +41,16 @@ package frysk.rt.tests;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
-//import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockObserver;
-//import frysk.proc.ProcBlockObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
-//import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
-//import frysk.rt.StackFactory;
-//import frysk.rt.StackFrame;
 import frysk.rt.RunState;
 import frysk.sys.Sig;
 import frysk.junit.Paths;
@@ -81,13 +78,12 @@ public class TestRunState extends TestLib
   
   private int count = 0;
   
-  //StepObserver stepper;
-  ProcBlockObserver stepper;
-  
   protected static final int INSTRUCTION_STEP = 0;
   protected static final int STEP_IN = 1;
   protected static final int STEP_OVER = 2;
   protected static final int STEP_OUT = 3;
+  
+  private LockObserver lock;
   
   
   public void testInstructionStepping ()
@@ -99,11 +95,11 @@ public class TestRunState extends TestLib
         return;
       }
     
-    if (count == 0)
-      {
-    brokenXXX(3529);
-    return;
-      }
+    initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
@@ -111,10 +107,6 @@ public class TestRunState extends TestLib
         "" + frysk.rt.tests.TestLib.getMyPid(),
         "" + Sig.POLL_
     });
-    
-    initial = true;
-    this.dwflMap = new HashMap();
-    this.lineMap = new HashMap();
     
     testState = INSTRUCTION_STEP;
     
@@ -125,13 +117,13 @@ public class TestRunState extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    stepper = new StepObserver(myProc);
+    //System.out.println(initial);
     
-    runState = new RunState(stepper);
+    runState = new RunState();
+    runState.addObserver(lock);
+    runState.setProc(myProc);
 
-    //setUpTest();
     assertRunUntilStop("Attempting to add observer");
-    //setUpTest();
   }
   
   public void testLineStepping ()
@@ -142,18 +134,12 @@ public class TestRunState extends TestLib
         brokenXXX(3277);
         return;
       }
-    
-    if (count == 0)
-      {
-    brokenXXX(3529);
-    return;
-      }
-    
-    //TaskCreatedObserver obs = new TaskCreatedObserver();
 
     initial = true;
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
@@ -171,21 +157,17 @@ public class TestRunState extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-//    stepper = new StepObserver();
-//    myTask.requestAddInstructionObserver(stepper);
-    
-    stepper = new StepObserver(myProc);
-    
-    runState = new RunState(stepper);
+    runState = new RunState();
+    runState.addObserver(lock);
+    runState.setProc(myProc);
 
-    //setUpTest();
     assertRunUntilStop("Attempting to add observer");
-    //setUpTest();
   }
   
   
   public void setUpTest ()
   {
+    //System.out.println("setupTest");
     Iterator i = myProc.getTasks().iterator();
     
     while (i.hasNext())
@@ -217,12 +199,17 @@ public class TestRunState extends TestLib
         //t.requestUnblock(this.stepper);
       }
     count = 0;
+    runState.setTaskStepCount(myProc.getTasks().size());
     runState.setUpStep(myProc.getTasks());
   }
   
-  public void stepAssertions ()
+  public synchronized void stepAssertions (Task task)
   {
-    //System.out.println("********************");
+    if (task.getTid() != myProc.getPid())
+        return;
+    
+    //System.out.println("In stepAssertions");
+    myTask = task;
     DwflLine line = null;
     try
       {
@@ -230,24 +217,25 @@ public class TestRunState extends TestLib
       }
     catch (TaskException te)
       {
-        // //System.out.println("task execption");
+        //System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
       {
-        // //System.out.println("NPE");
+        //System.out.println("NPE");
         return;
       }
 
     if (line == null)
       return;
 
-    // //System.out.println("Nothing is null");
+    // ////System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
 
     if (testState == INSTRUCTION_STEP)
       {
+        //System.out.println("------> About to assert " + prev + " " + lineNum);
         switch (prev)
         {
         case 78:
@@ -283,11 +271,11 @@ public class TestRunState extends TestLib
         case 90:
           assertTrue(lineNum == 90 || lineNum == 91);
           break;
-        case 94:
-          assertTrue(lineNum == 94 || lineNum == 59);
-          break;
-        case 59:
-          assertTrue(lineNum == 59 || lineNum == 61);
+//        case 94:
+//          assertTrue(lineNum == 94 || lineNum == 60);
+//          break;
+        case 60:
+          assertTrue(lineNum == 60 || lineNum == 61);
           break;
         case 61:
           assertTrue(lineNum == 61 || lineNum == 62);
@@ -299,18 +287,32 @@ public class TestRunState extends TestLib
           assertTrue(lineNum == 63 || lineNum == 64);
           break;
         case 64:
-          assertTrue(lineNum == 64 || lineNum == 66);
+          assertTrue(lineNum == 64 || lineNum == 65);
           break;
-        case 66:
-          assertTrue(lineNum == 66 || lineNum == 95);
+        case 65:
+          assertTrue(lineNum == 65 || lineNum == 67);
           break;
-        case 95:
-          assertTrue(lineNum == 95 || lineNum == 78);
+        case 67:
+          assertTrue(lineNum == 67 || lineNum == 94);
           break;
+//        case 94:
+//          assertTrue(lineNum == 94 || lineNum == 95);
+//          break;
         default:
           break;
         }
         count++;
+        
+        runState.stepCompleted();
+        
+        if (count != 50)
+          {
+            this.lineMap.put(task, new Integer(lineNum));
+            LinkedList l = new LinkedList();
+            l.add(myTask);
+            runState.setTaskStepCount(1);
+            runState.stepInstruction(l);
+          }
       }
     else if (testState == STEP_IN)
       {
@@ -352,13 +354,13 @@ public class TestRunState extends TestLib
           case 91:
             assertEquals(lineNum, 94);
             break;
-          case 94:
-            assertEquals(lineNum, 59);
-            break;
+//          case 94:
+//            assertEquals(lineNum, 60);
+//            break;
           case 95:
             assertEquals(lineNum, 78);
             break;
-          case 59:
+          case 60:
             assertEquals(lineNum, 61);
             break;
           case 61:
@@ -371,103 +373,73 @@ public class TestRunState extends TestLib
             assertEquals(lineNum, 64);
             break;
           case 64:
-            assertEquals(lineNum, 66);
+            assertEquals(lineNum, 65);
             break;
-          case 66:
-            assertEquals(lineNum, 95);
+          case 65:
+            assertEquals(lineNum, 67);
             break;
+          case 67:
+            assertEquals(lineNum, 94);
+            break;
+//          case 94:
+//            assertEquals(lineNum, 95);
+//            break;
           default:
             break;
           }
         count++;
+        
+        runState.stepCompleted();
+        
+        if (count != 50)
+          {
+          //runState.stepIn(myTask);
+            this.lineMap.put(task, new Integer(line.getLineNum()));
+            LinkedList tasks = new LinkedList();
+            tasks.add(task);
+            runState.setTaskStepCount(1);
+            runState.setUpStep(tasks);
+          }
+        
+        //System.out.println(">>>> COUNT: " + count);
       }
-    //System.out.println("checking count");
+    ////System.out.println("checking count");
     if (count == 50)
       {
-        //System.out.println("Manager.eventLoop.requestStop();");
+        ////System.out.println("Manager.eventLoop.requestStop();");
         Manager.eventLoop.requestStop();
         return;
       }
-    else
-      stepper.requestUnblock(myTask);
-      //myTask.requestUnblock(stepper);
   }
   
-  
-  protected class StepObserver
-  extends ProcBlockObserver
+  class LockObserver implements Observer
   {
-    Task myTask;
     
-    public StepObserver (Proc theProc)
+    /**
+     * Builtin Observer method - called whenever the Observable we're concerned
+     * with - in this case the RunState - has changed.
+     * 
+     * @param o The Observable we're watching
+     * @param arg An Object argument
+     */
+    public synchronized void update (Observable o, Object arg)
     {
-      super(theProc);
-    }
-    
-    public synchronized void existingTask (Task task)
-    {
+      //System.out.println("Got notification");
+      if (arg == null)
+        return;
+      
       if (initial == true)
         {
+          //System.out.println("initial true");
           initial = false;
           setUpTest();
-          
           return;
         }
       
-      // //System.out.println("existing task");
-      myTask = task;
-
-      if (runState.getTaskStepCount() == 0)
-        {
-          // //System.out.println("resetting taskstepcount");
-          runState.setTaskStepCount(myProc.getTasks().size());
-        }
-
-      switch (testState)
-        {
-        case INSTRUCTION_STEP:
-          runState.decTaskStepCount();
-          break;
-        case STEP_IN:
-          runState.stepIn(task);
-          break;
-        case STEP_OVER:
-          //runState.stepOver(task);
-          break;
-        case STEP_OUT:
-          runState.stepOut(task);
-          break;
-        }
-      // //System.out.println("taskstepcount " + taskStepCount);
-      if (runState.getTaskStepCount() == 0)
-        {
-//          try
-//            {
-              //frame = StackFactory.createStackFrame(myTask);
-              stepAssertions();
-//            }
-//          catch (TaskException te)
-//            {
-//              return;
-//            }
-        }
-
-      return;
-    }
-
-    public void addedTo(Object o)
-    {
-      Manager.eventLoop.requestStop();
+      //System.out.println("About to call assertions on " + (Task)arg);
+      stepAssertions(myProc.getMainTask());
     }
     
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException(w);
-    }
-
-    public void deletedFrom (Object observable)
-    {
-      // TODO Auto-generated method stub
-    }
   }
+  
 }
