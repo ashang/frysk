@@ -371,26 +371,7 @@ public class TestLib
 	}
 	/**
 	 * Find/return the child's Proc, polling /proc if necessary.
-	 */
-	public Proc findProcUsingRefresh (boolean refreshTasks)
-	{
-	    // Try polling /proc.
-	    Manager.host.requestFindProc(refreshTasks, new ProcId(pid), new Host.FindProc() {
-
-        public void procFound (ProcId procId)
-        {
-          proc = Manager.host.getProc(procId);
-          Manager.eventLoop.requestStop();
-        }
-
-        public void procNotFound (ProcId procId, Exception e)
-        {
-         fail("Couldn't find the given proc");
-        }});
-	    Manager.eventLoop.run();
-	    return proc;
-	}
-    
+	 */	
     public Proc assertFindProcAndTasks()
     {
       Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
@@ -409,15 +390,8 @@ public class TestLib
         return proc;
     }
     
-	/**
-	 * Like {@link findProcUsingRefresh (boolean)}, but do not
-	 * refresh the task list.
-	 */
-	Proc findProcUsingRefresh ()
-	{
-	    return findProcUsingRefresh (false);
-	}
 	private Proc proc;
+    
 	/**
 	 * Find the child's Proc's main or non-main Task, polling
 	 * /proc if necessary.

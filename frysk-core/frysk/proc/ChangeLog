@@ -1,5 +1,8 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestLib.java (Child.findProcUsingRefresh): Removed.
+	(Child.findProcUsingRefresh (boolean) ): Ditto.
+
 	* TestRefresh.java (testRefreshDaemon): Changed to use assertFindProcAndTasks.
 	Used to just find task.
 	(testUnattachedSingleExec): Ditto.
