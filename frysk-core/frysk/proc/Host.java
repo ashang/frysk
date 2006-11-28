@@ -207,6 +207,19 @@ public abstract class Host
     }
     
     /**
+     * Find a specifc process from its Id.
+     */
+    public void requestFindProc(final ProcId procId, final FindProc finder)
+    {
+      Manager.eventLoop.add(new HostEvent("FindProc") {
+
+        public void execute ()
+        {
+          newState = oldState().handleRefresh (Host.this, true, procId, finder);
+        }});
+    }
+    
+    /**
      * Interface to be used with requestFindProc.
      * 
      * @author npremji

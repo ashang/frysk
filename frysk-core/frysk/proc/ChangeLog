@@ -1,5 +1,7 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* Host.java (requestFindProc): Added. Assumes refresh tasks.
+
 	* TestLib.java (Child.findProcUsingRefresh): Removed.
 	(Child.findProcUsingRefresh (boolean) ): Ditto.
 
