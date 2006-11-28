@@ -300,7 +300,7 @@ public class TestRefresh
 	
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
-	Proc zombieParent = zombie.findProcUsingRefresh ();
+	Proc zombieParent = zombie.assertFindProcAndTasks();
     
     //XXX: Hack to get zombieParent's children.
     Manager.host.requestRefreshXXX(true);
@@ -345,7 +345,7 @@ public class TestRefresh
 	daemon.assertSendAddForkWaitForAcks ();
 
 	// Find the process and it's children.
-	Proc daemonProc = daemon.findProcUsingRefresh ();
+	Proc daemonProc = daemon.assertFindProcAndTasks();
 
 	// Monitor proc deleted events looking for the daemon being
 	// removed.
@@ -438,7 +438,7 @@ public class TestRefresh
     public void testUnattachedSingleExec ()
     {
 	AckProcess child = new AckDaemonProcess ();
-	Proc proc = child.findProcUsingRefresh ();
+	Proc proc = child.assertFindProcAndTasks();
 	
 	child.assertSendExecWaitForAcks ();
 

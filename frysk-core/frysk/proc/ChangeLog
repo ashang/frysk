@@ -1,5 +1,10 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestRefresh.java (testRefreshDaemon): Changed to use assertFindProcAndTasks.
+	Used to just find task.
+	(testUnattachedSingleExec): Ditto.
+	(testExitLoosesChild): Ditto.
+
 	* TestProcTasksObserver.java (manyExistingThread): Changed to use assertFindProcAndTasks.
 	Used to just find task.
 	(doClone): Ditto.
