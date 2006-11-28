@@ -230,7 +230,7 @@ public class TestExec
 	// Create an unattached child process.
 	AckProcess child = new DetachedAckProcess ();
 
-	Proc proc = child.findProcUsingRefresh (true);
+	Proc proc = child.assertFindProcAndTasks();
 	ExecParentObserver execParentObserver = new ExecParentObserver ();
 
 	// Attach to the process using the exec observer.  The event
@@ -288,7 +288,7 @@ public class TestExec
 	// Create an unattached child process.
 	AckProcess child = new DetachedAckProcess ("funit-child-alias", null);
 
-	Proc proc = child.findProcUsingRefresh (true);
+	Proc proc = child.assertFindProcAndTasks();
 	ExecChildObserver execObserverParent = new ExecChildObserver ();
 	ExecChildObserver execObserverChild = new ExecChildObserver ();
 

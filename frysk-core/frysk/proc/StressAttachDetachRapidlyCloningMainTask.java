@@ -69,7 +69,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 		Integer.toString (timeout), // Seconds
 		"1000" // Tasks
 	    });
-	final Proc proc = child.findProcUsingRefresh (true);
+	final Proc proc = child.assertFindProcAndTasks();
 
 	// Create a list of tasks.  Since the above is constantly
 	// creating new tasks (with the old ones exiting) it is almost

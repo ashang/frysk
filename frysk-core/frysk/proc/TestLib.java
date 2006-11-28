@@ -424,7 +424,7 @@ public class TestLib
 	 */
 	public Task findTaskUsingRefresh (boolean mainTask)
 	{
-	    Proc proc = findProcUsingRefresh (true);
+	    Proc proc = assertFindProcAndTasks();
 	    for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
 		Task task = (Task) i.next ();
 		if (task.getTid () == proc.getPid ()) {

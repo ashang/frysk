@@ -402,7 +402,7 @@ public class TestRefresh
 	// Do a refresh (that includes updating the task list), find
 	// the zombie maker, check that it's child has one task and no
 	// processes.
-	Proc zombieParent = zombie.findProcUsingRefresh (true);
+	Proc zombieParent = zombie.assertFindProcAndTasks();
     
     //XXX: Hack to get zombieParent's children.
     Manager.host.requestRefreshXXX(true);
@@ -459,7 +459,7 @@ public class TestRefresh
     public void testUnattachedMultipleExec ()
     {
 	AckProcess child = new AckDaemonProcess (1);
-	Proc proc = child.findProcUsingRefresh (true);
+	Proc proc = child.assertFindProcAndTasks();
 
 	Manager.host.requestRefreshXXX (true);
 	Task taskBefore = child.findTaskUsingRefresh (false);

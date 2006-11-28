@@ -322,7 +322,7 @@ public class TestFCore
     AckProcess ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
     ackProc.sendStopXXX();
-    Proc proc = ackProc.findProcUsingRefresh(true);
+    Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);
     return proc;
   }

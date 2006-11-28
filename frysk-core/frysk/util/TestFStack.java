@@ -180,7 +180,7 @@ public class TestFStack
   public void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
 
-    final Proc proc = ackProc.findProcUsingRefresh(true);
+    final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
     {
@@ -220,7 +220,7 @@ public class TestFStack
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
-    final Proc proc = ackProc.findProcUsingRefresh(true);
+    final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
     {

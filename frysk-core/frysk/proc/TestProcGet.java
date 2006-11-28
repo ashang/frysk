@@ -112,7 +112,7 @@ public class TestProcGet
     public void testGetTasks ()
     {
 	Child child = new AckDaemonProcess (1);
-	Proc proc = child.findProcUsingRefresh (true); // and tasks
+	Proc proc = child.assertFindProcAndTasks(); // and tasks
 	List tasks = proc.getTasks ();
 
 	assertEquals ("number of tasks", 2, tasks.size ());

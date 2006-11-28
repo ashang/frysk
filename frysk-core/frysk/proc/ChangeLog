@@ -1,5 +1,15 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestRefresh.java (testRefreshZombie): Changed to use assertFindProcAndTasks.
+	(testUnattachedMultipleExec): Ditto.
+	* TestExec.java (testAttachedMultipleChildExec): Ditto.
+	(testAttachedMultipleParentExec): Ditto.
+	* TestProcGet.java (testGetTasks): Ditto.
+	* StressAttachDetachRapidlyCloningMainTask.java (test): Ditto.
+	* TestAbandon.java (testAbandonAndAbandon): Ditto.
+	(abandonThenRemove): Ditto.
+	(removeThenAbandon): Ditto.
+	
 	* TestLib.java (Child.assertFindProcAndTasks): Added.
 
 2006-11-27  Andrew Cagney  <cagney@redhat.com>
