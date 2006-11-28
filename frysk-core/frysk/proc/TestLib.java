@@ -390,6 +390,25 @@ public class TestLib
 	    Manager.eventLoop.run();
 	    return proc;
 	}
+    
+    public Proc assertFindProcAndTasks()
+    {
+      Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+
+        public void procFound (ProcId procId)
+        {
+          proc = Manager.host.getProc(procId);
+          Manager.eventLoop.requestStop();
+        }
+
+        public void procNotFound (ProcId procId, Exception e)
+        {
+         fail("Couldn't find the given proc");
+        }});
+        Manager.eventLoop.run();
+        return proc;
+    }
+    
 	/**
 	 * Like {@link findProcUsingRefresh (boolean)}, but do not
 	 * refresh the task list.

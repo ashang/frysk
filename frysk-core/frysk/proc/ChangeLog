@@ -1,3 +1,7 @@
+2006-11-28  Nurdin Premji  <npremji@redhat.com>
+
+	* TestLib.java (Child.assertFindProcAndTasks): Added.
+
 2006-11-27  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskTerminateObserver.java (testBlockingWhileTerminating):
