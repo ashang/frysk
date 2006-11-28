@@ -1,5 +1,13 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestProcTasksObserver.java (manyExistingThread): Changed to use assertFindProcAndTasks.
+	Used to just find task.
+	(doClone): Ditto.
+	(cloneThenKill): Ditto.
+	(singleExistingThread): Ditto. 
+	(singleExistingClone): Ditto.
+	(delete): Ditto.
+
 	* TestProcStopped.java (running): Changed to use assertFindProcAndTasks.
 	Used to just find task.
 	(stopped): Ditto.
