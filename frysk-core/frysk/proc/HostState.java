@@ -63,7 +63,7 @@ class HostState
     {
 	throw unhandled (host, "handleRefresh");
     }
-    HostState handleRefresh (Host host, boolean refreshAll, ProcId procId, Host.FindProc finder)
+    HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
     {
       throw unhandled (host, "handleRefresh");
     }
@@ -96,10 +96,10 @@ class HostState
 					     attached);
 		return HostState.running;
 	    }
-        HostState handleRefresh (Host host, boolean refreshAll, ProcId procId, Host.FindProc finder)
+        HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
         {
           logger.log (Level.FINE, "{0} handleRefresh\n", host); 
-        host.sendRefresh (refreshAll, procId, finder);
+        host.sendRefresh (procId, finder);
         return running;
         }
 	};

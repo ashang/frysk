@@ -194,8 +194,7 @@ public class LinuxHost
       }
   }
   
-  void sendRefresh (boolean refreshAll, final ProcId procId,
-                    final FindProc finder)
+  void sendRefresh (final ProcId procId, final FindProc finder)
   {
 
     // Iterate (build) the /proc tree starting with the given procId.
@@ -225,12 +224,10 @@ public class LinuxHost
         return;
       }
 
-    if (refreshAll)
-      {
-        LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
-        proc.sendRefresh();
-      }
-
+    
+    LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
+    proc.sendRefresh();
+    
     Manager.eventLoop.add(new Event()
     {
 

@@ -1,5 +1,12 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* DummyHost.java (sendRefresh): Removed boolean.
+	* LinuxHost.java (sendRefresh): Ditto.
+	* HostState.java (running.handleRefresh): Ditto.
+	(handleRefresh): Ditto.
+	* Host.java (sendRefresh): Ditto.
+	(requestFindProc.Event.execute): Ditto.
+
 	* Host.java (requestFindProc (boolean refreshAll ...)): Removed.
 
 	* TestFindProc.java (doFindProc): Changed to use simplified requestFindProc.

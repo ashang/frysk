@@ -126,7 +126,7 @@ public abstract class Host
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
     
-    abstract void sendRefresh (boolean refreshAll, ProcId procId, FindProc finder);
+    abstract void sendRefresh (ProcId procId, FindProc finder);
     
     /**
      * Tell the host to create a running child process.
@@ -201,7 +201,7 @@ public abstract class Host
 
         public void execute ()
         {
-          newState = oldState().handleRefresh (Host.this, true, procId, finder);
+          newState = oldState().handleRefresh (Host.this, procId, finder);
         }});
     }
     
