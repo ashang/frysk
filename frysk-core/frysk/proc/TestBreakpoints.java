@@ -88,7 +88,7 @@ public class TestBreakpoints
     out = new DataOutputStream(process.out);
     
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 
       public void procFound (ProcId procId)
       {

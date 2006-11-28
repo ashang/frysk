@@ -127,7 +127,7 @@ public class GuiTestLib extends TestCase{
 			logger.log(Level.FINE, "{0} getProc\n", this);
 			if(proc == null)
               {
-				Manager.host.requestFindProc(true, new ProcId(pid),
+				Manager.host.requestFindProc(new ProcId(pid),
                                        new Host.FindProc()
                                        {
 

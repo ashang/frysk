@@ -156,7 +156,7 @@ public class fstack
                 
                 hasProc = true;
                 int pid = Integer.parseInt(arg);
-                Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+                Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 
                   public void procFound (ProcId procId)
                   {

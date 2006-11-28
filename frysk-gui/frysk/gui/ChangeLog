@@ -1,3 +1,8 @@
+2006-11-28  Nurdin Premji  <npremji@redhat.com>
+
+	* test/GuiTestLib.java (TestProc.getProc): Changed to use simplified 
+	requestFindProc.
+
 2006-11-24  Mike Cvet  <mcvet@redhat.com>
 
 	* Gui.java (MultipleInvocationEvent.execute): Raise dialog instead

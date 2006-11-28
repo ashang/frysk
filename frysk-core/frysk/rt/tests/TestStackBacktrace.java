@@ -211,7 +211,7 @@ public class TestStackBacktrace
     
     myTask = process.findTaskUsingRefresh(true);
     
-    Manager.host.requestFindProc(true, new ProcId(process.getPid()), new Host.FindProc() {
+    Manager.host.requestFindProc(new ProcId(process.getPid()), new Host.FindProc() {
 
       public void procFound (ProcId procId)
       {

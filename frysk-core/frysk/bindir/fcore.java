@@ -114,7 +114,7 @@ public class fcore
                 System.err.println("Argument " + arg + " does not appear to be a valid pid");
                 return;
               }
-              Manager.host.requestFindProc(true, new ProcId (pid), new Host.FindProc() {
+              Manager.host.requestFindProc(new ProcId (pid), new Host.FindProc() {
 
                 public void procFound (ProcId procId)
                 {

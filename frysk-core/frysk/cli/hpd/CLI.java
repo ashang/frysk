@@ -322,7 +322,7 @@ public class CLI
 
           if (cli)
             {
-              Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+              Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 
                 public void procFound (ProcId procId)
                 {

@@ -1,5 +1,12 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestBreakpoints.java (setUp): Changed to use simplified requestFindProc.
+	* TestFindProc.java (testFindAndRefreshFailed): Ditto. 
+	* TestLib.java (Child.assertFindProcAndTasks): Ditto.
+	* TestSyscallSignal.java (setUp): Ditto.
+	* TestSyscallRunning.java (setUp): 	Ditto.
+	* TestTaskSyscallObserver.java (TestSyscallInterruptInternals.TestSyscallInterruptInternals): Ditto.
+
 	* Host.java (requestFindProc): Added. Assumes refresh tasks.
 
 	* TestLib.java (Child.findProcUsingRefresh): Removed.

@@ -1,3 +1,7 @@
+2006-11-28  Nurdin Premji  <npremji@redhat.com>
+
+	* hpd/CLI.java (AttachHandler.handle): Changed to use simplified requestFindProc.
+
 2006-11-27  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (AccessDW_FORM_block.getBufferAddr): Change 

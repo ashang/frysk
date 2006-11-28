@@ -374,7 +374,7 @@ public class TestLib
 	 */	
     public Proc assertFindProcAndTasks()
     {
-      Manager.host.requestFindProc(true, new ProcId(pid), new Host.FindProc() {
+      Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 
         public void procFound (ProcId procId)
         {

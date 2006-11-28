@@ -180,7 +180,7 @@ public class TestFindProc
       }
     };
 
-    Manager.host.requestFindProc(true, new ProcId(0), finder);
+    Manager.host.requestFindProc(new ProcId(0), finder);
     assertRunUntilStop("testFindFailed");
 
   }
