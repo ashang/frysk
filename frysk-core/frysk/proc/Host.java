@@ -190,21 +190,7 @@ public abstract class Host
 		    newState= oldState ().handleRefresh (Host.this, refreshAll);
 		}
 	    });
-    }
-    
-    /**
-     * Find a specific process from its Id.
-     */
-    public void requestFindProc(final boolean refreshAll, final ProcId procId, final FindProc finder)
-    {
-      Manager.eventLoop.add(new HostEvent("FindProc") {
-
-        public void execute ()
-        {
-          newState = oldState().handleRefresh (Host.this, refreshAll, procId, finder);
-        }});
-            
-    }
+    }    
     
     /**
      * Find a specifc process from its Id.
