@@ -225,7 +225,7 @@ public class TestRegMemModify
     volatile int syscallState;
     volatile boolean exited;
     volatile int exitedTaskEventStatus;
-    boolean EMT64Isa;
+    boolean X8664Isa;
     int syscallNum;
     long orig_eax;
     long rax;
@@ -380,13 +380,13 @@ public class TestRegMemModify
         isa = null;
           }
         if (isa instanceof LinuxX8664) {
-          EMT64Isa = true;
+          X8664Isa = true;
           task.requestAddSyscallObserver (taskEventObserver);
           task.requestAddSignaledObserver (taskEventObserver);
         }
         else {
           // If not ia32, stop immediately
-          EMT64Isa = false;
+          X8664Isa = false;
           Manager.eventLoop.requestStop ();
         }
       }
@@ -609,7 +609,7 @@ public class TestRegMemModify
     }).resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
-    if (t.EMT64Isa) {
+    if (t.X8664Isa) {
       assertTrue ("proc exited", t.exited);
       assertTrue ("exit syscall found", t.exitSyscall);
     }

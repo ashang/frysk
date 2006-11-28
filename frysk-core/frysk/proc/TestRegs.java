@@ -158,7 +158,7 @@ public class TestRegs
   
   class TestX8664RegsInternals extends SyscallExaminer.Tester
   {
-    boolean EMT64Isa;
+    boolean X8664Isa;
     int syscallNum;
     String[] regNames 
     = new String[] { "orig_rax", "rdi", "rsi", "rdx", "r10", "r8", "r9"};
@@ -253,14 +253,14 @@ public class TestRegs
           }
         if (isa instanceof LinuxX8664) 
           {
-            EMT64Isa = true;
+            X8664Isa = true;
             task.requestAddSyscallObserver(taskEventObserver);
             task.requestAddSignaledObserver(taskEventObserver);
           }
         else
           {
             // If not X86_64, stop immediately
-            EMT64Isa = false;
+            X8664Isa = false;
             Manager.eventLoop.requestStop();
           }
       }
@@ -466,7 +466,7 @@ public class TestRegs
     child.resume();
     assertRunUntilStop ("run \"x86regs\" until exit");
     
-    if (t.EMT64Isa) 
+    if (t.X8664Isa) 
       {
         t.verify();
       }

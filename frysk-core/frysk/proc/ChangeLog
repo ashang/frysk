@@ -1,3 +1,13 @@
+2006-11-28  Mike Cvet  <mcvet@redhat.com>
+
+	* TestRegMemModify.java (TestX8664ModifyInternals.X8664Isa): Renamed
+	from EMT64Isa.
+	* TestRegs.java (TestX8664RegsInternals.X8664Isa): Renamed from 
+	EMT64Isa.
+	* IsaX8664.java (X8664Register): Renamed from EMT64Register.
+	(X8664SegmentRegister): Renamed from EMT64SegmentRegister.
+	(X8664FPRegister): Renamed from EMT64FPRegister.
+
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
 	* DummyHost.java (sendRefresh): Removed boolean.

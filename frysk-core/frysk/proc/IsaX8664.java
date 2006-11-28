@@ -56,16 +56,16 @@ class IsaX8664 implements Isa
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
   
-  static class EMT64Register extends Register
+  static class X8664Register extends Register
   {
-    EMT64Register(String name, int wordOffset)
+    X8664Register(String name, int wordOffset)
     {
       super(0, wordOffset * 8, 8, name);
     }
   }
-  static class EMT64SegmentRegister extends EMT64Register
+  static class X8664SegmentRegister extends X8664Register
   {
-    EMT64SegmentRegister (String name, int wordOffset)
+    X8664SegmentRegister (String name, int wordOffset)
     {
       super (name, wordOffset);
     }
@@ -125,34 +125,34 @@ class IsaX8664 implements Isa
     }
   }
 
-  private static final EMT64Register[] regDefs
-  = { new EMT64Register("rax", 10),
-      new EMT64Register("rbx", 5),
-      new EMT64Register("rcx", 11),
-      new EMT64Register("rdx", 12),
-      new EMT64Register("rsi", 13),
-      new EMT64Register("rdi", 14),
-      new EMT64Register("rbp", 4),
-      new EMT64Register("rsp", 19),
-      new EMT64Register("r8", 9),
-      new EMT64Register("r9", 8),
-      new EMT64Register("r10", 7),
-      new EMT64Register("r11", 6),
-      new EMT64Register("r12", 3),
-      new EMT64Register("r13", 2),
-      new EMT64Register("r14", 1),
-      new EMT64Register("r15", 0),
-      new EMT64Register("rip", 16),
-      new EMT64Register("eflags", 18),
-      new EMT64SegmentRegister("cs", 17),
-      new EMT64SegmentRegister("ss", 20),
-      new EMT64SegmentRegister("ds", 23),
-      new EMT64SegmentRegister("es", 24),
-      new EMT64SegmentRegister("fs", 25),
-      new EMT64SegmentRegister("gs", 26),
-      new EMT64Register("orig_rax", 15),
-      new EMT64Register("fs_base", 21),
-      new EMT64Register("gs_base", 22) };
+  private static final X8664Register[] regDefs
+  = { new X8664Register("rax", 10),
+      new X8664Register("rbx", 5),
+      new X8664Register("rcx", 11),
+      new X8664Register("rdx", 12),
+      new X8664Register("rsi", 13),
+      new X8664Register("rdi", 14),
+      new X8664Register("rbp", 4),
+      new X8664Register("rsp", 19),
+      new X8664Register("r8", 9),
+      new X8664Register("r9", 8),
+      new X8664Register("r10", 7),
+      new X8664Register("r11", 6),
+      new X8664Register("r12", 3),
+      new X8664Register("r13", 2),
+      new X8664Register("r14", 1),
+      new X8664Register("r15", 0),
+      new X8664Register("rip", 16),
+      new X8664Register("eflags", 18),
+      new X8664SegmentRegister("cs", 17),
+      new X8664SegmentRegister("ss", 20),
+      new X8664SegmentRegister("ds", 23),
+      new X8664SegmentRegister("es", 24),
+      new X8664SegmentRegister("fs", 25),
+      new X8664SegmentRegister("gs", 26),
+      new X8664Register("orig_rax", 15),
+      new X8664Register("fs_base", 21),
+      new X8664Register("gs_base", 22) };
 
 
   private LinkedHashMap registerMap = new LinkedHashMap();
