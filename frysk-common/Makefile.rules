@@ -623,3 +623,11 @@ checked-parameterless-junit-fail: $(GEN_DIRNAME).jar
 		exit 1 ; \
 	fi
 	touch $@
+
+# Check that runtest exists for use by dejagnu
+
+check-local: checked-for-dejagnu
+CLEANFILES += checked-for-dejagnu
+checked-for-dejagnu:
+	$(RUNTEST) --help > /dev/null 2>&1
+	touch $@
