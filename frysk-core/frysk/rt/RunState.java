@@ -230,7 +230,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     // System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(task)).intValue();
-
+    
     if (lineNum != prev)
       {
         this.lineMap.put(task, new Integer(lineNum));
@@ -255,7 +255,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
-    System.out.println("Stepping over from runstate");
     this.state = STEP_OVER;
     this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
     this.lastFrame = lastFrame;
@@ -316,7 +315,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void cleanUpBreakPoint (Task task)
   {
-    System.out.println("Cleanupbreakpoint");
     this.setChanged();
     this.notifyObservers(task);
   }
@@ -324,7 +322,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void setUpStepOut (LinkedList tasks, StackFrame lastFrame)
   {
     this.state = STEP_OUT;
-    System.out.println("Stepping out from runstate");
     this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
     this.lastFrame = lastFrame;
     //this.numSteppingTasks = tasks.size();
@@ -332,7 +329,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
     
     Task t = lastFrame.getTask();
     t.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
-    System.out.println("Unblock");
     //t.requestDeleteInstructionObserver(this);
     t.requestUnblock(this);
   }
@@ -645,7 +641,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     this.stateProc = proc;
     this.tasks = proc.getTasks();
-    requestAdd(tasks);
+    requestAdd(this.tasks);
   }
   
   /**
@@ -725,7 +721,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
     if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
-        switch (state)
+        switch (RunState.this.state)
           {
           case INSTRUCTION_STEP:
             this.taskStepCount--;

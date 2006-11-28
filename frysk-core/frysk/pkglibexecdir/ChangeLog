@@ -1,3 +1,8 @@
+2006-11-28  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-threadstepper.c: Added. More interesting stepping cases.
+	* funit-rt-stepper.c (signal_parent): Loop instead of exit.
+
 2006-11-28  Chris Moller  <moller@mollerware.com>
 
 	* funit-exit.xml: Add documentation for -exclude and -include

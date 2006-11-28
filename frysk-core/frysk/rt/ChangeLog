@@ -1,3 +1,16 @@
+2006-11-28  Mike Cvet  <mcvet@redhat.com>
+
+	* TestRunState.java: Removed lots of unneeded imports and variables.
+	Uses new RunState interface.
+	(testInstructionStepping): Cleaned up. Initialize new LockObserver.
+	Enabled re: #3529.
+	(testLineStepping): Ditto.
+	(setUpTest): Set the task step count in the RunState.
+	(stepAssertions): Fixed up some expected line numbers. Made sure to
+	clean up after each step and properly re-initialize for each new step.
+	(LockObserver): Added.
+	(StepObserver): Removed.
+
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
 	* tests/TestStackBacktrace.java (testThreadedBacktrace): Changed to use 

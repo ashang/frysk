@@ -45,71 +45,153 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-volatile int lock;
+#define FIRST 0
+#define SECOND 1
+
+pthread_t tester_thread_one;
+pthread_t tester_thread_two;
+
+volatile int lock_one;
+volatile int lock_two;
 volatile pid_t pid;
 volatile int sig;
 
-void *signal_parent (void* args)
-{
-  while (lock == 1);
-  kill (pid, sig);
-  while (1);
-}
+void bak_two ();
 
-void jump ()
-{
-	int z = 1;
-	int y = 2;
-	int x = 3;
-	int w = (((((x + y + z) * 20) / 10) - 0) + 1);
-	w++;
-	return;
-}
+int kill_bool = 1;
 
-void foo ()
+void 
+*signal_parent ()
 {
-  int a = 0;
-  int b = 0;
-  int c = 0;
-  long d = 0;
-  lock = 0;
-  while (1)
+  while (lock_one || lock_two);
+
+  if (kill_bool == 1)
     {
-      a++;
-      b++;
-      c++;
-      d = a;
-      if (a + b == 2)
-		{
-	 	 if (b + d == 2)
-	  	  {
-	 	     a = 0;
-	 	     b = 0;
-		     c = 0;
-		     d = 0;
-	 		 if (d == 0)
-				d = 1;
-	    	}
-		}
-		jump ();
+      kill (pid, sig);
+      kill_bool = 0;
+    }
+
+  signal_parent ();
+  return NULL;
+}
+
+int bak_two_count = 0;
+
+void
+bak_three ()
+{
+  bak_two_count++;
+
+  if (bak_two_count == 5)
+    while (1);
+
+  bak_two ();
+}
+
+/* tester_thread_two */
+void
+bak_two ()
+{
+  lock_two = 0;
+  bak_three ();
+}
+
+int bak_recursive_count = 0;
+int ret_count = 0;
+
+void
+bak_recursive ()
+{
+  if (bak_recursive_count == 20 || ret_count == 1)
+    {
+      ret_count = 1;
+      bak_recursive_count--;
+      return;
+    }
+  else
+    {
+      ret_count = 0;
+      bak_recursive_count++;
+      bak_recursive ();
     }
 }
 
-int main (int argc, char ** argv)
+/* tester_thread_one: b = 1 
+* tester_thread_two: b = 0 */
+void
+bak (int b)
+{
+  if (b == SECOND)
+    bak_two ();
+
+  lock_one = 0;
+  //while (1);
+  bak_recursive ();
+}
+
+/* tester_thread_two */
+void
+baz_two (int b)
+{
+  bak (b);
+} 
+
+/* tester_thread_one */
+void
+baz ()
+{
+  bak (FIRST);
+}
+
+/* tester_thread_two */
+void
+bar_two ()
+{
+  baz_two (SECOND);
+}
+
+/* tester_thread_one */
+void
+bar ()
+{
+  int i = 12345;
+  while (i < 0)
+    i--;
+
+  baz ();
+}
+
+/* tester_thread_two: a = 0 */
+void
+foo_two ()
+{
+  bar_two ();
+}
+
+/* tester_thread_one: a = 1 */
+void
+*foo ()
+{
+  bar ();
+  return NULL;
+}
+
+int
+main (int argc, char ** argv)
 {
 
-  if(argc < 3)
+  if (argc < 3)
     {
-      printf ("Usage: funit-rt-stepper <pid> <signal>\n");
-      exit (0);
+      printf("Usage: funit-rt-threader <pid> <signal>\n");
+      exit(0);
     }
 
   errno = 0;
-  pid_t target_pid = (pid_t) strtoul (argv[1], (char **) NULL, 10);
+  pid_t target_pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
   if (errno)
     {
       perror ("Invalid pid");
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   
   errno = 0;
@@ -117,18 +199,22 @@ int main (int argc, char ** argv)
   if (errno)
     {
       perror ("Invalid signal");
-      exit (1);
+      exit (EXIT_FAILURE);
     }
   
   pid = target_pid;
   sig = signal;
-  
-  lock = 1;
 
-  pthread_t thread;
-  pthread_create (&thread, NULL, signal_parent, NULL);
+  lock_one = 1;
+  lock_two = 1;
 
-  foo ();
-  
+  pthread_attr_t attr;
+  pthread_attr_init (&attr);
+
+  pthread_create (&tester_thread_one, &attr, signal_parent, NULL);
+  pthread_create (&tester_thread_two, &attr, foo, NULL);
+
+  foo_two ();
+
   return 0;
 }
