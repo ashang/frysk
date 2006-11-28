@@ -101,7 +101,7 @@ public class TestProcGet
     public void testGetCommand ()
     {
 	Child child = new AckDaemonProcess ();
-	Proc childProc = child.findProcUsingRefresh ();
+	Proc childProc = child.assertFindProcAndTasks();
 	assertEquals ("value of child's getCommand()", "funit-child",
 		      childProc.getCommand ());
     }
@@ -139,8 +139,8 @@ public class TestProcGet
 	// Create two children.  The refreshes have the side effect of
 	// updating this processes proc list.
 	Proc[] child = new Proc[] {
-	    new DetachedAckProcess ().findProcUsingRefresh (),
-	    new DetachedAckProcess ().findProcUsingRefresh ()
+	    new DetachedAckProcess ().assertFindProcAndTasks(),
+	    new DetachedAckProcess ().assertFindProcAndTasks()
 	};
 	Proc self = host.getSelf ();
 
@@ -160,7 +160,7 @@ public class TestProcGet
     {
 	Child child = new AckDaemonProcess ();
 	String[] argv = child.getArgv ();
-	Proc proc = child.findProcUsingRefresh ();
+	Proc proc = child.assertFindProcAndTasks();
 	String[] cmdLine = proc.getCmdLine ();
 	assertEquals ("cmdLine.length", argv.length, cmdLine.length);
 	for (int i = 0; i < argv.length; i++) {
@@ -183,7 +183,7 @@ public class TestProcGet
 	catch (IOException e) {
 	    throw new RuntimeException (e);
 	}
-	Proc proc = child.findProcUsingRefresh ();
+	Proc proc = child.assertFindProcAndTasks();
 	assertEquals ("exe", proc.getExe (), file);
     }
 }

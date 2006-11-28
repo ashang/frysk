@@ -1,7 +1,13 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestProcGet.java 	(testGetCommand): Changed to use assertFindProcAndTasks. 
+	Used to just find task		 
+	(testGetExe): Ditto.
+	(testGetCmdLine): Ditto.
+	(testGetChildren): Ditto.
+
 	* TestProcForceDetach.java (requestRemove): Changed to use assertFindProcAndTasks. 
-	Used to just find task
+	Used to just find task		
 	
 	* TestRefresh.java (testRefreshZombie): Changed to use assertFindProcAndTasks.
 	(testUnattachedMultipleExec): Ditto.
