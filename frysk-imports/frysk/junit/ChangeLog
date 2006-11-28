@@ -1,10 +1,14 @@
 2006-11-28  Chris Moller  <moller@mollerware.com>
 
+	* Runner.java: Rename private variable omitTests to excludeTests.
+	Initialise excludeTests and includeTests to new ArrayList().
+	* Runner.java (createCommandLineParser): Rename -omit to -excludeTests.
+	* Runner.java (runCases): Remove checks for null excludeTests and
+	includeTests. 
+
 	* Runner.java: New private variables omitTests and includeTests
-
-	* Runner.java (createCommandLineParser): AAdd options -omit and
+	* Runner.java (createCommandLineParser): Add options -omit and
 	-include. 
-
 	* Runner.java (runCases): Add code to omit tests specified by
 	-omit and include tests specified by -include, overriding tests
 	omitted by -omit.

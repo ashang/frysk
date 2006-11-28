@@ -1,3 +1,8 @@
+2006-11-28  Chris Moller  <moller@mollerware.com>
+
+	* funit-exit.xml: Add documentation for -exclude and -include
+	switches. 
+
 2006-11-27  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-threadexit.c (running_thread_can_exit): New barrier.

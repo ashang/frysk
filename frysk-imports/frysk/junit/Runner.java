@@ -83,8 +83,8 @@ public class Runner
     // Put all tests through a filter; by default exclude all Stress.*
     // classes.
     private String testFilter = "^(|.*\\.)(?!Stress)[^\\.]*$";
-    private ArrayList omitTests = null;
-    private ArrayList includeTests = null;
+    private ArrayList excludeTests = new ArrayList();
+    private ArrayList includeTests = new ArrayList();
     
     private LinkedList otherArgs;
     
@@ -196,23 +196,19 @@ public class Runner
 		// Only include tests that gets by both filters.
 		if (testClass.getName ().matches (testFilter)) {
 		    boolean addit = true;
-		    if (null != omitTests) {
-			int size = omitTests.size();
-			for (int j = 0; j < size; j++) {
-			    try {
-				if (testClass.getName ().matches ((String)omitTests.get (j))) {
-				    addit = false;
-				    break;
-				}
-			    }
-			    catch (PatternSyntaxException p) {
-				System.out.println(p.getMessage());
+		    for (int j = 0; j < excludeTests.size(); j++) {
+			try {
+			    if (testClass.getName ().matches ((String)excludeTests.get (j))) {
+				addit = false;
+				break;
 			    }
 			}
+			catch (PatternSyntaxException p) {
+			    System.out.println(p.getMessage());
+			}
 		    }
-		    if (!addit && (null != includeTests)) {
-			int size = includeTests.size();
-			for (int j = 0; j < size; j++) {
+		    if (!addit) {
+			for (int j = 0; j < includeTests.size(); j++) {
 			    try {
 				if (testClass.getName ().matches ((String)includeTests.get (j))) {
 				    addit = true;
@@ -486,8 +482,8 @@ public class Runner
 	    });
 		
 	// Specify tests to omit.
-	parser.add (new Option ("omit",  'o',
-				"Specify a test to omit.  Each passed"
+	parser.add (new Option ("exclude",  'e',
+				"Specify a test to exclude.  Each passed"
 				+ " option will be interpreted as the"
 				+ " regex specification of a test to omit."
 				+ "  This option may be used multiple"
@@ -496,8 +492,7 @@ public class Runner
 	    {
 		public void parsed (String arg0)
 		{
-		    if (null == omitTests) omitTests = new ArrayList();
-		    omitTests.add (arg0);
+		    excludeTests.add (arg0);
 		}
 	    });
 		
@@ -513,7 +508,6 @@ public class Runner
 	    {
 		public void parsed (String arg0)
 		{
-		    if (null == includeTests) includeTests = new ArrayList();
 		    includeTests.add (arg0);
 		}
 	    });

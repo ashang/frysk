@@ -90,6 +90,12 @@
         <option>--all</option>
       </arg>
       <arg choice="opt">
+        <option>-e <replaceable>test-spec</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>-i <replaceable>test-spec</replaceable></option>
+      </arg>
+      <arg choice="opt">
         <option><replaceable>test-class</replaceable> ...</option>
       </arg>
     </cmdsynopsis>
@@ -152,6 +158,22 @@
         <term>--all</term>
         <listitem>
           <para> Run all tests (by default stress tests are excluded). </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-e <replaceable>test-spec</replaceable></term>
+	<listitem>
+          <para> Specify a test to exclude.  Each passed option will be interpreted as the regex specification of a test to omit
+		This option may be used multiple times. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-i <replaceable>test-spec</replaceable></term>
+	<listitem>
+          <para> Specify a test to include, ovirriding an omit specification.  Each passed option will be interpreted as the
+		regex specification of a test to include.  This option may be used multiple times. </para>
         </listitem>
       </varlistentry>
 
