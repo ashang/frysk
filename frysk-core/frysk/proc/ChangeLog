@@ -1,5 +1,10 @@
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
+	* TestFindProc.java (doFindProc): Changed to use simplified requestFindProc.
+	Previously did not refresh tasks.
+	(testFindFailed): Removed, changing to use simplified would be the same as
+	testFindAndRefreshFailed.
+
 	* TestBreakpoints.java (setUp): Changed to use simplified requestFindProc.
 	* TestFindProc.java (testFindAndRefreshFailed): Ditto. 
 	* TestLib.java (Child.assertFindProcAndTasks): Ditto.

@@ -130,36 +130,13 @@ public class TestFindProc
      * Should be just the one.
      */
     Host.FindProc finder = new MyFinder(new ProcId(ackProc.getPid()));
-    Manager.host.requestFindProc(false, new ProcId(ackProc.getPid()), finder);
+    Manager.host.requestFindProc(new ProcId(ackProc.getPid()), finder);
     assertRunUntilStop("testFindProc");
 
     int postFind = o.getCount();
 
     assertEquals(expectedCount, postFind - preFind);
     
-  }
-
-  public void testFindFailed ()
-  {
-    Host.FindProc finder = new Host.FindProc()
-    {
-      public void procFound (ProcId procId)
-      {
-        logger.log(Level.FINE, "{0} procId\n", procId);
-        fail("Found proc 0, should have failed.");
-      }
-
-      public void procNotFound (ProcId procId, Exception e)
-      {
-        logger.log(Level.FINE, "{0} procId\n", procId);
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-
-      }
-    };
-
-    Manager.host.requestFindProc(false, new ProcId(0), finder);
-    assertRunUntilStop("testFindFailed");
-
   }
   
   public void testFindAndRefreshFailed ()
