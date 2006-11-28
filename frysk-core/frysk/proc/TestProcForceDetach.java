@@ -48,7 +48,7 @@ public class TestProcForceDetach
   public void requestRemove (AckProcess ackProc, int count)
   {
 
-    new MyObserver(ackProc.findProcUsingRefresh(),count);    
+    new MyObserver(ackProc.assertFindProcAndTasks(),count);    
 
     assertRunUntilStop("test");
   }
