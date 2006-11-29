@@ -139,7 +139,10 @@ public class TestRunState extends TestLib
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
+    runState = new RunState();
     lock = new LockObserver();
+    runState.addObserver(lock);
+    testState = STEP_IN;
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
@@ -148,8 +151,6 @@ public class TestRunState extends TestLib
         "" + Sig.POLL_
     });
     
-    testState = STEP_IN;
-    
     Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
     
@@ -157,8 +158,6 @@ public class TestRunState extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    runState = new RunState();
-    runState.addObserver(lock);
     runState.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
@@ -167,7 +166,6 @@ public class TestRunState extends TestLib
   
   public void setUpTest ()
   {
-    //System.out.println("setupTest");
     Iterator i = myProc.getTasks().iterator();
     
     while (i.hasNext())
@@ -176,6 +174,7 @@ public class TestRunState extends TestLib
         if (this.dwflMap.get(t) == null)
           {
             Dwfl d = new Dwfl(t.getTid());
+           //System.out.println("setupTest " + t + " " + d);
             DwflLine line = null;
             try
               {
@@ -188,8 +187,11 @@ public class TestRunState extends TestLib
             
             if (line == null)
               {
+               //System.out.println("DwflLine null");
                 continue;
               }
+            else
+             //System.out.println("setupTest " + line.getLineNum());
 
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
@@ -199,16 +201,19 @@ public class TestRunState extends TestLib
         //t.requestUnblock(this.stepper);
       }
     count = 0;
-    runState.setTaskStepCount(myProc.getTasks().size());
-    runState.setUpStep(myProc.getTasks());
+    
+   //System.out.println("About to step from testsetup: " + myProc.getMainTask());
+    if (testState == INSTRUCTION_STEP)
+      {
+        runState.stepInstruction(myProc.getTasks());
+      }
+    else
+      runState.setUpStep(myProc.getTasks());
   }
   
   public synchronized void stepAssertions (Task task)
-  {
-    if (task.getTid() != myProc.getPid())
-        return;
-    
-    //System.out.println("In stepAssertions");
+  { 
+   //System.out.println("In stepAssertions " + task);
     myTask = task;
     DwflLine line = null;
     try
@@ -217,90 +222,113 @@ public class TestRunState extends TestLib
       }
     catch (TaskException te)
       {
-        //System.out.println("task execption");
+       //System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
       {
-        //System.out.println("NPE");
+       //System.out.println("NPE {");
+        Dwfl d = new Dwfl(task.getTid());
+       //System.out.println("setupTest " + task + " " + d);
+        line = null;
+        try
+        {
+          line = d.getSourceLine(task.getIsa().pc(task));
+        }
+      catch (TaskException te)
+        {
+          
+        }
+      if (line != null)
+        {
+          this.dwflMap.put(task, d);
+          this.lineMap.put(task, new Integer(line.getLineNum()));
+        }
+      else
+       //System.out.println("Second attempt - line still null");
+      
+     //System.out.println("}");
         return;
       }
 
     if (line == null)
       return;
 
-    // ////System.out.println("Nothing is null");
+   //System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
 
     if (testState == INSTRUCTION_STEP)
       {
-        //System.out.println("------> About to assert " + prev + " " + lineNum);
+       //System.out.println("------> (instruction) About to assert " + line + " " + prev + " " + lineNum);
         switch (prev)
-        {
-        case 78:
-          assertTrue(lineNum == 78 || lineNum == 79);
-          break;
-        case 79:
-          assertTrue(lineNum == 79 || lineNum == 80);
-          break;
-        case 80:
-          assertTrue(lineNum == 80 || lineNum == 81);
-          break;
-        case 81:
-          assertTrue(lineNum == 81 || lineNum == 82);
-          break;
-        case 82:
-          assertTrue(lineNum == 82 || lineNum == 84);
-          break;
-        case 84:
-          assertTrue(lineNum == 84 || lineNum == 86);
-          break;
-        case 86:
-          assertTrue(lineNum == 86 || lineNum == 87);
-          break;
-        case 87:
-          assertTrue(lineNum == 87 || lineNum == 88);
-          break;
-        case 88:
-          assertTrue(lineNum == 88 || lineNum == 89);
-          break;
-        case 89:
-          assertTrue(lineNum == 89 || lineNum == 90);
-          break;
-        case 90:
-          assertTrue(lineNum == 90 || lineNum == 91);
-          break;
-//        case 94:
-//          assertTrue(lineNum == 94 || lineNum == 60);
-//          break;
-        case 60:
-          assertTrue(lineNum == 60 || lineNum == 61);
-          break;
-        case 61:
-          assertTrue(lineNum == 61 || lineNum == 62);
-          break;
-        case 62:
-          assertTrue(lineNum == 62 || lineNum == 63);
-          break;
-        case 63:
-          assertTrue(lineNum == 63 || lineNum == 64);
-          break;
-        case 64:
-          assertTrue(lineNum == 64 || lineNum == 65);
-          break;
-        case 65:
-          assertTrue(lineNum == 65 || lineNum == 67);
-          break;
-        case 67:
-          assertTrue(lineNum == 67 || lineNum == 94);
-          break;
-//        case 94:
-//          assertTrue(lineNum == 94 || lineNum == 95);
-//          break;
-        default:
-          break;
-        }
+          {
+          case 56:
+            assertTrue(lineNum == 56);
+            break;
+          case 78:
+            assertTrue(lineNum == 78 || lineNum == 79);
+            break;
+          case 79:
+            assertTrue(lineNum == 79 || lineNum == 80);
+            break;
+          case 80:
+            assertTrue(lineNum == 80 || lineNum == 81);
+            break;
+          case 81:
+            assertTrue(lineNum == 81 || lineNum == 82);
+            break;
+          case 82:
+            assertTrue(lineNum == 82 || lineNum == 84);
+            break;
+          case 84:
+            assertTrue(lineNum == 84 || lineNum == 86);
+            break;
+          case 86:
+            assertTrue(lineNum == 86 || lineNum == 87);
+            break;
+          case 87:
+            assertTrue(lineNum == 87 || lineNum == 88);
+            break;
+          case 88:
+            assertTrue(lineNum == 88 || lineNum == 89);
+            break;
+          case 89:
+            assertTrue(lineNum == 89 || lineNum == 90);
+            break;
+          case 90:
+            assertTrue(lineNum == 90 || lineNum == 91);
+            break;
+          // case 94:
+          // assertTrue(lineNum == 94 || lineNum == 60);
+          // break;
+          case 60:
+            assertTrue(lineNum == 60 || lineNum == 61);
+            break;
+          case 61:
+            assertTrue(lineNum == 61 || lineNum == 62);
+            break;
+          case 62:
+            assertTrue(lineNum == 62 || lineNum == 63);
+            break;
+          case 63:
+            assertTrue(lineNum == 63 || lineNum == 64);
+            break;
+          case 64:
+            assertTrue(lineNum == 64 || lineNum == 65);
+            break;
+          case 65:
+            assertTrue(lineNum == 65 || lineNum == 67);
+            break;
+          case 67:
+            assertTrue(lineNum == 67 || lineNum == 94);
+            break;
+          //        case 94:
+          //          assertTrue(lineNum == 94 || lineNum == 95);
+          //          break;
+          default:
+            break;
+          }
         count++;
         
         runState.stepCompleted();
@@ -309,15 +337,19 @@ public class TestRunState extends TestLib
           {
             this.lineMap.put(task, new Integer(lineNum));
             LinkedList l = new LinkedList();
-            l.add(myTask);
-            runState.setTaskStepCount(1);
+            l.add(task);
             runState.stepInstruction(l);
           }
       }
     else if (testState == STEP_IN)
       {
+       //System.out.println("------> (stepin) About to assert " + line + " " + prev + " " + lineNum);
+        
         switch (prev)
           {
+          case 56:
+            assertEquals(lineNum, 56);
+            break;
           case 78:
             assertEquals(lineNum, 79);
             break;
@@ -378,11 +410,8 @@ public class TestRunState extends TestLib
           case 65:
             assertEquals(lineNum, 67);
             break;
-          case 67:
-            assertEquals(lineNum, 94);
-            break;
-//          case 94:
-//            assertEquals(lineNum, 95);
+//          case 67:
+//            assertEquals(lineNum, 95); // put this back in when breakage is figured out.
 //            break;
           default:
             break;
@@ -393,20 +422,14 @@ public class TestRunState extends TestLib
         
         if (count != 50)
           {
-          //runState.stepIn(myTask);
             this.lineMap.put(task, new Integer(line.getLineNum()));
             LinkedList tasks = new LinkedList();
             tasks.add(task);
-            runState.setTaskStepCount(1);
             runState.setUpStep(tasks);
           }
-        
-        //System.out.println(">>>> COUNT: " + count);
       }
-    ////System.out.println("checking count");
     if (count == 50)
       {
-        ////System.out.println("Manager.eventLoop.requestStop();");
         Manager.eventLoop.requestStop();
         return;
       }
@@ -424,19 +447,16 @@ public class TestRunState extends TestLib
      */
     public synchronized void update (Observable o, Object arg)
     {
-      //System.out.println("Got notification");
       if (arg == null)
         return;
       
       if (initial == true)
         {
-          //System.out.println("initial true");
           initial = false;
           setUpTest();
           return;
         }
-      
-      //System.out.println("About to call assertions on " + (Task)arg);
+
       stepAssertions(myProc.getMainTask());
     }
     

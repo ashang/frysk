@@ -1,3 +1,9 @@
+2006-11-29  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-stepper.c: Removed dependence on integer as a lock.
+	(signal_parent): Loop and then kill.
+	(main): Create thread with new default attributes.
+
 2006-11-28  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-threadstepper.c: Added. More interesting stepping cases.

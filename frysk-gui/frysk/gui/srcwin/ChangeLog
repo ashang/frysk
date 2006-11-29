@@ -1,3 +1,13 @@
+2006-11-29  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java: (numSteppingThreads): Removed.
+	(stepInstruction): Removed reference to above. Now lets RunState
+	decide how many tasks are stepping.
+	(doStep): Ditto.
+	(doNext): Ditto.
+	(doFinish): Ditto.
+	(getNumSteppingThreads): Removed.
+
 2006-11-27  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (highlightLine): Added additional code to take

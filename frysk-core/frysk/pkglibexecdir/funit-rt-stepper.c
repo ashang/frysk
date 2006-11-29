@@ -36,7 +36,6 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -45,15 +44,16 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-volatile int lock;
 volatile pid_t pid;
 volatile int sig;
+pthread_t thread;
+volatile int check = 0;
 
 void *signal_parent (void* args)
 {
-  while (lock == 1);
-  kill (pid, sig);
-  while (1);
+  int i; for (i = 0; i < 40000; i+=3);
+  kill (pid, sig);  
+  while (check == 0); return NULL;
 }
 
 void jump ()
@@ -72,7 +72,7 @@ void foo ()
   int b = 0;
   int c = 0;
   long d = 0;
-  lock = 0;
+  
   while (1)
     {
       a++;
@@ -119,14 +119,14 @@ int main (int argc, char ** argv)
       perror ("Invalid signal");
       exit (1);
     }
+    
+    pthread_attr_t attr;
+  	pthread_attr_init (&attr);
+    
+    pthread_create (&thread, &attr, signal_parent, NULL);
   
   pid = target_pid;
   sig = signal;
-  
-  lock = 1;
-
-  pthread_t thread;
-  pthread_create (&thread, NULL, signal_parent, NULL);
 
   foo ();
   

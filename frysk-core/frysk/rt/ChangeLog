@@ -1,3 +1,13 @@
+2006-11-29  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java: Removed ProcBlockObserver import and constructor.
+	(setUpStep): Set numSteppingTasks here.
+	(stepInstruction): Ditto.
+	* TestRunState.java: (testLineStepping): Re-arranged some code.
+	(setUpTest): Remove call to set number of stepping Tasks.
+	(stepAssertions): If DwflLine returns null, attempt to create a 
+	new one. Edited some cases.
+
 2006-11-28  Mike Cvet  <mcvet@redhat.com>
 
 	* TestRunState.java: Removed lots of unneeded imports and variables.

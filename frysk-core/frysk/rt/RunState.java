@@ -46,8 +46,6 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-//import org.gnu.glib.CustomEvents;
-
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import frysk.event.Event;
@@ -58,8 +56,6 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
-
-import frysk.proc.ProcBlockObserver;
 
 /**
  * Model for state transitions in the SourceWindow and HPD classes. Currently
@@ -117,11 +113,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.lineMap = new HashMap();
     this.runningTasks = new HashSet();
   }
-  
-  public RunState (ProcBlockObserver pbo)
-  {
-    
-  }
 
   /*****************************************************************************
    * STEP HANDLING METHODS
@@ -138,6 +129,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     this.state = STEP_IN;
     this.numSteppingTasks = tasks.size();
+    this.taskStepCount = numSteppingTasks;
     Iterator i = tasks.iterator();
     
     while (i.hasNext())
@@ -187,6 +179,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void stepInstruction (LinkedList tasks)
   {
     this.state = INSTRUCTION_STEP;
+    this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
     notifyNotBlocked();
     while (i.hasNext())
@@ -218,7 +211,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     catch (NullPointerException npe)
       {
-         //System.out.println("NPE");
+        // System.out.println("NPE - stepin");
         return;
       }
 
@@ -230,11 +223,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
     // System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(task)).intValue();
-    
+
     if (lineNum != prev)
       {
         this.lineMap.put(task, new Integer(lineNum));
         --taskStepCount;
+        return;
       }
     else
       {
@@ -303,7 +297,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
         this.state = STEP_OVER;
         this.breakpoint = new Breakpoint(lastFrame.getAddress());
         task.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
-        System.out.println("Unblock");
         task.requestDeleteInstructionObserver(this);
       }
   }

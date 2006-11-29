@@ -249,8 +249,6 @@ public class SourceWindow
   
   protected boolean SW_active = false;
   
-  private int numSteppingThreads = 0;
-  
   private StackFrame currentFrame;
   
   private Task currentTask;
@@ -545,10 +543,6 @@ public class SourceWindow
     
     desensitize();
     
-    //this.SW_state = INSTRUCTION_STEP;
-    this.numSteppingThreads = tasks.size();
-    this.runState.setTaskStepCount(this.numSteppingThreads);
-    
     this.runState.stepInstruction(tasks);
     removeTags();
   }
@@ -595,16 +589,6 @@ public class SourceWindow
   public View getView ()
   {
     return this.view;
-  }
-  
-//  public int getState ()
-//  {
-//    return this.SW_state;
-//  }
-  
-  public int getNumSteppingThreads ()
-  {
-    return this.numSteppingThreads;
   }
   
   public RunState getRunState ()
@@ -1589,12 +1573,7 @@ public class SourceWindow
     sbar.push(0, "Stepping");
     
     desensitize();
-    
-  //  this.SW_state = STEP_IN;
-    LinkedList taskList = swProc.getTasks();
-    this.numSteppingThreads = taskList.size();
-    
-    this.runState.setTaskStepCount(this.numSteppingThreads);
+
     this.runState.setUpStep(this.swProc.getTasks());
     
     removeTags();
@@ -1611,9 +1590,6 @@ public class SourceWindow
     sbar.push(0, "Stepping Over");
     
     desensitize();
-    
-    //this.numSteppingThreads = swProc.getTasks().size();
-    this.numSteppingThreads = 1;
     
     this.runState.setUpStepOver(this.swProc.getTasks(), this.currentFrame);
     removeTags();
@@ -1639,9 +1615,6 @@ public class SourceWindow
     sbar.push(0, "Stepping Out");
     
     desensitize();
-    
-    //this.numSteppingThreads = swProc.getTasks().size();
-    this.numSteppingThreads = 1;
     
     this.runState.setUpStepOut(this.swProc.getTasks(), this.currentFrame);
     removeTags();
