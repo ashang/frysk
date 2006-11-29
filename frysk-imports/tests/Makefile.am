@@ -441,3 +441,9 @@ TESTS += frysk3491/x-state
 frysk3491_x_state_SOURCES = frysk3491/x-state.c
 frysk3491_x_state_LDFLAGS = -lpthread
 noinst_PROGRAMS += frysk3491/x-state
+
+# A hang during a brutal detach from a multi-threaded program.
+TESTS += frysk3595/detach-multi-thread
+frysk3595_detach_multi_thread_SOURCES = frysk3595/detach-multi-thread.c
+frysk3595_detach_multi_thread_LDFLAGS = -lpthread
+noinst_PROGRAMS += frysk3595/detach-multi-thread
