@@ -1,8 +1,11 @@
 2006-11-29  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk3595/detach-multi-thread.c (main): Simplify, remove any
+	failing system calls - only detach from non-main thread.
+
 	* frysk3595/detach-multi-thread.c (main): Fix for-loop typo,
 	attatch to all NR_TASKS.
-	
+
 	* frysk3595/detach-multi-thread.c (main): Reduce number of tasks
 	to 1.
 	

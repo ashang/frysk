@@ -38,8 +38,9 @@
 // exception.
 
 /**
- * Create a multi-threaded program, attach to it, try to
- * simultaneously detach and terminate it.
+ * Create a multi-threaded program, when the main thread is running,
+ * but the non-main thread is blocked, kill it and then wait for
+ * events.
  */
 
 #define _GNU_SOURCE
@@ -181,7 +182,7 @@ main (int argc, char *argv[], char *envp[])
 
   // set up an alarm, if that expires the test should just die and
   // fail.
-  alarm (100);
+  alarm (3);
 
   // Stop any buffering
   setbuf (stdout, NULL);
@@ -196,7 +197,8 @@ main (int argc, char *argv[], char *envp[])
 
   printf ("%d forking daemon\n", getpid ());
   pid_t ppid = getpid ();
-  volatile pid_t pid;
+#define NR_TASKS 2
+  volatile pid_t tasks[NR_TASKS];
   pid_t v = vfork ();
   switch (v) {
 
@@ -204,15 +206,14 @@ main (int argc, char *argv[], char *envp[])
     assert_perror (errno);
 
   case 0: // child
-    pid = fork ();
-    switch (pid) {
+    tasks[0] = fork ();
+    switch (tasks[0]) {
     case -1:
       assert_perror (errno);
     case 0: // daemon
       errno = 0;
       pthread_mutex_lock (&hung_mutex);
-#define NR_TASKS 1
-      for (i = 0; i < NR_TASKS; i++) {
+      for (i = 1; i < NR_TASKS; i++) {
 	pthread_t t;
 	OK (pthread_create, (&t, NULL, hung_thread, NULL));
       }
@@ -230,12 +231,10 @@ main (int argc, char *argv[], char *envp[])
     // Wait for for the daemon to report that it is ready.
     wait_for_signals (&old_mask);
 
-    // Find the two tasks
-    pid_t tasks[NR_TASKS + 1];
-    tasks[0] = pid;
+    // Find the non-main tasks
     {
       char *p;
-      asprintf (&p, "/proc/%d/task", pid);
+      asprintf (&p, "/proc/%d/task", tasks[0]);
       if (p == NULL) {
 	perror ("printf");
 	exit (1);
@@ -254,7 +253,7 @@ main (int argc, char *argv[], char *envp[])
 	  continue;
 	}
 	pid_t task = atoi (d->d_name);
-	if (task == pid) {
+	if (task == tasks[0]) {
 	  printf ("%d skip pid %s/%d\n", getpid (), p, task);
 	  continue;
 	}
@@ -264,42 +263,31 @@ main (int argc, char *argv[], char *envp[])
       closedir (task_dir);
     }
 
-    // Attach and wait for the other two threads
-    for (i = 0; i <= NR_TASKS; i++) {
+    // Attach and wait for all tasks
+    for (i = 0; i < NR_TASKS; i++) {
       ptracer (PTRACE_ATTACH, tasks[i], 0);
       waitstatus (tasks[i], "daemon other attached", wifstopped, SIGSTOP);
     }
 
-    // Now resume the first and third tasks
-    // ptracer (PTRACE_CONT, tasks[2], 0);
+    // Now resume the main task.
     ptracer (PTRACE_CONT, tasks[0], 0);
 
-    // Rip the heart out of the task
-    tkill (pid, SIGKILL);
+    // Rip the heart out of the main task
+    printf ("%d tkilling %d\n", getpid (), tasks[0]);
+    if (tkill (tasks[0], SIGKILL) < 0) {
+      perror ("tkill");
+      exit (1);
+    }
 
-    // Start trying to detach in reverse order!
-    for (i = NR_TASKS; i >= 0; i--) {
-      printf ("%d clobbering %d\n", getpid (), tasks[i]);
+    // Detach from the blocked non-main tasks - note that trying to
+    // detach from the main task fails.
+    for (i = 1; i < NR_TASKS; i++) {
+      printf ("%d detaching from %d\n", getpid (), tasks[i]);
       if (ptrace (PTRACE_DETACH, tasks[i], 0, 0) < 0)
 	perror ("ptrace");
-      if (tkill (tasks[i], SIGCONT) < 0)
-	perror ("tkill SIGCONT");
-      if (tkill (tasks[i], SIGKILL) < 0)
-	perror ("tkill SIGKILL");
     }
 
-    while (1) {
-      int rpid = waitstatus (-1, "wait for anything", NULL, 0);
-      if (rpid < 0)
-	break;
-      printf ("%d re-clobbering %d\n", getpid (), rpid);
-      if (ptrace (PTRACE_DETACH, rpid, 0, 0) < 0)
-	perror ("ptrace");
-      if (tkill (rpid, SIGCONT) < 0)
-	perror ("tkill SIGCONT");
-      if (tkill (rpid, SIGKILL) < 0)
-	perror ("tkill SIGKILL");
-    }
+    waitstatus (-1, "wait for anything", NULL, 0);
   }
 
   exit (0);
