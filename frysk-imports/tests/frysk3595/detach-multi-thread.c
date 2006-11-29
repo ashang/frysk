@@ -181,7 +181,7 @@ main (int argc, char *argv[], char *envp[])
 
   // set up an alarm, if that expires the test should just die and
   // fail.
-  alarm (2);
+  alarm (100);
 
   // Stop any buffering
   setbuf (stdout, NULL);
@@ -210,10 +210,13 @@ main (int argc, char *argv[], char *envp[])
       assert_perror (errno);
     case 0: // daemon
       errno = 0;
-      pthread_t lhs, rhs;
       pthread_mutex_lock (&hung_mutex);
-      OK (pthread_create, (&lhs, NULL, hung_thread, NULL));
-      OK (pthread_create, (&rhs, NULL, hung_thread, NULL));
+#define NR_TASKS 1
+      for (i = 0; i < NR_TASKS; i++) {
+	pthread_t t;
+	OK (pthread_create, (&t, NULL, hung_thread, NULL));
+      }
+      // OK (pthread_create, (&rhs, NULL, hung_thread, NULL));
       send_signal (ppid, SIGUSR1);
       wait_for_signals (&old_mask);
     default:
@@ -228,7 +231,7 @@ main (int argc, char *argv[], char *envp[])
     wait_for_signals (&old_mask);
 
     // Find the two tasks
-    pid_t tasks[3];
+    pid_t tasks[NR_TASKS + 1];
     tasks[0] = pid;
     {
       char *p;
@@ -262,20 +265,20 @@ main (int argc, char *argv[], char *envp[])
     }
 
     // Attach and wait for the other two threads
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < NR_TASKS; i++) {
       ptracer (PTRACE_ATTACH, tasks[i], 0);
       waitstatus (tasks[i], "daemon other attached", wifstopped, SIGSTOP);
     }
 
     // Now resume the first and third tasks
-    ptracer (PTRACE_CONT, tasks[2], 0);
+    // ptracer (PTRACE_CONT, tasks[2], 0);
     ptracer (PTRACE_CONT, tasks[0], 0);
 
     // Rip the heart out of the task
     tkill (pid, SIGKILL);
 
     // Start trying to detach in reverse order!
-    for (i = 2; i >= 0; i--) {
+    for (i = NR_TASKS; i >= 0; i--) {
       printf ("%d clobbering %d\n", getpid (), tasks[i]);
       if (ptrace (PTRACE_DETACH, tasks[i], 0, 0) < 0)
 	perror ("ptrace");
