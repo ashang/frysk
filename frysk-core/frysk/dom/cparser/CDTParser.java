@@ -119,6 +119,8 @@ public class CDTParser
   private DOMFrysk dom;
   
   private final boolean debug = false;
+  
+  private final String DEFINE = "#define";
 
   /*
    * (non-Javadoc)
@@ -272,10 +274,10 @@ public class CDTParser
     int comma_index = 0;
     int i = 0;
     while (comma_index != -1) {
-        comma_index = includes.lastIndexOf(",", i);
+        comma_index = includes.indexOf(",", i);
         if (i != -1) {
             ctr++;
-            i = comma_index++;
+            i = comma_index + 2;
         }
     }
     return ctr;
@@ -890,19 +892,21 @@ public class CDTParser
     {
 
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
+      if (line == null || ! checkScope(arg0.getName(), line.getText()))
         return;
 
       String lineText = line.getText();
 
+      // if this is not a #define stmt, we do not need the KEYWORD entry
+      if (lineText.indexOf(DEFINE) >= 0)
+        {
+          line.addTag(DOMTagTypes.KEYWORD,
+                      lineText.substring(0, arg0.getNameOffset()
+                                            - line.getOffset()),
+                      arg0.getStartingOffset() - line.getOffset());
+        }
       line.addTag(
-                  DOMTagTypes.KEYWORD,
-                  lineText.substring(0, arg0.getNameOffset() - line.getOffset()),
-                  arg0.getStartingOffset() - line.getOffset());
-      line.addTag(
-                  DOMTagTypes.MACRO,
-                  lineText.substring(arg0.getNameOffset() - line.getOffset(),
-                                     arg0.getNameEndOffset() - line.getOffset()),
+                  DOMTagTypes.MACRO, arg0.getName(),
                   arg0.getNameOffset() - line.getOffset());
     }
 
