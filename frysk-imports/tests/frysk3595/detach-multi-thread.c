@@ -265,7 +265,7 @@ main (int argc, char *argv[], char *envp[])
     }
 
     // Attach and wait for the other two threads
-    for (i = 0; i < NR_TASKS; i++) {
+    for (i = 0; i <= NR_TASKS; i++) {
       ptracer (PTRACE_ATTACH, tasks[i], 0);
       waitstatus (tasks[i], "daemon other attached", wifstopped, SIGSTOP);
     }
