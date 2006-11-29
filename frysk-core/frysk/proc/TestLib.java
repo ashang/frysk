@@ -112,16 +112,6 @@ public class TestLib
     }
 
     /**
-     * run event loop while the given proc is not removed
-     * if it is removed before the timeout the assert fails
-     * other wise the test passes.
-     */
-    static void assertRunWhileProcNotRemoved(int pid, int timeout){
-      new StopEventLoopWhenProcRemoved(pid);
-       assertFalse("Event loop has been interrupted by proc removal", Manager.eventLoop.runPolling (timeout * 1000));
-    }
-    
-    /**
      * Run the event loop for a short period of time until it is
      * explicitly stopped (using EventLoop . requestStop).  During
      * this period poll for external events.

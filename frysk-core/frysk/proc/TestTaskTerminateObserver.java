@@ -151,18 +151,6 @@ public class TestTaskTerminateObserver
     public void testTerminatedKillKILL () { terminated (-Sig.KILL_); }
     public void testTerminatedKillHUP () { terminated (-Sig.HUP_); }
 
-    class AttachCounter
-	extends TaskObserverBase
-	implements TaskObserver.Attached
-    {
-	int count;
-	public Action updateAttached (Task task)
-	{
-	    count++;
-	    task.requestUnblock (this);
-	    return Action.BLOCK;
-	}
-    }
     class TerminatingCounter
 	extends TaskObserverBase
 	implements TaskObserver.Terminating
@@ -179,7 +167,6 @@ public class TestTaskTerminateObserver
 	    return Action.BLOCK;
 	}
     }
-
     
     /**
      * Check that a process with a task, that has exited, but not yet
@@ -217,37 +204,4 @@ public class TestTaskTerminateObserver
 	assertEquals ("Number of terminating processes", 1,
 		      terminatingCounter.count);
     }
-   
-   
-   /**
-    * Check that a terminating task can be blocked
-    */
-  public void testBlockingWhileTerminating ()
-   {
-       if (brokenXXX (3603))
-	   return;
-
-     
-     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-     {
-      getExecPrefix () + "funit-child",
-      "1",
-      ""+ Manager.host.getSelf().getPid()
-     });
-     
-    TerminatingCounter terminatingCounter = new TerminatingCounter (){
-      public Action updateTerminating (Task task, boolean signal, int value)
-      {
-          count++;
-          return Action.BLOCK;
-      }
-    };
-    
-    child.mainTask.requestAddTerminatingObserver(terminatingCounter);
-    child.resume();
-
-    assertRunWhileProcNotRemoved(child.mainTask.getProc().getPid(), 5);
-    assertTrue ("Number terminating processes", terminatingCounter.count != 0);
-    
-   }
 }

@@ -1,3 +1,10 @@
+2006-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskTerminateObserver.java (AttachedCounter): Delete.
+	(testBlockingWhileTerminating): Delete, now covered by
+	testAttachToUnjoinedTask.
+	* TestLib.java (assertRunWhileProcNotRemoved): Delete.
+
 2006-11-28  Mike Cvet  <mcvet@redhat.com>
 
 	* TestRegMemModify.java (TestX8664ModifyInternals.X8664Isa): Renamed
