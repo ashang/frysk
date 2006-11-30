@@ -1,3 +1,9 @@
+2006-11-30  Nurdin Premji  <npremji@redhat.com>
+
+	* fcore.java (main): Changed version number to use Config.VERSION	
+	* ftrace.java (run): Ditto.
+	* fstack.java (main): Ditto.	
+
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java (.notifyFile): Changed to use simplified requestFindProc.

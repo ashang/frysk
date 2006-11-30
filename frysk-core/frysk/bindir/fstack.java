@@ -58,6 +58,8 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+import frysk.Config;
+
 public class fstack
 {
 
@@ -132,7 +134,7 @@ public class fstack
   public static void main (String[] args)
   {
 
-    parser = new Parser("fstack", "1.0", true)
+    parser = new Parser("fstack", Config.VERSION, true)
     {
       protected void validate () throws OptionException
       {

@@ -59,6 +59,8 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+import frysk.Config;
+
 public class fcore
 {
 
@@ -86,7 +88,7 @@ public class fcore
   {
 
     // Parse command line. Check pid provided.
-    parser = new Parser("fcore", "1.0", true)
+    parser = new Parser("fcore", Config.VERSION, true)
     {
       protected void validate () throws OptionException
       {

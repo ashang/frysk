@@ -54,6 +54,7 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+import frysk.Config;
 
 
 class ftrace
@@ -127,7 +128,7 @@ class ftrace
 
     public void run(String[] args)
     {
-        Parser parser = new Parser("ftrace", "0.0", true) {
+        Parser parser = new Parser("ftrace", Config.VERSION, true) {
             protected void validate() throws OptionException {
                 if (! requestedPid && commandAndArguments == null)
                     throw new OptionException("no command or PID specified");
