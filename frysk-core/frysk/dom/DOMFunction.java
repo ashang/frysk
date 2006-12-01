@@ -58,6 +58,7 @@ public class DOMFunction {
 	public static final String SOURCE_NAME_ATTR = "source";
 	public static final String LINE_START_ATTR = "line_start";
 	public static final String LINE_END_ATTR = "line_end";
+    public static final String FUNCTION_CALL = "function_call";
 	
 	/**
 	 * creates a DOMFunction
@@ -72,7 +73,7 @@ public class DOMFunction {
 	 */
 	
 	public static DOMFunction createDOMFunction(String name, String source,
-			int lineStart, int lineEnd, int start, int end){
+			int lineStart, int lineEnd, int start, int end, String func_call){
 		Element func = new Element(FUNCTION_NODE);
 		func.setAttribute(FUNCTION_NAME_ATTR, name);
 		func.setAttribute(SOURCE_NAME_ATTR, source);
@@ -80,6 +81,7 @@ public class DOMFunction {
 		func.setAttribute(END_ATTR, ""+end);
 		func.setAttribute(LINE_START_ATTR, ""+lineStart);
 		func.setAttribute(LINE_END_ATTR, ""+lineEnd);
+        func.setAttribute(FUNCTION_CALL, func_call);
 		
 		return new DOMFunction(func);
 	}
@@ -98,9 +100,9 @@ public class DOMFunction {
 	 */
 	public static DOMFunction createDOMFunction(DOMImage parent, 
 			String name, String source, 
-			int lineStart, int lineEnd, int start, int end){
+			int lineStart, int lineEnd, int start, int end, String func_call){
 		DOMFunction func = DOMFunction.createDOMFunction(name, source, lineStart,
-				lineEnd, start, end); 
+				lineEnd, start, end, func_call); 
 		parent.getElement().addContent(0, 
 				func.getElement()); // We want functions, then lines		
 		

@@ -463,10 +463,6 @@ public class CDTParser
                   arg0.getStartingOffset() - line.getOffset());
       nameLine.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getNameOffset()
                                                       - nameLine.getOffset());
-      
-      // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
-      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine() - 1,
-                        0, arg0.getStartingOffset(), 0);
 
       // start building the full name of the function for jump-to purposes
       String functionName = arg0.getName() + "(";
@@ -532,6 +528,9 @@ public class CDTParser
       functionName += ")";
 
       line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
+      // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
+      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine() - 1,
+                        0, arg0.getStartingOffset(), 0, functionName);
     }
 
     public void acceptFunctionReference (IASTFunctionReference arg0)

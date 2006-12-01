@@ -1,3 +1,10 @@
+2006-12-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFunction.java: Added "function_call" sub-element to
+	"function".
+	* DOMImage.java: Ditto.
+	* cparser/CDTParser.java: Ditto.
+
 2006-11-29  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fix bug in acceptMacro method.

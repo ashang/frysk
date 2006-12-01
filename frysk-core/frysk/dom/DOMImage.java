@@ -112,9 +112,9 @@ public class DOMImage {
 	 */
 	public void addFunction(String inline_name, String source, 
 			int startLine, int endLine,
-			int start_offset, int end_offset) {
+			int start_offset, int end_offset, String function_call) {
 		DOMFunction.createDOMFunction(this, inline_name, source, startLine, endLine,
-				start_offset, end_offset);
+				start_offset, end_offset, function_call);
 	}
 	
 	/**
