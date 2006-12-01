@@ -355,6 +355,9 @@ main (int argc, char **argv)
 
   _UPT_destroy (ui);
 
+  if (*backtrace_check != NULL && !killed)
+    panic ("-b requested but the first function was never found\n");
+
   if (nerrors)
     {
       printf ("FAILURE: detected %d errors\n", nerrors);
