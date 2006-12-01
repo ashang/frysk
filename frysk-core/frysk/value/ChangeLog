@@ -1,3 +1,13 @@
+2006-12-01  Stan Cox  <scox@redhat.com>
+
+	* LongType.java: New.
+	* ShortType.java (newLongVariable): New.  Reformat file.
+	* IntegerType.java (newLongVariable): New.  Reformat file.
+	* FloatType.java (newLongVariable): New.  Reformat file.
+	* DoubleType.java (newLongVariable): New.  Reformat file.
+	* Type.java (newLongVariable): New.
+	* Variable.java (getLong): Use getLong.
+	
 2006-11-16  Stan Cox  <scox@redhat.com>
 
 	* Type.java: Rename frysk.lang to frysk.value.

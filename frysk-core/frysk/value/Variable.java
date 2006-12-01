@@ -98,7 +98,7 @@ public class Variable
     }
 
     public long getLong() {
-      return _location.getInt();
+      return _location.getLong();
     }
 
     public float getFloat() {
@@ -122,7 +122,7 @@ public class Variable
     }
 
     public long getLong(int idx) {
-      return _location.getInt(idx);
+      return _location.getLong(idx);
     }
 
     public float getFloat(int idx) {

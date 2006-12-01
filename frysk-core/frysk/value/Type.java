@@ -124,6 +124,7 @@ public abstract class Type
 
   public abstract Variable newShortVariable(ShortType type, Variable val);
   public abstract Variable newIntegerVariable(IntegerType type, Variable val);
+  public abstract Variable newLongVariable(LongType type, Variable val);
   public abstract Variable newFloatVariable(FloatType type, Variable val);
   public abstract Variable newDoubleVariable(DoubleType type, Variable val);
   public abstract Variable newVariable(Type type, Variable val);
