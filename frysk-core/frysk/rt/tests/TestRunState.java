@@ -174,7 +174,6 @@ public class TestRunState extends TestLib
         if (this.dwflMap.get(t) == null)
           {
             Dwfl d = new Dwfl(t.getTid());
-           //System.out.println("setupTest " + t + " " + d);
             DwflLine line = null;
             try
               {
@@ -187,22 +186,15 @@ public class TestRunState extends TestLib
             
             if (line == null)
               {
-               //System.out.println("DwflLine null");
                 continue;
               }
-            else
-             //System.out.println("setupTest " + line.getLineNum());
 
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
-        
-        //stepper.requestUnblock(t);
-        //t.requestUnblock(this.stepper);
       }
     count = 0;
     
-   //System.out.println("About to step from testsetup: " + myProc.getMainTask());
     if (testState == INSTRUCTION_STEP)
       {
         runState.stepInstruction(myProc.getTasks());
@@ -213,7 +205,6 @@ public class TestRunState extends TestLib
   
   public synchronized void stepAssertions (Task task)
   { 
-   //System.out.println("In stepAssertions " + task);
     myTask = task;
     DwflLine line = null;
     try
@@ -227,9 +218,7 @@ public class TestRunState extends TestLib
       }
     catch (NullPointerException npe)
       {
-       //System.out.println("NPE {");
         Dwfl d = new Dwfl(task.getTid());
-       //System.out.println("setupTest " + task + " " + d);
         line = null;
         try
         {
@@ -245,22 +234,17 @@ public class TestRunState extends TestLib
           this.lineMap.put(task, new Integer(line.getLineNum()));
         }
       else
-       //System.out.println("Second attempt - line still null");
-      
-     //System.out.println("}");
         return;
       }
 
     if (line == null)
       return;
 
-   //System.out.println("Nothing is null");
     int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
 
     if (testState == INSTRUCTION_STEP)
       {
-       //System.out.println("------> (instruction) About to assert " + line + " " + prev + " " + lineNum);
         switch (prev)
           {
           case 56:
@@ -279,13 +263,13 @@ public class TestRunState extends TestLib
             assertTrue(lineNum == 81 || lineNum == 82);
             break;
           case 82:
-            assertTrue(lineNum == 82 || lineNum == 84);
+            assertTrue(lineNum == 82 || lineNum == 83);
             break;
-          case 84:
-            assertTrue(lineNum == 84 || lineNum == 86);
+          case 83:
+            assertTrue(lineNum == 83 || lineNum == 85);
             break;
-          case 86:
-            assertTrue(lineNum == 86 || lineNum == 87);
+          case 85:
+            assertTrue(lineNum == 85 || lineNum == 87);
             break;
           case 87:
             assertTrue(lineNum == 87 || lineNum == 88);
@@ -299,9 +283,6 @@ public class TestRunState extends TestLib
           case 90:
             assertTrue(lineNum == 90 || lineNum == 91);
             break;
-          // case 94:
-          // assertTrue(lineNum == 94 || lineNum == 60);
-          // break;
           case 60:
             assertTrue(lineNum == 60 || lineNum == 61);
             break;
@@ -321,11 +302,11 @@ public class TestRunState extends TestLib
             assertTrue(lineNum == 65 || lineNum == 67);
             break;
           case 67:
-            assertTrue(lineNum == 67 || lineNum == 94);
+            assertTrue(lineNum == 67 || lineNum == 95);
             break;
-          //        case 94:
-          //          assertTrue(lineNum == 94 || lineNum == 95);
-          //          break;
+          case 95:
+            assertTrue(lineNum == 95 || lineNum == 79 || lineNum == 60);
+            break;
           default:
             break;
           }
@@ -343,8 +324,6 @@ public class TestRunState extends TestLib
       }
     else if (testState == STEP_IN)
       {
-       //System.out.println("------> (stepin) About to assert " + line + " " + prev + " " + lineNum);
-        
         switch (prev)
           {
           case 56:
@@ -363,12 +342,12 @@ public class TestRunState extends TestLib
             assertEquals(lineNum, 82);
             break;
           case 82:
-            assertEquals(lineNum, 84);
+            assertEquals(lineNum, 83);
             break;
-          case 84:
-            assertEquals(lineNum, 86);
+          case 83:
+            assertEquals(lineNum, 85);
             break;
-          case 86:
+          case 85:
             assertEquals(lineNum, 87);
             break;
           case 87:
@@ -384,13 +363,13 @@ public class TestRunState extends TestLib
             assertEquals(lineNum, 91);
             break;
           case 91:
-            assertEquals(lineNum, 94);
+            assertEquals(lineNum, 92);
             break;
-//          case 94:
-//            assertEquals(lineNum, 60);
-//            break;
+          case 92:
+            assertEquals(lineNum, 95);
+            break;
           case 95:
-            assertEquals(lineNum, 78);
+            assertTrue(lineNum == 60 || lineNum == 79);
             break;
           case 60:
             assertEquals(lineNum, 61);
@@ -410,9 +389,6 @@ public class TestRunState extends TestLib
           case 65:
             assertEquals(lineNum, 67);
             break;
-//          case 67:
-//            assertEquals(lineNum, 95); // put this back in when breakage is figured out.
-//            break;
           default:
             break;
           }

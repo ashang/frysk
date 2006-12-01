@@ -47,31 +47,32 @@
 volatile pid_t pid;
 volatile int sig;
 pthread_t thread;
-volatile int check = 0;
+
+void bar ();
 
 void *signal_parent (void* args)
 {
-  int i; for (i = 0; i < 40000; i+=3);
   kill (pid, sig);  
-  while (check == 0); return NULL;
+  while (1);
 }
 
 void jump ()
 {
-	int z = 1;
-	int y = 2;
-	int x = 3;
-	int w = (((((x + y + z) * 20) / 10) - 0) + 1);
+	volatile int z = 1;
+	volatile int y = 2;
+	volatile int x = 3;
+	volatile int w = (((((x + y + z) * 20) / 10) - 0) + 1);
 	w++;
 	return;
 }
 
+  volatile int a = 0;
+  volatile int b = 0;
+  volatile int c = 0;
+  volatile long d = 0;
+
 void foo ()
 {
-  int a = 0;
-  int b = 0;
-  int c = 0;
-  long d = 0;
   
   while (1)
     {
@@ -120,13 +121,13 @@ int main (int argc, char ** argv)
       exit (1);
     }
     
-    pthread_attr_t attr;
-  	pthread_attr_init (&attr);
+  pthread_attr_t attr;
+  pthread_attr_init (&attr);
     
-    pthread_create (&thread, &attr, signal_parent, NULL);
-  
   pid = target_pid;
   sig = signal;
+    
+  pthread_create (&thread, &attr, signal_parent, NULL);
 
   foo ();
   
