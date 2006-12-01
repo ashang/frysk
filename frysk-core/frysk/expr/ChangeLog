@@ -1,3 +1,7 @@
+2006-12-01  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (CppTreeParser.expr): Add builtin types to CAST
+
 2006-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* RunCppParser.java (SymTab): Rename .symTab; nest within

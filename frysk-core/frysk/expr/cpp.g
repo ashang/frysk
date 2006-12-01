@@ -677,16 +677,20 @@ options {
 }
 
 {
+    LongType longType;
     IntegerType intType;
     ShortType shortType;
+    DoubleType doubleType;
     FloatType floatType;
     private CppSymTab cppSymTabRef;
     public CppTreeParser(int intSize, int shortSize, CppSymTab symTab) {
         this();
 	cppSymTabRef = symTab; 
+        longType = new LongType(intSize * 2, ByteOrder.LITTLE_ENDIAN);
         intType = new IntegerType(intSize, ByteOrder.LITTLE_ENDIAN);
-        floatType = new FloatType(intSize, ByteOrder.LITTLE_ENDIAN);
         shortType = new ShortType(shortSize, ByteOrder.LITTLE_ENDIAN);
+        doubleType = new DoubleType(intSize * 2, ByteOrder.LITTLE_ENDIAN);
+        floatType = new FloatType(intSize, ByteOrder.LITTLE_ENDIAN);
     }
 }
 
@@ -860,8 +864,20 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             cppSymTabRef.put(v1.getText(), v1);
         }
     |   #(CAST pt:primitiveType v2=expr) { 
-	    if(pt.getText().compareTo("short") == 0) {
+	    if(pt.getText().compareTo("long") == 0) {
+	      returnVar = longType.newLongVariable(longType, "0", (long)0);
+              returnVar.getType().assign(returnVar, v2);
+	      }
+	    else if(pt.getText().compareTo("int") == 0) {
+	      returnVar = intType.newIntegerVariable(intType, "0", (int)0);
+              returnVar.getType().assign(returnVar, v2);
+	      }
+	    else if(pt.getText().compareTo("short") == 0) {
 	      returnVar = shortType.newShortVariable(shortType, "0", (short)0);
+              returnVar.getType().assign(returnVar, v2);
+	      }
+	    else if(pt.getText().compareTo("double") == 0) {
+	      returnVar = doubleType.newDoubleVariable(doubleType, "0", (double)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("float") == 0) {
