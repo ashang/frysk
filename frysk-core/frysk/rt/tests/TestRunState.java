@@ -53,6 +53,7 @@ import frysk.proc.TaskException;
 import frysk.proc.TestLib;
 import frysk.rt.RunState;
 import frysk.sys.Sig;
+import frysk.event.Event;
 import frysk.junit.Paths;
 
 import lib.dw.Dwfl;
@@ -126,7 +127,7 @@ public class TestRunState extends TestLib
     assertRunUntilStop("Attempting to add observer");
   }
   
-  public void testLineStepping ()
+  public void LineStepping ()
   {
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
@@ -426,14 +427,20 @@ public class TestRunState extends TestLib
       if (arg == null)
         return;
       
-      if (initial == true)
+      Manager.eventLoop.add(new Event()
+      {
+        public void execute ()
         {
-          initial = false;
-          setUpTest();
-          return;
+          if (initial == true)
+            {
+              initial = false;
+              setUpTest();
+              return;
+            }
+          
+          stepAssertions(myProc.getMainTask());
         }
-
-      stepAssertions(myProc.getMainTask());
+      });
     }
     
   }

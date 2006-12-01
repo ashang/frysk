@@ -21,13 +21,13 @@
 // distribute linked combinations including the two, subject to the
 // limitations in this paragraph. Non-GPL Code permitted under this
 // exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
+// defined volatile interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved volatile interfaces"). The files of
 // Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
+// functions from the Approved volatile interfaces without causing the
 // resulting work to be covered by the GNU General Public
 // License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
+// list of Approved volatile interfaces. You must obey the GNU General Public
 // License in all respects for all of the FRYSK code and other code
 // used in conjunction with FRYSK except the Non-GPL Code covered by
 // this exception. If you modify this file, you may extend this
@@ -58,10 +58,27 @@ volatile int sig;
 
 void bak_two ();
 
-int kill_bool = 1;
+volatile int kill_bool = 1;
+volatile int sig_rec = 0;
+
+void
+signal_rec ()
+{
+  if (sig_rec < 5)
+    {
+      sig_rec++;
+      signal_rec ();
+    }
+  else
+    {
+      sig_rec--;
+      return;
+    }
+}
+
 
 void 
-*signal_parent ()
+signal_parent ()
 {
   while (lock_one || lock_two);
 
@@ -71,11 +88,12 @@ void
       kill_bool = 0;
     }
 
-  signal_parent ();
-  return NULL;
+  while (1)
+	signal_rec ();
+	
 }
 
-int bak_two_count = 0;
+volatile int bak_two_count = 0;
 
 void
 bak_three ()
@@ -96,12 +114,15 @@ bak_two ()
   bak_three ();
 }
 
-int bak_recursive_count = 0;
-int ret_count = 0;
+volatile int bak_recursive_count = 0;
+volatile int ret_count = 0;
 
 void
 bak_recursive ()
 {
+  if (bak_recursive_count == 1)
+    ret_count = 0;
+    
   if (bak_recursive_count == 20 || ret_count == 1)
     {
       ret_count = 1;
@@ -125,8 +146,9 @@ bak (int b)
     bak_two ();
 
   lock_one = 0;
-  //while (1);
-  bak_recursive ();
+  
+  while (1)
+	bak_recursive ();
 }
 
 /* tester_thread_two */
@@ -154,7 +176,7 @@ bar_two ()
 void
 bar ()
 {
-  int i = 12345;
+  volatile int i = 12345;
   while (i < 0)
     i--;
 
@@ -163,9 +185,10 @@ bar ()
 
 /* tester_thread_two: a = 0 */
 void
-foo_two ()
+*foo_two ()
 {
-  bar_two ();
+  bar_two (); 
+  return NULL;
 }
 
 /* tester_thread_one: a = 1 */
@@ -211,10 +234,11 @@ main (int argc, char ** argv)
   pthread_attr_t attr;
   pthread_attr_init (&attr);
 
-  pthread_create (&tester_thread_one, &attr, signal_parent, NULL);
-  pthread_create (&tester_thread_two, &attr, foo, NULL);
+  pthread_create (&tester_thread_one, &attr, foo, NULL);
+  pthread_create (&tester_thread_two, &attr, foo_two, NULL);
 
-  foo_two ();
+  signal_parent ();
 
+  fprintf (stderr, "%d, %d, %d %d\n", bak_recursive_count, ret_count, sig_rec, kill_bool);
   return 0;
 }

@@ -1,3 +1,13 @@
+2006-12-01  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-stepper.c (bar): Added.
+	(jump): Made all integers volatile to avoid over-optimization.
+	(foo): Ditto.
+
+	* funit-rt-threadstepper.c: Cleaned up, using volatile integers.
+	(signal_rec): Added.
+	(signal_parent): Now main thread.
+
 2006-11-29  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-stepper.c: Removed dependence on integer as a lock.

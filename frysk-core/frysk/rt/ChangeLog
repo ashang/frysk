@@ -1,3 +1,10 @@
+2006-12-01  Mike Cvet  <mcvet@redhat.com>
+
+	* TestRunState.java: Cleaned up. Fixed strange compiler optimization bugs.
+	(LockObserver.update): Scheduled work on the event loop.
+	* TestStepping.java: Added. More complex stepping tests, with recursive
+	functions.
+
 2006-11-29  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java: Removed ProcBlockObserver import and constructor.
