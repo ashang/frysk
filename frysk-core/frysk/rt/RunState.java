@@ -74,18 +74,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
   /* Keeps track of the last executed line in source for each Task */
   private HashMap lineMap;
+  
+  /* Keep track of how many times the task has been unblocked for a particular
+   * line. If it gets too high, assume that the line won't change (while(1))
+   * and finish. */
+  private HashMap lineCountMap;
 
   /* Set of Tasks currently running, or unblocked. */
   private HashSet runningTasks;
 
-  /* Keep track of how many times the task has been unblocked for a particular
-   * line. If it gets too high, assume that the line won't change (while(1))
-   * and finish. */
-  private int lineLoopCount = 0;
-
   private int taskStepCount = 0;
-
-  private int numSteppingTasks = 0;
   
   private int numRunningTasks = 0;
   
@@ -111,6 +109,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
+    this.lineCountMap = new HashMap();
     this.runningTasks = new HashSet();
   }
 
@@ -128,8 +127,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void setUpStep (LinkedList tasks)
   {
     this.state = STEP_IN;
-    this.numSteppingTasks = tasks.size();
-    this.taskStepCount = numSteppingTasks;
+    this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
     
     while (i.hasNext())
@@ -165,6 +163,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
             this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
+        this.lineCountMap.put(t, new Integer(0));
         notifyNotBlocked();
         t.requestUnblock(this);
       }
@@ -195,7 +194,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param task    The task to step in
    */
-  public void stepIn (Task task)
+  public synchronized void stepIn (Task task)
   {
     DwflLine line = null;
     try
@@ -232,13 +231,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     else
       {
-        this.lineLoopCount++;
-        if ((this.lineLoopCount / this.numSteppingTasks) > 8)
+        int count = ((Integer) this.lineCountMap.get(task)).intValue();
+        count++;
+        if (count > 8)
           {
-            this.lineMap.put(task, new Integer(lineNum));
             --taskStepCount;
             return;
           }
+        else
+          this.lineCountMap.put(task, new Integer(count));
 
         task.requestUnblock(this);
       }
@@ -345,9 +346,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void stepCompleted ()
   {
     this.state = STOPPED;
-    this.lineLoopCount = 0;
+    this.lineCountMap.clear();
     this.taskStepCount = 0;
-    this.numSteppingTasks = 0;
   }
 
   /*****************************************************************************
@@ -711,7 +711,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-
+    
     if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
         switch (RunState.this.state)
@@ -748,7 +748,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         
         /* No more Tasks have to be blocked, or this RunState is already blocked
          * and this is the first time this method has been called. */
-        if (numRunningTasks == 0 || state == STOPPED)
+        if (numRunningTasks == 0)// || state == STOPPED)
           {
             RunState.this.setChanged();
             RunState.this.notifyObservers(task);
@@ -800,6 +800,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void requestAdd (LinkedList tasks)
   { 
     this.tasks = tasks;
+    this.numRunningTasks = tasks.size();
     
     /*
      * The rest of the construction must be done synchronous to the EventLoop,

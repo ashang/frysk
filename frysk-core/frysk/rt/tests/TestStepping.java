@@ -88,7 +88,7 @@ public class TestStepping extends TestLib
   private LockObserver lock;
   
   
-  public void RecursiveLineStepping ()
+  public void testRecursiveLineStepping ()
   {
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
@@ -133,7 +133,6 @@ public class TestStepping extends TestLib
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        System.out.println("SetUpTest: " + t);
         if (this.dwflMap.get(t) == null)
           {
             Dwfl d = new Dwfl(t.getTid());
@@ -212,7 +211,6 @@ public class TestStepping extends TestLib
         int lineNum = line.getLineNum();
         int prev = ((Integer) this.lineMap.get(task)).intValue();
 
-        System.out.println("----> " + prev + " " + lineNum + " " + count + " " + tasks.size());
         if (testState == STEP_IN)
           {
             switch (prev)
@@ -228,7 +226,7 @@ public class TestStepping extends TestLib
                 assertEquals(67, lineNum);
                 break;
               case 67:
-                assertTrue(lineNum == 68 || lineNum == 73);
+                assertTrue(lineNum == 69 || lineNum == 74);
                 break;
               case 68:
                 assertEquals(69, lineNum);
@@ -237,13 +235,13 @@ public class TestStepping extends TestLib
                 assertEquals(70, lineNum);
                 break;
               case 70:
-                assertEquals(66, lineNum);
+                assertTrue(lineNum == 66 || lineNum == 67 || lineNum == 92);
                 break;
               case 73:
                 assertEquals(74, lineNum);
                 break;
               case 74:
-                assertEquals(75, lineNum);
+                assertTrue(lineNum == 70 || lineNum == 91);
                 break;
               case 75:
                 assertTrue(lineNum == 70 || lineNum == 91);
@@ -287,7 +285,7 @@ public class TestStepping extends TestLib
                 assertEquals(151, lineNum);
                 break;
               case 151:
-                assertEquals(122, lineNum);
+                assertEquals(123, lineNum);
                 break;
               case 122:
                 assertEquals(123, lineNum);
@@ -299,7 +297,7 @@ public class TestStepping extends TestLib
                 assertEquals(126, lineNum);
                 break;
               case 126:
-                assertTrue(lineNum == 127 || lineNum == 133);
+                assertTrue(lineNum == 128 || lineNum == 134);
                 break;
               case 127:
                 assertEquals(128, lineNum);
@@ -308,7 +306,7 @@ public class TestStepping extends TestLib
                 assertEquals(129, lineNum);
                 break;
               case 129:
-                assertEquals(130, lineNum);
+                assertTrue(lineNum == 136 || lineNum == 151);
                 break;
               case 130:
                 assertTrue(lineNum == 136 || lineNum == 151);
@@ -323,7 +321,7 @@ public class TestStepping extends TestLib
                 assertEquals(136, lineNum);
                 break;
               case 136:
-                assertEquals(122, lineNum);
+                assertTrue(lineNum == 123 || lineNum == 151 || lineNum == 136);
                 break;
                 
                 /* Main thread */
@@ -334,7 +332,7 @@ public class TestStepping extends TestLib
                 assertEquals(103, lineNum);
                 break;
               case 103:
-                assertTrue(lineNum == 104 || lineNum == 106);
+                assertTrue(lineNum == 104 || lineNum == 106 || lineNum == 103);
                 break;
               case 104:
                 assertEquals(104, lineNum);
@@ -380,25 +378,27 @@ public class TestStepping extends TestLib
      * with - in this case the RunState - has changed.
      * 
      * @param o The Observable we're watching
-     * @param arg An Object argument
+     * @param arg An Object argument, usually a Task when important
      */
     public synchronized void update (Observable o, Object arg)
     {
       if (arg == null)
         return;
+      
       myTask = (Task) arg;
+      
       Manager.eventLoop.add(new Event()
       {
         public void execute ()
-        {System.out.println(">> " + myTask);
+        {
           if (initial == true)
             {
               initial = false;
               setUpTest();
               return;
             }
-          
-          stepAssertions(myProc.getTasks());
+          else
+            stepAssertions(myTask.getProc().getTasks());
         }
       });
     }

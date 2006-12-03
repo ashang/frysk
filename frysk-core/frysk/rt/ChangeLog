@@ -1,3 +1,20 @@
+2006-12-03  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (lineLoopCount): Removed.
+	(numSteppingTasks): Removed.
+	(lineCountMap): Added. Need to keep track of iterations on a Task-specific
+	level.
+	(setUpStep): Update lineCountMap.
+	(stepIn): Updated to use lineCountMap, removed redundant lineMap putting.
+	(stepCompleted): Clear out lineCountMap.
+	(updateExecuted): No longer let state == STOPPED get through.
+	(requestAdd): Update numRunningTasks here.
+	* TestRunState.java (stepAssertions): Fixed up a couple assertions.
+	* TestStepping.java: Removed debugging prints.
+	(stepAssertions): Fixed assertions.
+	(LockObserver.update): Cleaned up.
+	
+
 2006-12-01  Mike Cvet  <mcvet@redhat.com>
 
 	* TestRunState.java: Cleaned up. Fixed strange compiler optimization bugs.

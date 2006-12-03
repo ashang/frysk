@@ -127,7 +127,7 @@ public class TestRunState extends TestLib
     assertRunUntilStop("Attempting to add observer");
   }
   
-  public void LineStepping ()
+  public void testLineStepping ()
   {
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
@@ -306,7 +306,7 @@ public class TestRunState extends TestLib
             assertTrue(lineNum == 67 || lineNum == 95);
             break;
           case 95:
-            assertTrue(lineNum == 95 || lineNum == 79 || lineNum == 60);
+            assertTrue(lineNum == 95 || lineNum == 79 || lineNum == 60 || lineNum == 61);
             break;
           default:
             break;
@@ -370,7 +370,7 @@ public class TestRunState extends TestLib
             assertEquals(lineNum, 95);
             break;
           case 95:
-            assertTrue(lineNum == 60 || lineNum == 79);
+            assertTrue(lineNum == 60 || lineNum == 61 || lineNum == 79);
             break;
           case 60:
             assertEquals(lineNum, 61);
