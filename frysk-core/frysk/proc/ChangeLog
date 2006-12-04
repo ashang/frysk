@@ -1,5 +1,7 @@
 2006-12-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverDetach.java (testDetachClone): Enable.
+
 	* TestLib.java (setUp): Add children of proceses already in
 	tidsToKillDuringTearDown to tidsToKillDuringTearDown.
 

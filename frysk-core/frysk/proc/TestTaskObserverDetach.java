@@ -210,9 +210,6 @@ public class TestTaskObserverDetach
      */
     public void testDetachClone ()
     {
-      if (brokenXXX(3598))
-        return;
-      
 	class DetachClone
 	    extends Detach
 	    implements TaskObserver.Cloned
