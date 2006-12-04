@@ -190,7 +190,6 @@ public class TestRegMemModify
               if (!isChildOfMine (task.proc))
                   return;
               
-              killDuringTearDown (task.getTid ());
               Isa isa;
               
               try
@@ -369,7 +368,6 @@ public class TestRegMemModify
         Task task = (Task) obj;
         if (!isChildOfMine (task.proc))
           return;
-        killDuringTearDown (task.getTid ());
         Isa isa;
         try
           {
@@ -549,7 +547,6 @@ public class TestRegMemModify
           Task task = (Task) obj;
           if (!isChildOfMine (task.proc))
             return;
-          killDuringTearDown (task.getTid ());
           
           Isa isa;
           try

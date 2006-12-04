@@ -127,7 +127,6 @@ public class SyscallExaminer
 	return;
       logger.log(Level.FINEST, "Registering pid {0} for kill", 
 		 new Integer(task.getTid()));
-      killDuringTearDown (task.getTid());
     }
   }
 }

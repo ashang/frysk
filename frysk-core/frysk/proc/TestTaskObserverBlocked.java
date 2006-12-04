@@ -160,7 +160,6 @@ public class TestTaskObserverBlocked
 	protected Action spawnedParent (Task parent, Task offspring)
 	{
 	    logger.log (Level.FINE, "{0} spawnedParent\n", this);
-	    killDuringTearDown (offspring.getTid ());
 	    assertInState (OBSERVER_ADDED_TO_PARENT);
 	    nextState (SPAWN_PARENT);
 	    this.parent = parent;

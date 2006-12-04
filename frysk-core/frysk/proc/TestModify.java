@@ -179,7 +179,6 @@ public class TestModify
 			Task task = (Task) obj;
 			if (!isChildOfMine (task.proc))
 			    return;
-			killDuringTearDown (task.getTid ());
 			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
 			task.requestAddSignaledObserver (taskEventObserver);
 		    }
