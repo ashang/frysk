@@ -47,6 +47,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Observer;
+import java.util.Observable;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -888,6 +890,8 @@ abstract public class Task
 
   public ByteBuffer getMemory ()
   {
+    if (null == memory)
+      fillMemory();
     return this.memory;
   }
 
@@ -1006,6 +1010,56 @@ abstract public class Task
 
   public ByteBuffer[] getRegisterBank ()
   {
+    if (null == registerBank)
+      fillRegisterBank();
     return registerBank;
+  }
+  
+  protected abstract void fillMemory();
+  protected abstract void fillRegisterBank();
+  
+  /**
+   * The process has transitioned to the detached.
+   *
+   * XXX: Should be made private and instead accessor methods added.
+   * Should more formally define the observable and the event.
+   */
+  public static TaskStateObservable taskStateDetached = new TaskStateObservable ();
+  
+ static
+    {
+      taskStateDetached.addObserver(new Observer()
+      {
+
+        public void update (Observable o, Object arg)
+        {
+          if (arg instanceof Task)
+            {
+              Task task = (Task) arg;
+              task.clearIsa();
+            }
+        }
+      });
+    }
+ 
+ public void clearIsa()
+ {
+   isa = null;
+   memory = null;
+   registerBank = null;
+ }
+  
+  /**
+   * XXX: Temporary until .observable's are converted to .requestAddObserver.
+   */
+  public static class TaskStateObservable
+    extends Observable
+  {
+    void notify (Object o)
+    {
+        logger.log (Level.FINE, "{0} notify -- all observers\n", o); 
+        setChanged ();
+        notifyObservers (o);
+    }
   }
 }

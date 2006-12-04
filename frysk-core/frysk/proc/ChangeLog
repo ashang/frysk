@@ -1,3 +1,22 @@
+2006-12-04  Nurdin Premji  <npremji@redhat.com>
+
+	* LinuxTask.java (fillRegisterBank): Added.
+	(fillMemory): Added.
+	(LinuxTask): Removed calls to setupMapsXXX/fill memory and register banks.
+	* DummyTask.java (fillRegisterBank): Added.
+	(fillMemory): Added.
+	* TestIsa.java (AttachedObserver.updateAttached): Added call to try to detect isa. (For "on-demand" access of isa).
+	(testAttachDetachAttachAgainDetachAgainAttachAgainAgain): Enabled.
+	(testIsa): Enabled.
+	* TaskState.java (detaching.handleStoppedEvent): notify Task that the given task has detached.
+	* Task.java (TaskStateObservable): Added.
+	(TaskStateObservable.notify): Added.
+	(taskStateDetached): Added.
+	(getRegisterBank): Added. Fills register bank if null.
+	(clearIsa): Added.
+	(static.update): When a task detaches, clear it's Isa information.
+	(getMemory): Fill memory if null.
+
 2006-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverDetach.java (testDetachClone): Enable.

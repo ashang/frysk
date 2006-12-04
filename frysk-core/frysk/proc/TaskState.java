@@ -1081,6 +1081,7 @@ class TaskState
 		// task is detached.
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
+        Task.taskStateDetached.notify(task);
 		return detached;
 	    }
 	    TaskState handleTerminatingEvent (Task task, boolean signal,

@@ -56,6 +56,17 @@ public class TestIsa
   {
     public Action updateAttached (Task task)
     {
+      
+      try
+        {
+          task.getIsa();
+        }
+      catch (TaskException e)
+        {
+          fail("Couldn't get Isa");
+          e.printStackTrace();
+        }
+      
       assertTrue("task isa initialized", task.hasIsa());
       Manager.eventLoop.requestStop();
       return Action.CONTINUE;
@@ -89,8 +100,7 @@ public class TestIsa
 
   public void testIsa ()
   {
-    if (brokenXXX(3540))
-      return;
+
     AckProcess ackProc = new DetachedAckProcess();
 
     final Task task = ackProc.findTaskUsingRefresh(true);
@@ -99,7 +109,7 @@ public class TestIsa
 
     TaskObserver.Attached attacher = new AttachedObserver();
 
-   // Task.taskStateDetached.addObserver(new DetachedObserver(task));
+    Task.taskStateDetached.addObserver(new DetachedObserver(task));
 
     task.requestAddAttachedObserver(attacher);
     assertRunUntilStop("testIsa attach");
@@ -260,8 +270,6 @@ public class TestIsa
 
   public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain ()
   {
-    if (brokenXXX(3540))
-      return;
     AckProcess ackProc = new DetachedAckProcess();
 
     Proc proc = ackProc.assertFindProcAndTasks();
@@ -283,7 +291,7 @@ public class TestIsa
         e.printStackTrace();
       }
 
-   // Task.taskStateDetached.addObserver(new DetachedObserver(task));
+    Task.taskStateDetached.addObserver(new DetachedObserver(task));
 
     task.requestDeleteAttachedObserver(attacher);
     assertRunUntilStop("First Detach");

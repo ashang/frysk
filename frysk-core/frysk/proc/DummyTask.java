@@ -61,4 +61,16 @@ public class DummyTask extends Task {
 		
 	}
 
+  protected void fillMemory ()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  protected void fillRegisterBank ()
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

@@ -61,22 +61,66 @@ public class LinuxTask
   // XXX: For moment wire in standard 32-bit memory
   // map. This will be replaced by a memory map created using
   // information from /proc/PID/maps.
-  private void setupMapsXXX () throws TaskException
+//  private void setupMapsXXX () throws TaskException
+//  {
+//    ByteOrder byteOrder = getIsa().getByteOrder();
+//    // XXX: For writing at least, PTRACE must be used as /proc/mem
+//    // cannot be written to.
+//    // For 64-bit address space.  Here is only a workaround, and still
+//    // not cover all 64-bit address.  UBigInteger is needed here?
+//    if (getIsa().getWordSize() == 8)
+//      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+//				    0x7fffffffffffffffl);
+//    // For 32-bit address space.
+//    else
+//      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+//                                  0xffffffffl);
+//    memory.order(byteOrder);
+//    registerBank = getIsa().getRegisterBankBuffers(id.id);
+//  }
+  
+  public void fillMemory ()
   {
-    ByteOrder byteOrder = getIsa().getByteOrder();
-    // XXX: For writing at least, PTRACE must be used as /proc/mem
-    // cannot be written to.
-    // For 64-bit address space.  Here is only a workaround, and still
-    // not cover all 64-bit address.  UBigInteger is needed here?
-    if (getIsa().getWordSize() == 8)
-      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-				    0x7fffffffffffffffl);
-    // For 32-bit address space.
-    else
-      memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                                  0xffffffffl);
-    memory.order(byteOrder);
-    registerBank = getIsa().getRegisterBankBuffers(id.id);
+    if (null == memory)
+      {
+        try
+          {
+            ByteOrder byteOrder = getIsa().getByteOrder();
+            // XXX: For writing at least, PTRACE must be used as /proc/mem
+            // cannot be written to.
+            // For 64-bit address space.  Here is only a workaround, and still
+            // not cover all 64-bit address.  UBigInteger is needed here?
+            if (getIsa().getWordSize() == 8)
+              memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+                            0x7fffffffffffffffl);
+            // For 32-bit address space.
+            else
+              memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+                                          0xffffffffl);
+            memory.order(byteOrder);
+          }
+        catch (TaskException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+      }
+  }
+
+  public void fillRegisterBank () 
+  {
+    if (null == registerBank)
+      {
+        try
+          {
+            registerBank = getIsa().getRegisterBankBuffers(id.id);
+          }
+        catch (TaskException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+      }
   }
 
   /**
@@ -85,7 +129,7 @@ public class LinuxTask
   LinuxTask (Proc proc, TaskId id) throws TaskException
   {
     super(proc, id);
-    setupMapsXXX();
+    //setupMapsXXX();
   }
 
   /**
@@ -94,7 +138,7 @@ public class LinuxTask
   LinuxTask (Task task, TaskId clone) throws TaskException
   {
     super(task, clone);
-    setupMapsXXX();
+    //setupMapsXXX();
   }
 
   /**
@@ -103,7 +147,7 @@ public class LinuxTask
   LinuxTask (Proc proc, TaskObserver.Attached attached) throws TaskException
   {
     super(proc, attached);
-    setupMapsXXX();
+    //setupMapsXXX();
   }
 
   /**
