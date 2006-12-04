@@ -362,26 +362,28 @@ public class TestLib
 	/**
 	 * Find/return the child's Proc, polling /proc if necessary.
 	 */	
-    public Proc assertFindProcAndTasks()
-    {
-      Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
-
-        public void procFound (ProcId procId)
-        {
-          proc = Manager.host.getProc(procId);
-          Manager.eventLoop.requestStop();
-        }
-
-        public void procNotFound (ProcId procId, Exception e)
-        {
-         fail("Couldn't find the given proc");
-        }});
-        Manager.eventLoop.run();
-        return proc;
-    }
-    
-	private Proc proc;
-    
+	public Proc assertFindProcAndTasks ()
+	{
+	    class FindProc
+		implements Host.FindProc
+	    {
+		Proc proc;
+		public void procFound (ProcId procId)
+		{
+		    proc = Manager.host.getProc (procId);
+		    Manager.eventLoop.requestStop();
+		}
+		public void procNotFound (ProcId procId, Exception e)
+		{
+		    fail ("Couldn't find the given proc");
+		}
+	    }
+	    FindProc findProc = new FindProc ();
+	    Manager.host.requestFindProc( new ProcId(pid), findProc);
+	    Manager.eventLoop.run();
+	    return findProc.proc;
+	}
+	
 	/**
 	 * Find the child's Proc's main or non-main Task, polling
 	 * /proc if necessary.
