@@ -106,34 +106,36 @@ public class TestModify
 		    memAddr = b.getUWord ();
 		    addr = memAddr;
 		    String chString = "abcdefghijklmnopqrstuvwxyz";
+            
+            ByteBuffer memory = task.getMemory();
 		    // Modify byte values across a page boundary.
 		    for (int i = 0; i < 4097; ++i)
-			task.memory.putByte (addr + i, 
+			memory.putByte (addr + i, 
 					     (byte) chString.charAt (i % 26));
 		    // Modify short values across a page boundary.
 		    addr = memAddr + 8000;
 		    for (int i = 0; i < 100; ++i)
-			task.memory.putShort (addr + i * 2, 
+			memory.putShort (addr + i * 2, 
 					      (short) (50 - i));
 		    // Modify an unaligned short value.
 		    addr = memAddr + 9999;
-		    task.memory.putShort (addr, (short) 0xdeaf);
+		    memory.putShort (addr, (short) 0xdeaf);
 		    // Modify int values across a page boundary.
 		    addr = memAddr + 12096;
 		    for (int i = 0; i < 100; ++i)
-			task.memory.putInt (addr + i * 4, 
+			memory.putInt (addr + i * 4, 
 					    (int) (50 - i));
 		    // Modify an unaligned int value.
 		    addr = memAddr + 14001;
-		    task.memory.putInt (addr, (int) 0xabcdef01);
+		    memory.putInt (addr, (int) 0xabcdef01);
 		    // Modify long values across a page boundary.
 		    addr = memAddr + 16192;
 		    for (int i = 0; i < 100; ++i)
-			task.memory.putLong (addr + i * 8, 
+			memory.putLong (addr + i * 8, 
 					     (long) (50 - i));
 		    // Modify an unaligned int value.
 		    addr = memAddr + 17003;
-		    task.memory.putLong (addr, (long) 0xabcdef0123456789L);
+		    memory.putLong (addr, (long) 0xabcdef0123456789L);
 		}
 		return Action.CONTINUE;
 	    }

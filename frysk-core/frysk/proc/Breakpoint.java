@@ -143,7 +143,7 @@ public class Breakpoint
     ByteBuffer buffer = null;
     byte[] bpInstruction = null;
     
-    buffer = task.memory;
+    buffer = task.getMemory();
     buffer.position(address);
     
     bpInstruction = task.getIsa().getBreakpointInstruction();
@@ -185,7 +185,7 @@ public class Breakpoint
     int len = 0;
     ByteBuffer buffer = null;
     
-    buffer = task.memory;
+    buffer = task.getMemory();
     buffer.position(address);
     
     len = origInstruction.length;

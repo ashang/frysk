@@ -117,7 +117,7 @@ public abstract class Syscall
     else {
       writer.print ("\"");
       StringBuffer x = new StringBuffer ();
-      task.memory.get (addr, 20, x);
+      task.getMemory().get (addr, 20, x);
       if (x.length () == 20)
 	x.append ("...");
       x.append ("\"");

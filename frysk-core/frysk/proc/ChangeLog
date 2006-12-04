@@ -1,3 +1,22 @@
+2006-12-04  Nurdin Premji  <npremji@redhat.com>
+
+	* Task.java (getRegisterBank): Added.
+	* LinuxPowerPCSyscall.java (SocketSubSyscall.getArguments): Changed to use task.getMemory().
+	* Breakpoint.java (reset): Ditto.
+	(set): Ditto.
+	* TestRegMemModify.java (TestPPC64ModifyInternals.PPC64TaskEventObserver.updateSyscallEnter): Ditto.
+	(TestX8664ModifyInternals.X8664TaskEventObserver.updateSyscallExit): Ditto.
+	(TestI386ModifyInternals.I386TaskEventObserver.updateSyscallEnter): Ditto.
+	(TestX8664ModifyInternals.X8664TaskEventObserver.updateSyscallEnter): Ditto.
+	* TestModify.java (TestModifyInternals.TaskEventObserver.updateSignaled): Ditto.
+	* LinuxIa32Syscall.java (SocketSubSyscall.getArguments): Ditto.
+	(printStringArg): Ditto.
+	* TestTaskSyscallObserver.java (SyscallOpenObserver.updateSyscallEnter): Ditto.
+		* Register.java (putBigInteger): Changed to use task.getRegister().
+	(get): Ditto.
+	(getBigInteger): Ditto.
+	(put): Ditto.
+
 2006-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (Child .proc): Delete.

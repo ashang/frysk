@@ -1003,4 +1003,9 @@ abstract public class Task
   // or deletion (in order that they were requested). Will be dealt with
   // as soon as a stop event is received during one of the running states.
   LinkedList pendingObservations = new LinkedList();
+
+  public ByteBuffer[] getRegisterBank ()
+  {
+    return registerBank;
+  }
 }

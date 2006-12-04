@@ -393,7 +393,7 @@ public class TestTaskSyscallObserver
       if ((opensys.equals(syscall))) { 
 	long addr = syscallEventInfo.arg (task, 1);
 	StringBuffer x = new StringBuffer ();
-	task.memory.get (addr, x);
+	task.getMemory().get (addr, x);
 	String name = x.toString ();
 	if (name.indexOf (openName) >= 0) {
 	  testFileOpened = true;

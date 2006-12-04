@@ -471,7 +471,7 @@ public class LinuxIa32Syscall
       long base = isa.getRegisterByName("ecx").get (task);
 	
       //System.out.println(Long.toHexString(base) + " " + n);
-      return task.memory.getInt(base + (n-1) * isa.getWordSize());
+      return task.getMemory().getInt(base + (n-1) * isa.getWordSize());
     }
   }
 

@@ -458,7 +458,7 @@ public class LinuxPowerPCSyscall
       long base = isa.getRegisterByName("gpr4").get (task);
 	
       // FIXME: There are some bi-arch issues
-      return task.memory.getInt(base + (n-1) * isa.getWordSize());
+      return task.getMemory().getInt(base + (n-1) * isa.getWordSize());
     }
   }
 

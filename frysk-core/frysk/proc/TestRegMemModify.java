@@ -121,10 +121,10 @@ public class TestRegMemModify
               // edx contains address of memory location we
               // are expected to write 8 to
               edx = isa.getRegisterByName ("edx").get (task);
-              int mem = task.memory.getInt (edx);
+              int mem = task.getMemory().getInt (edx);
               assertEquals ("old mem value", 3, mem);
-              task.memory.putInt (edx, 8);
-              mem = task.memory.getInt (edx);
+              task.getMemory().putInt (edx, 8);
+              mem = task.getMemory().getInt (edx);
               assertEquals ("new mem value", 8, mem);
               ebp = isa.getRegisterByName ("ebp").get (task);
               assertEquals ("ebp register", 21, ebp);
@@ -279,7 +279,7 @@ public class TestRegMemModify
         // are expected to write 8 to
         r10 = isa.getRegisterByName ("r10").get (task);
         memDataAddress = r10;
-        int mem = task.memory.getInt (r10);
+        int mem = task.getMemory().getInt (r10);
         assertEquals ("old mem value", 3, mem);
         
         rdi = isa.getRegisterByName ("rdi").get (task);
@@ -320,9 +320,9 @@ public class TestRegMemModify
         syscallNum = syscall.number (task);
         if (syscallNum == SyscallNum.SYSgetpid)
           { 
-            task.memory.putInt (this.memDataAddress, 8);
+            task.getMemory().putInt (this.memDataAddress, 8);
             
-            int mem = task.memory.getInt (r10);
+            int mem = task.getMemory().getInt (r10);
             assertEquals ("new mem value", 8, mem);
             
             isa.getRegisterByName ("r9").put (task, this.branchRightAddress);
@@ -463,12 +463,12 @@ public class TestRegMemModify
           assertEquals ("rdx register", 23, gpr5);
           
           gpr6 = isa.getRegisterByName ("gpr6").get (task);
-          int mem = task.memory.getInt (gpr6);
+          int mem = task.getMemory().getInt (gpr6);
           
           // gpr6 store the value 3 first and then we will modify it to 8
           assertEquals ("old mem value", 3, mem);
-          task.memory.putInt (gpr6, 8);
-          mem = task.memory.getInt (gpr6);
+          task.getMemory().putInt (gpr6, 8);
+          mem = task.getMemory().getInt (gpr6);
           assertEquals ("new mem value", 8, mem);
           
           // After this, the assembler program will be executed.
