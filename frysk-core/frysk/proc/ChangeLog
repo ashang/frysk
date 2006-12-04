@@ -1,3 +1,8 @@
+2006-12-04  Nurdin Premji  <npremji@redhat.com>
+
+	* TestIsa.java: Added.	
+	* Task.java: (hasIsa): Added.
+
 2006-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskTerminateObserver.java (AttachedCounter): Delete.

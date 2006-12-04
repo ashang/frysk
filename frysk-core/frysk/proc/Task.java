@@ -100,6 +100,10 @@ abstract public class Task
     return isa;
   }
 
+  public final boolean hasIsa()
+  {
+    return (null == isa);
+  }
 
   public final SyscallEventInfo getSyscallEventInfo ()
     throws TaskException
