@@ -111,9 +111,6 @@ public class TestIsa
 
   public void testIsaSingleton ()
   {
-    if (brokenXXX(3540))
-      return;
-    
     AckProcess ackProc = new DetachedAckProcess();
     AckProcess ackProc2 = new DetachedAckProcess();
 
@@ -145,8 +142,6 @@ public class TestIsa
 
   public void testAttachedCreateChild ()
   {
-    if (brokenXXX(3540))
-      return;
     AckProcess ackProc = new AttachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 

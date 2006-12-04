@@ -102,7 +102,7 @@ abstract public class Task
 
   public final boolean hasIsa()
   {
-    return (null == isa);
+    return (null != isa);
   }
 
   public final SyscallEventInfo getSyscallEventInfo ()
