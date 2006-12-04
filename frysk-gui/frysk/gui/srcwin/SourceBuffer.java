@@ -292,6 +292,18 @@ public class SourceBuffer
   protected void setCurrentLine (StackFrame frame)
   {
 
+    if (!frame.getData().getFileName().equals(this.scope.getData().getFileName()))
+      {
+        frame = frame.getOuter();
+        tagFlag = 0;
+        if (frame != null)
+          setCurrentLine(frame);
+        
+        return;
+      }
+      
+    //System.out.println("setCurrentLine matching: " + frame.getMethodName());
+      
     int startLine = frame.getStartLine();
     int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
@@ -357,6 +369,7 @@ public class SourceBuffer
    */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
+    
     int startLine = frame.getStartLine();
     int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
@@ -386,6 +399,10 @@ public class SourceBuffer
                               true);
       }
     
+    if (frame.getData().getFileName().equals(fileName))
+      {
+        //System.out.println("HIghlighting " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
+        
         if (newFrame == true)
           {
             this.applyTag(this.currentLine, this.getIter(start), this.getIter(end));
@@ -395,17 +412,29 @@ public class SourceBuffer
             this.removeTag(this.currentLine, this.getIter(start),
                                                           this.getIter(end));
           }
+      }
+    
         
         StackFrame curr = frame.getOuter();
+        String fileName = this.scope.getData().getFileName();
         
         while (curr != null)
           {
+            
+            //System.out.println("Checking " + curr.getData().getFileName() + " to " + fileName);
+            if (newFrame == true && !curr.getData().getFileName().equals(fileName))
+              {
+                //System.out.println("files don't match, not highlighting " + curr.getMethodName());
+                curr = curr.getOuter();
+                continue;
+              }
+            
             startLine = curr.getStartLine();
             startCol = curr.getStartOffset();
             endLine = curr.getEndLine();
             endCol = curr.getEndOffset();
 
-            //System.out.println("iterating" + curr.getMethodName() + " " + curr.getLineNumber() + " " + newFrame);
+            //System.out.println("iterating " + curr.getMethodName() + " " + curr.getLineNumber() + " " + newFrame);
             
             start = this.createMark(
                                              curr.getMethodName(),
@@ -1179,7 +1208,8 @@ public class SourceBuffer
 
             String type = tag.getType();
 
-            if (type.equals(DOMTagTypes.FUNCTION_BODY))
+            //if (type.equals(DOMTagTypes.FUNCTION_BODY))
+            if (type.equals(DOMTagTypes.FUNCTION_CALL))
               {
                 String funcName = tag.getToken();
                 
@@ -1190,10 +1220,14 @@ public class SourceBuffer
                   buffer.append(nameArray[i]);
                 
                 funcName = buffer.toString();
+                
                 this.functions.add(funcName);
                 this.createMark(funcName, this.getLineIter(line.getLineNum()),
                                 true);
 
+              }
+            else if (type.equals(DOMTagTypes.FUNCTION_BODY))
+              {
               }
             else
               {

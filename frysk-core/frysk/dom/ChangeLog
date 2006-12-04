@@ -1,3 +1,12 @@
+2006-12-04  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFunction.java (createDOMFunction): Strip spaces out of
+	incoming function_call String.
+	* DOMTagTypes.java (DOMTagTypes): Added FUNCTION_CALL. 
+	* cparser/CDTParser.java (enterFunctionBody): Dump function
+	header information into FUNCTION_CALL.
+	(enterMethodBody): Ditto.
+
 2006-12-01  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFunction.java: Added "function_call" sub-element to

@@ -81,7 +81,14 @@ public class DOMFunction {
 		func.setAttribute(END_ATTR, ""+end);
 		func.setAttribute(LINE_START_ATTR, ""+lineStart);
 		func.setAttribute(LINE_END_ATTR, ""+lineEnd);
-        func.setAttribute(FUNCTION_CALL, func_call);
+        
+        String[] callItems = func_call.split("\\s+");
+        
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < callItems.length; i++)
+          buffer.append(callItems[i]);
+          
+        func.setAttribute(FUNCTION_CALL, buffer.toString());
 		
 		return new DOMFunction(func);
 	}
@@ -239,6 +246,11 @@ public class DOMFunction {
 		
 		return lines;
 	}
+    
+    public String getFunctionCall ()
+    {
+      return this.myElement.getAttributeValue(FUNCTION_CALL);
+    }
 	
 	/**
 	 * returns the JDOM Element associated with this Function

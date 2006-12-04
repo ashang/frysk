@@ -411,7 +411,7 @@ public class SourceWindow
             this.currentTask = curr.getTask();
             this.view = new SourceView(curr, this);
             
-            SourceView v = (SourceView) view;
+            SourceView v = (SourceView) this.view;
             SourceBuffer b = (SourceBuffer) v.getBuffer();
             
             for (int j = 0; j < frames.length; j++)
@@ -440,7 +440,7 @@ public class SourceWindow
         return;
       }
     
-    SourceView sv = (SourceView) view;
+    SourceView sv = (SourceView) this.view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
     
     StackFrame curr = null;
@@ -508,7 +508,6 @@ public class SourceWindow
       {
         if (taskMatch != null)
           {
-            this.stackView.resetView(frames);
             this.currentFrame = taskMatch;
             updateShownStackFrame(taskMatch);
           }
@@ -520,7 +519,7 @@ public class SourceWindow
       }
 
     this.stackView.resetView(frames);
-    stackView.expandAll();
+    this.stackView.expandAll();
   }
   
   public void updateThreads ()
@@ -1447,6 +1446,7 @@ public class SourceWindow
 
   private void updateShownStackFrame (StackFrame selected)
   {
+    
     if (selected == null)
       return;
 
@@ -1460,31 +1460,38 @@ public class SourceWindow
         if (source != null && selected.getDOMFunction() != null)
       {
 
-        DOMSource oldSource = this.view.getScope().getData();
+        DOMSource oldSource = this.currentFrame.getData();
         
-        if (oldSource != null && !source.getFileName().equals(oldSource.getFileName())
-            || this.runState.getState() == RUNNING)
-          {
-            this.view.load(selected);
+            if (oldSource == null || !source.getFileName().equals(oldSource.getFileName()))
+              {
+                removeTags();
 
-            int line = (selected.getDOMFunction().getStartingLine());
-            String declaration = source.getLine(line).getText();
-            String ret = source.getLine(line - 1).getText();
-            if (ret != "")
-              declaration = ret.split("\n")[0] + " " + declaration;
+                this.view.load(selected);
 
-            this.view.scrollToFunction(declaration);
-          }
+                SourceView v = (SourceView) SourceWindow.this.view;
+                SourceBuffer b = (SourceBuffer) v.getBuffer();
+
+                StackFrame curr = selected;
+                while (curr.getInner() != null)
+                  curr = curr.getInner();
+
+                b.highlightLine(curr, true);
+
+                this.view.scrollToFunction(selected.getDOMFunction().getFunctionCall());
+              }
+          
         else
           {
+            currentFrame = selected;
             if (selected.getLineNumber() == 0)
               return;
             else
               this.view.scrollToLine(selected.getLineNumber());
           }
+        
       }
       
-
+        currentFrame = selected;
     this.view.showAll();
   }
   
@@ -2155,7 +2162,6 @@ public class SourceWindow
             regWin.resetTask(newFrame.getTask());
         }
       
-      currentFrame = newFrame;
       // TreePath path = stackView.getSelection().getSelectedRows()[0];
       // int selected = path.getIndices()[0];
 

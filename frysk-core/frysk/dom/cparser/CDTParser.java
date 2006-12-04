@@ -527,7 +527,7 @@ public class CDTParser
 
       functionName += ")";
 
-      line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
+      line.addTag(DOMTagTypes.FUNCTION_CALL, functionName, 0);
       // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
       image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine() - 1,
                         0, arg0.getStartingOffset(), 0, functionName);
@@ -836,7 +836,7 @@ public class CDTParser
 
       functionName += ")";
 
-      line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
+      line.addTag(DOMTagTypes.FUNCTION_CALL, functionName, 0);
     }
 
     /* TEMPLATES */
