@@ -523,7 +523,6 @@ public class TestTaskObserverBlocked
 	    }
 	    public Action updateClonedOffspring (Task parent, Task offspring)
 	    {
-		killDuringTearDown (offspring.getTid ());
 		offspring.requestAddClonedObserver (this);
 		childTasks.add (offspring);
 		Manager.eventLoop.requestStop ();
@@ -557,7 +556,6 @@ public class TestTaskObserverBlocked
 	    }
 	    public Action updateForkedOffspring (Task parent, Task offspring)
 	    {
-		killDuringTearDown (offspring.getTid ());
 		childTasks.add (offspring);
 		offspring.requestAddForkedObserver (this);
 		Manager.eventLoop.requestStop ();
