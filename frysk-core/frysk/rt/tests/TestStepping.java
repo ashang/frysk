@@ -90,6 +90,9 @@ public class TestStepping extends TestLib
   
   public void testRecursiveLineStepping ()
   {
+      if (brokenXXX (3646))
+	  return;
+
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
       {
