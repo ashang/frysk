@@ -309,8 +309,6 @@ public class TestIsa
   
   public void test64To32Isa ()
   {
-    if (brokenXXX(3540))
-      return;
     
     if (!Build.BUILD_ARCH.equals("x86_64"))
       return;
@@ -370,8 +368,7 @@ public class TestIsa
   
   public void test64To32To64 ()
   {
-    if (brokenXXX(3540))
-      return;
+
     if (!Build.BUILD_ARCH.equals("x86_64"))
       return;
     String[] command = new String[] { getExecPrefix()

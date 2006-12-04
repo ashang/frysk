@@ -754,6 +754,8 @@ abstract public class Task
    */
   int notifyExeced ()
   {
+    //Flush the isa in case it has changed between exec's.
+    isa = null;
     for (Iterator i = execedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
