@@ -1267,16 +1267,33 @@ public class TestLib
 	tidsToKillDuringTearDown = new HashSet ();
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX ();
-	// Add every descendant of this process, and all their tasks,
-	// to the set of tidsToKillDuringTearDown that should be
-	// killed off after the test has run.
+	// Detect all test processes added to the process tree,
+	// registering each with tidsToKillDuringTearDown list.  Look
+	// both for children of this process, and children of any
+	// processes already marked to be killed.  The latter is to
+	// catch children of children, such as daemons.
+	//
+	// Note that, in addition to this, the Child code also
+	// directly registers its process.  That is to ensure that
+	// children that never get entered into the process tree also
+	// get registered with tidsToKillDuringTearDown.
 	host.observableProcAddedXXX.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{
 		    Proc proc = (Proc) obj;
-		    if (isDescendantOfMine (proc))
+		    if (isChildOfMine (proc)) {
 			killDuringTearDown (proc.getPid ());
+			return;
+		    }
+		    // XXX: Should be able to just test for proc's
+		    // parent's ID in tidsToKillDuringTearDown.
+		    Object[] tidsToKill = tidsToKillDuringTearDown.toArray ();
+		    for (int i = 0; i < tidsToKill.length; i++) {
+			int tid = ((Integer) tidsToKill[i]).intValue ();
+			if (isChildOf (tid, proc))
+			    killDuringTearDown (proc.getPid ());
+		    }
 		}
 	    });
 	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
