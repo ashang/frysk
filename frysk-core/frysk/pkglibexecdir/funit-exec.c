@@ -45,6 +45,7 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <limits.h>
+#include <stdlib.h>
 
 #include "util.h"
 
@@ -112,6 +113,20 @@ op_block (void *np)
   return NULL;
 }
 
+long
+stringtolong (const char * string)
+{
+	char *end;
+	long val = strtol (string, &end, 0);
+	
+	if (*end != '\0')
+	{
+		printf("Invalid integer argument %s\n", string);
+		usage();
+	}	
+	return val; 
+}
+
 int
 main (int argc, char *argv[], char *envp[])
 {
@@ -133,9 +148,10 @@ main (int argc, char *argv[], char *envp[])
 
   if (argi + 4 > argc)
     usage ();
-  pid = atol (argv[argi++]);
-  sig = atol (argv[argi++]);
-  sec = atol (argv[argi++]);
+  pid = stringtolong (argv[argi++]);
+  sig = stringtolong (argv[argi++]);
+  sec = stringtolong (argv[argi++]); 	
+  alarm(sec);
   exec_argv = argv + argi;
   exec_envp = envp;
 
@@ -157,15 +173,20 @@ main (int argc, char *argv[], char *envp[])
     pthread_barrier_wait (&barrier); // Can't check error status.
   }
 
-  signal (SIGUSR1, exec_handler);
-  signal (SIGUSR2, random_handler);
+  sigset (SIGUSR1, exec_handler);
+  sigset (SIGUSR2, random_handler);
 
   trace ("send sig %d to pid %d", sig, pid);
   tkill (pid, sig); // ack.
 
-  while (sec > 0) {
+	sigset_t mask;
+	sigfillset(&mask);	
+	sigdelset(&mask, SIGUSR1);
+	sigdelset(&mask, SIGUSR2);
+	
+  while (1) {
     trace ("sleep %d sec", sec);
-    sec -= sleep (sec);
+    sigsuspend(&mask);
   }
 
   return 0;
