@@ -84,6 +84,12 @@ public class TestFStack
                                   + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
 
                               "Task #\\d+\\n"
+                                  + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
+                                  + "#1 0x[\\da-f]+ in server \\(\\): line #249\\n"
+                                  + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                  + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
+
+                              "Task #\\d+\\n"
                                   + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                                   + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
                                   + "#2 0x[\\da-f]+ in tkill \\(\\): line #47\\n"
@@ -100,6 +106,13 @@ public class TestFStack
                             + "#3 0x[\\da-f]+ in main \\(\\): line #177\\n"
                             + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                             + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
+
+                        "Task #\\d+\\n"
+                            + "#0 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
+                            + "#1 0x[\\da-f]+ in sleep \\(\\)\\n"
+                            + "#2 0x[\\da-f]+ in main \\(\\): line #177\\n"
+                            + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                            + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
 
                         "Task #\\d+\\n"
                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
@@ -146,36 +159,36 @@ public class TestFStack
 
   };
 
-   public void testSingleThreadedDetached ()
-   {
-   AckProcess ackProc = new DetachedAckProcess();
-   multiThreaded(ackProc, 0);
-   }
-    
-   public void testSingleThreadedAckDaemon ()
-   {
-   AckProcess ackProc = new AckDaemonProcess();
-   multiThreaded(ackProc, 0);
-   }
-    
-   public void testMultiThreadedDetached ()
-   {
-   AckProcess ackProc = new DetachedAckProcess(2);
-   multiThreaded(ackProc, 2);
-   }
-    
-   public void testMultiThreadedAckDaemon ()
-   {
-   AckProcess ackProc = new AckDaemonProcess(2);
-   multiThreaded(ackProc, 2);
-   }
-    
-   public void testStressMultiThreadedDetach ()
-   {
-   int clones = 7;
-   AckProcess ackProc = new DetachedAckProcess(clones);
-   multiThreaded(ackProc, clones);
-   }
+  public void testSingleThreadedDetached ()
+  {
+    AckProcess ackProc = new DetachedAckProcess();
+    multiThreaded(ackProc, 0);
+  }
+
+  public void testSingleThreadedAckDaemon ()
+  {
+    AckProcess ackProc = new AckDaemonProcess();
+    multiThreaded(ackProc, 0);
+  }
+
+  public void testMultiThreadedDetached ()
+  {
+    AckProcess ackProc = new DetachedAckProcess(2);
+    multiThreaded(ackProc, 2);
+  }
+
+  public void testMultiThreadedAckDaemon ()
+  {
+    AckProcess ackProc = new AckDaemonProcess(2);
+    multiThreaded(ackProc, 2);
+  }
+
+  public void testStressMultiThreadedDetach ()
+  {
+    int clones = 7;
+    AckProcess ackProc = new DetachedAckProcess(clones);
+    multiThreaded(ackProc, clones);
+  }
 
   public void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
