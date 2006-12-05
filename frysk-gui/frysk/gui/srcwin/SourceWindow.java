@@ -255,18 +255,6 @@ public class SourceWindow
   
   private StackFrame[] frames;
   
-  /* The state that the SourceWindow is current in. Critical for determining
-   * which operations can be performed at which time. */
-  //private int SW_state = 0;
-  
-  /* Possible states this SourceWindow can be in. */
-  protected static final int STOPPED = 0;
-  protected static final int RUNNING = 1;
-  protected static final int INSTRUCTION_STEP = 2;
-  protected static final int STEP_IN = 3;
-  protected static final int STEP_OVER = 4;
-  protected static final int STEP_OUT = 5;
-  
   private RunState runState;
 
   // Due to java-gnome bug #319415
@@ -2131,7 +2119,8 @@ public class SourceWindow
       if (newFrame == null)
         return;
       
-      if (SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
+      if (SourceWindow.this.currentFrame != null 
+          && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
         {
           DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
           if (disWin != null && disWin.getClosed() == false)

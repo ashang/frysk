@@ -1008,7 +1008,8 @@ public class SourceView
         result = target.mousedOverMargin(event);
       else if (target.isTextArea(win))
         {
-          if (parent.getRunState().getState() == SourceWindow.STOPPED)
+          /* If the SW is stopped */
+          if (parent.getRunState().getState() == 0)
             result = target.mousedOverText(event);
         }
 

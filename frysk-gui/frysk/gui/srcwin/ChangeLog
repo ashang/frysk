@@ -1,6 +1,10 @@
 2006-12-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (setCurrentLine): Check for null frame data.
+	* SourceWindow.java: Removed references to SourceWindow state.
+	(SourceWindowListener.currentStackChanged): Prevent nulls, fixing #3619.
+	* SourceView.java (SourceViewListener.mouseMotionEvent): Remove
+	reference to SourceWindow state macro.
 
 2006-12-04  Mike Cvet  <mcvet@redhat.com>
 
