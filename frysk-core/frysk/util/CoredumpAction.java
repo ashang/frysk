@@ -78,7 +78,7 @@ import frysk.event.SignalEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockObserver;
+import frysk.proc.ProcBlockAction;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.sys.Sig;
@@ -121,7 +121,7 @@ import frysk.sys.proc.Status;
  *
  */
 public class CoredumpAction
-extends ProcBlockObserver
+extends ProcBlockAction
 {
 
   protected static final Logger logger = EventLogger.get("logs/",

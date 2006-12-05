@@ -147,7 +147,7 @@ public class TestProcStopped
   }
 
   public class MyTester
-      extends ProcBlockObserver
+      extends ProcBlockAction
   {
 
     int count;

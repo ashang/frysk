@@ -52,7 +52,7 @@ import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockObserver;
+import frysk.proc.ProcBlockAction;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
@@ -60,7 +60,7 @@ import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 
 public class StacktraceObserver
-    extends ProcBlockObserver
+    extends ProcBlockAction
 {
   private LinkedList taskList;
 

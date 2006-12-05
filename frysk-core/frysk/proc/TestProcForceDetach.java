@@ -78,7 +78,7 @@ public class TestProcForceDetach
   }
 
   class MyObserver
-      extends ProcBlockObserver
+      extends ProcBlockAction
   {
 
     int count;

@@ -1,3 +1,10 @@
+2006-12-05  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcBlockAction.java: Renamed, was ProcBlockObserver.
+	Removed unused methods and variables.	
+	* TestProcStopped.java (MyTester): Changed due to above rename.
+	* TestProcForceDetach.java (MyObserver): Ditto.
+
 2006-12-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskState.java: Move Linux code to ...

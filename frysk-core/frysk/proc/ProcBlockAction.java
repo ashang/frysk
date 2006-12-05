@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
-abstract public class ProcBlockObserver
+abstract public class ProcBlockAction
     implements ProcObserver
 {
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
@@ -119,20 +119,17 @@ abstract public class ProcBlockObserver
 
   protected final Proc proc;
 
-  private Task mainTask;
+  
+  private LinkedList tasks = new LinkedList();
 
-  private int numTasks;
-
-  private LinkedList tasks;
-
-  public ProcBlockObserver (Proc theProc)
+  public ProcBlockAction (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
     requestAdd();
   }
 
-  public void requestAdd ()
+  private void requestAdd ()
   {
     /*
      * The rest of the construction must be done synchronous to the EventLoop,
@@ -149,10 +146,9 @@ abstract public class ProcBlockObserver
             System.exit(1);
           }
 
-        /* XXX: deprecated hack. */
-        proc.sendRefresh();
-
-        mainTask = Manager.host.get(new TaskId(proc.getPid()));
+       
+        Task mainTask = proc.getMainTask(); 
+          
         if (mainTask == null)
           {
             logger.log(Level.FINE, "Could not get main thread of "
@@ -174,8 +170,6 @@ abstract public class ProcBlockObserver
                                + " is not owned by user/group.");
             System.exit(1);
           }
-
-        numTasks = proc.getTasks().size();
 
         requestAddObservers(mainTask);
       }
@@ -200,8 +194,9 @@ abstract public class ProcBlockObserver
 
   }
 
-  public void requestAddObservers (Task task)
+  private void requestAddObservers (Task task)
   {
+    tasks.add(task);
     task.requestAddInstructionObserver(taskObserver);
     task.requestAddTerminatedObserver(taskObserver);
   }
@@ -211,45 +206,14 @@ abstract public class ProcBlockObserver
 
   }
 
-  public void blockTask (LinkedList tasks)
-  {
-    // //System.out.println("in blockTask - setting numTasks to " +
-    // tasks.size());
-    this.tasks = tasks;
-    numTasks = tasks.size();
-    Manager.eventLoop.add(new Event()
-    {
-      public void execute ()
-      {
-        Iterator i = ProcBlockObserver.this.tasks.iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            // System.out.println("blockTask -> " + t);
-            t.requestAddInstructionObserver(taskObserver);
-          }
-      }
-    });
-  }
-
-  public void requestUnblock (Task task)
-  {
-    task.requestUnblock(taskObserver);
-  }
-
-  public void requestDeleteInstructionObserver (Task task)
-  {
-    task.requestDeleteInstructionObserver(taskObserver);
-  }
-
-  public int getNumTasks ()
-  {
-    return this.numTasks;
-  }
-
   public void taskAddFailed (Object observable, Throwable w)
   {
     // TODO Auto-generated method stub
 
+  }
+
+  public LinkedList getTasks ()
+  {
+    return tasks;
   }
 }
