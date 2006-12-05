@@ -149,27 +149,24 @@ public class TestProcStopped
   public class MyTester
       extends ProcBlockAction
   {
-
-    int count;
     
     public MyTester(Proc proc, int c)
     {
       super(proc);
-      count = c;
+
     }
     public void existingTask (Task task)
     {
-      // TODO Auto-generated method stub
-      count--;
-      
-      if (0 == count)
-        {
-          Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop)); 
-        }
+
     }
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
+      
+    }
+    public void allExistingTasksCompleted ()
+    {
+      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop)); 
       
     }
 

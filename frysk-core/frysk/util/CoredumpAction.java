@@ -167,32 +167,7 @@ extends ProcBlockAction
       // Remove this task from the list of tasks that
       // the Proc object told us about.
       if (taskList.contains(task))
-          taskList.remove(task);
-
-      // if taskList.size() == 0 then we have
-      // ordered all our tasks.
-      if (taskList.size() == 0)
-        {
-
-          try
-          {
-            write_elf_file(taskArray, proc);
-            // Run the given Event.
-            Manager.eventLoop.add(event);
-          }
-          catch (final ElfFileException e)
-          {
-            abandonCoreDump(e);
-          }
-          catch (final ElfException e)
-          {
-            abandonCoreDump(e);
-          }
-          catch (final TaskException e)
-          {
-            abandonCoreDump(e);
-          }
-        }
+          taskList.remove(task);      
     }
 
 
@@ -1137,6 +1112,34 @@ extends ProcBlockAction
       System.exit(1);
 
     }
+  }
+
+  public void allExistingTasksCompleted ()
+  {
+
+    //  if taskList.size() == 0 then we have
+    // ordered all our tasks.
+    
+
+        try
+        {
+          write_elf_file(taskArray, proc);
+          // Run the given Event.
+          Manager.eventLoop.add(event);
+        }
+        catch (final ElfFileException e)
+        {
+          abandonCoreDump(e);
+        }
+        catch (final ElfException e)
+        {
+          abandonCoreDump(e);
+        }
+        catch (final TaskException e)
+        {
+          abandonCoreDump(e);
+        }
+      
   }
 
  

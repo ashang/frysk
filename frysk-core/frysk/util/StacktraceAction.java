@@ -59,11 +59,9 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 
-public class StacktraceObserver
+public class StacktraceAction
     extends ProcBlockAction
 {
-  private LinkedList taskList;
-
   protected StringBuffer stackTrace= new StringBuffer();
 
   private TreeMap sortedTasks;
@@ -80,10 +78,9 @@ public class StacktraceObserver
    * @param theEvent an event to run on completion of the stack trace. For
    *          example: Stop the eventLoop and exit the program.
    */
-  public StacktraceObserver (Proc theProc, Event theEvent)
+  public StacktraceAction (Proc theProc, Event theEvent)
   {
     super(theProc);
-    taskList = proc.getTasks();
     event = theEvent;
 
     Manager.eventLoop.add(new InterruptEvent(proc));
@@ -95,54 +92,15 @@ public class StacktraceObserver
     logger.log(Level.FINE, "{0} existingTask, Task : {1}", new Object[] {this, task});
 
     // Print the stack frame for this stack.
-    storeTask(task);
-  
-    checkFinish(task, event);
-   
+    storeTask(task);  
   }
   
-  private boolean finished = false;
-  private void checkFinish (Task task, Event event)
-  {
-    
-    if (null != task)
-    taskList.remove(task);
-    
-    logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
-               new Object[] { taskList, proc.getTasks() });
-
-    //Check for destroyed tasks.
-    Iterator iter = taskList.iterator();
-    while (iter.hasNext())
-      {
-        Task t = (Task) iter.next();
-        if (t.isDestroyed())
-          iter.remove();
-      }
-    
-   if (taskList.isEmpty())
-      {
-       if (!finished){
-         finished = true;
-        // Print all the tasks in order.
-        printTasks();
-
-        // Run the given Event.
-        Manager.eventLoop.add(event);
-       }
-      }
-   
-
-  }
 
   public void taskAddFailed (Object observable, Throwable w)
   {
     logger.log(Level.SEVERE, "{0} could not be added to {1}\n",
                new Object[] { this, observable });
-
-    Task task = (Task) observable;
   
-    checkFinish(task, event);
   }
 
   public void deletedFrom (Object observable)
@@ -234,6 +192,15 @@ public class StacktraceObserver
       System.exit(1);
 
     }
+  }
+
+  public void allExistingTasksCompleted ()
+  {
+    //  Print all the tasks in order.
+    printTasks();
+
+    // Run the given Event.
+    Manager.eventLoop.add(event);
   }
 
 }

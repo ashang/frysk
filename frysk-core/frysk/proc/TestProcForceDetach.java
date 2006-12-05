@@ -80,26 +80,24 @@ public class TestProcForceDetach
   class MyObserver
       extends ProcBlockAction
   {
-
-    int count;
-
     public MyObserver (Proc theProc, int c)
     {
-      super(theProc);
-      count = c;
+      super(theProc);    
     }
 
     public void existingTask (Task task)
     {
-      count--;
-      // TODO Auto-generated method stub
-      if (0 == count)
-        task.getProc().requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
     }
 
     public void deletedFrom (Object observable)
     {
       // TODO Auto-generated method stub
+      
+    }
+
+    public void allExistingTasksCompleted ()
+    {
+      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       
     }
 

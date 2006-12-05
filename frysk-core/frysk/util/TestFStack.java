@@ -244,7 +244,7 @@ public class TestFStack
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
+    StacktraceAction stacker = new StacktraceAction(proc, new Event()
     {
 
       public void execute ()
@@ -284,7 +284,7 @@ public class TestFStack
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceObserver stacker = new StacktraceObserver(proc, new Event()
+    StacktraceAction stacker = new StacktraceAction(proc, new Event()
     {
 
       public void execute ()

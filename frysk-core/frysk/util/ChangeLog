@@ -1,5 +1,13 @@
 2006-12-05  Nurdin Premji  <npremji@redhat.com>
 
+	* StacktraceAction.java: Renamed, was StacktraceObserver.
+	(allExistingTasksCompleted): Added, required by ProcBlockAction
+	(existingTask): Simplified, uses allExistingTasksCompleted when all tasks have been seen.
+	* TestFStack.java (multiThreaded): StacktraceObserver renamed to StacktraceAction.
+	(testClone): Ditto.
+	* CoredumpAction.java (existingTask): Simplified, uses allExistingTasksCompleted.
+	(allExistingTasksCompleted): Added, required by ProcBlockAction.
+
 	* StacktraceObserver.java: ProcBlockObserver renamed to ProcBlockAction.
 	* CoredumpAction.java: Ditto.
 	

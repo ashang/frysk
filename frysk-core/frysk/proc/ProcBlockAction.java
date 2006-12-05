@@ -84,7 +84,8 @@ abstract public class ProcBlockAction
 
         public void execute ()
         {
-          existingTask(task);     
+          existingTask(task);    
+          checkFinish(task);
         }
         
       });
@@ -95,6 +96,7 @@ abstract public class ProcBlockAction
     public void addFailed (Object observable, Throwable w)
     {
       taskAddFailed(observable, w);
+      checkFinish((Task) observable);
     }
 
     public void addedTo (Object observable)
@@ -110,6 +112,7 @@ abstract public class ProcBlockAction
     public Action updateTerminated (Task task, boolean signal, int value)
     {
       taskAddFailed(task, new RuntimeException("Task terminated"));
+      checkFinish(task);
       return Action.BLOCK;
     }
 
@@ -121,11 +124,14 @@ abstract public class ProcBlockAction
 
   
   private LinkedList tasks = new LinkedList();
+  
+  private LinkedList taskList;
 
   public ProcBlockAction (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
+    taskList = proc.getTasks();
     requestAdd();
   }
 
@@ -216,4 +222,59 @@ abstract public class ProcBlockAction
   {
     return tasks;
   }
+  
+  private void requestDeleteObservers (Task task)
+  {
+    task.requestDeleteInstructionObserver(taskObserver);
+    task.requestDeleteTerminatedObserver(taskObserver);
+  }
+  
+  private void requestDelete()
+  {
+    Iterator iter = tasks.iterator();
+    
+    while (iter.hasNext())
+      {
+        Task task = (Task) iter.next();
+        requestDeleteObservers(task);
+        iter.remove();
+      }
+  }
+  
+  public abstract void allExistingTasksCompleted();
+  
+  private boolean finished = false;
+  private void checkFinish (Task task)
+  {
+    
+    if (null != task)
+    taskList.remove(task);
+    
+    logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
+               new Object[] { taskList, proc.getTasks() });
+
+    //Check for destroyed tasks.
+    Iterator iter = taskList.iterator();
+    while (iter.hasNext())
+      {
+        Task t = (Task) iter.next();
+        if (t.isDestroyed())
+          iter.remove();
+      }
+    
+   if (taskList.isEmpty())
+      {
+       if (!finished){
+         finished = true;
+       
+         allExistingTasksCompleted();
+         
+         requestDelete();
+       }
+      }
+   
+
+  }
+  
+  
 }

@@ -51,7 +51,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
-import frysk.util.StacktraceObserver;
+import frysk.util.StacktraceAction;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -65,7 +65,7 @@ public class fstack
 
   private static boolean hasProc = false;
 
-  private static StacktraceObserver stacker;
+  private static StacktraceAction stacker;
 
   private static Parser parser;
 
@@ -163,7 +163,7 @@ public class fstack
                   public void procFound (ProcId procId)
                   {
                     final Proc proc = Manager.host.getProc(procId);
-                    stacker = new StacktraceObserver(proc, new Event()
+                    stacker = new StacktraceAction(proc, new Event()
                     {
                       public void execute ()
                       {
