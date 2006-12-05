@@ -39,50 +39,52 @@
 
 package frysk.proc;
 
+import java.util.logging.Level;
+
 /**
- * A Process State Machine
+ * Possible Linux ptrace host states.
  */
 
-abstract class ProcState
-    extends State
+abstract class LinuxPtraceHostState
+    extends HostState
 {
-    protected ProcState (String state)
+    /**
+     * Return the hosts initial state.
+     */
+    static HostState initial (Host host)
+    {
+	return running;
+    }
+    protected LinuxPtraceHostState (String state)
     {
 	super (state);
     }
-    ProcState handleRemoval (Proc proc)
-    {
-	throw unhandled (proc, "handleRemoval");
-    }
-    ProcState handleRefresh (Proc proc)
-    {
-	throw unhandled (proc, "handleRefresh");
-    }
-    ProcState handleTaskAttachCompleted (Proc proc, Task task)
-    {
-	throw unhandled (proc, "handleTaskAttachCompleted");
-    }
-    ProcState handleTaskDetachCompleted (Proc proc, Task task)
-    {
-	throw unhandled (proc, "handleTaskDetachCompleted");
-    }
-    ProcState handleTaskDetachCompleted (Proc proc, Task task,
-					 Task clone)
-    {
-	throw unhandled (proc, "handleTaskDetachCompleted/clone");
-    }
-    ProcState handleAddObservation (Proc proc,
-				    Observation observation)
-    {
-	throw unhandled (proc, "handleAddObservation");
-    }
-    ProcState handleDeleteObservation (Proc proc,
-				       Observation observation)
-    {
-	throw unhandled (proc, "handleDeleteObservation");
-    }
-    ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
-    {
-	throw unhandled (proc, "handleDetach");
-    }
+
+    private static HostState running = new HostState ("running")
+	{
+	    HostState handleRefresh (Host host, boolean refreshAll)
+	    {
+		logger.log (Level.FINE, "{0} handleRefresh\n", host); 
+		host.sendRefresh (refreshAll);
+		return running;
+	    }
+	    HostState handleCreateAttachedProc (Host host,
+						String stdin,
+						String stdout,
+						String stderr,
+						String[] args,
+						TaskObserver.Attached attached)
+	    {
+		logger.log (Level.FINE, "{0} handleCreateAttachedProc\n", host);
+		host.sendCreateAttachedProc (stdin, stdout, stderr, args,
+					     attached);
+		return LinuxPtraceHostState.running;
+	    }
+	    HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
+	    {
+		logger.log (Level.FINE, "{0} handleRefresh\n", host); 
+		host.sendRefresh (procId, finder);
+		return running;
+	    }
+	};
 }

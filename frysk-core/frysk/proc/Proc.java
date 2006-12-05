@@ -180,7 +180,7 @@ public abstract class Proc
     protected Proc (Host host, Proc parent, ProcId id)
     {
 	this (id, parent, host, null);
-	newState = ProcState.initial (this, false);
+	newState = LinuxPtraceProcState.initial (this, false);
 	logger.log (Level.FINEST, "{0} new - create unattached running proc\n",
 		    this); 
     }
@@ -198,7 +198,7 @@ public abstract class Proc
     protected Proc (Task task, ProcId forkId)
     {
 	this (forkId, task.proc, task.proc.host, task);
-	newState = ProcState.initial (this, true);
+	newState = LinuxPtraceProcState.initial (this, true);
 	logger.log (Level.FINE, "{0} new - create attached running proc\n",
 		    this); 
     }

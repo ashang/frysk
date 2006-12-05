@@ -181,7 +181,7 @@ abstract public class Task
   protected Task (Proc proc, TaskId id)
   {
     this(id, proc, null);
-    newState = TaskState.detachedState();
+    newState = LinuxPtraceTaskState.detachedState();
     logger.log(Level.FINEST, "{0} new -- create unattached\n", this);
   }
 
@@ -191,7 +191,7 @@ abstract public class Task
   protected Task (Task task, TaskId cloneId)
   {
     this(cloneId, task.proc, task);
-    newState = TaskState.clonedState(task.getState());
+    newState = LinuxPtraceTaskState.clonedState(task.getState());
     logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
   }
 
@@ -206,7 +206,7 @@ abstract public class Task
   protected Task (Proc proc, TaskObserver.Attached attached)
   {
     this(new TaskId(proc.getPid()), proc, proc.creator);
-    newState = TaskState.mainState();
+    newState = LinuxPtraceTaskState.mainState();
     if (attached != null)
       {
         TaskObservation ob = new TaskObservation(this, attachedObservers,
@@ -261,7 +261,7 @@ abstract public class Task
    */
   public boolean isDestroyed()
   {
-    return getState().equals(TaskState.getDestroyed());
+    return getState().equals(LinuxPtraceTaskState.getDestroyed());
   }
 
   /**

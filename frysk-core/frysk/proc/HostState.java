@@ -39,22 +39,13 @@
 
 package frysk.proc;
 
-import java.util.logging.Level;
-
 /**
  * Possible host states.
  */
 
-class HostState
+abstract class HostState
     extends State
 {
-    /**
-     * Return the hosts initial state.
-     */
-    static HostState initial (Host host)
-    {
-	return running;
-    }
     protected HostState (String state)
     {
 	super (state);
@@ -65,9 +56,8 @@ class HostState
     }
     HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
     {
-      throw unhandled (host, "handleRefresh");
+	throw unhandled (host, "handleRefresh");
     }
-    
     HostState handleCreateAttachedProc (Host host,
 					String stdin, String stdout,
 					String stderr, String[] args,
@@ -75,32 +65,4 @@ class HostState
     {
 	throw unhandled (host, "handleCreateAttachedProc");
     }
-
-    private static HostState running = new HostState ("running")
-	{
-	    HostState handleRefresh (Host host, boolean refreshAll)
-	    {
-		logger.log (Level.FINE, "{0} handleRefresh\n", host); 
-		host.sendRefresh (refreshAll);
-		return running;
-	    }
-	    HostState handleCreateAttachedProc (Host host,
-						String stdin,
-						String stdout,
-						String stderr,
-						String[] args,
-						TaskObserver.Attached attached)
-	    {
-		logger.log (Level.FINE, "{0} handleCreateAttachedProc\n", host);
-		host.sendCreateAttachedProc (stdin, stdout, stderr, args,
-					     attached);
-		return HostState.running;
-	    }
-        HostState handleRefresh (Host host, ProcId procId, Host.FindProc finder)
-        {
-          logger.log (Level.FINE, "{0} handleRefresh\n", host); 
-        host.sendRefresh (procId, finder);
-        return running;
-        }
-	};
 }

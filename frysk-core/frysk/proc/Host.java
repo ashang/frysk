@@ -64,7 +64,7 @@ public abstract class Host
      */
     Host ()
     {
-	newState = HostState.initial (this);
+	newState = LinuxPtraceHostState.initial (this);
 	logger.log (Level.FINE, "{0} Host\n", this);
     }
 
