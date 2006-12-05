@@ -1,3 +1,7 @@
+2006-12-05  Nurdin Premji  <npremji@redhat.com>
+
+	* StackFrame.java (toPrint): Added source file to print output.
+
 2006-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestStepping.java (testRecursiveLineStepping): Disabled,
