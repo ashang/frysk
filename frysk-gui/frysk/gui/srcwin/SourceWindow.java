@@ -490,10 +490,9 @@ public class SourceWindow
         if (! curr.getMethodName().equals(this.currentFrame.getMethodName()))
           sb.highlightLine(curr, true);
 
-        // Catch null pointers here
         while (curr != null)
           {
-            if (curr.getMethodName().equals(currentMethodName))
+            if (currentMethodName.equals(curr.getMethodName()))
               {
                 flag = true;
                 sb.setCurrentLine(curr);
@@ -1894,22 +1893,6 @@ public class SourceWindow
   {
     this.runState.executeTasks(tasks);
   }
-  
-  /**
-   * Thread stepping has completed, clean up. 
-   */
-//  private void stepCompleted ()
-//  {
-//    //System.out.println("step completed");
-//    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-//    sbar.push(0, "Stopped");
-//    
-//    this.runState.stepCompleted();
-//    
-//    resensitize();
-//    
-//    this.SW_state = STOPPED;
-//  }
 
   private StackFrame[] generateProcStackTrace (StackFrame[] frames, Task[] tasks)
   {
@@ -1943,6 +1926,7 @@ public class SourceWindow
           }
         catch (Exception e)
           {
+            System.out.println("Error generating stack trace");
             System.out.println(e.getMessage());
           }
 
