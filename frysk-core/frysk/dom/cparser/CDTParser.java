@@ -876,15 +876,15 @@ public class CDTParser
         return;
       String lineText = line.getText();
 
-      line.addTag(DOMTagTypes.KEYWORD,
-                  lineText.substring(0, arg0.getNameOffset() - line.getOffset()
-                                        - 2), arg0.getStartingOffset()
-                                              - line.getOffset());
-      line.addTag(DOMTagTypes.INCLUDE,
-                  lineText.substring(arg0.getNameOffset() - line.getOffset()
-                                     - 1, arg0.getNameEndOffset()
-                                          - line.getOffset() + 1),
-                  arg0.getNameOffset() - line.getOffset() - 1);
+      line.addTag(DOMTagTypes.KEYWORD, "#include", 0);
+      
+      int i = lineText.indexOf("<");
+      int j = lineText.indexOf(">");
+      if (i == -1) {
+        i = lineText.indexOf('"');
+        j = lineText.lastIndexOf('"');
+      }
+      line.addTag(DOMTagTypes.INCLUDE, lineText.substring(i+1,j), i+1);
     }
 
     public void acceptMacro (IASTMacro arg0)

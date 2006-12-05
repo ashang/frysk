@@ -21,11 +21,11 @@ import org.jdom.output.XMLOutputter;
 
 public class DOMFactory
 {
-  private static final boolean debug = false;
+  private static final boolean DEBUG = false;
   
-  private static final String globalinclude = "/usr/include";
+  private static final String GLOBAL_INCLUDE = "/usr/include";
   
-  private static final String localinclude = "/usr/local/include";
+  private static final String LOCAL_INCLUDE = "/usr/local/include";
 
   private static HashMap hashmap = new HashMap();
 
@@ -112,7 +112,7 @@ public class DOMFactory
           }
         hashmap.put(proc, dom);
         // if we are debugging the DOM, print it out now
-        if (debug)
+        if (DEBUG)
           {
             printDOM(dom);
           }
@@ -204,8 +204,9 @@ public class DOMFactory
         int numberfiles = 0;
         for (int i = 0; i < files.length; i++)
           {
-            if (files[i].endsWith(".h") && ! files[i].startsWith(globalinclude)
-                && ! files[i].startsWith(localinclude))
+            if (files[i].endsWith(".h") && ! (files[i] == GLOBAL_INCLUDE)
+                && ! (files[i] == LOCAL_INCLUDE) && 
+                ! alreadyAdded(incfiles, files[i]))
               {
                 int j = files[i].lastIndexOf("/");
                 if (pathFound(files[i].substring(0, j)))
@@ -216,14 +217,14 @@ public class DOMFactory
               }
           }
         // Add the default includes used for all systems
-        if (pathFound(localinclude))
+        if (pathFound(LOCAL_INCLUDE))
           {
-            incfiles[numberfiles] = "/usr/local/include";
+            incfiles[numberfiles] = LOCAL_INCLUDE;
             numberfiles++;
           }
-        if (pathFound(globalinclude))
+        if (pathFound(GLOBAL_INCLUDE))
           {
-            incfiles[numberfiles] = "/usr/include";
+            incfiles[numberfiles] = GLOBAL_INCLUDE;
           }
         return incfiles;
       }
@@ -233,6 +234,33 @@ public class DOMFactory
         System.err.println("Error getting include paths: " + ee.getMessage());
         return null;
       }
+  }
+  
+  /**
+   * alreadyAdded checks to see if an include path is already in the list before adding it.
+   * "/usr/include" and "/usr/local/include" are specail cases and are added at the end
+   * automatically.
+   * 
+   * @param filelist is a String array containing the heretofore added include files
+   * @param newfile is a String with the candidate include path to be added
+   * @return true if the include is already in the list, false if not
+   * 
+   */
+  public static boolean alreadyAdded(String[] filelist, String newfile )
+  {
+    if (filelist.length <= 1)
+      return false;
+    int j = newfile.lastIndexOf("/");
+    for (int i = 0; i <= filelist.length; i++)
+      {
+        if (filelist[i] == null)
+          return false;
+        if (filelist[i].equals(newfile.substring(0, j)) ||
+            newfile.substring(0,j).equals(GLOBAL_INCLUDE) ||
+            newfile.substring(0,j).equals(LOCAL_INCLUDE))
+          return true;
+      }
+    return false;
   }
   
   /**
