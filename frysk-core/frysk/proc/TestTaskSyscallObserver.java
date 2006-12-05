@@ -123,9 +123,9 @@ public class TestTaskSyscallObserver
    */
   public void testExecSyscall(){
   
-    //	if (brokenXXX (2245))
-    //	    return;
-    //	    
+    if (brokenXXX (3244))
+        return;
+    
     //	  Create an unattached child process.
     AckProcess child = new DetachedAckProcess ();
     

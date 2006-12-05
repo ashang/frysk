@@ -1,3 +1,7 @@
+2006-12-05  Mark Wielaard  <mark@klomp.org>
+
+	* TestTaskSyscallObserver (testExecSyscall): Mark broken #3244.
+
 2006-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (killDuringTearDown): Replace "int" parameter with
