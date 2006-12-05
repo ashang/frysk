@@ -11,5 +11,17 @@
 	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/vte0.12.jar"/>
-	<classpathentry kind="output" path="build"/>
+	<classpathentry kind="lib" path="build/frysk-core/frysk-core.jar"/>
+	<classpathentry kind="lib" path="build/frysk-gtk/frysk-gtk.jar"/>
+	<classpathentry kind="lib" path="build/frysk-gtk/ftk.jar"/>
+	<classpathentry kind="lib" path="build/frysk-gui/frysk-gui.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/antlr.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/cdtparser.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/frysk-imports.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/getopt.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/jdom.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/jline.jar"/>
+	<classpathentry kind="lib" path="build/frysk-imports/junit.jar"/>
+	<classpathentry kind="lib" path="build/frysk-sys/frysk-sys.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
