@@ -53,7 +53,7 @@ import frysk.sys.proc.Exe;
  * Linux implementation of Proc.
  */
 
-public class LinuxProc
+public class LinuxPtraceProc
     extends Proc
 {
     /**
@@ -78,7 +78,7 @@ public class LinuxProc
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
-    LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
+    LinuxPtraceProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
 	super (host, parent, pid);
 	this.stat = stat;
@@ -87,7 +87,7 @@ public class LinuxProc
      * Create a new, definitely attached, definitely running fork of
      * Task.
      */
-    LinuxProc (Task task, ProcId forkId)
+    LinuxPtraceProc (Task task, ProcId forkId)
     {
 	super (task, forkId);
     }
@@ -114,14 +114,14 @@ public class LinuxProc
 		    // Add the process (it currently isn't attached).
 		    try
 			{
-			    Task newTask = new LinuxTask (LinuxProc.this,
+			    Task newTask = new LinuxPtraceTask (LinuxPtraceProc.this,
 							  new TaskId (tid));
 			    added.put (newTask.id, newTask);
 			}
 		    catch (TaskException e)
 			{
 			  // No big deal; we weren't able to create
-			  // the LinuxTask object because we don't
+			  // the LinuxPtraceTask object because we don't
 			  // have permission to access the task's
 			  // executable or  something, so the user
 			  // won't be able to manipulate this task.

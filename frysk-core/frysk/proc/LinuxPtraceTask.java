@@ -53,7 +53,7 @@ import java.util.logging.Level;
  * Linux implementation of Task.
  */
 
-public class LinuxTask
+public class LinuxPtraceTask
   extends Task
 {
   private long ptraceOptions = 0;
@@ -126,7 +126,7 @@ public class LinuxTask
   /**
    * Create a new unattached Task.
    */
-  LinuxTask (Proc proc, TaskId id) throws TaskException
+  LinuxPtraceTask (Proc proc, TaskId id) throws TaskException
   {
     super(proc, id);
     //setupMapsXXX();
@@ -135,7 +135,7 @@ public class LinuxTask
   /**
    * Create a new attached clone of Task.
    */
-  LinuxTask (Task task, TaskId clone) throws TaskException
+  LinuxPtraceTask (Task task, TaskId clone) throws TaskException
   {
     super(task, clone);
     //setupMapsXXX();
@@ -144,7 +144,7 @@ public class LinuxTask
   /**
    * Create a new attached main Task of Proc.
    */
-  LinuxTask (Proc proc, TaskObserver.Attached attached) throws TaskException
+  LinuxPtraceTask (Proc proc, TaskObserver.Attached attached) throws TaskException
   {
     super(proc, attached);
     //setupMapsXXX();

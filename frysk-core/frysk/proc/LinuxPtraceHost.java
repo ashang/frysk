@@ -60,15 +60,15 @@ import java.util.logging.Level;
  * A Linux Host.
  */
 
-public class LinuxHost
+public class LinuxPtraceHost
     extends Host
 {
   EventLoop eventLoop;
 
   /**
-   * Construct an instance of the LinuxHost that uses the specified eventLoop.
+   * Construct an instance of the LinuxPtraceHost that uses the specified eventLoop.
    */
-  LinuxHost (EventLoop eventLoop)
+  LinuxPtraceHost (EventLoop eventLoop)
   {
     this.eventLoop = eventLoop;
     eventLoop.add(new PollWaitOnSigChld());
@@ -127,7 +127,7 @@ public class LinuxHost
                 break;
             }
           // .. and then add this process.
-          proc = new LinuxProc(LinuxHost.this, parent, procId, stat);
+          proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent, procId, stat);
           added.add(proc);
         }
       else if (removed.get(procId) != null)
@@ -135,7 +135,7 @@ public class LinuxHost
           // Process 1 never gets a [new] parent.
           if (pid > 1)
             {
-              Stat stat = ((LinuxProc) proc).getStat();
+              Stat stat = ((LinuxPtraceProc) proc).getStat();
               // An existing process that hasn't yet been
               // updated. Still need check that its parent
               // didn't change (assuming there is one).
@@ -177,7 +177,7 @@ public class LinuxHost
         // Changes individual process.
         for (Iterator i = procPool.values().iterator(); i.hasNext();)
           {
-            LinuxProc proc = (LinuxProc) i.next();
+            LinuxPtraceProc proc = (LinuxPtraceProc) i.next();
             proc.sendRefresh();
           }
       }
@@ -225,7 +225,7 @@ public class LinuxHost
       }
 
     
-    LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
+    LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
     proc.sendRefresh();
     
     Manager.eventLoop.add(new Event()
@@ -256,10 +256,10 @@ public class LinuxHost
 	  {
 	    // If not, find this process and add this task to it.
 	    Proc myProc = getSelf();
-	    myTask = new LinuxTask(myProc, myTaskId);
+	    myTask = new LinuxPtraceTask(myProc, myTaskId);
 	  }
-	Proc proc = new LinuxProc(myTask, new ProcId(pid));
-	new LinuxTask(proc, attached);
+	Proc proc = new LinuxPtraceProc(myTask, new ProcId(pid));
+	new LinuxPtraceTask(proc, attached);
       }
     catch (TaskFileException e) 
       {
@@ -366,7 +366,7 @@ public class LinuxHost
         Task clone;
 	try
 	  {
-	    clone = new LinuxTask(task, new TaskId(clonePid));
+	    clone = new LinuxPtraceTask(task, new TaskId(clonePid));
 	  }
 	catch (TaskException e)
 	  {
@@ -387,12 +387,12 @@ public class LinuxHost
         Task task = getTask(pid, "{0} forkEvent\n");
         // Create an attached and running fork of TASK.
         ProcId forkId = new ProcId(childPid);
-        Proc forkProc = new LinuxProc(task, forkId);
+        Proc forkProc = new LinuxPtraceProc(task, forkId);
         // The main task.
         Task forkTask;
 	try
 	  {
-	    forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
+	    forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
 	  }
 	catch (TaskException e)
 	  {

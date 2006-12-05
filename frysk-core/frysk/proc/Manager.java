@@ -57,7 +57,7 @@ public class Manager
     // most appropriate.
 
     public static EventLoop eventLoop = new EventLoop ();
-    public static Host host = new LinuxHost (eventLoop);
+    public static Host host = new LinuxPtraceHost (eventLoop);
 
     /**
      * XXX: For testing, resets the Manager back to it's default
@@ -66,7 +66,7 @@ public class Manager
     static Host resetXXX ()
     {
 	eventLoop = new EventLoop ();
-	host = new LinuxHost (eventLoop);
+	host = new LinuxPtraceHost (eventLoop);
 	return host;
     }
 }

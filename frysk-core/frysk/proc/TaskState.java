@@ -829,7 +829,7 @@ class TaskState
 	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
 	    task.proc.retain (task);
-	    ((LinuxProc)task.proc).getStat ().refresh();
+	    ((LinuxPtraceProc)task.proc).getStat ().refresh();
 
 	    // All breakpoints have been erased.  We need to explicitly
 	    // tell those attached to the current Task.
