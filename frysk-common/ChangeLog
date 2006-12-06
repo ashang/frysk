@@ -1,5 +1,15 @@
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-for-import-junit-framework): Rename
+	checked-import-junit-framework, make silent.
+	(checked-for-parameterless-junit-fail): Rename
+	checked-for-parameterless-junit-fail, make silent.
+	(checked-for-import-junit-framework)
+	(checked-for-parameterless-junit-fail, checked-for-null-equals)
+	(checked-for-eclipse-residue, checked-for-copyright-notice): Clean
+	up PASS / FAIL message.
+	(checked-for-at-author): New.
+
 	* Makefile.rules (checked-for-null-equals)
 	(checked-for-eclipse-residue, checked-for-copyright-notice): New
 	rules, added to check-local.

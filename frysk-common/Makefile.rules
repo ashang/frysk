@@ -587,9 +587,10 @@ clean-ecj-dir:
 # directories .jar file as that is updated when ever any java files
 # change.
 
-check-local: checked-import-junit-framework
-.PHONY: checked-import-junit-framework
-checked-import-junit-framework:  $(GEN_DIRNAME).jar
+check-local: checked-for-import-junit-framework
+.PHONY: checked-for-import-junit-framework
+checked-for-import-junit-framework:  $(GEN_DIRNAME).jar
+	@echo "" ; \
 	if for dir in $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir ./$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
@@ -597,29 +598,28 @@ checked-import-junit-framework:  $(GEN_DIRNAME).jar
 			-o -name junit -prune ; \
 	   done | xargs grep -H -n -e 'import *junit\.framework' ; \
 	then \
-		echo 1>&2 "" ; \
-		echo 1>&2 "***** frysk code should use frysk.junit," ; \
-		echo 1>&2 "***** and not junit.framework." ; \
-		echo 1>&2 "" ; \
+		echo "FAIL: code uses frysk.junit" ; \
 		exit 1 ; \
+	else \
+		echo "PASS: code uses frysk.junit" ; \
 	fi
 
 # Check that everything is calling fail() with a parameter.
 
-check-local: checked-parameterless-junit-fail
-.PHONY: checked-parameterless-junit-fail
-checked-parameterless-junit-fail: $(GEN_DIRNAME).jar
-	if for dir in $(GEN_DIRS) ; do \
+check-local: checked-for-parameterless-junit-fail
+.PHONY: checked-for-parameterless-junit-fail
+checked-for-parameterless-junit-fail: $(GEN_DIRNAME).jar
+	@if for dir in $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir ./$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
 	   done | xargs grep -H -n -e 'fail *()' ; \
 	then \
-		echo 1>&2 "" ; \
-		echo 1>&2 "***** frysk tests should paramterize fail()" ; \
-		echo 1>&2 "" ; \
+		echo "FAIL: code does paramterize all fail() calls" ; \
 		exit 1 ; \
+	else \
+		echo "PASS: code parameterizes all fail() calls" ; \
 	fi
 
 # Check that runtest exists for use by dejagnu
@@ -627,7 +627,13 @@ checked-parameterless-junit-fail: $(GEN_DIRNAME).jar
 check-local: checked-for-dejagnu
 .PHONY: checked-for-dejagnu
 checked-for-dejagnu:
-	$(RUNTEST) --help > /dev/null 2>&1
+	@if test x"$(RUNTEST)" = x ; then \
+		echo "SKIP: check for dejagnu" ; \
+	elif $(RUNTEST) --help > /dev/null 2>&1 ; then \
+		echo "PASS: check for dejagnu" ; \
+	else \
+		echo "FAIL: check for dejagnu" ; \
+	fi
 
 # Check for NULL== or null== in code base
 
@@ -644,9 +650,27 @@ checked-for-null-equals:
 		-e '\(NULL *==' \
 		-e '\(null *==' ; \
 	then \
-		echo 1>&2 "" ; \
-		echo 1>&2 "***** Code uses null==" ; \
-		echo 1>&2 "" ; \
+		echo "FAIL: Code does not use NULL==" ; \
+	else \
+		echo "PASS: code does not use NULL==" ; \
+	fi
+
+# Check for lingering ECLIPSE code stubs and the like
+
+check-local: checked-for-eclipse-residue
+.PHONY: checked-for-at-author
+checked-for-at-author:
+	@if for dir in $(GEN_DIRS) ; do \
+		find $(srcdir)/$$dir \
+			-type f -name '[a-zA-Z]*.java' -print \
+			-o -name inua -prune \
+			-o -name junit -prune ; \
+	    done | xargs grep -H -n \
+		-e '@author' \
+	then \
+		echo "FAIL: code does not contain @author" ; \
+	else \
+		echo "PASS: code does not contain @author" ; \
 	fi
 
 # Check for lingering ECLIPSE code stubs and the like
@@ -660,12 +684,11 @@ checked-for-eclipse-residue:
 			-o -name inua -prune \
 			-o -name junit -prune ; \
 	    done | xargs grep -H -n \
-		-e '@author' \
 		-e 'TODO Auto-generated method stub' ; \
 	then \
-		echo 1>&2 "" ; \
-		echo 1>&2 "***** Code contains ECLIPSE residue" ; \
-		echo 1>&2 "" ; \
+		echo "FAIL: code does not contain ECLIPSE residue" ; \
+	else \
+		echo "PASS: code does not contain ECLIPSE residue" ; \
 	fi
 
 # Check that the file has a valid copyright notice.
@@ -673,7 +696,7 @@ checked-for-eclipse-residue:
 check-local: checked-for-copyright-notice
 .PHONY: checked-for-copyright-notice
 checked-for-copyright-notice:
-	@if for dir in $(GEN_DIRS) ; do \
+	@if for dir in Makefile.am configure.ac $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -type f -name '[a-zA-Z]*.cxx' -print \
@@ -682,7 +705,7 @@ checked-for-copyright-notice:
 	    done | xargs grep -H -n -L \
 		-e 'Copyright' ; \
 	then \
-		echo 1>&2 "" ; \
-		echo 1>&2 "***** Missing Copyright" ; \
-		echo 1>&2 "" ; \
+		echo "PASS: code has Copyright notice" ; \
+	else \
+		echo "FAIL: code has Copyright notice" ; \
 	fi
