@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * Elf Program segment header
- * @author ajocksch
- *
  */
 public class ElfPHeader {
 

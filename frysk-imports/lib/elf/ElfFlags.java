@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * An ElfFlag is a flag that is applicable to Elf structures
- * @author ajocksch
- *
  */
 public class ElfFlags {
 

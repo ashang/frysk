@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * An ElfArchiveSymbol is an entry in the Archive symbol table
- * @author ajocksch
- *
  */
 public class ElfArchiveSymbol {
 

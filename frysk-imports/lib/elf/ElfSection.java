@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * An ElfSection is a descriptor o an Elf file section
- * @author ajocksch
- *
  */
 public class ElfSection {
 

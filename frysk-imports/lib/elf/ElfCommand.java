@@ -40,9 +40,8 @@ package lib.elf;
 
 /**
  * And ElfCommand is a Command 
- * @author ajocksch
  *
- * TODO: Something more desctiptive please?!?!?
+ * XXX: Something more desctiptive please?!?!?
  */
 public class ElfCommand {
 

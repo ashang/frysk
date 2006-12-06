@@ -72,7 +72,7 @@ public class ElfNhdr
   }
   public void setName(String nhdrName)
   {
-    if (null == nhdrName)
+    if (nhdrName == null)
       return;
     
     this.name = nhdrName;

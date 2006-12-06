@@ -41,8 +41,6 @@ package lib.elf;
 /**
  * An ElfHeader is a header for and Elf file. This appears at the start of
  * every Elf file.
- * @author ajocksch
- *
  */
 public class ElfEHeader {
 

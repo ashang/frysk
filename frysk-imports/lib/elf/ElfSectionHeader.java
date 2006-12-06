@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * Header for an {@see ElfSection}
- * @author ajocksch
- *
  */
 
 

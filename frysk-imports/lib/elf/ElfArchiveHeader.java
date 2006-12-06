@@ -42,8 +42,6 @@ package lib.elf;
 
 /**
  * An ElfArchiveHeader is a header for an archive member
- * @author ajocksch
- *
  */
 public class ElfArchiveHeader {
 

@@ -1,3 +1,18 @@
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* ElfFlags.java: Remove @author.
+	* ElfArchiveHeader.java: Ditto.
+	* ElfArchiveSymbol.java: Ditto.
+	* ElfType.java: Ditto.
+	* ElfSectionHeader.java: Ditto.
+	* ElfData.java: Ditto.
+	* ElfCommand.java: Ditto.
+	* ElfKind.java: Ditto.
+	* ElfEHeader.java: Ditto.
+	* ElfPHeader.java: Ditto.
+	* ElfSection.java: Ditto.
+	* ElfNhdr.java: Use ==null.
+
 2006-11-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrFPRegSet.java: New File.

@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * And ElfKind is an identification value for a recognized object file
- * @author ajocksch
- *
  */
 public class ElfKind {
 

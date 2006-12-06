@@ -40,9 +40,8 @@ package lib.elf;
 
 
 /**
- * An ElfData is a descriptor of data that will be converted to or from memory format
- * @author ajocksch
- *
+ * An ElfData is a descriptor of data that will be converted to or
+ * from memory format
  */
 public class ElfData {
 

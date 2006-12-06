@@ -40,8 +40,6 @@ package lib.elf;
 
 /**
  * An ElfType is a known Elf translation type
- * @author ajocksch
- *
  */
 public class ElfType {
 	
