@@ -47,10 +47,6 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.sys.Sig;
 
-/**
- * @author pmuldoon
- *
- */
 public class TaskSignaledObserver extends TaskObserverRoot implements
 		TaskObserver.Signaled {
 

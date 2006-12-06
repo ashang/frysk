@@ -47,10 +47,7 @@ import java.util.logging.Logger;
 import frysk.Config;
 import frysk.gui.Gui;
 
-/**
- * @author pmuldoon
- *
- */
+
 public class EventLogger {
 
 	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog"; //$NON-NLS-1$

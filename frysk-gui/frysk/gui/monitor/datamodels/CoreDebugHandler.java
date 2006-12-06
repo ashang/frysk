@@ -1,15 +1,9 @@
-/**
- * 
- */
 package frysk.gui.monitor.datamodels;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-/**
- * @author pmuldoon
- *
- */
+
 public class CoreDebugHandler extends Handler {
 
 	/* (non-Javadoc)

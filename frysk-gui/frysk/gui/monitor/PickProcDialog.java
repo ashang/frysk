@@ -77,8 +77,6 @@ import frysk.proc.Proc;
 
 /**
  * 
- * @author pmuldoon
- *
  * A Dialog that displays a list of procs matching
  * the given path.
  */

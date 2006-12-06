@@ -54,7 +54,6 @@ import org.gnu.gtk.TextView;
 import org.gnu.gtk.Widget;
 
 /**
- * @author pmuldoon,  sami wagiaalla
  * 
  * Generic log window, just prints out events it recieves
  * */

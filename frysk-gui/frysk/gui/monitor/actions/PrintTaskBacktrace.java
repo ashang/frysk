@@ -52,7 +52,6 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 
 /**
- * @author pmuldoon
  * 
  * Action that prints the backtrace of a blocked task
  * to the log window, and also to the eventlogger.

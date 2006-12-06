@@ -45,7 +45,6 @@ import frysk.proc.Proc;
 
 /**
  * 
- * @author pmuldoon
  *
  * A CheckListView that filters on the given path.
  */

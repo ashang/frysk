@@ -1,6 +1,3 @@
-/**
- * 
- */
 package frysk.gui.monitor.datamodels;
 
 import java.util.logging.LogRecord;
@@ -9,10 +6,7 @@ import org.gnu.glib.CustomEvents;
 
 import frysk.gui.monitor.ObservableLinkedList;
 
-/**
- * @author pmuldoon
- *
- */
+
 public class CoreDebugDataModel extends ObservableLinkedList {
 
 	/**

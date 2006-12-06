@@ -1,6 +1,3 @@
-/**
- * 
- */
 package frysk.gui.monitor.datamodels;
 
 import java.util.logging.Level;
@@ -8,10 +5,7 @@ import java.util.logging.LogRecord;
 
 import frysk.gui.monitor.GuiObject;
 
-/**
- * @author pmuldoon
- *
- */
+
 public class CoreDebugLogRecord extends GuiObject {
 	
 	long sequence;

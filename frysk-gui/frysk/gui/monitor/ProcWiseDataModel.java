@@ -61,9 +61,9 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 
 /**
- * @author swagiaal, pmuldoon A data model that groups PID's by executable name.
- *         Also has a selected component that allows the druid to define whether
- *         a process is selected
+ * A data model that groups PID's by executable name.
+ * Also has a selected component that allows the druid to define whether
+ * a process is selected
  */
 public class ProcWiseDataModel
 {

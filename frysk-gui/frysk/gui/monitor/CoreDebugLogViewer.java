@@ -62,8 +62,7 @@ import frysk.gui.monitor.datamodels.DataModelManager;
 
 /**
  * 
- * @author pmuldoon
- *
+ * *
  * A Dialog that displays a list core log messages
  */
 public class CoreDebugLogViewer extends Dialog {
