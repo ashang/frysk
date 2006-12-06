@@ -161,8 +161,6 @@ public class TestProcStopped
     }
     public void deletedFrom (Object observable)
     {
-      // TODO Auto-generated method stub
-      
     }
     public void allExistingTasksCompleted ()
     {

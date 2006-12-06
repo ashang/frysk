@@ -381,13 +381,11 @@ public class TestProcTasksObserver extends TestLib {
 		
 	public void addFailed(Object observable, Throwable w)
 	{
-	    // TODO Auto-generated method stub
-	    throw new RuntimeException("You forgot to implement this method :D ");
+	   throw new RuntimeException("You forgot to implement this method :D ");
 	}
 		
 	public void deletedFrom(Object observable)
 	{
-	    // TODO Auto-generated method stub
 	    throw new RuntimeException("You forgot to implement this method :D ");
 	}
     }

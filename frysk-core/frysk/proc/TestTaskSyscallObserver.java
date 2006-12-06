@@ -610,8 +610,6 @@ public class TestTaskSyscallObserver
 
         public void procNotFound (ProcId procId, Exception e)
         {
-          // TODO Auto-generated method stub
-          
         }});
       Manager.eventLoop.run();
 

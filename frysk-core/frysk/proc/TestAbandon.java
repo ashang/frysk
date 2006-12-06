@@ -56,20 +56,14 @@ public class TestAbandon
 
     public void addFailed (Object observable, Throwable w)
     {
-      // TODO Auto-generated method stub
-
     }
 
     public void addedTo (Object observable)
     {
-      // TODO Auto-generated method stub
-
     }
 
     public void deletedFrom (Object observable)
     {
-      // TODO Auto-generated method stub
-
     }
   }
 

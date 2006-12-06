@@ -91,8 +91,6 @@ public class TestProcForceDetach
 
     public void deletedFrom (Object observable)
     {
-      // TODO Auto-generated method stub
-      
     }
 
     public void allExistingTasksCompleted ()

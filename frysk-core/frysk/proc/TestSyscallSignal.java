@@ -91,8 +91,6 @@ public class TestSyscallSignal
 
       public void procNotFound (ProcId procId, Exception e)
       {
-        // TODO Auto-generated method stub
-        
       }});
     Manager.eventLoop.run();
 

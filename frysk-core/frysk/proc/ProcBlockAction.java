@@ -105,8 +105,6 @@ abstract public class ProcBlockAction
 
     public void deletedFrom (Object observable)
     {
-      // TODO Auto-generated method stub
-
     }
 
     public Action updateTerminated (Task task, boolean signal, int value)
@@ -214,8 +212,6 @@ abstract public class ProcBlockAction
 
   public void taskAddFailed (Object observable, Throwable w)
   {
-    // TODO Auto-generated method stub
-
   }
 
   public LinkedList getTasks ()

@@ -11,12 +11,10 @@ public class DummyProc extends Proc {
 	}
 	
 	protected String sendrecCommand() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	protected String sendrecExe() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -29,17 +27,13 @@ public class DummyProc extends Proc {
         }
 
 	protected String[] sendrecCmdLine() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	void sendRefresh() {
-		// TODO Auto-generated method stub
-
 	}
 
 	Auxv[] sendrecAuxv() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
