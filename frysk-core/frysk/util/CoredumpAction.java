@@ -89,10 +89,6 @@ import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 
 /**
- * @author pmuldoon
- *
- * XXX: WORK IN PROGRESS. NOT YET COMPLETED
- * 
  * FCore - Utility class to take a pid. Derive from that a Proc that is modelled in the core, stop all the tasks,
  * get the main tasks's maps, and each threads register/status. Construct an elf core-file. Caveats associated
  * at this time:
@@ -116,10 +112,7 @@ import frysk.sys.proc.Status;
  * elf_fpregset_t (one per thread, regardless of whether fp used)
  * 
  */
-/**
- * @author pmuldoon
- *
- */
+
 public class CoredumpAction
 extends ProcBlockAction
 {
@@ -541,7 +534,7 @@ extends ProcBlockAction
 
         secSize += entrySize;
       }
-    //XXX: in the operation "new byte[count]", count must be "int". 
+    // In the operation "new byte[count]", count must be "int". 
     // If secSize is bigger than the max of "int' type, how can we do?
     byte[] noteSecBuffer = new byte[(int)secSize];
     long startAddress = 0;
