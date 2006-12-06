@@ -1,5 +1,7 @@
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-for-at-author): Enable.
+
 	* Makefile.rules (checked-for-null-equals): Enforce.
 	(checked-for-at-author): Enforce, but disable.  Check this user.
 	(checked-for-copyright-notice): Fix fail check.
