@@ -1,3 +1,11 @@
+2006-12-06  Nurdin Premji  <npremji@redhat.com>
+
+	* IntegerType.java: Added (C).
+	* ShortType.java: Ditto.
+	* TypeTest.java: Ditto.
+	* ClassType.java: Ditto.
+	* LongType.java: Ditto.
+
 2006-12-01  Stan Cox  <scox@redhat.com>
 
 	* LongType.java: New.
