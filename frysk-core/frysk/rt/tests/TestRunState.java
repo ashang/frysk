@@ -100,7 +100,10 @@ public class TestRunState extends TestLib
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
+    runState = new RunState();
     lock = new LockObserver();
+    runState.addObserver(lock);
+    testState = INSTRUCTION_STEP;
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL, new String[] {
@@ -109,8 +112,6 @@ public class TestRunState extends TestLib
         "" + Sig.POLL_
     });
     
-    testState = INSTRUCTION_STEP;
-    
     Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
     
@@ -118,10 +119,6 @@ public class TestRunState extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    //System.out.println(initial);
-    
-    runState = new RunState();
-    runState.addObserver(lock);
     runState.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
@@ -206,6 +203,7 @@ public class TestRunState extends TestLib
   
   public synchronized void stepAssertions (Task task)
   { 
+   //System.out.println("Test.stepAssertions");
     myTask = task;
     DwflLine line = null;
     try
@@ -214,7 +212,7 @@ public class TestRunState extends TestLib
       }
     catch (TaskException te)
       {
-       //System.out.println("task execption");
+       System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
@@ -227,7 +225,8 @@ public class TestRunState extends TestLib
         }
       catch (TaskException te)
         {
-          
+          System.out.println("task execption");
+          return;
         }
       if (line != null)
         {
@@ -235,7 +234,23 @@ public class TestRunState extends TestLib
           this.lineMap.put(task, new Integer(line.getLineNum()));
         }
       else
-        return;
+        {
+         //System.out.println("Can't get DwflLine for " + task);
+          /* For whatever reason we can't get a DwflLine - bail out, re-step
+           * and try again. */
+          LinkedList l = new LinkedList();
+          l.add(task);
+          if (testState == INSTRUCTION_STEP)
+            {
+              runState.stepInstruction(l);
+            }
+          else if (testState == STEP_IN)
+            {
+              runState.setUpStep(l);
+            }
+          
+          return;
+        }
       }
 
     if (line == null)
@@ -405,6 +420,7 @@ public class TestRunState extends TestLib
             runState.setUpStep(tasks);
           }
       }
+    
     if (count == 50)
       {
         Manager.eventLoop.requestStop();
@@ -433,11 +449,12 @@ public class TestRunState extends TestLib
         {
           if (initial == true)
             {
+             //System.out.println("First run - Lock.update");
               initial = false;
               setUpTest();
               return;
             }
-          
+         //System.out.println("Lock.update");
           stepAssertions(myProc.getMainTask());
         }
       });
