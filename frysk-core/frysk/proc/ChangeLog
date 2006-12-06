@@ -1,5 +1,10 @@
 2006-12-06  Mark Wielaard  <mark@klomp.org>
 
+	* frysk-core/frysk/proc/TestTaskObserverInstructionAndCode.java:
+	New test (disabled) for bug #3500.
+
+2006-12-06  Mark Wielaard  <mark@klomp.org>
+
 	Fixes bug #3571
 	* frysk-core/frysk/proc/TestTaskObserverInstruction.java: Don't
 	explicitly unblock before deletion of observer.
