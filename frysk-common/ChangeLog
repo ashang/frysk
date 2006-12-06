@@ -1,5 +1,7 @@
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-for-at-author): Add missing ";".
+	
 	* Makefile.rules (checked-for-at-author): Enforce during check.
 	
 	* Makefile.rules (checked-for-at-author): Enable.

@@ -666,7 +666,7 @@ checked-for-at-author:
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
-	    done | xargs grep -H -n -e '@author' \
+	    done | xargs grep -H -n -e '@author' ; \
 	then \
 		echo "FAIL: code does not contain @author" ; \
 		exit 0 ; \
