@@ -588,7 +588,7 @@ clean-ecj-dir:
 # change.
 
 check-local: checked-import-junit-framework
-CLEANFILES += checked-import-junit-framework
+.PHONY: checked-import-junit-framework
 checked-import-junit-framework:  $(GEN_DIRNAME).jar
 	if for dir in $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir ./$$dir \
@@ -603,12 +603,11 @@ checked-import-junit-framework:  $(GEN_DIRNAME).jar
 		echo 1>&2 "" ; \
 		exit 1 ; \
 	fi
-	touch $@
 
 # Check that everything is calling fail() with a parameter.
 
 check-local: checked-parameterless-junit-fail
-CLEANFILES += checked-parameterless-junit-fail
+.PHONY: checked-parameterless-junit-fail
 checked-parameterless-junit-fail: $(GEN_DIRNAME).jar
 	if for dir in $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir ./$$dir \
@@ -622,12 +621,68 @@ checked-parameterless-junit-fail: $(GEN_DIRNAME).jar
 		echo 1>&2 "" ; \
 		exit 1 ; \
 	fi
-	touch $@
 
 # Check that runtest exists for use by dejagnu
 
 check-local: checked-for-dejagnu
-CLEANFILES += checked-for-dejagnu
+.PHONY: checked-for-dejagnu
 checked-for-dejagnu:
 	$(RUNTEST) --help > /dev/null 2>&1
-	touch $@
+
+# Check for NULL== or null== in code base
+
+check-local: checked-for-null-equals
+.PHONY: checked-for-null-equals
+checked-for-null-equals:
+	@if for dir in $(GEN_DIRS) ; do \
+		find $(srcdir)/$$dir \
+			-type f -name '[a-zA-Z]*.java' -print \
+			-o -type f -name '[a-zA-Z]*.cxx' -print \
+			-o -name inua -prune \
+			-o -name junit -prune ; \
+	    done | xargs egrep -H -n \
+		-e '\(NULL *==' \
+		-e '\(null *==' ; \
+	then \
+		echo 1>&2 "" ; \
+		echo 1>&2 "***** Code uses null==" ; \
+		echo 1>&2 "" ; \
+	fi
+
+# Check for lingering ECLIPSE code stubs and the like
+
+check-local: checked-for-eclipse-residue
+.PHONY: checked-for-eclipse-residue
+checked-for-eclipse-residue:
+	@if for dir in $(GEN_DIRS) ; do \
+		find $(srcdir)/$$dir \
+			-type f -name '[a-zA-Z]*.java' -print \
+			-o -name inua -prune \
+			-o -name junit -prune ; \
+	    done | xargs grep -H -n \
+		-e '@author' \
+		-e 'TODO Auto-generated method stub' ; \
+	then \
+		echo 1>&2 "" ; \
+		echo 1>&2 "***** Code contains ECLIPSE residue" ; \
+		echo 1>&2 "" ; \
+	fi
+
+# Check that the file has a valid copyright notice.
+
+check-local: checked-for-copyright-notice
+.PHONY: checked-for-copyright-notice
+checked-for-copyright-notice:
+	@if for dir in $(GEN_DIRS) ; do \
+		find $(srcdir)/$$dir \
+			-type f -name '[a-zA-Z]*.java' -print \
+			-o -type f -name '[a-zA-Z]*.cxx' -print \
+			-o -name inua -prune \
+			-o -name junit -prune ; \
+	    done | xargs grep -H -n -L \
+		-e 'Copyright' ; \
+	then \
+		echo 1>&2 "" ; \
+		echo 1>&2 "***** Missing Copyright" ; \
+		echo 1>&2 "" ; \
+	fi
