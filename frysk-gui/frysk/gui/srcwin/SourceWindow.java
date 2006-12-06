@@ -39,6 +39,7 @@
 
 
 package frysk.gui.srcwin;
+
 import java.util.Observer;
 import java.util.Observable;
 import java.io.FileNotFoundException;
@@ -305,7 +306,7 @@ public class SourceWindow
     StackFrame[] frames = generateProcStackTrace(null, null);
 
     this.listener = new SourceWindowListener(this);
-    this.watchView = new VariableWatchView(this);
+    this.watchView = new VariableWatchView();
     this.tips = new ToolTips();
     
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
@@ -351,21 +352,6 @@ public class SourceWindow
       this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
     else
       this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
-  }
-
-  /**
-   * Adds the selected variable to the variable trace window
-   * 
-   * @param var The variable to trace
-   */
-  public void addVariableTrace (Variable var)
-  {
-    this.watchView.addTrace(var);
-  }
-
-  public void removeVariableTrace (Variable var)
-  {
-    this.watchView.removeTrace(var);
   }
 
   /**
@@ -422,6 +408,7 @@ public class SourceWindow
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
+        this.watchView.setView((SourceView) this.view); 
         stackView.expandAll();
         stackView.showAll();
         this.view.showAll();
@@ -507,6 +494,24 @@ public class SourceWindow
 
     this.stackView.resetView(frames);
     this.stackView.expandAll();
+    
+    /* Update the variable watch as well */
+    this.watchView.refreshList();
+  }
+  
+  /**
+   * Adds the selected variable to the variable trace window
+   * 
+   * @param var The variable to trace
+   */
+  public void addVariableTrace (Variable var)
+  {
+    this.watchView.addTrace(var);
+  }
+
+  public void removeVariableTrace (Variable var)
+  {
+    this.watchView.removeTrace(var);
   }
   
   public void updateThreads ()

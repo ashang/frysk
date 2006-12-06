@@ -1,3 +1,21 @@
+2006-12-06  Mike Cvet  <mcvet@redhat.com>
+
+	* VariableWatchView.java (variables): Added.
+	(view): Refactored from SourceWindow parent.
+	(VariableWatchView): Removed SourceWindow parameter.
+	(setView): Added.
+	(addTrace): Append new Variable to variables Vector.
+	(removeTrace): Remove Variable to variables Vector.
+	(refreshList): Added. Clears the model and re-parses the variables'
+	values from SymTab. Addresses #1717.
+	* SourceView.java (removeVar): Use Variable.getText() rather than 
+	toString().
+	(refreshVars): Calls buffer to refresh variable list.
+	* SourceBuffer.java (refreshVars): Iterates through the incoming Vector
+	and re-parses values for contained Variables.
+	* SourceWindow.java (populateStackBrowser): Set VariableWatchView's 
+	SourceView, and remind it to update values after a Proc state transition.
+
 2006-12-06  Rick Moseley  <rmoseley@redhat.com>
 
 	* testfiles/test_looper.xml: New test file to incorporate changes for

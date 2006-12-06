@@ -740,6 +740,34 @@ public class SourceBuffer
     return var;
   }
   
+  public Vector refreshVars (Vector vars)
+  {
+    Vector ret = new Vector();
+    Iterator i = vars.iterator();
+    try
+      {
+        while (i.hasNext())
+          {
+            Variable v = (Variable) i.next();
+            i.remove();
+            Variable vv = SymTab.print(v.getText());
+            
+            /* Variable is out of scope, leave it as-is */
+            if (vv == null)
+              ret.add(v);
+            else
+              ret.add(vv);
+          }
+      }
+    catch (ParseException e)
+      {
+        System.out.println(e.getMessage());
+        return ret;
+      }
+    
+    return ret;
+  }
+  
   /**
    * Searches for a variable at the location specified by tag and line and returns a
    * VariableLocation if a variable was found there. Returns null otherwise

@@ -79,7 +79,9 @@ public class VariableWatchView
 
   private Vector observers;
   
-  private SourceWindow parent;
+  private Vector variables;
+  
+  private SourceView view;
   
   private VariableWatchListener listener;
   
@@ -87,17 +89,17 @@ public class VariableWatchView
   
   private int treeSize = 0;
 
-  public VariableWatchView (SourceWindow sw)
+  public VariableWatchView ()
   {
     super();
 
-    this.parent = sw;
     this.setName("varWatchView");
     this.getAccessible().setName("varWatchView_variableWatchList");
     this.getAccessible().setDescription(
                                         "A list of all the variables that are being watched");
 
     this.observers = new Vector();
+    this.variables = new Vector();
 
     traceColumns = new DataColumn[] { new DataColumnString(),
                                      new DataColumnString(),
@@ -129,6 +131,11 @@ public class VariableWatchView
     listener = new VariableWatchListener();
     this.addListener(listener);
   }
+  
+  public void setView (SourceView sv)
+  {
+    this.view = sv;
+  }
 
   /**
    * Addes a Variable row to this TreeView.
@@ -143,6 +150,7 @@ public class VariableWatchView
     this.model.setValue(iter, (DataColumnString) this.traceColumns[0], var.getText());
     this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
                        "" + var.toString());
+    this.variables.add(var);
     this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
     this.showAll();
   }
@@ -154,6 +162,7 @@ public class VariableWatchView
    */
   public void removeTrace (Variable var)
   {
+    
     TreeIter iter = this.model.getFirstIter();
 
     while (iter != null)
@@ -163,6 +172,7 @@ public class VariableWatchView
             Variable v = (Variable) model.getValue(iter,
                          (DataColumnObject) traceColumns[2]);
 
+            this.variables.remove(v);
             if (v.getText().equals(var.getText()))
               {
                 this.model.removeRow(iter);
@@ -176,6 +186,40 @@ public class VariableWatchView
           break;
       }
   }
+  
+  /**
+   * Refresh the variables contained by this window. If there are variables
+   * listed, clears the window and passes all contained variables through 
+   * the local SourceBuffer to be run through the parser again to have 
+   * their values refreshed. Then re-builds the window.
+   */
+  public void refreshList ()
+  {
+    TreeIter iter = this.model.getFirstIter();
+    if (iter == null)
+      return;
+    
+    this.model.clear();
+    
+    this.variables = this.view.refreshVars(this.variables);
+    
+    Iterator i = this.variables.iterator();
+    while (i.hasNext())
+      {
+        Variable var = (Variable) i.next();
+        iter = this.model.appendRow();
+        this.treeSize++;
+
+        this.model.setValue(iter, (DataColumnString) this.traceColumns[0],
+                            var.getText());
+        this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
+                            "" + var.toString());
+        this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
+      }
+    
+    this.showAll();
+  }
+  
 
   /**
    * Adds a listener to this list of observers.
@@ -245,7 +289,7 @@ public class VariableWatchView
   }
    
   /**
-   * Finds the selected Variable and tells the View parent
+   * Finds the selected Variable and tells the View view
    * to remove it, which will then update this TreeView.
    */
   private void handleClick()
@@ -254,7 +298,7 @@ public class VariableWatchView
     
     Variable selected = (Variable) model.getValue(model.getIter(paths[0]),
                              (DataColumnObject) traceColumns[2]);
-    ((SourceView)parent.getView()).removeVar(selected);
+    this.view.removeVar(selected);
   }
   
   /**

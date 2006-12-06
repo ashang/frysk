@@ -559,14 +559,19 @@ public class SourceView
     drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
   }
   
-  public void removeVar(Variable var)
+  public void removeVar (Variable var)
   {
-    if (varMap.containsKey(var.toString()))
-      varMap.remove(var.toString());
+    if (varMap.containsKey(var.getText()))
+      varMap.remove(var.getText());
     else
       return;
     
     SourceView.this.parent.removeVariableTrace(var);
+  }
+  
+  public Vector refreshVars (Vector vars)
+  {
+    return this.buf.refreshVars(vars);
   }
 
   /*---------------------------*
@@ -822,7 +827,7 @@ public class SourceView
              * Only show this item in the menu if the variable is not already
              * there
              */
-            if (! varMap.containsKey(var.toString()))
+            if (! varMap.containsKey(var.getText()))
               {
                 MenuItem traceItem = new MenuItem("Add to Variable Watches",
                                                   false);
@@ -832,10 +837,10 @@ public class SourceView
                 {
                   public void menuItemEvent (MenuItemEvent arg0)
                   {
-                    if (varMap.containsKey(var.toString()))
+                    if (varMap.containsKey(var.getText()))
                       return;
                     else
-                      varMap.put(var.toString(), var);
+                      varMap.put(var.getText(), var);
 
                     SourceView.this.parent.addVariableTrace(var);
                   }
@@ -844,7 +849,7 @@ public class SourceView
             /*
              * Only show this item if the variable is indeed in the list
              */
-            if (varMap.containsKey(var.toString()))
+            if (varMap.containsKey(var.getText()))
               {
 
                 MenuItem removeItem = new MenuItem(
