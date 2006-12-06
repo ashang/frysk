@@ -890,7 +890,7 @@ abstract public class Task
 
   public ByteBuffer getMemory ()
   {
-    if (null == memory)
+    if (memory == null )
       fillMemory();
     return this.memory;
   }
@@ -1010,7 +1010,7 @@ abstract public class Task
 
   public ByteBuffer[] getRegisterBank ()
   {
-    if (null == registerBank)
+    if (registerBank == null)
       fillRegisterBank();
     return registerBank;
   }

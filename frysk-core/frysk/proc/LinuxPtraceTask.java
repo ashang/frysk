@@ -81,7 +81,7 @@ public class LinuxPtraceTask
   
   public void fillMemory ()
   {
-    if (null == memory)
+    if (memory == null)
       {
         try
           {
@@ -109,7 +109,7 @@ public class LinuxPtraceTask
 
   public void fillRegisterBank () 
   {
-    if (null == registerBank)
+    if (registerBank == null)
       {
         try
           {
