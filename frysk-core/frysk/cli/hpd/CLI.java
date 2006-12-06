@@ -332,8 +332,6 @@ public class CLI
 
                 public void procNotFound (ProcId procId, Exception e)
                 {
-                  // TODO Auto-generated method stub
-                  
                 }});
               Manager.eventLoop.run();
               //Proc proc = Manager.host.getProc(new ProcId(pid));
