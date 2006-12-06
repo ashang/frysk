@@ -1,3 +1,11 @@
+2006-12-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java: Removed auto-generated @author tag.
+	* SessionManagerGui.java: Ditto.	
+	* sessions/SessionManager.java: Ditto.
+	* sessions/Session.java: Ditto.
+	* sessions/DebugProcess.java: Ditto.
+
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
 	* test/GuiTestLib.java (TestProc.getProc): Changed to use simplified 

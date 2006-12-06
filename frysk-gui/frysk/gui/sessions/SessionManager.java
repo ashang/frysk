@@ -48,11 +48,7 @@ import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
-/**
- * 
- * @author pmuldoon
- *
- */
+
 public class SessionManager {
 
 	public static SessionManager theManager = new SessionManager();

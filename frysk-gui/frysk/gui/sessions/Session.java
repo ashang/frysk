@@ -45,8 +45,8 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * @author swagiaal, pmuldoon A Session object is used to hold and save user
- *         preferences with respect to a debug session.
+ * A Session object is used to hold and save user
+ * preferences with respect to a debug session.
  */
 public class Session extends GuiObject {
 

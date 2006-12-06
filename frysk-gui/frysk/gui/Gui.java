@@ -105,10 +105,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 
-/**
- * @author pmuldoon
- *
- */
+
 public class Gui implements LifeCycleListener, Saveable {
 
 	private static Logger errorLogFile = null;

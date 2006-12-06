@@ -69,10 +69,8 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Proc;
 
 /**
- * @author pmuldoon
  * 
  * SessionManagerGui - Manage all entry workflows into the UI
- * 
  * 
  */
 public class SessionManagerGui extends org.gnu.gtk.Dialog implements

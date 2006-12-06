@@ -66,9 +66,9 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
- * @author pmuldoon, swagiaal, A container that refers to an executable there
- *         could be zero or many instances of these executable. This keeps track
- *         of those too.
+ * A container that refers to an executable there
+ * could be zero or many instances of these executable. This keeps track
+ *  of those too.
  */
 
 public class DebugProcess
