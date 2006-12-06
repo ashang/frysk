@@ -1,5 +1,10 @@
 2006-12-06  Nurdin Premji  <npremji@redhat.com>
 
+	* ProcBlockAction.java: Added (C).
+	* DummyHost.java: Ditto.
+	* DummyTask.java: Ditto.
+	* DummyProc.java: Ditto.
+
 	* LinuxPtraceTask.java (fillRegisterBank): change null== to ==null
 	(fillMemory): 	Ditto.
 	* Task.java (getRegisterBank): Ditto.
