@@ -124,7 +124,23 @@ public class TestFStack
                                   + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #235\\n"
                                   + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                  + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
+                                  + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
+
+                              "Task #\\d+\\n"
+                                  + "#0 0x[\\da-f]+ in syscall \\(\\)\\n"
+                                  + "#1 0x[\\da-f]+ in "
+                                  + Build.SRCDIR
+                                  + "/frysk/pkglibexecdir/funit-child.c tkill \\(\\): line #47\\n"
+                                  + "#2 0x[\\da-f]+ in "
+                                  + Build.SRCDIR
+                                  + "/frysk/pkglibexecdir/funit-child.c notify_manager \\(\\): line #126\\n"
+                                  + "#3 0x[\\da-f]+ in "
+                                  + Build.SRCDIR
+                                  + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #235\\n"
+                                  + "#4 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                                  + "#5 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
+
+  };
 
   String[] mainClone = {
                         "Task #\\d+\\n"

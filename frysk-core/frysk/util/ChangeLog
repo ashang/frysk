@@ -1,5 +1,7 @@
 2006-12-06  Nurdin Premji  <npremji@redhat.com>
 
+	* TestFStack.java: Another regex added.
+
 	* TestFStack.java: Changed to use Build.SRC rather than Build.ABSSRCDIR
 
 2006-12-05  Nurdin Premji  <npremji@redhat.com>
