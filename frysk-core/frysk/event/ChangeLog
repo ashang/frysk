@@ -1,3 +1,8 @@
+2006-12-06  Nurdin Premji  <npremji@redhat.com>
+
+	* TestSigChild.java: Ditto.
+	* RequestStopEvent.java: Added (C).	
+
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSigChild.java: Use frysk.junit.TestCase.
