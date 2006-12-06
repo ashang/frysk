@@ -111,7 +111,8 @@ jint
 frysk::sys::Pty::writeString (jint fd, jstring str)
 {
   int rc;
-  if (NULL == str) return 0;
+  if (str == NULL)
+    return 0;
 
   int len = JvGetStringUTFLength (str);
   char * obfr = (char *) alloca (len + 1);

@@ -1,3 +1,7 @@
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Pty.cxx (writeString): Use ==NULL.
+
 2006-11-16  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Wait.cxx (log): New.
