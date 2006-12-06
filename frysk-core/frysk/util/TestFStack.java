@@ -56,10 +56,10 @@ public class TestFStack
                              + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                              + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
                              + "#2 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #249\\n"
                              + "#3 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c main \\(\\): line #505\\n"
                              + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                              + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -67,10 +67,10 @@ public class TestFStack
                          "Task #\\d+\\n"
                              + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
                              + "#1 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #249\\n"
                              + "#2 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c main \\(\\): line #505\\n"
                              + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                              + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -79,16 +79,16 @@ public class TestFStack
                              + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                              + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
                              + "#2 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c tkill \\(\\): line #47\\n"
                              + "#3 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c notify_manager \\(\\): line #126\\n"
                              + "#4 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #235\\n"
                              + "#5 0x[\\da-f]+ in "
-                             + Build.ABS_SRCDIR
+                             + Build.SRCDIR
                              + "/frysk/pkglibexecdir/funit-child.c main \\(\\): line #505\\n"
                              + "#6 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                              + "#7 0x[\\da-f]+ in _start \\(\\)\\n" };
@@ -98,7 +98,7 @@ public class TestFStack
                                   + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                                   + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
                                   + "#2 0x[\\da-f]+ in "
-                                  + Build.ABS_SRCDIR
+                                  + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #249\\n"
                                   + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                   + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
@@ -106,7 +106,7 @@ public class TestFStack
                               "Task #\\d+\\n"
                                   + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
                                   + "#1 0x[\\da-f]+ in "
-                                  + Build.ABS_SRCDIR
+                                  + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #249\\n"
                                   + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                   + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
@@ -115,13 +115,13 @@ public class TestFStack
                                   + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                                   + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
                                   + "#2 0x[\\da-f]+ in "
-                                  + Build.ABS_SRCDIR
+                                  + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c tkill \\(\\): line #47\\n"
                                   + "#3 0x[\\da-f]+ in "
-                                  + Build.ABS_SRCDIR
+                                  + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c notify_manager \\(\\): line #126\\n"
                                   + "#4 0x[\\da-f]+ in "
-                                  + Build.ABS_SRCDIR
+                                  + Build.SRCDIR
                                   + "/frysk/pkglibexecdir/funit-child.c server \\(\\): line #235\\n"
                                   + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                   + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n" };
@@ -132,7 +132,7 @@ public class TestFStack
                             + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
                             + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
                             + "#3 0x[\\da-f]+ in "
-                            + Build.ABS_SRCDIR
+                            + Build.SRCDIR
                             + "/frysk/pkglibexecdir/funit-child.c main \\(\\): line #177\\n"
                             + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                             + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -141,7 +141,7 @@ public class TestFStack
                             + "#0 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
                             + "#1 0x[\\da-f]+ in sleep \\(\\)\\n"
                             + "#2 0x[\\da-f]+ in "
-                            + Build.ABS_SRCDIR
+                            + Build.SRCDIR
                             + "/frysk/pkglibexecdir/funit-threads.c main \\(\\): line #177\\n"
                             + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                             + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -150,7 +150,7 @@ public class TestFStack
                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                             + "#1 0x[\\da-f]+ in kill \\(\\)\\n"
                             + "#2 0x[\\da-f]+ in "
-                            + Build.ABS_SRCDIR
+                            + Build.SRCDIR
                             + "/frysk/pkglibexecdir/funit-threads.c main \\(\\): line #175\\n"
                             + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                             + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -165,7 +165,7 @@ public class TestFStack
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c op_clone \\(\\): line #105\\n"
                                  + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                  + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
@@ -173,7 +173,7 @@ public class TestFStack
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in memset \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c op_clone \\(\\): line #105\\n"
                                  + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                  + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
@@ -181,7 +181,7 @@ public class TestFStack
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c main \\(\\): line #177\\n"
                                  + "#2 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                                  + "#3 0x[\\da-f]+ in _start \\(\\)\\n",
@@ -190,7 +190,7 @@ public class TestFStack
                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
                                  + "#2 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c op_clone \\(\\): line #100\\n"
                                  + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                  + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
@@ -198,12 +198,12 @@ public class TestFStack
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in start_thread \\(\\)\\n"
                                  + "#1 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c (__)?clone \\(\\)\\n",
 
                              "Task #\\d+\\n"
                                  + "#0 0x[\\da-f]+ in "
-                                 + Build.ABS_SRCDIR
+                                 + Build.SRCDIR
                                  + "/frysk/pkglibexecdir/funit-threads.c (__)?clone \\(\\)\\n",
 
   };
