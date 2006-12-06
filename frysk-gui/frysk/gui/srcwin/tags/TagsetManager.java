@@ -15,8 +15,6 @@ import frysk.gui.monitor.UniqueHashMap;
  * The TagsetManager keeps track of the tagsets available for frysk,
  * as well as maintaining the association between tagsets and what
  * executable command they are applicable to.
- * @author ajocksch, pmuldoon
- *  *
  */
 public class TagsetManager {
 	
