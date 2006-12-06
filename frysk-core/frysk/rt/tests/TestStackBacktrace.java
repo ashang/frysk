@@ -413,28 +413,22 @@ public class TestStackBacktrace
 
     public void taskAdded (Task task)
     {
-      // TODO Auto-generated method stub
-
     }
 
     public void taskRemoved (Task task)
     {
-      // TODO Auto-generated method stub
     }
 
     public void addFailed (Object observable, Throwable w)
     {
-      // TODO Auto-generated method stub
     }
 
     public void addedTo (Object observable)
     {
-      // TODO Auto-generated method stub
     }
 
     public void deletedFrom (Object observable)
     {
-      // TODO Auto-generated method stub
       Manager.eventLoop.requestStop();
     }
 

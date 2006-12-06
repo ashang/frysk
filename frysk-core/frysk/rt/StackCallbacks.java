@@ -114,7 +114,6 @@ public class StackCallbacks
     logger.log(Level.FINE, "Libunwind: writing value 0x"
                                 + Long.toHexString(value) + " to register "
                                 + registerName + "\n");
-    // TODO Auto-generated method stub
     throw new RuntimeException("Not implemented in core yet");
   }
 
@@ -127,7 +126,6 @@ public class StackCallbacks
                                 + "\n");
 
     throw new RuntimeException("Not implemented in core yet");
-    // TODO Auto-generated method stub
     // return 0;
   }
 
@@ -139,14 +137,11 @@ public class StackCallbacks
     logger.log(Level.FINE, "Libunwind: writing value " + value
                                 + " to register " + registerName + "\n");
     throw new RuntimeException("Not implemented in core yet");
-    // TODO Auto-generated method stub
-
   }
 
   public int resume (long as, long cp)
   {
     throw new RuntimeException("Not implemented in core yet");
-    // TODO Auto-generated method stub
     // return 0;
   }
 
