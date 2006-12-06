@@ -1,3 +1,11 @@
+2006-12-06  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #3571
+	* frysk-core/frysk/proc/TestTaskObserverInstruction.java: Don't
+	explicitly unblock before deletion of observer.
+	* LinuxPtraceTaskState.java (BlockedSignal.handleDeleteObservation):
+	Explicitly unblock observer.
+
 2006-12-05  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcStopped.java (MyTester.allExistingTasksCompleted): Added, required by ProcBlockAction.

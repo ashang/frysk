@@ -88,8 +88,6 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("added both 2", instr2.added);
     assertEquals("hit both 2", 2, instr2.hit);
 
-    // XXX - unblock needed?
-    task.requestUnblock(instr1);
     task.requestDeleteInstructionObserver(instr1);
     task.requestUnblock(instr2);
     assertRunUntilStop("delete and unblock");

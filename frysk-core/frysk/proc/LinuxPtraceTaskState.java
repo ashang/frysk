@@ -1146,7 +1146,7 @@ abstract class LinuxPtraceTaskState
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
 	    observation.delete();
-	    return this;
+	    return handleUnblock(task, observation.getTaskObserver());
 	}
       
 	TaskState handleDetach (Task task, boolean shouldRemoveObservers)
