@@ -149,7 +149,7 @@ public class TestFStack
                             + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
                             + "#3 0x[\\da-f]+ in "
                             + Build.SRCDIR
-                            + "/frysk/pkglibexecdir/funit-child.c main \\(\\): line #177\\n"
+                            + "/frysk/pkglibexecdir/funit-threads.c main \\(\\): line #177\\n"
                             + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
                             + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
 
