@@ -1,3 +1,10 @@
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* test/TestWindowFactorization.java: Add copyright.
+	* DebugHistory.java: Ditto.
+	* DummyDebugResults.java: Ditto.
+	* DummySourceWindow.java: Ditto.
+
 2006-12-06  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java: Removed @authors tag.

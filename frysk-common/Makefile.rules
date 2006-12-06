@@ -709,7 +709,7 @@ checked-for-copyright-notice:
 	if test -s $@.tmp ; then \
 		rm -f $@.tmp ; \
 		echo "FAIL: code has Copyright notice" ; \
-		exit 0 ; \
+		exit 1 ; \
 	fi ; \
 	rm -f $@.tmp ; \
 	echo "PASS: code has Copyright notice"

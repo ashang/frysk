@@ -1,3 +1,9 @@
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* tags/Tag.java: Add copyright.
+	* tags/Tagset.java: Ditto.
+	* tags/TagsetManager.java: Ditto.
+
 2006-12-06  Mike Cvet  <mcvet@redhat.com>
 
 	* InlineSourceView.java: Removed @author tag.
