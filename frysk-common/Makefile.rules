@@ -644,6 +644,7 @@ checked-for-null-equals:
 		find $(srcdir)/$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -type f -name '[a-zA-Z]*.cxx' -print \
+			-o -type f -name '[a-zA-Z]*.c' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
 	    done | xargs egrep -H -n \
@@ -651,13 +652,13 @@ checked-for-null-equals:
 		-e '\(null *==' ; \
 	then \
 		echo "FAIL: Code does not use NULL==" ; \
-	else \
-		echo "PASS: code does not use NULL==" ; \
-	fi
+		exit 1 ; \
+	fi ; \
+	echo "PASS: code does not use NULL=="
 
 # Check for lingering ECLIPSE code stubs and the like
 
-check-local: checked-for-eclipse-residue
+check-local: # checked-for-at-author
 .PHONY: checked-for-at-author
 checked-for-at-author:
 	@if for dir in $(GEN_DIRS) ; do \
@@ -665,13 +666,12 @@ checked-for-at-author:
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
-	    done | xargs grep -H -n \
-		-e '@author' \
+	    done | xargs grep -H -n -e '@author' \
 	then \
 		echo "FAIL: code does not contain @author" ; \
-	else \
-		echo "PASS: code does not contain @author" ; \
-	fi
+		exit 1 ; \
+	fi ; \
+	echo "PASS: code does not contain @author"
 
 # Check for lingering ECLIPSE code stubs and the like
 
@@ -687,25 +687,29 @@ checked-for-eclipse-residue:
 		-e 'TODO Auto-generated method stub' ; \
 	then \
 		echo "FAIL: code does not contain ECLIPSE residue" ; \
-	else \
-		echo "PASS: code does not contain ECLIPSE residue" ; \
-	fi
+		exit 0 ; \
+	fi ; \
+	echo "PASS: code does not contain ECLIPSE residue"
 
 # Check that the file has a valid copyright notice.
 
 check-local: checked-for-copyright-notice
 .PHONY: checked-for-copyright-notice
 checked-for-copyright-notice:
-	@if for dir in Makefile.am configure.ac $(GEN_DIRS) ; do \
+	@rm -f $@.tmp ; \
+	for dir in Makefile.am configure.ac $(GEN_DIRS) ; do \
 		find $(srcdir)/$$dir \
 			-type f -name '[a-zA-Z]*.java' -print \
 			-o -type f -name '[a-zA-Z]*.cxx' -print \
 			-o -name inua -prune \
 			-o -name junit -prune ; \
-	    done | xargs grep -H -n -L \
-		-e 'Copyright' ; \
-	then \
-		echo "PASS: code has Copyright notice" ; \
-	else \
+	done | xargs grep -H -n -L -e 'Copyright' \
+	| sed -e 's,$$,: 1: Missing copyright,' \
+	| tee $@.tmp ; \
+	if test -s $@.tmp ; then \
+		rm -f $@.tmp ; \
 		echo "FAIL: code has Copyright notice" ; \
-	fi
+		exit 0 ; \
+	fi ; \
+	rm -f $@.tmp ; \
+	echo "PASS: code has Copyright notice"
