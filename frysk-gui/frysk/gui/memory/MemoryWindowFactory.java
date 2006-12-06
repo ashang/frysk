@@ -57,8 +57,6 @@ import frysk.rt.RunState;
  * same process. Uses a ProcBlockCounter to co-ordinate the un-blocking of the
  * process between the Register and SourceWindows if the other two are also 
  * running on that process. A singleton class dynamically creating MemoryWindows.
- *  
- * @author mcvet
  */
 public class MemoryWindowFactory
 {

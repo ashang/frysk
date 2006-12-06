@@ -61,8 +61,6 @@ import frysk.rt.StackFrame;
  * but also acts as an adapter to make the SourceWindow using it think that the 
  * function being displayed is actually a whole file, and that nothing exists beyond it.
  * It also overrides some parent methods to take into acccount ellipsis
- * @author ajocksch
- *
  */
 public class InlineBuffer extends SourceBuffer {
 

@@ -67,8 +67,6 @@ import frysk.rt.StackFrame;
  * appear as a child widget within a SourceViewWidget and should not be created on their
  * own. Some information such as executable information and breakpoints is deliberately
  * omitted since this information may vary due to compiler optimizations.
- * @author ajocksch
- *
  */
 public class InlineSourceView extends SourceView{
 	

@@ -96,8 +96,6 @@ import frysk.rt.StackFrame;
  * TextView. This widget uses a SourceBuffer instead of a TextBuffer. A
  * SourceBuffer allows some extras that are needed by the source window such as
  * break- point management.
- * 
- * @author ifoox, ajocksch
  */
 public class SourceView
     extends TextView

@@ -86,9 +86,6 @@ import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
 import lib.opcodes.Instruction;
 
-/**
- * @author mcvet, ajocksch
- */
 public class MemoryWindow
     extends Window
     implements Saveable

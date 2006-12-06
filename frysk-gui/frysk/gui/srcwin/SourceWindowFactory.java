@@ -61,8 +61,6 @@ import frysk.rt.RunState;
  * in frysk should be created. It takes care of setting paths to resource files
  * as well as making sure that at most one window is opened per Task. A
  * singleton class dynamically creating SourceWindows.
- * 
- * @author ajocksch
  */
 public class SourceWindowFactory
 {

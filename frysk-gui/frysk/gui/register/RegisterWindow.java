@@ -80,12 +80,8 @@ import frysk.proc.Register;
 import frysk.proc.RegisterView;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
-//import frysk.rt.RunState;
 
-/**
- * 
- * @author ajocksch
- */
+
 public class RegisterWindow
     extends Window
     implements Saveable

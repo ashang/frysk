@@ -79,9 +79,6 @@ import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
 import lib.opcodes.Instruction;
 
-/**
- * @author mcvet
- */
 public class DisassemblyWindow
     extends Window
     implements Saveable

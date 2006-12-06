@@ -1,3 +1,14 @@
+2006-12-06  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java: Removed @authors tag.
+	* memory/MemoryWindowFactory.java: Ditto.
+	* sessions/ProcessPicker.java: Ditto.
+	* disassembler/DisassemblyWindow.java: Ditto.
+	* disassembler/DisassemblyWindowFactory.java: Ditto.
+	* register/RegisterWindowFactory.java: Ditto.
+	* register/RegisterWindow.java: Ditto.
+	* register/RegisterFormatDialog.java: Ditto.
+
 2006-12-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java: Removed auto-generated @author tag.

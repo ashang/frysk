@@ -78,8 +78,6 @@ import frysk.rt.StackFrame;
  * This class is a wrapper around TextBuffer, it allows for extra functionality
  * needed by the SourceViewWidget. It will need to be retrofited to use correct
  * model objects once these are set, instead of SourceCodeLine and so on.
- * 
- * @author ifoox
  */
 public class SourceBuffer
     extends TextBuffer

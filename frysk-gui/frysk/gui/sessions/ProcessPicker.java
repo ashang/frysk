@@ -78,8 +78,6 @@ import org.gnu.gtk.TreeViewColumn;
 /**
  * A dialog allowing the user select and de-select processes of the same name,
  * allowing customization of which processes are brought to the MainWindow.
- * 
- * @author mcvet
  */
 public class ProcessPicker
     extends Dialog

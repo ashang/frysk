@@ -68,8 +68,6 @@ import frysk.gui.monitor.Saveable;
 /**
  * Various options applicable to the RegisterWindow including radix and
  * endianness of values displayed.
- * 
- * @author ajocksch
  */
 public class RegisterFormatDialog
     extends Dialog
