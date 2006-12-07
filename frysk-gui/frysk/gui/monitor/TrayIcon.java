@@ -64,9 +64,6 @@ import frysk.gui.common.IconManager;
  * functionalities such as facilitating popup menus and opening/minimizing windows
  */
 
-/**
- * @author Adam Jocksch
- */
 public class TrayIcon implements Saveable{
 	public static int NO_BUTTON = 0;
 	public static int BUTTON_1 = 1;

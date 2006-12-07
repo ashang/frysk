@@ -46,9 +46,8 @@ import java.util.Vector;
 import org.jdom.Element;
 
 /**
- * DOMSource represents a source code file within the frysk source window dom
- * 
- * @author ajocksch
+ * DOMSource represents a source code file within the frysk source
+ * window dom
  */
 public class DOMSource
 {

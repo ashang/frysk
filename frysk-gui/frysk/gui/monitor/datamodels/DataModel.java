@@ -42,8 +42,6 @@ package frysk.gui.monitor.datamodels;
 import java.util.HashMap;
 
 /**
- * @author swagiaal
- *
  * Base class for sharing code between DataModels.
  */
 public class DataModel {

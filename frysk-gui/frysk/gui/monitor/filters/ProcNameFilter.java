@@ -46,8 +46,8 @@ import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
 
 /**
- * @author swagiaal Filter passes if the name if the given process matches the
- *         stored process name.
+ * Filter passes if the name if the given process matches the stored
+ * process name.
  */
 public class ProcNameFilter
     extends ProcFilter

@@ -45,8 +45,8 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
 /**
- * @author swagiaal Filter passes if the name of the parent process of the given
- *         Task matches the stored process name.
+ * Filter passes if the name of the parent process of the given Task
+ * matches the stored process name.
  */
 public class TaskProcNameFilter
     extends TaskFilter

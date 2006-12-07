@@ -48,9 +48,6 @@ import frysk.gui.memory.MemoryWindowFactory;
 import frysk.proc.MachineType;
 import frysk.proc.Task;
 
-/**
- * @author mcvet
- */
 public class ShowMemWin
     extends TaskAction
 {

@@ -58,12 +58,11 @@ import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 
 /**
- * Model for state transitions in the SourceWindow and HPD classes. Currently
- * possible states include: running, stopped, instruction step, step in,
- * step over, step out. Performs necessary operations for each of these states 
- * including Task management, adding/removing observers, and source work.
- * 
- * @author mcvet
+ * Model for state transitions in the SourceWindow and HPD
+ * classes. Currently possible states include: running, stopped,
+ * instruction step, step in, step over, step out. Performs necessary
+ * operations for each of these states including Task management,
+ * adding/removing observers, and source work.
  */
 public class RunState extends Observable implements TaskObserver.Instruction
 {

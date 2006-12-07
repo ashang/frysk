@@ -162,7 +162,7 @@ public class StacktraceAction
   }
   
   /**
-   * @author mcvet If the user cntl-c interrupts, handle it cleanly
+   * If the user cntl-c interrupts, handle it cleanly
    */
   static class InterruptEvent
       extends SignalEvent

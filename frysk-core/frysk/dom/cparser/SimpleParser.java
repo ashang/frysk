@@ -48,10 +48,6 @@ import frysk.dom.DOMSource;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
 
-/**
- * @author ajocksch
- *
- */
 public class SimpleParser implements StaticParser {
 	private Tokenizer tokenMaker;
 	

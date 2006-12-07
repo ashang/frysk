@@ -751,13 +751,12 @@ public class DisassemblyWindow
   }
   
   /**
-   * Local Observer class used to poke this window from RunState when all the
-   * Tasks belonging to this window's Proc have been blocked. These Tasks could
-   * have ben running, stepping, or neither and were just blocked once to allow
-   * this window to finish building. This observer is synchronized between this
-   * windowand the Register, Source, and Memory windows.
-   * 
-   * @author mcvet
+   * Local Observer class used to poke this window from RunState when
+   * all the Tasks belonging to this window's Proc have been
+   * blocked. These Tasks could have ben running, stepping, or neither
+   * and were just blocked once to allow this window to finish
+   * building. This observer is synchronized between this windowand
+   * the Register, Source, and Memory windows.
    */
   class LockObserver implements Observer
   {

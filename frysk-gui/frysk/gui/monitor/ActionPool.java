@@ -40,15 +40,13 @@ package frysk.gui.monitor;
 
 
 /**
- * @author Sami Wagiaalla
- * Singleton; only one action pool. Flyweight;
- * instanciate Action objects here, then just call execute() from
- * anywhere in the GUI.
+ * Singleton; only one action pool. Flyweight; instanciate Action
+ * objects here, then just call execute() from anywhere in the GUI.
  * ActionPool Provies a place for extendors to add their
  * actions. Provies a place for menus to grab their dynamically
- * extendable contents. Avoids rewriting of code, and copying of objects
- * (Ex, a MenuItem, ToolBar button, maybe even CLI, all call execute on
- * the same Action object)
+ * extendable contents. Avoids rewriting of code, and copying of
+ * objects (Ex, a MenuItem, ToolBar button, maybe even CLI, all call
+ * execute on the same Action object)
  */
 public class ActionPool {
 

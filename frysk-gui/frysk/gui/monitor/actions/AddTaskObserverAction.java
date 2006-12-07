@@ -47,8 +47,8 @@ import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 /**
- * @author swagiaal When executed this action adds the given observer to the
- *         given task.
+ * When executed this action adds the given observer to the given
+ * task.
  */
 public class AddTaskObserverAction
     extends TaskAction

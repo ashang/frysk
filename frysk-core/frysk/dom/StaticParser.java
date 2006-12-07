@@ -44,11 +44,6 @@ package frysk.dom;
 
 import java.io.IOException;
 
-
-/**
- * @author ajocksch
- *
- */
 public interface StaticParser {
 	/**
 	 * Parses the given file for syntax and other static information and stores the

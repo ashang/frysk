@@ -57,10 +57,9 @@ import java.util.Date;
 import org.gnu.glib.CustomEvents;
 
 /**
- * Provides the ability to execute a binary or other program externally to
- * Frysk, allowing the flexibility of user-defined actions following some event.
- * 
- * @author mcvet
+ * Provides the ability to execute a binary or other program
+ * externally to Frysk, allowing the flexibility of user-defined
+ * actions following some event.
  */
 public class RunExternal
     extends TaskAction

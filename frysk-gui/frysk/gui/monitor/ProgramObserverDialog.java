@@ -58,11 +58,7 @@ import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 
 /**
- * 
- * @author swagiaal
- *
- * A Dialog for editing the properties of the frysk program
- * Observer
+ * A Dialog for editing the properties of the frysk program Observer
  */
 public class ProgramObserverDialog extends FryskDialog implements Saveable{
 	

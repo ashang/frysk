@@ -207,9 +207,6 @@ public abstract class Host
     
     /**
      * Interface to be used with requestFindProc.
-     * 
-     * @author npremji
-     *
      */
     public interface FindProc
   {

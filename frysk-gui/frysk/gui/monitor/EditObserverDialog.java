@@ -68,7 +68,7 @@ import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Action;
 
 /**
- * @author swagiaal Dialog that is used to edit an observer.
+ * Dialog that is used to edit an observer.
  */
 public class EditObserverDialog
     extends FryskDialog

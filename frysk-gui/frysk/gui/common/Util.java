@@ -40,10 +40,8 @@
 package frysk.gui.common;
 
 /**
- * @author swagiaal
- *  
- * A class for small utility functions that are common
- * throughout out the code base.
+ * A class for small utility functions that are common throughout out
+ * the code base.
  */
 public class Util
 {

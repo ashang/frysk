@@ -67,10 +67,8 @@ import frysk.gui.common.IconManager;
 import frysk.gui.monitor.Saveable;
 
 /**
- * Various options applicable to the MemoryWindow involving number of bits,
- * endian-ness, and radix.
- * 
- * @author mcvet, ajocksch
+ * Various options applicable to the MemoryWindow involving number of
+ * bits, endian-ness, and radix.
  */
 public class MemoryFormatDialog
     extends Dialog

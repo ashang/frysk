@@ -1,3 +1,18 @@
+2006-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* DOMImage.java: Remove @author.
+	* DOMSource.java: Ditto.
+	* DOMLine.java: Ditto.
+	* DOMFunction.java: Ditto.
+	* cparser/CTagsParser.java: Ditto.
+	* cparser/SimpleParser.java: Ditto.
+	* cparser/CDTParser.java: Ditto.
+	* DOMFrysk.java: Ditto.
+	* DOMInlineInstance.java: Ditto.
+	* DOMTagTypes.java: Ditto.
+	* StaticParser.java: Ditto.
+	* DOMTag.java: Ditto.
+
 2006-12-06  Nurdin Premji  <npremji@redhat.com>
 
 	* DOMFactory.java: Added (C).

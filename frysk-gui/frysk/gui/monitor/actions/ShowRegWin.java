@@ -46,9 +46,6 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.proc.Task;
 
-/**
- * @author mcvet
- */
 public class ShowRegWin
     extends TaskAction
 {

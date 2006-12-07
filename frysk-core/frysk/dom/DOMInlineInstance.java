@@ -42,10 +42,10 @@ package frysk.dom;
 import org.jdom.Element;
 
 /**
- * DOMInlineInstance represents the instance of a piece of inlined code. It contains the 
- * information specific to this instance as well as a reference to the declaration to speed up
- * parsing time and for reference.
- * @author ajocksch
+ * DOMInlineInstance represents the instance of a piece of inlined
+ * code. It contains the information specific to this instance as well
+ * as a reference to the declaration to speed up parsing time and for
+ * reference.
  */
 public class DOMInlineInstance {
 	private int start;

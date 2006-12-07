@@ -1,5 +1,12 @@
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* register/RegisterWindow.java: Remove @author.
+	* disassembler/DisassemblyFormatDialog.java: Ditto.
+	* disassembler/DisassemblyWindow.java: Ditto.
+	* memory/MemoryFormatDialog.java: Ditto.
+	* memory/MemoryWindow.java: Ditto.
+	* Gui.java: Ditto.
+
 	* test/TestWindowFactorization.java: Add copyright.
 	* DebugHistory.java: Ditto.
 	* DummyDebugResults.java: Ditto.

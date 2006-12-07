@@ -55,8 +55,8 @@ import org.gnu.gtk.event.FocusListener;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
- * @author swagiaal A widget that shows an observer item and allows the user to
- *         edit it. An observer item can either be a filter or an action.
+ * A widget that shows an observer item and allows the user to edit
+ * it. An observer item can either be a filter or an action.
  */
 public abstract class ObserverItemRow
 {

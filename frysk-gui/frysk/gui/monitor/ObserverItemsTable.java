@@ -50,9 +50,6 @@ import org.gnu.gtk.Table;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 
-/**
- * @author swagiaal
- */
 public abstract class ObserverItemsTable
     extends Table
 {

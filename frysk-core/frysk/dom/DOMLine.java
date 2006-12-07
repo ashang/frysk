@@ -47,8 +47,6 @@ import org.jdom.filter.Filter;
 
 /**
  * DOMLine represents a line of code (not assembly instruction) in a file.
- * 
- * @author ajocksch
  */
 public class DOMLine {
 	/**

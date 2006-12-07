@@ -47,12 +47,10 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
- * @author swagiaal
- *
  * A ProgramObserver watches a process for fork events. If the process
- * forks it watches the newly forked child for exec events when the new
- * child has called exec it is added to the procs list. The procs lis is
- * to be watched by clients interested in new procs spawning.
+ * forks it watches the newly forked child for exec events when the
+ * new child has called exec it is added to the procs list. The procs
+ * lis is to be watched by clients interested in new procs spawning.
  */
 public class ProgramObserver extends TaskObserverRoot implements TaskObserver.Forked, TaskObserver.Execed
 {

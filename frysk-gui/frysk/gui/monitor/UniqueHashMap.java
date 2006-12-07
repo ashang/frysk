@@ -42,12 +42,8 @@ package frysk.gui.monitor;
 import java.util.HashMap;
 
 /**
- * 
- * @author swagiaal
- *
- * A HashMap of GuiObjects. Makes sure that
- * the objects added to it are unique, and throws
- * and exception if that is violated.
+ * A HashMap of GuiObjects. Makes sure that the objects added to it
+ * are unique, and throws and exception if that is violated.
  */
 
 public class UniqueHashMap{

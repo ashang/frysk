@@ -42,11 +42,8 @@ package frysk.dom;
 import org.jdom.Element;
 
 /**
- * DOMFunction represents a function element to the DOM for any functions
- * found within an image.
- * 
- * @author ajocksch
- *
+ * DOMFunction represents a function element to the DOM for any
+ * functions found within an image.
  */
 public class DOMFunction {
 	

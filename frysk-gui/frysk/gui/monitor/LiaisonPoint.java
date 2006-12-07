@@ -46,16 +46,16 @@ import java.util.logging.Logger;
 import org.jdom.Element;
 
 /**
- * @author swagiaal The job of a LiaisonPoint is to execute all its liaison
- *         Items with its specialized argument. For example a TaskFilterPoint is
- *         a LiaisonPoint that is specialized in calling all its filters with
- *         the task its deticated to as an argument. If for instance the update
- *         function of an observer looks like this: updateForked(Task parent,
- *         Task child) then that observer will create two TaskFilterPoints;
- *         deticating one to the parent task and the other to the child task.
- *         Thereby allowing the user to add TaskFilter(s) to either
- *         TaskFilterPoint and filter on the properties of either task. A
- *         LiaisonPoint can either be a FilterPoint or an ActionPoint.
+ * The job of a LiaisonPoint is to execute all its liaison Items with
+ * its specialized argument. For example a TaskFilterPoint is a
+ * LiaisonPoint that is specialized in calling all its filters with
+ * the task its deticated to as an argument. If for instance the
+ * update function of an observer looks like this: updateForked(Task
+ * parent, Task child) then that observer will create two
+ * TaskFilterPoints; deticating one to the parent task and the other
+ * to the child task.  Thereby allowing the user to add TaskFilter(s)
+ * to either TaskFilterPoint and filter on the properties of either
+ * task. A LiaisonPoint can either be a FilterPoint or an ActionPoint.
  */
 public abstract class LiaisonPoint
     extends GuiObject

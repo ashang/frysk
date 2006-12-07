@@ -43,8 +43,6 @@ import java.math.BigInteger;
 
 /**
  * Some utility functions for treating BigIntegers as unsigned integers.
- *
- * @author timoore
  */
 public class UBigInteger
 {

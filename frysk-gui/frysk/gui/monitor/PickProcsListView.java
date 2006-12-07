@@ -44,9 +44,6 @@ import org.gnu.gtk.TreeIter;
 import frysk.proc.Proc;
 
 /**
- * 
- * @author swagiaal
- *
  * A CheckListView that filters on the given path.
  */
 public class PickProcsListView extends CheckedListView {

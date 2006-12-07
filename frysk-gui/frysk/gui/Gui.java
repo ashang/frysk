@@ -579,8 +579,6 @@ public class Gui implements LifeCycleListener, Saveable {
 	}
 
 	/**
-	 * @author mcvet
-	 *
 	 * Handle a signal if another instance of Frysk is started
 	 */
 	static class MultipleInvocationEvent extends SignalEvent {
@@ -604,8 +602,6 @@ public class Gui implements LifeCycleListener, Saveable {
 	}
 
 	/**
-	 * @author mcvet
-	 *
 	 * If the user cntl-c interrupts, handle it cleanly
 	 */
 	static class InterruptEvent extends SignalEvent {

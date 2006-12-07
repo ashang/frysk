@@ -67,10 +67,8 @@ import frysk.gui.common.IconManager;
 import frysk.gui.monitor.Saveable;
 
 /**
- * A simple dialog to accept input determining which columns should be 
+ * A simple dialog to accept input determining which columns should be
  * displayed on the SessionProcTreeView.
- * 
- * @author mcvet
  */
 public class PIDColumnDialog
     extends Dialog

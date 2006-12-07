@@ -48,12 +48,10 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.SaveableXXX;
 
 /**
- * A Tagset contains a collection of tags that are applicable to a process.
+ * A Tagset contains a collection of tags that are applicable to a
+ * process.
  * 
  * TODO: Tags not implemented yet
- * 
- * @author ajocksch
- *
  */
 public class Tagset  extends GuiObject implements SaveableXXX{
 

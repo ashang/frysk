@@ -45,9 +45,8 @@ import java.util.Vector;
 import org.jdom.Element;
 
 /**
- * DOMImage represents an image within the source window document object model
- * 
- * @author ajocksch
+ * DOMImage represents an image within the source window document
+ * object model
  */
 public class DOMImage {
 	/**

@@ -68,8 +68,6 @@ import frysk.gui.monitor.Saveable;
 
 /**
  * A dialog to display options available to the DisassemblyWindow.
- * 
- * @author mcvet
  */
 public class DisassemblyFormatDialog
     extends Dialog

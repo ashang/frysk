@@ -669,7 +669,7 @@ checked-for-at-author:
 	    done | xargs grep -H -n -e '@author' ; \
 	then \
 		echo "FAIL: code does not contain @author" ; \
-		exit 0 ; \
+		exit 1 ; \
 	fi ; \
 	echo "PASS: code does not contain @author"
 

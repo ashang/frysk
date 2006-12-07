@@ -118,16 +118,15 @@ import org.jdom.Element;
  *          |--attr: line_start - line no. where this function begins in the source file 
  *          |--attr: line_end - line no. where this function ends in the source file 
  *          
- * Debugging Scenario
- * When a processe is debugged, no matter how activated, here are the steps that need
- * to happen: Frysk backend identifies the PID or the executable that is to be
- * debugged Frysk backend grabs the source code and creates a DOM adds the image
- * adds a source file adds all functions found adds each line of the source file
- * sends DOM to GUI sends pointer to source code to GUI GUI parses source and
- * marks up the DOM with code highlighting information GUI brings up the source
- * window GUI and backend communicate so GUI can update affected windows
- * 
- * @author ajocksch
+ * Debugging Scenario When a processe is debugged, no matter how
+ * activated, here are the steps that need to happen: Frysk backend
+ * identifies the PID or the executable that is to be debugged Frysk
+ * backend grabs the source code and creates a DOM adds the image adds
+ * a source file adds all functions found adds each line of the source
+ * file sends DOM to GUI sends pointer to source code to GUI GUI
+ * parses source and marks up the DOM with code highlighting
+ * information GUI brings up the source window GUI and backend
+ * communicate so GUI can update affected windows
  */
 
 public class DOMFrysk

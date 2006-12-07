@@ -48,12 +48,11 @@ import org.gnu.gtk.event.MenuItemListener;
 import frysk.gui.monitor.PIDColumnDialog;
 
 /**
- * A menu to appear on the right-click of any of the column headers in the
- * SessionProcTreeView, to handle the manipulation of these columns.
+ * A menu to appear on the right-click of any of the column headers in
+ * the SessionProcTreeView, to handle the manipulation of these
+ * columns.
  * 
  * Not used until column header bugs are worked out!
- * 
- * @author mcvet
  */
 public class PIDMenu
     extends Menu

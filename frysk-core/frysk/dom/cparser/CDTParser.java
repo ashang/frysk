@@ -105,9 +105,6 @@ import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
 
-/**
- * @author ajocksch
- */
 public class CDTParser
     implements StaticParser
 {

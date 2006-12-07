@@ -53,11 +53,6 @@ import frysk.dom.DOMSource;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
 
-
-/**
- * @author ajocksch
- *
- */
 public class CTagsParser implements StaticParser {
 	
 	/* (non-Javadoc)

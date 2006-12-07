@@ -50,9 +50,9 @@ import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
 
 /**
- * @author sami wagiaalla Singleton; one window manager. Provides an instance to
- *         our major components so that they can be manipulated from any where
- *         in the gui code. Add your windows here.
+ * Singleton; one window manager. Provides an instance to our major
+ * components so that they can be manipulated from any where in the
+ * gui code. Add your windows here.
  */
 
 public class WindowManager

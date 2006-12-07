@@ -40,18 +40,13 @@
 package frysk.gui.monitor.datamodels;
 
 /**
+ * To promote sharing of DataModels this manager will keep track of
+ * all DataModels so that they can be retrieved by TreeViews when
+ * needed.
  * 
- * @author swagiaal
- *
- * To promote sharing of DataModels this manager
- * will keep track of all DataModels so that they 
- * can be retrieved by TreeViews when needed.
- * 
- * This is only for complicated, computationally heavy
- * dataModels. for light weight, simple models it is better
- * to use the ListView,ObservableLinkedList combination.
- * 
- * 
+ * This is only for complicated, computationally heavy dataModels. for
+ * light weight, simple models it is better to use the
+ * ListView,ObservableLinkedList combination.
  */
 public class DataModelManager {
 

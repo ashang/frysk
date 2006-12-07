@@ -44,9 +44,6 @@ import org.gnu.glib.Handle;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 
-/**
- * @author swagiaal
- */
 public class FiltersTable
     extends ObserverItemsTable
 {

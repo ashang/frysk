@@ -42,9 +42,8 @@ package frysk.dom;
 import org.jdom.Element;
 
 /**
- * DOMTag represents a tagged area (i.e. function declaration, varaible use, comment, etc) in
- * a source code file
- * @author ajocksch
+ * DOMTag represents a tagged area (i.e. function declaration,
+ * varaible use, comment, etc) in a source code file
  */
 public class DOMTag {
 	/**

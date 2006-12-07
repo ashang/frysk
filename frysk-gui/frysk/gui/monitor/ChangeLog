@@ -1,5 +1,38 @@
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
+	* PickProcsListView.java: Remove @author.
+	* FiltersTable.java: Ditto.
+	* GuiProc.java: Ditto.
+	* TIDColumnDialog.java: Ditto.
+	* UniqueHashMap.java: Ditto.
+	* ActionPool.java: Ditto.
+	* LiaisonPoint.java: Ditto.
+	* Combo.java: Ditto.
+	* EditObserverDialog.java: Ditto.
+	* SaveableXXX.java: Ditto.
+	* datamodels/DataModelManager.java: Ditto.
+	* datamodels/DataModel.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/ComboFactory.java: Ditto.
+	* filters/ProcParentNameFilter.java: Ditto.
+	* filters/ProcPathFilter.java: Ditto.
+	* filters/ProcCommandLineFilter.java: Ditto.
+	* WindowManager.java: Ditto.
+	* LiaisonItem.java: Ditto.
+	* PIDColumnDialog.java: Ditto.
+	* observers/ProgramObserver.java:Ditto.
+	* ProgramObserverDialog.java: Ditto.
+	* actions/ShowRegWin.java: Ditto.
+	* actions/AddTaskObserverAction.java: Ditto.
+	* actions/RunExternal.java: Ditto.
+	* actions/ShowMemWin.java: Ditto.
+	* ObserverItemRow.java: Ditto.
+	* DynamicWidget.java: Ditto.
+	* TrayIcon.java: Ditto.
+	* ObserverItemsTable.java: Ditto.
+	* PIDMenu.java: Ditto.
+
 	* PIDMenu.java: Add copyright.
 	* observers/ExitNotificationObserver.java: Ditto.
 	* observers/ObserverRoot.java: Ditto.

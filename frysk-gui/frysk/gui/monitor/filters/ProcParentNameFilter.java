@@ -44,10 +44,6 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
-
-/**
- * @author mcvet
- */
 public class ProcParentNameFilter
     extends ProcFilter
 {

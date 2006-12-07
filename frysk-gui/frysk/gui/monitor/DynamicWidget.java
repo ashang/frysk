@@ -48,9 +48,6 @@ import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
 
 /**
- * 
- * @author swagiaal
- *
  * Allows clients to easily create an argument entry
  * widget without having to deal with widgets. Clients
  * only have to specify the type of entries they require.
