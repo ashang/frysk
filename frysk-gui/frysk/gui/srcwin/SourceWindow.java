@@ -371,6 +371,17 @@ public class SourceWindow
         StackFrame temp = null;
         
         temp = CurrentStackView.getCurrentFrame();
+        
+        if (temp == null)
+          {
+            this.view = new SourceView(temp, this);
+            ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
+            ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
+            sw.add(stackView);
+            this.view.showAll();
+            return;
+          }
+        
         StackFrame curr = temp;
         
         if (curr.getDwflLine() == null)
@@ -758,7 +769,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(false);
+    this.next.setSensitive(true);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -1136,7 +1147,7 @@ public class SourceWindow
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-    //this.next.setSensitive(true);
+    this.next.setSensitive(true);
     //this.finish.setSensitive(true);
     //this.cont.setSensitive(true);
     this.nextAsm.setSensitive(true);
@@ -1920,7 +1931,7 @@ public class SourceWindow
         catch (Exception e)
           {
             System.out.println("Error generating stack trace");
-            System.out.println(e.getMessage());
+            e.printStackTrace();
           }
 
         /** Stack frame created * */

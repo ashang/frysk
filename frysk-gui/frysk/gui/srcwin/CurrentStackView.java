@@ -206,7 +206,7 @@ public class CurrentStackView
       {
         iter = treeModel.appendRow(null);
         treeModel.setValue(iter, (DataColumnString) stackColumns[0], "Broken stack trace");
-        treeModel.setValue(iter, (DataColumnString) stackColumns[1], null);
+        treeModel.setValue(iter, (DataColumnObject) stackColumns[1], null);
       }
   }
   

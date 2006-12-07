@@ -183,6 +183,11 @@ public class SourceBuffer
   public SourceBuffer (StackFrame scope)
   {
     this();
+    if (scope == null)
+    {
+        this.insertText("Stack and source information not available!");
+        return;
+    }
     this.functions = new Vector();
     this.setScope(scope, SOURCE_MODE);
   }
@@ -190,6 +195,11 @@ public class SourceBuffer
   public SourceBuffer (StackFrame scope, int mode)
   {
     this();
+    if (scope == null)
+    {
+        this.insertText("Stack and source information not available!");
+        return;
+    }
     this.functions = new Vector();
     this.setScope(scope, mode);
   }
