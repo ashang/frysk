@@ -1,3 +1,9 @@
+2006-12-07  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (buildTree): Taking #3677 into account, check
+	to see if the entire stack trace for all threads is null, if so dump
+	an error into the StackView.
+
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Remove @author.

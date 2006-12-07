@@ -125,10 +125,18 @@ public class CurrentStackView
   {
     TreeIter iter = null;
     TreeIter parent = null;
+    int nullCount = 0;
+    
     for (int j = frames.length - 1; j >= 0; j--)
       {
         StackFrame frame = frames[j];
 
+        if (frame == null)
+          {
+            nullCount++;
+            continue;
+          }
+        
         parent = null;
         iter = null;
         
@@ -192,6 +200,13 @@ public class CurrentStackView
                 row = "";
               }
           }
+      }
+    
+    if (nullCount == frames.length)
+      {
+        iter = treeModel.appendRow(null);
+        treeModel.setValue(iter, (DataColumnString) stackColumns[0], "Broken stack trace");
+        treeModel.setValue(iter, (DataColumnString) stackColumns[1], null);
       }
   }
   
