@@ -83,6 +83,7 @@ public abstract class MapsBuilder
     abstract public void buildMap (long addressLow, long addressHigh,
 				   boolean permRead, boolean permWrite,
 				   boolean permExecute, boolean permPrivate,
+				   boolean permShared,
 				   long offset,
 				   int devMajor, int devMinor,
 				   int inode,
