@@ -149,15 +149,15 @@ public class ElfNhdr
     fillSize = fillNhdr(buffer, startAddress);
     if (fillSize != getNhdrSize())
       {
-        //XXX: error occurred. throw excetpion?
+	throw new RuntimeException("fillSize != getNhdrSize");
       }
     
     nhdrEntrySize += fillSize;
     startAddress += fillSize;
     fillSize = fillNhdrName(buffer, startAddress);
     if (fillSize != this.namesz)
-      {
-        //XXX: error occurred. Throw exception?
+      {	
+	throw new RuntimeException("fillSize != this.names");
       }
     
     nhdrEntrySize += fillSize;
@@ -165,7 +165,8 @@ public class ElfNhdr
     fillSize = this.desc.fillMemRegion(buffer, startAddress);
     if (fillSize != this.descsz)
       {
-        //XXX: error occurred. Throw exception?
+
+	throw new RuntimeException("fillSize != this.descsz");
       }
     
     nhdrEntrySize += fillSize;

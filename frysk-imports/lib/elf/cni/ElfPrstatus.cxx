@@ -127,9 +127,7 @@ struct elf_prstatus
 jlong
 lib::elf::ElfPrstatus::getEntrySize()
 {
-	int entrySize = sizeof(elf_prstatus);
-	
-	return (jlong)entrySize;
+	return sizeof(struct elf_prstatus);
 }
 
 
@@ -140,8 +138,7 @@ lib::elf::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	jbyte *bs = elements(buffer);
 	struct elf_prstatus *prstatus = NULL;
 
-	
-	prstatus = (struct elf_prstatus *)malloc(sizeof(struct elf_prstatus));
+	prstatus = (struct elf_prstatus *)alloca(sizeof(struct elf_prstatus));
 
 	memset(prstatus, 0, sizeof(struct elf_prstatus));
 
@@ -170,8 +167,8 @@ lib::elf::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	prstatus->pr_fpvalid = 0;		/* True if math co-processor being used.  */
 
 	memcpy(bs + startAddress, prstatus, sizeof(struct elf_prstatus));
-	
-	return sizeof(prstatus);
+
+	return sizeof(struct elf_prstatus);
 }
 
 #ifdef __cplusplus

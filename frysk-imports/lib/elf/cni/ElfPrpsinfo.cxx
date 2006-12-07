@@ -87,9 +87,7 @@ typedef struct elf_prpsinfo {   /* Information about process                 */
 jlong
 lib::elf::ElfPrpsinfo::getEntrySize()
 {
-	int entrySize = sizeof(elf_prpsinfo);
-	
-	return (jlong)entrySize;
+	return sizeof(struct elf_prpsinfo);
 }
 
 jlong 
@@ -99,7 +97,7 @@ lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	jbyte *bs = elements(buffer);
 	struct elf_prpsinfo *prpsinfo = NULL;
 	
-	prpsinfo = (struct elf_prpsinfo *)malloc(sizeof(struct elf_prpsinfo));
+	prpsinfo = (struct elf_prpsinfo *)alloca(sizeof(struct elf_prpsinfo));
 	
 	memset(prpsinfo, 0, sizeof(struct elf_prpsinfo));
 	
@@ -126,7 +124,7 @@ lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 
 	memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo));
 	
-	return sizeof(prpsinfo);
+	return sizeof(struct elf_prpsinfo);
 }
 
 #ifdef __cplusplus
