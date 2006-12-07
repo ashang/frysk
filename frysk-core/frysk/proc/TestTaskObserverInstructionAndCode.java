@@ -43,7 +43,7 @@ public class TestTaskObserverInstructionAndCode extends TestLib
 {
   public void testInstructionAndCode()
   {
-    if (brokenXXX(3500))
+    if (brokenXXX(3676))
       return;
 
     // Create busy child.

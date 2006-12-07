@@ -1,3 +1,9 @@
+2006-12-06  Mark Wielaard  <mark@klomp.org>
+
+	* TestTaskObserverInstructionAndCode.java:
+	This isn't a testcase for #3500 after all. Marked as broken
+	testcase for bug #3676.
+
 2006-12-06  Andrew Cagney  <cagney@redhat.com>
 
 	* UBigInteger.java: Remove @author.
@@ -34,7 +40,7 @@
 
 2006-12-06  Mark Wielaard  <mark@klomp.org>
 
-	* frysk-core/frysk/proc/TestTaskObserverInstructionAndCode.java:
+	* TestTaskObserverInstructionAndCode.java:
 	New test (disabled) for bug #3500.
 
 2006-12-06  Mark Wielaard  <mark@klomp.org>
