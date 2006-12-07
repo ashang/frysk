@@ -90,12 +90,10 @@ public class AboutWindow extends AboutDialog implements Saveable {
 	}
 	
 	public void save(Preferences prefs) {
-		// TODO Auto-generated method stub
-
+	    throw new RuntimeException ("Auto-generated method stub");
 	}
 	public void load(Preferences prefs) {
-		// TODO Auto-generated method stub
-
+	    throw new RuntimeException ("Auto-generated method stub");
 	}
 
 

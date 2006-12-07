@@ -140,8 +140,7 @@ public class GuiTestLib extends TestCase{
                                                                    ProcId procId,
                                                                    Exception e)
                                          {
-                                           // TODO Auto-generated method stub
-
+					     throw new RuntimeException ("Auto-generated method stub");
                                          }
                                        });
 			    try {

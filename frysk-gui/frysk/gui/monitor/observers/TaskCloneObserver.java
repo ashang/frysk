@@ -107,7 +107,6 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
     // TaskObserver.Forked and TaskObserver.Cloned.
 
 	public Action updateClonedOffspring (Task task, Task clone) {
-		// TODO Auto-generated method stub
 		//System.out.println("TaskCloneObserver.updateCloned()");
 		final Task myTask = task;
 		final Task myClone = clone;
