@@ -73,7 +73,8 @@ public class StressMapRead
 
 	public void buildMap (long addressLow, long addressHigh, boolean permRead,
 			      boolean permWrite, boolean permExecute,
-			      boolean permPrivate, long offset, int devMajor,
+			      boolean permPrivate, boolean permShared,
+			      long offset, int devMajor,
 			      int devMinor, int inode, int pathnameOffset,
 			      int pathnameLength)
 	{
