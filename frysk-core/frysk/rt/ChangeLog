@@ -1,3 +1,8 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestStepping.java (testRecursiveLineStepping): Disable,
+	3686.
+
 2006-12-08  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (setUpStep): Instead of trying to re-step the task,
