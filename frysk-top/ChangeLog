@@ -1,3 +1,7 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (SUBDIRS): Remove references to frysk-sys.
+
 2006-12-06  Nurdin Premj <npremji@redhat.com>
 
 	* .settings: Stop eclipse from adding TODO and author tags, Add (C) to all new files.

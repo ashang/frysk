@@ -4,7 +4,7 @@ public class PtyTest
 {
     static {
 	System.loadLibrary ("frysk-junit");
-	System.loadLibrary ("frysk-sys");
+	System.loadLibrary ("frysk-imports");
     }
 
     PtyTest() {

@@ -35,8 +35,8 @@ if [ "$1" = "info" ] ; then
 --directory frysk-gui/frysk/gui/srcwin/prefs \
 --directory frysk-gui/frysk/gui/srcwin/tags \
 --directory frysk-gui/frysk/vtecli \
---directory frysk-sys/frysk/sys \
---directory frysk-sys/frysk/sys/proc \
+--directory frysk-imports/frysk/sys \
+--directory frysk-imports/frysk/sys/proc \
 -c
 elif [ "$1" = "zero" ] ; then
 /home/scox/lcov/lcov \
@@ -62,8 +62,8 @@ elif [ "$1" = "zero" ] ; then
 --directory frysk-gui/frysk/gui/srcwin/prefs \
 --directory frysk-gui/frysk/gui/srcwin/tags \
 --directory frysk-gui/frysk/vtecli \
---directory frysk-sys/frysk/sys \
---directory frysk-sys/frysk/sys/proc \
+--directory frysk-imports/frysk/sys \
+--directory frysk-imports/frysk/sys/proc \
 -z
 rm -rf /tmp/frysk.genhtml
 elif [ "$1" = "genhtml" ] ; then

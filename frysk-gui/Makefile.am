@@ -49,7 +49,6 @@ EXTRA_DIST += \
 
 GEN_CLASSPATH += ../frysk-gtk/frysk-gtk.jar
 GEN_CLASSPATH += ../frysk-core/frysk-core.jar
-GEN_CLASSPATH += ../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
@@ -63,7 +62,6 @@ GEN_CLASSPATH += /usr/lib
 
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-gtk.a
 GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
-GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a

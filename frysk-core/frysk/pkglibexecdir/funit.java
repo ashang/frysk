@@ -57,7 +57,6 @@ public class funit
 
 	LinkedList list = new LinkedList ();
 	list.addAll (frysk.imports.JUnitTests.get ());
-	list.addAll (frysk.sys.JUnitTests.get ());
 	list.addAll (frysk.core.JUnitTests.get ());
 	
 	// It's unnecessary for other modules(such as frysk-import) to

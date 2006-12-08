@@ -1,5 +1,5 @@
 # Do not build fryski.  It does not link with --coverage
-for i in frysk-sys/Makefile frysk-core/Makefile frysk-gui/Makefile
+for i in frysk-core/Makefile frysk-gui/Makefile
 do
 cp $i $i.sv
 ex $i  <<END

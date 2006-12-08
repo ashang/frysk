@@ -1,14 +1,14 @@
      JAVA_RT_JAR = /usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
          GTK_JAR = /usr/share/java/gtk2.8.jar
         GLIB_JAR = /usr/share/java/glib0.2.jar
-   FRYSK_SYS_JAR = ../../../../../frysk-build/frysk-sys/frysk-sys.jar
-  FRYSK_SYS_PATH = ../../../../../frysk-build/frysk-sys
-    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(FRYSK_SYS_JAR)
+   FRYSK_IMPORTS_JAR = ../../../../../frysk-build/frysk-imports/frysk-imports.jar
+  FRYSK_IMPORTS_PATH = ../../../../../frysk-build/frysk-imports
+    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(FRYSK_IMPORTS_JAR)
 
-   LD_LIBRARY_PATH=$(FRYSK_SYS_PATH):/usr/local/lib
+   LD_LIBRARY_PATH=$(FRYSK_IMPORTS_PATH):/usr/local/lib
 #   LD_LIBRARY_PATH=.:/usr/local/qt/lib:/usr/local/lib
 
-#	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH):$(FRYSK_SYS_PATH) PtyTest
+#	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH):$(FRYSK_IMPORTS_PATH) PtyTest
 
 all::run
 

@@ -1,3 +1,10 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_SOURCEPATH, GEN_GCJ_LDADD): Remove references
+	to frysk-sys.
+	* .project: Ditto.
+	* .classpath: Ditto.
+
 2006-11-28  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): frysk/lang/ChangeLog was moved to

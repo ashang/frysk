@@ -1,9 +1,14 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* test/wrapper/Makefile-pty: Refer to frysk-imports, intead of frysk-sys.
+	* test/wrapper/Makefile-vtepty: Ditto.
+	* test/wrapper/PtyTest.java: Load frysk-imports, instead of frysk-sys.
+	* test/wrapper/VtePtyTest.java: Ditto.
+
 2006-10-13  Andrew Cagney  <cagney@redhat.com>
 
-	* test/wrapper/VtePtyTest.java: 
-
-	* src/java/com/redhat/ftk/EventViewer.java: 
-	
+	* test/wrapper/VtePtyTest.java: Coding nit, remove NULL==.
+	* src/java/com/redhat/ftk/EventViewer.java: Ditto.
 
 2006-09-18  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c: Added api to change alpha values externally.

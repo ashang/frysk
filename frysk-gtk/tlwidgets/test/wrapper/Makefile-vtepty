@@ -2,11 +2,11 @@
          GTK_JAR = /usr/share/java/gtk2.8.jar
         GLIB_JAR = /usr/share/java/glib0.2.jar
          VTE_JAR = /usr/local/share/java/vte0.11.jar
-   FRYSK_SYS_JAR = ../../../../../build/frysk-sys/frysk-sys.jar
-    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(VTE_JAR):$(FRYSK_SYS_JAR)
+   FRYSK_IMPORTS_JAR = ../../../../../build/frysk-imports/frysk-imports.jar
+    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(VTE_JAR):$(FRYSK_IMPORTS_JAR)
 
-  FRYSK_SYS_PATH = ../../../../../build/frysk-sys
-   LD_LIBRARY_PATH=$(FRYSK_SYS_PATH):/usr/local/lib
+  FRYSK_IMPORTS_PATH = ../../../../../build/frysk-imports
+   LD_LIBRARY_PATH=$(FRYSK_IMPORTS_PATH):/usr/local/lib
 
 all::run
 
