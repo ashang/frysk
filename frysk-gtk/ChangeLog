@@ -1,3 +1,7 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Add -laudit.
+
 2006-11-14  Stepan Kasal  <skasal@redhat.com>
 
 	* configure.ac: The included file `common/acinclude.m4' was renamed

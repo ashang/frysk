@@ -86,6 +86,11 @@ GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a \
                 ./libunwind/src/libunwind-$(libunwind_cpu).a 
 endif
 
+# For CNI code.
+AM_CXXFLAGS += -I$(srcdir)/include
+# For auding of system calls.
+GEN_GCJ_LDADD += -laudit
+
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally 
 # compile this code just for simplification.
 noinst_LIBRARIES += lib/opcodes/libbfd_get.a
