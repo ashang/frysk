@@ -90,8 +90,6 @@ public class TestStepping extends TestLib
   
   public void testRecursiveLineStepping ()
   {
-      if (brokenXXX (3646))
-	  return;
 
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
@@ -151,6 +149,8 @@ public class TestStepping extends TestLib
             
             if (line == null)
               {
+                this.dwflMap.put(t, d);
+                this.lineMap.put(t, new Integer(0));
                 continue;
               }
 
@@ -170,11 +170,13 @@ public class TestStepping extends TestLib
   
   public synchronized void stepAssertions (LinkedList tasks)
   {
+   //System.out.println("Test.steAssertions " + tasks.size());
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
         
         Task task = (Task) i.next();
+        
 
         myTask = task;
         DwflLine line = null;
@@ -184,7 +186,7 @@ public class TestStepping extends TestLib
           }
         catch (TaskException te)
           {
-            // System.out.println("task execption");
+             System.out.println("task execption");
             return;
           }
         catch (NullPointerException npe)
@@ -197,27 +199,37 @@ public class TestStepping extends TestLib
               }
             catch (TaskException te)
               {
-
+                System.out.println("task execption");
               }
             if (line != null)
               {
                 this.dwflMap.put(task, d);
                 this.lineMap.put(task, new Integer(line.getLineNum()));
               }
-            else
-              return;
           }
 
+        int lineNum;
+        
         if (line == null)
-          return;
-
-        int lineNum = line.getLineNum();
+          {
+           //System.out.println("line null - assigning 0");
+            lineNum = 0;
+          }
+        else
+          {
+            lineNum = line.getLineNum();
+          }
+        
         int prev = ((Integer) this.lineMap.get(task)).intValue();
 
+       //System.out.println("-------------> " + task + " " + prev + " " + lineNum);
         if (testState == STEP_IN)
           {
             switch (prev)
               {
+                case 0:
+                  break;
+                
                 /* Thread one */
               case 90:
                 assertEquals(91, lineNum);
@@ -355,7 +367,7 @@ public class TestStepping extends TestLib
                 break;
               }
           }
-        this.lineMap.put(task, new Integer(line.getLineNum()));
+        this.lineMap.put(task, new Integer(lineNum));
       }
     
     count++;
@@ -401,7 +413,10 @@ public class TestStepping extends TestLib
               return;
             }
           else
-            stepAssertions(myTask.getProc().getTasks());
+            {
+              //System.out.println("LockObserver.update " + (Task) myTask);
+               stepAssertions(myTask.getProc().getTasks());
+            }
         }
       });
     }

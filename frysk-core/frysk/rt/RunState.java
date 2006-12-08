@@ -125,6 +125,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void setUpStep (LinkedList tasks)
   {
+   //System.out.println("RUnState.setUpStep " + tasks.size());
     this.state = STEP_IN;
     this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
@@ -132,6 +133,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     while (i.hasNext())
       {
         Task t = (Task) i.next();
+       //System.out.println("SetupStep.iterate " + t);
         if (this.dwflMap.get(t) == null)
           {
             Dwfl d = new Dwfl(t.getTid());
@@ -142,17 +144,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
               }
             catch (TaskException te)
               {
+                System.out.println("TaskException");
                 continue;
               }
             catch (NullPointerException npe)
             {
-              //System.out.println("ZOMG! Null.");
-              //System.out.println(npe.getMessage());
+             //System.out.println("ZOMG! Null.");
+              System.out.println(npe.getMessage());
               continue;
             }
             
             if (line == null)
               {
+               //System.out.println("Coulnd't get DwflLine, assigning 0");
+                this.taskStepCount--;
                 this.dwflMap.put(t, d);
                 this.lineMap.put(t, new Integer(0));
                 continue;
@@ -203,24 +208,30 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     catch (TaskException te)
       {
-         //System.out.println("task execption");
+         System.out.println("task execption");
         return;
       }
     catch (NullPointerException npe)
       {
-        // System.out.println("NPE - stepin");
+         System.out.println("NPE - stepin");
         return;
       }
 
+    int lineNum;
+    int prev;
+    
     if (line == null)
       {
-        return;
+        lineNum = 0;
+        prev = ((Integer) this.lineMap.get(task)).intValue();
       }
-
+    else
+      {
     // System.out.println("Nothing is null");
-    int lineNum = line.getLineNum();
-    int prev = ((Integer) this.lineMap.get(task)).intValue();
-
+        lineNum = line.getLineNum();
+        prev = ((Integer) this.lineMap.get(task)).intValue();
+      }
+    
     if (lineNum != prev)
       {
         this.lineMap.put(task, new Integer(lineNum));
@@ -711,7 +722,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-    
+   //System.out.println("UpdateExecuted " + task + " " + taskStepCount);
     if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
         switch (RunState.this.state)
@@ -738,6 +749,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         /* No more Tasks have to be blocked */
         if (taskStepCount == 0)
           {
+           //System.out.println("UpdateExecuted - No more tasks");
             RunState.this.setChanged();
             RunState.this.notifyObservers(task);
           }
@@ -748,7 +760,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         
         /* No more Tasks have to be blocked, or this RunState is already blocked
          * and this is the first time this method has been called. */
-        if (numRunningTasks == 0)// || state == STOPPED)
+        if (numRunningTasks == 0)
           {
             RunState.this.setChanged();
             RunState.this.notifyObservers(task);
