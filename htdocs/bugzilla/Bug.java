@@ -1,10 +1,11 @@
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Collection;
 import javax.xml.parsers.DocumentBuilder; 
 import javax.xml.parsers.DocumentBuilderFactory;  
 import org.w3c.dom.Document;
@@ -128,9 +129,9 @@ public class Bug
 	}
     }
 
-    public static Map slurp ()
+    public static TreeMap slurp ()
     {
-	HashMap map = new HashMap ();
+	TreeMap map = new TreeMap ();
 	File[] dotXml = new File (".").listFiles (new FilenameFilter ()
 	    {
 		public boolean accept (File path, String filename)
@@ -156,6 +157,34 @@ public class Bug
 
     public static void main (String[] args)
     {
-	slurp ();
+	TreeMap map = slurp ();
+
+	{
+	    System.out.println ("Roots:");
+	    Collection roots = ((Map) (map.clone())).values ();
+	    for (Iterator i = roots.iterator ();
+		 i.hasNext (); ) {
+		Bug bug = (Bug)i.next ();
+		if (bug.blocked.size () > 0)
+		    i.remove ();
+	    }
+	    for (Iterator i = roots.iterator (); i.hasNext (); ) {
+		Bug bug = (Bug)i.next ();
+		System.out.println ("Root: " + bug.toPrint ());
+	    }
+	}
+
+	{
+	    System.out.println ("Duplicates:");
+	    for (Iterator i = map.values ().iterator (); i.hasNext (); ) {
+		Bug bug = (Bug)i.next ();
+		if (!bug.duplicate)
+		    continue;
+		if (bug.dependson.size () > 0)
+		    System.out.println ("dependson: " + bug.toPrint ());
+		if (bug.blocked.size () != 1)
+		    System.out.println ("blocked: " + bug.toPrint ());
+	    }
+	}
     }
 }
