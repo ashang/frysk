@@ -153,10 +153,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
             
             if (line == null)
               {
-                LinkedList temp = new LinkedList();
-                temp.add(t);
-                stepInstruction(temp);
-                return;
+                this.dwflMap.put(t, d);
+                this.lineMap.put(t, new Integer(0));
+                continue;
               }
 
             this.dwflMap.put(t, d);
@@ -249,7 +248,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
-    this.state = STEP_OVER;
+    //this.state = STEP_OVER;
+    this.state = STEP_OVER_LINE_STEP;
     this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
     this.lastFrame = lastFrame;
     //this.numSteppingTasks = tasks.size();
@@ -268,6 +268,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void stepOver (Task task)
   {
+    System.out.println("stepOver");
     StackFrame newFrame = null;
     try
     {
@@ -293,7 +294,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     else
       {
         /* There is a different innermost frame on the stack - run until
-         * it exits. */
+         * it exits - success!. */
         this.state = STEP_OVER;
         this.breakpoint = new Breakpoint(lastFrame.getAddress());
         task.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
