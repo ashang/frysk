@@ -47,6 +47,10 @@ SUBDIRS = \
 
 empty=
 space=$(empty) $(empty)
+
+# Note the dir/. is needed, causes the file copy to put the contents
+# into the top level directory.
+
 SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%/frysk,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%/frysk,$(SUBDIRS)) \
@@ -55,14 +59,10 @@ SOURCEDIRS = \
 	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
 	$(srcdir)/frysk-imports/jline/src/jline \
 	$(srcdir)/frysk-imports/junit/src/junit \
+	$(srcdir)/frysk-core/frysk/pkglibexecdir/. \
+	$(srcdir)/frysk-core/frysk/bindir/. \
+	$(srcdir)/frysk-gui/frysk/bindir/. \
 	$(empty)
-SOURCEPATH = $(subst $(space),:,$(strip \
-		$(dir $(SOURCEDIRS)) \
-		$(srcdir)/frysk-core/frysk/pkglibexecdir/ \
-		$(srcdir)/frysk-core/frysk/bindir/ \
-		$(srcdir)/frysk-gui/frysk/bindir/ \
-		))
-
 
 
 # Generate JAVADOC documentation.
@@ -71,8 +71,31 @@ JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: all
 	for scope in public private ; do \
-		rm -rf javadoc/$$scope ; \
+		rm -rf javadoc/$$scope javadoc/source/$$scope ; \
 		mkdir -p javadoc/$$scope ; \
+		mkdir -p javadoc/source/$$scope ; \
+		for path in $(SOURCEDIRS) ; do \
+			test -d $$path || continue ; \
+			d=`dirname $$path` ; \
+			b=`basename $$path` ; \
+			echo "Copying $$d : $$b" ; \
+			( \
+				cd $$d ; \
+				find $$b \
+					-path '*/*dir/*' -prune -o \
+					-name '[A-Za-z]*\.java' -print \
+				| tar cfT - - ; \
+			) | ( \
+				cd javadoc/source/$$scope ; \
+				tar xpf - ; \
+			) \
+		done ; \
+		case $$scope in \
+			public ) find javadoc/source/$$scope \
+				-name '*Test*' -print \
+				-o -name '*Stress*' -print \
+				| xargs rm ; \
+		esac ; \
 		CLASSPATH=$(JAVADOC_CLASSPATH) $(JAVADOC) \
 			-$$scope \
 			-link http://developer.classpath.org/doc/ \
@@ -87,8 +110,8 @@ javadoc: all
 			-windowtitle 'FRYSK' \
 			-group "<em>frysk</em> Packages" 'frysk*' \
 			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
-			-sourcepath $(SOURCEPATH) \
-			-subpackages 'frysk:inua:jline:junit:gnu' \
+			-sourcepath javadoc/source/$$scope \
+			-all \
 		; \
 	done
 
@@ -111,8 +134,8 @@ upload-javadoc:
 		--links \
 		--itemize-changes \
 		--stats \
-		javadoc \
-		sources.redhat.com:/sourceware/www/sourceware/htdocs/frysk
+		javadoc/public javadoc/private \
+		sources.redhat.com:/sourceware/www/sourceware/htdocs/frysk/javadoc
 CLEANFILES += javadoc
 
 # Generate DOXYGEN documentation.
