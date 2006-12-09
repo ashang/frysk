@@ -39,6 +39,7 @@
 # exception.
 
 ./common/Makefile.gen.sh \
+    --cni \
     tlwidgets/ftk.jar \
     org
 

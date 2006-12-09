@@ -40,7 +40,11 @@
 
 if test $# -eq 0 ; then
     cat <<EOF 1>&2
-Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
+Usage: $0 [ --cni ] <source-dir>... <.jar-file>... <_JAR-macro>...
+
+--cni:
+
+Include CNI directories in build.
 
 <source-dir>:
 
@@ -63,12 +67,14 @@ EOF
     exit 1
 fi
 
+cni=false
 dirs=
 jars=
 JARS=
 while test $# -gt 0
 do
   case "$1" in
+      --cni ) cni=true ;;
       *.jar ) jars="${jars} $1" ;;
       *_JAR ) JARS="${JARS} $1" ;;
       * ) dirs="${dirs} $1" ;;
@@ -79,7 +85,44 @@ dirs=`echo ${dirs}`
 jars=`echo ${jars}`
 JARS=`echo ${JARS}`
 
-# Generate the list of source files
+# Generate a list of source files; all the code below should refer to
+# this list, and not run a local find.
+
+(
+    find ${dirs} -name 'CVS' -prune \
+    -o -name "[A-Za-z]*\.s" -print \
+    -o -name "[A-Za-z]*\.S" -print \
+    -o -name "[A-Za-z]*\.h" -print \
+    -o -name "[A-Za-z]*\.c" -print \
+    -o -name "[A-Za-z]*\.cpp" -print \
+    -o -name "[A-Za-z]*\.java" -print \
+    -o -name "[A-Za-z]*\.shjava" -print \
+    -o -name "[A-Za-z]*\.javain" -print \
+    -o -name "[A-Za-z]*\.mkjava" -print \
+    -o -name "[A-Za-z]*\.mkenum" -print \
+    -o -name "[A-Za-z]*\.shenum" -print \
+    -o -name "[A-Za-z]*\.glade" -print \
+    -o -name "[A-Za-z]*\.desktop" -print \
+    -o -name "[A-Za-z]*\.properties" -print \
+    -o -name "[A-Za-z]*\.fig" -print \
+    -o -name "[A-Za-z]*\.g" -print \
+    -o -type f -name 'test*' -print
+    if $cni ; then
+	find ${dirs} \
+	    -path '*/cni/[A-Za-z]*\.hxx' -print \
+	    -o -path '*/cni/[A-Za-z]*\.cxx' -print
+    fi
+) | sort -f > files.tmp
+
+if cmp files.tmp files.list > /dev/null 2>&1
+then
+    rm files.tmp
+else
+    echo 1>&2 "Updating files.list"
+    mv files.tmp files.list
+fi
+
+#
 
 echo Creating Makefile.gen from directories ${dirs} ...
 exec > Makefile.gen
@@ -399,13 +442,12 @@ noinst_PROGRAMS += TestRunner
 EOF
 echo_LDFLAGS TestRunner
 
+
 # Generate SOURCES list for all files.
 
 for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
     print_header "... ${suffix}"
-    SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
-    find ${dirs} -name "[A-Za-z]*${suffix}" -print \
-	| sort -f | while read file ; do
+    grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	echo "EXTRA_DIST += ${file}"
@@ -421,8 +463,7 @@ done
 
 for suffix in .java ; do
     print_header "... ${suffix}"
-    find ${dirs} -name "[A-Za-z]*${suffix}" -print \
-	| sort -f | while read file ; do
+    grep -e  "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
@@ -460,9 +501,7 @@ arch32_cflags_output=0
 
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
-    find ${dirs} \
-	-name "[A-Za-z]*${suffix}" -print \
-	| sort -f | while read file ; do
+    grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
@@ -499,9 +538,7 @@ done
 #
 for suffix in .s .S ; do
     print_header "... ${suffix}"
-    find ${dirs} \
-        -name "[A-Za-z]*${suffix}" -print \
-        | sort -f | while read file ; do
+    grep -e "\\${suffix}\$" files.list | while read file ; do
         d=`dirname ${file}`
         b=`basename ${file} ${suffix}`
         name=${d}/${b}
@@ -530,10 +567,7 @@ done
 # automatically generate the inner Class$Nested class.
 
 print_header "... *.cxx=.h"
-find ${dirs} -name 'cni' -print | while read d
-do
-    find $d -name "[A-Za-z]*.cxx" -print
-done \
+grep -e '/cni/' files.list \
     | xargs grep -H '#include ".*.h"' \
     | sed -e 's/\.cxx:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
     | while read o h
@@ -558,7 +592,7 @@ done | sort -u
 print_header "... glade_DATA"
 echo "gladedir = \$(pkgdatadir)/glade"
 echo "glade_DATA ="
-find ${dirs} -type f -name "[A-Za-z]*.glade" | sort -f | while read file
+grep -e '\.glade$' files.list | while read file
 do
   echo glade_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -605,7 +639,7 @@ find_images "imageMACOSX32" "images/__MACOSX/32"
 print_header "... desktop_DATA"
 echo "desktopdir = \${prefix}/share/applications"
 echo "desktop_DATA ="
-find ${dirs} -type f -name "[A-Za-z]*.desktop" | while read file
+grep -e '\.desktop$' files.list | while read file
 do
   echo desktop_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -626,27 +660,17 @@ done
 print_header "... properties_DATA"
 echo "propertydir = \$(pkgdatadir)"
 echo "property_DATA ="
-find ${dirs} -type f -name "[A-Za-z]*.properties" | while read file
+grep -e '\.properties$' files.list | while read file
 do
   echo property_DATA += ${file}
   echo EXTRA_DIST += ${file}
 done
 
-# Form a list of all the .cpp files
-#print_header "... sample_DATA"
-#echo "sampledir = \$(pkgdatadir)/samples"
-#echo "sample_DATA ="
-#find ${dirs} -type f -name 'test*.cpp' | sort -f | while read file
-#do
-#  echo sample_DATA += ${file}
-#  echo EXTRA_DIST += ${file}
-#done
-
 # Form a list of the test files needed to run funit
 print_header "... test_DATA"
 echo "testdir = \$(pkgdatadir)/test"
 echo "test_DATA ="
-find ${dirs} -type f -name 'test*' | sort -f | while read file
+grep -e '.*/test[^/]*$' files.list | while read file
 do
   echo test_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -656,7 +680,7 @@ done
 # be built as DATA.
 
 print_header "... .fig.jpg:"
-find ${dirs} -type f -name "[A-Za-z]*.fig" | sort -u | while read f
+grep -e '\.fig' files.list | while read f
 do
   d=`dirname ${f}`
   b=`basename ${f} .fig`
@@ -669,7 +693,7 @@ done
 # Form a list of all the antlr generated files.
 
 print_header "... GEN_G = .g"
-find ${dirs} -type f -name "[A-Za-z]*.g" | while read g
+grep -e '\.g$' files.list | while read g
 do
   echo "EXTRA_DIST += $g"
   d=`dirname $g`
@@ -697,11 +721,9 @@ done
 # Form a list of all the stand-alone test cases that need to be run.
 
 print_header "... TESTS += Test*.java"
-find ${dirs} \
-    -name "[^A-Za-z]*" -prune -o \
-    -name 'TestCase.java' -prune -o \
-    -name '*Test*.java' -print \
-    | sort -f | while read file ; do
+grep -e 'Test.*\.java$' files.list | \
+    grep -v -e 'TestCase.java$' | \
+    while read file ; do
     if has_main ${file} ; then
 	d=`dirname ${file}`
 	b=`basename ${file} .java`

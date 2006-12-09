@@ -48,7 +48,7 @@ FILE_LIST="frysk \
     getopt/getopt.jar \
     lib"
     
-./common/Makefile.gen.sh $FILE_LIST
+./common/Makefile.gen.sh --cni $FILE_LIST
     
 
 # Generate everything (always run with --add-missing).
