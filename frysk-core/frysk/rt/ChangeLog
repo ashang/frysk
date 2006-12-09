@@ -1,3 +1,11 @@
+2006-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestRunState.java: Use frysk.sys.Pid.get.
+	* tests/TestStepping.java: Ditto.
+	* tests/TestStackBacktrace.java: Ditto.
+	* tests/TestLib.java: Delete.
+	* tests/cni/TestLib.cxx: Delete.
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestStepping.java (testRecursiveLineStepping): Disable,

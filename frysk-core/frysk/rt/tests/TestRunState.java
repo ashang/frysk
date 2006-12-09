@@ -53,6 +53,7 @@ import frysk.proc.TaskException;
 import frysk.proc.TestLib;
 import frysk.rt.RunState;
 import frysk.sys.Sig;
+import frysk.sys.Pid;
 import frysk.event.Event;
 import frysk.junit.Paths;
 
@@ -106,11 +107,12 @@ public class TestRunState extends TestLib
     testState = INSTRUCTION_STEP;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL, new String[] {
-        Paths.getExecPrefix () + "/funit-rt-stepper",
-        "" + frysk.rt.tests.TestLib.getMyPid(),
-        "" + Sig.POLL_
-    });
+	(Sig.POLL,
+	 new String[] {
+	    Paths.getExecPrefix () + "/funit-rt-stepper",
+	    "" + Pid.get (),
+	    "" + Sig.POLL_
+	});
     
     Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
@@ -143,11 +145,12 @@ public class TestRunState extends TestLib
     testState = STEP_IN;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL, new String[] {
-        Paths.getExecPrefix () + "/funit-rt-stepper",
-        "" + frysk.rt.tests.TestLib.getMyPid(),
-        "" + Sig.POLL_
-    });
+	(Sig.POLL,
+	 new String[] {
+	    Paths.getExecPrefix () + "/funit-rt-stepper",
+	    "" + Pid.get (),
+	    "" + Sig.POLL_
+	});
     
     Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.runPending();

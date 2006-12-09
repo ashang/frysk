@@ -57,6 +57,7 @@ import frysk.proc.TestLib;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.proc.MapsBuilder;
+import frysk.sys.Pid;
 import frysk.sys.Sig;
 import frysk.junit.Paths;
 
@@ -94,7 +95,7 @@ public class TestStackBacktrace
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
 	    Paths.getExecPrefix () + "/funit-rt-looper",
-	    "" + frysk.rt.tests.TestLib.getMyPid(),
+	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
     
@@ -205,7 +206,7 @@ public class TestStackBacktrace
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
 	    Paths.getExecPrefix () + "/funit-rt-threader",
-	    "" + frysk.rt.tests.TestLib.getMyPid(),
+	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
     

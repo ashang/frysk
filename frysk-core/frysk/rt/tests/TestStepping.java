@@ -54,6 +54,7 @@ import frysk.proc.TaskException;
 import frysk.proc.TestLib;
 import frysk.rt.RunState;
 import frysk.sys.Sig;
+import frysk.sys.Pid;
 import frysk.event.Event;
 import frysk.junit.Paths;
 
@@ -109,12 +110,13 @@ public class TestStepping extends TestLib
     testState = STEP_IN;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL, new String[] {
-        Paths.getExecPrefix () + "/funit-rt-threadstepper",
-        "" + frysk.rt.tests.TestLib.getMyPid(),
-        "" + Sig.POLL_
-    });
-
+	(Sig.POLL,
+	 new String[] {
+	    Paths.getExecPrefix () + "/funit-rt-threadstepper",
+	    "" + Pid.get (),
+	    "" + Sig.POLL_
+	});
+    
     myTask = process.findTaskUsingRefresh(true);
     myProc = myTask.getProc();
     assertNotNull(myProc);
