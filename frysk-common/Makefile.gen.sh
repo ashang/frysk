@@ -656,7 +656,7 @@ done
 # be built as DATA.
 
 print_header "... .fig.jpg:"
-find ${dirs} -type f -name "[A-Za-z]*.fig" | while read f
+find ${dirs} -type f -name "[A-Za-z]*.fig" | sort -u | while read f
 do
   d=`dirname ${f}`
   b=`basename ${f} .fig`

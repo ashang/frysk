@@ -46,10 +46,7 @@ FILE_LIST="frysk \
     JDOM_JAR \
     jline/jline.jar \
     getopt/getopt.jar \
-    lib/dw \
-    lib/elf \
-    lib/stdcpp \
-    lib/opcodes"
+    lib"
     
 target_cpu=`uname -a`
 

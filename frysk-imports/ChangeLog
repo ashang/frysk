@@ -1,3 +1,8 @@
+2006-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh (FILE_LIST): List lib, not all lib's
+	sub-directories.
+
 2006-12-08  Nurdin Premji  <npremji@redhat.com>
 
 	* bootstrap.sh (FILE_LIST): Added lib/stdcpp.
