@@ -46,17 +46,7 @@ m4_include([common/frysk-common.ac])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
-dnl Relying that the above called AC_CANONICAL_TARGET.
-# No platform is ready to for "make check" in libunwind yet.
-case $target_cpu in
-*)	check_libunwind=no;;
-esac
-AM_CONDITIONAL([CHECK_LIBUNWIND], [test $check_libunwind = yes])
-
-AC_CONFIG_SUBDIRS([elfutils])
-if test $use_libunwind = yes; then
-	AC_CONFIG_SUBDIRS([libunwind])
-fi
+AC_CONFIG_SUBDIRS([elfutils libunwind])
 
 AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)

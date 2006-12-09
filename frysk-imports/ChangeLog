@@ -1,5 +1,12 @@
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_GCJ_LDADD): Remove conditional addition of
+	libunwind.
+	(CHECK_SUBDIRS): Delete, fold into SUBDIRS.
+	* configure.ac: Remove code conditionally adding libunwind.
+	* bootstrap.sh (FILE_LIST): Remove code conditionally adding
+	lib/unwind, simplify.
+	
 	* bootstrap.sh (FILE_LIST): List lib, not all lib's
 	sub-directories.
 

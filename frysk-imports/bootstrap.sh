@@ -48,26 +48,6 @@ FILE_LIST="frysk \
     getopt/getopt.jar \
     lib"
     
-target_cpu=`uname -a`
-
-case "${target_cpu}" in
-       *)
-       # libunwind is supported on X86 and X86_64 now, so buildlibunwind
-       # java binding.  When libunwind is supported on PPC/PPC64, libuwind
-       # and its java bindings could be built unconditionally.
-       FILE_LIST="${FILE_LIST} lib/unwind"
-       # Now run a separate aclocal/autoconf/automake for libunwind
-       cd libunwind
-       echo "Running aclocal ... for libunwind"
-       aclocal
-       echo "Running autoconf ... for libunwind"
-       autoconf -f
-       echo "Running autoheader ... for libunwind"
-       autoheader
-       cd ..
-       ;;
-esac
-
 ./common/Makefile.gen.sh $FILE_LIST
     
 
@@ -95,4 +75,14 @@ automake --add-missing
 cd ../antlr
 echo "Running autoconf ... for antlr"
 autoconf -f
+cd ..
+
+# Now run a separate aclocal/autoconf/automake for libunwind
+cd libunwind
+echo "Running aclocal ... for libunwind"
+aclocal
+echo "Running autoconf ... for libunwind"
+autoconf -f
+echo "Running autoheader ... for libunwind"
+autoheader
 cd ..

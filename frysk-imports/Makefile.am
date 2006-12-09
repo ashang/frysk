@@ -40,26 +40,14 @@
 include common/Makefile.rules
 include Makefile.gen
 
-CHECK_SUBDIRS = \
+SUBDIRS = \
 	jline \
 	tests \
 	cdtparser \
 	junit \
 	elfutils \
-	getopt
-
-SUBDIRS = $(CHECK_SUBDIRS)
-
-# Add in libunwind only for certain arches
-if USE_LIBUNWIND
-SUBDIRS += libunwind
-endif
-
-# On certain platforms, "make check" in libunwind is disabled.
-# (This is probably not portable, but we do not mind.)
-if !CHECK_LIBUNWIND
-check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
-endif
+	getopt \
+	libunwind
 
 EXTRA_DIST += \
 	frysk/ChangeLog \
@@ -81,12 +69,8 @@ GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 GEN_GCJ_LDADD += -lstdc++
-
-# Add in libunwind only for certain arches
-if USE_LIBUNWIND
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a \
-                ./libunwind/src/libunwind-$(libunwind_cpu).a 
-endif
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-$(libunwind_cpu).a 
 
 # For CNI code.
 AM_CXXFLAGS += -I$(srcdir)/include
