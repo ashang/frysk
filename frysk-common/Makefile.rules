@@ -511,8 +511,8 @@ distclean-cvsignored:
 # directories (as occurs when building in the source tree).  An
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
-CLEANFILES += files.list
-files.list:
+CLEANFILES += files-java.list
+files-java.list:
 	topdirs= ; \
 	for d in $(top_builddir) $(top_srcdir) ; do \
 	    p=`cd $$d && pwd` ; \
@@ -527,11 +527,11 @@ files.list:
 	    done \
 	done | sort > $@.tmp
 	mv $@.tmp $@
-${GEN_DIRNAME}.jar: files.list
+${GEN_DIRNAME}.jar: files-java.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)
 	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) \
-		@$(top_builddir)/files.list \
+		@$(top_builddir)/files-java.list \
 		2>&1 | tee $*.log
 	if test -s $*.log ; \
 	then rm $*.log ; false ; \
@@ -554,13 +554,13 @@ clean-classes-dir:
 
 all-local: checked-ecj-compile
 CLEANFILES += checked-ecj-compile
-checked-ecj-compile: files.list $(GEN_DIRNAME).jar
+checked-ecj-compile: files-java.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ
 	$(if $(prune_ecj), \
-	grep -v $(prune_ecj) $(top_builddir)/files.list > $(top_builddir)/files.list.ecj, \
-	cp $(top_builddir)/files.list $(top_builddir)/files.list.ecj)
+	grep -v $(prune_ecj) $(top_builddir)/files-java.list > $(top_builddir)/files-java.list.ecj, \
+	cp $(top_builddir)/files-java.list $(top_builddir)/files-java.list.ecj)
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
@@ -569,12 +569,12 @@ if HAVE_ECJ
 		-warn:+semicolon \
 		-sourcepath $(SOURCEPATH) \
 		-classpath $(CLASSPATH) \
-		@$(top_builddir)/files.list.ecj \
+		@$(top_builddir)/files-java.list.ecj \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \
 	then rm $@.log ; false ; \
 	fi
-	rm -f $@.log $(top_builddir)/files.list.ecj
+	rm -f $@.log $(top_builddir)/files-java.list.ecj
 endif
 	touch $@
 .PHONY: clean-ecj-dir

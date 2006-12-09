@@ -1,3 +1,8 @@
+2006-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (checked-ecj-compile): Rename files.list to
+	files-java.list.
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Add --cni flag, generate files.list
