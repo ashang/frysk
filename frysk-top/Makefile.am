@@ -82,8 +82,10 @@ javadoc: all
 			( \
 				cd $$d ; \
 				find $$b \
-					-path '*/*dir/*' -prune -o \
-					-name '[A-Za-z]*\.java' -print \
+				-path '*/*dir/*' -prune \
+				-o -name '[A-Za-z]*\.java' -print \
+				-o -name 'package.html' -print \
+				-o -path '*/doc-files/*.jpg' -print \
 				| tar cfT - - ; \
 			) | ( \
 				cd javadoc/source/$$scope ; \

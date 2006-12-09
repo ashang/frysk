@@ -1,5 +1,7 @@
 2006-12-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (javadoc): Copy over .jpg and package.html files.
+
 	* Makefile.am (SOURCEPATH): Delete.
 	(SOURCEDIRS): Add *dir directories.
 	(javadoc): Re-implement.  Copy java source to working directory;
