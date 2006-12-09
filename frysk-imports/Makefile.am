@@ -68,6 +68,7 @@ EXTRA_DIST += \
 	lib/dw/ChangeLog \
 	lib/elf/ChangeLog \
 	lib/opcodes/ChangeLog \
+	lib/stdcpp/ChangeLog \
 	frysk/pkgdatadir/test-core.bz2.uu \
 	frysk/pkgdatadir/helloworld.o.bz2.uu
 
@@ -79,6 +80,7 @@ GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
+GEN_GCJ_LDADD += -lstdc++
 
 # Add in libunwind only for certain arches
 if USE_LIBUNWIND

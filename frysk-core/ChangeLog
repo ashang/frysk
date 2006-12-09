@@ -1,3 +1,7 @@
+2006-12-08  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Added -lstdc++.
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_SOURCEPATH, GEN_GCJ_LDADD): Remove references

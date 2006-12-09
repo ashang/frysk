@@ -1,3 +1,9 @@
+2006-12-08  Nurdin Premji  <npremji@redhat.com>
+
+	* bootstrap.sh (FILE_LIST): Added lib/stdcpp.
+	* Makefile.am (EXTRA_DIST): added lib/stdcpp/ChangeLog.
+	(GEN_GCJ_LDADD): Added -lstdc++
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (AM_CXXFLAGS): Add include/ directory.

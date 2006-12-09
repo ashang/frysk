@@ -1,0 +1,5 @@
+2006-12-08  Nurdin Premji  <npremji@redhat.com>
+
+	* TestDemangler.java: Added.
+	* Demangler.java: Added.
+	* cni/Demangler.cxx: Added.

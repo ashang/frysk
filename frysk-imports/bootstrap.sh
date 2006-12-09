@@ -48,6 +48,7 @@ FILE_LIST="frysk \
     getopt/getopt.jar \
     lib/dw \
     lib/elf \
+    lib/stdcpp \
     lib/opcodes"
     
 target_cpu=`uname -a`
