@@ -558,7 +558,7 @@ done | sort -u
 print_header "... glade_DATA"
 echo "gladedir = \$(pkgdatadir)/glade"
 echo "glade_DATA ="
-find ${dirs} -type f -name "[A-Za-z]*.glade" | while read file
+find ${dirs} -type f -name "[A-Za-z]*.glade" | sort -f | while read file
 do
   echo glade_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -636,7 +636,7 @@ done
 #print_header "... sample_DATA"
 #echo "sampledir = \$(pkgdatadir)/samples"
 #echo "sample_DATA ="
-#find ${dirs} -type f -name 'test*.cpp' | while read file
+#find ${dirs} -type f -name 'test*.cpp' | sort -f | while read file
 #do
 #  echo sample_DATA += ${file}
 #  echo EXTRA_DIST += ${file}
