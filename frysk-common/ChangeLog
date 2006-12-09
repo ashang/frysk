@@ -1,7 +1,9 @@
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Sort test files.
+
 	* Makefile.gen.sh: Sort the list of .glade and .cpp files.
-	
+
 	* Makefile.gen.sh: Sort the list of .fig files.
 
 2006-12-06  Andrew Cagney  <cagney@redhat.com>

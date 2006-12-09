@@ -646,7 +646,7 @@ done
 print_header "... test_DATA"
 echo "testdir = \$(pkgdatadir)/test"
 echo "test_DATA ="
-find ${dirs} -type f -name 'test*' | while read file
+find ${dirs} -type f -name 'test*' | sort -f | while read file
 do
   echo test_DATA += ${file}
   echo EXTRA_DIST += ${file}
