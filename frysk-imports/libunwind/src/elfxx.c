@@ -55,6 +55,8 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
   if (!elf_w (valid_object) (ei))
     return -UNW_ENOINFO;
 
+  buf_len--;	/* Terminating 0. */
+
   soff = ehdr->e_shoff;
   if (soff + ehdr->e_shnum * ehdr->e_shentsize > ei->size)
     {
@@ -107,7 +109,6 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
 		  if ((Elf_W (Addr)) (ip - val) < min_dist)
 		    {
 		      min_dist = (Elf_W (Addr)) (ip - val);
-		      buf_len--;
 		      if (buf)
 			{
 			  strncpy (buf, strtab + sym->st_name, buf_len);

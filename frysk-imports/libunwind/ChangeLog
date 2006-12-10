@@ -1,5 +1,9 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/elfxx.c (lookup_symbol): Fixed excessive buffer size requirement.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* tests/test-ptrace.c (main): Check for too many unexpected child
 	signals, such as the common `SIGSEGV'.
 
