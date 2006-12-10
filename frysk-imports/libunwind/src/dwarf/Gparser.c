@@ -777,10 +777,18 @@ apply_reg_state (struct dwarf_cursor *c, struct dwarf_reg_state *rs)
 	}
     }
   c->cfa = cfa;
-  ret = dwarf_get (c, c->loc[c->ret_addr_column], &ip);
-  if (ret < 0)
-    return ret;
-  c->ip = ip;
+  /* After fixing glibc's `__restore_rt' unwinding by CFI in:
+     	http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sysdeps/unix/sysv/linux/x86_64/sigaction.c.diff?cvsroot=glibc&r1=text&tr1=1.10&r2=text&tr2=1.12&f=u
+     we need to check for the frame stop (indicated by `ip == 0').  */
+  if (DWARF_IS_NULL_LOC (c->loc[c->ret_addr_column]))
+    c->ip = 0;
+  else
+    {
+      ret = dwarf_get (c, c->loc[c->ret_addr_column], &ip);
+      if (ret < 0)
+	return ret;
+      c->ip = ip;
+    }
   /* XXX: check for ip to be code_aligned */
 
   if (c->ip == prev_ip && c->cfa == prev_cfa)
