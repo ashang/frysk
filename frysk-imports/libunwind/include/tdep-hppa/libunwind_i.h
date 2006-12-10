@@ -237,6 +237,7 @@ dwarf_put (struct dwarf_cursor *c, dwarf_loc_t loc, unw_word_t val)
 # define tdep_put_unwind_info(c,pi)					\
 	(*(c)->as->acc.put_unwind_info)((c)->as, (pi), (c)->as_arg)
 #endif
+#define tdep_fetch_proc_info_post(c, ip, need_unwind_info) 0
 
 #define tdep_get_as(c)			((c)->dwarf.as)
 #define tdep_get_as_arg(c)		((c)->dwarf.as_arg)

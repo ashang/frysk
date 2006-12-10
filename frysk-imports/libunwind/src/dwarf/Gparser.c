@@ -410,6 +410,10 @@ fetch_proc_info (struct dwarf_cursor *c, unw_word_t ip, int need_unwind_info)
 
   c->pi_valid = 1;
   c->pi_is_dynamic = dynamic;
+
+  if (ret >= 0)
+    tdep_fetch_proc_info_post (c, ip, need_unwind_info);
+
   return ret;
 }
 

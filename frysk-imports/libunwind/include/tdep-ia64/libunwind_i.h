@@ -239,6 +239,7 @@ extern void tdep_init (void);
 extern int tdep_find_proc_info (unw_addr_space_t as, unw_word_t ip,
 				unw_proc_info_t *pi, int need_unwind_info,
 				void *arg);
+#define tdep_fetch_proc_info_post(c, ip, need_unwind_info) 0
 extern void tdep_put_unwind_info (unw_addr_space_t as,
 				  unw_proc_info_t *pi, void *arg);
 extern void *tdep_uc_addr (ucontext_t *uc, unw_regnum_t regnum,
