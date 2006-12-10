@@ -110,15 +110,15 @@ unw_step (unw_cursor_t *cursor)
 
   if (c->sigcontext_format == X86_64_SCF_LINUX_RT_SIGFRAME)
     {
-      unw_word_t err, trapno;
+      unw_word_t trapno, err;
       int trapno_ret, err_ret;
 
       trapno_ret = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_TRAPNO, 0), &trapno);
       err_ret = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_ERR, 0), &err);
 
       Debug (2, "x86_64 sigcontext (post-step): CFA = 0x%lx, trapno = %d, err = 0x%x\n",
-	     (unsigned long) c->dwarf.cfa, (err_ret < 0 ? -1 : (int) err),
-	     (trapno_ret < 0 ? -1 : (int) trapno));
+	     (unsigned long) c->dwarf.cfa, (trapno_ret < 0 ? -1 : (int) trapno),
+	     (err_ret < 0 ? -1 : (int) err));
     }
 
   if (unlikely (ret < 0))

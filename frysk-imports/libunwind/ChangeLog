@@ -1,5 +1,9 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/x86_64/Gstep.c (unw_step): Fixed debug message exhanged values.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
         * src/x86/Gstep.c (unw_step): Handle the case of `c->dwarf.ip == 0'.
 	* src/x86_64/Gstep.c (code_descriptor_trap): Handle the cases of signal
 	frame leaving stale address due to page fault on an instruction fetch.
