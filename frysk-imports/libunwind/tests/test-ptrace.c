@@ -315,6 +315,9 @@ main (int argc, char **argv)
 	  else
 	    {
 	      pending_sig = WSTOPSIG (status);
+	      /* Avoid deadlock:  */
+	      if (WSTOPSIG (status) == SIGKILL)
+	        break;
 	      if (trace_mode == TRIGGER)
 		{
 		  if (WSTOPSIG (status) == SIGUSR1)
@@ -322,6 +325,17 @@ main (int argc, char **argv)
 		  else if  (WSTOPSIG (status) == SIGUSR2)
 		    state = 1;
 		}
+	      if (WSTOPSIG (status) != SIGUSR1 && WSTOPSIG (status) != SIGUSR2)
+	        {
+		  static int count = 0;
+
+		  if (count++ > 100)
+		    {
+		      panic ("Too many child unexpected signals (now %d)\n",
+			     WSTOPSIG (status));
+			killed = 1;
+		    }
+	        }
 	    }
 	}
 
