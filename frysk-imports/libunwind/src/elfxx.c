@@ -100,23 +100,58 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
 	      if (ELF_W (ST_TYPE) (sym->st_info) == STT_FUNC
 		  && sym->st_shndx != SHN_UNDEF)
 		{
+		  Elf_W (Shdr) *shdr2;
+		  int i2;
+
 		  val = sym->st_value;
 		  if (sym->st_shndx != SHN_ABS)
 		    val += load_offset;
+
+		  if (ip < val)
+		    continue;
+		  if (sym->st_size && ip >= val + sym->st_size)
+		    continue;
+
+		  if ((Elf_W (Addr)) (ip - val) >= min_dist)
+		    continue;
+
+		  /* Check both the address and the symbol belong to the same
+		     section.  */
+		  shdr2 = (Elf_W (Shdr) *) ((char *) ei->image + soff);
+		  for (i2 = 0; i2 < ehdr->e_shnum; ++i2)
+		    {
+		      unw_word_t addr_start;
+
+		      /* Prefer `sh_addr' as for the main executable:
+		         load_offset=0x0, sh_addr=0x400200, sh_offset=0x200
+			 but for a shared library:
+			 load_offset=0x2aaaaaf1c000, sh_addr=0x1d710, sh_offset=0x1d710  */
+		      if (!load_offset)
+		        addr_start = shdr2->sh_addr;
+		      else
+		        addr_start = load_offset + shdr2->sh_offset;
+		      if (shdr2->sh_type == SHT_PROGBITS
+			  && ip >= addr_start
+			  && ip < addr_start + shdr2->sh_size
+			  && val >= addr_start
+			  && val < addr_start + shdr2->sh_size)
+			break;
+		      shdr2 = (Elf_W (Shdr) *) (((char *) shdr2) + ehdr->e_shentsize);
+		    }
+		  if (i2 >= ehdr->e_shnum)
+		    continue;
+
 		  Debug (16, "0x%016lx info=0x%02x %s\n",
 			 (long) val, sym->st_info, strtab + sym->st_name);
 
-		  if ((Elf_W (Addr)) (ip - val) < min_dist)
+		  min_dist = (Elf_W (Addr)) (ip - val);
+		  if (buf)
 		    {
-		      min_dist = (Elf_W (Addr)) (ip - val);
-		      if (buf)
-			{
-			  strncpy (buf, strtab + sym->st_name, buf_len);
-			  buf[buf_len] = '\0';
-			}
-		      if (strlen (strtab + sym->st_name) > buf_len)
-			ret = -UNW_ENOMEM;
+		      strncpy (buf, strtab + sym->st_name, buf_len);
+		      buf[buf_len] = '\0';
 		    }
+		  if (strlen (strtab + sym->st_name) > buf_len)
+		    ret = -UNW_ENOMEM;
 		}
 	    }
 	  break;

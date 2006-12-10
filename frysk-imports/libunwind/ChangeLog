@@ -1,5 +1,10 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/elfxx.c (lookup_symbol): Avoid returning irrelevant symbols
+	defined as the last ones before the address in different section.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* src/elfxx.c (lookup_symbol): Fixed excessive buffer size requirement.
 
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
