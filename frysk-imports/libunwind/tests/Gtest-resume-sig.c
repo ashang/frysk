@@ -32,6 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #ifdef HAVE_IA64INTRIN_H
 # include <ia64intrin.h>
@@ -68,6 +69,7 @@ handler (int sig)
   unw_cursor_t c;
   char foo;
   int ret;
+  int stepno;
 
 #if UNW_TARGET_IA64
   if (verbose)
@@ -95,11 +97,32 @@ handler (int sig)
       if ((ret = unw_init_local (&c, &uc)) < 0)
 	panic ("unw_init_local() failed: ret=%d\n", ret);
 
-      if ((ret = unw_step (&c)) < 0)		/* step to signal trampoline */
-	panic ("unw_step(1) failed: ret=%d\n", ret);
+      /* After fixing glibc's `__restore_rt' unwinding by CFI in:
+	 	http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sysdeps/unix/sysv/linux/x86_64/sigaction.c.diff?cvsroot=glibc&r1=text&tr1=1.10&r2=text&tr2=1.12&f=u
+	 This test started failing as the original code stepped back directly
+	 out of `main' into `__libc_start_main' and so despite `SIGUSR2' was
+	 never hit (at least on GNU/Linux) the test PASSed due to exit code 0.
+	 Patch fixing the unwind is in Fedora Core glibc-2.5.90-11 upwards.
+	 Needing to implement also non-ia64 `resume_restores_sigmask'.  */
 
-      if ((ret = unw_step (&c)) < 0)		/* step to signal trampoline */
-	panic ("unw_step(2) failed: ret=%d\n", ret);
+      for (stepno = 0;; stepno++)
+        {
+	  char buf[512];
+
+	  if ((ret = unw_get_proc_name (&c, buf, sizeof (buf), NULL)) < 0)
+	    panic ("unw_get_proc_name(%d) failed: ret=%d\n", stepno, ret);
+	  else
+	    {
+	      if (verbose)
+	        printf ("unw_get_proc_name(%d): %s\n", stepno, buf);
+	      if (!strcmp (buf, "kill") || !strcmp (buf, "main"))
+		break;
+	    }
+
+	  /* Step one frame behind `main' to get into `__libc_start_main'.  */
+	  if ((ret = unw_step (&c)) < 0)
+	    panic ("unw_step(%d) failed: ret=%d\n", stepno, ret);
+	}
 
       if ((ret = unw_get_reg (&c, UNW_REG_IP, &ip)) < 0)
 	panic ("unw_get_reg(IP) failed: ret=%d\n", ret);

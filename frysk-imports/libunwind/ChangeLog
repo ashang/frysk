@@ -1,5 +1,10 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* tests/Gtest-resume-sig.c (handler): Fixed false PASS on non-ia64.
+	Be adaptive to the number of unwinding steps from `SIGUSR1'.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* src/dwarf/Gparser.c (apply_reg_state): Handle undefined PC by
 	`c->ip = 0' as in the case of the outermost frame of clone(3).
 
