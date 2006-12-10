@@ -1,0 +1,14 @@
+#!/bin/sh
+# $Id$
+
+# On i?86 it assumes the default `/proc/sys/kernel/vdso' == 1.
+sigframe=__kernel_sigreturn
+if [ `uname -m` = x86_64 ]
+then
+	sigframe=__restore_rt 
+fi 
+   
+./test-ptrace -t -b keeper,$sigframe,bowler+,main+,__libc_start_main+,_start+  ./test-ptrace-signull data_read
+./test-ptrace -t -b keeper,$sigframe,bowler+,main+,__libc_start_main+,_start+  ./test-ptrace-signull data_write
+./test-ptrace -t -b keeper,$sigframe,bowler+,main+,__libc_start_main+,_start+ ./test-ptrace-signull code_entry_point
+./test-ptrace -t -b keeper,$sigframe,bowler+,main+,__libc_start_main+,_start+  ./test-ptrace-signull code_descriptor

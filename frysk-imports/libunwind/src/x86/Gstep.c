@@ -47,11 +47,18 @@ unw_step (unw_cursor_t *cursor)
     {
       /* DWARF failed, let's see if we can follow the frame-chain
 	 or skip over the signal trampoline.  */
-      struct dwarf_loc ebp_loc, eip_loc;
+      struct dwarf_loc eip_loc;
 
       Debug (13, "dwarf_step() failed (ret=%d), trying frame-chain\n", ret);
 
-      if (unw_is_signal_frame (cursor))
+      if (c->dwarf.ip == 0)
+        {
+	  Debug (13, "[EIP=0]\n");
+
+	  eip_loc = DWARF_LOC (c->dwarf.cfa, 0);
+	  c->dwarf.cfa += 4;
+	}
+      else if (unw_is_signal_frame (cursor))
 	{
 	  /* XXX This code is Linux-specific! */
 
@@ -96,7 +103,6 @@ unw_step (unw_cursor_t *cursor)
 	      sc_addr = sigcontext_ptr + LINUX_UC_MCONTEXT_OFF;
 	    }
 	  esp_loc = DWARF_LOC (sc_addr + LINUX_SC_ESP_OFF, 0);
-	  ebp_loc = DWARF_LOC (sc_addr + LINUX_SC_EBP_OFF, 0);
 	  eip_loc = DWARF_LOC (sc_addr + LINUX_SC_EIP_OFF, 0);
 	  ret = dwarf_get (&c->dwarf, esp_loc, &c->dwarf.cfa);
 	  if (ret < 0)
@@ -128,17 +134,16 @@ unw_step (unw_cursor_t *cursor)
 	  Debug (13, "[EBP=0x%x] = 0x%x\n", DWARF_GET_LOC (c->dwarf.loc[EBP]),
 		 c->dwarf.cfa);
 
-	  ebp_loc = DWARF_LOC (c->dwarf.cfa, 0);
-	  eip_loc = DWARF_LOC (c->dwarf.cfa + 4, 0);
-	  c->dwarf.cfa += 8;
-
 	  /* Mark all registers unsaved, since we don't know where
 	     they are saved (if at all), except for the EBP and
 	     EIP.  */
 	  for (i = 0; i < DWARF_NUM_PRESERVED_REGS; ++i)
 	    c->dwarf.loc[i] = DWARF_NULL_LOC;
+
+	  c->dwarf.loc[EBP] = DWARF_LOC (c->dwarf.cfa, 0);
+	  eip_loc = DWARF_LOC (c->dwarf.cfa + 4, 0);
+	  c->dwarf.cfa += 8;
 	}
-      c->dwarf.loc[EBP] = ebp_loc;
       c->dwarf.loc[EIP] = eip_loc;
       c->dwarf.ret_addr_column = EIP;
 

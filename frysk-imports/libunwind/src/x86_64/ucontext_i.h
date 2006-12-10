@@ -39,3 +39,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #define UC_MCONTEXT_GREGS_RCX	0x98
 #define UC_MCONTEXT_GREGS_RSP	0xa0
 #define UC_MCONTEXT_GREGS_RIP	0xa8
+#define UC_MCONTEXT_GREGS_ERR	0xc0
+#define UC_MCONTEXT_GREGS_TRAPNO	0xc8
+
+#define UC_MCONTEXT_GREGS_TRAPNO_PF 14	/* Page-Fault Exception */
+
+/* http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/24593.pdf
+   Publication # 24593, Revision 3.12, page 219 (261/488):  */
+#define UC_MCONTEXT_GREGS_ERR_P_BIT   0
+#define UC_MCONTEXT_GREGS_ERR_RW_BIT  1
+#define UC_MCONTEXT_GREGS_ERR_US_BIT  2
+#define UC_MCONTEXT_GREGS_ERR_RSV_BIT 3
+#define UC_MCONTEXT_GREGS_ERR_ID_BIT  4

@@ -29,11 +29,68 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include "ucontext_i.h"
 #include <signal.h>
 
+/* Try to skip single-word (8 bytes) return address on stack left there in some
+   cases of the signal frame.
+   Unsure if the real return address gets pushed to the stack exactly when this
+   bit is set.  If it is not detectable we would need to keep the return
+   address on stack and improve the code path
+   	dwarf_step() failed (ret=%d), trying frame-chain
+   below to disassemble the return address and not to pop two words
+   automatically as no stack frame pointer is present in these cases there:
+   	./test-ptrace-signull code_entry_point: err=0x14
+   	./test-ptrace-signull code_descriptor:  err=0x15  */
+
+static int
+code_descriptor_trap (struct cursor *c, struct dwarf_loc *rip_loc_pointer)
+{
+  unw_word_t trapno, err;
+  int i;
+
+  if (c->sigcontext_format != X86_64_SCF_LINUX_RT_SIGFRAME)
+    return -UNW_EBADFRAME;
+
+  i = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_TRAPNO, 0), &trapno);
+  if (i < 0)
+    {
+      Debug (2, "failed to query [sigframe:trapno]; %d\n", i);
+      return i;
+    }
+  /* page fault */
+  if (trapno != UC_MCONTEXT_GREGS_TRAPNO_PF)
+    {
+      Debug (2, "[sigframe:trapno] %d not Page-Fault Exception\n", (int) trapno);
+      return -UNW_EBADFRAME;
+    }
+
+  i = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_ERR, 0), &err);
+  if (i < 0)
+    {
+      Debug (2, "failed to query [sigframe:err]; %d\n", i);
+      return i;
+    }
+  if (!(err & (1 << UC_MCONTEXT_GREGS_ERR_ID_BIT)))
+    {
+      Debug (2, "[sigframe:err] 0x%x not &0x%x (instruction fetch)\n",
+	     (int) err, (1 << UC_MCONTEXT_GREGS_ERR_ID_BIT));
+      return -UNW_EBADFRAME;
+    }
+
+  Debug (1, "[sigframe] Page-Fault Exception, instruction fetch (err = 0x%x)\n", (int) err);
+
+  *rip_loc_pointer = DWARF_LOC (c->dwarf.cfa, 0);
+  c->dwarf.cfa += 8;
+
+  return 1;
+}
+
 PROTECTED int
 unw_step (unw_cursor_t *cursor)
 {
   struct cursor *c = (struct cursor *) cursor;
   int ret, i;
+  struct dwarf_loc rip_loc;
+  int rip_loc_set = 0;
+  unw_word_t prev_ip = c->dwarf.ip, prev_cfa = c->dwarf.cfa;
 
   Debug (1, "(cursor=%p, ip=0x%016llx)\n",
 	 c, (unsigned long long) c->dwarf.ip);
@@ -41,20 +98,30 @@ unw_step (unw_cursor_t *cursor)
   /* Try DWARF-based unwinding... */
   ret = dwarf_step (&c->dwarf);
 
+  /* Skip the faulty address left alone on the stack.  */
+  if (ret >= 0 && code_descriptor_trap (c, &rip_loc) > 0)
+    rip_loc_set = 1;
+
   if (ret < 0 && ret != -UNW_ENOINFO)
     {
       Debug (2, "returning %d\n", ret);
       return ret;
     }
 
-  if (likely (ret >= 0))
+  if (c->sigcontext_format == X86_64_SCF_LINUX_RT_SIGFRAME)
     {
-      /* x86_64 ABI specifies that end of call-chain is marked with a
-	 NULL RBP.  */
-      if (DWARF_IS_NULL_LOC (c->dwarf.loc[RBP]))
-	c->dwarf.ip = 0;
+      unw_word_t err, trapno;
+      int trapno_ret, err_ret;
+
+      trapno_ret = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_TRAPNO, 0), &trapno);
+      err_ret = dwarf_get (&c->dwarf, DWARF_LOC (c->sigcontext_addr + UC_MCONTEXT_GREGS_ERR, 0), &err);
+
+      Debug (2, "x86_64 sigcontext (post-step): CFA = 0x%lx, trapno = %d, err = 0x%x\n",
+	     (unsigned long) c->dwarf.cfa, (err_ret < 0 ? -1 : (int) err),
+	     (trapno_ret < 0 ? -1 : (int) trapno));
     }
-  else
+
+  if (unlikely (ret < 0))
     {
       /* DWARF failed.  There isn't much of a usable frame-chain on x86-64,
 	 but we do need to handle two special-cases:
@@ -68,12 +135,18 @@ unw_step (unw_cursor_t *cursor)
 	      via CALLQ.  Try this for all non-signal trampoline
 	      code.  */
 
-      unw_word_t prev_ip = c->dwarf.ip, prev_cfa = c->dwarf.cfa;
-      struct dwarf_loc rbp_loc, rsp_loc, rip_loc;
+      struct dwarf_loc rbp_loc, rsp_loc;
 
       Debug (13, "dwarf_step() failed (ret=%d), trying frame-chain\n", ret);
 
-      if (unw_is_signal_frame (cursor))
+      if (c->dwarf.ip == 0)
+        {
+	  Debug (1, "[RIP=0]\n");
+
+	  rip_loc = DWARF_LOC (c->dwarf.cfa, 0);
+	  c->dwarf.cfa += 8;
+	}
+      else if (unw_is_signal_frame (cursor))
 	{
 	  unw_word_t ucontext = c->dwarf.cfa;
 
@@ -109,6 +182,9 @@ unw_step (unw_cursor_t *cursor)
 	  c->dwarf.loc[R14] = DWARF_LOC (ucontext + UC_MCONTEXT_GREGS_R14, 0);
 	  c->dwarf.loc[R15] = DWARF_LOC (ucontext + UC_MCONTEXT_GREGS_R15, 0);
 	  c->dwarf.loc[RIP] = DWARF_LOC (ucontext + UC_MCONTEXT_GREGS_RIP, 0);
+
+	  c->dwarf.loc[RBP] = rbp_loc;
+	  c->dwarf.loc[RSP] = rsp_loc;
 	}
       else
 	{
@@ -149,13 +225,19 @@ unw_step (unw_cursor_t *cursor)
 	  /* Mark all registers unsaved */
 	  for (i = 0; i < DWARF_NUM_PRESERVED_REGS; ++i)
 	    c->dwarf.loc[i] = DWARF_NULL_LOC;
-	}
 
-      c->dwarf.loc[RBP] = rbp_loc;
-      c->dwarf.loc[RSP] = rsp_loc;
+	  c->dwarf.loc[RBP] = rbp_loc;
+	  c->dwarf.loc[RSP] = rsp_loc;
+	}
+      rip_loc_set = 1;
+    }
+  if (rip_loc_set)
+    {
       c->dwarf.loc[RIP] = rip_loc;
       c->dwarf.ret_addr_column = RIP;
 
+      /* x86_64 ABI specifies that end of call-chain is marked with a
+	 NULL RBP.  */
       if (!DWARF_IS_NULL_LOC (c->dwarf.loc[RBP]))
 	{
 	  ret = dwarf_get (&c->dwarf, c->dwarf.loc[RIP], &c->dwarf.ip);
@@ -170,10 +252,11 @@ unw_step (unw_cursor_t *cursor)
 	}
       else
 	c->dwarf.ip = 0;
-
-      if (c->dwarf.ip == prev_ip && c->dwarf.cfa == prev_cfa)
-	return -UNW_EBADFRAME;
     }
+
+  if (c->dwarf.ip == prev_ip && c->dwarf.cfa == prev_cfa)
+    return -UNW_EBADFRAME;
+
   ret = (c->dwarf.ip == 0) ? 0 : 1;
   Debug (2, "returning %d\n", ret);
   return ret;
