@@ -1,3 +1,11 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Clean up; remove .deps, gij.sh, TestRunner,
+	TestRunner.java, TestJUnits.java, Makefile, *.db, *jar,
+	config.log, config.status; add files.list.
+
+	depcomp install-sh missing config.guess config.sub
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass --cni to Makefile.gen.sh.

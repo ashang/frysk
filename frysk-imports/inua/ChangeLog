@@ -1,3 +1,9 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* eio/cni/.cvsignore: Delete.
+	* elf/.cvsignore: Delete.
+	* eio/.cvsignore: Delete.
+
 2006-10-31  Tim Moore  <timoore@redhat.com>
 
 	* ULong.java: New file.

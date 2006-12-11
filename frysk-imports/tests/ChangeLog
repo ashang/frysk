@@ -1,3 +1,7 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* werror/.cvsignore: Delete.
+
 2006-11-29  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3595/detach-multi-thread.c (main): Simplify, remove any
