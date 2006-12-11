@@ -2,10 +2,11 @@ Makefile.gen
 Makefile.in
 aclocal.m4
 autom4te.cache
-configure
-missing
-depcomp
-install-sh
+compile
 config.guess
 config.sub
-compile
+configure
+depcomp
+files.list
+install-sh
+missing

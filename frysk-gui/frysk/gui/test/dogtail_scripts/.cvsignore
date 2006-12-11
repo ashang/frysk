@@ -1,1 +1,3 @@
+# Bug frysk/3227 build leaves source tree containing .pyc files from
+# dogtail stuff.
 *.pyc
