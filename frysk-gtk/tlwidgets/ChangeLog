@@ -1,3 +1,9 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* src/widgets/.cvsignore: Delete.
+	* test/widget/.cvsignore: Delete.
+	* test/wrapper/.cvsignore: Delete.
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* test/wrapper/Makefile-pty: Refer to frysk-imports, intead of frysk-sys.
