@@ -1,3 +1,9 @@
+2006-12-11  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java: Stripped down regex's to just the common text between threads.
+	(testClone): Re-enabled
+	(testStressMultiThreadedDetach): Ditto.
+
 2006-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFStack.java: Replace pkglibexecdir with pkglibdir.

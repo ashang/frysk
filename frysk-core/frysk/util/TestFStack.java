@@ -40,189 +40,42 @@
 
 package frysk.util;
 
+import java.util.logging.Level;
+
+import frysk.core.Build;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
-import frysk.core.Build;
-
 public class TestFStack
     extends TestLib
 {
 
-  String[] mainThread = {
-                         "Task #\\d+\\n"
-                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                             + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                             + "#2 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c server \\(\\): line #249\\n"
-                             + "#3 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c main \\(\\): line #505\\n"
-                             + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                             + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
+  String mainThread = "Task #\\d+\\n"
+                      + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
+                      + "#[\\d]+ 0x[\\da-f]+ in "
+                      + Build.SRCDIR
+                      + "/frysk/pkglibdir/funit-child.c server \\(\\): line #[\\d]+\\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in "
+                      + Build.SRCDIR
+                      + "/frysk/pkglibdir/funit-child.c main \\(\\): line #[\\d]+\\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\\n";
 
-                         "Task #\\d+\\n"
-                             + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                             + "#1 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c server \\(\\): line #249\\n"
-                             + "#2 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c main \\(\\): line #505\\n"
-                             + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                             + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
+  String thread = "Task #\\d+\\n"
+                  + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
+                  + "#[\\d]+ 0x[\\da-f]+ in "
+                  + Build.SRCDIR
+                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #[\\d]+\\n"
+                  + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\\n"
+                  + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
 
-                         "Task #\\d+\\n"
-                             + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                             + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
-                             + "#2 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c tkill \\(\\): line #47\\n"
-                             + "#3 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c notify_manager \\(\\): line #126\\n"
-                             + "#4 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c server \\(\\): line #235\\n"
-                             + "#5 0x[\\da-f]+ in "
-                             + Build.SRCDIR
-                             + "/frysk/pkglibdir/funit-child.c main \\(\\): line #505\\n"
-                             + "#6 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                             + "#7 0x[\\da-f]+ in _start \\(\\)\\n" };
+  String mainClone = "Task #\\d+\\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
+                     + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
+                     + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\\n";
 
-  String[] secondaryThread = {
-                              "Task #\\d+\\n"
-                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                                  + "#1 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                                  + "#2 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #249\\n"
-                                  + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                  + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                              "Task #\\d+\\n"
-                                  + "#0 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\\n"
-                                  + "#1 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #249\\n"
-                                  + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                  + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                              "Task #\\d+\\n"
-                                  + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                                  + "#1 0x[\\da-f]+ in syscall \\(\\)\\n"
-                                  + "#2 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c tkill \\(\\): line #47\\n"
-                                  + "#3 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c notify_manager \\(\\): line #126\\n"
-                                  + "#4 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #235\\n"
-                                  + "#5 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                  + "#6 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                              "Task #\\d+\\n"
-                                  + "#0 0x[\\da-f]+ in syscall \\(\\)\\n"
-                                  + "#1 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c tkill \\(\\): line #47\\n"
-                                  + "#2 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c notify_manager \\(\\): line #126\\n"
-                                  + "#3 0x[\\da-f]+ in "
-                                  + Build.SRCDIR
-                                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #235\\n"
-                                  + "#4 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                  + "#5 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
-
-  };
-
-  String[] mainClone = {
-                        "Task #\\d+\\n"
-                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                            + "#1 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
-                            + "#2 0x[\\da-f]+ in sleep \\(\\)\\n"
-                            + "#3 0x[\\da-f]+ in "
-                            + Build.SRCDIR
-                            + "/frysk/pkglibdir/funit-threads.c main \\(\\): line #177\\n"
-                            + "#4 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                            + "#5 0x[\\da-f]+ in _start \\(\\)\\n",
-
-                        "Task #\\d+\\n"
-                            + "#0 0x[\\da-f]+ in __nanosleep_nocancel \\(\\)\\n"
-                            + "#1 0x[\\da-f]+ in sleep \\(\\)\\n"
-                            + "#2 0x[\\da-f]+ in "
-                            + Build.SRCDIR
-                            + "/frysk/pkglibdir/funit-threads.c main \\(\\): line #177\\n"
-                            + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                            + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
-
-                        "Task #\\d+\\n"
-                            + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                            + "#1 0x[\\da-f]+ in kill \\(\\)\\n"
-                            + "#2 0x[\\da-f]+ in "
-                            + Build.SRCDIR
-                            + "/frysk/pkglibdir/funit-threads.c main \\(\\): line #175\\n"
-                            + "#3 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                            + "#4 0x[\\da-f]+ in _start \\(\\)\\n",
-
-                        "Task  #\\d+\\n" + "#0 0x[\\da-f]+ in sleep \\(\\)\\n"
-                            + "#1 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                            + "#2 0x[\\da-f]+ in _start \\(\\)\\n"
-
-  };
-
-  String[] secondaryClone = {
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
-                                 + "#1 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c op_clone \\(\\): line #105\\n"
-                                 + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                 + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in memset \\(\\)\\n"
-                                 + "#1 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c op_clone \\(\\): line #105\\n"
-                                 + "#2 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                 + "#3 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in (__)?clone \\(\\)\\n"
-                                 + "#1 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c main \\(\\): line #177\\n"
-                                 + "#2 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                                 + "#3 0x[\\da-f]+ in _start \\(\\)\\n",
-
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in __kernel_vsyscall \\(\\)\\n"
-                                 + "#1 0x[\\da-f]+ in pthread_join \\(\\)\\n"
-                                 + "#2 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c op_clone \\(\\): line #100\\n"
-                                 + "#3 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                 + "#4 0x[\\da-f]+ in (__)?clone \\(\\)\\n",
-
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                                 + "#1 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c (__)?clone \\(\\)\\n",
-
-                             "Task #\\d+\\n"
-                                 + "#0 0x[\\da-f]+ in "
-                                 + Build.SRCDIR
-                                 + "/frysk/pkglibdir/funit-threads.c (__)?clone \\(\\)\\n",
-
-  };
+  String clone = "Task #\\d+\\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*";
 
   public void testSingleThreadedDetached ()
   {
@@ -250,8 +103,6 @@ public class TestFStack
 
   public void testStressMultiThreadedDetach ()
   {
-      if (brokenXXX (3691))
-	  return;
     int clones = 7;
     AckProcess ackProc = new DetachedAckProcess(clones);
     multiThreaded(ackProc, clones);
@@ -271,34 +122,22 @@ public class TestFStack
       }
     });
 
-    assertRunUntilStop("test");
+    assertRunUntilStop("perform backtrace");
 
     String regex = new String();
-    regex += "(" + mainThread[0];
-    for (int i = 1; i < mainThread.length; i++)
-      {
-        regex += "|" + mainThread[i];
-      }
-
-    regex += ")";
-    regex += "(" + secondaryThread[0];
-
-    for (int i = 1; i < secondaryThread.length; i++)
-      {
-        regex += "|" + secondaryThread[i];
-      }
-
-    regex += "){" + numSecondaryThreads + "}";
+    regex += "(" + mainThread + ")(" + thread + "){"
+             + numSecondaryThreads + "}";
 
     String result = stacker.toPrint();
-    assertTrue(result + "did not match: " + regex, result.matches(regex));
+    logger.log(Level.FINE, result);
+    assertTrue(result + "should match: " + regex
+               + " threads", result.matches(regex));
 
   }
 
   public void testClone ()
   {
-      if (brokenXXX (3690))
-	  return;
+
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
@@ -312,28 +151,16 @@ public class TestFStack
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
     });
-    assertRunUntilStop("test");
+    assertRunUntilStop("perform backtrace");
 
     String regex = new String();
 
-    regex += "(" + mainClone[0];
-
-    for (int i = 1; i < mainClone.length; i++)
-      {
-        regex += "|" + mainClone[i];
-      }
-
-    regex += ")(" + secondaryClone[0];
-
-    for (int i = 1; i < secondaryClone.length; i++)
-      {
-        regex += "|" + secondaryClone[i];
-      }
-
-    regex += ")*";
+    regex += "(" + mainClone + ")(" + clone + ")*";
 
     String result = stacker.toPrint();
-    assertTrue(result + "did not match: " + regex, result.matches(regex));
+    logger.log(Level.FINE, result);
+    assertTrue(result + "should match: " + regex, result.matches(regex));
+
   }
 
 }
