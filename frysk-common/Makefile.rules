@@ -633,6 +633,7 @@ checked-for-dejagnu:
 		echo "PASS: check for dejagnu" ; \
 	else \
 		echo "FAIL: check for dejagnu" ; \
+		exit 1 ; \
 	fi
 
 # Check for NULL== or null== in code base
@@ -687,7 +688,7 @@ checked-for-eclipse-residue:
 		-e 'TODO Auto-generated method stub' ; \
 	then \
 		echo "FAIL: code does not contain ECLIPSE residue" ; \
-		exit 0 ; \
+		exit 1 ; \
 	fi ; \
 	echo "PASS: code does not contain ECLIPSE residue"
 
