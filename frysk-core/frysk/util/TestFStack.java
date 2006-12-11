@@ -250,6 +250,8 @@ public class TestFStack
 
   public void testStressMultiThreadedDetach ()
   {
+      if (brokenXXX (3691))
+	  return;
     int clones = 7;
     AckProcess ackProc = new DetachedAckProcess(clones);
     multiThreaded(ackProc, clones);
@@ -295,6 +297,8 @@ public class TestFStack
 
   public void testClone ()
   {
+      if (brokenXXX (3690))
+	  return;
     int threads = 2;
     AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
