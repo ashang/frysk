@@ -141,7 +141,7 @@ public class TestStackBacktrace
     assertNotNull(frame);
 
     assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
+                                              "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("baz", frame.getMethodName());
     assertNull(frame.getInner());
     
@@ -150,21 +150,21 @@ public class TestStackBacktrace
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
+                                              "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("bar", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(71, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
+                                              "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("foo", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(81, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibexecdir/funit-rt-looper.c"));
+                                              "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("main", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(117, frame.getLineNumber());
@@ -256,32 +256,32 @@ public class TestStackBacktrace
     
     /* Main thread assertions */
     
-    assertTrue(this.frameTracker[lowest][1][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][1][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("bak_two", this.frameTracker[lowest][1][2]);
     assertNotNull(this.frameTracker[lowest][1][3]);
     assertEquals(71, Integer.parseInt(this.frameTracker[lowest][1][4]));
     
-    assertTrue(this.frameTracker[lowest][2][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][2][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("bak", this.frameTracker[lowest][2][2]);
     assertNotNull(this.frameTracker[lowest][2][3]);
     assertEquals(81, Integer.parseInt(this.frameTracker[lowest][2][4]));
     
-    assertTrue(this.frameTracker[lowest][3][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][3][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("baz_two", this.frameTracker[lowest][3][2]);
     assertNotNull(this.frameTracker[lowest][3][3]);
     assertEquals(91, Integer.parseInt(this.frameTracker[lowest][3][4]));
     
-    assertTrue(this.frameTracker[lowest][4][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][4][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("bar_two", this.frameTracker[lowest][4][2]);
     assertNotNull(this.frameTracker[lowest][4][3]);
     assertEquals(105, Integer.parseInt(this.frameTracker[lowest][4][4]));
     
-    assertTrue(this.frameTracker[lowest][5][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][5][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("foo_two", this.frameTracker[lowest][5][2]);
     assertNotNull(this.frameTracker[lowest][5][3]);
     assertEquals(123, Integer.parseInt(this.frameTracker[lowest][5][4]));
     
-    assertTrue(this.frameTracker[lowest][6][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[lowest][6][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("main", this.frameTracker[lowest][6][2]);
     assertNotNull(this.frameTracker[lowest][6][3]);
     assertEquals(172, Integer.parseInt(this.frameTracker[lowest][6][4]));
@@ -309,7 +309,7 @@ public class TestStackBacktrace
     
     /* Second thread assertions */
     
-    assertTrue(this.frameTracker[next][1][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[next][1][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("signal_parent", this.frameTracker[next][1][2]);
     assertNotNull(this.frameTracker[next][1][3]);
     assertEquals(63, Integer.parseInt(this.frameTracker[next][1][4]));
@@ -349,17 +349,17 @@ public class TestStackBacktrace
     assertNotNull(this.frameTracker[last][1][3]);
     assertEquals(83, Integer.parseInt(this.frameTracker[last][1][4]));
     
-    assertTrue(this.frameTracker[last][2][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[last][2][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("baz", this.frameTracker[last][2][2]);
     assertNotNull(this.frameTracker[last][2][3]);
     assertEquals(98, Integer.parseInt(this.frameTracker[last][2][4]));
     
-    assertTrue(this.frameTracker[last][3][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[last][3][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("bar", this.frameTracker[last][3][2]);
     assertNotNull(this.frameTracker[last][3][3]);
     assertEquals(116, Integer.parseInt(this.frameTracker[last][3][4]));
     
-    assertTrue(this.frameTracker[last][4][1].endsWith("/frysk/pkglibexecdir/funit-rt-threader.c"));
+    assertTrue(this.frameTracker[last][4][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
     assertEquals("foo", this.frameTracker[last][4][2]);
     assertNotNull(this.frameTracker[last][4][3]);
     assertEquals(130, Integer.parseInt(this.frameTracker[last][4][4]));

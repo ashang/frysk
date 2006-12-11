@@ -47,7 +47,7 @@ EXTRA_DIST += \
 	frysk/event/ChangeLog \
 	frysk/proc/ChangeLog \
 	frysk/util/ChangeLog \
-	frysk/pkglibexecdir/ChangeLog \
+	frysk/pkglibdir/ChangeLog \
 	frysk/model/ChangeLog \
 	frysk/value/ChangeLog \
 	frysk/dom/ChangeLog \
@@ -92,24 +92,24 @@ GEN_GCJ_LDADD += -lstdc++
 GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 
 # For TestExec.java
-pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-child-alias
-frysk_pkglibexecdir_funit_child_alias_SOURCES =
-frysk/pkglibexecdir/funit-child-alias: frysk/pkglibexecdir/funit-child
-	cp -p frysk/pkglibexecdir/funit-child $@
+pkglib_PROGRAMS += frysk/pkglibdir/funit-child-alias
+frysk_pkglibdir_funit_child_alias_SOURCES =
+frysk/pkglibdir/funit-child-alias: frysk/pkglibdir/funit-child
+	cp -p frysk/pkglibdir/funit-child $@
 
 if DO_ARCH32_TEST
-pkglibexec_arch32_PROGRAMS += frysk/pkglibexecdir/arch32/funit-child-alias
-frysk_pkglibexecdir_arch32_funit_child_alias_SOURCES =
-frysk/pkglibexecdir/arch32/funit-child-alias: frysk/pkglibexecdir/arch32/funit-child
-	cp -p frysk/pkglibexecdir/arch32/funit-child $@
+pkglib_arch32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
+frysk_pkglibdir_arch32_funit_child_alias_SOURCES =
+frysk/pkglibdir/arch32/funit-child-alias: frysk/pkglibdir/arch32/funit-child
+	cp -p frysk/pkglibdir/arch32/funit-child $@
 endif
 
 EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
-EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
+EXTRA_DIST += $(srcdir)/frysk/pkglibdir/util.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.
 installcheck-local: installcheck-funit
 .PHONY: installcheck-funit
 installcheck-funit:
-	$(DESTDIR)$(pkglibexecdir)/funit
+	$(DESTDIR)$(pkglibdir)/funit

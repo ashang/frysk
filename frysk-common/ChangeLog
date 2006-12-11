@@ -1,3 +1,11 @@
+2006-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.javain: Replace pkglibexecdir with pkglibdir.
+	* Makefile.rules (pkglib_PROGRAMS): Define.
+	(pkglibexecdir, pkglibexecdir, pkglibdir): Define.
+	(pkglibexec_PROGRAMS, pkglibexecdir): Delete.
+	(pkglibexecdir, pkglibexecdir): Delete.
+
 2006-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (checked-ecj-compile): Rename files.list to

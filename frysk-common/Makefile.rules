@@ -50,11 +50,12 @@ bin_PROGRAMS =
 sbin_PROGRAMS =
 libexec_PROGRAMS =
 pkgdata_DATA =
-pkglibexec_PROGRAMS =
-pkglibexecdir = $(libexecdir)/@PACKAGE@
-
-pkglibexec_arch32_PROGRAMS =
-pkglibexec_arch32dir = $(pkglibexecdir)/arch32
+pkglib_PROGRAMS =
+pkglibdir = $(libdir)/@PACKAGE@
+# XXX: These should perhaps be removed, instead let funit run the
+# binaries installed by a pure 32-bit build.
+pkglib_arch32_PROGRAMS =
+pkglib_arch32dir = $(pkglibdir)/arch32
 
 noinst_LIBRARIES =
 man_MANS =

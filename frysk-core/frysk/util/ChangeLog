@@ -1,5 +1,7 @@
 2006-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFStack.java: Replace pkglibexecdir with pkglibdir.
+
 	* TestFStack.java (testClone): Note broken - 3690.
 	(testStressMultiThreadedDetach): Note broken - 3691.
 

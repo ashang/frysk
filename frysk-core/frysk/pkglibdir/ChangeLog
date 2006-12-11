@@ -1,3 +1,47 @@
+2006-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Moved from ../pkglibexecdir/.
+	* ChangeLog: Ditto.
+	* funit-breakpoints.c: Ditto.
+	* funit-child.c: Ditto.
+	* funit-child.xml: Ditto.
+	* funit-exec.c: Ditto.
+	* funit-exec.xml: Ditto.
+	* funit-exit.c: Ditto.
+	* funit-exit.xml: Ditto.
+	* funit-fib-clone.c: Ditto.
+	* funit-fib-exec.c: Ditto.
+	* funit-fib-fork.c: Ditto.
+	* funit-forks.c: Ditto.
+	* funit-ia32-modify.S: Ditto.
+	* funit-ia32-regs.S: Ditto.
+	* funit.java: Ditto.
+	* funit-modify.c: Ditto.
+	* funit-ppc64-modify.S: Ditto.
+	* funit-ppc64-regs.S: Ditto.
+	* funit-print-argc.c: Ditto.
+	* funit-print-argv.c: Ditto.
+	* funit-print-auxv.c: Ditto.
+	* funit-print-envp.c: Ditto.
+	* funit-rt-looper.c: Ditto.
+	* funit-rt-stepper.c: Ditto.
+	* funit-rt-threader.c: Ditto.
+	* funit-rt-threadstepper.c: Ditto.
+	* funit-syscall-exec.c: Ditto.
+	* funit-syscallint.c: Ditto.
+	* funit-syscallloop.c: Ditto.
+	* funit-syscall-running.c: Ditto.
+	* funit-syscalls.c: Ditto.
+	* funit-syscall-signal.c: Ditto.
+	* funit-syscall-threadexec.c: Ditto.
+	* funit-threadexit.c: Ditto.
+	* funit-threads.c: Ditto.
+	* funit-threads.xml: Ditto.
+	* funit-x8664-modify.S: Ditto.
+	* funit-x8664-regs.S: Ditto.
+	* funit.xml: Ditto.
+	* util.h: Ditto.
+
 2006-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Delete reference to frysk.sys, I.e., the frysk-sys

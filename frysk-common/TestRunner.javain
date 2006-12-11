@@ -55,9 +55,9 @@ public class TestRunner
 	int status = testRunner.runTestCases
 	    (Build.ABS_BUILDDIR + "/frysk/pkgdatadir/",
 	     JUnitTests.get (),
-	     Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/",
+	     Build.ABS_BUILDDIR + "/frysk/pkglibdir/",
 	     JUnitTests.get (),
-	     Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/arch32/");
+	     Build.ABS_BUILDDIR + "/frysk/pkglibdir/arch32/");
 	System.exit (status);
     }
 }
