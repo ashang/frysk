@@ -1,5 +1,7 @@
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (EXTRA_DIST): Add files.list.
+	
 	* Makefile.rules (SUBST_SED): Do not substitute pkglibexecdir, and
 	pkglibexec_arch32dir.  Substitute pkglib_arch32dir.
 	* Makefile.gen.sh: Replace pkglibexecdir with pkglibdir in rules
