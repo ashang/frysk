@@ -1,3 +1,7 @@
+2006-12-11  Nurdin Premji  <npremji@redhat.com>
+
+	* StackFrame.java (toPrint): Demangle method names.
+
 2006-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestStackBacktrace.java: Replace pkglibexecdir with

@@ -47,6 +47,7 @@ import frysk.proc.TaskException;
 import gnu.gcj.RawDataManaged;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
+import lib.stdcpp.Demangler;
 import lib.unwind.FrameCursor;
 
 public class StackFrame
@@ -355,14 +356,14 @@ public class StackFrame
       {
         ret = "0x"
               + Long.toHexString(this.address) + " in "
-              + this.sourceFile + " "+ this.methodName + " (): line #"
+              + this.sourceFile + " "+ Demangler.demangle(this.methodName) + " (): line #"
               + this.lineNum;
       }
     else
       {
         ret = "0x"
           + Long.toHexString(this.address) + " in "
-          + this.methodName + " ()";
+          + Demangler.demangle(this.methodName) + " ()";
       }
     
     return ret;
