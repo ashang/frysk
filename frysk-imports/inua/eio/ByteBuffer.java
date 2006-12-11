@@ -349,7 +349,7 @@ public abstract class ByteBuffer
   {
     if (ULong.GT(index + len, remaining()))
       throw new BufferUnderflowException();
-    peek(lowWater + index, dst, off, len);
+    peekFully(lowWater + index,dst,off,len);
     return this;
   }
 
