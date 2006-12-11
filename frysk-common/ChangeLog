@@ -1,5 +1,9 @@
 2006-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java): Depend on
+	files.list, which is only modified when the list of files changes.
+	Re-implement using files.list.
+	
 	* TestRunner.javain: Replace pkglibexecdir with pkglibdir.
 	* Makefile.rules (pkglib_PROGRAMS): Define.
 	(pkglibexecdir, pkglibexecdir, pkglibdir): Define.

@@ -269,38 +269,37 @@ $(GEN_SOURCENAME)/Build.java: common/Build.javain
 	$(SUBST)
 TestRunner.java: common/TestRunner.javain
 	$(SUBST)
-$(GEN_SOURCENAME)/JUnitTests.java:
+$(GEN_SOURCENAME)/JUnitTests.java: files.list
 	mkdir -p $(GEN_SOURCENAME)
 	rm -f $@.tmp
 	touch $@.tmp
-	echo 'package $(GEN_PACKAGENAME);'			>> $@.tmp
-	echo 'import java.util.LinkedList;'			>> $@.tmp
-	echo '/** JUnit tests for $(GEN_DIR) directory.  */'	>> $@.tmp
-	echo 'public class JUnitTests'				>> $@.tmp
-	echo '{'						>> $@.tmp
-	echo '  public static LinkedList get ()'		>> $@.tmp
-	echo '  {'						>> $@.tmp
-	echo '    LinkedList list = new LinkedList ();'		>> $@.tmp
-	( cd $(srcdir) ; \
-	  find ${GEN_DIRS} \
-	    -name 'TestLib.*' -prune -o \
-	    -name 'JUnit*' -prune -o \
-	    -name 'TestCase.java' -prune -o \
-	    -name 'Test*.java' -print -o \
-	    -name 'Stress*.java' -print \
-	    | sort -f | while read test ; do \
-		main=`$(JV_SCAN) --print-main $${test}` ; \
+	echo >> $@.tmp 'package $(GEN_PACKAGENAME);'
+	echo >> $@.tmp 'import java.util.LinkedList;'
+	echo >> $@.tmp '/** JUnit tests for $(GEN_DIR) directory.  */'
+	echo >> $@.tmp 'public class JUnitTests'
+	echo >> $@.tmp '{'
+	echo >> $@.tmp '  public static LinkedList get ()'
+	echo >> $@.tmp '  {'
+	echo >> $@.tmp '    LinkedList list = new LinkedList ();'
+	grep -v \
+		-e 'TestLib' \
+		-e 'JUnit' \
+		$(srcdir)/files.list \
+	| grep \
+		-e 'Test[A-Z].*\.java$$' \
+		-e 'Stress[A-Z].*\.java$$' \
+	| while read test ; do \
+		main=`$(JV_SCAN) --print-main $(srcdir)/$${test}` ; \
 		if test "$$main"x = x ; then \
 			echo $${test} | sed \
 				-e 's,/,.,g' \
 				-e 's,.java$$,.class,' \
 				-e 's,\(.*\),    list.add(\1);,' ; \
 		fi ; \
-	  done \
-	)							>> $@.tmp
-	echo '    return list;'					>> $@.tmp
-	echo '  }'						>> $@.tmp
-	echo '}'						>> $@.tmp
+	  done >> $@.tmp
+	echo >> $@.tmp '    return list;'
+	echo >> $@.tmp '  }'
+	echo >> $@.tmp '}'
 	mv -f $@.tmp $@
 
 # Generate a .h file (using CNI) from the corresponding .java file.
