@@ -1,3 +1,13 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java: Import frysk.testbed.ForkTestLib.  Replace
+	wild card imports of java.net.* and java.io.* with explict
+	includes.  Note need to simplify test down to a single thread.
+	* TestSyscallSignal.java: Ditto.
+	* TestSyscallRunning.java: Ditto.
+	* ForkTestLib.java: Moved to frysk-imports/frysk/testbed/.
+	* cni/ForkTestLib.cxx: Moved to frysk-imports/frysk/testbed/cni.
+
 2006-12-06  Mark Wielaard  <mark@klomp.org>
 
 	* TestTaskObserverInstructionAndCode.java:

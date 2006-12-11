@@ -47,15 +47,15 @@
 
 #include <gcj/cni.h>
 
-#include "frysk/proc/ForkTestLib.h"
-#include "frysk/proc/ForkTestLib$ForkedInputStream.h"
-#include "frysk/proc/ForkTestLib$ForkedOutputStream.h"
-#include "frysk/proc/ForkTestLib$ForkedProcess.h"
+#include "frysk/testbed/ForkTestLib.h"
+#include "frysk/testbed/ForkTestLib$ForkedInputStream.h"
+#include "frysk/testbed/ForkTestLib$ForkedOutputStream.h"
+#include "frysk/testbed/ForkTestLib$ForkedProcess.h"
 
 #include <java/io/IOException.h>
 
-frysk::proc::ForkTestLib$ForkedProcess*
-frysk::proc::ForkTestLib::fork (jstringArray args)
+frysk::testbed::ForkTestLib$ForkedProcess*
+frysk::testbed::ForkTestLib::fork (jstringArray args)
 {
   // Convert args into argv, argc.
   int argc = JvGetArrayLength (args);
@@ -96,18 +96,18 @@ frysk::proc::ForkTestLib::fork (jstringArray args)
     ::perror ("execvp");
     ::_exit (errno);
   default:
-    frysk::proc::ForkTestLib$ForkedInputStream *in;
-    in = new frysk::proc::ForkTestLib$ForkedInputStream (pfds[1][0]);
+    frysk::testbed::ForkTestLib$ForkedInputStream *in;
+    in = new frysk::testbed::ForkTestLib$ForkedInputStream (pfds[1][0]);
     close (pfds[1][1]);
-    frysk::proc::ForkTestLib$ForkedOutputStream *out;
-    out = new frysk::proc::ForkTestLib$ForkedOutputStream (pfds[0][1]);
+    frysk::testbed::ForkTestLib$ForkedOutputStream *out;
+    out = new frysk::testbed::ForkTestLib$ForkedOutputStream (pfds[0][1]);
     close (pfds[0][0]);
-    return new frysk::proc::ForkTestLib$ForkedProcess (pid, in, out);
+    return new frysk::testbed::ForkTestLib$ForkedProcess (pid, in, out);
   }
 }
 
 void
-frysk::proc::ForkTestLib$ForkedOutputStream::write (jint i)
+frysk::testbed::ForkTestLib$ForkedOutputStream::write (jint i)
 {
   jbyte b;
   int w;
@@ -120,7 +120,7 @@ frysk::proc::ForkTestLib$ForkedOutputStream::write (jint i)
 }
 
 jint
-frysk::proc::ForkTestLib$ForkedInputStream::read (void)
+frysk::testbed::ForkTestLib$ForkedInputStream::read (void)
 {
   jbyte b;
   int r;
@@ -135,8 +135,8 @@ frysk::proc::ForkTestLib$ForkedInputStream::read (void)
 }
 
 jint
-frysk::proc::ForkTestLib$ForkedInputStream::read (jbyteArray buf, jint off,
-						  jint len)
+frysk::testbed::ForkTestLib$ForkedInputStream::read (jbyteArray buf, jint off,
+						     jint len)
 {
   jbyte *bs = elements (buf) + off;
   int r;

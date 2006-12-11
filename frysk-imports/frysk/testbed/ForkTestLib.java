@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.testbed;
 
 import frysk.sys.Errno;
 
@@ -48,7 +48,7 @@ import java.io.IOException;
 /**
  * Utility class for creating a forked process.
  */
-class ForkTestLib
+public class ForkTestLib
 {
   /**
    * Returned by the fork() method to supply the process id an

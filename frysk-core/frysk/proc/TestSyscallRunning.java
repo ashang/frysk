@@ -39,8 +39,19 @@
 
 package frysk.proc;
 
-import java.io.*;
-import java.net.*;
+import frysk.testbed.ForkTestLib;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.io.OutputStream;
+
+/**
+ * XXX: This code should be simplified, eliminating local parallelism
+ * by performing everything in a single test-thread.  Multi-threaded
+ * interactions are tested elsewhere.
+ */
 
 public class TestSyscallRunning
   extends TestLib

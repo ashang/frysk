@@ -39,10 +39,19 @@
 
 package frysk.proc;
 
-import java.io.*;
-
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+import frysk.testbed.ForkTestLib;
+
+/**
+ * XXX: This code should be simplified, eliminating local parallelism
+ * by performing everything in a single test-thread.  Multi-threaded
+ * interactions are tested elsewhere.
+ */
 
 public class TestSyscallSignal
   extends TestLib
