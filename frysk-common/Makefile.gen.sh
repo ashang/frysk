@@ -154,7 +154,7 @@ echo_MANS ()
     esac
     case "$1" in
       *dir/* )
-          # Only programs in bindir, pkglibexecdir et.al. get man pages.
+          # Only programs in bindir, pkglibdir et.al. get man pages.
           if test -r $1.xml ; then
 	      echo "EXTRA_DIST += $1.xml"
               # extract the section number
@@ -205,35 +205,31 @@ echo_arch32_COMPILER()
 echo_arch32_PROGRAMS()
 {
     case "$1" in
-        *dir/* )
+        frysk/pkglibdir/* )
             # extract the directory prefix
             local dir=`echo /"$1" | sed -e 's,.*/\([a-z]*\)dir/.*,\1,'`
 
-	    local dname=`dirname $1`
-		
-	    dname=`dirname ${dname}`
-	    if [ "${dir}" = "pkglibexec" ] && [ "${dname}" = "frysk" ]; then
-		local file="$2"
-		local dir_name=`dirname $1`
-		local base_name=`basename $1`
-		local name="${dir_name}/arch32/${base_name}"
-
-		local name_=`echo ${name} | sed -e 'y,/-,__,'`
-		local ldflags="${name_}_LDFLAGS = -m32 -g"
-		
-		local compiler="$3"
-		local cflag="$4"
-
-		echo 
-		echo "if DO_ARCH32_TEST"
-		echo "${name_}_SOURCES = ${file}"
-		echo "am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
-		echo "${ldflags}"
-
-           	test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
+	    local file="$2"
+	    local dir_name=`dirname $1`
+	    local base_name=`basename $1`
+	    local name="${dir_name}/arch32/${base_name}"
+	    
+	    local name_=`echo ${name} | sed -e 'y,/-,__,'`
+	    local ldflags="${name_}_LDFLAGS = -m32 -g"
+	    
+	    local compiler="$3"
+	    local cflag="$4"
+	    
+	    echo 
+	    echo "if DO_ARCH32_TEST"
+	    echo "${name_}_SOURCES = ${file}"
+	    echo "am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
+	    echo "${ldflags}"
+	    
+	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
 
 cat <<EOF
-${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibexecdir/arch32/\$(am__dirstamp)
+${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibdir/arch32/\$(am__dirstamp)
 	@ARCH32_COMPILE=\`echo "\$(${compiler}) " | sed -e 's, -m64 , ,g'\`; \\
 	\$\$ARCH32_COMPILE \$(${cflag}) -c -o \$@ $<
 
@@ -241,17 +237,15 @@ ${dir_name}/arch32/${base_name}\$(EXEEXT): \$(${name_}_OBJECTS) \$(${name_}_DEPE
 	@rm -f \$@
 	@ARCH32_LINK=\`echo "\$(LINK) " | sed -e 's, -m64 , ,g'\`; \\
 	\$\$ARCH32_LINK \$(${name_}_LDFLAGS) \$(${name_}_OBJECTS) \$(${name_}_LDADD) \$(LIBS)
+${dir}_arch32_PROGRAMS += ${dir_name}/arch32/${base_name}
+MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)
 EOF
-	
-            	echo "${dir}_arch32_PROGRAMS += ${dir_name}/arch32/${base_name}"
-		echo "MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
 
-		if grep pthread.h ${file} > /dev/null 2>&1 ; then
-                    echo "${name_}_LDADD = -lpthread"
-           	fi
-		echo "endif"
-		echo
+	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
+		echo "${name_}_LDADD = -lpthread"
 	    fi
+	    echo "endif"
+	    echo
             ;;
         * )
             ;;

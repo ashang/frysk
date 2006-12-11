@@ -231,9 +231,8 @@ SUBST_SED = sed \
 		-e 's,[@]imagedir[@],$(imagedir),g' \
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
+		-e 's,[@]pkglib_arch32dir[@],$(pkglib_arch32dir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
-		-e 's,[@]pkglibexecdir[@],$(pkglibexecdir),g' \
-		-e 's,[@]pkglibexec_arch32dir[@],$(pkglibexec_arch32dir),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
 		-e 's,[@]VERSION[@],$(VERSION),g' \
 		-e 's,[@]target_cpu[@],@target_cpu@,g'
