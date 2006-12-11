@@ -1,5 +1,13 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/x86/Gfetch_proc_info_post.c: Set `cursor->sigcontext_addr'
+	even for CFI-unwinded signal frames.
+	* src/x86/Make-arch.in: Include `Gfetch_proc_info_post.o'.
+	* include/tdep-x86/libunwind_i.h (tdep_fetch_proc_info_post): Now
+	declaration.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* src/x86_64/Gstep.c (unw_step): Fixed debug message exhanged values.
 
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>

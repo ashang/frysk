@@ -9,3 +9,6 @@ libunwind_setjmp_OBJS += \
 
 libunwind_OBJS_common += \
 	$(arch)/is_fpreg.o
+
+libunwind_OBJS_dual += \
+	$(arch)/Gfetch_proc_info_post.o
