@@ -1,5 +1,15 @@
 2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
+	* src/x86/Gstep.c (code_descriptor_trap): Handle the cases of signal
+	frame leaving stale address due to page fault on an instruction fetch.
+	(unw_step): Call `code_descriptor_trap' above.
+	Debug dump the content of signal frame set from CFI.
+	Fixed non-CFI signal frame detection regarding its false positives.
+	Debug dump whether non-CFI unwinding as signal frame or not.
+	* src/x86/offsets.h: New signal frame value `LINUX_SC_TRAPNO_PF'.
+
+2006-12-10  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
 	* src/x86/Gfetch_proc_info_post.c: Set `cursor->sigcontext_addr'
 	even for CFI-unwinded signal frames.
 	* src/x86/Make-arch.in: Include `Gfetch_proc_info_post.o'.

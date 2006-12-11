@@ -44,6 +44,8 @@
 #define LINUX_SC_OLDMASK_OFF	0x50
 #define LINUX_SC_CR2_OFF	0x54
 
+#define LINUX_SC_TRAPNO_PF	14	/* Page-Fault Exception */
+
 /* Offsets for x86 Linux "struct _fpstate":  */
 
 #define LINUX_FPSTATE_CW_OFF		0x000
