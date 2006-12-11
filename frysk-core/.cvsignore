@@ -2,11 +2,11 @@ Makefile.gen
 Makefile.in
 aclocal.m4
 autom4te.cache
-configure
-TestJUnits.java
 compile
-depcomp
-install-sh
-missing
 config.guess
 config.sub
+configure
+depcomp
+files.list
+install-sh
+missing

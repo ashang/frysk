@@ -1,3 +1,7 @@
+2006-12-11  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Delete.
+
 2005-09-18  Andrew Cagney  <cagney@redhat.com>
 
 	* doc-files/arch-interfaces.fig: Simplify.

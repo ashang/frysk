@@ -1,5 +1,7 @@
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
+	* .cvsignore: Delete.
+
 	* TestBreakpoints.java: Import frysk.testbed.ForkTestLib.  Replace
 	wild card imports of java.net.* and java.io.* with explict
 	includes.  Note need to simplify test down to a single thread.
