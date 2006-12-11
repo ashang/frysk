@@ -67,6 +67,9 @@ TESTS += run-ptrace-mapper run-ptrace-misc run-ptrace-stepper \
 	test-mem test-setjmp test-ptrace
 TESTS_dual = Gtest-bt Gtest-exc Gtest-init Gtest-concurrent \
 	Gtest-resume-sig Gtest-dyn1 
+# Until http://sourceware.org/ml/libc-alpha/2006-11/msg00082.html
+# gets finally resolved, fix was present in RawHide glibc-2.5.90-11.
+XFAIL_TESTS = run-ptrace-signull
 
 # Get target-specific tests, if any.
 -include Make-$(arch).in
