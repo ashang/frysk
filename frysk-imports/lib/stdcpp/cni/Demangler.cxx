@@ -50,24 +50,21 @@ using namespace abi;
 
 jstring
 lib::stdcpp::Demangler::demangle (const jstring mangled_string)
-{
+{	
 	if (mangled_string == NULL)
-		return JvNewStringUTF("(null)");
-	  
-	int status = -1;
-	  int len = JvGetStringUTFLength (mangled_string);
-  char *mangled_name = (char *) alloca (len + 1);
-  JvGetStringUTFRegion (mangled_string, 0, mangled_string->length (), mangled_name);
-  mangled_name[len] = '\0';
-	
+		return NULL;
+			
+	int status = -1;			
+
+    int len = JvGetStringUTFLength (mangled_string);
+    char *mangled_name = (char *) alloca (len + 1);
+    JvGetStringUTFRegion (mangled_string, 0, mangled_string->length (), mangled_name);
+    mangled_name[len] = '\0';
+
     char *dem = __cxa_demangle(mangled_name, 0, 0, &status);
 
     if(status == 0)
         return JvNewStringUTF(dem);
-
-
-    return mangled_string;
-	
-
-	
+        
+    return mangled_string;	
 }

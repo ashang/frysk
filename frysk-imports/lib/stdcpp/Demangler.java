@@ -41,5 +41,11 @@ package lib.stdcpp;
 
 public class Demangler
 {
+  /**
+   * Returns a demangled representation of a mangled string.
+   * Or NULL if passed a null string.
+   * @param mangled_name
+   * @return demangled name of mangled_name or NULL if passed NULL.
+   */
   public static native String demangle(String mangled_name);
 }

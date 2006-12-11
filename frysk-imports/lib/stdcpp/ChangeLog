@@ -1,3 +1,12 @@
+2006-12-11  Nurdin Premji <npremji@redhat.com>
+
+	* Demangler.java: Added javadoc explaining what happens
+	when demangle_name is passed a null string.
+	* TestDemangler.java (testNull): Changed to check for null string.
+	(testEmpty): Added.
+	(testUnMangled): Added.
+	* cni/Demangler.cxx: If passed NULL, return NULL.
+
 2006-12-08  Nurdin Premji  <npremji@redhat.com>
 
 	* TestDemangler.java: Added.

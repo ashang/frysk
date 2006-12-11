@@ -37,23 +37,40 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package lib.stdcpp;
 
 import frysk.junit.TestCase;
 
-public class TestDemangler extends TestCase
+public class TestDemangler
+    extends TestCase
 {
 
-  public void test()
+  public void test ()
   {
-    
+
     String s = Demangler.demangle("_Z12Agent_OnLoadP10_Jv_JavaVMPcPv");
-    assertEquals("Agent_OnLoad(_Jv_JavaVM*, char*, void*)", s);
+    assertEquals("Mangled string returns demangled",
+                 "Agent_OnLoad(_Jv_JavaVM*, char*, void*)", s);
   }
-  
-  public void testNull()
+
+  public void testNull ()
   {
     String s = Demangler.demangle(null);
-    assertEquals("(null)", s);
+    assertNull("Null returns Null", s);
   }
+
+  public void testEmpty ()
+  {
+    String s = Demangler.demangle("");
+    assertEquals("Empty string returns empty", "", s);
+  }
+
+  public void testUnMangled ()
+  {
+    String s = Demangler.demangle("Agent_OnLoad(_Jv_JavaVM*, char*, void*)");
+    assertEquals("Unmangled string returns unmangled name",
+                 "Agent_OnLoad(_Jv_JavaVM*, char*, void*)", s);
+  }
+
 }
