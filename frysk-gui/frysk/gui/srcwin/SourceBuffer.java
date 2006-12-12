@@ -412,7 +412,7 @@ public class SourceBuffer
     
     if (frame.getData() == null || frame.getData().getFileName().equals(fileName))
       {
-        //System.out.println("HIghlighting " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
+        //System.out.println("file is null or match - finishing " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
         
         if (newFrame == true)
           {
@@ -425,22 +425,28 @@ public class SourceBuffer
           }
       }
     
+    //System.out.println("Going after next frames");
         
         StackFrame curr = frame.getOuter();
-        String fileName = this.scope.getData().getFileName();
+        if (this.scope.getData() == null)
+          return;
+        
+        String fileName = "";
+        
+        if (this.scope.getData() != null)
+          fileName = this.scope.getData().getFileName();
         
         while (curr != null)
       {
 
-        // System.out.println("Checking " + curr.getData().getFileName() + " to
-        // " + fileName);
+         //System.out.println("Checking " + curr.getData().getFileName() + " to " + fileName);
         if (curr.getData() != null)
           {
             if (newFrame == true
                 && ! curr.getData().getFileName().equals(fileName))
               {
-                // System.out.println("files don't match, not highlighting " +
-                // curr.getMethodName());
+                 //System.out.println("files don't match, not highlighting " +
+                 //curr.getMethodName());
                 curr = curr.getOuter();
                 continue;
               }
@@ -451,8 +457,8 @@ public class SourceBuffer
         endLine = curr.getEndLine();
         endCol = curr.getEndOffset();
 
-        // System.out.println("iterating " + curr.getMethodName() + " " +
-        // curr.getLineNumber() + " " + newFrame);
+         //System.out.println("iterating " + curr.getMethodName() + " " +
+         //curr.getLineNumber() + " " + newFrame);
 
         start = this.createMark(
                                 curr.getMethodName(),

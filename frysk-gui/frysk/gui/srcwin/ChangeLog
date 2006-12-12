@@ -1,5 +1,7 @@
 2006-12-12  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceBuffer.java (highlightLine): Assign a default empty string for
+	this scope's source filename. Fixes #3706.
 	* SourceWindow.java (populateStackBrowser): Catch more null 
 	StackFrames. Assume some stacktrace function names could be null
 	even if the objects aren't. Fixes #3696.
