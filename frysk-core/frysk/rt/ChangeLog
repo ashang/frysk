@@ -1,5 +1,7 @@
 2006-12-12  Mike Cvet  <mcvet@redhat.com>
 
+	* StackFrame.java (StackFrame): Demangle names by default.
+	(toPrint): Remove call to demangler.
 	* tests/TestRunState.java (setUpTest): Assign task with null DwflLine
 	a line number of zero.
 	(stepAssertions): Handle null DwflLines better; treat as temporary 

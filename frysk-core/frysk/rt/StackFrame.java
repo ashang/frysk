@@ -118,6 +118,7 @@ public class StackFrame
     unwind_data = current.getNativeCursor();
     initialize();
     this.inner = inner;
+    this.methodName = Demangler.demangle(this.methodName);
 
     if (address != 0) /* We were able to pull information from this cursor */
       {
@@ -356,14 +357,14 @@ public class StackFrame
       {
         ret = "0x"
               + Long.toHexString(this.address) + " in "
-              + this.sourceFile + " "+ Demangler.demangle(this.methodName) + " (): line #"
+              + this.sourceFile + " "+ this.methodName + " (): line #"
               + this.lineNum;
       }
     else
       {
         ret = "0x"
           + Long.toHexString(this.address) + " in "
-          + Demangler.demangle(this.methodName) + " ()";
+          + this.methodName + " ()";
       }
     
     return ret;
