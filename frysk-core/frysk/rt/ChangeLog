@@ -1,3 +1,10 @@
+2006-12-12  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestRunState.java (setUpTest): Assign task with null DwflLine
+	a line number of zero.
+	(stepAssertions): Handle null DwflLines better; treat as temporary 
+	zero rather than breakage. Fixes #3701.
+
 2006-12-11  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStepping.java (testRecursiveLineStepping): Re-enabled.

@@ -187,6 +187,8 @@ public class TestRunState extends TestLib
             
             if (line == null)
               {
+                this.dwflMap.put(t, d);
+                this.lineMap.put(t, new Integer(0));
                 continue;
               }
 
@@ -236,32 +238,32 @@ public class TestRunState extends TestLib
           this.dwflMap.put(task, d);
           this.lineMap.put(task, new Integer(line.getLineNum()));
         }
-      else
-        {
-         //System.out.println("Can't get DwflLine for " + task);
-          /* For whatever reason we can't get a DwflLine - bail out, re-step
-           * and try again. */
-          LinkedList l = new LinkedList();
-          l.add(task);
-          if (testState == INSTRUCTION_STEP)
-            {
-              runState.stepInstruction(l);
-            }
-          else if (testState == STEP_IN)
-            {
-              runState.setUpStep(l);
-            }
-          
-          return;
-        }
+      }
+     
+    int lineNum;
+    
+    if (line == null)
+      {
+        lineNum = 0;
+      }
+    else
+      {
+        lineNum = line.getLineNum();
       }
 
-    if (line == null)
-      return;
-
-    int lineNum = line.getLineNum();
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
 
+    if (lineNum == 0)
+      {
+        this.lineMap.put(task, new Integer(lineNum));
+        LinkedList l = new LinkedList();
+        l.add(task);
+        if (testState == INSTRUCTION_STEP)
+          runState.stepInstruction(l);
+        else
+          runState.setUpStep(l);
+      }
+    
     if (testState == INSTRUCTION_STEP)
       {
         switch (prev)
@@ -417,7 +419,7 @@ public class TestRunState extends TestLib
         
         if (count != 50)
           {
-            this.lineMap.put(task, new Integer(line.getLineNum()));
+            this.lineMap.put(task, new Integer(lineNum));
             LinkedList tasks = new LinkedList();
             tasks.add(task);
             runState.setUpStep(tasks);
