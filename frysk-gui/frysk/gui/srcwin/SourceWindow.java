@@ -361,6 +361,13 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
+
+    if (frames == null || frames[0] == null)
+      {
+        System.out.println("Frames were null");
+        return;
+      }
+    
     this.frames = frames;
     StackFrame taskMatch = null;
 
@@ -464,6 +471,7 @@ public class SourceWindow
      * Try to find the new StackFrame representing the same frame from before
      * the reset
      */
+
     for (int j = 0; j < frames.length; j++)
       {
         curr = frames[j];
@@ -473,7 +481,7 @@ public class SourceWindow
             taskMatch = curr;
           }
 
-        if (! curr.getMethodName().equals(this.currentFrame.getMethodName()))
+        if (! this.currentFrame.getMethodName().equals(curr.getMethodName()))
           sb.highlightLine(curr, true);
 
         while (curr != null)

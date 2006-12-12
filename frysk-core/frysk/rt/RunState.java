@@ -202,6 +202,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     DwflLine line = null;
     try
       {
+       //System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
         line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(
                                                                               task));
         //System.out.println()
@@ -220,7 +221,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     int lineNum;
     int prev;
     
-    if (line == null)
+    if (line == null) /* We're in no-debuginfo land */
       {
         lineNum = 0;
         prev = ((Integer) this.lineMap.get(task)).intValue();
@@ -242,8 +243,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
       {
         int count = ((Integer) this.lineCountMap.get(task)).intValue();
         count++;
-        if (count > 8)
+        if (count > 10)
           {
+           //System.out.println("single line broke");
             --taskStepCount;
             return;
           }
