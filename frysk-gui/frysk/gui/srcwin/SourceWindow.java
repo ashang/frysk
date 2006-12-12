@@ -361,12 +361,6 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
-
-    if (frames == null || frames[0] == null)
-      {
-        System.out.println("Frames were null");
-        return;
-      }
     
     this.frames = frames;
     StackFrame taskMatch = null;
@@ -430,6 +424,12 @@ public class SourceWindow
         stackView.expandAll();
         stackView.showAll();
         this.view.showAll();
+        return;
+      }
+    
+    if (frames == null || frames[0] == null)
+      {
+        System.out.println("Frames were null");
         return;
       }
     
