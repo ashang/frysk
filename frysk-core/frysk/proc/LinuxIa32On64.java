@@ -178,8 +178,54 @@ extends LinuxIa32
       x8664Reg.putBigInteger(task, realVal);
     }
   }
+
+  private class ConstantRegister extends Register 
+  {
+    String ia32Name;
+    final long value;
+    final BigInteger bigValue;
+    Register ia32Reg;
+    
+    ConstantRegister(String name, long value) 
+    {    
+      super(0, 0, 0, name);	// Dummy values, mostly
+      ia32Name = name;
+      this.value = value;
+      bigValue = BigInteger.valueOf(value);
+      ia32Reg = getRegisterByNameSuper(ia32Name);
+    }
+
+    public int getLength()
+    {
+      return ia32Reg.getLength();
+    }
+    
+
+    public RegisterView[] getViews() 
+    {
+      return ia32Reg.getViews();
+    }
+    
+
+    public long get(Task task) 
+    {
+      return value;
+    }
+    
+    public BigInteger getBigInteger(Task task) 
+    {
+      return bigValue;
+    }
+    
+    public void put(Task task, long val) 
+    {
+    }
+    
+    public void putBigInteger(Task task, BigInteger val) 
+    {
+    }
+  }
   
-  private final IndirectRegister[] regDefs;
   private LinkedHashMap registerMap = new LinkedHashMap();  
   
   /**
@@ -189,25 +235,44 @@ extends LinuxIa32
   {
     super();
     // TODO: floating point and debug registers
-    regDefs = new IndirectRegister[] { new IndirectRegister("eax", "rax"),
-		new IndirectRegister("ebx", "rbx"),
-		new IndirectRegister("ecx", "rcx"),
-		new IndirectRegister("edx", "rdx"),
-		new IndirectRegister("esi", "rsi"),
-		new IndirectRegister("edi", "rdi"),
-		new IndirectRegister("ebp", "rbp"),
-		new IndirectRegister("cs", "cs"),
-		new IndirectRegister("ds", "ds"),
-		new IndirectRegister("es", "es"),
-		new IndirectRegister("fs", "fs"),
-		new IndirectRegister("gs", "gs"),
-		new IndirectRegister("ss", "gs"),
-		new IndirectRegister("orig_eax", "orig_rax"),
-		new IndirectRegister("eip", "rip"),
-		new IndirectRegister("efl","eflags"),
-		new IndirectRegister("esp", "rsp") };
+    final Register[] regDefs = new Register[] 
+      { new IndirectRegister("eax", "rax"),
+	new IndirectRegister("ebx", "rbx"),
+	new IndirectRegister("ecx", "rcx"),
+	new IndirectRegister("edx", "rdx"),
+	new IndirectRegister("esi", "rsi"),
+	new IndirectRegister("edi", "rdi"),
+	new IndirectRegister("ebp", "rbp"),
+	new IndirectRegister("cs", "cs"),
+	new IndirectRegister("ds", "ds"),
+	new IndirectRegister("es", "es"),
+	new IndirectRegister("fs", "fs"),
+	new IndirectRegister("gs", "gs"),
+	new IndirectRegister("ss", "gs"),
+	new IndirectRegister("orig_eax", "orig_rax"),
+	new IndirectRegister("eip", "rip"),
+	new IndirectRegister("efl","eflags"),
+	new IndirectRegister("esp", "rsp"),
+	new IndirectRegister("cwd", "cwd"),
+	new IndirectRegister("swd", "swd"),
+	new IndirectRegister("twd", "ftw"),
+	new IndirectRegister("fip", "fprip"),
+	new ConstantRegister("fcs", 0),
+	new IndirectRegister("foo", "rdp"),
+	new ConstantRegister("fos", 0)
+      };
     for (int i = 0; i < regDefs.length; i++)
       registerMap.put(regDefs[i].getName(), regDefs[i]);
+    for (int i = 0; i < 8; i++) 
+      {
+	String fpName = "st" + i;
+	registerMap.put(fpName, new IndirectRegister(fpName, fpName));
+      }
+    for (int i = 0; i < 8; i++) 
+      {
+	String fpName = "xmm" + i;
+	registerMap.put(fpName, new IndirectRegister(fpName, fpName));
+      }
   }
 
   public Iterator RegisterIterator()
@@ -227,7 +292,4 @@ extends LinuxIa32
 
 }
 
-  
-	  
-      
   
