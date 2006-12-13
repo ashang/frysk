@@ -140,8 +140,18 @@ class ftrace
         parser.parse(args, new FileArgumentCallback() {
             public void notifyFile(String arg) throws OptionException
             {
-                if (commandAndArguments == null)
+                if (commandAndArguments == null) {
+                  
+                  //Check if the first argument is a pid, otherwise it will be a command.
+                  try {
+                  int pid = Integer.parseInt(arg);
+                  tracer.addTracePid(pid);
+                  requestedPid = true;
+                  return;
+                  } catch (NumberFormatException _) {
                     commandAndArguments = new ArrayList();
+                  }
+                }
                 commandAndArguments.add(arg);
             }
         });
