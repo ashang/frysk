@@ -350,15 +350,25 @@ public class StackFrame
   /**
    * Return a simple string representation of this stack frame.
    */
-  public String toPrint ()
+  public String toPrint (boolean isSourceWindow)
   {
     String ret = "";
     if (this.dwflLine != null)
       {
-        ret = "0x"
+        if (! isSourceWindow)
+          {
+            ret = "0x"
               + Long.toHexString(this.address) + " in "
               + this.methodName + " () from: "
               + this.sourceFile + "#" + this.lineNum;
+          }
+        else
+          {
+            String[] fileName = this.sourceFile.split("/");
+            ret = "0x" + Long.toHexString(this.address) + " in "
+                  + fileName[fileName.length - 1] + " " + this.methodName 
+                  + " (): line #" + this.lineNum;
+          }
       }
     else
       {

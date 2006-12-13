@@ -142,7 +142,7 @@ public class StacktraceAction
             for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
               {
                 // FIXME: do valgrind-like '=== PID ===' ?
-                String output = "#" + count + " " + frame.toPrint();
+                String output = "#" + count + " " + frame.toPrint(false);
 
                 list.add(output);
                 count++;

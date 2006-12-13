@@ -1,3 +1,8 @@
+2006-12-13  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (toPrint): Takes a parameter, true if called from the
+	SourceWindow (truncating path), false otherwise.
+
 2006-12-13  Nurdin Premji  <npremji@redhat.com>
 
 	* StackFrame.java (toPrint): Changed format of sourceFile#lineNumber.

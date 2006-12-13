@@ -1,3 +1,8 @@
+2006-12-13  Mike Cvet  <mcvet@redhat.com>
+
+	* StacktraceAction.java (storeTask): Update call to StackFrame.toPrint
+	with false boolean.
+
 2006-12-13  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (mainClone): Changed format of sourceFile#lineNumber
