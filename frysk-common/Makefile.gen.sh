@@ -52,9 +52,9 @@ Search source directory for .java, .mkjava, .shjava, shenum, mkenum,
 .javain, .c and .cxx files.  For each, generate a corresponding
 automake entry.  If the file contains a main program, also generate
 automake to build the corresponding program.  Any program located
-under a bindir/, sbindir/, or libexecdir/ sub-directory, will be
-installed in the corresponding bin/, sbin/, or libexec/ destination
-directory.
+under a bindir/, sbindir/, or pkglibdir/ sub-directory, will be
+installed in the corresponding bin/, sbin/, or lib{,64}/frysk/
+destination directory.
 
 <.jar-file> or <_JAR-macro>:
 

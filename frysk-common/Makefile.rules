@@ -48,7 +48,6 @@ noinst_PROGRAMS =
 noinst_DATA =
 bin_PROGRAMS =
 sbin_PROGRAMS =
-libexec_PROGRAMS =
 pkgdata_DATA =
 pkglib_PROGRAMS =
 pkglibdir = $(libdir)/@PACKAGE@
@@ -221,7 +220,6 @@ SUBST_SED = sed \
 		-e 's,[@]prefix[@],@prefix@,g' \
 		-e 's,[@]bindir[@],@bindir@,g' \
 		-e 's,[@]libdir[@],@libdir@,g' \
-		-e 's,[@]libexecdir[@],@libexecdir@,g' \
 		-e 's,[@]datadir[@],@datadir@,g' \
 		-e 's,[@]builddir[@],@top_builddir@,g' \
 		-e 's,[@]srcdir[@],@top_srcdir@,g' \
