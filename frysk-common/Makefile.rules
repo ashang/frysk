@@ -52,7 +52,7 @@ pkgdata_DATA =
 pkglib_PROGRAMS =
 pkglibdir = $(libdir)/@PACKAGE@
 pkglib32_PROGRAMS =
-pkglib32dir = $(libdir32)/@PACKAGE@
+pkglib32dir = $(lib32dir)/@PACKAGE@
 
 noinst_LIBRARIES =
 man_MANS =
