@@ -38,10 +38,7 @@
 // exception.
 
 import frysk.Config;
-import frysk.junit.Paths;
 import frysk.junit.Runner;
-
-import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -64,13 +61,10 @@ public class funit
 	LinkedList arch32List = new LinkedList();
 	arch32List.addAll (frysk.core.JUnitTests.get ());
 
-	Paths.setPrefixes (Config.PKGLIB_ARCH32DIR + File.separator,
-			   Config.PKGDATADIR + "/");
-
 	int status = testRunner.runTestCases
 	    (Config.PKGDATADIR + "/",
 	     list, Config.PKGLIBDIR + "/",
-	     arch32List, Config.PKGLIB_ARCH32DIR + "/");
+	     arch32List, Config.PKGLIB32DIR + "/");
 	System.exit (status);
     }
 }

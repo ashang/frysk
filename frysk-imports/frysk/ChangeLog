@@ -1,3 +1,7 @@
+2006-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (PKGLIB32DIR): Rename PKGLIB_ARCH32DIR.
+
 2006-12-12  Stepan Kasal  <skasal@redhat.com>
 
 	* Config.javain (PKGLIBEXECDIR): Remove.

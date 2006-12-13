@@ -59,7 +59,7 @@ public class Config
     public static final String PKGLIBDIR = "@pkglibdir@";
     public static final String PKGINCLUDEDIR = "@pkgincludedir@";
 
-    public static final String PKGLIB_ARCH32DIR = "@pkglib_arch32dir@";
+    public static final String PKGLIB32DIR = "@pkglib32dir@";
     public static final String VERSION = "@VERSION@";
 
     // User's config directory.
