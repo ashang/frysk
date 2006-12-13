@@ -1,3 +1,7 @@
+2006-12-13  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-asmstepper.S: Added. Assembly stepping test for RT.
+
 2006-12-12  Stepan Kasal  <skasal@redhat.com>
 
 	* funit-child.xml: s/pkglibexecdir/pkglibdir/
