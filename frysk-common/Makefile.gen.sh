@@ -71,6 +71,7 @@ cni=false
 dirs=
 jars=
 JARS=
+GEN_ARGS="$@"
 while test $# -gt 0
 do
   case "$1" in
@@ -288,7 +289,6 @@ has_main ()
 }
 
 
-GEN_ARGS="${dirs} ${jars} ${JARS}"
 GEN_DIRNAME=`basename $PWD`
 GEN_MAKENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,_,g'`
 GEN_PACKAGENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,.,g'`

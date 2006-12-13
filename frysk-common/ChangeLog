@@ -1,5 +1,7 @@
 2006-12-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (GEN_ARGS): Set to "$@".
+
 	* frysk-common.ac: Set lib32dir.
 	* Makefile.rules (pkglib32dir): Define as $(lib32dir)/@PACKAGE@.
 
