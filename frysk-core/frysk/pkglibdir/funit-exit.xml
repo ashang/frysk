@@ -127,7 +127,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>@pkglibexecdir@/funit</screen>
+    <screen>@pkglibdir@/funit</screen>
   </refsect1>
    
   <!-- refsect1>

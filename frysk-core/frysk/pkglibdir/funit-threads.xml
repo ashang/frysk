@@ -67,7 +67,7 @@
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>@pkglibexecdir@/funit-threads</command>
+      <command>@pkglibdir@/funit-threads</command>
       <arg choice="opt">
         <option>--clone</option>
       </arg>
@@ -171,7 +171,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>@pkglibexecdir@/funit-child</screen>
+    <screen>@pkglibdir@/funit-child</screen>
   </refsect1>
    
   <!-- refsect1>

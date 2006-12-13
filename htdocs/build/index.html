@@ -90,7 +90,7 @@ sudo yum install -y \
 </pre>
 
 In addition, on the PowerPC, check that the following packages were
-installed::
+installed:
 
 <pre>
 sudo yum install -y \
@@ -367,11 +367,11 @@ written to the screen.</dd>
 <dt>How do I refer to an external executable or data file in a
 test?<dt> <dd>Use:<dl>
 <dt><tt>frysk.junit.Paths.getExecPrefix()</tt></dt> <dd>Which will
-refer to either the installed <tt>libexec/frysk/</tt> or build tree
-<tt>frysk/pkglibexecdir</tt></dd>
+refer to either the installed <tt>lib{,64}/frysk/</tt> or build tree
+<tt>frysk/pkglibdir</tt></dd>
 <dt><tt>frysk.junit.Paths.getDataPrefix()</tt></dt> <dd>Which will
 refer to either the installed <tt>share/frysk/</tt> or build tree
-<tt>frysk/pkgdatadirdir</tt></dd> </dl> </dd>
+<tt>frysk/pkgdatadir</tt></dd> </dl> </dd>
 
 <dt>The tesets in the <tt>frysk-imports/tests/</tt> and
 <tt>frysk-gtk/tests/</tt> directories exercise bugs in components such

@@ -67,7 +67,7 @@
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>@pkglibexecdir@/funit-exec</command>
+      <command>@pkglibdir@/funit-exec</command>
       <arg choice="opt">
         <option>-<replaceable>N</replaceable></option>
       </arg>
@@ -162,7 +162,7 @@
     <title>EXAMPLE</title>
     <para>Create a process that, on receipt of SIGUSR1, will exec
     <function>/bin/echo</function>.</para>
-    <screen>@pkglibexecdir@/funit-child $$ 0 100 /bin/echo hello</screen>
+    <screen>@pkglibdir@/funit-child $$ 0 100 /bin/echo hello</screen>
   </refsect1>
    
   <!-- refsect1>

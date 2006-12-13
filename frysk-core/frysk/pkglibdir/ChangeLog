@@ -1,3 +1,12 @@
+2006-12-12  Stepan Kasal  <skasal@redhat.com>
+
+	* funit-child.xml: s/pkglibexecdir/pkglibdir/
+	* funit-exec.xml: Ditto.
+	* funit-exit.xml: Ditto.
+	* funit-threads.xml: Ditto.
+	* funit.xml: Ditto.
+	* funit.java: Replace Config.PKGLIBEXEC*DIR with Config.PKGLIB*DIR.
+
 2006-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Moved from ../pkglibexecdir/.

@@ -64,13 +64,13 @@ public class funit
 	LinkedList arch32List = new LinkedList();
 	arch32List.addAll (frysk.core.JUnitTests.get ());
 
-	Paths.setPrefixes (Config.PKGLIBEXEC_ARCH32DIR + File.separator,
+	Paths.setPrefixes (Config.PKGLIB_ARCH32DIR + File.separator,
 			   Config.PKGDATADIR + "/");
 
 	int status = testRunner.runTestCases
 	    (Config.PKGDATADIR + "/",
-	     list, Config.PKGLIBEXECDIR + "/",
-	     arch32List, Config.PKGLIBEXEC_ARCH32DIR + "/");
+	     list, Config.PKGLIBDIR + "/",
+	     arch32List, Config.PKGLIB_ARCH32DIR + "/");
 	System.exit (status);
     }
 }

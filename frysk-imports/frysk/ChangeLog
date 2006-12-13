@@ -1,3 +1,9 @@
+2006-12-12  Stepan Kasal  <skasal@redhat.com>
+
+	* Config.javain (PKGLIBEXECDIR): Remove.
+	(PKGLIBEXEC_ARCH32DIR): Rename to ...
+	(PKGLIB_ARCH32DIR): ... this.
+
 2006-09-25  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* Config.javain (PKGLIBEXEC_ARCH32DIR): Add.

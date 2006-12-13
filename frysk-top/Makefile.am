@@ -59,7 +59,7 @@ SOURCEDIRS = \
 	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
 	$(srcdir)/frysk-imports/jline/src/jline \
 	$(srcdir)/frysk-imports/junit/src/junit \
-	$(srcdir)/frysk-core/frysk/pkglibexecdir/. \
+	$(srcdir)/frysk-core/frysk/pkglibdir/. \
 	$(srcdir)/frysk-core/frysk/bindir/. \
 	$(srcdir)/frysk-gui/frysk/bindir/. \
 	$(empty)

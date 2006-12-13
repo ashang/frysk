@@ -1,3 +1,10 @@
+2006-12-12  Stepan Kasal  <skasal@redhat.com>
+
+	* test/dogtail_scripts/Test2921.xml: s/pkglibexecdir/pkglibdir/
+	* test/dogtail_scripts/funit_new_session.xml: Ditto.
+	* test/dogtail_scripts/another_new_session.xml: Ditto.
+	* test/dogtail_scripts/frysk_suite.in: Ditto.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* test/dogtail_scripts/.cvsignore: Cite bug 3227.

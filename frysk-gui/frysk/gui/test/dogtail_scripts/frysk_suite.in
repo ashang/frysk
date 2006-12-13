@@ -49,7 +49,7 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 frysk="@abs_builddir@/frysk/gui/FryskGui"
 src="@abs_srcdir@/frysk/gui/test/dogtail_scripts/"
-funitChild="@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child"
+funitChild="@abs_builddir@/../frysk-core/frysk/pkglibdir/funit-child"
 
 # Import needed to access test file input files via envron var's
 import os
