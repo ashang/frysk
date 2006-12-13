@@ -237,7 +237,7 @@ ${dir_name}/arch32/${base_name}\$(EXEEXT): \$(${name_}_OBJECTS) \$(${name_}_DEPE
 	@rm -f \$@
 	@ARCH32_LINK=\`echo "\$(LINK) " | sed -e 's, -m64 , ,g'\`; \\
 	\$\$ARCH32_LINK \$(${name_}_LDFLAGS) \$(${name_}_OBJECTS) \$(${name_}_LDADD) \$(LIBS)
-${dir}_arch32_PROGRAMS += ${dir_name}/arch32/${base_name}
+${dir}32_PROGRAMS += ${dir_name}/arch32/${base_name}
 MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)
 EOF
 

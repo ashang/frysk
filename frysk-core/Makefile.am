@@ -98,7 +98,7 @@ frysk/pkglibdir/funit-child-alias: frysk/pkglibdir/funit-child
 	cp -p frysk/pkglibdir/funit-child $@
 
 if DO_ARCH32_TEST
-pkglib_arch32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
 frysk_pkglibdir_arch32_funit_child_alias_SOURCES =
 frysk/pkglibdir/arch32/funit-child-alias: frysk/pkglibdir/arch32/funit-child
 	cp -p frysk/pkglibdir/arch32/funit-child $@

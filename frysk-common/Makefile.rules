@@ -53,8 +53,8 @@ pkglib_PROGRAMS =
 pkglibdir = $(libdir)/@PACKAGE@
 # XXX: These should perhaps be removed, instead let funit run the
 # binaries installed by a pure 32-bit build.
-pkglib_arch32_PROGRAMS =
-pkglib_arch32dir = $(pkglibdir)/arch32
+pkglib32_PROGRAMS =
+pkglib32dir = $(pkglibdir)/arch32
 
 noinst_LIBRARIES =
 man_MANS =
@@ -229,7 +229,7 @@ SUBST_SED = sed \
 		-e 's,[@]imagedir[@],$(imagedir),g' \
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
-		-e 's,[@]pkglib32dir[@],$(pkglib_arch32dir),g' \
+		-e 's,[@]pkglib32dir[@],$(pkglib32dir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
 		-e 's,[@]VERSION[@],$(VERSION),g' \

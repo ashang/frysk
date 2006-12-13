@@ -1,5 +1,11 @@
 2006-12-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (${dir}32_programs): Rename
+	${dir}_arch32_programs,
+	* Makefile.rules (pkglib32dir): Rename pkglib_arch32dir.
+	(pkglib32): Rename pkglib_arch.
+	(SUBST_SED): Update references.
+	
 	* Makefile.rules (SUBST_SED): Substitute pkglib32dir, instead of
 	pkglib_arch32dir.
 

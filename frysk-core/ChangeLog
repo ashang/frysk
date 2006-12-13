@@ -1,3 +1,7 @@
+2006-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (pkglib32_PROGRAMS): Rename pkglib_arch32_PROGRAMS.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: Clean up; remove TestJUnits.java; add files.list.
