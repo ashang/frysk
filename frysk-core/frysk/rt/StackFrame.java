@@ -357,8 +357,8 @@ public class StackFrame
       {
         ret = "0x"
               + Long.toHexString(this.address) + " in "
-              + this.sourceFile + " "+ this.methodName + " (): line #"
-              + this.lineNum;
+              + this.methodName + " () from: "
+              + this.sourceFile + "#" + this.lineNum;
       }
     else
       {

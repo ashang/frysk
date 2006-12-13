@@ -52,30 +52,30 @@ public class TestFStack
     extends TestLib
 {
 
-  String mainThread = "Task #\\d+\\n"
-                      + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
-                      + "#[\\d]+ 0x[\\da-f]+ in "
+  String mainThread = "Task #\\d+\n"
+                      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                      + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                       + Build.SRCDIR
-                      + "/frysk/pkglibdir/funit-child.c server \\(\\): line #[\\d]+\\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in "
+                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
                       + Build.SRCDIR
-                      + "/frysk/pkglibdir/funit-child.c main \\(\\): line #[\\d]+\\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\\n";
+                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
-  String thread = "Task #\\d+\\n"
-                  + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
-                  + "#[\\d]+ 0x[\\da-f]+ in "
+  String thread = "Task #\\d+\n"
+                  + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                  + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                   + Build.SRCDIR
-                  + "/frysk/pkglibdir/funit-child.c server \\(\\): line #[\\d]+\\n"
-                  + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\\n"
-                  + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\\n";
+                  + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                  + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
+                  + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
 
-  String mainClone = "Task #\\d+\\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*"
-                     + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\\n"
-                     + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\\n";
+  String mainClone = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                     + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
+                     + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
-  String clone = "Task #\\d+\\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\\n)*";
+  String clone = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
 
   public void testSingleThreadedDetached ()
   {
