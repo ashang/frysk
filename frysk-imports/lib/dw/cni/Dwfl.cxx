@@ -53,7 +53,8 @@
 void
 lib::dw::Dwfl::dwfl_begin(jint pid){
 	
-	static char *flags = "-:.debug:/usr/bin/debug";
+	/* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it CRCs.  */
+	static char *flags = "-:.debug:/usr/lib/debug";
 	
 	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
 	
