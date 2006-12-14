@@ -56,7 +56,7 @@ import frysk.sys.SyscallNum;
  * unless everything is correct.
  */
 
-public class TestRegMemModify
+public class TestRegisters
   extends TestLib
 {
     /**
@@ -594,7 +594,7 @@ public class TestRegMemModify
     // Create program making syscalls
     new AttachedDaemonProcess (new String[]
         {
-        getExecPrefix () + "funit-ia32-modify"
+        getExecPrefix () + "funit-registers"
         }).resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
@@ -612,7 +612,7 @@ public class TestRegMemModify
     // Create program making syscalls
     new AttachedDaemonProcess (new String[]
     {
-      getExecPrefix () + "funit-x8664-modify"
+      getExecPrefix () + "funit-registers"
     }).resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
@@ -631,7 +631,7 @@ public class TestRegMemModify
     // Call assembler program making syscalls
     new AttachedDaemonProcess (new String[]
     {
-      getExecPrefix () + "funit-ppc64-modify"
+      getExecPrefix () + "funit-registers"
     }).resume ();
     assertRunUntilStop ("run \"ppc64modify\" to exit");
     
