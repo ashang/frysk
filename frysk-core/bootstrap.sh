@@ -40,7 +40,7 @@
 
 # Generate everything (always run with --add-missing).
 
-sh -eu ./common/Makefile.gen.sh --cni frysk prog
+sh -eu ./common/Makefile.gen.sh frysk prog
 
 echo "Running aclocal ..."
 aclocal -I common/m4

@@ -40,7 +40,8 @@
 
 package lib.dw;
 
-import java.util.Vector;
+import java.util.Collections;
+import java.util.List;
 import gnu.gcj.RawDataManaged;
 
 public class Dwfl
@@ -138,14 +139,14 @@ public class Dwfl
   /**
    * Get all the DwflLine objects associated with a line in a source file.
    */
-  public Vector getLineAddresses(String fileName, int lineNo, int column) 
+  public List getLineAddresses(String fileName, int lineNo, int column) 
   {
     DwflModule[] modules = getModules();
     if (modules == null) 
       {
 	return null;
       }
-    Vector result = new Vector();
+    List list = Collections.EMPTY_LIST;
     for (int i = 0; i < modules.length; i++) 
       {
 	DwflModule mod = modules[i];
@@ -155,11 +156,11 @@ public class Dwfl
 	  {
 	    for (int j = 0; j < lines.length; j++) 
 	      {
-		result.add(lines[j]);
+		list.add(lines[j]);
 	      }
 	  }
       }
-    return result;
+    return list;
   }
   
   protected native void dwfl_begin (int pid);

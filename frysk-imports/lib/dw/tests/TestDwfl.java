@@ -40,8 +40,8 @@
 
 package lib.dw.tests;
 
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.List;
 import frysk.junit.TestCase;
 import frysk.junit.Paths;
 import lib.dw.DwarfDie;
@@ -49,6 +49,7 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 import lib.dw.DwflModule;
+import frysk.junit.TestCase;
 
 
 public class TestDwfl
@@ -141,7 +142,7 @@ public class TestDwfl
     long addr = TestLib.getFuncAddr();
     DwflLine line = dwfl.getSourceLine(addr);
     assertNotNull(line);
-    Vector lines = dwfl.getLineAddresses(line.getSourceFile(), 
+    List lines = dwfl.getLineAddresses(line.getSourceFile(), 
 					 line.getLineNum(),
 					 0);
     Iterator linesIterator = lines.iterator();

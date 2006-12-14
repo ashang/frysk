@@ -1,3 +1,9 @@
+2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (getLineAddresses): Now returns a list rather than a Vector
+	(bug #3729).
+	* TestDwfl.java (testGetAddresses): Refactored to reflect above change.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java: Use frysk .junit .Paths .getRunnerBasename.
