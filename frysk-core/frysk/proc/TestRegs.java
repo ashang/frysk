@@ -427,7 +427,7 @@ public class TestRegs
     // Create program making an exit syscall");
     new AttachedDaemonProcess (new String[]
     {
-      getExecPrefix () + "funit-ia32-regs"
+      getExecPrefix () + "funit-regs"
     }).resume ();
     assertRunUntilStop ("run \"x86regs\" until exit");
 
@@ -459,10 +459,10 @@ public class TestRegs
     // Create program making an exit syscall");
     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
     {
-      getExecPrefix () + "funit-x8664-regs"
+      getExecPrefix () + "funit-regs"
     });
     
-    logger.finest("About to resume funit-x8664-regs");
+    logger.finest("About to resume funit-regs");
     child.resume();
     assertRunUntilStop ("run \"x86regs\" until exit");
     
@@ -481,9 +481,9 @@ public class TestRegs
     // Create program making an exit syscall");
     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
     {
-      getExecPrefix () + "funit-ppc64-regs"
+      getExecPrefix () + "funit-regs"
     });
-    logger.finest("About to resume funit-ppc64-regs");
+    logger.finest("About to resume funit-regs");
     child.resume();
     assertRunUntilStop ("run \"ppc64regs\" until exit");
 
