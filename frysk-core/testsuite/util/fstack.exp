@@ -50,11 +50,11 @@ set funit_pid [spawn "$pwd/frysk/pkglibdir/funit-child" "100" "0" "0"]
 set funit_sid $spawn_id
 
 set regex {^Task #[[:digit:]]+\r\n}
-append regex {(#[[:digit:]]+ 0x[0-9a-f]+ in .*\r\n)*}
-append regex {#[[:digit:]]+ 0x[0-9a-f]+ in server [(][)] from: .*/frysk/pkglibdir/funit-child.c#[[:digit:]]+\r\n}
-append regex {#[[:digit:]]+ 0x[0-9a-f]+ in main [(][)] from: .*/frysk/pkglibdir/funit-child.c#[[:digit:]]+\r\n}
-append regex {#[[:digit:]]+ 0x[0-9a-f]+ in __libc_start_main [(][)]\r\n}
-append regex {#[[:digit:]]+ 0x[0-9a-f]+ in _start [(][)]\r\n$}
+append regex {(#[[:digit:]]+ 0x[[:xdigit:]]+ in .*\r\n)*}
+append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in server [(][)] from: .*/frysk/pkglibdir/funit-child.c#[[:digit:]]+\r\n}
+append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in main [(][)] from: .*/frysk/pkglibdir/funit-child.c#[[:digit:]]+\r\n}
+append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in __libc_start_main [(][)]\r\n}
+append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in _start [(][)]\r\n$}
 
 spawn "$pwd/frysk/bindir/fstack" "$funit_pid"
 expect {	
