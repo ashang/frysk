@@ -1,3 +1,9 @@
+2006-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Call Paths.setMyBasename.
+	* Paths.java (Paths): New private constructor.
+	(runnerBasename, setRunnerBasename, getRunnerBasename): New.
+	
 2006-11-28  Chris Moller  <moller@mollerware.com>
 
 	* Runner.java: Rename private variable omitTests to excludeTests.

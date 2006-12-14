@@ -46,6 +46,28 @@ package frysk.junit;
  */
 public class Paths
 {
+    /**
+     * Do not alow extension.
+     */
+    private Paths ()
+    {
+    }
+    /** Variable to hold the program's basename.  */
+    static private String runnerBasename;
+    /**
+     * Set the TestRunner's basename.
+     */
+    static public void setRunnerBasename (String runnerBasename)
+    {
+	Paths.runnerBasename = runnerBasename;
+    }
+    /**
+     * Get the TestRunner's basename.
+     */
+    static public String getRunnerBasename ()
+    {
+	return Paths.runnerBasename;
+    }
     static private String execPrefix;
     static private String dataPrefix;
     /**

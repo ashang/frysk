@@ -535,6 +535,8 @@ public class Runner
 	// Override the print methods.
 	super (new Results (System.out));
 
+	Paths.setRunnerBasename (programName);
+
 	// Create the command line parser, and use it to parse all
 	// command line options.
 	Parser parser = createCommandLineParser (programName);

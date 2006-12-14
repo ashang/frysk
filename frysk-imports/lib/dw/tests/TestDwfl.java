@@ -43,6 +43,7 @@ package lib.dw.tests;
 import java.util.Vector;
 import java.util.Iterator;
 import frysk.junit.TestCase;
+import frysk.junit.Paths;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
@@ -121,7 +122,7 @@ public class TestDwfl
     for (int i = 0; i < modules.length; i++) 
       {
 	String modName = modules[i].getName();
-	if (modName.lastIndexOf("TestRunner") >= 0)
+	if (modName.lastIndexOf (Paths.getRunnerBasename ()) >= 0)
 	  foundTestRunner = true;
 	else if (modName.lastIndexOf("libc") >= 0)
 	  foundlibc = true;

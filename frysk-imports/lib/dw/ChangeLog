@@ -1,3 +1,7 @@
+2006-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestDwfl.java: Use frysk .junit .Paths .getRunnerBasename.
+
 2006-12-13  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* cni/Dwfl.cxx (dwfl_begin): Fixed `debuginfo' files search path typo.
