@@ -41,6 +41,7 @@
 package lib.dw;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import gnu.gcj.RawDataManaged;
 
@@ -146,7 +147,7 @@ public class Dwfl
       {
 	return null;
       }
-    List list = Collections.EMPTY_LIST;
+    LinkedList list = new LinkedList();
     for (int i = 0; i < modules.length; i++) 
       {
 	DwflModule mod = modules[i];
