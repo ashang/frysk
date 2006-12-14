@@ -52,7 +52,44 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 	memcpy(native_cursor, cursor, sizeof(::unw_cursor_t));
 	
 	this->nativeCursor = (gnu::gcj::RawDataManaged *) native_cursor;
+
+	unw_proc_info_t proc_info;
+	int result = unw_get_proc_info(cursor, &proc_info);
+	int len = 256;
+	char buf[len];
+	unw_word_t offset;
 	
+	if(!unw_get_proc_name(cursor, buf, len, &offset))
+	{
+		this->methodName = JvNewStringUTF(buf);
+		
+		if(result == 0)
+			this->address = (jlong) offset + proc_info.start_ip;
+	}
+	
+	unw_word_t tmp;
+	unw_get_reg (cursor, UNW_REG_SP, &tmp);
+	this -> cfa = tmp;	
+}
+
+jlong
+lib::unwind::FrameCursor::get_reg(jlong reg)
+{
+	unw_word_t value;
+	int code;
+	unw_cursor_t *cursor = (unw_cursor_t *) this->nativeCursor;
+	code = unw_get_reg(cursor, (unw_regnum_t)reg, &value);	
+	// ??? Handle code < 0	
+	return value;
+}
+
+jlong
+lib::unwind::FrameCursor::set_reg(jlong reg, jlong val)
+{
+	int code;
+	unw_cursor_t *cursor = (unw_cursor_t *) this->nativeCursor;
+	code = unw_set_reg(cursor, (unw_regnum_t)reg, (unw_word_t)val);
+	return code;
 }
 
 /*

@@ -1,3 +1,18 @@
+2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* FrameCursor.java (getAddress): Added.
+	(setAddress): Added.
+	(getCfa): Added.
+	(isSignalFrame): Added.
+	(setIsSignalFrame): Added.
+	(getMethodName): Added.
+	(get_reg): Added.
+	(set_reg): Added.
+	* cni/FrameCursor.cxx (native_init): Initializes method name, cfa, 
+	isSignalFrame, and address.
+	(get_reg): Added.
+	(set_reg): Added.
+
 2006-09-25  Alexandre Oliva  <aoliva@redhat.com>
 
 	* RegisterAMD64.java: New class.

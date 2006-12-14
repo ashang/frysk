@@ -52,6 +52,12 @@ public class FrameCursor
   protected FrameCursor outer;
   
   protected int signal_frame;
+  
+  protected String methodName;
+  
+  private long cfa;
+  
+  private long address;
 
   protected FrameCursor (long cursor)
   {
@@ -91,4 +97,33 @@ public class FrameCursor
   }
 
   private native void create_frame_cursor (long cursor);
+
+  public long getAddress ()
+  {
+    return address;
+  }
+
+  public long getCfa ()
+  {
+    return cfa;
+  }
+
+  public boolean isSignalFrame()
+  {
+    // ??? Is this right?
+    return signal_frame == 1;
+  }
+  
+  public void setIsSignalFrame(boolean isSignalFrame)
+  {
+    signal_frame = isSignalFrame? 1 : 0;
+  }
+
+  public String getMethodName ()
+  {
+    return methodName;
+  }
+  
+  public native long get_reg (long reg);
+  public native long set_reg (long reg, long val);
 }
