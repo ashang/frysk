@@ -1,3 +1,7 @@
+2006-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-regs.S (main): New file.
+
 2006-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Do not call Paths .setPrefixes.  Use Config
