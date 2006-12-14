@@ -138,7 +138,7 @@ FRYSK_DO_ARCH32_TEST
 
 case "${libdir}:${lib}" in
   *64*:* )
-	lib32dir=`echo "${libdir}" | sed s,64,32,g`
+	lib32dir=`echo "${libdir}" | sed s,64,,g`
 	# 64-bit in /usr/lib64, 32-bit in /usr/lib
 	;;
   *:*64* )
