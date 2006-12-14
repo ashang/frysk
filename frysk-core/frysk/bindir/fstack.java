@@ -138,7 +138,7 @@ public class fstack
     {
       protected void validate () throws OptionException
       {
-        if (!hasProc)
+        if (! hasProc)
           {
             throw new OptionException("no pid provided");
           }
@@ -153,43 +153,40 @@ public class fstack
       {
         try
           {
-            if (!hasProc)
-              {
-                
-                hasProc = true;
-                int pid = Integer.parseInt(arg);
-                Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
+            hasProc = true;
+            int pid = Integer.parseInt(arg);
+            Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+            {
 
-                  public void procFound (ProcId procId)
+              public void procFound (ProcId procId)
+              {
+                final Proc proc = Manager.host.getProc(procId);
+                stacker = new StacktraceAction(proc, new Event()
+                {
+                  public void execute ()
                   {
-                    final Proc proc = Manager.host.getProc(procId);
-                    stacker = new StacktraceAction(proc, new Event()
+                    proc.requestAbandonAndRunEvent(new Event()
                     {
+
                       public void execute ()
                       {
-                        proc.requestAbandonAndRunEvent(new Event(){
-
-                          public void execute ()
-                          {
-                            Manager.eventLoop.requestStop();
-                            System.out.print(stacker.toPrint());
-                          }});
+                        Manager.eventLoop.requestStop();
+                        System.out.print(stacker.toPrint());
                       }
                     });
                   }
+                });
+              }
 
-                  public void procNotFound (ProcId procId, Exception e)
-                  {
-                   System.err.println("Couldn't find the proc with proc Id" + procId);
-                   System.exit(1);
-                  }});
-               
-                
-              }
-            else
+              public void procNotFound (ProcId procId, Exception e)
               {
-                throw new OptionException("too many pids");
+                System.err.println("Couldn't find the proc with proc Id"
+                                   + procId);
+                Manager.eventLoop.requestStop();
               }
+            });
+
+            Manager.eventLoop.run();
 
           }
         catch (Exception _)
@@ -202,8 +199,7 @@ public class fstack
     if (levelValue != null)
       {
         logger.setLevel(level);
-      }  
+      }
 
-    Manager.eventLoop.run();
   }
 }
