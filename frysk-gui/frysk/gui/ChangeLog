@@ -1,3 +1,7 @@
+2006-12-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* test/TestParser.java: Use ArrayList instead of String[].
+
 2006-12-13  Mike Cvet  <mcvet@redhat.com>
 
 	* disassembler/DisassemblyWindow.java (handleToSpin): Fixed some

@@ -57,6 +57,7 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -81,13 +82,11 @@ public class TestParser
 
   private static String CC_FILE = "./test";
 
-  private static String[] sourcelist;
+  private static String[] sourcelist = null;
 
   private static String installed_list = "/usr/share/frysk/samples/test_looper.c";
 
   private static String[] includepaths;
-
-  private static String[] INCLUDEPATHS = { "/usr/local/include", "/usr/include" };
 
   private static String[] exec_path = {
                                        "./frysk/gui/srcwin/testfiles/test_main_looper",
@@ -111,9 +110,10 @@ public class TestParser
         // Figure out whether we are doing an in-tree check or an installed check
         // which_file = 0 means in-tree, = 1 means an installed check
         which_file = 0;
-        assertNotNull(
-                      "testing getting of source file paths",
-                      (sourcelist = DOMFactory.getSrcFiles(exec_path[which_file])));
+        ArrayList arraysourcelist = DOMFactory.getSrcFiles(exec_path[which_file]);
+        assertTrue(arraysourcelist.size() != 0);
+        // Convert ArrayList to String Array
+        sourcelist = (String[]) arraysourcelist.toArray(new String [arraysourcelist.size()]);
       }
     else
       {
@@ -121,23 +121,24 @@ public class TestParser
         assertTrue("testing source file existence",
                    (DOMFactory.pathFound(installed_list)));
       }
-
-    if (sourcelist == null)
+    
+    // if this array is length 0, we must be doing an "installed" test
+    if (sourcelist.length == 0)
+      {
+        sourcelist = new String[1];
         sourcelist[0] = installed_list;
+      }
 
     // Get the list of include file paths associated with this image
-    includepaths = DOMFactory.getIncludePaths(exec_path[which_file]);
-    if (includepaths.equals(null))
-      {
-        includepaths = INCLUDEPATHS;
-      }
+    ArrayList arrayincludepaths = DOMFactory.getIncludePaths(exec_path[which_file]);
+    includepaths = (String[]) arrayincludepaths.toArray(new String [arrayincludepaths.size()]);
 
     dom = new DOMFrysk("TaskTask");
     dom.addImage(IMAGE_FILENAME, CC_FILE, CC_FILE);
     DOMImage image = dom.getImage(IMAGE_FILENAME);
-    int i = 0;
-    while (sourcelist[i] != null)
+    for (int i = 0; i < sourcelist.length; i++)
       {
+        System.out.print("sourcelist[" + i + "] = " + sourcelist[i] + "\n");
         String filename = sourcelist[i].substring(sourcelist[i].lastIndexOf("/") + 1);
         String path = sourcelist[i].substring(0, sourcelist[i].lastIndexOf("/"));
         DOMSource source = new DOMSource(filename, path, includepaths);
@@ -186,7 +187,6 @@ public class TestParser
       }
     catch (IOException e)
       {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
   }
@@ -220,7 +220,6 @@ public class TestParser
       }
     catch (IOException e)
       {
-        // TODO Auto-generated catch block
         e.printStackTrace();
         assertTrue("IO Error on opening the DOM files", false);
       }

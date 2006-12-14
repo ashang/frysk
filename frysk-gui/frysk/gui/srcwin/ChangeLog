@@ -1,3 +1,7 @@
+2006-12-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* testfiles/test_looper.xml: Fixed error in function def's for DOM.
+
 2006-12-13  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView.java (buildTree): Updated call to StackFrame.toPrint
