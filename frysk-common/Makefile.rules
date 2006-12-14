@@ -278,7 +278,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	echo >> $@.tmp '    LinkedList list = new LinkedList ();'
 	grep -v \
 		-e 'TestLib' \
-		-e 'JUnit' \
+		-e 'TestCase' \
 		$(srcdir)/files.list \
 	| grep \
 		-e 'Test[A-Z].*\.java$$' \
