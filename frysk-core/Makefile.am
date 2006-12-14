@@ -60,7 +60,7 @@ prune_ecj = -e CppParser.java -e CppTreeParser.java -e CppParserTokenTypes.java 
 
 # Add dejagnu, remember to clean up.
 AUTOMAKE_OPTIONS = dejagnu
-RUNTESTDEFAULTFLAGS = --srcdir $(srcdir)/testsuite --tool expr
+RUNTESTDEFAULTFLAGS = --srcdir $(srcdir)/testsuite #--tool expr
 CLEANFILES += *.sum *.log
 
 GEN_SOURCEPATH += ../frysk-imports/
