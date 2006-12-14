@@ -52,7 +52,11 @@ import frysk.sys.SyscallNum;
 public class TestRegs
   extends SyscallExaminer
 {
-  class TestI386RegsInternals extends SyscallExaminer.Tester
+    /**
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestI386RegsXXX extends SyscallExaminer.Tester
   {
     boolean ia32Isa;
     int syscallNum;
@@ -149,14 +153,18 @@ public class TestRegs
       }
     }
 
-    TestI386RegsInternals ()
+    TestI386RegsXXX ()
     {
       super();
       addTaskAddedObserver(new I386RegsTestObserver());
     }
   }
   
-  class TestX8664RegsInternals extends SyscallExaminer.Tester
+    /**
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestX8664RegsXXX extends SyscallExaminer.Tester
   {
     boolean X8664Isa;
     int syscallNum;
@@ -266,7 +274,7 @@ public class TestRegs
       }
     }
 
-    TestX8664RegsInternals ()
+    TestX8664RegsXXX ()
     {
       super();
       addTaskAddedObserver(new X8664RegsTestObserver(new LongTaskEventObserver()));
@@ -293,7 +301,11 @@ public class TestRegs
     }
   }
 
-  class TestPPC64RegsInternals extends SyscallExaminer.Tester
+    /**
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestPPC64RegsXXX extends SyscallExaminer.Tester
   {
     long gpr0;
     long gpr3;
@@ -396,22 +408,22 @@ public class TestRegs
         if ((isa instanceof LinuxPPC64) || isa instanceof LinuxPPC)
         {
           if (isa instanceof LinuxPPC64)
-            isaType = TestPPC64RegsInternals.isaPPC64;
+            isaType = TestPPC64RegsXXX.isaPPC64;
           else
-            isaType = TestPPC64RegsInternals.isaPPC32;
+            isaType = TestPPC64RegsXXX.isaPPC32;
           task.requestAddSyscallObserver(taskEventObserver);
           task.requestAddSignaledObserver(taskEventObserver);
         }
         else 
         {
           //If not PPC or PPC64, stop immediately
-          isaType = TestPPC64RegsInternals.unknown;
+          isaType = TestPPC64RegsXXX.unknown;
           Manager.eventLoop.requestStop();
         }
       }
     }
 
-    TestPPC64RegsInternals ()
+    TestPPC64RegsXXX ()
     {
       super();
       addTaskAddedObserver(new PPC64RegsTestObserver());
@@ -423,7 +435,7 @@ public class TestRegs
     if (MachineType.getMachineType() != MachineType.IA32)
       return;
     
-    TestI386RegsInternals t = new TestI386RegsInternals ();
+    TestI386RegsXXX t = new TestI386RegsXXX ();
     // Create program making an exit syscall");
     new AttachedDaemonProcess (new String[]
     {
@@ -455,7 +467,7 @@ public class TestRegs
     if (MachineType.getMachineType() != MachineType.X8664)
       return;
     
-    TestX8664RegsInternals t = new TestX8664RegsInternals();
+    TestX8664RegsXXX t = new TestX8664RegsXXX();
     // Create program making an exit syscall");
     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
     {
@@ -477,7 +489,7 @@ public class TestRegs
     if (MachineType.getMachineType() != MachineType.PPC64)
       return;
     
-    TestPPC64RegsInternals t = new TestPPC64RegsInternals();
+    TestPPC64RegsXXX t = new TestPPC64RegsXXX();
     // Create program making an exit syscall");
     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
     {
@@ -487,14 +499,14 @@ public class TestRegs
     child.resume();
     assertRunUntilStop ("run \"ppc64regs\" until exit");
 
-    if (t.isaType == TestPPC64RegsInternals.isaPPC32 || 
-	t.isaType == TestPPC64RegsInternals.isaPPC64)
+    if (t.isaType == TestPPC64RegsXXX.isaPPC32 || 
+	t.isaType == TestPPC64RegsXXX.isaPPC64)
       {
         assertEquals ("syscall", SyscallNum.SYSexit, t.syscallNum);
         assertEquals ("gpr0 register", 1, t.gpr0);
         assertEquals ("gpr3 register", 1, t.gpr3);
         assertEquals ("gpr4 register", 4, t.gpr4);
-        if (t.isaType == TestPPC64RegsInternals.isaPPC64)
+        if (t.isaType == TestPPC64RegsXXX.isaPPC64)
 	  {
 	    // Left shift 36bits from 0x1
 	    assertEquals ("gpr5 register", 0x1000000000L, t.gpr5);

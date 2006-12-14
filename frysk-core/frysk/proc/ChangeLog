@@ -1,5 +1,16 @@
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java (TestSyscallInterruptXXXX):
+	Rename TestSyscallInterruptInternals.
+	* TestRegs.java (TestI386RegsXXX): Rename TestI386RegsInternals.
+	(TestX8664RegsXXX): Rename TestX8664RegsInternals.
+	(TestPPC64RegsXXX): Rename TestPPC64RegsInternals.
+	* TestRegMemModify.java (TestI386ModifyXXX): Rename
+	TestI386ModifyInternals.
+	(TestX8664ModifyXXX): Rename TestX8664ModifyInternals.
+	(TestPPC64ModifyXXX): Rename TestPPC64ModifyInternals.
+	* TestModify.java (TestModifyXXX): Rename TestModifyInternals.
+
 	* TestRegs.java (checkI386Regs, checkX8664Regs, checkPPC64Regs):
 	Run funit-regs.
 

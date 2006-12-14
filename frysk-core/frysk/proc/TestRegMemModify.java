@@ -59,8 +59,13 @@ import frysk.sys.SyscallNum;
 public class TestRegMemModify
   extends TestLib
 {
-  // Timers, observers, counters, etc.. needed for the test.
-  class TestI386ModifyInternals {
+    /**
+     * Timers, observers, counters, etc.. needed for the test.
+     *
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestI386ModifyXXX {
     volatile int stoppedTaskEventCount;
     volatile int syscallTaskEventCount;
     volatile int syscallState;
@@ -179,7 +184,7 @@ public class TestRegMemModify
         }
     }
 
-    TestI386ModifyInternals ()
+    TestI386ModifyXXX ()
     {
         host.observableTaskAddedXXX.addObserver (new Observer ()
         {
@@ -217,8 +222,13 @@ public class TestRegMemModify
     }
   }
   
-  // Timers, observers, counters, etc.. needed for the test.
-  class TestX8664ModifyInternals {
+    /**
+     * Timers, observers, counters, etc.. needed for the test.
+     *
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestX8664ModifyXXX {
     volatile int stoppedTaskEventCount;
     volatile int syscallTaskEventCount;
     volatile int syscallState;
@@ -359,7 +369,7 @@ public class TestRegMemModify
       }
     }
 
-    TestX8664ModifyInternals ()
+    TestX8664ModifyXXX ()
     {
       host.observableTaskAddedXXX.addObserver (new Observer ()
     {
@@ -394,7 +404,7 @@ public class TestRegMemModify
     }
   }
 
-  class TestPPC64ModifyInternals
+  class TestPPC64ModifyXXX
   {
     volatile int stoppedTaskEventCount;
     volatile int syscallTaskEventCount;
@@ -538,7 +548,7 @@ public class TestRegMemModify
       }
     }
 
-    TestPPC64ModifyInternals ()
+    TestPPC64ModifyXXX ()
     {
       host.observableTaskAddedXXX.addObserver (new Observer ()
       {
@@ -580,7 +590,7 @@ public class TestRegMemModify
 
   private void checkI386Modify ()
   {
-    TestI386ModifyInternals t = new TestI386ModifyInternals ();
+    TestI386ModifyXXX t = new TestI386ModifyXXX ();
     // Create program making syscalls
     new AttachedDaemonProcess (new String[]
         {
@@ -598,7 +608,7 @@ public class TestRegMemModify
   {
     if (MachineType.getMachineType() != MachineType.X8664)
       return;
-    TestX8664ModifyInternals t = new TestX8664ModifyInternals ();
+    TestX8664ModifyXXX t = new TestX8664ModifyXXX ();
     // Create program making syscalls
     new AttachedDaemonProcess (new String[]
     {
@@ -616,7 +626,7 @@ public class TestRegMemModify
   {
     if (MachineType.getMachineType() != MachineType.PPC64)
       return;
-    TestPPC64ModifyInternals t = new TestPPC64ModifyInternals ();
+    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX ();
     
     // Call assembler program making syscalls
     new AttachedDaemonProcess (new String[]

@@ -58,8 +58,13 @@ import inua.eio.ByteBuffer;
 public class TestModify
    extends TestLib
 {
-    // Timers, observers, counters, etc.. needed for the test.
-    class TestModifyInternals {
+    /**
+     * Timers, observers, counters, etc.. needed for the test.
+     *
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+    class TestModifyXXX {
 	volatile int stoppedTaskEventCount;
 	volatile boolean exited;
 	volatile int exitedTaskEventStatus;
@@ -170,7 +175,7 @@ public class TestModify
 	    }
 	}
 
-	TestModifyInternals ()
+	TestModifyXXX ()
 	{
 	    host.observableTaskAddedXXX.addObserver (new Observer ()
 		{
@@ -192,7 +197,7 @@ public class TestModify
     {
 	if (brokenXXX (2933))
 	    return;
-	TestModifyInternals t = new TestModifyInternals ();
+	TestModifyXXX t = new TestModifyXXX ();
 	// Create program making syscalls
 	new AttachedDaemonProcess (new String[]
 	    {

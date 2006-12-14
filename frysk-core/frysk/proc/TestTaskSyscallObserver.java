@@ -496,8 +496,13 @@ public class TestTaskSyscallObserver
       }
   }
 
-  // Timers, observers, counters, etc.. needed for the test.
-  class TestSyscallInterruptInternals {
+    /**
+     * Timers, observers, counters, etc.. needed for the test.
+     *
+     * XXX: Please do not copy.  This came from the most evilly
+     * complex code and needs to be rewriten.
+     */
+  class TestSyscallInterruptXXX {
     int readEnter, readExit, sigusr1Count;
     SyscallInterruptObserver syscallObserver;
     
@@ -581,7 +586,7 @@ public class TestTaskSyscallObserver
       }
     }
 
-    TestSyscallInterruptInternals (final int pid)
+    TestSyscallInterruptXXX (final int pid)
     {
       Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 
@@ -629,8 +634,8 @@ public class TestTaskSyscallObserver
     //	    return;
     PipeReadChild prc = new PipeReadChild (false);
 
-    TestSyscallInterruptInternals t 
-      = new TestSyscallInterruptInternals (prc.getPid ());
+    TestSyscallInterruptXXX t 
+      = new TestSyscallInterruptXXX (prc.getPid ());
     new StopEventLoopWhenProcRemoved (prc.getPid());
 	
     assertRunUntilStop ("run \"syscallint\" until exit");
@@ -650,8 +655,8 @@ public class TestTaskSyscallObserver
     //	    return;
     PipeReadChild prc = new PipeReadChild (true);
 
-    TestSyscallInterruptInternals t
-      = new TestSyscallInterruptInternals (prc.getPid ());
+    TestSyscallInterruptXXX t
+      = new TestSyscallInterruptXXX (prc.getPid ());
     new StopEventLoopWhenProcRemoved (prc.getPid());
 
     assertRunUntilStop ("run \"syscallint\" with restart until exit");
