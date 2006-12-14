@@ -1,7 +1,10 @@
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
-	* TestMemory.java: Rename TestModify.java.
+	* TestMemory.java (testMemoryReadWrite): Mark as broken by 3725.
+	Fix name of test executable.
 	
+	* TestMemory.java: Rename TestModify.java.
+
 	* TestTaskSyscallObserver.java (TestSyscallInterruptXXXX):
 	Rename TestSyscallInterruptInternals.
 	* TestRegs.java (TestI386RegsXXX): Rename TestI386RegsInternals.

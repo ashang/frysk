@@ -196,13 +196,13 @@ public class TestMemory
 	
     public void testMemoryReadWrite ()
     {
-	if (brokenXXX (2933))
+	if (brokenXXX (3725))
 	    return;
 	TestModifyXXX t = new TestModifyXXX ();
 	// Create program making syscalls
 	new AttachedDaemonProcess (new String[]
 	    {
-		getExecPrefix () + "funit-mem"
+		getExecPrefix () + "funit-memory"
 	    }).resume ();
 
 	assertRunUntilStop ("run \"modify\" to exit");
