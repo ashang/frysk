@@ -53,9 +53,19 @@ import lib.unwind.FrameCursor;
 public class StackFrame
 {
 
-  private String methodName;
+  protected StackFrame inner;
 
-  private String sourceFile;
+  protected StackFrame outer;
+  
+  protected FrameCursor myCursor;
+
+  private RawDataManaged unwind_data;
+  
+  private DOMFunction func;
+  
+  private DOMSource data;
+  
+  private Task task;
 
   private int lineNum;
   
@@ -68,26 +78,10 @@ public class StackFrame
   private int endOffset;
 
   private int column;
-
-  private long address;
-
-  protected StackFrame inner;
-
-  protected StackFrame outer;
-
-  private RawDataManaged unwind_data;
   
-  private DOMFunction func;
-  
-  private DOMSource data;
+  private String sourceFile;
   
   private DwflLine dwflLine;
-
-  private Task task;
-  
-  protected long cfa;
-  
-  private boolean isSignalFrame = false;
   
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
@@ -115,10 +109,12 @@ public class StackFrame
   public StackFrame (FrameCursor current, Task myTask, StackFrame inner)
   {
     this.task = myTask;
-    unwind_data = current.getNativeCursor();
-    initialize();
+    //unwind_data = current.getNativeCursor(); // ??? We don't need this now?
+    //initialize();
+    this.myCursor = current;
     this.inner = inner;
-    this.methodName = Demangler.demangle(this.methodName);
+    long address = this.myCursor.getAddress();
+    //this.methodName = Demangler.demangle(this.methodName);
 
     if (address != 0) /* We were able to pull information from this cursor */
       {
@@ -129,7 +125,7 @@ public class StackFrame
          * execution use their PC to get the line in source. All other 
          * frames have their PC set to the line after the inner frame call
          * and must be decremented by one. */
-        if (inner == null || isSignalFrame)
+        if (inner == null || this.myCursor.isSignalFrame())
           line = dwfl.getSourceLine(address);
         else
           line = dwfl.getSourceLine(address - 1);
@@ -157,7 +153,7 @@ public class StackFrame
    * Native function. Sets methodName and address via the cursor obtained
    * from unwind_data.
    */
-  private native void initialize ();
+  //private native void initialize ();
   
   /**
    * Sets the DOMFunction representing the function which is in turn
@@ -257,7 +253,7 @@ public class StackFrame
    */
   public long getAddress ()
   {
-    return address;
+    return this.myCursor.getAddress();
   }
 
   /**
@@ -366,23 +362,24 @@ public class StackFrame
         if (! isSourceWindow)
           {
             ret = "0x"
-              + Long.toHexString(this.address) + " in "
-              + this.methodName + " () from: "
-              + this.sourceFile + "#" + this.lineNum;
+	    + Long.toHexString(this.myCursor.getAddress()) + " in "
+	    + this.myCursor.getMethodName() + " () from: "
+            + this.sourceFile + "#" + this.lineNum;
           }
         else
           {
             String[] fileName = this.sourceFile.split("/");
-            ret = "0x" + Long.toHexString(this.address) + " in "
-                  + fileName[fileName.length - 1] + " " + this.methodName 
+            ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
+                  + fileName[fileName.length - 1] + " " 
+		  + this.myCursor.getMethodName() 
                   + " (): line #" + this.lineNum;
           }
       }
     else
       {
         ret = "0x"
-          + Long.toHexString(this.address) + " in "
-          + this.methodName + " ()";
+	  + Long.toHexString(this.myCursor.getAddress()) + " in "
+	  + Demangler.demangle(this.myCursor.getMethodName()) + " ()";
       }
     
     return ret;
@@ -438,7 +435,7 @@ public class StackFrame
    */
   public void setIsSignalFrame(boolean sigFrame)
   {
-    this.isSignalFrame = sigFrame;
+    this.myCursor.setIsSignalFrame(sigFrame);
   }
   
   /**
@@ -448,13 +445,13 @@ public class StackFrame
    */
   public boolean getIsSignalFrame()
   {
-    return this.isSignalFrame;
+    return this.myCursor.isSignalFrame();
   }
   
   public long getReg(long reg)
   {
     // ??? Use something akin to Register interface?
-    return get_reg(reg);
+    return this.myCursor.get_reg(reg);
   }
   
   /**
@@ -465,16 +462,13 @@ public class StackFrame
    */
   public long getCFA()
   {
-    return this.cfa;
+    return this.myCursor.getCfa();
   }
   
   public long setReg(long reg, long val)
   {
     // ??? Use something akin to Register interface?
-    return set_reg(reg, val);
+    return this.myCursor.set_reg(reg, val);
   }
-  
-  private native long get_reg (long reg);
-  private native long set_reg (long reg, long val);
 }
 
