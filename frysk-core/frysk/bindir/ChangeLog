@@ -1,3 +1,8 @@
+2006-12-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* fparser.java: New standalone source code parser.
+	* fparser.xml: Man page for standalone source code parser.
+
 2006-12-13  Nurdin Premji  <npremji@redhat.com>
 
 	* ftrace.java (.notifyFile): Allow user to enter pid without using -p option.
