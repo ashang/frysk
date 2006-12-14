@@ -483,6 +483,7 @@ public class DisassemblyWindow
             model.setValue(iter, (DataColumnString) cols[LOC],
                            "0x" + Long.toHexString(ins.address));
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
+            model.setValue(iter, (DataColumnObject) cols[3], ins);
             
             this.pcOffset += ins.address;
             
@@ -519,7 +520,7 @@ public class DisassemblyWindow
    * @param i   The address to be displayed
    * @param iter    The TreeIter representing the row to be added.
    */
-  public void rowAppend (long i, TreeIter iter)
+  public synchronized void rowAppend (long i, TreeIter iter)
   {
 //    if (iter == null)
 //      iter = model.appendRow();
@@ -540,7 +541,9 @@ public class DisassemblyWindow
     Iterator li = instructionsList.listIterator(0);
     Instruction ins = (Instruction) li.next();
     
-    for (int j = 0; j < i; j++)
+    //for (int j = 0; j < this.numInstructions; j++)
+    this.toToggle = true;
+    while (ins != null && ins.address < i)
       {
         iter = model.appendRow();
         if (ins != null)
@@ -550,6 +553,7 @@ public class DisassemblyWindow
             model.setValue(iter, (DataColumnString) cols[LOC],
                            "0x" + Long.toHexString(ins.address));
             model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
+            model.setValue(iter, (DataColumnObject) cols[3], ins);
             
             if (li.hasNext())
               ins = (Instruction) li.next();
@@ -563,6 +567,9 @@ public class DisassemblyWindow
         else
           model.setValue(iter, (DataColumnString) cols[1], "");
       }
+    
+    this.toSpin.setValue((double) ins.address);
+    this.lastKnownTo = ins.address;
   }
   
   private void desensitize ()
@@ -629,6 +636,8 @@ public class DisassemblyWindow
     this.lastKnownFrom = val;
   }
 
+  boolean toToggle = false;
+  
   /**
    * When the 'To' SpinBox is changed, update the displayed information 
    * accordingly.
@@ -637,6 +646,12 @@ public class DisassemblyWindow
    */
   public synchronized void handleToSpin (double val)
   {
+    
+    if (toToggle == true)
+      {
+        this.toToggle = false;
+        return;
+      }
 
     if (this.model.getFirstIter() == null)
       return;
@@ -655,7 +670,9 @@ public class DisassemblyWindow
             //this.model.appendRow();
             this.numInstructions++;
           }
-        rowAppend((long) (val - lastKnownTo), null);
+        //rowAppend((long) (val - lastKnownTo), null);
+        rowAppend((long) val, null);
+        //this.lastKnownTo = val;
         return;
       }
     else
@@ -668,28 +685,41 @@ public class DisassemblyWindow
 //        TreeIter i = model.getFirstIter();
 //        while (i != null)
 //          i = i.getNextIter();
-        
+//        
 //        this.numInstructions--;
-//
+
 //        TreeIter i = this.model.getFirstIter();
 //        long j;
-//        int end = (int) ((val - 2) - this.lastKnownFrom);
-//        for (j = 0; j < end; j++)
+//        //int end = (int) ((val - 2) - this.lastKnownFrom);
+//        for (j = 0; j < this.numInstructions - 1; j++)
 //          {
 //            System.out.println("iterating " + j);
 //            System.out.println("i is " + i);
 //            i = i.getNextIter();
 //          }
+//        System.out.println("i is " + i);
+//        /* Hopefully at the last iter by now */
+//        
+//        Instruction ins = (Instruction) this.model.getValue(i, (DataColumnObject) cols[3]);
+//        System.out.println("Ins is " + ins);
+//       this.toToggle = true;
+//       this.toSpin.setValue((double) ins.address);
+//       
+//        model.removeRow(i);
+//        i = i.getNextIter();
+        
+//        ins = (Instruction) this.model.getValue(i, new DataColumnObject());
 //
-//        end = (int) (this.lastKnownTo - (val - 2));
-//        for (j = 0; j < end; j++)
+//        //end = (int) (this.lastKnownTo - (val - 2));
+//        //for (j = 0; j < end; j++)
+//        while (ins.address > val)
 //          {
 //            System.out.println("de-iterating " + j);
 //            model.removeRow(i);
 //            i = i.getNextIter();
 //          }
-//        
-//        this.lastKnownTo = val;
+        
+        //this.lastKnownTo = val;
         //refreshList();
       }
   }
