@@ -129,9 +129,6 @@ public class TestElf
 
   public void testObjectFile () throws ElfException, ElfFileException
   {
-    if (brokenXXX(2712))
-      return;
-
     Elf testElf = new Elf(Paths.getDataPrefix () + "/helloworld.o",
                           ElfCommand.ELF_C_READ);
 
