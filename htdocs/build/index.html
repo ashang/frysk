@@ -451,9 +451,16 @@ Making sure that the current directory
 is<tt>frysk-imports/getopt</tt>.</dd>
 
 </dl>
-
-
-
+<dt>How do I add a new dejagnu test?</dt>
+<dd> Most of the work for this is done, just create a test_name.exp file and 
+drop it in a directory somewhere under frysk-core/testsuite. Take a look at 
+<pre>frysk-core/testsuite/util/fstack.exp</pre> to see an example.
+</dd>
+<dt>Help "[[:digit:]]" is causing dejagnu to panic with ERROR: (DejaGnu) proc 
+":digit:" does not exist.</dt>
+<dd>Don't use "s to wrap strings in dejagnu/expect/tcl, they cause the symbols 
+inside to be parsed differently. Instead use {}. So this becomes 
+<pre>{[[:digit:]]}</pre></dd>
               <!-- end text -->
               <p>&nbsp;</p>
             </td>

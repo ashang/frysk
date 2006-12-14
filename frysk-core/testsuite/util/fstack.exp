@@ -38,17 +38,19 @@
 # version and license this file solely under the GPL without
 # exception.
 
+#set up variables.
 global objdir
 global srcdir
 global frysk_testsuite
-
 load_lib frysk.exp
 set pwd [eval pwd]
-
 frysk_init
+
+#start test program, and store pid.
 set funit_pid [spawn $pwd/frysk/pkglibdir/funit-child 100 0 0]
 set funit_sid $spawn_id
 
+#define regex.
 set regex {^Task #[[:digit:]]+\r\n}
 append regex {(#[[:digit:]]+ 0x[[:xdigit:]]+ in .*\r\n)*}
 append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in server [(][)] from: .*/frysk/pkglibdir/funit-child.c#[[:digit:]]+\r\n}
@@ -56,12 +58,16 @@ append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in main [(][)] from: .*/frysk/pkglib
 append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in __libc_start_main [(][)]\r\n}
 append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in _start [(][)]\r\n$}
 
+#start tester program with pid.
 spawn $pwd/frysk/bindir/fstack $funit_pid
+
+#test output.
 expect {	
 	-re $regex {pass test_fstack}
 	default	{fail test_fstack}
 }
 
+#clean up.
 tool_exit $funit_sid
 frysk_term
 
