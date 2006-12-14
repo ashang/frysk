@@ -1,42 +1,3 @@
-// This file is part of the program FRYSK.
-//
-// Copyright 2005, Red Hat Inc.
-//
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-//
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
-
 package frysk.dom;
 
 import java.io.BufferedReader;
@@ -44,9 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import lib.dw.Dwarf;
 import lib.dw.DwarfCommand;
+//import lib.dw.DwflLine;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import lib.dw.NoDebugInfoException;
@@ -89,11 +52,14 @@ public class DOMFactory
 //      }
     
     // Get the list of source files associated with this image
-    String[] sourcelist = getSrcFiles(proc.getExe());
+    ArrayList arraysourcelist = getSrcFiles(proc.getExe());
+
+    // Convert ArrayList to String Array
+    String sourcelist[] = (String[]) arraysourcelist.toArray(new String [arraysourcelist.size()]);
     // Get the list of include file paths associated with this image
-    String[] includepaths = getIncludePaths(proc.getExe());
-    int i = 0;
-    while (sourcelist[i] != null)
+    ArrayList arrayincpaths = getIncludePaths(proc.getExe());
+    String includepaths[] = (String[]) arrayincpaths.toArray(new String [arrayincpaths.size()]);
+    for (int i = 0; i < sourcelist.length; i++)
       {
 
         String filename = sourcelist[i].substring(sourcelist[i].lastIndexOf("/") + 1);
@@ -109,7 +75,7 @@ public class DOMFactory
             // create a new dom and associate it with the given task
             // XXX create a fake name for now, must create unique names later
             dom = new DOMFrysk("TaskTask");
-            dom.addImage(proc.getMainTask().getName(), path, path);
+            dom.addImage(proc.getMainTask().getName(), sourcelist[i], sourcelist[i]);
           }
 
         DOMSource source = dom.getImage(proc.getMainTask().getName()).getSource(
@@ -148,6 +114,7 @@ public class DOMFactory
             // Parse the file and populate the DOM
             StaticParser parser = new CDTParser();
             parser.parse(dom, source, image);
+            source.setParsed(true);
           }
         hashmap.put(proc, dom);
         // if we are debugging the DOM, print it out now
@@ -155,7 +122,6 @@ public class DOMFactory
           {
             printDOM(dom);
           }
-        i++;
       }
     return dom;
   }
@@ -179,14 +145,18 @@ public class DOMFactory
   }
   
   /*
-   * get the source files for this image
+   * getSrcFiles gets the source files for this image from the elf/dwarf header
+   * The path from the ELF/DWARF header is used for the path for the initial
+   * initial search of the source file.  If that search fails the path to the
+   * executable is prepended to the beginning of that path to see if the file
+   * can be found that way.
    * 
    * @param executable is a String containing the path to the executable
-   * @return a String[] with the name(s) of the source file(s)
+   * @return an ArrayList with the path(s) of the source file(s)
    */
-  public static String[] getSrcFiles (String executable)
+  public static ArrayList getSrcFiles (String executable)
   {
-
+    ArrayList sourcefiles = new ArrayList();
     if (pathFound(executable))
       {
         try
@@ -197,40 +167,44 @@ public class DOMFactory
 
             // Since this call returns a lot of non-source file info, we must
             // parse it and glean the source paths from it
-            String[] sourcefiles = new String[files.length];
-            int numberfiles = 0;
             for (int i = 0; i < files.length; i++)
               {
-                if (files[i].endsWith(".c") || files[i].endsWith(".cpp"))
+                if (DOMCompilerSuffixes.checkCPP(files[i]) || DOMCompilerSuffixes.checkC(files[i]))
                   {
                     if (pathFound(files[i]))
                       {
-                        sourcefiles[numberfiles] = files[i];
-                        numberfiles++;
+                        sourcefiles.add(files[i]);
                       }
+                    // If we have not found the file and it has a relative path, prepend the path
+                    // to the executable to the front of the paths and see what happens
+                    else if (files[i].startsWith("..")) {
+                      if (pathFound(executable.substring(0,executable.lastIndexOf("/")) + "/" + files[i]))
+                        {
+                          sourcefiles.add(executable.substring(0,executable.lastIndexOf("/")+1) + files[i]);
+                        }
+                    }
                   }
               }
-            return sourcefiles;
           }
         catch (lib.elf.ElfException ee)
           {
             System.err.println("Error getting sourcefile paths: "
                                + ee.getMessage());
-            return null;
+            return sourcefiles;
           }
       }
-    else
-      return null;
+      return sourcefiles;
   }
   
   /*
    * get a list of the include files for this source file
    * 
    * @param executable is a String containing the path to the executable
-   * @return a String[] containing a list of the include path(s)
+   * @return an ArrayList containing a list of the include path(s)
    */
-  public static String[] getIncludePaths (String executable)
+  public static ArrayList getIncludePaths (String executable)
   {
+    ArrayList incpaths = new ArrayList();
     try
       {
         Elf elf = new Elf(executable, ElfCommand.ELF_C_READ);
@@ -239,33 +213,29 @@ public class DOMFactory
 
         // Since this call returns a lot of non-include file info, we must parse
         // it and glean the include paths from it
-        String[] incfiles = new String[files.length + 2];
-        int numberfiles = 0;
         for (int i = 0; i < files.length; i++)
-          {
-            if (files[i].endsWith(".h") && ! (files[i] == GLOBAL_INCLUDE)
-                && ! (files[i] == LOCAL_INCLUDE) && 
-                ! alreadyAdded(incfiles, files[i]))
+          { 
+            if ((DOMCompilerSuffixes.checkCHeader(files[i]) || 
+                                                  DOMCompilerSuffixes.checkCPPHeader(files[i])) &&
+                ! alreadyAdded(incpaths, files[i]))
               {
                 int j = files[i].lastIndexOf("/");
                 if (pathFound(files[i].substring(0, j)))
                   {
-                    incfiles[numberfiles] = files[i].substring(0, j);
-                    numberfiles++;
+                    incpaths.add(files[i].substring(0, j));
                   }
               }
           }
         // Add the default includes used for all systems
         if (pathFound(LOCAL_INCLUDE))
           {
-            incfiles[numberfiles] = LOCAL_INCLUDE;
-            numberfiles++;
+            incpaths.add(LOCAL_INCLUDE);
           }
         if (pathFound(GLOBAL_INCLUDE))
           {
-            incfiles[numberfiles] = GLOBAL_INCLUDE;
+            incpaths.add(GLOBAL_INCLUDE);
           }
-        return incfiles;
+        return incpaths;
       }
 
     catch (lib.elf.ElfException ee)
@@ -285,21 +255,22 @@ public class DOMFactory
    * @return true if the include is already in the list, false if not
    * 
    */
-  public static boolean alreadyAdded(String[] filelist, String newfile )
+  public static boolean alreadyAdded(ArrayList filelist, String newfile )
   {
-    if (filelist.length <= 1)
-      return false;
     int j = newfile.lastIndexOf("/");
-    for (int i = 0; i <= filelist.length; i++)
+    for (int i = 0; i < filelist.size(); i++)
       {
-        if (filelist[i] == null)
-          return false;
-        if (filelist[i].equals(newfile.substring(0, j)) ||
-            newfile.substring(0,j).equals(GLOBAL_INCLUDE) ||
-            newfile.substring(0,j).equals(LOCAL_INCLUDE))
-          return true;
+        if (newfile.substring(0,j) == GLOBAL_INCLUDE)
+        if (newfile.substring(0,j).equals(GLOBAL_INCLUDE))
+        if (filelist.get(i).equals(newfile.substring(0, j))) {
+              return true;
+            }
       }
-    return false;
+    if (newfile.substring(0,j).equals(GLOBAL_INCLUDE) ||
+            newfile.substring(0,j).equals(LOCAL_INCLUDE))
+      return true;
+    else
+      return false;
   }
   
   /**
