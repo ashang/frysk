@@ -3,19 +3,31 @@
 #include <stdarg.h>
 
 int
-loop_ ()
+loop_ (double d1, int i1, int i2, short s, int i3, float f, double d2, int i4, int i5)
 {
   return 2;
 }
 
+char
+assign_char (char arg)
+{
+  return arg;
+}
+
 short
-assign_short (short arg )
+assign_short (short arg)
 {
   return arg;
 }
 
 int
 assign_int (int arg)
+{
+  return arg;
+}
+
+long
+assign_long (long arg)
 {
   return arg;
 }
@@ -33,7 +45,7 @@ assign_double (double arg)
 }
 
 void
-assign_long_arr (long* arr, int arr_hb)
+assign_long_arr (long *arr, int arr_hb)
 {
   int i;
   for (i = 0 ; i < arr_hb; i++)
@@ -42,7 +54,7 @@ assign_long_arr (long* arr, int arr_hb)
 }
 
 void
-assign_int_arr (int* arr, int arr_hb)
+assign_int_arr (int *arr, int arr_hb)
 {
   int i;
   for (i = 0 ; i < arr_hb; i++)
@@ -51,7 +63,17 @@ assign_int_arr (int* arr, int arr_hb)
 }
 
 void
-assign_float_arr (float* arr, int arr_hb)
+assign_char_arr (char *arr, int arr_hb)
+{
+  int i;
+  const char alphas [] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for (i = 0 ; i < arr_hb; i++)
+    arr[i] = alphas[i];
+  return;
+}
+
+void
+assign_float_arr (float *arr, int arr_hb)
 {
   int i;
   for (i = 0 ; i < arr_hb; i++)

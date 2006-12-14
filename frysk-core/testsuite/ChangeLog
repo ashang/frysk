@@ -1,3 +1,9 @@
+2006-12-14  Stan Cox  <scox@redhat.com>
+
+	* expr/20061115-2.c (assign_char, assign_long, assign_char_arr): New.
+	* expr/20061115-1.c (loop_2): Use it.
+	* expr/CppParser.exp: Test it.
+
 2005-11-15  Stan Cox  <scox@redhat.com>
 
 	* lib/frysk.exp: New file.
