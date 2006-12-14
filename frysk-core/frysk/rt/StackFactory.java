@@ -57,7 +57,17 @@ public class StackFactory
       throws TaskException
   {
     StackCallbacks callbacks = new StackCallbacks(task);
-    FrameCursor innermost = StackTraceCreator.createStackTrace(callbacks);
+    FrameCursor innermost = null;
+    try
+    {
+      innermost = StackTraceCreator.createStackTrace(callbacks);
+    }
+    catch (Exception e)
+    {
+      System.out.println("Call stack is broken - couldn't unwind!");
+      e.printStackTrace();
+      return new StackFrame(task);
+    }
     StackFrame toReturn = new StackFrame(innermost, task);
 
     if (num == 0)

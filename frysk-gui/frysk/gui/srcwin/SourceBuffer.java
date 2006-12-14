@@ -378,8 +378,17 @@ public class SourceBuffer
    */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
-    if (frame == null)
+    if (frame == null || this.scope.getData() == null)
       return;
+    
+    if (frame.getDwflLine() == null)
+      {
+        while (frame.getOuter() != null && frame.getDwflLine() == null)
+          frame = frame.getOuter();
+        
+        if (frame == null)
+          return;
+      }
     
     int startLine = frame.getStartLine();
     int startCol = frame.getStartOffset();

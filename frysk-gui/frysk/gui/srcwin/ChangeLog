@@ -1,3 +1,13 @@
+2006-12-14  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (buildTree): Won't get null StackFrames
+	anymore, removed redundancies. Compare Tasks using their TID.
+	* SourceBuffer.java (highlightLine): Return before doing anything
+	if the scope of this Buffer has no source. If the incoming StackFrame
+	has no debuginfo, try and find a frame in the stack that does.
+	* SourceWindow.java (populateStackBrowser): Cleaned up, removed
+	redundant checks. Fixes #3723.
+
 2006-12-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* testfiles/test_looper.xml: Fixed error in function def's for DOM.

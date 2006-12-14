@@ -1,3 +1,13 @@
+2006-12-14  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFactory.java (createStackFrame): Catch Exceptions coming out of
+	StackTraceCreator, and return an empty StackFrame instead of null. Fixes
+	#3723.
+	* StackFrame.java (StackFrame): New constructor, taking a Task. Used to 
+	create an empty StackFrame.
+	(getMethodName): If the method name is null, return an empty String 
+	instead.
+
 2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StackFrame.java (myCursor): Added, replaces address, methodName, cfa,

@@ -125,23 +125,14 @@ public class CurrentStackView
   {
     TreeIter iter = null;
     TreeIter parent = null;
-    int nullCount = 0;
     
     for (int j = frames.length - 1; j >= 0; j--)
       {
         StackFrame frame = frames[j];
-
-        if (frame == null)
-          {
-            nullCount++;
-            continue;
-          }
         
         parent = null;
         iter = null;
-        
         boolean hasInlinedCode = false;
-
         String row = "";
 
         if (MachineType.getMachineType() == MachineType.PPC
@@ -163,7 +154,7 @@ public class CurrentStackView
                                "tid: " + task.getTid());
             treeModel.setValue(parent, (DataColumnObject) stackColumns[1], frame);
             
-            if (task.equals(task.getProc().getMainTask()))
+            if (task.getTid() == task.getProc().getMainTask().getTid())
               {
                 currentFrame = frame;
                 head = frame;
@@ -200,13 +191,6 @@ public class CurrentStackView
                 row = "";
               }
           }
-      }
-    
-    if (nullCount == frames.length)
-      {
-        iter = treeModel.appendRow(null);
-        treeModel.setValue(iter, (DataColumnString) stackColumns[0], "Broken stack trace");
-        treeModel.setValue(iter, (DataColumnObject) stackColumns[1], null);
       }
   }
   

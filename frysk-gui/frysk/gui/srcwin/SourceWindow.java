@@ -363,7 +363,6 @@ public class SourceWindow
   {
     
     this.frames = frames;
-    StackFrame taskMatch = null;
 
     /* Initialization */
     if (this.view == null)
@@ -373,17 +372,8 @@ public class SourceWindow
         
         temp = CurrentStackView.getCurrentFrame();
         
-        if (temp == null)
-          {
-            this.view = new SourceView(temp, this);
-            ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
-            ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
-            sw.add(stackView);
-            this.view.showAll();
-            return;
-          }
-        
         StackFrame curr = temp;
+        this.currentFrame = temp;
         
         if (curr.getDwflLine() == null)
           {
@@ -404,8 +394,7 @@ public class SourceWindow
               {
                 if (frames[j].getMethodName() != null)
                   {
-                    if (! frames[j].getMethodName().equals(
-                                                           this.currentFrame.getMethodName()))
+                    if (! frames[j].getMethodName().equals(curr.getMethodName()))
                       b.highlightLine(frames[j], true);
                   }
               }
@@ -427,51 +416,19 @@ public class SourceWindow
         return;
       }
     
-    if (frames == null || frames[0] == null)
-      {
-        System.out.println("Frames were null");
-        return;
-      }
-    
     SourceView sv = (SourceView) this.view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
     
     StackFrame curr = null;
-
-    /* If the currentFrame is null for some reason. Unlikely, but possible */
-    if (this.currentFrame == null)
-      {
-        curr = this.stackView.getFirstFrameSelection();
-
-        this.currentFrame = curr;
-        this.currentTask = curr.getTask();
-
-        /*
-         * Assume the first frame in the stack has debuginfo. If not, try to
-         * find one that does.
-         */
-        if (curr.getDwflLine() == null)
-          {
-            while (curr != null && curr.getDwflLine() == null)
-              curr = curr.getOuter();
-          }
-
-        if (curr != null)
-          {
-            this.currentFrame = curr;
-            this.currentTask = curr.getTask();
-          }
-      }
-
+    StackFrame taskMatch = null;
+    
     String currentMethodName = this.currentFrame.getMethodName();
     boolean flag = false;
-    curr = null;
 
     /*
      * Try to find the new StackFrame representing the same frame from before
      * the reset
      */
-
     for (int j = 0; j < frames.length; j++)
       {
         curr = frames[j];
@@ -777,7 +734,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(true);
+    this.next.setSensitive(false);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -1155,7 +1112,7 @@ public class SourceWindow
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-    this.next.setSensitive(true);
+    //this.next.setSensitive(true);
     //this.finish.setSensitive(true);
     //this.cont.setSensitive(true);
     this.nextAsm.setSensitive(true);
