@@ -1,3 +1,7 @@
+2006-12-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java: Disable tests on x8664, ppc for now. Take too long.
+
 2006-12-13  Mike Cvet  <mcvet@redhat.com>
 
 	* StacktraceAction.java (storeTask): Update call to StackFrame.toPrint

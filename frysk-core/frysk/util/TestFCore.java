@@ -69,6 +69,12 @@ public class TestFCore
 
   public void testCoreFileCreated ()
   {
+
+    // Core files not broken on either arch, but just
+    // take a long time to create. 3727 explains issue.
+    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
+	return;
+
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
@@ -78,6 +84,11 @@ public class TestFCore
   
   public void testElfCoreHeader ()
   {
+
+    // Core files not broken on either arch, but just
+    // take a long time to create. 3727 explains issue.
+    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
+	return;
  
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
@@ -165,6 +176,13 @@ public class TestFCore
   
   public void testProgramSegmentHeader ()
   {
+
+    // Core files not broken on either arch, but just
+    // take a long time to create. 3727 explains issue.
+
+    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
+	return;
+
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
