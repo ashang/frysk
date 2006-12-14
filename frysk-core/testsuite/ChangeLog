@@ -1,5 +1,7 @@
 2006-12-14  Nurdin Premji <npremji@redhat.com>
 
+	* util/fstack.exp: Removed unneccessary " wrappings
+
 	* util/fstack.exp: Changed [0-9a-f] to [[:xdigit:]]
 
 	* util/fstack.exp: New file.
