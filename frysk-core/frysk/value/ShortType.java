@@ -88,6 +88,13 @@ public class ShortType
     return returnVar;
   }
 
+  public Variable newByteVariable (ByteType type, Variable val)
+  {
+    Variable returnVar = new Variable(type, val.getText());
+    returnVar.getLocation().putByte((byte) (val.getChar()));
+    return returnVar;
+  }
+
   public Variable newShortVariable (ShortType type, Variable val)
   {
     Variable returnVar = new Variable(type, val.getText());

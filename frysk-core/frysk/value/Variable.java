@@ -85,8 +85,12 @@ public class Variable
       return _text;
     }
 
+    public byte getByte() {
+      return _location.getByte();
+    }
+
     public char getChar() {
-      return _location.getChar();
+      return (char)_location.getShort();
     }
 
     public short getShort() {
@@ -109,8 +113,12 @@ public class Variable
       return _location.getDouble();
     }
 
+    public byte getByte(int idx) {
+      return (byte)_location.getByte(idx);
+    }
+
     public char getChar(int idx) {
-      return _location.getChar(idx);
+      return (char)_location.getShort(idx);
     }
 
     public short getShort(int idx) {
@@ -133,8 +141,12 @@ public class Variable
       return _location.getDouble(idx);
     }
 
+    public void putByte(byte val) {
+      _location.putByte(val);
+    }
+
     public void putChar(char val) {
-      _location.putChar(val);
+      _location.putShort((short)val);
     }
 
     public void putShort(short val) {

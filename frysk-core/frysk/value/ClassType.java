@@ -90,7 +90,7 @@ public class ClassType
     {
       Type type = ((Type) (members.get(idx)));
       if (type._typeId == BaseTypes.baseTypeChar)
-        return new Integer(0);
+        return new Integer(v.getByte(idx * type.getSize()));
       else if (type._typeId == BaseTypes.baseTypeShort)
         return new Integer(v.getShort(idx * type.getSize()));
       else if (type._typeId == BaseTypes.baseTypeInteger)
@@ -176,6 +176,13 @@ public class ClassType
   public Variable newIntegerVariable (IntegerType type, Variable val)
   {
     return null;
+  }
+
+  public Variable newByteVariable (ByteType type, Variable val)
+  {
+    Variable returnVar = new Variable(type, val.getText());
+    returnVar.getLocation().putByte((byte) (val.getChar()));
+    return returnVar;
   }
 
   public Variable newShortVariable (ShortType type, Variable val)

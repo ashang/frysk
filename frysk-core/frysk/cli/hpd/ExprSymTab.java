@@ -53,9 +53,11 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import frysk.expr.CppSymTab;
 import frysk.value.ArrayType;
+import frysk.value.ByteType;
 import frysk.value.ClassType;
 import frysk.value.DoubleType;
 import frysk.value.FloatType;
+import frysk.value.LongType;
 import frysk.value.IntegerType;
 import frysk.value.ShortType;
 import frysk.value.Variable;
@@ -137,10 +139,14 @@ class ExprSymTab implements CppSymTab
     void setSuccessful(boolean b);
     DwarfDie varDie = null;
     long getAddr (String s);
+    long getLong (String s);
+    void putLong (String s, Variable v);
     int getInt (String s);
     void putInt (String s, Variable v);
     short getShort (String s);
     void putShort (String s, Variable v);
+    byte getByte (String s);
+    void putByte (String s, Variable v);
     float getFloat (String s);
     void putFloat (String s, Variable v);
     double getDouble (String s);
@@ -235,6 +241,18 @@ class ExprSymTab implements CppSymTab
       return getBufferAddr(varDie);
     }
     
+    public long getLong (String s)
+    {
+      DwarfDie varDie = getDie(s);
+      long addr = getBufferAddr(varDie);
+      return buffer.getLong(addr);
+    }
+    public void putLong (String s, Variable v) 
+    {
+      DwarfDie varDie = getDie(s);
+      long addr = getBufferAddr(varDie);
+      buffer.putLong(addr, v.getLong());
+    }
     public int getInt (String s)
     {
       DwarfDie varDie = getDie(s);
@@ -259,6 +277,19 @@ class ExprSymTab implements CppSymTab
       long addr = getBufferAddr(varDie);
       buffer.putShort(addr, v.getShort());
     }
+    public byte getByte (String s)
+    {
+      DwarfDie varDie = getDie(s);
+      long addr = getBufferAddr(varDie);
+      return buffer.getByte(addr);      
+    }
+    public void putByte (String s, Variable v)
+    {
+      DwarfDie varDie = getDie(s);
+      long addr = getBufferAddr(varDie);
+      buffer.putByte(addr, v.getByte());
+    }
+
     public float getFloat (String s)
     {
       DwarfDie varDie = getDie(s);
@@ -337,7 +368,18 @@ class ExprSymTab implements CppSymTab
     }    
 
       
-    
+    public long getLong (String s)
+    {
+      DwarfDie varDie = getDie(s);
+      long val = currentFrame.getReg(getReg(varDie));
+      return (long)val;
+    }
+    public void putLong (String s, Variable v)
+    {
+      DwarfDie varDie = getDie(s);
+      long reg = getReg(varDie);
+      currentFrame.setReg(reg, (long)v.getLong());
+    }
     public int getInt (String s)
     {
       DwarfDie varDie = getDie(s);
@@ -361,6 +403,18 @@ class ExprSymTab implements CppSymTab
       DwarfDie varDie = getDie(s);
       long reg = getReg(varDie);
       currentFrame.setReg(reg, (long)v.getShort());
+    }
+    public byte getByte (String s)
+    {
+      DwarfDie varDie = getDie(s);
+      long val = currentFrame.getReg(getReg(varDie));
+      return (byte)val;
+    }
+    public void putByte (String s, Variable v)
+    {
+      DwarfDie varDie = getDie(s);
+      long reg = getReg(varDie);
+      currentFrame.setReg(reg, (long)v.getByte());
     }
     public float getFloat (String s)
     {
@@ -446,13 +500,21 @@ class ExprSymTab implements CppSymTab
         return;
       for(int i = 0; i < variableAccessor.length; i++) 
         {
-          if (type.getBaseType() == BaseTypes.baseTypeInteger)
+          if (type.getBaseType() == BaseTypes.baseTypeLong)
+            {
+              variableAccessor[i].putLong(s, v);
+            }
+          else if (type.getBaseType() == BaseTypes.baseTypeInteger)
             {
               variableAccessor[i].putInt(s, v);
             }
           else if (type.getBaseType() == BaseTypes.baseTypeShort)
             {
               variableAccessor[i].putShort(s, v);
+            }
+          else if (type.getBaseType() == BaseTypes.baseTypeChar)
+            {
+              variableAccessor[i].putByte(s, v);
             }
           else if (type.getBaseType() == BaseTypes.baseTypeFloat)
             {
@@ -500,7 +562,16 @@ class ExprSymTab implements CppSymTab
           DwarfDie type = varDie.getType();
           if (type == null)
             return null;      
-          if (type.getBaseType() == BaseTypes.baseTypeInteger)
+          if (type.getBaseType() == BaseTypes.baseTypeLong)
+            {
+              long longVal = variableAccessor[i].getLong(s);
+              if (variableAccessor[i].isSuccessful() == false)
+                continue;
+              LongType longType = new LongType(8, byteorder);
+              v = LongType.newLongVariable(longType, s, longVal); 
+              return v; 
+            }
+          else if (type.getBaseType() == BaseTypes.baseTypeInteger)
             {
               int intVal = variableAccessor[i].getInt(s);
               if (variableAccessor[i].isSuccessful() == false)
@@ -516,6 +587,15 @@ class ExprSymTab implements CppSymTab
                 continue;
               ShortType shortType = new ShortType(2, byteorder);
               v = ShortType.newShortVariable(shortType, s, shortVal); 
+              return v; 
+            }
+          else if (type.getBaseType() == BaseTypes.baseTypeChar)
+            {
+              byte byteVal = variableAccessor[i].getByte(s);
+              if (variableAccessor[i].isSuccessful() == false)
+                continue;
+              ByteType byteType = new ByteType(1, byteorder);
+              v = ByteType.newByteVariable(byteType, s, byteVal); 
               return v; 
             }
           else if (type.getBaseType() == BaseTypes.baseTypeFloat)
@@ -555,7 +635,13 @@ class ExprSymTab implements CppSymTab
 
                 ArrayType arrayType = null;
                 int typeSize = 0;
-                if (type.getType().getBaseType() == BaseTypes.baseTypeShort)
+                if (type.getType().getBaseType() == BaseTypes.baseTypeChar)
+                  {
+                    typeSize = 1;
+                    ByteType byteType = new ByteType(1, byteorder);
+                    arrayType = new ArrayType (byteType, dims);
+                  }
+                else if (type.getType().getBaseType() == BaseTypes.baseTypeShort)
                   {
                     typeSize = 2;
                     ShortType shortType = new ShortType(2, byteorder);
@@ -585,6 +671,8 @@ class ExprSymTab implements CppSymTab
                     DoubleType doubleType = new DoubleType(8, byteorder);
                     arrayType = new ArrayType (doubleType, dims);
                   }
+		else
+		  return null;
                 
                 byte buf []= new byte[bufSize * typeSize];
                 for (int j = 0 ; j < bufSize; j++)
@@ -607,7 +695,13 @@ class ExprSymTab implements CppSymTab
                 int typeSize = 0;
                 while (subrange != null)
                   {
-                    if (subrange.getType().getBaseType() == BaseTypes.baseTypeShort)
+		    if (subrange.getType().getBaseType() == BaseTypes.baseTypeChar)
+		      {
+			typeSize += 1;
+			ByteType byteType = new ByteType(1, byteorder);
+			classType.addMember (byteType, subrange.getName());
+		      }
+                    else if (subrange.getType().getBaseType() == BaseTypes.baseTypeShort)
                       {
                         typeSize += 2;
                         ShortType shortType = new ShortType(2, byteorder);
@@ -637,6 +731,7 @@ class ExprSymTab implements CppSymTab
                         DoubleType doubleType = new DoubleType(8, byteorder);
                         classType.addMember (doubleType, subrange.getName());
                       }
+		    else return null;
                     subrange = subrange.getSibling();
                   }
                 

@@ -122,6 +122,7 @@ public abstract class Type
   
   public abstract boolean getLogicalValue(Variable var1) throws InvalidOperatorException; 
 
+  public abstract Variable newByteVariable(ByteType type, Variable val);
   public abstract Variable newShortVariable(ShortType type, Variable val);
   public abstract Variable newIntegerVariable(IntegerType type, Variable val);
   public abstract Variable newLongVariable(LongType type, Variable val);

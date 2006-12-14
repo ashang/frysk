@@ -1,3 +1,14 @@
+2006-12-14  Stan Cox  <scox@redhat.com>
+
+	* ByteType.java: New.
+	* ShortType.java (newByteVariable): New.
+	* LongType.java (newByteVariable): New. 
+	* IntegerType.java (newByteVariable): New.
+	* FloatType.java (newByteVariable): New.  
+	* DoubleType.java (newByteVariable): New. 
+	* Type.java (newByteVariable): New.
+	* Variable.java (getByte): New..
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: Delete.
