@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +50,7 @@ import frysk.proc.ProcId;
 import frysk.proc.Host;
 
 import frysk.util.CoredumpAction;
+import frysk.util.Util;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -220,53 +219,7 @@ public class fcore
 
       }
     });
-
-    parser.add(new Option(
-                          "console",
-                          'c',
-                          "Set the console level. The console-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<console-level>")
-    {
-      public void parsed (String consoleValue) throws OptionException
-      {
-        try
-          {
-            Level consoleLevel = Level.parse(consoleValue);
-            Handler consoleHandler = new ConsoleHandler();
-            consoleHandler.setLevel(consoleLevel);
-            logger.addHandler(consoleHandler);
-            logger.setLevel(consoleLevel);
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log console: " + consoleValue);
-          }
-
-      }
-    });
-
-    parser.add(new Option(
-                          "level",
-                          'l',
-                          "Set the log level. The log-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<log-level>")
-    {
-
-      public void parsed (String logLevel) throws OptionException
-      {
-        levelValue = logLevel;
-        try
-          {
-            level = Level.parse(levelValue);
-            logger.setLevel(level);
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log level: " + levelValue);
-          }
-      }
-    });
+    
+    Util.addConsoleOptions(logger, parser);
   }
 }

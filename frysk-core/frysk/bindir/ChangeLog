@@ -1,5 +1,9 @@
 2006-12-15  Nurdin Premji  <npremji@redhat.com>
 
+	* fcore.java (addOptions): Changed to use frysk.util.Util.addConsoleOptions()
+	* fstack.java (addOptions): Ditto.
+	* ftrace.java (addOptions): Added logging options using Util.addConsoleOptions
+
 	* fcore.java: Reverted ProcException addition.
 	* fstack.java: Ditto.
 

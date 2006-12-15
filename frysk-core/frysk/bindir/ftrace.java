@@ -42,12 +42,16 @@ import inua.util.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
+
+import frysk.EventLogger;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import frysk.util.Ftrace;
 import frysk.util.StracePrinter;
+import frysk.util.Util;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -61,7 +65,10 @@ class ftrace
 {
 //Where to send output.
     PrintWriter writer;
-
+   
+    protected static final Logger logger = EventLogger.get("logs/",
+    "frysk_core_event.log");
+    
     // Set of all Syscalls we want to trace.
     // This is null if the user hasn't specified any.
     HashSet tracedCalls;
@@ -74,6 +81,7 @@ class ftrace
 
     private void addOptions(Parser parser)
     {
+	Util.addConsoleOptions(logger, parser);
         parser.add(new Option('o', "output file name", "FILE") {
             public void parsed(String filename) throws OptionException
             {
