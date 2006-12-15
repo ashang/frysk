@@ -1,3 +1,7 @@
+2006-12-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFactory.java: Add Frysk copyright header back in.
+
 2006-12-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Use ArrayList instead of String[].
