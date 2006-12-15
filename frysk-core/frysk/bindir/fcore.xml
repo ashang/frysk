@@ -69,6 +69,12 @@
     <cmdsynopsis>
       <command>fcore</command>
       <arg choice="opt">
+        <option>-a </option>
+      </arg>
+      <arg choice="opt">
+        <option>-o <replaceable>filename</replaceable></option>
+      </arg>
+      <arg choice="opt">
         <option>-c <replaceable>console-log-level</replaceable></option>
       </arg>
       <arg choice="opt">
@@ -89,14 +95,30 @@
 
     <variablelist>
       <varlistentry>
-	<term>-c <replaceable>console-log-level</replaceable></term>
+	<term><option>-a, -allmaps</option></term>
+	<listitem>
+          <para> Write all readable segment maps. The default level is
+	to attempt to emulate gcore segment writing strategy. By
+	specifying this option, fcore will write all readable maps. 
+	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-o <replaceable>output-file</replaceable></option></term>
+	<listitem>
+          <para> Specifies the name of the core file. Default is core.
+	The core-file extension will still use the pid of the process being dumped.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-c <replaceable>console-log-level</replaceable></option></term>
 	<listitem>
           <para> Enable logging to the console and at the specified
           log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term>-l <replaceable>log-level</replaceable></term>
+	<term><option>-l <replaceable>log-level</replaceable></option></term>
 	<listitem>
           <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
         </listitem>

@@ -59,12 +59,15 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
+
 import frysk.Config;
 
 public class fcore
 {
 
+  private static String filename = "core";
   private static boolean hasProc = false;
+  private static boolean writeAllMaps = false;
   
   private static CoredumpAction stacker;
   
@@ -98,7 +101,7 @@ public class fcore
     };
     addOptions(parser);
 
-    parser.setHeader("Usage: fcore <pids>");
+    parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
 
     parser.parse(args, new FileArgumentCallback()
     {
@@ -139,13 +142,13 @@ public class fcore
                     }
 
                  
-                  stacker = new CoredumpAction(proc, new Event()
+                  stacker = new CoredumpAction(proc, filename, new Event()
                   {
                     public void execute ()
                     {
                       proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
                     }
-                  });
+		  },writeAllMaps);
                 }
 
                 public void procNotFound (ProcId procId, Exception e)
@@ -183,6 +186,53 @@ public class fcore
   */
   private static void addOptions (Parser parser)
   {
+
+    parser.add(new Option(
+                          "allmaps",
+                          'a',
+                          " Writes all readable maps. Does not elide"
+                          + " or omit any readable map. Caution: could"
+                          + " take considerable amount of time to"
+                          + " construct core file.")
+    {
+      public void parsed (String mapsValue) throws OptionException
+      {
+        try
+          {
+	    writeAllMaps  = true;
+
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid maps parameter " + mapsValue);
+          }
+
+      }
+    });
+
+    parser.add(new Option(
+                          "outputfile",
+                          'o',
+			  "Sets the name (not extension) of the core"
+                          + " file. Default is core.{pid}. The extension"
+                          + " will always be the pid.",
+                          "<filename>")
+    {
+      public void parsed (String filenameValue) throws OptionException
+      {
+        try
+          {
+	    filename = filenameValue;
+
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid output filename: " + filenameValue);
+          }
+
+      }
+    });
+
     parser.add(new Option(
                           "console",
                           'c',

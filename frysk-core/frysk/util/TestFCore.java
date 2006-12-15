@@ -230,7 +230,7 @@ public class TestFCore
       {
         ackProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    });
+      },false);
 
     assertRunUntilStop("Running event loop for core file");
     return coreDump.getConstructedFileName();

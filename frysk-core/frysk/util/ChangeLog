@@ -1,6 +1,22 @@
 2006-12-14  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* CoredumpAction.java (CoredumpAction): Add new constructor for
+	filename. Add writeAllMaps flag to both.
+	(write_elf_file): Use getConstructedFileName() instead of
+	recalculating.	Set ELF_LAYOUT mode on: construct offsets and 
+	alignments manually.
+	(getConstructedFileName): Get filename from fcore.java.
+	(buildElfHeader): Calculate and update offset in elf file.
+	(buildNotes): Ditto.
+	(buildStringTable): ditto.
+	(CoreMapsBuilder.buildBuffer): Create reference to raw maps.
+	(CoreMapsBuilder.buildMaps): Calculate map filename.
+	Check for writeAllMaps. If !writeAllMaps decided on elide
+	and omit strategy. Calculate offsets to build sparse file.
+	
+
 	* TestFCore.java: Disable tests on x8664, ppc for now. Take too long.
+	(constructCore): Add writeAllMaps flag.
 
 2006-12-13  Mike Cvet  <mcvet@redhat.com>
 

@@ -61,6 +61,7 @@ import lib.elf.ElfEHeader;
 import lib.elf.ElfEMachine;
 import lib.elf.ElfException;
 import lib.elf.ElfFileException;
+import lib.elf.ElfFlags;
 import lib.elf.ElfNhdr;
 import lib.elf.ElfNhdrType;
 import lib.elf.ElfPHeader;
@@ -121,9 +122,11 @@ extends ProcBlockAction
   "frysk_core_event.log");
 
   private Elf local_elf = null;
+  private String filename = "core";
+  private long elfSectionOffset = 0;
+  private boolean writeAllMaps = false;
 
   int taskArraySize = 1;
-
   Task[] taskArray;
 
   private LinkedList taskList;
@@ -131,18 +134,24 @@ extends ProcBlockAction
 
   private Event event;
   
-  
-  public CoredumpAction (Proc proc, Event theEvent)
+  public CoredumpAction (Proc proc,  Event theEvent, boolean writeAllMaps)
   {
     super(proc);
     this.proc = proc;
     this.event = theEvent;
     taskList = proc.getTasks();
     taskArray = new Task[taskList.size()];
-    
+    this.writeAllMaps = writeAllMaps;
     Manager.eventLoop.add(new InterruptEvent(proc));
   }
- 
+
+  public CoredumpAction(Proc proc, String filename, Event theEvent,
+  boolean writeAllMaps)
+  {
+    this(proc,theEvent, writeAllMaps);
+    this.filename = filename;
+    
+  }
 
   public void existingTask (Task task)
      {
@@ -230,7 +239,7 @@ extends ProcBlockAction
     builder.construct (proc.getPid());
     nhdrEntry.setNhdrDesc(ElfNhdrType.NT_AUXV, prAuxv);
     return 0;
-  
+
   }
 
   /**
@@ -642,7 +651,7 @@ extends ProcBlockAction
   {
  
     // Start new elf file
-    local_elf = new Elf("fcore."+ proc.getPid(), ElfCommand.ELF_C_WRITE, true);
+    local_elf = new Elf(getConstructedFileName(), ElfCommand.ELF_C_WRITE, true);
 
     // Build elf header
     int endianType = buildElfHeader(local_elf);
@@ -653,16 +662,28 @@ extends ProcBlockAction
 
     // Build initial Program segment header including PT_NOTE program header.
     local_elf.createNewPHeader(counter.numOfMaps + 1);
- 
+
+    ElfEHeader elf_header = local_elf.getEHeader();
+
+    elfSectionOffset += ((counter.numOfMaps+1) *  elf_header.phentsize);
+    
     // Build notes section
     buildNotes(local_elf);
- 
+
+    local_elf.flag(ElfCommand.ELF_C_SET, ElfFlags.LAYOUT);
+    
     // Build, and write out memory segments to sections
     final CoreMapsBuilder builder = new CoreMapsBuilder();
     builder.construct(proc.getMainTask().getTid());
 
     // Build string table.
     buildStringTable(local_elf);
+
+    elf_header = local_elf.getEHeader();
+    elf_header.shoff = elfSectionOffset + 2;
+
+    // Elf Header is completed
+    local_elf.updateEHeader(elf_header);
 
     // Write elf file
     final long i = local_elf.update(ElfCommand.ELF_C_WRITE);
@@ -674,9 +695,7 @@ extends ProcBlockAction
     // Ugly post process. Libelf will not let us write program segment when
     // class type is set to ET_CORE. Bit confusing. See bz sw 3373.
 
-    // Open the file
-    boolean postProcess = postProcessElfFile(System.getProperty("user.dir")
-                                             + "/fcore." + proc.getPid(), endianType);
+    boolean postProcess = postProcessElfFile(getConstructedFileName(), endianType);
     if (! postProcess)
         throw new ElfException(
         "Could not post process elf core file. Stuck as ET_EXEC");
@@ -692,7 +711,7 @@ extends ProcBlockAction
    * 
    * @throws TaskException
    */
-  protected int  buildElfHeader(Elf local_elf)  throws TaskException
+  protected int  buildElfHeader(Elf local_elf)  throws TaskException, ElfException
   {
  
     int endianType = 0;
@@ -756,7 +775,16 @@ extends ProcBlockAction
 
     // Elf Header is completed
     local_elf.updateEHeader(elf_header);
-    
+
+    // Write elf file. Calculate offsets in elf memory.
+    final long i = local_elf.update(ElfCommand.ELF_C_NULL);
+    if (i < 0)
+        throw new ElfException("LibElf elf_update failed with "
+                               + local_elf.getLastErrorMsg());
+
+    // Get size of written header
+    elf_header = local_elf.getEHeader();
+    elfSectionOffset += elf_header.ehsize;
     return endianType;
   }
   
@@ -783,6 +811,7 @@ extends ProcBlockAction
     noteSectHeader.flags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
     noteSectHeader.nameAsNum = 16;
     noteSectHeader.offset = 0;
+    noteSectHeader.addralign = 1;
     noteSectHeader.size = noteSection.getData().getSize();
     noteSection.update(noteSectHeader);
 
@@ -799,9 +828,13 @@ extends ProcBlockAction
     // Modify PT_NOTE program header
     noteProgramHeader = local_elf.getPHeader(0);
     noteProgramHeader.type = ElfPHeader.PTYPE_NOTE;
-
+    noteProgramHeader.flags =  ElfPHeader.PHFLAG_READABLE;
     noteProgramHeader.offset = noteSectHeader.offset;
     noteProgramHeader.filesz = noteSectHeader.size;
+
+    // Calculate elf section offset.
+    elfSectionOffset += noteSectHeader.size;
+    noteProgramHeader.align = noteSectHeader.addralign;
     local_elf.updatePHeader(0, noteProgramHeader);
   }
   
@@ -817,17 +850,25 @@ extends ProcBlockAction
    * to store in.
   */
   protected void buildStringTable(Elf local_elf)
-  {
-   
+  { 
+  
     // Make a static string table. 
-    String a = "\0" + "load" + "\0" + ".shstrtab" + "\0" + "note" + "\0";
+    String a = "\0" + "load" + "\0" + ".shstrtab" + "\0" + "note0" + "\0";
     byte[] bytes = a.getBytes();
-    
+
+    ElfSection lastSection = local_elf.getSection(local_elf.getSectionCount()-1);
+
     // Sections need a string lookup table
     ElfSection stringSection = local_elf.createNewSection();
     ElfData data = stringSection.createNewElfData();
     ElfSectionHeader stringSectionHeader = stringSection.getSectionHeader();
     stringSectionHeader.type = ElfSectionHeaderTypes.SHTYPE_STRTAB;
+    stringSectionHeader.size = bytes.length;
+
+    stringSectionHeader.offset = lastSection.getSectionHeader().offset + 
+      lastSection.getSectionHeader().size;
+
+    stringSectionHeader.addralign = 1;
     stringSectionHeader.nameAsNum = 6; // offset of .shrstrtab;
 
     // Set elf data
@@ -839,7 +880,11 @@ extends ProcBlockAction
     // Repoint shstrndx to string segment number
     ElfEHeader elf_header = local_elf.getEHeader();
     elf_header.shstrndx = (int) stringSection.getIndex();
+
+    // Calculate elf section offset.
+    elfSectionOffset += bytes.length;
     local_elf.updateEHeader(elf_header);
+
   }
 
   /**
@@ -923,12 +968,14 @@ extends ProcBlockAction
   {
 
     int numOfMaps = 0;
-    int totalSize = 0;
-    
+
+    byte[] mapsLocal;
     Elf elf;
 
     public void buildBuffer (final byte[] maps)
     {
+      // Safe a refernce to the raw maps.
+      mapsLocal = maps;
       maps[maps.length - 1] = 0;
     }
 
@@ -944,15 +991,60 @@ extends ProcBlockAction
     if (permRead == true)
         {
 
+	  // Calculate segment name
+	  byte[] filename = new byte[pathnameLength];
+	  boolean writeMap = false;
+
+	  System.arraycopy(mapsLocal,pathnameOffset,filename,0,pathnameLength);
+	  String sfilename = new String(filename);
+	 
+	  if (writeAllMaps)
+	    {
+	      writeMap = true;
+	    }
+	  else
+	    {
+	      // Should the map be written?
+	      if (inode == 0)
+		writeMap = true;
+	      if ((inode > 0) && (permWrite))
+		writeMap = true;
+	      if (sfilename.equals("[vdso]"))
+		writeMap = true;
+	      if (sfilename.equals("[stack]"))
+		writeMap = true;
+	      if ((permRead) && (permPrivate)) 
+		if ((!permWrite) && (!permExecute))
+		  writeMap = true;
+	      if (permShared)
+		writeMap = true;
+	    }
+
           // Get empty progam segment header corresponding to this entry.
           // PT_NOTE's program header entry takes the index: 0. So we should
           // begin from 1.
           final ElfPHeader pheader = local_elf.getPHeader(numOfMaps + 1);
-          pheader.offset = offset;
+
+	  // Get the section written before this one.
+	  final ElfPHeader previous = local_elf.getPHeader(numOfMaps);
+	  
+	  // Calculate offset in elf file, from offset of previous section.
+	  if (previous.memsz > 0)
+	    pheader.offset = previous.offset + previous.memsz;
+	  else
+	    pheader.offset = previous.offset + previous.filesz;
+
           pheader.type = ElfPHeader.PTYPE_LOAD;
           pheader.vaddr = addressLow;
           pheader.memsz = addressHigh - addressLow;
           pheader.flags = ElfPHeader.PHFLAG_NONE;
+
+	  // If we are to write this map, annotate file size within
+	  // elf file.
+	  if (writeMap)
+	    pheader.filesz = pheader.memsz;
+	  else
+	    pheader.filesz = 0;
 
           // Set initial section flags (always ALLOC).
           long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC; // SHF_ALLOC;
@@ -974,11 +1066,6 @@ extends ProcBlockAction
                              | ElfSectionHeaderTypes.SHFLAG_EXECINSTR;
             }
 
-          // Construct file size, if any
-          pheader.filesz = 0;
-          if (ElfPHeader.PHFLAG_WRITABLE == (pheader.flags & ElfPHeader.PHFLAG_WRITABLE))
-            pheader.filesz = pheader.memsz;
-
           // Update section header
           ElfSection section = local_elf.createNewSection();
           ElfSectionHeader sectionHeader = section.getSectionHeader();
@@ -996,34 +1083,32 @@ extends ProcBlockAction
           sectionHeader.size = pheader.memsz;
           sectionHeader.link = 0;
           sectionHeader.info = 0;
-          sectionHeader.addralign = 0;
-          sectionHeader.entsize = 0;
-          
-          // XXX: New data section. Need to decide what maps to write
-          ElfData data = section.createNewElfData();
+          sectionHeader.addralign = 1;
+          sectionHeader.entsize = 0;    
+	  elfSectionOffset += sectionHeader.size;
 
-          // Segment writing strategy
-          //if ((inode == 0) || ((inode > 0) && permWrite) || ((permRead) && (permPrivate) && (!permWrite) && (!permExecute)))
-          //	{
+
+	  // Only actually write the segment if we have previously
+	  // decided to write that segment.
+	  if (writeMap)
+	    {          
+
+	      ElfData data = section.createNewElfData();	  
+
+	      // Construct file size, if any	      
+	      pheader.filesz = pheader.memsz;
+
         	  // Load data. How to fail here?
         	  byte[] memory = new byte[(int) (addressHigh - addressLow)];
         	  proc.getMainTask().getMemory().get(addressLow, memory, 0,
         			  (int) (addressHigh - addressLow));
- 
+
           	  // Set and update back to native elf section
         	  data.setBuffer(memory);
         	  data.setSize(memory.length);
-        	  
-          	//} 
-//          else 
-//          	{
-//        	  data.setBuffer(new byte[] {});
-//        	  data.setSize(0);
-//          	}
+		  data.setType(0);
+            } 
 
-          // Fix this
-          data.setType(0);
-            
           section.update(sectionHeader);
 
        
@@ -1035,7 +1120,7 @@ extends ProcBlockAction
             System.err.println("update in memory failed with message "
                                + local_elf.getLastErrorMsg());
           sectionHeader = section.getSectionHeader();
-          pheader.offset = sectionHeader.offset;
+          //pheader.offset = sectionHeader.offset;
           pheader.align = sectionHeader.addralign;
           // Write back Segment header to elf structure
           local_elf.updatePHeader(numOfMaps + 1, pheader);
@@ -1076,7 +1161,7 @@ extends ProcBlockAction
 
   public String getConstructedFileName()
   {
-    return "fcore."+proc.getPid();
+    return filename+"."+proc.getPid();
   }
 
   static class InterruptEvent
@@ -1112,9 +1197,6 @@ extends ProcBlockAction
   public void allExistingTasksCompleted ()
   {
 
-    //  if taskList.size() == 0 then we have
-    // ordered all our tasks.
-    
 
         try
         {
