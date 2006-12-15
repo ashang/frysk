@@ -40,14 +40,17 @@
 include common/Makefile.rules
 include Makefile.gen
 
-SUBDIRS = \
+# On all platforms, "make check" in libunwind is disabled.  (This is
+# probably not portable, but we do not mind.)
+CHECK_SUBDIRS = \
 	jline \
 	tests \
 	cdtparser \
 	junit \
 	elfutils \
-	getopt \
-	libunwind
+	getopt
+SUBDIRS = $(CHECK_SUBDIRS) libunwind
+check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 EXTRA_DIST += \
 	frysk/ChangeLog \

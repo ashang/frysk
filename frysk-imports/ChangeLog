@@ -1,3 +1,9 @@
+2006-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (SUBDIRS, CHECK_SUBDIRS): Remove libunwind from
+	check list.  Partially re-instate code lost in 2006-12-08 changes.
+	(check-recursive): Add.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: Clean up; remove .deps, gij.sh, TestRunner,
