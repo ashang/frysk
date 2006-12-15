@@ -40,8 +40,8 @@
 	.text
 	.global main
 
-main:
 #ifdef __i386__
+main:
 	push %ebp
 	mov $0x14, %eax
 	mov $1, %ebp 
@@ -64,6 +64,30 @@ loop:
 	pop %ebp
 	ret
 fail: jmp 0
+
+#elif defined __x86_64__
+main:
+	mov $0x14, %rax
+	mov $1, %rdi
+	mov $2, %rsi
+	mov $3, %rdx
+	int $0x80
+loop:
+	nop
+	nop
+	nop
+	nop ; nop ; nop
+	nop
+	cmp $1, %rdi
+	jne fail
+	cmp $2, %rsi
+	jne fail
+	cmp $3, %rdx
+	jne fail
+	jmp loop
+	ret
+fail: jmp 0
+
 #endif
 
 // make the stack non-executable
