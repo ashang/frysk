@@ -1,3 +1,9 @@
+2006-12-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.java: (notifyFile): Change error handling to use
+	OptionException. Remove tests that are already performed in ProcBlockAction
+	Be more consistent in error messages.
+
 2006-12-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fcore.java (addOptions): Add -a and -o options.

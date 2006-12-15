@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 import frysk.EventLogger;
 
 import frysk.event.Event;
-import frysk.event.RequestStopEvent;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -99,6 +98,7 @@ public class fcore
             throw new OptionException("No pid(s) provided");
       }
     };
+
     addOptions(parser);
 
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
@@ -107,74 +107,64 @@ public class fcore
     {
       public void notifyFile (String arg) throws OptionException
       {
-        try
-        {
-              hasProc = true;
-              int pid = 0;
-              try
-              {
-                pid = Integer.parseInt(arg);
-              } catch (NumberFormatException nfe)
-              {
-                System.err.println("Argument " + arg + " does not appear to be a valid pid");
-                return;
-              }
-              Manager.host.requestFindProc(new ProcId (pid), new Host.FindProc() {
 
-                public void procFound (ProcId procId)
-                {
-                  final Proc proc = Manager.host.getProc(procId);
-                  boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || 
-                      proc.getGID() == Manager.host.getSelf().getGID());
+	hasProc = true;
+	int pid = 0;
+	
+	// Test pid is valid
+	try
+	  {
+	    pid = Integer.parseInt(arg);
+	  }
+	catch (NumberFormatException nfe)
+	  {
+	    
+	    throw new OptionException("Argument " + arg + " does " 
+				      + "not appear to be a valid pid. Skipping.");
+	  }
+	
 
-                  // Do we have permission to work on this process?
-                  if (! isOwned)
-                    {
-                      System.err.println("Process " + proc.getPid()
-                                         + " is not owned by user/group. Cannot dump core.");
-                      System.exit(2);
-                    }
-                  
-                  if (proc == null)
-                    {
-                      System.err.println("Could not attach to the process " + procId.toString());                    
-                      System.exit(3);
-                    }
+	Manager.host.requestFindProc(new ProcId (pid), new Host.FindProc()
+	  {
+	    public void procFound (ProcId procId) 
+	    {
+	      final Proc coreProc = Manager.host.getProc(procId);
+	      stacker = new CoredumpAction(coreProc, filename, new Event()
+		{
+		  public void execute ()
+		  {
+		    coreProc.requestAbandonAndRunEvent(new Event()
+		      {
+			
+			public void execute ()
+			{
+			  Manager.eventLoop.requestStop();
+			}
+		      });
+		  }
+		},writeAllMaps);
+	    }
+	    
+	    public void procNotFound (ProcId procId, Exception e)
+	    {
+	      System.err.println("fcore: Could not find the process: " + procId.toString());
+	    }
+	  }
+				     );    
 
-                 
-                  stacker = new CoredumpAction(proc, filename, new Event()
-                  {
-                    public void execute ()
-                    {
-                      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-                    }
-		  },writeAllMaps);
-                }
-
-                public void procNotFound (ProcId procId, Exception e)
-                {
-                  System.err.println("Could not find the process: " + procId.toString());
-                  System.exit(4);
-                }});            
-              
-
-        }
-      catch (Exception _)
-        {
-          throw new OptionException("Could not parse the PID list.");
-        }
-    }
-    });
-
+	Manager.eventLoop.run();
+      }
+      });
+    
     // Set log level.
     if (levelValue != null)
       {
         logger.setLevel(level);
       }
     
-
-    Manager.eventLoop.run();
-
+    
+    // Manager.eventLoop.run();
+    
     stacker.getClass();
   }
   
