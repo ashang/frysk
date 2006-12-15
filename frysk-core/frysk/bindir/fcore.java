@@ -48,7 +48,6 @@ import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcException;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
@@ -59,27 +58,27 @@ import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
-
 import frysk.Config;
 
 public class fcore
 {
 
   private static String filename = "core";
+
   private static boolean hasProc = false;
+
   private static boolean writeAllMaps = false;
-  
+
   private static CoredumpAction stacker;
-  
+
   protected static final Logger logger = EventLogger.get("logs/",
-  "frysk_core_event.log");
-    private static Parser parser;
+                                                         "frysk_core_event.log");
+
+  private static Parser parser;
 
   private static String levelValue;
 
   private static Level level;
-
-  
 
   /**
    * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
@@ -95,8 +94,8 @@ public class fcore
     {
       protected void validate () throws OptionException
       {
-        if (!hasProc)
-            throw new OptionException("No pid(s) provided");
+        if (! hasProc)
+          throw new OptionException("No pid(s) provided");
       }
     };
 
@@ -109,95 +108,88 @@ public class fcore
       public void notifyFile (String arg) throws OptionException
       {
 
-	hasProc = true;
-	int pid = 0;
-	
-	// Test pid is valid
-	try
-	  {
-	    pid = Integer.parseInt(arg);
-	  }
-	catch (NumberFormatException nfe)
-	  {
-	    
-	    throw new OptionException("Argument " + arg + " does " 
-				      + "not appear to be a valid pid. Skipping.");
-	  }
-	
+        hasProc = true;
+        int pid = 0;
 
-	Manager.host.requestFindProc(new ProcId (pid), new Host.FindProc()
-	  {
-	    public void procFound (ProcId procId) 
-	    {
-	      final Proc coreProc = Manager.host.getProc(procId);
-	      try
+        // Test pid is valid
+        try
           {
+            pid = Integer.parseInt(arg);
+          }
+        catch (NumberFormatException nfe)
+          {
+
+            throw new OptionException(
+                                      "Argument "
+                                          + arg
+                                          + " does "
+                                          + "not appear to be a valid pid. Skipping.");
+          }
+
+        Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+        {
+          public void procFound (ProcId procId)
+          {
+            final Proc coreProc = Manager.host.getProc(procId);
+
             stacker = new CoredumpAction(coreProc, filename, new Event()
-{
- public void execute ()
- {
-            coreProc.requestAbandonAndRunEvent(new Event()
+            {
+              public void execute ()
               {
+                coreProc.requestAbandonAndRunEvent(new Event()
+                {
 
-public void execute ()
-{
-            Manager.eventLoop.requestStop();
-}
-              });
- }
-},writeAllMaps);
+                  public void execute ()
+                  {
+                    Manager.eventLoop.requestStop();
+                  }
+                });
+              }
+            }, writeAllMaps);
+
           }
-        catch (ProcException e)
+
+          public void procNotFound (ProcId procId, Exception e)
           {
-            System.err.println("Proc Exception" + e.getMessage());
+            System.err.println("fcore: Could not find the process: "
+                               + procId.toString());
           }
-	    }
-	    
-	    public void procNotFound (ProcId procId, Exception e)
-	    {
-	      System.err.println("fcore: Could not find the process: " + procId.toString());
-	    }
-	  }
-				     );    
+        });
 
-	Manager.eventLoop.run();
+        Manager.eventLoop.run();
       }
-      });
-    
+    });
+
     // Set log level.
     if (levelValue != null)
       {
         logger.setLevel(level);
       }
-    
-    
+
     // Manager.eventLoop.run();
-    
+
     stacker.getClass();
   }
-  
- 
+
   /**
    * Add options to the the option parser. Belongs
    * 
    * @param parser - the parser that is to be worked on.
-  */
+   */
   private static void addOptions (Parser parser)
   {
 
-    parser.add(new Option(
-                          "allmaps",
-                          'a',
+    parser.add(new Option("allmaps", 'a',
                           " Writes all readable maps. Does not elide"
-                          + " or omit any readable map. Caution: could"
-                          + " take considerable amount of time to"
-                          + " construct core file.")
+                              + " or omit any readable map. Caution: could"
+                              + " take considerable amount of time to"
+                              + " construct core file.")
     {
       public void parsed (String mapsValue) throws OptionException
       {
         try
           {
-	    writeAllMaps  = true;
+            writeAllMaps = true;
 
           }
         catch (IllegalArgumentException e)
@@ -208,24 +200,22 @@ public void execute ()
       }
     });
 
-    parser.add(new Option(
-                          "outputfile",
-                          'o',
-			  "Sets the name (not extension) of the core"
-                          + " file. Default is core.{pid}. The extension"
-                          + " will always be the pid.",
-                          "<filename>")
+    parser.add(new Option("outputfile", 'o',
+                          "Sets the name (not extension) of the core"
+                              + " file. Default is core.{pid}. The extension"
+                              + " will always be the pid.", "<filename>")
     {
       public void parsed (String filenameValue) throws OptionException
       {
         try
           {
-	    filename = filenameValue;
+            filename = filenameValue;
 
           }
         catch (IllegalArgumentException e)
           {
-            throw new OptionException("Invalid output filename: " + filenameValue);
+            throw new OptionException("Invalid output filename: "
+                                      + filenameValue);
           }
 
       }
@@ -255,7 +245,7 @@ public void execute ()
 
       }
     });
-    
+
     parser.add(new Option(
                           "level",
                           'l',

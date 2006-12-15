@@ -47,14 +47,12 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcException;
 
 public class TestFStack
     extends TestLib
 {
 
-  String mainThread = "Task #\\d+\n"
-                      + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+  String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                       + Build.SRCDIR
                       + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
@@ -64,11 +62,9 @@ public class TestFStack
                       + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
-  String thread = "Task #\\d+\n"
-                  + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+  String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                   + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                  + Build.SRCDIR
-                  + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                  + Build.SRCDIR + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
                   + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
                   + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
 
@@ -115,34 +111,26 @@ public class TestFStack
     final Proc proc = ackProc.assertFindProcAndTasks();
 
     StacktraceAction stacker;
-    try
-      {
-        stacker = new StacktraceAction(proc, new Event()
-        {
 
-          public void execute ()
-          {
-            proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-          }
-        });
-    
+    stacker = new StacktraceAction(proc, new Event()
+    {
+
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }
+    });
 
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();
-    regex += "(" + mainThread + ")(" + thread + "){"
-             + numSecondaryThreads + "}";
+    regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
+             + "}";
 
     String result = stacker.toPrint();
     logger.log(Level.FINE, result);
-    assertTrue(result + "should match: " + regex
-               + " threads", result.matches(regex));
-    
-      }
-    catch (ProcException e)
-      {
-        fail ("Proc Exception: " + e.getMessage());
-      }
+    assertTrue(result + "should match: " + regex + " threads",
+               result.matches(regex));
 
   }
 
@@ -154,30 +142,23 @@ public class TestFStack
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    try
+    StacktraceAction stacker = new StacktraceAction(proc, new Event()
+    {
+
+      public void execute ()
       {
-        StacktraceAction stacker = new StacktraceAction(proc, new Event()
-        {
-
-          public void execute ()
-          {
-            proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-          }
-        });
-        assertRunUntilStop("perform backtrace");
-
-        String regex = new String();
-
-        regex += "(" + mainClone + ")(" + clone + ")*";
-
-        String result = stacker.toPrint();
-        logger.log(Level.FINE, result);
-        assertTrue(result + "should match: " + regex, result.matches(regex));
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    catch (ProcException e)
-      {
-          fail("Proc Exception" + e.getMessage());
-      }
+    });
+    assertRunUntilStop("perform backtrace");
+
+    String regex = new String();
+
+    regex += "(" + mainClone + ")(" + clone + ")*";
+
+    String result = stacker.toPrint();
+    logger.log(Level.FINE, result);
+    assertTrue(result + "should match: " + regex, result.matches(regex));
 
   }
 

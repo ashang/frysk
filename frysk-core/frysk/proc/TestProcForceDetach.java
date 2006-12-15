@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import frysk.event.RequestStopEvent;
@@ -47,16 +48,7 @@ public class TestProcForceDetach
 
   public void requestRemove (AckProcess ackProc, int count)
   {
-
-    try
-      {
-        new MyProcBlockAction(ackProc.assertFindProcAndTasks(),count);
-      }
-    catch (Exception e)
-      {
-        fail("Proc Exception" + e);
-      }    
-
+    new MyProcBlockAction(ackProc.assertFindProcAndTasks(), count);
     assertRunUntilStop("test");
   }
 
@@ -65,19 +57,19 @@ public class TestProcForceDetach
     AckProcess ackProc = new AckDaemonProcess();
     requestRemove(ackProc, 1);
   }
-  
+
   public void testRequestRemoveDetached ()
   {
     AckProcess ackProc = new DetachedAckProcess();
     requestRemove(ackProc, 1);
   }
-  
+
   public void testMultiThreadedRequestRemoveAckDaemon ()
   {
     AckProcess ackProc = new AckDaemonProcess(2);
     requestRemove(ackProc, 3);
   }
-  
+
   public void testMultiThreadedRequestRemoveDetached ()
   {
     AckProcess ackProc = new DetachedAckProcess(2);
@@ -87,9 +79,9 @@ public class TestProcForceDetach
   class MyProcBlockAction
       extends ProcBlockAction
   {
-    public MyProcBlockAction (Proc theProc, int c) throws Exception
+    public MyProcBlockAction (Proc theProc, int c)
     {
-      super(theProc);    
+      super(theProc);
     }
 
     public void existingTask (Task task)
@@ -103,10 +95,8 @@ public class TestProcForceDetach
     public void allExistingTasksCompleted ()
     {
       proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
-    }
 
-   
+    }
 
   }
 }

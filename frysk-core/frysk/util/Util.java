@@ -40,11 +40,18 @@
 package frysk.util;
 
 import java.io.PrintStream;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
 
 public class Util {
 
@@ -72,4 +79,60 @@ public class Util {
     		writer.println("... couldn't print stack trace");
     	}
     }
+    
+    public static void addConsoleOptions(final Logger logger, Parser parser)
+    {
+      parser.add(new Option(
+                            "console",
+                            'c',
+                            "Set the console level. The console-level can be "
+                                + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
+                            "<console-level>")
+      {
+        public void parsed (String consoleValue) throws OptionException
+        {
+          try
+            {
+              Level consoleLevel = Level.parse(consoleValue);
+              // Need to set both the console and the main logger as
+              // otherwize the console won't see the log messages.
+
+              System.out.println("console " + consoleLevel);
+              Handler consoleHandler = new ConsoleHandler();
+              consoleHandler.setLevel(consoleLevel);
+              logger.addHandler(consoleHandler);
+              logger.setLevel(consoleLevel);
+              System.out.println(consoleHandler);
+
+            }
+          catch (IllegalArgumentException e)
+            {
+              throw new OptionException("Invalid log console: " + consoleValue);
+            }
+
+        }
+      });
+      parser.add(new Option(
+                            "level",
+                            'l',
+                            "Set the log level. The log-level can be "
+                                + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
+                            "<log-level>")
+      {
+        public void parsed (String arg0) throws OptionException
+        {
+          String levelValue = arg0;
+          try
+            {
+              Level level = Level.parse(levelValue);
+              logger.setLevel(level);
+            }
+          catch (IllegalArgumentException e)
+            {
+              throw new OptionException("Invalid log level: " + levelValue);
+            }
+        }
+      });
+    }
+    
 }

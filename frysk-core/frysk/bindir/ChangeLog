@@ -1,6 +1,9 @@
 2006-12-15  Nurdin Premji  <npremji@redhat.com>
 
-	* fcore.java (main.procFound): Added try catch for creating CoredumAction.	
+	* fcore.java: Reverted ProcException addition.
+	* fstack.java: Ditto.
+
+	* fcore.java (main.procFound): Added try catch for creating CoredumAction.		
 	* fstack.java (main.procFound): Ditto. Changed general catch Exception to 
 	specific catch NumberFormatException.
 

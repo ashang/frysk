@@ -60,7 +60,6 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcException;
 import frysk.proc.TaskException;
 import frysk.sys.proc.MapsBuilder;
 
@@ -74,31 +73,33 @@ public class TestFCore
     // Core files not broken on either arch, but just
     // take a long time to create. 3727 explains issue.
     if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-	return;
+      return;
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
-    assertTrue("Core file " + coreFileName + " does not exist.",testCore.exists());
+    assertTrue("Core file " + coreFileName + " does not exist.",
+               testCore.exists());
     testCore.delete();
   }
-  
+
   public void testElfCoreHeader ()
   {
 
     // Core files not broken on either arch, but just
     // take a long time to create. 3727 explains issue.
     if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-	return;
- 
+      return;
+
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
-    assertTrue("Checking core file " + coreFileName + " exists.",testCore.exists());
-    
+    assertTrue("Checking core file " + coreFileName + " exists.",
+               testCore.exists());
+
     Isa arch = getIsa(ackProc);
     ByteOrder order = arch.getByteOrder();
-    
+
     Elf local_elf = null;
     // Start new elf file
     try
@@ -114,67 +115,76 @@ public class TestFCore
         fail(e.getMessage());
       }
     assertNotNull("elf variable is null", local_elf);
-       
-    assertEquals("Checking ELF Kind", local_elf.getKind(), ElfKind.ELF_K_ELF);
-    assertEquals("Checkin base 0",local_elf.getBase(), 0);
 
-  
+    assertEquals("Checking ELF Kind", local_elf.getKind(), ElfKind.ELF_K_ELF);
+    assertEquals("Checkin base 0", local_elf.getBase(), 0);
+
     ElfEHeader header = local_elf.getEHeader();
 
     // Check the elf file MSB/LSB byte according to the endian
     // level returned from Isa.
     if (order == inua.eio.ByteOrder.BIG_ENDIAN)
-      assertEquals("Checking endian is appropriate to platform", 
+      assertEquals("Checking endian is appropriate to platform",
                    header.ident[5], ElfEHeader.PHEADER_ELFDATA2MSB);
     else
       assertEquals("Checking endian is appropriate to platform",
                    header.ident[5], ElfEHeader.PHEADER_ELFDATA2LSB);
- 
+
     // Check version written
     assertEquals("Checking elf version and ident core file version",
                  header.ident[6], (byte) local_elf.getElfVersion());
-   
+
     // Check version written
     assertEquals("Checking elf version and non-ident core file version",
                  header.version, (byte) local_elf.getElfVersion());
-    
+
     // Check Header Type
-    assertEquals("Checking Header type is ET_CORE",
-                 header.type, ElfEHeader.PHEADER_ET_CORE);
-    
+    assertEquals("Checking Header type is ET_CORE", header.type,
+                 ElfEHeader.PHEADER_ET_CORE);
+
     // Get machine architecture
     String arch_test = getArch(arch);
 
     // Check machine and class
     if (arch_test.equals("frysk.proc.LinuxIa32"))
       {
-        assertEquals("Checking header machine type", header.machine, ElfEMachine.EM_386);
-        assertEquals("Checking elf class", header.ident[4], ElfEHeader.PHEADER_ELFCLASS32);
+        assertEquals("Checking header machine type", header.machine,
+                     ElfEMachine.EM_386);
+        assertEquals("Checking elf class", header.ident[4],
+                     ElfEHeader.PHEADER_ELFCLASS32);
       }
     if (arch_test.equals("frysk.proc.LinuxPPC64"))
       {
-        assertEquals("Checking header machine type", header.machine, ElfEMachine.EM_PPC64);
-        assertEquals("Checking elf class", header.ident[4], ElfEHeader.PHEADER_ELFCLASS64);
-       }
+        assertEquals("Checking header machine type", header.machine,
+                     ElfEMachine.EM_PPC64);
+        assertEquals("Checking elf class", header.ident[4],
+                     ElfEHeader.PHEADER_ELFCLASS64);
+      }
     if (arch_test.equals("frysk.proc.LinuxPPC32On64"))
       {
-        assertEquals("Checking header machine type", header.machine, ElfEMachine.EM_PPC);
-        assertEquals("Checking elf class", header.ident[4], ElfEHeader.PHEADER_ELFCLASS32);
+        assertEquals("Checking header machine type", header.machine,
+                     ElfEMachine.EM_PPC);
+        assertEquals("Checking elf class", header.ident[4],
+                     ElfEHeader.PHEADER_ELFCLASS32);
       }
     if (arch_test.equals("frysk.proc.LinuxX8664"))
       {
-        assertEquals("Checking header machine type", header.machine, ElfEMachine.EM_X86_64);
-        assertEquals("Checking elf class", header.ident[4], ElfEHeader.PHEADER_ELFCLASS64);
+        assertEquals("Checking header machine type", header.machine,
+                     ElfEMachine.EM_X86_64);
+        assertEquals("Checking elf class", header.ident[4],
+                     ElfEHeader.PHEADER_ELFCLASS64);
       }
     if (arch_test.equals("frysk.proc.LinuxIa32On64"))
       {
-        assertEquals("Checking header machine type", header.machine, ElfEMachine.EM_386);
-        assertEquals("Checking elf class", header.ident[4], ElfEHeader.PHEADER_ELFCLASS32);
+        assertEquals("Checking header machine type", header.machine,
+                     ElfEMachine.EM_386);
+        assertEquals("Checking elf class", header.ident[4],
+                     ElfEHeader.PHEADER_ELFCLASS32);
       }
 
     testCore.delete();
   }
-  
+
   public void testProgramSegmentHeader ()
   {
 
@@ -182,13 +192,14 @@ public class TestFCore
     // take a long time to create. 3727 explains issue.
 
     if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-	return;
+      return;
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
-    assertTrue("Checking core file " + coreFileName + " exists.",testCore.exists());
-    
+    assertTrue("Checking core file " + coreFileName + " exists.",
+               testCore.exists());
+
     Elf local_elf = null;
     // Start new elf file
     try
@@ -204,19 +215,17 @@ public class TestFCore
         fail(e.getMessage());
       }
     assertNotNull("elf variable is null", local_elf);
-    
 
-    
     // Build, and write out memory segments to sections
-    final ProgramHeaderMapsTester builder = new ProgramHeaderMapsTester(local_elf);
+    final ProgramHeaderMapsTester builder = new ProgramHeaderMapsTester(
+                                                                        local_elf);
     builder.construct(ackProc.getMainTask().getTid());
-    
+
     testCore.delete();
   }
 
   /**
-   * Given a Proc object, generate a core file from that
-   * given proc.
+   * Given a Proc object, generate a core file from that given proc.
    * 
    * @param ackProc - proc object to generate core from.
    * @return - name of constructed core file.
@@ -224,130 +233,133 @@ public class TestFCore
   public String constructCore (final Proc ackProc)
   {
 
-    try
+    final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
+    {
+
+      public void execute ()
       {
-        final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
-        {
-
-          public void execute ()
-          {
-            ackProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-          }
-          },false);
-
-        assertRunUntilStop("Running event loop for core file");
-        return coreDump.getConstructedFileName();
+        ackProc.requestAbandonAndRunEvent(new RequestStopEvent(
+                                                               Manager.eventLoop));
       }
-    catch (ProcException e)
-      {
-        fail("Proc Exception: " + e.getMessage());
+    }, false);
 
-      }
-    
-    return null;
+    assertRunUntilStop("Running event loop for core file");
+    return coreDump.getConstructedFileName();
   }
-  
-  
+
   /**
-   * Builder that matches the maps in the process to those in 
-   * the core file, and lints the segment/program segment
-   * values.
+   * Builder that matches the maps in the process to those in the core file, and
+   * lints the segment/program segment values.
    */
-  class ProgramHeaderMapsTester extends MapsBuilder {
+  class ProgramHeaderMapsTester
+      extends MapsBuilder
+  {
 
     int numOfMaps = 0;
+
     int count = 0;
+
     Elf elf;
-    
-    ProgramHeaderMapsTester(Elf elf)
+
+    ProgramHeaderMapsTester (Elf elf)
     {
       this.elf = elf;
-      ElfEHeader header = elf.getEHeader();  
+      ElfEHeader header = elf.getEHeader();
       count = header.phnum;
     }
-    
-    public void buildBuffer(final byte[] maps) {
+
+    public void buildBuffer (final byte[] maps)
+    {
       maps[maps.length - 1] = 0;
     }
 
-    public void buildMap(final long addressLow, final long addressHigh,
-                         final boolean permRead, final boolean permWrite, final boolean permExecute,
-                         final boolean permPrivate, final boolean permShared, 
-			 final long offset, final int devMajor, final int devMinor,
-                         final int inode, final int pathnameOffset, final int pathnameLength) {
-                         if (permRead == true)
-                           {
-                             int flags = 0;
-                            
-                             // Special Case For Notes. First entry in the maps and the first entry in the 
-                             // file will not match. Check sanity of the notes segment, then advance counter.
-                             if (numOfMaps == 0)
-                               {
-                                 ElfPHeader pheader = elf.getPHeader(numOfMaps);
-                                 assertEquals("Checking Program Header type for NOTES", 
-                                              ElfPHeader.PTYPE_NOTE,pheader.type);
-                                 ElfSection section = elf.getSection(numOfMaps + 1);
-                                 ElfSectionHeader sheader = section.getSectionHeader();
-                                 
-                                 assertEquals("Testing section header type for NOTES",
-                                              ElfSectionHeaderTypes.SHTYPE_NOTE,sheader.type);
-                                 numOfMaps++;
-                               }
-                             
-                             // Continue on with normal program header segment checking.
-                             ElfPHeader pheader = elf.getPHeader(numOfMaps);
-                             assertEquals("Checking Program Header type",ElfPHeader.PTYPE_LOAD,pheader.type);
-                             assertEquals("Checking Program Header vaddr",addressLow,pheader.vaddr);
-                             assertEquals("Checking Program Header memsz", addressHigh - addressLow,pheader.memsz);
-                             
-                             // Check for flags. Have to build them first.
-                             long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
-                             // Build flags
-                             if (permRead == true)
-                               flags = flags | ElfPHeader.PHFLAG_READABLE;
+    public void buildMap (final long addressLow, final long addressHigh,
+                          final boolean permRead, final boolean permWrite,
+                          final boolean permExecute, final boolean permPrivate,
+                          final boolean permShared, final long offset,
+                          final int devMajor, final int devMinor,
+                          final int inode, final int pathnameOffset,
+                          final int pathnameLength)
+    {
+      if (permRead == true)
+        {
+          int flags = 0;
 
-                             if (permWrite == true)
-                               {
-                                 flags = flags | ElfPHeader.PHFLAG_WRITABLE;
-                                 sectionFlags = sectionFlags | ElfSectionHeaderTypes.SHFLAG_WRITE;
-                               }
+          // Special Case For Notes. First entry in the maps and the first entry
+          // in the
+          // file will not match. Check sanity of the notes segment, then
+          // advance counter.
+          if (numOfMaps == 0)
+            {
+              ElfPHeader pheader = elf.getPHeader(numOfMaps);
+              assertEquals("Checking Program Header type for NOTES",
+                           ElfPHeader.PTYPE_NOTE, pheader.type);
+              ElfSection section = elf.getSection(numOfMaps + 1);
+              ElfSectionHeader sheader = section.getSectionHeader();
 
-                             if (permExecute == true)
-                               {
-                                 flags = flags | ElfPHeader.PHFLAG_EXECUTABLE;
-                                 sectionFlags = sectionFlags
-                                 | ElfSectionHeaderTypes.SHFLAG_EXECINSTR;
-                               }
-                             assertEquals("Checking Program Header flags", flags, pheader.flags);
+              assertEquals("Testing section header type for NOTES",
+                           ElfSectionHeaderTypes.SHTYPE_NOTE, sheader.type);
+              numOfMaps++;
+            }
 
-                             // Check if the should be a filez value, and if so, it is correct.
-                             if (ElfPHeader.PHFLAG_WRITABLE == (flags & ElfPHeader.PHFLAG_WRITABLE))
-                               assertEquals("Checking filesz",pheader.memsz, pheader.filesz);
-                             
-                             // Now check the corresponding section and section data
-                             // mappings to ensure they match.
-                             ElfSection section = elf.getSection(numOfMaps+1);
-                             ElfSectionHeader sheader = section.getSectionHeader();
-                             
-                             assertEquals("Testing section header type",
-                                          ElfSectionHeaderTypes.SHTYPE_PROGBITS,sheader.type);
-                             assertEquals("Testing section header flags", sectionFlags,sheader.flags); 
-                             assertEquals("Testing section size", sheader.size, pheader.memsz);
-                            
-                             numOfMaps++;
-                           }
+          // Continue on with normal program header segment checking.
+          ElfPHeader pheader = elf.getPHeader(numOfMaps);
+          assertEquals("Checking Program Header type", ElfPHeader.PTYPE_LOAD,
+                       pheader.type);
+          assertEquals("Checking Program Header vaddr", addressLow,
+                       pheader.vaddr);
+          assertEquals("Checking Program Header memsz", addressHigh
+                                                        - addressLow,
+                       pheader.memsz);
+
+          // Check for flags. Have to build them first.
+          long sectionFlags = ElfSectionHeaderTypes.SHFLAG_ALLOC;
+          // Build flags
+          if (permRead == true)
+            flags = flags | ElfPHeader.PHFLAG_READABLE;
+
+          if (permWrite == true)
+            {
+              flags = flags | ElfPHeader.PHFLAG_WRITABLE;
+              sectionFlags = sectionFlags | ElfSectionHeaderTypes.SHFLAG_WRITE;
+            }
+
+          if (permExecute == true)
+            {
+              flags = flags | ElfPHeader.PHFLAG_EXECUTABLE;
+              sectionFlags = sectionFlags
+                             | ElfSectionHeaderTypes.SHFLAG_EXECINSTR;
+            }
+          assertEquals("Checking Program Header flags", flags, pheader.flags);
+
+          // Check if the should be a filez value, and if so, it is correct.
+          if (ElfPHeader.PHFLAG_WRITABLE == (flags & ElfPHeader.PHFLAG_WRITABLE))
+            assertEquals("Checking filesz", pheader.memsz, pheader.filesz);
+
+          // Now check the corresponding section and section data
+          // mappings to ensure they match.
+          ElfSection section = elf.getSection(numOfMaps + 1);
+          ElfSectionHeader sheader = section.getSectionHeader();
+
+          assertEquals("Testing section header type",
+                       ElfSectionHeaderTypes.SHTYPE_PROGBITS, sheader.type);
+          assertEquals("Testing section header flags", sectionFlags,
+                       sheader.flags);
+          assertEquals("Testing section size", sheader.size, pheader.memsz);
+
+          numOfMaps++;
+        }
     }
   }
-  
+
   /**
    * Generate a process suitable for attaching to (ie detached when returned).
-   * 
    * Stop the process, check that is is found in the frysk state machine, then
    * return a proc oject corresponding to that process.
    * 
    * @return - Proc - generated process.
    */
-  protected Proc giveMeAProc() 
+  protected Proc giveMeAProc ()
   {
     AckProcess ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
@@ -356,31 +368,29 @@ public class TestFCore
     assertNotNull(proc);
     return proc;
   }
-  
+
   /**
-   * 
-   * Return a string representing the architecture of the given ISA.
-   * 
-   * Really need to make a better ISA arch test.
+   * Return a string representing the architecture of the given ISA. Really need
+   * to make a better ISA arch test.
    * 
    * @param isa - Isa to test
    * @return String - a string corresponding to the arch.
    */
-  protected String getArch(Isa isa)
+  protected String getArch (Isa isa)
   {
     String arch_test = isa.toString();
     String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
 
     return type;
   }
-  
+
   /**
-   * 
    * Returns the ISA that corresponds to the given Proc
+   * 
    * @param Proc - the proc to test
-   * @return Isa - the Isa that corresponds to given proc. 
+   * @return Isa - the Isa that corresponds to given proc.
    */
-  protected Isa getIsa(Proc proc)
+  protected Isa getIsa (Proc proc)
   {
     Isa arch = null;
     try

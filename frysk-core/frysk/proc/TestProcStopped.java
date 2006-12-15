@@ -48,32 +48,15 @@ public class TestProcStopped
 
   public void stopped (AckProcess ackProc, int count)
   {
-    ackProc.sendStopXXX ();
-
+    ackProc.sendStopXXX();
     Proc proc = ackProc.assertFindProcAndTasks();
-
-    try
-      {
-        new  MyTester(proc, count);
-      }
-    catch (ProcException e)
-      {
-        fail("Proc Exception" + e);
-      }
+    new MyTester(proc, count);
   }
 
   public void running (AckProcess ackProc, int count)
   {
     Proc proc = ackProc.assertFindProcAndTasks();
-
-    try
-      {
-        new  MyTester(proc, count);
-      }
-    catch (ProcException e)
-      {
-        fail("Proc Exception" + e);
-      }
+    new MyTester(proc, count);
   }
 
   public void testStoppedAckDaemon ()
@@ -117,7 +100,7 @@ public class TestProcStopped
     running(ackProc, 1);
     assertRunUntilStop("testRunningAttached");
   }
-  
+
   public void testMultiThreadedStoppedAckDaemon ()
   {
     AckProcess ackProc = new AckDaemonProcess(2);
@@ -163,26 +146,27 @@ public class TestProcStopped
   public class MyTester
       extends ProcBlockAction
   {
-    
-    public MyTester(Proc proc, int c) throws ProcException
+
+    public MyTester (Proc proc, int c)
     {
       super(proc);
 
     }
+
     public void existingTask (Task task)
     {
 
     }
+
     public void deletedFrom (Object observable)
     {
     }
+
     public void allExistingTasksCompleted ()
     {
-      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop)); 
-      
+      Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
+
     }
-
-
 
   }
 }

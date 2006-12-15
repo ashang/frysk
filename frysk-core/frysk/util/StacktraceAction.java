@@ -53,7 +53,6 @@ import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcException;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
@@ -63,7 +62,7 @@ import frysk.sys.Sig;
 public class StacktraceAction
     extends ProcBlockAction
 {
-  protected StringBuffer stackTrace= new StringBuffer();
+  protected StringBuffer stackTrace = new StringBuffer();
 
   private TreeMap sortedTasks;
 
@@ -78,9 +77,9 @@ public class StacktraceAction
    * @param theProc the process to run the stack trace on.
    * @param theEvent an event to run on completion of the stack trace. For
    *          example: Stop the eventLoop and exit the program.
-   * @throws ProcException 
+   * @throws ProcException
    */
-  public StacktraceAction (Proc theProc, Event theEvent) throws ProcException
+  public StacktraceAction (Proc theProc, Event theEvent)
   {
     super(theProc);
     event = theEvent;
@@ -91,18 +90,18 @@ public class StacktraceAction
   public final void existingTask (Task task)
   {
 
-    logger.log(Level.FINE, "{0} existingTask, Task : {1}", new Object[] {this, task});
+    logger.log(Level.FINE, "{0} existingTask, Task : {1}", new Object[] { this,
+                                                                         task });
 
     // Print the stack frame for this stack.
-    storeTask(task);  
+    storeTask(task);
   }
-  
 
   public void taskAddFailed (Object observable, Throwable w)
   {
     logger.log(Level.SEVERE, "{0} could not be added to {1}\n",
                new Object[] { this, observable });
-  
+
   }
 
   public void deletedFrom (Object observable)
@@ -119,7 +118,7 @@ public class StacktraceAction
         Iterator i = output.iterator();
         while (i.hasNext())
           {
-	   stackTrace.append((String) i.next()+"\n");
+            stackTrace.append((String) i.next() + "\n");
           }
       }
     logger.log(Level.FINE, "{0} exiting printTasks", this);
@@ -127,8 +126,8 @@ public class StacktraceAction
 
   public final String toPrint ()
   {
-    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}", new Object[] { this,
-                                                                     stackTrace });
+    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}",
+               new Object[] { this, stackTrace });
     return stackTrace.toString();
   }
 
@@ -162,7 +161,7 @@ public class StacktraceAction
           }
       }
   }
-  
+
   /**
    * If the user cntl-c interrupts, handle it cleanly
    */
@@ -198,7 +197,7 @@ public class StacktraceAction
 
   public void allExistingTasksCompleted ()
   {
-    //  Print all the tasks in order.
+    // Print all the tasks in order.
     printTasks();
 
     // Run the given Event.

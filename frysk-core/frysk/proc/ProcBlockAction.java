@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import java.util.Iterator;
@@ -65,30 +66,30 @@ abstract public class ProcBlockAction
           isMainTaskAdded = true;
 
           Iterator i = proc.getTasks().iterator();
-       
+
           while (i.hasNext())
             {
-              Task t = (Task) i.next();              
+              Task t = (Task) i.next();
               requestAddObservers(t);
             }
         }
 
       /*
-       * Must have existingTask called later so that there are no issues with 
-       * synchronization with going through the task list. 
-       * Happens in ProcState.allAttached, ConcurrentModificationException.
-       * 
+       * Must have existingTask called later so that there are no issues with
+       * synchronization with going through the task list. Happens in
+       * ProcState.allAttached, ConcurrentModificationException.
        */
-      Manager.eventLoop.add(new Event() {
+      Manager.eventLoop.add(new Event()
+      {
 
         public void execute ()
         {
-          existingTask(task);    
+          existingTask(task);
           checkFinish(task);
         }
-        
+
       });
-     
+
       return Action.BLOCK;
     }
 
@@ -119,28 +120,30 @@ abstract public class ProcBlockAction
 
   protected final Proc proc;
 
-  
   private LinkedList tasks = new LinkedList();
-  
+
   private LinkedList taskList;
 
-  public ProcBlockAction (Proc theProc) throws ProcException
+  /**
+   * Creates a ProcBlockAction which will attach to the given process stopping
+   * all of its tasks, performing the requested action on each task, and then
+   * removing itself.
+   * 
+   * @param theProc a non-null Process.
+   */
+  public ProcBlockAction (Proc theProc)
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
-    if (proc == null)
-      {
-        throw new ProcException("Proc is null");
-      }
-    
+
     boolean isOwned = proc.getUID() == Manager.host.getSelf().getUID()
-    || proc.getGID() == Manager.host.getSelf().getGID();
+                      || proc.getGID() == Manager.host.getSelf().getGID();
 
     if (! isOwned)
       {
-        throw new ProcException("Process " + proc + " is not owned by user/group.");
+        // ("Process " + proc + " is not owned by user/group.");
       }
-    
+
     taskList = proc.getTasks();
     requestAdd();
   }
@@ -154,9 +157,9 @@ abstract public class ProcBlockAction
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
-      {       
-        Task mainTask = proc.getMainTask(); 
-          
+      {
+        Task mainTask = proc.getMainTask();
+
         if (mainTask == null)
           {
             logger.log(Level.FINE, "Could not get main thread of "
@@ -209,17 +212,17 @@ abstract public class ProcBlockAction
   {
     return tasks;
   }
-  
+
   private void requestDeleteObservers (Task task)
   {
     task.requestDeleteInstructionObserver(taskObserver);
     task.requestDeleteTerminatedObserver(taskObserver);
   }
-  
-  private void requestDelete()
+
+  private void requestDelete ()
   {
     Iterator iter = tasks.iterator();
-    
+
     while (iter.hasNext())
       {
         Task task = (Task) iter.next();
@@ -227,20 +230,21 @@ abstract public class ProcBlockAction
         iter.remove();
       }
   }
-  
-  public abstract void allExistingTasksCompleted();
-  
+
+  public abstract void allExistingTasksCompleted ();
+
   private boolean finished = false;
+
   private void checkFinish (Task task)
   {
-    
+
     if (null != task)
-    taskList.remove(task);
-    
+      taskList.remove(task);
+
     logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
                new Object[] { taskList, proc.getTasks() });
 
-    //Check for destroyed tasks.
+    // Check for destroyed tasks.
     Iterator iter = taskList.iterator();
     while (iter.hasNext())
       {
@@ -248,20 +252,19 @@ abstract public class ProcBlockAction
         if (t.isDestroyed())
           iter.remove();
       }
-    
-   if (taskList.isEmpty())
+
+    if (taskList.isEmpty())
       {
-       if (!finished){
-         finished = true;
-       
-         allExistingTasksCompleted();
-         
-         requestDelete();
-       }
+        if (! finished)
+          {
+            finished = true;
+
+            allExistingTasksCompleted();
+
+            requestDelete();
+          }
       }
-   
 
   }
-  
-  
+
 }

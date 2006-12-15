@@ -48,7 +48,6 @@ import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcException;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
@@ -162,28 +161,23 @@ public class fstack
               public void procFound (ProcId procId)
               {
                 final Proc proc = Manager.host.getProc(procId);
-                try
+
+                stacker = new StacktraceAction(proc, new Event()
+                {
+                  public void execute ()
                   {
-                    stacker = new StacktraceAction(proc, new Event()
+                    proc.requestAbandonAndRunEvent(new Event()
                     {
+
                       public void execute ()
                       {
-                        proc.requestAbandonAndRunEvent(new Event()
-                        {
-
-                          public void execute ()
-                          {
-                            Manager.eventLoop.requestStop();
-                            System.out.print(stacker.toPrint());
-                          }
-                        });
+                        Manager.eventLoop.requestStop();
+                        System.out.print(stacker.toPrint());
                       }
                     });
                   }
-                catch (ProcException e)
-                  {
-                    System.err.println("Proc Exception" + e.getMessage());
-                  }
+                });
+
               }
 
               public void procNotFound (ProcId procId, Exception e)
