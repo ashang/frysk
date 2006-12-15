@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -394,6 +394,8 @@ public class TestRefresh
      */
     public void testRefreshZombie ()
     {
+	if (brokenUtraceXXX (3488))
+	    return;
 	// Create the zombie maker, and then get it to create one
 	// child.
 	AckProcess zombie = new AckDaemonProcess ();

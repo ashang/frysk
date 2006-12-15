@@ -1,5 +1,13 @@
 2006-12-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java (testDetachExitingMainTask)
+	(testDetachExitingOtherTask): Note broken, 3737.
+	* TestProcStopped.java (testMultiThreadedStoppedDetached)
+	(testMultiThreadedStoppedAckDaemon): Note broken, 3595.
+	* TestRefresh.java (testRefreshZombie): Note broken, 3488.
+	* TestProcTasksObserver.java (testCloneThenKillAttached)
+	(testDeleteAttached): Note broken, 3486.
+
 	* TestTaskTerminateObserver.java (check): Mark anything involving
 	exit(47) or SIGKILL as broken, 3489.
 
