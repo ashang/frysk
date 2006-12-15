@@ -49,8 +49,6 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 import lib.dw.DwflModule;
-import frysk.junit.TestCase;
-
 
 public class TestDwfl
     extends TestCase

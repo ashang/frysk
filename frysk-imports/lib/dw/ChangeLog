@@ -1,3 +1,9 @@
+2006-12-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Dwfl.java: Delete import of java.util.Collections.
+	* tests/TestDwfl.java: Delete redundant import of
+	frysk.junit.TestCase.
+
 2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwfl.java (getLineAddresses): Fixed small bug in initializing list.
