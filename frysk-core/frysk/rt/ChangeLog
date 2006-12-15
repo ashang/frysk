@@ -1,3 +1,12 @@
+2006-12-15  Mike Cvet  <mcvet@redhat.com>
+	
+	* StackFrame.java (getMethodName): Return empty string if either the
+	FrameCursor's name is null, or the cursor itself.
+	(toPrint): Catch broken FrameCursors.
+	* RunState.java (setUpStep): Fixed #3735. If none of the Tasks
+	belonging to the process have debuginfo, perform an instruction 
+	step instead of a line step; clear out line-stepping data structures.
+
 2006-12-14  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFactory.java (createStackFrame): Catch Exceptions coming out of

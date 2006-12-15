@@ -129,7 +129,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.state = STEP_IN;
     this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
+    int zeroCount = 0;
     
+    notifyNotBlocked();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
@@ -149,7 +151,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
               }
             catch (NullPointerException npe)
             {
-             //System.out.println("ZOMG! Null.");
+              System.out.println("NullPointerException from Dwfl.getSourceLine");
               System.out.println(npe.getMessage());
               continue;
             }
@@ -157,9 +159,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
             if (line == null)
               {
                //System.out.println("Coulnd't get DwflLine, assigning 0");
-                this.taskStepCount--;
+                zeroCount++;
                 this.dwflMap.put(t, d);
                 this.lineMap.put(t, new Integer(0));
+                this.lineCountMap.put(t, new Integer(0));
                 continue;
               }
 
@@ -167,9 +170,21 @@ public class RunState extends Observable implements TaskObserver.Instruction
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
         this.lineCountMap.put(t, new Integer(0));
-        notifyNotBlocked();
-        t.requestUnblock(this);
       }
+    
+    /* None of these tasks have any debug information, so a 
+     * "line-step" is meaningless - perform an instruction step instead. */
+    if (zeroCount == tasks.size())
+      {
+        this.dwflMap.clear();
+        this.lineMap.clear();
+        this.lineCountMap.clear();
+        this.state = INSTRUCTION_STEP;
+      }
+    
+    i = tasks.iterator();
+    while (i.hasNext())
+      ((Task) i.next()).requestUnblock(this);
   }
 
   /**
@@ -180,6 +195,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepInstruction (LinkedList tasks)
   {
+    //System.out.println("Instruction step");
     this.state = INSTRUCTION_STEP;
     this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
@@ -187,6 +203,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     while (i.hasNext())
       {
         Task t = (Task) i.next();
+        //System.out.println("Requesitng unblock for " + t);
         t.requestUnblock(this);
       }
   }
@@ -690,6 +707,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void notifyNotBlocked ()
   {
+    //System.out.println("notifyNotBlocked");
     this.setChanged();
     this.notifyObservers(null);
   }
@@ -700,6 +718,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void notifyStopped ()
   {
+    //System.out.println("notifyStopped");
     this.setChanged();
     this.notifyObservers(null);
   }
@@ -867,6 +886,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void requestAddObservers (Task task)
   {
+    //System.out.println("Adding instruction observer to " + task);
     task.requestAddInstructionObserver(this);
   }
 

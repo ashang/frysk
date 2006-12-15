@@ -211,7 +211,7 @@ public class StackFrame
    */
   public String getMethodName ()
   {
-    if (this.myCursor.getMethodName() == null)
+    if (this.myCursor == null || this.myCursor.getMethodName() == null)
       return "";
     
     return this.myCursor.getMethodName();
@@ -377,6 +377,9 @@ public class StackFrame
       }
     else
       {
+        if (this.myCursor == null)
+          return "Empty stack trace";
+        
         ret = "0x"
 	  + Long.toHexString(this.myCursor.getAddress()) + " in "
 	  + Demangler.demangle(this.myCursor.getMethodName()) + " ()";

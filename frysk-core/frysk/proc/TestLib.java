@@ -811,7 +811,7 @@ public class TestLib
 	/**
 	 * Resume the attached process.
 	 */
-	void resume ()
+	public void resume ()
 	{
 	    mainTask.requestUnblock (execBlockingObserver);
 	}
@@ -1511,4 +1511,84 @@ public class TestLib
 
 	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
     }
+    
+    
+    /** Don't use me yet */
+    public class AttachedSyscallDaemonProcess extends AckDaemonProcess
+  {
+    final Task mainTask;
+
+    TaskObserver.Execed execBlockingObserver;
+    TaskObserver.Syscall syscallObserver;
+
+    public AttachedSyscallDaemonProcess (String[] argv)
+    {
+      // Create the child.
+      AckProcess child = new DetachedAckProcess((String) null, argv);
+      this.mainTask = child.findTaskUsingRefresh(true);
+      // Create and add an exec observer that blocks the task.
+      class ExecObserver
+          extends TaskObserverBase
+          implements TaskObserver.Execed
+      {
+        public void addedTo (Object o)
+        {
+          super.addedTo(o);
+          Manager.eventLoop.requestStop();
+        }
+
+        public Action updateExeced (Task task)
+        {
+          Manager.eventLoop.requestStop();
+          return Action.BLOCK;
+        }
+      }
+      
+      class SyscallObserver 
+      extends TaskObserverBase
+      implements TaskObserver.Syscall
+      {
+        public void addedTo (Object o)
+        {
+          Manager.eventLoop.requestStop();
+        }
+        
+        public Action updateSyscallEnter (Task task)
+        {
+          Manager.eventLoop.requestStop();
+          return Action.BLOCK;
+        }
+        
+        public Action updateSyscallExit (Task task)
+        {
+          return Action.CONTINUE;
+        }
+      }
+      execBlockingObserver = new ExecObserver();
+      syscallObserver = new SyscallObserver();
+      mainTask.requestAddExecedObserver(execBlockingObserver);
+      assertRunUntilStop("add exec observer to AttachedDaemonProcess");
+      // Run to the exec call.
+      Signal.tkill(mainTask.getTid(), execSig);
+      assertRunUntilStop("run to exec");
+      mainTask.requestAddSyscallObserver(syscallObserver);
+      assertRunUntilStop("add syscall observer to AttachedDaemonProcess");
+      resume();
+      assertRunUntilStop("run to syscall");
+    }
+
+    public void deleteObservers()
+    {
+      mainTask.requestDeleteExecedObserver(execBlockingObserver);
+      mainTask.requestDeleteSyscallObserver(syscallObserver);
+    }
+    
+    /**
+     * Resume the attached process.
+     */
+    public void resume ()
+    {
+      mainTask.requestUnblock(execBlockingObserver);
+    }
+  }
 }
