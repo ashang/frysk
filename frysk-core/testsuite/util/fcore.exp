@@ -91,7 +91,7 @@ expect {
     default	{fail test_fcore_bad_log_correct_console_argument}
 }
 
-#start tester program with valid pid, wrong -c  but correct -l argument
+#start tester program with valid pid, wrong -c  and wrong -l argument
 spawn $pwd/frysk/bindir/fcore -c SILLY -l ALL $funit_pid
 
 #test output.
@@ -101,7 +101,36 @@ expect {
     default	{fail test_fcore_correct_log_bad_console_argument}
 }
 
-#clean up.
+#start tester program with valid pid, wrong -c  but correct -l argument
+spawn $pwd/frysk/bindir/fcore -c SILLY -l SILLY $funit_pid
+
+#test output.
+expect {
+    -re "fcore: Invalid log console: SILLY"
+    {pass test_fcore_bad_log_bad_console_argument}
+    default     {fail test_fcore_bad_log_bad_console_argument}
+}
+
+#start tester program with invaalid argument
+spawn $pwd/frysk/bindir/fcore -z  $funit_pid
+
+#test output.
+expect {
+    -re "fcore: unrecognized option"
+    {pass test_fcore_unrecognized_option}
+    default     {fail test_fcore_unrecognized_option}
+}
+
+#start tester program with one invalid argument, one correct
+spawn $pwd/frysk/bindir/fcore -z  -a $funit_pid
+
+#test output.
+expect {
+    -re "fcore: unrecognized option"
+    {pass test_fcore_unrecognized_with_valid_option}
+    default     {fail test_fcore_unrecognized_with_valid__option}
+}
+
 #clean up.
 tool_exit $funit_sid
 frysk_term
