@@ -1,5 +1,6 @@
 2006-12-15  Nurdin Premji  <npremji@redhat.com>
 
+	* Util.java (addConsoleOptions): Added.	
 	* StacktraceAction.java: Revert ProcException.
 	* CoredumpAction.java: Ditto.
 	* TestFStack.java: Ditto.
