@@ -39,6 +39,7 @@
 
 package frysk.junit;
 
+import frysk.sys.Uname;
 import frysk.imports.Build;
 
 /**
@@ -89,5 +90,28 @@ public class TestCase
     }
     return false;
   }
+
+    /**
+     * Results from uname(2) call.
+     */
+    private static Uname uname;
+    /**
+     * A method that returns true, and prints skip, when the build
+     * kernel is utrace.
+     */
+    protected static boolean brokenUtraceXXX (int bug)
+    {
+	if (uname == null)
+	    uname = Uname.get ();
+	String[] badKernels = {
+	    "2.6.18-1.2849.fc6",
+	    "2.6.18-1.2239.fc5"
+	};
+	for (int i = 0; i < badKernels.length; i++) {
+	    if (badKernels[i].equals (uname.getRelease ()))
+		return brokenXXX (bug);
+	}
+	return false;
+    }
 
 }

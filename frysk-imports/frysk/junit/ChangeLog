@@ -1,3 +1,8 @@
+2006-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (brokenUtraceXXX): New; make all methods
+	non-static.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java: Call Paths.setMyBasename.

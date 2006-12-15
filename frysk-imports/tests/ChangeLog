@@ -1,3 +1,7 @@
+2006-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (TESTS): Remove frysk3381.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* werror/.cvsignore: Delete.
