@@ -48,6 +48,7 @@ import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcException;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
@@ -161,21 +162,28 @@ public class fstack
               public void procFound (ProcId procId)
               {
                 final Proc proc = Manager.host.getProc(procId);
-                stacker = new StacktraceAction(proc, new Event()
-                {
-                  public void execute ()
+                try
                   {
-                    proc.requestAbandonAndRunEvent(new Event()
+                    stacker = new StacktraceAction(proc, new Event()
                     {
-
                       public void execute ()
                       {
-                        Manager.eventLoop.requestStop();
-                        System.out.print(stacker.toPrint());
+                        proc.requestAbandonAndRunEvent(new Event()
+                        {
+
+                          public void execute ()
+                          {
+                            Manager.eventLoop.requestStop();
+                            System.out.print(stacker.toPrint());
+                          }
+                        });
                       }
                     });
                   }
-                });
+                catch (ProcException e)
+                  {
+                    System.err.println("Proc Exception" + e.getMessage());
+                  }
               }
 
               public void procNotFound (ProcId procId, Exception e)
@@ -189,7 +197,7 @@ public class fstack
             Manager.eventLoop.run();
 
           }
-        catch (Exception _)
+        catch (NumberFormatException _)
           {
             throw new OptionException("couldn't parse pid");
           }

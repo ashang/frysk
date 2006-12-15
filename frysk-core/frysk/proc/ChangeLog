@@ -1,3 +1,15 @@
+2006-12-15  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcException.java (ProcException): Added.	
+	* TestProcForceDetach.java (MyProcBlockAction): Renamed from MyObserver.
+	(MyProcBlockAction.MyProcBlockAction): 	throw ProcException.
+	(requestRemove): catch ProcException
+	* ProcBlockAction.java (.execute): Moved null proc and proc ownerships to ..
+	(ProcBlockAction): here. Throw exception on null proc and proc ownership.
+	* TestProcStopped.java (MyTester.MyTester): throw ProcException
+	(running): Catch ProcException
+	(stopped): Ditto.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRegisters.java: Replace TestRegMemModify.java.

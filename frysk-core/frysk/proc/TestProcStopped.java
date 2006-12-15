@@ -52,14 +52,28 @@ public class TestProcStopped
 
     Proc proc = ackProc.assertFindProcAndTasks();
 
-    new  MyTester(proc, count);
+    try
+      {
+        new  MyTester(proc, count);
+      }
+    catch (ProcException e)
+      {
+        fail("Proc Exception" + e);
+      }
   }
 
   public void running (AckProcess ackProc, int count)
   {
     Proc proc = ackProc.assertFindProcAndTasks();
 
-    new  MyTester(proc, count);
+    try
+      {
+        new  MyTester(proc, count);
+      }
+    catch (ProcException e)
+      {
+        fail("Proc Exception" + e);
+      }
   }
 
   public void testStoppedAckDaemon ()
@@ -150,7 +164,7 @@ public class TestProcStopped
       extends ProcBlockAction
   {
     
-    public MyTester(Proc proc, int c)
+    public MyTester(Proc proc, int c) throws ProcException
     {
       super(proc);
 

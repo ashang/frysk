@@ -47,6 +47,7 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcException;
 
 public class TestFStack
     extends TestLib
@@ -113,14 +114,18 @@ public class TestFStack
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceAction stacker = new StacktraceAction(proc, new Event()
-    {
-
-      public void execute ()
+    StacktraceAction stacker;
+    try
       {
-        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
+        stacker = new StacktraceAction(proc, new Event()
+        {
+
+          public void execute ()
+          {
+            proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+          }
+        });
+    
 
     assertRunUntilStop("perform backtrace");
 
@@ -132,6 +137,12 @@ public class TestFStack
     logger.log(Level.FINE, result);
     assertTrue(result + "should match: " + regex
                + " threads", result.matches(regex));
+    
+      }
+    catch (ProcException e)
+      {
+        fail ("Proc Exception: " + e.getMessage());
+      }
 
   }
 
@@ -143,23 +154,30 @@ public class TestFStack
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceAction stacker = new StacktraceAction(proc, new Event()
-    {
-
-      public void execute ()
+    try
       {
-        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+        StacktraceAction stacker = new StacktraceAction(proc, new Event()
+        {
+
+          public void execute ()
+          {
+            proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+          }
+        });
+        assertRunUntilStop("perform backtrace");
+
+        String regex = new String();
+
+        regex += "(" + mainClone + ")(" + clone + ")*";
+
+        String result = stacker.toPrint();
+        logger.log(Level.FINE, result);
+        assertTrue(result + "should match: " + regex, result.matches(regex));
       }
-    });
-    assertRunUntilStop("perform backtrace");
-
-    String regex = new String();
-
-    regex += "(" + mainClone + ")(" + clone + ")*";
-
-    String result = stacker.toPrint();
-    logger.log(Level.FINE, result);
-    assertTrue(result + "should match: " + regex, result.matches(regex));
+    catch (ProcException e)
+      {
+          fail("Proc Exception" + e.getMessage());
+      }
 
   }
 

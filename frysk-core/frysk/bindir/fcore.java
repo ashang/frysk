@@ -48,6 +48,7 @@ import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcException;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
@@ -129,20 +130,27 @@ public class fcore
 	    public void procFound (ProcId procId) 
 	    {
 	      final Proc coreProc = Manager.host.getProc(procId);
-	      stacker = new CoredumpAction(coreProc, filename, new Event()
-		{
-		  public void execute ()
-		  {
-		    coreProc.requestAbandonAndRunEvent(new Event()
-		      {
-			
-			public void execute ()
-			{
-			  Manager.eventLoop.requestStop();
-			}
-		      });
-		  }
-		},writeAllMaps);
+	      try
+          {
+            stacker = new CoredumpAction(coreProc, filename, new Event()
+{
+ public void execute ()
+ {
+            coreProc.requestAbandonAndRunEvent(new Event()
+              {
+
+public void execute ()
+{
+            Manager.eventLoop.requestStop();
+}
+              });
+ }
+},writeAllMaps);
+          }
+        catch (ProcException e)
+          {
+            System.err.println("Proc Exception" + e.getMessage());
+          }
 	    }
 	    
 	    public void procNotFound (ProcId procId, Exception e)

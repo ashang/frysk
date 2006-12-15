@@ -53,6 +53,7 @@ import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcException;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
@@ -77,8 +78,9 @@ public class StacktraceAction
    * @param theProc the process to run the stack trace on.
    * @param theEvent an event to run on completion of the stack trace. For
    *          example: Stop the eventLoop and exit the program.
+   * @throws ProcException 
    */
-  public StacktraceAction (Proc theProc, Event theEvent)
+  public StacktraceAction (Proc theProc, Event theEvent) throws ProcException
   {
     super(theProc);
     event = theEvent;

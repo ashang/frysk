@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,74 +39,13 @@
 
 package frysk.proc;
 
-import frysk.event.RequestStopEvent;
-
-public class TestProcForceDetach
-    extends TestLib
+public class ProcException
+    extends Exception
 {
+  private static final long serialVersionUID = 200608040000L;
 
-  public void requestRemove (AckProcess ackProc, int count)
+  public ProcException (String message)
   {
-
-    try
-      {
-        new MyProcBlockAction(ackProc.assertFindProcAndTasks(),count);
-      }
-    catch (Exception e)
-      {
-        fail("Proc Exception" + e);
-      }    
-
-    assertRunUntilStop("test");
-  }
-
-  public void testRequestRemoveAckDaemon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess();
-    requestRemove(ackProc, 1);
-  }
-  
-  public void testRequestRemoveDetached ()
-  {
-    AckProcess ackProc = new DetachedAckProcess();
-    requestRemove(ackProc, 1);
-  }
-  
-  public void testMultiThreadedRequestRemoveAckDaemon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess(2);
-    requestRemove(ackProc, 3);
-  }
-  
-  public void testMultiThreadedRequestRemoveDetached ()
-  {
-    AckProcess ackProc = new DetachedAckProcess(2);
-    requestRemove(ackProc, 3);
-  }
-
-  class MyProcBlockAction
-      extends ProcBlockAction
-  {
-    public MyProcBlockAction (Proc theProc, int c) throws Exception
-    {
-      super(theProc);    
-    }
-
-    public void existingTask (Task task)
-    {
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
-    }
-
-   
-
+    super(message);
   }
 }

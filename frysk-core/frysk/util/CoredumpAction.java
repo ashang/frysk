@@ -80,6 +80,7 @@ import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcException;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.sys.Sig;
@@ -134,7 +135,7 @@ extends ProcBlockAction
 
   private Event event;
   
-  public CoredumpAction (Proc proc,  Event theEvent, boolean writeAllMaps)
+  public CoredumpAction (Proc proc,  Event theEvent, boolean writeAllMaps) throws ProcException
   {
     super(proc);
     this.proc = proc;
@@ -146,7 +147,7 @@ extends ProcBlockAction
   }
 
   public CoredumpAction(Proc proc, String filename, Event theEvent,
-  boolean writeAllMaps)
+  boolean writeAllMaps) throws ProcException
   {
     this(proc,theEvent, writeAllMaps);
     this.filename = filename;

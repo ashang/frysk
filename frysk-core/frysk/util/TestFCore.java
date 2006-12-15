@@ -60,6 +60,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcException;
 import frysk.proc.TaskException;
 import frysk.sys.proc.MapsBuilder;
 
@@ -223,17 +224,27 @@ public class TestFCore
   public String constructCore (final Proc ackProc)
   {
 
-    final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
-    {
-
-      public void execute ()
+    try
       {
-        ackProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }
-      },false);
+        final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
+        {
 
-    assertRunUntilStop("Running event loop for core file");
-    return coreDump.getConstructedFileName();
+          public void execute ()
+          {
+            ackProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+          }
+          },false);
+
+        assertRunUntilStop("Running event loop for core file");
+        return coreDump.getConstructedFileName();
+      }
+    catch (ProcException e)
+      {
+        fail("Proc Exception: " + e.getMessage());
+
+      }
+    
+    return null;
   }
   
   

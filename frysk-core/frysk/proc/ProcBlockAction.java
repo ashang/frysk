@@ -124,10 +124,23 @@ abstract public class ProcBlockAction
   
   private LinkedList taskList;
 
-  public ProcBlockAction (Proc theProc)
+  public ProcBlockAction (Proc theProc) throws ProcException
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
+    if (proc == null)
+      {
+        throw new ProcException("Proc is null");
+      }
+    
+    boolean isOwned = proc.getUID() == Manager.host.getSelf().getUID()
+    || proc.getGID() == Manager.host.getSelf().getGID();
+
+    if (! isOwned)
+      {
+        throw new ProcException("Process " + proc + " is not owned by user/group.");
+      }
+    
     taskList = proc.getTasks();
     requestAdd();
   }
@@ -141,39 +154,18 @@ abstract public class ProcBlockAction
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
-      {
-
-        if (proc == null)
-          {
-            System.out.println("Couldn't get the proc");
-            System.exit(1);
-          }
-
-       
+      {       
         Task mainTask = proc.getMainTask(); 
           
         if (mainTask == null)
           {
             logger.log(Level.FINE, "Could not get main thread of "
                                    + "this process\n {0}", proc);
-            addFailed(
-                      proc,
-                      new RuntimeException(
-                                           "Process lost: could not "
-                                               + "get the main thread of this process.\n"
-                                               + proc));
+            addFailed(proc, new RuntimeException("Process lost: could not get "
+                                                 + "the main thread of this "
+                                                 + "process.\n" + proc));
             return;
           }
-
-        boolean isOwned = (proc.getUID() == Manager.host.getSelf().getUID() || proc.getGID() == Manager.host.getSelf().getGID());
-
-        if (! isOwned)
-          {
-            System.err.println("Process " + proc
-                               + " is not owned by user/group.");
-            System.exit(1);
-          }
-
         requestAddObservers(mainTask);
       }
     });
