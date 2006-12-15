@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <linux/unistd.h>
-#include <errno.h>
-
-_syscall0(pid_t,gettid)
-
+extern void assign_char_arr (char*, int);
 extern void assign_long_arr (long*, int);
 extern void assign_int_arr (int*, int);
 extern void assign_float_arr (float*, int);
@@ -34,15 +27,15 @@ func_2 (int x, int y)
   char arr_4 [4];
   class_t *class_p;
   int int_22;
-  char char_21 = assign_char('a');
+  char char_21 __attribute__((unused)) = assign_char('a');
   short short_21 = assign_short (12);
   int int_21 = assign_int (11);
-  long long_21 = assign_long(10);
+  long long_21 __attribute__((unused)) = assign_long(10);
   float float_21 = assign_float (1.1);
   double double_21 = assign_double (1.2l);
   assign_long_arr (arr_1, sizeof (arr_1) / sizeof (long));
-  assign_int_arr (arr_2, sizeof (arr_2) / sizeof (int));
-  assign_float_arr (arr_3, sizeof (arr_3) / sizeof (float));
+  assign_int_arr ((int*)arr_2, sizeof (arr_2) / sizeof (int));
+  assign_float_arr ((float*)arr_3, sizeof (arr_3) / sizeof (float));
   assign_char_arr (arr_4, sizeof (arr_4));
   
   int_p = &int_22;
@@ -68,10 +61,10 @@ func_1 (int x, int y)
   return func_2 (int_21, int_11);
 }
 
+int
 main (int argc, char **argv)
 {
   int int_21 = 31;
   int int_1 = 1;
-  fprintf (stderr,"attach %s %d -task %d -cli\n", argv[0], getpid(), gettid());
   return func_1 (int_21, int_1);
 }
