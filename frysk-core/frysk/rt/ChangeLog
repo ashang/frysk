@@ -1,3 +1,13 @@
+2006-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestRunState.java (testInstructionStepping)
+	(testLineStepping): Use brokenPpcXXX.
+	* tests/TestStepping.java (testRecursiveLineStepping): Ditto.
+	* tests/TestStackBacktrace.java (testBacktrace): Note broken due
+	to 3744.  Use brokenPpcXXX.
+	(testThreadedBacktrace): Note broken due to 3743.  Use
+	brokenPpcXXX.
+
 2006-12-15  Mike Cvet  <mcvet@redhat.com>
 	
 	* StackFrame.java (getMethodName): Return empty string if either the

@@ -44,7 +44,6 @@ import inua.eio.ByteBuffer;
 import inua.eio.ULong;
 import frysk.proc.Action;
 import frysk.proc.Host;
-import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
@@ -82,14 +81,13 @@ public class TestStackBacktrace
 
   public void testBacktrace () throws TaskException
   {
-    
+    if (brokenXXX(3259))
+	return;
+    if (brokenXXX (3744))
+	return;
     // Backtraces only work on x86 and x86_64 for now.
-    if (MachineType.getMachineType() == MachineType.PPC
-        || MachineType.getMachineType() == MachineType.PPC64)
-      {
-        brokenXXX(3277);
-        return;
-      }
+    if (brokenPpcXXX (3277))
+	return;
 
     TaskCreatedObserver obs = new TaskCreatedObserver();
     AckDaemonProcess process = new AckDaemonProcess
@@ -145,8 +143,7 @@ public class TestStackBacktrace
     assertEquals("baz", frame.getMethodName());
     assertNull(frame.getInner());
     
-    if (!brokenXXX(3259))
-      assertEquals(62, frame.getLineNumber());
+    assertEquals(62, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
@@ -195,13 +192,11 @@ public class TestStackBacktrace
   public synchronized void testThreadedBacktrace () throws TaskException
   {
     
-    // Backtraces only work on x86 and x86_64 for now.
-    if (MachineType.getMachineType() == MachineType.PPC
-        || MachineType.getMachineType() == MachineType.PPC64)
-      {
-        brokenXXX(3277);
-        return;
-      }
+      if (brokenXXX (3743))
+	  return;
+      // Backtraces only work on x86 and x86_64 for now.
+      if (brokenPpcXXX (3277))
+	  return;
 
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {

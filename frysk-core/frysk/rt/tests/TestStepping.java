@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -92,12 +91,8 @@ public class TestStepping extends TestLib
   public void testRecursiveLineStepping ()
   {
 
-    if (MachineType.getMachineType() == MachineType.PPC
-        || MachineType.getMachineType() == MachineType.PPC64)
-      {
-        brokenXXX(3277);
-        return;
-      }
+      if (brokenPpcXXX (3277))
+	  return;
     
     initial = true;
     this.dwflMap = new HashMap();
