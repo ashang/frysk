@@ -1,3 +1,17 @@
+2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CurrentStackView.java (observers): Is now a LinkedList.
+	* View.java (getFunctions): Now returns a list.
+	* MixedView.java (getFunctions): Ditto.
+	* SourceView.java (getFunctions): Ditto.
+	(refreshVars): Now takes and returns a List.
+	* SourceBuffer.java (functions): Is now a LinkedList.
+	(getFunctions): Now returns a List.
+	* SourceWindow.java: Refactored to reflect above changes.
+	* VariableWatchView.java (observers): Is now a LinkedList.
+	(variables): Ditto.
+	* prefs/SyntaxPreference.java (syntaxListeners): Ditto.
+
 2006-12-14  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView.java (buildTree): Won't get null StackFrames

@@ -40,13 +40,13 @@
 
 package frysk.gui.srcwin;
 
-import java.util.Observer;
-import java.util.Observable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
@@ -108,23 +108,21 @@ import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
-import frysk.gui.disassembler.DisassemblyWindowFactory;
 import frysk.gui.disassembler.DisassemblyWindow;
+import frysk.gui.disassembler.DisassemblyWindowFactory;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.value.Variable;
-//import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-//import frysk.proc.TaskObserver;
+import frysk.rt.RunState;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
-import frysk.rt.RunState;
+import frysk.value.Variable;
 import frysk.vtecli.ConsoleWindow;
 
 /**
@@ -1175,7 +1173,7 @@ public class SourceWindow
     DataColumn[] cols = { new DataColumnString() };
     ListStore store = new ListStore(cols);
 
-    Vector funcs = this.view.getFunctions();
+    List funcs = this.view.getFunctions();
     for (int i = 0; i < funcs.size(); i++)
       {
         TreeIter iter = store.appendRow();

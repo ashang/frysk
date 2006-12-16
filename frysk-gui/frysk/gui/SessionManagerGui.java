@@ -41,7 +41,7 @@ package frysk.gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -102,7 +102,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 
 	private ProcessPicker processPicker;
 	
-	private Vector popupControl = new Vector();
+	private LinkedList popupControl = new LinkedList();
 	
 	private boolean sessionLaunched = false;
 
@@ -466,7 +466,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 			processPicker.checkSession(s);
 			WindowManager.theManager.mainWindow.buildTerminal();
 			sessionLaunched = true;
-			popupControl.removeAllElements();
+			popupControl.clear();
 			popupControl.add(WindowManager.theManager.mainWindow);
 			IconManager.trayIcon.setPopupWindows(popupControl);
 			//WindowManager.theManager.mainWindow.hideTerminal();

@@ -41,7 +41,8 @@
 package frysk.gui.srcwin;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
@@ -77,9 +78,9 @@ public class VariableWatchView
 
   private DataColumn[] traceColumns;
 
-  private Vector observers;
+  private LinkedList observers;
   
-  private Vector variables;
+  private List variables;
   
   private SourceView view;
   
@@ -98,8 +99,8 @@ public class VariableWatchView
     this.getAccessible().setDescription(
                                         "A list of all the variables that are being watched");
 
-    this.observers = new Vector();
-    this.variables = new Vector();
+    this.observers = new LinkedList();
+    this.variables = new LinkedList();
 
     traceColumns = new DataColumn[] { new DataColumnString(),
                                      new DataColumnString(),

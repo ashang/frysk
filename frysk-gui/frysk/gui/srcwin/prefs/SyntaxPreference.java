@@ -40,7 +40,7 @@
 package frysk.gui.srcwin.prefs;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
@@ -61,14 +61,14 @@ public class SyntaxPreference extends ColorPreference {
 	protected Weight defaultWeight;
 	protected Style defaultStyle;
 
-	protected Vector syntaxListeners;
+	protected LinkedList syntaxListeners;
 	
 	public SyntaxPreference(String name, Color fallback, Weight defaultWeight, Style defaultStyle) {
 		super(name, fallback);
 		
 		this.defaultStyle = defaultStyle;
 		this.defaultWeight = defaultWeight;
-		this.syntaxListeners = new Vector();
+		this.syntaxListeners = new LinkedList();
 	}
 
 	public Style getCurrentStyle() {

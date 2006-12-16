@@ -41,7 +41,7 @@
 package frysk.gui.srcwin;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -86,9 +86,8 @@ import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-//import frysk.value.InvalidOperatorException;
-import frysk.value.Variable;
 import frysk.rt.StackFrame;
+import frysk.value.Variable;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -357,7 +356,7 @@ public class SourceView
       }
   }
 
-  public Vector getFunctions ()
+  public List getFunctions ()
   {
     return this.buf.getFunctions();
   }
@@ -567,7 +566,7 @@ public class SourceView
     SourceView.this.parent.removeVariableTrace(var);
   }
   
-  public Vector refreshVars (Vector vars)
+  public List refreshVars (List vars)
   {
     return this.buf.refreshVars(vars);
   }

@@ -41,17 +41,15 @@
 package frysk.gui.srcwin;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
-//import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.TreeIter;
-//import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
@@ -59,9 +57,7 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-//import frysk.dom.DOMFunction;
 import frysk.dom.DOMLine;
-//import frysk.dom.DOMSource;
 import frysk.proc.MachineType;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
@@ -81,7 +77,7 @@ public class CurrentStackView
 
   private static StackFrame currentFrame;
 
-  private Vector observers;
+  private LinkedList observers;
   
   private StackFrame head = null;
   
@@ -97,7 +93,7 @@ public class CurrentStackView
 
     this.setHeadersVisible(false);
 
-    this.observers = new Vector();
+    this.observers = new LinkedList();
 
     buildTree(frames);
     

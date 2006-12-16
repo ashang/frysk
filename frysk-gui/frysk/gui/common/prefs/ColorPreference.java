@@ -40,7 +40,7 @@
 package frysk.gui.common.prefs;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
@@ -58,7 +58,7 @@ public class ColorPreference extends FryskPreference {
     protected Color currentColor;
 	protected Color fallback;
 	
-	protected Vector listeners;
+	protected LinkedList listeners;
 	
 	/**
 	 * Creates a new ColorPreference
@@ -68,7 +68,7 @@ public class ColorPreference extends FryskPreference {
 	public ColorPreference(String name, Color fallback) {
 		this.name = name;
 		this.fallback = fallback;
-		this.listeners = new Vector();
+		this.listeners = new LinkedList();
 	}
 	
 	/**

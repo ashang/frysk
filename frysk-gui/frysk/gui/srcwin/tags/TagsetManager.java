@@ -41,7 +41,7 @@ package frysk.gui.srcwin.tags;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.jdom.Element;
 
@@ -149,7 +149,7 @@ public class TagsetManager {
 	public Iterator getTagsets(String command){
 		Iterator iter = tagsets.iterator();
 		
-		Vector matches = new Vector();
+		LinkedList matches = new LinkedList();
 		
 		while(iter.hasNext()){
 			Tagset set = (Tagset) iter.next();

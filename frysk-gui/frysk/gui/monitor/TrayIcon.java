@@ -39,7 +39,9 @@
 
 package frysk.gui.monitor;
 
-import java.util.Vector;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import org.gnu.gtk.EventBox;
@@ -71,7 +73,7 @@ public class TrayIcon implements Saveable{
 	public static int BUTTON_3 = 3;
 	
 	private EggTrayIcon tray;
-	private Vector popupWindows;
+	private LinkedList popupWindows;
 	private Menu popupMenu;
 	
 	private EventBox trayItem;
@@ -151,11 +153,9 @@ public class TrayIcon implements Saveable{
 	 * element in popups must be of type org.gnu.gtk.Window
 	 * @param popups The popups to be displayed
 	 */
-	public void setPopupWindows(Vector popups){
-		popupWindows = new Vector();
-		
-		for(int i = 0; i < popups.size(); i++)
-			addPopupWindow((Window)popups.elementAt(i));
+	public void setPopupWindows(List popups){
+		popupWindows = new LinkedList();
+        Collections.copy(popupWindows, popups);
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public class TrayIcon implements Saveable{
 	 * Clears the popup windows and the popup menu
 	 */
 	public void clearPopups(){
-		popupWindows = new Vector();
+		popupWindows = new LinkedList();
 		popupMenu = null;
 	}
 	
@@ -258,9 +258,9 @@ public class TrayIcon implements Saveable{
 				
 				if(arg0.getButtonPressed() == windowButton && popupWindows.size() != 0){
 					for(int i = 0; i < popupWindows.size(); i++){
-						((Window)popupWindows.elementAt(i)).showAll();
-						((Window)popupWindows.elementAt(i)).deiconify();
-						((Window)popupWindows.elementAt(i)).present();
+						((Window)popupWindows.get(i)).showAll();
+						((Window)popupWindows.get(i)).deiconify();
+						((Window)popupWindows.get(i)).present();
 					}
                     setActive(false, tooltip);
                 }

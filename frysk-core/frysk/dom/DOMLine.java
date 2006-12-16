@@ -40,7 +40,7 @@
 package frysk.dom;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.jdom.Element;
 import org.jdom.filter.Filter;
@@ -298,7 +298,7 @@ public class DOMLine {
 				return false;
 			}
 		}).iterator();
-		Vector v = new Vector();
+		LinkedList v = new LinkedList();
 
 		while (iter.hasNext()){
 			Element e = (Element) iter.next();

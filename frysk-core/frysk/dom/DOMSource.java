@@ -41,7 +41,7 @@
 package frysk.dom;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.jdom.Element;
 
@@ -277,7 +277,7 @@ public class DOMSource
   public Iterator getInlinedFunctions ()
   {
     Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-    Vector v = new Vector();
+    LinkedList v = new LinkedList();
 
     while (iter.hasNext())
       v.add(new DOMFunction((Element) iter.next()));

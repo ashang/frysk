@@ -39,7 +39,7 @@
 
 package frysk.gui.srcwin;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.gnu.gtk.Widget;
 
@@ -57,7 +57,7 @@ public interface View{
 	
 	void scrollToLine(int line);
 	
-	Vector getFunctions();
+	List getFunctions();
 	
 	void load(StackFrame data);
 	

@@ -41,9 +41,9 @@ package frysk.gui.monitor;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
@@ -74,7 +74,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	private DataColumnObject objectDC;
 	
 	private HashMap map;
-	private Vector listObservers;
+	private LinkedList listObservers;
 
 	public DetailedObserverTreeView(ObservableLinkedList observers) {
 		super();
@@ -100,7 +100,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 //		});
 		
 		this.map = new HashMap();
-		this.listObservers = new Vector();
+		this.listObservers = new LinkedList();
 		
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
@@ -316,10 +316,10 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	private void removeListObservers(ObservableLinkedList list){
 //		System.out.print("DetailedObserverTreeView.removeListObservers() from " + list.hashCode());
 		for (int i = 0; i < listObservers.size(); i++) {
-			ObservableLinkedList storedList = (ObservableLinkedList) (((Object[])listObservers.elementAt(i))[0]);
+			ObservableLinkedList storedList = (ObservableLinkedList) (((Object[])listObservers.get(i))[0]);
 			if(storedList == list){
-				list.itemAdded.deleteObserver((Observer) ((((Object[])listObservers.elementAt(i))[1])));
-				list.itemRemoved.deleteObserver((Observer) ((((Object[])listObservers.elementAt(i))[2])));
+				list.itemAdded.deleteObserver((Observer) ((((Object[])listObservers.get(i))[1])));
+				list.itemRemoved.deleteObserver((Observer) ((((Object[])listObservers.get(i))[2])));
 				listObservers.remove(i);
 //				System.out.println("...DONE " + list.hashCode());
 				return;

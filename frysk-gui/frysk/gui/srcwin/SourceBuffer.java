@@ -44,7 +44,8 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
@@ -70,9 +71,9 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
-import frysk.value.Variable;
 import frysk.proc.Task;
 import frysk.rt.StackFrame;
+import frysk.value.Variable;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -106,7 +107,7 @@ public class SourceBuffer
 
   /* END CONSTANTS */
 
-  private Vector functions;
+  private LinkedList functions;
 
   private TextMark startCurrentLine;
 
@@ -188,7 +189,7 @@ public class SourceBuffer
         this.insertText("Stack and source information not available!");
         return;
     }
-    this.functions = new Vector();
+    this.functions = new LinkedList();
     this.setScope(scope, SOURCE_MODE);
   }
 
@@ -200,7 +201,7 @@ public class SourceBuffer
         this.insertText("Stack and source information not available!");
         return;
     }
-    this.functions = new Vector();
+    this.functions = new LinkedList();
     this.setScope(scope, mode);
   }
 
@@ -763,9 +764,9 @@ public class SourceBuffer
     return var;
   }
   
-  public Vector refreshVars (Vector vars)
+  public List refreshVars (List vars)
   {
-    Vector ret = new Vector();
+    LinkedList ret = new LinkedList();
     Iterator i = vars.iterator();
     try
       {
@@ -828,7 +829,7 @@ public class SourceBuffer
   /**
    * @return The list of functions found by the parser
    */
-  public Vector getFunctions ()
+  public List getFunctions ()
   {
     return functions;
   }
@@ -1064,7 +1065,7 @@ public class SourceBuffer
    */
   private void init ()
   {
-    functions = new Vector();
+    functions = new LinkedList();
     this.currentLine = this.createTag(CURRENT_LINE);
     this.currentLine.setBackground(ColorConverter.colorToHexString(Color.GREEN));
     this.outerLine = this.createTag(OUTER_LINE);

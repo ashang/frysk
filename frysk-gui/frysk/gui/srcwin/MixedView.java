@@ -39,7 +39,7 @@
 
 package frysk.gui.srcwin;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.gnu.gtk.HPaned;
 import org.gnu.gtk.ScrolledWindow;
@@ -117,7 +117,7 @@ public class MixedView extends HPaned implements View {
 		
 	}
 
-	public Vector getFunctions() {
+	public List getFunctions() {
 		return null;
 	}
 

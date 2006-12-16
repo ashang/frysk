@@ -40,7 +40,7 @@
 package frysk.gui.common.prefs;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import java.util.prefs.Preferences;
 
 /**
@@ -56,7 +56,7 @@ public class BooleanPreference extends FryskPreference {
     protected boolean value;
 	protected boolean fallback;
 	
-	protected Vector listeners;
+	protected LinkedList listeners;
 	
 	/**
 	 * Creates a new BooleanPreference
@@ -66,7 +66,7 @@ public class BooleanPreference extends FryskPreference {
 	public BooleanPreference(String name, boolean fallback) {
 		this.name = name;
 		this.fallback = fallback;
-		this.listeners = new Vector();
+		this.listeners = new LinkedList();
 	}
 
 	/**

@@ -39,7 +39,7 @@
 
 package frysk.gui;
 
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
@@ -73,7 +73,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	
 	private int threshold;
 	
-	Vector events;
+	LinkedList events;
 	
 	/**
 	 * Creates a new debug history widget
@@ -85,7 +85,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		
 		this.threshold = threshold;
 		
-		this.events = new Vector();
+		this.events = new LinkedList();
 		for(int i = 0; i < 100; i++)
 			events.add(new ObserverEvent(i*25, i%10, "Test " + i));
 		this.setMinimumSize(events.size()*25,0);
@@ -119,7 +119,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		
 		// Draw each visible event
 		for(int i = (x/25)*25; i < x + width; i += 25){
-			ObserverEvent event = ((ObserverEvent) this.events.elementAt(i/25));
+			ObserverEvent event = ((ObserverEvent) this.events.get(i/25));
 			if(event.importance >= this.threshold)
 				event.draw(cairo, height);
 		}

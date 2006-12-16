@@ -40,7 +40,7 @@
 package frysk.gui.common.prefs;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import java.util.prefs.Preferences;
 
 /**
@@ -59,7 +59,7 @@ public class IntPreference extends FryskPreference {
 	protected int max;
 	protected int fallback;
 	
-	protected Vector listeners;
+	protected LinkedList listeners;
 
 	/**
 	 * Creates a new IntPreference. Note that if the default value is outside
@@ -74,7 +74,7 @@ public class IntPreference extends FryskPreference {
 		this.min = min;
 		this.max = max;
 		this.fallback = fallback;
-		this.listeners = new Vector();
+		this.listeners = new LinkedList();
 	}
 	
 	/**

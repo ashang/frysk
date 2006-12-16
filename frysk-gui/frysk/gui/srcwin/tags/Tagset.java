@@ -39,8 +39,8 @@
 
 package frysk.gui.srcwin.tags;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import org.jdom.Element;
 
@@ -60,7 +60,7 @@ public class Tagset  extends GuiObject implements SaveableXXX{
 	private String command;
 	private String version;
 	
-	private Vector tags;
+	private LinkedList tags;
 	
 	/**
 	 * Creates a new tagset
@@ -73,13 +73,13 @@ public class Tagset  extends GuiObject implements SaveableXXX{
 		this.desc = desc;
 		this.command = command;
 		this.version = version;
-		this.tags = new Vector();
+		this.tags = new LinkedList();
 		doSaveObject();
 	}
 	
 	public Tagset(){
 		super();
-		this.tags = new Vector();
+		this.tags = new LinkedList();
 	}
 	
 	/**

@@ -40,7 +40,7 @@
 package frysk.dom;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 
 import org.jdom.Element;
 
@@ -198,12 +198,12 @@ public class DOMImage {
 	 * @return An iterator to all functions in this image
 	 */
 	public Iterator getFunctions(){
-		Vector v = new Vector();
+		LinkedList list = new LinkedList();
 		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
 		while (iter.hasNext()) 
-			v.add(new DOMFunction((Element) iter.next()));
+			list.add(new DOMFunction((Element) iter.next()));
 		
-		return v.iterator();
+		return list.iterator();
 	}
 
 	/**

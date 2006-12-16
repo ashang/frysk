@@ -1,3 +1,10 @@
+2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMImage.java (getFunctions): Moved from using Vectors to using the
+	collections framework.
+	* DOMLine.java: Ditto.
+	* DOMSource.java (getInlinedFunctions): Ditto.
+
 2006-12-15  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMFactory.java: Add Frysk copyright header back in.
