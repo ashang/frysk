@@ -177,10 +177,19 @@ main (int argc, char **argv)
   if (!got_usr2)
     panic ("failed to get SIGUSR2\n");
 
+#ifdef __ia64__
+  if (!nerrors)
+    panic ("Unexpected PASS on non-ia64 platform\n");
+#endif /* !__ia64__ */
   if (nerrors)
     {
+#ifdef __ia64__
       fprintf (stderr, "FAILURE: detected %d errors\n", nerrors);
       exit (-1);
+#else /* !__ia64__ */
+      fprintf (stderr, "Known bug: non-ia64 `resume_restores_sigmask' not implemented\n");
+      exit (77);
+#endif /* !__ia64__ */
     }
 
   if (verbose)
