@@ -118,25 +118,32 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
 		  /* Check both the address and the symbol belong to the same
 		     section.  */
 		  shdr2 = (Elf_W (Shdr) *) ((char *) ei->image + soff);
-		  for (i2 = 0; i2 < ehdr->e_shnum; ++i2)
+		  for (i2 = 0; i2 < ehdr->e_shnum; ++i2,
+		       shdr2 = (Elf_W (Shdr) *) (((char *) shdr2) + ehdr->e_shentsize))
 		    {
 		      unw_word_t addr_start;
 
-		      /* Prefer `sh_addr' as for the main executable:
-		         load_offset=0x0, sh_addr=0x400200, sh_offset=0x200
-			 but for a shared library:
-			 load_offset=0x2aaaaaf1c000, sh_addr=0x1d710, sh_offset=0x1d710  */
-		      if (!load_offset)
-		        addr_start = shdr2->sh_addr;
-		      else
-		        addr_start = load_offset + shdr2->sh_offset;
-		      if (shdr2->sh_type == SHT_PROGBITS
-			  && ip >= addr_start
+		      if (shdr2->sh_type != SHT_PROGBITS)
+			continue;
+		      /* `load_offset' is no absolute address.
+		         `shdr2->sh_addr' is address where the library was prelink(8)ed to.
+			 `load_offset + shdr2->sh_addr' will give the loaded address.
+			 `shdr2->sh_addr == 0' is for sections not in the memory image.
+			 prelink(8) at offset 0x0:
+			 	load_offset=0x360000,segbase=0x360000,p_vaddr=0x0,p_paddr=0x0
+			 	segbase=0x360000,load_offset=0x360000,shdr2->sh_addr=0x1b4,shdr2->sh_offset=0x1b4,ip=0x3601c5
+			 prelink(8) at offset 0x8048000:
+			 	load_offset=0xf80c9000,segbase=0x111000,p_vaddr=0x8048000,p_paddr=0x8048000
+			 	segbase=0x111000,load_offset=0xf80c9000,shdr2->sh_addr=0x80481b4,shdr2->sh_offset=0x1b4,ip=0x1111c5
+			 */
+		      if (shdr2->sh_addr == 0)
+			continue;
+		      addr_start = load_offset + shdr2->sh_addr;
+		      if (ip >= addr_start
 			  && ip < addr_start + shdr2->sh_size
 			  && val >= addr_start
 			  && val < addr_start + shdr2->sh_size)
 			break;
-		      shdr2 = (Elf_W (Shdr) *) (((char *) shdr2) + ehdr->e_shentsize);
 		    }
 		  if (i2 >= ehdr->e_shnum)
 		    continue;

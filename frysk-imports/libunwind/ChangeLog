@@ -1,3 +1,9 @@
+2006-12-18  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/elfxx.c (elf_w): Fix regression in the 2006-12-10 bugfix;
+	on already prelink(8)ed libraries loaded at a different address.
+	No testcase provided as prelink(8) need `root' privileges.
+
 2006-12-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* tests/check-namespace.sh.in (check_local_unw_abi): Restrict the
