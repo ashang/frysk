@@ -107,6 +107,7 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.properties" -print \
     -o -name "[A-Za-z]*\.fig" -print \
     -o -name "[A-Za-z]*\.g" -print \
+    -o -name "[A-Za-z]*\.xml" -print \
     -o -type f -name 'test*' -print
     if $cni ; then
 	find ${dirs} \
@@ -142,7 +143,7 @@ EOF
     echo "$@" 1>&2
 }
 
-echo_MANS ()
+check_MANS ()
 {
     # bin/ directories require a man page.
     case "$1" in
@@ -153,30 +154,6 @@ echo_MANS ()
 	  fi
 	  ;;
     esac
-    case "$1" in
-      *dir/* )
-          # Only programs in bindir, pkglibdir et.al. get man pages.
-          if test -r $1.xml ; then
-	      echo "EXTRA_DIST += $1.xml"
-              # extract the section number
-              local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
-              local d=`dirname $1`
-              # And the possible list of names.
-	      sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
-	          | while read title ; do
-                  # Need to generate explicit rules
-                  cat <<EOF
-man_MANS += ${d}/${title}.${n}
-CLEANFILES += ${d}/${title}.${n}
-${d}/${title}.${n}: $1.xml
-	\$(SUBST_SED) < \$< > \$@.tmp
-	\$(XMLTO) -o ${d} man \$@.tmp
-	rm -f \$@.tmp
-EOF
-	      done
-	  fi
-	  ;;
-  esac
 }
 
 echo_PROGRAMS ()
@@ -479,7 +456,7 @@ for suffix in .java ; do
 	if has_main ${file} ; then
 	    name_=`echo_name_ ${name}`
 	    echo_PROGRAMS ${name}
-	    echo_MANS ${name}
+	    check_MANS ${name}
 	    echo "${name_}_SOURCES = ${file}"
 	    echo "${name_}_LINK = \$(GCJLINK)"
 	    echo_LDFLAGS ${name}
@@ -504,7 +481,7 @@ for suffix in .cxx .c .hxx ; do
 	    echo "${name_}_SOURCES = ${file}"
 	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
 	    echo_PROGRAMS ${name}
-	    echo_MANS ${name}
+	    check_MANS ${name}
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
@@ -574,6 +551,37 @@ do
       echo "CLEANFILES += ${h}\\\$\$*.h"
   fi
 done | sort -u
+
+
+# Generate rules for all .xml files, assume that they are converted to
+# man pages.
+
+print_header "... .xml"
+grep -e '\.xml$' files.list | while read xml
+do
+  case "$xml" in
+      *dir/* )
+          # Only programs in bindir, pkglibdir et.al. get man pages.
+          echo "EXTRA_DIST += $xml"
+          # extract the section number
+	  n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $xml`
+	  d=`dirname $xml`
+          # And the possible list of names.
+	  sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $xml \
+	          | while read title ; do
+                  # Need to generate explicit rules
+                  cat <<EOF
+man_MANS += ${d}/${title}.${n}
+CLEANFILES += ${d}/${title}.${n}
+${d}/${title}.${n}: $xml
+	\$(SUBST_SED) < \$< > \$@.tmp
+	\$(XMLTO) -o ${d} man \$@.tmp
+	rm -f \$@.tmp
+EOF
+	  done
+	  ;;
+  esac
+done
 
 
 # Form a list of all the .glade files, these are installed in
