@@ -94,7 +94,6 @@ function check_local_unw_abi {
 
     match _U${plat}_flush_cache
     match _U${plat}_get_accessors
-    match _U${plat}_getcontext
     match _U${plat}_regname
     match _U${plat}_strerror
 
@@ -109,10 +108,18 @@ function check_local_unw_abi {
 	    match _UL${plat}_dwarf_search_unwind_table
 	    match _U${plat}_get_elf_image
 	    match _U${plat}_setcontext
+	    match _U${plat}_getcontext
 	    ;;
 	ia64)
 	    match _UL${plat}_search_unwind_table
 	    match _U${plat}_get_elf_image
+	    case ${os} in
+		hpux*)
+		    ;;
+		*)
+		    match _U${plat}_getcontext
+		    ;;
+	    esac
 	    ;;
 	x86)
 	    match _U${plat}_get_elf_image
