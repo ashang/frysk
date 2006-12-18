@@ -39,10 +39,14 @@
 
 AC_DEFUN([FRYSK_DO_ARCH32_TEST], [
 AC_REQUIRE([AC_CANONICAL_TARGET])
-case $target_cpu in
-x86_64|powerpc64|ppc64)
-	do_arch32_test=yes;;
-*)	do_arch32_test=no;;
-esac
-AM_CONDITIONAL([DO_ARCH32_TEST], [test $do_arch32_test = yes])
+AC_ARG_ENABLE([arch32_tests],
+    [AS_HELP_STRING([--disable-arch32-tests],
+	[Disable the multiarch testing on 64-bit platforms.])],
+    [],
+    [dnl The default:
+    case $target_cpu in #(
+    x86_64|powerpc64|ppc64) enable_arch32_tests=yes;; #(
+    *) enable_arch32_tests=no;;
+    esac])
+AM_CONDITIONAL([DO_ARCH32_TEST], [test "$enable_arch32_tests" = yes])
 ])

@@ -1,3 +1,14 @@
+2006-12-18  Stepan Kasal  <skasal@redhat.com>
+
+	* m4/frysk_do_arch32_test.m4 (--disable-arch32-tests): New
+	option to skip building arch32 tests.
+	* frysk-common.ac: Do not call FRYSK_DO_ARCH32_TEST.
+	* Makefile.gen.sh: Do not use "if DO_ARCH32_TEST" for
+	variables which can appear in packages without arch32 tests.
+	(arch32_cflags_output): Removed, it was modified only in
+	subshells, which was confusing.
+	(arch32_cflag_name, arch32_as_cflag_name): Add comment.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (JUnitTests.java): Filter out TestCase, not

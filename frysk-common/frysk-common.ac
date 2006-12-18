@@ -134,8 +134,6 @@ test $UUDECODE = no && AC_ERROR([no uudecode program found, please install sharu
 
 FRYSK_USE_LIBUNWIND
 
-FRYSK_DO_ARCH32_TEST
-
 case "${libdir}:${lib}" in
   *64*:* )
 	lib32dir=`echo "${libdir}" | sed s,64,,g`

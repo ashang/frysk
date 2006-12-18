@@ -1,3 +1,7 @@
+2006-12-18  Stepan Kasal  <skasal@redhat.com>
+
+	* configure.ac: Call FRYSK_DO_ARCH32_TEST.
+
 2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* bootstrap.sh: No longer uses --cni (bug #3687).

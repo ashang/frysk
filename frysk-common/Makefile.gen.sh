@@ -195,10 +195,13 @@ echo_PROGRAMS ()
 
 echo_arch32_COMPILER()
 {
-	echo "if DO_ARCH32_TEST"
+	# FIXME: This variable should outputted only when a rule uses it.
+	# As a workaround, we omit the "if DO_ARCH32_TEST", as not all
+	# configure scripts call FRYSK_DO_ARCH32_TEST.
+	#echo "if DO_ARCH32_TEST"
 	echo "ARCH32_COMPILE=\$(CC) \$(DEFAULT_INCLUDES) \$(INCLUDES) \
 	      \$(AM_CPPFLAGS) \$(CPPFLAGS) \$(AM_CFLAGS)"
-	echo "endif"
+	#echo "endif"
 }
 
 # usage:
@@ -490,9 +493,6 @@ done
 # output the compile for arch32
 echo_arch32_COMPILER
 
-# the flag for output of arch32 test's CFLAGS
-arch32_cflags_output=0
-
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
@@ -510,21 +510,19 @@ for suffix in .cxx .c .hxx ; do
 	    fi
 
            # Generate the rules for arch32 test
-           if [ $arch32_cflags_output -eq 0 ]; then
-               echo "if DO_ARCH32_TEST"
-               arch32_path="${d}/arch32"
-               arch32_cflag_name=`echo ${arch32_path}_CFLAGS | sed -e 'y,/-,__,'`
+           if [ -z "${arch32_cflag_name+set}" ]; then
+               arch32_cflag_name=`echo ${d}/arch32 | sed -e 'y,/-,__,'`_CFLAGS
+               # Set unconditionally, see the comment in echo_arch32_COMPILER.
                echo "${arch32_cflag_name}=-m32 -g"
-               echo "endif"
            fi
 
            echo_arch32_PROGRAMS ${name} ${file} "ARCH32_COMPILE" ${arch32_cflag_name}
-           arch32_cflags_output=1
 
 	else
 	    echo "${sources} += ${file}"
 	fi
     done
+    # arch32_cflag_name is empty again, the pipe created a subshell.
 done
 
 #
@@ -542,17 +540,15 @@ for suffix in .s .S ; do
 	echo_PROGRAMS ${name}
 
 	# Generate the rules for arch32 test
-	if [ $arch32_cflags_output -eq 0 ]; then
-	    echo "if DO_ARCH32_TEST"
-	    arch32_path="${d}/arch32"
-	    arch32_as_cflag_name=`echo ${arch32_path}_AS_CFLAGS | sed -e 'y,/-,__,'`
+	if [ -z "${arch32_as_cflag_name+set}" ]; then
+	    arch32_as_cflag_name=`echo ${d}/arch32 | sed -e 'y,/-,__,'`_AS_CFLAGS
+            # Set unconditionally, see the comment in echo_arch32_COMPILER.
 	    echo "${arch32_as_cflag_name}=-m32 -g"
-	    echo "endif"
 	fi
 
 	echo_arch32_PROGRAMS ${name} ${file} "CCASCOMPILE" ${arch32_as_cflag_name}
-	arch32_cflags_output=1
     done
+    # arch32_as_cflag_name is empty again, the pipe created a subshell.
 done
 
 # Grep the cni/*.cxx files forming a list of included files.  Assume

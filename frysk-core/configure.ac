@@ -46,5 +46,7 @@ m4_include([common/frysk-common.ac])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
+FRYSK_DO_ARCH32_TEST
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
