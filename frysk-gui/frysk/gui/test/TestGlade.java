@@ -100,6 +100,9 @@ public class TestGlade extends TestCase {
 	public void testGladeLoading() {
 
 
+	    if (brokenXXX (3749))
+		return;
+
 		// The location of the glade file may need to be modified
 		// here, depending on where the program is being run from. If
 		// the directory that the src directory is in is used as the
