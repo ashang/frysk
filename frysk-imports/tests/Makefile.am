@@ -42,9 +42,11 @@ AM_CFLAGS = -Werror -Wall -I$(top_srcdir)/include
 # Gag all the output from the failing tests
 noinst_PROGRAMS =
 noinst_SCRIPTS =
+pkglib_SCRIPTS =
 TESTS_ENVIRONMENT = eval > /dev/null 2>&1
 XFAIL_TESTS =
-TESTS = $(XFAIL_TESTS)
+PASS_TESTS =
+TESTS = $(XFAIL_TESTS) $(PASS_TESTS)
 all-local: $(TESTS)
 $(TESTS): Makefile
 CLEANFILES = \
@@ -67,6 +69,58 @@ check-local:
 	@uname -a
 	@echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
 	@echo ''
+
+
+# Install all passing systests tests so that they can be run on the
+# install system.  This lets the frysk user test for system problems
+# in a deployed installation.
+
+# Tests are either PROGRAMS or SCRIPTS, accumulate each separatly.
+# Can't assume that all PROGRAMS are TESTS and/or all TESTS are
+# PROGRAMS, as some scripts come with programs that are not directly
+# executed as tests.
+
+systests_PASS_SCRIPT =
+systests_PASS_PROGRAM =
+systests_XFAIL_PROGRAM =
+systests_XFAIL_SCRIPT =
+PASS_TESTS += $(systests_PASS_SCRIPT) $(systests_PASS_PROGRAM)
+XFAIL_TESTS += $(systests_XFAIL_PROGRAM) $(systests_XFAIL_SCRIPT)
+pkglibsystests_PROGRAMS = $(systests_PASS_PROGRAM) $(systests_XFAIL_PROGRAM)
+pkglibsystests_SCRIPTS = $(systests_PASS_SCRIPT) $(systests_XFAIL_SCRIPT)
+pkglibsystestsdir = $(pkglibdir)/sys-tests
+
+pkglibsystests_SCRIPTS += run-sys-tests.sh
+CLEANFILES += run-sys-tests.sh
+run-sys-tests.sh: Makefile
+	rm -f $@.tmp
+	touch $@.tmp
+	echo >> $@.tmp '#!/bin/sh'
+	echo >> $@.tmp 'ulimit -c 0'
+	echo >> $@.tmp 'status=true'
+	echo >> $@.tmp 'p="$(systests_PASS_PROGRAM) $(systests_PASS_SCRIPT)"'
+	echo >> $@.tmp 'x="$(systests_XFAIL_PROGRAM) $(systests_XFAIL_SCRIPT)"'
+	echo >> $@.tmp 'for s in p x'
+	echo >> $@.tmp 'do'
+	echo >> $@.tmp '  tests=$$(eval echo \$$$$s)'
+	echo >> $@.tmp '  for test in $$tests'
+	echo >> $@.tmp '  do'
+	echo >> $@.tmp '    t=`basename $$test`'
+	echo >> $@.tmp '    d=`dirname $$test`'
+	echo >> $@.tmp '    ( test -d $$d && cd $$d ; ./$$t ) > /dev/null 2>&1'
+	echo >> $@.tmp '    case $${s}:$$? in'
+	echo >> $@.tmp '      p:0 ) echo PASS: $$test ;;'
+	echo >> $@.tmp '      x:0 ) echo XPASS: $$test ;;'
+	echo >> $@.tmp '      *:77 ) echo SKIP: $$test ;;'
+	echo >> $@.tmp '      p:* ) echo FAIL: $$test ; status=false ;;'
+	echo >> $@.tmp '      x:* ) echo XFAIL: $$test ;;'
+	echo >> $@.tmp '    esac'
+	echo >> $@.tmp '  done'
+	echo >> $@.tmp 'done'
+	echo >> $@.tmp '$$status'
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+# TESTS += run-sys-tests.sh # Disable - not informative enough
 
 # This failed in GCC 4.0 beta
 frysk2493_Npe_SOURCES = frysk2493/Npe.java
@@ -224,31 +278,30 @@ frysk2137/Gcov.sh:
 	mv $@.tmp $@
 
 # test for kernel ptrace - from a thread other than the attacher
-noinst_PROGRAMS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
-XFAIL_TESTS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
+systests_XFAIL_PROGRAM += frysk2595/ptrace_peek_wrong_thread
+
 # test for kernel ptrace - fork from thread, and ptrace after thread exit
-noinst_PROGRAMS += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_LDFLAGS = -lpthread
-TESTS += frysk2595/ptrace_after_forked_thread_exits
+systests_PASS_PROGRAM += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_forked_thread_exits.c
+
 # test for kernel ptrace - fork from thread, and ptrace before thread exit
-noinst_PROGRAMS += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_LDFLAGS = -lpthread
-XFAIL_TESTS += frysk2595/ptrace_before_forked_thread_exits
+systests_XFAIL_PROGRAM += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_SOURCES = frysk2595/ptrace_before_forked_thread_exits.c
+
 # test for kernel ptrace - ptrace after main thread execs - YES
 # THIS REALLY DOES WORK.
-noinst_PROGRAMS += frysk2595/ptrace_after_exec
 frysk2595_ptrace_after_exec_LDFLAGS = -lpthread
-TESTS += frysk2595/ptrace_after_exec
 frysk2595_ptrace_after_exec_SOURCES = frysk2595/ptrace_after_exec.c
+systests_PASS_PROGRAM += frysk2595/ptrace_after_exec
+
 # test for kernel ptrace - ptrace after exec, child of other thread
-noinst_PROGRAMS += frysk2595/ptrace_after_exec_of_thread
 frysk2595_ptrace_after_exec_of_thread_LDFLAGS = -lpthread
-TESTS += frysk2595/ptrace_after_exec_of_thread
 frysk2595_ptrace_after_exec_of_thread_SOURCES = frysk2595/ptrace_after_exec_of_thread.c
+systests_PASS_PROGRAM += frysk2595/ptrace_after_exec_of_thread
 
 process_TESTS = \
 	process/single_exec \
@@ -259,8 +312,7 @@ process_single_exec_LDFLAGS = -lpthread
 process_multi_child_exec_LDFLAGS = -lpthread
 process_multi_parent_exec_LDFLAGS = -lpthread
 process_multi_child_parent_exec_LDFLAGS = -lpthread
-TESTS += $(process_TESTS)
-noinst_PROGRAMS += $(process_TESTS)
+systests_PASS_PROGRAM += $(process_TESTS)
 
 # GCJ complains that frysk.model.Signal isn't visible from
 # frysk.event.SignalEvent, it should have imported frysk.event.Signal.
@@ -317,10 +369,9 @@ TESTS += cmdline/print
 
 # Test an strace of a cloned exec.
 EXTRA_DIST += frysk2130/strace-clone-exec.shin
-noinst_PROGRAMS += frysk2130/threadexec
-noinst_SCRIPTS += frysk2130/strace-clone-exec.sh
+pkglibsystests_PROGRAMS += frysk2130/threadexec
 frysk2130_threadexec_LDFLAGS = -lpthread
-TESTS += frysk2130/strace-clone-exec.sh
+systests_PASS_SCRIPT += frysk2130/strace-clone-exec.sh
 
 # A garbage collector stress test.
 noinst_PROGRAMS += frysk2299/GCTest
@@ -361,9 +412,8 @@ frysk2670/gcj.sh:
 # Frysk, when creating test processes uses the sequence vfork -> fork
 # -> exec to create a process of known pid that has process 1 as its
 # parent.
-TESTS += vfork-exec/vfork-exec
 vfork_exec_vfork_exec_SOURCES = vfork-exec/vfork-exec.c
-noinst_PROGRAMS += vfork-exec/vfork-exec
+systests_PASS_PROGRAM += vfork-exec/vfork-exec
 
 # Indexing an array with a class pointer makes no sense but it compiles.
 EXTRA_DIST += frysk2630/ClassIndex.java
@@ -412,30 +462,25 @@ noinst_PROGRAMS += frysk3228/LoggerParent
 
 # The FC-6 kernel screws up signal delivery during ptrace attach,
 # check this is fixed.
-TESTS += frysk3231/ptrace-test
-frysk3231_ptrace_test_SOURCES = frysk3231/ptrace-test.c
-noinst_PROGRAMS += frysk3231/ptrace-test
+frysk3231_ptrace_detach_looses_signal_SOURCES = frysk3231/ptrace-test.c
+systests_PASS_PROGRAM += frysk3231/ptrace-detach-looses-signal
 
 # Legacy ptrace inhibits some ptrace requests (PTRACE_DETACH, possibly
 # PTRACE_CONT, and maybe others) if the accompanying signal is invalid.
 # This test makes sure that behaviour hasn't been "fixed."
-TESTS += frysk3205/ptrace-test
-frysk3205_ptrace_test_SOURCES = frysk3205/ptrace-test.c
-noinst_PROGRAMS += frysk3205/ptrace-test
+frysk3205_ptrace_detach_bad_signal_SOURCES = frysk3205/ptrace-test.c
+systests_PASS_PROGRAM += frysk3205/ptrace-detach-bad-signal
 
 # A daemon can produce double or plain wrong exit events.
-TESTS += frysk3525/exit47
 frysk3525_exit47_SOURCES = frysk3525/exit47.c
-noinst_PROGRAMS += frysk3525/exit47
+systests_PASS_PROGRAM += frysk3525/exit47
 
 # A non-joined but exited thread should end up in state 'X'
-TESTS += frysk3491/x-state
 frysk3491_x_state_SOURCES = frysk3491/x-state.c
 frysk3491_x_state_LDFLAGS = -lpthread
-noinst_PROGRAMS += frysk3491/x-state
+systests_PASS_PROGRAM += frysk3491/x-state
 
 # A hang during a brutal detach from a multi-threaded program.
-TESTS += frysk3595/detach-multi-thread
 frysk3595_detach_multi_thread_SOURCES = frysk3595/detach-multi-thread.c
 frysk3595_detach_multi_thread_LDFLAGS = -lpthread
-noinst_PROGRAMS += frysk3595/detach-multi-thread
+systests_PASS_PROGRAM += frysk3595/detach-multi-thread

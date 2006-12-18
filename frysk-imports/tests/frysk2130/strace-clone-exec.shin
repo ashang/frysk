@@ -1,9 +1,11 @@
 #!/bin/sh
 
+# When in build tree, threadexec is in directory below.
+test -d frysk2130 && cd frysk2130
+
 if which strace > /dev/null 2>&1 ; then
-    strace -f -o /dev/null frysk2130/threadexec /bin/echo hi | grep hi
+    strace -f -o /dev/null ./threadexec /bin/echo hi | grep hi
 else
     echo "No strace installed; skipping" 1>&2
     exit 77
 fi
-
