@@ -172,5 +172,10 @@ public class TestProcStopped
 
     }
 
+    public void addFailed (Object observable, Throwable w)
+    {
+      fail("Proc add failed: " + w.getMessage());
+    }
+
   }
 }

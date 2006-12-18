@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import frysk.EventLogger;
 
 import frysk.event.Event;
+import frysk.event.RequestStopEvent;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -76,7 +77,7 @@ public class fstack
 
   private static void addOptions (Parser parser)
   {
-   Util.addConsoleOptions(logger, parser);
+    Util.addConsoleOptions(logger, parser);
   }
 
   public static void main (String[] args)
@@ -105,7 +106,6 @@ public class fstack
             int pid = Integer.parseInt(arg);
             Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
             {
-
               public void procFound (ProcId procId)
               {
                 final Proc proc = Manager.host.getProc(procId);
@@ -124,7 +124,27 @@ public class fstack
                       }
                     });
                   }
-                });
+                })
+                {
+                  public void addFailed (Object observable, Throwable w)
+                  {
+                    w.printStackTrace();
+                    proc.requestAbandonAndRunEvent(new RequestStopEvent(
+                                                                        Manager.eventLoop));
+
+                    try
+                      {
+                        // Wait for eventLoop to finish.
+                        Manager.eventLoop.join();
+                      }
+                    catch (InterruptedException e)
+                      {
+                        e.printStackTrace();
+                      }
+                    System.exit(1);
+
+                  }
+                };
 
               }
 

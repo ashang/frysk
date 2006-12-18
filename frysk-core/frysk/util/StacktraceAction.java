@@ -59,7 +59,7 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 
-public class StacktraceAction
+public abstract class StacktraceAction
     extends ProcBlockAction
 {
   protected StringBuffer stackTrace = new StringBuffer();
@@ -102,10 +102,6 @@ public class StacktraceAction
     logger.log(Level.SEVERE, "{0} could not be added to {1}\n",
                new Object[] { this, observable });
 
-  }
-
-  public void deletedFrom (Object observable)
-  {
   }
 
   private final void printTasks ()

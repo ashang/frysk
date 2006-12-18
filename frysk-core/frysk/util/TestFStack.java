@@ -119,7 +119,12 @@ public class TestFStack
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    });
+    }){
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("Proc add failed: " + w.getMessage());
+      }};
 
     assertRunUntilStop("perform backtrace");
 
@@ -149,7 +154,12 @@ public class TestFStack
       {
         proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
       }
-    });
+    }){
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("Proc add failed" + w.getMessage());
+      }};
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();

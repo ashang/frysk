@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
-import frysk.event.RequestStopEvent;
 
 abstract public class ProcBlockAction
     implements ProcObserver
@@ -141,7 +140,7 @@ abstract public class ProcBlockAction
 
     if (! isOwned)
       {
-        // ("Process " + proc + " is not owned by user/group.");
+        addFailed(proc, new Throwable("Process " + proc + " is not owned by user/group."));
       }
 
     taskList = proc.getTasks();
@@ -174,23 +173,7 @@ abstract public class ProcBlockAction
     });
   }
 
-  public void addFailed (Object observable, Throwable w)
-  {
-    w.printStackTrace();
-    proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-
-    try
-      {
-        // Wait for eventLoop to finish.
-        Manager.eventLoop.join();
-      }
-    catch (InterruptedException e)
-      {
-        e.printStackTrace();
-      }
-    System.exit(1);
-
-  }
+  
 
   private void requestAddObservers (Task task)
   {
@@ -201,7 +184,10 @@ abstract public class ProcBlockAction
 
   public void addedTo (Object observable)
   {
+  }   
 
+  public void deletedFrom (Object observable)
+  {
   }
 
   public void taskAddFailed (Object observable, Throwable w)
