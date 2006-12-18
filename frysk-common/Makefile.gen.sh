@@ -574,6 +574,7 @@ do
 man_MANS += ${d}/${title}.${n}
 CLEANFILES += ${d}/${title}.${n}
 ${d}/${title}.${n}: $xml
+	mkdir -p ${d}
 	\$(SUBST_SED) < \$< > \$@.tmp
 	\$(XMLTO) -o ${d} man \$@.tmp
 	rm -f \$@.tmp

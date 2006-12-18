@@ -1,5 +1,7 @@
 2006-12-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: For man page rule, create the dest directory.
+
 	* Makefile.gen.sh (files.list): Include .xml files.  Add code to
 	generate .xml to .man using files.list as input.
 	(check_MANS): Rename echo_MANS.  Simplify.
