@@ -1,0 +1,10 @@
+2006-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* ftail.xml: New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
