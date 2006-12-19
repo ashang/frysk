@@ -1,3 +1,7 @@
+2006-12-19  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java (storeTask): Add logging message.
+
 2006-12-18  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (multiThreaded.addFailed): Added.

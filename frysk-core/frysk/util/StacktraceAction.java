@@ -153,6 +153,7 @@ public abstract class StacktraceAction
         catch (TaskException _)
           {
             // FIXME: log exception, or rethrow?
+            logger.log(Level.FINE, "{0} Couldn't print stack trace\n", task);
             stackTrace.append("... couldn't print stack trace\n");
           }
       }
