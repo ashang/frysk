@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -155,7 +154,6 @@ public class TrayIcon implements Saveable{
 	 */
 	public void setPopupWindows(List popups){
 		popupWindows = new LinkedList(popups);
-        Collections.copy(popupWindows, popups);
 	}
 	
 	/**
