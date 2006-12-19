@@ -1,5 +1,9 @@
 2006-12-19  Nurdin Premji  <npremji@redhat.com>
 
+	* Util.java: Ran gnu formatter.
+	(parsePids): Added.
+	(PidParser): Added.	
+
 	* Util.java (addConsoleOptions): Removed short character options.
 	Changed "level" to "log" option.
 	

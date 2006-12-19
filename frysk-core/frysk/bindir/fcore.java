@@ -37,7 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import java.util.logging.Level;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
@@ -52,19 +53,15 @@ import frysk.proc.Host;
 import frysk.util.CoredumpAction;
 import frysk.util.Util;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
-import frysk.Config;
 
 public class fcore
 {
 
   private static String filename = "core";
-
-  private static boolean hasProc = false;
 
   private static boolean writeAllMaps = false;
 
@@ -73,11 +70,7 @@ public class fcore
   protected static final Logger logger = EventLogger.get("logs/",
                                                          "frysk_core_event.log");
 
-  private static Parser parser;
-
-  private static String levelValue;
-
-  private static Level level;
+  private static Util.PidParser parser;
 
   /**
    * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
@@ -89,43 +82,22 @@ public class fcore
   {
 
     // Parse command line. Check pid provided.
-    parser = new Parser("fcore", Config.VERSION, true)
-    {
-      protected void validate () throws OptionException
-      {
-        if (! hasProc)
-          throw new OptionException("No pid(s) provided");
-      }
-    };
+    parser = new Util.PidParser("fcore");
 
     addOptions(parser);
 
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
+    
+    LinkedList pidList = Util.parsePids(parser, args);
+    
+    Iterator iter = pidList.iterator();
 
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
+    while (iter.hasNext())
       {
+    
+        ProcId procId = (ProcId) iter.next();
 
-        hasProc = true;
-        int pid = 0;
-
-        // Test pid is valid
-        try
-          {
-            pid = Integer.parseInt(arg);
-          }
-        catch (NumberFormatException nfe)
-          {
-
-            throw new OptionException(
-                                      "Argument "
-                                          + arg
-                                          + " does "
-                                          + "not appear to be a valid pid. Skipping.");
-          }
-
-        Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+        Manager.host.requestFindProc(procId, new Host.FindProc()
         {
           public void procFound (ProcId procId)
           {
@@ -152,20 +124,12 @@ public class fcore
           {
             System.err.println("fcore: Could not find the process: "
                                + procId.toString());
+            Manager.eventLoop.requestStop();
           }
         });
 
         Manager.eventLoop.run();
       }
-    });
-
-    // Set log level.
-    if (levelValue != null)
-      {
-        logger.setLevel(level);
-      }
-
-    // Manager.eventLoop.run();
 
     stacker.getClass();
   }

@@ -37,7 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import java.util.logging.Level;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
@@ -53,27 +54,16 @@ import frysk.proc.Host;
 import frysk.util.StacktraceAction;
 import frysk.util.Util;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
-import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
-
-import frysk.Config;
 
 public class fstack
 {
-
-  private static boolean hasProc = false;
-
   private static StacktraceAction stacker;
 
-  private static Parser parser;
+  private static Util.PidParser parser;
 
   protected static final Logger logger = EventLogger.get("logs/",
                                                          "frysk_core_event.log");
-
-  private static String levelValue;
-
-  private static Level level;
 
   private static void addOptions (Parser parser)
   {
@@ -83,92 +73,71 @@ public class fstack
   public static void main (String[] args)
   {
 
-    parser = new Parser("fstack", Config.VERSION, true)
-    {
-      protected void validate () throws OptionException
-      {
-        if (! hasProc)
-          {
-            throw new OptionException("no pid provided");
-          }
-      }
-    };
+    parser = new Util.PidParser("fstack");
     addOptions(parser);
     parser.setHeader("Usage: fstack <PID>");
 
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-        try
-          {
-            hasProc = true;
-            int pid = Integer.parseInt(arg);
-            Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
-            {
-              public void procFound (ProcId procId)
-              {
-                final Proc proc = Manager.host.getProc(procId);
+    LinkedList pidList = Util.parsePids(parser, args);
 
-                stacker = new StacktraceAction(proc, new Event()
+    Iterator iter = pidList.iterator();
+
+    while (iter.hasNext())
+      {
+        ProcId procId = (ProcId) iter.next();
+
+        Manager.host.requestFindProc(procId, new Host.FindProc()
+        {
+          public void procFound (ProcId procId)
+          {
+            final Proc proc = Manager.host.getProc(procId);
+
+            stacker = new StacktraceAction(proc, new Event()
+            {
+              public void execute ()
+              {
+                proc.requestAbandonAndRunEvent(new Event()
                 {
+
                   public void execute ()
                   {
-                    proc.requestAbandonAndRunEvent(new Event()
-                    {
-
-                      public void execute ()
-                      {
-                        Manager.eventLoop.requestStop();
-                        System.out.print(stacker.toPrint());
-                      }
-                    });
+                    Manager.eventLoop.requestStop();
+                    System.out.print(stacker.toPrint());
                   }
-                })
-                {
-                  public void addFailed (Object observable, Throwable w)
-                  {
-                    w.printStackTrace();
-                    proc.requestAbandonAndRunEvent(new RequestStopEvent(
-                                                                        Manager.eventLoop));
-
-                    try
-                      {
-                        // Wait for eventLoop to finish.
-                        Manager.eventLoop.join();
-                      }
-                    catch (InterruptedException e)
-                      {
-                        e.printStackTrace();
-                      }
-                    System.exit(1);
-
-                  }
-                };
-
+                });
               }
-
-              public void procNotFound (ProcId procId, Exception e)
+            })
+            {
+              public void addFailed (Object observable, Throwable w)
               {
-                System.err.println("Couldn't find the proc with proc Id"
-                                   + procId);
-                Manager.eventLoop.requestStop();
+                w.printStackTrace();
+                proc.requestAbandonAndRunEvent(new RequestStopEvent(
+                                                                    Manager.eventLoop));
+
+                try
+                  {
+                    // Wait for eventLoop to finish.
+                    Manager.eventLoop.join();
+                  }
+                catch (InterruptedException e)
+                  {
+                    e.printStackTrace();
+                  }
+                System.exit(1);
+
               }
-            });
-
-            Manager.eventLoop.run();
+            };
 
           }
-        catch (NumberFormatException _)
+
+          public void procNotFound (ProcId procId, Exception e)
           {
-            throw new OptionException("couldn't parse pid");
+            System.err.println("Couldn't find the process: "
+                               + procId.toString());
+            Manager.eventLoop.requestStop();
           }
-      }
-    });
+        });
 
-    if (levelValue != null)
-      {
-        logger.setLevel(level);
+        Manager.eventLoop.run();
       }
 
   }

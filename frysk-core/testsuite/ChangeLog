@@ -1,4 +1,7 @@
 2006-12-19  Nurdin Premji  <npremji@redhat.com>
+
+	* util/fcore.exp (test_fcore_bad_argument): Changed re to match change in
+	fcore.
 	
 	* util/fcore.exp: Switched to long logging options, short options no longer
 	supported.

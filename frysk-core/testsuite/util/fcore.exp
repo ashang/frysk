@@ -55,7 +55,7 @@ spawn $pwd/frysk/bindir/fcore "this is a bad argument"
 
 #test output.
 expect {	
-    -re "fcore: Argument this is a bad argument does not appear to be a valid pid. Skipping."
+    -re "fcore: Argument this is a bad argument does not appear to be a valid pid."
     {pass test_fcore_bad_argument}
     default	{fail test_fcore_bad_argument}
 }

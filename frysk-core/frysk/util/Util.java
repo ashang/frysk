@@ -37,100 +37,144 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.util;
 
 import java.io.PrintStream;
+import java.util.LinkedList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import frysk.Config;
+import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
-public class Util {
+public class Util
+{
 
-	private Util()
-	{
-	}
+  private Util ()
+  {
+  }
 
-    public static void printStackTrace(PrintStream writer, Task task)
-    {
-    	writer.println("Stack trace for task " + task);
-    	try
-    	{
-    		for (StackFrame frame = StackFactory.createStackFrame(task);
-    			frame != null;
-    			frame = frame.getOuter())
-    		{
-    			// FIXME: do valgrind-like '=== PID ===' ?
-    			writer.print("  ");
-    			writer.println(frame);
-    		}
-    	}
-    	catch (TaskException _)
-    	{
-    		// FIXME: log exception, or rethrow?
-    		writer.println("... couldn't print stack trace");
-    	}
-    }
-    
-    public static void addConsoleOptions(final Logger logger, Parser parser)
-    {
-      parser.add(new Option(
-                            "console",
-                            "Set the console level. The console-level can be "
-                                + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                            "<console-level>")
+  public static void printStackTrace (PrintStream writer, Task task)
+  {
+    writer.println("Stack trace for task " + task);
+    try
       {
-        public void parsed (String consoleValue) throws OptionException
-        {
-          try
-            {
-              Level consoleLevel = Level.parse(consoleValue);
-              // Need to set both the console and the main logger as
-              // otherwize the console won't see the log messages.
-
-              System.out.println("console " + consoleLevel);
-              Handler consoleHandler = new ConsoleHandler();
-              consoleHandler.setLevel(consoleLevel);
-              logger.addHandler(consoleHandler);
-              logger.setLevel(consoleLevel);
-              System.out.println(consoleHandler);
-
-            }
-          catch (IllegalArgumentException e)
-            {
-              throw new OptionException("Invalid log console: " + consoleValue);
-            }
-
-        }
-      });
-      parser.add(new Option(
-                            "log",
-                            "Set the log level. The log-level can be "
-                                + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                            "<log-level>")
+        for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
+          {
+            // FIXME: do valgrind-like '=== PID ===' ?
+            writer.print("  ");
+            writer.println(frame);
+          }
+      }
+    catch (TaskException _)
       {
-        public void parsed (String arg0) throws OptionException
-        {
-          String levelValue = arg0;
-          try
-            {
-              Level level = Level.parse(levelValue);
-              logger.setLevel(level);
-            }
-          catch (IllegalArgumentException e)
-            {
-              throw new OptionException("Invalid log level: " + levelValue);
-            }
-        }
-      });
+        // FIXME: log exception, or rethrow?
+        writer.println("... couldn't print stack trace");
+      }
+  }
+
+  public static class PidParser
+      extends Parser
+  {
+    LinkedList pidList = new LinkedList();
+
+    public PidParser (String programName)
+    {
+      super(programName, Config.VERSION, true);
     }
-    
+
+    protected void validate () throws OptionException
+    {
+      if (pidList.isEmpty())
+        throw new OptionException("No pid(s) provided");
+    }
+
+  }
+
+  public static LinkedList parsePids (final PidParser parser, String[] args)
+  {
+    parser.parse(args, new FileArgumentCallback()
+    {
+      public void notifyFile (String arg) throws OptionException
+      {
+        try
+          {
+            int pid = Integer.parseInt(arg);
+            parser.pidList.add(new ProcId(pid));
+          }
+        catch (NumberFormatException nfe)
+          {
+            throw new OptionException("Argument " + arg + " does "
+                                      + "not appear to be a valid pid.");
+
+          }
+      }
+    });
+    return parser.pidList;
+  }
+
+  public static void addConsoleOptions (final Logger logger, Parser parser)
+  {
+    parser.add(new Option(
+                          "console",
+                          "Set the console level. The console-level can be "
+                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
+                          "<console-level>")
+    {
+      public void parsed (String consoleValue) throws OptionException
+      {
+        try
+          {
+            Level consoleLevel = Level.parse(consoleValue);
+            // Need to set both the console and the main logger as
+            // otherwize the console won't see the log messages.
+
+            System.out.println("console " + consoleLevel);
+            Handler consoleHandler = new ConsoleHandler();
+            consoleHandler.setLevel(consoleLevel);
+            logger.addHandler(consoleHandler);
+            logger.setLevel(consoleLevel);
+            System.out.println(consoleHandler);
+
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid log console: " + consoleValue);
+          }
+
+      }
+    });
+    parser.add(new Option(
+                          "log",
+                          "Set the log level. The log-level can be "
+                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
+                          "<log-level>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        String levelValue = arg0;
+        try
+          {
+            Level level = Level.parse(levelValue);
+            logger.setLevel(level);
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid log level: " + levelValue);
+          }
+      }
+    });
+  }
+
 }
