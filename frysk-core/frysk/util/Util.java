@@ -84,7 +84,6 @@ public class Util {
     {
       parser.add(new Option(
                             "console",
-                            'c',
                             "Set the console level. The console-level can be "
                                 + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
                             "<console-level>")
@@ -113,8 +112,7 @@ public class Util {
         }
       });
       parser.add(new Option(
-                            "level",
-                            'l',
+                            "log",
                             "Set the log level. The log-level can be "
                                 + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
                             "<log-level>")
