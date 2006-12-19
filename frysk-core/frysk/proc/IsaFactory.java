@@ -89,10 +89,12 @@ public class IsaFactory
 	  {
 	  case ElfEMachine.EM_386:
 	    {
-	      if (frysk.core.Build.BUILD_ARCH.equals("i686"))
-		return LinuxIa32.isaSingleton ();
-	      else
-		return LinuxIa32On64.isaSingleton();
+		// XXX: This should not be looking at frysk.core.Build
+		// when selecting the ISA.
+		if (frysk.core.Build.BUILD_ARCH.equals ("x86_64"))
+		    return LinuxIa32On64.isaSingleton();
+		else
+		    return LinuxIa32.isaSingleton ();
 	    }
 	  case ElfEMachine.EM_PPC:
 	    {
