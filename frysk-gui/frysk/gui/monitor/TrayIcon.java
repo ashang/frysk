@@ -154,7 +154,7 @@ public class TrayIcon implements Saveable{
 	 * @param popups The popups to be displayed
 	 */
 	public void setPopupWindows(List popups){
-		popupWindows = new LinkedList();
+		popupWindows = new LinkedList(popups);
         Collections.copy(popupWindows, popups);
 	}
 	

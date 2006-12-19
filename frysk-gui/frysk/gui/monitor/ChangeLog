@@ -1,3 +1,8 @@
+2006-12-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TrayIcon.java (setPopupWindows): Initialize the new LinkedList to be the
+	same size as the incoming List parameter. Fixes #3749.
+
 2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DetailedObserverTreeView (listObservers): Is now a LinkedList.
