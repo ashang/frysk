@@ -61,8 +61,8 @@ expect {
 }
 
 
-#start tester program with valid pid, but wrong -c argument
-spawn $pwd/frysk/bindir/fcore -c SILLY $funit_pid
+#start tester program with valid pid, but wrong -console argument
+spawn $pwd/frysk/bindir/fcore -console SILLY $funit_pid
 
 #test output.
 expect {	
@@ -71,8 +71,8 @@ expect {
     default	{fail test_fcore_bad_console_log_argument}
 }
 
-#start tester program with valid pid, but wrong -l argument
-spawn $pwd/frysk/bindir/fcore -l SILLY $funit_pid
+#start tester program with valid pid, but wrong -log argument
+spawn $pwd/frysk/bindir/fcore -log SILLY $funit_pid
 
 #test output.
 expect {	
@@ -81,8 +81,8 @@ expect {
     default	{fail test_fcore_bad_log_argument}
 }
 
-#start tester program with valid pid, correct -c  but wrong -l argument
-spawn $pwd/frysk/bindir/fcore -c ALL -l SILLY $funit_pid
+#start tester program with valid pid, correct -console  but wrong -log argument
+spawn $pwd/frysk/bindir/fcore -console ALL -log SILLY $funit_pid
 
 #test output.
 expect {	
@@ -91,8 +91,8 @@ expect {
     default	{fail test_fcore_bad_log_correct_console_argument}
 }
 
-#start tester program with valid pid, wrong -c  and wrong -l argument
-spawn $pwd/frysk/bindir/fcore -c SILLY -l ALL $funit_pid
+#start tester program with valid pid, wrong -console  and wrong -log argument
+spawn $pwd/frysk/bindir/fcore -console SILLY -log ALL $funit_pid
 
 #test output.
 expect {	
@@ -101,8 +101,8 @@ expect {
     default	{fail test_fcore_correct_log_bad_console_argument}
 }
 
-#start tester program with valid pid, wrong -c  but correct -l argument
-spawn $pwd/frysk/bindir/fcore -c SILLY -l SILLY $funit_pid
+#start tester program with valid pid, wrong -console  but correct -log argument
+spawn $pwd/frysk/bindir/fcore -console SILLY -log SILLY $funit_pid
 
 #test output.
 expect {
@@ -111,7 +111,7 @@ expect {
     default     {fail test_fcore_bad_log_bad_console_argument}
 }
 
-#start tester program with invaalid argument
+#start tester program with invalid argument
 spawn $pwd/frysk/bindir/fcore -z  $funit_pid
 
 #test output.
