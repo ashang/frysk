@@ -108,6 +108,8 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.fig" -print \
     -o -name "[A-Za-z]*\.g" -print \
     -o -name "[A-Za-z]*\.xml" -print \
+    -o -path "*dir/[A-Za-z]*\.sh" -print \
+    -o -path "*dir/[A-Za-z]*\.py" -print \
     -o -type f -name 'test*' -print
     if $cni ; then
 	find ${dirs} \
@@ -582,6 +584,26 @@ EOF
 	  done
 	  ;;
   esac
+done
+
+
+# Generate rules for .in files, convert to basename using SUBST_SED.
+
+for suffix in .sh .py
+do
+  print_header "... ${suffix}"
+  grep -e "dir/.*\\${suffix}$" files.list | while read file
+  do
+    d=`dirname $file`
+    b=`basename $file ${suffix}`
+    echo EXTRA_DIST += ${file}
+    echo `expr $d : '.*/\([a-z]*\)dir'`_SCRIPTS += $d/$b
+    check_MANS $d/$b
+    cat <<EOF
+${d}/${b}: ${file}
+	\$(SUBST)
+EOF
+  done
 done
 
 

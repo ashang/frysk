@@ -103,13 +103,3 @@ CLEANFILES += frysk/pkgdatadir/helloworld.o.bz2 frysk/pkgdatadir/helloworld.o
 # we need to get this into the distribution
 noinstdir = $(srcdir)
 noinst_HEADERS = include/linux.ptrace.h include/linux.syscall.h
-
-
-# For moment, hand build/install the fsystest script.
-
-pkglib_SCRIPTS = frysk/pkglibdir/fsystest
-frysk/pkglibdir/fsystest: frysk/pkglibdir/fsystest.sh
-	mkdir -p `dirname $@`
-	$(SUBST_SED) < $(srcdir)/$@.sh > $@.tmp
-	chmod a+x $@.tmp
-	mv $@.tmp $@

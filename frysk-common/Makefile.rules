@@ -47,9 +47,12 @@ MOSTLYCLEANFILES = core.[1-9]*
 noinst_PROGRAMS =
 noinst_DATA =
 bin_PROGRAMS =
+bin_SCRIPTS =
 sbin_PROGRAMS =
+sbin_SCRIPTS =
 pkgdata_DATA =
 pkglib_PROGRAMS =
+pkglib_SCRIPTS =
 pkglibdir = $(libdir)/@PACKAGE@
 pkglib32_PROGRAMS =
 pkglib32dir = $(lib32dir)/@PACKAGE@
@@ -246,11 +249,13 @@ SUBST = \
 			echo '\#! /bin/sh'		>> $@.tmp ; \
 			echo '\# Generated from: $<'	>> $@.tmp ; \
 			echo ''				>> $@.tmp ; \
+			chmod a+x $@.tmp ; \
 			;; \
 		*.py) \
 			echo '\#! /usr/bin/env python'	>> $@.tmp ; \
 			echo '\# Generated from: $<'	>> $@.tmp ; \
 			echo ''				>> $@.tmp ; \
+			chmod a+x $@.tmp ; \
 			;; \
 	esac ; \
 	$(SUBST_SED) < $< 				>> $@.tmp ; \

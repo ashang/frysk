@@ -1,3 +1,10 @@
+2006-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST): For .sh and .py files, chmod +x.
+	(pkglib_SCRIPTS, sbin_SCRIPTS, bin_SCRIPTS): Define.
+	* Makefile.gen.sh (files.list): Add .sh and .py files, convert
+	using SUBST, add to corresponding SCRIPTS list.
+
 2006-12-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: For man page rule, create the dest directory.
