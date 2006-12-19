@@ -757,7 +757,8 @@ abstract public class Task
   int notifyExeced ()
   {
     //Flush the isa in case it has changed between exec's.
-    isa = null;
+    clearIsa();
+    //XXX: When should the isa be rebuilt?
     for (Iterator i = execedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Execed observer = (TaskObserver.Execed) i.next();
@@ -1042,6 +1043,27 @@ abstract public class Task
       });
     }
  
+ public static TaskStateObservable taskStateAttached = new TaskStateObservable();
+ static
+ {
+   taskStateAttached.addObserver(new Observer(){
+     public void update (Observable o, Object arg)
+     {
+       if (arg instanceof Task)
+         {
+           Task task = (Task) arg;
+           try
+            {
+              task.getIsa();
+            }
+          catch (TaskException e)
+            {
+             //XXX: What to do here?
+            }           
+         }
+     }
+   });
+ }
  public void clearIsa()
  {
    isa = null;

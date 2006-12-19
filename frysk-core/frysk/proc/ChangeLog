@@ -1,3 +1,11 @@
+2006-12-19  Nurdin Premji  <npremji@redhat.com>
+
+	* LinuxPtraceTaskState.java (.transitionToAttached): notify Task of 
+	transition.
+	* ProcBlockAction.java (ProcBlockAction): return/exit after addFailed call.
+	* Task.java: Added variable taskStateAttached, fills isa on attach.
+	(notifyExeced): Clear isa using clearIsa rather than isa = null.
+
 2006-12-18  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcStopped.java (MyTester.addFailed): Added.

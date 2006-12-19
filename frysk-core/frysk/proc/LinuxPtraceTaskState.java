@@ -141,6 +141,7 @@ abstract class LinuxPtraceTaskState
 	    private TaskState transitionToAttached (Task task, int signal)
 	    {
 		task.proc.performTaskAttachCompleted (task);
+        Task.taskStateAttached.notify(task);
 		return new Attached.WaitForContinueOrUnblock (signal);
 	    }
 	    TaskState handleStoppedEvent (Task task)

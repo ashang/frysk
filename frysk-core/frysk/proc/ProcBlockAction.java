@@ -141,6 +141,7 @@ abstract public class ProcBlockAction
     if (! isOwned)
       {
         addFailed(proc, new Throwable("Process " + proc + " is not owned by user/group."));
+        return;
       }
 
     taskList = proc.getTasks();
