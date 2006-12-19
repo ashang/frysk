@@ -113,3 +113,25 @@ installcheck-local: installcheck-funit
 .PHONY: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
+
+
+# frysk's core, which doesn't have a UI gets install-tested using
+# dejagnu.  Add those tests to 
+
+install-data-local: install-dejagnu-testsuite-local
+uninstall-local: uninstall-dejagnu-testsuite-local
+.PHONY: install-dejagnu-testsuite-local uninstall-dejagnu-testsuite-local
+install-dejagnu-testsuite-local:
+	set -e ; \
+	( \
+		cd $(srcdir) ; \
+		find testsuite \
+			-name CVS -prune \
+			-o -type f -print \
+		| tar cTf - - \
+	) | ( \
+		cd $(pkgdatadir) ; \
+		tar xpf - \
+	)
+uninstall-dejagnu-testsuite-local:
+	rm -rf $(pkgdatadir)/testsuite

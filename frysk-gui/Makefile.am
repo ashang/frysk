@@ -138,3 +138,25 @@ glade.catalog:
 		$(GLADE_DTD_FILE) \
 		$@.tmp
 	mv $@.tmp $@
+
+
+# frysk's core, which doesn't have a UI gets install-tested using
+# dejagnu.  Add those tests to 
+
+install-data-local: install-dogtail-scripts-local
+uninstall-local: uninstall-dogtail-scripts-local
+.PHONY: install-dogtail-scripts-local uninstall-dogtail-scripts-local
+install-dogtail-scripts-local:
+	set -e ; \
+	( \
+		cd $(srcdir)/frysk/gui/test ; \
+		find dogtail_scripts \
+			-name CVS -prune \
+			-o -type f -print \
+		| tar cTf - - \
+	) | ( \
+		cd $(pkgdatadir) ; \
+		tar xpf - \
+	)
+uninstall-dogtail-scripts-local:
+	rm -rf $(pkgdatadir)/dogtail_scripts
