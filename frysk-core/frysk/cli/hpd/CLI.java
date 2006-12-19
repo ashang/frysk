@@ -71,6 +71,7 @@ import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
+import lib.stdcpp.Demangler;
 
 
 public class CLI 
@@ -523,7 +524,7 @@ public class CLI
         cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
         cmd.getOut().print(" in " + tmpFrame.getMethodName());
         cmd.getOut().print(" at " + tmpFrame.getSourceFile());
-        cmd.getOut().println(":" + tmpFrame.getLineNumber());        
+        cmd.getOut().println("#" + tmpFrame.getLineNumber());        
       }
     }
   
@@ -534,28 +535,34 @@ public class CLI
         int level = 0;
         StackFrame tmpFrame = null;
         
+        if (proc == null)
+          {
+            addMessage(new Message("No symbol table is available.", Message.TYPE_NORMAL));
+            return;
+          }
+
         if (cmd.getParameters().size() != 0)
           level = Integer.parseInt((String)cmd.getParameters().elementAt(0));
  
         int l = stackLevel;
-	int stopLevel;
-	if (level > 0)
-	  stopLevel = l + level;
-	else
-	  stopLevel = 0;
-	tmpFrame = symtab.getCurrentFrame();
-	while (tmpFrame != null)
-	    {
-              cmd.getOut().print("# " + l);
-	      cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
-	      cmd.getOut().print(" in " + tmpFrame.getMethodName());
-	      cmd.getOut().print(" at " + tmpFrame.getSourceFile());
-	      cmd.getOut().println(":" + tmpFrame.getLineNumber());
-	      tmpFrame = tmpFrame.getOuter();
-	      l += 1;
-	      if (l == stopLevel)
-                break;
-            }
+        int stopLevel;
+        if (level > 0)
+          stopLevel = l + level;
+        else
+          stopLevel = 0;
+        tmpFrame = symtab.getCurrentFrame();
+        while (tmpFrame != null)
+          {
+            cmd.getOut().print("# " + l);
+            cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
+            cmd.getOut().print(" in " + Demangler.demangle(tmpFrame.getMethodName()));
+            cmd.getOut().print(" at " + tmpFrame.getSourceFile());
+            cmd.getOut().println("#" + tmpFrame.getLineNumber());
+            tmpFrame = tmpFrame.getOuter();
+            l += 1;
+            if (l == stopLevel)
+              break;
+          }
       }
     }
     
@@ -564,6 +571,13 @@ public class CLI
       public void handle(Command cmd) throws ParseException {
         if (cmd.getParameters().size() == 0)
           return;
+        
+        if (proc == null)
+          {
+            addMessage(new Message("No symbol table is available.", Message.TYPE_NORMAL));
+            return;
+          }
+
         String sInput = ((String)cmd.getParameters().elementAt(0));
         try 
         {
@@ -575,7 +589,7 @@ public class CLI
                                  Message.TYPE_ERROR));
         }
       }
-	}
+    }
     
     private static final int DECIMAL = 10;
     private static final int HEX = 16;
@@ -585,10 +599,19 @@ public class CLI
     {
       public void handle(Command cmd) throws ParseException
       {
+        if (cmd.getParameters().size() == 0)
+          return;
+
         Vector params = cmd.getParameters();
         boolean haveFormat = false;
         int outputFormat = DECIMAL;
         
+        if (proc == null)
+          {
+            addMessage(new Message("No symbol table is available.", Message.TYPE_NORMAL));
+            return;
+          }
+
         String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
         for (int i = 0; i < params.size(); i++)

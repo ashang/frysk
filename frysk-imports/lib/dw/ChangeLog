@@ -1,3 +1,15 @@
+2006-12-18  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (isFormalParameter): New.
+	(isArtificial): New.
+	(isExternal): New.
+	(toString): New.
+	(getDecl): New.
+	* cni/DwarfDie.cxx (is_formal_parameter): New.
+	(is_artificial): New.
+	(is_external): New.
+	(get_decl): New.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Dwfl.java: Delete import of java.util.Collections.
@@ -34,7 +46,7 @@
 	(getScopeIndex): New.
 	* cni/DwarfDie.cxx (get_scope_var): Return scope index.
 
-2006-11-09  Stan Cox  <scox@redhat.com>
+2006=11=09  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (isClassType): New.
 	* cni/DwarfDie.cxx (is_class_type): New.

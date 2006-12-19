@@ -67,14 +67,22 @@ lib::dw::DwarfDie::get_highpc()
 jstring
 lib::dw::DwarfDie::get_diename()
 {
-	return JvNewStringUTF(dwarf_diename(DWARF_DIE_POINTER));
+  const char *name = dwarf_diename (DWARF_DIE_POINTER);
+  if (name != NULL)
+    return JvNewStringUTF (name);
+  else
+    return JvNewStringUTF ("");
 }
 
 jstring
 lib::dw::DwarfDie::get_decl_file(jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
-  return JvNewStringLatin1 (dwarf_decl_file (die));
+  const char *name = dwarf_decl_file (die);
+  if (name != NULL)
+    return JvNewStringLatin1 (name);
+  else
+    return JvNewStringLatin1 ("");
 }
 
 jlong
@@ -285,6 +293,42 @@ lib::dw::DwarfDie::is_class_type (jlong type_die)
     return 0;
 }
 
+jboolean
+lib::dw::DwarfDie::is_formal_parameter (jlong type_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  
+  if (dwarf_tag (die) == DW_TAG_formal_parameter)
+    return 1;
+  else
+    return 0;
+}
+
+jboolean
+lib::dw::DwarfDie::is_artificial (jlong type_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  Dwarf_Attribute type_attr;
+  
+  if (dwarf_attr_integrate (die, DW_AT_artificial, &type_attr))
+    return 1;
+  else
+    return 0;
+}
+
+jboolean
+lib::dw::DwarfDie::is_external (jlong type_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  
+  Dwarf_Attribute type_attr;
+  
+  if (dwarf_attr_integrate (die, DW_AT_external, &type_attr))
+    return 1;
+  else
+    return 0;
+}
+
 #define GETREGNO(r) (r == DW_OP_breg0) ? 0 : (r == DW_OP_breg1) ? 1     \
   : (r == DW_OP_breg2) ? 2 : (r == DW_OP_breg3) ? 3 : (r == DW_OP_breg4) ? 4 \
   : (r == DW_OP_breg5) ? 5 : (r == DW_OP_breg6) ? 6 : (r == DW_OP_breg7) ? 7 \
@@ -306,7 +350,7 @@ lib::dw::DwarfDie::get_framebase (jlongArray fbreg_and_disp, jlong var_die,
   
   jlong* longp = elements(fbreg_and_disp);
   longp[0] = -1;
-  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
+  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr) >= 0)
     {
       code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
       if (fb_expr[0].atom != DW_OP_fbreg)
@@ -365,4 +409,79 @@ jboolean
 lib::dw::DwarfDie::is_inline_func ()
 {
 	return dwarf_tag(DWARF_DIE_POINTER) == DW_TAG_inlined_subroutine;
+}
+
+/*
+ * Return die for static symbol SYM_P in DBG_P
+ */
+
+static Dwarf_Die* iterate_decl (Dwarf_Die*, char*, size_t);
+
+jlong
+lib::dw::DwarfDie::get_decl (jlong dbg_p, jstring sym_p)
+{
+  Dwarf_Off offset = 0;
+  Dwarf_Off old_offset;
+  Dwarf_Die cudie_mem;
+  size_t hsize;
+  Dwarf_Files *files;
+  size_t nfiles;
+  ::Dwarf *dbg = (::Dwarf*)dbg_p;
+  int sym_len = sym_p->length ();
+  char sym[sym_len + 1];
+  JvGetStringUTFRegion (sym_p, 0, sym_len, sym);
+  sym[sym_len] = '\0';
+
+  while (dwarf_nextcu (dbg, old_offset = offset, &offset, &hsize, NULL, NULL,
+                       NULL) == 0)
+    {
+      Dwarf_Die *cudie = dwarf_offdie (dbg, old_offset + hsize, &cudie_mem);
+
+      if (dwarf_getsrcfiles (cudie, &files, &nfiles) != 0)
+	continue;
+
+      if (dwarf_haschildren (cudie))
+	{
+	  jlong result = (jlong)iterate_decl(cudie, sym, nfiles);
+	  if (result != 0)
+	    return result;
+	}
+    }
+  return (jlong)0;
+}
+
+static Dwarf_Die*
+iterate_decl (Dwarf_Die *die_p, char *sym, size_t nfiles)
+{
+  Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  memcpy (die, die_p, sizeof (Dwarf_Die));
+  
+  /* Iterate over all immediate children of the CU DIE.  */
+  dwarf_child (die, die);
+  do
+    {
+      Dwarf_Attribute attr_mem;
+      Dwarf_Attribute *attr = dwarf_attr (die, DW_AT_name, &attr_mem);
+      const char *name = dwarf_formstring (attr);
+      if (name == NULL)
+	continue;
+
+      Dwarf_Word fileidx;
+      attr = dwarf_attr (die, DW_AT_decl_file, &attr_mem);
+      if (dwarf_formudata (attr, &fileidx) != 0 || (size_t)fileidx >= nfiles)
+	continue;
+
+      if (strcmp(name, sym) == 0)
+	return die;
+
+      if (dwarf_haschildren (die))
+	{
+	  Dwarf_Die *result = iterate_decl (die, sym, nfiles);
+	  if (result != NULL)
+	    return result;
+	}
+    }
+  while (dwarf_siblingof (die, die) == 0);
+  JvFree (die);
+  return NULL;
 }

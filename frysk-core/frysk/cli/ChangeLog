@@ -1,3 +1,12 @@
+2006-12-18  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java (SymTab): Add elf and dwarf.
+	(what): Handle functions.
+	* hpd/CLI.java (WhereHandler): Demangle. Check usage.
+	(UpDownHandler): Demangle.
+	(PrintHandler): Check usage.
+	(WhatHandler): Check usage.
+
 2006-12-14  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (VariableAccessor): Add getLong/putLong/ and

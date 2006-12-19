@@ -193,6 +193,30 @@ public class DwarfDie
   }
   
   /**
+   * @return True if die describes a formal parameter
+   */
+  public boolean isFormalParameter()
+  {
+    return is_formal_parameter(this.getPointer());
+  }
+ 
+  /**
+   * @return True if die describes a hidden parameter
+   */
+  public boolean isArtificial()
+  {
+    return is_artificial(this.getPointer());
+  }
+  
+  /**
+   * @return True if die describes an extern
+   */
+  public boolean isExternal()
+  {
+    return is_external(this.getPointer());
+  }
+  
+  /**
    * @return The child for the current die.
    */
   public DwarfDie getChild ()
@@ -260,7 +284,46 @@ public class DwarfDie
     return is_inline_func();
   }
   
-  // protected native long dwarf_diecu();
+  public String toString ()
+  {
+    String typeStr;
+    DwarfDie type = getType();
+    if (type.getBaseType() == BaseTypes.baseTypeLong)
+      typeStr = "long";
+    else if (type.getBaseType() == BaseTypes.baseTypeInteger)
+      typeStr = "int";
+    else if (type.getBaseType() == BaseTypes.baseTypeShort)
+      typeStr = "short";
+    else if (type.getBaseType() == BaseTypes.baseTypeChar)
+      typeStr = "short";
+    else if (type.getBaseType() == BaseTypes.baseTypeFloat)
+      typeStr = "float";
+    else if (type.getBaseType() == BaseTypes.baseTypeDouble)
+      typeStr = "double";
+    else
+      typeStr = "";
+    return typeStr;
+  }
+  
+/**
+ * Get die for static symbol sym in dw. 
+ * @param dw
+ * @param sym
+ * @return die
+ */
+  public static DwarfDie getDecl (Dwarf dw, String sym)
+  {
+    long result = get_decl (dw.getPointer(), sym);
+    DwarfDie die = null;
+    if (result > 0)
+      {
+        die = new DwarfDie(result, null);
+        die.scopes = null;
+        die.scopeIndex = 0;
+      }
+    return die;
+  }
+
   private native long get_lowpc ();
 
   private native long get_highpc ();
@@ -291,9 +354,17 @@ public class DwarfDie
   
   private native boolean is_class_type (long addr);
   
+  private native boolean is_formal_parameter (long addr);
+  
+  private native boolean is_artificial (long addr);
+  
+  private native boolean is_external (long addr);
+  
   private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
 
   private native void get_formdata (long[] fbreg_and_disp, long addr, long scope, long pc);
   
   private native boolean is_inline_func ();
+
+  private static native long get_decl (long dw, String sym);
 }

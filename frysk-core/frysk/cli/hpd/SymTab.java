@@ -43,10 +43,14 @@ import java.text.ParseException;
 
 import javax.naming.NameNotFoundException;
 
+import lib.dw.Dwarf;
+import lib.dw.DwarfCommand;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
+import lib.elf.Elf;
+import lib.elf.ElfCommand;
 import antlr.CommonAST;
 import frysk.value.Variable;
 import frysk.proc.Proc;
@@ -64,6 +68,8 @@ public class SymTab
   Proc proc;
   Task task;
   int pid;
+  Elf elf;
+  Dwarf dwarf;
   static ExprSymTab exprSymTab;
 
 
@@ -82,6 +88,13 @@ public class SymTab
       pid = pid_p;
       proc = proc_p;
       task = task_p;
+      try 
+      {
+        elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+        dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+      }
+      catch (lib.elf.ElfException ee)
+      {}
       exprSymTab = new ExprSymTab (task, pid, frame);
     }
     /**
@@ -100,9 +113,13 @@ public class SymTab
       if (proc == null)
         throw new NameNotFoundException("No symbol table is available.");
       
+      StackFrame currentFrame = getCurrentFrame();
       try
       {
-        pc = task.getIsa().pc(task) - 1;
+        if (currentFrame.getInner() == null)
+          pc = task.getIsa().pc(task) - 1;
+       else
+          pc = currentFrame.getAddress();
       }
       catch (TaskException tte)
       {
@@ -113,14 +130,54 @@ public class SymTab
       DwflLine line = null;
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
-      DwarfDie[] allDies = die.getScopes(die.getLowPC() - bias.bias);
+      DwarfDie type = null;
+      StringBuffer result = new StringBuffer();
 
+      DwarfDie[] allDies = die.getScopes(pc - bias.bias);
       DwarfDie varDie = die.getScopeVar(allDies, sInput);
       if (varDie == null)
-        throw new NameNotFoundException(sInput + " not found in scope.");
-      return varDie.getType() + " " + varDie.getName()
-                         + " declared on line " + varDie.getDeclLine()
-                         + " of " + varDie.getDeclFile();
+        {
+          varDie = DwarfDie.getDecl(dwarf, sInput);
+	  if (varDie == null)
+            throw new NameNotFoundException(sInput + " not found in scope.");
+          if (varDie.isExternal())
+            result.append("extern ");
+          result.append(varDie + " " + varDie.getName());
+          DwarfDie parm = varDie.getChild();
+          boolean first = true;
+          while (parm != null && parm.isFormalParameter())
+            {
+              if (parm.isArtificial() == false)
+                {
+                  if (first)
+                    {
+                      result.append(" (");
+                      first = false;
+                    }
+                  else
+                    result.append(",");
+                  result.append(parm.getType().getName());
+                }
+              parm = parm.getSibling();
+            }
+          if (first == false)
+            result.append(")");
+
+          if (varDie == null)
+            throw new NameNotFoundException(sInput + " not found in scope.");
+        }
+      else
+        {
+          if (varDie.isExternal())
+            result.append("extern ");
+          result.append(varDie);
+        }
+      if (varDie != null)
+        {
+          result.append(" at " + varDie.getDeclFile()
+                        + "#" + varDie.getDeclLine());
+        }
+      return result.toString();
     }
     
      /**
