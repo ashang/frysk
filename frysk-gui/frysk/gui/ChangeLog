@@ -1,3 +1,8 @@
+2006-12-19  Andrew Cagney  <cagney@redhat.com>
+
+	* test/dogtail_scripts/frysk_suite.in (frysk, funitChild, src):
+	Conditionally set configuration variables.
+
 2006-12-18  Andrew Cagney  <cagney@redhat.com>
 
 	* test/TestGlade.java: Note broken, 3749.

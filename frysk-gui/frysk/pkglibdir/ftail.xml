@@ -68,9 +68,6 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>ftail</command>
-      <arg choice="opt">
-        <option>--headless</option>
-      </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
@@ -80,18 +77,11 @@
     <para><function>ftail</function> runs Frysk's dogtail testsuite,
     which exercises the GNOME interface.</para>
 
-    <para>The dogtail testsuite exercises Frysk's GNOME interface.
-    When run it will either use the current X display, or, when
-    specified, run headless. </para>
+    <para>The dogtail testsuite exercises Frysk's GNOME interface
+    using the current X display.  To run the testsuite headless, run
+    <function>ftail</function> using
+    <function>dogtail-run-headless</function>. </para>
 
-    <variablelist>
-      <varlistentry>
-	<term>--headless</term>
-	<listitem>
-          <para> Run the testsuite in headless mode. </para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
   </refsect1>
   
   <refsect1>
@@ -102,7 +92,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>@pkglibdir@/ftail</screen>
+    <screen>dogtail-run-headless @pkglibdir@/ftail</screen>
   </refsect1>
    
   <refsect1>

@@ -1,7 +1,12 @@
 2006-12-19  Andrew Cagney  <cagney@redhat.com>
 
+	* ftail.xml: Remove --headless flag, document
+	dogtail-run-headless.
+	* ftail.py: New file, copied from
+	frysk/gui/test/dogtail_scripts/frysk_suite.in.
+	
 	* ftail.xml: New file.
-
+
 Local Variables:
 mode: change-log
 left-margin: 8
