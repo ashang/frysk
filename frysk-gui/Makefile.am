@@ -158,7 +158,7 @@ install-dogtail-scripts-local:
 		cd $(pkgdatadir) ; \
 		tar xpf - \
 	)
-	cp frysk/gui/test/dogtail_scripts/frysk_suite.py \
+	cp -p -f frysk/gui/test/dogtail_scripts/frysk_suite.py \
 		$(pkgdatadir)/dogtail_scripts
 uninstall-dogtail-scripts-local:
 	rm -rf $(pkgdatadir)/dogtail_scripts
