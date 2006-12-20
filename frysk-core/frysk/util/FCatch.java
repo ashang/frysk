@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.util;
 
 import inua.util.PrintWriter;
@@ -60,12 +59,12 @@ import frysk.proc.TaskObserver;
 import frysk.rt.StackFrame;
 import frysk.rt.StackFactory;
 
-public class FCrash
+public class FCatch
 {
 
   private Proc proc;
   
-  //private int numProcesses = 0;
+  private int numTasks = 0;
 
   //public ProcAttachedObserver pao;
   
@@ -168,7 +167,7 @@ public class FCrash
 
         while (curr != null)
           {
-            System.out.println(curr.toString());
+            System.out.println(curr.toPrint(false));
             curr = curr.getOuter();
           }
         i++;
@@ -195,9 +194,11 @@ public class FCrash
     {
         public Action updateAttached (Task task)
         {
-          //System.out.println("attached.updateattached");
+          System.out.println("attached.updateattached");
             SignalObserver sigo = new SignalObserver();
             task.requestAddSignaledObserver(sigo);
+            TermObserver termo = new TermObserver();
+            task.requestAddTerminatingObserver(termo);
             handleTask(task);
             task.requestUnblock(this);
             return Action.BLOCK;
@@ -233,7 +234,7 @@ public class FCrash
 
     public Action updateSignaled (Task task, int signal)
     {
-
+      FCatch.this.numTasks = task.getProc().getTasks().size();
       System.out.println("From PID: " + task.getProc().getPid() + " TID: " + task.getTid());
       switch (signal)
         {
@@ -286,6 +287,10 @@ public class FCrash
     public void addedTo (Object observable)
     {
       System.out.println("sig.addedTo");
+//      Task t = (Task) observable;
+//      TaskObserver[] to = t.getBlockers();
+//      for (int j = 0; j < to.length -1; j++)
+//        t.requestUnblock(to[j]);
       // Hurray! Lets notify everybody.
       synchronized (monitor)
         {
@@ -314,6 +319,40 @@ public class FCrash
     public boolean isRemoved ()
     {
       return removed;
+    }
+  }
+    
+    class TermObserver
+      implements TaskObserver.Terminating, TaskObserver.Terminated
+  {
+    public void addedTo(Object o)
+    {
+      System.out.println("TermObserver.addedTo " + (Task) o);
+    }
+    
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+      System.out.println("TermObserver.updateTerminating");
+      return Action.CONTINUE;
+    }
+
+    public Action updateTerminated (Task task, boolean signal, int value)
+    {
+      System.out.println("TermObserver.updateTerminated " + numTasks);
+      if (--FCatch.this.numTasks <= 0)
+        System.exit(0);
+      
+      return Action.CONTINUE;
+    }
+    
+    public void addFailed (Object o, Throwable t)
+    {
+      
+    }
+    
+    public void deletedFrom (Object o)
+    {
+      
     }
   }
 
