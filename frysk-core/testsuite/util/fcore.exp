@@ -62,7 +62,7 @@ expect {
 
 
 #start tester program with valid pid, but wrong -console argument
-spawn $pwd/frysk/bindir/fcore -console SILLY $funit_pid
+spawn $pwd/frysk/bindir/fcore -console frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -72,7 +72,7 @@ expect {
 }
 
 #start tester program with valid pid, but wrong -log argument
-spawn $pwd/frysk/bindir/fcore -log SILLY $funit_pid
+spawn $pwd/frysk/bindir/fcore -log frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -82,7 +82,7 @@ expect {
 }
 
 #start tester program with valid pid, correct -console  but wrong -log argument
-spawn $pwd/frysk/bindir/fcore -console ALL -log SILLY $funit_pid
+spawn $pwd/frysk/bindir/fcore -console frysk=ALL -log frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -92,7 +92,7 @@ expect {
 }
 
 #start tester program with valid pid, wrong -console  and wrong -log argument
-spawn $pwd/frysk/bindir/fcore -console SILLY -log ALL $funit_pid
+spawn $pwd/frysk/bindir/fcore -console frysk=SILLY -log frysk=ALL $funit_pid
 
 #test output.
 expect {	
@@ -102,7 +102,7 @@ expect {
 }
 
 #start tester program with valid pid, wrong -console  but correct -log argument
-spawn $pwd/frysk/bindir/fcore -console SILLY -log SILLY $funit_pid
+spawn $pwd/frysk/bindir/fcore -console frysk=SILLY -log frysk=SILLY $funit_pid
 
 #test output.
 expect {

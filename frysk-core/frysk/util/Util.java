@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.util;
 
 import java.io.PrintStream;
@@ -45,6 +44,7 @@ import java.util.LinkedList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import frysk.Config;
@@ -128,50 +128,77 @@ public class Util
   {
     parser.add(new Option(
                           "console",
-                          "Set the console level. The console-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<console-level>")
-    {
-      public void parsed (String consoleValue) throws OptionException
-      {
-        try
-          {
-            Level consoleLevel = Level.parse(consoleValue);
-            // Need to set both the console and the main logger as
-            // otherwize the console won't see the log messages.
-
-            System.out.println("console " + consoleLevel);
-            Handler consoleHandler = new ConsoleHandler();
-            consoleHandler.setLevel(consoleLevel);
-            logger.addHandler(consoleHandler);
-            logger.setLevel(consoleLevel);
-            System.out.println(consoleHandler);
-
-          }
-        catch (IllegalArgumentException e)
-          {
-            throw new OptionException("Invalid log console: " + consoleValue);
-          }
-
-      }
-    });
-    parser.add(new Option(
-                          "log",
-                          "Set the log level. The log-level can be "
-                              + "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-                          "<log-level>")
+                          "Set the log CONSOLE_LOG to level LEVEL. Can set "
+                              + "multiple logs. The LEVEL can be [ OFF | "
+                              + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
+                              + "FINEST | ALL]", "<CONSOLE_LOG=LEVEL,...>")
     {
       public void parsed (String arg0) throws OptionException
       {
-        String levelValue = arg0;
-        try
+        String[] logs = arg0.split(",");
+
+        for (int i = 0; i < logs.length; i++)
           {
-            Level level = Level.parse(levelValue);
-            logger.setLevel(level);
+            String[] log_level = logs[i].split("=");
+            Logger logger = LogManager.getLogManager().getLogger(log_level[0]);
+
+            if (logger == null)
+              {
+                throw new OptionException("Couldn't find logger with name: "
+                                          + log_level[0]);
+              }
+            try
+              {
+                Level consoleLevel = Level.parse(log_level[1]);
+                // Need to set both the console and the main logger as
+                // otherwize the console won't see the log messages.
+
+                System.out.println("console " + consoleLevel);
+                Handler consoleHandler = new ConsoleHandler();
+                consoleHandler.setLevel(consoleLevel);
+                logger.addHandler(consoleHandler);
+                logger.setLevel(consoleLevel);
+                System.out.println(consoleHandler);
+
+              }
+            catch (IllegalArgumentException e)
+              {
+                throw new OptionException("Invalid log console: "
+                                          + log_level[1]);
+              }
           }
-        catch (IllegalArgumentException e)
+      }
+    });
+    parser.add(new Option("log",
+                          "Set the log LOG to level LEVEL. Can set multiple "
+                              + "logs. The LEVEL can be [ OFF | SEVERE | "
+                              + "WARNING | INFO | CONFIG | FINE | FINER | "
+                              + "FINEST | ALL]", "<LOG=LEVEL,...>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        String[] logs = arg0.split(",");
+
+        for (int i = 0; i < logs.length; i++)
           {
-            throw new OptionException("Invalid log level: " + levelValue);
+            String[] log_level = logs[i].split("=");
+            Logger logger = LogManager.getLogManager().getLogger(log_level[0]);
+
+            if (logger == null)
+              {
+                throw new OptionException("Couldn't find logger with name: "
+                                          + log_level[0]);
+              }
+
+            try
+              {
+                Level level = Level.parse(log_level[1]);
+                logger.setLevel(level);
+              }
+            catch (IllegalArgumentException e)
+              {
+                throw new OptionException("Invalid log level: " + log_level[1]);
+              }
           }
       }
     });
