@@ -37,10 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-	.text
-	.global main
 
 #ifdef __i386__
+	.text
+	.global main
 main:
 	push %ebp
 	mov $0x14, %eax
@@ -66,6 +66,8 @@ loop:
 fail: jmp 0
 
 #elif defined __x86_64__
+	.text
+	.global main
 main:
 	mov $0x14, %rax
 	mov $1, %rdi
@@ -88,6 +90,26 @@ loop:
 	ret
 fail: jmp 0
 
+
+#elif defined __powerpc64__
+	.section        ".opd","aw"
+	.global main
+	.align 3
+main:
+	.quad   ._main,.TOC.@tocbase,0
+	.text                       # section declaration - begin code
+	.global  ._main
+._main:
+
+
+#elif defined __powerpc__
+.text                       # section declaration - begin code
+	.global  main
+main:
+
+	
+#else
+#error Unimplemented stepper
 #endif
 
 // make the stack non-executable

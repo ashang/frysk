@@ -124,15 +124,12 @@ d0:	.word 3
 
 
 #elif defined __powerpc64__
-.text                       # section declaration - begin code
-
-	.global main
 	.section        ".opd","aw"
+	.global main
 	.align 3
 main:
 	.quad   ._main,.TOC.@tocbase,0
-	.previous
-
+	.text                       # section declaration - begin code
 	.global  ._main
 ._main:
         mflr    0               # move the value of LR to gpr0
@@ -200,8 +197,11 @@ data_value:     .long  3
 	
 
 #elif defined __powerpc__
-#  error 32-bit PowerPC needs its own register test
-
+.text                       # section declaration - begin code
+	.global  main
+main:
+	// code to set up PowerPC 32-bit registers goes here!
+	
 
 #else
 #  error Unknown ISA
