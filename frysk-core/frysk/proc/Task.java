@@ -579,6 +579,15 @@ abstract public class Task
   int notifyAttached ()
   {
     logger.log(Level.FINE, "{0} notifyAttached\n", this);
+    //Fill isa on attach.
+    try
+    {
+      getIsa();
+    }
+  catch (TaskException e)
+    {
+      //XXX: What to do here?
+    }
     for (Iterator i = attachedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
@@ -1043,27 +1052,6 @@ abstract public class Task
       });
     }
  
- public static TaskStateObservable taskStateAttached = new TaskStateObservable();
- static
- {
-   taskStateAttached.addObserver(new Observer(){
-     public void update (Observable o, Object arg)
-     {
-       if (arg instanceof Task)
-         {
-           Task task = (Task) arg;
-           try
-            {
-              task.getIsa();
-            }
-          catch (TaskException e)
-            {
-             //XXX: What to do here?
-            }           
-         }
-     }
-   });
- }
  public void clearIsa()
  {
    isa = null;
