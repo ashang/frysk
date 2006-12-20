@@ -47,7 +47,8 @@ set pwd [eval pwd]
 frysk_init
 
 #start test program, and store pid.
-set funit_pid [spawn $pwd/frysk/pkglibdir/funit-child 100 0 0]
+set funit_path [findfile "$pwd/frysk/pkglibdir/funit-child" "$pwd/frysk/pkglibdir/funit-child" funit-child]
+set funit_pid [spawn $funit_path 100 0 0]
 set funit_sid $spawn_id
 
 #define regex.
@@ -59,7 +60,8 @@ append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in __libc_start_main [(][)]\r\n}
 append regex {#[[:digit:]]+ 0x[[:xdigit:]]+ in _start [(][)]\r\n$}
 
 #start tester program with pid.
-spawn $pwd/frysk/bindir/fstack $funit_pid
+set fstack_path [findfile "$pwd/frysk/bindir/fstack" "$pwd/frysk/bindir/fstack" fstack]
+spawn $fstack_path $funit_pid
 
 #test output.
 expect {	

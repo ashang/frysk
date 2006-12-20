@@ -53,7 +53,8 @@ target_compile ${srcdir}/testsuite/expr/20061115-2.c ${frysk_testsuite}/20061115
 set LD_FOR_TARGET cc
 default_link "" "${frysk_testsuite}/20061115-1.o ${frysk_testsuite}/20061115-2.o" ${frysk_testsuite}/20061115.x ""
 set loop_sid [tool_start "${frysk_testsuite}/20061115.x"]
-set hpd_sid [tool_start "$pwd/frysk/cli/hpd/hpd"]
+set hpd_path [findfile "$objdir/frysk/cli/hpd/hpd" "$objdir/frysk/cli/hpd/hpd" hpd]
+set hpd_sid [tool_start ${hpd_path}]
 
 tool_send $hpd_sid "" "(hpd)" "prompt"
 tool_send $hpd_sid "print 2+2\n" "\r\n4\r\n" "add"
@@ -76,13 +77,15 @@ tool_send $hpd_sid "print arr_3\n" "print.*3,3.=10\.8.3,4.=1.9.*(hpd)" "arr_3"
 tool_send $hpd_sid "print arr_4\n" "print.*(hpd)" "arr_4"
 tool_exit $hpd_sid
 
-set rcp_sid [tool_start "$pwd/frysk/expr/RunCppParser"]
-set prompt "\\\$"
+if [file exists "$pwd/frysk/expr/RunCppParser"] {
+   set rcp_sid [tool_start "$pwd/frysk/expr/RunCppParser"]
+   set prompt "\\\$"
 
-tool_send $rcp_sid "" "$prompt" "rcp prompt"
-tool_send $rcp_sid "xyz=3" "xyz=3.*${prompt}" "rcp assign"
-tool_send $rcp_sid "xya=4" "xya=4.*${prompt}" "rcp assign"
-tool_send $rcp_sid "xy\t" "xyz.*xya.*${prompt}" "rcp tab"
-tool_exit $rcp_sid
+   tool_send $rcp_sid "" "$prompt" "rcp prompt"
+   tool_send $rcp_sid "xyz=3" "xyz=3.*${prompt}" "rcp assign"
+   tool_send $rcp_sid "xya=4" "xya=4.*${prompt}" "rcp assign"
+   tool_send $rcp_sid "xy\t" "xyz.*xya.*${prompt}" "rcp tab"
+   tool_exit $rcp_sid
+}
 
 frysk_term

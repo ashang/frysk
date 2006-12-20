@@ -47,11 +47,13 @@ set pwd [eval pwd]
 frysk_init
 
 #start test program, and store pid.
-set funit_pid [spawn $pwd/frysk/pkglibdir/funit-child 100 0 0]
+set funit_path [findfile "$pwd/frysk/pkglibdir/funit-child" "$pwd/frysk/pkglibdir/funit-child" funit-child]
+set funit_pid [spawn ${funit_path} 100 0 0]
 set funit_sid $spawn_id
 
 #start tester program with garbled input.
-spawn $pwd/frysk/bindir/fcore "this is a bad argument"
+set fcore_path [findfile "$pwd/frysk/bindir/fcore" "$pwd/frysk/bindir/fcore" fcore]
+spawn $fcore_path "this is a bad argument"
 
 #test output.
 expect {	
@@ -62,7 +64,7 @@ expect {
 
 
 #start tester program with valid pid, but wrong -console argument
-spawn $pwd/frysk/bindir/fcore -console frysk=SILLY $funit_pid
+spawn $fcore_path -console frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -72,7 +74,7 @@ expect {
 }
 
 #start tester program with valid pid, but wrong -log argument
-spawn $pwd/frysk/bindir/fcore -log frysk=SILLY $funit_pid
+spawn $fcore_path -log frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -82,7 +84,7 @@ expect {
 }
 
 #start tester program with valid pid, correct -console  but wrong -log argument
-spawn $pwd/frysk/bindir/fcore -console frysk=ALL -log frysk=SILLY $funit_pid
+spawn $fcore_path -console frysk=ALL -log frysk=SILLY $funit_pid
 
 #test output.
 expect {	
@@ -92,7 +94,7 @@ expect {
 }
 
 #start tester program with valid pid, wrong -console  and wrong -log argument
-spawn $pwd/frysk/bindir/fcore -console frysk=SILLY -log frysk=ALL $funit_pid
+spawn $fcore_path -console frysk=SILLY -log frysk=ALL $funit_pid
 
 #test output.
 expect {	
@@ -102,7 +104,7 @@ expect {
 }
 
 #start tester program with valid pid, wrong -console  but correct -log argument
-spawn $pwd/frysk/bindir/fcore -console frysk=SILLY -log frysk=SILLY $funit_pid
+spawn $fcore_path -console frysk=SILLY -log frysk=SILLY $funit_pid
 
 #test output.
 expect {
@@ -112,7 +114,7 @@ expect {
 }
 
 #start tester program with invalid argument
-spawn $pwd/frysk/bindir/fcore -z  $funit_pid
+spawn $fcore_path -z  $funit_pid
 
 #test output.
 expect {
@@ -122,7 +124,7 @@ expect {
 }
 
 #start tester program with one invalid argument, one correct
-spawn $pwd/frysk/bindir/fcore -z  -a $funit_pid
+spawn $fcore_path -z  -a $funit_pid
 
 #test output.
 expect {
