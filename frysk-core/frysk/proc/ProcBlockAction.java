@@ -135,15 +135,6 @@ abstract public class ProcBlockAction
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
 
-    boolean isOwned = proc.getUID() == Manager.host.getSelf().getUID()
-                      || proc.getGID() == Manager.host.getSelf().getGID();
-
-    if (! isOwned)
-      {
-        addFailed(proc, new Throwable("Process " + proc + " is not owned by user/group."));
-        return;
-      }
-
     taskList = proc.getTasks();
     requestAdd();
   }
