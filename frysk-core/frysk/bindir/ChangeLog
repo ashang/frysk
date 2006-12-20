@@ -1,3 +1,7 @@
+2006-12-20  Nurdin Premji  <npremji@redhat.com>
+	
+	* ftrace.xml: Made mention of option parsing bug.
+
 2006-12-19  Nurdin Premji  <npremji@redhat.com>
 
 	* fcore.java: Cleaned out unnecessay logging option residue.

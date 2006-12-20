@@ -151,6 +151,10 @@
   
   <refsect1>
     <title>BUGS</title>
+    <para> The option parser is greedy when looking for options so running ftrace on a program that uses options can be a problem, use -- to split between ftrace and the program. So change from:</para>
+    <screen>~/prefix/bin/ftrace ~/prefix/lib64/frysk/funit --arch 32 frysk.proc.TestAbandon</screen>
+    <para>to</para>
+    <screen>~/prefix/bin/ftrace -- ~/prefix/lib64/frysk/funit --arch 32 frysk.proc.TestAbandon</screen>
     <para>Report bugs to <ulink url="http:/sources.redhat.com/ftrace">
     http://sources.redhat.com/ftrace/ </ulink>. </para>
   </refsect1>
