@@ -39,7 +39,8 @@
 package frysk.cli.hpd;
 
 import frysk.proc.*;
-import java.util.Vector;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.LinkedList;
@@ -66,9 +67,9 @@ class AllPTSet implements PTSet
 	public static final int TASK_STATE_HELD = 3;
 
 	// parallel arrays are not cute, but in this case they are handy
-	// Proc at proSet[i] has it's tasks in taskSets[i] in the form of a vector
-	Vector taskSets; // a Vector of Vectors containing Tasks
-	Vector procSet; // a Vector of Proc's
+	// Proc at proSet[i] has it's tasks in taskSets[i] in the form of a ArrayList
+	ArrayList taskSets; // a ArrayList of ArrayLists containing Tasks
+	ArrayList procSet; // a ArrayList of Proc's
 
 	/*
 	 * Public methods
@@ -79,8 +80,8 @@ class AllPTSet implements PTSet
 	 */
 	public AllPTSet()
 	{
-		procSet = new Vector();
-		taskSets = new Vector();
+		procSet = new ArrayList();
+		taskSets = new ArrayList();
 	}
 
 	/**
@@ -96,7 +97,7 @@ class AllPTSet implements PTSet
 
 		if (procID < taskSets.size())
 		{
-			Vector set = (Vector) taskSets.elementAt(procID);
+			ArrayList set = (ArrayList) taskSets.get(procID);
 
 			result = set.size();
 			set.add(task);
@@ -117,10 +118,10 @@ class AllPTSet implements PTSet
 		int result = procSet.size(); // new Proc will be appended
 
 		procSet.add(proc);
-		taskSets.add(new Vector());
+		taskSets.add(new ArrayList());
 
 		if (procSet.size() != taskSets.size())
-			throw new IllegalStateException("Unsynchronized Proc and Task vectors.");
+			throw new IllegalStateException("Unsynchronized Proc and Task ArrayLists.");
 
 		return result;
 	}
@@ -136,11 +137,11 @@ class AllPTSet implements PTSet
 		result[0] = -1;
 		result [1] = -1;
 
-		Vector temp = null;
+		ArrayList temp = null;
 
 		for (int i = 0; i < taskSets.size(); i++)
 		{
-			temp = (Vector) taskSets.elementAt(i);
+			temp = (ArrayList) taskSets.get(i);
 
 			if (temp.contains(task))
 			{
@@ -159,11 +160,11 @@ class AllPTSet implements PTSet
 	public int getTaskID(Task task, int procID)
 	{
 		int result = -1;
-		Vector temp = null;
+		ArrayList temp = null;
 
 		if (taskSets.size() < procID)
 		{
-			temp = (Vector) taskSets.elementAt(procID);
+			temp = (ArrayList) taskSets.get(procID);
 			result = temp.indexOf(task);
 		}
 		else
@@ -186,24 +187,24 @@ class AllPTSet implements PTSet
 	public Proc getProc(int procID)
 	{
 		if (procID < procSet.size())
-			return (Proc)procSet.elementAt(procID);
+			return (Proc)procSet.get(procID);
 		else
 			return null;
 	}
 
-	public Vector getTasksVector()
+	public ArrayList getTasksArrayList()
 	{
-		Vector result = new Vector();
+		ArrayList result = new ArrayList();
 
 		for (int i = 0; i < result.size(); i++)
-			result.addAll((Vector)taskSets.elementAt(i));
+			result.addAll((ArrayList)taskSets.get(i));
 
 		return result;
 	}
 
-	public Vector getProcsVector()
+	public ArrayList getProcsArrayList()
 	{
-		Vector result = (Vector)procSet.clone();
+		ArrayList result = (ArrayList)procSet.clone();
 		return result;
 	}
 
@@ -211,7 +212,7 @@ class AllPTSet implements PTSet
 	{
 		boolean result = false;
 
-		if (procid < procSet.size() && taskid < ((Vector)taskSets.elementAt(procid)).size())
+		if (procid < procSet.size() && taskid < ((ArrayList)taskSets.get(procid)).size())
 			result = true;
 
 		return result;
@@ -219,20 +220,20 @@ class AllPTSet implements PTSet
 
 	public Iterator getTasks()
 	{
-		return getTasksVector().iterator();
+		return getTasksArrayList().iterator();
 	}
 
 	public Iterator getTaskData()
 	{
 		LinkedList result = new LinkedList();
-		Vector temp = null;
+		ArrayList temp = null;
 
 		for (int i = 0; i < taskSets.size(); i++)
 		{
-			temp = (Vector) taskSets.elementAt(i);
+			temp = (ArrayList) taskSets.get(i);
 			for (int j = 0; j < temp.size(); j++)
 			{
-				result.add(new TaskData((Task)temp.elementAt(j), j, i));
+				result.add(new TaskData((Task)temp.get(j), j, i));
 			}
 		}
 
@@ -274,7 +275,7 @@ class AllPTSet implements PTSet
 		}
 
 		//convert values to array
-		result = (ProcTasks[]) (new Vector(proctasks.values()).toArray(new ProcTasks[0]));
+		result = (ProcTasks[]) (new ArrayList(proctasks.values()).toArray(new ProcTasks[0]));
 
 		return result;
 	}
@@ -292,12 +293,12 @@ class AllPTSet implements PTSet
 	public String toString()
 	{
 		String result = "";
-		Vector tempVec = new Vector();
+		ArrayList tempVec = new ArrayList();
 
 		for (int i = 0; i < procSet.size(); i++)
 		{
 			result += i + ".0:";
-			tempVec = (Vector)taskSets.elementAt(i);
+			tempVec = (ArrayList)taskSets.get(i);
 			result += tempVec.size() - 1;
 			result += "\n";
 		}
@@ -391,14 +392,14 @@ class AllPTSet implements PTSet
 	}
 
 	/**
-	 * Add tasks to the "tasks" Vector, as specified in "range", which
+	 * Add tasks to the "tasks" ArrayList, as specified in "range", which
 	 * corresponds to a.b:c.d notation
 	 * @param proctasks A treemap of Integer(procID) to ProcTasks
 	 * @param reg an array of length 4 returned by walkRangeTree
 	 */
 	private void addTasksFromRange(TreeMap proctasks, int[] range)
 	{
-		Vector tempSet = null; // a temporary vector of a process tasks
+		ArrayList tempSet = null; // a temporary ArrayList of a process tasks
 		ProcTasks tempPT = null; // 
 		int procStart = range[0];
 		int taskStart = range[1];
@@ -412,7 +413,7 @@ class AllPTSet implements PTSet
 		if (procEnd == -1 || procEnd >= procSet.size())
 			procEnd = procSet.size() - 1;
 
-		tempSet = (Vector)taskSets.elementAt(procEnd);
+		tempSet = (ArrayList)taskSets.get(procEnd);
 
 		if (taskEnd == -1 || taskEnd >= tempSet.size()) //if wildcard or more than actual
 		{
@@ -429,7 +430,7 @@ class AllPTSet implements PTSet
 		taskP = taskStart;
 
 		if (procP < taskSets.size())
-			tempSet = (Vector)taskSets.elementAt(procP);
+			tempSet = (ArrayList)taskSets.get(procP);
 		else
 			procP = -1;
 
@@ -439,7 +440,7 @@ class AllPTSet implements PTSet
 			{
 				procP++;
 				taskP = 0;
-				tempSet = (Vector)taskSets.elementAt(procP);
+				tempSet = (ArrayList)taskSets.get(procP);
 			}
 
 			if (!proctasks.containsKey(new Integer(procP))) // if this process hasn't been added yet
@@ -453,21 +454,21 @@ class AllPTSet implements PTSet
 				tempPT = (ProcTasks) proctasks.get(new Integer(procP));
 			}
 
-			tempPT.addTaskData(new TaskData( (Task)tempSet.elementAt(taskP), taskP, procP ));
+			tempPT.addTaskData(new TaskData( (Task)tempSet.get(taskP), taskP, procP ));
 
 			taskP++;
 		}
 	}
 
 	/**
-	 * Add tasks to the "tasks" Vector, as specified in "reg", which
+	 * Add tasks to the "tasks" ArrayList, as specified in "reg", which
 	 * corresponds to a:b.c:d notation
 	 * @param proctasks TreeMap of ProcTasks to put Procs and Tasks into
 	 * @param reg an array of length 4 returned by walkRegTree
 	 */
 	private void addTasksFromReg(TreeMap proctasks, int[] reg)
 	{
-		Vector tempSet = null; // a temporary vector of a process tasks
+		ArrayList tempSet = null; // a temporary ArrayList of a process tasks
 		ProcTasks tempPT = null;  
 		int procStart = reg[0];
 		int procEnd = reg[1];
@@ -492,7 +493,7 @@ class AllPTSet implements PTSet
 
 		
 		if (procP < taskSets.size())
-			tempSet = (Vector)taskSets.elementAt(procP);
+			tempSet = (ArrayList)taskSets.get(procP);
 		else
 			procP = -1;
 
@@ -502,7 +503,7 @@ class AllPTSet implements PTSet
 			{
 				procP++;
 				taskP = taskStart;
-				tempSet = (Vector)taskSets.elementAt(procP);
+				tempSet = (ArrayList)taskSets.get(procP);
 			}
 
 			if (!proctasks.containsKey(new Integer(procP))) // if this process hasn't been added yet
@@ -516,7 +517,7 @@ class AllPTSet implements PTSet
 				tempPT = (ProcTasks) proctasks.get(new Integer(procP));
 			}
 
-			tempPT.addTaskData(new TaskData( (Task)tempSet.elementAt(taskP), taskP, procP ));
+			tempPT.addTaskData(new TaskData( (Task)tempSet.get(taskP), taskP, procP ));
 
 			taskP++;
 		}

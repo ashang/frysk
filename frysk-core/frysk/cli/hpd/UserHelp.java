@@ -39,7 +39,7 @@
 package frysk.cli.hpd;
 
 import java.util.TreeMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 class UserHelp
 {
@@ -177,9 +177,9 @@ class UserHelp
 		return commandHelp.containsKey(cmd);
 	}
 
-	public Vector getCmdList()
+	public ArrayList getCmdList()
 	{
-		return new Vector(commandHelp.keySet());
+		return new ArrayList(commandHelp.keySet());
 	}
 
 	public String getCmdDescription(String cmd)

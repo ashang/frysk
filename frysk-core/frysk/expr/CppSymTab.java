@@ -39,11 +39,13 @@
 
 package frysk.expr;
 
+import javax.naming.NameNotFoundException;
+
 import frysk.value.Variable;
 
 public interface CppSymTab
 {
-  void put(String s, Variable v);
-  Variable get(String s);
+  void put(String s, Variable v) throws NameNotFoundException;
+  Variable get(String s) throws NameNotFoundException;
   boolean putUndefined();
 }

@@ -47,6 +47,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.naming.NameNotFoundException;
+
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
@@ -760,6 +762,10 @@ public class SourceBuffer
         System.out.println(e.getMessage());
         return null;
       }
+    catch (NameNotFoundException n)
+      {
+	return null;
+      }
 
     return var;
   }
@@ -787,6 +793,10 @@ public class SourceBuffer
       {
         System.out.println(e.getMessage());
         return ret;
+      }
+    catch (NameNotFoundException n)
+      {
+	return null;
       }
     
     return ret;
@@ -821,6 +831,10 @@ public class SourceBuffer
       {
         System.out.println(e.getMessage());
         return null;
+      }
+    catch (NameNotFoundException n)
+      {
+	return null;
       }
 
     return var;

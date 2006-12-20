@@ -39,7 +39,7 @@
 package frysk.cli.hpd;
 
 import java.util.TreeMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * A container for ProcData and a subset of it's TaskDatas. If you try to add tasks from other
@@ -96,11 +96,11 @@ class ProcTasks
 
 	/**
 	 * Returns a Vecotr of all TaskData objects order by ID
-	 * @return a Vector of TaskData objects
+	 * @return a ArrayList of TaskData objects
 	 */
-	public Vector getTaskData()
+	public ArrayList getTaskData()
 	{
-		return new Vector( ((TreeMap) tasks.clone()).values() );
+		return new ArrayList( ((TreeMap) tasks.clone()).values() );
 	}
 
 	public void addTaskData(TaskData task)
@@ -117,9 +117,9 @@ class ProcTasks
 	public String toString()
 	{
 		String result = ""; 
-		Vector values = new Vector(tasks.values());
+		ArrayList values = new ArrayList(tasks.values());
 		for (int i = 0; i < values.size(); i++)
-			result += (TaskData)values.elementAt(i) + "\n";
+			result += (TaskData)values.get(i) + "\n";
 
 		return result;
 	}

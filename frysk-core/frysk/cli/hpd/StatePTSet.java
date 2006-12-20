@@ -39,7 +39,7 @@
 package frysk.cli.hpd;
 
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 class StatePTSet implements PTSet
@@ -87,14 +87,14 @@ class StatePTSet implements PTSet
 	public Iterator getTasks()
 	{
 		ProcTasks[] proctasks = pool.getSubsetByState(state);
-		Vector temp = new Vector();
+		ArrayList temp = new ArrayList();
 		LinkedList result = new LinkedList();
 
 		for (int i = 0; i < proctasks.length; i++)
 		{
 			temp = proctasks[i].getTaskData();
 			for (int j = 0; j < temp.size(); j++)
-				result.add( ((TaskData)temp.elementAt(i)).getTask() );
+				result.add( ((TaskData)temp.get(i)).getTask() );
 		}
 
 		return result.iterator();

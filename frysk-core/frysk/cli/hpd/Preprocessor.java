@@ -38,8 +38,8 @@
 // exception.
 package frysk.cli.hpd;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Preprocessor handles constructs like linebreaks and compound statements, also provides a couple of
@@ -109,7 +109,7 @@ class Preprocessor
 		// *split the resulting string into compounds
 		
 		cmd = cmd.trim();
-		Vector cmdQueue = new Vector();
+		ArrayList cmdQueue = new ArrayList();
 
 		buffer.append( stripLineBreak( stripComment(cmd))); // appends the command to the buffer
 
@@ -140,9 +140,9 @@ class Preprocessor
 	/**
 	 * Break a compound command into subcommands.
 	 */
-	private static Vector breakCompound(String cmd)
+	private static ArrayList breakCompound(String cmd)
 	{
-		Vector result = new Vector();
+		ArrayList result = new ArrayList();
 		cmd = cmd.trim();
 
 		int scindex = 0; // index of last usable semicolon

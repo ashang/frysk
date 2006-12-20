@@ -40,7 +40,7 @@
 package frysk.cli.hpd;
 
 import java.io.PrintStream;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.text.ParseException;
 import java.util.Arrays;
 
@@ -56,7 +56,7 @@ class Command
 	private String myFullCommand;
 	private String mySet;
 	private String myAction;
-	private Vector myParameters;
+	private ArrayList myParameters;
 	private PrintStream out;
 
 	/**
@@ -70,14 +70,14 @@ class Command
 		myFullCommand = cmd;
 		mySet = null;
 		myAction = null;
-		myParameters = new Vector();
+		myParameters = new ArrayList();
 
-		Vector tokens = tokenize(myFullCommand);
+		ArrayList tokens = tokenize(myFullCommand);
 		String tempToken;
 
 		for (int i = 0; i < tokens.size(); i++)
 		{
-			tempToken = (String) tokens.elementAt(i);
+			tempToken = (String) tokens.get(i);
 
 			// first token is either p/t-set or an action
 			if (i == 0)
@@ -114,7 +114,7 @@ class Command
 		return myAction;
 	}
 
-	public Vector getParameters()
+	public ArrayList getParameters()
 	{
 		return myParameters;
 	}
@@ -126,13 +126,13 @@ class Command
 
 	/**
 	 * Tokenize a string (probably command) minding quoted statements
-	 * @return Vector of string tokens
+	 * @return ArrayList of string tokens
 	 */
 	// might be a little odd that it takes a parameter,
 	// but it used to be a static function and might be later
-	private Vector tokenize(String str) throws ParseException
+	private ArrayList tokenize(String str) throws ParseException
 	{
-		Vector result = new Vector();
+		ArrayList result = new ArrayList();
 		str = str.trim();
 		str = str.replaceAll(" +", " ");
 		str = str.replaceAll(" *\" *", "\"");

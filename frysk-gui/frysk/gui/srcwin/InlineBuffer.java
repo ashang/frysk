@@ -42,6 +42,8 @@ package frysk.gui.srcwin;
 import java.text.ParseException;
 import java.util.Iterator;
 
+import javax.naming.NameNotFoundException;
+
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
@@ -200,6 +202,10 @@ public class InlineBuffer extends SourceBuffer {
           {
             return null;
           }
+	catch (NameNotFoundException n)
+	  {
+	    return null;
+	  }
         
 		return var;
     }

@@ -1,3 +1,9 @@
+2006-12-20  Stan Cox  <scox@redhat.com>
+
+	* SourceBuffer.java (getVariable): Add NameNotFoundException.
+	(refreshVars): Likewise.
+	* InlineBuffer.java (getVariable): Add NameNotFoundException.
+
 2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* CurrentStackView.java (observers): Is now a LinkedList.

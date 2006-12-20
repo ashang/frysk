@@ -1,3 +1,19 @@
+2006-12-20  Stan Cox  <scox@redhat.com>
+
+	* hpd/AllPTSet.java (taskSets): Use ArrayList instead of Vector.
+	* hpd/CLI.java (handle): Likewise.
+	* hpd/Command.java (myParameters): Likewise.
+	* hpd/DynamicPTSet.java (getTasks): Likewise.
+	* hpd/ExecPTSet.java (getTasks): Likewise.
+	* hpd/Preprocessor.java (preprocess): Likewise.
+	* hpd/ProcTasks.java (getTaskData): Likewise.
+	* hpd/SetNotationParser.java (parse): Likewise.
+	* hpd/StaticPTSet.java (getProcs): Likewise.
+	* hpd/StatePTSet.java (getTasks): Likewise.
+	* hpd/UserHelp.java (getCmdList): Likewise.
+	* hpd/SymTab.java (print): Add NameNotFoundException, TmpSymTab.
+	* hpd/CppSymTab.java (print): Add NameNotFoundException.
+
 2006-12-18  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java (SymTab): Add elf and dwarf.

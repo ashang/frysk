@@ -60,6 +60,7 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
+import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 
 
@@ -186,10 +187,23 @@ public class SymTab
      * @return Variable
      * @throws ParseException
      */
-    static public Variable print(String sInput) throws ParseException
+    static public Variable print(String sInput) throws ParseException,NameNotFoundException
     {
+      final class TmpSymTab
+      implements CppSymTab
+      {
+        public void put (String s, Variable v) throws NameNotFoundException    
+        {
+          throw new NameNotFoundException("No symbol table is available.");
+        }
+        public Variable get(String s) throws NameNotFoundException 
+        {
+          throw new NameNotFoundException("No symbol table is available.");
+        }
+        public boolean putUndefined() {return false;}
+      }
+      TmpSymTab tmpSymTab = new TmpSymTab();
       Variable result = null;
-
       sInput += (char)3;
       CppLexer lexer = new CppLexer(new StringReader (sInput));
       CppParser parser = new CppParser(lexer);
@@ -204,7 +218,11 @@ public class SymTab
       {}
 
       CommonAST t = (CommonAST)parser.getAST();
-      CppTreeParser treeParser = new CppTreeParser(4, 2, exprSymTab);
+      CppTreeParser treeParser;
+      if (exprSymTab == null)
+        treeParser = new CppTreeParser(4, 2, tmpSymTab);
+      else
+        treeParser = new CppTreeParser(4, 2, exprSymTab);
 
       try {
         Integer intResult;

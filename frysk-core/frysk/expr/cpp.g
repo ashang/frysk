@@ -80,6 +80,7 @@ header
 // exception.
     package frysk.expr;
 
+    import javax.naming.NameNotFoundException;
     import frysk.value.*;
     import java.util.*;
     import lib.dw.BaseTypes;
@@ -706,7 +707,9 @@ primitiveType
     |   "double"
     ;
 
-expr returns [Variable returnVar=null] throws InvalidOperatorException, OperationNotDefinedException
+expr returns [Variable returnVar=null] throws InvalidOperatorException,
+OperationNotDefinedException,
+NameNotFoundException
 { Variable v1, v2, log_expr;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
     |   ( #(MINUS expr expr) )=> #( MINUS v1=expr v2=expr ) 

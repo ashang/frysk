@@ -38,7 +38,7 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -57,7 +57,7 @@ class StaticPTSet implements PTSet
 
 	public Iterator getProcs()
 	{
-		Vector result = new Vector();
+		ArrayList result = new ArrayList();
 
 		for (int i = 0; i < set.length; i++)
 		{
@@ -86,15 +86,15 @@ class StaticPTSet implements PTSet
 
 	public Iterator getTasks()
 	{
-		Vector result = new Vector();
-		Vector temp = new Vector();
+		ArrayList result = new ArrayList();
+		ArrayList temp = new ArrayList();
 
 		for (int i = 0; i < set.length; i++)
 		{
 			temp = set[i].getTaskData();
 
 			for (int j = 0; j < temp.size(); j++)
-				result.add( ((TaskData) temp.elementAt(j)).getTask() );
+				result.add( ((TaskData) temp.get(j)).getTask() );
 		}
 
 		return temp.iterator();

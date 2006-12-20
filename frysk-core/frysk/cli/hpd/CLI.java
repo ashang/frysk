@@ -40,6 +40,7 @@ package frysk.cli.hpd;
 
 import java.io.PrintStream;
 
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.LinkedList;
 import java.util.Hashtable;
@@ -98,18 +99,18 @@ public class CLI
 	class DefsetHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
-			Vector params = cmd.getParameters();
+			ArrayList params = cmd.getParameters();
 			String setname = null;
 			String setnot = null;
 			PTSet set = null;
 
 			if (params.size() == 2)
 			{
-				setname = (String) params.elementAt(0);
+				setname = (String) params.get(0);
 				if (!setname.matches("\\w+"))
 					throw new ParseException("Set name must be alphanumeric.", 0);
 
-				setnot = (String) params.elementAt(1);
+				setnot = (String) params.get(1);
 
 				if (!builtinPTSets.containsKey(setnot))
 				{
@@ -133,7 +134,7 @@ public class CLI
 		{
 			if (cmd.getParameters().size() == 1)
 			{
-				String setname = (String)cmd.getParameters().elementAt(0);
+				String setname = (String)cmd.getParameters().get(0);
 
 				if (builtinPTSets.contains(setname))
 				{
@@ -173,7 +174,7 @@ public class CLI
 					tempset = targetset;
 				else if (cmd.getParameters().size() == 1)
 				{
-					setname = (String)cmd.getParameters().elementAt(0);
+					setname = (String)cmd.getParameters().get(0);
 					if (namedPTSets.containsKey(setname))
 						tempset = (PTSet) namedPTSets.get(setname);
 					else
@@ -215,7 +216,7 @@ public class CLI
 				if (cmd.getParameters().size() == 0)
 					searchset = targetset;
 				else if (cmd.getParameters().size() == 1)
-					searchset = createSet((String)cmd.getParameters().elementAt(0));
+					searchset = createSet((String)cmd.getParameters().get(0));
 
 				// start iterating through available sets
 				for (Iterator it = searchset.getTaskData(); it.hasNext();)
@@ -248,7 +249,7 @@ public class CLI
 			if (cmd.getParameters().size() <= 1)
 			{
 				if (cmd.getParameters().size() == 1)
-					targetset = createSet((String)cmd.getParameters().elementAt(0));
+					targetset = createSet((String)cmd.getParameters().get(0));
 				else
 					( (CommandHandler) handlers.get("viewset") ).handle( new Command("viewset") );
 			}
@@ -264,16 +265,16 @@ public class CLI
 	{
 		public void handle(Command cmd) throws ParseException
 		{
-			Vector params = cmd.getParameters();
+			ArrayList params = cmd.getParameters();
 			if (params.size() <= 2)
 			{
 				if (params.size() == 2)
 				{
-					aliases.put((String)params.elementAt(0), (String)params.elementAt(1));
+					aliases.put((String)params.get(0), (String)params.get(1));
 				}
 				else if (params.size() == 1)
 				{
-					String temp = (String)params.elementAt(0);
+					String temp = (String)params.get(0);
 					if (aliases.containsKey(temp))
 					{
 						addMessage(new Message(temp + " = " + (String)aliases.get(temp), Message.TYPE_NORMAL));
@@ -297,7 +298,7 @@ public class CLI
     {
         public void handle(Command cmd) throws ParseException
         {
-          Vector params = cmd.getParameters();
+          ArrayList params = cmd.getParameters();
           String executable = "";
           boolean cli = false;
           attachedObserver = new AttachedObserver();
@@ -310,16 +311,16 @@ public class CLI
  
           for (int idx = 2; idx < params.size(); idx++)
             {
-              if (((String)params.elementAt(idx)).equals("-cli"))
+              if (((String)params.get(idx)).equals("-cli"))
                 cli = true;
-              else if (((String)params.elementAt(idx)).equals("-task"))
+              else if (((String)params.get(idx)).equals("-task"))
                 {
                   idx += 1;
-                  tid = Integer.parseInt(((String)params.elementAt(idx)));
+                  tid = Integer.parseInt(((String)params.get(idx)));
                 }
             }
-          executable = ((String)params.elementAt(0));
-          pid = Integer.parseInt((String)params.elementAt(1));
+          executable = ((String)params.get(0));
+          pid = Integer.parseInt((String)params.get(1));
 
           if (cli)
             {
@@ -384,7 +385,7 @@ public class CLI
     {
         public void handle(Command cmd) throws ParseException
         {
-          Vector params = cmd.getParameters();
+          ArrayList params = cmd.getParameters();
           String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
           if (attachedObserver != null)
@@ -402,17 +403,17 @@ public class CLI
 	{
 		public void handle(Command cmd)  throws ParseException
 		{
-			Vector params = cmd.getParameters();
+			ArrayList params = cmd.getParameters();
 			if (params.size() == 1)
 			{
-				if ( ((String)params.elementAt(0)).equals("-all") )
+				if ( ((String)params.get(0)).equals("-all") )
 				{
 						aliases.clear();
 						addMessage(new Message("Removing all aliases.", Message.TYPE_VERBOSE));
 				}
 				else
 				{
-					String temp = (String)params.elementAt(0);
+					String temp = (String)params.get(0);
 					if (aliases.containsKey(temp))
 					{
 						aliases.remove(temp);
@@ -433,33 +434,33 @@ public class CLI
 	{
 		public void handle(Command cmd) throws ParseException
 		{
-			Vector params = cmd.getParameters();
+			ArrayList params = cmd.getParameters();
 			String temp;
-			if (params.size() == 3 && ((String)params.elementAt(1)).equals("=") )
+			if (params.size() == 3 && ((String)params.get(1)).equals("=") )
 			{
-				temp = (String)params.elementAt(0);
+				temp = (String)params.get(0);
 				if (dbgvars.variableIsValid(temp))
 				{
-					if (dbgvars.valueIsValid(temp, (String)params.elementAt(2)))
+					if (dbgvars.valueIsValid(temp, (String)params.get(2)))
 					{
-						dbgvars.setVariable(temp, (String)params.elementAt(2));
+						dbgvars.setVariable(temp, (String)params.get(2));
 					}
 					else
 						addMessage(new Message("Illegal variable value.", Message.TYPE_ERROR));
 				}
 				else
-					addMessage(new Message("Illegal debugger variable \"" + (String)params.elementAt(0) + "\"",
+					addMessage(new Message("Illegal debugger variable \"" + (String)params.get(0) + "\"",
 											Message.TYPE_ERROR));
 			}
 			else if (params.size() == 1)
 			{
-				temp = (String)params.elementAt(0);
+				temp = (String)params.get(0);
 				if (dbgvars.variableIsValid(temp))
 				{
 					addMessage(new Message(temp + " = " + dbgvars.getValue(temp).toString(), Message.TYPE_NORMAL));
 				}
 				else
-					addMessage(new Message("Illegal debugger variable \"" + (String)params.elementAt(0) + "\"",
+					addMessage(new Message("Illegal debugger variable \"" + (String)params.get(0) + "\"",
 											Message.TYPE_ERROR));
 			}
 			else if (params.size() == 0)
@@ -477,11 +478,11 @@ public class CLI
 	{
 		public void handle(Command cmd) throws ParseException
 		{
-			Vector params = cmd.getParameters();
+			ArrayList params = cmd.getParameters();
 			String temp;
 			if (params.size() == 1)
 			{
-				temp = (String)params.elementAt(0);
+				temp = (String)params.get(0);
 				if (temp.equals("-all"))
 					dbgvars.unsetAll();
 				else
@@ -489,7 +490,7 @@ public class CLI
 					if (dbgvars.variableIsValid(temp))
 						dbgvars.unsetVariable(temp);
 					else
-						addMessage(new Message("\"" + (String)params.elementAt(0) + "\" is not a valid debugger variable",
+						addMessage(new Message("\"" + (String)params.get(0) + "\" is not a valid debugger variable",
 											Message.TYPE_ERROR));
 				}
 			}
@@ -508,7 +509,7 @@ public class CLI
         StackFrame tmpFrame = null;
         
         if (cmd.getParameters().size() != 0)
-          level = Integer.parseInt((String)cmd.getParameters().elementAt(0));
+          level = Integer.parseInt((String)cmd.getParameters().get(0));
 
         if (cmd.getAction().compareTo("up") == 0)
           {
@@ -542,7 +543,7 @@ public class CLI
           }
 
         if (cmd.getParameters().size() != 0)
-          level = Integer.parseInt((String)cmd.getParameters().elementAt(0));
+          level = Integer.parseInt((String)cmd.getParameters().get(0));
  
         int l = stackLevel;
         int stopLevel;
@@ -578,7 +579,7 @@ public class CLI
             return;
           }
 
-        String sInput = ((String)cmd.getParameters().elementAt(0));
+        String sInput = ((String)cmd.getParameters().get(0));
         try 
         {
           cmd.getOut().println(symtab.what(sInput));
@@ -602,25 +603,19 @@ public class CLI
         if (cmd.getParameters().size() == 0)
           return;
 
-        Vector params = cmd.getParameters();
+        ArrayList params = cmd.getParameters();
         boolean haveFormat = false;
         int outputFormat = DECIMAL;
-        
-        if (proc == null)
-          {
-            addMessage(new Message("No symbol table is available.", Message.TYPE_NORMAL));
-            return;
-          }
 
         String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
         for (int i = 0; i < params.size(); i++)
           {
-            if (((String)params.elementAt(i)).equals("-format"))
+            if (((String)params.get(i)).equals("-format"))
               {
                 haveFormat = true;
                 i += 1;
-                String arg = ((String)params.elementAt(i));
+                String arg = ((String)params.get(i));
                 if (arg.compareTo("d") == 0)
                   outputFormat = DECIMAL;
                 else if (arg.compareTo("o") == 0)
@@ -646,7 +641,17 @@ public class CLI
           sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
         }        
 
-        Variable result = SymTab.print(sInput);
+        Variable result = null;
+        try 
+        {
+          result = SymTab.print(sInput);
+        }
+        catch (NameNotFoundException nnfe)
+        {
+          addMessage(new Message(nnfe.getMessage(),
+                                 Message.TYPE_ERROR));
+          return;
+        }
         if (result == null)
           {
             addMessage(new Message("Variable " + sInput + " not found in scope", Message.TYPE_ERROR));

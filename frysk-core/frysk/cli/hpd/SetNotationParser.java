@@ -40,7 +40,7 @@ package frysk.cli.hpd;
 
 import java.lang.Character;
 import java.lang.Integer;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.text.ParseException;
 
 class SetNotationParser
@@ -87,7 +87,7 @@ class SetNotationParser
 		}
 		else
 		{
-			Vector root = new Vector();
+			ArrayList root = new ArrayList();
 
 			notation = set;
 			curToken = 0;
@@ -118,7 +118,7 @@ class SetNotationParser
 	 */
 	private void tokenize()
 	{
-		Vector tokens = new Vector();
+		ArrayList tokens = new ArrayList();
 		String buf = "";
 		char ch = ' ';
 
@@ -144,7 +144,7 @@ class SetNotationParser
 			}
 		}
 
-		this.tokens = new String[tokens.size()]; // convert vector to array so we don't have to cast all the time
+		this.tokens = new String[tokens.size()]; // convert ArrayList to array so we don't have to cast all the time
 		for (int i = 0; i < tokens.size(); i++)
 		{
 			this.tokens[i] = (String)tokens.get(i);
@@ -174,7 +174,7 @@ class SetNotationParser
 	 * The first rule of the grammar, creates a tree that grows from "root"
 	 * and with process id and range on depth 1, and the same for task on depth 2.
 	 */
-	private void S_1(Vector root) throws ParseException
+	private void S_1(ArrayList root) throws ParseException
 	{
 		if (tokens[curToken].equals("["))
 			curToken++;
@@ -196,7 +196,7 @@ class SetNotationParser
 	 * S_2 -> S_3.S_3S_6 | S_4:S_4S_6 // takes nasty looking-ahead
 	 * Also checks validity of range notation
 	 */
-	private void S_2(Vector root) throws ParseException
+	private void S_2(ArrayList root) throws ParseException
 	{
 		ParseTreeNode node = null;
 		int[] tempIDs = new int[4];
@@ -351,7 +351,7 @@ class SetNotationParser
 	/*
 	 * S_6 -> ,S_2 | empty_string
 	 */
-	private void S_6(Vector root) throws ParseException
+	private void S_6(ArrayList root) throws ParseException
 	{
 		if (curToken != tokens.length-1)
 		{
