@@ -69,24 +69,43 @@ public class Paths
 	return Paths.runnerBasename;
     }
     static private String execPrefix;
+    static private String exec32Prefix; 
     static private String dataPrefix;
     /**
      * Set the TestRunner's working directories.  Tests should prefix
      * any paths paths with these.
      */
-    static public void setPrefixes (String execPrefix, String dataPrefix)
+    static public void setPrefixes (String execPrefix,
+				    String exec32Prefix,
+				    String dataPrefix)
     {
 	Paths.execPrefix = execPrefix;
+	Paths.exec32Prefix = exec32Prefix;
 	Paths.dataPrefix = dataPrefix;
     }
     /**
      * Get the TestRunner's executable working directory.  Tests
-     * requriing external executables should prefix any programs with
-     * this path.
+     * requring external executables prefix any programs with this
+     * path.
+     *
+     * On a 32-bit system this directory will contain 32-bit
+     * executables, and on a 64-bit system this directory will contain
+     * 64-bit executables.
      */
     static public String getExecPrefix ()
     {
 	return execPrefix;
+    }
+    /**
+     * Get the TestRunner's 32-bit executable working directory.
+     * Tests requring external 32-bit executables prefix any 32-bit
+     * programs with this path.
+     *
+     * Only 64-bit tests, requiring 32-bit executables, use this path.
+     */
+    static public String getExec32Prefix ()
+    {
+	return exec32Prefix;
     }
     /**
      * Get the TestRunner's data working directory.  Tests requiring

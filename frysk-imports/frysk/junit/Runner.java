@@ -581,11 +581,11 @@ public class Runner
 	setBuildArch (Build.BUILD_ARCH);
 	
 	// Set the path prefixes and then do the common test.
-	Paths.setPrefixes (execPrefix, dataPrefix);
+	Paths.setPrefixes (execPrefix, exec32Prefix, dataPrefix);
 	result = worstResult (runArchCases (archTests), result);
 	
 	// Set the execPrefix of arch32 and then do the arch32 test.
-	Paths.setPrefixes (exec32Prefix, dataPrefix);
+	Paths.setPrefixes (exec32Prefix, null, dataPrefix);
 	result = worstResult (runArch32Cases (arch32Tests), result);
 
 	return result;

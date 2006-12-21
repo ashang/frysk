@@ -325,7 +325,7 @@ public class TestIsa
                                       String.valueOf(Pid.get()),
                                       String.valueOf(Sig.USR2_),
                                       "5",
-                                      getExecPrefix() + "arch32/funit-exec",
+                                      getExec32Prefix() + "funit-exec",
                                       String.valueOf(Pid.get()),
                                       String.valueOf(Sig.USR2_),
                                       "5", "echo",  "hello"};
@@ -384,7 +384,7 @@ public class TestIsa
                                       String.valueOf(Pid.get()),
                                       String.valueOf(Sig.USR2_),
                                       "20",
-                                      getExecPrefix() + "arch32/funit-exec",
+                                      getExec32Prefix() + "funit-exec",
                                       String.valueOf(Pid.get()),
                                       String.valueOf(Sig.USR2_),
                                       "20", getExecPrefix()

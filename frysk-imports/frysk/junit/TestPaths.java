@@ -47,6 +47,7 @@ public class TestPaths
     extends TestCase
 {
     private String savedExec;
+    private String savedExec32;
     private String savedData;
 
     /**
@@ -55,6 +56,7 @@ public class TestPaths
     public void setUp ()
     {
 	savedExec = Paths.getExecPrefix ();
+	savedExec32 = Paths.getExec32Prefix ();
 	savedData = Paths.getDataPrefix ();
     }
 
@@ -64,10 +66,12 @@ public class TestPaths
     public void testCrossedPaths ()
     {
 	String exec = "exec";
+	String exec32 = "exec32";
 	String data = "data";
 
-	Paths.setPrefixes (exec, data);
+	Paths.setPrefixes (exec, exec32, data);
 	assertEquals (exec, exec, Paths.getExecPrefix ());
+	assertEquals (exec32, exec32, Paths.getExec32Prefix ());
 	assertEquals (data, data, Paths.getDataPrefix ());
     }
 
@@ -76,8 +80,9 @@ public class TestPaths
      */
     public void tearDown ()
     {
-	Paths.setPrefixes (savedExec, savedData);
+	Paths.setPrefixes (savedExec, savedExec32, savedData);
 	assertEquals (savedExec, savedExec, Paths.getExecPrefix ());
+	assertEquals (savedExec32, savedExec32, Paths.getExec32Prefix ());
 	assertEquals (savedData, savedData, Paths.getDataPrefix ());
     }
 }

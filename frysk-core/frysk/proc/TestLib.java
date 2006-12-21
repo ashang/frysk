@@ -89,9 +89,18 @@ public class TestLib
      * Return the exec prefix that should be prepended to all
      * programs.
      */
-    static String getExecPrefix ()
+    protected static String getExecPrefix ()
     {
 	return Paths.getExecPrefix ();
+    }
+
+    /**
+     * Return the exec prefix that should be prepended to all
+     * programs.
+     */
+    protected static String getExec32Prefix ()
+    {
+	return Paths.getExec32Prefix ();
     }
 
     /**

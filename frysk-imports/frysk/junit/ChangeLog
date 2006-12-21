@@ -1,3 +1,11 @@
+2006-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java: Test getExec32Prefix.
+	* Runner.java (runTestCases): Pass exec32Path to Paths
+	.setPrefixes.
+	* Paths.java (exec32Prefix): Add.
+	(setPrefixes): Add exec32Prefix parameter.
+
 2006-12-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (brokenUtraceXXX): New; make all methods
