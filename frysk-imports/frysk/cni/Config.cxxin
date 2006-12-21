@@ -1,8 +1,8 @@
-// -*- Java -*-
+// -*- C++ -*-
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,32 +39,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk;
+#include <gcj/cni.h>
 
-/**
- * All the run-time (install time) configuration information.
- */
+#include <java/lang/String.h>
+#include "frysk/Config.h"
 
-public class Config
+// Why not use autoconf's config.h?
+
+// Because config.h does not expand variables the way Makefile and
+// SUBST_SED do.
+
+jstring
+frysk::Config::getVersion ()
 {
-    public static final String PREFIX = "@prefix@";
-    public static final String BINDIR = "@bindir@";
-    public static final String LIBDIR = "@libdir@";
-    public static final String DATADIR = "@datadir@";
-
-    public static final String GLADEDIR = "@gladedir@";
-    public static final String IMAGEDIR = "@imagedir@";
-    public static final String PKGDATADIR = "@pkgdatadir@";
-    public static final String PKGLIBDIR = "@pkglibdir@";
-    public static final String PKGINCLUDEDIR = "@pkgincludedir@";
-
-    public static final String PKGLIB32DIR = "@pkglib32dir@";
-    /**
-     * The frysk version number.
-     */
-    public static native final String getVersion ();
-
-    // User's config directory.
-    public static final String FRYSK_DIR
-	= System.getProperty("user.home") + "/" + ".frysk" + "/";
+  return JvNewStringUTF ("@VERSION@");
 }

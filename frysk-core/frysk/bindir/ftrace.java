@@ -136,7 +136,7 @@ class ftrace
 
     public void run(String[] args)
     {
-        Parser parser = new Parser("ftrace", Config.VERSION, true) {
+        Parser parser = new Parser("ftrace", Config.getVersion (), true) {
             protected void validate() throws OptionException {
                 if (! requestedPid && commandAndArguments == null)
                     throw new OptionException("no command or PID specified");

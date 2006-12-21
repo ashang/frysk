@@ -1,3 +1,9 @@
+2006-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (VERSION): Delete.
+	(getVersion): New native method.
+	* cni/Config.cxxin: New file.
+
 2006-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain (LIBEXECDIR): Delete.

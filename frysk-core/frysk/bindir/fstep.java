@@ -75,7 +75,7 @@ public class fstep
     sample = 0;
     instrs = 1;
 
-    final Parser parser = new Parser("fstack", Config.VERSION);
+    final Parser parser = new Parser("fstep", Config.getVersion ());
     parser.add(new Option("sample", 's',
 			  "how often to print the current instruction",
 			  "samples")

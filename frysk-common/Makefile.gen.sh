@@ -49,7 +49,7 @@ Include CNI directories in build.
 <source-dir>:
 
 Search source directory for .java, .mkjava, .shjava, shenum, mkenum,
-.javain, .c and .cxx files.  For each, generate a corresponding
+.javain, cxxin, .c and .cxx files.  For each, generate a corresponding
 automake entry.  If the file contains a main program, also generate
 automake to build the corresponding program.  Any program located
 under a bindir/, sbindir/, or pkglibdir/ sub-directory, will be
@@ -114,6 +114,7 @@ JARS=`echo ${JARS}`
     if $cni ; then
 	find ${dirs} \
 	    -path '*/cni/[A-Za-z]*\.hxx' -print \
+	    -o -path '*/cni/[A-Za-z]*\.cxxin' -print \
 	    -o -path '*/cni/[A-Za-z]*\.cxx' -print
     fi
 ) | sort -f > files.tmp
@@ -472,6 +473,17 @@ done
 # output the compile for arch32
 echo_arch32_COMPILER
 
+for suffix in .cxxin ; do
+    print_header "... ${suffix}"
+    grep -e "\\${suffix}\$" files.list | while read file ; do
+	d=`dirname ${file}`
+	b=`basename ${file} ${suffix}`
+	echo "EXTRA_DIST += ${file}"
+	echo "${nodist_lib_sources} += ${d}/${b}.cxx"
+	echo "BUILT_SOURCES += ${d}/${b}.cxx"
+    done
+done
+
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
@@ -538,7 +550,7 @@ done
 print_header "... *.cxx=.h"
 grep -e '/cni/' files.list \
     | xargs grep -H '#include ".*.h"' \
-    | sed -e 's/\.cxx:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
+    | sed -e 's/\..*:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
     | while read o h
 do
   if test \
@@ -546,7 +558,8 @@ do
       -r ${h}.shenum -o \
       -r ${h}.mkenum -o \
       -r ${h}.shjava -o \
-      -r ${h}.mkjava \
+      -r ${h}.mkjava -o \
+      -r ${h}.javain \
       ; then
       echo ${o}: ${h}.h
       echo "CLEANFILES += ${h}.h"

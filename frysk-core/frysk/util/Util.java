@@ -91,7 +91,7 @@ public class Util
 
     public PidParser (String programName)
     {
-      super(programName, Config.VERSION, true);
+	super(programName, Config.getVersion (), true);
     }
 
     protected void validate () throws OptionException

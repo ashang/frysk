@@ -262,6 +262,9 @@ SUBST = \
 	chmod a-w $@.tmp ; \
 	mv -f $@.tmp $@
 
+SUFFIXES += .cxxin
+.cxxin.cxx:
+	$(SUBST)
 SUFFIXES += .javain
 .javain.java:
 	$(SUBST)

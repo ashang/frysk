@@ -1,3 +1,7 @@
+2006-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Util.java: Use Config's getVersion, instead of VERSION.
+
 2006-12-21  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceAction.java (printTasks): Modified to use StringBuffer instead

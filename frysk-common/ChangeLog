@@ -1,3 +1,9 @@
+2006-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.cxxin.cxx): New rule.
+	* Makefile.gen.sh: Add support for .cxxin.  Check .cxxin files for
+	headers.
+
 2006-12-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (SUBST): For .sh and .py files, chmod +x.
