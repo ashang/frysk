@@ -1,3 +1,9 @@
+2006-12-21  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackBacktrace.java: Moved into frysk.rt from frysk.rt.tests.
+	* TestRunState.java: Ditto.
+	* TestStepping.java: Ditto.
+
 2006-12-19  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStepping.java (testAsmStepping): Added. Marked as broken
