@@ -41,7 +41,6 @@
 package frysk.util;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,7 +63,7 @@ public abstract class StacktraceAction
 {
   protected StringBuffer stackTrace = new StringBuffer();
 
-  private TreeMap sortedTasks;
+  private TreeMap sortedTasks = new TreeMap();
 
   private Event event;
 
@@ -94,7 +93,12 @@ public abstract class StacktraceAction
                                                                          task });
 
     // Print the stack frame for this stack.
-    storeTask(task);
+    StringBuffer taskTrace = generateTaskStackTrace(task);
+    
+    if (sortedTasks == null)
+      sortedTasks = new TreeMap();
+
+    sortedTasks.put(new Integer(task.getTid()), taskTrace);
   }
 
   public void taskAddFailed (Object observable, Throwable w)
@@ -110,12 +114,8 @@ public abstract class StacktraceAction
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
       {
-        LinkedList output = (LinkedList) iter.next();
-        Iterator i = output.iterator();
-        while (i.hasNext())
-          {
-            stackTrace.append((String) i.next() + "\n");
-          }
+        StringBuffer output = (StringBuffer) iter.next();        
+        stackTrace.append(output);        
       }
     logger.log(Level.FINE, "{0} exiting printTasks", this);
   }
@@ -127,36 +127,35 @@ public abstract class StacktraceAction
     return stackTrace.toString();
   }
 
-  private final void storeTask (Task task)
+  public final StringBuffer generateTaskStackTrace (Task task)
   {
     if (task != null)
       {
         try
           {
-            LinkedList list = new LinkedList();
-            list.add(new String("Task #" + task.getTid()));
+            StringBuffer buffer = new StringBuffer();
+            buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
             int count = 0;
             for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
               {
                 // FIXME: do valgrind-like '=== PID ===' ?
-                String output = "#" + count + " " + frame.toPrint(false);
+                StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
 
-                list.add(output);
+                buffer.append(output);
                 count++;
               }
 
-            if (sortedTasks == null)
-              sortedTasks = new TreeMap();
-
-            sortedTasks.put(new Integer(task.getTid()), list);
+            return buffer; 
           }
         catch (TaskException _)
           {
             // FIXME: log exception, or rethrow?
             logger.log(Level.FINE, "{0} Couldn't print stack trace\n", task);
-            stackTrace.append("... couldn't print stack trace\n");
+            return new StringBuffer("... couldn't print stack trace\n");
           }
       }
+    
+    return null;
   }
 
   /**

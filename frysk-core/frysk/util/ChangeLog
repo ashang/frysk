@@ -1,3 +1,11 @@
+2006-12-21  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java (printTasks): Modified to use StringBuffer instead
+	of LinkedLists.
+	(existingTask): Use generateTaskStackTrace.
+	(generateTaskStackTrace): Renamed from storeTask, made public, return
+	StringBuffer.
+
 2006-12-21  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (init): Fixed to work properly with attaching to an 
