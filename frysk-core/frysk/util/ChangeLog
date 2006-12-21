@@ -1,6 +1,8 @@
 2006-12-20  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java: Refactored from FCrash. Committing re: #3733.
+	Merged small observers together into main AttachedObserver; handles
+	multiple Tasks better.
 
 2006-12-20  Nurdin Premji  <npremji@redhat.com>
 
