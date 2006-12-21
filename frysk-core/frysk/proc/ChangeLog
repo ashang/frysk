@@ -1,3 +1,14 @@
+2006-12-21  Nurdin Premji  <npremji@redhat.com>
+
+	* TestIsa.java (testAttachedCreateChild): Removed redundant e.printStackTrace.
+	(AttachedObserver.updateAttached): Ditto.
+	(testAttachDetachAttachAgainDetachAgainAttachAgainAgain): Ditto.
+	(test64To32Isa): Ditto.
+	(testIsaSingleton): Ditto.
+	(test64To32To64): Ditto.
+	(testAttachedCreateAttachedClone): Ditto.
+	(testAttachedCreateAttachedChild): Ditto.
+
 2006-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (getExec32Prefix): Add.

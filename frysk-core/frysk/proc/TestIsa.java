@@ -61,10 +61,9 @@ public class TestIsa
         {
           task.getIsa();
         }
-      catch (TaskException e)
+      catch (TaskException _)
         {
           fail("Couldn't get Isa");
-          e.printStackTrace();
         }
       
       assertTrue("task isa initialized", task.hasIsa());
@@ -142,9 +141,8 @@ public class TestIsa
 
         assertSame(firstMain.getIsa(), secondMain.getIsa());
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
-        e.printStackTrace();
         fail("TaskException");
       }
 
@@ -159,10 +157,9 @@ public class TestIsa
       {
         assertNotNull("child has an isa", proc.getMainTask().getIsa());
       }
-    catch (TaskException e1)
+    catch (TaskException _)
       {
-        fail("TaskException");
-        e1.printStackTrace();
+        fail("TaskException");       
       }
 
     ackProc.assertSendAddForkWaitForAcks();
@@ -179,10 +176,9 @@ public class TestIsa
       {
         assertNotNull("child has an isa", child.getMainTask().getIsa());
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
   }
 
@@ -220,10 +216,9 @@ public class TestIsa
       {
         assertNotNull("Child has an isa", child.getMainTask().getIsa());
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
   }
   
@@ -261,10 +256,9 @@ public class TestIsa
       {
         assertNotNull("Clone has an isa", clone.getIsa());
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
   }
 
@@ -285,10 +279,9 @@ public class TestIsa
       {
         assertNotNull("Proc has an isa", proc.getMainTask().getIsa());
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
 
     Task.taskStateDetached.addObserver(new DetachedObserver(task));
@@ -349,10 +342,9 @@ public class TestIsa
 
         isa64 = task.getIsa();
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
 
     logger.log(Level.FINE, "Before sending exec\n");    
@@ -366,10 +358,9 @@ public class TestIsa
         assertNotNull("32 bit isa", task.getIsa());
         assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
 
   }
@@ -412,10 +403,9 @@ public class TestIsa
 
         isa64 = task.getIsa();
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
 
     logger.log(Level.FINE, "Before sending 1st exec\n");    
@@ -429,10 +419,9 @@ public class TestIsa
         assertNotNull("32 bit isa", task.getIsa());
         assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
       }
-    catch (TaskException e)
+    catch (TaskException _)
       {
         fail("TaskException");
-        e.printStackTrace();
       }
     
     logger.log(Level.FINE, "Before sending 2nd exec\n");   
@@ -446,10 +435,9 @@ public class TestIsa
       assertNotNull("64 bit isa", task.getIsa());
       assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
     } 
-    catch (TaskException e)
+    catch (TaskException _)
     {
       fail("TaskException");
-      e.printStackTrace();
     }
   }
 }
