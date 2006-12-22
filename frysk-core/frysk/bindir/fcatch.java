@@ -39,8 +39,10 @@
 
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import frysk.util.FCatch;
+import frysk.util.Util;
 //import frysk.util.StracePrinter;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
@@ -49,6 +51,7 @@ import gnu.classpath.tools.getopt.Parser;
 import gnu.classpath.tools.getopt.OptionException;
 
 import frysk.Config;
+import frysk.EventLogger;
 
 public class fcatch
 {
@@ -58,6 +61,8 @@ public class fcatch
   //private static Parser parser;
 
   //private static int pid;
+  protected static final Logger logger = EventLogger.get("logs/",
+  "frysk_core_event.log");
   
   private boolean requestedPid;
   
@@ -65,7 +70,7 @@ public class fcatch
 
   private void run (String[] args)
   {
-    Parser parser = new Parser("fcatch", Config.VERSION, true)
+    Parser parser = new Parser("fcatch", Config.getVersion (), true)
     {
       protected void validate () throws OptionException
       {
@@ -74,6 +79,7 @@ public class fcatch
       }
     };
     addOptions(parser);
+    Util.addConsoleOptions(logger, parser);
     parser.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
 
     parser.parse(args, new FileArgumentCallback()
