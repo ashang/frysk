@@ -37,37 +37,57 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "funit-asm.h"
+#define NO_OP nop
+#define MOVE mov
+#define INTERRUPT int
+#define COMPARE cmp
+#define RETURN ret
+#define PUSH push
+#define POP pop
+#define JUMP jmp
+#define JUMP_IF_NOT_EQUAL jne
 
+#ifdef __i386__
 
+	.text
+	.global main
+
+#define STACK_BASE_POINTER %ebp // stack base pointer
+#define GEN_REG_1 %eax // accumulator register
+#define GEN_REG_2 %ebx // base register
+#define GEN_REG_3 %ecx // counter register
+#define GEN_REG_4 %edx // data register
+
+#elif defined __x86_64__
+
+	.text
+	.global main
+
+#define GEN_REG_1 %rax
+#define GEN_REG_2 %rdi
+#define GEN_REG_3 %rsi
+#define GEN_REG_4 %rdx
+
+#elif defined __powerpc__
+
+.text                       # section declaration - begin code
+	.global  main
 main:
-#ifdef __i386__
-	PUSH STACK_BASE_POINTER
-#endif
-	MOVE $0x14, GEN_REG_1
-	MOVE $1, GEN_REG_2
-	MOVE $2, GEN_REG_3
-	MOVE $3, GEN_REG_4
-	INTERRUPT $0x80
-loop:
-	NO_OP
-	NO_OP
-	NO_OP
-	NO_OP ; NO_OP ; NO_OP
-	NO_OP
-	COMPARE $1, %ebp
-	JUMP_IF_NOT_EQUAL fail
-	COMPARE $2, %ebx
-	JUMP_IF_NOT_EQUAL fail
-	COMPARE $3, %ecx
-	JUMP_IF_NOT_EQUAL fail
-	JUMP loop
-#ifdef __i386__
-	POP %ebp
-#endif
-	RETURN
-fail: JUMP 0
 
-// make the stack non-executable
-.section	.note.GNU-stack,"",@progbits
+#elif defined __powerpc64__
 
+	.section        ".opd","aw"
+	.global main
+	.align 3
+main:
+	.quad   ._main,.TOC.@tocbase,0
+	.text                       # section declaration - begin code
+	.global  ._main
+._main:
+
+#define GEN_REG_1 %gpr0
+#define GEN_REG_2 %gpr3
+#define GEN_REG_3 %gpr4
+#define GEN_REG_4 %gpr5
+
+#endif
