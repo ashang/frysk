@@ -1,3 +1,14 @@
+2006-12-22  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java: Added logging.
+	(init): Removed code which scanned all processes looking
+	for PIDs, and directly get the Proc.
+	(stackTrace): Added.
+	(toString): Added.
+	(getStackTrace): Added.
+	(generateStackTrace): Build stack trace into the stackTrace StringBuffer.
+	* TestFCatch.java: Added.
+
 2006-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Util.java: Use Config's getVersion, instead of VERSION.
