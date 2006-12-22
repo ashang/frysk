@@ -40,6 +40,7 @@
 package frysk.util;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -102,7 +103,7 @@ public class Util
 
   }
 
-  public static LinkedList parsePids (final PidParser parser, String[] args)
+  public static Collection parsePids (final PidParser parser, String[] args)
   {
     parser.parse(args, new FileArgumentCallback()
     {
@@ -124,7 +125,7 @@ public class Util
     return parser.pidList;
   }
 
-  public static void addConsoleOptions (final Logger logger, Parser parser)
+  public static void addConsoleOptions (Parser parser)
   {
     parser.add(new Option(
                           "console",

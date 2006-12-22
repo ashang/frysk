@@ -1,3 +1,9 @@
+2006-12-22  Nurdin Premji  <npremji@redhat.com>
+
+	* Util.java (parsePids): Use more generic Collections Return type.
+	(addConsoleOptions): Removed logger argument.
+	* StacktraceAction.java (allExistingTasksCompleted): Added log message.
+
 2006-12-22  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java: Added logging.

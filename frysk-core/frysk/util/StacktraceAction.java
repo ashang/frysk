@@ -193,6 +193,7 @@ public abstract class StacktraceAction
 
   public void allExistingTasksCompleted ()
   {
+    logger.log(Level.FINE, "{0} allExistingTasksCompleted\n", this);
     // Print all the tasks in order.
     printTasks();
 

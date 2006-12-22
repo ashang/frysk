@@ -81,7 +81,7 @@ class ftrace
 
     private void addOptions(Parser parser)
     {
-	Util.addConsoleOptions(logger, parser);
+	Util.addConsoleOptions(parser);
         parser.add(new Option('o', "output file name", "FILE") {
             public void parsed(String filename) throws OptionException
             {

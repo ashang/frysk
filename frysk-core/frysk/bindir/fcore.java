@@ -37,8 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
@@ -88,7 +88,7 @@ public class fcore
 
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
     
-    LinkedList pidList = Util.parsePids(parser, args);
+    Collection pidList = Util.parsePids(parser, args);
     
     Iterator iter = pidList.iterator();
 
@@ -184,6 +184,6 @@ public class fcore
       }
     });
     
-    Util.addConsoleOptions(logger, parser);
+    Util.addConsoleOptions(parser);
   }
 }

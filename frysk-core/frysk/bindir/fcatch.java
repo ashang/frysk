@@ -79,7 +79,7 @@ public class fcatch
       }
     };
     addOptions(parser);
-    Util.addConsoleOptions(logger, parser);
+    Util.addConsoleOptions(parser);
     parser.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
 
     parser.parse(args, new FileArgumentCallback()

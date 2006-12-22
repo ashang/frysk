@@ -37,8 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
@@ -67,7 +67,7 @@ public class fstack
 
   private static void addOptions (Parser parser)
   {
-    Util.addConsoleOptions(logger, parser);
+    Util.addConsoleOptions(parser);
   }
 
   public static void main (String[] args)
@@ -77,7 +77,7 @@ public class fstack
     addOptions(parser);
     parser.setHeader("Usage: fstack <PID>");
 
-    LinkedList pidList = Util.parsePids(parser, args);
+    Collection pidList = Util.parsePids(parser, args);
 
     Iterator iter = pidList.iterator();
 
