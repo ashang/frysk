@@ -130,8 +130,8 @@ install-dejagnu-testsuite-local:
 			-o -type f -print \
 		| tar cTf - - \
 	) | ( \
-		cd $(pkgdatadir) ; \
+		cd $(DESTDIR)$(pkgdatadir) ; \
 		tar xpf - \
 	)
 uninstall-dejagnu-testsuite-local:
-	rm -rf $(pkgdatadir)/testsuite
+	rm -rf $(DESTDIR)$(pkgdatadir)/testsuite
