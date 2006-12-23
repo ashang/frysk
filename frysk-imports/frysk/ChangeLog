@@ -1,3 +1,15 @@
+2006-12-23  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxxin (getPkgDataDir, getPkgLibDir, getPkgLib32Dir)
+	(getImageDir, getGladeDir, getPkgDataDir): New.
+	* Config.javain (getPkgLibDir): Replace PKGLIBDIR.
+	(getPkgLib32Dir): Replace PKGLIB32DIR.
+	(getPkgDataDir): Replace PKGDATADIR.
+	(getGladeDir): Replace GLADEDIR.
+	(getImageDir): Replace IMAGEDIR.
+	(PREFIX, BINDIR, LIBDIR, DATADIR): Comment out.
+	(PKGINCLUDEDIR): Comment out.
+	
 2006-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain (VERSION): Delete.

@@ -62,9 +62,9 @@ public class funit
 	arch32List.addAll (frysk.core.JUnitTests.get ());
 
 	int status = testRunner.runTestCases
-	    (Config.PKGDATADIR + "/",
-	     list, Config.PKGLIBDIR + "/",
-	     arch32List, Config.PKGLIB32DIR + "/");
+	    (Config.getPkgDataDir () + "/",
+	     list, Config.getPkgLibDir () + "/",
+	     arch32List, Config.getPkgLib32Dir () + "/");
 	System.exit (status);
     }
 }

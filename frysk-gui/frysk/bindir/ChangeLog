@@ -1,3 +1,8 @@
+2006-12-23  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.java: Update, use Config's .getPkgDataDir,
+	.getPkgImageDir, and getGladeDir.
+
 2006-12-01  Stepan Kasal  <skasal@redhat.com>
 
 	* frysk.java (main): Fix a typo.

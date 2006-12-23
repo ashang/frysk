@@ -50,10 +50,10 @@ class frysk
     {
     	if (args.length == 0) {
 	    Gui.gui (args,
-		     new String[] { Config.GLADEDIR + "/" },
-		     new String[] { Config.PKGDATADIR + "/images" }, 
-		     new String[] { Config.PKGDATADIR + "/" },
-		     new String[] { Config.PKGDATADIR + "/samples" });
+		     new String[] { Config.getGladeDir () + "/" },
+		     new String[] { Config.getImageDir () }, 
+		     new String[] { Config.getPkgDataDir () + "/" },
+		     new String[] { Config.getPkgDataDir () + "/samples" });
     	}
 	else if (args[0].equals ("--help")) {
 	    System.out.println ("Usage: frysk [option]");

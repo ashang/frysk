@@ -50,6 +50,36 @@
 // SUBST_SED do.
 
 jstring
+frysk::Config::getGladeDir ()
+{
+  return JvNewStringUTF ("@gladedir@");
+}
+
+jstring
+frysk::Config::getImageDir ()
+{
+  return JvNewStringUTF ("@imagedir@");
+}
+
+jstring
+frysk::Config::getPkgDataDir ()
+{
+  return JvNewStringUTF ("@pkgdatadir@");
+}
+
+jstring
+frysk::Config::getPkgLibDir ()
+{
+  return JvNewStringUTF ("@pkglibdir@");
+}
+
+jstring
+frysk::Config::getPkgLib32Dir ()
+{
+  return JvNewStringUTF ("@pkglib32dir@");
+}
+
+jstring
 frysk::Config::getVersion ()
 {
   return JvNewStringUTF ("@VERSION@");
