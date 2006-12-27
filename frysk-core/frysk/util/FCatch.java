@@ -107,15 +107,15 @@ public class FCatch
     logger.log(Level.FINE, "{0} exiting trace", this);
   }
   
-  public void trace ()
-  {
-    logger.log(Level.FINE, "{0} trace", this);
-    //System.out.println("trace");
-    Manager.host.requestRefreshXXX(true);
-    init();
-    Manager.eventLoop.start();
-    logger.log(Level.FINE, "{0} exiting trace", this);
-  }
+//  public void trace ()
+//  {
+//    logger.log(Level.FINE, "{0} trace", this);
+//    //System.out.println("trace");
+//    Manager.host.requestRefreshXXX(true);
+//    init();
+//    Manager.eventLoop.start();
+//    logger.log(Level.FINE, "{0} exiting trace", this);
+//  }
 
   private void init ()
   {

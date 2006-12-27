@@ -1,3 +1,7 @@
+2006-12-27  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java (trace): Removed, redundant.
+
 2006-12-22  Nurdin Premji  <npremji@redhat.com>
 
 	* Util.java (parsePids): Use more generic Collections Return type.

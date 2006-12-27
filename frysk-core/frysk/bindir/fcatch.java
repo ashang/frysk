@@ -66,7 +66,7 @@ public class fcatch
   
   private boolean requestedPid;
   
-  private static ArrayList arguments = new ArrayList();
+  private static ArrayList arguments;
 
   private void run (String[] args)
   {
@@ -86,8 +86,8 @@ public class fcatch
     {
       public void notifyFile (String arg) throws OptionException
       {
-//        if (fcatch.this.arguments == null)
-//          fcatch.this.arguments = new ArrayList();
+        if (fcatch.arguments == null)
+          fcatch.arguments = new ArrayList();
         fcatch.arguments.add(arg);
       }
     });
@@ -97,8 +97,6 @@ public class fcatch
       String[] cmd = (String[]) arguments.toArray(new String[0]);
       catcher.trace(cmd, requestedPid);
   }
-  else
-    catcher.trace();
   }
   
   public void addOptions (Parser p)

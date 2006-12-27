@@ -1,3 +1,8 @@
+2006-12-27  Mike Cvet  <mcvet@redhat.com>
+
+	* fcatch.java (run): Initialize arguments ArrayList here.
+	Removed call to secondary trace() in util.FCatch.
+
 2006-12-22  Nurdin Premji  <npremji@redhat.com>
 
 	* fcore.java (main): Reflect changes from Util.parsePid and Util.addConsoleOptions.
