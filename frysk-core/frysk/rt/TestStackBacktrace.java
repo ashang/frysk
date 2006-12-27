@@ -63,7 +63,7 @@ public class TestStackBacktrace
 {
   private Task myTask;
   
-  private int task_count = 0;
+  private int task_count;
   
   /*
    *    [frame.getLineNumber()]
@@ -204,6 +204,7 @@ public class TestStackBacktrace
 	});
     
     myTask = process.findTaskUsingRefresh(true);
+    task_count = 0;
     
     Manager.host.requestFindProc(new ProcId(process.getPid()), new Host.FindProc() {
 
@@ -283,33 +284,40 @@ public class TestStackBacktrace
     assertNotNull(this.frameTracker[lowest][8][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[lowest][8][4]));
     
+    int index = 1;
     for (int i = 0; i < 3; i++)
       {
         if (this.frameTracker[i][1][2].equals("signal_parent"))
           next = i;
+        else if (this.frameTracker[i][1][2].equals("kill"))
+          {
+            index = 2;
+            next = i;
+            break;
+          }
       }
     
     /* Second thread assertions */
+    assertTrue(this.frameTracker[next][index][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
+    assertEquals("signal_parent", this.frameTracker[next][index][2]);
+    assertNotNull(this.frameTracker[next][index][3]);
+    assertEquals(63, Integer.parseInt(this.frameTracker[next][index][4]));
     
-    assertTrue(this.frameTracker[next][1][1].endsWith("/frysk/pkglibdir/funit-rt-threader.c"));
-    assertEquals("signal_parent", this.frameTracker[next][1][2]);
-    assertNotNull(this.frameTracker[next][1][3]);
-    assertEquals(63, Integer.parseInt(this.frameTracker[next][1][4]));
+    index++;
+    assertNull(this.frameTracker[next][index][1]);
+    assertEquals("start_thread", this.frameTracker[next][index][2]);
+    assertNotNull(this.frameTracker[next][index][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][index][4]));
     
-    assertNull(this.frameTracker[next][2][1]);
-    assertEquals("start_thread", this.frameTracker[next][2][2]);
-    assertNotNull(this.frameTracker[next][2][3]);
-    assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
-    
-    assertNull(this.frameTracker[next][3][1]);
+    index++;
+    assertNull(this.frameTracker[next][index][1]);
 //    if (MachineType.getMachineType() == MachineType.IA32)
 //      assertEquals("__clone", this.frameTracker[next][3][2]);
 //    if (MachineType.getMachineType() == MachineType.X8664)
 //      assertEquals("(__)?clone", this.frameTracker[next][3][2]);
-    assertTrue(this.frameTracker[next][3][2].matches("(__)?clone"));
-    assertNotNull(this.frameTracker[next][3][3]);
-    assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
-    
+    assertTrue(this.frameTracker[next][index][2].matches("(__)?clone"));
+    assertNotNull(this.frameTracker[next][index][3]);
+    assertEquals(0, Integer.parseInt(this.frameTracker[next][index][4]));
     
     /* Find the last thread */
     switch (lowest + next)
@@ -427,8 +435,8 @@ public class TestStackBacktrace
    */
   public synchronized void handleTask (Task task)
   {
-
     StackFrame frame = null;
+    myTask = task;
     
     if (task != null)
       {
