@@ -55,11 +55,13 @@ loop:
 	NO_OP
 	NO_OP ; NO_OP ; NO_OP
 	NO_OP
-	COMPARE $1, %ebp
+	NO_OP ; NO_OP ; NO_OP
+	NO_OP;
+	COMPARE $1, GEN_REG_2
 	JUMP_IF_NOT_EQUAL fail
-	COMPARE $2, %ebx
+	COMPARE $2, GEN_REG_3
 	JUMP_IF_NOT_EQUAL fail
-	COMPARE $3, %ecx
+	COMPARE $3, GEN_REG_4
 	JUMP_IF_NOT_EQUAL fail
 	JUMP loop
 #ifdef __i386__
