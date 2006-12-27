@@ -190,8 +190,8 @@ public class TestStackBacktrace
   public synchronized void testThreadedBacktrace () throws TaskException
   {
     
-      if (brokenXXX (3743))
-        return;
+    if (brokenXXX(3815))
+      return;
       // Backtraces only work on x86 and x86_64 for now.
       if (brokenPpcXXX (3277))
 	  return;

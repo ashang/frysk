@@ -3,8 +3,10 @@
 	* TestStackBacktrace.java (frameAssertions): Now determines the
 	identity of stack frames by innermost frame function name, rather than
 	relative TID. Fixes #3530.
-	Catch the case where sometimes kill() is still in the stack trace.
+	Catch the case where sometimes kill() is still in the stack trace. Fixes
+	#3743.
 	(handleTask): Set the global task to the incoming one.
+	(testMultiThreadedBacktrace): Added brokenXXX(3815).
 
 2006-12-21  Mike Cvet  <mcvet@redhat.com>
 
