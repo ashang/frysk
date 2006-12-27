@@ -254,7 +254,7 @@ public class DisassemblyWindow
         return;
       }
     //long end = pc_inc + 20;
-    this.numInstructions = 20;
+    this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -349,7 +349,7 @@ public class DisassemblyWindow
         return;
       }
     // long end = pc_inc + 20;
-    this.numInstructions = 20;
+    this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 

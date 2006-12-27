@@ -299,7 +299,7 @@ public class MemoryWindow
         return;
       }
     
-    long end = pc_inc + 20;
+    long end = pc_inc + 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
