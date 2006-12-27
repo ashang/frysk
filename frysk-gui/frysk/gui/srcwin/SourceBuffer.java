@@ -40,7 +40,10 @@
 
 package frysk.gui.srcwin;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1176,6 +1179,7 @@ public class SourceBuffer
    */
   protected void loadFile () throws FileNotFoundException, JGException
   {
+
     if (this.scope == null)
       return;
 
@@ -1185,7 +1189,32 @@ public class SourceBuffer
       {
         if (! this.firstLoad)
           return;
-
+        
+        if (this.scope.getSourceFile() != null && this.scope.getSourceFile() != "")
+          {
+            BufferedReader br = new BufferedReader(new FileReader(this.scope.getSourceFile()));
+            StringBuffer text = new StringBuffer();
+            String line = "";
+            try
+            {
+              line = br.readLine();
+              while (line != null)
+                {
+                  text.append(line);
+                  text.append("\n");
+                  line = br.readLine();
+                }
+            }
+            catch (IOException ioe)
+            {
+              System.out.println("IOException!");
+              ioe.printStackTrace();
+            }
+            
+            this.insertText(text.toString());
+            return;
+          }
+        
         StackFrame curr = this.scope;
         while (curr != null)
           {
@@ -1207,9 +1236,7 @@ public class SourceBuffer
         else
           {
             Iterator lines = source.getLines();
-
             String bufferText = loadLines(lines);
-
             this.deleteText(this.getStartIter(), this.getEndIter());
             this.insertText(bufferText);
             this.createTags();
@@ -1217,14 +1244,12 @@ public class SourceBuffer
           }
       }
 
-    Iterator lines = source.getLines();
-
-    String bufferText = loadLines(lines);
-
-    this.deleteText(this.getStartIter(), this.getEndIter());
-    this.insertText(bufferText);
-
-    this.createTags();
+        Iterator lines = source.getLines();
+        String bufferText = loadLines(lines);
+        
+        this.deleteText(this.getStartIter(), this.getEndIter());
+        this.insertText(bufferText);
+        this.createTags();
   }
 
   protected void loadAssembly ()

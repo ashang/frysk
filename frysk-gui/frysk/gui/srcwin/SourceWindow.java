@@ -1417,10 +1417,18 @@ public class SourceWindow
       return;
 
     DOMSource source = selected.getData();
+    if (source == null && selected.getSourceFile() == null)
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                          + (source == null ? "Unknown File"
-                                                                           : source.getFileName())
+                                                          + "Unknown File"
                                                           + "</b>");
+    else if (source == null && selected.getSourceFile() != null)
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + selected.getSourceFile()
+                                                            + "</b>");
+    else
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + source.getFileName()
+                                                            + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 
         if (source != null && selected.getDOMFunction() != null)
