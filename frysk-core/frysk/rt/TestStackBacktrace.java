@@ -80,9 +80,9 @@ public class TestStackBacktrace
   public void testBacktrace () throws TaskException
   {
     if (brokenXXX(3259))
-	return;
+      return;
     if (brokenXXX (3744))
-	return;
+      return;
     // Backtraces only work on x86 and x86_64 for now.
     if (brokenPpcXXX (3277))
 	return;
@@ -191,7 +191,7 @@ public class TestStackBacktrace
   {
     
       if (brokenXXX (3743))
-	  return;
+        return;
       // Backtraces only work on x86 and x86_64 for now.
       if (brokenPpcXXX (3277))
 	  return;
@@ -227,24 +227,18 @@ public class TestStackBacktrace
    */
   public void frameAssertions()
   {
-    
-    int tid = Integer.parseInt(this.frameTracker[0][0][0]);
     int lowest = 0;
     int next = 0;
     int last = 0;
-    int temp = 0;
     
-    /* Find the numerically lowest TID (== main task) because these tasks may
-     * have come in any order, and we need to know which task is which to
-     * perform assertions */
+    /* The Tasks could appear in any order, and the TID of each sucessive
+     * Task is not necessarily larger than the TID of the thread that spawned
+     * it. The only way to be sure that we're looking at the right thread is to
+     * manually check the function names in the call stack. */
     for (int i = 0; i < 3; i++)
       {
-        temp = Integer.parseInt(this.frameTracker[i][0][0]);
-        if (temp < tid)
-          {
-            tid = temp;
-            lowest = i;
-          }
+        if (this.frameTracker[i][1][2].equals("bak_two"))
+          lowest = i; 
       }
     
     /* Main thread assertions */
@@ -289,15 +283,10 @@ public class TestStackBacktrace
     assertNotNull(this.frameTracker[lowest][8][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[lowest][8][4]));
     
-    
-    /* Find the first thread the main thread created - the signal thread. */
     for (int i = 0; i < 3; i++)
       {
-        temp = Integer.parseInt(this.frameTracker[i][0][0]);
-        if (temp == (tid + 1))
-          {
-            next = i;
-          }
+        if (this.frameTracker[i][1][2].equals("signal_parent"))
+          next = i;
       }
     
     /* Second thread assertions */
