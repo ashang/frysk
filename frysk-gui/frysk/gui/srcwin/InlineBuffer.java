@@ -236,7 +236,8 @@ public class InlineBuffer extends SourceBuffer {
     protected void setCurrentLine(StackFrame frame){
     		frame.setStartLine(frame.getStartLine() - this.declaration.getStartingLine()+1);
     		frame.setEndLine(frame.getEndLine() - this.declaration.getStartingLine()+1);
-    		super.setCurrentLine(frame);
+    		//super.setCurrentLine(frame);
+            super.highlightLine(frame, true);
     }
     
     /**

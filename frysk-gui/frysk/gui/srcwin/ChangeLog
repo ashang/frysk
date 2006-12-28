@@ -1,3 +1,19 @@
+2006-12-28  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (setCurrentLine): Removed; replaced in
+	functionality by highlightLine().
+	(highlightLine): Cleaned up a little.
+	(setScope): Removed redundant call to create DOMTags from 
+	source code. Call highlightLine() instead of setCurrentLine().
+	(loadUnmarkedText): Added. Loads unmarked text into
+	this SourceBuffer.
+	(loadFile): Moved some code into loadUnmarkedText().
+	Better supports loading unmarked text from the innermost
+	stack frame containing source filename information.
+	* InlineBuffer.java (setCurrentLine): Call super.highlightLine()
+	instead of setCurrentLine().
+	* SourceWindow.java (populateStackBrowser): Ditto.
+
 2006-12-27  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (updateShownStackFrame): Display the source

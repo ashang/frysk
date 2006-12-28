@@ -116,7 +116,7 @@ public class SourceBuffer
 
   private TextMark startCurrentLine;
 
-  private TextMark endCurrentLine;
+//  private TextMark endCurrentLine;
 
   private TextIter startCurrentFind;
 
@@ -157,7 +157,7 @@ public class SourceBuffer
   
   //private HashMap MarkMap;
   
-  private int tagFlag = 0;
+//  private int tagFlag = 0;
 
   // Since conceptually each sourcebuffer will only be viewing one file, we
   // don't
@@ -303,75 +303,75 @@ public class SourceBuffer
    * @param endCol The offset (wrt. the start of the line) that the instruction
    *          ends on
    */
-  protected void setCurrentLine (StackFrame frame)
-  {
-
-    if (frame.getData() == null 
-        || !frame.getData().getFileName().equals(this.scope.getData().getFileName()))
-      {
-        frame = frame.getOuter();
-        tagFlag = 0;
-        if (frame != null)
-          setCurrentLine(frame);
-        
-        return;
-      }
-      
-    //System.out.println("setCurrentLine matching: " + frame.getMethodName());
-      
-    int startLine = frame.getStartLine();
-    int startCol = frame.getStartOffset();
-    int endLine = frame.getEndLine();
-    int endCol = frame.getEndOffset();
-    
-    this.startCurrentLine = this.createMark(
-                                            "currentLineStart",
-                                            this.getIter(this.getLineIter(
-                                                                          startLine - 1).getOffset()
-                                                         + startCol), true);
-    if (endCol != -1)
-      {
-        this.endCurrentLine = this.createMark(
-                                              "currentLineEnd",
-                                              this.getIter(this.getLineIter(
-                                                                            endLine - 1).getOffset()
-                                                           + endCol), false);
-      }
-    else
-      {
-        TextIter lineStart = this.getLineIter(endLine - 1);
-        this.endCurrentLine = this.createMark(
-                                              "currentLineEnd",
-                                              this.getIter(lineStart.getOffset()
-                                                           + lineStart.getCharsInLine()),
-                                              true);
-      }
-
-    if (frame.getInner() == null)
-      {
-        if (this.tagFlag == 0)
-          {
-            // System.out.println("currnetlineapplytag " + frame.getMethodName()
-            // + " " + frame.getLineNumber());
-            this.applyTag(this.currentLine,
-                          this.getIter(this.startCurrentLine),
-                          this.getIter(this.endCurrentLine));
-            this.tagFlag = 1;
-          }
-      }
-    else
-      {
-        this.applyTag(this.outerLine, this.getIter(this.startCurrentLine),
-                      this.getIter(this.endCurrentLine));
-      }
-    
-    // Apply the next sections of the 'current line'
-    frame = frame.getOuter();
-    if (frame != null)
-      setCurrentLine(frame);
-    else
-      this.tagFlag = 0;
-  }
+//  protected void setCurrentLine (StackFrame frame)
+//  {
+//
+//    if (frame.getData() == null 
+//        || !frame.getData().getFileName().equals(this.scope.getData().getFileName()))
+//      {
+//        frame = frame.getOuter();
+//        tagFlag = 0;
+//        if (frame != null)
+//          setCurrentLine(frame);
+//        
+//        return;
+//      }
+//      
+//    //System.out.println("setCurrentLine matching: " + frame.getMethodName());
+//      
+//    int startLine = frame.getStartLine();
+//    int startCol = frame.getStartOffset();
+//    int endLine = frame.getEndLine();
+//    int endCol = frame.getEndOffset();
+//    
+//    this.startCurrentLine = this.createMark(
+//                                            "currentLineStart",
+//                                            this.getIter(this.getLineIter(
+//                                                                          startLine - 1).getOffset()
+//                                                         + startCol), true);
+//    if (endCol != -1)
+//      {
+//        this.endCurrentLine = this.createMark(
+//                                              "currentLineEnd",
+//                                              this.getIter(this.getLineIter(
+//                                                                            endLine - 1).getOffset()
+//                                                           + endCol), false);
+//      }
+//    else
+//      {
+//        TextIter lineStart = this.getLineIter(endLine - 1);
+//        this.endCurrentLine = this.createMark(
+//                                              "currentLineEnd",
+//                                              this.getIter(lineStart.getOffset()
+//                                                           + lineStart.getCharsInLine()),
+//                                              true);
+//      }
+//
+//    if (frame.getInner() == null)
+//      {
+//        if (this.tagFlag == 0)
+//          {
+//            // System.out.println("currnetlineapplytag " + frame.getMethodName()
+//            // + " " + frame.getLineNumber());
+//            this.applyTag(this.currentLine,
+//                          this.getIter(this.startCurrentLine),
+//                          this.getIter(this.endCurrentLine));
+//            this.tagFlag = 1;
+//          }
+//      }
+//    else
+//      {
+//        this.applyTag(this.outerLine, this.getIter(this.startCurrentLine),
+//                      this.getIter(this.endCurrentLine));
+//      }
+//    
+//    // Apply the next sections of the 'current line'
+//    frame = frame.getOuter();
+//    if (frame != null)
+//      setCurrentLine(frame);
+//    else
+//      this.tagFlag = 0;
+//  }
   
   /**
    * Perform various highlighting operations on the incoming stack trace.
@@ -439,29 +439,23 @@ public class SourceBuffer
                                                           this.getIter(end));
           }
       }
-    
-    //System.out.println("Going after next frames");
-        
+
         StackFrame curr = frame.getOuter();
         if (this.scope.getData() == null)
           return;
         
-        String fileName = "";
-        
-        if (this.scope.getData() != null)
-          fileName = this.scope.getData().getFileName();
+        String fileName = this.scope.getData().getFileName();
         
         while (curr != null)
       {
 
-         //System.out.println("Checking " + curr.getData().getFileName() + " to " + fileName);
+        // System.out.println("Checking " + curr.getData().getFileName() + " to
+        // " + fileName);
         if (curr.getData() != null)
           {
             if (newFrame == true
                 && ! curr.getData().getFileName().equals(fileName))
               {
-                 //System.out.println("files don't match, not highlighting " +
-                 //curr.getMethodName());
                 curr = curr.getOuter();
                 continue;
               }
@@ -472,8 +466,8 @@ public class SourceBuffer
         endLine = curr.getEndLine();
         endCol = curr.getEndOffset();
 
-         //System.out.println("iterating " + curr.getMethodName() + " " +
-         //curr.getLineNumber() + " " + newFrame);
+        // System.out.println("iterating " + curr.getMethodName() + " " +
+        // curr.getLineNumber() + " " + newFrame);
 
         start = this.createMark(
                                 curr.getMethodName(),
@@ -987,8 +981,6 @@ public class SourceBuffer
                 this.firstLoad = true;
                 loadFile();
               }
-            else
-              createTags();
             break;
           case ASM_MODE:
             this.loadAssembly();
@@ -1006,7 +998,8 @@ public class SourceBuffer
     if (scope != null)
       {
         this.fileName = file;
-        this.setCurrentLine(scope);
+//        this.setCurrentLine(scope);
+        this.highlightLine(scope, true);
       }
   }
 
@@ -1192,26 +1185,8 @@ public class SourceBuffer
         
         if (this.scope.getSourceFile() != null && this.scope.getSourceFile() != "")
           {
-            BufferedReader br = new BufferedReader(new FileReader(this.scope.getSourceFile()));
-            StringBuffer text = new StringBuffer();
-            String line = "";
-            try
-            {
-              line = br.readLine();
-              while (line != null)
-                {
-                  text.append(line);
-                  text.append("\n");
-                  line = br.readLine();
-                }
-            }
-            catch (IOException ioe)
-            {
-              System.out.println("IOException!");
-              ioe.printStackTrace();
-            }
-            
-            this.insertText(text.toString());
+            this.deleteText(this.getStartIter(), this.getEndIter());
+            this.insertText(loadUnmarkedText(this.scope));
             return;
           }
         
@@ -1222,6 +1197,13 @@ public class SourceBuffer
               {
                 source = curr.getData();
                 break;
+              }
+            if (curr.getSourceFile() != null && curr.getSourceFile() != "")
+              {
+                this.scope = curr;
+                this.deleteText(this.getStartIter(), this.getEndIter());
+                this.insertText(loadUnmarkedText(this.scope));
+                return;
               }
             curr = curr.getOuter();
           }
@@ -1250,6 +1232,37 @@ public class SourceBuffer
         this.deleteText(this.getStartIter(), this.getEndIter());
         this.insertText(bufferText);
         this.createTags();
+  }
+  
+  /**
+   * The source we're looking at isn't handled by the parser, so just load it in.
+   * @param frame   The StackFrame representing the current frame on
+   * the stack.
+   * @return    text    The source to be loaded into the SourceWindow
+   * @throws FileNotFoundException
+   */
+  private String loadUnmarkedText (StackFrame frame) throws FileNotFoundException
+  {
+    BufferedReader br = new BufferedReader(new FileReader(frame.getSourceFile()));
+    StringBuffer text = new StringBuffer();
+    String line = "";
+    try
+    {
+      line = br.readLine();
+      while (line != null)
+        {
+          text.append(line);
+          text.append("\n");
+          line = br.readLine();
+        }
+    }
+    catch (IOException ioe)
+    {
+      System.out.println("IOException!");
+      ioe.printStackTrace();
+    }
+    
+    return text.toString();
   }
 
   protected void loadAssembly ()

@@ -444,7 +444,8 @@ public class SourceWindow
             if (currentMethodName.equals(curr.getMethodName()))
               {
                 flag = true;
-                sb.setCurrentLine(curr);
+//                sb.setCurrentLine(curr);
+                sb.highlightLine(curr, true);
                 this.currentFrame = curr;
               }
 
