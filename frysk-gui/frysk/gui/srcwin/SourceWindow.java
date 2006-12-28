@@ -1418,11 +1418,11 @@ public class SourceWindow
       return;
 
     DOMSource source = selected.getData();
-    if (source == null && selected.getSourceFile() == null)
+    if (source == null && selected.getSourceFile() == "")
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                           + "Unknown File"
                                                           + "</b>");
-    else if (source == null && selected.getSourceFile() != null)
+    else if (source == null && selected.getSourceFile() != "")
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + selected.getSourceFile()
                                                             + "</b>");
@@ -1447,6 +1447,9 @@ public class SourceWindow
                 SourceBuffer b = (SourceBuffer) v.getBuffer();
 
                 StackFrame curr = selected;
+                
+                /* Find the innermost frame - want to make sure that we
+                 * get everything highlighted */
                 while (curr.getInner() != null)
                   curr = curr.getInner();
 
@@ -1463,10 +1466,9 @@ public class SourceWindow
             else
               this.view.scrollToLine(selected.getLineNumber());
           }
-        
       }
       
-        currentFrame = selected;
+    currentFrame = selected;
     this.view.showAll();
   }
   

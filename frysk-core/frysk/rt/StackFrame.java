@@ -223,6 +223,9 @@ public class StackFrame
    */
   public String getSourceFile ()
   {
+    if (sourceFile == null)
+      return "";
+    
     return sourceFile;
   }
 

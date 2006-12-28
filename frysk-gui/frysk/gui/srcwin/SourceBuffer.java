@@ -386,30 +386,37 @@ public class SourceBuffer
   {
     if (frame == null || this.scope.getData() == null)
       return;
-    
+
+    /* Check for debuginfo in this frame */
     if (frame.getDwflLine() == null)
       {
+        /* No debuginfo? Then check the rest of the stack */
         while (frame.getOuter() != null && frame.getDwflLine() == null)
           frame = frame.getOuter();
-        
+
+        /*
+         * Nothing in this call stack had debuginfo, so there's nothing to
+         * highlight
+         */
         if (frame == null)
           return;
       }
-    
+
     int startLine = frame.getStartLine();
     int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
     int endCol = frame.getEndOffset();
 
-    //System.out.println("HIghlighting " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
-    
+    // System.out.println("HIghlighting " + frame.getMethodName() + " " +
+    // frame.getLineNumber() + " " + newFrame);
+
     TextMark start = this.createMark(
                                      frame.getMethodName(),
                                      this.getIter(this.getLineIter(
                                                                    startLine - 1).getOffset()
                                                   + startCol), true);
     TextMark end = null;
-    if (endCol != -1)
+    if (endCol != - 1)
       {
         end = this.createMark(
                               "end",
@@ -421,40 +428,38 @@ public class SourceBuffer
         TextIter lineStart = this.getLineIter(endLine - 1);
         end = this.createMark("end",
                               this.getIter(lineStart.getOffset()
-                                           + lineStart.getCharsInLine()),
-                              true);
+                                           + lineStart.getCharsInLine()), true);
       }
-    
-    if (frame.getData() == null || frame.getData().getFileName().equals(fileName))
+
+    if (frame.getData() == null
+        || frame.getData().getFileName().equals(this.fileName))
       {
-        //System.out.println("file is null or match - finishing " + frame.getMethodName() + " " + frame.getLineNumber() + " " + newFrame);
-        
+        // System.out.println("file is null or match - finishing " +
+        // frame.getMethodName() + " " + frame.getLineNumber() + " " +
+        // newFrame);
+
         if (newFrame == true)
           {
-            this.applyTag(this.currentLine, this.getIter(start), this.getIter(end));
+            this.applyTag(this.currentLine, this.getIter(start),
+                          this.getIter(end));
           }
         else
           {
             this.removeTag(this.currentLine, this.getIter(start),
-                                                          this.getIter(end));
+                           this.getIter(end));
           }
       }
 
-        StackFrame curr = frame.getOuter();
-        if (this.scope.getData() == null)
-          return;
-        
-        String fileName = this.scope.getData().getFileName();
-        
-        while (curr != null)
-      {
+    StackFrame curr = frame.getOuter();
 
-        // System.out.println("Checking " + curr.getData().getFileName() + " to
-        // " + fileName);
+    /* Only highlight lines in the same file as the current scope of this
+     * SourceBuffer. */
+    while (curr != null)
+      {
         if (curr.getData() != null)
           {
             if (newFrame == true
-                && ! curr.getData().getFileName().equals(fileName))
+                && ! curr.getData().getFileName().equals(this.fileName))
               {
                 curr = curr.getOuter();
                 continue;
@@ -1183,7 +1188,7 @@ public class SourceBuffer
         if (! this.firstLoad)
           return;
         
-        if (this.scope.getSourceFile() != null && this.scope.getSourceFile() != "")
+        if (this.scope.getSourceFile() != "")
           {
             this.deleteText(this.getStartIter(), this.getEndIter());
             this.insertText(loadUnmarkedText(this.scope));
@@ -1198,7 +1203,7 @@ public class SourceBuffer
                 source = curr.getData();
                 break;
               }
-            if (curr.getSourceFile() != null && curr.getSourceFile() != "")
+            if (curr.getSourceFile() != "")
               {
                 this.scope = curr;
                 this.deleteText(this.getStartIter(), this.getEndIter());
