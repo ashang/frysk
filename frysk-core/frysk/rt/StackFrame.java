@@ -373,9 +373,8 @@ public class StackFrame
           {
             String[] fileName = this.sourceFile.split("/");
             ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
-                  + fileName[fileName.length - 1] + " " 
-		  + this.myCursor.getMethodName() 
-                  + " (): line #" + this.lineNum;
+            + this.myCursor.getMethodName() + " () from " 
+            + fileName[fileName.length - 1] + ": line #" + this.lineNum;
           }
       }
     else

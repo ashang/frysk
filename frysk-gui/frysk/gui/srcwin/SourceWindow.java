@@ -390,13 +390,8 @@ public class SourceWindow
             
             for (int j = 0; j < frames.length; j++)
               {
-                if (frames[j].getMethodName() != null)
-                  {
-                    if (! frames[j].getMethodName().equals(curr.getMethodName()))
-                      b.highlightLine(frames[j], true);
-                  }
+				 b.highlightLine(frames[j], true);
               }
-            b.highlightLine(curr, true);
           }
         else
           {
@@ -436,16 +431,13 @@ public class SourceWindow
             taskMatch = curr;
           }
 
-        if (! this.currentFrame.getMethodName().equals(curr.getMethodName()))
-          sb.highlightLine(curr, true);
+        sb.highlightLine(curr, true);
 
         while (curr != null)
           {
             if (currentMethodName.equals(curr.getMethodName()))
               {
                 flag = true;
-//                sb.setCurrentLine(curr);
-                sb.highlightLine(curr, true);
                 this.currentFrame = curr;
               }
 
