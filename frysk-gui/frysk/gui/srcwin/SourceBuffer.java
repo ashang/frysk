@@ -407,8 +407,8 @@ public class SourceBuffer
     int endLine = frame.getEndLine();
     int endCol = frame.getEndOffset();
 
-    // System.out.println("HIghlighting " + frame.getMethodName() + " " +
-    // frame.getLineNumber() + " " + newFrame);
+//     System.out.println("HIghlighting " + frame.getMethodName() + " " +
+//     frame.getLineNumber() + " " + newFrame);
 
     TextMark start = this.createMark(
                                      frame.getMethodName(),
@@ -471,8 +471,8 @@ public class SourceBuffer
         endLine = curr.getEndLine();
         endCol = curr.getEndOffset();
 
-        // System.out.println("iterating " + curr.getMethodName() + " " +
-        // curr.getLineNumber() + " " + newFrame);
+//        System.out.println("iterating " + curr.getMethodName() + " " +
+//        curr.getLineNumber() + " " + newFrame);
 
         start = this.createMark(
                                 curr.getMethodName(),
@@ -781,14 +781,15 @@ public class SourceBuffer
         while (i.hasNext())
           {
             Variable v = (Variable) i.next();
-            i.remove();
             Variable vv = SymTab.print(v.getText());
             
             /* Variable is out of scope, leave it as-is */
-            if (vv == null)
+            if (vv == null || vv.toString().equals("") || vv.toString().equals("\0"))
               ret.add(v);
             else
               ret.add(vv);
+            
+            i.remove();
           }
       }
     catch (ParseException e)
@@ -798,7 +799,8 @@ public class SourceBuffer
       }
     catch (NameNotFoundException n)
       {
-	return null;
+        n.printStackTrace();
+        return ret;
       }
     
     return ret;

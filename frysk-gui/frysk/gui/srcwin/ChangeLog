@@ -1,3 +1,9 @@
+2006-12-31  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (refreshVars): Catch the reading of out-of-scope
+	variables by looking for "" and "\0" in addition to a null Variable object.
+	Fixes #3819.
+
 2006-12-30  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Handles line
