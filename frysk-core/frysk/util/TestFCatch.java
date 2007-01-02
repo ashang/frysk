@@ -60,16 +60,17 @@ import frysk.proc.TestLib;
 public class TestFCatch
     extends TestLib
 {
-  
-  String mainThread = "#[\\d]+ 0x[\\da-f]+ in sigsuspend \\(\\)\n"
-  + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-  + Build.SRCDIR
-  + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
-  + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
-  + Build.SRCDIR
-  + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
-  + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-  + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+
+  String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                      + "#[\\d]+ 0x[\\da-f]+ in sigsuspend \\(\\)\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
+                      + Build.SRCDIR
+                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
+                      + Build.SRCDIR
+                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
   public void testSingleThreadedCatch ()
   {
@@ -78,48 +79,51 @@ public class TestFCatch
 
     FCatchTester catcher = new FCatchTester();
     Manager.eventLoop.runPending();
-    
+
     catcher.addTracePid(proc.getPid());
     catcher.trace(new String[1], true);
-    
+
     assertRunUntilStop("Adding all observers");
 
     Signal.kill(proc.getPid(), Sig.SEGV);
-    
+
     assertRunUntilStop("Building stacktrace");
 
     String trace = catcher.getStackTrace();
 
-    assertTrue(trace + "should match: " + this.mainThread, trace.matches(this.mainThread));
+    assertTrue(trace + "should match: " + this.mainThread,
+               trace.matches(this.mainThread));
   }
 
   class FCatchTester
       extends FCatch
   {
     private StringBuffer stackTrace = new StringBuffer();
+
     private int numAdds;
+
     private Proc proc;
-    
-    public FCatchTester()
+
+    public FCatchTester ()
     {
       super();
     }
-    
+
     public void trace (String[] command, boolean attach)
     {
       logger.log(Level.FINE, "{0} trace", this);
       Manager.host.requestRefreshXXX(true);
-      
+
       if (attach == true)
         init();
       else
         Manager.host.requestCreateAttachedProc(command, new CatchObserver());
     }
-    
+
     private void init ()
     {
       logger.log(Level.FINE, "{0} init", this);
-     
+
       Manager.host.requestFindProc(this.procID, new Host.FindProc()
       {
         public void procFound (ProcId procId)
@@ -136,7 +140,7 @@ public class TestFCatch
       });
       logger.log(Level.FINE, "{0} exiting init", this);
     }
-    
+
     private void iterateTasks ()
     {
       Iterator i = proc.getTasks().iterator();
@@ -145,7 +149,6 @@ public class TestFCatch
           ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
         }
     }
-    
 
     class CatchObserver
         implements TaskObserver.Attached, TaskObserver.Cloned,
@@ -198,7 +201,7 @@ public class TestFCatch
       public void addedTo (Object observable)
       {
         logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
-//        System.out.println("CatchObserver.addedTo " + numAdds);
+        // System.out.println("CatchObserver.addedTo " + numAdds);
         ++numAdds;
         if (numAdds == ((Task) observable).getProc().getTasks().size() * 4)
           Manager.eventLoop.requestStop();
@@ -227,39 +230,39 @@ public class TestFCatch
       public Action updateSignaled (Task task, int signal)
       {
         logger.log(Level.FINE, "{0} updateSignaled", task);
-      
+
         switch (signal)
           {
           case 2:
-            //System.out.println("SIGHUP detected: dumping stack trace");
+            // System.out.println("SIGHUP detected: dumping stack trace");
             generateStackTrace(task);
             break;
           case 3:
-            //System.out.println("SIGQUIT detected: dumping stack trace");
+            // System.out.println("SIGQUIT detected: dumping stack trace");
             generateStackTrace(task);
             // System.exit(0);
             break;
           case 6:
-            //System.out.println("SIGABRT detected: dumping stack trace");
+            // System.out.println("SIGABRT detected: dumping stack trace");
             generateStackTrace(task);
             // System.exit(0);
             break;
           case 9:
-            //System.out.println("SIGKILL detected: dumping stack trace");
+            // System.out.println("SIGKILL detected: dumping stack trace");
             generateStackTrace(task);
             // System.exit(0);
             break;
           case 11:
-            //System.out.println("SIGSEGV detected: dumping stack trace");
+            // System.out.println("SIGSEGV detected: dumping stack trace");
             generateStackTrace(task);
             // System.exit(0);
             break;
           case 15:
-            //System.out.println("SIGTERM detected: dumping stack trace");
+            // System.out.println("SIGTERM detected: dumping stack trace");
             // System.exit(0);
             break;
           default:
-            //System.out.println("Signal detected: dumping stack trace");
+            // System.out.println("Signal detected: dumping stack trace");
             generateStackTrace(task);
           }
 
@@ -314,7 +317,7 @@ public class TestFCatch
       int i = 0;
       while (frame != null)
         {
-          //System.out.println(frame.toPrint(false));
+          // System.out.println(frame.toPrint(false));
           this.stackTrace.append("#" + i + " ");
           this.stackTrace.append(frame.toPrint(false));
           this.stackTrace.append("\n");
@@ -325,8 +328,8 @@ public class TestFCatch
       Manager.eventLoop.requestStop();
       logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
     }
-    
-    public String getStackTrace()
+
+    public String getStackTrace ()
     {
       return this.stackTrace.toString();
     }

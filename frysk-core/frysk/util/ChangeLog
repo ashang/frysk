@@ -1,5 +1,7 @@
 2007-01-02  Nurdin Premji  <npremji@redhat.com>
 
+	* TestFCatch.java (mainThread): Added regex line to match beginning of output.
+
 	* StressTestFStack.java: Added.
 	* TestFStack.java (multiThreaded): 	Moved some variables here rather than
 	global.
