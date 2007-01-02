@@ -1,3 +1,10 @@
+2007-01-02  Nurdin Premji  <npremji@redhat.com>
+
+	* StressTestFStack.java: Added.
+	* TestFStack.java (multiThreaded): 	Moved some variables here rather than
+	global.
+	Moved stressfull tests to StressTestFStack.
+
 2006-12-27  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (trace): Removed, redundant.

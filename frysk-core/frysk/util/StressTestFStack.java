@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,63 +42,38 @@ package frysk.util;
 
 import java.util.logging.Level;
 
-import frysk.core.Build;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
-public class TestFStack
+public class StressTestFStack
     extends TestLib
 {
 
-  public void testSingleThreadedDetached ()
+  static String mainClone = "Task #\\d+\n"
+                            + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                            + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
+                            + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+
+  static String clone = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*";
+
+  public void testStressMultiThreadedDetach ()
   {
-    AckProcess ackProc = new DetachedAckProcess();
-    multiThreaded(ackProc, 0);
+    int clones = 20;
+    AckProcess ackProc = new DetachedAckProcess(clones);
+    TestFStack.multiThreaded(ackProc, clones);
   }
 
-  public void testSingleThreadedAckDaemon ()
+  public void testClone ()
   {
-    AckProcess ackProc = new AckDaemonProcess();
-    multiThreaded(ackProc, 0);
-  }
 
-  public void testMultiThreadedDetached ()
-  {
-    AckProcess ackProc = new DetachedAckProcess(2);
-    multiThreaded(ackProc, 2);
-  }
-
-  public void testMultiThreadedAckDaemon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess(2);
-    multiThreaded(ackProc, 2);
-  }
-
-  public static void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
-  {
-    String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                        + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                        + Build.SRCDIR
-                        + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
-                        + Build.SRCDIR
-                        + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
-
-    String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                    + Build.SRCDIR + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
-                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
+    int threads = 2;
+    AckProcess ackProc = new AckDaemonCloneProcess(threads);
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
-    StacktraceAction stacker;
-
-    stacker = new StacktraceAction(proc, new Event()
+    StacktraceAction stacker = new StacktraceAction(proc, new Event()
     {
 
       public void execute ()
@@ -110,20 +85,19 @@ public class TestFStack
 
       public void addFailed (Object observable, Throwable w)
       {
-        fail("Proc add failed: " + w.getMessage());
+        fail("Proc add failed" + w.getMessage());
       }
     };
-
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();
-    regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
-             + "}";
+
+    regex += "(" + mainClone + ")(" + clone + ")*";
 
     String result = stacker.toPrint();
     logger.log(Level.FINE, result);
-    assertTrue(result + "should match: " + regex + " threads",
-               result.matches(regex));
+    assertTrue(result + "should match: " + regex, result.matches(regex));
 
   }
+
 }
