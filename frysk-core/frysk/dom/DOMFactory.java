@@ -113,7 +113,7 @@ public class DOMFactory
           {
             // create a new dom and associate it with the given task
             // XXX create a fake name for now, must create unique names later
-            dom = new DOMFrysk("TaskTask");
+            dom = new DOMFrysk(proc.getCommand());
             dom.addImage(proc.getMainTask().getName(), sourcelist[i], sourcelist[i]);
           }
 
@@ -349,4 +349,14 @@ public class DOMFactory
     return str.substring(0,8);
   }  */
 
+  public static void clearDOMSourceMap (Proc proc)
+  {
+    DOMFrysk dom = (DOMFrysk) hashmap.get(proc);
+    if (dom != null)
+      {
+        DOMImage image = dom.getImage(proc.getMainTask().getName());
+        image.clearSourceMap();
+      }
+  }
+  
 }

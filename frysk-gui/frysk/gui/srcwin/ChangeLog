@@ -1,3 +1,11 @@
+2006-01-03  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (getFunctionXXX): Removed. Use 
+	DOMImage.findFunction() instead.
+	(generateProcStackTrace): Switch to calling 
+	DOMImage.findFunction(). Clear the DOMSource cache after
+	the new SourceWindow is finished.
+
 2006-12-31  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (refreshVars): Catch the reading of out-of-scope

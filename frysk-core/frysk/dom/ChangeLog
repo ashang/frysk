@@ -1,3 +1,30 @@
+2007-01-03  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFactory.java (createDOM): Use the proc's command field as the
+	new DOMFrysk parameter.
+	(clearDOMSourceMap): Added. Clears the specified DOMImage's DOMSource
+	HashMap.
+	* DOMImage.java: Applied GNU formatting.
+	(sourceMap): Added. Cache for DOMSource objects. Fixes #3821.
+	(addFunction): Set this as the parent Object for the new DOMFunction.
+	(getSource): First check the HashMap to see if the requested DOMSource
+	is contained first. If not, create as usual and insert into cache.
+	Substantial improvement over previous method, fixing #3821.
+	(getFunction): Set this as the parent Object for all these new 
+	DOMFunctions.
+	(findFunction): Replaces SourceWindow.getFunctionXXX; better and
+	faster.
+	(clearSourceMap): Clears this DOMImage's source HashMap.
+	* DOMFrysk.java: Applied GNU formatting.
+	(imageMap): Added. Cache for DOMImage objects, fixing #3821.
+	(getImage): Check the global HashMap for the requested DOMImage, 
+	if it isn't there, create and insert into the cache.
+	* DOMFunction.java: Applied GNU formatting.
+	(setParent): Added.
+	(getSource): Instead of iterating and creating new DOMImages each time, 
+	grab the requested DOMSource out of the parent DOMImage's HashMap.
+	* DOMLine.java: Applied GNU formatting.
+
 2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMImage.java (getFunctions): Moved from using Vectors to using the

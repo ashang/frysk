@@ -40,6 +40,7 @@
 
 package frysk.dom;
 
+import java.util.HashMap;
 import java.util.Iterator;
 //import java.util.Vector;
 import java.math.BigInteger;
@@ -146,6 +147,8 @@ public class DOMFrysk
   private final Element pcName = new Element(PC_ATTR);
 
   private Document data;
+  
+  private HashMap imageMap = new HashMap();
 
   /**
    * Creates a new DOMFrysk using the DOM contained in data
@@ -259,15 +262,26 @@ public class DOMFrysk
    */
   public DOMImage getImage (String name)
   {
-    Iterator i = this.data.getRootElement().getChildren().iterator();
-
-    while (i.hasNext())
+    
+    DOMImage image = (DOMImage) this.imageMap.get(name);
+    if (image != null)
+      return image;
+    else
       {
-        Element elem = (Element) i.next();
-        if (elem.getQualifiedName().equals(DOMImage.IMAGE_NODE))
+        Iterator i = this.data.getRootElement().getChildren().iterator();
+
+        while (i.hasNext())
           {
-            if (elem.getAttributeValue(DOMSource.FILENAME_ATTR).equals(name))
-              return new DOMImage(elem);
+            Element elem = (Element) i.next();
+            if (elem.getQualifiedName().equals(DOMImage.IMAGE_NODE))
+              {
+                if (elem.getAttributeValue(DOMSource.FILENAME_ATTR).equals(name))
+                  {
+                    image = new DOMImage(elem);
+                    this.imageMap.put(name, image);
+                    return image;
+                  }
+              }
           }
       }
 

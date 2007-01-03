@@ -48,7 +48,8 @@ import org.jdom.filter.Filter;
 /**
  * DOMLine represents a line of code (not assembly instruction) in a file.
  */
-public class DOMLine {
+public class DOMLine 
+{
 	/**
 	 * Whether this line is executable or not
 	 */
@@ -96,8 +97,9 @@ public class DOMLine {
 	 * @param address
 	 * 		The program counter value.
 	 */
-	public DOMLine(int lineNo, String lineText, int offset, 
-			boolean executable, boolean hasBreakpoint, long address){
+	public DOMLine (int lineNo, String lineText, int offset, 
+			boolean executable, boolean hasBreakpoint, long address)
+    {
 		this.myElement = new Element(DOMLine.LINE_NODE);
 		myElement.setText(lineText);
 		myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
@@ -114,7 +116,8 @@ public class DOMLine {
 	 * 
 	 * @param data is a JDOM element named "line"
 	 */
-	public DOMLine(Element data) {
+	public DOMLine (Element data) 
+    {
 		this.myElement = data;
 	}
 
@@ -123,7 +126,8 @@ public class DOMLine {
 	 * 
 	 * @return The number of this line
 	 */
-	public int getLineNum() {
+	public int getLineNum () 
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(NUMBER_ATTR));
 	}
 
@@ -132,7 +136,8 @@ public class DOMLine {
 	 * 
 	 * @return The length of this line in characters
 	 */
-	public int getLength() {
+	public int getLength () 
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(LENGTH_ATTR));
 	}
 
@@ -141,7 +146,8 @@ public class DOMLine {
 	 * 
 	 * @return The offset of this line from the start of the file in characters
 	 */
-	public int getOffset() {
+	public int getOffset () 
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(OFFSET_ATTR));
 	}
 
@@ -150,7 +156,8 @@ public class DOMLine {
 	 * 
 	 * @param character offset from the beginning of the file
 	 */
-	public void setOffset(int offset) {
+	public void setOffset (int offset) 
+    {
 		this.myElement.setAttribute(OFFSET_ATTR, ""+offset);
 	}
 	
@@ -159,7 +166,8 @@ public class DOMLine {
 	 * 
 	 * @return Whether or not this line contains inlined code
 	 */
-	public boolean hasInlinedCode() {
+	public boolean hasInlinedCode () 
+    {
 		return !this.myElement.getChildren(DOMInlineInstance.INLINE_NODE).isEmpty();
 	}
 
@@ -168,7 +176,8 @@ public class DOMLine {
 	 * 
 	 * @return whether or not this line is executable
 	 */
-	public boolean isExecutable() {
+	public boolean isExecutable () 
+    {
 		
 		if (this.myElement.getAttributeValue(EXECUTABLE_ATTR).equals("true"))
 			return true;
@@ -181,8 +190,8 @@ public class DOMLine {
 	 * 
 	 * @param executable is the boolean value to set the executable attribute to
 	 */
-	public void setExecutable(boolean executable) {
-		
+	public void setExecutable (boolean executable)
+    {
 		this.myElement.setAttribute(EXECUTABLE_ATTR, 
 				""+executable);
 	}
@@ -192,8 +201,8 @@ public class DOMLine {
 	 * 
 	 * @return true if there is a breakpoint set here, false if not
 	 */
-	public boolean hasBreakPoint() {
-		
+	public boolean hasBreakPoint () 
+    {
 		if (this.myElement.getAttributeValue(HAS_BREAK_ATTR).equals("true"))
 			return true;
 
@@ -205,8 +214,8 @@ public class DOMLine {
 	 * 
 	 * @param hasbreak is the boolean value to set the hasbreak value to 
 	 */
-	public void setBreakPoint(boolean hasbreak) {
-		
+	public void setBreakPoint (boolean hasbreak)
+    {
 		this.myElement.setAttribute(HAS_BREAK_ATTR, ""+hasbreak);
 	}
 
@@ -215,7 +224,8 @@ public class DOMLine {
 	 * 
 	 * @return the text of this line
 	 */
-	public String getText() {
+	public String getText () 
+    {
 		return this.myElement.getText();
 	}
 
@@ -224,7 +234,8 @@ public class DOMLine {
 	 * 
 	 * @param text is the text of the source line
 	 */
-	public void setText(String text) {
+	public void setText (String text) 
+    {
 		this.myElement.setText(text);
 		this.myElement.setAttribute(LENGTH_ATTR, ""+text.length());
 	}
@@ -234,7 +245,8 @@ public class DOMLine {
 	 * 
 	 * @return An iterator to all the of tags contained on this line of code
 	 */
-	public Iterator getTags() {
+	public Iterator getTags ()
+    {
 		return this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
 	}
 
@@ -245,7 +257,8 @@ public class DOMLine {
 	 * @param token - token associated with this tag
 	 * @param start - the starting character within the line
 	 */
-	public void addTag(String type, String token, int start) {
+	public void addTag (String type, String token, int start)
+    {
       // Don't add blank tokens
       if (token.equals("")) 
         return;
@@ -282,7 +295,8 @@ public class DOMLine {
 	 *            The type of tag to look for
 	 * @return An iterator to all the tags of that type on the line
 	 */
-	public Iterator getTags(String type) {
+	public Iterator getTags (String type) 
+    {
 		final String theType = type;
 
 		Iterator iter = this.myElement.getContent(new Filter() {
@@ -316,8 +330,8 @@ public class DOMLine {
 	 *            Offset to look for a tag at
 	 * @return The tag (if any) at that position
 	 */
-	public DOMTag getTag(int index) {
-
+	public DOMTag getTag (int index) 
+    {
 		Iterator iter = this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
 		
 		while (iter.hasNext()) {
@@ -337,7 +351,8 @@ public class DOMLine {
 	 * @return an iterator pointing to all inline instances on this line
 	 */
 
-	public Iterator getInlines() {
+	public Iterator getInlines ()
+    {
 		return this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).
 				iterator();
 	}
@@ -347,7 +362,8 @@ public class DOMLine {
 	 * 
 	 * @param tag is the element to add to this line
 	 */
-	public void addTag(DOMTag tag) {
+	public void addTag (DOMTag tag) 
+    {
 		this.myElement.addContent(tag.getElement());
 	}
 
@@ -361,7 +377,8 @@ public class DOMLine {
 	 * @param end_line
 	 *            is the ending character of this instance in this line
 	 */
-	public void addInlineInst(String instance, int start_inline, int length, int PCLine) {
+	public void addInlineInst (String instance, int start_inline, int length, int PCLine) 
+    {
 		this.myElement.addContent(new DOMInlineInstance(instance, start_inline, length, PCLine).getElement());
 	}
 
@@ -372,7 +389,8 @@ public class DOMLine {
 	 * 
 	 * @return the DOMInlineInstance of this instance
 	 */
-	public DOMInlineInstance getInlineInst(String inst_name) {
+	public DOMInlineInstance getInlineInst (String inst_name) 
+    {
 
 		Iterator iter = this.myElement.getChildren().iterator();
 		while (iter.hasNext()) {
@@ -387,7 +405,8 @@ public class DOMLine {
 		return null;
 	}
 
-	public long getAddress(){
+	public long getAddress ()
+    {
 		return Long.parseLong(this.myElement.getAttributeValue(DOMSource.ADDR_ATTR));
 	}
 	
@@ -396,7 +415,8 @@ public class DOMLine {
 	 * 
 	 * @return Element associated with this line
 	 */
-	protected Element getElement() {
+	protected Element getElement ()
+    {
 		return this.myElement;
 	}
 }

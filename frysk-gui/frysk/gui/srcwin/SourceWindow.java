@@ -100,7 +100,6 @@ import org.gnu.gtk.event.MouseListener;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
-import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.dialogs.WarnDialog;
@@ -1942,12 +1941,12 @@ public class SourceWindow
 
                 try
                   {
-                    f = getFunctionXXX(
-                                       this.dom.getImage(tasks[j].getProc().getMainTask().getName()),
-                                       filename, line.getLineNum());
+                    f = this.dom.getImage(tasks[j].getProc().getMainTask().getName())
+                    .findFunction(filename, line.getLineNum());
                   }
                 catch (NullPointerException npe)
                   {
+                    npe.printStackTrace();
                     f = null;
                   }
               }
@@ -1956,6 +1955,8 @@ public class SourceWindow
             curr = curr.getOuter();
           }
       }
+    
+    DOMFactory.clearDOMSourceMap(this.swProc);
     return frames;
   }
 
@@ -1968,31 +1969,31 @@ public class SourceWindow
    * @param linenum The line number of the function.
    * @return The found DOMFunction.
    */
-  private static DOMFunction getFunctionXXX (DOMImage image, String filename,
-                                             int linenum)
-  {
-    
-    Iterator functions = image.getFunctions();
-
-    // System.out.println("Looking for " + filename + ": " + linenum);
-
-    DOMFunction found = null;
-
-    while (functions.hasNext())
-      {
-        DOMFunction function = (DOMFunction) functions.next();
-        if (function.getSource().getFileName().equals(filename)
-            && function.getStartingLine() <= linenum)
-          {
-        
-            if (found == null
-                || function.getStartingLine() > found.getStartingLine())
-              found = function;
-          }
-      }
-
-    return found;
-  }
+//  private static DOMFunction getFunctionXXX (DOMImage image, String filename,
+//                                             int linenum)
+//  {
+//    
+//    Iterator functions = image.getFunctions();
+//
+//    //System.out.println("Looking for " + filename + ": " + linenum + " in " + image);
+//
+//    DOMFunction found = null;
+//
+//    while (functions.hasNext())
+//      {
+//        DOMFunction function = (DOMFunction) functions.next();
+//        if (function.getSource().getFileName().equals(filename)
+//            && function.getStartingLine() <= linenum)
+//          {
+//        
+//            if (found == null
+//                || function.getStartingLine() > found.getStartingLine())
+//              found = function;
+//          }
+//      }
+//
+//    return found;
+//  }
 
   private class SourceWindowListener
       implements ButtonListener, EntryListener, ComboBoxListener,

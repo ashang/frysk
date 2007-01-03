@@ -45,7 +45,8 @@ import org.jdom.Element;
  * DOMFunction represents a function element to the DOM for any
  * functions found within an image.
  */
-public class DOMFunction {
+public class DOMFunction 
+{
 	
 	public static final String FUNCTION_NODE = "function";
 	
@@ -56,6 +57,8 @@ public class DOMFunction {
 	public static final String LINE_START_ATTR = "line_start";
 	public static final String LINE_END_ATTR = "line_end";
     public static final String FUNCTION_CALL = "function_call";
+    
+    private DOMImage parent;
 	
 	/**
 	 * creates a DOMFunction
@@ -69,8 +72,9 @@ public class DOMFunction {
 	 * @return the created DOMFunction
 	 */
 	
-	public static DOMFunction createDOMFunction(String name, String source,
-			int lineStart, int lineEnd, int start, int end, String func_call){
+	public static DOMFunction createDOMFunction (String name, String source,
+			int lineStart, int lineEnd, int start, int end, String func_call)
+    {
 		Element func = new Element(FUNCTION_NODE);
 		func.setAttribute(FUNCTION_NAME_ATTR, name);
 		func.setAttribute(SOURCE_NAME_ATTR, source);
@@ -102,9 +106,10 @@ public class DOMFunction {
 	 * @param end is the ending character of the function from the start of the file
 	 * @return the created DOMFunction
 	 */
-	public static DOMFunction createDOMFunction(DOMImage parent, 
+	public static DOMFunction createDOMFunction (DOMImage parent, 
 			String name, String source, 
-			int lineStart, int lineEnd, int start, int end, String func_call){
+			int lineStart, int lineEnd, int start, int end, String func_call)
+    {
 		DOMFunction func = DOMFunction.createDOMFunction(name, source, lineStart,
 				lineEnd, start, end, func_call); 
 		parent.getElement().addContent(0, 
@@ -112,6 +117,11 @@ public class DOMFunction {
 		
 		return func;
 	}
+    
+    public void setParent (DOMImage parent)
+    {
+      this.parent = parent;
+    }
 	
 	private Element myElement;
 	
@@ -120,7 +130,8 @@ public class DOMFunction {
 	 * 
 	 * @param data is a JDOM element
 	 */
-	public DOMFunction(Element data){
+	public DOMFunction (Element data)
+    {
 		this.myElement = data;
 	}
 	
@@ -129,7 +140,8 @@ public class DOMFunction {
 	 * 
 	 * @return The name of the inlined code
 	 */
-	public String getName(){
+	public String getName ()
+    {
 		return this.myElement.getAttributeValue(FUNCTION_NAME_ATTR);
 	}
 	
@@ -138,7 +150,8 @@ public class DOMFunction {
 	 * 
 	 * @return The length in lines of the code block that will be inlined
 	 */
-	public int getLineCount(){
+	public int getLineCount ()
+    {
 		return this.myElement.getChildren().size();
 	}
 	
@@ -147,7 +160,8 @@ public class DOMFunction {
 	 * 
 	 * @return The start of the inlined code as a char offset from the start of the file
 	 */
-	public int getStart(){
+	public int getStart ()
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(START_ATTR));
 	}
 	
@@ -156,7 +170,8 @@ public class DOMFunction {
 	 * 
 	 * @return The end of the inlined code as a char offset from the start of the file
 	 */
-	public int getEnd(){
+	public int getEnd ()
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
@@ -165,7 +180,8 @@ public class DOMFunction {
      * 
      * @param The end of the function/inlined code as a char offset from the start of the file
      */
-    public void setEnd(int endingchar){
+    public void setEnd (int endingchar)
+    {
       this.myElement.setAttribute(END_ATTR, ""+endingchar);
     }
 	/**
@@ -173,19 +189,22 @@ public class DOMFunction {
 	 * 
 	 * @return the source that this function came from, null if cannot find
 	 */
-	public DOMSource getSource(){
+	public DOMSource getSource ()
+    {
 		String sourceName = this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
 		
-		Element parent = this.myElement.getParentElement();
-		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE))
-			parent = parent.getParentElement();
-		
-		if(parent != null){
-			DOMImage image = new DOMImage(parent);
-			return image.getSource(sourceName);
-		}
-		
-		return null;
+        return this.parent.getSource(sourceName);
+        
+//		Element parent = this.myElement.getParentElement();
+//		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE))
+//			parent = parent.getParentElement();
+//		
+//		if(parent != null){
+//			DOMImage image = new DOMImage(parent);
+//			return image.getSource(sourceName);
+//		}
+//		
+//		return null;
 	}
 	
 	/**
@@ -193,7 +212,8 @@ public class DOMFunction {
 	 * 
 	 * @return the starting line number in the source file
 	 */
-	public int getStartingLine(){
+	public int getStartingLine ()
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 	}
     
@@ -202,8 +222,8 @@ public class DOMFunction {
      * 
      * @param an integer with the starting line number in the source file to set it to
      */
-    public void setEndingLine(int linenum){
-      System.out.println("****************DOMFunction:setEndingLine = " + linenum);
+    public void setEndingLine (int linenum)
+    {
       this.myElement.setAttribute(LINE_END_ATTR, ""+linenum);
       return;
     }
@@ -213,7 +233,8 @@ public class DOMFunction {
 	 * 
 	 * @return the ending line number in the source file
 	 */
-	public int getEndingLine(){
+	public int getEndingLine ()
+    {
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
 	}
 	
@@ -222,7 +243,8 @@ public class DOMFunction {
 	 * 
 	 * @return a String array containing the source lines for this function
 	 */
-	public String[] getLines(){
+	public String[] getLines ()
+    {
 		int start = Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 		int end = Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
 		
@@ -233,9 +255,10 @@ public class DOMFunction {
 
 		DOMSource source = new DOMImage(elem).getSource(this.myElement.getAttributeValue(SOURCE_NAME_ATTR));
 		
-		for(int i = start; i< end; i++){
+		for (int i = start; i< end; i++)
+          {
 			String text = source.getLine(i).getText();
-			if(text.equals(""))
+			if (text.equals(""))
 				lines[i-start] = "\n";
 			else
 				lines[i-start] = text;
@@ -253,7 +276,8 @@ public class DOMFunction {
 	 * returns the JDOM Element associated with this Function
 	 * @return JDOM Element
 	 */
-	protected Element getElement(){
+	protected Element getElement ()
+    {
 		return this.myElement;
 	}
 }

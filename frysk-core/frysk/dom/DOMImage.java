@@ -39,6 +39,7 @@
 
 package frysk.dom;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -48,7 +49,8 @@ import org.jdom.Element;
  * DOMImage represents an image within the source window document
  * object model
  */
-public class DOMImage {
+public class DOMImage
+{
 	/**
 	 * CCPATH for the image
 	 */
@@ -58,12 +60,15 @@ public class DOMImage {
 	public static final String NAME_ATTR = "filename";
 	public static final String PATH_ATTR = "filepath";
     public DOMFrysk dom;
+    
+    private HashMap sourceMap = new HashMap();
 	
 	/**
 	 * Creates a new DOMImage from the given Element. Data must be of name "image".
 	 * @param data A JDOM Element of name "image"
 	 */
-	public DOMImage(Element data){
+	public DOMImage (Element data)
+    {
 		this.myElement = data;
 	}
 	
@@ -73,7 +78,8 @@ public class DOMImage {
 	 * @param path the path to the image
 	 * @param ccpath The CCPATH for the image
 	 */
-	public DOMImage(String name, String path, String ccpath, Element rootElement){
+	public DOMImage (String name, String path, String ccpath, Element rootElement)
+    {
 		myElement = new Element(DOMImage.IMAGE_NODE);
 		myElement.setAttribute(NAME_ATTR, name);
 		myElement.setAttribute(PATH_ATTR, path);
@@ -86,7 +92,8 @@ public class DOMImage {
 	 * @param path
 	 * @return
 	 */
-	public void addSource(String source_name, String path, String[] incpaths) {
+	public void addSource (String source_name, String path, String[] incpaths)
+    {
 		this.addSource(new DOMSource(source_name, path, incpaths));
 	}
 	
@@ -94,7 +101,8 @@ public class DOMImage {
 	 * Adds the given DOMSource as a source in this image
 	 * @param source The source to add
 	 */
-	public void addSource(DOMSource source){
+	public void addSource (DOMSource source)
+    {
 		this.myElement.addContent(source.getElement());
 	}
 	
@@ -109,18 +117,22 @@ public class DOMImage {
 	 * @param end_offset is the ending character offset from the beginning
 	 * 					of the file of the last character of the function
 	 */
-	public void addFunction(String inline_name, String source, 
+	public void addFunction (String inline_name, String source, 
 			int startLine, int endLine,
-			int start_offset, int end_offset, String function_call) {
-		DOMFunction.createDOMFunction(this, inline_name, source, startLine, endLine,
+			int start_offset, int end_offset, String function_call) 
+    {
+		DOMFunction function = DOMFunction.createDOMFunction(this, inline_name, source, startLine, endLine,
 				start_offset, end_offset, function_call);
+        
+        function.setParent(this);
 	}
 	
 	/**
 	 * gets the name of the image
 	 * @return The name of the image
 	 */
-	public String getName(){
+	public String getName ()
+    {
 		return this.myElement.getAttributeValue(NAME_ATTR);
 	}
 	
@@ -128,7 +140,8 @@ public class DOMImage {
 	 * Sets the CCPATH of the current image
 	 * @param image_name is the image for which this CCPATH is intended
 	 */
-	public void setCCPath(String image_name) {
+	public void setCCPath (String image_name)
+    {
 		this.myElement.setAttribute(CCPATH_ATTR, image_name);
 		return;
 	}
@@ -136,14 +149,16 @@ public class DOMImage {
 	 * sets the name of the image
 	 * @param name what the name of the image will be
 	 */
-	public void setName(String name) {
+	public void setName (String name) 
+    {
 		
 	}
 	/**
 	 * returns the name of the image
 	 * @return The CCPATH of the image
 	 */
-	public String getCCPath(){
+	public String getCCPath ()
+    {
 		return this.myElement.getAttributeValue(CCPATH_ATTR);
 	}
 	
@@ -151,7 +166,8 @@ public class DOMImage {
 	 * gets an iterator pointing to all of the sources belonging to this image
 	 * @return an iterator to all the source files contained in this image.
 	 */
-	public Iterator getSources(){
+	public Iterator getSources ()
+    {
 		return this.myElement.getChildren(DOMSource.SOURCE_NODE).iterator();
 	}
 	
@@ -163,18 +179,31 @@ public class DOMImage {
 	 * @return The DOMSource corresponding to the element, or null if no such
 	 *         element exists
 	 */
-	public DOMSource getSource(String name) {
-		Iterator i = this.myElement.getChildren().iterator();
-
-		while (i.hasNext()) {
-			Element elem = (Element) i.next();
-			if (elem.getQualifiedName().equals(DOMSource.SOURCE_NODE)) {
-				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
-						.equals(name))
-					return new DOMSource(elem);
-			}
-		}
-		return null;
+	public DOMSource getSource (String name)
+    {
+      DOMSource source = (DOMSource) this.sourceMap.get(name);
+      if (source != null)
+        {
+          return source;
+        }
+      else
+      {
+        Iterator i = this.myElement.getChildren().iterator();
+        while (i.hasNext())
+          {
+            Element elem = (Element) i.next();
+            if (elem.getQualifiedName().equals(DOMSource.SOURCE_NODE))
+              {
+                if (elem.getAttributeValue(DOMSource.FILENAME_ATTR).equals(name))
+                  {
+                    source = new DOMSource(elem);
+                    this.sourceMap.put(name, source);
+                    return source;
+                  }
+              }
+          }
+        return null;
+      }
 	}
 	
 	/**
@@ -183,34 +212,72 @@ public class DOMImage {
 	 * @return the DOMImage corresponding to the element, or null if no such
 	 * 	element exists
 	 */
-	public DOMFunction getFunction(String name) {
-		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-		while (iter.hasNext()) {
-			Element node = (Element) iter.next();
-			if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR) == name)
-				return new DOMFunction (node);
-		}
-		return null;
-	}
+	public DOMFunction getFunction (String name)
+  {
+    Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
+    while (iter.hasNext())
+      {
+        Element node = (Element) iter.next();
+        if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR) == name)
+          return new DOMFunction(node);
+      }
+    return null;
+  }
 	
 	/**
-	 * 
-	 * @return An iterator to all functions in this image
-	 */
-	public Iterator getFunctions(){
+   * @return An iterator to all functions in this image
+   */
+	public Iterator getFunctions ()
+    {
 		LinkedList list = new LinkedList();
 		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-		while (iter.hasNext()) 
-			list.add(new DOMFunction((Element) iter.next()));
+		while (iter.hasNext())
+          {
+            DOMFunction function = new DOMFunction ((Element) iter.next());
+            function.setParent(this);
+			list.add(function);
+          }
 		
 		return list.iterator();
 	}
+    
+    public DOMFunction findFunction (String name, int lineNum)
+    {
+        Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
+        DOMFunction found = null;
+        
+        while (iter.hasNext())
+        {
+          DOMFunction function = new DOMFunction ((Element) iter.next());
+          String sourceName = function.getElement().getAttributeValue("source");
+          DOMSource source = getSource(sourceName);
+          if (source.getFileName().equals(name)
+              && function.getStartingLine() <= lineNum)
+            {
+          
+              if (found == null
+                  || function.getStartingLine() > found.getStartingLine())
+                {
+                  found = function;
+                  found.setParent(this);
+                }
+            }
+        }
+        
+        return found;
+    }
 
 	/**
 	 * This function should only be used internally within the frysk source dom
 	 * @return The JDom element at the core of this node
 	 */
-	protected Element getElement() {
+	protected Element getElement () 
+    {
 		return this.myElement;
 	}
+    
+    public void clearSourceMap ()
+    {
+      this.sourceMap.clear();
+    }
 }
