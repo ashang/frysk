@@ -42,9 +42,14 @@ package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StackTraceCreator
 {
+  
+  static Logger logger = Logger.getLogger("frysk");
+  
   /**
    * Using the provided set of callbacks, initialize libunwind to provide a
    * full stack backtrace
@@ -54,6 +59,7 @@ public class StackTraceCreator
    */
   public static FrameCursor createStackTrace (UnwindCallbacks callbacks)
   {
+    logger.log(Level.FINEST, "createStackTrace");
     return unwind_setup(new UnwindArgs(callbacks));
   }
 
