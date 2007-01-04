@@ -43,6 +43,8 @@ package frysk.rt;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
+import inua.eio.ByteBuffer;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lib.unwind.UnwindCallbacks;
@@ -65,24 +67,33 @@ public class StackCallbacks
   public long accessMem (long addressSpace, long addr)
   {
     logger.log(Level.FINE, "Libunwind: reading memory at 0x"
-                                + Long.toHexString(addr) + "\n");
+                                + Long.toHexString(addr) + " " + System.currentTimeMillis() + "\n");
 
     long value;
 
-    switch (isa.getWordSize())
+    logger.log(Level.FINE, "Before getWordSize " + System.currentTimeMillis() + "\n");
+    int wordSize = isa.getWordSize();
+    logger.log(Level.FINE, "After getWordSize " + System.currentTimeMillis() + "\n");
+    switch (wordSize)
       {
       case 4:
-	value = myTask.getMemory().getInt(addr);
+        logger.log(Level.FINEST, "In wordSize case: 4 " + System.currentTimeMillis() + "\n");
+    ByteBuffer memory = myTask.getMemory();
+    logger.log(Level.FINEST, "After getMemory " + System.currentTimeMillis() + "\n");
+	value = memory.getInt(addr);
+    logger.log(Level.FINEST, "After getInt " + System.currentTimeMillis() + "\n");
 	break;
       case 8:
+        logger.log(Level.FINEST, "In wordsize case: 8 " + System.currentTimeMillis() + "\n");
 	value = myTask.getMemory().getLong(addr);
 	break;
       default:
+        logger.log(Level.FINEST, "In wordSize case: default " + System.currentTimeMillis() + "\n");
 	throw new RuntimeException("Not implemented for this word length yet");
       }
 
     logger.log(Level.FINE, "Libunwind: read value 0x"
-                                + Long.toHexString(value) + "\n");
+                                + Long.toHexString(value) + " " + System.currentTimeMillis() + "\n");
     return value;
   }
 
