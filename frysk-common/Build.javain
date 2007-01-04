@@ -49,9 +49,7 @@ package @GEN_PACKAGENAME@;
 
 public class Build
 {
-	public static final String BUILDDIR = "@builddir@";
 	public static final String SRCDIR = "@srcdir@";
 	public static final String ABS_SRCDIR = "@abs_srcdir@";
-	public static final String ABS_BUILDDIR = "@abs_builddir@";
 	public static final String BUILD_ARCH = "@target_cpu@";
 }

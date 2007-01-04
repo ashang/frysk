@@ -1,5 +1,7 @@
 2007-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Build.javain (ABS_BUILDDIR, BUILDDIR): Delete.
+
 	* Makefile.rules (SUBST_SED): Substitute abs_root_srcdir, and
 	root_srcdir.
 	* TestRunner.javain: Replace Build.ABS_BUILDDIR with direct
