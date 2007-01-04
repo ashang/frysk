@@ -1,3 +1,9 @@
+2007-01-04  Mark Wielaard  <mark@klomp.org>
+
+	Fixes frysk/3825
+	* TestFCatch.java (mainThread): Add optional __ before sigsuspend
+	regex match.
+
 2007-01-02  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFCatch.java (mainThread): Added regex line to match beginning of output.

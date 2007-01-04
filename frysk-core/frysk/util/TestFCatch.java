@@ -62,7 +62,7 @@ public class TestFCatch
 {
 
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                      + "#[\\d]+ 0x[\\da-f]+ in sigsuspend \\(\\)\n"
+                      + "#[\\d]+ 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                       + Build.SRCDIR
                       + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
