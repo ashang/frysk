@@ -42,9 +42,15 @@
 
 package inua.eio;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public abstract class ByteBuffer
     extends Buffer
 {
+
+  private Logger logger = Logger.getLogger("frysk");
+  
   protected ByteBuffer (long lowWater, long highWater)
   {
     super(lowWater, highWater);
@@ -448,7 +454,10 @@ public abstract class ByteBuffer
 
   public final int getInt (long index)
   {
-    return byteOrdered.peekInt(this, lowWater + index);
+    logger.log(Level.FINE, "{0} getInt\n", this);
+    int peek = byteOrdered.peekInt(this, lowWater + index);
+    logger.log(Level.FINE, "{0} getInt Finished " + peek + " \n", this);
+    return peek;
   }
 
   public final long getUInt ()

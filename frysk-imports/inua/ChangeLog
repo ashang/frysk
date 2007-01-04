@@ -1,3 +1,7 @@
+2007-01-04  Nurdin Premji  <npremji@redhat.com>
+
+	* eio/ByteBuffer.java (getInt): Added logging messages.
+
 2006-12-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* eio/ByteBuffer.java (get): Change to use peekFully over peek.
