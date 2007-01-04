@@ -2,6 +2,8 @@
 
 	* cni/FrameCursor.cxx (create_frame_cursor): Resolve frame address
 	from unw_get_proc_info independently of function name. Fixes #3791.
+	* FrameCursor.java (FrameCursor): Demangle all method names immediately 
+	after object creation. Moved demangler over from StackFrame.
 
 2006-12-14  Adam Jocksch  <ajocksch@redhat.com>
 

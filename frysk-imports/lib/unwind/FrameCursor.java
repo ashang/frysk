@@ -40,6 +40,8 @@
 
 package lib.unwind;
 
+import lib.stdcpp.Demangler;
+
 import gnu.gcj.RawDataManaged;
 
 public class FrameCursor
@@ -62,6 +64,7 @@ public class FrameCursor
   protected FrameCursor (long cursor)
   {
     create_frame_cursor(cursor);
+    this.methodName = Demangler.demangle(this.methodName);
   }
 
   /**

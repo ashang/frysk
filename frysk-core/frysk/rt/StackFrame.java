@@ -47,7 +47,6 @@ import frysk.proc.TaskException;
 import gnu.gcj.RawDataManaged;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
-import lib.stdcpp.Demangler;
 import lib.unwind.FrameCursor;
 
 public class StackFrame
@@ -114,7 +113,6 @@ public class StackFrame
     this.myCursor = current;
     this.inner = inner;
     long address = this.myCursor.getAddress();
-    //this.methodName = Demangler.demangle(this.methodName);
 
     if (address != 0) /* We were able to pull information from this cursor */
       {
@@ -360,33 +358,42 @@ public class StackFrame
   public String toPrint (boolean isSourceWindow)
   {
     String ret = "";
+    String funcString = this.myCursor.getMethodName();
+    
+    if (this.myCursor == null)
+      return "Empty stack trace";
+    
     if (this.dwflLine != null)
       {
+        if (funcString == null)
+          funcString = "[unknown] from: ";
+        else
+          funcString = funcString + " () from: ";
+        
         if (! isSourceWindow)
           {
-            ret = "0x"
-	    + Long.toHexString(this.myCursor.getAddress()) + " in "
-	    + this.myCursor.getMethodName() + " () from: "
-            + this.sourceFile + "#" + this.lineNum;
+            ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
+                  + funcString
+                  + this.sourceFile + "#" + this.lineNum;
           }
         else
           {
             String[] fileName = this.sourceFile.split("/");
             ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
-            + this.myCursor.getMethodName() + " () from " 
-            + fileName[fileName.length - 1] + ": line #" + this.lineNum;
+                  + funcString
+                  + fileName[fileName.length - 1] + ": line #" + this.lineNum;
           }
       }
     else
       {
-        if (this.myCursor == null)
-          return "Empty stack trace";
-        
-        ret = "0x"
-	  + Long.toHexString(this.myCursor.getAddress()) + " in "
-	  + Demangler.demangle(this.myCursor.getMethodName()) + " ()";
+        if (funcString == null)
+          funcString = "[unknown]";
+        else
+          funcString = funcString + " ()";
+        ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
+              + funcString;
       }
-    
+
     return ret;
   }
   
