@@ -53,6 +53,7 @@ import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.proc.ProcBuilder;
 import java.io.File;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -62,6 +63,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.LogManager;
 
 /**
  * Utility for JUnit tests.
@@ -120,6 +122,21 @@ public class TestLib
 		    new Object[] { TestLib.class, reason });
     }
 
+    static int assertRunTime = 5;
+    static
+    {   
+      Enumeration logEnum = LogManager.getLogManager().getLoggerNames();
+      
+      while (logEnum.hasMoreElements())
+        {
+          Object logName = logEnum.nextElement();
+          Level logLevel = Logger.getLogger((String) logName).getLevel();
+          if (Level.FINE.equals(logLevel) || Level.FINER.equals(logLevel)
+              || Level.FINEST.equals(logLevel))
+            assertRunTime = 15;
+        }
+    }
+    
     /**
      * Run the event loop for a short period of time until it is
      * explicitly stopped (using EventLoop . requestStop).  During
@@ -129,14 +146,12 @@ public class TestLib
      */
     protected static void assertRunUntilStop (String reason)
     {
-	assertRunUntilStop (5, reason);
+    assertRunUntilStop(assertRunTime, reason);
     }
 
     /**
-     * Process all the pending events; no polling of external events
-     * is performed.
-     *
-     * XXX: Static to avoid gcc bugs.
+     * Process all the pending events; no polling of external events is
+     * performed. XXX: Static to avoid gcc bugs.
      */
     protected static void runPending ()
     {

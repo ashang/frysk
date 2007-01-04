@@ -81,45 +81,41 @@ public class LinuxPtraceTask
   
   public void fillMemory ()
   {
-    if (memory == null)
+  logger.log(Level.FINE, "Begin fillMemory\n", this);
+    try
       {
-        try
-          {
-            ByteOrder byteOrder = getIsa().getByteOrder();
-            // XXX: For writing at least, PTRACE must be used as /proc/mem
-            // cannot be written to.
-            // For 64-bit address space.  Here is only a workaround, and still
-            // not cover all 64-bit address.  UBigInteger is needed here?
-            if (getIsa().getWordSize() == 8)
-              memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                            0x7fffffffffffffffl);
-            // For 32-bit address space.
-            else
-              memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                                          0xffffffffl);
-            memory.order(byteOrder);
-          }
-        catch (TaskException e)
-          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
+        ByteOrder byteOrder = getIsa().getByteOrder();
+        // XXX: For writing at least, PTRACE must be used as /proc/mem
+        // cannot be written to.
+        // For 64-bit address space. Here is only a workaround, and still
+        // not cover all 64-bit address. UBigInteger is needed here?
+        if (getIsa().getWordSize() == 8)
+          memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+                                        0x7fffffffffffffffl);
+        // For 32-bit address space.
+        else
+          memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
+                                        0xffffffffl);
+        memory.order(byteOrder);
       }
+    catch (TaskException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    logger.log(Level.FINE, "End fillMemory\n", this); 
   }
 
   public void fillRegisterBank () 
   {
-    if (registerBank == null)
+    try
       {
-        try
-          {
-            registerBank = getIsa().getRegisterBankBuffers(id.id);
-          }
-        catch (TaskException e)
-          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
+        registerBank = getIsa().getRegisterBankBuffers(id.id);
+      }
+    catch (TaskException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
   }
 

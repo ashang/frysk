@@ -900,8 +900,10 @@ abstract public class Task
 
   public ByteBuffer getMemory ()
   {
+    logger.log(Level.FINE, "{0} entering get memory {1}\n",new Object[] {this, memory});
     if (memory == null )
       fillMemory();
+    logger.log(Level.FINE, "{0} exiting get memory {1}\n", new Object[] {this, memory});
     return this.memory;
   }
 
