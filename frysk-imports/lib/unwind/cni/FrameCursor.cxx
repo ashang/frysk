@@ -62,10 +62,13 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 	if(!unw_get_proc_name(cursor, buf, len, &offset))
 	{
 		this->methodName = JvNewStringUTF(buf);
-		
-		if(result == 0)
-			this->address = (jlong) offset + proc_info.start_ip;
 	}
+	
+	if(result == 0)
+			this->address = (jlong) offset + proc_info.start_ip;
+	
+//	unw_word_t ip;
+//	unw_get_reg (cursor, UNW_REG_IP, &ip);
 	
 	unw_word_t tmp;
 	unw_get_reg (cursor, UNW_REG_SP, &tmp);
