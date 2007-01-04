@@ -1,3 +1,10 @@
+2007-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST_SED): Substitute abs_root_srcdir, and
+	root_srcdir.
+	* TestRunner.javain: Replace Build.ABS_BUILDDIR with direct
+	reference to @abs_builddir@.
+
 2006-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.cxxin.cxx): New rule.

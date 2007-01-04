@@ -1,3 +1,8 @@
+2007-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxxin (getRootSrcDir, getAbsRootSrcDir): Define.
+	* Config.javain (getRootSrcDir, getAbsRootSrcDir): Declare.
+
 2006-12-23  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxxin (getPkgDataDir, getPkgLibDir, getPkgLib32Dir)

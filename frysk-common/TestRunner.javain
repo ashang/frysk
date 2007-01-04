@@ -41,7 +41,6 @@
 
 import frysk.junit.Runner;
 import @GEN_PACKAGENAME@.JUnitTests;
-import @GEN_PACKAGENAME@.Build;
 
 /**
  * Run the JUnit tests from within the build tree.
@@ -51,13 +50,15 @@ public class TestRunner
 {
     public static void main (String[] args)
     {
+	String ABS_BUILDDIR = "@abs_builddir@";
+
 	Runner testRunner = new Runner ("TestRunner", args);
 	int status = testRunner.runTestCases
-	    (Build.ABS_BUILDDIR + "/frysk/pkgdatadir/",
+	    (ABS_BUILDDIR + "/frysk/pkgdatadir/",
 	     JUnitTests.get (),
-	     Build.ABS_BUILDDIR + "/frysk/pkglibdir/",
+	     ABS_BUILDDIR + "/frysk/pkglibdir/",
 	     JUnitTests.get (),
-	     Build.ABS_BUILDDIR + "/frysk/pkglibdir/arch32/");
+	     ABS_BUILDDIR + "/frysk/pkglibdir/arch32/");
 	System.exit (status);
     }
 }

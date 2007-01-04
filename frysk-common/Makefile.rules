@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -215,7 +215,7 @@ SUFFIXES += .shenum
 
 # Don't be confused by top_builddir and top_srcdir, they are actually
 # the directory corresponding to current sub-directory (frysk-gui,
-# frysk-core, ...).
+# frysk-core, ...).  Instead there is root_srcdir.
 
 SUBST_SED = sed \
 		-e 's,[@]prefix[@],@prefix@,g' \
@@ -224,6 +224,8 @@ SUBST_SED = sed \
 		-e 's,[@]datadir[@],@datadir@,g' \
 		-e 's,[@]builddir[@],@top_builddir@,g' \
 		-e 's,[@]srcdir[@],@top_srcdir@,g' \
+		-e 's,[@]root_srcdir[@],$(dir $(top_srcdir)),g' \
+		-e 's,[@]abs_root_srcdir[@],$(dir $(abs_top_srcdir)),g' \
 		-e 's,[@]abs_builddir[@],@abs_top_builddir@,g' \
 		-e 's,[@]abs_srcdir[@],@abs_top_srcdir@,g' \
 		-e 's,[@]gladedir[@],$(gladedir),g' \

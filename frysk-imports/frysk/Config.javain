@@ -2,7 +2,7 @@
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -88,4 +88,24 @@ public class Config
     // User's config directory.
     public static final String FRYSK_DIR
 	= System.getProperty("user.home") + "/" + ".frysk" + "/";
+
+    /**
+     * The relative source root directory against which the build was
+     * created; this is an install time option since, with debug-info
+     * installed, the source files found under the root srcdir are
+     * available.
+     *
+     * Note that this is the root directory, and excludes any suffix
+     * such as frysk-imports et.al.
+     */
+    public static final native String getRootSrcDir ();
+    /**
+     * The absolute source root directory against which the build was
+     * created; this is an install time option since, with debug-info
+     * installed, these source files exist.
+     *
+     * Note that this is the root directory, and excludes any suffix
+     * such as frysk-imports et.al.
+     */
+    public static final native String getAbsRootSrcDir ();
 }
