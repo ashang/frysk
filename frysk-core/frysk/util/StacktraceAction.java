@@ -89,12 +89,12 @@ public abstract class StacktraceAction
   public final void existingTask (Task task)
   {
 
-    logger.log(Level.FINE, "{0} existingTask, Task : {1}", new Object[] { this,
-                                                                         task });
+    logger.log(Level.FINE, "{0} existingTask, Task : {1}\n",
+               new Object[] { this, task });
 
     // Print the stack frame for this stack.
     StringBuffer taskTrace = generateTaskStackTrace(task);
-    
+
     if (sortedTasks == null)
       sortedTasks = new TreeMap();
 
@@ -110,19 +110,19 @@ public abstract class StacktraceAction
 
   private final void printTasks ()
   {
-    logger.log(Level.FINE, "{0} printTasks", this);
+    logger.log(Level.FINE, "{0} printTasks\n", this);
     Iterator iter = sortedTasks.values().iterator();
     while (iter.hasNext())
       {
-        StringBuffer output = (StringBuffer) iter.next();        
-        stackTrace.append(output);        
+        StringBuffer output = (StringBuffer) iter.next();
+        stackTrace.append(output);
       }
-    logger.log(Level.FINE, "{0} exiting printTasks", this);
+    logger.log(Level.FINE, "{0} exiting printTasks\n", this);
   }
 
   public final String toPrint ()
   {
-    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}",
+    logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}\n",
                new Object[] { this, stackTrace });
     return stackTrace.toString();
   }
@@ -139,13 +139,15 @@ public abstract class StacktraceAction
             for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
               {
                 // FIXME: do valgrind-like '=== PID ===' ?
-                StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
+                StringBuffer output = new StringBuffer("#" + count + " "
+                                                       + frame.toPrint(false)
+                                                       + "\n");
 
                 buffer.append(output);
                 count++;
               }
 
-            return buffer; 
+            return buffer;
           }
         catch (TaskException _)
           {
@@ -154,7 +156,7 @@ public abstract class StacktraceAction
             return new StringBuffer("... couldn't print stack trace\n");
           }
       }
-    
+
     return null;
   }
 

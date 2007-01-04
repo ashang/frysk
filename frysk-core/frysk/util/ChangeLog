@@ -1,3 +1,10 @@
+2007-01-04  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java: GNU Formatted.
+	(existingTask): Clean up logging messages (added newline).
+	(printTasks): Ditto.
+	(toPrint): Ditto.
+
 2007-01-04  Mark Wielaard  <mark@klomp.org>
 
 	Fixes frysk/3825
