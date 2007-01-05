@@ -43,7 +43,6 @@ package frysk.util;
 import java.util.logging.Level;
 
 import frysk.core.Build;
-import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -98,14 +97,7 @@ public class TestFStack
 
     StacktraceAction stacker;
 
-    stacker = new StacktraceAction(proc, new Event()
-    {
-
-      public void execute ()
-      {
-        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      }
-    })
+    stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop))
     {
 
       public void addFailed (Object observable, Throwable w)

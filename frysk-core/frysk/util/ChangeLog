@@ -1,3 +1,8 @@
+2007-01-05  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFStack.java (multiThreaded): Changed to not abandon process when 
+	stack trace is finished. (abandon is tested in frysk.proc.TestAbandon).
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceAction.java: GNU Formatted.
