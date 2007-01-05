@@ -1,3 +1,45 @@
+2007-01-05  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFunction.java (parent): Changed to a DOMSource. Now resides
+	with DOMSource as a parent rather than DOMImage. Fixes #3834.
+	(createDOMFunction): Takes a DOMSource.
+	(setParent): Ditto.
+	(getSource): Can now just return the parent, being a DOMSource.
+	* DOMImage.java (addFunction): Moved to DOMSource.
+	(getFunction): Ditto.
+	(getFunctions): Ditto.
+	(findFunction): Ditto.
+	* DOMInlineInstance.java: Applied GNU formatting.
+	(NUM_LINE): Added - tag for source line this inline instance
+	is called from.
+	(parent): Added.
+	(setParent): Added.
+	(DOMInlineInstance): Now takes another int, being the line number
+	of this inline instance in the source.
+	(getDeclaration): Now returns the function from the DOMSource parent.
+	(getLine): Added.
+	(addInlineInst): Takes an extra int for line number.
+	* DOMLine.java (getInlines): Moved to DOMSource.
+	(addInlineInst): Ditto.
+	(getInlineInst): Ditto.
+	* DOMSource.java: Now is a DOM parent for DOMInlineInstance and
+	DOMFunction. Fixes #3834.
+	(addFunction): Moved from DOMImage.
+	(getFunction): Ditto.
+	(findFunction): Ditto.
+	(getFunctions): Ditto.
+	(addInlineInst): Moved from DOMLine.
+	(getInlineInst): Ditto.
+	(getInlines): Ditto (also takes an int for line number).
+	* TestDOM.java (testDOMSource): Added some inline tests.
+	(testDOMLine): Removed some inline tests.
+	(testDOMInlineInstance): Now calls a 
+	* cparser/CDTParser.c (image): Removed. Made redundant by
+	new DOMSource.
+	(enterFunctionBody): Now uses DOMSource and calls updated
+	addFunction() method.
+	(exitFunctionBody): Calls source instead of image.
+
 2007-01-05  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMImage.java (getFunction): Change "==" to ".equals".

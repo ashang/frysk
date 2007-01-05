@@ -58,7 +58,7 @@ public class DOMFunction
 	public static final String LINE_END_ATTR = "line_end";
     public static final String FUNCTION_CALL = "function_call";
     
-    private DOMImage parent;
+    private DOMSource parent;
 	
 	/**
 	 * creates a DOMFunction
@@ -106,7 +106,7 @@ public class DOMFunction
 	 * @param end is the ending character of the function from the start of the file
 	 * @return the created DOMFunction
 	 */
-	public static DOMFunction createDOMFunction (DOMImage parent, 
+	public static DOMFunction createDOMFunction (DOMSource parent, 
 			String name, String source, 
 			int lineStart, int lineEnd, int start, int end, String func_call)
     {
@@ -118,7 +118,7 @@ public class DOMFunction
 		return func;
 	}
     
-    public void setParent (DOMImage parent)
+    public void setParent (DOMSource parent)
     {
       this.parent = parent;
     }
@@ -191,9 +191,7 @@ public class DOMFunction
 	 */
 	public DOMSource getSource ()
     {
-		String sourceName = this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
-		
-        return this.parent.getSource(sourceName);
+        return this.parent;
         
 //		Element parent = this.myElement.getParentElement();
 //		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE))

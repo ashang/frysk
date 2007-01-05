@@ -1941,8 +1941,8 @@ public class SourceWindow
 
                 try
                   {
-                    f = this.dom.getImage(tasks[j].getProc().getMainTask().getName())
-                    .findFunction(filename, line.getLineNum());
+                    f = this.dom.getImage(tasks[j].getProc().getMainTask().getName()).getSource(filename)
+                    .findFunction(line.getLineNum());
                   }
                 catch (NullPointerException npe)
                   {

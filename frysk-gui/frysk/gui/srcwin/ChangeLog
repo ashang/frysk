@@ -1,3 +1,13 @@
+2007-01-05  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Calls
+	updated findFunction in DOMSource.
+	* SourceBuffer.java (getInlineInstance): Gets inlines
+	from DOMSource.
+	(createTags): Ditto.
+	* InlineBuffer.java: Applied GNU formatting.
+	(createTags): Gets inlines from DOMSource.
+
 2007-01-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* testfiles/test_looper.xml: Fixes to DOMIMage.java and

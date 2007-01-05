@@ -181,6 +181,88 @@ public class DOMSource
     return this.myElement.getAttributeValue(INCLUDES);
   }
   
+    /**
+     * adds an inline function to an image
+     * @param inline_name is the name of the inline function
+     * @param source is the name of the source this function came from
+     * @param startLine is the starting line number of this function in the source
+     * @param endLine is the ending line number of this function in the source
+     * @param start_offset is the starting character offset from the beginning
+     *                  of the file of the first character of the function
+     * @param end_offset is the ending character offset from the beginning
+     *                  of the file of the last character of the function
+     */
+    public void addFunction (String inline_name, 
+            int startLine, int endLine,
+            int start_offset, int end_offset, String function_call) 
+  {
+        DOMFunction function = DOMFunction.createDOMFunction(this, inline_name, this.myElement.getAttributeValue(FILENAME_ATTR), startLine, endLine,
+                start_offset, end_offset, function_call);
+      
+      function.setParent(this);
+    }
+    
+    /**
+     * @return An iterator to all functions in this image
+     */
+    public Iterator getFunctions ()
+      {
+        LinkedList list = new LinkedList();
+        Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
+        while (iter.hasNext())
+            {
+              DOMFunction function = new DOMFunction ((Element) iter.next());
+              function.setParent(this);
+            list.add(function);
+            }
+        
+        return list.iterator();
+    }
+  
+    public DOMFunction findFunction (int lineNum)
+    {
+      System.out.println("DOMSource.findFunction() " + lineNum);
+        Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
+        DOMFunction found = null;
+        
+        while (iter.hasNext())
+        {
+          System.out.println("iterating");
+          DOMFunction function = new DOMFunction ((Element) iter.next());
+          if (function.getStartingLine() <= lineNum && function.getEndingLine() >= lineNum)
+            {
+          
+              if (found == null
+                  || function.getStartingLine() > found.getStartingLine())
+                {
+                  found = function;
+                  found.setParent(this);
+                }
+            }
+        }
+        
+        return found;
+    }
+    
+    /**
+     * attempts to fetch an inlined function DOM element
+     * 
+     * @param name of the inlined function to return
+     * @return the DOMImage corresponding to the element, or null if no such
+     *         element exists
+     */
+  public DOMFunction getFunction (String name)
+  {
+    Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
+    while (iter.hasNext())
+      {
+        Element node = (Element) iter.next();
+        if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR).equals(name))
+          return new DOMFunction(node);
+      }
+    return null;
+  }
+    
   /**
    * creates a line Element under this source Element
    * 
@@ -267,6 +349,72 @@ public class DOMSource
   {
     this.myElement.addContent(line.getElement());
   }
+  
+  /**
+     * add an inline instance to this line
+     * 
+     * @param instance
+     *            is the name of the instance to add
+     * @param start_inline
+     *            is the starting character of this instance in this line
+     * @param end_line
+     *            is the ending character of this instance in this line
+     */
+    public void addInlineInst (String instance, int start_inline, int length,
+                             int PCLine, int line)
+  {
+    DOMInlineInstance dii = new DOMInlineInstance(instance, start_inline,
+                                                  length, PCLine, line);
+    dii.setParent(this);
+    this.myElement.addContent(dii.getElement());
+  }
+
+    /**
+     * get the DOMInlineInstance associated with this instance
+     * 
+     * @param inst is the name of the instance to retrieve
+     * 
+     * @return the DOMInlineInstance of this instance
+     */
+    public DOMInlineInstance getInlineInst (String inst_name)
+  {
+
+    Iterator iter = this.myElement.getChildren().iterator();
+    while (iter.hasNext())
+      {
+        Element inst = (Element) iter.next();
+        String name = inst.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
+        if (name == inst_name)
+          {
+            DOMInlineInstance val = new DOMInlineInstance((Element) inst);
+            val.setParent(this);
+            return val;
+          }
+      }
+    return null;
+  }
+    
+    /**
+     * gets all of the inline instances attached with is line
+     * 
+     * @param lineNum The line number in the source jumping to the inlined instance.
+     * @return an iterator pointing to all inline instances on this line
+     */
+
+    public Iterator getInlines (int lineNum)
+    {
+      LinkedList list = new LinkedList();
+      Iterator iter = this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).iterator();
+      while (iter.hasNext())
+        {
+          DOMInlineInstance dii = (DOMInlineInstance) iter.next();
+          if (dii.getLine() == lineNum)
+            list.add(dii);
+        }
+      
+      return list.iterator();
+    }
+  
 
   /**
    * get all of the inlined function declarations in this source file

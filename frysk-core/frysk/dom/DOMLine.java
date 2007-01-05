@@ -344,18 +344,6 @@ public class DOMLine
 
 		return null;
 	}
-	
-	/**
-	 * gets all of the inline instances attached with is line
-	 * 
-	 * @return an iterator pointing to all inline instances on this line
-	 */
-
-	public Iterator getInlines ()
-    {
-		return this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).
-				iterator();
-	}
 
 	/**
 	 * add a tag element to this line
@@ -365,44 +353,6 @@ public class DOMLine
 	public void addTag (DOMTag tag) 
     {
 		this.myElement.addContent(tag.getElement());
-	}
-
-	/**
-	 * add an inline instance to this line
-	 * 
-	 * @param instance
-	 *            is the name of the instance to add
-	 * @param start_inline
-	 *            is the starting character of this instance in this line
-	 * @param end_line
-	 *            is the ending character of this instance in this line
-	 */
-	public void addInlineInst (String instance, int start_inline, int length, int PCLine) 
-    {
-		this.myElement.addContent(new DOMInlineInstance(instance, start_inline, length, PCLine).getElement());
-	}
-
-	/**
-	 * get the DOMInlineInstance associated with this instance
-	 * 
-	 * @param inst is the name of the instance to retrieve
-	 * 
-	 * @return the DOMInlineInstance of this instance
-	 */
-	public DOMInlineInstance getInlineInst (String inst_name) 
-    {
-
-		Iterator iter = this.myElement.getChildren().iterator();
-		while (iter.hasNext()) {
-			Element inst = (Element) iter.next();
-			String name = inst
-					.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
-			if (name == inst_name) {
-				DOMInlineInstance val = new DOMInlineInstance((Element) inst);
-				return val;
-			}
-		}
-		return null;
 	}
 
 	public long getAddress ()

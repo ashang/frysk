@@ -940,7 +940,7 @@ public class SourceBuffer
     if (this.scope == null)
       return null;
 
-    Iterator iter = this.scope.getData().getLine(lineNumber + 1).getInlines();
+    Iterator iter = this.scope.getData().getInlines(lineNumber + 1);
     if (! iter.hasNext())
       return null;
 
@@ -1358,7 +1358,7 @@ public class SourceBuffer
               }
           }
 
-        Iterator inlines = line.getInlines();
+        Iterator inlines = this.scope.getData().getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {

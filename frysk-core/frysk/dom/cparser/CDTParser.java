@@ -109,7 +109,7 @@ public class CDTParser
     implements StaticParser
 {
 
-  private DOMImage image;
+//  private DOMImage image;
 
   private DOMSource source;
   
@@ -129,7 +129,7 @@ public class CDTParser
     throws IOException
   {
     this.source = source;
-    this.image = image;
+//    this.image = image;
     this.dom = dom;
 
     String filename = source.getFilePath() + "/" + source.getFileName();
@@ -527,7 +527,7 @@ public class CDTParser
 
       line.addTag(DOMTagTypes.FUNCTION_CALL, functionName, 0);
       // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
-      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine(),
+      source.addFunction(arg0.getName(), arg0.getStartingLine() - 1,
                         0, arg0.getStartingOffset(), 0, functionName);
     }
 
@@ -939,7 +939,7 @@ public class CDTParser
       if (debug)
         System.out.println("exitFunctionBody....name = " + arg0.getName());
       
-      DOMFunction func = image.getFunction(arg0.getName());
+      DOMFunction func = source.getFunction(arg0.getName());
       if (func == null && debug)
         System.out.println("Could not get DOMFunction");
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());

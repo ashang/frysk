@@ -41,7 +41,6 @@ package frysk.dom;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import org.jdom.Element;
 
@@ -104,27 +103,6 @@ public class DOMImage
 	public void addSource (DOMSource source)
     {
 		this.myElement.addContent(source.getElement());
-	}
-	
-	/**
-	 * adds an inline function to an image
-	 * @param inline_name is the name of the inline function
-	 * @param source is the name of the source this function came from
-	 * @param startLine is the starting line number of this function in the source
-	 * @param endLine is the ending line number of this function in the source
-	 * @param start_offset is the starting character offset from the beginning
-	 * 					of the file of the first character of the function
-	 * @param end_offset is the ending character offset from the beginning
-	 * 					of the file of the last character of the function
-	 */
-	public void addFunction (String inline_name, String source, 
-			int startLine, int endLine,
-			int start_offset, int end_offset, String function_call) 
-    {
-		DOMFunction function = DOMFunction.createDOMFunction(this, inline_name, source, startLine, endLine,
-				start_offset, end_offset, function_call);
-        
-        function.setParent(this);
 	}
 	
 	/**
@@ -205,67 +183,6 @@ public class DOMImage
         return null;
       }
 	}
-	
-	/**
-	 * attempts to fetch an inlined function DOM element
-	 * @param name of the inlined function to return
-	 * @return the DOMImage corresponding to the element, or null if no such
-	 * 	element exists
-	 */
-	public DOMFunction getFunction (String name)
-  {
-    Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-    while (iter.hasNext())
-      {
-        Element node = (Element) iter.next();
-        if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR).equals(name))
-          return new DOMFunction(node);
-      }
-    return null;
-  }
-	
-	/**
-   * @return An iterator to all functions in this image
-   */
-	public Iterator getFunctions ()
-    {
-		LinkedList list = new LinkedList();
-		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-		while (iter.hasNext())
-          {
-            DOMFunction function = new DOMFunction ((Element) iter.next());
-            function.setParent(this);
-			list.add(function);
-          }
-		
-		return list.iterator();
-	}
-    
-    public DOMFunction findFunction (String name, int lineNum)
-    {
-        Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
-        DOMFunction found = null;
-        
-        while (iter.hasNext())
-        {
-          DOMFunction function = new DOMFunction ((Element) iter.next());
-          String sourceName = function.getElement().getAttributeValue("source");
-          DOMSource source = getSource(sourceName);
-          if (source.getFileName().equals(name)
-              && function.getStartingLine() <= lineNum)
-            {
-          
-              if (found == null
-                  || function.getStartingLine() > found.getStartingLine())
-                {
-                  found = function;
-                  found.setParent(this);
-                }
-            }
-        }
-        
-        return found;
-    }
 
 	/**
 	 * This function should only be used internally within the frysk source dom

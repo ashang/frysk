@@ -283,6 +283,16 @@ public class TestDOM extends TestCase {
         
         assertEquals("testing DOMSource.getIncludes()", testDOMSource.getIncludes(),
                      "/home/testing,/home/testing2");
+        
+      String test_inline = "do_something";
+      int start_inline = main_prog[1].indexOf(test_inline) + main_prog[0].length();
+      int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
+              main_prog[0].length();
+      testDOMSource.addInlineInst(test_inline, start_inline, end_inline, 0, testDOMLine.getLineNum());
+      
+      assertEquals("testing DOMLine.addInlineInst()", 
+              testDOMSource.getInlineInst(test_inline).getElement().
+              getAttributeValue(DOMInlineInstance.LINEINST_ATTR), test_inline);
 	}
 
 	/**************************************************************************
@@ -336,17 +346,9 @@ public class TestDOM extends TestCase {
 		testDOMLine.setBreakPoint(true);
 		
 		assertTrue("testing DOMLine.setBreakPoint() - true", testDOMLine.hasBreakPoint());
-		
+
 		String test_inline = "do_something";
-		int start_inline = main_prog[1].indexOf(test_inline) + main_prog[0].length();
-		int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
-				main_prog[0].length();
-		testDOMLine.addInlineInst(test_inline, start_inline, end_inline, 0);
-		
-		assertEquals("testing DOMLine.addInlineInst()", 
-				testDOMLine.getInlineInst(test_inline).getElement().
-				getAttributeValue(DOMInlineInstance.LINEINST_ATTR), test_inline);
-		
+        
 		String tag_type = "inline";
 		DOMTag tag = new DOMTag(tag_type, test_inline,
 				main_prog[1].indexOf(test_inline));
@@ -391,15 +393,15 @@ public class TestDOM extends TestCase {
 	public static void testDOMInlineInstance() {
 		
 		final String inst = "do_something";
-		final int line_no = 2;
+//		final int line_no = 2;
 		final int start_index = 10;
 		final int end_index = 20;
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
 		final DOMSource testDOMSource = testDOMImage
 				.getSource("test_source1.1");
-		final DOMLine testDOMLine = testDOMSource.getLine(line_no);
+//		final DOMLine testDOMLine = testDOMSource.getLine(line_no);
 		final DOMInlineInstance testDOMInlineInstance =
-			testDOMLine.getInlineInst(inst);
+			testDOMSource.getInlineInst(inst);
 
 		testDOMInlineInstance.setStart(start_index);
 		
