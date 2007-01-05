@@ -218,6 +218,31 @@ public class TestAbandon
 
     assertRunUntilStop("testAbandonThenRemove");
   }
+  
+  public void testStressAbandon()
+  {
+    AckProcess ackProc = new AckDaemonProcess(99);
+    Proc proc = ackProc.assertFindProcAndTasks();
+
+    new ProcBlockAction(proc)
+    {
+
+      public void allExistingTasksCompleted ()
+      {
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+      }
+
+      public void existingTask (Task task)
+      {
+      }
+
+      public void addFailed (Object observable, Throwable w)
+      {
+      }
+    };
+    
+    assertRunUntilStop("testStressAbandon");
+  }
 
   public void testRemoveThenAbandonAckDaemon ()
   {
