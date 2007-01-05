@@ -1,4 +1,9 @@
-2006-01-03  Mike Cvet  <mcvet@redhat.com>
+2007-01-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* testfiles/test_looper.xml: Fixes to DOMIMage.java and
+	CDTParser.java; see bz #3832.
+
+2007-01-03  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (getFunctionXXX): Removed. Use 
 	DOMImage.findFunction() instead.
