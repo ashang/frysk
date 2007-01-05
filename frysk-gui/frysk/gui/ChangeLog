@@ -1,3 +1,7 @@
+2007-01-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* test/TestParser.java: Remove debug print statement.
+
 2007-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* DummyDebugResults.java: Delete.

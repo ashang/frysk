@@ -138,7 +138,6 @@ public class TestParser
     DOMImage image = dom.getImage(IMAGE_FILENAME);
     for (int i = 0; i < sourcelist.length; i++)
       {
-        System.out.print("sourcelist[" + i + "] = " + sourcelist[i] + "\n");
         String filename = sourcelist[i].substring(sourcelist[i].lastIndexOf("/") + 1);
         String path = sourcelist[i].substring(0, sourcelist[i].lastIndexOf("/"));
         DOMSource source = new DOMSource(filename, path, includepaths);
