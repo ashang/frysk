@@ -1,3 +1,7 @@
+2007-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestIsa.java: Replace Build.BUILD_ARCH with Config.getWordSize.
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 
 	* TestLib.java (assertRunUntilStop): Changed to give more time to logged tests.

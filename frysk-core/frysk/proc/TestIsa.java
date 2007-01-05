@@ -41,7 +41,7 @@ package frysk.proc;
 
 import java.util.Observable;
 import java.util.logging.Level;
-import frysk.imports.Build;
+import frysk.Config;
 
 import frysk.sys.Pid;
 import frysk.sys.Sig;
@@ -310,9 +310,8 @@ public class TestIsa
   
   public void test64To32Isa ()
   {
-    
-    if (!Build.BUILD_ARCH.equals("x86_64"))
-      return;
+      if (Config.getWordSize () == 32)
+	  return;
     String[] command = new String[] { getExecPrefix()
                                       + "funit-exec",                                               
                                       String.valueOf(Pid.get()),
@@ -367,9 +366,8 @@ public class TestIsa
   
   public void test64To32To64 ()
   {
-
-    if (!Build.BUILD_ARCH.equals("x86_64"))
-      return;
+      if (Config.getWordSize () == 32)
+	  return;
     String[] command = new String[] { getExecPrefix()
                                       + "funit-exec",                                               
                                       String.valueOf(Pid.get()),

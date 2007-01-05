@@ -40,7 +40,7 @@
 package frysk.junit;
 
 import frysk.EventLogger;
-import frysk.imports.Build;
+import frysk.Config;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.regex.PatternSyntaxException;
@@ -77,7 +77,6 @@ public class Runner
     // Reapeat onece by default.
     private int repeatValue = 1;
     private String archTarget = null;
-    private String archBuild = null; 
     private Collection testCases = null;
     private boolean listClassesOnly = false;
     // Put all tests through a filter; by default exclude all Stress.*
@@ -160,15 +159,6 @@ public class Runner
 	return this.testCases;
     }
    
-    public void setBuildArch(String buildArch)
-    {
-	this.archBuild = buildArch;
-    }
-    public String getBuildArch()
-    {
-	return this.archBuild;
-    }
-
     private int runCases (Collection testClasses)
     {
 	// Create the testsuite to be run, either as specified on the
@@ -267,25 +257,14 @@ public class Runner
 	if (this.archTarget != null && !this.archTarget.equals(Runner.ARCH64))
 	    return SUCCESS_EXIT;
      
-	boolean testArch64 = false;
+	boolean testArch64 = Config.getWordSize () == 64;
       
-	if (this.archBuild == null)
-	    this.archBuild = Build.BUILD_ARCH;
-
-	// Check whether --arch=64 is given on 32-bit machine.
-	if (archBuild.equalsIgnoreCase("x86_64") ||
-	    archBuild.equalsIgnoreCase("ppc64") ||
-	    archBuild.equalsIgnoreCase("powerpc64"))
-	    {
-		testArch64 = true;
-	    }
-
 	if (this.archTarget != null && !testArch64)
 	    {
-		System.out.println ("It's unsupported "+
-				    "to do arch test in " + archBuild +". ");
+		System.out.println ("Arch test is only supported on 64-bit"
+				    + " systems.");
 		System.out.println ("Please try without --arch option! Exit...");
-		System.exit (SUCCESS_EXIT);
+		System.exit (FAILURE_EXIT);
 	    }
  
 	return this.runCases(testClasses);
@@ -309,23 +288,15 @@ public class Runner
 	if (this.archTarget == null)
 	    return SUCCESS_EXIT;
       
-	boolean testArch32 = false;
-
-	if (this.archBuild == null)
-	    this.archBuild = Build.BUILD_ARCH;
-
-	if (archBuild.equalsIgnoreCase("x86_64") || 
-	    archBuild.equalsIgnoreCase("ppc64") || 
-	    archBuild.equalsIgnoreCase("powerpc64"))
-	    {
-		testArch32 = true;
-	    }
+	boolean testArch32 = Config.getWordSize () == 64;
 	  
 	if (!testArch32)
 	    {
-		System.out.println("It's unnecessary or unsupported "+ 
-				   "to do arch test in " + archBuild +". Exit...");
-		System.exit (SUCCESS_EXIT);
+		System.out.println("It's unnecessary or unsupported"
+				   + " to do arch test on "
+				   + Config.getWordSize ()
+				   + " system.");
+		System.exit (FAILURE_EXIT);
 	    }
 	else if (!this.archTarget.equals(Runner.ARCH32))
 	    return SUCCESS_EXIT;
@@ -578,8 +549,6 @@ public class Runner
     {
 	int result = SUCCESS_EXIT;
 
-	setBuildArch (Build.BUILD_ARCH);
-	
 	// Set the path prefixes and then do the common test.
 	Paths.setPrefixes (execPrefix, exec32Prefix, dataPrefix);
 	result = worstResult (runArchCases (archTests), result);

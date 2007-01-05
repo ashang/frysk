@@ -1,3 +1,9 @@
+2007-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java (runArchCases, runArch32Cases, runTestCases):
+	Replace Build.BUILD_ARCH with Config.getWordSize.
+	(archBuild, setBuildArch, getBuildArch): Delete.
+	
 2006-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPaths.java: Test getExec32Prefix.

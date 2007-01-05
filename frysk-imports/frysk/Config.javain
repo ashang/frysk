@@ -108,4 +108,8 @@ public class Config
      * such as frysk-imports et.al.
      */
     public static final native String getAbsRootSrcDir ();
+    /**
+     * The word size of the underlying architecture.
+     */
+    public static final native int getWordSize ();
 }

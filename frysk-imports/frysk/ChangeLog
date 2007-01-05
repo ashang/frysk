@@ -1,3 +1,8 @@
+2007-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxxin (getWordSize): Define.
+	* Config.javain (getWordSize): Declare.
+
 2007-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxxin (getRootSrcDir, getAbsRootSrcDir): Define.

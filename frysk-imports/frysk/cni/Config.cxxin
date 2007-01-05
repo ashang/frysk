@@ -96,3 +96,9 @@ frysk::Config::getAbsRootSrcDir ()
 {
   return JvNewStringUTF ("@abs_root_srcdir@");
 }
+
+jint
+frysk::Config::getWordSize ()
+{
+  return sizeof (long) * 8;
+}
