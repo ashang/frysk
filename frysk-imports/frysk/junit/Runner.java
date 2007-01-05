@@ -162,10 +162,7 @@ public class Runner
     private int runCases (Collection testClasses)
     {
 	// Create the testsuite to be run, either as specified on the
-	// command line, or from the provided list of classes.  XXX:
-	// It would be good if individual tests from within a testcase
-	// could be identified and run.  //String[] otherArgs =
-	// parser.getRemainingArgs ();
+	// command line, or from the provided list of classes.  
       
 	TestSuite testSuite = new TestSuite ();
       
@@ -176,8 +173,34 @@ public class Runner
 		String arg = (String) iter.next();
 		if (arg.charAt (0) == '-')
 		    this.repeatValue = -Integer.parseInt (arg);
-		else
-		    testSuite.addTest (getTest (arg));
+		else 
+          {
+            int lidot = arg.lastIndexOf('.');
+            if (arg.substring(lidot+1).startsWith("test"))
+              {           
+                try
+                  {
+                    Class klass = loadSuiteClass(arg.substring(0, lidot));
+                    TestCase test = (TestCase) klass.newInstance();
+                    test.setName(arg.substring(lidot+1));
+                    testSuite.addTest(test);
+                  }
+                catch (ClassNotFoundException e)
+                  {
+                    e.printStackTrace();
+                  }
+                catch (InstantiationException e)
+                  {
+                    e.printStackTrace();
+                  }
+                catch (IllegalAccessException e)
+                  {
+                    e.printStackTrace();
+                  }
+              }
+            else 
+              testSuite.addTest (getTest (arg));
+          }
 	    }
 	}
 	else {
@@ -324,58 +347,86 @@ public class Runner
     {
 	Parser parser = new Parser (programName, "1.0", true);
 
-	// Send logging output to the console, and the level.
-	parser.add (new Option ("console", 'c',
-				"Set the console level."
-				+ " The console-level can be"
-				+ " [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-				"<console-level>")
-	    {
-		public void parsed (String consoleValue)
-		    throws OptionException
-		{			
-		    try {		
-			Level consoleLevel = Level.parse (consoleValue);	
-			// Need to set both the console and the main
-			// logger as otherwize the console won't see
-			// the log messages.
-			
-			System.out.println ("console " + consoleLevel);	   
-			Handler consoleHandler = new ConsoleHandler ();
-			consoleHandler.setLevel (consoleLevel);
-			logger.addHandler (consoleHandler);
-			logger.setLevel (consoleLevel);
-			System.out.println (consoleHandler);		
-	  		    
-		    }
-		    catch (IllegalArgumentException e) {
-			throw new OptionException ("Invalid log console: "
-						   + consoleValue);
-		    }
-		}
-	    });
+    parser.add(new Option(
+                          "console",
+                          "Set the log CONSOLE_LOG to level LEVEL. Can set "
+                              + "multiple logs. The LEVEL can be [ OFF | "
+                              + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
+                              + "FINEST | ALL]", "<CONSOLE_LOG=LEVEL,...>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        String[] logs = arg0.split(",");
 
-	// Send logging output to a file, and the level.
-	parser.add (new Option ("level", 'l',
-				"Set the log level."
-				+ " The log-level can be "
-				+ "[ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL]",
-			       "<log-level>")
-	    {
-		public void parsed (String levelValue)
-		    throws OptionException
-		{				
-		    try {
-			Level level = Level.parse (levelValue);
-			if (levelValue != null)
-			    logger.setLevel (level);                
-		    }
-		    catch (IllegalArgumentException e) {
-			throw new OptionException ("Invalid log level: "
-						   + levelValue);
-		    }
-		}
-	    });
+        for (int i = 0; i < logs.length; i++)
+          {
+            String[] log_level = logs[i].split("=");
+            // XXX: Should logs be set up in advance?
+            Logger logger = Logger.getLogger(log_level[0]);
+            // LogManager.getLogManager().getLogger(log_level[0]);
+
+            if (logger == null)
+              {
+                throw new OptionException("Couldn't find logger with name: "
+                                          + log_level[0]);
+              }
+            try
+              {
+                Level consoleLevel = Level.parse(log_level[1]);
+                // Need to set both the console and the main logger as
+                // otherwize the console won't see the log messages.
+
+                System.out.println("console " + consoleLevel);
+                Handler consoleHandler = new ConsoleHandler();
+                consoleHandler.setLevel(consoleLevel);
+                logger.addHandler(consoleHandler);
+                logger.setLevel(consoleLevel);
+                System.out.println(consoleHandler);
+
+              }
+            catch (IllegalArgumentException e)
+              {
+                throw new OptionException("Invalid log console: "
+                                          + log_level[1]);
+              }
+          }
+      }
+    });
+    parser.add(new Option("log",
+                          "Set the log LOG to level LEVEL. Can set multiple "
+                              + "logs. The LEVEL can be [ OFF | SEVERE | "
+                              + "WARNING | INFO | CONFIG | FINE | FINER | "
+                              + "FINEST | ALL]", "<LOG=LEVEL,...>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        String[] logs = arg0.split(",");
+
+        for (int i = 0; i < logs.length; i++)
+          {
+            String[] log_level = logs[i].split("=");
+            // XXX: Should logs be set up in advance?
+            Logger logger = Logger.getLogger(log_level[0]);
+            // LogManager.getLogManager().getLogger(log_level[0]);
+
+            if (logger == null)
+              {
+                throw new OptionException("Couldn't find logger with name: "
+                                          + log_level[0]);
+              }
+
+            try
+              {
+                Level level = Level.parse(log_level[1]);
+                logger.setLevel(level);
+              }
+            catch (IllegalArgumentException e)
+              {
+                throw new OptionException("Invalid log level: " + log_level[1]);
+              }
+          }
+      }
+    });
 		
 	// Determine the number of times that the testsuite should be
 	// run.

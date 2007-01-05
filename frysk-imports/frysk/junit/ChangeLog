@@ -1,3 +1,9 @@
+2007-01-05  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (runCases): Extended to run individual tests from testcases.
+	(createCommandLineParser): Made to look more like the command line options
+	used by frysk utilities.
+
 2007-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java (runArchCases, runArch32Cases, runTestCases):
