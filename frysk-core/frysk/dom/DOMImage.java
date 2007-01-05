@@ -218,7 +218,7 @@ public class DOMImage
     while (iter.hasNext())
       {
         Element node = (Element) iter.next();
-        if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR) == name)
+        if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR).equals(name))
           return new DOMFunction(node);
       }
     return null;

@@ -288,6 +288,7 @@ public class CDTParser
     try {
       XMLOutputter serializer = new XMLOutputter();
       serializer.getFormat();
+      System.out.println("\n\n********** CDTParser **********\n");
       serializer.output(doc, System.out);
     }
     catch (IOException e) {
@@ -526,7 +527,7 @@ public class CDTParser
 
       line.addTag(DOMTagTypes.FUNCTION_CALL, functionName, 0);
       // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
-      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine() - 1,
+      image.addFunction(arg0.getName(), source.getFileName(), arg0.getStartingLine(),
                         0, arg0.getStartingOffset(), 0, functionName);
     }
 
@@ -935,20 +936,33 @@ public class CDTParser
 
     public void exitFunctionBody (IASTFunction arg0)
     {
-      DOMFunction func = image.getFunction(arg0.getName());
-      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-
-      if (line == null || !checkScope(arg0.getName(), line.getText()))
-          return;
+      if (debug)
+        System.out.println("exitFunctionBody....name = " + arg0.getName());
       
-      func.setEndingLine(arg0.getEndingLine() - 1);
-      DOMLine line2 = source.getLine(arg0.getEndingLine() - 1);
+      DOMFunction func = image.getFunction(arg0.getName());
+      if (func == null && debug)
+        System.out.println("Could not get DOMFunction");
+      DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+      DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+      
+      if (line == null || !checkScope(arg0.getName(), nameLine.getText()))
+          return;
+      if (debug)
+        {
+          System.out.println(".....line = " + line.getText().trim());
+          System.out.println(".....arg0.getEndingLine() = " + arg0.getEndingLine());
+          System.out.println(".....func name = " + func.getName());
+        }
+      func.setEndingLine(arg0.getEndingLine());
+      DOMLine line2 = source.getLine(arg0.getEndingLine());
       func.setEnd(line2.getOffset() + line.getLength());
       
     }
 
     public void exitCodeBlock (IASTCodeScope arg0)
     {
+      if (debug)
+        System.out.println("exitCodeBlock");
     }
 
     public void enterCompilationUnit (IASTCompilationUnit arg0)
@@ -1022,8 +1036,11 @@ public class CDTParser
       if (debug)
         System.out.println("Made it to acceptProblem" + ".....error = "
                            + arg0.getMessage() + ".....line # = "
-                           + arg0.getSourceLineNumber() + ".....ID# = "
-                           + arg0.getSourceStart());
+                           + arg0.getSourceLineNumber() + ".....source start = "
+                           + arg0.getSourceStart() + "\n"
+                           + ".....originating file name = "
+                           + arg0.getOriginatingFileName().toString().toString()
+                           + ".....arguments = " + arg0.getArguments());
       return false;
     }
     

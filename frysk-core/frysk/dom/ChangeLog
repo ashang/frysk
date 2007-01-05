@@ -1,3 +1,9 @@
+2007-01-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java (getFunction): Change "==" to ".equals".
+	* CDTParser.java: Fix starting/ending line number calculations.
+	Add some debug info to print out when "debug" is set to true.
+
 2007-01-03  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java (createDOM): Use the proc's command field as the
