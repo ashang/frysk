@@ -1,6 +1,7 @@
 2007-01-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCatch.java: Use wild cards, instead of Build.SRCDIR.
+	* TestFStack.java: Ditto.
 
 2007-01-05  Nurdin Premji  <npremji@redhat.com>
 

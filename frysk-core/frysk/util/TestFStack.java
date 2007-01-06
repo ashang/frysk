@@ -42,7 +42,6 @@ package frysk.util;
 
 import java.util.logging.Level;
 
-import frysk.core.Build;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -79,17 +78,15 @@ public class TestFStack
   {
     String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                         + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                        + Build.SRCDIR
-                        + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                        + ".*/funit-child.c#[\\d]+\n"
                         + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
-                        + Build.SRCDIR
-                        + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                        + ".*/funit-child.c#[\\d]+\n"
                         + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
                         + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
     String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                     + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                    + Build.SRCDIR + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                    + ".*/funit-child.c#[\\d]+\n"
                     + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
                     + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
 
