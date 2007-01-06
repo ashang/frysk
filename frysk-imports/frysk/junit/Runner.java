@@ -593,6 +593,8 @@ public class Runner
     }
 
     public int runTestCases (String dataPrefix,
+			     String gladeDirs,
+			     String imageDirs,
 			     Collection archTests,
 			     String execPrefix,
 			     Collection arch32Tests,
@@ -600,12 +602,14 @@ public class Runner
     {
 	int result = SUCCESS_EXIT;
 
+	Paths.setDataPrefixes (dataPrefix, gladeDirs, imageDirs);
+
 	// Set the path prefixes and then do the common test.
-	Paths.setPrefixes (execPrefix, exec32Prefix, dataPrefix);
+	Paths.setExecPrefixes (execPrefix, exec32Prefix);
 	result = worstResult (runArchCases (archTests), result);
 	
 	// Set the execPrefix of arch32 and then do the arch32 test.
-	Paths.setPrefixes (exec32Prefix, null, dataPrefix);
+	Paths.setExecPrefixes (exec32Prefix, null);
 	result = worstResult (runArch32Cases (arch32Tests), result);
 
 	return result;

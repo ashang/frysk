@@ -55,6 +55,8 @@ public class TestRunner
 	Runner testRunner = new Runner ("TestRunner", args);
 	int status = testRunner.runTestCases
 	    (ABS_BUILDDIR + "/frysk/pkgdatadir/",
+	     ABS_BUILDDIR + "/frysk/gui/glade/",
+	     ABS_BUILDDIR + "/frysk/gui/images/",
 	     JUnitTests.get (),
 	     ABS_BUILDDIR + "/frysk/pkglibdir/",
 	     JUnitTests.get (),

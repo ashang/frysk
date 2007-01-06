@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -71,17 +71,29 @@ public class Paths
     static private String execPrefix;
     static private String exec32Prefix; 
     static private String dataPrefix;
+    static private String gladePrefix;
+    static private String imagePrefix;
     /**
-     * Set the TestRunner's working directories.  Tests should prefix
-     * any paths paths with these.
+     * Set the TestRunner's exec paths.  Tests should prefix any
+     * program paths with these.
      */
-    static public void setPrefixes (String execPrefix,
-				    String exec32Prefix,
-				    String dataPrefix)
+    static public void setExecPrefixes (String execPrefix,
+					String exec32Prefix)
     {
 	Paths.execPrefix = execPrefix;
 	Paths.exec32Prefix = exec32Prefix;
+    }
+    /**
+     * Set the TestRunner's data directories.  Tests should prefix any
+     * data paths with these.
+     */
+    static public void setDataPrefixes (String dataPrefix,
+					String gladePrefix,
+					String imagePrefix)
+    {
 	Paths.dataPrefix = dataPrefix;
+	Paths.gladePrefix = gladePrefix;
+	Paths.imagePrefix = imagePrefix;
     }
     /**
      * Get the TestRunner's executable working directory.  Tests
@@ -114,5 +126,19 @@ public class Paths
     static public String getDataPrefix ()
     {
 	return dataPrefix;
+    }
+    /**
+     * Get the TestRunner's glade directories.
+     */
+    static public String getGladePrefix ()
+    {
+	return gladePrefix;
+    }
+    /**
+     * Get the TestRunner's image directories.
+     */
+    static public String getImagePrefix ()
+    {
+	return imagePrefix;
     }
 }

@@ -1,3 +1,8 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.javain: Pass glade, and image directories to
+	runTestCases.
+
 2007-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Build.javain (ABS_BUILDDIR, BUILDDIR): Delete.

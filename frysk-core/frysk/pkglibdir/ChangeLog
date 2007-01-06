@@ -1,3 +1,7 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Pass glade and image directories to runTestCases.
+
 2006-12-27  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-asmstepper.S: Fixed loop and removed all instances of 

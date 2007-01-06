@@ -63,6 +63,8 @@ public class funit
 
 	int status = testRunner.runTestCases
 	    (Config.getPkgDataDir () + "/",
+	     Config.getGladeDir (),
+	     Config.getImageDir (),
 	     list, Config.getPkgLibDir () + "/",
 	     arch32List, Config.getPkgLib32Dir () + "/");
 	System.exit (status);

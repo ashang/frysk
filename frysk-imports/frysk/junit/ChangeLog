@@ -1,3 +1,14 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPaths.java (savedGlade, savedImage, setUp, tearDown): Save
+	and restore glade and image prefixes.
+	(testCrossedDataPaths, testCrossedExecPaths): Replace
+	testCrossPaths.
+	* Paths.java (setDataPrefixes, setExecPrefixes): Replace
+	setPrefixes.
+	(gladePrefix, getGladePrefix, imagePrefix, getImagePrefix): Add.
+	* Runner.java: Update.
+
 2007-01-05  Nurdin Premji  <npremji@redhat.com>
 
 	* Runner.java (runCases): Extended to run individual tests from testcases.

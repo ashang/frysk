@@ -49,6 +49,8 @@ public class TestPaths
     private String savedExec;
     private String savedExec32;
     private String savedData;
+    private String savedGlade;
+    private String savedImage;
 
     /**
      * This test needs to leave the paths intact, save them.
@@ -58,21 +60,36 @@ public class TestPaths
 	savedExec = Paths.getExecPrefix ();
 	savedExec32 = Paths.getExec32Prefix ();
 	savedData = Paths.getDataPrefix ();
+	savedGlade = Paths.getGladePrefix ();
+	savedImage = Paths.getImagePrefix ();
     }
 
     /**
-     * Check that the paths are correctly wired.
+     * Check that the exec paths are correctly wired.
      */
-    public void testCrossedPaths ()
+    public void testCrossedExecPaths ()
     {
 	String exec = "exec";
 	String exec32 = "exec32";
-	String data = "data";
 
-	Paths.setPrefixes (exec, exec32, data);
+	Paths.setExecPrefixes (exec, exec32);
 	assertEquals (exec, exec, Paths.getExecPrefix ());
 	assertEquals (exec32, exec32, Paths.getExec32Prefix ());
+    }
+
+    /**
+     * Check that the data paths are correctly wired.
+     */
+    public void testCrossedDataPaths ()
+    {
+	String data = "data";
+	String glade = "glade";
+	String image = "image";
+
+	Paths.setDataPrefixes (data, glade, image);
 	assertEquals (data, data, Paths.getDataPrefix ());
+	assertEquals (glade, glade, Paths.getGladePrefix ());
+	assertEquals (image, image, Paths.getImagePrefix ());
     }
 
     /**
@@ -80,9 +97,12 @@ public class TestPaths
      */
     public void tearDown ()
     {
-	Paths.setPrefixes (savedExec, savedExec32, savedData);
+	Paths.setExecPrefixes (savedExec, savedExec32);
+	Paths.setDataPrefixes (savedData, savedGlade, savedImage);
 	assertEquals (savedExec, savedExec, Paths.getExecPrefix ());
 	assertEquals (savedExec32, savedExec32, Paths.getExec32Prefix ());
 	assertEquals (savedData, savedData, Paths.getDataPrefix ());
+	assertEquals (savedGlade, savedGlade, Paths.getGladePrefix ());
+	assertEquals (savedImage, savedImage, Paths.getImagePrefix ());
     }
 }
