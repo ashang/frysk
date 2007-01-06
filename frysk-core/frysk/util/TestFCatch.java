@@ -47,7 +47,6 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import frysk.core.Build;
 import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -64,11 +63,9 @@ public class TestFCatch
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
                       + "#[\\d]+ 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                      + Build.SRCDIR
-                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + ".*/funit-child.c#[\\d]+\n"
                       + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
-                      + Build.SRCDIR
-                      + "/frysk/pkglibdir/funit-child.c#[\\d]+\n"
+                      + ".*/funit-child.c#[\\d]+\n"
                       + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
