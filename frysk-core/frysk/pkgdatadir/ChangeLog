@@ -1,0 +1,14 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk/pkgdatadir/test_main_looper.c: New, copied from
+	frysk-gui/frysk/gui/srcwin/testfiles/.
+	* frysk/pkgdatadir/test_looper.xml: New, copied from
+	frysk-gui/frysk/gui/srcwin/testfiles/.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

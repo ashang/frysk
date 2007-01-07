@@ -51,6 +51,7 @@ bin_SCRIPTS =
 sbin_PROGRAMS =
 sbin_SCRIPTS =
 pkgdata_DATA =
+pkgdata_PROGRAMS =
 pkglib_PROGRAMS =
 pkglib_SCRIPTS =
 pkglibdir = $(libdir)/@PACKAGE@

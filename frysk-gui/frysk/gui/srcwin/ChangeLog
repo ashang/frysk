@@ -1,3 +1,10 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* testfiles/test_main_looper.c: Delete, moved to
+	frysk-core/frysk/pkgdatadir.
+	* testfiles/test_looper.xml: Delete, moved to
+	frysk-core/frysk/pkgdatadir.
+
 2007-01-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (generateProcStackTrace): Calls

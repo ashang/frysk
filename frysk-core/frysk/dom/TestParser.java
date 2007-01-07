@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.gui.test;
+package frysk.dom;
 
 import frysk.junit.TestCase;
 import frysk.dom.DOMFrysk;
@@ -48,7 +48,7 @@ import frysk.dom.DOMLine;
 import frysk.dom.DOMFactory;
 import frysk.dom.StaticParser;
 import frysk.dom.cparser.CDTParser;
-import frysk.gui.Build;
+import frysk.core.Build;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -104,6 +104,9 @@ public class TestParser
 
   public static void testParser ()
   {
+      if (brokenXXX (3841))
+	  return;
+
 
     if (DOMFactory.pathFound(Build.SRCDIR))
       {

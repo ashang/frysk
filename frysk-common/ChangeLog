@@ -1,5 +1,7 @@
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (pkgdata_PROGRAMS): Define.
+
 	* TestRunner.javain: Pass glade, and image directories to
 	runTestCases.
 

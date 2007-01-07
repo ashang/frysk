@@ -1,3 +1,8 @@
+2007-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestParser.java: Renamed from frysk/gui/test/TestParser.java.
+	Note problem 3841.
+
 2007-01-05  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFunction.java (parent): Changed to a DOMSource. Now resides
