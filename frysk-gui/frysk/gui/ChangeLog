@@ -1,5 +1,9 @@
 2007-01-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestGlade.java: Rename test/TestGlade.java.  Use
+	Paths.getGladePrefix and Paths.getImagePrefix instead of
+	Build.ABS_SRCDIR.  Fixes frysk/3749.
+
 	* FryskGui.javain: Rename FryskGui.java. Replace Build.SRCDIR and
 	Build.ABS_SRCDIR with @srcdir@ and @abs_srcdir@.
 

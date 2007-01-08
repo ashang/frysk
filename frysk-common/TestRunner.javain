@@ -2,7 +2,7 @@
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,12 +51,13 @@ public class TestRunner
     public static void main (String[] args)
     {
 	String ABS_BUILDDIR = "@abs_builddir@";
+	String ABS_SRCDIR = "@abs_srcdir@";
 
 	Runner testRunner = new Runner ("TestRunner", args);
 	int status = testRunner.runTestCases
 	    (ABS_BUILDDIR + "/frysk/pkgdatadir/",
-	     ABS_BUILDDIR + "/frysk/gui/glade/",
-	     ABS_BUILDDIR + "/frysk/gui/images/",
+	     ABS_SRCDIR + "/frysk/gui/glade",
+	     ABS_SRCDIR + "/frysk/gui/images",
 	     JUnitTests.get (),
 	     ABS_BUILDDIR + "/frysk/pkglibdir/",
 	     JUnitTests.get (),
