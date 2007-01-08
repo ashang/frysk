@@ -166,43 +166,68 @@ public class Runner
       
 	TestSuite testSuite = new TestSuite ();
       
-	if (otherArgs.size() > 0) {
-	    // Construct the testsuite from the list of names.
-	    Iterator iter = otherArgs.listIterator(0);
-	    while (iter.hasNext()) {
-		String arg = (String) iter.next();
-		if (arg.charAt (0) == '-')
-		    this.repeatValue = -Integer.parseInt (arg);
-		else 
+	if (otherArgs.size() > 0)
+      {
+        // Construct the testsuite from the list of names.
+        Iterator iter = otherArgs.listIterator(0);
+        while (iter.hasNext())
           {
-            int lidot = arg.lastIndexOf('.');
-            if (arg.substring(lidot+1).startsWith("test"))
-              {           
+            String arg = (String) iter.next();
+            if (arg.charAt(0) == '-')
+              this.repeatValue = - Integer.parseInt(arg);
+            else
+              {
+                int lidot = arg.lastIndexOf('.');
+                String testName = null;
+                String testCaseName = null;
+                if (arg.substring(lidot + 1).startsWith("test"))
+                  {
+                    testCaseName = arg.substring(0, lidot);
+                    testName = arg.substring(lidot + 1);
+                  }
+                else if (arg.matches("test.*\\(.*\\)"))
+                  {
+                    String[] testTuple = arg.split("[\\(\\)]");
+                    testName = testTuple[0];
+                    testCaseName = testTuple[1];
+                  }
+                else
+                  {
+                    testCaseName = arg;
+                  }
+
                 try
                   {
-                    Class klass = loadSuiteClass(arg.substring(0, lidot));
-                    TestCase test = (TestCase) klass.newInstance();
-                    test.setName(arg.substring(lidot+1));
-                    testSuite.addTest(test);
+                    
+                    if (testName == null)
+                      testSuite.addTest(getTest(testCaseName));
+                    else
+                      {
+                        Class klass = loadSuiteClass(testCaseName);
+                        TestCase test = (TestCase) klass.newInstance();
+                        test.setName(testName);
+                        testSuite.addTest(test);
+                      }
                   }
                 catch (ClassNotFoundException e)
                   {
-                    e.printStackTrace();
+                    System.out.println("Couldn't find class with name: "
+                                       + testCaseName);
                   }
                 catch (InstantiationException e)
                   {
-                    e.printStackTrace();
+                    System.out.println("Couldn't instantiate class with name: "
+                                       + testCaseName);
                   }
                 catch (IllegalAccessException e)
                   {
-                    e.printStackTrace();
+                    System.out.println("Couldn't access class with name: "
+                                       + testCaseName);
                   }
+
               }
-            else 
-              testSuite.addTest (getTest (arg));
           }
-	    }
-	}
+      }
 	else {
 	    for (Iterator i = testClasses.iterator (); i.hasNext (); ) {
 		Class testClass = (Class) i.next ();

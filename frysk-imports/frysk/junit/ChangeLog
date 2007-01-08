@@ -1,3 +1,8 @@
+2007-01-08  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (runCases): Allow for individual test cases in the form of:
+	test*(TestCaseClass).
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPaths.java (savedGlade, savedImage, setUp, tearDown): Save
