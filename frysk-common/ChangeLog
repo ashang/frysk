@@ -1,5 +1,7 @@
 2007-01-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (files-java.list): Add back .*enum files.
+
 	* Makefile.rules (files-java.list): Make dependant on and us
 	files.list.
 
