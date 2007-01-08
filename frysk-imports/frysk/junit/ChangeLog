@@ -1,5 +1,8 @@
 2007-01-08  Nurdin Premji  <npremji@redhat.com>
 
+	* Runner.java (runCases): Check that test actually exists before trying to
+	run it. Fixes bug #3839.
+
 	* Runner.java (runCases): Allow for individual test cases in the form of:
 	test*(TestCaseClass).
 

@@ -205,10 +205,19 @@ public class Runner
                       {
                         Class klass = loadSuiteClass(testCaseName);
                         TestCase test = (TestCase) klass.newInstance();
+                        
+                        //Check if the method exists.
+                        klass.getMethod(testName, null);
+                        
                         test.setName(testName);
                         testSuite.addTest(test);
                       }
                   }
+                catch (NoSuchMethodException e)
+                {
+                  System.out.println("Couldn't find method with name: "
+                                     + testName);
+                }
                 catch (ClassNotFoundException e)
                   {
                     System.out.println("Couldn't find class with name: "
