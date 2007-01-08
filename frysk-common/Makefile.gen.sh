@@ -265,9 +265,15 @@ echo_LDFLAGS ()
 has_main ()
 {
     case "$1" in
-		*.java ) jv-scan --print-main $1 | grep .  > /dev/null 2>&1 ;;
-        *.c|*.cxx ) grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1 ;;
-		* ) false ;; 
+	*.java | *.javain )
+	    jv-scan --print-main $1 | grep .  > /dev/null 2>&1
+	    ;;
+        *.c | *.cxx )
+	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
+	    ;;
+	* )
+	    false
+	    ;; 
     esac
 }
 
@@ -422,23 +428,7 @@ echo_LDFLAGS TestRunner
 
 # Generate SOURCES list for all files.
 
-for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
-    print_header "... ${suffix}"
-    grep -e "\\${suffix}\$" files.list | while read file ; do
-	d=`dirname ${file}`
-	b=`basename ${file} ${suffix}`
-	echo "EXTRA_DIST += ${file}"
-	echo "${nodist_lib_sources} += ${d}/${b}.java"
-	echo "BUILT_SOURCES += ${d}/${b}.java"
-	case "${suffix}" in
-	    *java ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
-	    *enum ) echo "${d}/${b}.java: \$(MKENUM)" ;;
-	esac
-	echo "${GEN_DIRNAME}.jar: ${d}/${b}.java"
-    done
-done
-
-for suffix in .java ; do
+for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
     print_header "... ${suffix}"
     grep -e  "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
@@ -446,26 +436,38 @@ for suffix in .java ; do
 	name=${d}/${b}
 	# Skip when a generated file, happens when configured in
 	# source tree - handled earlier.
-	test -r "${d}/${b}.mkjava" && continue
-	test -r "${d}/${b}.shjava" && continue
-	test -r "${d}/${b}.mkenum" && continue
-	test -r "${d}/${b}.shenum" && continue
-	test -r "${d}/${b}.javain" && continue
-	test -r "common/${b}.javain" && continue # too strong?
-	test "${b}" = JUnitTests && continue # hack
-	test -r "${d}/${b}.g" && continue
-	test -r "${d}/${b}.sed" && continue
-	echo "${GEN_DIRNAME}.jar: ${d}/${b}.java"
+	case ${suffix} in
+	    .java)
+	        test -r "${d}/${b}.mkjava" && continue
+		test -r "${d}/${b}.shjava" && continue
+		test -r "${d}/${b}.mkenum" && continue
+		test -r "${d}/${b}.shenum" && continue
+		test -r "${d}/${b}.javain" && continue
+		test -r "common/${b}.javain" && continue # too strong?
+		test "${b}" = JUnitTests && continue # hack
+		test -r "${d}/${b}.g" && continue
+		test -r "${d}/${b}.sed" && continue
+		echo "${sources} += ${file}"
+		;;
+	    *)
+	        echo "EXTRA_DIST += ${file}"
+		echo "BUILT_SOURCES += ${name}.java"
+		case "${suffix}" in
+		    *java ) echo "${name}.java: \$(MKJAVA)" ;;
+		    *enum ) echo "${name}.java: \$(MKENUM)" ;;
+		esac
+		echo "${nodist_lib_sources} += ${d}/${b}.java"
+		;;
+	esac
+	echo "${GEN_DIRNAME}.jar: ${name}.java"
 	if has_main ${file} ; then
 	    name_=`echo_name_ ${name}`
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
-	    echo "${name_}_SOURCES = ${file}"
+	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK)"
 	    echo_LDFLAGS ${name}
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
-	else
-	    echo "${sources} += ${file}"
 	fi
     done || exit 1
 done

@@ -1,3 +1,8 @@
+2007-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* FryskGui.javain: Rename FryskGui.java. Replace Build.SRCDIR and
+	Build.ABS_SRCDIR with @srcdir@ and @abs_srcdir@.
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* test/TestParser.java: Moved to frysk/dom/TestParser.java.

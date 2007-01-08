@@ -1,3 +1,8 @@
+2007-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Allow .javain to have a main method.  Merge
+	.java, and .javain source generation code.
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (pkgdata_PROGRAMS): Define.

@@ -1,3 +1,5 @@
+// -*- Java -*-
+
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, 2006, Red Hat Inc.
@@ -45,28 +47,31 @@ package frysk.gui;
  */
 public class FryskGui
 {
-    private static final String BASE_PATH = "frysk/gui/";
-    private static final String GLADE_PKG_PATH = "glade/";
     public static void main (String[] args)
     {
+	final String BASE_PATH = "frysk/gui/";
+	final String GLADE_PKG_PATH = "glade/";
+	final String SRCDIR = "@srcdir@";
+	final String ABS_SRCDIR = "@abs_srcdir@";
 	Gui.gui (args, new String[] {
 		     GLADE_PKG_PATH,
 		     BASE_PATH + GLADE_PKG_PATH,
 		     // Check both relative ...
-		     Build.SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
+		     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
 		     // ... and absolute.
-		     Build.ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
+		     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
 		 },
 		 new String[] {
-		     Build.ABS_SRCDIR + "/" + BASE_PATH + "images/"
+		     ABS_SRCDIR + "/" + BASE_PATH + "images/"
 		 }, 
 		 new String[] {
 		     "./common", Build.SRCDIR + "/" + BASE_PATH + "common/",
-		     Build.ABS_SRCDIR + "/" + BASE_PATH + "common/"
+		     ABS_SRCDIR + "/" + BASE_PATH + "common/"
 		 },
 		 new String[] {
-		     "./srcwin/testfiles", Build.SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
-		     Build.ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
+		     "./srcwin/testfiles",
+		     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
+		     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
 		 });
     }
 }
