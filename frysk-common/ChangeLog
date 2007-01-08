@@ -1,5 +1,8 @@
 2007-01-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (files-java.list): Make dependant on and us
+	files.list.
+
 	* Makefile.gen.sh: Allow .javain to have a main method.  Merge
 	.java, and .javain source generation code.
 

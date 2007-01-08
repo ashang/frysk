@@ -519,20 +519,11 @@ distclean-cvsignored:
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files-java.list
-files-java.list:
-	topdirs= ; \
-	for d in $(top_builddir) $(top_srcdir) ; do \
-	    p=`cd $$d && pwd` ; \
-	    case " $$topdirs " in \
-	        *$$p* ) continue ;; \
-	    esac ; \
-	    topdirs="$$dirs $$p" ; \
-	    for g in $(GEN_DIRS) ; do \
-		find $$p/$$g \
-		    -name '*#*' -prune -o \
-		    -name '[A-Za-z]*.java' -print ; \
-	    done \
-	done | sort > $@.tmp
+files-java.list: files.list
+	sed -n < $(top_srcdir)/files.list > $@.tmp \
+		-e 's,\(^.*\.java$$\),$(top_srcdir)/\1, p' \
+		-e 't' \
+		-e 's,\(^.*\)\..*java.*,$(top_builddir)/\1.java, p'
 	mv $@.tmp $@
 ${GEN_DIRNAME}.jar: files-java.list
 	rm -rf $(GEN_CLASSDIR)

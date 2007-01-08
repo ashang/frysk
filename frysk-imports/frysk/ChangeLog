@@ -1,3 +1,8 @@
+2007-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.java: Rename Config.javain, remove commented out
+	variables.
+
 2007-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxxin (getWordSize): Define.

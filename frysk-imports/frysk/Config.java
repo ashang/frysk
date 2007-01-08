@@ -1,5 +1,3 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, 2006, 2007, Red Hat Inc.
@@ -47,12 +45,6 @@ package frysk;
 
 public class Config
 {
-    // public static final String PREFIX = "@prefix@";
-    // public static final String BINDIR = "@bindir@";
-    // public static final String LIBDIR = "@libdir@";
-    // public static final String DATADIR = "@datadir@";
-    // public static final String PKGINCLUDEDIR = "@pkgincludedir@";
-
     /**
      * Directory containing the .glade files describing frysk's UI
      * windows.
