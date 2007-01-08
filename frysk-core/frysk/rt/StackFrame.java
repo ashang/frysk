@@ -164,10 +164,6 @@ public class StackFrame
   public void setDOMFunction(DOMFunction f)
   {
     this.func = f;
-    if (f != null)
-        setData(f.getSource());
-    else
-        setData(null);
   }
   
   /**
@@ -176,7 +172,7 @@ public class StackFrame
    * 
    * @param s   The DOMSource for the executable this StackFrame belongs to.
    */
-  public void setData(DOMSource s)
+  public void setDOMSource(DOMSource s)
   {
     this.data = s;
   }

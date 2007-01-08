@@ -1,3 +1,9 @@
+2007-01-08  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (setDOMSource): Refactored from setData
+	(setDOMFunction): No longer set the DOMSource for this class, set
+	independently.
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 
 	* StackCallbacks.java (accessMem): Added logging messages.

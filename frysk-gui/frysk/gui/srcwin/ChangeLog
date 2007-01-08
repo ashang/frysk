@@ -3,6 +3,8 @@
 	* SourceWindow.java (populateStackBrowser): No longer
 	try and set currentFrame object, and instead let
 	updateShownStackFrame() do it. Fixes #3844.
+	(generateProcStackTrace): Set the StackFrame DOMSource and
+	DOMFunction separately.
 
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 

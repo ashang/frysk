@@ -1893,6 +1893,7 @@ public class SourceWindow
       {
         DwflLine line;
         DOMFunction f = null;
+        DOMSource s = null;
 
         /** Create the stack frame * */
 
@@ -1950,16 +1951,18 @@ public class SourceWindow
 
                 try
                   {
-                    f = this.dom.getImage(tasks[j].getProc().getMainTask().getName()).getSource(filename)
-                    .findFunction(line.getLineNum());
+                    s = this.dom.getImage(tasks[j].getProc().getMainTask().getName()).getSource(filename);
+                    f = s.findFunction(line.getLineNum());
                   }
                 catch (NullPointerException npe)
                   {
                     npe.printStackTrace();
+                    s = null;
                     f = null;
                   }
               }
 
+            curr.setDOMSource(s);
             curr.setDOMFunction(f);
             curr = curr.getOuter();
           }
