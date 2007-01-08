@@ -182,7 +182,7 @@ public class DOMSource
   }
   
     /**
-     * adds an inline function to an image
+     * adds an inline function to this DOMSource object.
      * @param inline_name is the name of the inline function
      * @param source is the name of the source this function came from
      * @param startLine is the starting line number of this function in the source
@@ -203,7 +203,7 @@ public class DOMSource
     }
     
     /**
-     * @return An iterator to all functions in this image
+     * @return An iterator to all functions in this DOMSource
      */
     public Iterator getFunctions ()
       {
@@ -219,15 +219,20 @@ public class DOMSource
         return list.iterator();
     }
   
+    /**
+     * Search the functions which are children to this DOMSource to find 
+     * the DOMFunction which contains the requested line number.
+     * 
+     * @param lineNum   The source line inside the function being searched for.
+     * @return  found   The DOMFunction found to match lineNum
+     */
     public DOMFunction findFunction (int lineNum)
     {
-      System.out.println("DOMSource.findFunction() " + lineNum);
         Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
         DOMFunction found = null;
         
         while (iter.hasNext())
         {
-          System.out.println("iterating");
           DOMFunction function = new DOMFunction ((Element) iter.next());
           if (function.getStartingLine() <= lineNum && function.getEndingLine() >= lineNum)
             {
@@ -351,7 +356,7 @@ public class DOMSource
   }
   
   /**
-     * add an inline instance to this line
+     * add an inline instance to this source instance.
      * 
      * @param instance
      *            is the name of the instance to add
@@ -395,7 +400,7 @@ public class DOMSource
   }
     
     /**
-     * gets all of the inline instances attached with is line
+     * gets all of the inline instances attached with the requested line number
      * 
      * @param lineNum The line number in the source jumping to the inlined instance.
      * @return an iterator pointing to all inline instances on this line

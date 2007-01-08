@@ -59,7 +59,7 @@ import org.jdom.Element;
  * made sense from that standpoint too. For more information regarding JDOM, see
  * http://www.jdom.org. The DOM is under constant construction during this phase
  * of development. As more features are added to Frysk, more items will be added
- * to the DOM. This is just a snapshot of the DOM as it exists now (03/24/06),
+ * to the DOM. This is just a snapshot of the DOM as it exists now (01/07/07),
  * although we will endeavor to keep it as current as possible. Class Structure
  * The following diagram is the current "class" structure of the Frysk DOM. As
  * can be seen from the tree below, the top class is the executable image itself
@@ -70,7 +70,8 @@ import org.jdom.Element;
  *  DOMFunction - all functions defined for this source image 
  *  DOMSource - a particular source image
  *  DOMLine - contains the info associated with each line within the source
- *  DOMInlineInstance - contains info about inline functions on this line 
+ *  DOMInlineInstance - contains info about inline functions on a particuar 
+ *  source line 
  *  
  * Each one of these classes/subclasses has a set of methods to create/modify/access
  * the information in the DOM. Here is a more detailed version of the above
@@ -81,24 +82,24 @@ import org.jdom.Element;
  * nodes/elements. 
  * 
  * DOM  |--PC - current program counter 
- *      |--PID - Process ID of debugged process 
- *          |-- attr: value - the process ID number 
+ *           |--PID - Process ID of debugged process 
+ *           |-- attr: value - the process ID number 
  *      |--Image - element: image 
  *          |--attr: name - name associated with this image 
  *          |--attr: filename - name of the executable 
  *          |--attr: CCPATH - path to the executable 
- *      |--Function - element: function
- *          |--attr: name - name associated with this function
- *          |--attr: source name - nmae of the source file thsi comes from
- *          |--attr: char start - starting character from beginning of source file
- *          |--attr: char end - ending character from beginning of source file
- *          |--attr: line start - starting line number
- *          |--attr: end line - ending line number
  *        |--Source - element: source 
  *          |--attr: filename - name of the source file 
  *          |--attr: filepath - path to the source file 
  *          |--attr: include paths - list of comma-separated include paths
- *          |--attr: parsed - boolean to indicate if the GUI has parsed this source 
+ *          |--attr: parsed - boolean to indicate if the GUI has parsed this source
+ *            |--Function - element: function
+ *              |--attr: name - name associated with this function
+ *              |--attr: source name - nmae of the source file thsi comes from
+ *              |--attr: char start - starting character from beginning of source file
+ *              |--attr: char end - ending character from beginning of source file
+ *              |--attr: line start - starting line number
+ *              |--attr: end line - ending line number
  *            |--Line - element: line 
  *              |--attr: number - line number to be added 
  *              |--attr: pc - address where this line's executable code begins
@@ -111,13 +112,14 @@ import org.jdom.Element;
  *                  |--attr: start - starting character from beginning of the file for tag 
  *                  |--attr: length - no. of chars the tag will encompass 
  *                  |--attr: token - 
- *        |--Inline - element: function 
- *          |--attr: function_name - name of the inline function 
- *          |--attr: source - source where this function came from 
- *          |--attr: start - starting char this inline function begins from the beginning of the file 
- *          |--attr: end - ending char this inline function ends at 
- *          |--attr: line_start - line no. where this function begins in the source file 
- *          |--attr: line_end - line no. where this function ends in the source file 
+ *            |--Inline - element: function 
+ *              |--attr: function_name - name of the inline function 
+ *              |--attr: source - source where this function came from 
+ *              |--attr: start - starting char this inline function begins from the beginning of the file 
+ *              |--attr: end - ending char this inline function ends at 
+ *              |--attr: line_start - line no. where this function begins in the source file 
+ *              |--attr: line_end - line no. where this function ends in the source file
+ *              |--attr: line_num - line of source code where this inlined code begins 
  *          
  * Debugging Scenario When a processe is debugged, no matter how
  * activated, here are the steps that need to happen: Frysk backend
@@ -148,6 +150,10 @@ public class DOMFrysk
 
   private Document data;
   
+  /**
+   * Keep a cached reference to each of the requested DOMImages, thus
+   * saving a lot of work in terms of trying to find requested images and
+   * being able to return them faster after the first request through this map. */
   private HashMap imageMap = new HashMap();
 
   /**
@@ -254,7 +260,10 @@ public class DOMFrysk
 
   /**
    * Attempts to fetch an image of the given name from the DOM. If no image is
-   * found returns null
+   * found returns null. Initially attempts to retrieve the image from the above
+   * HashMap cache; if the image is not contained in there but is found
+   * after some iteration through the children of this node, then it is added
+   * to the cache for future reference.
    * 
    * @param name The name of the image to look for
    * @return The DOMImage corresponding to the element, or null if no such
@@ -262,12 +271,14 @@ public class DOMFrysk
    */
   public DOMImage getImage (String name)
   {
-    
+    /* Attempt to retrieve the requested image from the HashMap */
     DOMImage image = (DOMImage) this.imageMap.get(name);
     if (image != null)
       return image;
     else
       {
+        /* Couldn't find it above; iterate through the children of this node
+         * until we find it, and cache the Object that we find. */
         Iterator i = this.data.getRootElement().getChildren().iterator();
 
         while (i.hasNext())

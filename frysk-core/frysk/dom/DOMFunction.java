@@ -43,7 +43,7 @@ import org.jdom.Element;
 
 /**
  * DOMFunction represents a function element to the DOM for any
- * functions found within an image.
+ * functions found within a particular source file.
  */
 public class DOMFunction 
 {
@@ -58,6 +58,8 @@ public class DOMFunction
 	public static final String LINE_END_ATTR = "line_end";
     public static final String FUNCTION_CALL = "function_call";
     
+    /* Keep a link to the parent Object. Lets us find the DOMSource
+     * that this Object belongs to wicked fast. */
     private DOMSource parent;
 	
 	/**
@@ -95,7 +97,7 @@ public class DOMFunction
 	}
 	
 	/**
-	 * creates a DOMFunction element to an image in the DOM
+	 * creates a DOMFunction element to a source file in the DOM
 	 * 
 	 * @param parent is the image element to attach this DOMFunction to
 	 * @param name is the name of this DOMFunction
@@ -118,6 +120,11 @@ public class DOMFunction
 		return func;
 	}
     
+    /**
+     * Set the parent Element for this DOMFunction
+     * 
+     * @param parent    The DOM parent of this Object
+     */
     public void setParent (DOMSource parent)
     {
       this.parent = parent;
@@ -185,24 +192,14 @@ public class DOMFunction
       this.myElement.setAttribute(END_ATTR, ""+endingchar);
     }
 	/**
-	 * gets the name of the source that this function came from
+	 * Since all functions are contained in source files, just return the parent
+     * source file.
 	 * 
 	 * @return the source that this function came from, null if cannot find
 	 */
 	public DOMSource getSource ()
     {
         return this.parent;
-        
-//		Element parent = this.myElement.getParentElement();
-//		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE))
-//			parent = parent.getParentElement();
-//		
-//		if(parent != null){
-//			DOMImage image = new DOMImage(parent);
-//			return image.getSource(sourceName);
-//		}
-//		
-//		return null;
 	}
 	
 	/**
@@ -248,14 +245,9 @@ public class DOMFunction
 		
 		String[] lines = new String[end - start ];
 		
-		// Parent of this should be a  DOMImage
-		Element elem = this.getElement().getParentElement();
-
-		DOMSource source = new DOMImage(elem).getSource(this.myElement.getAttributeValue(SOURCE_NAME_ATTR));
-		
 		for (int i = start; i< end; i++)
           {
-			String text = source.getLine(i).getText();
+			String text = this.parent.getLine(i).getText();
 			if (text.equals(""))
 				lines[i-start] = "\n";
 			else

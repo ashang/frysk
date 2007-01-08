@@ -60,6 +60,13 @@ public class DOMImage
 	public static final String PATH_ATTR = "filepath";
     public DOMFrysk dom;
     
+    /* Keep a cache of DOMSources contained within this image. Prevents
+     * excessive new JDOM Object creation and iteration. This is important
+     * because DOMSources have a lot of child elements.
+     * 
+     * This map is cleared each time that the JDOM tree potentially has
+     * changed, being after a step, or a continuation of the process. See
+     * more about this in getSource() below. */
     private HashMap sourceMap = new HashMap();
 	
 	/**
@@ -151,7 +158,11 @@ public class DOMImage
 	
 	/**
 	 * Attempts to fetch an image of the given name from the DOM. If no image is
-	 * found returns null
+	 * found returns null. The first time a particular source name is searched
+     * for, the child source elements of this DOMImage are searched until
+     * the requested source Element is found. At that point, that newly created
+     * Object is hashed into this DOMImage's sourceMap to be cached for 
+     * future requests.
 	 * 
 	 * @param name is the name of the image to look for
 	 * @return The DOMSource corresponding to the element, or null if no such
@@ -160,12 +171,16 @@ public class DOMImage
 	public DOMSource getSource (String name)
     {
       DOMSource source = (DOMSource) this.sourceMap.get(name);
+      
+      /* We found the requested DOMSource in the HashMap cache. */
       if (source != null)
         {
           return source;
         }
       else
       {
+        /* This DOMSource hasn't be cached yet, so iterate through 
+         * children elements to find a potential match. */
         Iterator i = this.myElement.getChildren().iterator();
         while (i.hasNext())
           {
@@ -193,6 +208,12 @@ public class DOMImage
 		return this.myElement;
 	}
     
+    /**
+     * Clears this DOMImage's HashMap cache after DOM work has been
+     * completed after a particular segment of operation. The longevity of each
+     * source file can't be predicted, so take the high road and free the 
+     * space each time.
+     */
     public void clearSourceMap ()
     {
       this.sourceMap.clear();

@@ -67,6 +67,8 @@ public class DOMInlineInstance
 
   private Element myElement;
   
+  /* Keep a reference to the parent DOM object. Needed to get the actual
+   * DOMLine source line that this inline instance is related to. */
   private DOMSource parent;
 
   /**
@@ -105,6 +107,11 @@ public class DOMInlineInstance
     this.myElement = data;
   }
   
+  /**
+   * Set the parent Element for this DOMInlineInstance
+   * 
+   * @param parent    The DOM parent of this Object
+   */
   public void setParent (DOMSource parent)
   {
     this.parent = parent;

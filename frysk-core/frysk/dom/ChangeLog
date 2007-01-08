@@ -1,3 +1,13 @@
+2007-01-08  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFrysk.java: Updated comments to represent new DOM structure.
+	Added new comments in other places.
+	* DOMFunction.java: Added comments.
+	(getLines): Removed some old redundant code.
+	* DOMImage.java: Added comments.
+	* DOMInlineInstance.java: Ditto.
+	* DOMSource.java: Ditto.
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestParser.java: Renamed from frysk/gui/test/TestParser.java.

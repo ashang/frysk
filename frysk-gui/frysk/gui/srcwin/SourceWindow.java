@@ -437,7 +437,8 @@ public class SourceWindow
             if (currentMethodName.equals(curr.getMethodName()))
               {
                 flag = true;
-                this.currentFrame = curr;
+//                this.currentFrame = curr;
+                break;
               }
 
             curr = curr.getOuter();
@@ -448,16 +449,18 @@ public class SourceWindow
       {
         if (taskMatch != null)
           {
-            this.currentFrame = taskMatch;
+//            this.currentFrame = taskMatch;
             updateShownStackFrame(taskMatch);
           }
         else
           {
-            this.currentFrame = this.stackView.getFirstFrameSelection();
-            updateShownStackFrame(this.currentFrame);
+//            this.currentFrame = this.stackView.getFirstFrameSelection();
+            updateShownStackFrame(this.stackView.getFirstFrameSelection());
           }
       }
-
+    else
+      updateShownStackFrame(curr);
+    
     this.stackView.resetView(frames);
     this.stackView.expandAll();
     
@@ -1408,6 +1411,7 @@ public class SourceWindow
     if (selected == null)
       return;
 
+   //System.out.println("updateSHownstackframe " + selected.getMethodName() + " " + selected.getDOMFunction().getFunctionCall()+ " " + selected.getData().getFileName());
     DOMSource source = selected.getData();
     if (source == null && selected.getSourceFile() == "")
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
@@ -1428,27 +1432,32 @@ public class SourceWindow
 
         DOMSource oldSource = this.currentFrame.getData();
         
-            if (oldSource == null || !source.getFileName().equals(oldSource.getFileName()))
-              {
-                removeTags();
+       //System.out.println(oldSource.getFileName() + " " + source.getFileName());
+            if (oldSource == null
+            || ! source.getFileName().equals(oldSource.getFileName()))
+          {
+            removeTags();
 
-                this.view.load(selected);
+            // System.out.println("about to load");
+            this.view.load(selected);
 
-                SourceView v = (SourceView) SourceWindow.this.view;
-                SourceBuffer b = (SourceBuffer) v.getBuffer();
+            SourceView v = (SourceView) SourceWindow.this.view;
+            SourceBuffer b = (SourceBuffer) v.getBuffer();
 
-                StackFrame curr = selected;
-                
-                /* Find the innermost frame - want to make sure that we
-                 * get everything highlighted */
-                while (curr.getInner() != null)
-                  curr = curr.getInner();
+            StackFrame curr = selected;
 
-                b.highlightLine(curr, true);
+            /*
+             * Find the innermost frame - want to make sure that we get
+             * everything highlighted
+             */
+            while (curr.getInner() != null)
+              curr = curr.getInner();
 
-                this.view.scrollToFunction(selected.getDOMFunction().getFunctionCall());
-              }
-          
+            b.highlightLine(curr, true);
+
+            this.view.scrollToFunction(selected.getDOMFunction().getFunctionCall());
+          }
+
         else
           {
             currentFrame = selected;
