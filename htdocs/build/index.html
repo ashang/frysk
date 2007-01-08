@@ -360,9 +360,11 @@ separate source tree</li> </ul> </dd>
 <tt>funit</tt>?<dt> <dd>The command line options accepted by installed
 program <tt>funit</tt>, and described in <tt>funit</tt>'s man page,
 are also accepted by the build-tree program <tt>TestRunner</tt>.  For
-instance: <pre> TestRunner -c frysk.proc.TestClass </pre> runs just
+instance: <pre> TestRunner -console frysk=FINEST frysk.proc.TestClass </pre> runs just
 the tests from <tt>frysk.proc.TestClass</tt> with trace logging
-written to the screen.</dd>
+written to the screen.</dd> <dd> Also <pre> TestRunner frysk.proc.TestClass.testName 
+</pre> and <pre> TestRunner testName(frysk.proc.TestClass) </pre> will both 
+run specific tests.</dd>
 
 <dt>How do I refer to an external executable or data file in a
 test?<dt> <dd>Use:<dl>
