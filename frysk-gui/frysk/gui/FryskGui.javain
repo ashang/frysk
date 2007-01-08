@@ -65,7 +65,8 @@ public class FryskGui
 		     ABS_SRCDIR + "/" + BASE_PATH + "images/"
 		 }, 
 		 new String[] {
-		     "./common", Build.SRCDIR + "/" + BASE_PATH + "common/",
+		     "./common",
+		     SRCDIR + "/" + BASE_PATH + "common/",
 		     ABS_SRCDIR + "/" + BASE_PATH + "common/"
 		 },
 		 new String[] {
