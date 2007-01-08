@@ -72,10 +72,10 @@
         <option>-r <replaceable>repeat-count</replaceable></option>
       </arg>
       <arg choice="opt">
-        <option>-c <replaceable>console-log-level</replaceable></option>
+        <option>--console <replaceable>CONSOLE_LOG=LEVEL</replaceable></option>
       </arg>
       <arg choice="opt">
-        <option>-l <replaceable>log-level</replaceable></option>
+        <option>--log <replaceable>LOG=LEVEL</replaceable></option>
       </arg>
       <arg choice="opt">
         <option>--arch <replaceable>arch</replaceable></option>
@@ -120,16 +120,15 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term>-c <replaceable>console-log-level</replaceable></term>
+	<term>--console <replaceable>CONSOLE_LOG=LEVEL</replaceable></term>
 	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
+          <para>Set the log CONSOLE_LOG to level LEVEL. Can set multiple logs. The LEVEL can be [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL] </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term>-l <replaceable>log-level</replaceable></term>
+	<term>--log <replaceable>LOG</replaceable></term>
 	<listitem>
-          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
+          <para>Set the log LOG to level LEVEL. Can set multiple logs. The LEVEL can be [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST | ALL] </para>
         </listitem>
       </varlistentry>
 
@@ -172,7 +171,7 @@
       <varlistentry>
 	<term>-i <replaceable>test-spec</replaceable></term>
 	<listitem>
-          <para> Specify a test to include, ovirriding an omit specification.  Each passed option will be interpreted as the
+          <para> Specify a test to include, overriding an omit specification.  Each passed option will be interpreted as the
 		regex specification of a test to include.  This option may be used multiple times. </para>
         </listitem>
       </varlistentry>

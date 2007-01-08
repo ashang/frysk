@@ -1,3 +1,7 @@
+2007-01-08  Nurdin Premji <npremji@redhat.com>
+
+	* funit.xml: Fixed typo, updated format of -console and -log options.
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Pass glade and image directories to runTestCases.
