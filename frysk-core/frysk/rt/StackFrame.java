@@ -108,8 +108,6 @@ public class StackFrame
   public StackFrame (FrameCursor current, Task myTask, StackFrame inner)
   {
     this.task = myTask;
-    //unwind_data = current.getNativeCursor(); // ??? We don't need this now?
-    //initialize();
     this.myCursor = current;
     this.inner = inner;
     long address = this.myCursor.getAddress();
@@ -146,12 +144,6 @@ public class StackFrame
   {
       this.task = task;
   }
-  
-  /**
-   * Native function. Sets methodName and address via the cursor obtained
-   * from unwind_data.
-   */
-  //private native void initialize ();
   
   /**
    * Sets the DOMFunction representing the function which is in turn
