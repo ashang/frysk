@@ -1,3 +1,8 @@
+2007-01-09  Mark Wielaard  <mark@klomp.org>
+
+	* tests/TestElf.java (testObjectFile): Add and use
+	expectedDataAlignments values.
+
 2006-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestElf.java (testObjectFile): Remove brokenXXX, bug says

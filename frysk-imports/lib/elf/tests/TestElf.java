@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -161,6 +161,7 @@ public class TestElf
     int[] expectedTypes = { 0, 1, 9, 1, 8, 1, 1, 1, 3, 2, 3 };
 
     int[] expectedDataSizes = { 0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25 };
+    int[] expectedDataAlignments = { 0, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1 };
     ElfType[] expectedDataTypes = { ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
                                    ElfType.ELF_T_REL, ElfType.ELF_T_BYTE,
                                    ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
@@ -190,7 +191,8 @@ public class TestElf
 
         ElfData data = section.getData();
         assertNotNull(data);
-        assertEquals("section-" + i + "-alignment", 0, data.getAlignment());
+        assertEquals("section-" + i + "-alignment", expectedDataAlignments[i],
+                     data.getAlignment());
         assertEquals("section-" + i + "-offset", 0, data.getOffset());
         assertEquals("section-" + i + "-size", expectedDataSizes[i], data.getSize());
         assertEquals("section-" + i + "-type", expectedDataTypes[i], data.getType());
