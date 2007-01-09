@@ -1,3 +1,7 @@
+2007-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* test_main_looper.c: New, copied from frysk/pkgdatadir/.
+
 2007-01-08  Nurdin Premji <npremji@redhat.com>
 
 	* funit.xml: Fixed typo, updated format of -console and -log options.

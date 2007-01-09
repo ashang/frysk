@@ -1,3 +1,7 @@
+2007-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* test_main_looper.c: Delete, moved to frysk/pkglibdir/.
+
 2007-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk/pkgdatadir/test_main_looper.c: New, copied from

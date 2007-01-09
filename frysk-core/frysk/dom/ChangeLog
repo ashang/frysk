@@ -1,3 +1,16 @@
+2007-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestParser.java (NEWDOM, tearDown, tmpFile, testParser): Replace
+	NEWDOM - the generated DOM's output - with a temporary file,
+	delete during tearDown.
+	(exec_path, BASEDOM, installed_list, includepaths, sourcelist)
+	(root, data, dom, IMAGE_FILENAME, CC_FILE, which_file)
+	(testParser): Re-implement testParser using List instead of
+	array's, and Paths.getExecPrefix and Paths.getDataPrefix instead
+	of Build.SRCDIR, Build.ABS_SRCDIR, and hardwired install paths.
+	(checkPath, assertDomMatchesBase): Replace checkPath with
+	assertDomMatchesBase.
+
 2007-01-08  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFrysk.java: Updated comments to represent new DOM structure.
