@@ -38,6 +38,13 @@
 # exception.
 
 
+dnl This test is used by `elfutils' and as we share its interface we need
+dnl to have consistent ABI of any structures possibly containing `off_t'.
+dnl This test must come as early as possible after the compiler configuration
+dnl tests, because the choice of the file model can (in principle) affect
+dnl whether functions and headers are available, whether they work, etc.
+AC_SYS_LARGEFILE
+
 AC_PROG_RANLIB
 
 # Use AC_CHECK_PROGS, and not AC_PATH_PROGS and AC_PATH_PROG:

@@ -1,3 +1,7 @@
+2007-01-09  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* frysk-common.ac: Call AC_SYS_LARGEFILE to get in sync all the ABIs.
+
 2007-01-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.javain: Change glade and image paths to specify the
