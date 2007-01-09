@@ -1,3 +1,27 @@
+2007-01-09  sami wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TaskTimeLine.java: Moved all drawing code to parent.
+	* eventviewer/ProcTimeLine.java: Added text lables ontop of events.
+	* eventviewer/EventViewer2.java: Changed widget from being a DrawingArea
+	into being a VBox.
+	* SessionProcTreeView.java: Added statusWidget to a ScrolledWindow.
+
+2007-01-04  sami wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Added draw period and handlers.
+	* eventviewer/ProcTimeLine.java: Added ownsEvent function and used
+	it instead of long boolean expressions.
+	* eventviewer/TaskTimeLine.java: Ditto.
+	* eventviewer/ProcBox.java: Added Histogram.
+	* eventviewer/EventViewerWidgetList.java (mouseMotionEvent): Added
+	check for child return value.
+	* eventviewer/Event.java: Added belongs() function.
+	* eventviewer/Box.java: Removed mouseMotionEvent function.
+
+2007-01-04  sami wagiaalla  <swagiaal@to-dhcp16.toronto.redhat.com>
+
+	* eventviewer/Histogram.java: New file.
+
 2006-12-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TrayIcon.java (setPopupWindows): Initialize the new LinkedList to be the
@@ -80,6 +104,56 @@
 
 	* actions/ShowMemWin.java (execute): Remove call to setMonitor().
 	* actions/ShowRegWin.java (execute): Ditto.
+
+2006-11-06    <swagiaal@redhat.com>
+
+	* observers/TaskSyscallObserver.java: Now adds events to EventManager.
+	* eventviewer/TimeLineList.java: Deleted.
+	* eventviewer/TimeLine.java: Now extends EventViewerWidget.
+	Fixed drawing.
+	Added gloubal indentation support.
+	* eventviewer/TaskTimeLine.java: New file.
+	* eventviewer/EventViewerWidget.java: Made x,y,height,width private.
+	Now extends GuiObject.
+	Changed constructor to take name and tooltip.
+	* eventviewer/EventViewer2.java: Created standard margins.
+	Added watching for event list for updates.
+	Moved thread Support from here...
+	* eventviewer/ProcBox.java: ...to here.	
+	New file.
+	* eventviewer/EventManager.java: Changed sizes of Event objects.
+	* eventviewer/Event.java: Changed it constructor to take a tooltip.
+	Added set/getIndex.
+	Fixed drawing.
+	* eventviewer/BoxList.java: New file.
+	* eventviewer/Box.java: Changed it to extend EventViewerWidgetList.
+
+2006-10-18    <swagiaal@redhat.com>
+
+	* eventviewer/TimeLineList.java: New.
+	* eventviewer/TimeLine.java: New.
+	* eventviewer/EventViewerWidgetList.java: New.
+	* eventviewer/EventViewerWidget.java: New.
+	* eventviewer/EventViewer2.java: New.
+	* eventviewer/EventManager.java: New.
+	* eventviewer/Event.java: New.
+	* eventviewer/Box.java: New.
+	* StatusWidget.java: Removed.
+	* ProcStatusWidget.java: Removed.
+	* InfoWidget.java: Removed.
+	* observers/TaskForkedObserver.java: Added test call to 
+	EventManager once design is final this will be added to all
+	observers.
+	* observers/ObserverRoot.java: Added calls to notify EventManger
+	of observers being added/removed.
+	* SessionProcTreeView.java: Removed all references to 
+	StatusWidget. A single EventViewer widget is now directly
+	instanciated form here.
+	* GuiProc.java: Removed adding of observers to 'observers'
+	List. The particular observer is now reponsible for notify
+	EventManager.
+	* GuiData.java: Removed all references to the objects widget.
+	The EventViewer is now responsible for that.
 
 2006-10-13  Nurdin Premji <npremji@redhat.com>
 

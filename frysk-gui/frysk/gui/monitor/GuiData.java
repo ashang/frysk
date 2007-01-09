@@ -40,8 +40,6 @@
 
 package frysk.gui.monitor;
 
-import org.gnu.gtk.Widget;
-
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
@@ -52,11 +50,7 @@ public class GuiData
     extends GuiObject
 {
 
-  Widget widget;
-
   ObservableLinkedList observers;
-
-  private int trace;
 
   public GuiData()
   {
@@ -72,32 +66,6 @@ public class GuiData
   public ObservableLinkedList getObservers()
   {
     return this.observers;
-  }
-
-  public void setWidget(Widget widget, int trace)
-  {
-    if (this.widget != null)
-      {
-        throw new RuntimeException(
-                                   "Trying to set widget when widget is already set."); //$NON-NLS-1$
-      }
-    this.widget = widget;
-    this.trace = trace;
-  }
-
-  public Widget getWidget()
-  {
-    return this.widget;
-  }
-
-  public boolean hasWidget()
-  {
-    return (this.widget != null);
-  }
-
-  public int getTrace()
-  {
-    return this.trace;
   }
 
 }

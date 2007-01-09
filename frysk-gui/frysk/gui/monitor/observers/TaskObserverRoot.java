@@ -69,8 +69,9 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		{
 		    public void taskAdded(Task task)
 		    {
-			apply(task);
-		    }
+		      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
+              guiTask.add(TaskObserverRoot.this);
+            }
 		    public void addFailed(Object observable, Throwable w)
 		    {
 		    	errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
@@ -78,7 +79,8 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		    }
 		    public void existingTask(Task task)
 		    {
-			apply(task);
+              GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
+              guiTask.add(TaskObserverRoot.this);
 		    }
 		    public void addedTo(Object observable){}
 		    public void taskRemoved(Task task){}

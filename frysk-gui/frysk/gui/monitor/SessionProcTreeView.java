@@ -49,10 +49,12 @@ package frysk.gui.monitor;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
-import org.gnu.glade.LibGlade; 
+import org.gnu.glade.LibGlade;
 import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.PolicyType;
+import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
@@ -77,6 +79,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
+import frysk.gui.monitor.eventviewer.EventViewer2;
 import frysk.gui.sessions.Session;
 
 public class SessionProcTreeView
@@ -96,9 +99,7 @@ public class SessionProcTreeView
 
   private TreeModelFilter threadFilter;
 
-  private VBox statusWidget;
-  
-  private InfoWidget infoWidget;
+  //private VBox statusWidget;
   
   private PIDColumnDialog procPidColumnDialog;
   
@@ -124,6 +125,8 @@ public class SessionProcTreeView
   
   private TreeViewColumn[] threadTVC;
 
+  private final EventViewer2 eventViewer;
+  
   public SessionProcTreeView (LibGlade libGlade) throws IOException
   {
     super((libGlade.getWidget("allProcVBox")).getHandle());
@@ -143,13 +146,17 @@ public class SessionProcTreeView
 
     this.vPane = (VPaned) glade.getWidget("vPane");
 
-    this.statusWidget = (VBox) glade.getWidget("statusWidget");
-
-    this.infoWidget = new InfoWidget();
-    this.statusWidget.add(infoWidget);
-
+    eventViewer = new EventViewer2((new VBox(false,0)).getHandle());
+    ScrolledWindow scrolledWindow = new  ScrolledWindow();
+    scrolledWindow.addWithViewport(eventViewer);
+    scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+    VBox statusWidget = (VBox) glade.getWidget("statusWidget");
+    statusWidget.add(scrolledWindow);
+    statusWidget.showAll();
+//    eventViewer.showAll();
     this.procDataModel = new SessionProcDataModel();
-
+    
+    
     this.mountProcModel(this.procDataModel);
     this.threadViewInit(procDataModel);
 
@@ -167,18 +174,7 @@ public class SessionProcTreeView
             GuiProc data = (GuiProc) procFilter.getValue(
                                                          procFilter.getIter(selected),
                                                          procDataModel.getProcDataDC());
-            if (! data.hasWidget())
-              {
-                StatusWidget statusWidget = new StatusWidget(
-                                                             data,
-                                                             data.getProc().getCommand());
-                data.setWidget(statusWidget, statusWidget.getTrace0());
-              }
-            infoWidget.setSelectedProc(data);
-
-            // Sets the status bar to read the full executable path of the given
-            // process.
-            
+                        
             if (!data.getFullExecutablePath().contains("(deleted"))
             	WindowManager.theManager.mainWindowStatusBar.push(
                                                               0,
@@ -195,10 +191,6 @@ public class SessionProcTreeView
                                                      threadTreeView.getModel().getFirstIter());
               }
           }
-        else
-          {
-            infoWidget.setSelectedProc(null);
-          }
       }
     });
 
@@ -210,28 +202,7 @@ public class SessionProcTreeView
         if (procTreeView.getSelection().getSelectedRows().length > 0
             && threadTreeView.getSelection().getSelectedRows().length > 0)
           {
-            TreePath selected = threadTreeView.getSelection().getSelectedRows()[0];
-
-            GuiTask data = (GuiTask) threadFilter.getValue(
-                                                           threadFilter.getIter(selected),
-                                                           procDataModel.getProcDataDC());
-            if (! data.hasWidget())
-              {
-                // GuiProc pdata = (GuiProc) procFilter.getValue(
-                // procFilter.getIter(selected),
-                // procDataModel.getProcDataDC());
-                // GuiProc pdata =
-                // GuiProcFactory.getGuiProc(data.getTask().getProc());
-                // StatusWidget sw = (StatusWidget) pdata.getWidget();
-                // int trace = sw.newTrace(data.getTask().getName(),
-                // "Other useful per-trace information.");
-                // data.setWidget(sw, trace);
-              }
-
-          }
-        else
-          {
-            infoWidget.setSelectedTask(null);
+            //XXX Sami: do something upon selection
           }
       }
     });
@@ -306,7 +277,6 @@ public class SessionProcTreeView
           SessionProcTreeView.this.setThreadCols();
       }
     });
-
   }
 
   public void mountProcModel (final SessionProcDataModel dataModel)
@@ -1099,6 +1069,7 @@ public class SessionProcTreeView
   public void setSession (Session session)
   {
     this.procDataModel.setSession(session);
+    this.eventViewer.setSession(session);
   }
 
 }

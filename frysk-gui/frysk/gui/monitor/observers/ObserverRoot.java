@@ -54,14 +54,17 @@ import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.Combo;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.Action;
+import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
@@ -412,15 +415,12 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 
       
-        //XXX: These should really be abstract
-        // they cannot be made abstract right now because
-        // ObserverRoot cannot be made abstract because dummy
-        // instances of it is needed. perhaps creating a class
-        // DummyObserverRoot can solve that problem... sami
-	  public void addedTo (Object observable){}
-      public void deletedFrom (Object observable){}
-
-//    abstract public void addedTo (Object observable);
-//    abstract public void deletedFrom (Object observable);
-		
+        public void addedTo (Object observable){
+            EventManager.theManager.observerAdded(GuiTask.GuiTaskFactory.getGuiTask((Task)observable), this);
+        }
+        
+        public void deletedFrom (Object observable){
+          EventManager.theManager.observerAdded(GuiTask.GuiTaskFactory.getGuiTask((Task)observable), this);
+        }
+        	
 	}

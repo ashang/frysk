@@ -487,6 +487,7 @@
 
 		      <child>
 			<widget class="GtkVBox" id="statusWidget">
+			  <property name="border_width">6</property>
 			  <property name="width_request">320</property>
 			  <property name="height_request">240</property>
 			  <property name="visible">True</property>

@@ -46,8 +46,11 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -140,8 +143,13 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		super.runActions();
 		// Sami why do we need to call enteringGenericActionPoint as well as enteringTaskActionPoint?
 		//this.enteringGenericActionPoint.runActions(this);
+        // ^ this runs all generic actions (actions that take no arguments)
+        // that the user wants to upon entry to the system call 
 		this.enteringTaskActionPoint.runActions(task);
-	}
+
+        //add events to event manager
+        EventManager.theManager.addEvent(new Event("Syscall Enter", SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+ 	}
 
 	private boolean runEnterFilters(Task task) {
 		return this.enteringTaskFilterPoint.filter(task);
@@ -175,7 +183,10 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		// Sami why do we need to call exitingGenericActionPoint as well as exitingTaskActionPoint?
 		//this.exitingGenericActionPoint.runActions(this);
 		this.exitingTaskActionPoint.runActions(task);
-	}
+		
+        //add events to event manager
+        EventManager.theManager.addEvent(new Event("Syscall Exit", SysCallUtilyInfo.getReturnInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    }
 
 	private boolean runExitFilters(Task task) {
 		return this.exitingTaskFilterPoint.filter(task);

@@ -50,8 +50,11 @@ package frysk.gui.monitor.observers;
 import java.util.logging.Level;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -197,6 +200,11 @@ public class TaskForkedObserver
   {
     WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
     super.runActions();
+    
+    // add events to event manager
+    EventManager.theManager.addEvent(new Event("fork", "parent called fork", GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    //EventManager.theManager.addEvent(new Event("forked", "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this));
+    
     this.forkingTaskActionPoint.runActions(task);
     this.forkedTaskActionPoint.runActions(child);
   }
