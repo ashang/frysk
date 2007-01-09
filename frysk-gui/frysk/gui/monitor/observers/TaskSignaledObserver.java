@@ -39,7 +39,10 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -121,8 +124,8 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 		setInfo(getName() + ": " + "PID: " + task.getProc().getPid()
 				+ " TID: " + task.getTid() + " Event: has pending signal: "
 				+ Sig.toPrintString(signal) + " Host: " + Manager.host.getName());
-		if (runFilters(task)) {
-			this.runActions(task);
+		if (runFilters(task, signal)) {
+			this.runActions(task, signal);
 		}
 
 		final Action action = whatActionShouldBeReturned();
@@ -131,12 +134,13 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 		}
 	}
 
-	private void runActions(final Task task) {
+	private void runActions(final Task task, int signal) {
 		super.runActions();
 		taskActionPoint.runActions(task);
+        EventManager.theManager.addEvent(new Event("signaled " + Sig.toString(signal), "task recieved signal " + Sig.toString(signal), GuiTask.GuiTaskFactory.getGuiTask(task), this));
 	}
 
-	private boolean runFilters(final Task task) {
+	private boolean runFilters(final Task task, int signal) {
 		return filter(task);
 	}
 

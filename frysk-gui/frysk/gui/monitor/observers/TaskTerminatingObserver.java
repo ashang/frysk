@@ -48,13 +48,17 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.IntFilterPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.sys.Sig;
 
 public class TaskTerminatingObserver
     extends TaskObserverRoot
@@ -124,7 +128,7 @@ public class TaskTerminatingObserver
                  + Manager.host.getName());
     if (this.runFilters(task, signal, value))
       {
-        this.runActions(task, signal, value);
+        this.runActions(task, signal , value);
       }
 
     Action action = this.whatActionShouldBeReturned();
@@ -143,6 +147,13 @@ public class TaskTerminatingObserver
     // TODO implement action points to take care of signal and value
     super.runActions();
     this.taskActionPoint.runActions(task);
+    String name = "terminating";
+    String tooltip = "task terminating";
+    if(signal){
+      name += " sig " + Sig.toPrintString(value);
+      tooltip += " with signal " + Sig.toPrintString(value);
+    }
+    EventManager.theManager.addEvent(new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this));
   }
 
   private boolean runFilters (Task task, boolean signal, int value)

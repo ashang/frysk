@@ -47,7 +47,10 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -140,6 +143,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		super.runActions();
 		this.cloningTaskActionPoint.runActions(task);
 		this.clonedTaskActionPoint.runActions(clone);
+        EventManager.theManager.addEvent(new Event("cloned " + clone, "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this));
 	}
 	
 	public void apply(Task task){

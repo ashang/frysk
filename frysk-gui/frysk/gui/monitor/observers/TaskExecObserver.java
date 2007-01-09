@@ -41,7 +41,10 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.actions.TaskActionPoint;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -120,6 +123,7 @@ public class TaskExecObserver
   {
     super.runActions();
     this.taskActionPoint.runActions(task);
+    EventManager.theManager.addEvent(new Event("exec", "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this));
   }
 
   private boolean runFilters (Task task)
