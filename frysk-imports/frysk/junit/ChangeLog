@@ -1,5 +1,7 @@
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
+	* Runner.java: (runCases): Print out the number of successful runs if fail.
+
 	* Runner.java: forgot to remove unused imports.
 
 	* Runner.java (repeatValue): fixed typo.

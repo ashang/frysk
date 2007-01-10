@@ -287,7 +287,10 @@ public class Runner
 			TestResult testResult = doRun (testSuite);
               
 			if (!testResult.wasSuccessful()) 
+              {
+                System.out.println("Failed after run #" + i);
 			    return FAILURE_EXIT;
+              }
 		    }
 	    }
 	catch(Exception e)
