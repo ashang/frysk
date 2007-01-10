@@ -1,8 +1,7 @@
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
-	* StressTestAbandon.java: New
-	(testStressAbandon): Moved here from:
-	* TestAbandon.java (testStressAbandon): Removed.
+	* TestLib.java: Changed to use Runner.getTimeout to find default value
+	for assertRunUntilStop.
 
 2007-01-05  Nurdin Premji  <npremji@redhat.com>
 

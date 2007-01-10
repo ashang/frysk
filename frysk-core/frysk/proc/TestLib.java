@@ -122,9 +122,10 @@ public class TestLib
 		    new Object[] { TestLib.class, reason });
     }
 
-    static int assertRunTime = 5;
+    static int assertRunTime = 5;   
     static
-    {   
+    {  
+      assertRunTime = frysk.junit.Runner.getTimeout();
       Enumeration logEnum = LogManager.getLogManager().getLoggerNames();
       
       while (logEnum.hasMoreElements())
@@ -133,7 +134,7 @@ public class TestLib
           Level logLevel = Logger.getLogger((String) logName).getLevel();
           if (Level.FINE.equals(logLevel) || Level.FINER.equals(logLevel)
               || Level.FINEST.equals(logLevel))
-            assertRunTime = 15;
+            assertRunTime *= 5;
         }
     }
     
