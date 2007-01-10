@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -107,7 +107,9 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.properties" -print \
     -o -name "[A-Za-z]*\.fig" -print \
     -o -name "[A-Za-z]*\.g" -print \
-    -o -name "[A-Za-z]*\.xml" -print \
+    -o -name "[A-Za-z_]*\.xml" -print \
+    -o -path "*dir/[A-Za-z_]*\.in" -print \
+    -o -path "*dir/[A-Za-z_]*\.uu" -print \
     -o -path "*dir/[A-Za-z]*\.sh" -print \
     -o -path "*dir/[A-Za-z]*\.py" -print \
     -o -type f -name 'test*' -print
@@ -767,4 +769,26 @@ grep -e 'Test.*\.java$' files.list | \
 	main_=`echo ${main} | tr '[/]' '[_]'`
 	echo "TESTS += ${main}"
     fi
+done
+
+# Generate rules for unpacking data files.
+
+print_header "... packed files"
+sed -n \
+    -e 's,\.bz2.*,, p' -e 't' \
+    -e 's,\.uu.*,, p' -e 't' files.list \
+    | while read f ; do
+    d=$(expr $(basename $(dirname ${f})) : '\(.*\)dir')
+    echo "${d}_DATA += ${f}"
+done
+for suffix in .uu .bz2 ; do
+    sed -n -e "s,\\${suffix}.*,, p" files.list | while read f ; do
+        d=`dirname $f`
+	cat <<EOF
+CLEANFILES += ${f}
+${f}: ${f}${suffix}
+	mkdir -p ${d}
+	uudecode -o ${f} \$(srcdir)/${f}${suffix}
+EOF
+    done
 done

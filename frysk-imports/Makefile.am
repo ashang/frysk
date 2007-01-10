@@ -85,21 +85,6 @@ GEN_GCJ_LDADD += -laudit
 noinst_LIBRARIES += lib/opcodes/libbfd_get.a
 GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
 
-pkgdata_DATA += frysk/pkgdatadir/test-core frysk/pkgdatadir/helloworld.o
-frysk/pkgdatadir/test-core: frysk/pkgdatadir/test-core.bz2.uu
-	mkdir -p frysk/pkgdatadir
-	uudecode -o frysk/pkgdatadir/test-core.bz2 $(srcdir)/frysk/pkgdatadir/test-core.bz2.uu
-	bzip2 -d < frysk/pkgdatadir/test-core.bz2 > frysk/pkgdatadir/test-core
-
-frysk/pkgdatadir/helloworld.o: frysk/pkgdatadir/helloworld.o.bz2.uu
-	mkdir -p frysk/pkgdatadir
-	uudecode -o frysk/pkgdatadir/helloworld.o.bz2 $(srcdir)/frysk/pkgdatadir/helloworld.o.bz2.uu
-	bzip2 -d < frysk/pkgdatadir/helloworld.o.bz2 > frysk/pkgdatadir/helloworld.o
-
-CLEANFILES += frysk/pkgdatadir/test-core.bz2 frysk/pkgdatadir/test-core
-CLEANFILES += frysk/pkgdatadir/helloworld.o.bz2 frysk/pkgdatadir/helloworld.o
-
-
-# we need to get this into the distribution
+# Need to get this into the distribution
 noinstdir = $(srcdir)
 noinst_HEADERS = include/linux.ptrace.h include/linux.syscall.h

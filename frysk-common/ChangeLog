@@ -1,3 +1,8 @@
+2007-01-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (.uu, .bz2.uu): Add to files.list, generate
+	rules to unpack and add to _DATA variable.
+
 2007-01-09  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* frysk-common.ac: Call AC_SYS_LARGEFILE to get in sync all the ABIs.
