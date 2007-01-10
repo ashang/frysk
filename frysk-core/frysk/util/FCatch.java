@@ -47,7 +47,6 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.EventLogger;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Host;
@@ -79,8 +78,7 @@ public class FCatch
   
   ProcId procID = null;
   
-  protected static final Logger logger = EventLogger.get("logs/",
-  "frysk_core_event.log");
+  protected static final Logger logger = Logger.getLogger("frysk");
   
   StackFrame[] frames;
   

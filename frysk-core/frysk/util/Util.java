@@ -42,11 +42,6 @@ package frysk.util;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import frysk.Config;
 import frysk.proc.ProcId;
@@ -55,7 +50,6 @@ import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
-import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
@@ -123,86 +117,6 @@ public class Util
       }
     });
     return parser.pidList;
-  }
-
-  public static void addConsoleOptions (Parser parser)
-  {
-    parser.add(new Option(
-                          "console",
-                          "Set the log CONSOLE_LOG to level LEVEL. Can set "
-                              + "multiple logs. The LEVEL can be [ OFF | "
-                              + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
-                              + "FINEST | ALL]", "<CONSOLE_LOG=LEVEL,...>")
-    {
-      public void parsed (String arg0) throws OptionException
-      {
-        String[] logs = arg0.split(",");
-
-        for (int i = 0; i < logs.length; i++)
-          {
-            String[] log_level = logs[i].split("=");
-            Logger logger = LogManager.getLogManager().getLogger(log_level[0]);
-
-            if (logger == null)
-              {
-                throw new OptionException("Couldn't find logger with name: "
-                                          + log_level[0]);
-              }
-            try
-              {
-                Level consoleLevel = Level.parse(log_level[1]);
-                // Need to set both the console and the main logger as
-                // otherwize the console won't see the log messages.
-
-                System.out.println("console " + consoleLevel);
-                Handler consoleHandler = new ConsoleHandler();
-                consoleHandler.setLevel(consoleLevel);
-                logger.addHandler(consoleHandler);
-                logger.setLevel(consoleLevel);
-                System.out.println(consoleHandler);
-
-              }
-            catch (IllegalArgumentException e)
-              {
-                throw new OptionException("Invalid log console: "
-                                          + log_level[1]);
-              }
-          }
-      }
-    });
-    parser.add(new Option("log",
-                          "Set the log LOG to level LEVEL. Can set multiple "
-                              + "logs. The LEVEL can be [ OFF | SEVERE | "
-                              + "WARNING | INFO | CONFIG | FINE | FINER | "
-                              + "FINEST | ALL]", "<LOG=LEVEL,...>")
-    {
-      public void parsed (String arg0) throws OptionException
-      {
-        String[] logs = arg0.split(",");
-
-        for (int i = 0; i < logs.length; i++)
-          {
-            String[] log_level = logs[i].split("=");
-            Logger logger = LogManager.getLogManager().getLogger(log_level[0]);
-
-            if (logger == null)
-              {
-                throw new OptionException("Couldn't find logger with name: "
-                                          + log_level[0]);
-              }
-
-            try
-              {
-                Level level = Level.parse(log_level[1]);
-                logger.setLevel(level);
-              }
-            catch (IllegalArgumentException e)
-              {
-                throw new OptionException("Invalid log level: " + log_level[1]);
-              }
-          }
-      }
-    });
   }
 
 }

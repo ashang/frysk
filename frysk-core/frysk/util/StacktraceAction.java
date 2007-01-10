@@ -45,7 +45,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.EventLogger;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -67,8 +66,7 @@ public abstract class StacktraceAction
 
   private Event event;
 
-  protected static final Logger logger = EventLogger.get("logs/",
-                                                         "frysk_core_event.log");
+  protected static Logger logger = Logger.getLogger("frysk"); 
 
   /**
    * Runs a stacktrace on the given process.
@@ -103,8 +101,8 @@ public abstract class StacktraceAction
 
   public void taskAddFailed (Object observable, Throwable w)
   {
-    logger.log(Level.SEVERE, "{0} could not be added to {1}\n",
-               new Object[] { this, observable });
+    logger.log(Level.SEVERE, "{0} could not be added to {1} because: {2}\n",
+               new Object[] { this, observable, w.getMessage() });
 
   }
 

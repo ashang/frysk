@@ -73,7 +73,6 @@ import lib.elf.ElfPrstatus;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfSectionHeaderTypes;
-import frysk.EventLogger;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
@@ -105,8 +104,7 @@ public class CoredumpAction
     extends ProcBlockAction
 {
 
-  protected static final Logger logger = EventLogger.get("logs/",
-                                                         "frysk_core_event.log");
+  protected static final Logger logger = Logger.getLogger("frysk");
 
   private Elf local_elf = null;
 
