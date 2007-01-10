@@ -98,6 +98,9 @@
       <arg choice="opt">
         <option><replaceable>test-class</replaceable> ...</option>
       </arg>
+      <arg choice="opt">
+        <option>-timeout <replaceable>timeout</replaceable></option>
+      </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
@@ -176,6 +179,13 @@
         </listitem>
       </varlistentry>
 
+      <varlistentry>
+	<term>-timeout <replaceable>timeout</replaceable></term>
+	<listitem>
+          <para> Specify the test timeout value in seconds. Default is 5.</para>
+        </listitem>
+      </varlistentry>
+      
     </variablelist>
   </refsect1>
   
