@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
-
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
@@ -56,18 +55,17 @@ import frysk.util.Util;
 
 import gnu.classpath.tools.getopt.Parser;
 
-public class fstack
+public final class fstack
 {
   private static StacktraceAction stacker;
 
   private static Util.PidParser parser;
 
-  protected static final Logger logger = EventLogger.get("logs/",
-                                                         "frysk_core_event.log");
+  protected static final Logger logger = Logger.getLogger("frysk"); 
 
   private static void addOptions (Parser parser)
   {
-    Util.addConsoleOptions(parser);
+    EventLogger.addConsoleOptions(parser);
   }
 
   public static void main (String[] args)

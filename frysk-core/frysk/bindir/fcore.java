@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import frysk.EventLogger;
-
 import frysk.event.Event;
 
 import frysk.proc.Manager;
@@ -67,9 +66,7 @@ public class fcore
 
   private static CoredumpAction stacker;
 
-  protected static final Logger logger = EventLogger.get("logs/",
-                                                         "frysk_core_event.log");
-
+  protected static final Logger logger = Logger.getLogger("frysk");
   private static Util.PidParser parser;
 
   /**
@@ -184,6 +181,6 @@ public class fcore
       }
     });
     
-    Util.addConsoleOptions(parser);
+    EventLogger.addConsoleOptions(parser);
   }
 }

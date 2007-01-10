@@ -1,3 +1,12 @@
+2007-01-10  Nurdin Premji  <npremji@redhat.com>
+
+	* fcatch.java (run): Use Logger.getLogger instead of EventLogger.get to avoid
+	creating new files.
+	Reflect move of addConsoleOptions from frysk.util.Util to frysk.EventLogger.
+	* fstack.java (addOptions): Ditto.
+	* fcore.java (addOptions): Ditto.
+	* ftrace.java (addOptions): Ditto.
+
 2006-12-27  Mike Cvet  <mcvet@redhat.com>
 
 	* fcatch.java (run): Initialize arguments ArrayList here.

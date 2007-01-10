@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import frysk.util.FCatch;
-import frysk.util.Util;
 //import frysk.util.StracePrinter;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
@@ -61,8 +60,7 @@ public class fcatch
   //private static Parser parser;
 
   //private static int pid;
-  protected static final Logger logger = EventLogger.get("logs/",
-  "frysk_core_event.log");
+  protected static final Logger logger = Logger.getLogger("frysk");
   
   private boolean requestedPid;
   
@@ -79,7 +77,7 @@ public class fcatch
       }
     };
     addOptions(parser);
-    Util.addConsoleOptions(parser);
+    EventLogger.addConsoleOptions(parser);
     parser.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
 
     parser.parse(args, new FileArgumentCallback()
