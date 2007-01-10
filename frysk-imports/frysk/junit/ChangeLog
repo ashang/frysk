@@ -1,9 +1,11 @@
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
+	* Runner.java: forgot to remove unused imports.
+
 	* Runner.java (repeatValue): fixed typo.
 	(createCommandLineParser): Simplified to use EventLogger.addConsoleOptions.
 	Added timeout option.
-	(getTimeout): Added.
+	(getTimeout): Added.	
 
 2007-01-08  Nurdin Premji  <npremji@redhat.com>
 
