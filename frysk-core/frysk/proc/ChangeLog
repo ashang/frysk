@@ -1,3 +1,9 @@
+2007-01-10  Nurdin Premji  <npremji@redhat.com>
+
+	* StressTestAbandon.java: New
+	(testStressAbandon): Moved here from:
+	* TestAbandon.java (testStressAbandon): Removed.
+
 2007-01-05  Nurdin Premji  <npremji@redhat.com>
 
 	* TestAbandon.java (testStressAbandon): Added.
