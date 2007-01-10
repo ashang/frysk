@@ -69,7 +69,7 @@ public class TestPrototypeCopying extends TestCase{
 //			System.out.println("\n===========================================");
 //			System.out.println("Testing copy of :" + a.getName());
 			if(a instanceof TaskForkedObserver){
-				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter());
+				((TaskForkedObserver)a).offspringTaskFilterPoint.addFilter(new ProcNameFilter());
 			}
 			ObserverRoot b = (ObserverRoot) a.getCopy();
 			

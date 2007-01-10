@@ -71,7 +71,7 @@ public class ProgramObserver {
 				Proc newProc = task.getProc();
 				TaskForkedObserver newForkedObserver = (TaskForkedObserver) forkedObserver.getCopy();
 				TaskExecObserver   newExecObserver   = (TaskExecObserver) execObserver.getCopy();
-				newForkedObserver.forkedTaskActionPoint.addAction(this);
+				newForkedObserver.offspringTaskActionPoint.addAction(this);
 				
 				newForkedObserver.apply(newProc);
 				newExecObserver.apply(newProc);
@@ -94,7 +94,7 @@ public class ProgramObserver {
 			}
 		};
 		
-		forkedObserver.forkedTaskActionPoint.addAction(myTaskAction);
+		forkedObserver.offspringTaskActionPoint.addAction(myTaskAction);
 		
 		forkedObserver.apply(proc);
 		execObserver.apply(proc);

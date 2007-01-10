@@ -59,49 +59,56 @@ import frysk.proc.TaskObserver;
 
 public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.Cloned {
 
-	public TaskFilterPoint cloningTaskFilterPoint;
-	public TaskFilterPoint clonedTaskFilterPoint;
+	public TaskFilterPoint parentTaskFilterPoint;
+	public TaskFilterPoint offspringTaskFilterPoint;
 
-	public TaskActionPoint cloningTaskActionPoint;
-	public TaskActionPoint clonedTaskActionPoint;
+	public TaskActionPoint parentTaskActionPoint;
+	public TaskActionPoint offspringTaskActionPoint;
 
 	public TaskCloneObserver(){
 		super("Clone Observer", "Fires when a proc calls clone");
 
-		this.cloningTaskFilterPoint = new TaskFilterPoint("cloning thread","Thread that made the clone system call");
-		this.clonedTaskFilterPoint = new TaskFilterPoint("cloned thread","New thread that has just been created as a result of clone call");
+		this.parentTaskFilterPoint = new TaskFilterPoint("cloning thread","Thread that made the clone system call");
+		this.offspringTaskFilterPoint = new TaskFilterPoint("cloned thread","New thread that has just been created as a result of clone call");
 		
-		this.addFilterPoint(cloningTaskFilterPoint);
-		this.addFilterPoint(clonedTaskFilterPoint);
+		this.addFilterPoint(parentTaskFilterPoint);
+		this.addFilterPoint(offspringTaskFilterPoint);
 		
-		this.cloningTaskActionPoint = new TaskActionPoint("cloning thread","Thread that made the clone system call");
-		this.clonedTaskActionPoint = new TaskActionPoint("cloned thread","New thread that has just been created as a result of clone call");
+		this.parentTaskActionPoint = new TaskActionPoint("cloning thread","Thread that made the clone system call");
+		this.offspringTaskActionPoint = new TaskActionPoint("cloned thread","New thread that has just been created as a result of clone call");
 		
-		this.addActionPoint(cloningTaskActionPoint);
-		this.addActionPoint(clonedTaskActionPoint);
+		this.addActionPoint(parentTaskActionPoint);
+		this.addActionPoint(offspringTaskActionPoint);
 		
 	}
 
 	public TaskCloneObserver(TaskCloneObserver other) {
 		super(other);
 		
-		this.cloningTaskFilterPoint = new TaskFilterPoint(other.cloningTaskFilterPoint);
-		this.clonedTaskFilterPoint = new TaskFilterPoint(other.clonedTaskFilterPoint);
+		this.parentTaskFilterPoint = new TaskFilterPoint(other.parentTaskFilterPoint);
+		this.offspringTaskFilterPoint = new TaskFilterPoint(other.offspringTaskFilterPoint);
 		
-		this.addFilterPoint(cloningTaskFilterPoint);
-		this.addFilterPoint(clonedTaskFilterPoint);
+		this.addFilterPoint(parentTaskFilterPoint);
+		this.addFilterPoint(offspringTaskFilterPoint);
 		
-		this.cloningTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
-		this.clonedTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
+		this.parentTaskActionPoint = new TaskActionPoint(other.parentTaskActionPoint);
+		this.offspringTaskActionPoint = new TaskActionPoint(other.parentTaskActionPoint);
 		
-		this.addActionPoint(cloningTaskActionPoint);
-		this.addActionPoint(clonedTaskActionPoint);
+		this.addActionPoint(parentTaskActionPoint);
+		this.addActionPoint(offspringTaskActionPoint);
 
 	}
 
 	
 	public Action updateClonedParent(Task task, Task clone) {
-		return Action.BLOCK;
+        final Task myTask = task;
+        final Task myClone = clone;
+        org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+            public void run() {
+                bottomHalfParent(myTask, myClone);
+            }
+        });
+        return Action.BLOCK;
 	}
 	
     // XXX: Sami, take a look at frysk.proc.TestTaskObserverBlocked,
@@ -115,37 +122,59 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		final Task myClone = clone;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
-				bottomHalf(myTask, myClone);
+				bottomHalfOffspring(myTask, myClone);
 			}
 		});
 		return Action.BLOCK;
 	}
 	
-	private void bottomHalf(Task task, Task clone){
-		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: cloned new task TID: "+ clone.getTid() + " Host: " + Manager.host.getName());
-		if(this.runFilters(task, clone)){
-			this.runActions(task, clone);
+	private void bottomHalfParent(Task task, Task offspring){
+		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: cloned new task TID: "+ offspring.getTid() + " Host: " + Manager.host.getName());
+		if(this.runFiltersParent(task, offspring)){
+			this.runActionsParent(task, offspring);
 		}
 		
         Action action = this.whatActionShouldBeReturned();
         if(action == Action.CONTINUE){
-          clone.requestUnblock(this);
+          task.requestUnblock(this);
         }
 	}
 	
-	private boolean runFilters(Task task, Task clone){
-		if(!this.cloningTaskFilterPoint.filter(task )) return false;
-		if(!this.clonedTaskFilterPoint.filter(clone)) return false;
-		return true;
-	}
-	
-	private void runActions(Task task, Task clone){
-		super.runActions();
-		this.cloningTaskActionPoint.runActions(task);
-		this.clonedTaskActionPoint.runActions(clone);
-        EventManager.theManager.addEvent(new Event("cloned " + clone, "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this));
-	}
-	
+    private void bottomHalfOffspring(Task task, Task offspring){
+        this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: cloned new task TID: "+ offspring.getTid() + " Host: " + Manager.host.getName());
+        if(this.runFiltersOffspring(task, offspring)){
+            this.runActionsOffspring(task, offspring);
+        }
+        
+        Action action = this.whatActionShouldBeReturned();
+        if(action == Action.CONTINUE){
+          offspring.requestUnblock(this);
+        }
+    }
+    
+    private boolean runFiltersParent(Task task, Task clone){
+        if(!this.parentTaskFilterPoint.filter(task )) return false;
+        return true;
+    }
+    
+    private boolean runFiltersOffspring(Task task, Task clone){
+        if(!this.offspringTaskFilterPoint.filter(clone)) return false;
+        return true;
+    }
+    
+    private void runActionsParent(Task task, Task clone){
+        super.runActions();
+        this.parentTaskActionPoint.runActions(task);
+        this.offspringTaskActionPoint.runActions(clone);
+        EventManager.theManager.addEvent(new Event("cloning " + clone.getTid(), "thread called clone and created " + clone, GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    }
+    
+    private void runActionsOffspring(Task task, Task clone){
+        super.runActions();
+        this.offspringTaskActionPoint.runActions(clone);
+        EventManager.theManager.addEvent(new Event("cloned by " + task.getTid(), "this thread was cloned by " + task, GuiTask.GuiTaskFactory.getGuiTask(clone), this));
+    }
+    
 	public void apply(Task task){
 		task.requestAddClonedObserver(this);
 	}
@@ -154,9 +183,9 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		return new TaskCloneObserver(this);
 	}
 
-  public void unapply (Task task)
-  {
-    task.requestDeleteClonedObserver(this);
-  }
+    public void unapply (Task task)
+    {
+      task.requestDeleteClonedObserver(this);
+    }
 	
 }

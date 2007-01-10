@@ -68,33 +68,33 @@ public class TaskForkedObserver
 
   // ObservableLinkedList forkedActions;
 
-  public TaskFilterPoint forkingTaskFilterPoint;
+  public TaskFilterPoint parentTaskFilterPoint;
 
-  public TaskFilterPoint forkedTaskFilterPoint;
+  public TaskFilterPoint offspringTaskFilterPoint;
 
-  public TaskActionPoint forkingTaskActionPoint;
+  public TaskActionPoint parentTaskActionPoint;
 
-  public TaskActionPoint forkedTaskActionPoint;
+  public TaskActionPoint offspringTaskActionPoint;
 
   public TaskForkedObserver ()
   {
     super("Fork Observer", "Fires when a proc forks");
 
-    this.forkingTaskFilterPoint = new TaskFilterPoint("forking thread",
+    this.parentTaskFilterPoint = new TaskFilterPoint("forking thread",
                                                       "Thread that performed the fork");
-    this.forkedTaskFilterPoint = new TaskFilterPoint("forked thread",
+    this.offspringTaskFilterPoint = new TaskFilterPoint("forked thread",
                                                      "Main thread of newly forked process");
 
-    this.addFilterPoint(this.forkingTaskFilterPoint);
-    this.addFilterPoint(this.forkedTaskFilterPoint);
+    this.addFilterPoint(this.parentTaskFilterPoint);
+    this.addFilterPoint(this.offspringTaskFilterPoint);
 
-    this.forkingTaskActionPoint = new TaskActionPoint("forking thread",
+    this.parentTaskActionPoint = new TaskActionPoint("forking thread",
                                                       "Thread that performed the fork");
-    this.forkedTaskActionPoint = new TaskActionPoint("forked thread",
+    this.offspringTaskActionPoint = new TaskActionPoint("forked thread",
                                                      "Main thread of newly forked process");
 
-    this.addActionPoint(this.forkingTaskActionPoint);
-    this.addActionPoint(this.forkedTaskActionPoint);
+    this.addActionPoint(this.parentTaskActionPoint);
+    this.addActionPoint(this.offspringTaskActionPoint);
 
   }
 
@@ -102,35 +102,42 @@ public class TaskForkedObserver
   {
     super(other);
 
-    this.forkingTaskFilterPoint = new TaskFilterPoint(
-                                                      other.forkingTaskFilterPoint);
-    this.forkedTaskFilterPoint = new TaskFilterPoint(
-                                                     other.forkedTaskFilterPoint);
+    this.parentTaskFilterPoint = new TaskFilterPoint(
+                                                      other.parentTaskFilterPoint);
+    this.offspringTaskFilterPoint = new TaskFilterPoint(
+                                                     other.offspringTaskFilterPoint);
 
-    this.addFilterPoint(this.forkingTaskFilterPoint);
-    this.addFilterPoint(this.forkedTaskFilterPoint);
+    this.addFilterPoint(this.parentTaskFilterPoint);
+    this.addFilterPoint(this.offspringTaskFilterPoint);
 
-    this.forkingTaskActionPoint = new TaskActionPoint(
-                                                      other.forkingTaskActionPoint);
-    this.forkedTaskActionPoint = new TaskActionPoint(
-                                                     other.forkedTaskActionPoint);
+    this.parentTaskActionPoint = new TaskActionPoint(
+                                                      other.parentTaskActionPoint);
+    this.offspringTaskActionPoint = new TaskActionPoint(
+                                                     other.offspringTaskActionPoint);
 
-    this.addActionPoint(this.forkingTaskActionPoint);
-    this.addActionPoint(this.forkedTaskActionPoint);
+    this.addActionPoint(this.parentTaskActionPoint);
+    this.addActionPoint(this.offspringTaskActionPoint);
 
   }
 
   public Action updateForkedParent (Task task, Task child)
   {
+    final Task myTask = task;
+    final Task myChild = child;
+    org.gnu.glib.CustomEvents.addEvent(new Runnable()
+    {
+      public void run ()
+      {
+        // This does the unblock.
+        bottomHalfOffspring(myTask, myChild);
+      }
+    });
+
     return Action.BLOCK;
   }
 
   public Action updateForkedOffspring (Task task, Task child)
   {
-    // WarnDialog dialog = new WarnDialog("Fork ya'll");
-    // dialog.showAll();
-    // dialog.run();
-
     WindowManager.logger.log(Level.FINE,
                              "{0} updateForkedOffspring child: {1} \n",
                              new Object[] { this, child });
@@ -141,24 +148,23 @@ public class TaskForkedObserver
       public void run ()
       {
         // This does the unblock.
-        bottomHalf(myTask, myChild);
+        bottomHalfParent(myTask, myChild);
       }
     });
 
-    // return this.getReturnAction();
     return Action.BLOCK;
   }
 
-  private void bottomHalf (Task task, Task child)
+  private void bottomHalfParent (Task parent, Task child)
   {
     WindowManager.logger.log(Level.FINE, "{0} bottomHalf\n", this);
-    this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid()
-                 + " TID: " + task.getTid() + " Event: forked new child PID: "
+    this.setInfo(this.getName() + ": " + "PID: " + parent.getProc().getPid()
+                 + " TID: " + parent.getTid() + " Event: forked new child PID: "
                  + child.getProc().getPid() + " Host: "
                  + Manager.host.getName());
-    if (this.runFilters(task, child))
+    if (this.runFiltersParent(parent, child))
       {
-        this.runActions(task, child);
+        this.runActionsParent(parent, child);
       }
     else
       {
@@ -172,8 +178,32 @@ public class TaskForkedObserver
     Action action = this.whatActionShouldBeReturned();
     if (action == Action.CONTINUE)
       {
-        task.requestUnblock(this);
-        child.requestUnblock(this);
+        parent.requestUnblock(this);
+      }
+  }
+
+  private void bottomHalfOffspring(Task parent, Task offspring)
+  {
+    WindowManager.logger.log(Level.FINE, "{0} bottomHalf\n", this);
+    this.setInfo(this.getName() + ": " + "PID: " + parent.getProc().getPid()
+                 + " TID: " + parent.getTid() + " Event: forked new child PID: "
+                 + offspring.getProc().getPid() + " Host: "
+                 + Manager.host.getName());
+    if (this.runFiltersOffspring(parent, offspring))
+      {
+        this.runActionsOffspring(parent, offspring);
+      }
+    else
+      {
+        WindowManager.logger.log(Level.FINER,
+                                 "{0} bottomHalf run filters returned False\n",
+                                 this);
+      }
+
+    Action action = this.whatActionShouldBeReturned();
+    if (action == Action.CONTINUE)
+      {
+        offspring.requestUnblock(this);
       }
   }
 
@@ -187,26 +217,40 @@ public class TaskForkedObserver
     return new TaskForkedObserver(this);
   }
 
-  private boolean runFilters (Task task, Task child)
+  private boolean runFiltersParent(Task task, Task child)
   {
-    if (! this.forkingTaskFilterPoint.filter(task))
-      return false;
-    if (! this.forkedTaskFilterPoint.filter(child))
+    if (! this.parentTaskFilterPoint.filter(task))
       return false;
     return true;
   }
 
-  private void runActions (Task task, Task child)
+  private void runActionsParent (Task task, Task child)
   {
     WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
     super.runActions();
     
     // add events to event manager
-    EventManager.theManager.addEvent(new Event("fork", "parent called fork", GuiTask.GuiTaskFactory.getGuiTask(task), this));
-    //EventManager.theManager.addEvent(new Event("forked", "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this));
+    EventManager.theManager.addEvent(new Event("forking " + child.getTid(), "parent called fork", GuiTask.GuiTaskFactory.getGuiTask(task), this));
     
-    this.forkingTaskActionPoint.runActions(task);
-    this.forkedTaskActionPoint.runActions(child);
+    this.parentTaskActionPoint.runActions(task);
+  }
+  
+  private boolean runFiltersOffspring (Task task, Task offspring)
+  {
+    if (! this.offspringTaskFilterPoint.filter(offspring))
+      return false;
+    return true;
+  }
+
+  private void runActionsOffspring (Task task, Task child)
+  {
+    WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
+    super.runActions();
+    
+    // add events to event manager
+    EventManager.theManager.addEvent(new Event("forked by " + task.getTid(), "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this));
+    
+    this.offspringTaskActionPoint.runActions(child);
   }
 
   public void unapply (Task task)

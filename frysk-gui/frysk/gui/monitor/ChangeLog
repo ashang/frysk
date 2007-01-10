@@ -1,3 +1,22 @@
+2007-01-10  sami wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TaskTimeLine.java: Added frysk copyright notice.
+	* eventviewer/ProcTimeLine.java: Ditto.
+	* eventviewer/ProcBox.java: Ditto.
+	* eventviewer/EventViewerWidget.java: Ditto.
+	* eventviewer/EventManager.java: Ditto.
+	* eventviewer/BoxList.java: Ditto.
+	* eventviewer/Box.java: Ditto.
+	* observers/TaskCloneObserver.java: Renamed spint bottomHalfs,
+	events, actions, and filters into parent/offspring and renamed
+	accordingly.
+	* observers/TaskForkedObserver.java: Ditto.
+	* eventviewer/TimeLine.java: Added frysk copyright notice.
+	Removed unused functions and TODO's.
+	* eventviewer/EventViewer2.java: Ditto both.
+	* eventviewer/EventViewerWidgetList.java: Ditto.
+	* eventviewer/Histogram.java: Ditto.
+
 2007-01-10  Mark Wielaard  <mark@klomp.org>
 
 	* eventviewer/BoxList.java: Remove @author to make
