@@ -1,5 +1,8 @@
 2007-01-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.uu, .bz2.uu): Fix previous commit, only
+	unpacked .uu files.
+
 	* Makefile.gen.sh (.uu, .bz2.uu): Add to files.list, generate
 	rules to unpack and add to _DATA variable.
 

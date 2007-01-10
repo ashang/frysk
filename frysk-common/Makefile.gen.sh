@@ -788,7 +788,12 @@ for suffix in .uu .bz2 ; do
 CLEANFILES += ${f}
 ${f}: ${f}${suffix}
 	mkdir -p ${d}
-	uudecode -o ${f} \$(srcdir)/${f}${suffix}
+	rm -f \$@.tmp
 EOF
+	case "${suffix}" in
+	    .uu ) printf "\tuudecode -o \$@.tmp \$<\n" ;;
+	    .bz2 ) printf "\tbunzip2 < \$< > \$@.tmp\n" ;;
+	esac
+	printf "\tmv \$@.tmp \$@\n"
     done
 done
