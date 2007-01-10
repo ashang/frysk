@@ -165,13 +165,13 @@ public class TestStackBacktrace
     assertEquals(117, frame.getLineNumber());
 
     frame = frame.getOuter();
-    assertNull(frame.getSourceFile());
+    assertEquals("", frame.getSourceFile());
     assertEquals("__libc_start_main", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());
 
     frame = frame.getOuter();
-    assertNull(frame.getSourceFile());
+    assertEquals("", frame.getSourceFile());
     assertEquals("_start", frame.getMethodName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());

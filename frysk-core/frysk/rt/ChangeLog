@@ -1,3 +1,8 @@
+2007-01-10  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackBacktrace.java (testBacktrace): Expect "" instead of null
+	for vdso frame filenames.
+
 2007-01-08  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (setDOMSource): Refactored from setData
