@@ -2,6 +2,7 @@
 
 	* TestStackBacktrace.java (testBacktrace): Expect "" instead of null
 	for vdso frame filenames.
+	(testThreadedBacktrace): Ditto.
 
 2007-01-08  Mike Cvet  <mcvet@redhat.com>
 

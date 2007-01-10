@@ -274,12 +274,12 @@ public class TestStackBacktrace
     assertNotNull(this.frameTracker[lowest][6][3]);
     assertEquals(172, Integer.parseInt(this.frameTracker[lowest][6][4]));
     
-    assertNull(this.frameTracker[lowest][7][1]);
+    assertEquals("", this.frameTracker[lowest][7][1]);
     assertEquals("__libc_start_main", this.frameTracker[lowest][7][2]);
     assertNotNull(this.frameTracker[lowest][7][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[lowest][7][4]));
     
-    assertNull(this.frameTracker[lowest][8][1]);
+    assertEquals("", this.frameTracker[lowest][8][1]);
     assertEquals("_start", this.frameTracker[lowest][8][2]);
     assertNotNull(this.frameTracker[lowest][8][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[lowest][8][4]));
@@ -304,13 +304,13 @@ public class TestStackBacktrace
     assertEquals(63, Integer.parseInt(this.frameTracker[next][index][4]));
     
     index++;
-    assertNull(this.frameTracker[next][index][1]);
+    assertEquals("", this.frameTracker[next][index][1]);
     assertEquals("start_thread", this.frameTracker[next][index][2]);
     assertNotNull(this.frameTracker[next][index][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][index][4]));
     
     index++;
-    assertNull(this.frameTracker[next][index][1]);
+    assertEquals("", this.frameTracker[next][index][1]);
 //    if (MachineType.getMachineType() == MachineType.IA32)
 //      assertEquals("__clone", this.frameTracker[next][3][2]);
 //    if (MachineType.getMachineType() == MachineType.X8664)
@@ -354,12 +354,12 @@ public class TestStackBacktrace
     assertNotNull(this.frameTracker[last][4][3]);
     assertEquals(130, Integer.parseInt(this.frameTracker[last][4][4]));
     
-    assertNull(this.frameTracker[next][2][1]);
+    assertEquals("", this.frameTracker[next][2][1]);
     assertEquals("start_thread", this.frameTracker[next][2][2]);
     assertNotNull(this.frameTracker[next][2][3]);
     assertEquals(0, Integer.parseInt(this.frameTracker[next][2][4]));
     
-    assertNull(this.frameTracker[next][3][1]);
+    assertEquals("", this.frameTracker[next][3][1]);
 //    if (MachineType.getMachineType() == MachineType.IA32)
 //      assertEquals("__clone", this.frameTracker[next][3][2]);
 //    if (MachineType.getMachineType() == MachineType.X8664)
