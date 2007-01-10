@@ -51,7 +51,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.EventLogger;
 
 /**
  * Implements an event loop.
@@ -66,7 +65,7 @@ public class EventLoop
      */
     public EventLoop ()
     {
-	logger = EventLogger.get ("logs/", "frysk_core_event.log");
+	logger = Logger.getLogger("frysk");
 	// Make certain that the global signal set is empty.
 	Poll.empty ();
 	// Sig.IO is used to wake up a blocked event loop when an
