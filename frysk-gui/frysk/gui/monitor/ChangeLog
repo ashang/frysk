@@ -1,3 +1,11 @@
+2007-01-10  Mark Wielaard  <mark@klomp.org>
+
+	* eventviewer/BoxList.java: Remove @author to make
+	"code does not contain @author" make check happy.
+	* eventviewer/EventManager.java: Likewise.
+	* eventviewer/EventViewerWidget.java: Likewise.
+	* eventviewer/EventViewerWidgetList.java: Likewise.
+
 2007-01-09  sami wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskExecObserver.java: Now adds events to EventManager.

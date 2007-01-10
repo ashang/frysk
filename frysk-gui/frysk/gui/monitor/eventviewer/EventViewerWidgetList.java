@@ -8,8 +8,6 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseMotionEvent;
 
 /**
- * @author swagiaal
- *
  * A widget that is basically just a collection of widgets
  * and calls draw on all its children when it is told to
  * draw.

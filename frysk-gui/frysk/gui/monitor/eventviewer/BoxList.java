@@ -4,8 +4,6 @@ import java.util.Iterator;
 
 
 /**
- * 
- * @author swagiaal
  * A little layout widget responsible for placing the time lines
  * on top of each other. And more complicated layouts if needed.
  */

@@ -7,10 +7,7 @@ import org.gnu.gtk.event.MouseMotionListener;
 import frysk.gui.monitor.GuiObject;
 
 /**
- * 
- * @author swagiaal
- *
- * an EventViewerWidget is a widget within the EventViewer.
+ * An EventViewerWidget is a widget within the EventViewer.
  * This Glyph design pattern will make complex manipulations
  * of EventViewer and its children simpler.
  */

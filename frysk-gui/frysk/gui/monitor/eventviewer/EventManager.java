@@ -5,9 +5,6 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
- * 
- * @author swagiaal
- * 
  * This is a list of all the events that the time line widget is meant to draw,
  * and the timeline's.
  * TimeLine widgets are to iterate over this list to find out which events
