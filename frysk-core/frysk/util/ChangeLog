@@ -1,5 +1,9 @@
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
+	* StacktraceAction.java (taskAddFailed): Changed to FINE output, it really
+	doesn't cause a severe problem. Especially with stress testcases where tasks
+	die before they are seen.
+
 	* Util.java: Moved addConsoleOptions to frysk.EventLogger.
 	* FCatch.java: Use Logger.getLogger. instead of EventLogger.get to avoid
 	creating new files.

@@ -101,7 +101,7 @@ public abstract class StacktraceAction
 
   public void taskAddFailed (Object observable, Throwable w)
   {
-    logger.log(Level.SEVERE, "{0} could not be added to {1} because: {2}\n",
+    logger.log(Level.FINE, "{0} could not be added to {1} because: {2}\n",
                new Object[] { this, observable, w.getMessage() });
 
   }
