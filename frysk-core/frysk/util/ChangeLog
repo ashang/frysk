@@ -1,3 +1,10 @@
+2007-01-11  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java (SignalObserver.updateSignaled): Fix a couple bugs in
+	signal switch statement; notify which thread the trace is coming from.
+	(updateTerminating): Request an eventloop stop after the last thread
+	passes through.
+
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceAction.java (taskAddFailed): Changed to FINE output, it really

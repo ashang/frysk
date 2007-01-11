@@ -182,7 +182,6 @@ public class FCatch
     int i = 0;
     while (frame != null)
       {
-        //System.out.println(frame.toPrint(false));
         this.stackTrace.append("#" + i + " ");
         this.stackTrace.append(frame.toPrint(false));
         this.stackTrace.append("\n");
@@ -251,7 +250,7 @@ public class FCatch
           logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
           //System.out.println("Cloned.updateOffspring " + offspring);
           
-          FCatch.this.numTasks =offspring.getProc().getTasks().size();
+          FCatch.this.numTasks = offspring.getProc().getTasks().size();
           SignalObserver sigo = new SignalObserver();
           
           offspring.requestAddSignaledObserver(sigo);
@@ -266,8 +265,8 @@ public class FCatch
         {
           logger.log(Level.FINE, "{0} updateTerminating", task);
           //System.out.println("TermObserver.updateTerminating " + task + " " +  numTasks);
-//          if (--FCatch.this.numTasks <= 0)
-//            System.exit(0);
+          if (--FCatch.this.numTasks <= 0)
+            Manager.eventLoop.requestStop();
 
           return Action.CONTINUE;
         }
@@ -276,8 +275,8 @@ public class FCatch
         {
           logger.log(Level.FINE, "{0} updateTerminated", task);
           //System.out.println("TermObserver.updateTerminated " + task + " " + numTasks);
-          if (--FCatch.this.numTasks <= 0)
-            System.exit(0);
+//          if (--FCatch.this.numTasks <= 0)
+//            Manager.eventLoop.requestStop();
           
           return Action.CONTINUE;
         }
@@ -307,7 +306,7 @@ public class FCatch
     {
       logger.log(Level.FINE, "{0} updateSignaled", task);
       FCatch.this.numTasks = task.getProc().getTasks().size();
-      //System.out.println("From PID: " + task.getProc().getPid() + " TID: " + task.getTid());
+      System.out.println("From PID: " + task.getProc().getPid() + " TID: " + task.getTid());
       switch (signal)
         {
         case 2:
@@ -336,11 +335,13 @@ public class FCatch
           break;
         case 15:
           System.out.println("SIGTERM detected: dumping stack trace");
+          generateStackTrace(task);
           //System.exit(0);
           break;
         default:
           System.out.println("Signal detected: dumping stack trace");
           generateStackTrace(task);
+          break;
         }
 
       System.out.println(FCatch.this.stackTrace.toString());
