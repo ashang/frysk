@@ -50,9 +50,10 @@ import java.util.logging.Logger;
 import lib.unwind.UnwindCallbacks;
 
 public class StackCallbacks
-  implements UnwindCallbacks
+    implements UnwindCallbacks
 {
-    static final Logger logger = Logger.getLogger ("frysk");//.rt");
+  static final Logger logger = Logger.getLogger("frysk");// .rt");
+
   private Task myTask;
 
   private Isa isa;
@@ -66,75 +67,69 @@ public class StackCallbacks
 
   public long accessMem (long addressSpace, long addr)
   {
-    logger.log(Level.FINE, "Libunwind: reading memory at 0x"
-                                + Long.toHexString(addr) + " " + System.currentTimeMillis() + "\n");
+    logger.log(Level.FINE, "Libunwind: reading memory at 0x{0}\n",
+               Long.toHexString(addr));
 
     long value;
-
-    logger.log(Level.FINE, "Before getWordSize " + System.currentTimeMillis() + "\n");
     int wordSize = isa.getWordSize();
-    logger.log(Level.FINE, "After getWordSize " + System.currentTimeMillis() + "\n");
     switch (wordSize)
       {
       case 4:
-        logger.log(Level.FINEST, "In wordSize case: 4 " + System.currentTimeMillis() + "\n");
-    ByteBuffer memory = myTask.getMemory();
-    logger.log(Level.FINEST, "After getMemory " + System.currentTimeMillis() + "\n");
-	value = memory.getInt(addr);
-    logger.log(Level.FINEST, "After getInt " + System.currentTimeMillis() + "\n");
-	break;
+        logger.log(Level.FINEST, "In wordSize case: 4\n");
+        ByteBuffer memory = myTask.getMemory();
+        value = memory.getInt(addr);
+        break;
       case 8:
-        logger.log(Level.FINEST, "In wordsize case: 8 " + System.currentTimeMillis() + "\n");
-	value = myTask.getMemory().getLong(addr);
-	break;
+        logger.log(Level.FINEST, "In wordsize case: 8\n");
+        value = myTask.getMemory().getLong(addr);
+        break;
       default:
-        logger.log(Level.FINEST, "In wordSize case: default " + System.currentTimeMillis() + "\n");
-	throw new RuntimeException("Not implemented for this word length yet");
+        logger.log(Level.FINEST, "In wordSize case: default\n");
+        throw new RuntimeException("Not implemented for this word length yet");
       }
 
-    logger.log(Level.FINE, "Libunwind: read value 0x"
-                                + Long.toHexString(value) + " " + System.currentTimeMillis() + "\n");
+    logger.log(Level.FINE, "Libunwind: read value 0x{0}\n",
+               Long.toHexString(value));
     return value;
   }
 
   public void writeMem (long as, long addr, long value)
   {
-    logger.log(Level.FINE, "Libunwind: writing value 0x"
-                                + Long.toHexString(value)
-                                + " to memory address 0x"
-                                + Long.toHexString(addr) + "\n");
+    logger.log(Level.FINE,
+               "Libunwind: writing value 0x{0} to memory address 0x{1}\n",
+               new Object[] { Long.toHexString(value), Long.toHexString(addr) });
     throw new RuntimeException("Not implemented in core yet");
   }
 
   public long accessReg (long as, long regnum)
   {
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: reading from register "
-                                + registerName + "\n");
+    logger.log(Level.FINE, "Libunwind: reading from register {0}\n",
+               registerName);
 
     long value = isa.getRegisterByName(registerName).get(myTask);
 
-    logger.log(Level.FINE, "Libunwind: read value 0x"
-                                + Long.toHexString(value) + "\n");
+    logger.log(Level.FINE, "Libunwind: read value 0x{0}\n",
+               Long.toHexString(value));
     return value;
   }
 
   public void writeReg (long as, long regnum, long value)
   {
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: writing value 0x"
-                                + Long.toHexString(value) + " to register "
-                                + registerName + "\n");
+    logger.log(Level.FINE, "Libunwind: writing value 0x{0} to register {1}\n",
+               new Object[] { Long.toHexString(value), registerName });
     throw new RuntimeException("Not implemented in core yet");
   }
 
   public double accessFpreg (long as, long regnum)
   {
-    /* This is probably broken, since the numbering for FP regs ought
-     * to be different from that for non-FP reg.  */
+    /*
+     * This is probably broken, since the numbering for FP regs ought to be
+     * different from that for non-FP reg.
+     */
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: reading register " + registerName
-                                + "\n");
+    logger.log(Level.FINE, "Libunwind: reading register {0}\n", registerName);
 
     throw new RuntimeException("Not implemented in core yet");
     // return 0;
@@ -142,11 +137,13 @@ public class StackCallbacks
 
   public void writeFpreg (long as, long regnum, double value)
   {
-    /* This is probably broken, since the numbering for FP regs ought
-     * to be different from that for non-FP reg.  */
+    /*
+     * This is probably broken, since the numbering for FP regs ought to be
+     * different from that for non-FP reg.
+     */
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: writing value " + value
-                                + " to register " + registerName + "\n");
+    logger.log(Level.FINE, "Libunwind: writing value {0} to register {1}\n",
+               new Object[] { new Double(value), registerName });
     throw new RuntimeException("Not implemented in core yet");
   }
 
@@ -158,8 +155,9 @@ public class StackCallbacks
 
   public int getPid ()
   {
-    /* FIXME: this relies on the hashCode of a ProcId returning the
-     * actual id.  */
+    /*
+     * FIXME: this relies on the hashCode of a ProcId returning the actual id.
+     */
     return myTask.getProc().getId().hashCode();
   }
 }

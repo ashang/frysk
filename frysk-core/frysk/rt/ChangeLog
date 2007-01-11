@@ -1,3 +1,13 @@
+2007-01-11  Nurdin Premji  <npremji@redhat.com>
+
+	* StackCallbacks.java (accessReg): Use logger formatting mechanism, bug #3216
+	(accessFpreg): Ditto.
+	(getPid): Ditto.
+	(writeFpreg): Ditto.
+	(writeMem): Ditto.
+	(accessMem): Ditto. Cleaned up some excessive logging junk. 
+	(writeReg): Ditto.
+
 2007-01-10  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackBacktrace.java (testBacktrace): Expect "" instead of null
