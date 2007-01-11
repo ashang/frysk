@@ -38,9 +38,14 @@
 // exception.
 package frysk.cli.hpd;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.PrintStream;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.LinkedList;
 import java.util.Hashtable;
@@ -82,13 +87,49 @@ public class CLI
     Task task;
     int pid = 0;
     int tid = 0;
-    SymTab symtab;
+    SymTab symtab = null;
     StackFrame frame = null;
     int stackLevel = 0;
     static Object monitor = new Object();
     static boolean attached;
     AttachedObserver attachedObserver = null;
 
+    /**
+     * Handle ConsoleReader Completor
+     * @param buffer Input buffer.
+     * @param cursor Position of TAB in buffer.
+     * @param candidates List that may complete token.
+     * @return cursor position in buffer
+     */
+    public int complete (String buffer, int cursor, List candidates)
+    {
+      int first_ws = buffer.indexOf(' ');
+      // Complete the request name
+      if (first_ws == -1)
+        {
+          Set commands = handlers.keySet();
+          Iterator it = commands.iterator();
+          while(it.hasNext())
+            {
+              String command = (String)it.next();
+              if (command.startsWith(buffer))
+                candidates.add(command);
+            }
+        }
+      // Otherwise assume a symbol is being completed
+      else if (symtab != null)
+	{
+	  cursor = symtab.complete(buffer.substring(first_ws),
+				   cursor - first_ws, candidates);
+	  for (Iterator i = candidates.iterator(); i.hasNext();)
+	    {
+	      String sNext = (String) i.next();
+	    }
+	  return cursor + first_ws;
+	}
+      return 1;
+    }
+    
 	/*
 	 * Command handlers
 	 */
@@ -300,7 +341,7 @@ public class CLI
         {
           ArrayList params = cmd.getParameters();
           String executable = "";
-          boolean cli = false;
+          boolean cli = true;
           attachedObserver = new AttachedObserver();
 
           if (params.size() < 2)
@@ -313,6 +354,8 @@ public class CLI
             {
               if (((String)params.get(idx)).equals("-cli"))
                 cli = true;
+              else if (((String)params.get(idx)).equals("-no-cli"))
+                cli = false;
               else if (((String)params.get(idx)).equals("-task"))
                 {
                   idx += 1;
@@ -429,6 +472,60 @@ public class CLI
 			}
 		}
 	}
+    
+	class ListHandler implements CommandHandler
+	{
+	  public void handle(Command cmd) throws ParseException
+	  {
+        StackFrame tmpFrame = null;
+        
+        if (proc == null)
+          {
+            addMessage(new Message("No symbol table is available.", Message.TYPE_NORMAL));
+            return;
+          }
+
+        if (cmd.getParameters().size() != 0)
+          {
+            addMessage(new Message("No options are currently implemented.", Message.TYPE_NORMAL));
+            return;
+          }
+ 
+        frame = symtab.getCurrentFrame();
+        
+        try {
+          FileReader fr = new FileReader(frame.getSourceFile());
+          LineNumberReader lr = new LineNumberReader(fr);
+          String str;
+          boolean display = false;
+          int startLine = frame.getLineNumber() > 10 ? frame.getLineNumber() - 10 : 1; 
+          int endLine = startLine + 20;
+          String flag = "";
+
+          while ((str = lr.readLine()) != null) 
+            {
+              if (lr.getLineNumber() == startLine)
+                display = true;
+              else if (lr.getLineNumber() == frame.getLineNumber())
+                flag = "*";
+              else if (lr.getLineNumber() == endLine)
+                display = false;
+                
+              if (display)
+                {
+                  cmd.getOut().println(lr.getLineNumber() + flag + "\t "+ str);
+                  flag = "";
+                }
+            }
+          lr.close();
+        }
+        catch (IOException e) 
+        {
+          addMessage(new Message("file " + frame.getSourceFile() + " not found.", Message.TYPE_ERROR));
+        }
+
+	  }
+    }
 
 	class SetHandler implements CommandHandler
 	{
@@ -507,20 +604,26 @@ public class CLI
         int action;
         int level = 1;
         StackFrame tmpFrame = null;
-        
+        StackFrame currentFrame = symtab.getCurrentFrame();
+
         if (cmd.getParameters().size() != 0)
           level = Integer.parseInt((String)cmd.getParameters().get(0));
 
         if (cmd.getAction().compareTo("up") == 0)
           {
             tmpFrame = symtab.setCurrentFrame(level);
-            stackLevel += 1;
+            if (tmpFrame != currentFrame)
+                stackLevel += level;
           }
         else if (cmd.getAction().compareTo("down") == 0)
           {
             tmpFrame = symtab.setCurrentFrame(-level);
-            stackLevel -= 1;
+            if (tmpFrame != currentFrame)
+              stackLevel -= level;
           }
+        
+        if (tmpFrame == null)
+          tmpFrame = currentFrame;
         cmd.getOut().print("#" + stackLevel);
         cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
         cmd.getOut().print(" in " + tmpFrame.getMethodName());
@@ -745,7 +848,7 @@ public class CLI
 	 * Constructor
 	 * @param prompt String initially to be used as the prompt
 	 */
-	public CLI(String prompt, PrintStream out)
+	public CLI (String prompt, PrintStream out)
 	{
 		this.prompt = prompt;
 		CLI.out = out;
@@ -762,6 +865,7 @@ public class CLI
         handlers.put("down", new UpDownHandler());
 		handlers.put("focus", new FocusHandler());
         handlers.put("help", new HelpHandler());
+        handlers.put("list", new ListHandler());
 		handlers.put("print", new PrintHandler());
 		handlers.put("quit", new QuitHandler());
         handlers.put("set", new SetHandler());

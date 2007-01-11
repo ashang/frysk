@@ -1,3 +1,10 @@
+2007-01-11  Stan Cox  <scox@redhat.com>
+
+	* hpd/CLI.java (complete): New.
+	(ListHandler): New.
+	* hpd/SymTab.java (complete): New.
+	* hpd/UserHelp.java (list): New.	
+
 2006-12-20  Stan Cox  <scox@redhat.com>
 
 	* hpd/AllPTSet.java (taskSets): Use ArrayList instead of Vector.

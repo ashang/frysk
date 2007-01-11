@@ -40,6 +40,8 @@ package frysk.cli.hpd;
 
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
@@ -98,6 +100,67 @@ public class SymTab
       {}
       exprSymTab = new ExprSymTab (task, pid, frame);
     }
+    
+    /**
+     * Handle ConsoleReader Completor
+     * @param buffer Input buffer.
+     * @param cursor Position of TAB in buffer.
+     * @param candidates List that may complete token.
+     * @return cursor position in buffer
+     */
+    public int complete (String buffer, int cursor, List candidates)
+    {
+      long pc;
+      Dwfl dwfl;
+      
+      StackFrame currentFrame = getCurrentFrame();
+      try
+      {
+        if (currentFrame.getInner() == null)
+          pc = task.getIsa().pc(task) - 1;
+       else
+          pc = currentFrame.getAddress();
+      }
+      catch (TaskException tte)
+      {
+        throw new RuntimeException(tte);
+      }
+
+      dwfl = new Dwfl(pid);
+      DwflDieBias bias = dwfl.getDie(pc);
+      DwarfDie die = bias.die;
+      StringBuffer result = new StringBuffer();
+      String token = "";
+
+      String sInput = buffer.substring(0, cursor) + '\t' + (cursor < buffer.length() 
+          ? buffer.substring(cursor) : "");
+
+      sInput += (char)3;
+      CppLexer lexer = new CppLexer(new StringReader(sInput));
+      CppParser parser = new CppParser(lexer);
+      try {
+        parser.start();
+      }
+      catch (antlr.RecognitionException r)
+      {}
+      catch (antlr.TokenStreamException t)
+      {}
+      catch (frysk.expr.TabException t)
+      {
+        token = t.getTabExpression().trim();
+      }
+
+      DwarfDie[] allDies = die.getScopes(pc - bias.bias);
+      List candidates_p = die.getScopeVarNames(allDies, token /*buffer.substring(buffer.indexOf(' ')+1)*/);
+      for (Iterator i = candidates_p.iterator(); i.hasNext();)
+        {
+            String sNext = (String) i.next();
+            candidates.add(sNext);
+        }
+
+      return buffer.indexOf(token) + 1;
+    }
+    
     /**
      * Implement the cli what request
      * @param sInput
@@ -131,7 +194,6 @@ public class SymTab
       DwflLine line = null;
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
-      DwarfDie type = null;
       StringBuffer result = new StringBuffer();
 
       DwarfDie[] allDies = die.getScopes(pc - bias.bias);
@@ -265,7 +327,8 @@ public class SymTab
              tmpFrame = tmpFrame.getInner();
            level -= 1;;
          }
-       exprSymTab.setCurrentFrame(tmpFrame);
+       if (tmpFrame != null)
+         exprSymTab.setCurrentFrame(tmpFrame);
        return exprSymTab.getCurrentFrame();
      }
      

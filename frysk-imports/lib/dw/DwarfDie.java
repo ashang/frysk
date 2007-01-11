@@ -40,6 +40,9 @@
 
 package lib.dw;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DwarfDie
 {
 
@@ -95,7 +98,11 @@ public class DwarfDie
     return get_decl_line(this.getPointer());
   }
 
-
+  /**
+   * 
+   * @param addr PC address.
+   * @return Scope DwarfDies containing addr.
+   */
   public DwarfDie[] getScopes (long addr)
   {
     long[] vals = get_scopes(addr);
@@ -119,7 +126,7 @@ public class DwarfDie
     long[] vals = new long[scopes.length];
     long[] die_and_scope = new long[2];
     for(int i = 0; i < scopes.length; i++)
-	vals[i] = scopes[i].getPointer();
+    vals[i] = scopes[i].getPointer();
 
     DwarfDie die = null;
     long val = get_scopevar(die_and_scope, vals, variable);
@@ -131,19 +138,48 @@ public class DwarfDie
       }
     return die;
   }
-    
+  
+  private ArrayList varNames;
+  /**
+   * @param scopes
+   * @param variable
+   * @return List of names in scopes matching variable
+   */
+  public List getScopeVarNames (DwarfDie[] scopes, String variable)
+  {
+    varNames = new ArrayList();    
+    long[] vals = new long[scopes.length];
+    for(int i = 0; i < scopes.length; i++)
+      vals[i] = scopes[i].getPointer();
+
+    get_scopevar_names(vals, variable);
+   return varNames; 
+  }
+ 
+  public void addScopeVarName (String name)
+  {
+    varNames.add(name);
+  }
+  
+  /**
+   * @return Scopes index of this die.
+   */
   public long getScopeIndex ()
   {
       return this.scopeIndex;
   }
   
+  /**
+   * @param index Scopes index.
+   * @return Die of scope.
+   */
   public long getScope (int index)
   {
       return this.scopes[index].pointer;
   }
   
   /**
-   * @param fbreg_and_disp - Return ptr+disp.   Typically this is a static address or ptr+disp.
+   * @param fbreg_and_disp Return ptr+disp.   Typically this is a static address or ptr+disp.
    */
   public void getAddr (long[] fbreg_and_disp)
   {
@@ -338,6 +374,8 @@ public class DwarfDie
 
   private native long get_scopevar (long[] die_scope, long[] scopes, String variable);
 
+  private native long get_scopevar_names (long[] scopes, String variable);
+  
   private native void get_addr (long[] fbreg_and_disp, long addr);
   
   private native long get_type (long addr);
@@ -367,4 +405,5 @@ public class DwarfDie
   private native boolean is_inline_func ();
 
   private static native long get_decl (long dw, String sym);
+
 }

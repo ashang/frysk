@@ -1,3 +1,9 @@
+2007-01-11  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getScopeVarNames): New.
+	(addScopeVarName): New.
+	* cni/DwarfDie.java (get_scopevar_names): New.
+
 2006-12-18  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (isFormalParameter): New.

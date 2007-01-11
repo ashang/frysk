@@ -149,6 +149,59 @@ lib::dw::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
   return code;
 }
 
+jlong
+lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
+				 jstring variable_arg)
+{
+  int nscopes = JvGetArrayLength (scopes_arg);
+  Dwarf_Die *scopes[nscopes];
+  jlong* scopesp = elements(scopes_arg);
+  Dwarf_Die result;
+  int variable_len = variable_arg->length ();
+  char variable[variable_len + 1];
+  JvGetStringUTFRegion (variable_arg, 0, variable_len, variable);
+  variable[variable_len] = '\0';
+
+  using namespace java::lang;
+
+  for(int i = 0; i < nscopes; i++)
+    {
+      jlong dieptr = scopesp[i];
+      scopes[i] = (Dwarf_Die*)dieptr;
+    }
+
+  /* Start with the innermost scope and move out.  */
+  for (int out = 0; out < nscopes; ++out)
+    if (dwarf_haschildren (scopes[out]))
+      {
+        if (dwarf_child (scopes[out], &result) != 0)
+          return -1;
+        do
+          {
+            switch (dwarf_tag (&result))
+              {
+              case DW_TAG_variable:
+              case DW_TAG_formal_parameter:
+	      case DW_TAG_subprogram:
+                break;
+
+              default:
+                continue;
+              }
+
+            Dwarf_Attribute attr_mem;
+            const char *diename = dwarf_formstring
+              (dwarf_attr_integrate (&result, DW_AT_name, &attr_mem));
+            if (diename != NULL && !strncmp (diename, variable, variable_len))
+	      {
+		addScopeVarName (JvNewStringUTF (diename));
+	      }
+	  }
+	while (dwarf_siblingof (&result, &result) == 0);
+      }
+  return 0;
+}
+
 void
 lib::dw::DwarfDie::get_addr (jlongArray fbreg_and_disp, jlong var_die)
 {

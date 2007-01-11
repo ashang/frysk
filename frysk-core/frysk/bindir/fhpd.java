@@ -38,13 +38,29 @@
 // exception.
 
 import java.io.IOException;
+import java.util.List;
 
 import frysk.cli.hpd.CLI;
 
+import jline.Completor;
 import jline.ConsoleReader;
 
 public class fhpd 
 {
+    
+  final class FhpdCompletor implements Completor
+  {
+    CLI cli;
+    public FhpdCompletor (CLI cli)
+    {
+      this.cli = cli;
+    }
+    public int complete (String buffer, int cursor, List candidates)
+    {
+      return cli.complete (buffer, cursor, candidates);
+    }
+  }
+
   public static void main (String[] argv) 
   {
     CLI cli;
@@ -60,6 +76,8 @@ public class fhpd
       System.out.print(ioe.getMessage());
     }
 
+    Completor fhpdCompletor = new FhpdCompletor(cli);
+    reader.addCompletor(fhpdCompletor);
     try {
       while (line != null && !line.equals("quit")) {
         line = reader.readLine(cli.getPrompt());
