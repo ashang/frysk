@@ -1,3 +1,8 @@
+2007-01-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* glade/frysk_create_session_druid.glade: Change "debug
+	session" to "monitoring session".
+
 2007-01-09  sami wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Added a border of 6 to statusWidget.
