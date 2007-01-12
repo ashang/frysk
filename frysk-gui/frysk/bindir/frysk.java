@@ -39,6 +39,10 @@
 
 import frysk.Config;
 import frysk.gui.Gui;
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
 
 /**
  * Start the frysk GUI.
@@ -46,24 +50,36 @@ import frysk.gui.Gui;
 
 class frysk
 {
-    public static void main (String[] args)
+  public static void main (String[] args)
+  {
+    Parser parser = new Parser("frysk", Config.getVersion(), true);
+    parser.setHeader("usage: frysk [options]");
+
+    addOptions(parser);
+
+    parser.parse(args, new FileArgumentCallback()
     {
-    	if (args.length == 0) {
-	    Gui.gui (args,
-		     new String[] { Config.getGladeDir () + "/" },
-		     new String[] { Config.getImageDir () }, 
-		     new String[] { Config.getPkgDataDir () + "/" },
-		     new String[] { Config.getPkgDataDir () + "/samples" });
-    	}
-	else if (args[0].equals ("--help")) {
-	    System.out.println ("Usage: frysk [option]");
-	    System.out.println ();
-	    System.out.println ("options:");
-	    System.out.println ("\t--help\t\tDisplays this message");
-    	}
-	else {
-	    System.err.println ("Invalid argument:" + args[0]);
-	    System.err.println ("See 'frysk --help' for valid options");
-	}
-    }
+      public void notifyFile (String arg) throws OptionException
+      {
+      }
+    });
+    
+    System.out.println(Config.getImageDir());
+    
+    Gui.gui(args, new String[] { Config.getGladeDir() + "/" },
+            new String[] { Config.getImageDir() },
+            new String[] { Config.getPkgDataDir() + "/" },
+            new String[] { Config.getPkgDataDir() + "/samples" });
+
+  }
+
+  private static void addOptions (Parser parser)
+  {
+    parser.add(new Option("debug", 'd', "debug mode", "EXECUTABLE")
+    {
+      public void parsed (String arg) throws OptionException
+      {
+      }
+    });
+  }
 }
