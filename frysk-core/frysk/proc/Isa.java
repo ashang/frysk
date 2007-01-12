@@ -110,6 +110,12 @@ public interface Isa
   long getBreakpointAddress(Task task);
 
   /**
+   * Reports whether or not the given Task just did a step of an
+   * instruction.
+   */
+  boolean isTaskStepped(Task task);
+
+  /**
    * Return an array of ByteBuffers for accessing the register
    * banks. It's possible for different elements of the array to be
    * shared.

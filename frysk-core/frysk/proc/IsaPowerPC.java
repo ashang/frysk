@@ -116,6 +116,14 @@ abstract class IsaPowerPC
     return pcValue;
   }
 
+  /**
+   * FIXME. Not yet implemented for PowerPC platform.
+   */
+  public boolean isTaskStepped(Task task)
+  {
+    return false;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxPowerPCSyscall.syscallList;

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ package frysk.proc;
 
 public class TestTaskObserverInstruction extends TestLib
 {
-  public void testInstruction()
+  public void testInstruction() throws TaskException
   {
     // We want a busy child, because we are going to follow its steps.
     Child child = new AckDaemonProcess(true);
@@ -56,12 +56,16 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("added", instr1.added);
     assertEquals("hit", 1, instr1.hit);
 
+    assertFalse("!isa.isTaskStepped()", task.getIsa().isTaskStepped(task));
+
     task.requestUnblock(instr1);
     assertRunUntilStop("unblock self and hit");
     
     assertFalse("deleted", instr1.deleted);
     assertTrue("added", instr1.added);
     assertEquals("hit", 2, instr1.hit);
+
+    assertTrue("isa.isTaskStepped()", task.getIsa().isTaskStepped(task));
 
     InstructionObserver instr2 = new InstructionObserver();
 

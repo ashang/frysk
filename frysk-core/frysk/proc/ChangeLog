@@ -1,3 +1,22 @@
+2007-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* Isa.java (isTaskStepped): New method.
+	* IsaIA32.java (I387_OFFSET): Removed unused field.
+	(DBG_OFFSET): Document how to get value.
+	(getRegisterBankBuffers): Add "USR" bank.
+	(DBGRegister): New static class.
+	(dbg): Removed unused field.
+	(IsaIA32): Create debug register and add to registerMap.
+	(isTaskStepped): New method.
+	* IsaPowerPC.java (isTaskStepped): Implemented (as returning false).
+	* IsaX8664.java (FPREGS_OFFSET): removed unused field.
+	(DBG_OFFSET): Document and correct value.
+	(DBGRegister): New static class.
+	(IsaX8664): Create debug register and add to registerMap.
+	(isTaskStepped): New method.
+	(getRegisterBankBuffers): Add "USR" bank.
+	* TestTaskObserverInstruction.java: Add isTaskStepped() tests.
+
 2007-01-12  Nurdin Premji  <npremji@redhat.com>
 
 	* TestProcStopped.java (stopped): Updated name change from sendStopXXX 

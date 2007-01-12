@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,13 +46,28 @@ import inua.eio.ByteOrder;
 import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace;
+import frysk.sys.PtraceByteBuffer;
 
 import frysk.sys.RegisterSetBuffer;
 
 class IsaIA32 implements Isa
 {
-  static final int I387_OFFSET = 18*4;
-  static final int DBG_OFFSET = 63 * 4;
+  /**
+   * Offset into user struct from user.h. Determined with:
+   *
+   * #include <sys/types.h>
+   * #include <sys/user.h>
+   * #include <stdio.h>
+   *
+   * #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+   * 
+   * int
+   * main (int argc, char **argv)
+   * {
+   *   printf("DBG_OFFSET = %d\n", offsetof(struct user, u_debugreg[0]));
+   * }
+   */
+  private static final int DBG_OFFSET = 252;
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
   
@@ -60,13 +75,18 @@ class IsaIA32 implements Isa
   
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    bankBuffers = new ByteBuffer[3];
+    bankBuffers = new ByteBuffer[4];
     int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS, Ptrace.FPXREGS };
     for (int i = 0; i < 3; i++) 
       {
 	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
 	bankBuffers[i].order(getByteOrder());
       }
+
+    // Debug registers come from the USR area.
+    bankBuffers[3] = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR);
+    bankBuffers[3].order(getByteOrder());
+
     return bankBuffers;
   }
   
@@ -142,7 +162,20 @@ class IsaIA32 implements Isa
       super(2, 160 + regNum * 16, 16, name, xmmViews);
     }
   }
-  
+
+  /**
+   * Debug registers come from the debug bank (USR area) starting at
+   * DBG_OFFSET, are 4 bytes long and are named d0 till d7.
+   */
+  static class DBGRegister
+    extends Register
+  {
+    DBGRegister(int d)
+    {
+      super(3, DBG_OFFSET + d * 4, 4, "d" + d);
+    }
+  }
+
   private static final IA32Register[] 
   regDefs = { new IA32Register("eax", 6),
 	      new IA32Register("ebx", 0),
@@ -164,11 +197,6 @@ class IsaIA32 implements Isa
 
   private LinkedHashMap registerMap = new LinkedHashMap();
 
-  // No one is using the FP or debug registers yet, but here are
-  // some definitions for them.
-  // Register[] st = new Register[10];
-  Register[] dbg = new Register[8];
-
   IsaIA32()
   {
     for (int i = 0; i < regDefs.length; i++) 
@@ -189,13 +217,10 @@ class IsaIA32 implements Isa
 	String name = "xmm" + i;
 	registerMap.put(name, new XMMRegister(name, i));
       }
-    // don't print out debug registers for now
-    if (false) 
+    for (int i = 0; i < 8; i++) 
       {
-	for (int i = 0; i < dbg.length; i++) 
-	  {
-	    dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
-	  }
+	Register reg = new DBGRegister(i);
+	registerMap.put(reg.getName(), reg);
       }
   }
     
@@ -261,6 +286,16 @@ class IsaIA32 implements Isa
     pcValue = pcValue - IsaIA32.BREAKPOINT_INSTRUCTION.length;
     
     return pcValue;
+  }
+
+  /**
+   * Reports whether or not the given Task just did a step of an
+   * instruction.  This can be deduced by examining the single step
+   * flag (BS bit 14) in the debug status register (DR6) on x86.
+   */
+  public boolean isTaskStepped(Task task)
+  {
+    return (getRegisterByName("d6").get(task) & 0x4000) != 0;
   }
 
   public Syscall[] getSyscallList ()

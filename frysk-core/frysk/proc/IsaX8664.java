@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,14 +45,29 @@ import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace;
+import frysk.sys.PtraceByteBuffer;
 import frysk.sys.RegisterSetBuffer;
 
 import lib.unwind.RegisterAMD64;
 
 class IsaX8664 implements Isa
 {
-  static final int FPREGS_OFFSET = 28 * 8;
-  static final int DBG_OFFSET = 32 * 8;
+  /**
+   * Offset into user struct from user.h. Determined with:
+   *
+   * #include <sys/types.h>
+   * #include <sys/user.h>
+   * #include <stdio.h>
+   *
+   * #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+   * 
+   * int
+   * main (int argc, char **argv)
+   * {
+   *   printf("DBG_OFFSET = %d\n", offsetof(struct user, u_debugreg[0]));
+   * }
+   */
+  private static final int DBG_OFFSET = 848;
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
   
@@ -125,6 +140,19 @@ class IsaX8664 implements Isa
     }
   }
 
+  /**
+   * Debug registers come from the debug bank (USR area) starting at
+   * DBG_OFFSET, are 8 bytes long and are named d0 till d7.
+   */
+  static class DBGRegister
+    extends Register
+  {
+    DBGRegister(int d)
+    {
+      super(2, DBG_OFFSET + d * 8, 8, "d" + d);
+    }
+  }
+
   private static final X8664Register[] regDefs
   = { new X8664Register("rax", 10),
       new X8664Register("rbx", 5),
@@ -180,7 +208,11 @@ class IsaX8664 implements Isa
 	String name = "xmm" + i;
         registerMap.put(name, new XMMRegister(name, i));
       }
-    
+    for (int i = 0; i < 8; i++)
+      {
+	Register reg = new DBGRegister(i);
+	registerMap.put(reg.getName(), reg);
+      }
   }
 
   public Iterator RegisterIterator()
@@ -247,6 +279,16 @@ class IsaX8664 implements Isa
     return pcValue;
   }
 
+  /**
+   * Reports whether or not the given Task just did a step of an
+   * instruction.  This can be deduced by examining the single step
+   * flag (BS bit 14) in the debug status register (DR6) on x86_64.
+   */
+  public boolean isTaskStepped(Task task)
+  {
+    return (getRegisterByName("d6").get(task) & 0x4000) != 0;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxX8664Syscall.syscallList;
@@ -264,13 +306,18 @@ class IsaX8664 implements Isa
 
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    ByteBuffer[] bankBuffers = new ByteBuffer[2];
+    ByteBuffer[] bankBuffers = new ByteBuffer[3];
     int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS };
     for (int i = 0; i < 2; i++) 
       {
 	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
 	bankBuffers[i].order(getByteOrder());
       }
+
+    // Debug registers come from the USR area.
+    bankBuffers[2] = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR);
+    bankBuffers[2].order(getByteOrder());
+    
     return bankBuffers;
   }
 }
