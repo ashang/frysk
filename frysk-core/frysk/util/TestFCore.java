@@ -363,7 +363,7 @@ public class TestFCore
   {
     AckProcess ackProc = new DetachedAckProcess();
     assertNotNull(ackProc);
-    ackProc.sendStopXXX();
+    ackProc.assertSendStop();
     Proc proc = ackProc.assertFindProcAndTasks();
     assertNotNull(proc);
     return proc;

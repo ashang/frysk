@@ -1,3 +1,8 @@
+2007-01-12  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFCore.java (giveMeAProc): Updated name change from sendStopXXX 
+	to assertSendStop.
+	
 2007-01-11  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (SignalObserver.updateSignaled): Fix a couple bugs in

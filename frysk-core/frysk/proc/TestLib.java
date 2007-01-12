@@ -52,6 +52,8 @@ import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.proc.ProcBuilder;
+import frysk.sys.proc.Stat;
+
 import java.io.File;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -601,15 +603,24 @@ public class TestLib
 	    ack.await ();
 	}
 	/**
-	 * Stop a Task.  XXX: Nothing confirming that the task
-	 * actually stopped.
+	 * Stop a Task. 
 	 */
-	public void sendStopXXX ()
-	{
-	    signal (stopSig);
-	    // XXX: there is nothing confirming that this operation
-	    // completed!!!
-	}
+	public void assertSendStop ()
+    {
+      signal(stopSig);
+
+      Stat stat = new Stat();
+      stat.refresh(this.getPid());
+     for (int i = 0; i < 10; i++)
+        {
+          if (stat.state == 'T')
+            return;
+          Thread.yield();
+          stat.refresh();
+        }
+
+     fail("Stop signal not handled by process, in state: " + stat.state);      
+    }
     }
 
     /**

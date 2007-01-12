@@ -48,7 +48,7 @@ public class TestProcStopped
 
   public void stopped (AckProcess ackProc, int count)
   {
-    ackProc.sendStopXXX();
+    ackProc.assertSendStop();
     Proc proc = ackProc.assertFindProcAndTasks();
     new MyTester(proc, count);
   }
