@@ -1,3 +1,7 @@
+2007-01-12  Mike Cvet  <mcvet@redhat.com>
+
+	* Dwfl.java (isLineExecutable): Added.
+
 2007-01-11  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getScopeVarNames): New.

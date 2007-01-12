@@ -163,6 +163,29 @@ public class Dwfl
     return list;
   }
   
+  /**
+   * Test to see if the requested line number is executable.
+   */
+  public boolean isLineExecutable (String fileName, int lineNo, int column)
+  {
+    DwflModule[] modules = getModules();
+    if (modules == null)
+      return false;
+    
+    for (int i = 0; i < modules.length; i++)
+      {
+        DwflModule mod = modules[i];
+        DwflLine[] lines = mod.getLines(fileName, lineNo, column);
+
+        if (lines != null)
+          {
+            return true;
+          }
+      }
+    
+    return false;
+  }
+  
   protected native void dwfl_begin (int pid);
 
   protected native void dwfl_end ();
