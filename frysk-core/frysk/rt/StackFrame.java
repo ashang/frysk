@@ -78,7 +78,7 @@ public class StackFrame
 
   private int column;
   
-  private String sourceFile;
+  private String sourceFile = "";
   
   private DwflLine dwflLine;
   
@@ -345,11 +345,11 @@ public class StackFrame
    */
   public String toPrint (boolean isSourceWindow)
   {
-    String ret = "";
-    String funcString = this.myCursor.getMethodName();
-    
     if (this.myCursor == null)
       return "Empty stack trace";
+    
+    String ret = "";
+    String funcString = this.myCursor.getMethodName();
     
     if (this.dwflLine != null)
       {

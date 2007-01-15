@@ -263,6 +263,8 @@ public class SourceWindow
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
   
+  private SourceWindowFactory.AttachedObserver attachedObserver;
+  
   private LockObserver lock;
 
   /**
@@ -289,7 +291,13 @@ public class SourceWindow
     this.runState.addObserver(lock);
     this.runState.setProc(proc);
   }
-  
+
+  public SourceWindow (LibGlade glade, String gladePath, Proc proc, 
+                       SourceWindowFactory.AttachedObserver ao)
+  {
+    this(glade, gladePath, proc);
+    this.attachedObserver = ao;
+  }
   
   /**
    * Initializes the rest of the members of the SourceWindow not handled by 
@@ -314,6 +322,16 @@ public class SourceWindow
     ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
 
     this.populateStackBrowser(frames);
+    
+    if (this.attachedObserver != null)
+      {
+        Iterator i = this.swProc.getTasks().iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            t.requestDeleteAttachedObserver(this.attachedObserver);
+          }
+      }
 
     this.createActions(ag);
     this.createMenus();

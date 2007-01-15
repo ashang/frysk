@@ -1,3 +1,8 @@
+2007-01-15  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (toPrint): Re-arranged some code to prevent possible
+	NullPointerExceptions.
+
 2007-01-11  Nurdin Premji  <npremji@redhat.com>
 
 	* StackCallbacks.java (accessReg): Use logger formatting mechanism, bug #3216

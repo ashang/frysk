@@ -1,3 +1,8 @@
+2007-01-15  Mike Cvet  <mcvet@redhat.com>
+
+	* Gui.java (gui): Added a new overloaded gui() method, used to 
+	directly instantiate a new SourceWindow.
+
 2007-01-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* glade/frysk_create_session_druid.glade: Change "debug

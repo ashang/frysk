@@ -1,3 +1,12 @@
+2007-01-15  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Added.
+	(finishSourceWin): Added some code to remove any AttachedObservers.
+	* SourceWindowFactory.java (AttachedObserver): Added, re: #3584.
+	(startNewProc): Added, starts a new executable.
+	(attachToPID): Added, attaches a new source window to a running
+	process.
+
 2007-01-08  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): No longer

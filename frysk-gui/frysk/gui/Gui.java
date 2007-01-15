@@ -146,123 +146,214 @@ public class Gui implements LifeCycleListener, Saveable {
 	 * @param messagePaths - where the message paths are.
 	 * @param testfilePaths
 	 */
-	public static void gui(String[] args, String[] glade_dirs,
-			String[] imagePaths, String[] messagePaths, String[] testfilePaths) {
+	public static void gui (String[] args, String[] glade_dirs,
+                          String[] imagePaths, String[] messagePaths,
+                          String[] testfilePaths)
+  {
 
-		Gui procpop = null;
-		Preferences prefs = null;
-		
-		// Set Frysk Name
-		System.setProperty("gnome.appName", "Frysk");
-		
-		// Check Frysk data location is created
-		createFryskDataLocation(Config.FRYSK_DIR);
+    Gui procpop = null;
+    Preferences prefs = null;
 
-		// Make sure that a Frysk invocation is not already running
-		if (isFryskRunning())
-		{
-			System.err.println("Frysk is already running!");
-			System.exit(0);
-		} 
-		
-		// Create a Frysk lock file
-		createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
+    // Set Frysk Name
+    System.setProperty("gnome.appName", "Frysk");
 
-		Gtk.init(args);
+    // Check Frysk data location is created
+    createFryskDataLocation(Config.FRYSK_DIR);
 
-		// XXX: a hack to make sure the DataModelManager
-		// is initialized early enough. Should probably
-		// have an entitiy that initializes all Managers
-		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+    // Make sure that a Frysk invocation is not already running
+    if (isFryskRunning())
+      {
+        System.err.println("Frysk is already running!");
+        System.exit(0);
+      }
 
-		// Setup Icon Manager singleton
-		IconManager.setImageDir(imagePaths);
-		IconManager.loadIcons();
-		IconManager.useSmallIcons();
+    // Create a Frysk lock file
+    createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
 
-		// Bootstraps Core logging
-		setupCoreLogging();
+    Gtk.init(args);
 
-		// Bootsraps Error Logging
-		setupErrorLogging();
+    // XXX: a hack to make sure the DataModelManager
+    // is initialized early enough. Should probably
+    // have an entitiy that initializes all Managers
+    DataModelManager.theManager.flatProcObservableLinkedList.getClass();
 
-		// Sets transaltion bundle paths
-		Messages.setBundlePaths(messagePaths);
+    // Setup Icon Manager singleton
+    IconManager.setImageDir(imagePaths);
+    IconManager.loadIcons();
+    IconManager.useSmallIcons();
 
-		// Load glade, and setup WindowManager
-		try {
-			procpop = new Gui(glade_dirs);
-		} catch (GladeXMLException e1) {
-			errorLogFile.log(Level.SEVERE, "glade XML is badly formed", //$NON-NLS-1$
-					e1);
-			System.exit(1);
-		} catch (FileNotFoundException e1) {
-			errorLogFile.log(Level.SEVERE, "glade XML files not found", //$NON-NLS-1$
-					e1);
-			System.exit(1);
-		} catch (IOException e1) {
-			errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
-			System.exit(1);
-		}
+    // Bootstraps Core logging
+    setupCoreLogging();
 
-		// Hide main for now
-		WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
-		WindowManager.theManager.mainWindow.hideAll();
+    // Bootsraps Error Logging
+    setupErrorLogging();
 
-		// Now that we now the glade paths are good, send the paths to
-		// the SourceWindowFactory
-		SourceWindowFactory.setGladePaths(glade_dirs);
-		RegisterWindowFactory.setPaths(glade_dirs);
-		MemoryWindowFactory.setPaths(glade_dirs);
-		DisassemblyWindowFactory.setPaths(glade_dirs);
+    // Sets transaltion bundle paths
+    Messages.setBundlePaths(messagePaths);
 
-		// Find and load preferences.
-		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
-		PreferenceManager.setPreferenceModel(prefs);
-		initializePreferences();
+    // Load glade, and setup WindowManager
+    try
+      {
+        procpop = new Gui(glade_dirs);
+      }
+    catch (GladeXMLException e1)
+      {
+        errorLogFile.log(Level.SEVERE, "glade XML is badly formed", //$NON-NLS-1$
+                         e1);
+        System.exit(1);
+      }
+    catch (FileNotFoundException e1)
+      {
+        errorLogFile.log(Level.SEVERE, "glade XML files not found", //$NON-NLS-1$
+                         e1);
+        System.exit(1);
+      }
+    catch (IOException e1)
+      {
+        errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
+        System.exit(1);
+      }
 
-		// Startup Trayicon Manager right click menu.
-		buildTrayManager();
-		
-		// Bootstrap Core Event Loop
-		startCoreEventLoop();
-		
-		// Assign
-		final Gui myGui = procpop;
-		final Preferences myPrefs = prefs;
+    // Hide main for now
+    WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
+    WindowManager.theManager.mainWindow.hideAll();
 
-		// Load preferences
-		myGui.load(myPrefs);
-		
-		// Add interruption and multiple
-		// invocations handlers
-		addInvocationEvents();
+    // Now that we now the glade paths are good, send the paths to
+    // the SourceWindowFactory
+    SourceWindowFactory.setGladePaths(glade_dirs);
+    RegisterWindowFactory.setPaths(glade_dirs);
+    MemoryWindowFactory.setPaths(glade_dirs);
+    DisassemblyWindowFactory.setPaths(glade_dirs);
 
-		// Show wndow and run
-		WindowManager.theManager.sessionManager.showAll();
-		Gtk.main();
+    // Find and load preferences.
+    prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
+    PreferenceManager.setPreferenceModel(prefs);
+    initializePreferences();
 
-		WindowManager.theManager.mainWindow.killTerminalShell();
-		// Gtk main loop exited, stop core event loop.
-		Manager.eventLoop.requestStop();
-		
-		// Save preferences
-		procpop.save(prefs);
-		WindowManager.theManager.mainWindow.killTerminalShell();
+    // Startup Trayicon Manager right click menu.
+    buildTrayManager();
 
-		// XXX: Save Observers
-		ObserverManager.theManager.save();
+    // Bootstrap Core Event Loop
+    startCoreEventLoop();
 
-		try {
-			// Export the node to a file
-			prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
-					+ SETTINGSFILE));
-		} catch (Exception e) {
-			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
+    // Assign
+    final Gui myGui = procpop;
+    final Preferences myPrefs = prefs;
 
-		}
+    // Load preferences
+    myGui.load(myPrefs);
 
-	}
+    // Add interruption and multiple
+    // invocations handlers
+    addInvocationEvents();
+
+    // Show wndow and run
+    WindowManager.theManager.sessionManager.showAll();
+    Gtk.main();
+
+    WindowManager.theManager.mainWindow.killTerminalShell();
+    // Gtk main loop exited, stop core event loop.
+    Manager.eventLoop.requestStop();
+
+    // Save preferences
+    procpop.save(prefs);
+    WindowManager.theManager.mainWindow.killTerminalShell();
+
+    // XXX: Save Observers
+    ObserverManager.theManager.save();
+
+    try
+      {
+        // Export the node to a file
+        prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
+                                                 + SETTINGSFILE));
+      }
+    catch (Exception e)
+      {
+        errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
+
+      }
+  }
+    
+    public static void gui (String[] args, String[] glade_dirs,
+                              String[] imagePaths, String[] messagePaths,
+                              String[] testfilePaths, boolean sw, int pid, String exe)
+      {
+
+        Preferences prefs = null;
+        
+        System.setProperty("gnome.appName", "Frysk");
+
+        // Check Frysk data location is created
+        createFryskDataLocation(Config.FRYSK_DIR);
+
+        // Make sure that a Frysk invocation is not already running
+        if (isFryskRunning())
+          {
+            System.err.println("Frysk is already running!");
+            System.exit(0);
+          }
+
+        // Create a Frysk lock file
+        createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
+
+        Gtk.init(args);
+        
+        IconManager.setImageDir(imagePaths);
+        IconManager.loadIcons();
+        IconManager.useSmallIcons();
+
+        // Bootstraps Core logging
+        setupCoreLogging();
+
+        // Bootsraps Error Logging
+        setupErrorLogging();
+
+        // Sets transaltion bundle paths
+        Messages.setBundlePaths(messagePaths);
+        
+        SourceWindowFactory.setGladePaths(glade_dirs);
+        RegisterWindowFactory.setPaths(glade_dirs);
+        MemoryWindowFactory.setPaths(glade_dirs);
+        DisassemblyWindowFactory.setPaths(glade_dirs);
+
+        // Find and load preferences.
+        prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
+        PreferenceManager.setPreferenceModel(prefs);
+        initializePreferences();
+
+        // Startup Trayicon Manager right click menu.
+        buildTrayManager();
+
+        // Bootstrap Core Event Loop
+        startCoreEventLoop();
+        
+//      Add interruption and multiple
+        // invocations handlers
+        addInvocationEvents();
+        
+        if (pid != 0)
+          SourceWindowFactory.attachToPID(pid);
+        else
+          SourceWindowFactory.startNewProc(exe);
+        
+        Gtk.main();
+
+        // Gtk main loop exited, stop core event loop.
+        Manager.eventLoop.requestStop();
+
+        try
+          {
+            // Export the node to a file
+            prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
+                                                     + SETTINGSFILE));
+          }
+        catch (Exception e)
+          {
+            errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
+
+          }
+      }
 	
 	/**
 	 * Creates a lock file in ~/.frysk

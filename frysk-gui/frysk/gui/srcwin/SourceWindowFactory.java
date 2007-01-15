@@ -40,6 +40,7 @@
 
 package frysk.gui.srcwin;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -51,10 +52,17 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import frysk.dom.DOMFrysk;
+import frysk.gui.Gui;
 import frysk.gui.monitor.WindowManager;
+import frysk.proc.Action;
+import frysk.proc.Host;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcId;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.rt.RunState;
+
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -157,6 +165,41 @@ public class SourceWindowFactory
     map.put(proc, sw);
   }
   
+  public static void attachToPID (int pid)
+  {
+    ProcId procID = new ProcId(pid);
+    Manager.host.requestRefreshXXX(true);
+
+    Manager.host.requestFindProc(procID, new Host.FindProc()
+    {
+      public void procFound (ProcId procId)
+      {
+        Proc proc = Manager.host.getProc(procId);
+        createSourceWindow(proc);
+      }
+
+      public void procNotFound (ProcId procId, Exception e)
+      {
+        System.err.println("Couldn't find the process: " + procId.toString());
+        Manager.eventLoop.requestStop();
+      }
+    });
+  }
+  
+  public static void startNewProc (String file)
+  {
+    File exe = new File(file);
+    String[] cmd = new String[1];
+    cmd[0] = file;
+    if (exe.exists())
+      Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
+    else
+      {
+        System.out.println("fcatch: can't find executable!");
+        System.exit(1);
+      }
+  }
+  
   
 
   /**
@@ -178,10 +221,10 @@ public class SourceWindowFactory
   }
 
   /**
-   * Unblocks the Task being examined and removes all Observers on it, and
+   * Unblocks the Proc being examined and removes all Observers on it, and
    * removes it from the tables watching it.
    * 
-   * @param task The Task to be unblocked.
+   * @param proc The Proc to be unblocked.
    */
   private static void unblockProc (Proc proc)
   {
@@ -225,16 +268,88 @@ public class SourceWindowFactory
                 {
                   Proc proc = s.getSwProc();
                   map.remove(proc);
-
+                  
                   unblockProc(proc);
                 }
 
-              WindowManager.theManager.sessionManager.show();
               s.hideAll();
+              
+              if (WindowManager.theManager.sessionManager != null)
+                WindowManager.theManager.sessionManager.show();
+              else
+                Gui.quitFrysk();
             }
         }
 
       return true;
+    }
+  }
+  
+ protected static class AttachedObserver implements TaskObserver.Attached
+  {
+    public void addedTo (Object o)
+    {
+      
+    }
+    
+    public Action updateAttached (Task task)
+    {
+      
+      int i = 0;
+      LibGlade glade = null;
+
+      for (; i < gladePaths.length; i++)
+        {
+          try
+            {
+              glade = new LibGlade(gladePaths[i] + "/" + SourceWindow.GLADE_FILE,
+                                   null);
+            }
+          catch (Exception e)
+            {
+              if (i < gladePaths.length - 1)
+                // If we don't find the glade file, look at the next file
+                continue;
+              else
+                {
+                  e.printStackTrace();
+                  System.exit(1);
+                }
+
+            }
+
+          // If we've found it, break
+          break;
+        }
+      // If we don't have a glade file by this point, bail
+      if (glade == null)
+        {
+          System.err.println("Could not file source window glade file in path "
+                             + gladePaths[gladePaths.length - 1] + "! Exiting.");
+          return Action.CONTINUE;
+        }
+
+      Proc proc = task.getProc();
+      SourceWindow sw = new SourceWindow(glade, gladePaths[i], proc, this);
+
+      stateTable.put(proc, sw.getRunState());
+      sw.addListener(new SourceWinListener());
+      sw.grabFocus();
+
+      // Store the reference to the source window
+      map.put(proc, sw);
+      
+      return Action.BLOCK;
+    }
+    
+    public void addFailed  (Object observable, Throwable w)
+    {
+      
+    }
+    
+    public void deletedFrom (Object o)
+    {
+      
     }
   }
   
