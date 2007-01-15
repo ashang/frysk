@@ -1250,7 +1250,16 @@ public class SourceBuffer
    */
   private String loadUnmarkedText (StackFrame frame) throws FileNotFoundException
   {
-    BufferedReader br = new BufferedReader(new FileReader(frame.getSourceFile()));
+    BufferedReader br = null;
+    try
+    {
+      br = new BufferedReader(new FileReader(frame.getSourceFile()));
+    }
+    catch (FileNotFoundException fnfe)
+    {
+      System.out.println("Cannot find source file!");
+      return "";
+    }
     StringBuffer text = new StringBuffer();
     String line = "";
     try
@@ -1265,7 +1274,7 @@ public class SourceBuffer
     }
     catch (IOException ioe)
     {
-      System.out.println("IOException!");
+      //System.out.println("IOException!");
       ioe.printStackTrace();
     }
     

@@ -1,9 +1,12 @@
 2007-01-15  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceBuffer.java (loadUnmarkedText): Look out for 
+	FileNotFoundExceptions.
 	* SourceView.java (scrollToLine): Edited scrolling parameter for more
 	sane window scrolling.
 	* SourceWindow.java (SourceWindow): Added.
 	(finishSourceWin): Added some code to remove any AttachedObservers.
+	(generateProcStackTrace): Watch out for more null DOMSources.
 	* SourceWindowFactory.java (AttachedObserver): Added, re: #3584.
 	(startNewProc): Added, starts a new executable.
 	(attachToPID): Added, attaches a new source window to a running

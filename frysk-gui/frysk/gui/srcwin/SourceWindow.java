@@ -1970,7 +1970,8 @@ public class SourceWindow
                 try
                   {
                     s = this.dom.getImage(tasks[j].getProc().getMainTask().getName()).getSource(filename);
-                    f = s.findFunction(line.getLineNum());
+                    if (s != null)
+                      f = s.findFunction(line.getLineNum());
                   }
                 catch (NullPointerException npe)
                   {
@@ -1989,41 +1990,6 @@ public class SourceWindow
     DOMFactory.clearDOMSourceMap(this.swProc);
     return frames;
   }
-
-  /**
-   * Returns a DOMFunction matching the incoming function information from the
-   * DOMImage.
-   * 
-   * @param image The DOMImage containing the source information.
-   * @param filename The name of the source file.
-   * @param linenum The line number of the function.
-   * @return The found DOMFunction.
-   */
-//  private static DOMFunction getFunctionXXX (DOMImage image, String filename,
-//                                             int linenum)
-//  {
-//    
-//    Iterator functions = image.getFunctions();
-//
-//    //System.out.println("Looking for " + filename + ": " + linenum + " in " + image);
-//
-//    DOMFunction found = null;
-//
-//    while (functions.hasNext())
-//      {
-//        DOMFunction function = (DOMFunction) functions.next();
-//        if (function.getSource().getFileName().equals(filename)
-//            && function.getStartingLine() <= linenum)
-//          {
-//        
-//            if (found == null
-//                || function.getStartingLine() > found.getStartingLine())
-//              found = function;
-//          }
-//      }
-//
-//    return found;
-//  }
 
   private class SourceWindowListener
       implements ButtonListener, EntryListener, ComboBoxListener,
