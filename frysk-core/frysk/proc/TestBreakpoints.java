@@ -272,9 +272,6 @@ public class TestBreakpoints
 
   public void testInsertRemove() throws IOException
   {
-    if (brokenXXX (3240))
-      return;
-
     // Start an EventLoop so there's no need to poll for events all
     // the time.
     eventLoop = new EventLoopRunner();
@@ -417,6 +414,22 @@ public class TestBreakpoints
     CodeObserver code3 = new CodeObserver(breakpoint1);
     task.requestAddCodeObserver(code3, breakpoint1);
     
+    // Make sure the observer is properly installed.
+    synchronized (monitor)
+      {
+	while (! code3.isAdded())
+	  {
+	    try
+	      {
+		monitor.wait();
+	      }
+	    catch (InterruptedException ie)
+	      {
+		// ignored
+	      }
+	  }
+      }
+
     // And we are done.
     out.writeByte(0);
     out.flush();

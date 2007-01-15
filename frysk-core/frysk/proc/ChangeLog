@@ -1,3 +1,30 @@
+2007-01-15  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #3240
+	* TestBreakPoints.java (testInsertRemove): Make sure the observer
+	is properly installed.
+
+2007-01-15  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #3676
+	* Breakpoint.java (stepDone): Only set if still installed.
+	(isInstalled): new method.
+	(toString): Prettify.
+	* IsaIA32.java (isTaskStepped): Reset flag.
+	* IsaX8664.java (isTaskStepped): Likewise.
+	* LinuxIa32On64.java (LinuxIa32On64): Install IndirectRegisters for
+	d0 till d7.
+	* LinuxPtraceTaskState.java (Running.sendContinue): Rewritten to take
+	breakpoints into account.
+	(Running.handleStoppedEvent): Fix log message. Call sendContinue()
+	on new state.
+	(Running.handleTrappedEvent): Rewritten.
+	(running, syscallRunning, inSyscallRunning, inSyscallRunningTraced):
+	Now have type Running.
+	(BlockedSignal.handleUnblock): Call sendContinue() on new state.
+	* TestTaskObserverInstruction.java: Don't test Isa.isTaskStepped().
+	* TestTaskObserverInstructionAndCode.java: Enable.
+
 2007-01-12  Mark Wielaard  <mark@klomp.org>
 
 	* Isa.java (isTaskStepped): New method.
