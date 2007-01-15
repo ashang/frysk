@@ -1,3 +1,10 @@
+2007-01-15  Nurdin Premji  <npremji@redhat.com>
+
+	* TestLib.java: Ran gnu formatter.
+	(isChildOf): Changed to use proc.ppid rather than proc.parent.
+	* Proc.java: Ran gnu formatter.
+	(Proc): Added variable ppid to store parent pid, use frysk.sys.proc.Stat to fill.
+
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaFactory.java: Replace Build.BUILD_ARCH with
