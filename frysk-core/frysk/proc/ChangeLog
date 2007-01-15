@@ -1,5 +1,8 @@
 2007-01-15  Nurdin Premji  <npremji@redhat.com>
 
+	* TestExec.java (testTaskBlockExec): Changed to use StopEventLoopWhenProcRemoved.
+	(testProcBlockExec): Ditto.
+	
 	* Proc.java: Removed proc.ppid.
 	* TestLib.java: Removed proc.ppid.
 

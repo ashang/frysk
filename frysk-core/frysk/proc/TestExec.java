@@ -100,7 +100,7 @@ public class TestExec
 	assertTrue ("tmp file exists", tmpFile.stillExists ());
 
 	// Unblock the process, let it exit.
-	new StopEventLoopWhenChildProcRemoved ();
+	new StopEventLoopWhenProcRemoved (task.getProc().getPid());
 	task.requestUnblock (execBlockCounter);
 	assertRunUntilStop ("wait for exec program exit");
 
@@ -137,7 +137,7 @@ public class TestExec
 	assertRunUntilStop ("wait for exec");
 
 	// Set things up to stop once the exec task exits.
-	new StopEventLoopWhenChildProcRemoved ();
+	new StopEventLoopWhenProcRemoved (mainTask.getProc().getPid());
 	mainTask.requestUnblock (execBlockCounter);
 	assertRunUntilStop ("wait for exec program exit");
 
