@@ -1,5 +1,8 @@
 2007-01-15  Nurdin Premji  <npremji@redhat.com>
 
+	* Proc.java: Removed proc.ppid.
+	* TestLib.java: Removed proc.ppid.
+
 	* TestLib.java: Ran gnu formatter.
 	(isChildOf): Changed to use proc.ppid rather than proc.parent.
 	* Proc.java: Ran gnu formatter.

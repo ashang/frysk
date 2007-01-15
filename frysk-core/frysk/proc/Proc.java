@@ -52,7 +52,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
-import frysk.sys.proc.Stat;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -81,8 +80,6 @@ public abstract class Proc
     // XXX: This needs to be made on-demand.
     return this.parent;
   }
-
-  int ppid;
 
   final Host host;
 
@@ -177,10 +174,6 @@ public abstract class Proc
    */
   private Proc (ProcId id, Proc parent, Host host, Task creator)
   {
-    Stat stat = new Stat();
-    stat.refresh(id.id);
-    this.ppid = stat.ppid;
-
     this.host = host;
     this.id = id;
     this.parent = parent;

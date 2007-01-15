@@ -171,14 +171,15 @@ public class TestLib
     // If the parent's pid matches this processes pid, assume that
     // is sufficient. Would need a very very long running system
     // for that to not be the case.
-    if (proc.ppid == pid)
+    if (proc.getParent().getPid() == pid)
       {
         logger.log(Level.FINE, "isChildOf proc is child\n");
         return true;
       }
     logger.log(Level.FINE,
                "isChildOf proc {3} not child pid: {0} ppid: {1} parent: {2}\n",
-               new Object[] { new Integer(pid), new Integer(proc.ppid),
+               new Object[] { new Integer(pid),
+                             new Integer(proc.getParent().getPid()),
                              proc.getParent(), proc });
 
     return false;
