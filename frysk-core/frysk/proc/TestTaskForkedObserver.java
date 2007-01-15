@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 /**
@@ -46,61 +47,64 @@ package frysk.proc;
 public class TestTaskForkedObserver
     extends TestLib
 {
-    static int n = 10;
+  static int n = 10;
 
-    /**
-     * Test that the fork count from a sub-program that, in turn,
-     * creates lots and lots of sub-processes matches the expected.
-     */
-    public void testTaskForkedObserver ()
+  /**
+   * Test that the fork count from a sub-program that, in turn, creates lots and
+   * lots of sub-processes matches the expected.
+   */
+  public void testTaskForkedObserver ()
+  {
+    ProcCounter procCounter = new ProcCounter(true);
+
+    // Watch for any Task fork events, accumulating them as they
+    // arrive.
+    class ForkObserver
+        extends TaskObserverBase
+        implements TaskObserver.Forked
     {
-	ProcCounter procCounter = new ProcCounter (true);
-	new StopEventLoopWhenChildProcRemoved ();
+      int count;
 
-	// Watch for any Task fork events, accumulating them as they
-	// arrive.
-	class ForkObserver
-	    extends TaskObserverBase
-	    implements TaskObserver.Forked
-	{
-	    int count;
-	    public Action updateForkedParent (Task parent, Task offspring)
-	    {
-		count++;
-		parent.requestUnblock (this);
-		return Action.BLOCK;
-	    }
-	    public Action updateForkedOffspring (Task parent, Task offspring)
-	    {
-		// XXX: Is this legit?  Like knowing that the request
-		// won't be processed until the event loop is run
-		// again so that there's no race condition.
-		offspring.requestAddForkedObserver (this);
-		offspring.requestUnblock (this);
-		return Action.BLOCK;
-	    }
-	}
-	ForkObserver forkObserver = new ForkObserver ();
+      public Action updateForkedParent (Task parent, Task offspring)
+      {
+        count++;
+        parent.requestUnblock(this);
+        return Action.BLOCK;
+      }
 
-	// Run a program that forks wildly.
-	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	    {
-		getExecPrefix () + "funit-fib-fork",
-		Integer.toString (n)
-	    });
-	child.mainTask.requestAddForkedObserver (forkObserver);
-	child.resume ();
-	assertRunUntilStop ("run \"fork\" until exit");
-
-	Fibonacci fib = new Fibonacci (n);
-
-	assertEquals ("number of child processes created",
-		      fib.callCount, procCounter.added.size ());
-	assertEquals ("number of child processes destroyed",
-		      fib.callCount, procCounter.removed.size ());
-	assertEquals ("number of times fork observer added",
-		      fib.callCount, forkObserver.addedCount);
-	assertEquals ("number of forks (one less than number of processes)",
-		      fib.callCount - 1, forkObserver.count);
+      public Action updateForkedOffspring (Task parent, Task offspring)
+      {
+        // XXX: Is this legit? Like knowing that the request
+        // won't be processed until the event loop is run
+        // again so that there's no race condition.
+        offspring.requestAddForkedObserver(this);
+        offspring.requestUnblock(this);
+        return Action.BLOCK;
+      }
     }
+    ForkObserver forkObserver = new ForkObserver();
+
+    // Run a program that forks wildly.
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] {
+                                                                          getExecPrefix()
+                                                                              + "funit-fib-fork",
+                                                                          Integer.toString(n) });
+
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    child.mainTask.requestAddForkedObserver(forkObserver);
+    child.resume();
+    assertRunUntilStop("run \"fork\" until exit");
+
+    Fibonacci fib = new Fibonacci(n);
+
+    assertEquals("number of child processes created", fib.callCount,
+                 procCounter.added.size());
+    assertEquals("number of child processes destroyed", fib.callCount,
+                 procCounter.removed.size());
+    assertEquals("number of times fork observer added", fib.callCount,
+                 forkObserver.addedCount);
+    assertEquals("number of forks (one less than number of processes)",
+                 fib.callCount - 1, forkObserver.count);
+  }
 }

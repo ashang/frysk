@@ -1,5 +1,8 @@
 2007-01-15  Nurdin Premji  <npremji@redhat.com>
 
+	* TestTaskForkedObserver.java Ran GNU formatter.
+	(testTaskForkedObserver): Changed to use StopEventLoopWhenProcRemoved.
+	
 	* TestTaskClonedObserver.java: Ran GNU formatter. 
 	(testTaskCloneObserver): Changed to use StopEventLoopWhenProcRemoved.
 	
