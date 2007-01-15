@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import inua.util.Scanner;
@@ -52,138 +53,146 @@ import java.util.List;
 public class TestProcGet
     extends TestLib
 {
-    /**
-     * Compare the output from a program that just prints its AUXV (to
-     * a tempoary file) to that extracted from the same process using
-     * Proc.getAuxv().
-     */
-    public void testGetAuxv ()
-    {
-	TmpFile tmpFile = new TmpFile ();
-	new StopEventLoopWhenChildProcRemoved ();
-	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	    {
-		getExecPrefix () + "funit-print-auxv",
-		tmpFile.toString (),
-		"/dev/null"
-	    });
-	// Grab the AUXV from the process sitting at its entry point.
-	Auxv[] auxv = child.mainTask.proc.getAuxv ();
-	assertNotNull ("captured AUXV", auxv);
-	child.resume ();
-	assertRunUntilStop ("run \"auxv\" to completion");
+  /**
+   * Compare the output from a program that just prints its AUXV (to a tempoary
+   * file) to that extracted from the same process using Proc.getAuxv().
+   */
+  public void testGetAuxv ()
+  {
+    TmpFile tmpFile = new TmpFile();
 
-	// Compare the AUXV as printed against that extracted using
-	// Proc.getAuxv.
-	try {
-	    Scanner reader = new Scanner (tmpFile.getFile ());
-	    for (int i = 0; i < auxv.length; i++) {
-		if (auxv[i].type == 0)
-		    break;
-		long type = reader.readDecimalLong ();
-		reader.skipWhitespace ();
-		long val = reader.readDecimalLong ();
-		reader.skipWhitespace ();
-		assertEquals ("auxv[" + i + "].type", type, auxv[i].type);
-		assertEquals ("auxv[" + i + "].val", val, auxv[i].val);
-	    }
-	    assertTrue ("reached AUXV end-of-file", reader.endOfFile ());
-	}
-	catch (Exception e) {
-	    throw new RuntimeException (e);
-	}
-    }
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] {
+                                                                          getExecPrefix()
+                                                                              + "funit-print-auxv",
+                                                                          tmpFile.toString(),
+                                                                          "/dev/null" });
 
-    /**
-     * Check that .getCommand returns the command in an expected
-     * format.
-     */
-    public void testGetCommand ()
-    {
-	Child child = new AckDaemonProcess ();
-	Proc childProc = child.assertFindProcAndTasks();
-	assertEquals ("value of child's getCommand()", "funit-child",
-		      childProc.getCommand ());
-    }
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    // Grab the AUXV from the process sitting at its entry point.
+    Auxv[] auxv = child.mainTask.proc.getAuxv();
+    assertNotNull("captured AUXV", auxv);
+    child.resume();
+    assertRunUntilStop("run \"auxv\" to completion");
 
-    /**
-     * Check that .getTasks, for a two task process returns two tasks.
-     */
-    public void testGetTasks ()
-    {
-	Child child = new AckDaemonProcess (1);
-	Proc proc = child.assertFindProcAndTasks(); // and tasks
-	List tasks = proc.getTasks ();
+    // Compare the AUXV as printed against that extracted using
+    // Proc.getAuxv.
+    try
+      {
+        Scanner reader = new Scanner(tmpFile.getFile());
+        for (int i = 0; i < auxv.length; i++)
+          {
+            if (auxv[i].type == 0)
+              break;
+            long type = reader.readDecimalLong();
+            reader.skipWhitespace();
+            long val = reader.readDecimalLong();
+            reader.skipWhitespace();
+            assertEquals("auxv[" + i + "].type", type, auxv[i].type);
+            assertEquals("auxv[" + i + "].val", val, auxv[i].val);
+          }
+        assertTrue("reached AUXV end-of-file", reader.endOfFile());
+      }
+    catch (Exception e)
+      {
+        throw new RuntimeException(e);
+      }
+  }
 
-	assertEquals ("number of tasks", 2, tasks.size ());
+  /**
+   * Check that .getCommand returns the command in an expected format.
+   */
+  public void testGetCommand ()
+  {
+    Child child = new AckDaemonProcess();
+    Proc childProc = child.assertFindProcAndTasks();
+    assertEquals("value of child's getCommand()", "funit-child",
+                 childProc.getCommand());
+  }
 
-	// Find the main task.
-	Task mainTask = null;
-	for (Iterator i = tasks.iterator  (); i.hasNext (); ) {
-	    Task task = (Task) i.next ();
-	    if (proc.getPid () == task.getTid ()) {
-		// Only found once.
-		assertNull ("main task", mainTask);
-		mainTask = task;
-	    }
-	}
-	assertNotNull ("main task", mainTask);
-    }
+  /**
+   * Check that .getTasks, for a two task process returns two tasks.
+   */
+  public void testGetTasks ()
+  {
+    Child child = new AckDaemonProcess(1);
+    Proc proc = child.assertFindProcAndTasks(); // and tasks
+    List tasks = proc.getTasks();
 
-    /**
-     * Check that .getChildren, for this process with two children
-     * returns both of them.
-     */
-    public void testGetChildren ()
-    {
-	// Create two children.  The refreshes have the side effect of
-	// updating this processes proc list.
-	Proc[] child = new Proc[] {
-	    new DetachedAckProcess ().assertFindProcAndTasks(),
-	    new DetachedAckProcess ().assertFindProcAndTasks()
-	};
-	Proc self = host.getSelf ();
+    assertEquals("number of tasks", 2, tasks.size());
 
-	assertEquals ("number of children", 2, self.getChildren ().size ());
-	assertNotSame ("children", child[0], child[1]);
-	for (int i = 0; i < child.length; i++) {
-	    assertTrue ("this contains child " + i,
-			self.getChildren ().contains (child[i]));
-	}
-    }
+    // Find the main task.
+    Task mainTask = null;
+    for (Iterator i = tasks.iterator(); i.hasNext();)
+      {
+        Task task = (Task) i.next();
+        if (proc.getPid() == task.getTid())
+          {
+            // Only found once.
+            assertNull("main task", mainTask);
+            mainTask = task;
+          }
+      }
+    assertNotNull("main task", mainTask);
+  }
 
-    /**
-     * Check that getCmdLine returns the list of arguments that
-     * matches what was passed to a detached child.
-     */
-    public void testGetCmdLine ()
-    {
-	Child child = new AckDaemonProcess ();
-	String[] argv = child.getArgv ();
-	Proc proc = child.assertFindProcAndTasks();
-	String[] cmdLine = proc.getCmdLine ();
-	assertEquals ("cmdLine.length", argv.length, cmdLine.length);
-	for (int i = 0; i < argv.length; i++) {
-	    assertEquals ("cmdLine[" + i + "]", argv[i], cmdLine[i]);
-	}
-    }
+  /**
+   * Check that .getChildren, for this process with two children returns both of
+   * them.
+   */
+  public void testGetChildren ()
+  {
+    // Create two children. The refreshes have the side effect of
+    // updating this processes proc list.
+    Proc[] child = new Proc[] {
+                               new DetachedAckProcess().assertFindProcAndTasks(),
+                               new DetachedAckProcess().assertFindProcAndTasks() };
+    Proc self = host.getSelf();
 
-    /**
-     * Check that getExe returns the fully qualified path to the
-     * ack-daemon program.
-     */
-    public void testGetExe ()
-    {
-	Child child = new AckDaemonProcess ();
-	String[] argv = child.getArgv ();
-	String file;
-	try {
-	    file = new File (argv[0]).getCanonicalPath ();
-	}
-	catch (IOException e) {
-	    throw new RuntimeException (e);
-	}
-	Proc proc = child.assertFindProcAndTasks();
-	assertEquals ("exe", proc.getExe (), file);
-    }
+    assertEquals("number of children", 2, self.getChildren().size());
+    assertNotSame("children", child[0], child[1]);
+    for (int i = 0; i < child.length; i++)
+      {
+        assertTrue("this contains child " + i,
+                   self.getChildren().contains(child[i]));
+      }
+  }
+
+  /**
+   * Check that getCmdLine returns the list of arguments that matches what was
+   * passed to a detached child.
+   */
+  public void testGetCmdLine ()
+  {
+    Child child = new AckDaemonProcess();
+    String[] argv = child.getArgv();
+    Proc proc = child.assertFindProcAndTasks();
+    String[] cmdLine = proc.getCmdLine();
+    assertEquals("cmdLine.length", argv.length, cmdLine.length);
+    for (int i = 0; i < argv.length; i++)
+      {
+        assertEquals("cmdLine[" + i + "]", argv[i], cmdLine[i]);
+      }
+  }
+
+  /**
+   * Check that getExe returns the fully qualified path to the ack-daemon
+   * program.
+   */
+  public void testGetExe ()
+  {
+    Child child = new AckDaemonProcess();
+    String[] argv = child.getArgv();
+    String file;
+    try
+      {
+        file = new File(argv[0]).getCanonicalPath();
+      }
+    catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    Proc proc = child.assertFindProcAndTasks();
+    assertEquals("exe", proc.getExe(), file);
+  }
 }
