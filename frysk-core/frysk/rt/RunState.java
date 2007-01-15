@@ -219,7 +219,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     DwflLine line = null;
     try
       {
-       System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
+       //System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
         line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(
                                                                               task));
         //System.out.println()
@@ -749,7 +749,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-   System.out.println("UpdateExecuted " + task + " " + taskStepCount);
+   //System.out.println("UpdateExecuted " + task + " " + taskStepCount);
     if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
         switch (RunState.this.state)
