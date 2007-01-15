@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@
 // exception.
 package lib.opcodes.tests;
 
+import frysk.Config;
 import inua.eio.ByteBuffer;
-import frysk.imports.Build;
 
 public class DummyByteBuffer
   extends ByteBuffer 
@@ -51,7 +51,7 @@ public class DummyByteBuffer
   {
     super(0, 8);
 
-    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
+    if (Config.getTargetCpuXXX ().indexOf("powerpc") != - 1)
       {
 	bytes = new byte[]
 	  {
@@ -67,7 +67,7 @@ public class DummyByteBuffer
 	  };
 
       }
-    else if (Build.BUILD_ARCH.indexOf("_64") != - 1)
+    else if (Config.getTargetCpuXXX ().indexOf("_64") != - 1)
       {
 	bytes = new byte[]
 	  {

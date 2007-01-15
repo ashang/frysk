@@ -1,3 +1,8 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (brokenPpcXXX, brokenX8664XXX): Replace
+	Build.BUILD_ARCH with Config.getTargetCpuXXX.
+
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
 	* Runner.java: (runCases): Print out the number of successful runs if fail.

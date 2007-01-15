@@ -104,4 +104,18 @@ public class Config
      * The word size of the underlying architecture.
      */
     public static final native int getWordSize ();
+
+    /**
+     * Return the <tt>autoconf</tt>target_cpu</tt> specified when
+     * building frysk.
+     *
+     * XXX: This variable's value is not a reliable indicator of the
+     * system's architecture.  For instance, on an IA032 system, it
+     * could contain any of i386, i586, or i686.
+     *
+     * XXX: This code was folded in from frysk.*.Build.BUILD_ARCH when
+     * that file was deleted.  It is much more likely that code needs
+     * to know the arch family, and not some arbitrary string.
+     */
+    public static final native String getTargetCpuXXX ();
 }

@@ -1,3 +1,8 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Config.cxxin (getTargetCpuXXX): Implement.
+	* Config.java getTargetCpuXXX): Define.
+
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
 	* EventLogger.java: Changed to log files only created when specified by

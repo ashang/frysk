@@ -1,3 +1,9 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestOpcodes.java: Replace Build.BUILD_ARCH with
+	Config.getTargetCpuXXX.
+	* tests/DummyByteBuffer.java: Ditto.
+
 2006-09-18  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* Instruction.java (length): New member.

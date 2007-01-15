@@ -49,5 +49,4 @@ package @GEN_PACKAGENAME@;
 
 public class Build
 {
-	public static final String BUILD_ARCH = "@target_cpu@";
 }

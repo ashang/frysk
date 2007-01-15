@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ package frysk.proc;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import frysk.Config;
 
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
@@ -89,9 +91,9 @@ public class IsaFactory
 	  {
 	  case ElfEMachine.EM_386:
 	    {
-		// XXX: This should not be looking at frysk.core.Build
-		// when selecting the ISA.
-		if (frysk.core.Build.BUILD_ARCH.equals ("x86_64"))
+		// XXX: This should not be looking at the
+		// configuration target string when selecting the ISA.
+		if (Config.getTargetCpuXXX().equals ("x86_64"))
 		    return LinuxIa32On64.isaSingleton();
 		else
 		    return LinuxIa32.isaSingleton ();
@@ -99,10 +101,10 @@ public class IsaFactory
 	  case ElfEMachine.EM_PPC:
 	    {
 	      // Assume we do not build 32-bit frysk on ppc64.
-	      if (frysk.core.Build.BUILD_ARCH.equals("powerpc64"))
-		return LinuxPPC32On64.isaSingleton ();
-	      else
-		return LinuxPPC.isaSingleton ();
+		if (Config.getTargetCpuXXX ().equals("powerpc64"))
+		    return LinuxPPC32On64.isaSingleton ();
+		else
+		    return LinuxPPC.isaSingleton ();
 	    }
 	  case ElfEMachine.EM_PPC64:
 	    return LinuxPPC64.isaSingleton ();

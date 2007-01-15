@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@
 
 package frysk.junit;
 
+import frysk.Config;
 import frysk.sys.Uname;
-import frysk.imports.Build;
 
 /**
  * <em>frysk</em> specific extension to the JUnit test framework's
@@ -73,7 +73,7 @@ public class TestCase
    */
   protected static boolean brokenPpcXXX (int bug)
   {
-    if (Build.BUILD_ARCH.indexOf ("powerpc") != - 1) {
+      if (Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1) {
 	return brokenXXX (bug);
     }
     return false;
@@ -85,7 +85,7 @@ public class TestCase
    */
   protected static boolean brokenX8664XXX (int bug)
   {
-    if (Build.BUILD_ARCH.indexOf ("_64") != - 1) {
+      if (Config.getTargetCpuXXX ().indexOf ("_64") != - 1) {
 	return brokenXXX (bug);
     }
     return false;

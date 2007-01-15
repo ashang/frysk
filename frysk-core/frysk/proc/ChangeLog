@@ -1,3 +1,8 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* IsaFactory.java: Replace Build.BUILD_ARCH with
+	Config.getTargetCpuXXX.
+
 2007-01-15  Mark Wielaard  <mark@klomp.org>
 
 	Fixes bug #3240

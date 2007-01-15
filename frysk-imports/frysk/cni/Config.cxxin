@@ -102,3 +102,9 @@ frysk::Config::getWordSize ()
 {
   return sizeof (long) * 8;
 }
+
+jstring
+frysk::Config::getTargetCpuXXX ()
+{
+  return JvNewStringUTF ("@target_cpu@");
+}

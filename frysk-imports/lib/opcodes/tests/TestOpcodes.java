@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,11 +44,11 @@ import inua.eio.ByteBuffer;
 
 import java.util.LinkedList;
 
+import frysk.Config;
 import frysk.junit.TestCase;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 import lib.opcodes.OpcodesException;
-import frysk.imports.Build;
 
 public class TestOpcodes
   extends TestCase
@@ -76,10 +76,8 @@ public class TestOpcodes
 
     String[] insts = new String[0];
 
-    //boolean is64 = Build.BUILD_ARCH.indexOf("_64") != - 1;
-
     // for powerpc
-    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
+    if (Config.getTargetCpuXXX ().indexOf("powerpc") != - 1)
       {
 	insts = new String[]
 	  { 
@@ -95,7 +93,7 @@ public class TestOpcodes
 	  };
       }
     // for X86_64
-    else if (Build.BUILD_ARCH.indexOf("_64") != - 1)
+    else if (Config.getTargetCpuXXX ().indexOf("_64") != - 1)
       {
 
         insts = new String[] { "add    %al,(%rcx)",
