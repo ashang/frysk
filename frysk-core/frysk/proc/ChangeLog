@@ -1,5 +1,9 @@
 2007-01-15  Nurdin Premji  <npremji@redhat.com>
 
+	* TestExec.java: Ran GNU formatter.
+	* TestTaskTerminateObserver.java: Ran GNU formatter.
+	 (check):Changed to use StopEventLoopWhenProcRemoved.
+	 	
 	* TestExec.java (testTaskBlockExec): Changed to use StopEventLoopWhenProcRemoved.
 	(testProcBlockExec): Ditto.
 	
