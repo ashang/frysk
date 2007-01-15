@@ -219,7 +219,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     DwflLine line = null;
     try
       {
-       //System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
+       System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
         line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(
                                                                               task));
         //System.out.println()
@@ -280,15 +280,21 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     //this.state = STEP_OVER;
     this.state = STEP_OVER_LINE_STEP;
-    this.breakpoint = new Breakpoint(lastFrame.getOuter().getAddress());
+    this.breakpoint = new Breakpoint(lastFrame.getAddress());
     this.lastFrame = lastFrame;
     //this.numSteppingTasks = tasks.size();
     this.taskStepCount =  1;
     
-    Task t = lastFrame.getTask();
-    t.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
-    System.out.println("Unblock");
-    t.requestDeleteInstructionObserver(this);
+    //Task t = lastFrame.getTask();
+    Iterator i = tasks.iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) i.next();
+        t.requestAddCodeObserver(breakpoint, lastFrame.getAddress());
+        t.requestDeleteInstructionObserver(this);
+        System.out.println("Unblocking " + t);
+      }
+//    t.requestDeleteInstructionObserver(this);
     //t.requestUnblock(this);
     
 //    Iterator i = tasks.iterator();
@@ -743,7 +749,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-   //System.out.println("UpdateExecuted " + task + " " + taskStepCount);
+   System.out.println("UpdateExecuted " + task + " " + taskStepCount);
     if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
       {
         switch (RunState.this.state)
@@ -939,14 +945,17 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
     public Action updateHit (Task task, long address)
     {
-      System.out.println("Hit " + address + " | " + this.address);
+      System.out.println("Hit " + address + " | " + this.address + " " + task);
       if (address != this.address)
         {
           System.out.println("Hit wrong address!");
           return Action.CONTINUE;
         }
       else
-        cleanUpBreakPoint(task);
+        {
+          cleanUpBreakPoint(task);
+          task.requestDeleteCodeObserver(this, address);
+        }
 
       triggered++;
       return Action.CONTINUE;

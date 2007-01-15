@@ -1,5 +1,8 @@
 2007-01-15  Mike Cvet  <mcvet@redhat.com>
 
+	* RunState.java (Breakpoint.updateHit): Deletes the breakpoint once it
+	has been hit.
+	(setUpStepOver): Apply the breakpoint Observer to each task.
 	* StackFrame.java (toPrint): Re-arranged some code to prevent possible
 	NullPointerExceptions.
 
