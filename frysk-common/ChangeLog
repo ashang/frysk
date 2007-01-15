@@ -1,5 +1,10 @@
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (Build.javain): Delete generation of variables
+	containing Build.javain.
+	* Build.javain: Delete.
+	* Makefile.rules (Build.java): Delete rule.
+
 	* Build.javain (BUILD_ARCH): Delete.
 	
 	* Build.javain (ABS_SRCDIR): Delete.

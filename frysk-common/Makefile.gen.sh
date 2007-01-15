@@ -405,14 +405,6 @@ EOF
 
 
 
-cat <<EOF
-EXTRA_DIST += common/Build.javain
-${nodist_lib_sources} += ${GEN_SOURCENAME}/Build.java
-${GEN_DIRNAME}.jar: ${GEN_SOURCENAME}/Build.java
-BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
-EOF
-
-
 # Test runner program.
 
 cat <<EOF
