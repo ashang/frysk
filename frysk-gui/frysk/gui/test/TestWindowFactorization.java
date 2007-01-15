@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.gui.test;
 
+import frysk.junit.Paths;
 import frysk.junit.TestCase;
 
 import frysk.proc.Task;
@@ -48,7 +49,6 @@ import frysk.gui.register.RegisterWindow;
 import frysk.proc.Manager;
 import frysk.proc.DummyProc;
 import frysk.proc.DummyTask;
-import frysk.gui.Build;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
 
@@ -57,16 +57,6 @@ import org.gnu.gtk.Gtk;
 public class TestWindowFactorization
     extends TestCase
 {
-
-  public String[] gladePaths = { "glade/", "frysk/gui/glade/",
-                                "../../frysk/frysk-gui/frysk/gui/glade/",
-                                "/home/mcvet/workspace/build/frysk-gui/../../frysk/frysk-gui/frysk/gui/glade/" };
-
-  String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
-                                       + "images/" };
-  
-  private static final String BASE_PATH = "frysk/gui/";
-
   private Task theTask = null;
 
   private LibGlade gladem = null;
@@ -80,12 +70,15 @@ public class TestWindowFactorization
   public void setUp ()
   {
     Gtk.init(new String[] {});
-    IconManager.setImageDir(imagePaths);
+    IconManager.setImageDir(new String[] { Paths.getImagePrefix () });
     IconManager.loadIcons();
     IconManager.useSmallIcons();
   }
 
   public void testWindowFactorization ()
+      throws org.gnu.glade.GladeXMLException,
+	     java.io.FileNotFoundException,
+	     java.io.IOException
   {
     DummyProc dp = new DummyProc();
     DummyTask dt = new DummyTask(dp);
@@ -118,40 +111,16 @@ public class TestWindowFactorization
   }
 
   public void initGlades ()
+      throws org.gnu.glade.GladeXMLException,
+	     java.io.FileNotFoundException,
+	     java.io.IOException
   {
-    int i = 0;
-    for (; i < gladePaths.length; i++)
-      {
-        try
-          {
-            gladem = new LibGlade(gladePaths[i] + "/" + "memorywindow.glade",
-                                  null);
-            glader = new LibGlade(gladePaths[i] + "/" + "registerwindow.glade",
-                                  null);
-          }
-        catch (Exception e)
-          {
-            if (i < gladePaths.length - 1)
-              // If we don't find the glade file, look at the next file
-              continue;
-            else
-              {
-                if (i < gladePaths.length - 1)
-                  // If we don't find the glade file, look at the next file
-                  continue;
-                else
-                  fail("GLADE FAILED");
-
-              }
-          }
-        // If we've found it, break
-        break;
-      }
-
-    MemoryWindow mw = new MemoryWindow(gladem);
-    mw.getClass();
-    RegisterWindow rw = new RegisterWindow(glader);
-    rw.getClass();
+      gladem = new LibGlade (Paths.getGladePrefix () + "/" + "memorywindow.glade", null);
+      glader = new LibGlade (Paths.getGladePrefix () + "/" + "registerwindow.glade", null);
+      MemoryWindow mw = new MemoryWindow(gladem);
+      mw.getClass();
+      RegisterWindow rw = new RegisterWindow(glader);
+      rw.getClass();
   }
 
   public void setTasks ()

@@ -40,7 +40,7 @@
 
 package frysk.gui.test;
 
-import frysk.gui.Build;
+import frysk.junit.Paths;
 import frysk.junit.TestCase;
 import frysk.gui.common.IconManager;
 import org.gnu.gtk.IconFactory;
@@ -54,18 +54,13 @@ public class TestIconManager
 
   IconFactory defaultSet = null;
 
-  private static final String BASE_PATH = "frysk/gui/";
-
-  String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
-                                       + "images/" };
-
   public void testIconManagerLoad ()
   {
     Gtk.init(new String[] {});
 
     // Start loading factory. Need to improve this test as we are
     // basically looking for a stacktrace.
-    IconManager.setImageDir(imagePaths);
+    IconManager.setImageDir(new String[] { Paths.getImagePrefix () });
     IconManager.loadIcons();
     IconManager.useSmallIcons();
   }

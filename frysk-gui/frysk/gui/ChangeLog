@@ -1,3 +1,15 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* test/TestIconManager.java (BASE_PATH, imagePaths): Delete,
+	eliminate reference to Build .ABS_SRCDIR.
+	(testIconManagerLoad): Update, use frysk .junit .Paths
+	.getImagePrefix.
+	* test/TestWindowFactorization.java (gladePaths, BASE_PATH)
+	(imagePaths): Delete, eliminate Build .ABS_SRCDIR.
+	(initGlades): Simplify., use frysk .junit .Paths .getGladePrefix.
+	(setUp): Use frysk .junit .Paths .getImagePrefix.
+	(testWindowFactorization): Add throw list.
+
 2007-01-15  Mike Cvet  <mcvet@redhat.com>
 
 	* Gui.java (gui): Added a new overloaded gui() method, used to 

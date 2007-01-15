@@ -1,5 +1,7 @@
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Build.javain (ABS_SRCDIR): Delete.
+	
 	* Build.javain (SRCDIR): Delete.
 
 2007-01-10  Andrew Cagney  <cagney@redhat.com>
