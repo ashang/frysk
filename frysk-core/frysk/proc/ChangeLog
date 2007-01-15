@@ -1,6 +1,9 @@
 2007-01-15  Nurdin Premji  <npremji@redhat.com>
 
-	* TestProcGet.java: Ran gnu formatter.
+	* TestTaskClonedObserver.java: Ran GNU formatter. 
+	(testTaskCloneObserver): Changed to use StopEventLoopWhenProcRemoved.
+	
+	* TestProcGet.java: Ran GNU formatter.
 	(testGetAuxv): Changed to use StopEventLoopWhenProcRemoved.
 	
 	* TestExec.java: Ran GNU formatter.

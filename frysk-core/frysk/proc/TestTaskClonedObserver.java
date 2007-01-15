@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 /**
@@ -46,54 +47,54 @@ package frysk.proc;
 public class TestTaskClonedObserver
     extends TestLib
 {
-    static final int fibCount = 10;
+  static final int fibCount = 10;
 
-    /**
-     * Test that Task.requestAddObserver (Clone) can be used to track
-     * all clones by a child process.
-     *
-     * This creates a program that, in turn, creates lots and lots of
-     * tasks.  It then checks that the number of task create and
-     * delete events matches the expected.
-     */
-    public void testTaskCloneObserver ()
+  /**
+   * Test that Task.requestAddObserver (Clone) can be used to track all clones
+   * by a child process. This creates a program that, in turn, creates lots and
+   * lots of tasks. It then checks that the number of task create and delete
+   * events matches the expected.
+   */
+  public void testTaskCloneObserver ()
+  {
+
+    class CloneCounter
+        extends TaskObserverBase
+        implements TaskObserver.Cloned
     {
-	new StopEventLoopWhenChildProcRemoved ();
+      int count;
 
-	class CloneCounter
-	    extends TaskObserverBase
-	    implements TaskObserver.Cloned
-	{
-	    int count;
-	    public Action updateClonedParent (Task parent, Task offspring)
-	    {
-		count++;
-		parent.requestUnblock (this);
-		return Action.BLOCK;
-	    }
-	    public Action updateClonedOffspring (Task parent,
-						 Task offspring)
-	    {
-		offspring.requestAddClonedObserver (this);
-		offspring.requestUnblock (this);
-		return Action.BLOCK;
-	    }
-	}
-	CloneCounter cloneCounter = new CloneCounter ();
+      public Action updateClonedParent (Task parent, Task offspring)
+      {
+        count++;
+        parent.requestUnblock(this);
+        return Action.BLOCK;
+      }
 
-	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	    {
-		getExecPrefix () + "funit-fib-clone",
-		Integer.toString (fibCount)
-	    });
-	child.mainTask.requestAddClonedObserver (cloneCounter);
-	child.resume ();
-	assertRunUntilStop ("run \"clone\" to exit");
-
- 	Fibonacci fib = new Fibonacci (fibCount);
-	// The first task, included in fib.callCount isn't included in
-	// the clone count.
-	assertEquals ("number of clones", fib.callCount - 1,
-		      cloneCounter.count);
+      public Action updateClonedOffspring (Task parent, Task offspring)
+      {
+        offspring.requestAddClonedObserver(this);
+        offspring.requestUnblock(this);
+        return Action.BLOCK;
+      }
     }
+    CloneCounter cloneCounter = new CloneCounter();
+
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] {
+                                                                          getExecPrefix()
+                                                                              + "funit-fib-clone",
+                                                                          Integer.toString(fibCount) });
+
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+
+    child.mainTask.requestAddClonedObserver(cloneCounter);
+    child.resume();
+    assertRunUntilStop("run \"clone\" to exit");
+
+    Fibonacci fib = new Fibonacci(fibCount);
+    // The first task, included in fib.callCount isn't included in
+    // the clone count.
+    assertEquals("number of clones", fib.callCount - 1, cloneCounter.count);
+  }
 }
