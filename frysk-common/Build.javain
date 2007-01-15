@@ -2,7 +2,7 @@
 
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ package @GEN_PACKAGENAME@;
 
 public class Build
 {
-	public static final String SRCDIR = "@srcdir@";
 	public static final String ABS_SRCDIR = "@abs_srcdir@";
 	public static final String BUILD_ARCH = "@target_cpu@";
 }

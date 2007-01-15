@@ -1,3 +1,7 @@
+2007-01-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Build.javain (SRCDIR): Delete.
+
 2007-01-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (.uu, .bz2.uu): Fix previous commit, only
