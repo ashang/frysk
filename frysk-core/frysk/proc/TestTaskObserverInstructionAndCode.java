@@ -43,9 +43,6 @@ public class TestTaskObserverInstructionAndCode extends TestLib
 {
   public void testInstructionAndCode()
   {
-    if (brokenXXX(3676))
-      return;
-
     // Create busy child.
     Child child = new AckDaemonProcess(true);
     Task task = child.findTaskUsingRefresh (true);
@@ -91,7 +88,8 @@ public class TestTaskObserverInstructionAndCode extends TestLib
     task.requestAddCodeObserver(code, address);
     instr.setContinue(true);
     task.requestAddInstructionObserver(instr);
-    // XXX - and here the inferior crashes - bug #3500 ?
+
+    // And here the inferior used to crash - bug #3676
     assertRunUntilStop("add both then wait for block");
 
     // Verify the code observer got hit.

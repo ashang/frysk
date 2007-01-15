@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -234,7 +234,7 @@ extends LinuxIa32
   public LinuxIa32On64() 
   {
     super();
-    // TODO: floating point and debug registers
+    // TODO: floating point
     final Register[] regDefs = new Register[] 
       { new IndirectRegister("eax", "rax"),
 	new IndirectRegister("ebx", "rbx"),
@@ -272,6 +272,11 @@ extends LinuxIa32
       {
 	String fpName = "xmm" + i;
 	registerMap.put(fpName, new IndirectRegister(fpName, fpName));
+      }
+    for (int i = 0; i < 8; i++)
+      {
+	String dbName = "d" + i;
+	registerMap.put(dbName, new IndirectRegister(dbName, dbName));
       }
   }
 

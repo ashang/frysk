@@ -283,10 +283,15 @@ class IsaX8664 implements Isa
    * Reports whether or not the given Task just did a step of an
    * instruction.  This can be deduced by examining the single step
    * flag (BS bit 14) in the debug status register (DR6) on x86_64.
+   * This resets the stepping flag.
    */
   public boolean isTaskStepped(Task task)
   {
-    return (getRegisterByName("d6").get(task) & 0x4000) != 0;
+    Register d6 = getRegisterByName("d6");
+    long value = d6.get(task);
+    boolean stepped = (value & 0x4000) != 0;
+    d6.put(task, value & ~0x4000);
+    return stepped;
   }
 
   public Syscall[] getSyscallList ()

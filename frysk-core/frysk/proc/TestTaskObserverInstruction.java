@@ -56,16 +56,12 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("added", instr1.added);
     assertEquals("hit", 1, instr1.hit);
 
-    assertFalse("!isa.isTaskStepped()", task.getIsa().isTaskStepped(task));
-
     task.requestUnblock(instr1);
     assertRunUntilStop("unblock self and hit");
     
     assertFalse("deleted", instr1.deleted);
     assertTrue("added", instr1.added);
     assertEquals("hit", 2, instr1.hit);
-
-    assertTrue("isa.isTaskStepped()", task.getIsa().isTaskStepped(task));
 
     InstructionObserver instr2 = new InstructionObserver();
 

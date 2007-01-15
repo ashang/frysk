@@ -234,7 +234,8 @@ public class Breakpoint
           
     try
       {
-        set(task);
+	if (isInstalled())
+	  set(task);
       }
     catch (TaskException e)
       {
@@ -249,6 +250,17 @@ public class Breakpoint
       }
     
     stepping = false;
+  }
+
+  /**
+   * Returns true if break point is installed and not yet removed.
+   */
+  public boolean isInstalled()
+  {
+    synchronized(installed)
+      {
+	return this.equals(installed.get(this));
+      }
   }
 
   // Utility methods for keeping the map of breakpoints.
@@ -270,6 +282,6 @@ public class Breakpoint
   public String toString()
   {
     return this.getClass().getName() + "[proc=" + proc
-      + ", address=" + Long.toHexString(address) + "]";
+      + ", address=0x" + Long.toHexString(address) + "]";
   }
 }
