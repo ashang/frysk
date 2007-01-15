@@ -1,5 +1,7 @@
 2007-01-15  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceView.java (scrollToLine): Edited scrolling parameter for more
+	sane window scrolling.
 	* SourceWindow.java (SourceWindow): Added.
 	(finishSourceWin): Added some code to remove any AttachedObservers.
 	* SourceWindowFactory.java (AttachedObserver): Added, re: #3584.

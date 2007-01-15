@@ -221,7 +221,7 @@ public class SourceView
    */
   public void scrollToLine (int lineNum)
   {
-    this.scrollToIter(this.buf.getLineIter(lineNum - 1), 0.35);
+    this.scrollToIter(this.buf.getLineIter(lineNum - 1), 0.10);
   }
 
   /**
