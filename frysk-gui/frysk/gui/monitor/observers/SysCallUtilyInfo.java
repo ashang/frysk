@@ -158,7 +158,7 @@ public class SysCallUtilyInfo {
 			return "**** Error: " + e1.getMessage();
 		}
 
-		returnCall.append(syscall.getName() + " returns with value ");
+		returnCall.append(syscall.getName() + " r= ");
 
 		switch (syscall.argList.charAt(0)) {
 		case 'a':

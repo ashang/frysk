@@ -93,6 +93,7 @@ public class EventViewer2 extends VBox {
        eventList.itemAdded.addObserver(drawObserver);
        eventList.itemRemoved.addObserver(drawObserver);
        
+       this.getAccessible().setName("EventViewer");
 	}
 
 //	public boolean exposeEvent(ExposeEvent event) {

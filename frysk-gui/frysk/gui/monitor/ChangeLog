@@ -1,3 +1,14 @@
+2007-01-16  sami wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskSyscallObserver.java: Syscall events are now name
+	after their events instead of Syscall{Enter/Exit}.
+	* eventviewer/TimeLine.java: Increase spacing between event
+	ticks.
+	Added Ally info.
+	* eventviewer/EventViewer2.java: Added a11y info.
+	* eventviewer/ProcBox.java: Ditto.
+	* eventviewer/Event.java: Decreased text slant.
+
 2007-01-10  sami wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/TaskTimeLine.java: Added frysk copyright notice.

@@ -144,12 +144,12 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		// Sami why do we need to call enteringGenericActionPoint as well as enteringTaskActionPoint?
 		//this.enteringGenericActionPoint.runActions(this);
         // ^ this runs all generic actions (actions that take no arguments)
-        // that the user wants to upon entry to the system call 
+        // ^ that the user wants to upon entry to the system call 
 		this.enteringTaskActionPoint.runActions(task);
 
         //add events to event manager
-        EventManager.theManager.addEvent(new Event("Syscall Enter", SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
- 	}
+        EventManager.theManager.addEvent(new Event("" + SysCallUtilyInfo.getCallInfoFromSyscall(task), SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    }
 
 	private boolean runEnterFilters(Task task) {
 		return this.enteringTaskFilterPoint.filter(task);
@@ -166,7 +166,6 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	protected void exitBottomHalf(Task task) {
-		
 		
 		this.setInfo(this.getName()+" PID: " + task.getProc().getPid() + " TID: " + task.getTid() + 
 				" Event: Leaving Syscall -  " + 
@@ -185,7 +184,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.exitingTaskActionPoint.runActions(task);
 		
         //add events to event manager
-        EventManager.theManager.addEvent(new Event("Syscall Exit", SysCallUtilyInfo.getReturnInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+        EventManager.theManager.addEvent(new Event("" + SysCallUtilyInfo.getReturnInfoFromSyscall(task), SysCallUtilyInfo.getReturnInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
     }
 
 	private boolean runExitFilters(Task task) {

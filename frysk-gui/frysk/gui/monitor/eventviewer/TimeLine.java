@@ -41,11 +41,19 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
+import org.gnu.atk.AtkObject;
+import org.gnu.atk.ObjectFactory;
+import org.gnu.atk.Registry;
+import org.gnu.atk.RelationType;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
+import org.gnu.glib.GObject;
+import org.gnu.glib.Type;
 import org.gnu.gtk.DrawingArea;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
@@ -55,7 +63,7 @@ public abstract class TimeLine
 {
   
   static int eventIndentation = 0;
-  static int eventSpacing = 15;
+  static int eventSpacing = 30;
   
   protected int startIndex;
 //  protected int endIndex;
@@ -63,7 +71,7 @@ public abstract class TimeLine
   
   public TimeLine(String label){
     super();
-    
+    this.getAccessible().setName(label+"TimeLine");
     this.label = label;
     
   this.addListener((ExposeListener)this);
@@ -78,6 +86,23 @@ public abstract class TimeLine
     
     this.setDrawPeriod(0, 10);
     this.setMinimumSize(0 , 20);
+    
+    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        Event event = (Event)object;
+        Registry registry = new Registry();
+        ObjectFactory factory = registry.getFactory(Type.OBJECT());
+        AtkObject atkObject = factory.createAccessible(new GObject(Type.OBJECT()));
+        
+        System.out.println(".update() atkObject " + atkObject);
+        atkObject.setName(event.getName());
+        atkObject.setParent(TimeLine.this.getAccessible());
+        atkObject.addRelationship(RelationType.EMBEDS, atkObject);
+      }
+    });
+    
   }
   
   public boolean exposeEvent(ExposeEvent exposeEvent) {

@@ -48,16 +48,20 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 public class Event extends EventViewerWidget
 {
-
+ 
   String label;
   GuiTask guiTask;
   ObserverRoot observer;
   private int index;
   
+  private int textSlant;
+  
   public Event(String name, String tooltip, GuiTask guiTask, ObserverRoot observer){
     super(name, tooltip);
+  
     this.guiTask = guiTask;
     this.label = new String();
+    this.textSlant = 25;
   }
   
   public GuiTask getGuiTask(){
@@ -101,12 +105,12 @@ public class Event extends EventViewerWidget
   public void drawText(GdkCairo cairo){
     cairo.save();
     
-//  Text over each event
+    //  Text over each event
     cairo.setSourceColor(Color.BLACK);
     cairo.newPath();
-    //cairo.moveTo(this.getX(), this.getY() - this.getHeight()/2 - 10);
-    cairo.moveTo(this.getX(), this.getY());
-    cairo.rotate(Math.PI/-4); // 45 degrees counter-clockwise
+    
+    cairo.moveTo(this.getX(), this.getY()-5);
+    cairo.rotate(-Math.PI*textSlant/180);
     cairo.showText(this.getName());
     cairo.stroke();
     

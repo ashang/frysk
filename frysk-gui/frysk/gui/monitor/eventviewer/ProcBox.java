@@ -63,8 +63,6 @@ public class ProcBox
   VBox timeLinesVBox;
   VBox labelsVBox;
   
-//  private Histogram histogram;
-//  
 //  private static final int TIMELINE_LEFT_MARGIN = 5;
 //  private static final int TIMELINE_RIGHT_MARGIN = 5;
 //  private static final int TIMELINE_SPACING = 16;
@@ -75,8 +73,8 @@ public class ProcBox
     super();
     this.setBorderWidth(6);
     this.mainGutTaskAdded = false;
-//    this.histogram = new Histogram(this.getName(), this.getToolTip());
-//    this.addChild(histogram);
+
+    this.getAccessible().setName(guiProc.getExecutableName()+"ProcBox");
     this.timeLinesVBox = new VBox(false,0);
     this.labelsVBox = new VBox(false,0);
     
@@ -175,6 +173,7 @@ public class ProcBox
     //this.packEnd(taskTimeLine, true, true, 0);
     
     Label label = new Label(taskTimeLine.getLabel());
+    label.getAccessible().setName(label.getName());
     this.timeLinesVBox.packStart(taskTimeLine, true, true, 0);
     this.labelsVBox.packStart(new Label(taskTimeLine.getLabel()), true, true, 0);
     SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
