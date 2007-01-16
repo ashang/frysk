@@ -47,9 +47,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 //import frysk.proc.Action;
+import frysk.proc.Action;
 import frysk.proc.MachineType;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.TaskObserver;
 //import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
@@ -93,6 +95,8 @@ public class TestStepping extends TestLib
   
   private LockObserver lock;
   
+  private AttachedObserver attachedObserver;
+  
   
   public void testRecursiveLineStepping ()
   {
@@ -130,9 +134,6 @@ public class TestStepping extends TestLib
   public void testASMStepping ()
   {
 
-    if (brokenXXX(3767))
-      return;
-    
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
       {
@@ -151,17 +152,13 @@ public class TestStepping extends TestLib
     runState = new RunState();
     runState.addObserver(lock);
     
-    AttachedSyscallDaemonProcess process = new AttachedSyscallDaemonProcess(new String[] { Paths.getExecPrefix ()
-        + "/funit-rt-asmstepper" });
+    String[] cmd = new String[1];
+    cmd[0] = Paths.getExecPrefix() + "/funit-rt-asmstepper";
     
-    myAsmTask = process.findTaskUsingRefresh(true);
-    myProc = myAsmTask.getProc();
-    assertNotNull(myProc);
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
     
-    runState.setProc(myProc);
-    process.deleteObservers();
     assertRunUntilStop("Attempting to add instructionObserver");
-    
   }
   
   
@@ -217,14 +214,11 @@ public class TestStepping extends TestLib
   
   public synchronized void stepAssertions (LinkedList tasks)
   {
-   //System.out.println("Test.steAssertions " + tasks.size());
+//   System.out.println("Test.stepAssertions " + tasks.size());
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
-        
         Task task = (Task) i.next();
-        
-
         myTask = task;
         DwflLine line = null;
         try
@@ -269,7 +263,7 @@ public class TestStepping extends TestLib
         
         int prev = ((Integer) this.lineMap.get(task)).intValue();
        
-        //System.out.println("About to assert");
+//        System.out.println("About to assert " + prev + " " + lineNum);
        if (lineNum == 244 || lineNum == 0)
          {
            continue;
@@ -418,6 +412,60 @@ public class TestStepping extends TestLib
                 break;
               }
           }
+        else if (testState == ASM_INSTRUCTION_STEP)
+          {
+            switch (prev)
+            {
+              case 0:
+                break;
+              
+              case 53:
+                assertEquals(54, lineNum);
+                break;
+              case 54:
+                assertEquals(55, lineNum);
+                break;
+              case 55:
+                assertEquals(56, lineNum);
+                break;
+              case 56:
+                assertTrue(lineNum == 56 || lineNum == 57);
+                break;
+              case 57:
+                assertEquals(58, lineNum);
+                break;
+              case 58:
+                assertTrue(lineNum == 58 || lineNum == 59);
+                break;
+              case 59:
+                assertEquals(60, lineNum);
+                break;
+              case 60:
+                assertEquals(61, lineNum);
+                break;
+              case 61:
+                assertEquals(62, lineNum);
+                break;
+              case 62:
+                assertEquals(63, lineNum);
+                break;
+              case 63:
+                assertEquals(64, lineNum);
+                break;
+              case 64:
+                assertEquals(65, lineNum);
+                break;
+              case 65:
+                assertEquals(66, lineNum);
+                break;
+              case 66:
+                assertEquals(53, lineNum);
+                break;
+                
+                default:
+                  break;
+            }
+          }
         this.lineMap.put(task, new Integer(lineNum));
       }
     //System.out.println("After assertions");
@@ -438,6 +486,32 @@ public class TestStepping extends TestLib
         Manager.eventLoop.requestStop();
         return;
       }
+  }
+  
+  protected class AttachedObserver implements TaskObserver.Attached
+  {
+    public void addedTo (Object o)
+    {
+      
+    }
+    
+    public Action updateAttached (Task task)
+    {
+      myAsmTask = task;
+      myProc = task.getProc();
+      runState.setProc(myProc);
+      return Action.CONTINUE;
+    }
+    
+    public void addFailed  (Object observable, Throwable w)
+    {
+      
+    }
+    
+    public void deletedFrom (Object o)
+    {
+      
+    }
   }
   
   class LockObserver implements Observer
@@ -465,6 +539,10 @@ public class TestStepping extends TestLib
           if (initial == true)
             {
               //System.out.println("initial");
+              
+              if (attachedObserver != null)
+                myAsmTask.requestDeleteAttachedObserver(attachedObserver);
+              
               initial = false;
               setUpTest();
               return;

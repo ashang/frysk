@@ -48,7 +48,7 @@ main:
 	MOVE $1, GEN_REG_2
 	MOVE $2, GEN_REG_3
 	MOVE $3, GEN_REG_4
-	INTERRUPT $0x80
+//	INTERRUPT $0x80
 loop:
 	NO_OP
 	NO_OP
