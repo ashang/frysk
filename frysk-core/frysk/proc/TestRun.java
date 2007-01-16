@@ -37,122 +37,121 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 /**
- * Check that a program can be run to completion.
- *
- * A scratch file is created.  The program "rm -f TMPFILE" is then
- * run.  That the tmp file has been removed is then checked.
+ * Check that a program can be run to completion. A scratch file is created. The
+ * program "rm -f TMPFILE" is then run. That the tmp file has been removed is
+ * then checked.
  */
 
 public class TestRun
     extends TestLib
 {
-    /**
-     * Check that a free running sub-process can be created.
-     */
-    public void testCreateAttachedContinuedProc ()
+  /**
+   * Check that a free running sub-process can be created.
+   */
+  public void testCreateAttachedContinuedProc ()
+  {
+    TmpFile tmpFile = new TmpFile();
+    assertNotNull("temporary file", tmpFile);
+
+    // Add an observer that counts the number of proc create
+    // events.
+    ProcCounter procCounter = new ProcCounter(true);
+
+    // Observe TaskObserver.Attached events; when any occur
+    // indicate that the curresponding task should continue.
+    class TaskCreatedContinuedObserver
+        extends TaskObserverBase
+        implements TaskObserver.Attached
     {
-	TmpFile tmpFile = new TmpFile ();
-	assertNotNull ("temporary file", tmpFile);
+      final TaskSet attachedTasks = new TaskSet();
 
-	// Add an observer that counts the number of proc create
-	// events.
-	ProcCounter procCounter = new ProcCounter (true);
+      int tid;
 
-	// Once a proc destroyed has been seen stop the event loop.
-	new StopEventLoopWhenChildProcRemoved ();
-
-	// Observe TaskObserver.Attached events; when any occur
-	// indicate that the curresponding task should continue.
-	class TaskCreatedContinuedObserver
-	    extends TaskObserverBase
-	    implements TaskObserver.Attached
-	{
-	    final TaskSet attachedTasks = new TaskSet ();
-	    public Action updateAttached (Task task)
-	    {
-		attachedTasks.add (task);
-		return Action.CONTINUE;
-	    }
-	}
-	TaskCreatedContinuedObserver createdObserver
-	    = new TaskCreatedContinuedObserver ();
-
-	// Create a program that removes the above tempoary file, when
-	// it exits the event loop will be shutdown.
-	String[] command = new String[] {"rm", "-f", tmpFile.toString () };
-	host.requestCreateAttachedProc (command, createdObserver);
-
-	// Run the event loop, cap it at 5 seconds.
-	assertRunUntilStop ("run \"rm\" to exit");
-
-	assertEquals ("processes added",
-		      1, procCounter.added.size ());
-	assertEquals ("processes removed",
-		      1, procCounter.removed.size ());
-	assertFalse ("the file exists", tmpFile.stillExists ());
+      public Action updateAttached (Task task)
+      {
+        attachedTasks.add(task);
+        tid = task.getTid();
+        Manager.eventLoop.requestStop();
+        return Action.CONTINUE;
+      }
     }
+    TaskCreatedContinuedObserver createdObserver = new TaskCreatedContinuedObserver();
 
-    /**
-     * Check that a stopped (at entry point) sub-process can be
-     * created.
-     *
-     * This gets a little messy, need to get TaskObserver.Attached
-     * installed on the just added task.
-     */
-    public void testCreateAttachedStoppedProc ()
+    // Create a program that removes the above tempoary file, when
+    // it exits the event loop will be shutdown.
+    String[] command = new String[] { "rm", "-f", tmpFile.toString() };
+    host.requestCreateAttachedProc(command, createdObserver);
+
+    assertRunUntilStop("run \"rm\" to entry for tid");
+
+    // Once the proc destroyed has been seen stop the event loop.
+    new StopEventLoopWhenProcRemoved(createdObserver.tid);
+
+    // Run the event loop, cap it at 5 seconds.
+    assertRunUntilStop("run \"rm\" to exit");
+
+    assertEquals("processes added", 1, procCounter.added.size());
+    assertEquals("processes removed", 1, procCounter.removed.size());
+    assertFalse("the file exists", tmpFile.stillExists());
+  }
+
+  /**
+   * Check that a stopped (at entry point) sub-process can be created. This gets
+   * a little messy, need to get TaskObserver.Attached installed on the just
+   * added task.
+   */
+  public void testCreateAttachedStoppedProc ()
+  {
+    TmpFile tmpFile = new TmpFile();
+    assertNotNull("temporary file", tmpFile);
+
+    // Observe TaskObserver.Attached events; when any occur
+    // indicate that the curresponding task should block, and then
+    // request that the event-loop stop.
+    class TaskCreatedStoppedObserver
+        extends TaskObserverBase
+        implements TaskObserver.Attached
     {
-	TmpFile tmpFile = new TmpFile ();
-	assertNotNull ("temporary file", tmpFile);
+      int tid;
 
-	// Observe TaskObserver.Attached events; when any occur
-	// indicate that the curresponding task should block, and then
-	// request that the event-loop stop.
-	class TaskCreatedStoppedObserver
-	    extends TaskObserverBase
-	    implements TaskObserver.Attached
-	{
-	    final TaskSet attachedTasks = new TaskSet ();
-	    public Action updateAttached (Task task)
-	    {
-		attachedTasks.add (task);
-		Manager.eventLoop.requestStop ();
-		return Action.BLOCK;
-	    }
-	}
-	TaskCreatedStoppedObserver createdObserver
-	    = new TaskCreatedStoppedObserver ();
+      final TaskSet attachedTasks = new TaskSet();
 
-	// Create a program that removes the above temporary file, when
-	// it exits the event loop will be shutdown.
-	host.requestCreateAttachedProc
-	    (new String[]
-		{
-		    "rm",
-		    "-f",
-		    tmpFile.toString ()
-		},
-	     createdObserver);
-
-	// Once a proc destroyed has been seen stop the event loop.
-	new StopEventLoopWhenChildProcRemoved ();
-
-	// Run the event loop.  TaskCreatedStoppedObserver will BLOCK
-	// the process at the entry point.
-	assertRunUntilStop ("run \"rm\" to entry");
-
-	// A single task should be blocked at its entry point.
-	assertEquals ("attached task count", 1,
-		      createdObserver.attachedTasks.size ());
-	assertTrue ("tmp file exists", tmpFile.stillExists ());
-
-	// Unblock the attached task and resume the event loop.  This
-	// will allow the "rm" command to run to completion.
-	createdObserver.attachedTasks.unblock (createdObserver);
-	assertRunUntilStop ("run \"rm\" to exit");
-
-	assertFalse ("tmp file exists", tmpFile.stillExists ());
+      public Action updateAttached (Task task)
+      {
+        attachedTasks.add(task);
+        tid = task.getTid();
+        Manager.eventLoop.requestStop();
+        return Action.BLOCK;
+      }
     }
+    TaskCreatedStoppedObserver createdObserver = new TaskCreatedStoppedObserver();
+
+    // Create a program that removes the above temporary file, when
+    // it exits the event loop will be shutdown.
+    host.requestCreateAttachedProc(new String[] { "rm", "-f",
+                                                 tmpFile.toString() },
+                                   createdObserver);
+
+    // Run the event loop. TaskCreatedStoppedObserver will BLOCK
+    // the process at the entry point.
+    assertRunUntilStop("run \"rm\" to entry");
+
+    // A single task should be blocked at its entry point.
+    assertEquals("attached task count", 1, createdObserver.attachedTasks.size());
+    assertTrue("tmp file exists", tmpFile.stillExists());
+
+    // Once the proc destroyed has been seen stop the event loop.
+    new StopEventLoopWhenProcRemoved(createdObserver.tid);
+
+    // Unblock the attached task and resume the event loop. This
+    // will allow the "rm" command to run to completion.
+    createdObserver.attachedTasks.unblock(createdObserver);
+    assertRunUntilStop("run \"rm\" to exit");
+
+    assertFalse("tmp file exists", tmpFile.stillExists());
+  }
 }
