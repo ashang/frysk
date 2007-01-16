@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
 import java.util.Iterator;
@@ -49,279 +50,298 @@ import frysk.sys.Sig;
 import frysk.sys.Signal;
 
 /**
- * Check that syscall events are detected.
- *
- * This should be expanded later to support ISAs so that the syscall
- * parameters and return codes can be displayed.  That information must
- * be taken from registers specific to each platform.
- *
- * XXX: For reasons noted below, these tests are currently disabled.
+ * Check that syscall events are detected. This should be expanded later to
+ * support ISAs so that the syscall parameters and return codes can be
+ * displayed. That information must be taken from registers specific to each
+ * platform. XXX: For reasons noted below, these tests are currently disabled.
  */
 
 public class TestTaskSyscallObserver
     extends TestLib
 {
   class SyscallObserver
-    extends TaskObserverBase
-    implements TaskObserver.Syscall
+      extends TaskObserverBase
+      implements TaskObserver.Syscall
   {
     int enter = 0;
+
     int exit = 0;
+
     // boolean inSyscall = false; //XXX: this assumption cannot be made
     boolean inSyscall;
-    
-    boolean caughtExec = false;
-    final frysk.proc.Syscall execvesys;
-    final frysk.proc.Syscall opensys;
-    final frysk.proc.Syscall readsys;
-    
 
-    SyscallObserver(Task task) 
+    boolean caughtExec = false;
+
+    final frysk.proc.Syscall execvesys;
+
+    final frysk.proc.Syscall opensys;
+
+    final frysk.proc.Syscall readsys;
+
+    SyscallObserver (Task task)
     {
       execvesys = frysk.proc.Syscall.syscallByName("execve", task);
       opensys = frysk.proc.Syscall.syscallByName("open", task);
       readsys = frysk.proc.Syscall.syscallByName("read", task);
     }
-    
-    
+
     public void addedTo (Object o)
     {
-      super.addedTo (o);
-      Manager.eventLoop.requestStop ();
+      super.addedTo(o);
+      Manager.eventLoop.requestStop();
     }
+
     public Action updateSyscallEnter (Task task)
     {
-      assertFalse ("inSyscall", inSyscall);
+      assertFalse("inSyscall", inSyscall);
       inSyscall = true;
       enter++;
-	  
+
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
       // XXX - workaround for broken syscall detection on exit
-      if (syscallEventInfo.number(task) == -1)
-	return Action.CONTINUE;
+      if (syscallEventInfo.number(task) == - 1)
+        return Action.CONTINUE;
 
       frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
 
-      if (execvesys.equals(syscall)) { 
-        caughtExec = true;
-      }
-      
+      if (execvesys.equals(syscall))
+        {
+          caughtExec = true;
+        }
+
       return Action.CONTINUE;
     }
+
     public Action updateSyscallExit (Task task)
     {
-      if(enter != 0 ) assertTrue ("inSyscall", inSyscall);
+      if (enter != 0)
+        assertTrue("inSyscall", inSyscall);
       inSyscall = false;
       exit++;
       return Action.CONTINUE;
     }
   }
-	
+
   /**
-   * test that the state machine can handle an exec event
-   * during a a syscall.
+   * test that the state machine can handle an exec event during a a syscall.
    */
-  public void testExecSyscall(){
-  
-    if (brokenXXX (3244))
-        return;
-    
-    //	  Create an unattached child process.
-    AckProcess child = new DetachedAckProcess ();
-    
-    // Attach to the process using the exec observer.  The event
+  public void testExecSyscall ()
+  {
+
+    if (brokenXXX(3244))
+      return;
+
+    // Create an unattached child process.
+    AckProcess child = new DetachedAckProcess();
+
+    // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
     // called indicating that the attach succeeded.
-    Task task = child.findTaskUsingRefresh (true);
-    SyscallObserver syscallObserver = new SyscallObserver (task);
-    task.requestAddSyscallObserver (syscallObserver);
-    assertRunUntilStop ("adding exec observer causing attach");
-    
+    Task task = child.findTaskUsingRefresh(true);
+    SyscallObserver syscallObserver = new SyscallObserver(task);
+    task.requestAddSyscallObserver(syscallObserver);
+    assertRunUntilStop("adding exec observer causing attach");
+
     // Do the exec; this call keeps the event loop running until
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
-    child.assertSendExecWaitForAcks ();
-    	    
-    assertEquals("Caught exec syscall",syscallObserver.caughtExec, true);
-  }
- 
-  /**
-   * test that the state machine can handle a fork event
-   * during a a syscall.
-   */
-  public void testForkSyscall(){
+    child.assertSendExecWaitForAcks();
 
-    //    if (brokenXXX (2245))
-    //        return;
+    assertEquals("Caught exec syscall", syscallObserver.caughtExec, true);
+  }
+
+  /**
+   * test that the state machine can handle a fork event during a a syscall.
+   */
+  public void testForkSyscall ()
+  {
+
+    // if (brokenXXX (2245))
+    // return;
     //        
     // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess ();
+    AckProcess child = new DetachedAckProcess();
 
-    // Attach to the process using the exec observer.  The event
+    // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
     // called indicating that the attach succeeded.
-    Task task = child.findTaskUsingRefresh (true);
-    SyscallObserver syscallObserver = new SyscallObserver (task);
-    task.requestAddSyscallObserver (syscallObserver);
-    assertRunUntilStop ("adding exec observer causing attach");
+    Task task = child.findTaskUsingRefresh(true);
+    SyscallObserver syscallObserver = new SyscallObserver(task);
+    task.requestAddSyscallObserver(syscallObserver);
+    assertRunUntilStop("adding exec observer causing attach");
 
     // Do the exec; this call keeps the event loop running until
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
     child.assertSendAddForkWaitForAcks();
-        
+
     assertTrue(true);
   }
- 
-    
+
   /**
-   * test that the state machine can handle a fork event
-   * during a a syscall.
+   * test that the state machine can handle a fork event during a a syscall.
    */
-  public void testCloneSyscall(){
+  public void testCloneSyscall ()
+  {
 
-    //    if (brokenXXX (2957))
-    //        return;
-        
+    // if (brokenXXX (2957))
+    // return;
+
     // Create an unattached child process.
-    AckProcess child = new DetachedAckProcess ();
+    AckProcess child = new DetachedAckProcess();
 
-    // Attach to the process using the exec observer.  The event
+    // Attach to the process using the exec observer. The event
     // loop is kept running until SingleExecObserver .addedTo is
     // called indicating that the attach succeeded.
-    Task task = child.findTaskUsingRefresh (true);
-    SyscallObserver syscallObserver1 = new SyscallObserver (task);
-    
-    final SyscallObserver syscallObserver2 = new SyscallObserver (task);
-    
-    task.requestAddSyscallObserver (syscallObserver1);
+    Task task = child.findTaskUsingRefresh(true);
+    SyscallObserver syscallObserver1 = new SyscallObserver(task);
+
+    final SyscallObserver syscallObserver2 = new SyscallObserver(task);
+
+    task.requestAddSyscallObserver(syscallObserver1);
     task.requestAddClonedObserver(new TaskObserver.Cloned()
+    {
+
+      public void deletedFrom (Object observable)
       {
-    
-	public void deletedFrom (Object observable){}
-	public void addFailed (Object observable, Throwable w)
-	{
-	    fail ("adding Cloned Observer to traced task");
-	}
-	public Action updateClonedParent (Task task, Task clone){ return Action.CONTINUE; }
-	public void addedTo (Object observable){}
-    
-	public Action updateClonedOffspring (Task parent, Task offspring)
-	{
-	  offspring.requestAddSyscallObserver(syscallObserver2);
-	  offspring.requestUnblock(this);
-	  return Action.BLOCK;
-	  //        return Action.CONTINUE;
-	}
-    
-      });
-    assertRunUntilStop ("adding exec observer causing attach");
+      }
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("adding Cloned Observer to traced task");
+      }
+
+      public Action updateClonedParent (Task task, Task clone)
+      {
+        return Action.CONTINUE;
+      }
+
+      public void addedTo (Object observable)
+      {
+      }
+
+      public Action updateClonedOffspring (Task parent, Task offspring)
+      {
+        offspring.requestAddSyscallObserver(syscallObserver2);
+        offspring.requestUnblock(this);
+        return Action.BLOCK;
+        // return Action.CONTINUE;
+      }
+
+    });
+    assertRunUntilStop("adding exec observer causing attach");
 
     // Do the exec; this call keeps the event loop running until
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
     child.assertSendAddCloneWaitForAcks();
-        
-    //    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 1: " + syscallObserver1.enter);
-    //    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 2: " + syscallObserver2.enter);
-    
+
+    // System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall()
+    // 1: " + syscallObserver1.enter);
+    // System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall()
+    // 2: " + syscallObserver2.enter);
+
     assertTrue("number of system calls", syscallObserver1.enter > 0);
     assertTrue("number of system calls", syscallObserver2.enter > 0);
-     
+
   }
- 
-        
+
   /**
    * Test a system-call in a for loop.
    */
   public void testSyscallLoop ()
   {
 
-    //	if (brokenXXX (2245))
-    //	    return;
+    // if (brokenXXX (2245))
+    // return;
 
     int count = 5;
-    AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	{
-	  getExecPrefix () + "funit-syscallloop",
-	  Integer.toString (count),
-	});
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] {
+                                                                          getExecPrefix()
+                                                                              + "funit-syscallloop",
+                                                                          Integer.toString(count), });
 
-    // Add a syscall observer.  XXX: This doesn't work - system
+    // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
-    SyscallObserver syscallObserver = new SyscallObserver (child.mainTask);
-    child.mainTask.requestAddSyscallObserver (syscallObserver);
-    assertRunUntilStop ("add SyscallObserver");
+    SyscallObserver syscallObserver = new SyscallObserver(child.mainTask);
+    child.mainTask.requestAddSyscallObserver(syscallObserver);
+    assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
-    // never work.  What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenChildProcRemoved ();
-    child.resume ();
-    assertRunUntilStop ("run until program exits");
+    // never work. What about assertRunUntilTaskRemoved (...)?
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    child.resume();
+    assertRunUntilStop("run until program exits");
 
-    assertTrue ("enough syscall enter events",
-		syscallObserver.enter >= count);
-    assertTrue ("enough syscall enter exit",
-		syscallObserver.exit >= count);
-    assertTrue ("inSyscall (last call doesn't exit)",
-		syscallObserver.inSyscall);
+    assertTrue("enough syscall enter events", syscallObserver.enter >= count);
+    assertTrue("enough syscall enter exit", syscallObserver.exit >= count);
+    assertTrue("inSyscall (last call doesn't exit)", syscallObserver.inSyscall);
   }
 
-    
   /**
-   * Test adding a syscall to a newly created attached
-   * process created by Frysk.
+   * Test adding a syscall to a newly created attached process created by Frysk.
    * Test that Frysk does not miss the first exec call.
    */
   SyscallObserver syscallObserver1 = null;
-    
+
   TaskObserver.Attached attachedObserver = new TaskObserver.Attached()
+  {
+
+    public Action updateAttached (Task task)
     {
-      
-      public Action updateAttached (Task task)
-      {
-	if (syscallObserver1 == null) 
-	  {
-	    syscallObserver1 = new SyscallObserver(task) {
-		public void addedTo (Object observable){
-		  Task task = (Task) observable;
-		  task.requestUnblock(attachedObserver);
-		}
-	      };
-	  }
-	
-        logger.log(Level.FINE, "{0} **updateAttached\n", task);
-        new StopEventLoopWhenProcRemoved (task.getProc().getPid());
-        task.requestAddSyscallObserver(syscallObserver1);
-	//        task.requestUnblock(this);
-        return Action.BLOCK;
-      }
+      if (syscallObserver1 == null)
+        {
+          syscallObserver1 = new SyscallObserver(task)
+          {
+            public void addedTo (Object observable)
+            {
+              Task task = (Task) observable;
+              task.requestUnblock(attachedObserver);
+            }
+          };
+        }
 
-      public void deletedFrom (Object observable){}
-      public void addFailed (Object observable, Throwable w){}
-      public void addedTo (Object observable){}
+      logger.log(Level.FINE, "{0} **updateAttached\n", task);
+      new StopEventLoopWhenProcRemoved(task.getProc().getPid());
+      task.requestAddSyscallObserver(syscallObserver1);
+      // task.requestUnblock(this);
+      return Action.BLOCK;
+    }
 
-    };
-    
+    public void deletedFrom (Object observable)
+    {
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+  };
+
   public void testCreateAttachedAddSyscallObserver ()
   {
 
-    if (brokenXXX (2915))
+    if (brokenXXX(2915))
       return;
-    
+
     int count = 5;
 
-      
-    Manager.host.requestCreateAttachedProc(new String[]
-	{
-	  getExecPrefix () + "funit-syscallloop",
-	  Integer.toString (count),
-	}, attachedObserver);
-      
-    //assertRunUntilStop("run until program exits");
+    Manager.host.requestCreateAttachedProc(
+                                           new String[] {
+                                                         getExecPrefix()
+                                                             + "funit-syscallloop",
+                                                         Integer.toString(count), },
+                                           attachedObserver);
+
+    // assertRunUntilStop("run until program exits");
     assertRunUntilStop("run until program exits");
 
     assertTrue("enough syscall enter events", syscallObserver1.enter >= count);
@@ -330,7 +350,6 @@ public class TestTaskSyscallObserver
     assertTrue("Caught exec syscall", syscallObserver1.caughtExec);
   }
 
-    
   /**
    * Test system calls. XXX: How is this different to testSyscallLoop (other
    * than the program run). XXX: Also why is the last syscall expected to exit
@@ -338,261 +357,268 @@ public class TestTaskSyscallObserver
    */
   public void testSyscalls ()
   {
-    //	if (brokenXXX (2245))
-    //	    return;
+    // if (brokenXXX (2245))
+    // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	{
-	  getExecPrefix () + "funit-syscalls"
-	});
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] { getExecPrefix()
+                                                                           + "funit-syscalls" });
 
-    // Add a syscall observer.  XXX: This doesn't work - system
+    // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
-    SyscallObserver syscallObserver = new SyscallObserver (child.mainTask);
-    child.mainTask.requestAddSyscallObserver (syscallObserver);
-    assertRunUntilStop ("add SyscallObserver");
+    SyscallObserver syscallObserver = new SyscallObserver(child.mainTask);
+    child.mainTask.requestAddSyscallObserver(syscallObserver);
+    assertRunUntilStop("add SyscallObserver");
 
     // XXX: This is wrong; the task isn't a child so this will
-    // never work.  What about assertRunUntilTaskRemoved (...)?
-    new StopEventLoopWhenChildProcRemoved ();
-    child.resume ();
-    assertRunUntilStop ("run until program exits");
+    // never work. What about assertRunUntilTaskRemoved (...)?
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
+    child.resume();
+    assertRunUntilStop("run until program exits");
 
-    assertTrue ("syscall events received >= 8",
-		syscallObserver.enter >= 8);
-    //XXX: why ?	assertFalse ("syscall events", syscallObserver.inSyscall);
-    assertTrue ("syscall events", syscallObserver.inSyscall);
+    assertTrue("syscall events received >= 8", syscallObserver.enter >= 8);
+    // XXX: why ? assertFalse ("syscall events", syscallObserver.inSyscall);
+    assertTrue("syscall events", syscallObserver.inSyscall);
   }
 
   /**
-   * Need to add task observers to the process the moment it is
-   * created, otherwize the creation of the very first task is
-   * missed (giving a mismatch of task created and deleted
-   * notifications.)
+   * Need to add task observers to the process the moment it is created,
+   * otherwize the creation of the very first task is missed (giving a mismatch
+   * of task created and deleted notifications.)
    */
-	
+
   class SyscallOpenObserver
-    extends SyscallObserver
+      extends SyscallObserver
   {
     boolean openingTestFile;
+
     boolean testFileOpened;
+
     boolean expectedRcFound;
+
     String openName = "a.file";
-    
-    SyscallOpenObserver(Task task) 
+
+    SyscallOpenObserver (Task task)
     {
       super(task);
     }
-        
+
     public Action updateSyscallEnter (Task task)
     {
-      super.updateSyscallEnter (task);
+      super.updateSyscallEnter(task);
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
       frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-      if ((opensys.equals(syscall))) { 
-	long addr = syscallEventInfo.arg (task, 1);
-	StringBuffer x = new StringBuffer ();
-	task.getMemory().get (addr, x);
-	String name = x.toString ();
-	if (name.indexOf (openName) >= 0) {
-	  testFileOpened = true;
-	  openingTestFile = true;
-	}
-      }
+      if ((opensys.equals(syscall)))
+        {
+          long addr = syscallEventInfo.arg(task, 1);
+          StringBuffer x = new StringBuffer();
+          task.getMemory().get(addr, x);
+          String name = x.toString();
+          if (name.indexOf(openName) >= 0)
+            {
+              testFileOpened = true;
+              openingTestFile = true;
+            }
+        }
       return Action.CONTINUE;
     }
+
     public Action updateSyscallExit (Task task)
     {
-      super.updateSyscallExit (task);
+      super.updateSyscallExit(task);
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
       // XXX - workaround for broken syscall detection on exit
-      if (syscallEventInfo.number(task) == -1)
-	return Action.CONTINUE;
+      if (syscallEventInfo.number(task) == - 1)
+        return Action.CONTINUE;
       frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-      if (opensys.equals(syscall) && openingTestFile) {
-	openingTestFile = false;
-	int rc = (int)syscallEventInfo.returnCode (task);
-	if (rc == -2) // ENOENT
-	  expectedRcFound = true;
-      }
+      if (opensys.equals(syscall) && openingTestFile)
+        {
+          openingTestFile = false;
+          int rc = (int) syscallEventInfo.returnCode(task);
+          if (rc == - 2) // ENOENT
+            expectedRcFound = true;
+        }
       return Action.CONTINUE;
     }
   }
 
   /**
-   * Check that a specific syscall event can be detected.  In this
-   * case, an open syscall to a particular file.
+   * Check that a specific syscall event can be detected. In this case, an open
+   * syscall to a particular file.
    */
   public void testSyscallOpen ()
   {
-	
-    //	if (brokenXXX (2245))
-    //	    return;
 
-    
-    new StopEventLoopWhenChildProcRemoved ();
+    // if (brokenXXX (2245))
+    // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
-	{
-	  getExecPrefix () + "funit-syscalls"
-	});
-    SyscallOpenObserver syscallOpenObserver 
-      = new SyscallOpenObserver(child.mainTask);
-    child.mainTask.requestAddSyscallObserver (syscallOpenObserver);
-    assertRunUntilStop ("add SyscallObserver");
+    AttachedDaemonProcess child = new AttachedDaemonProcess(
+                                                            new String[] { getExecPrefix()
+                                                                           + "funit-syscalls" });
+    new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
 
-    child.resume ();
-    assertRunUntilStop ("run \"syscalls\" until exit");
-	
-    assertTrue ("syscall events received >= 8",
-		syscallOpenObserver.enter >= 8); 
-    //XXX: why ? assertFalse ("in syscall", syscallOpenObserver.inSyscall);
-    assertTrue ("in syscall", syscallOpenObserver.inSyscall);
-    assertTrue ("attempt to open a.file",
-		syscallOpenObserver.testFileOpened);
-    assertTrue ("open of a.file failed",
-		syscallOpenObserver.expectedRcFound);
+    SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
+                                                                      child.mainTask);
+    child.mainTask.requestAddSyscallObserver(syscallOpenObserver);
+    assertRunUntilStop("add SyscallObserver");
+
+    child.resume();
+    assertRunUntilStop("run \"syscalls\" until exit");
+
+    assertTrue("syscall events received >= 8", syscallOpenObserver.enter >= 8);
+    // XXX: why ? assertFalse ("in syscall", syscallOpenObserver.inSyscall);
+    assertTrue("in syscall", syscallOpenObserver.inSyscall);
+    assertTrue("attempt to open a.file", syscallOpenObserver.testFileOpened);
+    assertTrue("open of a.file failed", syscallOpenObserver.expectedRcFound);
   }
 
   /**
-   * Class to create a detached child process that will be in the
-   * middle of reading a pipe.
+   * Class to create a detached child process that will be in the middle of
+   * reading a pipe.
    */
   class PipeReadChild
-    extends Child
+      extends Child
   {
     protected int startChild (String stdin, String stdout, String stderr,
-			      String[] argv)
+                              String[] argv)
     {
-      return Fork.daemon (stdin, stdout, stderr, argv);
+      return Fork.daemon(stdin, stdout, stderr, argv);
     }
+
     PipeReadChild (String[] argv)
     {
-      super (argv);
+      super(argv);
     }
+
     PipeReadChild (boolean restart)
     {
-      this (new String[] {
-	  getExecPrefix () + "funit-syscallint",
-	  Integer.toString (Pid.get ()),
-	  Integer.toString (ackSignal.hashCode ()),
-	  Integer.toString (restart ? 1 : 0)
-	});
+      this(new String[] { getExecPrefix() + "funit-syscallint",
+                         Integer.toString(Pid.get()),
+                         Integer.toString(ackSignal.hashCode()),
+                         Integer.toString(restart ? 1 : 0) });
     }
   }
 
-  private SyscallEventInfo getSyscallEventInfo(Task task)
+  private SyscallEventInfo getSyscallEventInfo (Task task)
   {
     try
       {
-	return task.getSyscallEventInfo();
+        return task.getSyscallEventInfo();
       }
     catch (TaskException e)
       {
-	fail("task exception " + e);
-	return null; // not reached
+        fail("task exception " + e);
+        return null; // not reached
       }
   }
 
-    /**
-     * Timers, observers, counters, etc.. needed for the test.
-     *
-     * XXX: Please do not copy.  This came from the most evilly
-     * complex code and needs to be rewriten.
-     */
-  class TestSyscallInterruptXXX {
+  /**
+   * Timers, observers, counters, etc.. needed for the test. XXX: Please do not
+   * copy. This came from the most evilly complex code and needs to be rewriten.
+   */
+  class TestSyscallInterruptXXX
+  {
     int readEnter, readExit, sigusr1Count;
+
     SyscallInterruptObserver syscallObserver;
-    
+
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
     // missed (giving a mismatch of task created and deleted
     // notifications.)
-	
+
     class SyscallInterruptObserver
-      extends SyscallObserver
-      implements TaskObserver.Signaled
+        extends SyscallObserver
+        implements TaskObserver.Signaled
     {
 
-      SyscallInterruptObserver(Task task) 
+      SyscallInterruptObserver (Task task)
       {
-	super(task);
+        super(task);
       }
-	    
+
       public Action updateSyscallEnter (Task task)
       {
-	super.updateSyscallEnter (task);
-	SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+        super.updateSyscallEnter(task);
+        SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+        frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
 
-	// verify that read attempted
-	if (readsys.equals(syscall)) { 
-	  long numberOfBytes = syscallEventInfo.arg (task, 3);
-	  logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
-	  if (numberOfBytes != 1)
-	    throw new RuntimeException ("bytes to read not 1");
-	  if (readEnter == 0)
-	    Manager.eventLoop.add (new PausedReadTimerEvent (task, 500));
-	  ++readEnter;
-	}
-	return Action.CONTINUE;
+        // verify that read attempted
+        if (readsys.equals(syscall))
+          {
+            long numberOfBytes = syscallEventInfo.arg(task, 3);
+            logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
+            if (numberOfBytes != 1)
+              throw new RuntimeException("bytes to read not 1");
+            if (readEnter == 0)
+              Manager.eventLoop.add(new PausedReadTimerEvent(task, 500));
+            ++readEnter;
+          }
+        return Action.CONTINUE;
       }
+
       public Action updateSyscallExit (Task task)
       {
-	super.updateSyscallExit (task);
-	SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
-	// XXX - workaround for broken syscall detection on exit
-	if (syscallEventInfo.number(task) == -1)
-	  return Action.CONTINUE;
-	frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
-	if (readsys.equals(syscall)) {
-	  logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
-	  if (readEnter <= readExit)
-	    throw new RuntimeException ("Read exit before enter");
-	  ++readExit;
-	}
-	return Action.CONTINUE;
+        super.updateSyscallExit(task);
+        SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+        // XXX - workaround for broken syscall detection on exit
+        if (syscallEventInfo.number(task) == - 1)
+          return Action.CONTINUE;
+        frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+        if (readsys.equals(syscall))
+          {
+            logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
+            if (readEnter <= readExit)
+              throw new RuntimeException("Read exit before enter");
+            ++readExit;
+          }
+        return Action.CONTINUE;
       }
+
       public Action updateSignaled (Task task, int sig)
       {
-	if (sig == Sig.USR1_)
-	  sigusr1Count++;
-	return Action.CONTINUE;
+        if (sig == Sig.USR1_)
+          sigusr1Count++;
+        return Action.CONTINUE;
       }
     }
 
     class PausedReadTimerEvent
-      extends frysk.event.TimerEvent
+        extends frysk.event.TimerEvent
     {
       Task task;
+
       long milliseconds;
+
       PausedReadTimerEvent (Task task, long milliseconds)
       {
-	super (milliseconds);
-	this.task = task;
-	this.milliseconds = milliseconds;
+        super(milliseconds);
+        this.task = task;
+        this.milliseconds = milliseconds;
       }
+
       public void execute ()
       {
-	// Make sure we didn't get a read exit up to now
-	// as we are expecting to interrupt a blocked read.
-	if (readExit > 0)
-	  throw new RuntimeException ("read exited without signal");
-	// We want to signal the process so it will interrupt
-	// the read.
-	Signal.tkill (task.getTid (), Sig.USR1);
+        // Make sure we didn't get a read exit up to now
+        // as we are expecting to interrupt a blocked read.
+        if (readExit > 0)
+          throw new RuntimeException("read exited without signal");
+        // We want to signal the process so it will interrupt
+        // the read.
+        Signal.tkill(task.getTid(), Sig.USR1);
       }
     }
 
     TestSyscallInterruptXXX (final int pid)
     {
-      Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
+      Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+      {
 
         public void procFound (ProcId procId)
         {
-          Proc p = host.getProc (new ProcId (pid));
+          Proc p = host.getProc(new ProcId(pid));
           if (p != null)
             {
               List tasks = p.getTasks();
@@ -609,60 +635,56 @@ public class TestTaskSyscallObserver
                     }
                 }
             }
-          
+
           Manager.eventLoop.requestStop();
         }
 
         public void procNotFound (ProcId procId, Exception e)
         {
-        }});
+        }
+      });
       Manager.eventLoop.run();
 
-
-
- 
     }
   }
 
   /**
-   * Check that we can attach to a process currently in a syscall
-   * and trace syscall events properly.
+   * Check that we can attach to a process currently in a syscall and trace
+   * syscall events properly.
    */
   public void testSyscallInterrupt ()
   {
-    //	if (brokenXXX (2245))
-    //	    return;
-    PipeReadChild prc = new PipeReadChild (false);
+    // if (brokenXXX (2245))
+    // return;
+    PipeReadChild prc = new PipeReadChild(false);
 
-    TestSyscallInterruptXXX t 
-      = new TestSyscallInterruptXXX (prc.getPid ());
-    new StopEventLoopWhenProcRemoved (prc.getPid());
-	
-    assertRunUntilStop ("run \"syscallint\" until exit");
-    assertEquals ("read enter events", 1, t.readEnter);
-    assertEquals ("read exit events", 1, t.readExit);
-    assertEquals ("SIGUSR1 events", 1, t.sigusr1Count);
-    assertTrue ("inSyscall", t.syscallObserver.inSyscall);
+    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid());
+    new StopEventLoopWhenProcRemoved(prc.getPid());
+
+    assertRunUntilStop("run \"syscallint\" until exit");
+    assertEquals("read enter events", 1, t.readEnter);
+    assertEquals("read exit events", 1, t.readExit);
+    assertEquals("SIGUSR1 events", 1, t.sigusr1Count);
+    assertTrue("inSyscall", t.syscallObserver.inSyscall);
   }
 
   /**
-   * Check that we can attach to a process currently in a syscall
-   * and trace syscall events properly.
+   * Check that we can attach to a process currently in a syscall and trace
+   * syscall events properly.
    */
   public void testSyscallInterruptRestart ()
   {
-    //	if (brokenXXX (2245))
-    //	    return;
-    PipeReadChild prc = new PipeReadChild (true);
+    // if (brokenXXX (2245))
+    // return;
+    PipeReadChild prc = new PipeReadChild(true);
 
-    TestSyscallInterruptXXX t
-      = new TestSyscallInterruptXXX (prc.getPid ());
-    new StopEventLoopWhenProcRemoved (prc.getPid());
+    TestSyscallInterruptXXX t = new TestSyscallInterruptXXX(prc.getPid());
+    new StopEventLoopWhenProcRemoved(prc.getPid());
 
-    assertRunUntilStop ("run \"syscallint\" with restart until exit");
-    assertEquals ("restart read enter events", 2, t.readEnter);
-    assertEquals ("restart read exit events", 2, t.readExit);
-    assertEquals ("restart sigusr1 events", 1, t.sigusr1Count);
-    assertTrue ("inSyscall", t.syscallObserver.inSyscall);
+    assertRunUntilStop("run \"syscallint\" with restart until exit");
+    assertEquals("restart read enter events", 2, t.readEnter);
+    assertEquals("restart read exit events", 2, t.readExit);
+    assertEquals("restart sigusr1 events", 1, t.sigusr1Count);
+    assertTrue("inSyscall", t.syscallObserver.inSyscall);
   }
 }
