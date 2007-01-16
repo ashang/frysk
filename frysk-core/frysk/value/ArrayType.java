@@ -115,7 +115,7 @@ public class ArrayType
     public Object next ()
     {
       if (type._typeId == BaseTypes.baseTypeChar)
-        return new Byte(v.getByte(idx * type.getSize()));
+        return new Character((char)v.getByte(idx * type.getSize()));
       else if (type._typeId == BaseTypes.baseTypeShort)
         return new Integer(v.getShort(idx * type.getSize()));
       else if (type._typeId == BaseTypes.baseTypeInteger)
@@ -144,19 +144,35 @@ public class ArrayType
   {
     StringBuffer strBuf = new StringBuffer();
     Iterator e = getIterator(v);
+    boolean isString = false;
+    if (type._typeId == BaseTypes.baseTypeChar)
+      {
+        isString = true;
+        strBuf.append("\"");
+      }
     while (e.hasNext())
       {
-        strBuf.append("[");
-        int dimCount = e.dimCount;
-        for (int j = dimCount; j >= 1; j--)
+        if (!isString)
           {
-            strBuf.append(e.nextIdx());
-            if (j != 1)
-              strBuf.append(",");
+            strBuf.append("[");
+            int dimCount = e.dimCount;
+            for (int j = dimCount; j >= 1; j--)
+              {
+                strBuf.append(e.nextIdx());
+                if (j != 1)
+                  strBuf.append(",");
+              }
+            strBuf.append("]=" + e.next());
           }
-        strBuf.append("]=");
-        strBuf.append(e.next());
+        else
+          {
+            Character ch = (Character)e.next();
+            if ((int)ch.charValue() != 0)
+              strBuf.append(e.next());
+          }
       }
+    if (isString)
+      strBuf.append("\"");
     return strBuf.toString();
   }
 

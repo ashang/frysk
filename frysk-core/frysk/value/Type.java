@@ -76,9 +76,10 @@ public abstract class Type
   public String toString() {return _name;}
   public abstract String toString(Variable v);  
 
-  public long longValue(Variable v)	throws InvalidOperatorException	{
+  public long longValue(Variable v)	throws InvalidOperatorException	
+  {
     if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
-	return  0 ;//v.getChar();
+	return v.getByte();
     if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
 	return v.getShort();
     if(v.getType().getTypeId() == BaseTypes.baseTypeInteger)

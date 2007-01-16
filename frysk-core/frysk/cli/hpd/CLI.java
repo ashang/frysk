@@ -725,8 +725,8 @@ public class CLI
                   outputFormat = OCTAL;
                 else if (arg.compareTo("x") == 0)
                   outputFormat = HEX;
-      }
-    }
+              }
+          }
         if (haveFormat)
           sInput = sInput.substring(0,sInput.indexOf("-format"));
 
@@ -780,6 +780,9 @@ public class CLI
               || resultType == BaseTypes.baseTypeInteger
               || resultType == BaseTypes.baseTypeLong)
             cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat));
+          else if (resultType == BaseTypes.baseTypeChar)
+            cmd.getOut().println(Integer.toString((int)result.getType().longValue(result),outputFormat) + 
+                                 " '" + result.toString() + "'");
           else
             cmd.getOut().println(result.toString());
         }
