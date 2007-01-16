@@ -171,11 +171,16 @@ public class TestRegisters
     class I386ProcRemovedObserver
         implements Observer
     {
+      int pid;
+      public I386ProcRemovedObserver (final int pid)
+      {
+        this.pid = pid;
+      }
         volatile int count;
         public void update (Observable o, Object obj)
         {
           Proc process = (Proc) obj;
-          if (isChildOfMine (process))
+          if ((process.getPid() == pid))
             {
               syscallState ^= 1;  // we won't return from exit syscall
               exited = true;
@@ -184,7 +189,7 @@ public class TestRegisters
         }
     }
 
-    TestI386ModifyXXX ()
+    TestI386ModifyXXX (final int pid)
     {
         host.observableTaskAddedXXX.addObserver (new Observer ()
         {
@@ -192,7 +197,7 @@ public class TestRegisters
             {
               Task task = (Task) obj;
               
-              if (!isChildOfMine (task.proc))
+              if (task.proc.getPid() != pid)
                   return;
               
               Isa isa;
@@ -218,7 +223,7 @@ public class TestRegisters
             }
         });
         host.observableProcRemovedXXX.addObserver
-        (new I386ProcRemovedObserver ());
+        (new I386ProcRemovedObserver (pid));
     }
   }
   
@@ -357,11 +362,16 @@ public class TestRegisters
     class X8664ProcRemovedObserver
       implements Observer
     {
+      int pid;
+      public X8664ProcRemovedObserver (final int pid)
+      {
+        this.pid = pid;
+      }
       volatile int count;
       public void update (Observable o, Object obj)
       {
     Proc process = (Proc) obj;
-    if (isChildOfMine (process)) {
+    if (process.getPid() == pid) {
       syscallState ^= 1;  // we won't return from exit syscall
       exited = true;
       Manager.eventLoop.requestStop ();
@@ -369,14 +379,14 @@ public class TestRegisters
       }
     }
 
-    TestX8664ModifyXXX ()
+    TestX8664ModifyXXX (final int pid)
     {
       host.observableTaskAddedXXX.addObserver (new Observer ()
     {
       public void update (Observable o, Object obj)
       {
         Task task = (Task) obj;
-        if (!isChildOfMine (task.proc))
+        if (task.proc.getPid() != pid)
           return;
         Isa isa;
         try
@@ -400,7 +410,7 @@ public class TestRegisters
       }
     });
       host.observableProcRemovedXXX.addObserver
-    (new X8664ProcRemovedObserver ());
+    (new X8664ProcRemovedObserver (pid));
     }
   }
 
@@ -534,12 +544,17 @@ public class TestRegisters
     class PPC64ProcRemovedObserver
       implements Observer
     {
+      int pid;
+      PPC64ProcRemovedObserver(int pid)
+      {
+        this.pid = pid;
+      }
       volatile int count;
       
       public void update (Observable o, Object obj)
       {
         Proc process = (Proc) obj;
-        if (isChildOfMine (process))
+        if (process.getPid() == pid)
         {
           syscallState ^= 1;  // we won't return from exit syscall
           exited = true;
@@ -548,14 +563,14 @@ public class TestRegisters
       }
     }
 
-    TestPPC64ModifyXXX ()
+    TestPPC64ModifyXXX (final int pid)
     {
       host.observableTaskAddedXXX.addObserver (new Observer ()
       {
         public void update (Observable o, Object obj)
         {
           Task task = (Task) obj;
-          if (!isChildOfMine (task.proc))
+          if (task.proc.getPid() != pid)
             return;
           
           Isa isa;
@@ -584,18 +599,21 @@ public class TestRegisters
       });
       
       host.observableProcRemovedXXX.addObserver(
-                                                new PPC64ProcRemovedObserver ());
+                                                new PPC64ProcRemovedObserver (pid));
     }
   }
 
   private void checkI386Modify ()
-  {
-    TestI386ModifyXXX t = new TestI386ModifyXXX ();
+  {   
     // Create program making syscalls
-    new AttachedDaemonProcess (new String[]
+    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
         {
         getExecPrefix () + "funit-registers"
-        }).resume ();
+        });
+    
+    TestI386ModifyXXX t = new TestI386ModifyXXX (ackProc.mainTask.proc.getPid());
+    
+    ackProc.resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
     if (t.ia32Isa) {
@@ -608,12 +626,16 @@ public class TestRegisters
   {
     if (MachineType.getMachineType() != MachineType.X8664)
       return;
-    TestX8664ModifyXXX t = new TestX8664ModifyXXX ();
+    
     // Create program making syscalls
-    new AttachedDaemonProcess (new String[]
+    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
     {
       getExecPrefix () + "funit-registers"
-    }).resume ();
+    });
+    
+    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.mainTask.proc.getPid());
+    
+    ackProc.resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
 
     if (t.X8664Isa) {
@@ -626,13 +648,17 @@ public class TestRegisters
   {
     if (MachineType.getMachineType() != MachineType.PPC64)
       return;
-    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX ();
+   
     
     // Call assembler program making syscalls
-    new AttachedDaemonProcess (new String[]
+    AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
     {
       getExecPrefix () + "funit-registers"
-    }).resume ();
+    });
+    
+    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.mainTask.proc.getPid());
+    
+    ackProc.resume ();
     assertRunUntilStop ("run \"ppc64modify\" to exit");
     
     if (t.isPPC64Isa)
