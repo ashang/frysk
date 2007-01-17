@@ -41,173 +41,38 @@
 
 package frysk.gui;
 
-import java.io.File;
-
-import gnu.classpath.tools.getopt.FileArgumentCallback;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
-
 /**
  * Wrapper class for Gui.java. This is an entry point
  * for the Frysk UI 
  */
 public class FryskGui
 {
-
-    private static boolean cont = true;
-    private static int pid;
-    private static String argString;
-    private static int flag = 0;
-    private static String exeString;
-
     public static void main (String[] args)
     {
-    
-	Parser parser = new Parser("frysk", "1..23", true);
-	parser.setHeader("usage: frysk [options]");
-
-	addOptions(parser);
-
-	parser.parse(args, new FileArgumentCallback()
-	    {
-		public void notifyFile (String arg) throws OptionException
-		{
-		}
-	    });
-    
 	final String BASE_PATH = "frysk/gui/";
 	final String GLADE_PKG_PATH = "glade/";
 	final String SRCDIR = "@srcdir@";
 	final String ABS_SRCDIR = "@abs_srcdir@";
-	
-	if (cont == true)
-	    {
-		Gui.gui (args, new String[] {
-			     GLADE_PKG_PATH,
-			     BASE_PATH + GLADE_PKG_PATH,
-			     // Check both relative ...
-			     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-			     // ... and absolute.
-			     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-			 },
-			 new String[] {
-			     ABS_SRCDIR + "/" + BASE_PATH + "images/"
-			 }, 
-			 new String[] {
-			     "./common",
-			     SRCDIR + "/" + BASE_PATH + "common/",
-			     ABS_SRCDIR + "/" + BASE_PATH + "common/"
-			 },
-			 new String[] {
-			     "./srcwin/testfiles",
-			     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
-			     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
-			 });
-	    }
-	else
-	    {
-
-		if (flag == 1)
-		    {
-			Gui.gui (args, new String[] {
-				     GLADE_PKG_PATH,
-				     BASE_PATH + GLADE_PKG_PATH,
-				     // Check both relative ...
-				     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-				     // ... and absolute.
-				     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-				 },
-				 new String[] {
-				     ABS_SRCDIR + "/" + BASE_PATH + "images/"
-				 }, 
-				 new String[] {
-				     "./common",
-				     SRCDIR + "/" + BASE_PATH + "common/",
-				     ABS_SRCDIR + "/" + BASE_PATH + "common/"
-				 },
-				 new String[] {
-				     "./srcwin/testfiles",
-				     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
-				     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
-				 }, true, pid, "");
-		    }
-		    else if (flag == 2)
-		    {
-		    	Gui.gui (args, new String[] {
-				     GLADE_PKG_PATH,
-				     BASE_PATH + GLADE_PKG_PATH,
-				     // Check both relative ...
-				     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-				     // ... and absolute.
-				     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-				 },
-				 new String[] {
-				     ABS_SRCDIR + "/" + BASE_PATH + "images/"
-				 }, 
-				 new String[] {
-				     "./common",
-				     SRCDIR + "/" + BASE_PATH + "common/",
-				     ABS_SRCDIR + "/" + BASE_PATH + "common/"
-				 },
-				 new String[] {
-				     "./srcwin/testfiles",
-				     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
-				     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
-				 }, true, 0, exeString);
-		    }
-	    }
-    }
-		 
-		 
-    
-    private static void addOptions (Parser parser)
-    {
-	parser.add(new Option("new", 'n', "debug new exec", "EXECUTABLE")
-	    {
-		    public void parsed (String arg) throws OptionException
-			{
-			    cont = false;
-			    File file = null;
-			    try 
-				{
-				    file = new File(arg);
-				    if (!file.exists())
-					{
-					    System.out.println("Cannot find executable!");
-					    System.exit(1);
-					}
-				    else
-					exeString = arg;
-				}
-			    catch (Exception e)
-			{
-			    OptionException oe = new OptionException("couldn't parse executable: " + argString);
-			    oe.initCause(e);
-			    throw oe;
-			}
-			flag = 2;
-		}
-	    });
-    
-	parser.add(new Option("pid", 'p', "debug running pid", "EXECUTABLE")
-	    {
-		public void parsed (String arg) throws OptionException
-		{
-		    cont = false;
-		    try 
-			{
-			    pid = Integer.parseInt(arg);
-			}
-		    catch (NumberFormatException nfe)
-			{
-			    OptionException oe = new OptionException("couldn't parse pid: " + argString);
-			    oe.initCause(nfe);
-			    throw oe;
-			}
-		    flag = 1;
-		}
-	    });
+	Gui.gui (args, new String[] {
+		     GLADE_PKG_PATH,
+		     BASE_PATH + GLADE_PKG_PATH,
+		     // Check both relative ...
+		     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
+		     // ... and absolute.
+		     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
+		 },
+		 new String[] {
+		     ABS_SRCDIR + "/" + BASE_PATH + "images/"
+		 }, 
+		 new String[] {
+		     "./common",
+		     SRCDIR + "/" + BASE_PATH + "common/",
+		     ABS_SRCDIR + "/" + BASE_PATH + "common/"
+		 },
+		 new String[] {
+		     "./srcwin/testfiles",
+		     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
+		     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
+		 });
     }
 }
-
