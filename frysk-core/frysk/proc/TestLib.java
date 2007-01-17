@@ -171,15 +171,19 @@ public class TestLib
     // If the parent's pid matches this processes pid, assume that
     // is sufficient. Would need a very very long running system
     // for that to not be the case.
-    if (proc.getParent().getPid() == pid)
+
+    Stat stat = new Stat();
+    stat.refresh(proc.getPid());
+
+    if (stat.ppid == pid)
       {
         logger.log(Level.FINE, "isChildOf proc is child\n");
         return true;
       }
-    logger.log(Level.FINE,
-               "isChildOf proc {3} not child pid: {0} ppid: {1} parent: {2}\n",
-               new Object[] { new Integer(pid),
-                             new Integer(proc.getParent().getPid()),
+    logger.log(
+               Level.FINE,
+               "isChildOf proc not child pid: {0} ppid: {1} parent: {2} proc: {3}\n",
+               new Object[] { new Integer(pid), new Integer(stat.ppid),
                              proc.getParent(), proc });
 
     return false;
@@ -1344,42 +1348,6 @@ public class TestLib
     public void disappeared (int pid, Throwable w)
     {
       fail(message);
-    }
-  }
-
-  /**
-   * A self installing observer that, when a child process disappears (i.e.,
-   * exits), stops the event loop.
-   */
-  protected class StopEventLoopWhenChildProcRemoved
-      implements Observer
-  {
-    boolean p;
-
-    StopEventLoopWhenChildProcRemoved ()
-    {
-      Manager.host.observableProcRemovedXXX.addObserver(this);
-    }
-
-    public void update (Observable o, Object obj)
-    {
-      Proc proc = (Proc) obj;
-      if (isChildOfMine(proc))
-        {
-          // Shut things down.
-          logger.log(Level.FINE,
-                     "{0} update {1} has been removed stopping event loop\n",
-                     new Object[] { this, proc });
-          Manager.eventLoop.requestStop();
-          p = true;
-        }
-      else
-        {
-          logger.log(
-                     Level.FINER,
-                     "{0} update {1} has been removed NOT stopping event loop because the parent of proc is {2}\n",
-                     new Object[] { this, proc, proc.getParent() });
-        }
     }
   }
 
