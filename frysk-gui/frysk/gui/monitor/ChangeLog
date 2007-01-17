@@ -1,5 +1,6 @@
 2007-01-17  sami wagiaalla  <swagiaal@redhat.com>
 
+	* eventviewer/TimeLine.java (TimeLine): Removed debug output.
 	* eventviewer/ProcBox.java: More a11y info.
 
 2007-01-16  sami wagiaalla  <swagiaal@redhat.com>
