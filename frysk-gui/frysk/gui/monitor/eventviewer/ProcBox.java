@@ -75,8 +75,11 @@ public class ProcBox
     this.mainGutTaskAdded = false;
 
     this.getAccessible().setName(guiProc.getExecutableName()+"ProcBox");
+    
     this.timeLinesVBox = new VBox(false,0);
+    this.timeLinesVBox.getAccessible().setName(guiProc.getExecutableName()+"TimeLinesVBox");
     this.labelsVBox = new VBox(false,0);
+    this.labelsVBox.getAccessible().setName(guiProc.getExecutableName()+"LablesVBox");
     
     SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
     sizeGroup.addWidget(labelsVBox);
