@@ -181,7 +181,7 @@ public class SourceWindowFactory
       public void procNotFound (ProcId procId, Exception e)
       {
         System.err.println("Couldn't find the process: " + procId.toString());
-        Manager.eventLoop.requestStop();
+        Gui.quitFrysk();
       }
     });
   }
