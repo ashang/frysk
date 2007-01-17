@@ -55,6 +55,11 @@ import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+//import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.Parser;
+
 import org.gnu.gdk.Color;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
@@ -135,6 +140,12 @@ public class Gui implements LifeCycleListener, Saveable {
 	LibGlade process_picker_glade;
 
 	static Logger logger;
+    
+    private static boolean flag = true;
+    
+    private static String argString = "";
+    
+    private static int pid = 0;
 
 	/**
 	 * gui - FryskUI main program. Loads the window from glade,
@@ -150,6 +161,18 @@ public class Gui implements LifeCycleListener, Saveable {
                           String[] imagePaths, String[] messagePaths,
                           String[] testfilePaths)
   {
+    
+    Parser parser = new Parser("frysk", "1..23", true);
+    parser.setHeader("usage: frysk [options]");
+
+    addOptions(parser);
+
+    parser.parse(args, new FileArgumentCallback()
+    {
+      public void notifyFile (String arg) throws OptionException
+      {
+      }
+    });
 
     Gui procpop = null;
     Preferences prefs = null;
@@ -191,6 +214,12 @@ public class Gui implements LifeCycleListener, Saveable {
     // Sets transaltion bundle paths
     Messages.setBundlePaths(messagePaths);
 
+    if (flag == false)
+      {
+        gui (args, glade_dirs);
+        return;
+      }
+    
     // Load glade, and setup WindowManager
     try
       {
@@ -275,42 +304,58 @@ public class Gui implements LifeCycleListener, Saveable {
       }
   }
     
-    public static void gui (String[] args, String[] glade_dirs,
-                              String[] imagePaths, String[] messagePaths,
-                              String[] testfilePaths, boolean sw, int pid, String exe)
+    private static void addOptions (Parser parser)
+    {
+//    parser.add(new Option("new", 'n', "debug new exec", "EXECUTABLE")
+//        {
+//            public void parsed (String arg) throws OptionException
+//            {
+//                File file = null;
+//                try 
+//                {
+//                    file = new File(arg);
+//                    if (!file.exists())
+//                    {
+//                        System.out.println("Cannot find executable!");
+//                        System.exit(1);
+//                    }
+//                    else
+//                      argString = arg;
+//                    
+//                    flag = false;
+//                }
+//                catch (Exception e)
+//            {
+//                OptionException oe = new OptionException("couldn't parse executable: " + arg);
+//                oe.initCause(e);
+//                throw oe;
+//            }
+//        }
+//        });
+    
+//    parser.add(new Option("pid", 'p', "debug running pid", "EXECUTABLE")
+//        {
+//        public void parsed (String arg) throws OptionException
+//        {
+//          flag = false;
+//            try 
+//            {
+//                pid = Integer.parseInt(arg);
+//            }
+//            catch (NumberFormatException nfe)
+//            {
+//                OptionException oe = new OptionException("couldn't parse pid: " + arg);
+//                oe.initCause(nfe);
+//                throw oe;
+//            }
+//        }
+//        });
+    }
+    
+    public static void gui (String[] args, String[] glade_dirs)
       {
-
+        
         Preferences prefs = null;
-        
-        System.setProperty("gnome.appName", "Frysk");
-
-        // Check Frysk data location is created
-        createFryskDataLocation(Config.FRYSK_DIR);
-
-        // Make sure that a Frysk invocation is not already running
-        if (isFryskRunning())
-          {
-            System.err.println("Frysk is already running!");
-            System.exit(0);
-          }
-
-        // Create a Frysk lock file
-        createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
-
-        Gtk.init(args);
-        
-        IconManager.setImageDir(imagePaths);
-        IconManager.loadIcons();
-        IconManager.useSmallIcons();
-
-        // Bootstraps Core logging
-        setupCoreLogging();
-
-        // Bootsraps Error Logging
-        setupErrorLogging();
-
-        // Sets transaltion bundle paths
-        Messages.setBundlePaths(messagePaths);
         
         SourceWindowFactory.setGladePaths(glade_dirs);
         RegisterWindowFactory.setPaths(glade_dirs);
@@ -335,7 +380,7 @@ public class Gui implements LifeCycleListener, Saveable {
         if (pid != 0)
           SourceWindowFactory.attachToPID(pid);
         else
-          SourceWindowFactory.startNewProc(exe);
+          SourceWindowFactory.startNewProc(argString);
         
         Gtk.main();
 

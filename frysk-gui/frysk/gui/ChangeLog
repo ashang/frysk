@@ -1,3 +1,16 @@
+2007-01-17  Mike Cvet  <mcvet@redhat.com>
+
+	* Gui.java (flag): Added. Determines if the monitor side of Frysk gets
+	instantiated or not.
+	(argString): Added. Contains path to executable for option parsing.
+	(pid): Added. PID to attach to, given proper option parsing.
+	(gui): Added option parsing. Will either instantiate the monitor or not, 
+	checking after creation-agnostic code has been completed.
+	(addOptions): Added. Option parsing callbacks. Commented out pending
+	#3878.
+	(gui): Changed from a clone of the original gui() call to simply
+	completing GUI creation minus the Monitor.
+
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* test/TestIconManager.java (BASE_PATH, imagePaths): Delete,
