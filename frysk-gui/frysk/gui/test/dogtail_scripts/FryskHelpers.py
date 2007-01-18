@@ -765,3 +765,10 @@ def showChildren_new ( theNode, theType, theAction ):
     theList = theNode.children
     for x in theList:
         showChildren_new ( x, theType, theAction )    
+
+# ---------------------
+def brokenTest( bugNumber ):  
+    """ Function used to exit a broken test
+    """  
+    print "TestBroken please refer to http://sourceware.org/bugzilla/show_bug.cgi?id=" + str(bugNumber)
+    return True

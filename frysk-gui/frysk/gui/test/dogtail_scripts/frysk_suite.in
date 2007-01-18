@@ -104,6 +104,7 @@ suite.addTest(viewerButtonsSuite)
 suite.addTest(viewerMarkersSuite)
 suite.addTest(test2866Suite)
 suite.addTest(test2985Suite)
+suite.addTest(eventViewerAccessibilityInfo)
 # Commented out - test aborts as of 20060926 - bug #2807
 # suite.addTest(stressDruidSuite)
 suite.addTest(guiWalkTestSuite)

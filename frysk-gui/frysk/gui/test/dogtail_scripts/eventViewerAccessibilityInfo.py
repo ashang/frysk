@@ -59,6 +59,8 @@ import FryskHandler
 import sys
 import os
 
+import re
+
 # Set up for logging
 import dogtail.tc
 
@@ -83,6 +85,9 @@ class viewerMarkers (unittest.TestCase):
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
 
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
+
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
@@ -97,53 +102,40 @@ class viewerMarkers (unittest.TestCase):
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
         createMinimalSession (self.frysk, self.theSession, False, False)
-
+        
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
         
-    def testEVMarkers(self):  
-        """test = viewerMarkers.testEVMarkers - Check that GUI buttons can be acccessed""" 
+    def testEVAccessibilityInfo(self):  
+        """test = eventViewerAccessibilityInfotestEVAccessibilityInfo - Test that EV provides A11y info""" 
         
         if brokenTest(3282):
             return
+                             
         
         monitor = self.frysk.child(MONITOR)
-        nautilus = self.frysk.child('funit-child')
-        nautilus.grabFocus()
-        statusWidget = monitor.child('statusWidget')
 
+        procBox = self.frysk.child('funit-childTimeLinesVBox')
+#        procBox.blink(10);
+
+        timeLine = procBox.children[0];
+#       timeLine.blink(10);
+          
+        statusWidget = monitor.child('statusWidget')
+   
+        print "found " + timeLine.name;
         #Ensure that there are the proper number of monitors.
 
         # Positive test
-        theObserverList = ['Terminating Observer', 'Exec Observer', 'Fork Observer']
-        for observerName in theObserverList:
-            try:
-                tempObserver = statusWidget.child(observerName)
-                self.theLogWriter.writeResult({'INFO' :  'positive test passed - observer ' + observerName + ' found'  })
-            except dogtail.tree.SearchError:
-                self.fail ( 'Error - unable to locate Observer with name = ' + observerName )
-                sys.exit(1)
-
-        # Negative test
-
-        # Set the threshold to 3 to avoid having 17 search failure messages displayed for
-        # each iteration of the negative test
-        config.searchCutoffCount=3
-
-        theBadObserverList = ['Terminating Observer suffix', 'prefix Exec Observer']
-        for observerName in theBadObserverList:
-            try:
-                tempObserver = statusWidget.child(observerName)
-                self.fail ( 'Error - located a non-existent Observer with name = ' + observerName )
-                sys.exit(1)
-            except dogtail.tree.SearchError:
-                self.theLogWriter.writeResult({'INFO' :  'negative test passed - non-existent observer ' + observerName + ' not found'  })
-
+        if len(timeLine.children) == 0:
+            self.fail ( 'Error - EventViewer does not provide A11y info for events' )
+          
+       
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(viewerMarkers('testEVMarkers'))
+    suite.addTest(viewerMarkers('testEVAccessibilityInfo'))
     return suite
 
 if __name__ == '__main__':
