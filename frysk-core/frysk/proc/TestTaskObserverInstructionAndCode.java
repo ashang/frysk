@@ -131,7 +131,7 @@ public class TestTaskObserverInstructionAndCode extends TestLib
     public Action updateTerminated (Task task, boolean signal, int value)
     {
       String message = task + " terminated (signal: " + signal + "): " + value;
-      System.err.println(message);
+      fail(message);
       throw new IllegalStateException(message);
     }
   }

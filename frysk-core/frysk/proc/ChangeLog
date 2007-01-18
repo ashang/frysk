@@ -1,3 +1,8 @@
+2007-01-18  Mark Wielaard  <mark@klomp.org>
+
+	* TestTaskObserverInstructionAndCode.java
+	(TestObserver.updateTerminated): Explicitly fail().
+
 2007-01-17  Nurdin Premji  <npremji@redhat.com>
 
 	* TestLib.java (isChildOf): Changed to use Stat.ppid rather than proc.getParent().getPid().
