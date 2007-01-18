@@ -1,3 +1,9 @@
+2007-01-18  Andrew Cagney  <cagney@redhat.com>
+
+	* FryskGui.javain (GLADE_PKG_PATH): Change to "gladedir/".
+	* glade/: Rename to ..
+	* gladedir/: ... this.
+
 2007-01-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* helpdir: New, directory to contain online documentation.

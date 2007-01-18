@@ -50,7 +50,7 @@ public class FryskGui
     public static void main (String[] args)
     {
 	final String BASE_PATH = "frysk/gui/";
-	final String GLADE_PKG_PATH = "glade/";
+	final String GLADE_PKG_PATH = "gladedir/";
 	final String SRCDIR = "@srcdir@";
 	final String ABS_SRCDIR = "@abs_srcdir@";
 	Gui.gui (args, new String[] {
