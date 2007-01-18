@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,6 +51,12 @@ public class DwflLine
   {
     this.pointer = pointer;
     this.parent = parent;
+  }
+
+  public String toString()
+  {
+    return "DwflLine[0x" + Long.toHexString(getAddress())
+      + " " + getSourceFile() + ":" + getLineNum() + ":" + getColumn() + "]";
   }
 
   public String getSourceFile ()
