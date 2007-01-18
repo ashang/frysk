@@ -68,3 +68,5 @@ frysk-build-core -d frysk/frysk-core frysk-core &frysk-common
 frysk-build-gui -d frysk/frysk-gui frysk-gui &frysk-common
 frysk-build-imports -d frysk/frysk-imports frysk-imports &frysk-common
 frysk-build-htdocs -d frysk/htdocs htdocs
+
+libunwind -d libunwind frysk-imports/libunwind
