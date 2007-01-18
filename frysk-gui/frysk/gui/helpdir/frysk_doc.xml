@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+	<!ENTITY legal SYSTEM "legal.xml">
+	<!ENTITY app "Frysk">
+	<!ENTITY appversion "1.0">
+	<!ENTITY manrevision "1.0">
+	<!ENTITY year "2007">
+]>
+<article id="index" lang="en-US">
+	<articleinfo>
+		<title>&app;: Debugger/Monitoring Tool Revision &manrevision;</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="figures/fryskbiglogo.png" format="PNG"/>
+			</imageobject>
+		</mediaobject>
+		<copyright>
+			<year>2007</year>
+		</copyright>
+		<publisher>
+			<publishername>Red Hat Inc.</publishername>
+		</publisher>
+		<authorgroup>
+			<author role="maintainer">
+				<firstname>Red Hat Frysk Development Team</firstname>
+				<surname/>
+				<affiliation>
+					<orgname>Red Hat Inc.</orgname>
+				</affiliation>
+			</author>
+		</authorgroup>
+	</articleinfo>
+	<indexterm>
+		<primary>&app;</primary>
+	</indexterm>
+	<indexterm>
+		<primary>debugger</primary>
+	</indexterm>
+	<indexterm>
+		<primary>system monitor</primary>
+	</indexterm>
+	<!-- ============= Document Body =============== -->
+	<!-- ============= Overview ============ -->
+	<sect1 id="frysk-introduction">
+	<sect1info>
+		<graphic fileref="figures/fryskbiglogo.png"></graphic>
+	</sect1info>
+		<title>Introduction</title>
+		<figure id="frysk-logo">
+				<title>&app; Logo</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/fryskbiglogo.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+				<literallayout/>
+			</figure>
+		<para>The primary goal of the &app; project is to provide an intelligent, state-of-the-art tool for developers and systems administrators that enables them to monitor the inner workings of processes within a system or multiple systems and alert them if/when problems occur. &app; is designed to <keycap>observe</keycap> processes as unobtrusively as possible and detect problems at a point in time when the user can interrogate the errant process to get useful information before it exits the cpu queue. This information will help either resolve the problem or will result in data that will help narrow the problem down to where the next debug run can be more intelligently instrumented so it will harvest even more and better data or resolve the problem altogether.</para>
+		<para/>
+		<para>The key difference between &app; and most of the available open source Linux debuggers is that once the errant process has been identified, the user can then utilize &app; to attach <keycap>observers</keycap> to it that will stop the process at any sign of trouble or a user-defined behavior is detected. In the case of an errant process, it is stopped while useful information can be retrieved via backtraces, retrieving variable values, setting breakpoints, etc. When a &app;-observed process misbehaves, the user can configure &app; to perform several actions including having e-mails sent, having warning windows appear, having a <keycap>debug</keycap> window appear with the source code in it that the user can set breakpoints, look at variable values, etc. and/or having other processes/scripts activated and a whole list of other options.</para>
+		<para/>
+		<para>&app; has been designed to support two different workflows or modes of operation. A monitoring mode where a user can watch the actions of various processes through a feature called <keycap>observers</keycap>; and a debugging mode that the user can activate either via an observer from the monitoring side of &app; or as an independent task that has no connection to the monitoring side.</para>
+	</sect1>
+	<!-- ====================== Starting Frysk ================== -->
+	<sect1 id="starting-frysk">
+		<title>Starting the &app; UI</title>
+		<para>The UI part of &app; can be started in the following ways:</para>
+		<variablelist>
+			<varlistentry>
+				<term>
+					<guimenu>Applications</guimenu> menu</term>
+				<listitem>
+					<para>Choose <menuchoice>
+							<guisubmenu>System Tools</guisubmenu>
+							<guimenuitem>&app;</guimenuitem>
+						</menuchoice>
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term>Command line</term>
+				<listitem>
+					<para>Execute the following command: <command>frysk</command>
+					</para>
+				</listitem>
+			</varlistentry>
+		</variablelist>
+	</sect1>
+	<!-- =================== Frysk Monitoring Mode ====================== -->
+	<sect1 id="frysk-monitoring-mode">
+		<title>Monitoring Mode</title>
+		<sect2 id="observer-concept">
+			<title>Observer Concept</title>
+			<para>The <keycap>observer</keycap> model &app; uses is based on the Java <keycap>Observable</keycap> class. Basically the theory of operation here is that when an <keycap>observer</keycap> is attached to a process and/or a thread within a process(from now on when process is mentioned, the entire process or a thread within a process is implied), it reports back to the process that initiated the observer(&app; in this case) that the behavior has occurred. </para>
+			<para>Now the question is, what kinds of observers may be attached? The following observers are defined for &app; and may be attached to a process:</para>
+			<itemizedlist>
+				<listitem>
+					<para>Exec – Monitor a process for a call to the “exec” function</para>
+				</listitem>
+				<listitem>
+					<para>Fork – Monitor a process for a call to the “fork” function</para>
+				</listitem>
+				<listitem>
+					<para>Task Clone – Monitor a process for a clone operation</para>
+				</listitem>
+				<listitem>
+					<para>Task Terminating – Monitor a process for any activity for it to exit the cpu queue</para>
+				</listitem>
+				<listitem>
+					<para>Syscall – Monitor a process for any system call</para>
+				</listitem>
+				<listitem>
+					<para>Custom – Apply one of the above filters with filtering</para>
+				</listitem>
+			</itemizedlist>
+			<para>When these <keycap>observers</keycap> are attached to a process, the user can define how they want &app; to respond to the <keycap>observer</keycap> being triggered. These user-defined responses are enumerated in the <keycap>Overview</keycap> section and are described in more detail later in this document. </para>
+			<para/>
+			<para>The <keycap>custom observer</keycap> is basically any of the other five observers with filtering applied. For example, if the user wants to monitor a task with an <keycap>exec observer</keycap>, but wants an action to occur only when a certain task or certain tasks are exec'ed, then the <keycap>custom observer</keycap> would be used. If the user wants an action to occur when any <keycap>exec</keycap> call is made, the <keycap>exec observer</keycap> would be used.</para>
+		</sect2>
+		<!-- =================== Define Monitoring Session =================== -->
+		<sect2 id="define-debug-session">
+			<title>Defining a Monitoring Session</title>
+			<para/>
+			<para>Here is the first window that appears for &app; when the UI is activated. </para>
+			<figure id="startup-screen">
+				<title>&app; Start-up Screen</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_startup.png" format="PNG"/>
+						</imageobject>
+						<textobject>
+							<phrase>Shows &app; Initial window</phrase>
+						</textobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>This is the initial &app; start-up screen. From this screen the user may launch into either the monitoring part of &app; or the debug part of &app;. This document will begin with the monitoring side.</para>
+			<para>The default selection is for the &app; monitoring side as indicated by the <guibutton>Run or Manage Sessions</guibutton> radio button being selected. Since there are currently no sessions defined as indicated by the blank white area of the screen, <keycap>monitoring sessions</keycap> must be defined before monitoring can occur. Basically, a <keycap>monitoring session</keycap> consists of a process or group of processes that a user has attached <keycap>observers</keycap> to. The user may define as many sessions as they want.  These <keycap>monitoring sessions</keycap> are saved between activations of &app;.  So, once a <keycap>monitoring session</keycap> is defined, it will be available the next time the user starts &app;, unless, of course, it is deleted.</para>
+			<para/>
+			<para>So, to start the monitoring part of the &app; UI, at least one <keycap>monitoring session</keycap> must be defined. The user can define a <keycap>monitoring session</keycap> by clicking the <guibutton>New</guibutton> button to cause the following window to appear.</para>
+			<para/>
+			<figure>
+				<title>&app; Create Monitoring Session</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_create_mon_session.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+				<literallayout/>
+			</figure>
+			<para/>
+			<para>From this window a <keycap>monitoring session</keycap> can be created by selecting the process or group(s) of processes. The list of processes is derived from the cpu queue list of processes that the current user owns. (&app; does not allow a user to monitor/debug processes that they do not own.) For example, if <keycap>bash</keycap> was chosen from the list on the left, all of the child processes that <keycap>bash</keycap> has activated would also be selected.</para>
+			<para/>
+			<para>So, select the process(es) of interest from the <keycap>Process Groups</keycap> list and place the in the <keycap>Observed Process Groups</keycap> list by either double-clicking them or single-clicking and then clicking on the <guibutton>right-arrow</guibutton> button. Processes mistakenly selected can be removed by selecting them and clicking the <guibutton>left-arrow</guibutton> button.</para>
+			<para/>
+			<para>So, select a process and place it into the <keycap>Observer Process Groups</keycap>. The <guibutton>Forward</guibutton> button now becomes active enabling the user to progress to the next step in defining a <keycap>monitoring session</keycap> Clicking on that button brings up the next window enabling the user to attach whatever <keycap>observers</keycap> they desire.</para>
+			<para/>
+			<figure id="create-monitor-session">
+				<title>Create a &app; Monitoring Session (Page 2)</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_create_mon_session_2.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>This window is where the <keycap>Observers</keycap> get attached to the <keycap>Process Groups</keycap>. If there are multiple <keycap>Process Groups</keycap>, each one can have its own unique set of observers. If all a user wants to do is monitor a process group with one of the five observers and have a log or graph of each time a selected observer “fires”, then simply select the desired observer(s) and click <guibutton>Finish</guibutton>.</para>
+			<para/>
+		</sect2>
+		<!-- ================= Custom Observer Creation ================ -->
+		<sect2>
+			<title>Custom Observer Creation</title>
+			<para>If a user wants to do more than log/graph observer firings, then a <keycap>custom observer</keycap> must be created. This allows more control over an observer by allowing filters to be applied that more narrowly focuses one of the five other observers and gives much more precise control over when the observer fires. Click on the <guibutton>Create a Custom Observer</guibutton> button to begin the <keycap>custom observer</keycap> creation process.</para>
+			<para/>
+			<figure id="create-custom-observer">
+				<title>Create Customer Observer</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_create_custom_observer.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>From this window the user is given several options. Usually the five core observers shown here should be left alone and a new observer created. Click the <guibutton>New</guibutton> button to create a totally new observer with the following window.</para>
+			<para/>
+			<figure id="custom-observer-details">
+				<title>Custom Observer Details Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_create_custom_observer_details.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>From this window the name of the <keycap>custom observer</keycap> is defined and a brief description can be entered in the first two fields. The <guilabel>Event</guilabel> field is where one of the five core observers is chosen as a basis for this observer. The <guilabel>Filters</guilabel> field is where one or more filters may be applied to control when this observer fires. As many filters as is desired may be applied for a <keycap>custom observer</keycap>. Just click the <guibutton>+</guibutton> button to add more filters and click the <guibutton>-</guibutton> button to delete the currently-selected filter. The <guilabel>Actions</guilabel> field allows the definition of an action or a series of actions to be performed when the observer fires.</para>
+			<para/>
+			<para>For example, suppose a user wanted to observe a process and stop it and look at the source code whenever it tried to execute a process named <keycap>foo</keycap>. The &app; <keycap>Custom Observer Details</keycap> window would look something like the following.</para>
+			<para/>
+			<figure id="defined-custom-observer">
+				<title>Example of a Defined Custom Observered Based on an Exec Observer Filtered on Foo</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_defined_custom_observer.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>The above-defined <keycap>custom observer</keycap>, when attached to a process, looks for that process to exec another process named <keycap>foo</keycap> and when that occurs the observer would perform the selected action. In this case the <keycap>custom observer</keycap> would bring up a source window showing the code that is being executed and the process exec'ing <keycap>foo</keycap> would be stopped per the instructions defined for <guilabel>After</guilabel> actions are finished. As mentioned earlier, more filters/action can be applied. For example, if the user wanted to also watch for any occurrences of the process <keycap>bar</keycap> being executed, another filter could be added the same as for <keycap>foo</keycap>. So the process would be stopped upon any execution of either <keycap>foo</keycap> or <keycap>bar</keycap>.</para>
+			<para/>
+			<para>Logic can also be reversed for filters. That is, if you wanted to stop the process upon execution of any process other than <keycap>bar</keycap>, the filter could be changed from <keycap>is</keycap> to <keycap>is not</keycap>. There are also several other actions that can be performed when the observer fires such as printing the state of the exec'ing thread, showing the memory or register window of the executing thread, and others.</para>
+			<para/>
+			<para>As can be seen from this example, <keycap>custom observers</keycap> provide very powerful capabilities to the user. This feature is a great differentiator from the rest of the open source debuggers and adds a great deal of utility for &app;.</para>
+			<para/>
+			<para>When all definitions are complete, click on <guibutton>OK</guibutton> to complete the definition of this <keycap>custom observer</keycap> and return to the &app; <keycap>Custom Observers</keycap> window where it should be listed in the <guilabel>Observers</guilabel> pane. This observer is now available to be attached to any process or group of processes just like any of the core observers.</para>
+			<para/>
+		</sect2>
+		<!-- ================ Starting a Monitoring Session ================== -->
+		<sect2>
+			<title>Starting a Monitoring Session</title>
+			<para>Once at least one <keycap>monitoring session</keycap> has been defined, the monitoring part of &app; can be activated. So to start a <keycap>monitoring session</keycap>, make sure the <guibutton>Run</guibutton> or <guibutton>Manage Sessions</guibutton> radio button is selected, then select the desired session in the window of the startup screen and either double-click it or single-click the session and then click <guibutton>Open</guibutton>.</para>
+			<para/>
+			<figure id="startup-manager">
+				<title>&app; Startup Manager with a Monitoring Session Defined</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_start_mon_session.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+				<literallayout/>
+			</figure>
+			<para/>
+			<para>Once a <keycap>monitoring session</keycap> has been selected and opened, the monitoring part of &app; begins. Sometimes an interim window called a <guilabel>Process Picker</guilabel> will appear if there are multiple PID's in the cpu queue with the same name as the one the user has selected to monitor. In the above example a <keycap>bash</keycap> observer has been selected and when the <guibutton>Open</guibutton> button is clicked the following screen appears.</para>
+			<para/>
+			<figure id="monitoring-session-process-picker">
+				<title>Debug Session Process Picker Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_mon_session_proc_picker.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>As can be seen above there are multiple <keycap>bash</keycap> processes currently in the cpu queue. The user can either select a single PID or all or any number in between to monitor. Once the desired PID(s) have been selected, click the <guibutton>Forward</guibutton> button to continue. The main &app; monitoring window should appear and look something like this.</para>
+			<figure id="initial-monitoring-window">
+				<title>Initial &app; Monitoring Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_initial_monitor.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>As you can see, the initial Frysk screen is divided into 4 areas or <keycap>panes</keycap>: <guilabel>Processes</guilabel>, <guilabel>Status</guilabel>, <guilabel>Threads</guilabel> and <guilabel>Main Log</guilabel>. The upper left view currently has one tab for <guilabel>Processes</guilabel>. In the <guilabel>Process</guilabel> pane is a list of all of the processes defined(and possibly selected in the <guilabel>Process Picker</guilabel> window) for this <keycap>monitoring session</keycap>. To activate the <guilabel>Status</guilabel> and <guilabel>Threads</guilabel> panes, simply click on one of the processes in the <guilabel>Processes</guilabel> pane.</para>
+			<para/>
+			<figure id="after-process-selection">
+				<title>After a Process has been Selected</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="figures/frysk_monitor_after.png" format="PNG"/>
+					</imageobject>
+				</mediaobject>
+				<literallayout/>
+			</figure>
+			<para>With the selection of a process, the <guilabel>Status</guilabel> and <guilabel>Threads</guilabel> panes become active. The <guilabel>Threads</guilabel> pane is self-explanatory as it will contain a list of the threads of the selected process. The <guilabel>Status</guilabel> pane is basically a timeline of the observer firings for the selected process/thread. A blip would appear on the line anytime one of the observers attached to that process fires. There are controls at the top of the timeline to change the length of time viewed in the pane, allows the user to start/stop the timeline and to center the data in the pane.</para>
+			<para/>
+			<para>The following screenshot shows a monitor window where a <keycap>bash</keycap> process is has three observers attached, fork, exec and terminating. In this example, many forks have been executed and each one has been recorded in the <guilabel>Main Log</guilabel> pane and plotted in the <guilabel>Status</guilabel> pane.</para>
+			<figure id="monitor-window-fork-events">
+				<title>&app; Monitor Window Showing Numerous Fork Events</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_monitor_fork_events.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>The <guilabel>Main Log</guilabel> pane will show a line for every observer that fires with a time-stamp. The line will contain information on which observer fired(since multiple observers can be attached to a process/thread) and the host name where the event took place.</para>
+			<para/>
+			<para>The <guilabel>Status</guilabel> pane shows the fork observer symbol on the timeline each time the observer fires. The user can use the cursor to hover over an item on the line and a description will be displayed as shown above. In the above screenshot there were three fork observers firing about the same time and so the three events are displayed.</para>
+		</sect2>
+		<sect2 id="attaching-additional-observers">
+			<title>Attaching Additional Observers from the Monitor</title>
+			<para>Additional observers can be attached to the processes from the monitoring screen by right-clicking on a process in the <guilabel>Processes</guilabel> pane or a thread in the <guilabel>Threads</guilabel> pane as shown below.</para>
+			<para/>
+			<figure id="adding-observers">
+				<title>Adding Observers Via the &app; Monitor Screen</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_monitor_adding_observers.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>Grayed out observers in the list have already been attached to the process. Be aware that any observers added from the monitor window are only temporary for this monitoring session. Once the monitoring window for a session is closed, any observers attached from the monitoring screen will not be attached next time this session is opened again. To attach observers that will be applied upon the next activation of &app;, use the &app; <guilabel>Session Manager</guilabel> as described previously.</para>
+			<para>An observer can be attached to either the entire process(which basically attaches an observer to all of the threads(tasks) in a process) or it can be attached to a particular thread. To attach an observer to all of the threads in a process, use the process list in the <guilabel>Processes</guilabel> pane. To attach to a single thread within a process use the <guilabel>Threads</guilabel> pane. Each process can have as many observers attached as the user desires. Please keep in mind that each attached observer will consume a small percentage of system resources.</para>
+			<para/>
+		</sect2>
+	</sect1>
+	<!-- ======================== Debugging Mode ================= -->
+	<sect1 id="debugging-mode">
+		<title>Debugging Mode</title>
+		<para>The debugging mode has two separate methods of operation: command line driven or GUI driven.  Some capabilities are duplicated, some are not.  View the capabilities of each to determine which mode will best suite your needs.</para>
+		<sect2 id="source-window">
+			<!-- ====================== Source Window ================= -->
+			<title>Source Window</title>
+			<para/>
+			<para>The source window feature of &app; is currently only partially operational. Source code can be retrieved, marked up with highlighting info, stack trace highlighting of source lines, variable values can be viewed with a right-click and also placed into a <guilabel>Variable Trace</guilabel> pane where its value will change as the process executes.  Also, stepping on a line-by-line basis works too.  More features will be coming online in the coming weeks as the &app; infrastructure grows to accommodate them.</para>
+			<para/>
+			<para>***NOTE*** For the source window to work as expected on a process, that process must have been compiled with the <keycap>-g</keycap> option and the source code must be left in the same locations as it was when compiled. The location of the source code is derived from the ELF header of the executable where the compiler stores it.  If it is not, when the source window is activated the message <keycap>No debug information for this stack frame</keycap> will be displayed where the source code should appear.</para>
+			<para/>
+		</sect2>
+		<!-- ===================== Activation ================== -->
+		<sect2>
+			<title>Activation</title>
+			<para>The most common way to activate the source window is from the initial &app; window. Simply select the <guilabel>Debug an Existing Process</guilabel> radio button and click on the <guibutton>Click Here to Select an Existing Process</guibutton> button to bring up a list of processes that the current UID/GID owns.</para>
+			<para/>
+			<figure id="list-of-processes">
+				<title>List of Processes to Attach &app; Debugger To</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_debug_proc_list.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>Another way to activate the source window is to set that as as action to be performed when a <keycap>custom observer</keycap> fires. When defining a <keycap>custom observer</keycap> the user can define many actions to be performed and activating a source window is one of them. The following screenshot is an example of an activated source window.</para>
+			<para/>
+			<figure id="source-window_figure">
+				<title>Source Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_initial_source_window.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>The source window is divided into 4 sections: the <guilabel>Toolbar</guilabel>, <guilabel>Current Stack</guilabel>, <guilabel>Variable Traces</guilabel> and the view of the source itself. The <guilabel>Current Stack</guilabel> view shows the list of functions/tasks that have been defined for this process and the <guilabel>Variable Traces</guilabel> view has the variable values of any variables the user has selected to follow.</para>
+		</sect2>
+		<sect2 id="toolbar">
+			<title>Toolbar</title>
+			<para>Hovering the mouse cursor over each icon on the toolbar provides a useful tooltip explaining its function if the icon itself is not self-explanatory. Symbols that are universally-accepted to developers are used. As can be seen in the screenshot, all of the functionality required to easily and efficiently debug applications is available. The grayed out icons are for future functionality.</para>
+			<para>In addition to the icons on the toolbar, there are two other items. The item on the far right is a pulldown window that provides a selection of how the source window should be displayed. The choices are: SOURCE, SOURCE/ASM, ASM, MIXED. As of right now, only SOURCE is supported. More info will be provided as these features are implemented.</para>
+			<para/>
+			<para>To the left of the pulldown is a <guilabel>Jump to Function</guilabel> field. On the right-hand side of the field is a down-arrow indicating there are already some pre-built jump entries. &app; automatically puts the name of each of the functions contained within the current source window there as a help to the developer. If the developer wants to search for other strings within the source window, press CTRL-F and the <guilabel>Find</guilabel> toolbar will appear at the bottom of the screen as shown in the following screenshot.</para>
+			<para/>
+			<figure id="source-with-toolbar">
+				<title>Source Window with "Find" Toolbar Enabled</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_source_window_toolbar.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>As can be seen above, the <guilabel>Find</guilabel> mechanism within &app; is based loosely on the Firefox was of searching. Another way of activating the <guilabel>Find</guilabel> toolbar is to left-click on the <guilabel>Edit</guilabel> pulldown on the toolbar and select <guilabel>Find</guilabel> from the items on the pulldown.</para>
+			<para/>
+		</sect2>
+		<!-- ================= Expanding Inline Code ================ -->
+		<sect2 id="expanding-inline-code">
+			<title>Expanding Inline Code</title>
+			<para>Much thought has gone into the design of the source window incorporating many of the nice features of many open source GUI debuggers, plus a few more features have been/are being added.</para>
+			<para/>
+			<para>Inside the main source window where the example C++ code resides, notice that there is key-word highlighting. Variable names are in one color, function names in another, etc.</para>
+			<para/>
+			<para>A nice feature that has been implemented in the source window in &app; is the ability to view expanded inline code on demand. When a line of source code represents an inline function, the letter <keycap>i</keycap> appears in the column beside its line number.  Clicking on the line the <keycap>i</keycap> is on will expand that line and create another column of line numbers representing the inline function definition.  Below is a screenshot of this feature.</para>
+			<para/>
+			<figure id="source-window-expanded-inline">
+				<title>Source Window Showing Inline Code Expanded</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_source_window_inline.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+		</sect2>
+		<!-- =============== Other Planned Features =================== -->
+		<sect2 id="other-planned-features">
+			<title>Other Planned Source Window Features</title>
+			<para>Other planned features for the source window(not a complete list, just the highlights):</para>
+			<orderedlist>
+				<listitem>
+					<para>One-click tracing of variables</para>
+				</listitem>
+				<listitem>
+					<para>One-click set-up of “printf” statements(aka tagsets)</para>
+				</listitem>
+				<listitem>
+					<para>Show optimized code</para>
+				</listitem>
+			</orderedlist>
+			<para/>
+		</sect2>
+		<!-- ===================== Register Window ==================== -->
+		<sect2>
+			<title>Register Window</title>
+			<para>This window is activated from the source window <guilabel>View</guilabel> tab as shown in the screenshot below.</para>
+			<para/>
+			<figure id="window-activation">
+				<title>How to Activate the Register/Memory/Disassembly Windows</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_activate_reg-mem-dis.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+			<para>The <guilabel>&app; Register Window</guilabel> allows the user to view the current data in the registers associated with the current task being shown in the source window. The data can be shown in various formats: hexadecimal, octal, binary and decimal. The formats shown are user-selectable as are the order in which they are shown from left to right. To rearrange the column orders , simply left-click on a column heading and drag-and-drop the column into the desired position. A screenshot of all of the formats currently available is shown below.</para>
+			<para/>
+			<figure id="register-window">
+				<title>&app; Register Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_register_window.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+		</sect2>
+		<!-- ==================== Memory Window ===================== -->
+		<sect2 id="memory-window">
+			<title>Memory Window</title>
+			<para>The <guilabel>&app; Memory Window</guilabel> is similar to the <guilabel>Register Window</guilabel> in that it allows user-specified memory ranges of data of the current task to be displayed in user-specified formats. Hexadecimal, decimal, octal and binary formats are supported. The order of the columns can also be ordered just as the <guilabel>Register Window's</guilabel> can. The memory range being displayed can also be varied by using the scroll arrows located at the bottom of the screen.</para>
+			<para/>
+			<figure id="memory-window-figure">
+				<title>&app; Memory Window</title>
+				<screenshot>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="figures/frysk_memory_window.png" format="PNG"/>
+						</imageobject>
+					</mediaobject>
+				</screenshot>
+			</figure>
+			<para/>
+		</sect2>
+		<!-- =================== Disassembly Window ==================== -->
+		<sect2 id="disassembly-window-figure">
+			<title>Disassembly Window</title>
+			<para>The <guilabel>Disassembly Window</guilabel> allows the user to view the assembly code generated by the source code being viewed. The memory range being viewed can be varied using the scroll arrows at the bottom of the screen.</para>
+			<para/>
+			<figure id="disassembly-window">
+				<title>&app; Disassembly Window</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="figures/frysk_disassembly_window.png" format="PNG"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para/>
+		</sect2>
+	</sect1>
+	<!-- ===================== Commnad line utilities ======================== -->
+	<sect1 id="command-line-utilities">
+		<title>&app; Command Line Utilities</title>
+		<para>A set of command line utilities have been built for &app;. These utilities use the same underlying code that the &app; GUI does to perform its tasks. These powerful utilities allow the user to perform several useful features that can be used to complement/supplement other areas of &app;. Some of these utilities are replacements for <keycap>gdb</keycap> wrappers and some are unique in their capabilities. Here is a list of the &app; command line utilities available:</para>
+		<para/>
+		<itemizedlist>
+			<listitem>
+				<para><keycap>fcore</keycap> – allows the dumping of core from a running process; replacement for gcore</para>
+			</listitem>
+			<listitem>
+				<para><keycap>ftrace</keycap> – traces system calls made by a process; comparable to strace; correctly attaches to multi-threaded processes; correctly traces fork, clone exec calls</para>
+			</listitem>
+			<listitem>
+				<para><keycap>fstack</keycap> – provides a backtrace of running processes and core files; standalone replacement of fstack/gstack with equal to or better performance; testing includes bugs files against pstack</para>
+			</listitem>
+			<listitem>
+				<para><keycap>fstep</keycap> – produces a single-step trace of a process; usage is the same as fabort; prints each instruction executed as well as the file name and the line text; there is no existing equivalent</para>
+			</listitem>
+			<listitem>
+				<para><keycap>fcatch</keycap> – prints a backtrace of a crashing process; light weight; no existing equivalent</para>
+			</listitem>
+		</itemizedlist>
+		<para>There is a man page for each of these utilities which explains in detail the operation and what parameters applies to each.</para>
+		<para/>
+	</sect1>
+	<!-- ====================== Installing/Building Frysk ================= -->
+	<sect1 id="installing-building-frysk">
+		<title>Installing/Building &app;</title>
+		<para>Please be aware that, as of this writing, &app; is project in its relative infancy, just a little over a year and a half old. As such, it is in a constant state of flux with new features being added almost every day and bugs being fixed constantly. This being the case, it might be best at this stage of the &app; project to check out the latest source code from the CVS head and build it yourself. This will ensure you have the latest version and all of the latest features and bug fixes.</para>
+		<para/>
+		<para>Beginning with RHEL4U3(Red Hat Enterprise Linux Version 4 Update 3) and FC5(Fedora Core 5), &app; is available as a “technology preview”. &app; has been added as a full-blown tool in the FC6 release and will be added to RHEL5 when it is released. Every attempt is made to make sure &app; will properly build on these platforms as long as the latest compiler and associated libraries are installed. </para>
+		<para/>
+		<para>Please visit the &app; website at <ulink url="http://sourceware.org/frysk">http://sourceware.org/frysk</ulink> for instructions on building &app; on various os' and hardware architectures as well as the latest news on &app;.</para>
+		<para/>
+	</sect1>
+	<!-- ================= Getting Involved ================ -->
+	<sect1 id="getting-involved">
+		<title>Getting Involved with &app;</title>
+		<para>Please visit the following link to see how to join the &app; developers on chat channels and mailing lists: <ulink url="http://sourceware.org/frysk/getinvolved/">http://sourceware.org/frysk/getinvolved/</ulink>. As &app; is a fully open source project, everyone who is interested is invited to participate.</para>
+		<para/>
+		<para> To enter bug reports or enhancement requests for &app;, please go to <ulink url="http://sourceware.org/frysk/bugzilla/">http://sourceware.org/bugzilla</ulink> and log in.  There you can file bug reports/enhancement requests and follow the &app; development as pretty much everything that is/will be going on is documented there.</para>
+		<para/>
+	</sect1>
+	<!-- ================ Copyright Information ============== -->
+	<sect1 id="copyright-info">
+		<title>Copyright Information</title>
+		<para>Copyright (c)&year;  by Red Hat, Inc.. This material may be distributed only subject to the terms and conditions set forth in the Open Publication License, v1.0 or later (the latest version is presently available at <ulink url="http://www.opencontent.org/openpub/">http://www.opencontent.org/openpub/</ulink>).</para>
+	</sect1>
+</article>

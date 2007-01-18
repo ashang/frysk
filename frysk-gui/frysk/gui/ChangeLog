@@ -1,3 +1,11 @@
+2007-01-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* helpdir: New, directory to contain online documentation.
+	* helpdir/figures: New, directory to contain figures for online
+	documentation.
+	* helpdir/frysk_xml: New, Frysk online documentation.
+	* helpdir/figures/*.png: New, figures for online documentation.
+
 2007-01-18  sami wagiaalla  <swagiaal@redhat.com>
 
 	* test/dogtail_scripts/frysk_suite.in (suite): Added
