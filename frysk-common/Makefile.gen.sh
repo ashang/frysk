@@ -664,7 +664,7 @@ find_images "imageMACOSX24" "images/__MACOSX/24"
 find_images "imageMACOSX32" "images/__MACOSX/32"
 
 # Form a list of all the .desktop files, these are installed in
-# PREFIX/usr/share/applications
+# PREFIX/share/applications
 
 print_header "... desktop_DATA"
 echo "desktopdir = \${prefix}/share/applications"
@@ -695,6 +695,35 @@ do
   echo property_DATA += ${file}
   echo EXTRA_DIST += ${file}
 done
+
+# Get the yelp documentation file(.xml) that needs to be installed in
+# PREFIX/share/gnome/help/PACKAGE/...
+
+print_header "... doc_DATA"
+echo "docdir = \${prefix}/share/gnome/help/frysk/C"
+echo "doc_DATA ="
+find ${dirs} \
+	-path "*/helpdir/*" \
+	-type f -name "*.xml" | while read file
+do
+  echo doc_DATA += ${file}
+  echo EXTRA_DIST += ${file}
+done
+
+# Get the figues for the yelp documentation that needs to be installed
+# in PREFIX/share/gnome/help/PACKAGE/C/figures
+
+print_header "... docimage_DATA"
+echo "docimagedir = \${prefix}/share/gnome/help/frysk/C/figures"
+echo "docimage_DATA ="
+find ${dirs} \
+	-path "*/helpdir/figures/*" \
+	-type f -name "*.png" | while read file
+do
+  echo docimage_DATA += ${file}
+  echo EXTRA_DIST += ${file}
+done
+
 
 # Form a list of the test files needed to run funit
 print_header "... test_DATA"
