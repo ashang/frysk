@@ -50,13 +50,15 @@ bin_PROGRAMS =
 bin_SCRIPTS =
 sbin_PROGRAMS =
 sbin_SCRIPTS =
-pkgdata_DATA =
 pkgdata_PROGRAMS =
 pkglib_PROGRAMS =
 pkglib_SCRIPTS =
 pkglibdir = $(libdir)/@PACKAGE@
 pkglib32_PROGRAMS =
 pkglib32dir = $(lib32dir)/@PACKAGE@
+gladedir = $(pkgdatadir)/glade
+helpdir = $(datadir)/gnome/help/C
+helpfiguresdir = $(datadir)/gnome/help/C/figures
 
 noinst_LIBRARIES =
 man_MANS =

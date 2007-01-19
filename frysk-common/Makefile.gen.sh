@@ -52,9 +52,9 @@ Search source directory for .java, .mkjava, .shjava, shenum, mkenum,
 .javain, cxxin, .c and .cxx files.  For each, generate a corresponding
 automake entry.  If the file contains a main program, also generate
 automake to build the corresponding program.  Any program located
-under a bindir/, sbindir/, or pkglibdir/ sub-directory, will be
-installed in the corresponding bin/, sbin/, or lib{,64}/frysk/
-destination directory.
+under a bindir/, sbindir/, pkgdatadir, or pkglibdir/ sub-directory,
+will be installed in the corresponding bin/, sbin/, share/, or
+lib{,64}/frysk/ destination directory.
 
 <.jar-file> or <_JAR-macro>:
 
@@ -102,12 +102,14 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.mkjava" -print \
     -o -name "[A-Za-z]*\.mkenum" -print \
     -o -name "[A-Za-z]*\.shenum" -print \
-    -o -name "[A-Za-z]*\.glade" -print \
     -o -name "[A-Za-z]*\.desktop" -print \
     -o -name "[A-Za-z]*\.properties" -print \
     -o -name "[A-Za-z]*\.fig" -print \
     -o -name "[A-Za-z]*\.g" -print \
-    -o -name "[A-Za-z_]*\.xml" -print \
+    -o -name "[A-Za-z0-9_]*\.glade" -print \
+    -o -name "[A-Za-z0-9_]*\.gladep" -print \
+    -o -name "[A-Za-z0-9_]*\.png" -print \
+    -o -name "[A-Za-z0-9_]*\.xml" -print \
     -o -path "*dir/[A-Za-z_]*\.in" -print \
     -o -path "*dir/[A-Za-z_]*\.uu" -print \
     -o -path "*dir/[A-Za-z]*\.sh" -print \
@@ -616,125 +618,6 @@ EOF
 done
 
 
-# Form a list of all the .glade files, these are installed in
-# PREFIX/share/PACKAGE/glade/.
-
-print_header "... glade_DATA"
-echo "gladedir = \$(pkgdatadir)/glade"
-echo "glade_DATA ="
-grep -e '\.glade$' files.list | while read file
-do
-  echo glade_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-# Form a list of all the image files, these are installed in
-# PREFIX/share/PACKAGE/images/.
-
-# $1 - name of the images we're loading (i.e. image16, imageMACOSXicon, etc)
-# $2 - The path to look in
-find_images ()
-{
-   print_header "... ${1}_DATA"
-
-   echo ${1}"dir = \$(pkgdatadir)/"${2}
-   echo ${1}"_DATA ="
-
-   find ${dirs} \
-       -path "*/${2}/*" -prune \
-       | while read file
-   do
-     if test -f ${file} ; then
-	 echo ${1}"_DATA += "${file} 
-	 echo EXTRA_DIST += ${file} 
-     fi
-   done
-}
-
-find_images "image" "images"
-find_images "imageicon" "images/icon"
-find_images "image16" "images/16"
-find_images "image24" "images/24"
-find_images "image32" "images/32"
-find_images "image48" "images/48"
-find_images "imageMACOSX" "images/__MACOSX"
-find_images "imageMACOSXicon" "images/__MACOSX/icon"
-find_images "imageMACOSX16" "images/__MACOSX/16"
-find_images "imageMACOSX24" "images/__MACOSX/24"
-find_images "imageMACOSX32" "images/__MACOSX/32"
-
-# Form a list of all the .desktop files, these are installed in
-# PREFIX/share/applications
-
-print_header "... desktop_DATA"
-echo "desktopdir = \${prefix}/share/applications"
-echo "desktop_DATA ="
-grep -e '\.desktop$' files.list | while read file
-do
-  echo desktop_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-print_header "... icon_DATA"
-echo "icondir = \${prefix}/share/pixmaps"
-echo "icon_DATA ="
-find ${dirs} -type f -name 'fryskTrayIcon48.png' | while read file
-do
-  echo icon_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-# Form a list of all the .properties files, these need to be copied over
-# after install
-
-print_header "... properties_DATA"
-echo "propertydir = \$(pkgdatadir)"
-echo "property_DATA ="
-grep -e '\.properties$' files.list | while read file
-do
-  echo property_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-# Get the yelp documentation file(.xml) that needs to be installed in
-# PREFIX/share/gnome/help/PACKAGE/...
-
-print_header "... doc_DATA"
-echo "docdir = \${prefix}/share/gnome/help/frysk/C"
-echo "doc_DATA ="
-find ${dirs} \
-	-path "*/helpdir/*" \
-	-type f -name "*.xml" | while read file
-do
-  echo doc_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-# Get the figues for the yelp documentation that needs to be installed
-# in PREFIX/share/gnome/help/PACKAGE/C/figures
-
-print_header "... docimage_DATA"
-echo "docimagedir = \${prefix}/share/gnome/help/frysk/C/figures"
-echo "docimage_DATA ="
-find ${dirs} \
-	-path "*/helpdir/figures/*" \
-	-type f -name "*.png" | while read file
-do
-  echo docimage_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
-
-# Form a list of the test files needed to run funit
-print_header "... test_DATA"
-echo "testdir = \$(pkgdatadir)/test"
-echo "test_DATA ="
-grep -e '.*/test[^/]*$' files.list | while read file
-do
-  echo test_DATA += ${file}
-  echo EXTRA_DIST += ${file}
-done
-
 # For all .fig files, add the corresponding .jpg file to what needs to
 # be built as DATA.
 
@@ -792,16 +675,47 @@ grep -e 'Test.*\.java$' files.list | \
     fi
 done
 
+# Generate rules for _DATA directories; these are copied over as
+# hierarchies.
+
+print_header "... *_DATA"
+sed -n -e '/dir\// {
+  h
+  x
+  s,.*/\([^/]*\)dir/\(.*\),\1/\2,
+  s,/[^/]*$,,
+  s,/,,g
+  x
+  G
+  s,\n, ,
+  p
+}' files.list | while read f dir ; do
+    # Given a/bdir/c/d/e; read f=a/bdir/c/d/e dir=abcde
+    case "$f" in
+	*.bz2.uu )
+	    data=`expr "$f" : '\(.*\).bz2.uu'`
+            echo "EXTRA_DIST += $f"
+	    ;;
+	*/bindir/* | */pkglibdir/* )
+	    # skip, not a DATA dir.
+	    continue
+	    ;;
+	*)
+	    data="$f"
+	    ;;
+    esac
+    if eval test -z "\${${dir}_DATA:-}"; then
+	eval ${dir}_DATA=true
+	echo "${dir}_DATA = "
+	# generate ${abcde}dir = ${abcd}dir/e?
+    fi
+    echo "${dir}_DATA += $data"
+done
+
+
 # Generate rules for unpacking data files.
 
 print_header "... packed files"
-sed -n \
-    -e 's,\.bz2.*,, p' -e 't' \
-    -e 's,\.uu.*,, p' -e 't' files.list \
-    | while read f ; do
-    d=$(expr $(basename $(dirname ${f})) : '\(.*\)dir')
-    echo "${d}_DATA += ${f}"
-done
 for suffix in .uu .bz2 ; do
     sed -n -e "s,\\${suffix}.*,, p" files.list | while read f ; do
         d=`dirname $f`

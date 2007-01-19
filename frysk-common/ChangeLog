@@ -1,3 +1,14 @@
+2007-01-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (gladedir, helpdir, helpfiguresdir): Define.
+	(pkgdata_DATA): Delete.
+	* Makefile.gen.sh: Implement a generic _DATA rule, that also
+	copies sub-directories.
+	(files.list): Add .glade, .gladep and .png
+	files.
+	(glade_DATA, doc_DATA, docimage_DATA, test_DATA): Delete code
+	generating custom rules.
+
 2007-01-19  Mark Wielaard  <mark@klomp.org>
 
 	* TestRunner.javain (main): Glade files moved from frysk/gui/glade
