@@ -1,3 +1,12 @@
+2007-01-19  Andrew Cagney  <cagney@redhat.com>
+
+	* testfiles/test6.cpp: Delete.
+	* testfiles/test4.cpp: Delete.
+	* testfiles/test3.cpp: Delete.
+	* testfiles/test2.cpp: Delete.
+	* testfiles/common.h: Delete.
+	* testfiles/test.cpp: Delete.
+	
 2007-01-19  Tim Moore  <timoore@redhat.com>
 
 	* SourceWindow.java (getProcIsa): new method.

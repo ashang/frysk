@@ -1,5 +1,7 @@
 2007-01-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (files.list): Do not include .gladep files.
+	
 	* Makefile.rules (helpfiguresdir): Delete.
 	* Makefile.gen.sh (_DATA): Automatically generate rules to
 	initialize sub-directory variabels such as helpfiguresdir.
