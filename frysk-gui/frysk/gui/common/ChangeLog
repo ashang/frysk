@@ -1,3 +1,8 @@
+2007-01-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* FryskHelpManager.javain: New improved configuration-aware.
+	* FryskHelpManager.java: Changed to above.
+
 2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/BooleanPreference.java (listeners): Is now a LinkedList.
