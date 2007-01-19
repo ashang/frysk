@@ -1,5 +1,9 @@
 2007-01-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (helpfiguresdir): Delete.
+	* Makefile.gen.sh (_DATA): Automatically generate rules to
+	initialize sub-directory variabels such as helpfiguresdir.
+	
 	* Makefile.rules (gladedir, helpdir, helpfiguresdir): Define.
 	(pkgdata_DATA): Delete.
 	* Makefile.gen.sh: Implement a generic _DATA rule, that also

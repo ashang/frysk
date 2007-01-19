@@ -58,7 +58,6 @@ pkglib32_PROGRAMS =
 pkglib32dir = $(lib32dir)/@PACKAGE@
 gladedir = $(pkgdatadir)/glade
 helpdir = $(datadir)/gnome/help/C
-helpfiguresdir = $(datadir)/gnome/help/C/figures
 
 noinst_LIBRARIES =
 man_MANS =

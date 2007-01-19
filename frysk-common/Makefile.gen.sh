@@ -683,14 +683,17 @@ sed -n -e '/dir\// {
   h
   x
   s,.*/\([^/]*\)dir/\(.*\),\1/\2,
-  s,/[^/]*$,,
+  s,/[^/]*$,/,
+  s,/\([^/]*\)/$, \1,
   s,/,,g
   x
   G
   s,\n, ,
   p
-}' files.list | while read f dir ; do
-    # Given a/bdir/c/d/e; read f=a/bdir/c/d/e dir=abcde
+}' files.list | while read f d1 d2 ; do
+    # Given a/bdir/c/d/e; read a/bdir/c/d/e bcd e
+    # Given a/bdir/c; read a/bdir/c b
+    dir="${d1}${d2}"
     case "$f" in
 	*.bz2.uu )
 	    data=`expr "$f" : '\(.*\).bz2.uu'`
@@ -707,7 +710,9 @@ sed -n -e '/dir\// {
     if eval test -z "\${${dir}_DATA:-}"; then
 	eval ${dir}_DATA=true
 	echo "${dir}_DATA = "
-	# generate ${abcde}dir = ${abcd}dir/e?
+	if test -n "${d2}"; then
+	    echo "${dir}dir = \$(${d1}dir)/${d2}"
+	fi
     fi
     echo "${dir}_DATA += $data"
 done
