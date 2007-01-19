@@ -2,7 +2,7 @@
 
 	* common/FryskHelpManager.java: New. Activates Frysk help.
 	* gladedir/frysk_session_manager.glade: Added "Help" button.
-	* SessionManager.java: Ditto.
+	* SessionManagerGui.java: Ditto.
 
 2007-01-18  Andrew Cagney  <cagney@redhat.com>
 

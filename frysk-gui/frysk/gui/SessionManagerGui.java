@@ -60,6 +60,7 @@ import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Util;
+import frysk.gui.common.FryskHelpManager;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.ProcessPicker;
@@ -99,6 +100,8 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	private Button newSession;
 
 	private Button openButton;
+    
+    private Button helpButton;
 
 	private ProcessPicker processPicker;
 	
@@ -373,6 +376,15 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 			}
 		});
 
+        helpButton = (Button) glade.getWidget("SessionManager_helpButton");
+        helpButton.setSensitive(true);
+        helpButton.addListener(new ButtonListener() {
+            public void buttonEvent(ButtonEvent arg0) {
+                if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
+                    helpSession();
+                }
+            }
+        });
 	}
 
 	/**
@@ -473,5 +485,14 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 		}
 		
 	}
+    
+    /**
+     * Start the Frysk help system.
+     */
+    public void helpSession() {
+
+        FryskHelpManager.activateHelp();
+        
+    }
 
 }
