@@ -45,8 +45,9 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 //import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
-import frysk.proc.MachineType;
+import frysk.proc.TaskException;
 import frysk.proc.Task;
+import frysk.proc.Isa;
 
 public class ShowMemWin
     extends TaskAction
@@ -64,17 +65,28 @@ public class ShowMemWin
 
   public void execute (Task task)
   {
-    if (MachineType.getMachineType() == MachineType.X8664
-        || MachineType.getMachineType() == MachineType.PPC64)
+    Isa isa = null;
+    try 
       {
-        WarnDialog dialog = new WarnDialog(
-                                           " The Memory Window is yet not supported\n"
-                                               + " on 64-bit architectures! ");
+	isa = task.getIsa();
+      }
+    catch (TaskException e)
+      {
+      }
+    if (isa == null || isa instanceof frysk.proc.IsaX8664
+	|| isa instanceof frysk.proc.IsaPPC64) 
+      {
+	String warning;
+	if (isa == null)
+	  warning = "Can't get architecture!";
+	else
+	  warning = " The Memory Window is yet not supported\n"
+	    + " on 64-bit architectures! ";
+	WarnDialog dialog = new WarnDialog(warning);
         dialog.showAll();
         dialog.run();
         return;
       }
-
     MemoryWindowFactory.createMemoryWindow(task.getProc());
   }
 

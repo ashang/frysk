@@ -76,4 +76,8 @@ public class DummyProc extends Proc {
 		return null;
 	}
 
+  Isa sendrecIsa() 
+  {
+    return null;
+  }
 }

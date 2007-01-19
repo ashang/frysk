@@ -1,3 +1,9 @@
+2007-01-18  Tim Moore  <timoore@redhat.com>
+
+	* ExprSymTab.java(AccessDW_FORM_block.getBufferAddr,
+	AccessDW_FORM_data.getReg): Instead of using MachineType, look at
+	the task's Isa.
+
 2007-01-16  Stan Cox  <scox@redhat.com>
 
 	* hpd/CLI.java (PrintHandler.handle): Special case baseTypeChar.

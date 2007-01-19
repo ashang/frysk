@@ -50,7 +50,7 @@ import frysk.sys.PtraceByteBuffer;
 
 import frysk.sys.RegisterSetBuffer;
 
-class IsaIA32 implements Isa
+public class IsaIA32 implements Isa
 {
   /**
    * Offset into user struct from user.h. Determined with:

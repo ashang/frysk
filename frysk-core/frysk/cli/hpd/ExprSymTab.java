@@ -61,7 +61,7 @@ import frysk.value.LongType;
 import frysk.value.IntegerType;
 import frysk.value.ShortType;
 import frysk.value.Variable;
-import frysk.proc.MachineType;
+import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
@@ -211,16 +211,20 @@ class ExprSymTab implements CppSymTab
           setSuccessful(true);
           if (currentFrame.getInner() == null)
             {
-              if (MachineType.getMachineType() == MachineType.IA32)
-                regval = task.getIsa().getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
-              else if (MachineType.getMachineType() == MachineType.X8664)
-                regval = task.getIsa().getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][1]).get (task);
+	      Isa isa = task.getIsa();
+	      
+              if (isa instanceof frysk.proc.IsaIA32)
+                regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
+              else if (isa instanceof frysk.proc.IsaX8664)
+                regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][1]).get (task);
             }
           else
             {
-              if (MachineType.getMachineType() == MachineType.IA32)
+	      Isa isa = currentFrame.getTask().getIsa();
+	      
+              if (isa instanceof frysk.proc.IsaIA32)
                 regval = currentFrame.getReg(x86regnumbers[(int)fbreg_and_disp[0]]);
-              else if (MachineType.getMachineType() == MachineType.X8664)
+              else if (isa instanceof frysk.proc.IsaX8664)
                 regval = currentFrame.getReg(fbreg_and_disp[0]);
             }
         }
@@ -341,13 +345,21 @@ class ExprSymTab implements CppSymTab
       long pc;
       int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
       long reg = 0;
+      Isa isa;
       
       try
       {
-	if (currentFrame.getInner() == null)
-          pc = task.getIsa().pc(task) - 1;
-        else
-          pc = currentFrame.getAddress();
+	if (currentFrame.getInner() == null) 
+	  {
+	    isa = task.getIsa();
+	    pc = task.getIsa().pc(task) - 1;
+	  }
+	
+	else
+	  {
+	    isa = currentFrame.getTask().getIsa();
+	    pc = currentFrame.getAddress();
+	  }
       }
       catch (TaskException tte)
       {
@@ -358,9 +370,9 @@ class ExprSymTab implements CppSymTab
       if (fbreg_and_disp[0] != -1)
       {
         setSuccessful(true);
-        if (MachineType.getMachineType() == MachineType.IA32)
+        if (isa instanceof frysk.proc.IsaIA32)
           reg = x86regnumbers[(int)fbreg_and_disp[0]];
-        else if (MachineType.getMachineType() == MachineType.X8664)
+        else if (isa instanceof frysk.proc.IsaIA32)
           reg = fbreg_and_disp[0];
       }
    

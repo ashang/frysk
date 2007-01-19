@@ -839,6 +839,16 @@ public abstract class Proc
    */
   abstract Auxv[] sendrecAuxv ();
 
+  /** Get the Isa object associated with the process. Only use this
+   *  when you don't have a Task object to interrogate.
+   */
+  public Isa getIsa () throws TaskException // XXX TaskException yuck
+  {
+    return sendrecIsa();
+  }
+  
+  abstract Isa sendrecIsa() throws TaskException; // XXX TaskException yuck
+  
   /**
    * The process has transitioned to the attached state. XXX: Should be made
    * private and instead accessor methods added. Should more formally define the

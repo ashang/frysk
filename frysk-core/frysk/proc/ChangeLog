@@ -1,3 +1,16 @@
+2007-01-18  Tim Moore  <timoore@redhat.com>
+
+	* Proc.java(getIsa, sendrecIsa): New interface for getting the ISA
+	directly from a Proc object. 
+	* DummyProc.java (sendrecIsa): implement it.
+	* LinuxPtraceProc (sendrecIsa): ditto
+	* IsaIA32.java (IsaIA32): Make class public.
+	* IsaX8664.java (IsaX8664): ditto
+	* IsaPPC.java (IsaPPC): ditto
+	* IsaPPC64.java (IsaPPC64): ditto
+	* MachineType.java (getMachineType): Use new Proc.getIsa interface
+	instead of Uname.
+
 2007-01-18  Mark Wielaard  <mark@klomp.org>
 
 	* TestTaskObserverInstructionAndCode.java

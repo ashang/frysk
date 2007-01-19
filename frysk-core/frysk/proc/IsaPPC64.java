@@ -38,7 +38,7 @@
 // exception.
 package frysk.proc;
 
-class IsaPPC64
+public class IsaPPC64
   extends IsaPowerPC
 {
   static class PPC64Register 

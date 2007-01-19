@@ -42,9 +42,11 @@ package frysk.rt;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Vector;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -82,6 +84,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
   /* Set of Tasks currently running, or unblocked. */
   private HashSet runningTasks;
 
+  /* Tasks that have hit a breakpoint */
+  private HashMap breakpointMap;
+  
   private int taskStepCount = 0;
   
   private int numRunningTasks = 0;
@@ -110,11 +115,23 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.lineMap = new HashMap();
     this.lineCountMap = new HashMap();
     this.runningTasks = new HashSet();
+    this.breakpointMap = new HashMap();
+    
   }
 
   /*****************************************************************************
    * STEP HANDLING METHODS
    ****************************************************************************/
+  Dwfl getDwfl(Task task)
+  {
+    Dwfl d = (Dwfl)dwflMap.get(task);
+    if (d == null) 
+      {
+	d = new Dwfl(task.getTid());
+	dwflMap.put(task, d);
+      }
+    return d;
+  }
 
   /**
    * Sets up stepping information - which tasks are stepping, how many there, 
@@ -136,9 +153,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
       {
         Task t = (Task) i.next();
        //System.out.println("SetupStep.iterate " + t);
-        if (this.dwflMap.get(t) == null)
+        if (lineMap.get(t) == null)
           {
-            Dwfl d = new Dwfl(t.getTid());
+            Dwfl d = getDwfl(t);
             DwflLine line = null;
             try
               {
@@ -160,13 +177,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
               {
                //System.out.println("Coulnd't get DwflLine, assigning 0");
                 zeroCount++;
-                this.dwflMap.put(t, d);
                 this.lineMap.put(t, new Integer(0));
                 this.lineCountMap.put(t, new Integer(0));
                 continue;
               }
 
-            this.dwflMap.put(t, d);
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
         this.lineCountMap.put(t, new Integer(0));
@@ -220,8 +235,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     try
       {
        //System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
-        line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(
-                                                                              task));
+        line = getDwfl(task).getSourceLine(task.getIsa().pc(task));
         //System.out.println()
       }
     catch (TaskException te)
@@ -409,6 +423,33 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             this.runningTasks.add(t);
             t.requestDeleteInstructionObserver(this);
+          }
+      }
+  }
+
+  /**
+   * Continue from a breakpoint
+   * 
+   * @param tasks   The list of Tasks to be run
+   */
+  public void continueTasks(LinkedList tasks)
+  {
+    this.state = RUNNING;
+    this.numRunningTasks = tasks.size();
+    notifyNotBlocked();
+    Iterator i = tasks.iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) i.next();
+        if (! this.runningTasks.contains(t))
+          {
+            this.runningTasks.add(t);
+	    Breakpoint bpt = (Breakpoint)breakpointMap.get(t);
+	    if (bpt != null) 
+	      {
+		breakpointMap.remove(t);
+		t.requestUnblock(bpt);
+	      }
           }
       }
   }
@@ -1000,6 +1041,81 @@ public class RunState extends Observable implements TaskObserver.Instruction
     {
       return removed;
     }
+
+    public long getAddress()
+    {
+      return address;
+    }
+    
   }
 
+  public class SourceBreakpoint extends Breakpoint
+  {
+    SourceBreakpoint(long address, LineBreakpoint lineBreakpoint) 
+    {
+      super(address);
+      this.lineBreakpoint = lineBreakpoint;
+    }
+    
+    LineBreakpoint lineBreakpoint;
+
+    public Action updateHit(Task task, long address)
+    {
+      state = STOPPED;
+      breakpointMap.put(task, this);
+      return Action.BLOCK;
+    }
+    
+
+  }
+
+  public class LineBreakpoint
+  {
+    private List dwflAddrs;
+    private Vector breakpoints;
+    
+    LineBreakpoint () 
+    {
+      breakpoints = new Vector();
+    }
+
+    LineBreakpoint(Task task, String fileName, int lineNo, int column) 
+    {
+      this();
+      dwflAddrs = getDwfl(task).getLineAddresses(fileName, lineNo, column);
+    }
+    
+    public void addBreakpoint(Task task)
+    {
+      DwflLine line = (DwflLine)dwflAddrs.get(0);
+      long address = line.getAddress();
+	  
+      SourceBreakpoint breakpoint = new SourceBreakpoint(address, this);
+      breakpoints.add(breakpoint);
+      task.requestAddCodeObserver(breakpoint, address);
+    }
+
+    public void deleteBreakpoint(Task task)
+    {
+      task.requestDeleteCodeObserver((SourceBreakpoint)breakpoints.get(0),
+				     ((SourceBreakpoint)breakpoints.get(0)).getAddress());
+      breakpoints.remove(0);
+    }
+    
+    
+  }
+
+  public LineBreakpoint addBreakpoint(Task task, String fileName, int lineNo)
+  {
+    LineBreakpoint bp = new LineBreakpoint(task, fileName, lineNo, 0);
+    bp.addBreakpoint(task);
+    return bp;
+  }
+
+  public boolean deleteBreakpoint(Task task, LineBreakpoint lbp)
+  {
+    lbp.deleteBreakpoint(task);
+    return true;
+  }
+  
 }

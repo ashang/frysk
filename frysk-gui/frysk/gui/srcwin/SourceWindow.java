@@ -115,9 +115,10 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.proc.MachineType;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
+import frysk.proc.Isa;
 import frysk.rt.RunState;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
@@ -1823,11 +1824,24 @@ public class SourceWindow
       }
   }
 
+  private Isa getProcIsa()
+  {
+    try
+      {
+	return swProc.getMainTask().getIsa();
+      }
+    catch (TaskException e) 
+      {
+	return null;
+      }
+  }
+  
   private void toggleMemoryWindow ()
   {
-    if (MachineType.getMachineType() == MachineType.X8664
-        || MachineType.getMachineType() == MachineType.PPC64)
-      {
+    Isa isa = getProcIsa();
+    if (!(isa instanceof frysk.proc.IsaIA32 
+	  || isa instanceof frysk.proc.IsaPPC))
+            {
         WarnDialog dialog = new WarnDialog(
                                            " The Memory Window is yet not supported\n"
                                                + " on 64-bit architectures! ");
@@ -1852,8 +1866,9 @@ public class SourceWindow
 
   private void toggleDisassemblyWindow ()
   {
-    if (MachineType.getMachineType() == MachineType.X8664
-        || MachineType.getMachineType() == MachineType.PPC64)
+    Isa isa = getProcIsa();
+    if (!(isa instanceof frysk.proc.IsaIA32 
+	  || isa instanceof frysk.proc.IsaPPC))
       {
         WarnDialog dialog = new WarnDialog(
                                            " The Disassembly Window is yet not supported\n"

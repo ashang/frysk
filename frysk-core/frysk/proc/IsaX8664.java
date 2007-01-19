@@ -50,7 +50,7 @@ import frysk.sys.RegisterSetBuffer;
 
 import lib.unwind.RegisterAMD64;
 
-class IsaX8664 implements Isa
+public class IsaX8664 implements Isa
 {
   /**
    * Offset into user struct from user.h. Determined with:

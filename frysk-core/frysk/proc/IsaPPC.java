@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-class IsaPPC
+public class IsaPPC
   extends IsaPowerPC
 {
   static class PPCRegister

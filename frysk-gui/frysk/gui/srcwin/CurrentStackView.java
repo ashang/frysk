@@ -58,8 +58,9 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.dom.DOMLine;
-import frysk.proc.MachineType;
+import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 import frysk.rt.StackFrame;
 
 public class CurrentStackView
@@ -130,9 +131,19 @@ public class CurrentStackView
         iter = null;
         boolean hasInlinedCode = false;
         String row = "";
+	Task task = frame.getTask();
+	Isa isa = null;
 
-        if (MachineType.getMachineType() == MachineType.PPC
-            || MachineType.getMachineType() == MachineType.PPC64)
+	try
+	  {
+	    isa = task.getIsa();
+	  }
+	catch (TaskException e) 
+	  {
+	  }
+        if (isa == null 
+	    || !(isa instanceof frysk.proc.IsaIA32 
+		 || isa instanceof frysk.proc.IsaX8664))
           {
             iter = treeModel.appendRow(null);
             row = "Unknown file : Unknown function";
@@ -144,7 +155,6 @@ public class CurrentStackView
           {
             int level = 0;
             parent = treeModel.appendRow(null);
-            Task task = frame.getTask();
 
             treeModel.setValue(parent, (DataColumnString) stackColumns[0],
                                "tid: " + task.getTid());

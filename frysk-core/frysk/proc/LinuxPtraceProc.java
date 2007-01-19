@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.logging.Level;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.Status;
 import frysk.sys.proc.ProcBuilder;
@@ -200,4 +201,12 @@ public class LinuxPtraceProc
     {
 	return Exe.get (getPid ());
     }
+
+  protected Isa sendrecIsa () throws TaskException
+  {
+    logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+    IsaFactory factory = IsaFactory.getFactory();
+
+    return factory.getIsa(id.id);
+  }
 }

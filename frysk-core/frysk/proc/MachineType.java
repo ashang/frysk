@@ -39,11 +39,10 @@
 
 package frysk.proc;
 
-import frysk.sys.Uname;
-
 /**
  * Determine the machine type on which the program is running. This is
- * mostly intended for machine-specific tests.
+ * mostly intended for machine-specific tests. You probably want to
+ * use frysk.proc.Task.getIsa() instead.
  */
 public class MachineType 
 {
@@ -86,22 +85,27 @@ public class MachineType
    */
   public static MachineType getMachineType()
   {
-    Uname uname = Uname.get();
-    String machine = uname.getMachine();
+    Isa isa;
     
-    if (machine.equals("i386")
-	|| machine.equals("i486")
-	|| machine.equals("i586")
-	|| machine.equals("i686"))
+    try 
+      {
+	isa = Manager.host.getSelf().getIsa();
+      }
+    catch (TaskException e)
+      {
+	throw new UnknownMachineException("no machine");
+      }
+    
+    if (isa instanceof IsaIA32)
       return IA32;
-    else if (machine.equals("x86_64"))
+    else if (isa instanceof IsaX8664)
       return X8664;
-    else if (machine.equals("ppc"))
-      return PPC;
-    else if (machine.equals("ppc64"))
+    else if (isa instanceof IsaPPC64)
       return PPC64;
+    else if (isa instanceof IsaPPC)
+      return PPC;
     else
-      throw new UnknownMachineException(machine);
+      throw new UnknownMachineException(isa.toString());
   }
 }
 
