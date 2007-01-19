@@ -1,3 +1,8 @@
+2007-01-19  Mark Wielaard  <mark@klomp.org>
+
+	* TestRunner.javain (main): Glade files moved from frysk/gui/glade
+	to /frysk/gui/gladedir.
+
 2007-01-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.gen.sh: Added logic for online documentation to 
