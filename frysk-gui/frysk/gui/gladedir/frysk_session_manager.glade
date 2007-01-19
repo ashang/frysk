@@ -159,7 +159,7 @@
 		    <widget class="GtkRadioButton" id="SessionManager_startSessionButton">
 		      <property name="visible">True</property>
 		      <property name="tooltip" translatable="yes">Allows you to manage, create new, and launch existing sessions.</property>
-		      <property name="label" translatable="yes" context="yes">_Run or Manage Sessions</property>
+		      <property name="label" translatable="yes" context="yes">_Run or Manage Monitoring Sessions</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -250,74 +250,82 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVBox" id="vbox2">
+	    <widget class="GtkEventBox" id="eventbox1">
 	      <property name="visible">True</property>
-	      <property name="homogeneous">False</property>
-	      <property name="spacing">6</property>
+	      <property name="visible_window">True</property>
+	      <property name="above_child">False</property>
 
 	      <child>
-		<widget class="GtkButton" id="SessionManager_newSessionButton">
+		<widget class="GtkVBox" id="vbox2">
 		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">Creates a new Frysk session. This will allow you to choose process groups to monitor, and observers to apply to those groups.</property>
-		  <property name="label">gtk-new</property>
-		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
-		</widget>
-		<packing>
-		  <property name="padding">0</property>
-		  <property name="expand">False</property>
-		  <property name="fill">False</property>
-		</packing>
-	      </child>
+		  <property name="homogeneous">False</property>
+		  <property name="spacing">6</property>
 
-	      <child>
-		<widget class="GtkButton" id="SessionManager_editSessionButton">
-		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">Edits an existing session. Allows changes to what process groups are monitored, and what observers are applied to those groups.</property>
-		  <property name="label">gtk-edit</property>
-		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
-		</widget>
-		<packing>
-		  <property name="padding">0</property>
-		  <property name="expand">False</property>
-		  <property name="fill">False</property>
-		</packing>
-	      </child>
+		  <child>
+		    <widget class="GtkButton" id="SessionManager_newSessionButton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Creates a new Frysk session. This will allow you to choose process groups to monitor, and observers to apply to those groups.</property>
+		      <property name="label">gtk-new</property>
+		      <property name="use_stock">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
 
-	      <child>
-		<widget class="GtkButton" id="SessionManager_copySessionButton">
-		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">Copies a session selected in the treeview. The naming convention follows (copy), (another copy), (3rd copy), (4th copy) and so on. The name of the session can be changed during an edit.</property>
-		  <property name="label">gtk-copy</property>
-		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
-		</widget>
-		<packing>
-		  <property name="padding">0</property>
-		  <property name="expand">False</property>
-		  <property name="fill">False</property>
-		</packing>
-	      </child>
+		  <child>
+		    <widget class="GtkButton" id="SessionManager_editSessionButton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Edits an existing session. Allows changes to what process groups are monitored, and what observers are applied to those groups.</property>
+		      <property name="label">gtk-edit</property>
+		      <property name="use_stock">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
 
-	      <child>
-		<widget class="GtkButton" id="SessionManager_deleteSessionButton">
-		  <property name="border_width">1</property>
-		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">Deletes a selected session permanently, and removes it from the session store and treeview.</property>
-		  <property name="label">gtk-delete</property>
-		  <property name="use_stock">True</property>
-		  <property name="relief">GTK_RELIEF_NORMAL</property>
-		  <property name="focus_on_click">True</property>
+		  <child>
+		    <widget class="GtkButton" id="SessionManager_copySessionButton">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Copies a session selected in the treeview. The naming convention follows (copy), (another copy), (3rd copy), (4th copy) and so on. The name of the session can be changed during an edit.</property>
+		      <property name="label">gtk-copy</property>
+		      <property name="use_stock">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
+		    <widget class="GtkButton" id="SessionManager_deleteSessionButton">
+		      <property name="border_width">1</property>
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Deletes a selected session permanently, and removes it from the session store and treeview.</property>
+		      <property name="label">gtk-delete</property>
+		      <property name="use_stock">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="focus_on_click">True</property>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
 		</widget>
-		<packing>
-		  <property name="padding">0</property>
-		  <property name="expand">False</property>
-		  <property name="fill">False</property>
-		</packing>
 	      </child>
 	    </widget>
 	    <packing>
@@ -348,19 +356,23 @@
 
 	  <child>
 	    <widget class="GtkHButtonBox" id="hbuttonbox1">
+	      <property name="width_request">130</property>
 	      <property name="visible">True</property>
-	      <property name="layout_style">GTK_BUTTONBOX_END</property>
+	      <property name="layout_style">GTK_BUTTONBOX_DEFAULT_STYLE</property>
 	      <property name="spacing">5</property>
 
 	      <child>
-		<widget class="GtkButton" id="SessionManager_quitButton">
+		<widget class="GtkButton" id="SessionManager_helpButton">
 		  <property name="visible">True</property>
-		  <property name="tooltip" translatable="yes">Quits Frysk.</property>
+		  <property name="tooltip" translatable="yes">Brings up Frysk online help.</property>
 		  <property name="can_default">True</property>
-		  <property name="label">gtk-quit</property>
+		  <property name="label">gtk-help</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_description" translatable="yes">Brings up Frysk online help.</atkproperty>
+		  </accessibility>
 		</widget>
 	      </child>
 
@@ -373,6 +385,22 @@
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
+		</widget>
+	      </child>
+
+	      <child>
+		<widget class="GtkButton" id="SessionManager_quitButton">
+		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Quits Frysk.</property>
+		  <property name="can_default">True</property>
+		  <property name="label">gtk-quit</property>
+		  <property name="use_stock">True</property>
+		  <property name="relief">GTK_RELIEF_NORMAL</property>
+		  <property name="focus_on_click">True</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">Help</atkproperty>
+		    <atkproperty name="AtkObject::accessible_description" translatable="yes">Quits Frysk.</atkproperty>
+		  </accessibility>
 		</widget>
 	      </child>
 	    </widget>

@@ -1,3 +1,9 @@
+2007-01-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* common/FryskHelpManager.java: New. Activates Frysk help.
+	* gladedir/frysk_session_manager.glade: Added "Help" button.
+	* SessionManager.java: Ditto.
+
 2007-01-18  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.javain (GLADE_PKG_PATH): Change to "gladedir/".
