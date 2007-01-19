@@ -1,3 +1,8 @@
+2007-01-19  Phil Muldoon   <pmuldoon@redhat.com>
+
+	* gladedir/frysk_session_manager.glade: Place Help in its own
+	button bar, left edge justify and add 18 points spacing.
+
 2007-01-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* common/FryskHelpManager.java: New. Activates Frysk help.
