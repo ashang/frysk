@@ -1,7 +1,14 @@
 2007-01-22  Mike Cvet  <mcvet@redhat.com>
-
+	
 	* StackFrame.java (getAdjustedAddress): Added. Gets an adjusted address
 	for innermost and signal frames. Fixes #3903.
+	* TestStepping.java (setUpTest): Removed debug statements.
+	* RunState.java (setUpStep): Removed redundant try statement.
+	(stepIn): Ditto.
+	(getDwfl): Added Javadoc.
+	(LineBreakpoint): Changed Vector members to LinkedList, via #3904.
+	(LineBreakpoint.addBreakpoint): Some changes addressing above.
+	(LineBreakpoint.deleteBreakpoint): Ditto.
 
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 

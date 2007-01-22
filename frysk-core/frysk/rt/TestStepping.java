@@ -176,7 +176,7 @@ public class TestStepping extends TestLib
             DwflLine line = null;
             try
               {
-               System.out.println("setUpTest " + t + " " + t.getIsa().pc(t));
+               //System.out.println("setUpTest " + t + " " + t.getIsa().pc(t));
                 line = d.getSourceLine(t.getIsa().pc(t));
               }
             catch (TaskException te)
@@ -186,7 +186,7 @@ public class TestStepping extends TestLib
             
             if (line == null)
               {
-                System.out.println("Null dwflline " + t);
+                //System.out.println("Null dwflline " + t);
                 this.dwflMap.put(t, d);
                 this.lineMap.put(t, new Integer(0));
                 continue;

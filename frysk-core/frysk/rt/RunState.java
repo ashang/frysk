@@ -42,11 +42,10 @@ package frysk.rt;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+//import java.util.List;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -119,19 +118,26 @@ public class RunState extends Observable implements TaskObserver.Instruction
     
   }
 
-  /*****************************************************************************
-   * STEP HANDLING METHODS
-   ****************************************************************************/
-  Dwfl getDwfl(Task task)
+  /**
+   * Returns the Dwfl for this Task, and inserts it into the Dwfl map.
+   * 
+   * @param task The Task we want the Dwfl object from
+   * @return d The Dwfl for the incoming Task
+   */
+  Dwfl getDwfl (Task task)
   {
-    Dwfl d = (Dwfl)dwflMap.get(task);
-    if (d == null) 
+    Dwfl d = (Dwfl) this.dwflMap.get(task);
+    if (d == null)
       {
-	d = new Dwfl(task.getTid());
-	dwflMap.put(task, d);
+        d = new Dwfl(task.getTid());
+        this.dwflMap.put(task, d);
       }
     return d;
   }
+  
+  /*****************************************************************************
+   * STEP HANDLING METHODS
+   ****************************************************************************/
 
   /**
    * Sets up stepping information - which tasks are stepping, how many there, 
@@ -157,21 +163,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             Dwfl d = getDwfl(t);
             DwflLine line = null;
-            try
-              {
-                line = d.getSourceLine(t.getIsa().pc(t));
-              }
-            catch (TaskException te)
-              {
-                System.out.println("TaskException");
-                continue;
-              }
-            catch (NullPointerException npe)
-            {
-              System.out.println("NullPointerException from Dwfl.getSourceLine");
-              System.out.println(npe.getMessage());
-              continue;
-            }
+            line = d.getSourceLine(t.getIsa().pc(t));
             
             if (line == null)
               {
@@ -232,22 +224,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public synchronized void stepIn (Task task)
   {
     DwflLine line = null;
-    try
-      {
-       //System.out.println("Runstate.stepin" + task + " " + task.getIsa().pc(task));
-        line = getDwfl(task).getSourceLine(task.getIsa().pc(task));
-        //System.out.println()
-      }
-    catch (TaskException te)
-      {
-         System.out.println("task execption");
-        return;
-      }
-    catch (NullPointerException npe)
-      {
-         System.out.println("NPE - stepin");
-        return;
-      }
+    line = getDwfl(task).getSourceLine(task.getIsa().pc(task));
 
     int lineNum;
     int prev;
@@ -1071,12 +1048,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
   public class LineBreakpoint
   {
-    private List dwflAddrs;
-    private Vector breakpoints;
+    private LinkedList dwflAddrs;
+    private LinkedList breakpoints;
     
     LineBreakpoint () 
     {
-      breakpoints = new Vector();
+      breakpoints = new LinkedList();
     }
 
     LineBreakpoint(Task task, String fileName, int lineNo, int column) 
@@ -1087,7 +1064,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     
     public void addBreakpoint(Task task)
     {
-      DwflLine line = (DwflLine)dwflAddrs.get(0);
+      DwflLine line = (DwflLine)dwflAddrs.getFirst();
       long address = line.getAddress();
 	  
       SourceBreakpoint breakpoint = new SourceBreakpoint(address, this);
@@ -1097,9 +1074,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
     public void deleteBreakpoint(Task task)
     {
-      task.requestDeleteCodeObserver((SourceBreakpoint)breakpoints.get(0),
-				     ((SourceBreakpoint)breakpoints.get(0)).getAddress());
-      breakpoints.remove(0);
+      SourceBreakpoint sb = (SourceBreakpoint)breakpoints.getFirst();
+      task.requestDeleteCodeObserver(sb, sb.getAddress());
+      breakpoints.removeFirst();
     }
   }
 

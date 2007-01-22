@@ -41,7 +41,6 @@
 package lib.dw;
 
 import java.util.LinkedList;
-import java.util.List;
 import gnu.gcj.RawDataManaged;
 
 public class Dwfl
@@ -139,7 +138,7 @@ public class Dwfl
   /**
    * Get all the DwflLine objects associated with a line in a source file.
    */
-  public List getLineAddresses(String fileName, int lineNo, int column) 
+  public LinkedList getLineAddresses(String fileName, int lineNo, int column) 
   {
     DwflModule[] modules = getModules();
     if (modules == null) 
