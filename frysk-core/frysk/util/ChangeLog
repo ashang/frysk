@@ -1,3 +1,7 @@
+2007-01-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (giveMeAProc):  Remove assertSendStop() from ackProc.
+
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFCore.java: Delete catch failing when a TaskException.
