@@ -1,3 +1,7 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskException.java: Extend RuntimeException.
+
 2007-01-22  Tim Moore  <timoore@redhat.com>
 
 	* Isa.java (getElfMachineType): New method.

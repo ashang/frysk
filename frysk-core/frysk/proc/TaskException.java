@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@ package frysk.proc;
  * Superclass of exceptions thrown when accessing a task or when a
  * problem with a task is noticed.
  */
-public class TaskException extends Exception 
+public class TaskException
+    extends RuntimeException
 {
   private static final long serialVersionUID = 200608040000L;
   private Task task;
