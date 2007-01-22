@@ -99,7 +99,6 @@ public class IsaFactory
   /** Obtain ISA of task via pid. 
    */
   private Isa getIsa(int pid, Task task) 
-    throws TaskException
   {
     Elf elfFile;
     logger.log (Level.FINE, "{0} getIsa\n", this);
@@ -121,14 +120,10 @@ public class IsaFactory
 	
 	ElfEHeader header = elfFile.getEHeader();
 	Isa isa = (Isa)isaHash.get(Integer.valueOf(header.machine));
-	if (isa == null) 
-	  {
-	    throw new TaskException("Unknown machine type " + header.machine);
-	  }
-	else
-	  {
-	    return isa;
-	  }
+	if (isa == null)
+	    // A "can't happen".
+	    throw new RuntimeException ("Unknown machine type " + header.machine);
+	return isa;
       }
     finally 
       {

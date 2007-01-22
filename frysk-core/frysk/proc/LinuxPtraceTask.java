@@ -269,7 +269,7 @@ public class LinuxPtraceTask
     Ptrace.detach(getTid(), sig);
   }
 
-  protected Isa sendrecIsa () throws TaskException
+  protected Isa sendrecIsa ()
   {
     logger.log(Level.FINE, "{0} sendrecIsa\n", this);
     IsaFactory factory = IsaFactory.getFactory();

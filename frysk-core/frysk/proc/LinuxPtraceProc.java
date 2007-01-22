@@ -202,11 +202,10 @@ public class LinuxPtraceProc
 	return Exe.get (getPid ());
     }
 
-  protected Isa sendrecIsa () throws TaskException
+  protected Isa sendrecIsa ()
   {
     logger.log(Level.FINE, "{0} sendrecIsa\n", this);
     IsaFactory factory = IsaFactory.getFactory();
-
     return factory.getIsa(id.id);
   }
 }

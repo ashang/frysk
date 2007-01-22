@@ -50,9 +50,6 @@ import java.util.logging.Logger;
 import java.util.Observer;
 import java.util.Observable;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
 abstract public class Task
 {
     protected static final Logger logger = Logger.getLogger ("frysk");//.proc");
@@ -62,8 +59,6 @@ abstract public class Task
    * task.
    */
   final Task creator;
-
-  private Dwfl dwfl;
 
   /**
    * Return the task's corresponding TaskId.
@@ -95,7 +90,6 @@ abstract public class Task
    * Returns this Task's Instruction Set Architecture.
    */
   public final Isa getIsa ()
-    throws TaskException
   {
     if (isa == null)
       isa = sendrecIsa();
@@ -107,28 +101,6 @@ abstract public class Task
     return (null != isa);
   }
 
-  public final SyscallEventInfo getSyscallEventInfo ()
-    throws TaskException
-  {
-    return ((SyscallEventDecoder)getIsa()).getSyscallEventInfo();
-  }
-
-  public final DwflLine getDwflLineXXX ()
-    throws TaskException
-  {
-    if (dwfl == null)
-      dwfl = new Dwfl(getTid());
-    return dwfl.getSourceLine(getIsa().pc(this));
-  }
-  
-  public final DwflLine getDwflLineXXX (long addr)
-  throws TaskException
-{
-  if (dwfl == null)
-    dwfl = new Dwfl(getTid());
-  return dwfl.getSourceLine(addr);
-}
-
   /**
    * This Task's Instruction Set Architecture.
    */
@@ -137,7 +109,12 @@ abstract public class Task
   /**
    * Fetch this Task's Instruction Set Architecture.
    */
-  abstract protected Isa sendrecIsa () throws TaskException;
+  abstract protected Isa sendrecIsa ();
+
+  public final SyscallEventInfo getSyscallEventInfo ()
+  {
+    return ((SyscallEventDecoder)getIsa()).getSyscallEventInfo();
+  }
 
   /**
    * Return the task's entry point address. This is the address of the first

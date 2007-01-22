@@ -1,5 +1,13 @@
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (getIsa, sendrecIsa, getSyscallEventInfo): Remove
+	throw TaskException.
+	(getDwflLineXXX, getDwflLineXXX): Delete.
+	* IsaFactory.java (getIsa): Ditto.
+	* Proc.java (sendrecIsa, getIsa): Ditto.
+	* LinuxPtraceTask.java (sendrecIsa): Ditto.
+	* LinuxPtraceProc.java (sendrecIsa): Ditto.
+
 	* TestRegisters.java: Do not catch and fail TaskException.
 	* TestSyscallSignal.java: Do not catch and fail TaskException.
 	* TestTaskSyscallObserver.java: Do not catch and fail
