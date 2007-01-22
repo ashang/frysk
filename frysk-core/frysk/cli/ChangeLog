@@ -1,3 +1,12 @@
+2007-01-22  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/ExprSymTab.java (getReg): Removed erroneous frame PC decrement and 
+	instead call StackFrame.getAdjustedAddress().
+	(getBufferAddr): Ditto.
+	(getDie): Ditto.
+	* hpd/SymTab.java (complete): Ditto.
+	(what): Ditto.
+
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/ExprSymTab.java: Delete catch throwing TaskException as

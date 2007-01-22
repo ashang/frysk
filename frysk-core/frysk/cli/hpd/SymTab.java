@@ -114,10 +114,7 @@ public class SymTab
       Dwfl dwfl;
       
       StackFrame currentFrame = getCurrentFrame();
-      if (currentFrame.getInner() == null)
-          pc = task.getIsa().pc(task) - 1;
-      else
-          pc = currentFrame.getAddress();
+      pc = currentFrame.getAdjustedAddress();
 
       dwfl = new Dwfl(pid);
       DwflDieBias bias = dwfl.getDie(pc);
@@ -171,10 +168,7 @@ public class SymTab
         throw new NameNotFoundException("No symbol table is available.");
       
       StackFrame currentFrame = getCurrentFrame();
-      if (currentFrame.getInner() == null)
-          pc = task.getIsa().pc(task) - 1;
-      else
-          pc = currentFrame.getAddress();
+      pc = currentFrame.getAdjustedAddress();
 
       dwfl = new Dwfl(pid);
       DwflLine line = null;

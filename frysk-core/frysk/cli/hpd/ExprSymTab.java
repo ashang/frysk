@@ -63,7 +63,6 @@ import frysk.value.ShortType;
 import frysk.value.Variable;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Errno;
@@ -168,10 +167,8 @@ class ExprSymTab implements CppSymTab
                   };
       int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
       
-      if (currentFrame.getInner() == null)
-          pc = task.getIsa().pc(task) - 1;
-      else
-          pc = currentFrame.getAddress();
+      pc = currentFrame.getAdjustedAddress();
+
       long fbreg_and_disp [] = new long[2];
       varDie.getAddr (fbreg_and_disp);
       if (fbreg_and_disp[0] == DW_OP_addr)
@@ -315,15 +312,13 @@ class ExprSymTab implements CppSymTab
       int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
       long reg = 0;
       Isa isa;
-      
-      if (currentFrame.getInner() == null) {
-	  isa = task.getIsa();
-	  pc = task.getIsa().pc(task) - 1;
-      }
-      else {
-	  isa = currentFrame.getTask().getIsa();
-	  pc = currentFrame.getAddress();
-      }
+
+      if (currentFrame.getInner() == null)
+        isa = task.getIsa();
+      else
+        isa = currentFrame.getTask().getIsa();
+          
+      pc = currentFrame.getAdjustedAddress();
       long fbreg_and_disp [] = new long[2];
       varDie.getFormData (fbreg_and_disp, pc);
       if (fbreg_and_disp[0] != -1)
@@ -423,11 +418,7 @@ class ExprSymTab implements CppSymTab
   {
     Dwfl dwfl;
     DwarfDie[] allDies;
-    long pc;
-    if (currentFrame.getInner() == null)
-        pc = task.getIsa().pc(task) - 1;
-    else
-        pc = currentFrame.getAddress();
+    long pc = this.currentFrame.getAdjustedAddress();
   
     dwfl = new Dwfl(pid);
     DwflDieBias bias = dwfl.getDie(pc);
