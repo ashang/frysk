@@ -1101,8 +1101,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
 				     ((SourceBreakpoint)breakpoints.get(0)).getAddress());
       breakpoints.remove(0);
     }
-    
-    
   }
 
   public LineBreakpoint addBreakpoint(Task task, String fileName, int lineNo)

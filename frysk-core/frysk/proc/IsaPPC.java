@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import lib.elf.ElfEMachine;
+
 public class IsaPPC
   extends IsaPowerPC
 {
@@ -134,5 +136,10 @@ public class IsaPPC
   public int getWordSize ()
   {
     return 4;
+  }
+
+  public int getElfMachineType()
+  {
+    return ElfEMachine.EM_PPC64;
   }
 }

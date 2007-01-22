@@ -1,3 +1,13 @@
+2007-01-22  Tim Moore  <timoore@redhat.com>
+
+	* Isa.java (getElfMachineType): New method.
+	* IsaIA32.java (getElfMachineType): Implement it.
+	* IsaX8664.java (getElfMachineType): ditto
+	* IsaPPC.java (getElfMachineType): ditto
+	* IsaPPC64.java (getElfMachineType): ditto
+	* IsaFactory.java (IsaFactory, getIsa): Implement getIsa with a
+	hash table instead of a big conditional.
+
 2007-01-18  Tim Moore  <timoore@redhat.com>
 
 	* Proc.java(getIsa, sendrecIsa): New interface for getting the ISA

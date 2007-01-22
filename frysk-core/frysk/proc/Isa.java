@@ -151,4 +151,7 @@ public interface Isa
   /** @return Syscall return system call object if the name could be 
    * found in syscallList, otherwise return null. */
   Syscall syscallByName (String Name);
+
+  /** @return Elf machine type */
+  int getElfMachineType();
 }

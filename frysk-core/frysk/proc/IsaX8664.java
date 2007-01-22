@@ -48,6 +48,7 @@ import frysk.sys.Ptrace;
 import frysk.sys.PtraceByteBuffer;
 import frysk.sys.RegisterSetBuffer;
 
+import lib.elf.ElfEMachine;
 import lib.unwind.RegisterAMD64;
 
 public class IsaX8664 implements Isa
@@ -324,5 +325,10 @@ public class IsaX8664 implements Isa
     bankBuffers[2].order(getByteOrder());
     
     return bankBuffers;
+  }
+
+  public int getElfMachineType()
+  {
+    return ElfEMachine.EM_X86_64;
   }
 }

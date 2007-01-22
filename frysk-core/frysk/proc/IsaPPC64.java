@@ -38,6 +38,8 @@
 // exception.
 package frysk.proc;
 
+import lib.elf.ElfEMachine;
+
 public class IsaPPC64
   extends IsaPowerPC
 {
@@ -131,5 +133,10 @@ public class IsaPPC64
   public int getWordSize ()
   {
     return 8;
+  }
+
+  public int getElfMachineType()
+  {
+    return ElfEMachine.EM_PPC64;
   }
 }

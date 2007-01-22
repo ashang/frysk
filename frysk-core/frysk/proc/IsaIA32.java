@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
+import lib.elf.ElfEMachine;
 import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace;
@@ -330,5 +331,10 @@ public class IsaIA32 implements Isa
       return syscall;
 
     return null;
+  }
+
+  public int getElfMachineType()
+  {
+    return ElfEMachine.EM_386;
   }
 }

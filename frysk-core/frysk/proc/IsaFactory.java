@@ -41,6 +41,7 @@ package frysk.proc;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Hashtable;
 
 import frysk.Config;
 
@@ -54,8 +55,40 @@ import lib.elf.ElfFileException;
 public class IsaFactory
 {
   private static IsaFactory factory;
-    static final Logger logger = Logger.getLogger ("frysk");//.proc");
-
+  static final Logger logger = Logger.getLogger ("frysk");//.proc");
+  private Hashtable isaHash;
+    
+  IsaFactory() 
+  {
+    isaHash = new Hashtable();
+    isaHash.put(Integer.valueOf(ElfEMachine.EM_X86_64),
+		LinuxX8664.isaSingleton());
+    isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC64),
+		LinuxPPC64.isaSingleton());
+    // XXX: This should not be looking at the configuration target
+    // string when selecting the ISA.
+    if (Config.getTargetCpuXXX().equals ("x86_64")) 
+      {
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_386),
+		    LinuxIa32On64.isaSingleton());
+      }
+    else
+      {
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_386),
+		    LinuxIa32.isaSingleton());
+      }
+    if (Config.getTargetCpuXXX().equals("powerpc64"))
+      {
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
+		    LinuxPPC32On64.isaSingleton());
+      }
+    else
+      {
+	isaHash.put(Integer.valueOf(ElfEMachine.EM_PPC),
+		    LinuxPPC.isaSingleton());
+      }
+  }
+  
   static IsaFactory getFactory()
   {
     if (factory == null)
@@ -87,31 +120,14 @@ public class IsaFactory
       {
 	
 	ElfEHeader header = elfFile.getEHeader();
-	switch (header.machine) 
+	Isa isa = (Isa)isaHash.get(Integer.valueOf(header.machine));
+	if (isa == null) 
 	  {
-	  case ElfEMachine.EM_386:
-	    {
-		// XXX: This should not be looking at the
-		// configuration target string when selecting the ISA.
-		if (Config.getTargetCpuXXX().equals ("x86_64"))
-		    return LinuxIa32On64.isaSingleton();
-		else
-		    return LinuxIa32.isaSingleton ();
-	    }
-	  case ElfEMachine.EM_PPC:
-	    {
-	      // Assume we do not build 32-bit frysk on ppc64.
-		if (Config.getTargetCpuXXX ().equals("powerpc64"))
-		    return LinuxPPC32On64.isaSingleton ();
-		else
-		    return LinuxPPC.isaSingleton ();
-	    }
-	  case ElfEMachine.EM_PPC64:
-	    return LinuxPPC64.isaSingleton ();
-	  case ElfEMachine.EM_X86_64:
-	    return LinuxX8664.isaSingleton ();
-	  default: 
 	    throw new TaskException("Unknown machine type " + header.machine);
+	  }
+	else
+	  {
+	    return isa;
 	  }
       }
     finally 
