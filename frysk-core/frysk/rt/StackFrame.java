@@ -244,6 +244,19 @@ public class StackFrame
   {
     return this.myCursor.getAddress();
   }
+  
+  /**
+   * Returns the pre-call PC for this non-interrupted StackFrame.
+   * 
+   * @return The pre-call program counter for this StackFrame.
+   */
+  public long getAdjustedAddress ()
+  {
+    if (this.inner != null && !this.myCursor.isSignalFrame())
+      return this.myCursor.getAddress() - 1;
+    else
+      return this.myCursor.getAddress();
+  }
 
   /**
    * Returns the Task this StackFrame belongs to.

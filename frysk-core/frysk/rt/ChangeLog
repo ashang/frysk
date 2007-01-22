@@ -1,3 +1,8 @@
+2007-01-22  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (getAdjustedAddress): Added. Gets an adjusted address
+	for innermost and signal frames. Fixes #3903.
+
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackBacktrace.java: Do not catch and print TaskException.
