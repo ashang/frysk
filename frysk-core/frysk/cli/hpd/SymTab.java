@@ -57,7 +57,6 @@ import antlr.CommonAST;
 import frysk.value.Variable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.expr.CppParser;

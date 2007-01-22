@@ -1,3 +1,7 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/SymTab.java: Delete import frysk.proc.TaskException.
+		
 2007-01-22  Mike Cvet  <mcvet@redhat.com>
 
 	* hpd/ExprSymTab.java (getReg): Removed erroneous frame PC decrement and 
