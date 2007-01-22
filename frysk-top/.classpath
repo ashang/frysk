@@ -22,7 +22,5 @@
 	<classpathentry kind="lib" path="build/frysk-imports/jdom.jar"/>
 	<classpathentry kind="lib" path="build/frysk-imports/jline.jar"/>
 	<classpathentry kind="lib" path="build/frysk-imports/junit.jar"/>
-	<classpathentry kind="lib" path="build/frysk-sys/frysk-sys.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
