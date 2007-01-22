@@ -1,3 +1,7 @@
+2006-12-22  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am: Use CXX, not GCJ to compile cxx files.
+
 2006-12-18  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2130/strace-clone-exec.shin: Search for threadexec, handle
