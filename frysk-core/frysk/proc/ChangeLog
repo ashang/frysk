@@ -1,5 +1,14 @@
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* IsaFactory.java (getIsa): Convert ElfFileException, and
+	ElfException into RuntimeException.  Add note about how getIsa
+	should be re-implemented to not require the executable.
+	* LinuxPtraceHost.java (sendCreateAttachedProc): Remove catch
+	TaskException code, getIsa non-demand so won't trigger an
+	exception here.
+	* TaskFileException.java: Delete.
+	* TaskSevereException.java: Delete.
+
 	* Task.java (getIsa, sendrecIsa, getSyscallEventInfo): Remove
 	throw TaskException.
 	(getDwflLineXXX, getDwflLineXXX): Delete.

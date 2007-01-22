@@ -240,7 +240,8 @@ public class LinuxPtraceHost
   } 
 
   /**
-   * Create an attached process that is a child of this process (and this task).
+   * Create an attached process that is a child of this process (and
+   * this task).
    */
   void sendCreateAttachedProc (String in, String out, String err,
                                String[] args, TaskObserver.Attached attached)
@@ -250,27 +251,13 @@ public class LinuxPtraceHost
     // See if the Host knows about this task.
     TaskId myTaskId = new TaskId(Tid.get());
     Task myTask = get(myTaskId);
-    try
-      {
-	if (myTask == null)
-	  {
-	    // If not, find this process and add this task to it.
-	    Proc myProc = getSelf();
-	    myTask = new LinuxPtraceTask(myProc, myTaskId);
-	  }
-	Proc proc = new LinuxPtraceProc(myTask, new ProcId(pid));
-	new LinuxPtraceTask(proc, attached);
-      }
-    catch (TaskFileException e) 
-      {
-	// Not a problem; if we can't access the task's executable,
-	// we're not interested.
-      }
-    catch (TaskException e)
-      {
-	throw new RuntimeException("got TaskException", e);
-      }
-
+    if (myTask == null) {
+	// If not, find this process and add this task to it.
+	Proc myProc = getSelf();
+	myTask = new LinuxPtraceTask (myProc, myTaskId);
+    }
+    Proc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
+    new LinuxPtraceTask (proc, attached);
   }
 
   // When there's a SIGCHLD, poll the kernel's waitpid() queue
