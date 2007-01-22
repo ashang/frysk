@@ -96,27 +96,12 @@ class ExprSymTab implements CppSymTab
     pid = pid_p;
     // ??? 0x7fffffffffffffff
     buffer = new PtraceByteBuffer(task.getTid(), PtraceByteBuffer.Area.DATA, 0x7fffffffffffffffl);
-    ByteOrder byteorder;
-    try 
-    {
-      byteorder = task.getIsa().getByteOrder();
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
+    ByteOrder byteorder = task.getIsa().getByteOrder();
     buffer = buffer.order(byteorder);
     
     if (frame == null)
       {
-        try
-          {
-            currentFrame = StackFactory.createStackFrame(task);
-          }
-        catch (TaskException tte)
-          {
-            throw new RuntimeException(tte);
-          }
+	  currentFrame = StackFactory.createStackFrame(task);
       }
     
     else
@@ -183,17 +168,10 @@ class ExprSymTab implements CppSymTab
                   };
       int[] x86regnumbers = {0, 2, 1, 3, 7, 6, 4, 5};
       
-      try
-      {
       if (currentFrame.getInner() == null)
           pc = task.getIsa().pc(task) - 1;
-        else
+      else
           pc = currentFrame.getAddress();
-      }
-      catch (TaskException tte)
-      {
-        throw new RuntimeException(tte);
-      }
       long fbreg_and_disp [] = new long[2];
       varDie.getAddr (fbreg_and_disp);
       if (fbreg_and_disp[0] == DW_OP_addr)
@@ -206,33 +184,24 @@ class ExprSymTab implements CppSymTab
       if (fbreg_and_disp[0] != -1) // DW_OP_fbreg
       {
         long regval = 0;
-        try
-        {
-          setSuccessful(true);
-          if (currentFrame.getInner() == null)
-            {
-	      Isa isa = task.getIsa();
-	      
-              if (isa instanceof frysk.proc.IsaIA32)
-                regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
-              else if (isa instanceof frysk.proc.IsaX8664)
-                regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][1]).get (task);
-            }
-          else
-            {
-	      Isa isa = currentFrame.getTask().getIsa();
-	      
-              if (isa instanceof frysk.proc.IsaIA32)
-                regval = currentFrame.getReg(x86regnumbers[(int)fbreg_and_disp[0]]);
-              else if (isa instanceof frysk.proc.IsaX8664)
-                regval = currentFrame.getReg(fbreg_and_disp[0]);
-            }
-        }
-        catch (TaskException tte)
-        {
-          throw new RuntimeException(tte);
-        }
-   
+	setSuccessful(true);
+	if (currentFrame.getInner() == null) {
+	    Isa isa = task.getIsa();
+	    
+	    if (isa instanceof frysk.proc.IsaIA32)
+		regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][0]).get (task);
+	    else if (isa instanceof frysk.proc.IsaX8664)
+		regval = isa.getRegisterByName(x86regnames[(int)fbreg_and_disp[0]][1]).get (task);
+	}
+	else {
+	    Isa isa = currentFrame.getTask().getIsa();
+	    
+	    if (isa instanceof frysk.proc.IsaIA32)
+		regval = currentFrame.getReg(x86regnumbers[(int)fbreg_and_disp[0]]);
+	    else if (isa instanceof frysk.proc.IsaX8664)
+		regval = currentFrame.getReg(fbreg_and_disp[0]);
+	}
+	
         addr += fbreg_and_disp[1];
         addr += regval;
       }
@@ -347,23 +316,13 @@ class ExprSymTab implements CppSymTab
       long reg = 0;
       Isa isa;
       
-      try
-      {
-	if (currentFrame.getInner() == null) 
-	  {
-	    isa = task.getIsa();
-	    pc = task.getIsa().pc(task) - 1;
-	  }
-	
-	else
-	  {
-	    isa = currentFrame.getTask().getIsa();
-	    pc = currentFrame.getAddress();
-	  }
+      if (currentFrame.getInner() == null) {
+	  isa = task.getIsa();
+	  pc = task.getIsa().pc(task) - 1;
       }
-      catch (TaskException tte)
-      {
-        throw new RuntimeException(tte);
+      else {
+	  isa = currentFrame.getTask().getIsa();
+	  pc = currentFrame.getAddress();
       }
       long fbreg_and_disp [] = new long[2];
       varDie.getFormData (fbreg_and_disp, pc);
@@ -465,17 +424,10 @@ class ExprSymTab implements CppSymTab
     Dwfl dwfl;
     DwarfDie[] allDies;
     long pc;
-    try
-    {
-      if (currentFrame.getInner() == null)
+    if (currentFrame.getInner() == null)
         pc = task.getIsa().pc(task) - 1;
-      else
+    else
         pc = currentFrame.getAddress();
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
   
     dwfl = new Dwfl(pid);
     DwflDieBias bias = dwfl.getDie(pc);
@@ -551,15 +503,7 @@ class ExprSymTab implements CppSymTab
        new AccessDW_FORM_block(),
        new AccessDW_FORM_data()
       };
-    ByteOrder byteorder;
-    try 
-    {
-      byteorder = task.getIsa().getByteOrder();
-    }
-    catch (TaskException tte)
-    {
-      throw new RuntimeException(tte);
-    }
+    ByteOrder byteorder = task.getIsa().getByteOrder();
     
     DwarfDie varDie = getDie(s);
     if (varDie == null)

@@ -56,15 +56,7 @@ public class TestIsa
   {
     public Action updateAttached (Task task)
     {
-      
-      try
-        {
-          task.getIsa();
-        }
-      catch (TaskException _)
-        {
-          fail("Couldn't get Isa");
-        }
+	task.getIsa();
       
       assertTrue("task isa initialized", task.hasIsa());
       Manager.eventLoop.requestStop();
@@ -134,18 +126,10 @@ public class TestIsa
     secondMain.requestAddAttachedObserver(attacher);
     assertRunUntilStop("attach to second task");
 
-    try
-      {
-        assertNotNull("first task has Isa", firstMain.getIsa());
-        assertNotNull("second task has Isa", secondMain.getIsa());
-
-        assertSame(firstMain.getIsa(), secondMain.getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
-
+    assertNotNull("first task has Isa", firstMain.getIsa());
+    assertNotNull("second task has Isa", secondMain.getIsa());
+    
+    assertSame(firstMain.getIsa(), secondMain.getIsa());
   }
 
   public void testAttachedCreateChild ()
@@ -153,14 +137,7 @@ public class TestIsa
     AckProcess ackProc = new AttachedAckProcess();
     Proc proc = ackProc.assertFindProcAndTasks();
 
-    try
-      {
-        assertNotNull("child has an isa", proc.getMainTask().getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");       
-      }
+    assertNotNull("child has an isa", proc.getMainTask().getIsa());
 
     ackProc.assertSendAddForkWaitForAcks();
 
@@ -172,14 +149,7 @@ public class TestIsa
 
     assertRunUntilStop("attach to child process");
 
-    try
-      {
-        assertNotNull("child has an isa", child.getMainTask().getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    assertNotNull("child has an isa", child.getMainTask().getIsa());
   }
 
   public void testAttachedCreateAttachedChild ()
@@ -212,14 +182,7 @@ public class TestIsa
 
     Proc child = (Proc) proc.getChildren().iterator().next();
 
-    try
-      {
-        assertNotNull("Child has an isa", child.getMainTask().getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    assertNotNull("Child has an isa", child.getMainTask().getIsa());
   }
   
   public void testAttachedCreateAttachedClone()
@@ -252,14 +215,7 @@ public class TestIsa
 
     Task clone = ackProc.findTaskUsingRefresh(false);
 
-    try
-      {
-        assertNotNull("Clone has an isa", clone.getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    assertNotNull("Clone has an isa", clone.getIsa());
   }
 
   public void testAttachDetachAttachAgainDetachAgainAttachAgainAgain ()
@@ -275,14 +231,7 @@ public class TestIsa
     task.requestAddAttachedObserver(attacher);
     assertRunUntilStop("First attach");
 
-    try
-      {
-        assertNotNull("Proc has an isa", proc.getMainTask().getIsa());
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    assertNotNull("Proc has an isa", proc.getMainTask().getIsa());
 
     Task.taskStateDetached.addObserver(new DetachedObserver(task));
 
@@ -335,16 +284,9 @@ public class TestIsa
     assertRunUntilStop("Attaching to proc");
 
     Isa isa64 = null;
-    try
-      {
-        assertNotNull("64 bit isa", task.getIsa());
+    assertNotNull("64 bit isa", task.getIsa());
 
-        isa64 = task.getIsa();
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    isa64 = task.getIsa();
 
     logger.log(Level.FINE, "Before sending exec\n");    
     
@@ -352,16 +294,8 @@ public class TestIsa
     ackProc.signal(Sig.USR1);
     ack.await();
    
-    try
-      {
-        assertNotNull("32 bit isa", task.getIsa());
-        assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
-
+    assertNotNull("32 bit isa", task.getIsa());
+    assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
   }
   
   public void test64To32To64 ()
@@ -395,16 +329,9 @@ public class TestIsa
     assertRunUntilStop("Attaching to proc");
 
     Isa isa64 = null;
-    try
-      {
-        assertNotNull("64 bit isa", task.getIsa());
+    assertNotNull("64 bit isa", task.getIsa());
 
-        isa64 = task.getIsa();
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    isa64 = task.getIsa();
 
     logger.log(Level.FINE, "Before sending 1st exec\n");    
     
@@ -412,15 +339,8 @@ public class TestIsa
     ackProc.signal(Sig.USR1);
     ack.await();
 
-    try
-      {
-        assertNotNull("32 bit isa", task.getIsa());
-        assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
-      }
-    catch (TaskException _)
-      {
-        fail("TaskException");
-      }
+    assertNotNull("32 bit isa", task.getIsa());
+    assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
     
     logger.log(Level.FINE, "Before sending 2nd exec\n");   
     
@@ -428,14 +348,7 @@ public class TestIsa
     ackProc.signal(Sig.USR1);
     ack.await();
     
-    try
-    {
-      assertNotNull("64 bit isa", task.getIsa());
-      assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
-    } 
-    catch (TaskException _)
-    {
-      fail("TaskException");
-    }
+    assertNotNull("64 bit isa", task.getIsa());
+    assertSame("64 bit isa is a singleton", task.getIsa(), isa64);
   }
 }

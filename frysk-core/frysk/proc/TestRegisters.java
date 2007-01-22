@@ -102,16 +102,8 @@ public class TestRegisters
           syscallState = 1;
           SyscallEventInfo syscall;
           LinuxIa32 isa;
-          try 
-          {
-               syscall = task.getSyscallEventInfo();
-               isa = (LinuxIa32)task.getIsa();             
-          }
-          catch (TaskException e)
-          {
-               fail("got task exception " + e);
-               return Action.CONTINUE; // not reached
-          }
+	  syscall = task.getSyscallEventInfo();
+	  isa = (LinuxIa32)task.getIsa();             
           
           // The low-level assembler code performs an exit syscall
           // and sets up the registers with simple values.  We want
@@ -202,14 +194,7 @@ public class TestRegisters
               
               Isa isa;
               
-              try
-              {
-                 isa = task.getIsa();
-            }
-            catch (TaskException e)
-            {
-                 isa = null;
-            }
+	      isa = task.getIsa();
             if (isa instanceof LinuxIa32) {
                 ia32Isa = true;
                 task.requestAddSyscallObserver (taskEventObserver);
@@ -269,16 +254,8 @@ public class TestRegisters
     syscallState = 1;
     SyscallEventInfo syscall;
     LinuxX8664 isa;
-    try 
-      {
-        syscall = task.getSyscallEventInfo();
-        isa = (LinuxX8664)task.getIsa();             
-      }
-    catch (TaskException e)
-      {
-        fail("got task exception " + e);
-        return Action.CONTINUE; // not reached
-      }
+    syscall = task.getSyscallEventInfo();
+    isa = (LinuxX8664)task.getIsa();             
     // The low-level assembler code performs an exit syscall
     // and sets up the registers with simple values.  We want
     // to verify that all the registers are as expected.
@@ -318,16 +295,8 @@ public class TestRegisters
         
         SyscallEventInfo syscall;
         LinuxX8664 isa;
-        try 
-          {
-            syscall = task.getSyscallEventInfo();
-            isa = (LinuxX8664)task.getIsa();             
-          }
-        catch (TaskException e)
-          {
-            fail("got task exception " + e);
-            return Action.CONTINUE; // not reached
-          }
+	syscall = task.getSyscallEventInfo();
+	isa = (LinuxX8664)task.getIsa();             
         // The low-level assembler code performs an exit syscall
         // and sets up the registers with simple values.  We want
         // to verify that all the registers are as expected.
@@ -389,14 +358,7 @@ public class TestRegisters
         if (task.proc.getPid() != pid)
           return;
         Isa isa;
-        try
-          {
         isa = task.getIsa();
-          }
-        catch (TaskException e)
-          {
-        isa = null;
-          }
         if (isa instanceof LinuxX8664) {
           X8664Isa = true;
           task.requestAddSyscallObserver (taskEventObserver);
@@ -452,16 +414,8 @@ public class TestRegisters
         SyscallEventInfo syscall;
         LinuxPPC64 isa;
         
-        try 
-          {
-            syscall = task.getSyscallEventInfo();
-            isa = (LinuxPPC64)task.getIsa();             
-          }
-        catch (TaskException e)
-          {
-            fail("Got task exception " + e);
-            return Action.CONTINUE; // not reached
-          }
+	syscall = task.getSyscallEventInfo();
+	isa = (LinuxPPC64)task.getIsa();             
         
         // The low-level assembler code performs an exit syscall
         // and sets up the registers with simple values.  We want
@@ -507,16 +461,8 @@ public class TestRegisters
         LinuxPPC64 isa;
        
         syscallState = 0;
-        try 
-          {
-            syscall = task.getSyscallEventInfo();
-            isa = (LinuxPPC64)task.getIsa();             
-          }
-        catch (TaskException e)
-          {
-            fail("Got task exception " + e);
-            return Action.CONTINUE; // not reached
-          }
+	syscall = task.getSyscallEventInfo();
+	isa = (LinuxPPC64)task.getIsa();             
         
         syscallNum = syscall.number (task);
         if (syscallNum == SyscallNum.SYSgetpid)
@@ -574,14 +520,7 @@ public class TestRegisters
             return;
           
           Isa isa;
-          try
-            {
-              isa = task.getIsa();
-            }
-          catch (TaskException e)
-            {
-              isa = null;
-            }
+	  isa = task.getIsa();
           
           if (isa instanceof LinuxPPC64)
           {

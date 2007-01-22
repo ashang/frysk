@@ -1,3 +1,9 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/ExprSymTab.java: Delete catch throwing TaskException as
+	RuntimeException.
+	* hpd/SymTab.java: Ditto.
+
 2007-01-18  Tim Moore  <timoore@redhat.com>
 
 	* ExprSymTab.java(AccessDW_FORM_block.getBufferAddr,

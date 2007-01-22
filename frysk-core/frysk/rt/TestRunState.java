@@ -205,24 +205,11 @@ public class TestRunState extends TestLib
       {
         line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(myTask));
       }
-    catch (TaskException te)
-      {
-       System.out.println("task execption");
-        return;
-      }
     catch (NullPointerException npe)
       {
         Dwfl d = new Dwfl(task.getTid());
         line = null;
-        try
-        {
-          line = d.getSourceLine(task.getIsa().pc(task));
-        }
-      catch (TaskException te)
-        {
-          System.out.println("task execption");
-          return;
-        }
+	line = d.getSourceLine(task.getIsa().pc(task));
       if (line != null)
         {
           this.dwflMap.put(task, d);

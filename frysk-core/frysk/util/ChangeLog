@@ -1,3 +1,7 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFCore.java: Delete catch failing when a TaskException.
+
 2007-01-12  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFCore.java (giveMeAProc): Updated name change from sendStopXXX 

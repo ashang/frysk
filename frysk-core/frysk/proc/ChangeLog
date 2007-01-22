@@ -1,5 +1,15 @@
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRegisters.java: Do not catch and fail TaskException.
+	* TestSyscallSignal.java: Do not catch and fail TaskException.
+	* TestTaskSyscallObserver.java: Do not catch and fail
+	TaskException.
+	* TestTaskObserverInstructionAndCode.java: Do not re-throw
+	TaskException as a RuntimeException.
+	* Syscall.java: Do not re-throw TaskException as a
+	RuntimeException.
+	* TestTaskObserverInstruction.java: Do not throw TaskException.
+	* TestIsa.java: Do not catch and fail TaskException.
 	* TaskException.java: Extend RuntimeException.
 
 2007-01-22  Tim Moore  <timoore@redhat.com>

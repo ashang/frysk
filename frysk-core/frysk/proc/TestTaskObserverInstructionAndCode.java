@@ -159,14 +159,7 @@ public class TestTaskObserverInstructionAndCode extends TestLib
                                         + this.task);
 
       hit++;
-      try
-	{
-	  lastAddress = task.getIsa().pc(task);
-	}
-      catch (TaskException te)
-	{
-	  throw new RuntimeException(te);
-	}
+      lastAddress = task.getIsa().pc(task);
 
       if (cont)
         return Action.CONTINUE;

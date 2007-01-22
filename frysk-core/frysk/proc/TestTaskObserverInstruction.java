@@ -41,7 +41,7 @@ package frysk.proc;
 
 public class TestTaskObserverInstruction extends TestLib
 {
-  public void testInstruction() throws TaskException
+  public void testInstruction()
   {
     // We want a busy child, because we are going to follow its steps.
     Child child = new AckDaemonProcess(true);

@@ -225,23 +225,11 @@ public class TestStepping extends TestLib
           {
             line = ((Dwfl) this.dwflMap.get(task)).getSourceLine(task.getIsa().pc(task));
           }
-        catch (TaskException te)
-          {
-             System.out.println("task execption");
-            return;
-          }
         catch (NullPointerException npe)
           {
             Dwfl d = new Dwfl(task.getTid());
             line = null;
-            try
-              {
-                line = d.getSourceLine(task.getIsa().pc(task));
-              }
-            catch (TaskException te)
-              {
-                System.out.println("task execption");
-              }
+	    line = d.getSourceLine(task.getIsa().pc(task));
             if (line != null)
               {
                 this.dwflMap.put(task, d);

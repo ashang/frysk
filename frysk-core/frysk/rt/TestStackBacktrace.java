@@ -440,14 +440,7 @@ public class TestStackBacktrace
     
     if (task != null)
       {
-        try
-        {
-          frame = StackFactory.createStackFrame(task);
-        }
-        catch (TaskException te)
-        {
-          System.out.println(te.getMessage());
-        }
+        frame = StackFactory.createStackFrame(task);
         
         assertNotNull(frame);
         

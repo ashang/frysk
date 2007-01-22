@@ -1,3 +1,9 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackBacktrace.java: Do not catch and print TaskException.
+	* TestRunState.java: Ditto.
+	* TestStepping.java: Ditto.
+
 2007-01-19  Tim Moore  <timoore@redhat.com>
 
 	* RunState.java (getDwfl): new method.

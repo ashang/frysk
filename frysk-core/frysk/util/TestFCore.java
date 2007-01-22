@@ -60,7 +60,6 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.TaskException;
 import frysk.sys.proc.MapsBuilder;
 
 public class TestFCore
@@ -393,14 +392,7 @@ public class TestFCore
   protected Isa getIsa (Proc proc)
   {
     Isa arch = null;
-    try
-      {
-        arch = proc.getMainTask().getIsa();
-      }
-    catch (TaskException e)
-      {
-        fail(e.getMessage());
-      }
+    arch = proc.getMainTask().getIsa();
     return arch;
   }
 }

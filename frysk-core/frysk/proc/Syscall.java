@@ -262,15 +262,8 @@ public abstract class Syscall
     Syscall[] syscallList;
     HashMap unknownSyscalls;
 
-    try
-      {
-	syscallList = task.getIsa().getSyscallList ();
-	unknownSyscalls = task.getIsa().getUnknownSyscalls ();
-      }
-    catch (TaskException e)
-      {
-	throw new RuntimeException ("Could not get the isa", e);
-      }
+    syscallList = task.getIsa().getSyscallList ();
+    unknownSyscalls = task.getIsa().getUnknownSyscalls ();
 
     if (num < 0)
       {
@@ -327,14 +320,7 @@ public abstract class Syscall
   {
     Syscall syscall;
 
-    try
-      {
-	syscall = task.getIsa().syscallByName(name);
-      }
-    catch (TaskException e)
-      {
-	throw new RuntimeException ("Could not get the name of isa", e);
-      }
+    syscall = task.getIsa().syscallByName(name);
 
     return syscall;
   }
