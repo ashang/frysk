@@ -1,5 +1,7 @@
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (checked-for-java-util-vector): New rule.
+	
 	* Makefile.rules (SUBST_SED): Substitute pkglib64dir.
 	(pkglib64dir): Define.
 	(checked-for-pkglibdir-in-manpage): New rule.

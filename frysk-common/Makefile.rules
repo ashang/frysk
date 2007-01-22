@@ -732,3 +732,18 @@ checked-for-pkglibdir-in-manpage: files.list
 		exit 1 ; \
 	fi
 	mv $@.tmp $@
+
+# Check that java.util.Vector isn't being used - old school.
+
+all-local: checked-for-java-util-vector
+CLEANFILES += checked-for-java-util-vector
+checked-for-java-util-vector: files-java.list
+	xargs grep -H -n -e 'java.util.Vector' \
+		< files-java.list \
+		> $@.tmp \
+		|| :
+	if test -s $@.tmp ; then \
+		sed -e 's,$$,: Vector is old-school,' $@.tmp ; \		
+		exit 1 ; \
+	fi
+	mv $@.tmp $@

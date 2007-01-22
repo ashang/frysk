@@ -42,7 +42,6 @@ package frysk.dom;
 
 import java.util.HashMap;
 import java.util.Iterator;
-//import java.util.Vector;
 import java.math.BigInteger;
 import org.jdom.Document;
 import org.jdom.Element;
