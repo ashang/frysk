@@ -92,7 +92,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>dogtail-run-headless @pkglibdir@/ftail</screen>
+    <screen>dogtail-run-headless @pkglib32dir@/ftail</screen>
   </refsect1>
    
   <refsect1>

@@ -107,7 +107,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>@pkglibdir@/fsystest</screen>
+    <screen>@pkglib32dir@/fsystest</screen>
   </refsect1>
    
   <!-- refsect1>

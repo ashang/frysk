@@ -1,3 +1,8 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ftail.xml: Use explicit @pkglib32dir@ and @pkglib64dir@ in
+	examples.
+
 2006-12-19  Andrew Cagney  <cagney@redhat.com>
 
 	* ftail.xml: Remove --headless flag, document

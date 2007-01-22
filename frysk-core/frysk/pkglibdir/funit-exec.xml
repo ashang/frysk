@@ -67,7 +67,7 @@
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>@pkglibdir@/funit-exec</command>
+      <command>funit-exec</command>
       <arg choice="opt">
         <option>-<replaceable>N</replaceable></option>
       </arg>
@@ -160,9 +160,9 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <para>Create a process that, on receipt of SIGUSR1, will exec
-    <function>/bin/echo</function>.</para>
-    <screen>@pkglibdir@/funit-child $$ 0 100 /bin/echo hello</screen>
+    <para>Create a 32-bit process that, on receipt of SIGUSR1, will
+    exec the 64-bit <function>funit-exit</function> program.</para>
+    <screen>@pkglib32dir@/funit-exec $$ 0 100 @pkglib64dir@/funit-exec 1</screen>
   </refsect1>
    
   <!-- refsect1>

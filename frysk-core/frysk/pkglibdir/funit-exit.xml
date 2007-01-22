@@ -126,8 +126,10 @@
   </refsect1 -->
   
   <refsect1>
-    <title>EXAMPLE</title>
-    <screen>@pkglibdir@/funit</screen>
+    <title>EXAMPLES</title>
+    <para>Run the 32-bit version of the <command>funit-exit</command>
+    program.</para>
+    <screen>@pkglib32dir@/funit-exit 0</screen>
   </refsect1>
    
   <!-- refsect1>

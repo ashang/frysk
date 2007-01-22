@@ -56,6 +56,7 @@ pkglib_SCRIPTS =
 pkglibdir = $(libdir)/@PACKAGE@
 pkglib32_PROGRAMS =
 pkglib32dir = $(lib32dir)/@PACKAGE@
+pkglib64dir = $(lib64dir)/@PACKAGE@
 gladedir = $(pkgdatadir)/glade
 helpdir = $(datadir)/gnome/help/C
 
@@ -235,6 +236,7 @@ SUBST_SED = sed \
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
 		-e 's,[@]pkglib32dir[@],$(pkglib32dir),g' \
+		-e 's,[@]pkglib64dir[@],$(pkglib64dir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
 		-e 's,[@]VERSION[@],$(VERSION),g' \
@@ -713,3 +715,20 @@ checked-for-copyright-notice:
 	fi ; \
 	rm -f $@.tmp ; \
 	echo "PASS: code has Copyright notice"
+
+# Check that no .xml (i.e., man page) contains a reference to
+# @pkglibdir@.
+
+all-local: checked-for-pkglibdir-in-manpage
+CLEANFILES += checked-for-pkglibdir-in-manpage
+checked-for-pkglibdir-in-manpage: files.list
+	( cd $(srcdir) ; \
+		grep -e '\.xml$$' files.list \
+		| xargs grep -H -n -e '[@]libdir[@]' -e '[@]pkglibdir[@]' \
+	) > $@.tmp || :
+	if test -s  $@.tmp ; then \
+		sed -e 's,$$,: Reference to pkglibdir or libdir in xml file,' $@.tmp ; \
+		rm -f $@.tmp ; \
+		exit 1 ; \
+	fi
+	mv $@.tmp $@

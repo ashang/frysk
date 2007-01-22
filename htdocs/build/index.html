@@ -453,7 +453,6 @@ $ cvs -d :ext:<user-name>@sourceware.org:/cvs/frysk \
 Making sure that the current directory
 is<tt>frysk-imports/getopt</tt>.</dd>
 
-</dl>
 <dt>How do I add a new dejagnu test?</dt>
 <dd> Most of the work for this is done, just create a test_name.exp file and 
 drop it in a directory somewhere under frysk-core/testsuite. Take a look at 
@@ -464,6 +463,14 @@ drop it in a directory somewhere under frysk-core/testsuite. Take a look at
 <dd>Don't use "s to wrap strings in dejagnu/expect/tcl, they cause the symbols 
 inside to be parsed differently. Instead use {}. So this becomes 
 <pre>{[[:digit:]]}</pre></dd>
+
+<dt>Why are @libdir@ and @pkglibdir@ not permitted in man-pages?</dt>
+<dd>Because the path is not identical across 32-bit (e.g.,
+/usr/lib/frysk) and 64-bit (e.g., /usr/lib64/frysk) systems.  Instead
+manual pages explicitly refer to @pkglib32dir@ and/or
+@pkglib64dir@.</dd>
+
+</dl>
               <!-- end text -->
               <p>&nbsp;</p>
             </td>

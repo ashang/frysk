@@ -67,7 +67,7 @@
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>@pkglibdir@/funit-child</command>
+      <command>funit-child</command>
     </cmdsynopsis>
   </refsynopsisdiv>
   
@@ -98,8 +98,11 @@
   </refsect1 -->
   
   <refsect1>
-    <title>EXAMPLE</title>
-    <screen>@pkglibdir@/funit-child</screen>
+    <title>EXAMPLES</title>
+    <para>Run on a 32-bit system.</para>
+    <screen>@pkglib32dir@/funit-child</screen>
+    <para>Run on a 64-bit system.</para>
+    <screen>@pkglib64dir@/funit-child</screen>
   </refsect1>
    
   <!-- refsect1>

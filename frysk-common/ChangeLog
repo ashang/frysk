@@ -1,3 +1,10 @@
+2007-01-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST_SED): Substitute pkglib64dir.
+	(pkglib64dir): Define.
+	(checked-for-pkglibdir-in-manpage): New rule.
+	* frysk-common.ac (lib64dir): Perform AC_SUBST.
+
 2007-01-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (files.list): Do not include .gladep files.
