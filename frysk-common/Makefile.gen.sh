@@ -165,6 +165,10 @@ check_MANS ()
 echo_PROGRAMS ()
 {
     case "$1" in
+	*.javain )
+	    # .javain programs are never installed.
+	    echo "noinst_PROGRAMS += $1"
+            ;;
 	*dir/* )
             # extract the directory prefix
             local dir=`echo /"$1" | sed -e 's,.*/\([a-z]*\)dir/.*,\1,'`
@@ -268,7 +272,17 @@ echo_LDFLAGS ()
 has_main ()
 {
     case "$1" in
-	*.java | *.javain )
+	*.javain )
+            # .javain files must always have main
+            if jv-scan --print-main $1 | grep .  > /dev/null 2>&1 ; then
+		:
+	    else
+		echo "$1 must have a main" 1>&2
+		exit 1
+	    fi
+            true
+	    ;;
+	*.java )
 	    jv-scan --print-main $1 | grep .  > /dev/null 2>&1
 	    ;;
         *.c | *.cxx )

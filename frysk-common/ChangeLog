@@ -1,3 +1,8 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (echo_PROGRAMS, has_main): For .javain files,
+	assume it has a main and not installed.
+
 2007-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.rules: Made helpdir available to FryskHelpManager.java.
