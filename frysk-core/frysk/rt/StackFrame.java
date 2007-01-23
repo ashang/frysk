@@ -315,7 +315,7 @@ public class StackFrame
         for (int i = 0; i < padding; ++i)
           builder.append('0');
       }
-    catch (TaskException _)
+    catch (TaskException ignored)
       {
         // We couldn't get the task's ISA. But, we don't care, since
         // all it means is that we can't properly pad the address.
