@@ -1,5 +1,8 @@
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Util.java: Remove TaskException code.
+	* StacktraceAction.java: Ditto.
+
 	* Ftrace.java: Remove TaskException code.
 	* CoredumpAction.java: Ditto.
 

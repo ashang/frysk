@@ -1,3 +1,8 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Breakpoint.java: Remove TaskException from comments.
+	* LinuxPtraceTask.java: Ditto.
+
 2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
 	* TestGetProc.java: Removed

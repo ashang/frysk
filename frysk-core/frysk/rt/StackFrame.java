@@ -43,7 +43,6 @@ package frysk.rt;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import gnu.gcj.RawDataManaged;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -309,17 +308,9 @@ public class StackFrame
     String addr = Long.toHexString(getAddress());
     
     // Pad the address based on the task's word size.
-    try
-      {
-        int padding = 2 * task.getIsa().getWordSize() - addr.length();
-        for (int i = 0; i < padding; ++i)
-          builder.append('0');
-      }
-    catch (TaskException ignored)
-      {
-        // We couldn't get the task's ISA. But, we don't care, since
-        // all it means is that we can't properly pad the address.
-      }
+    int padding = 2 * task.getIsa().getWordSize() - addr.length();
+    for (int i = 0; i < padding; ++i)
+	builder.append('0');
     
     builder.append(addr);
     String mn = getMethodName();

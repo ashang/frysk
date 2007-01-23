@@ -1,5 +1,7 @@
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFrame.java: Remove TaskExceptoin code.
+
 	* TestStackBacktrace.java: Remove TaskException code.
 	* TestRunState.java: Ditto.
 	* RunState.java: Ditto.

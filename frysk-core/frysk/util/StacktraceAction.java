@@ -52,7 +52,6 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.sys.Sig;
@@ -129,30 +128,20 @@ public abstract class StacktraceAction
   {
     if (task != null)
       {
-        try
-          {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
-            int count = 0;
-            for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
-              {
-                // FIXME: do valgrind-like '=== PID ===' ?
-                StringBuffer output = new StringBuffer("#" + count + " "
-                                                       + frame.toPrint(false)
-                                                       + "\n");
-
-                buffer.append(output);
-                count++;
-              }
-
-            return buffer;
-          }
-        catch (TaskException e)
-          {
-            // FIXME: log exception, or rethrow?
-            logger.log(Level.FINE, "{0} Couldn't print stack trace\n", task);
-            return new StringBuffer("... couldn't print stack trace\n");
-          }
+	  StringBuffer buffer = new StringBuffer();
+	  buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
+	  int count = 0;
+	  for (StackFrame frame = StackFactory.createStackFrame(task);
+	       frame != null; frame = frame.getOuter()) {
+	      // FIXME: do valgrind-like '=== PID ===' ?
+	      StringBuffer output = new StringBuffer("#" + count + " "
+						     + frame.toPrint(false)
+						     + "\n");
+	      
+	      buffer.append(output);
+	      count++;
+	  }
+	  return buffer;
       }
 
     return null;
