@@ -1,5 +1,9 @@
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFrame.java: Do not import gnu.gcj.RawDataManaged.
+	(unwind_data): Delete field.
+	(getUnwindData): Delete method.
+
 	* StackFrame.java: Remove TaskExceptoin code.
 
 	* TestStackBacktrace.java: Remove TaskException code.

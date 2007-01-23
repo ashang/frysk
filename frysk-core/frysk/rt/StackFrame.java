@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@ package frysk.rt;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 import frysk.proc.Task;
-import gnu.gcj.RawDataManaged;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import lib.unwind.FrameCursor;
@@ -57,8 +56,6 @@ public class StackFrame
   
   protected FrameCursor myCursor;
 
-  private RawDataManaged unwind_data;
-  
   private DOMFunction func;
   
   private DOMSource data;
@@ -265,16 +262,6 @@ public class StackFrame
   public Task getTask ()
   {
     return task;
-  }
-
-  /**
-   * Returns the RawDataManaged  which represents this StackFrame's cursor.
-   * 
-   * @return This StackFrame's cursor.
-   */
-  protected RawDataManaged getUnwindData ()
-  {
-    return unwind_data;
   }
 
   /**
