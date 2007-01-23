@@ -1,3 +1,14 @@
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
+
+	* TestGetProc.java: Removed
+	* LinuxPtraceHostState.java (running.handleGetProc): Ditto.
+	* HostState.java (handleGetProc): Ditto.
+	* DummyHost.java (sendGetProc): Ditto.
+	* Host: (requestFindProc): Ditto.
+	(requestGetProc): Ditto.
+	(sendGetProc): Ditto.
+	* LinuxPtraceHost.java (sendGetProc): Ditto
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java: Remove TaskException code.
@@ -8,7 +19,7 @@
 	* Task.java: Ditto.
 	* TestSyscallRunning.java: Ditto.
 
-2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
 	* TestGetProc.java: Added.
 	* LinuxPtraceHostState.java (running.handleGetProc): Added.

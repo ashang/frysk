@@ -86,11 +86,5 @@ abstract class LinuxPtraceHostState
 		host.sendRefresh (procId, finder);
 		return running;
 	    }
-        HostState handleGetProc (Host host, ProcId procId, Host.FindProc finder)
-        {
-          logger.log (Level.FINE, "{0} handleRefresh\n", host); 
-        host.sendGetProc (procId, finder);
-        return running;
-        }
 	};
 }
