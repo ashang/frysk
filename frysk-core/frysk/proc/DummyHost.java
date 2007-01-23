@@ -58,4 +58,8 @@ public class DummyHost extends Host {
   {
   }
 
+  void sendGetProc (ProcId procId, FindProc finder)
+  {
+  }
+
 }

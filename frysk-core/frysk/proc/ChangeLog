@@ -1,3 +1,14 @@
+2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+
+	* TestGetProc.java: Added.
+	* LinuxPtraceHostState.java (running.handleGetProc): Added.
+	* HostState.java (handleGetProc): Added.
+	* DummyHost.java (sendGetProc): Added.
+	* Host: (requestFindProc): Fixed typo.
+	(requestGetProc): Added.
+	(sendGetProc): Added.
+	* LinuxPtraceHost.java (sendGetProc): Added.
+	
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaFactory.java (getIsa): Convert ElfFileException, and

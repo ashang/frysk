@@ -58,6 +58,10 @@ abstract class HostState
     {
 	throw unhandled (host, "handleRefresh");
     }
+    HostState handleGetProc (Host host, ProcId procId, Host.FindProc finder)
+    {
+      throw unhandled (host, "handleGetProc");
+    }
     HostState handleCreateAttachedProc (Host host,
 					String stdin, String stdout,
 					String stderr, String[] args,

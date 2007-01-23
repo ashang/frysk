@@ -127,7 +127,8 @@ public abstract class Host
     abstract void sendRefresh (boolean refreshAll);
     
     abstract void sendRefresh (ProcId procId, FindProc finder);
-    
+    abstract void sendGetProc (ProcId procId, FindProc finder);
+   
     /**
      * Tell the host to create a running child process.
      *
@@ -193,7 +194,7 @@ public abstract class Host
     }    
     
     /**
-     * Find a specifc process from its Id.
+     * Find a specific process from its Id.
      */
     public void requestFindProc(final ProcId procId, final FindProc finder)
     {
@@ -202,6 +203,17 @@ public abstract class Host
         public void execute ()
         {
           newState = oldState().handleRefresh (Host.this, procId, finder);
+        }});
+    }
+    
+    
+    public void requestGetProc(final ProcId procId, final FindProc finder)
+    {
+      Manager.eventLoop.add(new HostEvent("FindProc") {
+
+        public void execute ()
+        {
+          newState = oldState().handleGetProc (Host.this, procId, finder);
         }});
     }
     
