@@ -1,5 +1,7 @@
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskException.java: Delete.
+
 	* Breakpoint.java: Remove TaskException from comments.
 	* LinuxPtraceTask.java: Ditto.
 
