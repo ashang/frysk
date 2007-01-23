@@ -743,7 +743,7 @@ checked-for-java-util-vector: files-java.list
 		> $@.tmp \
 		|| :
 	if test -s $@.tmp ; then \
-		sed -e 's,$$,: Vector is old-school,' $@.tmp ; \		
+		sed -e 's,$$,: Vector is old-school,' $@.tmp ; \
 		exit 1 ; \
 	fi
 	mv $@.tmp $@

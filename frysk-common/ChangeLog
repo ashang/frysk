@@ -1,3 +1,8 @@
+2007-01-23  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.rules (checked-for-java-util-vector): Remove whitespace
+	following trailing backslash.
+
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (checked-for-java-util-vector): New rule.
