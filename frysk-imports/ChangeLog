@@ -1,3 +1,7 @@
+2007-01-23  Mark Wielaard  <mark@klomp.org>
+
+	* include/linux.syscall.h: Define MAX_ERRNO if not yet defined.
+
 2007-01-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk/pkgdatadir/helloworld.o)

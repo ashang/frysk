@@ -43,6 +43,13 @@
 #include <errno.h>
 #include <linux/unistd.h>
 
+/* If linux/unistd.h defines _syscall2 then it might refer to MAX_ERRNO
+ * which might not be defined anywhere (at least it does so on x86_64).
+ */
+#ifndef MAX_ERRNO
+#define MAX_ERRNO 4095
+#endif
+
 /* Declares syscall() */
 #include <unistd.h>
 
