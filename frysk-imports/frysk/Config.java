@@ -51,6 +51,10 @@ public class Config
      */
     public static final native String getGladeDir ();
     /**
+     * Directory containing the frysk help files.
+     */
+    public static final native String getHelpDir ();
+    /**
      * Root directory of frysk's images (or icons).
      */
     public static final native String getImageDir ();

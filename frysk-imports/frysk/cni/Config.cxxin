@@ -56,6 +56,12 @@ frysk::Config::getGladeDir ()
 }
 
 jstring
+frysk::Config::getHelpDir ()
+{
+  return JvNewStringUTF ("@helpdir@");
+}
+
+jstring
 frysk::Config::getImageDir ()
 {
   return JvNewStringUTF ("@imagedir@");

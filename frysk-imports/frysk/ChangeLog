@@ -1,3 +1,8 @@
+2007-01-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* cni/Config.cxxin (getHelpDir): Implement.
+	* Config.java (getHelpDir): Define.
+
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Config.cxxin (getTargetCpuXXX): Implement.
