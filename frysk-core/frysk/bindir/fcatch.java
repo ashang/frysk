@@ -109,9 +109,9 @@ public class fcatch
               //System.out.println("Option pid: " + pid);
               catcher.addTracePid(pid);
               requestedPid = true;
-          } catch (NumberFormatException _) {
+          } catch (NumberFormatException e) {
               OptionException oe = new OptionException("couldn't parse pid: " + arg);
-              oe.initCause(_);
+              oe.initCause(e);
               throw oe;
           }
       }

@@ -1,3 +1,9 @@
+2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+
+	* fcatch.java (.parsed): Changed catch Exception _ to catch Exception e.
+	* ftrace.java (.notifyFile): Ditto.
+	(.parsed): Ditto.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* fstep.java: Remove TaskException code.
