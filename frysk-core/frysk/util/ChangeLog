@@ -1,3 +1,8 @@
+2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+
+	* Util.java (printStackTrace): changed catch Exception _ to catch Exception ignored.
+	* StacktraceAction.java (generateTaskStackTrace): Ditto.
+
 2007-01-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java (giveMeAProc):  Remove assertSendStop() from ackProc.

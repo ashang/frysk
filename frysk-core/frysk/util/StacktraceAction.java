@@ -147,7 +147,7 @@ public abstract class StacktraceAction
 
             return buffer;
           }
-        catch (TaskException _)
+        catch (TaskException e)
           {
             // FIXME: log exception, or rethrow?
             logger.log(Level.FINE, "{0} Couldn't print stack trace\n", task);

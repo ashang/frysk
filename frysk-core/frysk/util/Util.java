@@ -72,7 +72,7 @@ public class Util
             writer.println(frame);
           }
       }
-    catch (TaskException _)
+    catch (TaskException ignored)
       {
         // FIXME: log exception, or rethrow?
         writer.println("... couldn't print stack trace");
