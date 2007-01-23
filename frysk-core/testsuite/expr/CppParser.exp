@@ -59,7 +59,7 @@ set hpd_sid [tool_start ${hpd_path}]
 tool_send $hpd_sid "" "(fhpd)" "prompt"
 tool_send $hpd_sid "print 2+2\n" "\r\n4\r\n" "add"
 tool_send $hpd_sid "attach loop.x [exp_pid -i $loop_sid] -cli" "attach.*(fhpd)" "attach"
-tool_send $hpd_sid "where\n" "where.*# 0.*(fhpd)" "where"
+tool_send $hpd_sid "where\n" "where.*#0.*(fhpd)" "where"
 tool_send $hpd_sid "print int_21\n" "print.*2.*(fhpd)" "int_21"
 tool_send $hpd_sid "up\n" "up.*#1.*(fhpd)" "up"
 tool_send $hpd_sid "print int_21\n" "print.*21.*(fhpd)" "int_21"

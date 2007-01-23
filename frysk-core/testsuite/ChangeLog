@@ -1,3 +1,7 @@
+2006-12-23  Nurdin Premji <npremji@redhat.com>
+
+	* expr/CppParser.exp (where): Removed space between # and 0.
+
 2006-12-21  Stan Cox  <scox@redhat.com>
 
 	* expr/CppParser.exp (hpd_path): Change from hpd to fhpd.
