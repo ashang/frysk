@@ -623,10 +623,7 @@ public class CLI
         if (tmpFrame == null)
           tmpFrame = currentFrame;
         cmd.getOut().print("#" + stackLevel);
-        cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
-        cmd.getOut().print(" in " + tmpFrame.getMethodName());
-        cmd.getOut().print(" at " + tmpFrame.getSourceFile());
-        cmd.getOut().println("#" + tmpFrame.getLineNumber());        
+        cmd.getOut().println(tmpFrame.toPrint(false));        
       }
     }
   
@@ -655,11 +652,8 @@ public class CLI
         tmpFrame = symtab.getCurrentFrame();
         while (tmpFrame != null)
           {
-            cmd.getOut().print("# " + l);
-            cmd.getOut().print(" 0x" + Integer.toString((int)tmpFrame.getAddress(), 16));
-            cmd.getOut().print(" in " + Demangler.demangle(tmpFrame.getMethodName()));
-            cmd.getOut().print(" at " + tmpFrame.getSourceFile());
-            cmd.getOut().println("#" + tmpFrame.getLineNumber());
+            cmd.getOut().print("#" + l);
+            cmd.getOut().println(tmpFrame.toPrint(false));
             tmpFrame = tmpFrame.getOuter();
             l += 1;
             if (l == stopLevel)

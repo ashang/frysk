@@ -1,3 +1,8 @@
+2007-01-23  Nurdin Premji  <npremji@redhat.com>
+
+	* hpd/CLI.java (WhereHandler.handle): Changed to use Stackframe.toPrint method.
+	(UpDownHandler.handle): Ditto.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/CLI.java: Delete unused import frysk.proc.TaskException.
