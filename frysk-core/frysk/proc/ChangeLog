@@ -1,3 +1,8 @@
+2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
+
+	* ProcBlockAction.java (ProcBlockTaskObserver.updateExecuted): Added check to avoid
+	main task being dealt with twice. Bug #3909
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskException.java: Delete.

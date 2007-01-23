@@ -69,7 +69,8 @@ abstract public class ProcBlockAction
           while (i.hasNext())
             {
               Task t = (Task) i.next();
-              requestAddObservers(t);
+              if (t != task)
+                requestAddObservers(t);
             }
         }
 
