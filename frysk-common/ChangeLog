@@ -1,3 +1,7 @@
+2007-01-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.rules: Made helpdir available to FryskHelpManager.java.
+
 2007-01-23  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.rules (checked-for-java-util-vector): Remove whitespace
