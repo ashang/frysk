@@ -42,23 +42,14 @@
 
 package frysk.gui.common;
 
-import java.io.File;
+import frysk.Config;
 
 public class FryskHelpManager
 {
-  private static final String BASE_PATH = "frysk/gui/";
-
-  private static final String HELP_PKG_PATH = "helpdir/";
-
-  private static final String SRCDIR = "@srcdir@";
-
-  private static final String ABS_SRCDIR = "@abs_srcdir@";
 
   private static final String HELP_PROGRAM = "/usr/bin/gnome-help";
-
-  private static final String HELP_ONLINE_PATH = "/usr/share/gnome/help/frysk/C";
   
-  private static final String HELP_DOC_NAME = "frysk_doc.xml";
+  private static final String HELP_DOC = "frysk_doc.xml";
 
   /**
    * activateHelp activates the Gnome help system poining it at Frysk's
@@ -66,21 +57,14 @@ public class FryskHelpManager
    */
   public static void activateHelp ()
   {
-    String help_doc_path = HELP_ONLINE_PATH + "/" + HELP_DOC_NAME;
 
-    File f1 = new File(SRCDIR + "/" + BASE_PATH + HELP_PKG_PATH + HELP_DOC_NAME);
-    File f2 = new File(ABS_SRCDIR + "/" + BASE_PATH + HELP_PKG_PATH + HELP_DOC_NAME);
-
-    if (f1.exists())
-      help_doc_path = SRCDIR + "/" + BASE_PATH + HELP_PKG_PATH + HELP_DOC_NAME;
-    else if (f2.exists())
-      help_doc_path = ABS_SRCDIR + "/" + BASE_PATH + HELP_PKG_PATH + HELP_DOC_NAME;
+    String help_dir_path = Config.getHelpDir();
 
     Runtime r = Runtime.getRuntime();
 
     try
       {
-        r.exec(HELP_PROGRAM + " " + help_doc_path);
+        r.exec(HELP_PROGRAM + " " + help_dir_path + "/" + HELP_DOC);
       }
     catch (Exception e)
       {
