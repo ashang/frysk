@@ -79,7 +79,6 @@ import frysk.proc.Proc;
 import frysk.proc.Register;
 import frysk.proc.RegisterView;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 
 public class RegisterWindow
@@ -205,15 +204,7 @@ public class RegisterWindow
   {
     this.myTask = myTask;
     Isa isa;
-    try
-      {
-        isa = this.myTask.getIsa();
-      }
-    catch (TaskException e)
-      {
-        e.printStackTrace();
-        return;
-      }
+    isa = this.myTask.getIsa();
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -339,15 +330,7 @@ public class RegisterWindow
   {
     this.myTask = task;
     Isa isa;
-    try
-      {
-        isa = this.myTask.getIsa();
-      }
-    catch (TaskException e)
-      {
-        e.printStackTrace();
-        return;
-      }
+    isa = this.myTask.getIsa();
     this.setTitle(this.getTitle() + this.myTask.getProc().getCommand() + " "
                   + this.myTask.getName());
 
@@ -456,16 +439,7 @@ public class RegisterWindow
   private void resetList ()
   {
     Isa isa;
-    try
-      {
-        isa = this.myTask.getIsa();
-      }
-    catch (TaskException e)
-      {
-        e.printStackTrace();
-        return;
-      }
-    
+    isa = this.myTask.getIsa();
     ListStore model = (ListStore) this.registerView.getModel();
     model.clear();
     

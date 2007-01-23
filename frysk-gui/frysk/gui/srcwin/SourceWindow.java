@@ -117,7 +117,6 @@ import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.Isa;
 import frysk.rt.RunState;
 import frysk.rt.StackFactory;
@@ -1826,14 +1825,7 @@ public class SourceWindow
 
   private Isa getProcIsa()
   {
-    try
-      {
-	return swProc.getMainTask().getIsa();
-      }
-    catch (TaskException e) 
-      {
-	return null;
-      }
+      return swProc.getMainTask().getIsa();
   }
   
   private void toggleMemoryWindow ()

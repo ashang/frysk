@@ -45,7 +45,6 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 //import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
-import frysk.proc.TaskException;
 import frysk.proc.Task;
 import frysk.proc.Isa;
 
@@ -66,13 +65,7 @@ public class ShowMemWin
   public void execute (Task task)
   {
     Isa isa = null;
-    try 
-      {
-	isa = task.getIsa();
-      }
-    catch (TaskException e)
-      {
-      }
+    isa = task.getIsa();
     if (isa == null || isa instanceof frysk.proc.IsaX8664
 	|| isa instanceof frysk.proc.IsaPPC64) 
       {

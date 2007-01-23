@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,15 +39,12 @@
 package frysk.gui.monitor.actions;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import frysk.gui.Gui;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 
@@ -59,8 +56,6 @@ import frysk.rt.StackFrame;
  */
 public class PrintTaskBacktrace extends TaskAction {
 
-	private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
-	
 	public PrintTaskBacktrace() {
 		super("Print Backtrace of", 
 				"Print the backtrace of the selected thread"); 
@@ -89,22 +84,16 @@ public class PrintTaskBacktrace extends TaskAction {
 				+ " from PID "
 				+ task.getProc().getPid());
 		
-		try {
-			for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame
-					.getOuter()) {
+		for (StackFrame frame = StackFactory.createStackFrame(task);
+		     frame != null; frame = frame.getOuter()) {
 				
-				WindowManager.theManager.logWindow.print(frame.toString()
-						+ "\n");
-				
-				EventLogger.theLogger.getEventLogger().log(Level.INFO,
+		    WindowManager.theManager.logWindow.print(frame.toString()
+							     + "\n");
+		    
+		    EventLogger.theLogger.getEventLogger().log(Level.INFO,
 						frame.toString());
-
-			}
-		} catch (TaskException e) {
-			errorLog.log(Level.WARNING, "Error encountered printing backtrace for" +
-					"Task " + task,e);
+		    
 		}
-
 	}
 
 	/* (non-Javadoc)

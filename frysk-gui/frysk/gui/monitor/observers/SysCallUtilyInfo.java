@@ -41,7 +41,6 @@ package frysk.gui.monitor.observers;
 import frysk.proc.Syscall;
 import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 public class SysCallUtilyInfo {
 
@@ -49,11 +48,7 @@ public class SysCallUtilyInfo {
 		Syscall syscall;
 
 		SyscallEventInfo syscallEventInfo = null;
-		try {
-			syscallEventInfo = task.getSyscallEventInfo();
-		} catch (final TaskException e) {
-			return null;
-		}
+		syscallEventInfo = task.getSyscallEventInfo();
 		
 		try {
 			syscall = syscallEventInfo.getSyscall(task);
@@ -73,11 +68,7 @@ public class SysCallUtilyInfo {
 		Syscall syscall;
 
 		SyscallEventInfo syscallEventInfo = null;
-		try {
-			syscallEventInfo = task.getSyscallEventInfo();
-		} catch (final TaskException e) {
-			return "";
-		}
+		syscallEventInfo = task.getSyscallEventInfo();
 		
 		try {
 			syscall = syscallEventInfo.getSyscall(task);
@@ -145,11 +136,7 @@ public class SysCallUtilyInfo {
 		Syscall syscall;
 
 		SyscallEventInfo syscallEventInfo = null;
-		try {
-			syscallEventInfo = task.getSyscallEventInfo();
-		} catch (final TaskException e) {
-			return "";
-		}
+		syscallEventInfo = task.getSyscallEventInfo();
 
 		try {
 			syscall = syscallEventInfo.getSyscall(task);

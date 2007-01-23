@@ -80,7 +80,6 @@ import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
@@ -286,19 +285,8 @@ public class MemoryWindow
     this.myTask = myTask;
     long pc_inc;
     
-    try
-      {
-        this.diss = new Disassembler(myTask.getMemory());
-
-        pc_inc = myTask.getIsa().pc(myTask);
-      }
-    catch (TaskException e)
-      {
-        // XXX What to do if there's an error?
-        e.printStackTrace();
-        return;
-      }
-    
+    this.diss = new Disassembler(myTask.getMemory());
+    pc_inc = myTask.getIsa().pc(myTask);
     long end = pc_inc + 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -448,19 +436,9 @@ public class MemoryWindow
     this.myTask = task;
     long pc_inc;
     
-    try
-      {
-        this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(myTask.getMemory());
 
-        pc_inc = myTask.getIsa().pc(myTask);
-      }
-    catch (TaskException e)
-      {
-        // XXX What to do if there's an error?
-        e.printStackTrace();
-        return;
-      }
-    
+    pc_inc = myTask.getIsa().pc(myTask);
     long end = pc_inc + 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
@@ -510,14 +488,7 @@ public class MemoryWindow
   private void resetPCAndList ()
   {
     long pc_inc = 0;
-    try
-    {
-      pc_inc = myTask.getIsa().pc(myTask);
-    }
-    catch (TaskException te)
-    {
-      refreshList();
-    }
+    pc_inc = myTask.getIsa().pc(myTask);
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
     

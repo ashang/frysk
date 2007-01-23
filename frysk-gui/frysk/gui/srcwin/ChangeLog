@@ -1,3 +1,8 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* CurrentStackView.java: Remove TaskException.
+	* SourceWindow.java: Ditto..
+
 2007-01-19  Andrew Cagney  <cagney@redhat.com>
 
 	* testfiles/test6.cpp: Delete.

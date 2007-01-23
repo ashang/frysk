@@ -1,3 +1,9 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* actions/ShowMemWin.java: Remove TaskException.
+	* actions/PrintTaskBacktrace.java: Ditto.
+	* observers/SysCallUtilyInfo.java: Ditto.
+
 2007-01-19  Tim Moore  <timoore@redhat.com>
 
 	* actions/ShowMemWin.java (execute): Don't use MachineType; look

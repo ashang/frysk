@@ -73,7 +73,6 @@ import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
@@ -240,19 +239,10 @@ public class DisassemblyWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    try
-      {
-        this.diss = new Disassembler(myTask.getMemory());
+    this.diss = new Disassembler(myTask.getMemory());
 
-        pc_inc = myTask.getIsa().pc(myTask);
-        this.pc = pc_inc;
-      }
-    catch (TaskException e)
-      {
-        // XXX What to do if there's an error?
-        e.printStackTrace();
-        return;
-      }
+    pc_inc = myTask.getIsa().pc(myTask);
+    this.pc = pc_inc;
     //long end = pc_inc + 20;
     this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
@@ -335,19 +325,9 @@ public class DisassemblyWindow
   {
     this.myTask = task;
     long pc_inc;
-    try
-      {
-        this.diss = new Disassembler(myTask.getMemory());
-
-        pc_inc = myTask.getIsa().pc(myTask);
-        this.pc = pc_inc;
-      }
-    catch (TaskException e)
-      {
-        // XXX What to do if there's an error?
-        e.printStackTrace();
-        return;
-      }
+    this.diss = new Disassembler(myTask.getMemory());
+    pc_inc = myTask.getIsa().pc(myTask);
+    this.pc = pc_inc;
     // long end = pc_inc + 20;
     this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
@@ -425,14 +405,7 @@ public class DisassemblyWindow
   private void resetPCAndList ()
   {
     long pc_inc = 0;
-    try
-    {
-      pc_inc = myTask.getIsa().pc(myTask);
-    }
-    catch (TaskException te)
-    {
-      refreshList();
-    }
+    pc_inc = myTask.getIsa().pc(myTask);
     
     //this.pc = pc_inc;
     this.pcEntryDec.setText("" + pc_inc);

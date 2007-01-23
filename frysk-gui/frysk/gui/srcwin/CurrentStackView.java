@@ -60,7 +60,6 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMLine;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.rt.StackFrame;
 
 public class CurrentStackView
@@ -134,13 +133,7 @@ public class CurrentStackView
 	Task task = frame.getTask();
 	Isa isa = null;
 
-	try
-	  {
-	    isa = task.getIsa();
-	  }
-	catch (TaskException e) 
-	  {
-	  }
+	isa = task.getIsa();
         if (isa == null 
 	    || !(isa instanceof frysk.proc.IsaIA32 
 		 || isa instanceof frysk.proc.IsaX8664))
