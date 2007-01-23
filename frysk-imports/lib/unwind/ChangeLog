@@ -1,3 +1,8 @@
+2007-01-23  Mike Cvet  <mcvet@redhat.com>
+
+	* cni/StackTraceCreator.cxx (unwind_setup): Make sure innermost frame
+	has a signal trampoline check.
+
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
 
 	* StackTraceCreator.java (createStackTrace): Added logging messages.
