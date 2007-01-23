@@ -221,12 +221,6 @@ public class fstep
 	      System.out.println("[" + tid + "]\t" + it.next());
 	  }
       }
-    catch (TaskException te)
-      {
-	// Task disappeared?
-	te.printStackTrace();
-	System.exit(-1);
-      }
     catch (OpcodesException oe)
       {
 	// Bad location?

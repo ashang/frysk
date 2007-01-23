@@ -116,28 +116,21 @@ public class Breakpoint
 
 	installed.put(this, this);
     
-        try
-          {
-            set(task);
-          }
-	catch (TaskException e)
-          {
-            // Throw RuntimeException for the following two reasons:
-            // 1st) TaskException is thrown out by Task.getIsa() in set(), if the
-            //      frysk works well, the exception shouldnot be thrown out. If we
-            //      get one, it mean some runtime exception occurs.
-            // 2nd) This method will be called in TaskState.Running.handleStoppedEvent().
-            //      There's no exception hanling there. So we have to throw one Runtime-
-            //      Exception here.
-            throw new RuntimeException(e);
-          }
+	set(task);
+	// This throws RuntimeException for the following two reasons:
+	// 1st) TaskException is thrown out by Task.getIsa() in set(), if the
+	//      frysk works well, the exception shouldnot be thrown out. If we
+	//      get one, it mean some runtime exception occurs.
+	// 2nd) This method will be called in TaskState.Running.handleStoppedEvent().
+	//      There's no exception hanling there. So we have to throw one Runtime-
+	//      Exception here.
       }
   }
 
   /**
    * Actually sets the breakpoint.
    */
-  private void set(Task task) throws TaskException
+  private void set(Task task)
   {
     int len = 0;
     ByteBuffer buffer = null;
@@ -202,7 +195,7 @@ public class Breakpoint
    * Should not be called again until <code>stepDone</code> is
    * called. The given Task should be stopped.
    */
-  public void prepareStep(Task task) throws TaskException
+  public void prepareStep(Task task)
   {
     if (stepping)
       throw new IllegalStateException("Already stepping");
@@ -232,22 +225,15 @@ public class Breakpoint
     if (! stepping)
       throw new IllegalStateException("Not stepping");
           
-    try
-      {
-	if (isInstalled())
-	  set(task);
-      }
-    catch (TaskException e)
-      {
-        // Throw RuntimeException for the following two reasons:
-        // 1st) TaskException is thrown out by Task.getIsa() in set(), if the
-        //      frysk works well, the exception shouldnot be thrown out. If we
-        //      get one, it mean some runtime exception occurs.
-        // 2nd) setDone() will be called in TaskState.Running.handleTrappedEvent().
-        //      There's no exception hanling there. So we have to throw one Runtime-
-        //      Exception here.
-        throw new RuntimeException(e);
-      }
+    if (isInstalled())
+	set(task);
+    // This throws RuntimeException for the following two reasons:
+    // 1st) TaskException is thrown out by Task.getIsa() in set(), if the
+    //      frysk works well, the exception shouldnot be thrown out. If we
+    //      get one, it mean some runtime exception occurs.
+    // 2nd) setDone() will be called in TaskState.Running.handleTrappedEvent().
+    //      There's no exception hanling there. So we have to throw one Runtime-
+    //      Exception here.
     
     stepping = false;
   }

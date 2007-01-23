@@ -1,3 +1,12 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackBacktrace.java: Remove TaskException code.
+	* TestRunState.java: Ditto.
+	* RunState.java: Ditto.
+	* StackCallbacks.java: Ditto.
+	* TestStepping.java: Ditto.
+	* StackFactory.java: Ditto.
+
 2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
 
 	* StackFrame.java (frameToString): Changed catch Exception _ to catch Exception ignored.

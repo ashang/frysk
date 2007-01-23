@@ -863,15 +863,7 @@ abstract class LinuxPtraceTaskState
 	  logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 	  
 	  Isa isa;
-	  try
-	    {
-	      isa = task.getIsa();
-	    }
-	  catch (TaskException tte)
-	    {
-	      // XXX - Now what - did the process die suddenly?
-	      throw new RuntimeException(tte);
-	    }
+	  isa = task.getIsa();
 
 	  // First see if this was just an indication the we stepped.
 	  // And see if we were stepping a breakpoint.  Or whether we
@@ -912,19 +904,10 @@ abstract class LinuxPtraceTaskState
 					       + task.steppingBreakpoint);
 
 		  // Prepare for stepping the breakpoint
-		  try
-		    {
-		      Proc proc = task.getProc();
-		      Breakpoint bp = Breakpoint.create(address, proc);
-		      bp.prepareStep(task);
-		      task.steppingBreakpoint = bp;
-		    }
-		  catch (TaskException te)
-		    {
-		      // Argh, major trouble!
-		      // No way to recover from this one...
-		      throw new RuntimeException(te);
-		    }
+		  Proc proc = task.getProc();
+		  Breakpoint bp = Breakpoint.create(address, proc);
+		  bp.prepareStep(task);
+		  task.steppingBreakpoint = bp;
 		  
 		  if (blockers == 0)
 		    {

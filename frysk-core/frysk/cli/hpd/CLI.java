@@ -63,7 +63,6 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;

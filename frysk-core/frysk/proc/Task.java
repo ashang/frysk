@@ -557,14 +557,7 @@ abstract public class Task
   {
     logger.log(Level.FINE, "{0} notifyAttached\n", this);
     //Fill isa on attach.
-    try
-    {
-      getIsa();
-    }
-  catch (TaskException e)
-    {
-      //XXX: What to do here?
-    }
+    getIsa();
     for (Iterator i = attachedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Attached observer = (TaskObserver.Attached) i.next();
@@ -783,21 +776,12 @@ abstract public class Task
    */
   int notifySyscallEnter ()
   {
-    try 
-      {
-	logger.log(
-		   Level.FINE,
-		   "{0} notifySyscallEnter {1}\n",
-		   new Object[] 
-		     { this,
-		       new Integer(this.getSyscallEventInfo().number(this))
-		     });
-      }
-    catch (TaskException e) 
-      {
-	logger.log(Level.SEVERE, "TaskException in {0}", this);
-	throw new RuntimeException("caught TaskException", e);
-      }
+      logger.log(Level.FINE,
+		 "{0} notifySyscallEnter {1}\n",
+		 new Object[] 
+		 { this,
+		   new Integer(this.getSyscallEventInfo().number(this))
+		 });
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
@@ -813,20 +797,12 @@ abstract public class Task
    */
   int notifySyscallExit ()
   {
-    try 
-      {
-	logger.log(Level.FINE,
-		   "{0} notifySyscallExit {1}\n",
-		   new Object[] 
-		     { this,
-		       new Integer(this.getSyscallEventInfo().number(this))
-		     });
-      }
-    catch (TaskException e) 
-      {
-	logger.log(Level.SEVERE, "TaskException in {0}", this);
-	throw new RuntimeException("caught TaskException", e);
-      }
+      logger.log(Level.FINE,
+		 "{0} notifySyscallExit {1}\n",
+		 new Object[] 
+		 { this,
+		   new Integer(this.getSyscallEventInfo().number(this))
+		 });
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();

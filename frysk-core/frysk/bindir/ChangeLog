@@ -1,3 +1,7 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* fstep.java: Remove TaskException code.
+
 2007-01-11  Stan Cox  <scox@redhat.com>
 
 	* fhpd.java (FhpdCompletor): New.

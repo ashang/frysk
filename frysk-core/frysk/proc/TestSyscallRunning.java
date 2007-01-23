@@ -339,15 +339,7 @@ public class TestSyscallRunning
 
     private SyscallEventInfo getSyscallEventInfo(Task task)
     {
-      try
-	{
-	  return task.getSyscallEventInfo();
-	}
-      catch (TaskException e)
-	{
-	  fail("task exception " + e);
-	  return null; // not reached
-	}
+	return task.getSyscallEventInfo();
     }
   }
 

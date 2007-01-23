@@ -50,7 +50,6 @@ import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.sys.proc.MapsBuilder;
@@ -77,7 +76,7 @@ public class TestStackBacktrace
    */
   private String[][][] frameTracker = new String[3][9][5];
 
-  public void testBacktrace () throws TaskException
+  public void testBacktrace ()
   {
     if (brokenXXX(3259))
       return;
@@ -187,7 +186,7 @@ public class TestStackBacktrace
   }
 
   
-  public synchronized void testThreadedBacktrace () throws TaskException
+  public synchronized void testThreadedBacktrace ()
   {
     
     if (brokenXXX(3815))

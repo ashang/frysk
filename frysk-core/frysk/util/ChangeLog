@@ -1,3 +1,8 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Remove TaskException code.
+	* CoredumpAction.java: Ditto.
+
 2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
 
 	* Util.java (printStackTrace): changed catch Exception _ to catch Exception ignored.

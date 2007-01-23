@@ -135,13 +135,11 @@ public class IsaFactory
   }
 
   public  Isa getIsa(int pid) 
-    throws TaskException 
   {
     return getIsa(pid, null);
   }
   
   public Isa getIsa(Task task)
-    throws TaskException
   {
     return getIsa(task.getTid(), task);
   }

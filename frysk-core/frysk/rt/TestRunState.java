@@ -48,7 +48,6 @@ import java.util.Observer;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.TestLib;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
@@ -166,15 +165,7 @@ public class TestRunState extends TestLib
           {
             Dwfl d = new Dwfl(t.getTid());
             DwflLine line = null;
-            try
-              {
-                line = d.getSourceLine(t.getIsa().pc(t));
-              }
-            catch (TaskException te)
-              {
-                continue;
-              }
-            
+	    line = d.getSourceLine(t.getIsa().pc(t));
             if (line == null)
               {
                 this.dwflMap.put(t, d);

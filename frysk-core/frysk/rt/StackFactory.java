@@ -43,7 +43,6 @@ package frysk.rt;
 import lib.unwind.FrameCursor;
 import lib.unwind.StackTraceCreator;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 
 public class StackFactory
 {
@@ -54,7 +53,6 @@ public class StackFactory
    * @return The stack frames as a linked list
    */
   public static StackFrame createStackFrame (Task task, int num)
-      throws TaskException
   {
     StackCallbacks callbacks = new StackCallbacks(task);
     FrameCursor innermost = null;
@@ -107,7 +105,7 @@ public class StackFactory
     return toReturn;
   }
   
-  public static StackFrame createStackFrame (Task task) throws TaskException
+  public static StackFrame createStackFrame (Task task)
   {
     return createStackFrame(task, 0);
   }

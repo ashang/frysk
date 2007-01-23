@@ -81,48 +81,32 @@ public class LinuxPtraceTask
   
   public void fillMemory ()
   {
-  logger.log(Level.FINE, "Begin fillMemory\n", this);
-    try
-      {
-        ByteOrder byteOrder = getIsa().getByteOrder();
-        // XXX: For writing at least, PTRACE must be used as /proc/mem
-        // cannot be written to.
-        // For 64-bit address space. Here is only a workaround, and still
-        // not cover all 64-bit address. UBigInteger is needed here?
-        if (getIsa().getWordSize() == 8)
+      logger.log(Level.FINE, "Begin fillMemory\n", this);
+      ByteOrder byteOrder = getIsa().getByteOrder();
+      // XXX: For writing at least, PTRACE must be used as /proc/mem
+      // cannot be written to.  For 64-bit address space. Here is only
+      // a workaround, and still not cover all 64-bit
+      // address. UBigInteger is needed here?
+      if (getIsa().getWordSize() == 8)
           memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
                                         0x7fffffffffffffffl);
-        // For 32-bit address space.
-        else
+      // For 32-bit address space.
+      else
           memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
                                         0xffffffffl);
-        memory.order(byteOrder);
-      }
-    catch (TaskException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    logger.log(Level.FINE, "End fillMemory\n", this); 
+      memory.order(byteOrder);
+      logger.log(Level.FINE, "End fillMemory\n", this); 
   }
 
   public void fillRegisterBank () 
   {
-    try
-      {
-        registerBank = getIsa().getRegisterBankBuffers(id.id);
-      }
-    catch (TaskException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      registerBank = getIsa().getRegisterBankBuffers(id.id);
   }
 
   /**
    * Create a new unattached Task.
    */
-  LinuxPtraceTask (Proc proc, TaskId id) throws TaskException
+  LinuxPtraceTask (Proc proc, TaskId id)
   {
     super(proc, id);
     //setupMapsXXX();
@@ -131,7 +115,7 @@ public class LinuxPtraceTask
   /**
    * Create a new attached clone of Task.
    */
-  LinuxPtraceTask (Task task, TaskId clone) throws TaskException
+  LinuxPtraceTask (Task task, TaskId clone)
   {
     super(task, clone);
     //setupMapsXXX();
@@ -140,7 +124,7 @@ public class LinuxPtraceTask
   /**
    * Create a new attached main Task of Proc.
    */
-  LinuxPtraceTask (Proc proc, TaskObserver.Attached attached) throws TaskException
+  LinuxPtraceTask (Proc proc, TaskObserver.Attached attached)
   {
     super(proc, attached);
     //setupMapsXXX();

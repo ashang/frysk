@@ -55,7 +55,6 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 
 /**
@@ -297,20 +296,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     System.out.println("stepOver");
     StackFrame newFrame = null;
-    try
-    {
-      newFrame = StackFactory.createStackFrame(task, 2);
-    }
-    catch (TaskException te)
-    {
-//      LinkedList temp = new LinkedList();
-//      temp.add(task);
-//      setUpStep(temp);
-      /* Well this failed, so pretend it was a single step and let the 
-       * Observers deal with the problem. */
-      this.setChanged();
-      this.notifyObservers(task);
-    }
+    newFrame = StackFactory.createStackFrame(task, 2);
     
     /* The two frames are the same; treat this step-over as a line step. */
     if (newFrame.getCFA() == this.lastFrame.getCFA())

@@ -351,14 +351,7 @@ public class LinuxPtraceHost
         Task task = getTask(pid, "{0} cloneEvent\n");
         // Create an attached, and running, clone of TASK.
         Task clone;
-	try
-	  {
-	    clone = new LinuxPtraceTask(task, new TaskId(clonePid));
-	  }
-	catch (TaskException e)
-	  {
-	    throw new RuntimeException("caught TaskException", e);
-	  }
+	clone = new LinuxPtraceTask(task, new TaskId(clonePid));
         task.processClonedEvent(clone);
 	attemptDeliveringFsckedKernelEvents ();
       }
@@ -377,14 +370,7 @@ public class LinuxPtraceHost
         Proc forkProc = new LinuxPtraceProc(task, forkId);
         // The main task.
         Task forkTask;
-	try
-	  {
-	    forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
-	  }
-	catch (TaskException e)
-	  {
-	    throw new RuntimeException("caught TaskException", e);
-	  }
+	forkTask = new LinuxPtraceTask(forkProc, (TaskObserver.Attached) null);
         task.processForkedEvent(forkTask);
 	attemptDeliveringFsckedKernelEvents ();
       }

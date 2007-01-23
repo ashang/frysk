@@ -81,7 +81,6 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.sys.Sig;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
@@ -242,14 +241,7 @@ public class CoredumpAction
     ElfPrFPRegSet fpRegSet = new ElfPrFPRegSet();
     Isa register = null;
 
-    try
-      {
-        register = task.getIsa();
-      }
-    catch (TaskException e)
-      {
-        abandonCoreDump(e);
-      }
+    register = task.getIsa();
 
     ByteBuffer registerMaps[] = register.getRegisterBankBuffers(task.getProc().getPid());
     if (registerMaps[1].capacity() <= 0)
@@ -289,14 +281,7 @@ public class CoredumpAction
     prStatus.setPrSid(processStat.session);
     prStatus.setPrSigPending(processStat.signal);
 
-    try
-      {
-        register = task.getIsa();
-      }
-    catch (TaskException e)
-      {
-        abandonCoreDump(e);
-      }
+    register = task.getIsa();
 
     // Fill register info. There is no generic way to do this.
     if (getArch().equals("frysk.proc.LinuxIa32")
@@ -639,10 +624,9 @@ public class CoredumpAction
    * @param proc - Proc object core file is to be constructed.
    * @throws ElfFileException
    * @throws ElfException
-   * @throws TaskException
    */
   protected void write_elf_file (final Task[] tasks, final Proc proc)
-      throws ElfFileException, ElfException, TaskException
+      throws ElfFileException, ElfException
   {
 
     // Start new elf file
@@ -702,10 +686,9 @@ public class CoredumpAction
    * 
    * @param local_elf - Elf object to build header for, and to to store in.
    * @return int - Returns the derived endian type.
-   * @throws TaskException
    */
-  protected int buildElfHeader (Elf local_elf) throws TaskException,
-      ElfException
+  protected int buildElfHeader (Elf local_elf)
+      throws ElfException
   {
 
     int endianType = 0;
@@ -1139,14 +1122,7 @@ public class CoredumpAction
     // this ugly, ugly hack
 
     Isa arch = null;
-    try
-      {
-        arch = proc.getMainTask().getIsa();
-      }
-    catch (TaskException e)
-      {
-        return "";
-      }
+    arch = proc.getMainTask().getIsa();
 
     String arch_test = arch.toString();
     String type = arch_test.substring(0, arch_test.lastIndexOf("@"));
@@ -1206,11 +1182,6 @@ public class CoredumpAction
       {
         abandonCoreDump(e);
       }
-    catch (final TaskException e)
-      {
-        abandonCoreDump(e);
-      }
-
   }
 
 }

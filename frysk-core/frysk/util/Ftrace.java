@@ -47,7 +47,6 @@ import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 import inua.util.PrintWriter;
 
@@ -224,34 +223,18 @@ public class Ftrace
 		public Action updateSyscallEnter (Task task)
 		{
 			SyscallEventInfo syscallEventInfo;
-			try
-			{
-				syscallEventInfo = task.getSyscallEventInfo ();
-				if (enterHandler != null)
-					enterHandler.handle(task, syscallEventInfo, SyscallEventInfo.ENTER);
-			}
-			catch (TaskException e) 
-			{
-				// XXX Abort? or what?
-				System.err.println("Got task exception " + e);
-			}
+			syscallEventInfo = task.getSyscallEventInfo ();
+			if (enterHandler != null)
+			    enterHandler.handle(task, syscallEventInfo, SyscallEventInfo.ENTER);
 			return Action.CONTINUE;
 		}
 		
 		public Action updateSyscallExit (Task task)
 		{
 			SyscallEventInfo syscallEventInfo;
-			try
-			{
-				syscallEventInfo = task.getSyscallEventInfo ();
-				if (exitHandler != null)
-					exitHandler.handle(task, syscallEventInfo, SyscallEventInfo.EXIT);
-			}
-			catch (TaskException e) 
-			{
-				// XXX Abort? or what?
-				System.err.println("Got task exception " + e);
-			}
+			syscallEventInfo = task.getSyscallEventInfo ();
+			if (exitHandler != null)
+			    exitHandler.handle(task, syscallEventInfo, SyscallEventInfo.EXIT);
 			return Action.CONTINUE;
 		}
 		

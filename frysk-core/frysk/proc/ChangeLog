@@ -1,3 +1,13 @@
+2007-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Remove TaskException code.
+	* LinuxPtraceTaskState.java: Ditto.
+	* Breakpoint.java: Ditto.
+	* IsaFactory.java: Ditto.
+	* LinuxPtraceTask.java: Ditto.
+	* Task.java: Ditto.
+	* TestSyscallRunning.java: Ditto.
+
 2007-01-23  npremji  <npremji@tow.toronto.redhat.com>
 
 	* TestGetProc.java: Added.

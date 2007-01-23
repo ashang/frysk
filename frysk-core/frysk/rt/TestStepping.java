@@ -54,7 +54,6 @@ import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
 //import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 //import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.sys.Sig;
@@ -174,15 +173,8 @@ public class TestStepping extends TestLib
           {
             Dwfl d = new Dwfl(t.getTid());
             DwflLine line = null;
-            try
-              {
-               //System.out.println("setUpTest " + t + " " + t.getIsa().pc(t));
-                line = d.getSourceLine(t.getIsa().pc(t));
-              }
-            catch (TaskException te)
-              {
-                continue;
-              }
+	    //System.out.println("setUpTest " + t + " " + t.getIsa().pc(t));
+	    line = d.getSourceLine(t.getIsa().pc(t));
             
             if (line == null)
               {

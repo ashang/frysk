@@ -42,7 +42,6 @@ package frysk.rt;
 
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.proc.TaskException;
 import inua.eio.ByteBuffer;
 
 import java.util.logging.Level;
@@ -58,7 +57,7 @@ public class StackCallbacks
 
   private Isa isa;
 
-  public StackCallbacks (Task myTask) throws TaskException
+  public StackCallbacks (Task myTask)
   {
     this.myTask = myTask;
     this.myTask.toString();

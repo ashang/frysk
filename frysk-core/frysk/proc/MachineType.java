@@ -87,14 +87,7 @@ public class MachineType
   {
     Isa isa;
     
-    try 
-      {
-	isa = Manager.host.getSelf().getIsa();
-      }
-    catch (TaskException e)
-      {
-	throw new UnknownMachineException("no machine");
-      }
+    isa = Manager.host.getSelf().getIsa();
     
     if (isa instanceof IsaIA32)
       return IA32;
