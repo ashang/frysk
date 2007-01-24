@@ -1,3 +1,8 @@
+2007-01-24  Mark Wielaard  <mark@klomp.org>
+
+	* dialogs/ErrorDialog.java (getStringTrace): Get whole StackTrace
+	including exception class name and possible cause Throwable.
+
 2007-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* FryskHelpManager.java: Re-added.

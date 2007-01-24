@@ -55,6 +55,9 @@ import org.gnu.gtk.TextView;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 
 public class ErrorDialog extends FryskDialog{
 
@@ -84,15 +87,9 @@ public class ErrorDialog extends FryskDialog{
 
 	private synchronized String getStringTrace(Exception e)
 	{
-		String stackText = ""; //$NON-NLS-1$
-		StackTraceElement[] stackElements = e.getStackTrace();
-		if (stackElements.length < 1)
-			return "No Stack Trace Given"; //$NON-NLS-1$
-		
-		for (int i=0; i<stackElements.length; i++)
-			stackText = stackText + stackElements[i].toString() + "\n"; //$NON-NLS-1$
-		
-		return stackText;
+	  StringWriter sw = new StringWriter();
+	  e.printStackTrace(new PrintWriter(sw));
+	  return sw.toString();
 	}
 	
 	private  void doImplementation()
