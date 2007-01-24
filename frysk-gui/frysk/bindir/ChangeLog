@@ -1,3 +1,8 @@
+2007-01-24  Nurdin Premji  <npremji@redhat.com>
+
+	* frysk.java (main): Option parsing is in Gui.java so both FryskGui and
+	frysk get same options.
+
 2007-01-12  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk.java : Set up some dummy option parsing.
