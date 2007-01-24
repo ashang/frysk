@@ -64,23 +64,14 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
-import frysk.sys.Errno;
-import frysk.sys.Ptrace;
-import frysk.sys.Sig;
 
 import lib.dw.BaseTypes;
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
-import lib.dw.DwflLine;
 import lib.stdcpp.Demangler;
 
 
 public class CLI 
 {
-    private Dwfl dwfl;
     Proc proc;
     Task task;
     int pid = 0;
@@ -116,15 +107,11 @@ public class CLI
         }
       // Otherwise assume a symbol is being completed
       else if (symtab != null)
-	{
-	  cursor = symtab.complete(buffer.substring(first_ws),
-				   cursor - first_ws, candidates);
-	  for (Iterator i = candidates.iterator(); i.hasNext();)
-	    {
-	      String sNext = (String) i.next();
-	    }
-	  return cursor + first_ws;
-	}
+        {
+          cursor = symtab.complete(buffer.substring(first_ws),
+                                   cursor - first_ws, candidates);
+          return cursor + first_ws;
+        }
       return 1;
     }
     
@@ -338,7 +325,6 @@ public class CLI
         public void handle(Command cmd) throws ParseException
         {
           ArrayList params = cmd.getParameters();
-          String executable = "";
           boolean cli = true;
           attachedObserver = new AttachedObserver();
 
@@ -360,7 +346,6 @@ public class CLI
                   tid = Integer.parseInt(((String)params.get(idx)));
                 }
             }
-          executable = ((String)params.get(0));
           pid = Integer.parseInt((String)params.get(1));
 
           if (cli)
@@ -427,7 +412,6 @@ public class CLI
         public void handle(Command cmd) throws ParseException
         {
           ArrayList params = cmd.getParameters();
-          String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 
           if (attachedObserver != null)
             task.requestDeleteAttachedObserver(attachedObserver);
@@ -475,7 +459,6 @@ public class CLI
 	{
 	  public void handle(Command cmd) throws ParseException
 	  {
-        StackFrame tmpFrame = null;
         
         if (proc == null)
           {
@@ -599,7 +582,6 @@ public class CLI
 	class UpDownHandler implements CommandHandler
     {
       public void handle(Command cmd) throws ParseException {
-        int action;
         int level = 1;
         StackFrame tmpFrame = null;
         StackFrame currentFrame = symtab.getCurrentFrame();
@@ -630,7 +612,6 @@ public class CLI
     class WhereHandler implements CommandHandler
     {
       public void handle(Command cmd) throws ParseException {
-        int action;
         int level = 0;
         StackFrame tmpFrame = null;
         
@@ -1051,11 +1032,8 @@ public class CLI
     
     private static class CLIEventLoop extends Thread
     {
-      private boolean stopped;
-
       public void run()
       {
-        stopped = false;
         try
         {
           Manager.eventLoop.run();
@@ -1064,7 +1042,6 @@ public class CLI
         {
           synchronized (monitor)
           {
-            stopped = true;
             monitor.notifyAll();
           }
         }
@@ -1079,7 +1056,7 @@ public class CLI
     {
       private boolean added;
 
-      public Action updateAttached(Task task)
+      public Action updateAttached(Task taskp)
       {
         synchronized (monitor)
           {

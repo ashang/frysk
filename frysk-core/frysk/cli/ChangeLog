@@ -1,6 +1,15 @@
+2007-01-23  Stan Cox  <scox@redhat.com>
+
+	* hpd/CLI.java Delete unused import frysk.rt.StackFactory,
+	frysk.sys.Errno, frysk.sys.Ptrace, frysk.sys.Sig, lib.dw.DwarfDie,
+	lib.dw.Dwfl, lib.dw.DwflDieBias, lib.dw.DwflLine.
+	(complete): Remove candidates iterator.
+	(AttachedObserver): Remove unread variable stopped.
+
 2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java (WhereHandler.handle): Changed to use Stackframe.toPrint method.
+	* hpd/CLI.java (WhereHandler.handle): Changed to use
+	Stackframe.toPrint method. 
 	(UpDownHandler.handle): Ditto.
 
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
@@ -15,8 +24,8 @@
 		
 2007-01-22  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/ExprSymTab.java (getReg): Removed erroneous frame PC decrement and 
-	instead call StackFrame.getAdjustedAddress().
+	* hpd/ExprSymTab.java (getReg): Removed erroneous frame PC
+	decrement and instead call StackFrame.getAdjustedAddress().
 	(getBufferAddr): Ditto.
 	(getDie): Ditto.
 	* hpd/SymTab.java (complete): Ditto.
