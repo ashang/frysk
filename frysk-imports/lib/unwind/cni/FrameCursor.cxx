@@ -36,43 +36,48 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <libunwind.h>
 #include <gcj/cni.h>
+#include <stdlib.h>
 
 #include "lib/unwind/FrameCursor.h"
+#include "lib/unwind/UnwindException.h"
 
 void
 lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 {
 	::unw_cursor_t *cursor = (::unw_cursor_t *) _cursor;
-	
-	::unw_cursor_t *native_cursor = (::unw_cursor_t *) JvMalloc(sizeof(::unw_cursor_t));
-	
-	// Create a local copy of the unwind cursor
-	memcpy(native_cursor, cursor, sizeof(::unw_cursor_t));
-	
-	this->nativeCursor = (gnu::gcj::RawDataManaged *) native_cursor;
 
-	unw_proc_info_t proc_info;
-	int result = unw_get_proc_info(cursor, &proc_info);
+	::unw_cursor_t *native_cursor = (::unw_cursor_t *) JvMalloc (sizeof (::unw_cursor_t));
+
+	// Create a local copy of the unwind cursor
+	memcpy (native_cursor, cursor, sizeof (::unw_cursor_t));
+
+	this -> nativeCursor = (gnu::gcj::RawDataManaged *) native_cursor;
+
 	int len = 256;
 	char buf[len];
 	unw_word_t offset;
-	
-	if(!unw_get_proc_name(cursor, buf, len, &offset))
-	{
-		this->methodName = JvNewStringUTF(buf);
-	}
-	
-	if(result == 0)
-			this->address = (jlong) offset + proc_info.start_ip;
-	
-//	unw_word_t ip;
-//	unw_get_reg (cursor, UNW_REG_IP, &ip);
-	
-	unw_word_t tmp;
-	unw_get_reg (cursor, UNW_REG_SP, &tmp);
-	this -> cfa = tmp;	
+	unw_word_t ip;
+	unw_word_t sp;
+
+	if (unw_get_reg (cursor, UNW_REG_IP, &ip))
+		throw new lib::unwind::UnwindException (
+				JvNewStringUTF ("Could not get program counter for the current stack.")
+				);
+
+	this -> address = ip;
+
+	if (unw_get_reg (cursor, UNW_REG_SP, &sp))
+		throw new lib::unwind::UnwindException (
+				JvNewStringUTF ("Could not get stack pointer for the current stack.")
+				);
+
+	this -> cfa = sp;
+
+	if (!unw_get_proc_name (cursor, buf, len, &offset))
+		this -> methodName = JvNewStringUTF (buf);
 }
 
 jlong

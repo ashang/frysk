@@ -1,3 +1,9 @@
+2007-01-24  Jan Kratochvil <jan.kratochvil@redhat.com>
+	    Mike Cvet  <mcvet@redhat.com>
+
+	* cni/FrameCursor.cxx (create_frame_cursor): Fix retrieved address.
+	Temporarily remove assertion failing due to libunwind Bug 3917.
+
 2007-01-23  Mike Cvet  <mcvet@redhat.com>
 
 	* cni/StackTraceCreator.cxx (unwind_setup): Make sure innermost frame
