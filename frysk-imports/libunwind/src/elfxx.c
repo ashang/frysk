@@ -49,6 +49,7 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
   Elf_W (Off) soff, str_soff;
   Elf_W (Shdr) *shdr, *str_shdr;
   Elf_W (Addr) val, min_dist = ~(Elf_W (Addr))0;
+  Elf_W (Addr) val_max_below = 0;
   int i, ret = 0;
   char *strtab;
 
@@ -109,6 +110,9 @@ elf_w (lookup_symbol) (unw_word_t ip, struct elf_image *ei,
 
 		  if (ip < val)
 		    continue;
+		  if (val + sym->st_size < val_max_below)
+		    continue;
+		  val_max_below = val + sym->st_size;
 		  if (sym->st_size && ip >= val + sym->st_size)
 		    continue;
 
