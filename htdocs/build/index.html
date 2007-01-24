@@ -470,6 +470,22 @@ inside to be parsed differently. Instead use {}. So this becomes
 manual pages explicitly refer to @pkglib32dir@ and/or
 @pkglib64dir@.</dd>
 
+<dt>Using valgrind to debug <em>frysk</em><.dt> <dd>Rick writes.<br>
+As mentioned in our meeting today, valgrind can be used to help debug
+gcj-compiled code, but it helps if a "suppression file" is pointed to
+when activated to help filter out errors that are expected due to some
+garbage collection tricks.  Tom Tromey wrote an article on using
+valgrind and is located <a
+href="http://www.redhat.com/magazine/015jan06/features/valgrind/">here</a>.
+In this article, Tom points out <a
+href="http://gcc.gnu.org/wiki/Debugging%20tips%20for%20libgcj">this
+website</a> which has some useful information.  And <a
+href="http://vektor.ca/eclipse/gcj.supp ">this website</a> in turn
+points top a website that has the "suppression file" that should be
+used with valgrind.  If thew suppression file is not used, the output
+from valgrind when used on gcj-generated code is several times larger
+and contains useless information.</dd>
+
 </dl>
               <!-- end text -->
               <p>&nbsp;</p>
