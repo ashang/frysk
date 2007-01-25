@@ -1,3 +1,9 @@
+2006-12-25  Nurdin Premji <npremji@redhat.com>
+
+	* Makefile.am (frysk/pkglibdir/funit-stackframe-nodebug): Added.
+	(frysk/pkglibdir/funit-stackframe-stripped): Ditto.
+	(pkglib_PROGRAMS): Added above.
+
 2006-12-22  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (install-dejagnu-testsuite-local):

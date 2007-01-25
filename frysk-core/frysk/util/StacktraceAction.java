@@ -53,7 +53,6 @@ import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 
 public abstract class StacktraceAction
@@ -90,7 +89,7 @@ public abstract class StacktraceAction
                new Object[] { this, task });
 
     // Print the stack frame for this stack.
-    StringBuffer taskTrace = generateTaskStackTrace(task);
+    StringBuffer taskTrace = StackFactory.generateTaskStackTrace(task);
 
     if (sortedTasks == null)
       sortedTasks = new TreeMap();
@@ -122,29 +121,6 @@ public abstract class StacktraceAction
     logger.log(Level.FINE, "{0} toPrint, stackTrace: {1}\n",
                new Object[] { this, stackTrace });
     return stackTrace.toString();
-  }
-
-  public final StringBuffer generateTaskStackTrace (Task task)
-  {
-    if (task != null)
-      {
-	  StringBuffer buffer = new StringBuffer();
-	  buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
-	  int count = 0;
-	  for (StackFrame frame = StackFactory.createStackFrame(task);
-	       frame != null; frame = frame.getOuter()) {
-	      // FIXME: do valgrind-like '=== PID ===' ?
-	      StringBuffer output = new StringBuffer("#" + count + " "
-						     + frame.toPrint(false)
-						     + "\n");
-	      
-	      buffer.append(output);
-	      count++;
-	  }
-	  return buffer;
-      }
-
-    return null;
   }
 
   /**

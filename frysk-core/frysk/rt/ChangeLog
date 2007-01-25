@@ -1,3 +1,9 @@
+2007-01-25  Nurdin Premji  <npremji@redhat.com>
+
+	* StackFactory.java (generateTaskStackTrace): Moved here from:
+	frysk.util.StacktraceAction.
+	* TestStackFrame: Added.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* StackFrame.java: Do not import gnu.gcj.RawDataManaged.

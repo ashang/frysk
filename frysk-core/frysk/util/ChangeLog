@@ -1,3 +1,7 @@
+2007-01-25  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java: Moved generateTaskStackTrace() to frysk.rt.StackFactory.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Util.java: Remove TaskException code.

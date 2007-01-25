@@ -135,3 +135,14 @@ install-dejagnu-testsuite-local:
 	)
 uninstall-dejagnu-testsuite-local:
 	rm -rf $(DESTDIR)$(pkgdatadir)/testsuite
+
+# Create executables for stackframe tests for TestStackFrame.java.
+frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
+	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
+
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
+
+frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
+	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
+
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
