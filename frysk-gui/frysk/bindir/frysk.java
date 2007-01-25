@@ -51,6 +51,19 @@ class frysk
     Gui.gui(args, new String[] { Config.getGladeDir() + "/" },
             new String[] { Config.getImageDir() },
             new String[] { Config.getPkgDataDir() + "/" },
+            new String[] { Config.getPkgDataDir() + "/samples" },
+            new String[] { Config.getHelpDir() + "/" } );
+
+  }
+
+  private static void addOptions (Parser parser)
+  {
+    parser.add(new Option("debug", 'd', "debug mode", "EXECUTABLE")
+    {
+      public void parsed (String arg) throws OptionException
+      {
+      }
+    });
             new String[] { Config.getPkgDataDir() + "/samples" });
   }
 }

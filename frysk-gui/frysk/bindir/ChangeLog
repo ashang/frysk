@@ -1,3 +1,7 @@
+2007-01-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* frysk.java: Add call to get online help docs directory.
+
 2007-01-24  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk.java (main): Option parsing is in Gui.java so both FryskGui and
