@@ -104,6 +104,7 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
+import frysk.gui.common.FryskHelpManager;
 
 import frysk.proc.Manager;
 import frysk.sys.Signal;
@@ -155,11 +156,12 @@ public class Gui implements LifeCycleListener, Saveable {
 	 * @param glade_dirs - where the glade files can be found
 	 * @param imagePaths - where the images are
 	 * @param messagePaths - where the message paths are.
-	 * @param testfilePaths
+	 * @param testfilePaths - where the testfiles are located
+     * @param helpdocPaths - where the online help docs are
 	 */
 	public static void gui (String[] args, String[] glade_dirs,
                           String[] imagePaths, String[] messagePaths,
-                          String[] testfilePaths)
+                          String[] testfilePaths, String[] help_dirs)
   {
     
     Parser parser = new Parser("frysk", "1..23", true);
@@ -253,6 +255,7 @@ public class Gui implements LifeCycleListener, Saveable {
     RegisterWindowFactory.setPaths(glade_dirs);
     MemoryWindowFactory.setPaths(glade_dirs);
     DisassemblyWindowFactory.setPaths(glade_dirs);
+    FryskHelpManager.setHelpPaths(help_dirs);
 
     // Find and load preferences.
     prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);

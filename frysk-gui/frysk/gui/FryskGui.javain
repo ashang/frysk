@@ -51,6 +51,7 @@ public class FryskGui
     {
 	final String BASE_PATH = "frysk/gui/";
 	final String GLADE_PKG_PATH = "gladedir/";
+	final String HELP_DOC_PATH = "helpdir/";
 	final String SRCDIR = "@srcdir@";
 	final String ABS_SRCDIR = "@abs_srcdir@";
 	Gui.gui (args, new String[] {
@@ -73,6 +74,15 @@ public class FryskGui
 		     "./srcwin/testfiles",
 		     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
 		     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
-		 });
+		 },
+		 new String[] {
+		 	  HELP_DOC_PATH,
+		 	  BASE_PATH + HELP_DOC_PATH,
+		 	  // Check both relative ...
+		 	  SRCDIR + "/" + BASE_PATH + HELP_DOC_PATH,
+		     // ... and absolute.
+		     ABS_SRCDIR + "/" + BASE_PATH + HELP_DOC_PATH,
+		 }
+		 	  );
     }
 }

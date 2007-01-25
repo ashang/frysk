@@ -1,3 +1,8 @@
+2007-01-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* Gui.java: Add helpdocdirs.
+	* FryskGui.javain: Add parameter for help docs directory.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* memory/MemoryWindow.java: Remove TaskException.
