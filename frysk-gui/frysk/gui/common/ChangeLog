@@ -1,3 +1,7 @@
+2007-01-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* FryskHelpManager.java: Get docs directory from proper place.
+
 2007-01-24  Mark Wielaard  <mark@klomp.org>
 
 	* dialogs/ErrorDialog.java (getStringTrace): Get whole StackTrace

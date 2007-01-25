@@ -1,5 +1,3 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
 // Copyright 2006,2007 Red Hat Inc.
@@ -42,7 +40,8 @@
 
 package frysk.gui.common;
 
-import frysk.Config;
+import java.io.File;
+import frysk.sys.Fork;
 
 public class FryskHelpManager
 {
@@ -50,28 +49,36 @@ public class FryskHelpManager
   private static final String HELP_PROGRAM = "/usr/bin/gnome-help";
   
   private static final String HELP_DOC = "frysk_doc.xml";
+  
+  public static String helpPath;
 
   /**
-   * activateHelp activates the Gnome help system poining it at Frysk's
+   * activateHelp activates the Gnome help system pointing it at Frysk's
    * installed help.
    */
   public static void activateHelp ()
   {
-
-    String help_dir_path = Config.getHelpDir();
-
-    Runtime r = Runtime.getRuntime();
-
-    try
-      {
-        r.exec(HELP_PROGRAM + " " + help_dir_path + "/" + HELP_DOC);
+    
+    Fork.daemon(new String[] { HELP_PROGRAM, helpPath +
+                                         "/" + HELP_DOC });
+  }
+  
+  /**
+   * setHelpPaths will set the proper help path no matter how it is activated.
+   * 
+   * @param help_dirs is a String[] containing file paths to the online help docs
+   * 
+   */
+  public static void setHelpPaths(String[] help_dirs)
+  {
+    // Search for the help docs in the paths
+    for (int i=0; i < help_dirs.length; i++) {
+      File f = new File(help_dirs[i] + "/" + HELP_DOC);
+      if (f.exists()) {
+        helpPath = help_dirs[i];
+        return;
       }
-    catch (Exception e)
-      {
-        System.out.println("Error activating " + HELP_PROGRAM + " error = "
-                           + e.getMessage());
-
-      }
-
+    }
+    helpPath = "";
   }
 }
