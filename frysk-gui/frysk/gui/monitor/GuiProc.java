@@ -71,7 +71,7 @@ public class GuiProc extends GuiData{
 	
 	private String executableName;
 	private String executablePath;
-	private String niceExecutbalePath;
+	private String niceExecutablePath;
 	
     private ObservableLinkedList tasks;
     
@@ -107,31 +107,31 @@ public class GuiProc extends GuiData{
     
 	private void setNiceExecutablePath(){
 		
-		this.niceExecutbalePath = this.getFullExecutablePath();
+		this.niceExecutablePath = this.getFullExecutablePath();
 
-		if(niceExecutbalePath.indexOf('\0') != -1){
-			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf("\0"));
+		if(niceExecutablePath.indexOf('\0') != -1){
+			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf("\0"));
 		}
 
-		if(niceExecutbalePath.endsWith(" (deleted)")){
-			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(" (deleted)"));
+		if(niceExecutablePath.endsWith(" (deleted)")){
+			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(" (deleted)"));
 		}
 		
-		if(niceExecutbalePath.indexOf(".#prelink#") != -1){
-			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(".#prelink#"));
+		if(niceExecutablePath.indexOf(".#prelink#") != -1){
+			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(".#prelink#"));
 		}
 		
 		if(this.executablePath == PATH_NOT_FOUND){
 			this.executableName = proc.getCommand();
 		}else{
-			File file = new File(niceExecutbalePath);		
+			File file = new File(niceExecutablePath);		
 			this.executableName = file.getName();
 		}
 	}
 
 	public String getNiceExecutablePath(){
 	  this.setNiceExecutablePath();
-		return this.niceExecutbalePath;
+		return this.niceExecutablePath;
 	}
 	
 	private void setExecutablePath(){

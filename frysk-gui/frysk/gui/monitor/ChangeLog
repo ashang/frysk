@@ -1,5 +1,6 @@
 2007-01-25  Mike Cvet  <mcvet@redhat.com>
 
+	* GuiProc.java (niceExecutablePath): Fixed spelling error.
 	* PickProcDialog.java (PickProcDialog): Applied GNU formatting.
 	(iterMap): Renamed from iterHash, and changed to HashMap.
 	(ProcCreatedObserver.update): Cleaned up and removed the need
