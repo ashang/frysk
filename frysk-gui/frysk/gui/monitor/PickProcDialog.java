@@ -41,7 +41,7 @@
 package frysk.gui.monitor;
 
 import java.io.File;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -87,7 +87,7 @@ public class PickProcDialog
 
   private TreeStore treeStore;
 
-  private Hashtable iterHash;
+  private HashMap iterMap;
 
   private DataColumnString nameDC;
 
@@ -114,7 +114,7 @@ public class PickProcDialog
     super();
     this.setTitle("Debug Process List");
 
-    this.iterHash = new Hashtable();
+    this.iterMap = new HashMap();
 
     this.nameDC = new DataColumnString();
     this.locationDC = new DataColumnString();
@@ -210,8 +210,8 @@ public class PickProcDialog
       return null;
 
     TreePath selected = this.ListView.getSelection().getSelectedRows()[0];
-    return ((GuiProc) this.treeStore.getValue(this.treeStore.getIter(selected),
-                                              objectDC)).getProc();
+    return (Proc) this.treeStore.getValue(this.treeStore.getIter(selected),
+                                              objectDC);
 
   }
 
@@ -328,32 +328,43 @@ public class PickProcDialog
       {
         public void run ()
         {
-          GuiProc guiProc = null;
+          
           try
             {
-              guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+              if (proc.getUID() == Manager.host.getSelf().getUID() || proc.getGID() == Manager.host.getSelf().getGID())
+                if (proc.getPid() == Manager.host.getSelf().getPid())
+                  return;
+
+              try
+                {
+                  proc.getExe();
+                }
+              catch (Exception e)
+                {
+                  return;
+                }
             }
           catch (Exception e)
             {
               return;
             }
-
-          if (! guiProc.isOwned())
-            return;
+          
           // new process name
           TreeIter process = treeStore.appendRow(null);
           if (process != null)
             {
-              iterHash.put(guiProc.getExecutableName(), process);
-              treeStore.setValue(process, nameDC, guiProc.getExecutableName());
-              File path = new File(guiProc.getNiceExecutablePath());
+              iterMap.put(proc.getCommand(), process);
+              treeStore.setValue(process, nameDC, proc.getCommand());
+              File path = new File(proc.getExe());
+              
               if (path != null)
                 treeStore.setValue(process, locationDC,
                                    justPath(path.getPath(), path.getName()));
               else
                 treeStore.setValue(process, locationDC, "");
-              treeStore.setValue(process, objectDC, guiProc);
-              treeStore.setValue(process, pidDC, guiProc.getProc().getPid());
+              
+              treeStore.setValue(process, objectDC, proc);
+              treeStore.setValue(process, pidDC, proc.getPid());
             }
         }
 
@@ -372,25 +383,15 @@ public class PickProcDialog
       {
         public void run ()
         {
-          GuiProc guiProc = null;
           TreeIter parent = null;
-          try
-            {
-              guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-            }
-          catch (Exception e)
-            {
-              return;
-            }
-          if (guiProc != null)
+          if (proc != null)
             {
               try
                 {
-                  parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
+                  parent = (TreeIter) iterMap.get(proc.getCommand());
                 }
               catch (Exception e)
                 {
-
                   return;
                 }
             }
@@ -410,8 +411,7 @@ public class PickProcDialog
             }
 
           treeStore.removeRow(parent);
-          iterHash.remove(guiProc.getExecutableName());
-
+          iterMap.remove(proc.getCommand());
         }
       });
     }

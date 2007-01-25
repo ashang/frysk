@@ -1,6 +1,10 @@
 2007-01-25  Mike Cvet  <mcvet@redhat.com>
 
 	* PickProcDialog.java (PickProcDialog): Applied GNU formatting.
+	(iterMap): Renamed from iterHash, and changed to HashMap.
+	(ProcCreatedObserver.update): Cleaned up and removed the need
+	for GuiProcs. Deals just with Procs now.
+	(ProcDestroyedObserver.update): Ditto.
 
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
