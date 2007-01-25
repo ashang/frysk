@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.druid;
 
 import java.util.Iterator;
@@ -87,768 +88,897 @@ import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 
-public class CreateFryskSessionDruid extends Dialog implements
-		LifeCycleListener {
+public class CreateFryskSessionDruid
+    extends Dialog
+    implements LifeCycleListener
+{
 
-	private ProcWiseDataModel dataModel;
+  private ProcWiseDataModel dataModel;
 
-	private ProcWiseTreeView procWiseTreeView;
+  private ProcWiseTreeView procWiseTreeView;
 
-	private ListView addedProcsTreeView;
+  private ListView addedProcsTreeView;
 
-	private CheckedListView observerSelectionTreeView;
-
-	private ListView processObserverSelectionTreeView;
-
-	private TextView observerDescriptionTextView;
-
-	private TextBuffer observerDescBuffer;
-
-	private Label warningLabel;
-
-	private Image warningIcon;
-
-	private Session currentSession = new Session();
-
-	private Entry nameEntry;
-
-	private Notebook notebook;
-
-	private Button nextButton;
-
-	private Button backButton;
-
-	private Button finishButton;
-
-	private Button saveButton;
-
-	private Button cancelButton;
-
-	private int processSelected = 0;
-
-	private boolean editSession;
-
-	private String oldSessionName;
-
-	/**
-	 * Create a new instance of the Session Assistant
-	 * 
-	 * @param glade - instance of the parsed glade file
-	 * 
-	 */
-	public CreateFryskSessionDruid(LibGlade glade) {
-		super(glade.getWidget("SessionDruid").getHandle());
-		setIcon(IconManager.windowIcon);
-
-		getDruidStructureControls(glade);
-		getProcessSelectionControls(glade);
-		getProcessObserverControls(glade);
-		this.addListener(this);
-	}
-
-	/**
-	 * Sets the druid up into new session mode.  
-	 * 
-	 */
-	public void setNewSessionMode() {
-		nextButton.showAll();
-		nextButton.setSensitive(false);
-		backButton.showAll();
-		backButton.setSensitive(false);
-		finishButton.hideAll();
-		saveButton.hideAll();
-		cancelButton.showAll();
-		nameEntry.setText("");
-
-		currentSession = null;
-		currentSession = new Session();
-		attachLinkedListsToWidgets();
-
-		notebook.setShowTabs(false);
-		notebook.setCurrentPage(0);
-		processSelected = 0;
-		nameEntry.setText(setInitialName());
-		nameEntry.selectRegion(0, nameEntry.getText().length());
-		editSession = false;
-		unFilterData();
-	}
-	
-	/**
-	 * Sets the druid up into edit mode. Edit mode loads
-	 * and existing session into the Assistant, and 
-	 * populates the existing widgets with the session 
-	 * data
-	 * 
-	 * @param givenSession - session to edit
-	 */
-	public void setEditSessionMode(Session givenSession) {
-		currentSession = givenSession;
-		if (currentSession == null) {
-			currentSession = new Session();
-		}
-
-		processSelected = currentSession.getProcesses().size();
-		attachLinkedListsToWidgets();
-
-		notebook.setShowTabs(true);
-		notebook.setCurrentPage(0);
-		finishButton.hideAll();
-		nextButton.hideAll();
-		backButton.hideAll();
-		cancelButton.showAll();
-		saveButton.showAll();
-		saveButton.setSensitive(true);
-		editSession = true;
-		oldSessionName = currentSession.getName();
-		warningLabel
-				.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
-		warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
-		editSession = true;
-		unFilterData();
-		filterDataInSession();
-		observerSelectionTreeView.setSensitive(true);
-
-	}
-
-	private void filterDataInSession() {
-		
-		// Does the current session have any processes?
-		if (currentSession.getProcesses() == null) {
-			return;
-		}
-		
-		// If so, get them
-		final Iterator i = currentSession.getProcesses().iterator();
-		if (i != null) {
-			while (i.hasNext()) {
-				
-				// Get the first process iteration.
-				final DebugProcess currentDebugProcess = (DebugProcess) i.next();
-				if (currentDebugProcess == null) {
-					continue;
-				}
-
-				// Find process in the tree data model, via name
-				// return either null or path to process
-				final TreePath processPath = dataModel.searchName(currentDebugProcess
-						.getName());
-
-				if (processPath != null) {
-					
-					// Covert to iter from path
-					final TreeIter foundIter = procWiseTreeView.psDataModel
-							.getModel().getIter(processPath);
-					if (procWiseTreeView.psDataModel.getModel().isIterValid(foundIter)) {
-						
-						// Get the process alternate name
-						final String altName = procWiseTreeView.psDataModel
-								.getModel().getValue(foundIter,procWiseTreeView.psDataModel.getNameDC());
-						
-						// set the names
-						currentDebugProcess.setRealName(currentDebugProcess
-								.getName());
-						currentDebugProcess.setAlternativeDisplayName(altName);
-						currentDebugProcess.setName(altName);
-
-						// Set in tree
-						procWiseTreeView.psDataModel.getModel().setValue(
-								foundIter,
-								procWiseTreeView.psDataModel.getSelectedDC(),
-								true);
-					}
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Sets the selection criteria (ie processes added to a session
-	 * or not added to a sesion) in the data model.
-	 * 
-	 * @param selected - Iter in tree to affect (from viewer).
-	 * @param setSelected - set the selected value.
-	 * @param setChildren - cascade down to children if true.
-	 */
-	private void setTreeSelected(TreeIter selected, boolean setSelected,
-			boolean setChildren) {
-		dataModel.setSelected(selected, setSelected, setChildren);
-	}
-
-	/**
-	 * If a child is a selected in a tree, we have to add the child's parent
-	 * also. This is because only process groups can be added in the druid (PIDs
-	 * and individual processes have no meaning inbetween sessions. This is a utility
-	 * function that given a Iter, will add that tree iters parent as well.
-	 * 
-	 * @param unfilteredProcessIter - parent
-	 */
-	private void addProcessParent(TreeIter unfilteredProcessIter) {
-		if (unfilteredProcessIter == null) {
-			return;
-		}
-
-		if (!dataModel.getModel().isIterValid(unfilteredProcessIter)) {
-			return;
-		}
-
-		GuiProc proc = (GuiProc) dataModel.getModel().getValue(
-				unfilteredProcessIter, dataModel.getObjectDC());
-		if (proc == null) {
-			if (unfilteredProcessIter.getChildCount() > 0) {
-				final TreeIter childIter = unfilteredProcessIter.getChild(0);
-				proc = (GuiProc) dataModel.getModel().getValue(childIter,
-						dataModel.getObjectDC());
-			}
-		}
-
-		final DebugProcess debugProcess = new DebugProcess(proc.getExecutableName(),
-				dataModel.getModel().getValue(unfilteredProcessIter,
-						dataModel.getNameDC()), proc
-						.getNiceExecutablePath());
-		currentSession.addProcess(debugProcess);
-
-	}
-
-	/**
-	 * Hack to test is a TreePath is a child or a parent noe. The JG
-	 * implementation is buggy 
-	 * 
-	 * @param pathTest - path to test
-	 * @return - boolean, true if child
-	 */
-	private boolean isChild(TreePath pathTest) {
-		// Minor hack. Sometimes path.up() returns a boolean
-		// that indicates it has a parent and the up() changed the
-		// state of the Path. However all operations on that then
-		// return NP which indicates a false positive. Fix locally,
-		// and file upstream bug.
-
-		if (pathTest.toString().split(":").length > 1) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Convert a TreeModelFilterIter to a TreePath
-	 * 
-	 * @param tree - TreeView the source iter is from
-	 * @param filter - Filtered TreePath 
-	 * @return - TreePath, returns the unfiltered iter in the view
-	 */
-	private TreePath deFilterPath(TreeView tree, TreePath filter) {
-		final TreeModelFilter ts = (TreeModelFilter) tree.getModel();
-		return ts.convertPathToChildPath(filter);
-	}
-
-	/**
-	 * Changes the transition on a group of processes from one tree to the other
-	 * As the druid removes items from one tree and adds them to another, it must
-	 * transport and translate thiose selected TreePaths.
-	 * 
-	 * Ugly and really needs to be re-written
-	 * @param tree - TreeView in question
-	 * @param selectedProcs - a TreePath[] of the selected processes
-	 * @param filtered - Is this a filtered tree?
-	 * @param state - What selected state do you want to render the
-	 * selected TreePath[]s
-	 */
-	private void changeGroupState(TreeView tree, TreePath[] selectedProcs,
-			boolean filtered, boolean state) {
-
-		
-		// Create a TreeRowReference. TreeRowReferences track model changes and
-		// so allow multiple selection.
-		final TreeRowReference[] paths = new TreeRowReference[selectedProcs.length];
-		TreeIter unfilteredProcessIter = null;
-
-		if (selectedProcs.length > 0) {
-
-			// Build the TreeRowReference. De filter from the model if needed.
-			for (int i = 0; i < selectedProcs.length; i++) {
-				if (selectedProcs[i] == null) {
-					continue;
-				}
-				if (filtered) {
-					unfilteredProcessIter = dataModel.getModel().getIter(
-							deFilterPath(tree, selectedProcs[i]));
-
-				} else {
-					unfilteredProcessIter = dataModel.getModel().getIter(
-							selectedProcs[i]);
-				}
-				paths[i] = new TreeRowReference(dataModel.getModel(),
-						unfilteredProcessIter.getPath());
-			}
-			for (int i = 0; i < paths.length; i++) {
-				// Scenario 1: Tree iter has children (a process group); selected
-				// the parent
-				if (paths[i] == null) {
-					continue;
-				}
-				if (dataModel.getModel().getIter(paths[i].getPath()).getChildCount() > 0) {
-					if (state) {
-						processSelected += dataModel.getModel().getIter(
-								paths[i].getPath()).getChildCount() + 1;
-						addProcessParent(dataModel.getModel().getIter(
-								paths[i].getPath()));
-					} else {
-						processSelected -= dataModel.getModel().getIter(
-								paths[i].getPath()).getChildCount() + 1;
-					}
-					setTreeSelected(dataModel.getModel().getIter(
-							paths[i].getPath()), state, true);
-				} else {
-					// Scenario 2: A child in the process group has been selected,
-					// also select the parent and siblings.
-					final TreePath parent_path = paths[i].getPath();
-					if (isChild(parent_path)) {
-						// we are a child that has a parent; sibilings and parent
-						parent_path.up();
-						// Save parent iter
-						final TreeIter parent_iter = dataModel.getModel()
-								.getIter(parent_path);
-						// Move the parent and children.
-						if (parent_iter.getChildCount() > 0) {
-							if (state) {
-								processSelected += dataModel.getModel()
-										.getIter(paths[i].getPath())
-										.getChildCount() + 1;
-								addProcessParent(parent_iter);
-							} else {
-								processSelected -= dataModel.getModel()
-										.getIter(paths[i].getPath())
-										.getChildCount() + 1;
-							}
-							setTreeSelected(parent_iter, state, true);
-						}
-					} else {
-						if (state) {
-							addProcessParent(dataModel.getModel().getIter(
-									paths[i].getPath()));
-							processSelected++;
-						} else {
-							processSelected--;
-						}
-						// Scenario 3: No children, or siblings
-						setTreeSelected(dataModel.getModel().getIter(
-								paths[i].getPath()), state, false);
-					}
-				}
-			}
-		}
-		setProcessNext(processSelected);
-	}
-
-	/**
-	 * @param processCount
-	 */
-	private void setProcessNext(int processCount) {
-		if (editSession == false) {
-			if (processCount > 0
-					&& nameEntry.getText().length() > 0
-					&& SessionManager.theManager.getSessionByName(nameEntry
-							.getText()) == null) {
-				nextButton.setSensitive(true);
-				saveButton.setSensitive(true);
-			} else {
-				nextButton.setSensitive(false);
-				saveButton.setSensitive(false);
-			}
-		} else {
-			if (processCount > 0 && nameEntry.getText().length() > 0) {
-				nextButton.setSensitive(true);
-				saveButton.setSensitive(true);
-			} else {
-				nextButton.setSensitive(false);
-				saveButton.setSensitive(false);
-			}
-		}
-	}
-
-	private void unFilterData() {
-		procWiseTreeView.psDataModel.unFilterData();
-	}
-
-	private void getProcessSelectionControls(LibGlade glade) {
-
-		Button addProcessGroupButton;
-		Button removeProcessGroupButton;
-
-		// Page 1 of the Druid. Initial Process Selection.
-
-		// Create New Live Data Model and mount on the TreeView
-		dataModel = new ProcWiseDataModel();
-		procWiseTreeView = new ProcWiseTreeView(glade.getWidget(
-				"sessionDruid_procWiseTreeView").getHandle(), dataModel);
-
-		procWiseTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
-
-		procWiseTreeView.addListener(new TreeViewListener() {
-			public void treeViewEvent(TreeViewEvent event) {
-				if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
-					changeGroupState(procWiseTreeView, procWiseTreeView
-							.getSelection().getSelectedRows(), true, true);
-					if (!currentSession.getProcesses().isEmpty()) {
-						observerSelectionTreeView.setSensitive(true);
-					}
-				}
-
-			}
-		});
-
-		// Create a New ListView and mount the Linked List from Session data
-		addedProcsTreeView = new ListView(glade.getWidget(
-				"sessionDruid_addedProcsTreeView").getHandle());
-		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
-		addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
-		addedProcsTreeView.addListener(new TreeViewListener() {
-			public void treeViewEvent(TreeViewEvent event) {
-				if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
-					final DebugProcess currentDebugProcess = (DebugProcess) addedProcsTreeView
-							.getSelectedObject();
-					if (currentDebugProcess != null) {
-						final TreePath foo = dataModel.searchName(currentDebugProcess
-								.getName());
-						changeGroupState(procWiseTreeView,
-								new TreePath[] { foo }, false, false);
-						currentSession.removeProcess(currentDebugProcess);
-					}
-					if (currentSession.getProcesses().isEmpty()) {
-						observerSelectionTreeView.setSensitive(false);
-					} else {
-						observerSelectionTreeView.setSensitive(true);
-					}
-				}
-			}
-		});
-		setUpCurrentPage();
-
-		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
-		nameEntry.addListener(new EntryListener() {
-			public void entryEvent(EntryEvent arg0) {
-				currentSession.setName(nameEntry.getText());
-				if (editSession == false) {
-					if (SessionManager.theManager.getSessionByName(nameEntry
-							.getText()) != null) {
-
-						warningLabel
-								.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
-						warningIcon.set(GtkStockItem.DIALOG_WARNING,
-								IconSize.BUTTON);
-					} else {
-						warningLabel
-								.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
-						warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
-
-					}
-				}
-				setProcessNext(processSelected);
-			}
-		});
-
-		final SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
-		sizeGroup.addWidget(procWiseTreeView);
-		sizeGroup.addWidget(addedProcsTreeView);
-
-		addProcessGroupButton = (Button) glade
-				.getWidget("sessionDruid_addProcessGroupButton");
-		removeProcessGroupButton = (Button) glade
-				.getWidget("sessionDruid_removeProcessGroupButton");
-
-		addProcessGroupButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					changeGroupState(procWiseTreeView, procWiseTreeView
-							.getSelection().getSelectedRows(), true, true);
-				}
-				if (!currentSession.getProcesses().isEmpty()) {
-					observerSelectionTreeView.setSensitive(true);
-				}
-			}
-		});
-
-
-		removeProcessGroupButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					final Iterator i = addedProcsTreeView.getSelectedObjects()
-							.iterator();
-					if (i != null) {
-						while (i.hasNext()) {
-							final DebugProcess currentDebugProcess = (DebugProcess) i
-									.next();
-							final TreePath foo = dataModel
-									.searchName(currentDebugProcess
-											.getRealName());
-							changeGroupState(procWiseTreeView,
-									new TreePath[] { foo }, false, false);
-							currentSession.removeProcess(currentDebugProcess);
-
-						}
-					}
-
-					if (currentSession.getProcesses().isEmpty()) {
-						observerSelectionTreeView.setSensitive(false);
-					} else {
-						observerSelectionTreeView.setSensitive(true);
-					}
-				}
-			}
-		});
-
-	}
-
-	private void getProcessObserverControls(LibGlade glade) {
-
-		observerSelectionTreeView = new CheckedListView(glade.getWidget(
-				"SessionDruid_observerTreeView").getHandle());
-		observerSelectionTreeView.expandAll();
-
-		processObserverSelectionTreeView = new ListView(glade.getWidget(
-				"SessionDruid_processObserverTreeView").getHandle());
-		processObserverSelectionTreeView.expandAll();
-
-		observerDescriptionTextView = (TextView) glade
-				.getWidget("SessionDruid_observerDescription");
-		observerDescBuffer = new TextBuffer();
-		observerDescriptionTextView.setBuffer(observerDescBuffer);
-
-		processObserverSelectionTreeView.watchLinkedList(currentSession
-				.getProcesses());
-		processObserverSelectionTreeView.getSelection().addListener(
-				new TreeSelectionListener() {
-					public void selectionChangedEvent(TreeSelectionEvent arg0) {
-						final DebugProcess selected = (DebugProcess) processObserverSelectionTreeView
-								.getSelectedObject();
-						if (selected != null) {
-							final Iterator i = selected.getObservers().iterator();
-							observerSelectionTreeView.clearChecked();
-							while (i.hasNext()) {
-								final ObserverRoot givenObserver = (ObserverRoot) i
-										.next();
-								observerSelectionTreeView.setCheckedByName(
-										givenObserver.getName(), true);
-							}
-						}
-					}
-				});
-
-		observerSelectionTreeView.watchLinkedList(ObserverManager.theManager
-				.getTaskObservers());
-		observerSelectionTreeView.getCellRendererToggle().addListener(
-				new CellRendererToggleListener() {
-					public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
-						final GuiObject selected = observerSelectionTreeView.getSelectedObject();
-						final DebugProcess observerProcessSelected = (DebugProcess) processObserverSelectionTreeView
-								.getSelectedObject();
-						if (observerSelectionTreeView.isChecked(selected)) {
-							if (!observerProcessSelected.getObservers().contains(selected)) {
-								observerProcessSelected.addObserver((ObserverRoot) selected.getCopy());
-							}
-						} else {
-							observerProcessSelected.removeObserverByName(((ObserverRoot) selected).getName());
-						}
-					}
-				});
-
-		observerSelectionTreeView.getSelection().addListener(
-				new TreeSelectionListener() {
-					public void selectionChangedEvent(TreeSelectionEvent arg0) {
-						if (observerSelectionTreeView.getSelectedObject() != null) {
-							if (observerSelectionTreeView.getSelectedObject()
-									.getToolTip() != null) {
-								observerDescBuffer
-										.setText(observerSelectionTreeView
-												.getSelectedObject()
-												.getToolTip());
-							}
-						}
-					}
-				});
-
-		final SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
-		sizeGroup.addWidget(observerSelectionTreeView);
-		sizeGroup.addWidget(processObserverSelectionTreeView);
-
-		final Button customObserver = (Button) glade
-				.getWidget("SessionDruid_createCustomObserver");
-		customObserver.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					WindowManager.theManager.observersDialog.showAll();
-				}
-			}
-		});
-
-		setUpCurrentPage();
-	}
-
-	private void getDruidStructureControls(LibGlade glade) {
-
-		notebook = (Notebook) glade
-				.getWidget("sessionDruid_sessionNoteBook");
-
-		nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
-		nextButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					nextPage();
-				}
-			}
-		});
-		nextButton.setSensitive(false);
-
-		backButton = (Button) glade.getWidget("sessionDruid_backButton");
-		backButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					previousPage();
-				}
-			}
-		});
-
-		finishButton = (Button) glade
-				.getWidget("sessionDruid_finishButton");
-		finishButton.setSensitive(true);
-		finishButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					SessionManager.theManager.addSession(currentSession);
-					SessionManager.theManager.save();
-					currentSession = null;
-					currentSession = new Session();
-					hide();
-				}
-			}
-		});
-
-		saveButton = (Button) glade
-				.getWidget("sessionDruid_saveEditSessionButton");
-		saveButton.hideAll();
-		saveButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					if (editSession) {
-						SessionManager.theManager.save();
-
-						if (!oldSessionName.equals(currentSession.getName())) {
-							// If they edited the name of the session, reload the
-							// Session Manager so it picks up the old session and
-							// delete it.
-							SessionManager.theManager.load();
-							SessionManager.theManager
-									.removeSession(SessionManager.theManager
-											.getSessionByName(oldSessionName));
-						}
-					}
-					hide();
-				}
-			}
-		});
-
-		cancelButton = (Button) glade
-				.getWidget("sessionDruid_cancelButton");
-		cancelButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					currentSession.dontSaveObject();
-					SessionManager.theManager.load();
-					hide();
-
-				}
-			}
-		});
-
-		warningIcon = (Image) glade
-				.getWidget("sessionDruid_feedbackImage");
-		warningLabel = (Label) glade
-				.getWidget("sessionDruid_feedbackLabel");
-	}
-
-	public void attachLinkedListsToWidgets() {
-		if (!currentSession.getName().equals("NoName")) {
-			nameEntry.setText(currentSession.getName());
-		}
-		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
-		processObserverSelectionTreeView.watchLinkedList(currentSession
-				.getProcesses());
-	}
-
-	private void nextPage() {
-
-		// Process previous page data
-		final int page = notebook.getCurrentPage();
-
-		notebook.setCurrentPage(page + 1);
-		setUpCurrentPage();
-	}
-
-	private void previousPage() {
-		notebook.setCurrentPage(notebook.getCurrentPage() - 1);
-		setUpCurrentPage();
-	}
-
-	private void setUpCurrentPage() {
-		final int page = notebook.getCurrentPage();
-
-		if (page == 0) {
-			backButton.setSensitive(false);
-		} else {
-			backButton.setSensitive(true);
-		}
-
-		if (page == notebook.getNumPages() - 1) {
-			nextButton.hideAll();
-			finishButton.showAll();
-		} else {
-			nextButton.showAll();
-			finishButton.hideAll();
-		}
-
-		if (page == 1) {
-			setProcessNext(processSelected);
-		}
-	}
-
-	private String setInitialName() {
-		final String Name = "New Frysk Session";
-		String filler = "00";
-		if (SessionManager.theManager.getSessionByName(Name) == null) {
-			return Name;
-		} else {
-			for (int i = 1; i < Integer.MAX_VALUE; i++) {
-				if (i < 10) {
-					filler = "0" + i;
-				} else {
-					filler = "" + i;
-				}
-				if (SessionManager.theManager.getSessionByName(Name + " "
-						+ filler) == null) {
-					return Name + " " + filler;
-				}
-			}
-		}
-		return "Error Finding Name";
-	}
-
-	public void showAll() {
-		super.showAll();
-		setUpCurrentPage();
-	}
-
-	public void lifeCycleEvent(LifeCycleEvent event) {
-	}
-
-	public boolean lifeCycleQuery(LifeCycleEvent event) {
-		if (event.isOfType(LifeCycleEvent.Type.DESTROY)
-				|| event.isOfType(LifeCycleEvent.Type.DELETE)) {
-			hide();
-			return true;
-		}
-		return false;
-	}
+  private CheckedListView observerSelectionTreeView;
+
+  private ListView processObserverSelectionTreeView;
+
+  private TextView observerDescriptionTextView;
+
+  private TextBuffer observerDescBuffer;
+
+  private Label warningLabel;
+
+  private Image warningIcon;
+
+  private Session currentSession = new Session();
+
+  private Entry nameEntry;
+
+  private Notebook notebook;
+
+  private Button nextButton;
+
+  private Button backButton;
+
+  private Button finishButton;
+
+  private Button saveButton;
+
+  private Button cancelButton;
+
+  private int processSelected = 0;
+
+  private boolean editSession;
+
+  private String oldSessionName;
+
+  /**
+   * Create a new instance of the Session Assistant
+   * 
+   * @param glade - instance of the parsed glade file
+   */
+  public CreateFryskSessionDruid (LibGlade glade)
+  {
+    super(glade.getWidget("SessionDruid").getHandle());
+    setIcon(IconManager.windowIcon);
+
+    getDruidStructureControls(glade);
+    getProcessSelectionControls(glade);
+    getProcessObserverControls(glade);
+    this.addListener(this);
+  }
+
+  /**
+   * Sets the druid up into new session mode.
+   */
+  public void setNewSessionMode ()
+  {
+    nextButton.showAll();
+    nextButton.setSensitive(false);
+    backButton.showAll();
+    backButton.setSensitive(false);
+    finishButton.hideAll();
+    saveButton.hideAll();
+    cancelButton.showAll();
+    nameEntry.setText("");
+
+    currentSession = null;
+    currentSession = new Session();
+    attachLinkedListsToWidgets();
+
+    notebook.setShowTabs(false);
+    notebook.setCurrentPage(0);
+    processSelected = 0;
+    nameEntry.setText(setInitialName());
+    nameEntry.selectRegion(0, nameEntry.getText().length());
+    editSession = false;
+    unFilterData();
+  }
+
+  /**
+   * Sets the druid up into edit mode. Edit mode loads and existing session into
+   * the Assistant, and populates the existing widgets with the session data
+   * 
+   * @param givenSession - session to edit
+   */
+  public void setEditSessionMode (Session givenSession)
+  {
+    currentSession = givenSession;
+    if (currentSession == null)
+      {
+        currentSession = new Session();
+      }
+
+    processSelected = currentSession.getProcesses().size();
+    attachLinkedListsToWidgets();
+
+    notebook.setShowTabs(true);
+    notebook.setCurrentPage(0);
+    finishButton.hideAll();
+    nextButton.hideAll();
+    backButton.hideAll();
+    cancelButton.showAll();
+    saveButton.showAll();
+    saveButton.setSensitive(true);
+    editSession = true;
+    oldSessionName = currentSession.getName();
+    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+    warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
+    editSession = true;
+    unFilterData();
+    filterDataInSession();
+    observerSelectionTreeView.setSensitive(true);
+
+  }
+
+  private void filterDataInSession ()
+  {
+
+    // Does the current session have any processes?
+    if (currentSession.getProcesses() == null)
+      {
+        return;
+      }
+
+    // If so, get them
+    final Iterator i = currentSession.getProcesses().iterator();
+    if (i != null)
+      {
+        while (i.hasNext())
+          {
+
+            // Get the first process iteration.
+            final DebugProcess currentDebugProcess = (DebugProcess) i.next();
+            if (currentDebugProcess == null)
+              {
+                continue;
+              }
+
+            // Find process in the tree data model, via name
+            // return either null or path to process
+            final TreePath processPath = dataModel.searchName(currentDebugProcess.getName());
+
+            if (processPath != null)
+              {
+
+                // Covert to iter from path
+                final TreeIter foundIter = procWiseTreeView.psDataModel.getModel().getIter(
+                                                                                           processPath);
+                if (procWiseTreeView.psDataModel.getModel().isIterValid(
+                                                                        foundIter))
+                  {
+
+                    // Get the process alternate name
+                    final String altName = procWiseTreeView.psDataModel.getModel().getValue(
+                                                                                            foundIter,
+                                                                                            procWiseTreeView.psDataModel.getNameDC());
+
+                    // set the names
+                    currentDebugProcess.setRealName(currentDebugProcess.getName());
+                    currentDebugProcess.setAlternativeDisplayName(altName);
+                    currentDebugProcess.setName(altName);
+
+                    // Set in tree
+                    procWiseTreeView.psDataModel.getModel().setValue(
+                                                                     foundIter,
+                                                                     procWiseTreeView.psDataModel.getSelectedDC(),
+                                                                     true);
+                  }
+              }
+          }
+      }
+
+  }
+
+  /**
+   * Sets the selection criteria (ie processes added to a session or not added
+   * to a sesion) in the data model.
+   * 
+   * @param selected - Iter in tree to affect (from viewer).
+   * @param setSelected - set the selected value.
+   * @param setChildren - cascade down to children if true.
+   */
+  private void setTreeSelected (TreeIter selected, boolean setSelected,
+                                boolean setChildren)
+  {
+    dataModel.setSelected(selected, setSelected, setChildren);
+  }
+
+  /**
+   * If a child is a selected in a tree, we have to add the child's parent also.
+   * This is because only process groups can be added in the druid (PIDs and
+   * individual processes have no meaning inbetween sessions. This is a utility
+   * function that given a Iter, will add that tree iters parent as well.
+   * 
+   * @param unfilteredProcessIter - parent
+   */
+  private void addProcessParent (TreeIter unfilteredProcessIter)
+  {
+    if (unfilteredProcessIter == null)
+      {
+        return;
+      }
+
+    if (! dataModel.getModel().isIterValid(unfilteredProcessIter))
+      {
+        return;
+      }
+
+    GuiProc proc = (GuiProc) dataModel.getModel().getValue(
+                                                           unfilteredProcessIter,
+                                                           dataModel.getObjectDC());
+    if (proc == null)
+      {
+        if (unfilteredProcessIter.getChildCount() > 0)
+          {
+            final TreeIter childIter = unfilteredProcessIter.getChild(0);
+            proc = (GuiProc) dataModel.getModel().getValue(
+                                                           childIter,
+                                                           dataModel.getObjectDC());
+          }
+      }
+
+    final DebugProcess debugProcess = new DebugProcess(
+                                                       proc.getExecutableName(),
+                                                       dataModel.getModel().getValue(
+                                                                                     unfilteredProcessIter,
+                                                                                     dataModel.getNameDC()),
+                                                       proc.getNiceExecutablePath());
+    currentSession.addProcess(debugProcess);
+
+  }
+
+  /**
+   * Hack to test is a TreePath is a child or a parent noe. The JG
+   * implementation is buggy
+   * 
+   * @param pathTest - path to test
+   * @return - boolean, true if child
+   */
+  private boolean isChild (TreePath pathTest)
+  {
+    // Minor hack. Sometimes path.up() returns a boolean
+    // that indicates it has a parent and the up() changed the
+    // state of the Path. However all operations on that then
+    // return NP which indicates a false positive. Fix locally,
+    // and file upstream bug.
+
+    if (pathTest.toString().split(":").length > 1)
+      {
+        return true;
+      }
+    else
+      {
+        return false;
+      }
+  }
+
+  /**
+   * Convert a TreeModelFilterIter to a TreePath
+   * 
+   * @param tree - TreeView the source iter is from
+   * @param filter - Filtered TreePath
+   * @return - TreePath, returns the unfiltered iter in the view
+   */
+  private TreePath deFilterPath (TreeView tree, TreePath filter)
+  {
+    final TreeModelFilter ts = (TreeModelFilter) tree.getModel();
+    return ts.convertPathToChildPath(filter);
+  }
+
+  /**
+   * Changes the transition on a group of processes from one tree to the other
+   * As the druid removes items from one tree and adds them to another, it must
+   * transport and translate thiose selected TreePaths. Ugly and really needs to
+   * be re-written
+   * 
+   * @param tree - TreeView in question
+   * @param selectedProcs - a TreePath[] of the selected processes
+   * @param filtered - Is this a filtered tree?
+   * @param state - What selected state do you want to render the selected
+   *          TreePath[]s
+   */
+  private void changeGroupState (TreeView tree, TreePath[] selectedProcs,
+                                 boolean filtered, boolean state)
+  {
+
+    // Create a TreeRowReference. TreeRowReferences track model changes and
+    // so allow multiple selection.
+    final TreeRowReference[] paths = new TreeRowReference[selectedProcs.length];
+    TreeIter unfilteredProcessIter = null;
+
+    if (selectedProcs.length > 0)
+      {
+
+        // Build the TreeRowReference. De filter from the model if needed.
+        for (int i = 0; i < selectedProcs.length; i++)
+          {
+            if (selectedProcs[i] == null)
+              {
+                continue;
+              }
+            if (filtered)
+              {
+                unfilteredProcessIter = dataModel.getModel().getIter(
+                                                                     deFilterPath(
+                                                                                  tree,
+                                                                                  selectedProcs[i]));
+
+              }
+            else
+              {
+                unfilteredProcessIter = dataModel.getModel().getIter(
+                                                                     selectedProcs[i]);
+              }
+            paths[i] = new TreeRowReference(dataModel.getModel(),
+                                            unfilteredProcessIter.getPath());
+          }
+        for (int i = 0; i < paths.length; i++)
+          {
+            // Scenario 1: Tree iter has children (a process group); selected
+            // the parent
+            if (paths[i] == null)
+              {
+                continue;
+              }
+            if (dataModel.getModel().getIter(paths[i].getPath()).getChildCount() > 0)
+              {
+                if (state)
+                  {
+                    processSelected += dataModel.getModel().getIter(
+                                                                    paths[i].getPath()).getChildCount() + 1;
+                    addProcessParent(dataModel.getModel().getIter(
+                                                                  paths[i].getPath()));
+                  }
+                else
+                  {
+                    processSelected -= dataModel.getModel().getIter(
+                                                                    paths[i].getPath()).getChildCount() + 1;
+                  }
+                setTreeSelected(
+                                dataModel.getModel().getIter(paths[i].getPath()),
+                                state, true);
+              }
+            else
+              {
+                // Scenario 2: A child in the process group has been selected,
+                // also select the parent and siblings.
+                final TreePath parent_path = paths[i].getPath();
+                if (isChild(parent_path))
+                  {
+                    // we are a child that has a parent; sibilings and parent
+                    parent_path.up();
+                    // Save parent iter
+                    final TreeIter parent_iter = dataModel.getModel().getIter(
+                                                                              parent_path);
+                    // Move the parent and children.
+                    if (parent_iter.getChildCount() > 0)
+                      {
+                        if (state)
+                          {
+                            processSelected += dataModel.getModel().getIter(
+                                                                            paths[i].getPath()).getChildCount() + 1;
+                            addProcessParent(parent_iter);
+                          }
+                        else
+                          {
+                            processSelected -= dataModel.getModel().getIter(
+                                                                            paths[i].getPath()).getChildCount() + 1;
+                          }
+                        setTreeSelected(parent_iter, state, true);
+                      }
+                  }
+                else
+                  {
+                    if (state)
+                      {
+                        addProcessParent(dataModel.getModel().getIter(
+                                                                      paths[i].getPath()));
+                        processSelected++;
+                      }
+                    else
+                      {
+                        processSelected--;
+                      }
+                    // Scenario 3: No children, or siblings
+                    setTreeSelected(
+                                    dataModel.getModel().getIter(
+                                                                 paths[i].getPath()),
+                                    state, false);
+                  }
+              }
+          }
+      }
+    setProcessNext(processSelected);
+  }
+
+  /**
+   * @param processCount
+   */
+  private void setProcessNext (int processCount)
+  {
+    if (editSession == false)
+      {
+        if (processCount > 0
+            && nameEntry.getText().length() > 0
+            && SessionManager.theManager.getSessionByName(nameEntry.getText()) == null)
+          {
+            nextButton.setSensitive(true);
+            saveButton.setSensitive(true);
+          }
+        else
+          {
+            nextButton.setSensitive(false);
+            saveButton.setSensitive(false);
+          }
+      }
+    else
+      {
+        if (processCount > 0 && nameEntry.getText().length() > 0)
+          {
+            nextButton.setSensitive(true);
+            saveButton.setSensitive(true);
+          }
+        else
+          {
+            nextButton.setSensitive(false);
+            saveButton.setSensitive(false);
+          }
+      }
+  }
+
+  private void unFilterData ()
+  {
+    procWiseTreeView.psDataModel.unFilterData();
+  }
+
+  private void getProcessSelectionControls (LibGlade glade)
+  {
+
+    Button addProcessGroupButton;
+    Button removeProcessGroupButton;
+
+    // Page 1 of the Druid. Initial Process Selection.
+
+    // Create New Live Data Model and mount on the TreeView
+    dataModel = new ProcWiseDataModel();
+    procWiseTreeView = new ProcWiseTreeView(
+                                            glade.getWidget(
+                                                            "sessionDruid_procWiseTreeView").getHandle(),
+                                            dataModel);
+
+    procWiseTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
+
+    procWiseTreeView.addListener(new TreeViewListener()
+    {
+      public void treeViewEvent (TreeViewEvent event)
+      {
+        if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
+          {
+            changeGroupState(procWiseTreeView,
+                             procWiseTreeView.getSelection().getSelectedRows(),
+                             true, true);
+            if (! currentSession.getProcesses().isEmpty())
+              {
+                observerSelectionTreeView.setSensitive(true);
+              }
+          }
+
+      }
+    });
+
+    // Create a New ListView and mount the Linked List from Session data
+    addedProcsTreeView = new ListView(
+                                      glade.getWidget(
+                                                      "sessionDruid_addedProcsTreeView").getHandle());
+    addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
+    addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
+    addedProcsTreeView.addListener(new TreeViewListener()
+    {
+      public void treeViewEvent (TreeViewEvent event)
+      {
+        if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
+          {
+            final DebugProcess currentDebugProcess = (DebugProcess) addedProcsTreeView.getSelectedObject();
+            if (currentDebugProcess != null)
+              {
+                final TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+                changeGroupState(procWiseTreeView, new TreePath[] { foo },
+                                 false, false);
+                currentSession.removeProcess(currentDebugProcess);
+              }
+            if (currentSession.getProcesses().isEmpty())
+              {
+                observerSelectionTreeView.setSensitive(false);
+              }
+            else
+              {
+                observerSelectionTreeView.setSensitive(true);
+              }
+          }
+      }
+    });
+    setUpCurrentPage();
+
+    nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
+    nameEntry.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent arg0)
+      {
+        currentSession.setName(nameEntry.getText());
+        if (editSession == false)
+          {
+            if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
+              {
+
+                warningLabel.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
+                warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
+              }
+            else
+              {
+                warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+                warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
+
+              }
+          }
+        setProcessNext(processSelected);
+      }
+    });
+
+    final SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+    sizeGroup.addWidget(procWiseTreeView);
+    sizeGroup.addWidget(addedProcsTreeView);
+
+    addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
+    removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
+
+    addProcessGroupButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            changeGroupState(procWiseTreeView,
+                             procWiseTreeView.getSelection().getSelectedRows(),
+                             true, true);
+          }
+        if (! currentSession.getProcesses().isEmpty())
+          {
+            observerSelectionTreeView.setSensitive(true);
+          }
+      }
+    });
+
+    removeProcessGroupButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            final Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+            if (i != null)
+              {
+                while (i.hasNext())
+                  {
+                    final DebugProcess currentDebugProcess = (DebugProcess) i.next();
+                    final TreePath foo = dataModel.searchName(currentDebugProcess.getRealName());
+                    changeGroupState(procWiseTreeView, new TreePath[] { foo },
+                                     false, false);
+                    currentSession.removeProcess(currentDebugProcess);
+
+                  }
+              }
+
+            if (currentSession.getProcesses().isEmpty())
+              {
+                observerSelectionTreeView.setSensitive(false);
+              }
+            else
+              {
+                observerSelectionTreeView.setSensitive(true);
+              }
+          }
+      }
+    });
+
+  }
+
+  private void getProcessObserverControls (LibGlade glade)
+  {
+
+    observerSelectionTreeView = new CheckedListView(
+                                                    glade.getWidget(
+                                                                    "SessionDruid_observerTreeView").getHandle());
+    observerSelectionTreeView.expandAll();
+
+    processObserverSelectionTreeView = new ListView(
+                                                    glade.getWidget(
+                                                                    "SessionDruid_processObserverTreeView").getHandle());
+    processObserverSelectionTreeView.expandAll();
+
+    observerDescriptionTextView = (TextView) glade.getWidget("SessionDruid_observerDescription");
+    observerDescBuffer = new TextBuffer();
+    observerDescriptionTextView.setBuffer(observerDescBuffer);
+
+    processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+    processObserverSelectionTreeView.getSelection().addListener(
+                                                                new TreeSelectionListener()
+                                                                {
+                                                                  public void selectionChangedEvent (
+                                                                                                     TreeSelectionEvent arg0)
+                                                                  {
+                                                                    final DebugProcess selected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
+                                                                    if (selected != null)
+                                                                      {
+                                                                        final Iterator i = selected.getObservers().iterator();
+                                                                        observerSelectionTreeView.clearChecked();
+                                                                        while (i.hasNext())
+                                                                          {
+                                                                            final ObserverRoot givenObserver = (ObserverRoot) i.next();
+                                                                            observerSelectionTreeView.setCheckedByName(
+                                                                                                                       givenObserver.getName(),
+                                                                                                                       true);
+                                                                          }
+                                                                      }
+                                                                  }
+                                                                });
+
+    observerSelectionTreeView.watchLinkedList(ObserverManager.theManager.getTaskObservers());
+    observerSelectionTreeView.getCellRendererToggle().addListener(
+                                                                  new CellRendererToggleListener()
+                                                                  {
+                                                                    public void cellRendererToggleEvent (
+                                                                                                         CellRendererToggleEvent arg0)
+                                                                    {
+                                                                      final GuiObject selected = observerSelectionTreeView.getSelectedObject();
+                                                                      final DebugProcess observerProcessSelected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
+                                                                      if (observerSelectionTreeView.isChecked(selected))
+                                                                        {
+                                                                          if (! observerProcessSelected.getObservers().contains(
+                                                                                                                                selected))
+                                                                            {
+                                                                              observerProcessSelected.addObserver((ObserverRoot) selected.getCopy());
+                                                                            }
+                                                                        }
+                                                                      else
+                                                                        {
+                                                                          observerProcessSelected.removeObserverByName(((ObserverRoot) selected).getName());
+                                                                        }
+                                                                    }
+                                                                  });
+
+    observerSelectionTreeView.getSelection().addListener(
+                                                         new TreeSelectionListener()
+                                                         {
+                                                           public void selectionChangedEvent (
+                                                                                              TreeSelectionEvent arg0)
+                                                           {
+                                                             if (observerSelectionTreeView.getSelectedObject() != null)
+                                                               {
+                                                                 if (observerSelectionTreeView.getSelectedObject().getToolTip() != null)
+                                                                   {
+                                                                     observerDescBuffer.setText(observerSelectionTreeView.getSelectedObject().getToolTip());
+                                                                   }
+                                                               }
+                                                           }
+                                                         });
+
+    final SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+    sizeGroup.addWidget(observerSelectionTreeView);
+    sizeGroup.addWidget(processObserverSelectionTreeView);
+
+    final Button customObserver = (Button) glade.getWidget("SessionDruid_createCustomObserver");
+    customObserver.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            WindowManager.theManager.observersDialog.showAll();
+          }
+      }
+    });
+
+    setUpCurrentPage();
+  }
+
+  private void getDruidStructureControls (LibGlade glade)
+  {
+
+    notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
+
+    nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
+    nextButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            nextPage();
+          }
+      }
+    });
+    nextButton.setSensitive(false);
+
+    backButton = (Button) glade.getWidget("sessionDruid_backButton");
+    backButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            previousPage();
+          }
+      }
+    });
+
+    finishButton = (Button) glade.getWidget("sessionDruid_finishButton");
+    finishButton.setSensitive(true);
+    finishButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            SessionManager.theManager.addSession(currentSession);
+            SessionManager.theManager.save();
+            currentSession = null;
+            currentSession = new Session();
+            hide();
+          }
+      }
+    });
+
+    saveButton = (Button) glade.getWidget("sessionDruid_saveEditSessionButton");
+    saveButton.hideAll();
+    saveButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            if (editSession)
+              {
+                SessionManager.theManager.save();
+
+                if (! oldSessionName.equals(currentSession.getName()))
+                  {
+                    // If they edited the name of the session, reload the
+                    // Session Manager so it picks up the old session and
+                    // delete it.
+                    SessionManager.theManager.load();
+                    SessionManager.theManager.removeSession(SessionManager.theManager.getSessionByName(oldSessionName));
+                  }
+              }
+            hide();
+          }
+      }
+    });
+
+    cancelButton = (Button) glade.getWidget("sessionDruid_cancelButton");
+    cancelButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            currentSession.dontSaveObject();
+            SessionManager.theManager.load();
+            hide();
+
+          }
+      }
+    });
+
+    warningIcon = (Image) glade.getWidget("sessionDruid_feedbackImage");
+    warningLabel = (Label) glade.getWidget("sessionDruid_feedbackLabel");
+  }
+
+  public void attachLinkedListsToWidgets ()
+  {
+    if (! currentSession.getName().equals("NoName"))
+      {
+        nameEntry.setText(currentSession.getName());
+      }
+    addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
+    processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+  }
+
+  private void nextPage ()
+  {
+
+    // Process previous page data
+    final int page = notebook.getCurrentPage();
+
+    notebook.setCurrentPage(page + 1);
+    setUpCurrentPage();
+  }
+
+  private void previousPage ()
+  {
+    notebook.setCurrentPage(notebook.getCurrentPage() - 1);
+    setUpCurrentPage();
+  }
+
+  private void setUpCurrentPage ()
+  {
+    final int page = notebook.getCurrentPage();
+
+    if (page == 0)
+      {
+        backButton.setSensitive(false);
+      }
+    else
+      {
+        backButton.setSensitive(true);
+      }
+
+    if (page == notebook.getNumPages() - 1)
+      {
+        nextButton.hideAll();
+        finishButton.showAll();
+      }
+    else
+      {
+        nextButton.showAll();
+        finishButton.hideAll();
+      }
+
+    if (page == 1)
+      {
+        setProcessNext(processSelected);
+      }
+  }
+
+  private String setInitialName ()
+  {
+    final String Name = "New Frysk Session";
+    String filler = "00";
+    if (SessionManager.theManager.getSessionByName(Name) == null)
+      {
+        return Name;
+      }
+    else
+      {
+        for (int i = 1; i < Integer.MAX_VALUE; i++)
+          {
+            if (i < 10)
+              {
+                filler = "0" + i;
+              }
+            else
+              {
+                filler = "" + i;
+              }
+            if (SessionManager.theManager.getSessionByName(Name + " " + filler) == null)
+              {
+                return Name + " " + filler;
+              }
+          }
+      }
+    return "Error Finding Name";
+  }
+
+  public void showAll ()
+  {
+    super.showAll();
+    setUpCurrentPage();
+  }
+
+  public void lifeCycleEvent (LifeCycleEvent event)
+  {
+  }
+
+  public boolean lifeCycleQuery (LifeCycleEvent event)
+  {
+    if (event.isOfType(LifeCycleEvent.Type.DESTROY)
+        || event.isOfType(LifeCycleEvent.Type.DELETE))
+      {
+        hide();
+        return true;
+      }
+    return false;
+  }
 
 }
