@@ -1,5 +1,8 @@
 2007-01-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFileDescriptor.java (testLeakyPipes): Use a WeakHashMap to
+	track and then close any non-garbage-collected file descriptors.
+
 	* TestFileDescriptor.java (testByteIO): Rename testIO.
 	(testByteEOF, testArrayEOF, testArrayIO): Add.
 	* FileDescriptor.java (read(byte[],int,int): Add.

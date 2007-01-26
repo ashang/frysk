@@ -42,6 +42,9 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.WeakHashMap;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Minimal testing for the FileDescriptor.
@@ -172,7 +175,19 @@ public class TestFileDescriptor
      */
     public void testLeakyPipes ()
     {
-	for (int i = 0; i < 2000; i++)
+	// Keep a table of all file file descriptors created; weak so
+	// that a garbage collect can empty it.
+	Map fds = new WeakHashMap ();
+	
+	for (int i = 0; i < 2000; i++) {
 	    setUp ();
+	    fds.put (in, null);
+	    fds.put (out, null);
+	}
+	// Close out any FileDescriptors not yet garbage collected.
+	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {
+	    FileDescriptor fd = (FileDescriptor) i.next ();
+	    fd.close ();
+	}
     }
 }
