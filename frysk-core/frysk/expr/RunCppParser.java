@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 
 package frysk.expr;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -68,8 +67,6 @@ public class RunCppParser
 
 	public void put (String s, Variable v)
 	{
-	    LinkedList lCandidates = new LinkedList();
-
 	    Iterator it = symTab.entrySet().iterator();
 	    boolean match = false;
 	    while(it.hasNext()) {
@@ -287,7 +284,6 @@ public class RunCppParser
 	// Create the command line parser, and use it to parse all
 	// command line options.
 
-	RunCppParser runParser = new RunCppParser();
 	SymTab hpdsymTab = new SymTab();
 	clParser = new Parser("RunCppParser", "1.0", true);
 	Completor parseCompletor = new ParserCompletor();
@@ -324,7 +320,6 @@ public class RunCppParser
 
 		String sInput;
 		Variable result;
-		Map symTab = new HashMap();
 		try
 		    {
 			while (! ((sInput = consReader.readLine("$ ")).equalsIgnoreCase("exit")))

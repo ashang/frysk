@@ -1,5 +1,11 @@
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
+	* RunCppParser.java: Removed unused import FileArgumentCallback.
+	(SymTab.put): Remove unused variable lCandidates.
+	(main): Removed unused variable runParser and symTab.
+
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
 	* RunCppTreeParser.java (rctpsymTab): Mark as static class. Don't
 	mark variable symTab as static.
 	* cpp.g: Call all static newXVariable() methods through class type.
