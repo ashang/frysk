@@ -1,3 +1,7 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am (jline.jar): Pass JAVACFLAGS to JAVAC.
+
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (jline.jar): Use $(JAVAC), and $(JAR).
