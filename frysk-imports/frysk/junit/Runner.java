@@ -500,15 +500,15 @@ public class Runner
             });
 
 	parser.setHeader ("Usage:"
-			  + " [ -c <console-level> ]"
-			  + " [ -l <log-level> ]"
+			  + " [ --console <LOG=LEVEL> ]"
+			  + " [ --log <LOG=LEVEL> ]"
 			  + " [ -r <repeat-count> ]"
 			  + " [ --arch <arch>]"
 			  + " [ -n ]"
 			  + " [ --stress ]"
 			  + " [ --all ]"
-			  + " [-o spec [-o spec [-o spec...]]]"
-			  + " [-i spec [-i spec [-i spec...]]]" 
+			  + " [-o spec...]"
+			  + " [-i spec...]" 
               + " [--timeout <timeout>]"
 			  + " [ class ... ]");
 	return parser;
