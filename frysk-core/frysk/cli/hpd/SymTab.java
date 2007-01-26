@@ -50,7 +50,6 @@ import lib.dw.DwarfCommand;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
-import lib.dw.DwflLine;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import antlr.CommonAST;

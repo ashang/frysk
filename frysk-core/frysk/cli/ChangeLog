@@ -1,5 +1,9 @@
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
+	* hpd/SymTab.java: Removed unused import DwflLine.
+
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
 	* hpd/CLI.java: Delete unused import lib.stdcpp.Demangler.
 	* hpd/SymTab.java: Delete unused import frysk.rt.StackFactory.
 	(complete): Removed unused variable result.
