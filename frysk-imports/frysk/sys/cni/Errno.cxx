@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,6 +44,9 @@
 
 #include <gcj/cni.h>
 
+#include <java/lang/System.h>
+#include <java/lang/Thread.h>
+
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Ebadf.h"
 #include "frysk/sys/Errno$Enomem.h"
@@ -75,7 +78,8 @@ vajprintf (const char *fmt, ...)
 /**
  * Create, and throw, an Errno.
  */
-static void
+static void throwErrno (int err, jstring jmessage) __attribute__ ((noreturn));
+void
 throwErrno (int err, jstring jmessage)
 {
   switch (err) {
@@ -154,4 +158,37 @@ throwRuntimeException (const char *message, const char *suffix, int val)
 {
   throw new java::lang::RuntimeException
     (vajprintf ("%s (%s %d)", message, suffix, val));
+}
+
+int
+tryGarbageCollect (int &count)
+{
+  switch (count++) {
+  case 0:
+    java::lang::System::gc ();
+    java::lang::Thread::yield ();
+    return count;
+  case 1:
+    fprintf (stderr, "yo dude, double garbage collect!\n");
+    java::lang::System::gc ();
+    java::lang::Thread::sleep (1);
+    return count;
+  default:
+    return 0;
+  }
+}
+
+void
+tryGarbageCollect (int &count, int err, const char *prefix)
+{
+  if (tryGarbageCollect (count) == 0)
+    throwErrno (err, prefix);
+}
+
+void
+tryGarbageCollect (int &count, int err, const char *prefix,
+		   const char *suffix, int val)
+{
+  if (tryGarbageCollect (count) == 0)
+    throwErrno (err, prefix, suffix, val);
 }

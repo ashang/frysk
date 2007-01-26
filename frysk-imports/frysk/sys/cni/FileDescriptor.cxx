@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,33 +37,92 @@
 // version and license this file solely under the GPL without
 // exception.
 
-// <<prefix>>: <<strerror(err)>>
-extern void throwErrno (int err, const char *prefix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
-// <<message>>
-extern void throwRuntimeException (const char *message);
-// <<message>> (<<suffix>> <<val>>)
-extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+#include <errno.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <stdio.h>
 
-/**
- * Like asprintf, only it returns a java string.
- */
-extern jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
+#include <gcj/cni.h>
 
+#include <java/io/IOException.h>
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/FileDescriptor.h"
+
+void
+frysk::sys::FileDescriptor::close ()
+{
+  // ::printf ("closing %d\n", (int)fd);
+  errno = 0;
+  ::close (fd);
+  if (errno != 0)
+    throwErrno (errno, "close", "fd", fd);
+  fd = -1;
+}
+
+void
+frysk::sys::FileDescriptor::write (jbyte b)
+{
+  errno = 0;
+  ::write (fd, &b, 1);
+  if (errno != 0)
+    throwErrno (errno, "write", "fd", fd);
+}
+
+jboolean
+frysk::sys::FileDescriptor::ready ()
+{
+  fd_set readfds;
+  FD_ZERO (&readfds);
+  FD_SET (fd, &readfds);
+
+  struct timeval timeout = { 0, 0 };
+
+  errno = 0;
+  switch (::select (fd + 1, &readfds, NULL, NULL, &timeout)) {
+  case 1:
+    return true;
+  case 0:
+    return false;
+  default:
+    throwErrno (errno, "select", "fd", fd);
+  }
+}
+
+jbyte
+frysk::sys::FileDescriptor::read (void)
+{
+  jbyte b;
+  errno = 0;
+  ::read (fd, &b, 1);
+  if (errno != 0)
+    throwErrno (errno, "read", "fd", fd);
+  return b;
+}
+
+JArray<frysk::sys::FileDescriptor*>*
+frysk::sys::FileDescriptor::pipe ()
+{
+  int gc_count = 0;
+  const int nfds = 2;
+  int filedes[nfds];
+  while (::pipe (filedes) < 0) {
+    int err = errno;
+    // ::printf ("err = %d %s\n", err, strerror (err));
+    switch (err) {
+    case EMFILE:
+      tryGarbageCollect (gc_count, err, "pipe");
+      continue;
+    default:
+      throwErrno (err, "pipe");
+    }
+  }
+  // printf ("pipe [%d, %d]\n", filedes[0], filedes[1]);
+  JArray<frysk::sys::FileDescriptor*>* fds
+    = ( JArray<frysk::sys::FileDescriptor*>*)
+    JvNewObjectArray (nfds, &frysk::sys::FileDescriptor::class$, NULL);
+  for (int i = 0; i < nfds; i++) {
+    elements(fds)[i] = new frysk::sys::FileDescriptor (filedes[i]);
+  }
+  return fds;
+}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,33 +37,112 @@
 // version and license this file solely under the GPL without
 // exception.
 
-// <<prefix>>: <<strerror(err)>>
-extern void throwErrno (int err, const char *prefix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
-// <<message>>
-extern void throwRuntimeException (const char *message);
-// <<message>> (<<suffix>> <<val>>)
-extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+package frysk.sys;
+
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
- * Like asprintf, only it returns a java string.
+ * Unix file descriptor.
+ *
+ * This object is loosely based on the Unix file-descriptor.
  */
-extern jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
 
+public final class FileDescriptor
+{
+    final int fd;
+    FileDescriptor (int fd)
+    {
+	this.fd = fd;
+    }
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
+    /**
+     * Read a single byte from the file descriptor.
+     */
+    public native byte read ();
+
+    /**
+     * Write a single byte to the file descriptor.
+     */
+    public native void write (byte b);
+
+    /**
+     * Is there at least one character available for reading?
+     */
+    public native boolean ready ();
+
+    /**
+     * Close the file descriptor.
+     */
+    public native void close ();
+
+    /**
+     * Always clean up the file descriptor.
+     */
+    protected void finalize ()
+    {
+	if (fd >= 0)
+	    close ();
+    }
+
+    /**
+     * Create a pipe pair.
+     *
+     * This makes for easier testing.
+     */
+    static public native FileDescriptor[] pipe ();
+
+    /**
+     * Return an input stream that can read this file descriptor.
+     */
+    public InputStream getInputStream ()
+    {
+	return new InputStream ()
+	    {
+		public int available ()
+		    throws IOException
+		{
+		    try {
+			if (FileDescriptor.this.ready ())
+			    return 1;
+			else
+			    return 0;
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
+		public int read ()
+		    throws IOException
+		{
+		    try {
+			return FileDescriptor.this.read ();
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
+	    };
+    }
+
+    /** 
+     * Return an output stream that can write this file descriptor.
+     */
+    public OutputStream getOutputStream ()
+    {
+	return new OutputStream ()
+	    {
+		public void write (int b)
+		    throws IOException
+		{
+		    try {
+			FileDescriptor.this.write ((byte) b);
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
+	    };
+    }
+}

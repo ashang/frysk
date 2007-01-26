@@ -1,3 +1,12 @@
+2007-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.hxx (throwErrno): Add noreturn attribute.
+	(tryGarbageCollect): Declare.
+	* cni/Errno.cxx (tryGarbageCollect): Define.
+	* cni/FileDescriptor.cxx: New file
+	* FileDescriptor.java: New file.
+	* TestFileDescriptor.java: New file.
+	
 2006-12-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StressMapRead.java: Add permShared flag.

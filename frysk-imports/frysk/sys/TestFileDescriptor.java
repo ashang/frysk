@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,33 +37,80 @@
 // version and license this file solely under the GPL without
 // exception.
 
-// <<prefix>>: <<strerror(err)>>
-extern void throwErrno (int err, const char *prefix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
-// <<message>>
-extern void throwRuntimeException (const char *message);
-// <<message>> (<<suffix>> <<val>>)
-extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+package frysk.sys;
+
+import frysk.junit.TestCase;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Like asprintf, only it returns a java string.
+ * Minimal testing for the FileDescriptor.
  */
-extern jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
 
+public class TestFileDescriptor
+    extends TestCase
+{
+    FileDescriptor in;
+    FileDescriptor out;
+    public void setUp ()
+    {
+	FileDescriptor[] pipe = FileDescriptor.pipe ();
+	in = pipe[0];
+	out = pipe[1];
+    }
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
+    /**
+     * Test the ready method, a pipe is only ready if something was
+     * written to it.*/
+    public void testReady ()
+    {
+	assertFalse ("empty pipe not ready", in.ready ());
+	out.write ((byte) 1);
+	assertTrue ("non-empty pipe ready", in.ready ());
+    }
+
+    /**
+     * Test writing of bytes.
+     */
+    public void testIO ()
+    {
+	int values[] = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	for (int i = 0; i < values.length; i++ ) {
+	    out.write ((byte) values[i]);
+	}
+	// This is risky, could hang.
+	for (int i = 0; i < values.length; i++) {
+	    assertTrue ("ready", in.ready ());
+	    assertEquals ("value " + i, in.read (), values[i]);
+	}
+    }
+
+    /**
+     * Test input and output streams.
+     */
+    public void testInputOutputStreams ()
+	throws java.io.IOException
+    {
+	InputStream ins = in.getInputStream ();
+	OutputStream outs = out.getOutputStream ();
+	assertEquals ("input stream available", ins.available (), 0);
+	outs.write (1);
+	assertEquals ("input stream available", ins.available (), 1);
+	assertEquals ("read back", ins.read (), 1);
+    }
+
+    /**
+     * Allocate, but loose, lots and lots of pipe file desciptors,
+     * checks that a garbage collect eventually occures.
+     *
+     * This test relies on the underlying code managing to trigger a
+     * garbage collect, something that in java, isn't really reliable.
+     * However, with a requested garbage collect, and a yield, the gc
+     * likes to run.
+     */
+    public void testLeakyPipes ()
+    {
+	for (int i = 0; i < 2000; i++)
+	    setUp ();
+    }
+}
