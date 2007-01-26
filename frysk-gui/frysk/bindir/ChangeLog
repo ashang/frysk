@@ -1,3 +1,7 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* frysk.java (addOptions): Removed.
+
 2007-01-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* frysk.java: Add call to get online help docs directory.
