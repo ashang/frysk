@@ -40,34 +40,27 @@
 package frysk.sys;
 
 /**
- * Open a pty
+ * Open a pty bound to a daemon process.
  */
 
-public class Pty
-    extends FileDescriptor
+public class PtyDaemon
+    extends Pty
 {
+    private final int pid;
+
     /**
-     * Open a pty not wired to anything.
+     * Open a pty wired up to a daemon process.
      */
-    public Pty ()
+    public PtyDaemon (String[] args)
     {
-	super (open ());
+	super ();
+	// setUpForConsole ();
+	String name = getName ();
+	pid = Fork.daemon (name, name, name, args);
     }
 
-    /**
-     * Returns the pathname of corrsponding to the fd
-     */
-    public native String getName();
-
-    /**
-     * Set pty parameters to set up for use in jline.
-     *
-     * XXX: This uses system() which is dangerous.
-     */
-    public native void setUpForConsole();
-
-    /**
-     * Returns an open master fd for a pty.
-     */
-    private static native int open ();
+    public int getPid()
+    {
+	return pid;
+    }
 }

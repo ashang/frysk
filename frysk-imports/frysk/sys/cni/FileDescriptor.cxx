@@ -61,12 +61,26 @@ frysk::sys::FileDescriptor::close ()
 }
 
 void
-frysk::sys::FileDescriptor::write (jbyte b)
+frysk::sys::FileDescriptor::write (jint b)
+{
+  char c = b;
+  errno = 0;
+  ::write (fd, &c, 1);
+  int err = errno;
+  // ::printf ("wrote <<%c>>\n", c);
+  if (err != 0)
+    throwErrno (err, "write", "fd", fd);
+}
+
+void
+frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
 {
   errno = 0;
-  ::write (fd, &b, 1);
-  if (errno != 0)
-    throwErrno (errno, "write", "fd", fd);
+  ::write (fd, elements(bytes) + off, len);
+  int err = errno;
+  // ::printf ("wrote <<%c>>\n", (char) b);
+  if (err != 0)
+    throwErrno (err, "write", "fd", fd);
 }
 
 jboolean
@@ -79,25 +93,48 @@ frysk::sys::FileDescriptor::ready ()
   struct timeval timeout = { 0, 0 };
 
   errno = 0;
-  switch (::select (fd + 1, &readfds, NULL, NULL, &timeout)) {
+  int count = ::select (fd + 1, &readfds, NULL, NULL, &timeout);
+  int err = errno;
+  // ::printf ("ready count %d\n", count);
+  switch (count) {
   case 1:
     return true;
   case 0:
     return false;
   default:
-    throwErrno (errno, "select", "fd", fd);
+    throwErrno (err, "select", "fd", fd);
   }
 }
 
-jbyte
+jint
 frysk::sys::FileDescriptor::read (void)
 {
   jbyte b;
   errno = 0;
-  ::read (fd, &b, 1);
-  if (errno != 0)
-    throwErrno (errno, "read", "fd", fd);
-  return b;
+  int nr = ::read (fd, &b, 1);
+  int err = errno;
+  switch (nr) {
+  case 0:
+    return -1; // EOF
+  case 1:
+    return b & 0xff;
+  default:
+    throwErrno (err, "read", "fd", fd);
+  }
+}
+
+jint
+frysk::sys::FileDescriptor::read (jbyteArray bytes, jint off, jint len)
+{
+  errno = 0;
+  int nr = ::read (fd, elements(bytes) + off, len);
+  int err = errno;
+  if (nr == 0)
+    return -1; // EOF
+  else if (nr > 0)
+    return nr;
+  else
+    throwErrno (err, "read", "fd", fd);
 }
 
 JArray<frysk::sys::FileDescriptor*>*

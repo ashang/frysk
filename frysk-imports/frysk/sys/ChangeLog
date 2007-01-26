@@ -1,5 +1,25 @@
 2007-01-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFileDescriptor.java (testByteIO): Rename testIO.
+	(testByteEOF, testArrayEOF, testArrayIO): Add.
+	* FileDescriptor.java (read(byte[],int,int): Add.
+	(getOutputStream): Add close method.
+	(getInputStream): Add close and read(byte[],int,int) methods.
+	(read): Change return type to int.
+	(write): Change parameter to int.
+	* cni/FileDescriptor.cxx: Update.
+	* TestPty.java (testOpen): Rename testAll.
+	(testEchoHi, testTeeHi): New methods.
+	* PtyDaemon.java: New.
+	* FileDescriptor.java (getFd): New method.
+	(fd): Make protected.
+	* Pty.java: Extend FileDescriptor, make non-final.
+	(ptyWrite, setUpPtyForConsole, writeString, getPtyName): Delete
+	(getFd): Delete, handled by parent class.
+	(open): Native method, rename openPty.
+	(getName): Make native.
+	* cni/Pty.cxx: Update to match Pty.java changes.
+	
 	* cni/Errno.hxx (throwErrno): Add noreturn attribute.
 	(tryGarbageCollect): Declare.
 	* cni/Errno.cxx (tryGarbageCollect): Define.

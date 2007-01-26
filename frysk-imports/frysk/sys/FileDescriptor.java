@@ -49,23 +49,40 @@ import java.io.IOException;
  * This object is loosely based on the Unix file-descriptor.
  */
 
-public final class FileDescriptor
+public class FileDescriptor
 {
-    final int fd;
+    protected final int fd;
     FileDescriptor (int fd)
     {
 	this.fd = fd;
     }
 
+    public int getFd ()
+    {
+	return fd;
+    }
+
     /**
-     * Read a single byte from the file descriptor.
+     * Read a single byte from the file descriptor.  Return -1 if
+     * end-of-file.
      */
-    public native byte read ();
+    public native int read ();
+
+    /**
+     * Read bytes from the file descriptor.  Return number of bytes
+     * read, or -1 of end-of-file.
+     */
+    public native int read (byte[] bytes, int off, int len);
 
     /**
      * Write a single byte to the file descriptor.
      */
-    public native void write (byte b);
+    public native void write (int b);
+
+    /**
+     * Write an entire array of bytes to the file descriptor.
+     */
+    public native void write (byte[] bytes, int off, int len);
 
     /**
      * Is there at least one character available for reading?
@@ -100,6 +117,16 @@ public final class FileDescriptor
     {
 	return new InputStream ()
 	    {
+		public void close ()
+		    throws IOException
+		{
+		    try {
+			FileDescriptor.this.close ();
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
 		public int available ()
 		    throws IOException
 		{
@@ -123,6 +150,16 @@ public final class FileDescriptor
 			throw new IOException (e.getMessage ());
 		    }
 		}
+		public int read (byte[] bytes, int off, int len)
+		    throws IOException
+		{
+		    try {
+			return FileDescriptor.this.read (bytes, off, len);
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
 	    };
     }
 
@@ -133,11 +170,31 @@ public final class FileDescriptor
     {
 	return new OutputStream ()
 	    {
+		public void close ()
+		    throws IOException
+		{
+		    try {
+			FileDescriptor.this.close ();
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
 		public void write (int b)
 		    throws IOException
 		{
 		    try {
-			FileDescriptor.this.write ((byte) b);
+			FileDescriptor.this.write (b);
+		    }
+		    catch (Errno e) {
+			throw new IOException (e.getMessage ());
+		    }
+		}
+		public void write (byte[] bytes, int off, int len)
+		    throws IOException
+		{
+		    try {
+			FileDescriptor.this.write (bytes, off, len);
 		    }
 		    catch (Errno e) {
 			throw new IOException (e.getMessage ());

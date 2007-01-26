@@ -1,3 +1,7 @@
+2007-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* ConsoleWidget.java (shutDownReader): Use pty.write method.
+
 2007-01-26  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcWiseTreeView.java: Applied GNU formatting, cleaned up.

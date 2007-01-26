@@ -70,19 +70,81 @@ public class TestFileDescriptor
     }
 
     /**
-     * Test writing of bytes.
+     * Test passing individual bytes through a pipe.
      */
-    public void testIO ()
+    public void testByteIO ()
     {
-	int values[] = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	byte[] values = "hello".getBytes ();
 	for (int i = 0; i < values.length; i++ ) {
-	    out.write ((byte) values[i]);
+	    out.write (values[i]);
 	}
 	// This is risky, could hang.
 	for (int i = 0; i < values.length; i++) {
 	    assertTrue ("ready", in.ready ());
 	    assertEquals ("value " + i, in.read (), values[i]);
 	}
+    }
+
+    /**
+     * Test passing arrays of bytes through a pipe.
+     */
+    public void testArrayIO ()
+    {
+	String hello = "hello";
+	String xxxhelloyyy = "xxxhelloyyy";
+
+	//  Simple read/write.
+	{
+	    out.write (hello.getBytes (), 0, hello.length ());
+	    // This is risky, could hang.
+	    assertTrue ("ready", in.ready ());
+	    byte[] bytesIn = new byte[100];
+	    int bytesRead = in.read (bytesIn, 0, bytesIn.length);
+	    assertEquals ("bytes transfered", hello.length (), bytesRead);
+	    assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
+	}
+
+	// Write a sub-buffer
+	{
+	    out.write (xxxhelloyyy.getBytes (), 3, hello.length ());
+	    // This is risky, could hang.
+	    assertTrue ("ready", in.ready ());
+	    byte[] bytesIn = new byte[100];
+	    int bytesRead = in.read (bytesIn, 0, bytesIn.length);
+	    assertEquals ("bytes transfered", hello.length (), bytesRead);
+	    assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
+	}
+
+	// Read a sub-buffer
+	{
+	    out.write (hello.getBytes (), 0, hello.length ());
+	    // This is risky, could hang.
+	    assertTrue ("ready", in.ready ());
+	    byte[] bytesIn = "xxxHELLOyyy".getBytes ();
+	    int bytesRead = in.read (bytesIn, 3, bytesIn.length);
+	    assertEquals ("bytes transfered", hello.length (), bytesRead);
+	    assertEquals ("contents", xxxhelloyyy, new String (bytesIn));
+	}
+    }
+
+    /**
+     * Test closing a pipe.
+     */
+    public void testByteEOF ()
+    {
+	out.close ();
+	int b = in.read ();
+	assertEquals ("eof", -1, b);
+    }
+
+    /**
+     * Test closing a pipe.
+     */
+    public void testArrayEOF ()
+    {
+	out.close ();
+	int b = in.read (new byte[10], 0, 10);
+	assertEquals ("eof", -1, b);
     }
 
     /**

@@ -40,6 +40,8 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Test manipulation of the pty stuff
@@ -47,24 +49,85 @@ import frysk.junit.TestCase;
 
 public class TestPty extends TestCase
 {
+    int pid;
+    public void tearDown ()
+    {
+	if (pid > 0) {
+	    try {
+		Signal.tkill (pid, Sig.KILL);
+	    }
+	    catch (Errno e) {
+		// toss it; don't care
+	    }
+	}
+	pid = -1;
+    }
+
     /**
-     * Check that Pty returns the right stuff
+     * Check that Pty opens successfully.
      */
-    public void testAll ()
+    public void testOpen ()
     {
 	Pty pty = new Pty();
-	final String ostr = "out string";
+	final int b = 0x3f;
 	
 	int master = pty.getFd ();
 	assertFalse ("master is invalid", master == -1);
 	String name = pty.getName ();
 	assertNotNull ("name is null", name);
-	//	System.out.println ("master = " + master);
-	//	System.out.println ("  name = " + name);
+	pty.write ((byte) b);
+    }
 
-	int rlen = pty.ptyWrite (ostr);
-	//	System.out.println ("rlen = " + rlen);
-	//	System.out.println ("olen = " + ostr.length());
-	assertTrue ("wrong write length", rlen == ostr.length());
+    /**
+     * Wait a short period of time for something to become available.
+     */
+    private void assertAvailable (InputStream in)
+	throws java.io.IOException, InterruptedException
+    {
+	int delay;
+	final int maxDelay = 100;
+	for (delay = 0; delay < maxDelay; delay++) {
+	    if (in.available () > 0)
+		break;
+	    Thread.sleep (1);
+	}
+	assertTrue ("something available before timeout", delay < maxDelay);
+    }
+
+    /**
+     * Wire a PtyDaemon up to /bin/echo, check that the expected
+     * output string is returned.
+     */
+    public void testEchoHi ()
+	throws java.io.IOException, InterruptedException
+    {
+	String hi = "hello";
+	PtyDaemon echo = new PtyDaemon (new String[] { "/bin/echo", hi });
+	pid = echo.getPid ();
+	InputStream in = echo.getInputStream ();
+	assertAvailable (in);
+	byte[] bytes = new byte[100];
+	int bytesRead  = in.read (bytes);
+	assertEquals ("read hi", new String (bytes, 0, bytesRead),
+		      hi + "\r\n");
+    }
+
+    /**
+     * Wire a PtyDaemon up to tee, which agressively copies its
+     * input-to-output, check what is fed in comes back.
+     */
+    public void testTeeHi ()
+	throws java.io.IOException, InterruptedException
+    {
+	String hi = "hello";
+	PtyDaemon tee = new PtyDaemon (new String[] { "/usr/bin/tee" });
+	pid = tee.getPid ();
+	InputStream in = tee.getInputStream ();
+	OutputStream out = tee.getOutputStream ();
+	out.write (hi.getBytes ());
+	assertAvailable (in);
+	byte[] bytes = new byte[100];
+	int bytesRead = in.read (bytes);
+	assertEquals ("read hi", new String (bytes, 0, bytesRead), hi);
     }
 }

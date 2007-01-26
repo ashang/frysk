@@ -176,11 +176,11 @@ public class ConsoleWidget extends Bin {
 		new Thread(rd).start();
     }
 
-	public void shutDownReader()
-	{
-		//send a ^C and then "quite" to jline
-		pty.ptyWrite(new String(new byte[] {3}));
-		pty.ptyWrite("quit\n");
-	}
+    public void shutDownReader()
+    {
+	//send a ^C and then "quit" to jline
+	pty.write (3);
+	byte[] quit = "quit\n".getBytes ();
+	pty.write (quit, 0, quit.length);
+    }
 }
-

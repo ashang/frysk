@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,13 +38,9 @@
 // exception.
 
 #include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <errno.h>
-#include <alloca.h>
+#include <unistd.h>
 
 #include <gcj/cni.h>
 
@@ -52,74 +48,55 @@
 #include "frysk/sys/cni/Errno.hxx"
 
 jint
-frysk::sys::Pty::openPty ()
+frysk::sys::Pty::open ()
 {
-  int rc = -1;
   int master;
 
-  if (-1 != (master = ::getpt ())) {
-    if (-1 != ::grantpt (master)) {
-      if (-1 != ::unlockpt (master)) {
-	rc = master;
-      }
-      else throwErrno (errno, "unlockpt");
-    }
-    else throwErrno (errno, "grantpt");
-    if (-1 == rc) ::close (master);
+  master = ::getpt ();
+  if (master < 0) {
+    int err = errno;
+    throwErrno (err, "getpt");
   }
-  else throwErrno (errno, "getpt");
-  return rc;
+
+  if (::grantpt (master) < 0) {
+    int err = errno;
+    ::close (master);
+    throwErrno (err, "grantpt", "fd", master);
+  }
+
+  if (::unlockpt (master) < 0) {
+    int err = errno;
+    ::close (master);
+    throwErrno (err, "grantpt", "fd", master);
+  }
+
+  return master;
 }
 
 jstring
-frysk::sys::Pty::getPtyName (jint master)
+frysk::sys::Pty::getName ()
 {
-  char * pts_name;
-  jstring name = NULL;
-
-  if (NULL != (pts_name = ptsname (master)))
-    name = JvNewStringLatin1 (pts_name, strlen (pts_name));
-  else throwErrno (errno, "ptsname");
-
-  return name;
+  char* pts_name = ::ptsname (fd);
+  if (pts_name == NULL)
+    throwErrno (errno, "ptsname");
+  return JvNewStringUTF (pts_name);
 }
 
 // sets up the pty for use with jline
 void
-frysk::sys::Pty::setUpPtyForConsole(jint master)
+frysk::sys::Pty::setUpForConsole ()
 {
-	char prefix[30] = "stty -F ";
-	char *pts_name = ptsname(master);
-	char cmd[60]; 
-	
-	if (pts_name != NULL)
-	{
-		strcat(prefix, pts_name);
-		strcpy(cmd, prefix);
-		strcat(cmd, " -icanon min 1");
-		system(cmd);
+  char *pts_name = ::ptsname (fd);
+  
+  if (pts_name == NULL)
+    throwErrno (errno, "ptsname");
 
-		strcpy(cmd, prefix);
-		strcat(cmd, " -echo");
-		system(cmd);
-	}
-	else	
-		throwErrno (errno, "ptsname");
-}
+  char *cmd;
+  asprintf (&cmd, "stty -F %s -icanon min 1", pts_name);
+  ::system(cmd);
+  free (cmd);
 
-jint
-frysk::sys::Pty::writeString (jint fd, jstring str)
-{
-  int rc;
-  if (str == NULL)
-    return 0;
-
-  int len = JvGetStringUTFLength (str);
-  char * obfr = (char *) alloca (len + 1);
-  JvGetStringUTFRegion (str, 0, str->length (), obfr);
-  obfr[len] = '\0';
-  rc = write ((int)fd, obfr, len);
-  if (-1 == rc) throwErrno (errno, "write");
-
-  return rc;
+  asprintf (&cmd, "stty -F %s -echo", pts_name);
+  ::system(cmd);
+  free (cmd);
 }
