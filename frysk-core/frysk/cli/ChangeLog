@@ -1,3 +1,11 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* hpd/CLI.java: Delete unused import lib.stdcpp.Demangler.
+	* hpd/SymTab.java: Delete unused import frysk.rt.StackFactory.
+	(complete): Removed unused variable result.
+	(what): Removed unused variable line.
+	(print): Removed unused variable intResult.
+
 2007-01-23  Stan Cox  <scox@redhat.com>
 
 	* hpd/CLI.java Delete unused import frysk.rt.StackFactory,

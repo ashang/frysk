@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -57,7 +57,6 @@ import antlr.CommonAST;
 import frysk.value.Variable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
@@ -118,7 +117,6 @@ public class SymTab
       dwfl = new Dwfl(pid);
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
-      StringBuffer result = new StringBuffer();
       String token = "";
 
       String sInput = buffer.substring(0, cursor) + '\t' + (cursor < buffer.length() 
@@ -170,7 +168,6 @@ public class SymTab
       pc = currentFrame.getAdjustedAddress();
 
       dwfl = new Dwfl(pid);
-      DwflLine line = null;
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       StringBuffer result = new StringBuffer();
@@ -266,7 +263,6 @@ public class SymTab
         treeParser = new CppTreeParser(4, 2, exprSymTab);
 
       try {
-        Integer intResult;
         result = treeParser.expr(t);
       }
       catch (ArithmeticException ae)  {
