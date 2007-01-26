@@ -1,3 +1,9 @@
+2007-01-26  Nurdin Premji  <npremji@redhat.com>
+
+	* TestStackFrame.java (testStaticDebug): Added.
+	(testStaticNoDebug): Added.
+	(testStaticStripped): Added.
+
 2007-01-25  Nurdin Premji  <npremji@redhat.com>
 
 	* StackFactory.java (generateTaskStackTrace): Moved here from:

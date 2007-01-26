@@ -146,3 +146,14 @@ frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
 	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
 
 pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
+
+frysk/pkglibdir/funit-stackframe-static-nodebug: frysk/pkglibdir/funit-stackframe-static
+	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-static-nodebug frysk/pkglibdir/funit-stackframe-static
+
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-nodebug
+
+frysk/pkglibdir/funit-stackframe-static-stripped: frysk/pkglibdir/funit-stackframe-static
+	strip -o frysk/pkglibdir/funit-stackframe-static-stripped frysk/pkglibdir/funit-stackframe-static
+
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-stripped
+

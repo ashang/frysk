@@ -53,7 +53,7 @@ public class TestStackFrame
 
   public void testDebug ()
   {
-    frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#47");
+    frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#43");
   }
   
   public void testNoDebug ()
@@ -64,6 +64,21 @@ public class TestStackFrame
   public void testStripped ()
   {
     frameTest("funit-stackframe-stripped", "0x[\\da-f]+ in \\[unknown\\]");
+  }
+  
+  public void testStaticDebug ()
+  {
+    frameTest("funit-stackframe-static", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#43");
+  }
+  
+  public void testStaticNoDebug ()
+  {
+    frameTest("funit-stackframe-static-nodebug", "0x[\\da-f]+ in foo \\(\\)");
+  }
+  
+  public void testStaticStripped ()
+  {
+    frameTest("funit-stackframe-static-stripped", "0x[\\da-f]+ in \\[unknown\\]");
   }
 
   public void frameTest (String command, final String result)

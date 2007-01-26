@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-void foo()
+__attribute__((noinline)) static void foo()
 {
  //Segfault!.
  *(int*)0 = 0; 
