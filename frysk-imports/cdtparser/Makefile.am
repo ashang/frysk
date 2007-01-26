@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2007 Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ classdir:
 	mkdir -p classdir
 	classdir=`cd classdir && pwd` ; \
 	cd $(srcdir) ; \
-	$(JAVAC) -O -g -d $$classdir @file.list
+	$(JAVAC) $(JAVACFLAGS) -O -g -d $$classdir @file.list
 
 CLEANFILES = cdtparser.jar
 clean-local:
