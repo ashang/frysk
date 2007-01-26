@@ -484,7 +484,11 @@ href="http://vektor.ca/eclipse/gcj.supp ">this website</a> in turn
 points top a website that has the "suppression file" that should be
 used with valgrind.  If the suppression file is not used, the output
 from valgrind when used on gcj-generated code is several times larger
-and contains useless information.</dd>
+and contains useless information.***NOTE*** The suppression file in
+the last link assumes libgcj.so.6.0.0 is being used.  If that file
+is to be used with the current version of libgcj all occurrences of
+"libgcj.so.6.0.0" must be changed to "libgcj.so.7.0.0" or else no
+suppression will take place.</dd>
 
 </dl>
               <!-- end text -->
