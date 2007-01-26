@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.gnu.glib.Handle;
@@ -48,75 +49,64 @@ import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
+public class ProcWiseTreeView
+    extends TreeView
+{
 
-public class ProcWiseTreeView extends TreeView {
-	
+  public ProcWiseDataModel psDataModel;
 
-	public ProcWiseDataModel psDataModel;
-	private TreeModelFilter removedProcFilter;
+  private TreeModelFilter removedProcFilter;
 
-	public ProcWiseTreeView(Handle handle, ProcWiseDataModel model){
-		super(handle);
-		this.mountDataModel(model);
-		this.psDataModel = model;
-	}
-	
-	
-	private void mountDataModel(final ProcWiseDataModel dataModel){
-		//this.setModel(dataModel.getModel());
-		
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn nameCol = new TreeViewColumn();
-		nameCol.packStart(cellRendererText, false);
-		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , dataModel.getNameDC());
-//		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.STRIKETHROUGH, dataModel.getSensitiveDC());
-		this.appendColumn(nameCol);
-		
-		this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
-		
-		removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
+  public ProcWiseTreeView (Handle handle, ProcWiseDataModel model)
+  {
+    super(handle);
+    this.mountDataModel(model);
+    this.psDataModel = model;
+  }
 
-			public boolean filter(TreeModel model, TreeIter iter) {
+  private void mountDataModel (final ProcWiseDataModel dataModel)
+  {
+    // this.setModel(dataModel.getModel());
 
-				//FIXME: this should be changed to set the row to insensitive
-				// instead of completely filtering it out. Once the java-gnome
-				// patch for doing so is in FC
-				if(model.getValue(iter, psDataModel.getSensitiveDC()) == false){
-					return false;	
-				}
-				
-				if(model.getValue(iter, psDataModel.getSelectedDC()) == false){
-					return true;
-				}else{
-					return false;
-				}
-			}
-			
-		});
+    CellRendererText cellRendererText = new CellRendererText();
+    TreeViewColumn nameCol = new TreeViewColumn();
+    nameCol.packStart(cellRendererText, false);
+    nameCol.addAttributeMapping(cellRendererText,
+                                CellRendererText.Attribute.TEXT,
+                                dataModel.getNameDC());
+    // nameCol.addAttributeMapping(cellRendererText,
+    // CellRendererText.Attribute.STRIKETHROUGH, dataModel.getSensitiveDC());
+    this.appendColumn(nameCol);
 
-		
-		this.setModel(removedProcFilter);
+    this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
 
-//		this.getSelection().addListener(new TreeSelectionListener() {
-//			public void selectionChangedEvent(TreeSelectionEvent event) {
-//				System.out.println(this + ": .selectionChangedEvent() dataModel " + dataModel);
-//				System.out.println(this + ": .selectionChangedEvent() dataModel.getModel() " + dataModel.getModel());
-//				System.out.println(this + ": .selectionChangedEvent() selected rows[0] " + getSelection().getSelectedRows()[0]);
-//				TreeIter iter = getModel().getIter(getSelection().getSelectedRows()[0]);
-//				System.out.println(this + ": .selectionChangedEvent() iter " + iter);
-//
-//				iter = dataModel.getModel().getIter(removedProcFilter.convertPathToChildPath(iter.getPath()));
-//				System.out.println(this + ": .selectionChangedEvent() iter " + iter);
-//
-//				
-//				System.out.println("\n===========================================");
-//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() object: " + dataModel.getModel().getValue(iter, dataModel.getObjectDC()));
-//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() name: " + dataModel.getModel().getValue(iter, dataModel.getNameDC()));
-//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() selected: " + dataModel.getModel().getValue(iter, dataModel.getSelectedDC()));
-//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() sensitive: " + dataModel.getModel().getValue(iter, dataModel.getSensitiveDC()));
-//				System.out.println("===========================================\n");
-//			}
-//		});
-	}
-	
+    removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
+    {
+
+      public boolean filter (TreeModel model, TreeIter iter)
+      {
+
+        // FIXME: this should be changed to set the row to insensitive
+        // instead of completely filtering it out. Once the java-gnome
+        // patch for doing so is in FC
+        if (model.getValue(iter, psDataModel.getSensitiveDC()) == false)
+          {
+            return false;
+          }
+
+        if (model.getValue(iter, psDataModel.getSelectedDC()) == false)
+          {
+            return true;
+          }
+        else
+          {
+            return false;
+          }
+      }
+
+    });
+
+    this.setModel(removedProcFilter);
+  }
+
 }
