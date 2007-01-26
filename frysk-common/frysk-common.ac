@@ -87,6 +87,18 @@ AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
 JAVAC="${JAVAC:-$GCJ -C}"
 AC_SUBST([JAVAC])
 
+# autoconf doesn't yet know about JAVA, so define it ourselves.
+m4_define([AC_LANG(JAVA)],
+[ac_ext=java
+ac_objext=class
+ac_compile='$JAVAC $JAVACFLAGS conftest.$ac_ext >&AS_MESSAGE_LOG_FD'
+ac_java_werror_flag=no
+])
+m4_defun([AC_LANG_COMPILER(JAVA)], [])
+m4_define([_AC_LANG_ABBREV(JAVA)], [java])
+
+AC_LANG(JAVA)
+
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
 case "${JAVAC}" in
@@ -94,6 +106,13 @@ gcj* | */gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
 ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 * ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 esac
+# See if -fsource=1.4 can be added, if not only use the warning flags.
+# If it is available also use it for the GCJFLAGS.
+JAVACFLAGS_WARN=$JAVACFLAGS
+JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
+AC_COMPILE_IFELSE([public class conftest{}],
+	[GCJFLAGS="$GCJFLAGS -fsource=1.4"],
+	[JAVACFLAGS=$JAVACFLAGS_WARN])
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 

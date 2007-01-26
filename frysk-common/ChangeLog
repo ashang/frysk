@@ -1,3 +1,9 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* common/frysk-common.ac (AC_LANG(JAVA)): Add to make autoconf
+	tests possible.
+	(JAVACFLAGS): See if -fsource=1.4 is available.
+
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (echo_PROGRAMS, has_main): For .javain files,
