@@ -51,7 +51,7 @@ classdir:
 	mkdir -p tmpdir
 	classdir=`cd tmpdir && pwd` ; \
 	cd $(srcdir)/src ; \
-	$(JAVAC) -O -g -d $$classdir @../file.list
+	$(JAVAC) $(JAVACFLAGS) -O -g -d $$classdir @../file.list
 	mv tmpdir classdir
 
 CLEANFILES = junit.jar
