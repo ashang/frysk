@@ -9,6 +9,6 @@ EXTRA_DIST= $(getoptsrc)/*.java \
 CLEANFILES = getopt.jar gnu/classpath/tools/getopt/*
 
 getopt.jar: $(getoptsrc)/*.java
-	$(JAVAC) -g -d . $(getoptsrc)/*.java
+	$(JAVAC) $(JAVACFLAGS) -g -d . $(getoptsrc)/*.java
 	cp $(getoptsrc)/*.properties ./gnu/classpath/tools/getopt
 	$(JAR) cf getopt.jar gnu/classpath/tools/getopt/*

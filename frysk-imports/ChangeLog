@@ -1,3 +1,7 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* getopt/Makefile.am (getopt.jar): Pass JAVACFLAGS to JAVAC.
+
 2007-01-23  Mark Wielaard  <mark@klomp.org>
 
 	* include/linux.syscall.h: Define MAX_ERRNO if not yet defined.
