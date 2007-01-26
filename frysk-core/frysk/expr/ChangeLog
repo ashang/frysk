@@ -1,3 +1,10 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* RunCppTreeParser.java (rctpsymTab): Mark as static class. Don't
+	mark variable symTab as static.
+	* cpp.g: Call all static newXVariable() methods through class type.
+	(sInputExpression): Uncomment because unused.
+
 2006-12-20  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (expr): Add NameNotFoundException.

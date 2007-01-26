@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ header
 {
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -103,13 +103,13 @@ options {
   */
     private boolean bTabPressed;
     private int assign_stmt_RHS_found;
-    private String sInputExpression;
+    //private String sInputExpression;
 
     protected CppParser(TokenStream lexer, String sInput)
     {
         this(lexer);
         bTabPressed = false;
-        sInputExpression = sInput;
+        //sInputExpression = sInput;
     }
 }
 
@@ -868,23 +868,23 @@ NameNotFoundException
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
-	      returnVar = longType.newLongVariable(longType, "0", (long)0);
+	      returnVar = LongType.newLongVariable(longType, "0", (long)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("int") == 0) {
-	      returnVar = intType.newIntegerVariable(intType, "0", (int)0);
+	      returnVar = IntegerType.newIntegerVariable(intType, "0", (int)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("short") == 0) {
-	      returnVar = shortType.newShortVariable(shortType, "0", (short)0);
+	      returnVar = ShortType.newShortVariable(shortType, "0", (short)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("double") == 0) {
-	      returnVar = doubleType.newDoubleVariable(doubleType, "0", (double)0);
+	      returnVar = DoubleType.newDoubleVariable(doubleType, "0", (double)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("float") == 0) {
-	      returnVar = floatType.newFloatVariable(floatType, "0", (float)0);
+	      returnVar = FloatType.newFloatVariable(floatType, "0", (float)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else returnVar = v2;

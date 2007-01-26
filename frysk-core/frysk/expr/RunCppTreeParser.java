@@ -57,9 +57,9 @@
       }
     }
 
-    class rctpsymTab implements CppSymTab
+    static class rctpsymTab implements CppSymTab
     {
-      static final Map symTab = new HashMap();
+      final Map symTab = new HashMap();
       public void put(String s, Variable v)
       { symTab.put(s, v);}
       public Variable get(String s)
