@@ -70,4 +70,25 @@ public class Pty
      * Returns an open master fd for a pty.
      */
     private static native int open ();
+
+
+    /**
+     * Convenience method, adds a child process bound to this pty.
+     */
+    public int addChild (String[] args)
+    {
+	// setUpForConsole ();
+	String name = getName ();
+	return Fork.exec (name, name, name, args);
+    }
+
+    /**
+     * Convenience method, adds a daemon process bound to this pty.
+     */
+    public int addDaemon (String[] args)
+    {
+	// setUpForConsole ();
+	String name = getName ();
+	return Fork.daemon (name, name, name, args);
+    }
 }

@@ -50,6 +50,10 @@ import java.io.OutputStream;
 public class TestPty extends TestCase
 {
     int pid;
+    public void setUp ()
+    {
+	pid = -1;
+    }
     public void tearDown ()
     {
 	if (pid > 0) {
@@ -60,7 +64,6 @@ public class TestPty extends TestCase
 		// toss it; don't care
 	    }
 	}
-	pid = -1;
     }
 
     /**
@@ -94,16 +97,22 @@ public class TestPty extends TestCase
 	assertTrue ("something available before timeout", delay < maxDelay);
     }
 
+    private Pty getPtyDaemon (String[] args)
+    {
+	Pty pty = new Pty ();
+	pid = pty.addDaemon (args);
+	return pty;
+    }
+
     /**
-     * Wire a PtyDaemon up to /bin/echo, check that the expected
-     * output string is returned.
+     * Wire a Pty up to /bin/echo, check that the expected output
+     * string is returned.
      */
     public void testEchoHi ()
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	PtyDaemon echo = new PtyDaemon (new String[] { "/bin/echo", hi });
-	pid = echo.getPid ();
+	Pty echo = getPtyDaemon (new String[] { "/bin/echo", hi });
 	InputStream in = echo.getInputStream ();
 	assertAvailable (in);
 	byte[] bytes = new byte[100];
@@ -113,15 +122,14 @@ public class TestPty extends TestCase
     }
 
     /**
-     * Wire a PtyDaemon up to tee, which agressively copies its
+     * Wire a Pty up to tee, which agressively copies its
      * input-to-output, check what is fed in comes back.
      */
     public void testTeeHi ()
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	PtyDaemon tee = new PtyDaemon (new String[] { "/usr/bin/tee" });
-	pid = tee.getPid ();
+	Pty tee = getPtyDaemon (new String[] { "/usr/bin/tee" });
 	InputStream in = tee.getInputStream ();
 	OutputStream out = tee.getOutputStream ();
 	out.write (hi.getBytes ());
