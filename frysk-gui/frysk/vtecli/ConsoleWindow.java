@@ -47,7 +47,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
 import java.io.*;
-import frysk.sys.Pty;
+import frysk.sys.PseudoTerminal;
 import frysk.cli.hpd.CLI;
 import jline.ConsoleReader;
 import jline.PtyTerminal;
@@ -162,7 +162,7 @@ public class ConsoleWindow
     String[] cmdargs = new String[1];
     cmdargs[0] = "-1";
 
-    Pty pty = new Pty();
+    PseudoTerminal pty = new PseudoTerminal ();
 
     int master = pty.getFd();
     String name = pty.getName();

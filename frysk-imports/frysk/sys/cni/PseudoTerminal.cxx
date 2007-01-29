@@ -44,11 +44,11 @@
 
 #include <gcj/cni.h>
 
-#include "frysk/sys/Pty.h"
+#include "frysk/sys/PseudoTerminal.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 jint
-frysk::sys::Pty::open ()
+frysk::sys::PseudoTerminal::open ()
 {
   int master;
 
@@ -74,7 +74,7 @@ frysk::sys::Pty::open ()
 }
 
 jstring
-frysk::sys::Pty::getName ()
+frysk::sys::PseudoTerminal::getName ()
 {
   char* pts_name = ::ptsname (fd);
   if (pts_name == NULL)
@@ -84,7 +84,7 @@ frysk::sys::Pty::getName ()
 
 // sets up the pty for use with jline
 void
-frysk::sys::Pty::setUpForConsole ()
+frysk::sys::PseudoTerminal::setUpForConsole ()
 {
   char *pts_name = ::ptsname (fd);
   

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,16 +44,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Test manipulation of the pty stuff
+ * Test manipulation of the pseudo-terminal stuff.
  */
 
-public class TestPty extends TestCase
+public class TestPseudoTerminal extends TestCase
 {
+    /**
+     * Some tests have a child process, keep it in this PID.
+     */
     int pid;
+
+    /**
+     * During setup, clear the daemon process.
+     */
     public void setUp ()
     {
 	pid = -1;
     }
+    /**
+     * During teardown, kill any daemon process, if present.
+     */
     public void tearDown ()
     {
 	if (pid > 0) {
@@ -67,11 +77,11 @@ public class TestPty extends TestCase
     }
 
     /**
-     * Check that Pty opens successfully.
+     * Check that a PseudoTerminal opens successfully.
      */
     public void testOpen ()
     {
-	Pty pty = new Pty();
+	PseudoTerminal pty = new PseudoTerminal();
 	final int b = 0x3f;
 	
 	int master = pty.getFd ();
@@ -97,22 +107,25 @@ public class TestPty extends TestCase
 	assertTrue ("something available before timeout", delay < maxDelay);
     }
 
-    private Pty getPtyDaemon (String[] args)
+    /**
+     * Create a pseudo-terminal with an attached daemon process.
+     */
+    private PseudoTerminal getPseudoTerminalDaemon (String[] args)
     {
-	Pty pty = new Pty ();
+	PseudoTerminal pty = new PseudoTerminal ();
 	pid = pty.addDaemon (args);
 	return pty;
     }
 
     /**
-     * Wire a Pty up to /bin/echo, check that the expected output
-     * string is returned.
+     * Wire a PseudoTerminal up to /bin/echo, check that the expected
+     * output string is returned.
      */
     public void testEchoHi ()
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	Pty echo = getPtyDaemon (new String[] { "/bin/echo", hi });
+	PseudoTerminal echo = getPseudoTerminalDaemon (new String[] { "/bin/echo", hi });
 	InputStream in = echo.getInputStream ();
 	assertAvailable (in);
 	byte[] bytes = new byte[100];
@@ -122,14 +135,14 @@ public class TestPty extends TestCase
     }
 
     /**
-     * Wire a Pty up to tee, which agressively copies its
+     * Wire a PseudoTerminal up to tee, which agressively copies its
      * input-to-output, check what is fed in comes back.
      */
     public void testTeeHi ()
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	Pty tee = getPtyDaemon (new String[] { "/usr/bin/tee" });
+	PseudoTerminal tee = getPseudoTerminalDaemon (new String[] { "/usr/bin/tee" });
 	InputStream in = tee.getInputStream ();
 	OutputStream out = tee.getOutputStream ();
 	out.write (hi.getBytes ());

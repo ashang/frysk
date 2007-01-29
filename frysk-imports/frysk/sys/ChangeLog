@@ -1,5 +1,9 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/PseudoTerminal.cxx: Rename cni/Pty.cxx.
+	* PseudoTerminal.java: Rename Pty.java.
+	* TestPseudoTerminal.java: Rename TestPty.java.
+
 	* TestPty.java (setUp): Add.
 	(tearDown): No need to clear pid.
 	(getPtyDaemon): Add.

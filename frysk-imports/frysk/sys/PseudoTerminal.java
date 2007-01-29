@@ -43,13 +43,13 @@ package frysk.sys;
  * Open a pty
  */
 
-public class Pty
+public class PseudoTerminal
     extends FileDescriptor
 {
     /**
-     * Open a pty not wired to anything.
+     * Open a pseudo-terminal, a.k.a. pty, not wired to anything.
      */
-    public Pty ()
+    public PseudoTerminal ()
     {
 	super (open ());
     }
@@ -60,20 +60,21 @@ public class Pty
     public native String getName();
 
     /**
-     * Set pty parameters to set up for use in jline.
+     * Set pseudo-terminal parameters to set up for use in jline.
      *
      * XXX: This uses system() which is dangerous.
      */
     public native void setUpForConsole();
 
     /**
-     * Returns an open master fd for a pty.
+     * Returns an open master fd for a pseudo-terminal.
      */
     private static native int open ();
 
 
     /**
-     * Convenience method, adds a child process bound to this pty.
+     * Convenience method, adds a child process bound to this
+     * pseudo-terminal.
      */
     public int addChild (String[] args)
     {
@@ -83,7 +84,8 @@ public class Pty
     }
 
     /**
-     * Convenience method, adds a daemon process bound to this pty.
+     * Convenience method, adds a daemon process bound to this
+     * pseudo-terminal.
      */
     public int addDaemon (String[] args)
     {

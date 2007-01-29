@@ -44,7 +44,7 @@ import org.gnu.glib.Handle;
 import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
 import java.io.*;
-import frysk.sys.Pty;
+import frysk.sys.PseudoTerminal;
 import frysk.cli.hpd.CLI;
 import jline.ConsoleReader;
 import jline.PtyTerminal;
@@ -52,7 +52,7 @@ import jline.PtyTerminal;
 public class ConsoleWidget extends Bin {
     private Terminal term;
 	private reader rd;
-	private Pty pty;
+	private PseudoTerminal pty;
 	
 	private class reader implements Runnable
 	{
@@ -152,7 +152,7 @@ public class ConsoleWidget extends Bin {
 		String[] cmdargs = new String[1];
 		cmdargs[0] = "-1";
 
-		pty = new Pty();
+		pty = new PseudoTerminal ();
 		pty.setUpForConsole();
 		
 		int master = pty.getFd ();

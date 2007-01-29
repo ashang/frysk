@@ -1,3 +1,8 @@
+2007-01-29  Andrew Cagney  <cagney@redhat.com>
+
+	* ConsoleWindow.java: Update, frysk.sys.Pty renamed to
+	frysk.sys.PseudoTerminal.
+
 2006-09-15  Mike Cvet  <mcvet@redhat.com>
 
 	* ConsoleWindow.java: Applied GNU formatting. Added as a menu item

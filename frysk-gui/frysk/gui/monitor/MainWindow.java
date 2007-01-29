@@ -55,7 +55,7 @@ import frysk.gui.Gui;
 import frysk.gui.sessions.Session;
 
 import frysk.proc.*;
-import frysk.sys.Pty;
+import frysk.sys.PseudoTerminal;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 
@@ -133,7 +133,7 @@ public class MainWindow extends Window implements Saveable{
   	
   	public void buildTerminal()
   	{
-		Pty pty = new Pty();
+		PseudoTerminal pty = new PseudoTerminal ();
 		String name = pty.getName();
 	  	final Terminal term = new Terminal();
 		
