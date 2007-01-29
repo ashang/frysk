@@ -1,3 +1,7 @@
+2007-01-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Moved frysk/gui/common/prefs/ to frysk/gui/prefs/.
+
 2007-01-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* FryskHelpManager.java: Get docs directory from proper place.
@@ -17,12 +21,6 @@
 	* FryskHelpManager.javain: New improved configuration-aware.
 	* FryskHelpManager.java: Changed to above.
 
-2006-12-16  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/BooleanPreference.java (listeners): Is now a LinkedList.
-	* prefs/ColorPreference.java (listeners): Ditto.
-	* prefs/IntPreference.java (listeners): Ditto.
-
 2006-12-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Messages.java: Remove TODO comment, TODONE.
@@ -33,14 +31,6 @@
 	* Util.java: Ditto.
 
 	* FryskIconSet.java: Add copyright.
-	* prefs/PreferenceManager.java: Ditto.
-	* prefs/IntPreference.java: Ditto.
-	* prefs/BooleanPreference.java: Ditto.
-	* prefs/PreferenceEditor.java: Ditto.
-	* prefs/PreferenceGroup.java: Ditto.
-	* prefs/PreferenceWindow.java: Ditto.
-	* prefs/FryskPreference.java: Ditto.
-	* prefs/ColorPreference.java: Ditto.
 	* IconManager.java: Ditto.
 
 2006-11-20  Mike Cvet  <mcvet@redhat.com>
@@ -104,11 +94,6 @@
 	* Util.java: New class.
 	(getNumberSuffix): Moved here from SessionManagerGui.
 
-2006-07-18  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceManager.java: Now statically adds the default preference
-	groups to the manager.
-
 2006-07-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* IconManager.java (loadIcons): Removed System.exit(1).	
@@ -118,11 +103,6 @@
 
 	* UBigInteger.java : New class for manipulating unsigned BigInteger
 	values.
-
-2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceManager.java: Added GNU formatting.
-	(getPrefs): Added.
 
 2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
 
@@ -139,139 +119,6 @@
 	* dialogs/ErrorDialog.java (doImplementation): Use TextView instead of 
 	Label (to fix odd focus issues that randomly occur on selecting text).
 	Add Continue button to choice.
-
-2006-03-28  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferencWindow.java (attachEvents): Added events for template
-	syntax highlighting.
-
-2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceWindow.java (attachEvents): Adds events for macro
-	syntax highlighting.
-
-	* prefs/PreferenceWindow.java (attachEvents): Adds events for namespace
-	and include statement highlighting.
-
-2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceWindow.java (attachEvents): Now adds events for
-	comment syntax highlighting.
-
-2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceGroup.java (PreferenceGroup): Now takes the
-	number corresponding to the tab number in the glade file.
-	(save): Also saves subgroups.
-	(load): Also loads subgroups.
-	(revertAll): Also reverts subgroups.
-	(addSubgroup): Added.
-	(getSubgroups): Ditto.
-	(removeSubgroup): Ditto.
-	(getTabNum): Ditto.
-	* prefs/PreferenceManager.java: Added tab numbers to preference groups.
-	* prefs/PreferenceWindow.java (attachEvents): Added.
-	(addGroup): Added.
-	(initColorPreference): Added.
-	(initSyntaxPreference): Added.
-	(selectionChangedEvent): Now sets current notebook tab based on
-	selected preference.
-	(BoolListener): Added.
-	(IntListener): Added.
-	(ColorListener): Added.
-	(SynPrefListener): Added.
-
-2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceWindow.java (PreferenceWindow): Title of window
-	set to "Preferences" and icon set to the Frysk logo.
-
-	* prefs/PreferenceEditor.java (setPreference): Now correctly sets
-	the value of the editor (spinner, colorbutton, etc) to reflect the
-	current value of the preference.
-
-2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceEditor.java (PreferenceEditor): Added showAll().
-	(setPreference): Removed call to showAll().
-	* prefs/PreferenceWindow.java (selectionChangedEvent): Now adds the
-	PreferenceEditors to a SizeGroup and no longer adds them with expand
-	set to true.
-
-	* prefs/PreferenceGroup.java (revertAll): Added.
-	* prefs/PreferenceManager.java (revertAll): Added.
-	* prefs/PreferenceWindow.java (PreferenceWindow): Adds self as listener
-	to apply, cancel buttons.
-	(buttonEvent): Added.
-
-	* prefs/BooleanPreference.java: Added comments.
-	* prefs/ColorPreference.java: Ditto.
-	* prefs/FryskPreference.java: Ditto.
-	* prefs/IntPreference.java: Ditto.
-	* prefs/PreferenceEditor.java: Ditto.
-	* prefs/PreferenceGroup.java: Ditto.
-	* prefs/PreferenceManager.java: Ditto.
-	* prefs/PreferenceWindow.java: Ditto.
-
-2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/BooleanPreference.java: Removed constants.
-	(BooleanPreferenceListener): Added.
-	(getDefaultValue): Removed.
-	(BooleanPreference): Only constructor now takes a string, not an int,
-	as well as a default value.
-	(save): Now fires off events to listeners of this preference.
-	(addListener): Added.
-	(revert): Added.
-	* prefs/ColorPreference.java: Removed constants.
-	(ColorPreferenceListener): Added.
-	(getDefaultValue): Removed.
-	(ColorPreference): Now takes a string and a default color to use.
-	(save): Now fires off events to listeners.
-	(addListener): Added.
-	(revert): Added.
-	* prefs/FryskPreference.java (revert): Added.
-	* prefs/IntPreference.java: Removed constants/
-	(IntPreferenceListener): Added.
-	(getDefaultValue): Removed.
-	(IntPreference): Now takes a string, a default value to use, and a
-	max and min value for the preference.
-	(save): Now fires events to listeners.
-	(addListener): Added.
-	(revert): Added.
-	(getMinValue): Added.
-	(getMaxValue): Added.
-	* prefs/PreferenceEditor.java: Added.
-	* prefs/PreferenceGroup.java: Changed internal storage method to a
-	HashMap from a Vector.
-	(getPreference): Added.
-	(contains): Added.
-	* prefs/PreferenceManager.java (sourceWinGroup): Added.
-	(syntaxHighlightingGroup): Added.
-	(addPreference): Removed.
-	(getBooleanPreference): Removed.
-	(getBooleanPreferenceValue): Removed.
-	(getColorPreferenceValue): Removed.
-	(getColorPreference): Removed.
-	(getSyntaxPreference): Removed.
-	(getIntPreferenceValue): Removed.
-	(getIntPreference): Removed.
-	(setPreferenceModel): Added.
-	(addPreferenceGroup): Added.
-	(getPreferenceGroups): Added.
-	(saveAll): Added.
-	* prefs/PreferenceWindow.java: Added.
-
-2006-02-23  Adam Jocksch  <ajocksch@redhat.com>
-
-	* prefs/PreferenceGroup.java: Added.
-
-	* prefs: Added.
-	* prefs/FryskPreference.java: Moved from frysk.gui.srcwin.prefs.
-	* prefs/IntPreference.java: Ditto.
-	* prefs/BooleanPreference.java: Ditto.
-	* prefs/ColorPreference.java: Ditto.
-	* prefs/PreferenceManager.java: Ditto.
 
 2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
 

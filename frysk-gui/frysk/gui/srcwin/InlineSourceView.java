@@ -55,8 +55,8 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
-import frysk.gui.common.prefs.IntPreference;
-import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.prefs.IntPreference;
+import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;

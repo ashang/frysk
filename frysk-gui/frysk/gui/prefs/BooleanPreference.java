@@ -37,98 +37,90 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.common.prefs;
+package frysk.gui.prefs;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.prefs.Preferences;
 
-import org.gnu.gdk.Color;
-
 /**
- * ColorPreference models a color-values preference for Frysk
- * 
+ * BoleanPreference models a boolean-valued preference within Frysk
+ *
  */
-public class ColorPreference extends FryskPreference {
+public class BooleanPreference extends FryskPreference {
 
-	public interface ColorPreferenceListener{
-		void preferenceChanged(String prefName, Color newColor);
+	public interface BooleanPreferenceListener{
+		void preferenceChanged(String prefName, boolean newValue);
 	}
 
-    protected Color currentColor;
-	protected Color fallback;
+    protected boolean value;
+	protected boolean fallback;
 	
 	protected LinkedList listeners;
 	
 	/**
-	 * Creates a new ColorPreference
+	 * Creates a new BooleanPreference
 	 * @param name The name of the preference
-	 * @param fallback The default color to use
+	 * @param fallback The default value of the preference
 	 */
-	public ColorPreference(String name, Color fallback) {
+	public BooleanPreference(String name, boolean fallback) {
 		this.name = name;
 		this.fallback = fallback;
 		this.listeners = new LinkedList();
 	}
-	
-	/**
-	 * Sets the current color for this preference. Note that this is
-	 * not saved into the model until {@see #save(Preferences)} is called.
-	 * @param currentColor The new color
-	 */
-	public void setCurrentColor(Color currentColor) {
-		this.currentColor = currentColor;
-	}
 
 	/**
 	 * 
-	 * @return The current value of this preference
+	 * @return The current value of the preference
 	 */
-	public Color getCurrentColor() {
-		return this.currentColor;
+	public boolean getCurrentValue() {
+		return this.value;
 	}
 
 	/**
-	 * Saves the value of this preference into the preference model and
-	 * notify all attached listeners
+	 * Sets the value of the preference. Note that this is not saved
+	 * in the preferences model permanently until {@see #save(Preferences)}
+	 * is called.
+	 * @param val The new value
+	 */
+	public void setCurrentValue(boolean val) {
+		value = val;
+	}
+
+	/**
+	 * Saves the value into the model and notifies the attached
+	 * listeners.
 	 */
 	public void save(Preferences prefs) {
-		this.model.putInt(name + "_R", this.currentColor.getRed());
-		this.model.putInt(name + "_G", this.currentColor.getGreen());
-		this.model.putInt(name + "_B", this.currentColor.getBlue());
+		this.model.putBoolean(name, value);
 		
 		Iterator it = this.listeners.iterator();
 		while(it.hasNext())
-			((ColorPreferenceListener) it.next()).preferenceChanged(this.name, this.currentColor);
+			((BooleanPreferenceListener) it.next()).preferenceChanged(this.name, this.value);
 	}
 
 	/**
-	 * Sets the preference to use the provided model and loads the values from
-	 * it.
+	 * Sets the preference to use the provided model and loads the value from it
 	 */
 	public void load(Preferences prefs) {
 		this.model = prefs;
-		
 		this.revert();
 	}
-
+	
 	/**
-	 * Adds a listener to this preference that will get notified whenever
-	 * the value of this preference changes
-	 * @param listener The object to notify when the preference changes.
+	 * Adds a listener that will be notified whenever the value
+	 * of the preference is changed
+	 * @param listener The object to notify
 	 */
-	public void addListener(ColorPreferenceListener listener){
+	public void addListener(BooleanPreferenceListener listener){
 		this.listeners.add(listener);
-		listener.preferenceChanged(this.name, this.currentColor);
+		listener.preferenceChanged(this.name, this.value);
 	}
 
 	/**
-	 * Restores the current value of this preference from the model.
+	 * Restores the preference from the value in the model.
 	 */
 	public void revert() {
-		int r = model.getInt(name + "_R", fallback.getRed());
-		int g = model.getInt(name + "_G", fallback.getGreen());
-		int b = model.getInt(name + "_B", fallback.getBlue());
-		this.currentColor = new Color(r, g, b);
+		this.value = this.model.getBoolean(name, this.fallback);
 	}
 }

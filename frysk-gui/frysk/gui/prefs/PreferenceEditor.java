@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.common.prefs;
+package frysk.gui.prefs;
 
 import org.gnu.gtk.Alignment;
 import org.gnu.gtk.CheckButton;

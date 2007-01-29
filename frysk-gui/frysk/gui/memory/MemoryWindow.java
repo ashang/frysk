@@ -73,7 +73,7 @@ import org.gnu.gtk.event.SpinEvent;
 import org.gnu.gtk.event.SpinListener;
 
 import frysk.gui.common.IconManager;
-import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;

@@ -72,7 +72,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.common.UBigInteger;
-import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Proc;

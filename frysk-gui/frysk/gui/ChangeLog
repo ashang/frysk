@@ -1,3 +1,11 @@
+2007-01-29  Andrew Cagney  <cagney@redhat.com>
+
+	* register/RegisterWindow.java: Update, frysk.gui.common.prefs
+	moved to frysk.gui.prefs.
+	* memory/MemoryWindow.java: Ditto.
+	* disassembler/DisassemblyWindow.java: Ditto.
+	* Gui.java: Ditto.
+
 2007-01-25  Mike Cvet  <mcvet@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java: Applied GNU formatting.

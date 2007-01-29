@@ -39,7 +39,7 @@
 
 package frysk.gui.srcwin.prefs;
 
-import frysk.gui.common.prefs.PreferenceGroup;
+import frysk.gui.prefs.PreferenceGroup;
 
 public class SourceWinPreferenceGroup extends PreferenceGroup {
 

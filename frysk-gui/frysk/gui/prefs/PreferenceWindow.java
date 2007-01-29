@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.common.prefs;
+package frysk.gui.prefs;
 
 import java.util.Iterator;
 
@@ -80,12 +80,13 @@ import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 
 /**
- * The PreferenceWindow allows the user to display and edit
- * any of the preferences in any of the groups registered with 
- * the preference manager. The list of preferences is constructed
- * dynamically so in order for a preference to be visible here all
- * that needs to be done is add that Preference to a {@see frysk.gui.common.prefs.PreferenceGroup}
- * and then add that group to the {@see frysk.gui.common.prefs.PreferenceManager}.
+ * The PreferenceWindow allows the user to display and edit any of the
+ * preferences in any of the groups registered with the preference
+ * manager. The list of preferences is constructed dynamically so in
+ * order for a preference to be visible here all that needs to be done
+ * is add that Preference to a {@see frysk.gui.prefs.PreferenceGroup}
+ * and then add that group to the {@see
+ * frysk.gui.prefs.PreferenceManager}.
  *
  */
 public class PreferenceWindow extends Window implements TreeSelectionListener, ButtonListener{

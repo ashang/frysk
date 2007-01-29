@@ -47,7 +47,7 @@ import org.gnu.gdk.Color;
 import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
-import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.prefs.ColorPreference;
 
 public class SyntaxPreference extends ColorPreference {
 
