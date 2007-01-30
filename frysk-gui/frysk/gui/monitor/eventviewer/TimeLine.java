@@ -41,58 +41,67 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
+import org.gnu.atk.Role;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
-import org.gnu.gtk.DrawingArea;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 
+import com.redhat.ftk.CustomAtkObject;
+import com.redhat.ftk.CustomDrawingArea;
+
 public abstract class TimeLine
-    extends DrawingArea implements ExposeListener
+    extends CustomDrawingArea implements ExposeListener
 {
+  LinkedList eventBuffer;
   
   static int eventIndentation = 0;
   static int eventSpacing = 30;
   
-  protected int startIndex;
-//  protected int endIndex;
   String label;
+  
   
   public TimeLine(String label){
     super();
-    this.getAccessible().setName(label+"TimeLine");
+  
+    CustomAtkObject atkObject = new CustomAtkObject(this);
+    
+    atkObject.setName(label+"TimeLine");
+    atkObject.setDescription("TimeLine");
+    
+    this.setAcessible(atkObject);
+    
     this.label = label;
     
-  this.addListener((ExposeListener)this);
-//  this.addListener((MouseMotionListener)this);
-//  this.addListener((MouseListener) this);
+    this.addListener((ExposeListener)this);
   
-  this.setEvents(EventMask.ALL_EVENTS_MASK);
-    
-//    if(name.length() > eventIndentation/characterSize - 5){
-//      eventIndentation = name.length() * characterSize + 5;
-//    }
-    
-    this.setDrawPeriod(0, 10);
+    this.setEvents(EventMask.ALL_EVENTS_MASK);
+        
     this.setMinimumSize(0 , 20);
     
-//    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
-//    {
-//      public void update (Observable observable, Object object)
-//      {
-//        Event event = (Event)object;
-//        Registry registry = new Registry();
-//        ObjectFactory factory = registry.getFactory(Type.OBJECT());
-//        AtkObject atkObject = factory.createAccessible(new GObject(Type.OBJECT()));
-//        
-//        atkObject.setName(event.getName());
-//        atkObject.setParent(TimeLine.this.getAccessible());
-//        atkObject.addRelationship(RelationType.EMBEDS, atkObject);
-//      }
-//    });
+    this.eventBuffer = new LinkedList();
+    
+    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        Event event = (Event)object;
+        eventBuffer.add(event);
+        
+        CustomAtkObject customAtkObject = new CustomAtkObject(TimeLine.this);
+        customAtkObject.setName(event.getName());
+        customAtkObject.setRole(Role.UNKNOWN);
+        
+        ((CustomAtkObject)TimeLine.this.getAccessible()).addChild(customAtkObject);
+        TimeLine.this.draw();
+      }
+    });
     
   }
   
@@ -104,23 +113,15 @@ public abstract class TimeLine
     
     int x = exposeEvent.getArea().getX();
     int y = exposeEvent.getArea().getY();
-//    int x = 0;
-//    int y = 0;
     int w = exposeEvent.getArea().getWidth();
     int h = this.getWindow().getHeight();
+   
     // White background
     cairo.setSourceColor(Color.WHITE);
     cairo.rectangle(new Point(x,y), new Point(x+w, y+h));
     cairo.fill();
     
     cairo.save();
-    
-    // text
-//    cairo.setSourceColor(Color.BLUE);
-//    cairo.newPath();
-//    cairo.moveTo(this.getX(),this.getY()-1);
-//    cairo.showText(this.getName());
-//    cairo.stroke();
     
     // line
     cairo.setLineWidth(0.1);
@@ -133,8 +134,9 @@ public abstract class TimeLine
     
     cairo.restore();
     
-//  draw events
+    // draw events
     Iterator iterator = EventManager.theManager.getEventsList().iterator();
+    
     int eventY = 0;
     int eventX = 0;
     
@@ -142,12 +144,8 @@ public abstract class TimeLine
       {
         Event event = (Event) iterator.next();
         
-//        if(event.getIndex() > this.endIndex){
-//          break;
-//        }
-        
         if(this.ownsEvent(event)){
-          eventX = 0 + eventIndentation + (event.getIndex() - this.startIndex)*(event.getWidth() + eventSpacing) + eventSpacing;
+          eventX = 0 + eventIndentation + (event.getIndex())*(event.getWidth() + eventSpacing) + eventSpacing;
           eventY = 0 + h - event.getHeight();
           event.setSize(eventX, eventY, event.getWidth(), event.getHeight());
           event.draw(cairo);
@@ -161,11 +159,6 @@ public abstract class TimeLine
     this.showAll();
     
     return true;
-  }
-  
-  public void setDrawPeriod(int start, int end){
-    this.startIndex = 0;
-    //this.endIndex = end;
   }
   
   /**

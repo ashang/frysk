@@ -1,3 +1,18 @@
+2007-01-30  swagiaal  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Added a buffer for buffering events unitl
+	they need to be drawn.
+	Added creation of a11y objects for events.
+	Removed commented out code.
+	* eventviewer/ProcBox.java: Removed commented out code.
+	* eventviewer/EventViewer2.java: Removed all redraw code (not needed).
+	* eventviewer/EventManager.java: Made getEventsList synchronized.
+	renamed events to eventsList.
+
+2007-01-30 swagiaal  <swagiaal@redhat.com>
+
+	* eventviewer/Histogram.java: Deleted.
+
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
 	* actions/ShowMemWin.java: Update, frysk.gui.common.dialogs

@@ -1,3 +1,8 @@
+2007-01-30  sami wagiaalla  <swagiaal@redhat.com>
+
+	* test/dogtail_scripts/eventViewerAccessibilityInfo.py: Changed
+	the way timelines are searched for to use role.
+
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskHelpManager.java: Moved to here from frysk/gui/common/,

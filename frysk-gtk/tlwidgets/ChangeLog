@@ -1,3 +1,17 @@
+2007-01-30  sami wagiaalla  <swagiaal@redhat.com>
+
+	* src/widgets/ftkcustomdrawingarea.c: New file.
+	* src/widgets/ftkcustomatkobject.c: New file. 
+	* src/widgets/ftkcustomdrawingarea.h: New file.
+	* src/widgets/ftkcustomatkobject.h: New file. 
+	* src/jni/com_redhat_ftk_CustomDrawingArea.c:  New file.
+	* src/jni/com_redhat_ftk_CustomAtkObject.c:  New file.
+	* src/java/com/redhat/ftk/CustomDrawingArea.java:  New file.
+	* src/java/com/redhat/ftk/CustomAtkObject.java: New file.
+	* Makefile.am: Added building rules to include CustomAtkObject.java,
+	CustomDrawingArea.java, com_redhat_ftk_CustomAtkObject.c,
+	com_redhat_ftk_CustomDrawingArea.c.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* src/widgets/.cvsignore: Delete.

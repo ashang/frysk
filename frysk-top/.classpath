@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="antlr/|cdtparser/|junit/|tests/|jargs/|elfutils/" kind="src" path="frysk-imports"/>
+	<classpathentry excluding="tlwidgets/src/java/" kind="src" path="frysk-gtk"/>
 	<classpathentry kind="src" path="frysk-sys"/>
 	<classpathentry kind="src" path="frysk-core"/>
 	<classpathentry kind="src" path="frysk-gtk/tlwidgets/src/java"/>

@@ -452,8 +452,11 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolea
     hbox77 = sessionDruid_sessionNoteBook.child('hbox77')
     vbox52 = hbox77.child('vbox52')
     SessionDruid_processObserverTreeView = vbox52.child('SessionDruid_processObserverTreeView')
+    print 'FOUND ' + SessionDruid_processObserverTreeView.name
     theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-
+    
+    #print 'The process list: ', theProcessList
+    
     for processName in theProcessList:
         resolvedName = extractString (str(processName), 'name')
         tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
@@ -463,7 +466,7 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolea
         
         vbox54 = hbox77.child('vbox54')
         SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
-        theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+        theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), True)
         theDictionary = createProcessDict (theList)
         userSelectedObservers = userSelectedObserverDict[resolvedName]
     

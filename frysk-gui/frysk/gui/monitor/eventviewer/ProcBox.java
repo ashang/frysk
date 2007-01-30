@@ -63,11 +63,6 @@ public class ProcBox
   VBox timeLinesVBox;
   VBox labelsVBox;
   
-//  private static final int TIMELINE_LEFT_MARGIN = 5;
-//  private static final int TIMELINE_RIGHT_MARGIN = 5;
-//  private static final int TIMELINE_SPACING = 16;
-//  private static final int HISTOGRAM_HEIGHT = 20;
-  
   ProcBox (GuiProc guiProc, SizeGroup labelsSizeGroup)
   {
     super();

@@ -33,6 +33,7 @@ eventviewer.html:eventviewer.sgml
 ftkconsole.o:    ftkconsole.c     ftkconsole.h
 ftktimeline.o:   ftktimeline.c    ftktimeline.h
 ftkstripchart.o: ftkstripchart.c  ftkstripchart.h
+ftkcustomdrawingarea.o: ftkcustomdrawingarea.c ftkcustomdrawingarea.h
 
 libftk.so: $(OBJ_FILES)
 	$(CC) -shared -o $@ $^ -lrt

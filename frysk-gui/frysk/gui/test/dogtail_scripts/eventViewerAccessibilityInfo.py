@@ -111,26 +111,32 @@ class viewerMarkers (unittest.TestCase):
     def testEVAccessibilityInfo(self):  
         """test = eventViewerAccessibilityInfotestEVAccessibilityInfo - Test that EV provides A11y info""" 
         
-        if brokenTest(3282):
-            return
+#        if brokenTest(3282):
+#            return
                              
         
         monitor = self.frysk.child(MONITOR)
 
-        procBox = self.frysk.child('funit-childTimeLinesVBox')
-#        procBox.blink(10);
+        #procBox = self.frysk.child(description = 'funit-childTimeLinesVBox')
+        #procBox = self.frysk.findChild(predicate.GenericPredicate(name = name, roleName = roleName, description= description, label = label), recursive = recursive, debugName=debugName))
+#       procBox.blink(10);
 
-        timeLine = procBox.children[0];
+        timeLines =  self.frysk.findChildren(predicate.GenericPredicate(description = 'TimeLine'))
+        timeLine = timeLines[0]
+        #timeLine = procBox.children[0]
 #       timeLine.blink(10);
+         
           
+        if (timeLine == 0):
+            self.fail ( 'Error - TimeLine cannot be found' )
+            
         statusWidget = monitor.child('statusWidget')
-   
-        print "found " + timeLine.name;
+        
         #Ensure that there are the proper number of monitors.
 
         # Positive test
         if len(timeLine.children) == 0:
-            self.fail ( 'Error - EventViewer does not provide A11y info for events' )
+            self.fail ( 'Error - TimeLine does not provide A11y info for events' )
           
        
 def suite():

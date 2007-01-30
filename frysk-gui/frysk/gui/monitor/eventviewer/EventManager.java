@@ -55,28 +55,28 @@ public class EventManager
 {
   public static EventManager theManager = new EventManager();
   
-  private ObservableLinkedList events;
+  private ObservableLinkedList eventsList;
   int index;
   
-  public EventManager(){
-    this.events = new ObservableLinkedList();
+  private EventManager(){
+    this.eventsList = new ObservableLinkedList();
     this.index = 0;
   }
   
   public void addEvent(Event event){
+    
     event.setSize(event.getWidth()*index, 0, 2, 10);
-//    event.setX(event.width*index);
-//    event.setY(event.height); 
+
     event.setIndex(index);
-    events.add(event);
+    eventsList.add(event);
     index++;
   }
+ 
   
-  public ObservableLinkedList getEventsList(){
-    return this.events;
+  public synchronized ObservableLinkedList getEventsList(){
+    return this.eventsList;
   }
   public void observerAdded(GuiTask guiTask, ObserverRoot observer){}
   public void observerRemoved(GuiTask guiTask, ObserverRoot observer){}
-  
   
 }

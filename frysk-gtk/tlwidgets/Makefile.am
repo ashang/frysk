@@ -63,12 +63,15 @@ CLEANFILES = *.so *.jar
 #     $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
 SRC=  $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java \
       $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java \
-      $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
+      $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java \
+      $(tlwidgetssrc)/java/com/redhat/ftk/CustomDrawingArea.java \
+      $(tlwidgetssrc)/java/com/redhat/ftk/CustomAtkObject.java 
+
 AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
 	-I$(srcdir)/src/widgets \
 	$(FRYSK_GTK_CFLAGS)
-	
+
 AM_CPPFLAGS = -I src/widgets -I $(srcdir)/src/widgets	
 
 .a.so:
@@ -85,7 +88,7 @@ AM_CPPFLAGS = -I src/widgets -I $(srcdir)/src/widgets
 CLEANFILES +=  com/redhat/ftk/SimultaneousEvent.class \
 	      com/redhat/ftk/EventPair.class \
 	      com/redhat/ftk/EventViewer.class
-	      
+
 #com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 #	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 #com/redhat/ftk/StripchartX.class: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
@@ -95,7 +98,7 @@ CLEANFILES +=  com/redhat/ftk/SimultaneousEvent.class \
 #com/redhat/ftk/SimultaneousEvent.class: $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
 #	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 #com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java com/redhat/ftk/SimultaneousEvent.class com/redhat/ftk/EventPair.class
-	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
+#	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
 
 
@@ -108,11 +111,15 @@ CLEANFILES +=  com/redhat/ftk/SimultaneousEvent.class \
 
 ftk.jar: $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java \
          $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java \
-         $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java 
+         $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java \
+         $(tlwidgetssrc)/java/com/redhat/ftk/CustomDrawingArea.java \
+         $(tlwidgetssrc)/java/com/redhat/ftk/CustomAtkObject.java 
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)    
 	$(JAR) cf ftk.jar -C . com/redhat/ftk/EventViewer.class \
 			  -C . com/redhat/ftk/SimultaneousEvent.class \
-			  -C . com/redhat/ftk/EventPair.class
+			  -C . com/redhat/ftk/EventPair.class \
+			  -C . com/redhat/ftk/CustomDrawingArea.class \
+		          -C . com/redhat/ftk/CustomAtkObject.class
 
 #Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 #	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
@@ -145,7 +152,10 @@ libftkjava.so:  SimultaneousEvent.o EventPair.o EventViewer.o
 #libftkjni_a_SOURCES = src/jni/com_redhat_ftk_Stripchart.c \
 #                      src/jni/com_redhat_ftk_StripchartX.c \
 #                      src/jni/com_redhat_ftk_EventViewer.c
-libftkjni_a_SOURCES = src/jni/com_redhat_ftk_EventViewer.c
+libftkjni_a_SOURCES = src/jni/com_redhat_ftk_EventViewer.c \
+                      src/jni/com_redhat_ftk_CustomDrawingArea.c \
+                      src/jni/com_redhat_ftk_CustomAtkObject.c
+
 noinst_LIBRARIES += libftkjni.a
 libftkjni_so_SOURCES =
 solib_PROGRAMS += libftkjni.so
@@ -155,7 +165,10 @@ libftkjni.so: libftkjni.a
 #                   src/widgets/ftkstripchartx.c \
 #                   src/widgets/ftkeventviewer.c
 libftk_a_SOURCES = src/widgets/ftkeventviewer.c \
-                  src/widgets/ftk_marshaller.list
+                   src/widgets/ftkcustomdrawingarea.c \
+                   src/widgets/ftkcustomatkobject.c \
+                   src/jni/com_redhat_ftk_CustomAtkObject.c \
+                   src/widgets/ftk_marshaller.list
 noinst_LIBRARIES += libftk.a
 solib_PROGRAMS += libftk.so
 libftk_so_SOURCES =

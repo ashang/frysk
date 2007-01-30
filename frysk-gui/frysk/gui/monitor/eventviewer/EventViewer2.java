@@ -49,7 +49,6 @@ import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.VBox;
 
 import frysk.gui.monitor.GuiProc;
-import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 
@@ -71,27 +70,22 @@ public class EventViewer2 extends VBox {
 	public EventViewer2(Handle handle){
 		super(handle);
         this.setBorderWidth(6);
-//        this.addListener((ExposeListener)this);
-//        this.addListener((MouseMotionListener)this);
-//        this.addListener((MouseListener) this);
-        
-//        this.setEvents(EventMask.ALL_EVENTS_MASK.xor(EventMask.POINTER_MOTION_HINT_MASK));
   
         this.lablesSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
         
-        // watch the event list for updates
-        // redraw upon updates
-        ObservableLinkedList eventList = EventManager.theManager.getEventsList();
-        Observer drawObserver = new Observer()
-        {
-          public void update (Observable arg0, Object arg1)
-          {
-            EventViewer2.this.draw();
-          }
-        
-        };
-       eventList.itemAdded.addObserver(drawObserver);
-       eventList.itemRemoved.addObserver(drawObserver);
+//        // watch the event list for updates
+//        // redraw upon updates
+//        ObservableLinkedList eventList = EventManager.theManager.getEventsList();
+//        Observer drawObserver = new Observer()
+//        {
+//          public void update (Observable arg0, Object arg1)
+//          {
+//            EventViewer2.this.draw();
+//          }
+//        
+//        };
+//       eventList.itemAdded.addObserver(drawObserver);
+//       eventList.itemRemoved.addObserver(drawObserver);
        
        this.getAccessible().setName("EventViewer");
 	}
