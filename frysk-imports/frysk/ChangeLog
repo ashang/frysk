@@ -1,3 +1,10 @@
+2007-01-30  Nurdin Premji  <npremji@redhat.com>
+
+	* EventLogger.java (setConsoleLog): Added.
+	(addConsoleOptions): Use setConsoleLog.
+	Share description string between both logging options.
+	Added specific example to each.
+
 2007-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* cni/Config.cxxin (getHelpDir): Implement.

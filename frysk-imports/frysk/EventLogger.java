@@ -118,14 +118,29 @@ public class EventLogger
 	return logger;
     }
 
+    public static void setConsoleLog(Logger logger, Level consoleLevel)
+    {
+      // Need to set both the console and the main logger as
+      // otherwize the console won't see the log messages.
+
+      System.out.println("console " + consoleLevel);
+      Handler consoleHandler = new ConsoleHandler();
+      consoleHandler.setLevel(consoleLevel);
+      logger.addHandler(consoleHandler);
+      logger.setLevel(consoleLevel);
+      System.out.println(consoleHandler);
+    }
+    
     public static void addConsoleOptions (Parser parser)
     {
+      final String description = "Set the log LOG to level LEVEL. Can set "
+        + "multiple logs. The LEVEL can be [ OFF | "
+        + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
+        + "FINEST | ALL].";
+      
       parser.add(new Option(
                             "console",
-                            "Set the log CONSOLE_LOG to level LEVEL. Can set "
-                                + "multiple logs. The LEVEL can be [ OFF | "
-                                + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
-                                + "FINEST | ALL]", "<CONSOLE_LOG=LEVEL,...>")
+                            description + " Example: -console frysk=FINEST", "<LOG=LEVEL,...>")
       {
         public void parsed (String arg0) throws OptionException
         {
@@ -147,12 +162,7 @@ public class EventLogger
                   // Need to set both the console and the main logger as
                   // otherwize the console won't see the log messages.
     
-                  System.out.println("console " + consoleLevel);
-                  Handler consoleHandler = new ConsoleHandler();
-                  consoleHandler.setLevel(consoleLevel);
-                  logger.addHandler(consoleHandler);
-                  logger.setLevel(consoleLevel);
-                  System.out.println(consoleHandler);
+                  setConsoleLog(logger, consoleLevel);
     
                 }
               catch (IllegalArgumentException e)
@@ -164,10 +174,7 @@ public class EventLogger
         }
       });
       parser.add(new Option("log",
-                            "Set the log LOG to level LEVEL. Can set multiple "
-                                + "logs. The LEVEL can be [ OFF | SEVERE | "
-                                + "WARNING | INFO | CONFIG | FINE | FINER | "
-                                + "FINEST | ALL]", "<LOG=LEVEL,...>")
+                            description + " Example -log frysk=FINE", "<LOG=LEVEL,...>")
       {
         public void parsed (String arg0) throws OptionException
         {

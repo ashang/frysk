@@ -47,6 +47,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.Enumeration;
 import junit.framework.AssertionFailedError;
@@ -383,7 +384,44 @@ public class Runner
 	Parser parser = new Parser (programName, "1.0", true);
 
     EventLogger.addConsoleOptions(parser);
+    
+    parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.", "<LEVEL>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        Logger logger = LogManager.getLogManager().getLogger("frysk");
+
+        try
+          {
+            Level consoleLevel = Level.parse(arg0);
+            EventLogger.setConsoleLog(logger, consoleLevel);
+
+          }
+        catch (IllegalArgumentException e)
+          {
+            throw new OptionException("Invalid log console: " + arg0);
+          }
+      }
+
+    });
 		
+    parser.add(new Option('l', "Shortcut for --log frysk=LEVEL", "<LEVEL>")
+    {
+      public void parsed (String arg0) throws OptionException
+      {
+        Logger logger = LogManager.getLogManager().getLogger("frysk");
+
+         try
+         {
+           Level level = Level.parse(arg0);
+           logger.setLevel(level);
+         }
+         catch (IllegalArgumentException e)
+         {
+           throw new OptionException ("Invalid log console: " + arg0);
+         }
+      }
+    });
 	// Determine the number of times that the testsuite should be
 	// run.
 	parser.add (new Option ("repeat",  'r',
