@@ -1,3 +1,7 @@
+2007-01-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Moved frysk/gui/common/dialogs/ to frysk/gui/dialogs/.
+
 2007-01-24  Mark Wielaard  <mark@klomp.org>
 
 	* ErrorDialog.java (getStringTrace): Get whole StackTrace
