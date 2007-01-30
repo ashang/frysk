@@ -1,3 +1,13 @@
+2007-01-29  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (byteType,shortType,intType,floatType,doubleType): New.
+	(VariableAccessor.(get*,put*): Add offset to getters and putters.
+	(AccessDW_FORM_block.(get*,put*): Add offset to getters and putters.
+	(AccessDW_FORM_data.(get*,put*): Add offset to getters and putters.
+	(get): Use switch statements.
+	(get): New for array element references.
+	* hpd/CLI.java (WhereHandler.handle): Fix formatting typo.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* hpd/SymTab.java: Removed unused import DwflLine.

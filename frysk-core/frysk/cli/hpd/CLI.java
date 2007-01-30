@@ -578,8 +578,8 @@ public class CLI
 		}
 	}
 
-	class UpDownHandler implements CommandHandler
-    {
+  class UpDownHandler implements CommandHandler
+  {
       public void handle(Command cmd) throws ParseException {
         int level = 1;
         StackFrame tmpFrame = null;
@@ -603,7 +603,7 @@ public class CLI
         
         if (tmpFrame == null)
           tmpFrame = currentFrame;
-        cmd.getOut().print("#" + stackLevel);
+        cmd.getOut().print("#" + stackLevel + " ");
         cmd.getOut().println(tmpFrame.toPrint(false));        
       }
     }
@@ -632,7 +632,7 @@ public class CLI
         tmpFrame = symtab.getCurrentFrame();
         while (tmpFrame != null)
           {
-            cmd.getOut().print("#" + l);
+            cmd.getOut().print("#" + l + " ");
             cmd.getOut().println(tmpFrame.toPrint(false));
             tmpFrame = tmpFrame.getOuter();
             l += 1;
