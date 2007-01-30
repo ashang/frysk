@@ -1,5 +1,8 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* SourceWindow.java: Update, frysk.gui.common.dialogs moved to
+	frysk.gui.dialogs.
+
 	* prefs/SyntaxPreferenceGroup.java: Update, frysk.gui.common.prefs
 	moved to frysk.gui.prefs.
 	* prefs/SyntaxPreference.java: Ditto.

@@ -102,7 +102,7 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
-import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.prefs.BooleanPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.prefs.PreferenceWindow;

@@ -53,7 +53,7 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 
-import frysk.gui.common.dialogs.FryskDialog;
+import frysk.gui.dialogs.FryskDialog;
 import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 

@@ -43,66 +43,109 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package frysk.gui.common.dialogs;
+package frysk.gui.dialogs;
 
 import org.gnu.gtk.GtkStockItem;
-import org.gnu.gtk.HBox;
+import org.gnu.gtk.VBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextView;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-public class QueryDialog extends FryskDialog{
 
-	private String title = ""; 
-	private String message = "";
+public class ErrorDialog extends FryskDialog{
 
-	private boolean result = false;
+	private String title = ""; //$NON-NLS-1$
+	private String message = ""; //$NON-NLS-1$
+	private Exception except = null;
 	
-	public QueryDialog(String message) {
+	public static final int QUIT = 1;
+	public static final int IGNORE = 2;
+
+	public  ErrorDialog(String title, String message, Exception except) {
 		super();
-		this.title = "";
+		this.title = title;
+		this.message = message;
+		this.except = except;
+		doImplementation();
+	}
+	
+	public ErrorDialog(String message, Exception except) {
+		super();
+		this.title = "Error"; //$NON-NLS-1$
 	    this.message = message;
+		this.except = except;
+
 		doImplementation();
 	}
 
+	private synchronized String getStringTrace(Exception e)
+	{
+	  StringWriter sw = new StringWriter();
+	  e.printStackTrace(new PrintWriter(sw));
+	  return sw.toString();
+	}
 	
-	private void doImplementation()
+	private  void doImplementation()
 	{
 		
-		this.addButton(GtkStockItem.YES, 1);
-		this.addButton(GtkStockItem.NO, 2);
+		this.addButton(GtkStockItem.QUIT, 1);
+		this.addButton("Continue", 2);
 		this.setTitle(this.title);
-		this.setDefaultSize(400,200);
-		HBox mainBox = new HBox(false,0);
+		VBox mainBox = new VBox(false,2);
+		mainBox.setSpacing(12);
+		mainBox.setBorderWidth(6);
+		
 		this.getDialogLayout().add(mainBox);
 		
 		ScrolledWindow sWindow = new ScrolledWindow(null,null);
-		sWindow.setBorderWidth(10);
+		sWindow.setBorderWidth(12);
 		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
+		sWindow.setMinimumSize(400,300);
+
 		
-		Label warnLabel = new Label(this.message);
+		String exceptionMessage;
+		
+		if (this.except.getMessage() == null)
+			exceptionMessage = "(No exception message provided)";
+		else
+			exceptionMessage = this.except.getMessage();
+		
+		String errorText = exceptionMessage+"\n\n" + //$NON-NLS-1$ //$NON-NLS-2$
+		getStringTrace(this.except);
+		
+		TextView warnLabel = new TextView();
+		warnLabel.setIndent(6);
+		warnLabel.setBorderWidth(6);
+		
+		TextBuffer foo = new TextBuffer();
+
+		foo.setText(errorText);
+		warnLabel.setBuffer(foo);
+		warnLabel.setEditable(false);
+
+
+	
 		sWindow.addWithViewport(warnLabel);
-		
+		mainBox.packStart(new Label(this.message),true,true,0);
 		mainBox.packStart(sWindow,true, true, 0);
 
 		this.addListener(new DialogListener(){
-			public boolean dialogEvent(DialogEvent event) {
-				if(event.getResponse() == 1){
-					result = true;
-				}else{
-					result = false;
-				}
+			public boolean dialogEvent(DialogEvent arg0) {
 				hideAll();
 				return false;
 			}
 		});
 		
+
+		
 	}
 	
-	public boolean getAnswer(){
-		return this.result;
-	}
+		
 }

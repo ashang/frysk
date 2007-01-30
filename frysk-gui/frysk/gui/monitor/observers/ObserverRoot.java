@@ -50,7 +50,7 @@ import java.util.logging.Level;
 import org.gnu.glib.CustomEvents;
 import org.jdom.Element;
 
-import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.dialogs.DialogManager;
 import frysk.gui.monitor.Combo;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;

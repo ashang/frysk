@@ -72,7 +72,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
-import frysk.gui.common.dialogs.FryskDialog;
+import frysk.gui.dialogs.FryskDialog;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 

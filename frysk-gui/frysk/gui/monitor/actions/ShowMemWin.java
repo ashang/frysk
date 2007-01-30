@@ -40,7 +40,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 //import frysk.gui.memory.MemoryWindow;

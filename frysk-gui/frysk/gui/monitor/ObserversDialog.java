@@ -51,7 +51,7 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Util;
-import frysk.gui.common.dialogs.FryskDialog;
+import frysk.gui.dialogs.FryskDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 

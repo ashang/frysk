@@ -1,15 +1,12 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* Moved frysk/gui/common/dialogs/ to frysk/gui/dialogs/.
+	
 	* Moved frysk/gui/common/prefs/ to frysk/gui/prefs/.
 
 2007-01-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* FryskHelpManager.java: Get docs directory from proper place.
-
-2007-01-24  Mark Wielaard  <mark@klomp.org>
-
-	* dialogs/ErrorDialog.java (getStringTrace): Get whole StackTrace
-	including exception class name and possible cause Throwable.
 
 2007-01-23  Rick Moseley  <rmoseley@redhat.com>
 
@@ -68,14 +65,6 @@
 	* IconManager.java: Added tooltip info about which host the 
 	eggtrayicon is connected to.
 
-2006-08-23  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* dialogs/ErrorDialog.java: Rnamed Dialog to FryskDialog
-	* dialogs/FryskDialog.java: Renamed Dialog.java to this.
-	* dialogs/WarnDialog.java: Ditto.
-	* dialogs/QueryDialog.java: Ditto.
-	* dialogs/NoDebugInfoDialog.java: Ditto.
-
 2006-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* IconManager.java: Moved public static instance of TrayIcon to
@@ -104,43 +93,13 @@
 	* UBigInteger.java : New class for manipulating unsigned BigInteger
 	values.
 
-2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/DialogManager.java (run): Synchronized. 
-	Add DialogManager.class.wait()
-
-2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/NoDebugInfoDialog.java: New.
-
-2006-06-13  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/DialogManager.java (showErrorDialog): Return a response.
-	* dialogs/ErrorDialog.java (doImplementation): Use TextView instead of 
-	Label (to fix odd focus issues that randomly occur on selecting text).
-	Add Continue button to choice.
-
-2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* dialogs/QueryDialog.java: New dialog.
-	* dialogs/DialogManager.java: Added showQueryDialog.
-
 2006-02-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* IconManager.java: Now added Pixbuf for splash screen.
 
-2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/WarnDialog.java: Revert i8n.
-	* dialogs/ErrorDialog.java: Revert i8n.
-
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* message.properties: Fix typo noted at sources.redhat.com bz 2284.
-
-	* dialogs/ErrorDialog.java (doImplementation): Made core error
-	dialog box error messages selectable and able to be copied via
-	right click menu. Helps in PRs.
 
 2006-02-02  Adam Jocksch  <ajocksch@redhat.com>
 
@@ -173,8 +132,6 @@
 	DetailedObserverTreeView.java, CustomeObserverWindow.java 
 	strings.
 
-	* dialogs/ErrorDialog.java: Externalize Strings.
-	* dialogs/WarnDialog.java: Externalize Strings
 	* messages.properties: Added WarnDialog.java and
 	ErrorDialog.java strings.
 
@@ -182,24 +139,9 @@
 
 	* messages.properties: Added FryskGui.java strings.
 	
-2006-01-26  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/ErrorDialog.java: Added.
-	* dialogs/DialogManager.java (showErrorDialog): Added. Make synchronized.
-
-2006-01-25  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* dialogs/DialogManager.java: added showing of dialog
-	with CustomEvents queue.
-
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* Messages.java (setBundlePaths): Added, replaces static constructor.
-
-2006-01-25  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/WarnDialog.java (doImplementation): Added scrollpane
-	to label area.
 
 2005-12-15  Adam Jocksch  <ajocksch@redhat.com>
 
@@ -224,19 +166,6 @@
 
 	* Monitor.java: Now looks for bundle in build and install situations.
 
-2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/WarnDialog.java (WarnDialog): Added overloaded
-	(title,message) constructor. Added padding to message.
-	* dialogs/DialogManager.java (showWarnDialog): Added 
-	overloaded (title,message) constructor.
-
-2005-10-26  Phil Muldoon  <pmuldoon@redhat.com>
-
-	* dialogs/WarnDialog.java: Added Copyright/License Header.
-	* dialogs/DialogManager.java: Ditto:
-	* dialogs/Dialog.java: Ditto.
-
 2005-10-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Messages.java: Added comments to make it easier to build in/out of
@@ -245,4 +174,10 @@
 2005-10-13  Chris Moller <moller@mollerware.com>
 
         * Messages.java: uncommented a commented import
-
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

@@ -43,7 +43,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package frysk.gui.common.dialogs;
+package frysk.gui.dialogs;
 
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.HBox;

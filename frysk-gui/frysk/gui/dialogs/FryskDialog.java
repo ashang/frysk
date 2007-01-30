@@ -45,9 +45,10 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package frysk.gui.common.dialogs;
+package frysk.gui.dialogs;
 
 import org.gnu.glib.Handle;
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -56,16 +57,16 @@ import org.gnu.gtk.event.LifeCycleListener;
 import frysk.gui.common.IconManager;
 
 
-public class Dialog extends org.gnu.gtk.Dialog {
+public class FryskDialog extends Dialog {
 
 	//private String message;
 	
-	public Dialog(){
+	public FryskDialog(){
 		super();
 		this.init();
 	}
 	
-	public Dialog(Handle handle){
+	public FryskDialog(Handle handle){
 		super(handle);
 		this.init();
 	}
@@ -76,16 +77,15 @@ public class Dialog extends org.gnu.gtk.Dialog {
 	         public boolean lifeCycleQuery(LifeCycleEvent event) {
 	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
 	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
-	            	 Dialog.this.hideAll();
+	            	 FryskDialog.this.hideAll();
 	             }	
 	             return true;
 	         }
 		});
 		
 		this.addListener(new DialogListener() {
-		
-			public boolean dialogEvent(DialogEvent arg0) {
-				Dialog.this.hideAll();
+			public boolean dialogEvent(DialogEvent event) {
+				FryskDialog.this.hideAll();
 				return false;
 			}
 		

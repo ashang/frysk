@@ -1,0 +1,86 @@
+2007-01-24  Mark Wielaard  <mark@klomp.org>
+
+	* ErrorDialog.java (getStringTrace): Get whole StackTrace
+	including exception class name and possible cause Throwable.
+
+2006-08-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ErrorDialog.java: Rnamed Dialog to FryskDialog
+	* FryskDialog.java: Renamed Dialog.java to this.
+	* WarnDialog.java: Ditto.
+	* QueryDialog.java: Ditto.
+	* NoDebugInfoDialog.java: Ditto.
+
+2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DialogManager.java (run): Synchronized. 
+	Add DialogManager.class.wait()
+
+2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* NoDebugInfoDialog.java: New.
+
+2006-06-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DialogManager.java (showErrorDialog): Return a response.
+	* ErrorDialog.java (doImplementation): Use TextView instead of 
+	Label (to fix odd focus issues that randomly occur on selecting text).
+	Add Continue button to choice.
+
+2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* QueryDialog.java: New dialog.
+	* DialogManager.java: Added showQueryDialog.
+
+2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WarnDialog.java: Revert i8n.
+	* ErrorDialog.java: Revert i8n.
+
+2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ErrorDialog.java (doImplementation): Made core error
+	dialog box error messages selectable and able to be copied via
+	right click menu. Helps in PRs.
+
+2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ErrorDialog.java: Externalize Strings.
+	* WarnDialog.java: Externalize Strings
+	* messages.properties: Added WarnDialog.java and
+	ErrorDialog.java strings.
+
+2006-01-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ErrorDialog.java: Added.
+	* DialogManager.java (showErrorDialog): Added. Make synchronized.
+
+2006-01-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DialogManager.java: added showing of dialog
+	with CustomEvents queue.
+
+2006-01-25  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WarnDialog.java (doImplementation): Added scrollpane
+	to label area.
+
+2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WarnDialog.java (WarnDialog): Added overloaded
+	(title,message) constructor. Added padding to message.
+	* DialogManager.java (showWarnDialog): Added 
+	overloaded (title,message) constructor.
+
+2005-10-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WarnDialog.java: Added Copyright/License Header.
+	* DialogManager.java: Ditto:
+	* Dialog.java: Ditto.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

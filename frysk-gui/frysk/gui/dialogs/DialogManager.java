@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.gui.common.dialogs;
+package frysk.gui.dialogs;
 
 import org.gnu.glib.CustomEvents;
 

@@ -60,8 +60,7 @@ import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
 import frysk.gui.common.IconManager;
-//import frysk.gui.common.dialogs.WarnDialog;
-import frysk.gui.common.dialogs.FryskDialog;
+import frysk.gui.dialogs.FryskDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;

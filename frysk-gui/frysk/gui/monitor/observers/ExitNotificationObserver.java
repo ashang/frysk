@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.observers;
 
-import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.dialogs.DialogManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;

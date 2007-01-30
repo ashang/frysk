@@ -1,5 +1,15 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* actions/ShowMemWin.java: Update, frysk.gui.common.dialogs
+	renamed to frysk.gui.dialogs.
+	* ProgramObserverDialog.java: Ditto.
+	* observers/ExitNotificationObserver.java: Ditto.
+	* observers/ObserverRoot.java: Ditto.
+	* PickProcDialog.java: Ditto.
+	* EditObserverDialog.java: Ditto.
+	* ProgramObserver.java: Ditto.
+	* ObserversDialog.java: Ditto.
+
 	* MainWindow.java: Update, frysk.sys.Pty renamed to
 	frysk.sys.PseudoTerminal.
 	* ConsoleWidget.java: Ditto.

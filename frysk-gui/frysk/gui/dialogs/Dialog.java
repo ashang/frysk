@@ -37,115 +37,60 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
+
 /*
  * Created on Sep 26, 2005
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package frysk.gui.common.dialogs;
+package frysk.gui.dialogs;
 
-import org.gnu.gtk.GtkStockItem;
-import org.gnu.gtk.VBox;
-import org.gnu.gtk.Label;
-import org.gnu.gtk.PolicyType;
-import org.gnu.gtk.ScrolledWindow;
-import org.gnu.gtk.TextBuffer;
-import org.gnu.gtk.TextView;
+import org.gnu.glib.Handle;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import frysk.gui.common.IconManager;
 
 
-public class ErrorDialog extends FryskDialog{
+public class Dialog extends org.gnu.gtk.Dialog {
 
-	private String title = ""; //$NON-NLS-1$
-	private String message = ""; //$NON-NLS-1$
-	private Exception except = null;
+	//private String message;
 	
-	public static final int QUIT = 1;
-	public static final int IGNORE = 2;
-
-	public  ErrorDialog(String title, String message, Exception except) {
+	public Dialog(){
 		super();
-		this.title = title;
-		this.message = message;
-		this.except = except;
-		doImplementation();
+		this.init();
 	}
 	
-	public ErrorDialog(String message, Exception except) {
-		super();
-		this.title = "Error"; //$NON-NLS-1$
-	    this.message = message;
-		this.except = except;
-
-		doImplementation();
-	}
-
-	private synchronized String getStringTrace(Exception e)
-	{
-	  StringWriter sw = new StringWriter();
-	  e.printStackTrace(new PrintWriter(sw));
-	  return sw.toString();
+	public Dialog(Handle handle){
+		super(handle);
+		this.init();
 	}
 	
-	private  void doImplementation()
-	{
-		
-		this.addButton(GtkStockItem.QUIT, 1);
-		this.addButton("Continue", 2);
-		this.setTitle(this.title);
-		VBox mainBox = new VBox(false,2);
-		mainBox.setSpacing(12);
-		mainBox.setBorderWidth(6);
-		
-		this.getDialogLayout().add(mainBox);
-		
-		ScrolledWindow sWindow = new ScrolledWindow(null,null);
-		sWindow.setBorderWidth(12);
-		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
-		sWindow.setMinimumSize(400,300);
-
-		
-		String exceptionMessage;
-		
-		if (this.except.getMessage() == null)
-			exceptionMessage = "(No exception message provided)";
-		else
-			exceptionMessage = this.except.getMessage();
-		
-		String errorText = exceptionMessage+"\n\n" + //$NON-NLS-1$ //$NON-NLS-2$
-		getStringTrace(this.except);
-		
-		TextView warnLabel = new TextView();
-		warnLabel.setIndent(6);
-		warnLabel.setBorderWidth(6);
-		
-		TextBuffer foo = new TextBuffer();
-
-		foo.setText(errorText);
-		warnLabel.setBuffer(foo);
-		warnLabel.setEditable(false);
-
-
-	
-		sWindow.addWithViewport(warnLabel);
-		mainBox.packStart(new Label(this.message),true,true,0);
-		mainBox.packStart(sWindow,true, true, 0);
-
-		this.addListener(new DialogListener(){
-			public boolean dialogEvent(DialogEvent arg0) {
-				hideAll();
-				return false;
-			}
+	private void init(){
+		this.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {}
+	         public boolean lifeCycleQuery(LifeCycleEvent event) {
+	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
+	            	 Dialog.this.hideAll();
+	             }	
+	             return true;
+	         }
 		});
 		
-
+		this.addListener(new DialogListener() {
 		
+			public boolean dialogEvent(DialogEvent arg0) {
+				Dialog.this.hideAll();
+				return false;
+			}
+		
+		});
+		this.setIcon(IconManager.windowIcon);
 	}
 	
-		
 }
