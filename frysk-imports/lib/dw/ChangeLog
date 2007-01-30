@@ -1,3 +1,7 @@
+2007-01-29  Stan Cox  <scox@redhat.com>
+
+	* BaseTypes.java (getTypeSize): New.
+
 2007-01-22  Mike Cvet  <mcvet@redhat.com>
 
 	* Dwfl.java (getLineAddresses): Changed return type to LinkedList.

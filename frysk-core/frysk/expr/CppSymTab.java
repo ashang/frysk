@@ -39,6 +39,8 @@
 
 package frysk.expr;
 
+import java.util.ArrayList;
+
 import javax.naming.NameNotFoundException;
 
 import frysk.value.Variable;
@@ -47,5 +49,6 @@ public interface CppSymTab
 {
   void put(String s, Variable v) throws NameNotFoundException;
   Variable get(String s) throws NameNotFoundException;
+  Variable get(String s, ArrayList v) throws NameNotFoundException;
   boolean putUndefined();
 }

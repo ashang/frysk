@@ -74,11 +74,12 @@ public class ArrayType
       terms[0] = 1;
       this.v = v;
 
-      for (int i = 1; i <= dimCount; i++)
+      for (int i = 1; i < dimCount; i++)
         {
-          int dim = ((Integer) (dimensions.get(i - 1))).intValue() + 1;
-          terms[i] = dim * terms[i - 1];
+          int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
+          terms[i] = d * terms[i - 1];
         }
+      terms[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * terms[dimCount - 1]; 
     }
 
     public boolean hasNext ()
@@ -89,8 +90,7 @@ public class ArrayType
 
       if (idx < terms[dimCount])
         return true;
-      else
-        return false;
+      return false;
     }
 
     /**
@@ -101,13 +101,13 @@ public class ArrayType
       dim -= 1;
       if (dim > 0)
         {
-          if (element >= terms[dim] + 1)
+          if (element >= terms[dim])
             {
-              element = idx % (terms[dim] + 1);
-              return idx / (terms[dim] + 1);
+              int newDim = element / (terms[dim]);
+              element = element % (terms[dim]);
+              return newDim;
             }
-          else
-            return 0;
+          return 0;
         }
       return element;
     }

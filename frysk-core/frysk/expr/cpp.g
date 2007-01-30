@@ -121,7 +121,7 @@ imaginaryTokenDefinitions
     :
         ARG_LIST
         ARRAY_REF
-	CAST
+        CAST
         COND_EXPR
         EXPR_LIST
         FUNC_CALL
@@ -366,7 +366,7 @@ variable! throws TabException
 
             (   options {warnWhenFollowAmbig = false;}
 
-            : LSQUARE expr1:expression RSQUARE
+            : LSQUARE expr1:expressionList RSQUARE
                 { astPostExpr = #([ARRAY_REF, "ArrayReference"], 
 								#astPostExpr, #expr1); }
             |   LPAREN (expr2:expressionList)? RPAREN
@@ -707,10 +707,23 @@ primitiveType
     |   "double"
     ;
 
+identifier returns [String idSpelling=null]
+    :   ident:IDENT  {idSpelling=ident.getText();} ;
+
+exprlist returns [ArrayList el=new ArrayList()]
+    :   exprList:EXPR_LIST {
+          AST list = exprList.getFirstChild();
+          while (list != null) {
+              el.add(list.getText());
+              list = list.getNextSibling();
+          }
+        };
+
+
 expr returns [Variable returnVar=null] throws InvalidOperatorException,
 OperationNotDefinedException,
 NameNotFoundException
-{ Variable v1, v2, log_expr;}
+{ Variable v1, v2, log_expr; String s1; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
     |   ( #(MINUS expr expr) )=> #( MINUS v1=expr v2=expr ) 
         { returnVar = v1.getType().subtract(v1, v2);  }
@@ -889,6 +902,9 @@ NameNotFoundException
 	      }
 	    else returnVar = v2;
         }
+    |   #(ARRAY_REF s1=identifier el=exprlist) { 
+          returnVar = (Variable)cppSymTabRef.get(s1, el);
+	      }
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {

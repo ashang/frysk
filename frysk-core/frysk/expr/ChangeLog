@@ -1,3 +1,10 @@
+2007-01-29  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (CppTreeParser.expr): Add identifier and exprlist.
+	* RunCppTreeParser.java (rctpsymTab.get): New offset method.
+	* RunCppParser.java (SymTab.get): New.
+	* CppSymTab.java (get): New.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* RunCppParser.java: Removed unused import FileArgumentCallback.

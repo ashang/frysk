@@ -40,6 +40,7 @@ package frysk.cli.hpd;
 
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -233,6 +234,10 @@ public class SymTab
         {
           throw new NameNotFoundException("No symbol table is available.");
         }
+        public Variable get(String s, ArrayList v) throws NameNotFoundException 
+        {
+          throw new NameNotFoundException("No symbol table is available.");
+        }
         public Variable get(String s) throws NameNotFoundException 
         {
           throw new NameNotFoundException("No symbol table is available.");
@@ -299,7 +304,7 @@ public class SymTab
              tmpFrame = tmpFrame.getOuter();
            else
              tmpFrame = tmpFrame.getInner();
-           level -= 1;;
+           level -= 1;
          }
        if (tmpFrame != null)
          exprSymTab.setCurrentFrame(tmpFrame);

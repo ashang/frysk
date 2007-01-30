@@ -42,8 +42,10 @@
  * Location of a variable.
  */
 package lib.dw;
-  public interface BaseTypes {
-      int baseTypeChar = 1,
+
+// This is a good candidate for 1.5 enum
+public final class BaseTypes {
+      public final static int baseTypeChar = 1,
 	  baseTypeUnsignedChar = 2,
 	  baseTypeShort = 3,
 	  baseTypeUnsignedShort = 4,
@@ -55,4 +57,35 @@ package lib.dw;
 	  baseTypeFloat = 9,
 	  baseTypeDouble = 10,
 	  baseTypeLongDouble = 11;
+      
+      public final static int getTypeSize(int type) 
+      {
+        switch (type)
+        {
+          case baseTypeChar:
+            return 1;
+          case baseTypeUnsignedChar:
+            return 1;
+          case baseTypeShort:
+            return 2;
+          case baseTypeUnsignedShort:
+            return 2;
+          case baseTypeInteger:
+            return 4;
+          case baseTypeUnsignedInteger:
+            return 4;
+          case baseTypeLong:
+            return 8;
+          case baseTypeUnsignedLong:
+            return 8;
+          case baseTypeFloat:
+            return 4;
+          case baseTypeDouble:
+            return 8;
+          case baseTypeLongDouble:
+            return 16;
+          default:
+            return 0;
+        }
+      }
   }
