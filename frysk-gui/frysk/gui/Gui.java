@@ -104,7 +104,6 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
-import frysk.gui.common.FryskHelpManager;
 
 import frysk.proc.Manager;
 import frysk.sys.Signal;

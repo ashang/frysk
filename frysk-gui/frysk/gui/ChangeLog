@@ -1,5 +1,10 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* FryskHelpManager.java: Moved to here from frysk/gui/common/,
+	along with ChangeLog entries.
+	* Gui.java: Update.
+	* SessionManagerGui.java: Update.
+
 	* Gui.java: Update, frysk.gui.common.dialogs moved to
 	frysk.gui.dialogs.
 	
@@ -15,14 +20,28 @@
 
 2007-01-24  Rick Moseley  <rmoseley@redhat.com>
 
+	* FryskHelpManager.java: Get docs directory from proper place.
+
+2007-01-24  Rick Moseley  <rmoseley@redhat.com>
+
 	* Gui.java: Add helpdocdirs.
 	* FryskGui.javain: Add parameter for help docs directory.
+
+2007-01-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* FryskHelpManager.java: Re-added.
+	* FryskHelpManager.javain: Deleted.
 
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* memory/MemoryWindow.java: Remove TaskException.
 	* disassembler/DisassemblyWindow.java: Ditto.
 	* register/RegisterWindow.java: Ditto.
+
+2007-01-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* FryskHelpManager.javain: New improved configuration-aware.
+	* FryskHelpManager.java: Changed to above.
 
 2007-01-19  Phil Muldoon   <pmuldoon@redhat.com>
 
@@ -31,7 +50,7 @@
 
 2007-01-19  Rick Moseley  <rmoseley@redhat.com>
 
-	* common/FryskHelpManager.java: New. Activates Frysk help.
+	* FryskHelpManager.java: New. Activates Frysk help.
 	* gladedir/frysk_session_manager.glade: Added "Help" button.
 	* SessionManagerGui.java: Ditto.
 

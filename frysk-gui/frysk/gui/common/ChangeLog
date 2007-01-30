@@ -1,22 +1,11 @@
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
+	* FryskHelpManager.java: Moved to frysk/gui/, along with ChangeLog
+	entries.
+	
 	* Moved frysk/gui/common/dialogs/ to frysk/gui/dialogs/.
 	
 	* Moved frysk/gui/common/prefs/ to frysk/gui/prefs/.
-
-2007-01-24  Rick Moseley  <rmoseley@redhat.com>
-
-	* FryskHelpManager.java: Get docs directory from proper place.
-
-2007-01-23  Rick Moseley  <rmoseley@redhat.com>
-
-	* FryskHelpManager.java: Re-added.
-	* FryskHelpManager.javain: Deleted.
-
-2007-01-19  Rick Moseley  <rmoseley@redhat.com>
-
-	* FryskHelpManager.javain: New improved configuration-aware.
-	* FryskHelpManager.java: Changed to above.
 
 2006-12-07  Andrew Cagney  <cagney@redhat.com>
 
