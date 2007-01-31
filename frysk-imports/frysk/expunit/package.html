@@ -1,0 +1,56 @@
+<html>
+<body>
+
+This package implements a simplistic version of expect that works with
+JUnit.
+
+<h2>Overview</h2>
+
+The {@link frysk.expunit} package provides a collection of methods and
+classes that can be used to implement expect based tests within the
+JUnit framework.
+
+<h2>Example</h2>
+
+Here is an extract from a simple testcase with running commentry.
+
+<p>
+The expect intance is kept in a class variable so that the tear down
+code can close it.  This is important as Expect consumes
+pseudo-terminal and other resources that must be cleaned up.
+<pre>
+Expect e;
+public void tearDown ()
+{
+  e.close ();
+}
+</pre>
+
+The test case proper then starts its program.  Here the program is
+<tt>tee</tt> which just copies all of <tt>STDIN</tt> to
+<tt>STDOUT</tt>.
+
+<pre>
+public void test ()
+{
+  e = new Expect (new String[] { "/usr/bin/tee" });
+</pre>
+
+The <tt>tee</tt> program is then sent some input (the string
+"catdogbird"), and then that the string was printed is confirmed.
+Several different matches are used, illustrating how partial matches
+can occur.
+
+<pre>
+  e.send ("catdogbi");
+  // skip "cat", match "dog", leaving "bi"
+  e.assertExpect (new Regex ("dog"));
+  // Append "rd", making "bird"
+  e.send ("rd");
+  // match that.
+  e.assertExpect (new Equals ("bird"));
+}
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+2007-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* doc-files/images-go-here: New file.
+	* package.html: New file.
+	* Eof.java: New file.
+	* Equals.java: New file.
+	* Expect.java: New file.
+	* Match.java: New file.
+	* Regex.java: New file.
+	* TestExpect.java: New file.
+	* Timeout.java: New file.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
