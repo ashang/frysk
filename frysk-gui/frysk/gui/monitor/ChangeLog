@@ -1,3 +1,7 @@
+2007-01-31  sami wagiaalla  <swagiaal@redhat.com>
+
+	* SessionProcTreeView.java: Removed thread view.
+
 2007-01-30  swagiaal  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLine.java: Added a buffer for buffering events unitl
@@ -24,7 +28,6 @@
 	* EditObserverDialog.java: Ditto.
 	* ProgramObserver.java: Ditto.
 	* ObserversDialog.java: Ditto.
-
 	* MainWindow.java: Update, frysk.sys.Pty renamed to
 	frysk.sys.PseudoTerminal.
 	* ConsoleWidget.java: Ditto.

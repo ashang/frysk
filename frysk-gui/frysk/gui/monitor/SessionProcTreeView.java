@@ -66,10 +66,7 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
-import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
@@ -89,29 +86,17 @@ public class SessionProcTreeView
 
   private TreeView procTreeView;
 
-  private TreeView threadTreeView;
-
   public SessionProcDataModel procDataModel;
 
-  private VPaned vPane;
-
   private TreeModelFilter procFilter;
-
-  private TreeModelFilter threadFilter;
 
   //private VBox statusWidget;
   
   private PIDColumnDialog procPidColumnDialog;
   
-  private TIDColumnDialog threadTidColumnDialog;
-  
   private ProcMenu procMenu;
   
-  private ThreadMenu threadMenu;
-  
   private String[] procColNames = {"Command", "VSZ", "RSS", "TIME", "PPID", "STAT", "NICE"}; 
-  
-  private String[] threadColNames = {"Entry function", "VSZ", "RSS", "TIME", "PPID", "STAT", "NICE"};
   
   private boolean[] colVisible = {true, true, true, true, false, false, false};
   
@@ -123,8 +108,6 @@ public class SessionProcTreeView
   
   private TreeViewColumn[] procTVC;
   
-  private TreeViewColumn[] threadTVC;
-
   private final EventViewer2 eventViewer;
   
   public SessionProcTreeView (LibGlade libGlade) throws IOException
@@ -133,19 +116,13 @@ public class SessionProcTreeView
 
     this.glade = libGlade;
     this.procTreeView = (TreeView) glade.getWidget("procTreeView");
-    this.threadTreeView = (TreeView) glade.getWidget("threadTreeView");
     
     this.procPidColumnDialog = new PIDColumnDialog(this.glade, this);
-    this.threadTidColumnDialog = new TIDColumnDialog(this.glade, this);
-    
+   
     this.procTVC = new TreeViewColumn[8];
-    this.threadTVC = new TreeViewColumn[8];
     
     this.procMenu = new ProcMenu(this.procPidColumnDialog, this);
-    this.threadMenu = new ThreadMenu(this.threadTidColumnDialog, this);
-
-    this.vPane = (VPaned) glade.getWidget("vPane");
-
+  
     eventViewer = new EventViewer2((new VBox(false,0)).getHandle());
     ScrolledWindow scrolledWindow = new  ScrolledWindow();
     scrolledWindow.addWithViewport(eventViewer);
@@ -158,8 +135,7 @@ public class SessionProcTreeView
     
     
     this.mountProcModel(this.procDataModel);
-    this.threadViewInit(procDataModel);
-
+    
     // Called when the user selects a different process in the procTreeView.
     this.procTreeView.getSelection().addListener(new TreeSelectionListener()
     {
@@ -169,8 +145,7 @@ public class SessionProcTreeView
         if (procTreeView.getSelection().getSelectedRows().length > 0)
           {
             TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
-            mountThreadModel(procDataModel, selected);
-
+            
             GuiProc data = (GuiProc) procFilter.getValue(
                                                          procFilter.getIter(selected),
                                                          procDataModel.getProcDataDC());
@@ -183,26 +158,6 @@ public class SessionProcTreeView
             	WindowManager.theManager.mainWindowStatusBar.push(
                         0,
                         data.getExecutableName());
-
-            // Sets the selected thread to the first thread.
-            if (threadTreeView.getModel().getFirstIter() != null)
-              {
-                threadTreeView.getSelection().select(
-                                                     threadTreeView.getModel().getFirstIter());
-              }
-          }
-      }
-    });
-
-    // called when a user selects a different thread from the threadTreeView.
-    this.threadTreeView.getSelection().addListener(new TreeSelectionListener()
-    {
-      public void selectionChangedEvent (TreeSelectionEvent event)
-      {
-        if (procTreeView.getSelection().getSelectedRows().length > 0
-            && threadTreeView.getSelection().getSelectedRows().length > 0)
-          {
-            //XXX Sami: do something upon selection
           }
       }
     });
@@ -230,53 +185,6 @@ public class SessionProcTreeView
       }
     });
 
-    this.threadTreeView.addListener(new MouseListener()
-    {
-
-      public boolean mouseEvent (MouseEvent event)
-      {
-        if (event.getType() == MouseEvent.Type.BUTTON_PRESS
-            & event.getButtonPressed() == MouseEvent.BUTTON3)
-          {
-
-            GuiTask data = getSelectedThread();
-            if (data != null)
-              threadMenu.popup(data);
-
-            // System.out.println("click : " + data); //$NON-NLS-1$
-            return true;
-          }
-        return false;
-      }
-    });
-    
-    this.procPidColumnDialog.addListener(new LifeCycleListener()
-    {
-      public boolean lifeCycleQuery (LifeCycleEvent arg0)
-      {
-        return false;
-      }
-
-      public void lifeCycleEvent (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          SessionProcTreeView.this.setProcCols();
-      }
-    });
-    
-    this.threadTidColumnDialog.addListener(new LifeCycleListener()
-    {
-      public boolean lifeCycleQuery (LifeCycleEvent arg0)
-      {
-        return false;
-      }
-
-      public void lifeCycleEvent (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          SessionProcTreeView.this.setThreadCols();
-      }
-    });
   }
 
   public void mountProcModel (final SessionProcDataModel dataModel)
@@ -622,370 +530,10 @@ public class SessionProcTreeView
     this.procTreeView.expandAll();
   }
 
-  public void mountThreadModel (final SessionProcDataModel dataModel,
-                                final TreePath relativeRoot)
-  {
-    final TreePath root = this.procFilter.convertPathToChildPath(relativeRoot);
-    this.threadFilter = new TreeModelFilter(dataModel.getModel(), root);
-
-    threadFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
-    {
-
-      public boolean filter (TreeModel model, TreeIter iter)
-      {
-
-        if (relativeRoot == null)
-          {
-            return false;
-          }
-        if (model.getValue(iter, dataModel.getThreadParentDC()) == procFilter.getValue(
-                                                                                       procFilter.getIter(relativeRoot),
-                                                                                       dataModel.getTidDC()))
-          {
-            return true;
-          }
-        else
-          {
-            return false;
-          }
-
-        // if(model.getValue(iter, psDataModel.getSensitiveDC()) == false){
-        // return false;
-        // }
-
-      }
-    });
-    
-    threadTVC[0].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getTidDC());
-
-        if (threadTVC[0].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getTidDC(),
-                                    SortType.DESCENDING);
-            threadTVC[0].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getTidDC(),
-                                    SortType.ASCENDING);
-            threadTVC[0].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-    
-//    threadTVC[1].addListener(new TreeViewColumnListener()
-//    {
-//      public void columnClickedEvent (TreeViewColumnEvent arg0)
-//      {
-//        threadTreeView.setSearchDataColumn(dataModel.getTidDC());
-//
-//        if (threadTVC[1].getSortOrder() == SortType.ASCENDING)
-//          {
-//            treeStore.setSortColumn(procDataModel.getTidDC(),
-//                                    SortType.DESCENDING);
-//            threadTVC[1].setSortOrder(SortType.DESCENDING);
-//          }
-//        else
-//          {
-//            treeStore.setSortColumn(procDataModel.getTidDC(),
-//                                    SortType.ASCENDING);
-//            threadTVC[1].setSortOrder(SortType.ASCENDING);
-//          }
-//      }
-//    });
-
-    threadTVC[2].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getVszDC());
-
-        if (threadTVC[2].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getVszDC(),
-                                    SortType.DESCENDING);
-            threadTVC[2].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getVszDC(),
-                                    SortType.ASCENDING);
-            threadTVC[2].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    threadTVC[3].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getRssDC());
-
-        if (threadTVC[3].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getRssDC(),
-                                    SortType.DESCENDING);
-            threadTVC[3].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getRssDC(),
-                                    SortType.ASCENDING);
-            threadTVC[3].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    threadTVC[4].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getTimeDC());
-
-        if (threadTVC[4].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getTimeDC(),
-                                    SortType.DESCENDING);
-            threadTVC[4].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getTimeDC(),
-                                    SortType.ASCENDING);
-            threadTVC[4].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    threadTVC[5].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getPPIDDC());
-
-        if (threadTVC[5].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getPPIDDC(),
-                                    SortType.DESCENDING);
-            threadTVC[5].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getPPIDDC(),
-                                    SortType.ASCENDING);
-            threadTVC[5].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    threadTVC[6].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getStateDC());
-
-        if (threadTVC[6].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getStateDC(),
-                                    SortType.DESCENDING);
-            threadTVC[6].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getStateDC(),
-                                    SortType.ASCENDING);
-            threadTVC[6].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    threadTVC[7].addListener(new TreeViewColumnListener()
-    {
-      public void columnClickedEvent (TreeViewColumnEvent arg0)
-      {
-        threadTreeView.setSearchDataColumn(dataModel.getNiceDC());
-
-        if (threadTVC[7].getSortOrder() == SortType.ASCENDING)
-          {
-            treeStore.setSortColumn(procDataModel.getNiceDC(),
-                                    SortType.DESCENDING);
-            threadTVC[7].setSortOrder(SortType.DESCENDING);
-          }
-        else
-          {
-            treeStore.setSortColumn(procDataModel.getNiceDC(),
-                                    SortType.ASCENDING);
-            threadTVC[7].setSortOrder(SortType.ASCENDING);
-          }
-      }
-    });
-
-    this.threadTreeView.setModel(threadFilter);
-    refreshThreadTree();
-  }
-
-  private void threadViewInit (SessionProcDataModel dataModel)
-  {
-
-    CellRendererText cellRendererText3 = new CellRendererText();
-    threadTVC[0] = new TreeViewColumn();
-    threadTVC[0].packStart(cellRendererText3, false);
-    threadTVC[0].addAttributeMapping(cellRendererText3,
-                               CellRendererText.Attribute.TEXT,
-                               procDataModel.getTidDC());
-    threadTVC[0].addAttributeMapping(cellRendererText3,
-                               CellRendererText.Attribute.FOREGROUND,
-                               procDataModel.getColorDC());
-    threadTVC[0].addAttributeMapping(cellRendererText3,
-                               CellRendererText.Attribute.WEIGHT,
-                               procDataModel.getWeightDC());
-
-    CellRendererText cellRendererText4 = new CellRendererText();
-    threadTVC[1] = new TreeViewColumn();
-    threadTVC[1].packStart(cellRendererText4, false);
-    threadTVC[1].addAttributeMapping(cellRendererText4,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getCommandDC());
-    threadTVC[1].addAttributeMapping(cellRendererText4,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[1].addAttributeMapping(cellRendererText4,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-
-    CellRendererText cellRendererText5 = new CellRendererText();
-    threadTVC[2] = new TreeViewColumn();
-    threadTVC[2].packStart(cellRendererText5, false);
-    threadTVC[2].addAttributeMapping(cellRendererText5,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getVszDC());
-    threadTVC[2].addAttributeMapping(cellRendererText5,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[2].addAttributeMapping(cellRendererText5,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    CellRendererText cellRendererText6 = new CellRendererText();
-    threadTVC[3] = new TreeViewColumn();
-    threadTVC[3].packStart(cellRendererText6, false);
-    threadTVC[3].addAttributeMapping(cellRendererText6,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getRssDC());
-    threadTVC[3].addAttributeMapping(cellRendererText6,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[3].addAttributeMapping(cellRendererText6,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    CellRendererText cellRendererText7 = new CellRendererText();
-    threadTVC[4] = new TreeViewColumn();
-    threadTVC[4].packStart(cellRendererText7, false);
-    threadTVC[4].addAttributeMapping(cellRendererText7,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getTimeDC());
-    threadTVC[4].addAttributeMapping(cellRendererText7,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[4].addAttributeMapping(cellRendererText7,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    CellRendererText cellRendererText8 = new CellRendererText();
-    threadTVC[5] = new TreeViewColumn();
-    threadTVC[5].packStart(cellRendererText8, false);
-    threadTVC[5].addAttributeMapping(cellRendererText8,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getPPIDDC());
-    threadTVC[5].addAttributeMapping(cellRendererText8,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[5].addAttributeMapping(cellRendererText8,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    CellRendererText cellRendererText9 = new CellRendererText();
-    threadTVC[6] = new TreeViewColumn();
-    threadTVC[6].packStart(cellRendererText9, false);
-    threadTVC[6].addAttributeMapping(cellRendererText9,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getStateDC());
-    threadTVC[6].addAttributeMapping(cellRendererText9,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[6].addAttributeMapping(cellRendererText9,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    CellRendererText cellRendererText10 = new CellRendererText();
-    threadTVC[7] = new TreeViewColumn();
-    threadTVC[7].packStart(cellRendererText10, false);
-    threadTVC[7].addAttributeMapping(cellRendererText10,
-                                   CellRendererText.Attribute.TEXT,
-                                   procDataModel.getNiceDC());
-    threadTVC[7].addAttributeMapping(cellRendererText10,
-                                   CellRendererText.Attribute.FOREGROUND,
-                                   procDataModel.getColorDC());
-    threadTVC[7].addAttributeMapping(cellRendererText10,
-                                   CellRendererText.Attribute.WEIGHT,
-                                   procDataModel.getWeightDC());
-    
-    
-    threadTVC[0].setTitle("TID"); //$NON-NLS-1$
-    threadTVC[1].setTitle("Entry Function"); //$NON-NLS-1$
-    threadTVC[2].setTitle("VSZ"); //$NON-NLS-1$
-    threadTVC[3].setTitle("RSS"); //$NON-NLS-1$
-    threadTVC[4].setTitle("TIME"); //$NON-NLS-1$
-    threadTVC[5].setTitle("PPID"); //$NON-NLS-1$
-    threadTVC[6].setTitle("STAT"); //$NON-NLS-1$
-    threadTVC[7].setTitle("NICE"); //$NON-NLS-1$
-
-    threadTVC[0].setVisible(true);
-    threadTVC[1].setVisible(true);
-    threadTVC[2].setVisible(true);
-    threadTVC[3].setVisible(true);
-    threadTVC[4].setVisible(true);
-    threadTVC[5].setVisible(true);
-    threadTVC[6].setVisible(true);
-    threadTVC[7].setVisible(true);
-
-    this.threadTreeView.appendColumn(threadTVC[0]);
-    this.threadTreeView.appendColumn(threadTVC[1]);
-    this.threadTreeView.appendColumn(threadTVC[2]);
-    this.threadTreeView.appendColumn(threadTVC[3]);
-    this.threadTreeView.appendColumn(threadTVC[4]);
-    this.threadTreeView.appendColumn(threadTVC[5]);
-    this.threadTreeView.appendColumn(threadTVC[6]);
-    this.threadTreeView.appendColumn(threadTVC[7]);
-
-    procDataModel.getModel().addListener(new TreeModelListener()
-    {
-
-      public void treeModelEvent (TreeModelEvent event)
-      {
-        threadTreeView.expandAll();
-      }
-
-    });
-
-    this.threadTreeView.expandAll();
-  }
-  
   public void refreshProcTree()
   {
     this.procDataModel.refreshProcRead();
     setProcCols();
-  }
-  
-  public void refreshThreadTree()
-  {
-    this.procDataModel.refreshThreadRead(getSelectedProc());
-    setThreadCols();
   }
   
   public void setProcCols()
@@ -995,23 +543,11 @@ public class SessionProcTreeView
                                                        this.colVisible[i]));
   }
   
-  public void setThreadCols()
-  {
-    for (int i = 0; i < threadColNames.length; i++)
-      this.threadTVC[i + 1].setVisible(prefs.getBoolean( threadColNames[i],
-                                                       this.colVisible[i]));
-  }
-  
   public String[] getProcColNames()
   {
     return this.procColNames;
   }
   
-  public String[] getThreadColNames()
-  {
-    return this.threadColNames;
-  }
-
   private GuiProc getSelectedProc ()
   {
     TreeSelection ts = this.procTreeView.getSelection();
@@ -1030,40 +566,16 @@ public class SessionProcTreeView
     return data;
   }
 
-  private GuiTask getSelectedThread ()
-  {
-    TreeSelection ts = this.threadTreeView.getSelection();
-    TreePath[] tp = ts.getSelectedRows();
-
-    if (tp.length == 0)
-      {
-        return null;
-      }
-
-    TreeModel model = this.threadFilter;
-    GuiTask data = (GuiTask) model.getValue(model.getIter(tp[0]),
-                                            this.procDataModel.getProcDataDC());
-    model.getValue(model.getIter(tp[0]), this.procDataModel.getTidDC());
-
-    return data;
-  }
-
   public void save (Preferences prefs)
   {
-    prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
     this.procPidColumnDialog.save(prefs);
-    this.threadTidColumnDialog.save(prefs);
   }
 
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
-    int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
-    this.vPane.setPosition(position);
     this.procPidColumnDialog.load(prefs);
-    this.threadTidColumnDialog.load(prefs);
     setProcCols();
-    setThreadCols();
   }
 
   public void setSession (Session session)
