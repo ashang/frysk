@@ -43,7 +43,7 @@ package frysk.expunit;
  * Interface used when expecting a timeout notification.
  */
 
-interface Timeout
+public interface Timeout
 {
     void timeout ();
 }
