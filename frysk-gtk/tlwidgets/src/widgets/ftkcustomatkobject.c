@@ -5,23 +5,15 @@
 void
 ftk_custom_atk_object_class_init (AtkObjectClass *klass)
 {
-  printf("ftk_custom_atk_object_class_init\n");
-  fflush(stdout);
 
-  // GObjectClass *gobject_class;
   GtkAccessibleClass *accessible_class;
   
-  // gobject_class = (GObjectClass *)klass;
   accessible_class = (GtkAccessibleClass *)klass;
-
-  //gobject_class->finalize = ftk_drawing_area_accessible_finalize;
 
   klass->get_n_children = ftk_custom_atk_object_get_n_children;
   klass->ref_child = ftk_custom_atk_object_ref_child;
   klass->initialize = ftk_custom_atk_object_init;
   
-  //accessible_class->connect_widget_destroyed = ftk_drawing_area_accessible_connect_widget_destroyed;
-  //accessible_da_private_data_quark = g_quark_from_static_string ("drawing_area-accessible-private-data");
 }
 
 AtkObject*
