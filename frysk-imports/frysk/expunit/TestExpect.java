@@ -107,4 +107,14 @@ public class TestExpect
 	// match that.
 	e.assertExpect (new Equals ("bird"));
     }
+
+    /**
+     * Try a command that is invoked via bash, bash will cause
+     * globbing et.al. to occure.  Expands the shell PID.
+     */
+    public void testUnderBash ()
+    {
+	e = new Expect ("echo x $$ y");
+	e.assertExpect ("x " + e.getPid () + " y");
+    }
 }

@@ -43,7 +43,7 @@ package frysk.expunit;
  * Interface used when expecting an end-of-file indication.
  */
 
-interface Eof
+public interface Eof
 {
     void eof ();
 }

@@ -82,6 +82,17 @@ public class Expect
     }
 
     /**
+     * Using <tt>bash</tt, create an expect instance running the
+     * specified command.  Since the command is invoked using
+     * <tt>bash</tt> it will be expanded using that shells variable
+     * and globbing rules.
+     */
+    public Expect (String command)
+    {
+	this (new String[] { "/bin/bash", "-c", command });
+    }
+
+    /**
      * Clean up.
      */
     public void close ()
@@ -106,6 +117,14 @@ public class Expect
     public void finalize ()
     {
 	close ();
+    }
+
+    /**
+     * Return the Process ID of the child.
+     */
+    public int getPid ()
+    {
+	return pid;
     }
 
     /**
@@ -224,7 +243,7 @@ public class Expect
      * Expect one of the patterns, fail if the default timeout, or eof
      * is reached.
      */
-    void assertExpect (Match[] matches)
+    public void assertExpect (Match[] matches)
     {
 	assertExpect (maxTimeoutMillis, null, null, matches);
     }
@@ -233,9 +252,17 @@ public class Expect
      * Expect the specified pattern, fail if the default timeout, or
      * eof is reached.
      */
-    void assertExpect (Match match)
+    public void assertExpect (Match match)
     {
 	assertExpect (new Match[] { match });
+    }
+
+    /**
+     * Expect the single regular expression pattern.
+     */
+    public void assertExpect (String regex)
+    {
+	assertExpect (new Regex (regex));
     }
 
     /**

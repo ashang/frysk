@@ -1,5 +1,12 @@
 2007-01-31  Andrew Cagney  <cagney@redhat.com>
 
+	* Timeout.java: Make public.
+	* Eof.java: Make public.
+	* Expect.java (getPid): Add.
+	(Expect(String)): Add.
+	(assertExpect(String)): Add.
+	* TestExpect.java (testUnderBash): Add.
+
 	* doc-files/images-go-here: New file.
 	* package.html: New file.
 	* Eof.java: New file.
