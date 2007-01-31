@@ -92,7 +92,9 @@ public class DwflModule
    * @return the name
    */
   public native String getName();
-    
+      
+  public native String getAddressName(long address);
+  
   private native ModuleElfBias module_getelf();
 
   /**

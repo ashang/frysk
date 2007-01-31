@@ -102,4 +102,16 @@ lib::dw::DwflModule::getLines(jstring filename, jint lineno, jint column)
   return 0;
 }
 
+jstring
+lib::dw::DwflModule::getAddressName(jlong address)
+{
+	Dwarf_Addr addr = (Dwarf_Addr) address;
+	
+	const char * methName = dwfl_module_addrname(DWFL_MODULE_POINTER, addr);
+	
+	if (methName == NULL)
+		return NULL;
+		
+	return JvNewStringUTF(methName);
+}
   
