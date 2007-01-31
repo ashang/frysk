@@ -39,8 +39,8 @@
 
 #include <errno.h>
 #include <unistd.h>
-#include <sys/select.h>
 #include <stdio.h>
+#include <sys/poll.h>
 
 #include <gcj/cni.h>
 
@@ -84,21 +84,15 @@ frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
 }
 
 jboolean
-frysk::sys::FileDescriptor::ready ()
+frysk::sys::FileDescriptor::ready (jlong timeout)
 {
-  fd_set readfds;
-  FD_ZERO (&readfds);
-  FD_SET (fd, &readfds);
-
-  struct timeval timeout = { 0, 0 };
-
-  errno = 0;
-  int count = ::select (fd + 1, &readfds, NULL, NULL, &timeout);
+  struct pollfd pollfd = { fd, POLLIN, 0 };
+  int count = ::poll (&pollfd, 1, timeout);
   int err = errno;
   // ::printf ("ready count %d\n", count);
   switch (count) {
   case 1:
-    return true;
+    return (pollfd.revents & (POLLIN | POLLHUP)) != 0;
   case 0:
     return false;
   default:
@@ -106,35 +100,46 @@ frysk::sys::FileDescriptor::ready ()
   }
 }
 
-jint
-frysk::sys::FileDescriptor::read (void)
+static jint
+doRead (jint fd, void *bytes, jint len)
 {
-  jbyte b;
   errno = 0;
-  int nr = ::read (fd, &b, 1);
+  int nr = ::read (fd, bytes, len);
   int err = errno;
+  // ::printf ("nr %d errno %d (%s)\n", nr, err, strerror (err));
   switch (nr) {
   case 0:
     return -1; // EOF
-  case 1:
-    return b & 0xff;
   default:
+    return nr;
+  case -1:
+    // Convert a hangup into EOF.
+    if (err == EIO) {
+      struct pollfd pollfd = { fd, 0, 0 };
+      if (::poll (&pollfd, 1, 0) > 0
+	  && (pollfd.revents & POLLHUP))
+	return -1;
+    }
     throwErrno (err, "read", "fd", fd);
   }
 }
 
 jint
+frysk::sys::FileDescriptor::read (void)
+{
+  jbyte b = 0;
+  errno = 0;
+  int nr = doRead (fd, &b, 1);
+  if (nr >= 0)
+    return b & 0xff;
+  else
+    return nr;
+}
+
+jint
 frysk::sys::FileDescriptor::read (jbyteArray bytes, jint off, jint len)
 {
-  errno = 0;
-  int nr = ::read (fd, elements(bytes) + off, len);
-  int err = errno;
-  if (nr == 0)
-    return -1; // EOF
-  else if (nr > 0)
-    return nr;
-  else
-    throwErrno (err, "read", "fd", fd);
+  return doRead (fd, elements(bytes) + off, len);
 }
 
 JArray<frysk::sys::FileDescriptor*>*

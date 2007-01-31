@@ -63,6 +63,22 @@ public class FileDescriptor
     }
 
     /**
+     * Poll the file descriptor determining if there is there at least
+     * one character, the end-of-file, or hangup indication available
+     * for reading?
+     */
+    public boolean ready ()
+    {
+	return ready (0);
+    }
+    /**
+     * Wait on the file descriptor for upto millesecond timeout,
+     * checking for at least one character, an eof indication, or
+     * hangup available for reading?
+     */
+    public native boolean ready (long millisecondTimeout);
+
+    /**
      * Read a single byte from the file descriptor.  Return -1 if
      * end-of-file.
      */
@@ -83,11 +99,6 @@ public class FileDescriptor
      * Write an entire array of bytes to the file descriptor.
      */
     public native void write (byte[] bytes, int off, int len);
-
-    /**
-     * Is there at least one character available for reading?
-     */
-    public native boolean ready ();
 
     /**
      * Close the file descriptor.

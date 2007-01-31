@@ -62,6 +62,23 @@ public class TestFileDescriptor
 	out = pipe[1];
     }
 
+    void assertBecomesReady (FileDescriptor fd)
+    {
+	final int maxDelay = 100;
+	int delay;
+	for (delay = 0; delay < maxDelay; delay++) {
+	    if (fd.ready ())
+		break;
+	    try {
+		Thread.sleep (1);
+	    }
+	    catch (InterruptedException e) {
+		fail ("wait interrupted");
+	    }
+	}
+	assertTrue ("FileDescriptor became ready", delay < maxDelay);
+    }
+
     /**
      * Test the ready method, a pipe is only ready if something was
      * written to it.*/
@@ -136,6 +153,7 @@ public class TestFileDescriptor
     public void testByteEOF ()
     {
 	out.close ();
+	assertBecomesReady (in);
 	int b = in.read ();
 	assertEquals ("eof", -1, b);
     }
@@ -146,6 +164,7 @@ public class TestFileDescriptor
     public void testArrayEOF ()
     {
 	out.close ();
+	assertBecomesReady (in);
 	int b = in.read (new byte[10], 0, 10);
 	assertEquals ("eof", -1, b);
     }

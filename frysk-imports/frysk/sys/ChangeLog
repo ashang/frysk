@@ -1,3 +1,17 @@
+2007-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* FileDescriptor.java (ready(long)): New.
+	(ready): Implement using ready(long).
+	* cni/FileDescriptor.cxx (ready): Update.
+	(doRead): New local function.
+	(read, read(byte[],int,int)): Implement using doRead.
+	* PseudoTerminal.java (toString): Implement.
+	* TestFileDescriptor.java (assertBecomesReady): New.
+	(testArrayEOF, testByteEOF): Add assertBecomesReady.
+	* TestPseudoTerminal.java (assertBecomesAvailable): Rename
+	assertAvailable.
+	(testEOF): New.
+
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/PseudoTerminal.cxx: Rename cni/Pty.cxx.

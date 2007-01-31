@@ -59,6 +59,11 @@ public class PseudoTerminal
      */
     public native String getName();
 
+    public String toString ()
+    {
+	return getName ();
+    }
+
     /**
      * Set pseudo-terminal parameters to set up for use in jline.
      *

@@ -94,7 +94,7 @@ public class TestPseudoTerminal extends TestCase
     /**
      * Wait a short period of time for something to become available.
      */
-    private void assertAvailable (InputStream in)
+    private void assertBecomesAvailable (InputStream in)
 	throws java.io.IOException, InterruptedException
     {
 	int delay;
@@ -127,7 +127,8 @@ public class TestPseudoTerminal extends TestCase
 	String hi = "hello";
 	PseudoTerminal echo = getPseudoTerminalDaemon (new String[] { "/bin/echo", hi });
 	InputStream in = echo.getInputStream ();
-	assertAvailable (in);
+	assertBecomesAvailable (in);
+	// Read back the message
 	byte[] bytes = new byte[100];
 	int bytesRead  = in.read (bytes);
 	assertEquals ("read hi", new String (bytes, 0, bytesRead),
@@ -146,9 +147,24 @@ public class TestPseudoTerminal extends TestCase
 	InputStream in = tee.getInputStream ();
 	OutputStream out = tee.getOutputStream ();
 	out.write (hi.getBytes ());
-	assertAvailable (in);
+	assertBecomesAvailable (in);
 	byte[] bytes = new byte[100];
 	int bytesRead = in.read (bytes);
 	assertEquals ("read hi", new String (bytes, 0, bytesRead), hi);
     }
-}
+
+    /**
+     * Wire a PseudoTerminal to a program that just exits, creating
+     * EOF. Check that is correctly detected.
+     */
+    public void testEOF ()
+	throws java.io.IOException, InterruptedException
+    {
+	PseudoTerminal exit = getPseudoTerminalDaemon (new String [] { "/bin/true" });
+	InputStream in = exit.getInputStream ();
+	assertBecomesAvailable (in);
+	byte[] bytes = new byte[100];
+	int bytesRead = in.read (bytes);
+	assertEquals ("eof read", -1, bytesRead);
+    }
+  }
