@@ -162,9 +162,10 @@ public class Expect
 		break;
 	    default:
 		String read = new String (bytes, 0, nr);
-		logger.log (Level.FINE, "{0} pollChild -> read {1}\n",
-			    new Object[] { this, read });
 		output = output + read;
+		logger.log (Level.FINE,
+			    "{0} pollChild -> read <<{1}>> giving <<{2}>>\n",
+			    new Object[] { this, read, output });
 		break;
 	    }
 	}
@@ -175,6 +176,9 @@ public class Expect
      */
     void send (String string)
     {
+	logger.log (Level.FINE,
+		    "{0} send <<{1}>>\n",
+		    new Object[] { this, string });
 	byte[] bytes = string.getBytes ();
 	child.write (bytes, 0, bytes.length);
     }
@@ -193,6 +197,9 @@ public class Expect
 		for (int i = 0; i < matches.length; i++) {
 		    Match p = matches[i];
 		    if (p.find (output)) {
+			logger.log (Level.FINE,
+				    "{0} match <<{1}>>\n",
+				    new Object[] { this, p.group () });
 			p.execute ();
 			// Remove everying up to and including what
 			// matched.
@@ -203,6 +210,7 @@ public class Expect
 		}
 	    }
 	    if (eof) {
+		logger.log (Level.FINE, "{0} match EOF\n", this);
 		if (expectEof != null)
 		    expectEof.eof ();
 		else
@@ -211,6 +219,7 @@ public class Expect
 	    }
 	    long timeRemaining = endTime - System.currentTimeMillis ();
 	    if (timeRemaining <= 0) {
+		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
 		if (expectTimeout != null)
 		    expectTimeout.timeout ();
 		else

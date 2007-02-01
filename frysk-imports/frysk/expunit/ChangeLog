@@ -1,5 +1,11 @@
 2007-01-31  Andrew Cagney  <cagney@redhat.com>
 
+	* package.html: Update examples.
+	* TestExpect.java (testRegex): Change test string to catchthebird.
+	(testBash): New.
+	* Regex.java: Specify Pattern.DOTALL.
+	* Expect.java: Improve logging.
+	
 	* Timeout.java: Make public.
 	* Eof.java: Make public.
 	* Expect.java (getPid): Add.

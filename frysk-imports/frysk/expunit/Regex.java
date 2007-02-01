@@ -52,7 +52,7 @@ public class Regex
     private final Pattern pattern;
     public Regex (String pattern)
     {
-	this.pattern = Pattern.compile (pattern);
+	this.pattern = Pattern.compile (pattern, Pattern.DOTALL);
     }
     /**
      * Find the pattern in the output, normally this is an unanchored

@@ -98,14 +98,14 @@ public class TestExpect
      */
     public void testRegex ()
     {
-	e = new Expect (new String[] { "/usr/bin/tee" });
-	e.send ("catdogbi");
-	// skip "cat", match "dog", leaving "bi"
-	e.assertExpect (new Regex ("dog"));
+	e = new Expect ("tee");
+	e.send ("catchthebi");
+	// Skip "catch", match "the", leaving "bi".
+	e.assertExpect ("the");
 	// Append "rd", making "bird"
 	e.send ("rd");
-	// match that.
-	e.assertExpect (new Equals ("bird"));
+	// Match the "bird".
+	e.assertExpect ("bird");
     }
 
     /**
@@ -116,5 +116,48 @@ public class TestExpect
     {
 	e = new Expect ("echo x $$ y");
 	e.assertExpect ("x " + e.getPid () + " y");
+    }
+
+    /**
+     * Try interacting with bash, check here that the pseudo-terminal
+     * is correctly configured - that no double echo is occuring for
+     * instance.
+     */
+    public void testBash ()
+    {
+	// Create the shell, as sh
+	e = new Expect (new String[] { "/bin/sh" });
+	// Match the initial prompt.  This ensures that things are
+	// blocked until the shell is fully running.  As a side effect
+	// it also discards all output so far.
+	e.assertExpect ("\\$ ");
+	// Send a command to simplify the prompt, and then match it.
+	// Notice how the matching pattern includes the
+	// carrage-return, the new-line, and the promt.  That ensures
+	// that it doesn't accidently match the command.
+	e.send ("PS1='\\$ '\r");
+	e.assertExpect ("\r\n\\$ ");
+	// Check out the terminal, again be careful to match the
+	// prompt.
+	e.send ("stty -a\r");
+	final StringBuffer g = new StringBuffer ();
+	e.assertExpect (new Match[]
+	    {
+		new Regex ("\\s(-brkint)\\s.*\\$ ")
+		{
+		    public void execute ()
+		    {
+			g.append (group (1));
+		    }
+		},
+		new Regex ("\\s(brkint)\\s.*\\$ ")
+		{
+		    public void execute ()
+		    {
+			g.append (group (1));
+		    }
+		}
+	    });
+	assertEquals ("brk mode", "-brkint", g.toString ());
     }
 }
