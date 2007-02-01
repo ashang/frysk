@@ -1,5 +1,5 @@
 /* Standard find_debuginfo callback for libdwfl.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -54,26 +54,22 @@
 #include "system.h"
 
 
-#define DEFAULT_DEBUGINFO_PATH ":.debug:/usr/lib/debug"
-
-
 /* Try to open64 [DIR/][SUBDIR/]DEBUGLINK, return file descriptor or -1.
    On success, *DEBUGINFO_FILE_NAME has the malloc'd name of the open file.  */
 static int
 try_open (const char *dir, const char *subdir, const char *debuglink,
 	  char **debuginfo_file_name)
 {
-  char *fname = NULL;
+  char *fname;
   if (dir == NULL && subdir == NULL)
-    fname = strdup (debuglink);
-  else if (subdir == NULL)
-    asprintf (&fname, "%s/%s", dir, debuglink);
-  else if (dir == NULL)
-    asprintf (&fname, "%s/%s", subdir, debuglink);
-  else
-    asprintf (&fname, "%s/%s/%s", dir, subdir, debuglink);
-
-  if (fname == NULL)
+    {
+      fname = strdup (debuglink);
+      if (fname == NULL)
+	return -1;
+    }
+  else if ((subdir == NULL ? asprintf (&fname, "%s/%s", dir, debuglink)
+	    : dir == NULL ? asprintf (&fname, "%s/%s", subdir, debuglink)
+	    : asprintf (&fname, "%s/%s/%s", dir, subdir, debuglink)) < 0)
     return -1;
 
   int fd = TEMP_FAILURE_RETRY (open64 (fname, O_RDONLY));

@@ -1,4 +1,4 @@
-/* Enumerate DWARF register numbers and their names.
+/* Return register name information.
    Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
@@ -47,54 +47,25 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#include "libdwflP.h"
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include <inttypes.h>
+#include <libeblP.h>
 
 
-int
-dwfl_module_register_names (mod, func, arg)
-     Dwfl_Module *mod;
-     int (*func) (void *, int regno, const char *setname,
-		  const char *prefix, const char *regname,
-		  int bits, int type);
-     void *arg;
+ssize_t
+ebl_register_info (ebl, regno, name, namelen, prefix, setname, bits, type)
+     Ebl *ebl;
+     int regno;
+     char *name;
+     size_t namelen;
+     const char **prefix;
+     const char **setname;
+     int *bits;
+     int *type;
 {
-  if (unlikely (mod == NULL))
-    return -1;
-
-  if (unlikely (mod->ebl == NULL))
-    {
-      Dwfl_Error error = __libdwfl_module_getebl (mod);
-      if (error != DWFL_E_NOERROR)
-	{
-	  __libdwfl_seterrno (error);
-	  return -1;
-	}
-    }
-
-  int nregs = ebl_register_info (mod->ebl, -1, NULL, 0,
-				 NULL, NULL, NULL, NULL);
-  int result = 0;
-  for (int regno = 0; regno < nregs && likely (result == 0); ++regno)
-    {
-      char name[32];
-      const char *setname = NULL;
-      const char *prefix = NULL;
-      int bits = -1;
-      int type = -1;
-      ssize_t len = ebl_register_info (mod->ebl, regno, name, sizeof name,
-				       &prefix, &setname, &bits, &type);
-      if (unlikely (len < 0))
-	{
-	  __libdwfl_seterrno (DWFL_E_LIBEBL);
-	  result = -1;
-	  break;
-	}
-      if (likely (len > 0))
-	{
-	  assert (len > 1);	/* Backend should never yield "".  */
-	  result = (*func) (arg, regno, setname, prefix, name, bits, type);
-	}
-    }
-
-  return result;
+  return ebl == NULL ? -1 : ebl->register_info (ebl, regno, name, namelen,
+						prefix, setname, bits, type);
 }

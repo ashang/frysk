@@ -1,5 +1,5 @@
 /* Register names and numbers for PowerPC DWARF.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -28,14 +28,16 @@
 #endif
 
 #include <string.h>
+#include <dwarf.h>
 
 #define BACKEND ppc_
 #include "libebl_CPU.h"
 
 ssize_t
-ppc_register_name (Ebl *ebl __attribute__ ((unused)),
+ppc_register_info (Ebl *ebl __attribute__ ((unused)),
 		   int regno, char *name, size_t namelen,
-		   const char **prefix, const char **setname)
+		   const char **prefix, const char **setname,
+		   int *bits, int *type)
 {
   if (name == NULL)
     return 1156;
@@ -44,6 +46,9 @@ ppc_register_name (Ebl *ebl __attribute__ ((unused)),
     return -1;
 
   *prefix = NULL;
+  *bits = ebl->machine == EM_PPC64 ? 64 : 32;
+  *type = (regno < 32 ? DW_ATE_signed
+	   : regno < 64 ? DW_ATE_float : DW_ATE_unsigned);
 
   if (regno < 32 || regno == 64 || regno == 66)
     *setname = "integer";
@@ -52,7 +57,10 @@ ppc_register_name (Ebl *ebl __attribute__ ((unused)),
   else if (regno < 1124)
     *setname = "privileged";
   else
-    *setname = "vector";
+    {
+      *setname = "vector";
+      *bits = 128;
+    }
 
   switch (regno)
     {
@@ -83,11 +91,11 @@ ppc_register_name (Ebl *ebl __attribute__ ((unused)),
       break;
 
     case 64:
-      return stpcpy (name, "cr") - name;
+      return stpcpy (name, "cr") + 1 - name;
     case 65:
-      return stpcpy (name, "fpscr") - name;
+      return stpcpy (name, "fpscr") + 1 - name;
     case 66:
-      return stpcpy (name, "msr") - name;
+      return stpcpy (name, "msr") + 1 - name;
 
     case 70 + 0 ... 70 + 9:
       name[0] = 's';
@@ -155,5 +163,5 @@ ppc_register_name (Ebl *ebl __attribute__ ((unused)),
   return namelen;
 }
 
-__typeof (ppc_register_name)
-     ppc64_register_name __attribute__ ((alias ("ppc_register_name")));
+__typeof (ppc_register_info)
+     ppc64_register_info __attribute__ ((alias ("ppc_register_info")));
