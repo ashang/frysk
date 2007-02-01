@@ -1,5 +1,5 @@
 /* Maintenance of module list in libdwfl.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ nofree (void *arg __attribute__ ((unused)))
 }
 
 void
-internal_function_def
+internal_function
 __libdwfl_module_free (Dwfl_Module *mod)
 {
   if (mod->lazy_cu_root != NULL)
@@ -109,7 +109,7 @@ dwfl_report_begin (Dwfl *dwfl)
 }
 INTDEF (dwfl_report_begin)
 
-/* Report that a module called NAME pans addresses [START, END).
+/* Report that a module called NAME spans addresses [START, END).
    Returns the module handle, either existing or newly allocated,
    or returns a null pointer for an allocation error.  */
 Dwfl_Module *
@@ -161,6 +161,7 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
 }
 INTDEF (dwfl_report_module)
 
+
 static int
 compare_modules (const void *a, const void *b)
 {
@@ -170,7 +171,14 @@ compare_modules (const void *a, const void *b)
     return -1;
   if (m2 == NULL)
     return 1;
-  return (GElf_Sxword) (m1->low_addr - m2->low_addr);
+
+  /* No signed difference calculation is correct here, since the
+     terms are unsigned and could be more than INT64_MAX apart.  */
+  if (m1->low_addr < m2->low_addr)
+    return -1;
+  if (m1->low_addr > m2->low_addr)
+    return 1;
+  return 0;
 }
 
 
@@ -179,11 +187,12 @@ compare_modules (const void *a, const void *b)
    existed before but was not included in the current report.
    Returns a nonzero return value from the callback.
    DWFL cannot be used until this function has returned zero.  */
-int dwfl_report_end (Dwfl *dwfl,
-		     int (*removed) (Dwfl_Module *, void *,
-				     const char *, Dwarf_Addr,
-				     void *arg),
-		     void *arg)
+int
+dwfl_report_end (Dwfl *dwfl,
+		 int (*removed) (Dwfl_Module *, void *,
+				 const char *, Dwarf_Addr,
+				 void *arg),
+		 void *arg)
 {
   assert (dwfl->modules == NULL);
 

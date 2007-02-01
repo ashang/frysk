@@ -1,5 +1,5 @@
 /* Get information from a source line record returned by libdwfl.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@
 #include "libdwflP.h"
 #include "../libdw/libdwP.h"
 
-extern const char *
+const char *
 dwfl_lineinfo (Dwfl_Line *line, Dwarf_Addr *addr, int *linep, int *colp,
 	       Dwarf_Word *mtime, Dwarf_Word *length)
 {

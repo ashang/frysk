@@ -69,7 +69,8 @@ am__objects_3 = i386_init.$(OBJEXT) i386_symbol.$(OBJEXT) \
 libebl_i386_pic_a_OBJECTS = $(am_libebl_i386_pic_a_OBJECTS)
 libebl_ia64_pic_a_AR = $(AR) $(ARFLAGS)
 libebl_ia64_pic_a_LIBADD =
-am__objects_4 = ia64_init.$(OBJEXT) ia64_symbol.$(OBJEXT)
+am__objects_4 = ia64_init.$(OBJEXT) ia64_symbol.$(OBJEXT) \
+	ia64_regs.$(OBJEXT) ia64_retval.$(OBJEXT)
 libebl_ia64_pic_a_OBJECTS = $(am_libebl_ia64_pic_a_OBJECTS)
 libebl_ppc64_pic_a_AR = $(AR) $(ARFLAGS)
 libebl_ppc64_pic_a_LIBADD =
@@ -93,7 +94,7 @@ libebl_sh_pic_a_OBJECTS = $(am_libebl_sh_pic_a_OBJECTS)
 libebl_sparc_pic_a_AR = $(AR) $(ARFLAGS)
 libebl_sparc_pic_a_LIBADD =
 am__objects_9 = sparc_init.$(OBJEXT) sparc_symbol.$(OBJEXT) \
-	sparc_regs.$(OBJEXT)
+	sparc_regs.$(OBJEXT) sparc_retval.$(OBJEXT)
 libebl_sparc_pic_a_OBJECTS = $(am_libebl_sparc_pic_a_OBJECTS)
 libebl_x86_64_pic_a_AR = $(AR) $(ARFLAGS)
 libebl_x86_64_pic_a_LIBADD =
@@ -166,6 +167,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -175,6 +179,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -270,7 +276,7 @@ x86_64_SRCS = x86_64_init.c x86_64_symbol.c x86_64_corenote.c \
 
 libebl_x86_64_pic_a_SOURCES = $(x86_64_SRCS)
 am_libebl_x86_64_pic_a_OBJECTS = $(x86_64_SRCS:.c=.os)
-ia64_SRCS = ia64_init.c ia64_symbol.c
+ia64_SRCS = ia64_init.c ia64_symbol.c ia64_regs.c ia64_retval.c
 libebl_ia64_pic_a_SOURCES = $(ia64_SRCS)
 am_libebl_ia64_pic_a_OBJECTS = $(ia64_SRCS:.c=.os)
 alpha_SRCS = alpha_init.c alpha_symbol.c alpha_retval.c
@@ -279,7 +285,7 @@ am_libebl_alpha_pic_a_OBJECTS = $(alpha_SRCS:.c=.os)
 arm_SRCS = arm_init.c arm_symbol.c
 libebl_arm_pic_a_SOURCES = $(arm_SRCS)
 am_libebl_arm_pic_a_OBJECTS = $(arm_SRCS:.c=.os)
-sparc_SRCS = sparc_init.c sparc_symbol.c sparc_regs.c
+sparc_SRCS = sparc_init.c sparc_symbol.c sparc_regs.c sparc_retval.c
 libebl_sparc_pic_a_SOURCES = $(sparc_SRCS)
 am_libebl_sparc_pic_a_OBJECTS = $(sparc_SRCS:.c=.os)
 ppc_SRCS = ppc_init.c ppc_symbol.c ppc_retval.c ppc_regs.c
@@ -301,7 +307,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -326,9 +332,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstLIBRARIES:
@@ -391,6 +397,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_retval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_symbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ia64_init.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ia64_regs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ia64_retval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ia64_symbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppc64_init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppc64_retval.Po@am__quote@
@@ -407,6 +415,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sh_symbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc_init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc_regs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc_retval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc_symbol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x86_64_corenote.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x86_64_init.Po@am__quote@
@@ -601,11 +610,10 @@ libebl_%.so: libebl_%_pic.a libebl_%.map $(libelf) $(libdw)
 libebl_%.map: Makefile
 	echo 'ELFUTILS_$(PACKAGE_VERSION) { global: $*_init; local: *; };' > $@
 
-%.os: %.c %.o
+%.os: %.c
 	if $(COMPILE) -c -o $@ -fpic -DPIC -DSHARED -MT $@ -MD -MP \
 	  -MF "$(DEPDIR)/$*.Tpo" `test -f '$<' || echo '$(srcdir)/'`$<; \
-	then cat "$(DEPDIR)/$*.Tpo" >> "$(DEPDIR)/$*.Po"; \
-	     rm -f "$(DEPDIR)/$*.Tpo"; \
+	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
 	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
 	fi
 

@@ -35,7 +35,6 @@ AM_CFLAGS += -fpic -Wall -Wshadow -Werror -Wunused -Wextra -Wformat=2 \
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libebl \
 	   -I$(top_srcdir)/libelf -I$(top_srcdir)/libdw \
 	   -I$(top_srcdir)/lib -I..
-PACKAGE_VERSION = @PACKAGE_VERSION@
 
 
 modules = i386 sh x86_64 ia64 alpha arm sparc ppc ppc64 s390
@@ -84,7 +83,7 @@ x86_64_SRCS = x86_64_init.c x86_64_symbol.c x86_64_corenote.c \
 libebl_x86_64_pic_a_SOURCES = $(x86_64_SRCS)
 am_libebl_x86_64_pic_a_OBJECTS = $(x86_64_SRCS:.c=.os)
 
-ia64_SRCS = ia64_init.c ia64_symbol.c
+ia64_SRCS = ia64_init.c ia64_symbol.c ia64_regs.c ia64_retval.c
 libebl_ia64_pic_a_SOURCES = $(ia64_SRCS)
 am_libebl_ia64_pic_a_OBJECTS = $(ia64_SRCS:.c=.os)
 
@@ -96,7 +95,7 @@ arm_SRCS = arm_init.c arm_symbol.c
 libebl_arm_pic_a_SOURCES = $(arm_SRCS)
 am_libebl_arm_pic_a_OBJECTS = $(arm_SRCS:.c=.os)
 
-sparc_SRCS = sparc_init.c sparc_symbol.c sparc_regs.c
+sparc_SRCS = sparc_init.c sparc_symbol.c sparc_regs.c sparc_retval.c
 libebl_sparc_pic_a_SOURCES = $(sparc_SRCS)
 am_libebl_sparc_pic_a_OBJECTS = $(sparc_SRCS:.c=.os)
 
@@ -113,11 +112,10 @@ libebl_s390_pic_a_SOURCES = $(s390_SRCS)
 am_libebl_s390_pic_a_OBJECTS = $(s390_SRCS:.c=.os)
 
 
-%.os: %.c %.o
+%.os: %.c
 	if $(COMPILE) -c -o $@ -fpic -DPIC -DSHARED -MT $@ -MD -MP \
 	  -MF "$(DEPDIR)/$*.Tpo" `test -f '$<' || echo '$(srcdir)/'`$<; \
-	then cat "$(DEPDIR)/$*.Tpo" >> "$(DEPDIR)/$*.Po"; \
-	     rm -f "$(DEPDIR)/$*.Tpo"; \
+	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
 	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
 	fi
 

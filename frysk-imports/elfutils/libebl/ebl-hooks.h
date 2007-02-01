@@ -1,5 +1,5 @@
 /* Backend hook signatures internal interface for libebl.
-   Copyright (C) 2000, 2001, 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -116,6 +116,12 @@ bool EBLHOOK(debugscn_p) (const char *);
 /* Check whether given relocation is a copy relocation.  */
 bool EBLHOOK(copy_reloc_p) (int);
 
+/* Check whether given relocation is a no-op relocation.  */
+bool EBLHOOK(none_reloc_p) (int);
+
+/* Check whether given relocation is a relative relocation.  */
+bool EBLHOOK(relative_reloc_p) (int);
+
 /* Check whether given symbol's value is ok despite normal checks.  */
 bool EBLHOOK(check_special_symbol) (Elf *, GElf_Ehdr *, const GElf_Sym *,
 			      const char *, const GElf_Shdr *);
@@ -129,9 +135,10 @@ int EBLHOOK(return_value_location) (Dwarf_Die *functypedie,
 				    const Dwarf_Op **locp);
 
 /* Return register name information.  */
-ssize_t EBLHOOK(register_name) (Ebl *ebl,
+ssize_t EBLHOOK(register_info) (Ebl *ebl,
 				int regno, char *name, size_t namelen,
-				const char **prefix, const char **setname);
+				const char **prefix, const char **setname,
+				int *bits, int *type);
 
 
 /* Destructor for ELF backend handle.  */

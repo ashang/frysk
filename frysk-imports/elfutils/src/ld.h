@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -115,6 +115,10 @@ struct usedfiles
      used in a reference.  */
   bool used;
 
+  /* True when file should be added to DT_NEEDED list only when
+     directly referenced.  */
+  bool as_needed;
+
   /* If nonzero this is the archive sequence number which can be used to
      determine whether back refernces from -( -) or GROUP statements
      have to be followed.  */
@@ -170,6 +174,8 @@ struct usedfiles
     Elf32_Word allsectionsidx;
     /* True if the section is used.  */
     bool used;
+    /* True if section is an unused COMDAT section.  */
+    bool unused_comdat;
     /* Section group number.  This is the index of the SHT_GROUP section.  */
     Elf32_Word grpid;
     /* Pointer back to the containing file information structure.  */
@@ -440,6 +446,8 @@ struct symbol
   unsigned int weak:1;
   unsigned int added:1;
   unsigned int merged:1;
+  unsigned int local:1;
+  unsigned int hidden:1;
   /* Nonzero if the symbol is on the from_dso list.  */
   unsigned int on_dsolist:1;
   /* Nonzero if symbol needs copy relocation, reset when the
@@ -791,6 +799,10 @@ struct ld_state
   /* If true static linking is requested.  */
   bool statically;
 
+  /* If true, add DT_NEEDED entries for following files if they are
+     needed.  */
+  bool as_needed;
+
   /* How to extract elements from archives.  */
   enum extract_rule extract_rule;
 
@@ -948,6 +960,14 @@ struct ld_state
   bool default_bind_local;
   bool default_bind_global;
 
+  /* Execuatable stack selection.  */
+  enum execstack
+    {
+      execstack_false = 0,
+      execstack_true,
+      execstack_false_force
+    } execstack;
+
   /* True if only used sections are used.  */
   bool gc_sections;
 
@@ -991,9 +1011,8 @@ struct ld_state
   /* Lazy-loading state for dependencies.  */
   bool lazyload;
 
-  /* True is DSOs which are not used in the linking process are not
-     recorded.  */
-  bool ignore_unused_dsos;
+  /* True if an .eh_frame_hdr section should be generated.  */
+  bool eh_frame_hdr;
 
 
   /* True if in executables all global symbols should be exported in

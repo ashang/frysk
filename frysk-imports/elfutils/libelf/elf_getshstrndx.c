@@ -140,7 +140,7 @@ elf_getshstrndx (elf, dst)
 		      goto out;
 		    }
 
-		  /* We can directly access the memory.  */
+		/* We can directly access the memory.  */
 		  num = ((Elf32_Shdr *) (elf->map_address + elf->start_offset
 					 + offset))->sh_link;
 		}
@@ -193,7 +193,7 @@ elf_getshstrndx (elf, dst)
 		      goto out;
 		    }
 
-		  /* We can directly access the memory.  */
+		/* We can directly access the memory.  */
 		  num = ((Elf64_Shdr *) (elf->map_address
 			 + elf->start_offset + offset))->sh_link;
 		}

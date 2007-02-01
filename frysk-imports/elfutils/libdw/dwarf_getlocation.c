@@ -1,5 +1,5 @@
 /* Return location expression list.
-   Copyright (C) 2000, 2001, 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
@@ -471,9 +471,13 @@ dwarf_getlocation_addr (attr, address, llbufs, listlens, maxlocs)
 							     &attr_mem),
 					 &base) != 0)
 	    {
-	      if (INTUSE(dwarf_errno) () == 0)
-		goto invalid;
-	      return -1;
+	      if (INTUSE(dwarf_errno) () != 0)
+		return -1;
+
+	      /* The compiler provided no base address when it should
+		 have.  Buggy GCC does this when it used absolute
+		 addresses in the location list and no DW_AT_ranges.  */
+	      base = 0;
 	    }
 	}
 

@@ -43,7 +43,12 @@ bin_PROGRAMS = readelf$(EXEEXT) nm$(EXEEXT) size$(EXEEXT) \
 	findtextrel$(EXEEXT) addr2line$(EXEEXT) elfcmp$(EXEEXT) \
 	objdump$(EXEEXT) ranlib$(EXEEXT) strings$(EXEEXT)
 @NATIVE_LD_FALSE@noinst_PROGRAMS = $(am__EXEEXT_1)
-@NATIVE_LD_TRUE@am__append_1 = libld_elf.a
+# We never build this library but we need to get the dependency files
+# of all the linker backends that might be used in a non-generic linker.
+@NEVER_TRUE@am__append_1 = libdummy.a
+# -ldl is always needed for libebl.
+@NATIVE_LD_TRUE@am__append_2 = libld_elf.a
+@NATIVE_LD_TRUE@am_libld_elf_i386_pic_a_OBJECTS =
 subdir = src
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in ChangeLog ldlex.c ldscript.c ylwrap
@@ -58,9 +63,15 @@ CONFIG_CLEAN_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
 ARFLAGS = cru
+libdummy_a_AR = $(AR) $(ARFLAGS)
+libdummy_a_LIBADD =
+am__libdummy_a_SOURCES_DIST = i386_ld.c
+@NEVER_TRUE@am_libdummy_a_OBJECTS = i386_ld.$(OBJEXT)
+libdummy_a_OBJECTS = $(am_libdummy_a_OBJECTS)
 libld_elf_a_AR = $(AR) $(ARFLAGS)
 libld_elf_a_LIBADD =
-am_libld_elf_a_OBJECTS = $(base_cpu)_ld.$(OBJEXT)
+am__libld_elf_a_SOURCES_DIST = $(base_cpu)_ld.c
+@NATIVE_LD_TRUE@am_libld_elf_a_OBJECTS = $(base_cpu)_ld.$(OBJEXT)
 libld_elf_a_OBJECTS = $(am_libld_elf_a_OBJECTS)
 libld_elf_i386_pic_a_AR = $(AR) $(ARFLAGS)
 libld_elf_i386_pic_a_LIBADD =
@@ -142,14 +153,15 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 LEXCOMPILE = $(LEX) $(LFLAGS) $(AM_LFLAGS)
 YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
-SOURCES = $(libld_elf_a_SOURCES) $(libld_elf_i386_pic_a_SOURCES) \
-	addr2line.c elfcmp.c elflint.c findtextrel.c $(ld_SOURCES) \
-	$(libld_elf_i386_so_SOURCES) nm.c objdump.c ranlib.c readelf.c \
-	size.c strings.c strip.c
-DIST_SOURCES = $(libld_elf_a_SOURCES) $(libld_elf_i386_pic_a_SOURCES) \
-	addr2line.c elfcmp.c elflint.c findtextrel.c $(ld_SOURCES) \
-	$(libld_elf_i386_so_SOURCES) nm.c objdump.c ranlib.c readelf.c \
-	size.c strings.c strip.c
+SOURCES = $(libdummy_a_SOURCES) $(libld_elf_a_SOURCES) \
+	$(libld_elf_i386_pic_a_SOURCES) addr2line.c elfcmp.c elflint.c \
+	findtextrel.c $(ld_SOURCES) $(libld_elf_i386_so_SOURCES) nm.c \
+	objdump.c ranlib.c readelf.c size.c strings.c strip.c
+DIST_SOURCES = $(am__libdummy_a_SOURCES_DIST) \
+	$(am__libld_elf_a_SOURCES_DIST) \
+	$(libld_elf_i386_pic_a_SOURCES) addr2line.c elfcmp.c elflint.c \
+	findtextrel.c $(ld_SOURCES) $(libld_elf_i386_so_SOURCES) nm.c \
+	objdump.c ranlib.c readelf.c size.c strings.c strip.c
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -198,6 +210,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -207,6 +222,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -285,9 +302,11 @@ AM_YFLAGS = -pld
 AM_LFLAGS = -Pld -olex.yy.c
 native_ld = @native_ld@
 ld_dsos = libld_elf_i386_pic.a
-@NATIVE_LD_FALSE@noinst_LIBRARIES = libld_elf.a $(ld_dsos)
-@NATIVE_LD_TRUE@noinst_LIBRARIES = libld_elf.a
+@NATIVE_LD_FALSE@noinst_LIBRARIES = libld_elf.a $(ld_dsos) \
+@NATIVE_LD_FALSE@	$(am__append_1)
+@NATIVE_LD_TRUE@noinst_LIBRARIES = libld_elf.a $(am__append_1)
 @NATIVE_LD_TRUE@native_ld_cflags = -DBASE_ELF_NAME=elf_$(base_cpu)
+@NEVER_TRUE@libdummy_a_SOURCES = i386_ld.c
 textrel_check = if readelf -d $@ | fgrep -q TEXTREL; then exit 1; fi
 ld_SOURCES = ld.c ldgeneric.c ldlex.l ldscript.y symbolhash.c sectionhash.c \
 	     versionhash.c
@@ -314,7 +333,7 @@ nm_LDADD = $(libdw) $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 size_LDADD = $(libelf) $(libeu) $(libmudflap)
 strip_LDADD = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 ld_LDADD = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl \
-	$(am__append_1)
+	$(am__append_2)
 ld_LDFLAGS = -rdynamic
 elflint_LDADD = $(libebl) $(libelf) $(libeu) $(libmudflap) -ldl
 findtextrel_LDADD = $(libdw) $(libelf) $(libmudflap)
@@ -326,16 +345,17 @@ strings_LDADD = $(libelf) $(libeu) $(libmudflap)
 ldlex_no_Werror = yes
 
 # Machine-specific linker code.
-libld_elf_a_SOURCES = $(base_cpu)_ld.c
-libld_elf_i386_pic_a_SOURCES = 
-am_libld_elf_i386_pic_a_OBJECTS = i386_ld.os
-libld_elf_i386_so_SOURCES = 
+@NATIVE_LD_TRUE@libld_elf_a_SOURCES := $(base_cpu)_ld.c
+@NATIVE_LD_FALSE@libld_elf_i386_pic_a_SOURCES = 
+@NATIVE_LD_FALSE@am_libld_elf_i386_pic_a_OBJECTS = i386_ld.os
+@NATIVE_LD_FALSE@libld_elf_i386_so_SOURCES = 
 CLEANFILES = none_ld.os $(ld_modules:.c=.os) *.gcno *.gcda *.gconv
+MAINTAINERCLEANFILES = ldlex.c ldscript.c ldscript.h
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .l .o .obj .y
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -360,13 +380,17 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libdummy.a: $(libdummy_a_OBJECTS) $(libdummy_a_DEPENDENCIES) 
+	-rm -f libdummy.a
+	$(libdummy_a_AR) libdummy.a $(libdummy_a_OBJECTS) $(libdummy_a_LIBADD)
+	$(RANLIB) libdummy.a
 libld_elf.a: $(libld_elf_a_OBJECTS) $(libld_elf_a_DEPENDENCIES) 
 	-rm -f libld_elf.a
 	$(libld_elf_a_AR) libld_elf.a $(libld_elf_a_OBJECTS) $(libld_elf_a_LIBADD)
@@ -416,6 +440,9 @@ findtextrel$(EXEEXT): $(findtextrel_OBJECTS) $(findtextrel_DEPENDENCIES)
 ld$(EXEEXT): $(ld_OBJECTS) $(ld_DEPENDENCIES) 
 	@rm -f ld$(EXEEXT)
 	$(LINK) $(ld_LDFLAGS) $(ld_OBJECTS) $(ld_LDADD) $(LIBS)
+@NATIVE_LD_TRUE@libld_elf_i386.so$(EXEEXT): $(libld_elf_i386_so_OBJECTS) $(libld_elf_i386_so_DEPENDENCIES) 
+@NATIVE_LD_TRUE@	@rm -f libld_elf_i386.so$(EXEEXT)
+@NATIVE_LD_TRUE@	$(LINK) $(libld_elf_i386_so_LDFLAGS) $(libld_elf_i386_so_OBJECTS) $(libld_elf_i386_so_LDADD) $(LIBS)
 nm$(EXEEXT): $(nm_OBJECTS) $(nm_DEPENDENCIES) 
 	@rm -f nm$(EXEEXT)
 	$(LINK) $(nm_LDFLAGS) $(nm_OBJECTS) $(nm_LDADD) $(LIBS)
@@ -449,6 +476,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elfcmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elflint.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/findtextrel.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_ld.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ld.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ldgeneric.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ldlex.Po@am__quote@
@@ -614,6 +642,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f ldlex.c
 	-rm -f ldscript.c
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
@@ -679,11 +708,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 ldlex.o: ldscript.c
 ldscript.h: ldscript.c
-libld_elf_i386.so: libld_elf_i386_pic.a libld_elf_i386.map
-	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
-	      $(libelf) $(libeu) \
-	      -Wl,--version-script,$(srcdir)/libld_elf_i386.map
-	$(textrel_check)
+@NATIVE_LD_FALSE@libld_elf_i386.so: libld_elf_i386_pic.a libld_elf_i386.map
+@NATIVE_LD_FALSE@	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
+@NATIVE_LD_FALSE@	      $(libelf) $(libeu) \
+@NATIVE_LD_FALSE@	      -Wl,--version-script,$(srcdir)/libld_elf_i386.map
+@NATIVE_LD_FALSE@	$(textrel_check)
 
 %.os: %.c %.o
 	if $(filter-out -fmudflap,$(COMPILE)) -c -o $@ -fpic -DPIC -DSHARED \

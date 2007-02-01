@@ -1,3 +1,49 @@
+2006-12-17  Roland McGrath  <roland@redhat.com>
+
+	* dwarf_getlocation.c (dwarf_getlocation_addr): Use zero as base
+	address when the CU is missing attributes due to buggy GCC.
+
+2006-08-29  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (CLEANFILES): Add libdw.so.$(VERSION).
+
+	* libdw.h (dwarf_diecu): Add __nonnull_attribute__.
+	(dwarf_child): Don't list arg 1 in __nonnull_attribute__.
+
+	* libdw_alloc.c (__libdw_allocate): Take new ALIGN argument, make sure
+	result is aligned.  Adjust NEWP->remaining here for this allocation.
+	* libdwP.h: Update decl.
+	(libdw_alloc): Update caller.
+
+2006-07-12  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwarf_child.c: Adjust for internal_function_def removal.
+	* dwarf_getabbrev.c: Likewise.
+	* dwarf_tag.c: Likewise.
+	* libdw_form.c: Likewise.
+	* memory-access.c: Likewise.
+
+2006-06-28  Roland McGrath  <roland@redhat.com>
+
+	* libdw.map: Export dwfl_linecu, dwfl_line_comp_dir.
+
+	* libdw.map: Bump to 0.122; export dwfl_module_getsymtab and
+	dwfl_module_getsym.
+
+2006-05-27  Ulrich Drepper  <drepper@redhat.com>
+
+	* libdw.h: Add extern "C".
+
+2006-05-22  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwarf_getaranges.c (dwarf_getaranges): Handle files without
+	aranges information.
+
+2006-05-21  Ulrich Drepper  <drepper@redhat.com>
+
+	* libdw.h: Add nonnull attributes to dwarf_tag, dwarf_getattrs,
+	dwarf_haschildren.
+
 2006-02-28  Roland McGrath  <roland@redhat.com>
 
 	* dwarf.h: Add missing DW_ATE_*, DW_TAG_*, DW_LANG_*, DW_CFA_*,

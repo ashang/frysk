@@ -1,5 +1,5 @@
 /* Locate source files and line information for given addresses
-   Copyright (C) 2005, 2006 Red Hat, Inc.
+   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2005.
 
@@ -63,7 +63,9 @@ static const struct argp_option options[] =
 {
   { NULL, 0, NULL, 0, N_("Output Selection:"), 0 },
   { "basenames", 's', NULL, 0, N_("Show only base names of source files"), 0 },
-  { "functions", 'f', NULL, 0, N_("Additional show function names"), 0 },
+  { "absolute", 'A', NULL, 0,
+    N_("Show absolute file names using compilation directory"), 0 },
+  { "functions", 'f', NULL, 0, N_("Also show function names"), 0 },
 
   { NULL, 0, NULL, 0, N_("Miscellaneous:"), 0 },
   /* Unsupported options.  */
@@ -98,6 +100,9 @@ static void handle_address (GElf_Addr addr, Dwfl *dwfl);
 
 /* True if only base names of files should be shown.  */
 static bool only_basenames;
+
+/* True if absolute file names based on DW_AT_comp_dir should be shown.  */
+static bool use_comp_dir;
 
 /* True if function names should be shown.  */
 static bool show_functions;
@@ -181,7 +186,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2006");
+"), "2007");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -205,6 +210,10 @@ parse_opt (int key, char *arg __attribute__ ((unused)),
 
     case 's':
       only_basenames = true;
+      break;
+
+    case 'A':
+      use_comp_dir = true;
       break;
 
     case 'f':
@@ -258,7 +267,8 @@ print_dwarf_function (Dwfl_Module *mod, Dwarf_Addr addr)
 					       &attr_mem), &val) == 0)
 		{
 		  const char *file = dwarf_filesrc (files, val, NULL, NULL);
-		  int lineno = 0, colno = 0;
+		  unsigned int lineno = 0;
+		  unsigned int colno = 0;
 		  if (dwarf_formudata (dwarf_attr (&scopes[i],
 						   DW_AT_call_line,
 						   &attr_mem), &val) == 0)
@@ -306,13 +316,24 @@ handle_address (GElf_Addr addr, Dwfl *dwfl)
   if (line != NULL && (src = dwfl_lineinfo (line, &addr, &lineno, &linecol,
 					    NULL, NULL)) != NULL)
     {
+      const char *comp_dir = "";
+      const char *comp_dir_sep = "";
+
       if (only_basenames)
 	src = basename (src);
+      else if (use_comp_dir && src[0] != '/')
+	{
+	  comp_dir = dwfl_line_comp_dir (line);
+	  if (comp_dir != NULL)
+	    comp_dir_sep = "/";
+	}
 
       if (linecol != 0)
-	printf ("%s:%d:%d\n", src, lineno, linecol);
+	printf ("%s%s%s:%d:%d\n",
+		comp_dir, comp_dir_sep, src, lineno, linecol);
       else
-	printf ("%s:%d\n", src, lineno);
+	printf ("%s%s%s:%d\n",
+		comp_dir, comp_dir_sep, src, lineno);
     }
   else
     puts ("??:0");

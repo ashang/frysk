@@ -1,5 +1,5 @@
 /* Interface for libebl.
-   Copyright (C) 2000, 2001, 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -62,6 +62,10 @@
 /* Opaque type for the handle.  */
 typedef struct ebl Ebl;
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Get backend handle for object associated with ELF handle.  */
 extern Ebl *ebl_openbackend (Elf *elf);
@@ -185,6 +189,12 @@ extern bool ebl_debugscn_p (Ebl *ebl, const char *name);
 /* Check whether given relocation is a copy relocation.  */
 extern bool ebl_copy_reloc_p (Ebl *ebl, int reloc);
 
+/* Check whether given relocation is a no-op relocation.  */
+extern bool ebl_none_reloc_p (Ebl *ebl, int reloc);
+
+/* Check whether given relocation is a relative relocation.  */
+extern bool ebl_relative_reloc_p (Ebl *ebl, int reloc);
+
 /* Check whether section should be stripped.  */
 extern bool ebl_section_strip_p (Ebl *ebl, const GElf_Ehdr *ehdr,
 				 const GElf_Shdr *shdr, const char *name,
@@ -192,6 +202,9 @@ extern bool ebl_section_strip_p (Ebl *ebl, const GElf_Ehdr *ehdr,
 
 /* Check if backend uses a bss PLT in this file.  */
 extern bool ebl_bss_plt_p (Ebl *ebl, GElf_Ehdr *ehdr);
+
+/* Return size of entry in SysV-style hash table.  */
+extern int ebl_sysvhash_entrysize (Ebl *ebl);
 
 /* Return location expression to find return value given a
    DW_TAG_subprogram, DW_TAG_subroutine_type, or similar DIE describing
@@ -206,7 +219,7 @@ extern int ebl_return_value_location (Ebl *ebl,
 				      Dwarf_Die *functypedie,
 				      const Dwarf_Op **locops);
 
-/* Fill in register name information given DWARF register numbers.
+/* Fill in register information given DWARF register numbers.
    If NAME is null, return the maximum REGNO + 1 that has a name.
    Otherwise, store in NAME the name for DWARF register number REGNO
    and return the number of bytes written (including '\0' terminator).
@@ -216,9 +229,10 @@ extern int ebl_return_value_location (Ebl *ebl,
    fit for "%s registers" title display, and *PREFIX to the string
    that precedes NAME in canonical assembler syntax (e.g. "%" or "$").
    The NAME string contains identifier characters only (maybe just digits).  */
-extern ssize_t ebl_register_name (Ebl *ebl,
+extern ssize_t ebl_register_info (Ebl *ebl,
 				  int regno, char *name, size_t namelen,
-				  const char **prefix, const char **setname);
+				  const char **prefix, const char **setname,
+				  int *bits, int *type);
 
 
 /* ELF string table handling.  */
@@ -288,5 +302,9 @@ extern void ebl_gstrtabfinalize (struct Ebl_GStrtab *st, Elf_Data *data);
 
 /* Get offset in wide char string table for string associated with SE.  */
 extern size_t ebl_gstrtaboffset (struct Ebl_GStrent *se);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* libebl.h */

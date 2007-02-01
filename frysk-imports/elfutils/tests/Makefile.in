@@ -265,7 +265,7 @@ BUILD_STATIC_FALSE = @BUILD_STATIC_FALSE@
 BUILD_STATIC_TRUE = @BUILD_STATIC_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS := $(filter-out -Wall,$(CFLAGS))
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
@@ -295,6 +295,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -304,6 +307,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -420,7 +425,8 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     testfile26.bz2 testfile27.bz2 \
 	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
-	     testfile29.bz2 testfile29.rdwr.bz2
+	     testfile29.bz2 testfile29.rdwr.bz2 \
+	     testfile30.bz2 testfile31.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -492,7 +498,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -517,9 +523,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstPROGRAMS:

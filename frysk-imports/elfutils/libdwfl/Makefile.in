@@ -68,11 +68,13 @@ am_libdwfl_a_OBJECTS = dwfl_begin.$(OBJEXT) dwfl_end.$(OBJEXT) \
 	dwfl_module_nextcu.$(OBJEXT) dwfl_nextcu.$(OBJEXT) \
 	dwfl_cumodule.$(OBJEXT) dwfl_module_addrdie.$(OBJEXT) \
 	dwfl_addrdie.$(OBJEXT) lines.$(OBJEXT) dwfl_lineinfo.$(OBJEXT) \
-	dwfl_linemodule.$(OBJEXT) dwfl_getsrclines.$(OBJEXT) \
+	dwfl_line_comp_dir.$(OBJEXT) dwfl_linemodule.$(OBJEXT) \
+	dwfl_linecu.$(OBJEXT) dwfl_getsrclines.$(OBJEXT) \
 	dwfl_onesrcline.$(OBJEXT) dwfl_module_getsrc.$(OBJEXT) \
 	dwfl_getsrc.$(OBJEXT) dwfl_module_getsrc_file.$(OBJEXT) \
 	libdwfl_crc32.$(OBJEXT) libdwfl_crc32_file.$(OBJEXT) \
-	elf-from-memory.$(OBJEXT) \
+	elf-from-memory.$(OBJEXT) dwfl_module_getsym.$(OBJEXT) \
+	dwfl_module_addrname.$(OBJEXT) \
 	dwfl_module_return_value_location.$(OBJEXT) \
 	dwfl_module_register_names.$(OBJEXT)
 libdwfl_a_OBJECTS = $(am_libdwfl_a_OBJECTS)
@@ -142,6 +144,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -151,6 +156,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -234,12 +241,14 @@ libdwfl_a_SOURCES = dwfl_begin.c dwfl_end.c dwfl_error.c dwfl_version.c \
 		    dwfl_addrmodule.c dwfl_addrdwarf.c \
 		    cu.c dwfl_module_nextcu.c dwfl_nextcu.c dwfl_cumodule.c \
 		    dwfl_module_addrdie.c dwfl_addrdie.c \
-		    lines.c dwfl_lineinfo.c dwfl_linemodule.c \
+		    lines.c dwfl_lineinfo.c dwfl_line_comp_dir.c \
+		    dwfl_linemodule.c dwfl_linecu.c \
 		    dwfl_getsrclines.c dwfl_onesrcline.c \
 		    dwfl_module_getsrc.c dwfl_getsrc.c \
 		    dwfl_module_getsrc_file.c \
 		    libdwfl_crc32.c libdwfl_crc32_file.c \
 		    elf-from-memory.c \
+		    dwfl_module_getsym.c dwfl_module_addrname.c \
 		    dwfl_module_return_value_location.c \
 		    dwfl_module_register_names.c
 
@@ -260,7 +269,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -285,9 +294,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstLIBRARIES:
@@ -321,13 +330,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_getmodules.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_getsrc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_getsrclines.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_line_comp_dir.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_linecu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_lineinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_linemodule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_addrdie.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_addrname.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getdwarf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getsrc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getsrc_file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_getsym.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_nextcu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl_module_register_names.Po@am__quote@

@@ -1,3 +1,115 @@
+2007-01-10  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (report_kernel): Check asprintf return value
+	directly instead of via side effect, to silence warn_unused_result.
+	(dwfl_linux_kernel_report_offline): Likewise.
+	(dwfl_linux_kernel_find_elf): Likewise.
+	(dwfl_linux_kernel_module_section_address): Likewise.
+	* find-debuginfo.c (try_open): Likewise.
+	* linux-proc-maps.c (find_sysinfo_ehdr): Likewise.
+	(dwfl_linux_proc_report): Likewise.
+
+	* libdwfl.h (dwfl_begin): Require nonnull argument.
+
+2006-12-27  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (compare_modules): Fix address comparison to avoid
+	signed overflow.  Patch by Frank Ch. Eigler <fche@redhat.com>.
+
+2006-10-30  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (dwfl_report_module): Comment typo fix.
+
+2006-09-05  Roland McGrath  <roland@redhat.com>
+
+	* derelocate.c (cache_sections): Use alloca instead of variable-sized
+	auto array, in function already alloca.
+
+2006-08-14  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (try_kernel_name): If the call to
+	dwfl_standard_find_debuginfo produces no results, try it again
+	with NULL as DEBUGLINK_FILE to try *FNAME with .debug suffix.
+
+	* find-debuginfo.c (DEFAULT_DEBUGINFO_PATH): Macro moved ...
+	* libdwflP.h: ... to here.
+	* linux-kernel-modules.c (try_kernel_name): Skip manual open if it
+	repeats the first thing dwfl_standard_find_debuginfo will try.
+
+	* linux-kernel-modules.c (MODULE_SECT_NAME_LEN): New macro.
+	(dwfl_linux_kernel_module_section_address): If a /sys file is missing
+	and the section name is >= MODULE_SECT_NAME_LEN, try truncating the
+	section name.
+
+2006-07-12  Ulrich Drepper  <drepper@redhat.com>
+
+	* cu.c: Adjust for internal_function_def removal.
+	* dwfl_error.c: Likewise.
+	* dwfl_module.c: Likewise.
+	* dwfl_module_getdwarf.c: Likewise.
+	* lines.c: Likewise.
+	* relocate.c: Likewise.
+
+2006-07-11  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwfl_module.c (compare_modules): Don't return GElf_Sxword value,
+	it can overflow the return value type.
+	Patch by Tim Moore <timoore@redhat.com>.
+
+2006-06-28  Roland McGrath  <roland@redhat.com>
+
+	* libdwfl.h: Cosmetic changes.
+
+	* dwfl_line_comp_dir.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_line_comp_dir.
+
+	* dwfl_lineinfo.c (dwfl_lineinfo): Remove stray extern in defn.
+
+	* dwfl_linecu.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add it.
+	* libdwfl.h: Declare dwfl_linecu.
+
+	* libdwflP.h (dwfl_linecu_inline): Function renamed from dwfl_linecu.
+	(dwfl_linecu): Define as macro.
+
+	* relocate.c (__libdwfl_relocate): Use dwfl_module_getsym.
+
+	* dwfl_module_getdwarf.c (dwfl_module_getsymtab): New function.
+	(dwfl_module_addrname): Function moved ...
+	* dwfl_module_addrname.c: ... here, new file.
+	* dwfl_module_getsym.c: New file.
+	* Makefile.am (libdwfl_a_SOURCES): Add them.
+	* libdwfl.h: Declare dwfl_module_getsymtab, dwfl_module_getsym.
+	* libdwflP.h: Add INTDECLs.
+
+2006-06-27  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (dwfl_report_end): Whitespace fix.
+
+2006-06-13  Roland McGrath  <roland@redhat.com>
+
+	* elf-from-memory.c (elf_from_remote_memory): Fix 32/64 typo.
+	Use __libdwfl_seterrno for elf_memory failure.
+
+2006-05-22  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module_return_value_location.c
+	(dwfl_module_return_value_location): Use __libdwfl_module_getebl.
+
+2006-05-27  Ulrich Drepper  <drepper@redhat.com>
+
+	* libdwfl.h: Add extern "C".
+
+2006-05-22  Ulrich Drepper  <drepper@redhat.com>
+
+	* cu.c (addrarange): Handle files without aranges information.
+
+2006-05-16  Ulrich Drepper  <drepper@redhat.com>
+
+	* dwfl_addrmodule.c (dwfl_addrmodule): Also return NULL of
+	->modules is NULL.
+
 2006-02-26  Roland McGrath  <roland@redhat.com>
 
 	* dwfl_version.c: New file.

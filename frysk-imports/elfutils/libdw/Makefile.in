@@ -184,6 +184,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -193,6 +196,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -307,12 +312,12 @@ libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_getelf.c \
 libdw_a_LIBADD = $(addprefix ../libdwfl/,$(shell $(AR) t ../libdwfl/libdwfl.a))
 noinst_HEADERS = libdwP.h memory-access.h dwarf_abbrev_hash.h
 EXTRA_DIST = libdw.map
-CLEANFILES = $(am_libdw_pic_a_OBJECTS) *.gcno *.gcda
+CLEANFILES = $(am_libdw_pic_a_OBJECTS) *.gcno *.gcda libdw.so.$(VERSION)
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -337,9 +342,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 install-libLIBRARIES: $(lib_LIBRARIES)
 	@$(NORMAL_INSTALL)

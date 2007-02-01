@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2004, 2005 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -47,6 +47,17 @@
 #include <system.h>
 #include "ld.h"
 #include "list.h"
+
+
+/* Header of .eh_frame_hdr section.  */
+struct unw_eh_frame_hdr
+{
+  unsigned char version;
+  unsigned char eh_frame_ptr_enc;
+  unsigned char fde_count_enc;
+  unsigned char table_enc;
+};
+#define EH_FRAME_HDR_VERSION 1
 
 
 /* Prototypes for local functions.  */
@@ -980,7 +991,36 @@ add_section (struct usedfiles *fileinfo, struct scninfo *scninfo)
 	    }
 
 	  /* XXX Possibly unaligned memory access.  */
-	  is_comdat = ((Elf32_Word *) grpscndata->d_buf)[0] & GRP_COMDAT;
+	  if ((((Elf32_Word *) grpscndata->d_buf)[0] & GRP_COMDAT) != 0)
+	    {
+	      /* We have to compare the group signatures.  There might
+		 be sections with the same name but belonging to
+		 groups with different signatures.  This means we have
+		 to compare the new group signature with all those
+		 already collected.  There might also be some
+		 non-group sections in the mix.  */
+	      struct scninfo *runp = queued->last;
+	      do
+		{
+		  if (SCNINFO_SHDR (runp->shdr).sh_flags & SHF_GROUP)
+		    {
+		      struct scninfo *grpscn2
+			= find_section_group (runp->fileinfo,
+					      elf_ndxscn (runp->scn),
+					      &grpscndata);
+
+		      if (strcmp (grpscn->symbols->name,
+				  grpscn2->symbols->name) == 0)
+			{
+			  scninfo->unused_comdat = is_comdat = true;
+			  break;
+			}
+		    }
+
+		  runp = runp->next;
+		}
+	      while (runp != queued->last);
+	    }
 	}
 
       if (!is_comdat)
@@ -989,7 +1029,8 @@ add_section (struct usedfiles *fileinfo, struct scninfo *scninfo)
 	  scninfo->next = queued->last->next;
 	  queued->last = queued->last->next = scninfo;
 
-	  queued->flags = SH_FLAGS_COMBINE (queued->flags, shdr->sh_flags);
+	  queued->flags = ebl_sh_flags_combine (ld_state.ebl, queued->flags,
+						shdr->sh_flags);
 	  queued->align = MAX (queued->align, shdr->sh_addralign);
 	}
     }
@@ -1028,6 +1069,9 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
   size_t nsymbols = 0;
   size_t nlocalsymbols = 0;
   bool has_merge_sections = false;
+  /* Unless we have different information we assume the code needs
+     an executable stack.  */
+  enum execstack execstack = execstack_true;
 
   /* Prerequisites.  */
   assert (fileinfo->elf != NULL);
@@ -1234,8 +1278,25 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
 			  || shdr->sh_type == SHT_INIT_ARRAY
 			  || shdr->sh_type == SHT_FINI_ARRAY
 			  || shdr->sh_type == SHT_PREINIT_ARRAY))
-	add_section (fileinfo, &fileinfo->scninfo[cnt]);
+	{
+	  /* Check whether the check needs to be executable.  */
+	  if (shdr->sh_type == SHT_PROGBITS
+	      && (shdr->sh_flags & SHF_EXECINSTR) == 0
+	      && strcmp (elf_strptr (fileinfo->elf, fileinfo->shstrndx,
+				     shdr->sh_name),
+			 ".note.GNU-stack") == 0)
+	    execstack = execstack_false;
+
+	  add_section (fileinfo, &fileinfo->scninfo[cnt]);
+	}
     }
+
+  /* Now we know more about the requirements for an executable stack
+     of the result.  */
+  if (fileinfo->file_type == relocatable_file_type
+      && execstack == execstack_true
+      && ld_state.execstack != execstack_false_force)
+    ld_state.execstack = execstack_true;
 
   /* Handle the symbols.  Record defined and undefined symbols in the
      hash table.  In theory there can be a file without any symbol
@@ -1346,6 +1407,11 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
 	  if (unlikely (shndx == SHN_ABS) && secttype == SHT_DYNSYM)
 	    continue;
 
+	  if ((shndx < SHN_LORESERVE || shndx > SHN_HIRESERVE)
+	      && fileinfo->scninfo[shndx].unused_comdat)
+	    /* The symbol is not used.  */
+	    continue;
+
 	  /* If the DSO uses symbols determine whether this is the default
 	     version.  Otherwise we'll ignore the symbol.  */
 	  if (versymdata != NULL)
@@ -1370,9 +1436,9 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
 	     _GLOBAL_OFFSET_TABLE_, _DYNAMIC.  */
 	  // XXX This loop is hot and the following tests hardly ever match.
 	  // XXX Maybe move the tests somewhere they are executed less often.
-	  if (((unlikely (hval == 165832675)
+	  if (((unlikely (hval == 165832675ul)
 		&& strcmp (search.name, "_DYNAMIC") == 0)
-	       || (unlikely (hval == 102264335)
+	       || (unlikely (hval == 102264335ul)
 		   && strcmp (search.name, "_GLOBAL_OFFSET_TABLE_") == 0))
 	      && sym->st_shndx != SHN_UNDEF
 	      /* If somebody defines such a variable in a relocatable we
@@ -1385,7 +1451,7 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
 	  struct symbol *newp;
 	  if (likely (oldp == NULL))
 	    {
-	      /* No symbol of this name know.  Add it.  */
+	      /* No symbol of this name known.  Add it.  */
 	      newp = (struct symbol *) obstack_alloc (&ld_state.smem,
 						      sizeof (*newp));
 	      newp->name = search.name;
@@ -1401,6 +1467,8 @@ add_relocatable_file (struct usedfiles *fileinfo, GElf_Word secttype)
 	      newp->weak = XELF_ST_BIND (sym->st_info) == STB_WEAK;
 	      newp->added = 0;
 	      newp->merged = 0;
+	      newp->local = 0;
+	      newp->hidden = 0;
 	      newp->need_copy = 0;
 	      newp->on_dsolist = 0;
 	      newp->in_dso = secttype == SHT_DYNSYM;
@@ -1534,8 +1602,11 @@ ld_handle_filename_list (struct filename_list *fnames)
       curp = runp->real = ld_new_inputfile (runp->name, relocatable_file_type);
 
       /* Set flags for group handling.  */
-      runp->real->group_start = runp->group_start;
-      runp->real->group_end = runp->group_end;
+      curp->group_start = runp->group_start;
+      curp->group_end = runp->group_end;
+
+      /* Set as-needed flag from the file, not the command line.  */
+      curp->as_needed = runp->as_needed;
 
       /* Read the file and everything else which comes up, including
 	 handling groups.  */
@@ -1859,6 +1930,18 @@ file_process2 (struct usedfiles *fileinfo)
 		       ebl_object_type_name (ld_state.ebl,
 					     FILEINFO_EHDR (fileinfo->ehdr).e_type,
 					     buf, sizeof (buf)));
+	      fileinfo->status = closed;
+	      return 1;
+	    }
+
+	  /* Make sure the file type matches the backend.  */
+	  if (FILEINFO_EHDR (fileinfo->ehdr).e_machine
+	      != ebl_get_elfmachine (ld_state.ebl))
+	    {
+	      fprintf (stderr, gettext ("\
+%s: input file incompatible with ELF machine type %s\n"),
+		       fileinfo->rfname,
+		       ebl_backend_name (ld_state.ebl));
 	      fileinfo->status = closed;
 	      return 1;
 	    }
@@ -2261,15 +2344,15 @@ ld_generic_generate_sections (struct ld_state *statep)
      program header.  */
   if (dynamically_linked_p ())
     {
-      int ndt_needed;
       /* Use any versioning (defined or required)?  */
       bool use_versioning = false;
       /* Use version requirements?  */
       bool need_version = false;
 
       /* First the .interp section.  */
-      new_generated_scn (scn_dot_interp, ".interp", SHT_PROGBITS, SHF_ALLOC,
-			 0, 1);
+      if (ld_state.interp != NULL || ld_state.file_type != dso_file_type)
+	new_generated_scn (scn_dot_interp, ".interp", SHT_PROGBITS, SHF_ALLOC,
+			   0, 1);
 
       /* Now the .dynamic section.  */
       new_generated_scn (scn_dot_dynamic, ".dynamic", SHT_DYNAMIC,
@@ -2291,11 +2374,6 @@ ld_generic_generate_sections (struct ld_state *statep)
       // XXX For Linux/Alpha we need other sizes unless they change...
       new_generated_scn (scn_dot_hash, ".hash", SHT_HASH, SHF_ALLOC,
 			 sizeof (Elf32_Word), sizeof (Elf32_Word));
-
-      /* By default we add all DSOs provided on the command line.  If
-	 the user added '-z ignore' to the command line we only add
-	 those which are actually used.  */
-      ndt_needed = ld_state.ignore_unused_dsos ? 0 : ld_state.ndsofiles;
 
       /* Create the section associated with the PLT if necessary.  */
       if (ld_state.nplt > 0)
@@ -2371,29 +2449,29 @@ ld_generic_generate_sections (struct ld_state *statep)
 	    new_generated_scn (scn_dot_version_r, ".gnu.version_r",
 			       SHT_GNU_verneed, SHF_ALLOC, 0,
 			       xelf_fsize (ld_state.outelf, ELF_T_WORD, 1));
+	}
 
-	  /* Now count the used DSOs since this is what the user
-	     wants.  */
-	  ndt_needed = 0;
-	  if (ld_state.ndsofiles > 0)
-	    {
-	      struct usedfiles *frunp = ld_state.dsofiles;
+      /* Now count the used DSOs since this is what the user
+	 wants.  */
+      int ndt_needed = 0;
+      if (ld_state.ndsofiles > 0)
+	{
+	  struct usedfiles *frunp = ld_state.dsofiles;
 
-	      do
-		if (! ld_state.ignore_unused_dsos || frunp->used)
-		  {
-		    ++ndt_needed;
-		    if (frunp->lazyload)
-		      /* We have to create another dynamic section
-			 entry for the DT_POSFLAG_1 entry.
+	  do
+	    if (! frunp->as_needed || frunp->used)
+	      {
+		++ndt_needed;
+		if (frunp->lazyload)
+		  /* We have to create another dynamic section
+		     entry for the DT_POSFLAG_1 entry.
 
-			 XXX Once more functionality than the
-			 lazyloading flag are suppported the test
-			 must be extended.  */
-		      ++ndt_needed;
-		  }
-	      while ((frunp = frunp->next) != ld_state.dsofiles);
-	    }
+		     XXX Once more functionality than the lazyloading
+		     flag are suppported the test must be
+		     extended.  */
+		  ++ndt_needed;
+	      }
+	  while ((frunp = frunp->next) != ld_state.dsofiles);
 	}
 
       if (use_versioning)
@@ -2471,7 +2549,7 @@ ld_generic_open_outfile (struct ld_state *statep, int machine, int klass,
     {
       strcpy (mempcpy (tempfname, ld_state.outfname, outfname_len), ".XXXXXX");
 
-      /* The useof mktemp() here is fine.  We do not want to use
+      /* The use of mktemp() here is fine.  We do not want to use
 	 mkstemp() since then the umask isn't used.  And the output
 	 file will have these permissions anyhow.  Any intruder could
 	 change the file later if it would be possible now.  */
@@ -2666,7 +2744,7 @@ match_section (const char *osectname, struct filemask_section_name *sectmask,
       const char *brfname = basename (runp->fileinfo->rfname);
 
       /* If the section isn't used, the name doesn't match the positive
-	 inclusion list or the name does match the negative inclusion
+	 inclusion list, or the name does match the negative inclusion
 	 list, ignore the section.  */
       if (!runp->used
 	  || (sectmask->filemask != NULL
@@ -2711,7 +2789,9 @@ match_section (const char *osectname, struct filemask_section_name *sectmask,
 	      newp->kind = scn_normal;
 	      newp->name = osectname;
 	      newp->type = SCNINFO_SHDR (found->shdr).sh_type;
-	      newp->flags = SCNINFO_SHDR (found->shdr).sh_flags;
+	      /* Executable or DSO do not have section groups.  Drop that
+		 information.  */
+	      newp->flags = SCNINFO_SHDR (found->shdr).sh_flags & ~SHF_GROUP;
 	      newp->segment_nr = segment_nr;
 	      newp->last = found->next = found;
 	      newp->used = true;
@@ -2742,9 +2822,12 @@ match_section (const char *osectname, struct filemask_section_name *sectmask,
 		/* XXX Any better choice?  */
 		queued->type = SHT_PROGBITS;
 	      if (queued->flags != SCNINFO_SHDR (found->shdr).sh_flags)
+		/* Executable or DSO do not have section groups.  Drop that
+		   information.  */
 		queued->flags = ebl_sh_flags_combine (ld_state.ebl,
 						      queued->flags,
-						      SCNINFO_SHDR (found->shdr).sh_flags);
+						      SCNINFO_SHDR (found->shdr).sh_flags
+						      & ~SHF_GROUP);
 
 	      /* Accumulate the relocation section size.  */
 	      queued->relsize += found->relsize;
@@ -3173,7 +3256,7 @@ reduce_symbol_p (XElf_Sym *sym, struct Ebl_Strent *strent)
     {
       search.id = strndupa (str, version - str);
       if (*++version == VER_CHR)
-	/* Skip the second '@' signalling a default definition.  */
+	/* Skip the second '@' signaling a default definition.  */
 	++version;
     }
   else
@@ -3491,9 +3574,9 @@ fillin_special_symbol (struct symbol *symst, size_t scnidx, size_t nsym,
   /* The name offset will be filled in later.  */
   sym->st_name = 0;
   /* Traditionally: globally visible.  */
-  sym->st_info = XELF_ST_INFO (STB_GLOBAL, symst->type);
-  /* No special visibility or so.  */
-  sym->st_other = 0;
+  sym->st_info = XELF_ST_INFO (symst->local ? STB_LOCAL : STB_GLOBAL,
+			       symst->type);
+  sym->st_other = symst->hidden ? STV_HIDDEN : STV_DEFAULT;
   /* Reference to the GOT or dynamic section.  Since the GOT and
      dynamic section are only created for executables and DSOs it
      cannot be that the section index is too large.  */
@@ -3580,66 +3663,62 @@ allocate_version_names (struct usedfiles *runp, struct Ebl_Strtab *dynstrtab)
 }
 
 
-XElf_Off
+static XElf_Off
 create_verneed_data (XElf_Off offset, Elf_Data *verneeddata,
 		     struct usedfiles *runp, int *ntotal)
 {
-	  size_t verneed_size = xelf_fsize (ld_state.outelf, ELF_T_VNEED, 1);
-	  size_t vernaux_size = xelf_fsize (ld_state.outelf, ELF_T_VNAUX, 1);
-	      int need_offset;
-	      bool filled = false;
-	      GElf_Verneed verneed;
-	      GElf_Vernaux vernaux;
-	      int ndef = 0;
-size_t cnt;
+  size_t verneed_size = xelf_fsize (ld_state.outelf, ELF_T_VNEED, 1);
+  size_t vernaux_size = xelf_fsize (ld_state.outelf, ELF_T_VNAUX, 1);
+  int need_offset;
+  bool filled = false;
+  GElf_Verneed verneed;
+  GElf_Vernaux vernaux;
+  int ndef = 0;
+  size_t cnt;
 
-	      /* If this DSO has no versions skip it.  */
-	      if (runp->nverdefused == 0)
-		return offset;
+  /* If this DSO has no versions skip it.  */
+  if (runp->nverdefused == 0)
+    return offset;
 
-	      /* We fill in the Verneed record last.  Remember the
-		 offset.  */
-	      need_offset = offset;
-	      offset += verneed_size;
+  /* We fill in the Verneed record last.  Remember the offset.  */
+  need_offset = offset;
+  offset += verneed_size;
 
-	      for (cnt = 2; cnt <= runp->nverdef; ++cnt)
-		if (runp->verdefused[cnt] != 0)
-		  {
-		    assert (runp->verdefent[cnt] != NULL);
+  for (cnt = 2; cnt <= runp->nverdef; ++cnt)
+    if (runp->verdefused[cnt] != 0)
+      {
+	assert (runp->verdefent[cnt] != NULL);
 
-		    if (filled)
-		      {
-			vernaux.vna_next = vernaux_size;
-			(void) gelf_update_vernaux (verneeddata, offset,
-						    &vernaux);
-			offset += vernaux_size;
-		      }
+	if (filled)
+	  {
+	    vernaux.vna_next = vernaux_size;
+	    (void) gelf_update_vernaux (verneeddata, offset, &vernaux);
+	    offset += vernaux_size;
+	  }
 
-		    vernaux.vna_hash
-		      = elf_hash (ebl_string (runp->verdefent[cnt]));
-		    vernaux.vna_flags = 0;
-		    vernaux.vna_other = runp->verdefused[cnt];
-		    vernaux.vna_name = ebl_strtaboffset (runp->verdefent[cnt]);
-		    filled = true;
-		    ++ndef;
-		  }
+	vernaux.vna_hash = elf_hash (ebl_string (runp->verdefent[cnt]));
+	vernaux.vna_flags = 0;
+	vernaux.vna_other = runp->verdefused[cnt];
+	vernaux.vna_name = ebl_strtaboffset (runp->verdefent[cnt]);
+	filled = true;
+	++ndef;
+      }
 
-	      assert (filled);
-	      vernaux.vna_next = 0;
-	      (void) gelf_update_vernaux (verneeddata, offset, &vernaux);
-	      offset += vernaux_size;
+  assert (filled);
+  vernaux.vna_next = 0;
+  (void) gelf_update_vernaux (verneeddata, offset, &vernaux);
+  offset += vernaux_size;
 
-	      verneed.vn_version = VER_NEED_CURRENT;
-	      verneed.vn_cnt = ndef;
-	      verneed.vn_file = ebl_strtaboffset (runp->verdefent[1]);
-	      /* The first auxiliary entry is always found directly
-		 after the verneed entry.  */
-	      verneed.vn_aux = verneed_size;
-	      verneed.vn_next = --*ntotal > 0 ? offset - need_offset : 0;
-	      (void) gelf_update_verneed (verneeddata, need_offset,
-					  &verneed);
+  verneed.vn_version = VER_NEED_CURRENT;
+  verneed.vn_cnt = ndef;
+  verneed.vn_file = ebl_strtaboffset (runp->verdefent[1]);
+  /* The first auxiliary entry is always found directly
+     after the verneed entry.  */
+  verneed.vn_aux = verneed_size;
+  verneed.vn_next = --*ntotal > 0 ? offset - need_offset : 0;
+  (void) gelf_update_verneed (verneeddata, need_offset, &verneed);
 
-	      return offset;
+  return offset;
 }
 
 
@@ -3654,7 +3733,7 @@ size_t cnt;
    For executables (shared or not) we have to create the program header,
    additional sections like the .interp, eventually (in addition) create
    a dynamic symbol table and a dynamic section.  Also the relocations
-have to be processed differently.  */
+   have to be processed differently.  */
 static int
 ld_generic_create_outfile (struct ld_state *statep)
 {
@@ -3920,7 +3999,7 @@ ld_generic_create_outfile (struct ld_state *statep)
 	      struct usedfiles *frunp = ld_state.dsofiles;
 
 	      do
-		if (! ld_state.ignore_unused_dsos || frunp->used)
+		if (! frunp->as_needed || frunp->used)
 		  frunp->sonameent = ebl_strtabadd (dynstrtab, frunp->soname,
 						    0);
 	      while ((frunp = frunp->next) != ld_state.dsofiles);
@@ -4522,6 +4601,7 @@ ld_generic_create_outfile (struct ld_state *statep)
   file = ld_state.relfiles->next;
   symdata = elf_getdata (elf_getscn (ld_state.outelf, ld_state.symscnidx),
 			 NULL);
+
   do
     {
       size_t maxcnt;
@@ -4580,11 +4660,11 @@ ld_generic_create_outfile (struct ld_state *statep)
 	    continue;
 
 #if NATIVE_ELF != 0
-	  /* Copy old data.  */
-	  XElf_Sym *sym2 = sym;
-	  assert (nsym < nsym_allocated);
-	  xelf_getsym (symdata, nsym, sym);
-	  *sym = *sym2;
+	  /* Copy old data.  We create a temporary copy because the
+	     symbol might still be discarded.  */
+	  XElf_Sym sym_mem;
+	  sym_mem = *sym;
+	  sym = &sym_mem;
 #endif
 
 	  if (sym->st_shndx != SHN_UNDEF
@@ -4689,6 +4769,7 @@ section index too large in dynamic symbol table"));
 	  /* Once we know the name this field will get the correct
 	     offset.  For now set it to zero which means no name
 	     associated.  */
+	  GElf_Word st_name = sym->st_name;
 	  sym->st_name = 0;
 
 	  /* If we had to merge sections we have a completely new
@@ -4699,7 +4780,7 @@ section index too large in dynamic symbol table"));
 
 	  /* Create the record in the output sections.  */
 	  assert (nsym < nsym_allocated);
-	  xelf_update_symshndx (symdata, xndxdata, nsym, sym, xndx, 0);
+	  xelf_update_symshndx (symdata, xndxdata, nsym, sym, xndx, 1);
 
 	  /* Add the reference to the symbol record in case we need it.
 	     Find the symbol if this has not happened yet.  We do
@@ -4707,12 +4788,33 @@ section index too large in dynamic symbol table"));
 	  if (defp == NULL && cnt >= file->nlocalsymbols)
 	    {
 	      defp = file->symref[cnt];
-	      assert (defp != NULL);
+
+	      if (defp == NULL)
+		{
+		  /* This is a symbol in a discarded COMDAT section.
+		     Find the definition we actually use.  */
+		  // XXX The question is: do we have to do this here
+		  // XXX or can we do it earlier when we discard the
+		  // XXX section.
+		  struct symbol search;
+		  search.name = elf_strptr (file->elf, file->symstridx,
+					    st_name);
+		  struct symbol *realp
+		    = ld_symbol_tab_find (&ld_state.symbol_tab,
+					  elf_hash (search.name), &search);
+		  if (realp == NULL)
+		    // XXX What to do here?
+		    error (EXIT_FAILURE, 0,
+			   "couldn't find symbol from COMDAT section");
+
+		  file->symref[cnt] = realp;
+
+		  continue;
+		}
 	    }
 
-	  /* Store the reference to the symbol record.  The
-	     sorting code will have to keep this array in the
-	     correct order, too.  */
+	  /* Store the reference to the symbol record.  The sorting
+	     code will have to keep this array in the correct order, too.  */
 	  ndxtosym[nsym] = defp;
 
 	  /* One more entry finished.  */
@@ -4728,7 +4830,6 @@ section index too large in dynamic symbol table"));
   /* Make sure we didn't create the extended section index table for
      nothing.  */
   assert (xndxdata == NULL || need_xndx);
-
 
   /* Create the version related sections.  */
   if (ld_state.verneedscnidx != 0)
@@ -5162,7 +5263,8 @@ section index too large in dynamic symbol table"));
 	  if (XELF_ST_TYPE (sym->st_info) == STT_FILE
 	      || XELF_ST_VISIBILITY (sym->st_other) == STV_INTERNAL
 	      || XELF_ST_VISIBILITY (sym->st_other) == STV_HIDDEN
-	      || (!ndxtosym[cnt]->in_dso && ndxtosym[cnt]->defined))
+	      || (!ld_state.export_all_dynamic
+		  && !ndxtosym[cnt]->in_dso && ndxtosym[cnt]->defined))
 	    {
 	      symstrent[cnt] = NULL;
 	      continue;
@@ -5185,7 +5287,9 @@ section index too large in dynamic symbol table"));
 	    {
 	      struct symbol *symp = ndxtosym[cnt];
 
-	      if (symp->file->verdefdata != NULL)
+	      /* Synthetic symbols (i.e., those with no file attached)
+		 have no version information.  */
+	      if (symp->file != NULL && symp->file->verdefdata != NULL)
 		{
 		  GElf_Versym versym;
 
@@ -5280,7 +5384,6 @@ cannot create hash table section for output file: %s"),
 	if (symstrent[cnt] != NULL)
 	  {
 	    XElf_Sym_vardef (sym);
-	    size_t hashidx;
 	    size_t dynidx = ndxtosym[cnt]->outdynsymidx;
 
 #if NATIVE_ELF != 0
@@ -5298,7 +5401,7 @@ cannot create hash table section for output file: %s"),
 	    (void) xelf_update_sym (dynsymdata, dynidx, sym);
 
 	    /* Add to the hash table.  */
-	    hashidx = hashcodes[dynidx] % nbucket;
+	    size_t hashidx = hashcodes[dynidx] % nbucket;
 	    if (bucket[hashidx] == 0)
 	      bucket[hashidx] = dynidx;
 	    else
@@ -5425,7 +5528,7 @@ cannot create hash table section for output file: %s"),
     strtab_ent = ebl_strtabadd (ld_state.shstrtab, ".strtab", 8);
   /* At this point we would have to test for failures in the
      allocation.  But we skip this.  First, the problem will be caught
-     latter when doing more allocations for the section header table.
+     later when doing more allocations for the section header table.
      Even if this would not be the case all that would happen is that
      the section names are empty.  The binary would still be usable if
      it is an executable or a DSO.  Not adding the test here saves
@@ -5530,11 +5633,7 @@ cannot create hash table section for output file: %s"),
   groups = ld_state.groups;
   while (groups != NULL)
     {
-      Elf_Scn *scn;
-      struct scngroup *oldp;
-      Elf32_Word si;
-
-      scn = elf_getscn (ld_state.outelf, groups->outscnidx);
+      Elf_Scn *scn = elf_getscn (ld_state.outelf, groups->outscnidx);
       xelf_getshdr (scn, shdr);
       assert (shdr != NULL);
 
@@ -5545,7 +5644,8 @@ cannot create hash table section for output file: %s"),
       shdr->sh_entsize = sizeof (Elf32_Word);
 
       /* Determine the index for the signature symbol.  */
-      si = groups->symbol->file->symindirect[groups->symbol->symidx];
+      Elf32_Word si
+	= groups->symbol->file->symindirect[groups->symbol->symidx];
       if (si == 0)
 	{
 	  assert (groups->symbol->file->symref[groups->symbol->symidx]
@@ -5557,7 +5657,7 @@ cannot create hash table section for output file: %s"),
 
       (void) xelf_update_shdr (scn, shdr);
 
-      oldp = groups;
+      struct scngroup *oldp = groups;
       groups = groups->next;
       free (oldp);
     }
@@ -5580,6 +5680,10 @@ cannot create hash table section for output file: %s"),
 
 	 XXX Determine whether the segment is non-empty.  */
       nphdr = 0;
+
+      /* We always add a PT_GNU_stack entry.  */
+      ++nphdr;
+
       segment = ld_state.output_segments;
       while (segment != NULL)
 	{
@@ -5590,10 +5694,16 @@ cannot create hash table section for output file: %s"),
       /* Add the number of SHT_NOTE sections.  We counted them earlier.  */
       nphdr += ld_state.nnotesections;
 
-      /* If we create a DSO or the file is linked against DSOs we have three
-	 more entries: INTERP, PHDR, DYNAMIC.  */
+      /* If we create a DSO or the file is linked against DSOs we have
+	 at least one more entry: DYNAMIC.  If an interpreter is
+	 specified we add PHDR and INTERP, too.  */
       if (dynamically_linked_p ())
-	nphdr += 3;
+	{
+	  ++nphdr;
+
+	  if (ld_state.interp != NULL || ld_state.file_type != dso_file_type)
+	    nphdr += 2;
+	}
 
       /* Create the program header structure.  */
       if (xelf_newphdr (ld_state.outelf, nphdr) == 0)
@@ -5621,7 +5731,14 @@ cannot create hash table section for output file: %s"),
       addr = shdr->sh_offset;
 
       /* The index of the first loadable segment.  */
-      nphdr = 1 + (dynamically_linked_p () == true) * 2;
+      nphdr = 0;
+      if (dynamically_linked_p ())
+	{
+	  ++nphdr;
+	  if (ld_state.interp != NULL
+	      || ld_state.file_type != dso_file_type)
+	    nphdr += 2;
+	}
 
       segment = ld_state.output_segments;
       while (segment != NULL)
@@ -5779,20 +5896,23 @@ internal error: nobits section follows nobits section"));
       xelf_getehdr (ld_state.outelf, ehdr);
       assert (ehdr != NULL);
 
-      xelf_getphdr_ptr (ld_state.outelf, 1, phdr);
-      phdr->p_type = PT_PHDR;
-      phdr->p_offset = ehdr->e_phoff;
-      phdr->p_vaddr = ld_state.output_segments->addr + phdr->p_offset;
-      phdr->p_paddr = phdr->p_vaddr;
-      phdr->p_filesz = ehdr->e_phnum * ehdr->e_phentsize;
-      phdr->p_memsz = phdr->p_filesz;
-      phdr->p_flags = 0;		/* No need to set PF_R or so.  */
-      phdr->p_align = xelf_fsize (ld_state.outelf, ELF_T_ADDR, 1);
-      (void) xelf_update_phdr (ld_state.outelf, 0, phdr);
+      /* Add the stack information.  */
+      xelf_getphdr_ptr (ld_state.outelf, nphdr, phdr);
+      phdr->p_type = PT_GNU_STACK;
+      phdr->p_offset = 0;
+      phdr->p_vaddr = 0;
+      phdr->p_paddr = 0;
+      phdr->p_filesz = 0;
+      phdr->p_memsz = 0;
+      phdr->p_flags = ld_state.execstack == execstack_true ? PF_X : 0;
+      phdr->p_align = 0;
+
+      (void) xelf_update_phdr (ld_state.outelf, nphdr, phdr);
+      ++nphdr;
 
 
-      /* Adjust the addresses in the addresses of the symbol according
-	 to the load addresses of the sections.  */
+      /* Adjust the addresses in the address fields of the symbol
+	 records according to the load addresses of the sections.  */
       if (ld_state.need_symtab)
 	for (cnt = 1; cnt < nsym; ++cnt)
 	  {
@@ -5892,24 +6012,41 @@ internal error: nobits section follows nobits section"));
 	{
 	  Elf_Scn *outscn;
 
-	  assert (ld_state.interpscnidx != 0);
-	  xelf_getshdr (elf_getscn (ld_state.outelf, ld_state.interpscnidx),
-			shdr);
-	  assert (shdr != NULL);
+	  int idx = 0;
+	  if (ld_state.interp != NULL || ld_state.file_type != dso_file_type)
+	    {
+	      assert (ld_state.interpscnidx != 0);
+	      xelf_getshdr (elf_getscn (ld_state.outelf,
+					ld_state.interpscnidx), shdr);
+	      assert (shdr != NULL);
 
-	  /* The interpreter string.  */
-	  // XXX Do we need to support files (DSOs) without interpreters?
-	  xelf_getphdr_ptr (ld_state.outelf, 1, phdr);
-	  phdr->p_type = PT_INTERP;
-	  phdr->p_offset = shdr->sh_offset;
-	  phdr->p_vaddr = shdr->sh_addr;
-	  phdr->p_paddr = phdr->p_vaddr;
-	  phdr->p_filesz = shdr->sh_size;
-	  phdr->p_memsz = phdr->p_filesz;
-	  phdr->p_flags = 0;		/* No need to set PF_R or so.  */
-	  phdr->p_align = 1;		/* It's a string.  */
+	      xelf_getphdr_ptr (ld_state.outelf, idx, phdr);
+	      phdr->p_type = PT_PHDR;
+	      phdr->p_offset = ehdr->e_phoff;
+	      phdr->p_vaddr = ld_state.output_segments->addr + phdr->p_offset;
+	      phdr->p_paddr = phdr->p_vaddr;
+	      phdr->p_filesz = ehdr->e_phnum * ehdr->e_phentsize;
+	      phdr->p_memsz = phdr->p_filesz;
+	      phdr->p_flags = 0;	/* No need to set PF_R or so.  */
+	      phdr->p_align = xelf_fsize (ld_state.outelf, ELF_T_ADDR, 1);
 
-	  (void) xelf_update_phdr (ld_state.outelf, 1, phdr);
+	      (void) xelf_update_phdr (ld_state.outelf, idx, phdr);
+	      ++idx;
+
+	      /* The interpreter string.  */
+	      xelf_getphdr_ptr (ld_state.outelf, idx, phdr);
+	      phdr->p_type = PT_INTERP;
+	      phdr->p_offset = shdr->sh_offset;
+	      phdr->p_vaddr = shdr->sh_addr;
+	      phdr->p_paddr = phdr->p_vaddr;
+	      phdr->p_filesz = shdr->sh_size;
+	      phdr->p_memsz = phdr->p_filesz;
+	      phdr->p_flags = 0;	/* No need to set PF_R or so.  */
+	      phdr->p_align = 1;	/* It's a string.  */
+
+	      (void) xelf_update_phdr (ld_state.outelf, idx, phdr);
+	      ++idx;
+	    }
 
 	  /* The pointer to the dynamic section.  We this we need to
 	     get the information for the dynamic section first.  */
@@ -5918,7 +6055,7 @@ internal error: nobits section follows nobits section"));
 	  xelf_getshdr (outscn, shdr);
 	  assert (shdr != NULL);
 
-	  xelf_getphdr_ptr (ld_state.outelf, 2, phdr);
+	  xelf_getphdr_ptr (ld_state.outelf, idx, phdr);
 	  phdr->p_type = PT_DYNAMIC;
 	  phdr->p_offset = shdr->sh_offset;
 	  phdr->p_vaddr = shdr->sh_addr;
@@ -5928,7 +6065,7 @@ internal error: nobits section follows nobits section"));
 	  phdr->p_flags = 0;		/* No need to set PF_R or so.  */
 	  phdr->p_align = shdr->sh_addralign;
 
-	  (void) xelf_update_phdr (ld_state.outelf, 2, phdr);
+	  (void) xelf_update_phdr (ld_state.outelf, idx, phdr);
 
 	  /* Fill in the reference to the .dynstr section.  */
 	  assert (ld_state.dynstrscnidx != 0);
@@ -5945,7 +6082,7 @@ internal error: nobits section follows nobits section"));
 	      struct usedfiles *runp = ld_state.dsofiles->next;
 
 	      do
-		if (! ld_state.ignore_unused_dsos || runp->used)
+		if (runp->used || !runp->as_needed)
 		  {
 		    /* Add the position-dependent flag if necessary.  */
 		    if (runp->lazyload)

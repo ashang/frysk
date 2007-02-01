@@ -118,7 +118,7 @@ am_libelf_a_OBJECTS = elf_version.$(OBJEXT) elf_hash.$(OBJEXT) \
 	elf_clone.$(OBJEXT) gelf_getlib.$(OBJEXT) \
 	gelf_update_lib.$(OBJEXT) elf32_offscn.$(OBJEXT) \
 	elf64_offscn.$(OBJEXT) gelf_offscn.$(OBJEXT) \
-	elf_getaroff.$(OBJEXT)
+	elf_getaroff.$(OBJEXT) elf_gnu_hash.$(OBJEXT)
 libelf_a_OBJECTS = $(am_libelf_a_OBJECTS)
 libelf_pic_a_AR = $(AR) $(ARFLAGS)
 libelf_pic_a_LIBADD =
@@ -187,6 +187,9 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LOCALEDIR = @LOCALEDIR@
 LTLIBOBJS = @LTLIBOBJS@
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MODVERSION = @MODVERSION@
@@ -196,6 +199,8 @@ MUDFLAP_FALSE = @MUDFLAP_FALSE@
 MUDFLAP_TRUE = @MUDFLAP_TRUE@
 NATIVE_LD_FALSE = @NATIVE_LD_FALSE@
 NATIVE_LD_TRUE = @NATIVE_LD_TRUE@
+NEVER_FALSE = @NEVER_FALSE@
+NEVER_TRUE = @NEVER_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -314,21 +319,22 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf_clone.c \
 		   gelf_getlib.c gelf_update_lib.c \
 		   elf32_offscn.c elf64_offscn.c gelf_offscn.c \
-		   elf_getaroff.c
+		   elf_getaroff.c \
+		   elf_gnu_hash.c
 
 @MUDFLAP_FALSE@libelf_pic_a_SOURCES = 
 @MUDFLAP_FALSE@am_libelf_pic_a_OBJECTS = $(libelf_a_SOURCES:.c=.os)
 @MUDFLAP_FALSE@libelf_so_SOURCES = 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
-		 version_xlate.h dl-hash.h
+		 version_xlate.h gnuhash_xlate.h dl-hash.h
 
 EXTRA_DIST = libelf.map
-CLEANFILES = $(am_libelf_pic_a_OBJECTS) *.gcno *.gcda
+CLEANFILES = $(am_libelf_pic_a_OBJECTS) *.gcno *.gcda libelf.so.$(VERSION)
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -353,9 +359,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 install-libLIBRARIES: $(lib_LIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -455,6 +461,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getscn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getshnum.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_getshstrndx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_gnu_hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_kind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf_memory.Po@am__quote@
