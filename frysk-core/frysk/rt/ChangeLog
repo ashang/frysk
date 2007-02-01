@@ -1,3 +1,13 @@
+2007-02-01  Nurdin Premji  <npremji@redhat.com>
+
+	* TestStackFrame.java: Cleaned up common strings.
+	(testAsmNoSize): Added.
+	(testAsmNoDebugNoSize): Ditto.
+	(testAsmStrippedNoSize): Ditto.
+	(testStaticAsmNoSize): Ditto.
+	(testStaticAsmNoDebugNoSize): Ditto.
+	(testStaticAsmStrippedNoSize): Ditto.
+
 2007-01-26  Nurdin Premji  <npremji@redhat.com>
 
 	* TestStackFrame.java (testStaticDebug): Added.

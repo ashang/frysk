@@ -51,6 +51,8 @@ public class TestStackFrame
     extends frysk.proc.TestLib
 {
 
+  private String noDebug = "0x[\\da-f]+ in foo \\(\\)";
+  private String unknown = "0x[\\da-f]+ in \\[unknown\\]";
   public void testDebug ()
   {
     frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#43");
@@ -58,12 +60,12 @@ public class TestStackFrame
   
   public void testNoDebug ()
   {
-    frameTest("funit-stackframe-nodebug", "0x[\\da-f]+ in foo \\(\\)");
+    frameTest("funit-stackframe-nodebug", noDebug);
   }
   
   public void testStripped ()
   {
-    frameTest("funit-stackframe-stripped", "0x[\\da-f]+ in \\[unknown\\]");
+    frameTest("funit-stackframe-stripped", unknown);
   }
   
   public void testStaticDebug ()
@@ -73,14 +75,43 @@ public class TestStackFrame
   
   public void testStaticNoDebug ()
   {
-    frameTest("funit-stackframe-static-nodebug", "0x[\\da-f]+ in foo \\(\\)");
+    frameTest("funit-stackframe-static-nodebug", noDebug);
   }
   
   public void testStaticStripped ()
   {
-    frameTest("funit-stackframe-static-stripped", "0x[\\da-f]+ in \\[unknown\\]");
+    frameTest("funit-stackframe-static-stripped", unknown);
   }
-
+  
+  public void testAsmNoSize()
+  {
+    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#9");
+  }
+  
+  public void testAsmNoDebugNoSize()
+  {
+    frameTest("funit-stackframe-asm-nodebug", noDebug);   
+  }
+  
+  public void testAsmStrippedNoSize()
+  {
+    frameTest("funit-stackframe-asm-stripped", unknown);    
+  }
+  
+  public void testStaticAsmNoSize()
+  {
+    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#8");    
+  }
+  
+  public void testStaticAsmNoDebugNoSize()
+  {
+    frameTest("funit-stackframe-static-asm-nodebug", noDebug);   
+  }
+  
+  public void testStaticAsmStrippedNoSize()
+  {
+    frameTest("funit-stackframe-static-asm-stripped", unknown);    
+  }
   public void frameTest (String command, final String result)
   {
     class Attacher
