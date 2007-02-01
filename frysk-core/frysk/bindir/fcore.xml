@@ -75,10 +75,10 @@
         <option>-o <replaceable>filename</replaceable></option>
       </arg>
       <arg choice="opt">
-        <option>-c <replaceable>console-log-level</replaceable></option>
+        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
       </arg>
       <arg choice="opt">
-        <option>-l <replaceable>log-level</replaceable></option>
+        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
       </arg>
      <arg rep="repeat" choice="plain">
         <replaceable>pids</replaceable>
@@ -111,14 +111,14 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-c <replaceable>console-log-level</replaceable></option></term>
+	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
 	<listitem>
           <para> Enable logging to the console and at the specified
           log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
         </listitem>
       </varlistentry>
       <varlistentry>
-	<term><option>-l <replaceable>log-level</replaceable></option></term>
+	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
 	<listitem>
           <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
         </listitem>
@@ -148,7 +148,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fcore 8823</screen>
+    <screen>fcore pid [...]</screen>
   </refsect1>
    
   <!-- refsect1>
@@ -163,7 +163,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8) ftrace(1) fstack(1)</para>
+    <para>funit(8) fcatch(1) fhpd(1) fstack(1) fstep(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>

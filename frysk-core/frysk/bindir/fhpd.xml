@@ -132,7 +132,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>fstrace(1) funit(8) fstack(1) fstep(1)</para>
+    <para>funit(8) fcatch(1) fcore(1) fstack(1) fstep(1) ftrace(1)</para>
   </refsect1>
   
   <refsect1>

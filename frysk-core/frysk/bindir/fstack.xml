@@ -62,12 +62,21 @@
 
   <refnamediv>
     <refname>fstack</refname>
-    <refpurpose>Runs the frysk fstack stack trace utility</refpurpose>
+    <refpurpose>Runs the frysk stack trace utility</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>fstack</command>
+       <arg choice="opt">
+        <option>--console <replaceable>LOG=LEVEL,...</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>--log <replaceable>LOG=LEVEL,...</replaceable></option>
+      </arg>
+      <arg rep="repeat" choice="plain">
+        <replaceable>pids</replaceable>
+      </arg>
       <!-- arg choice="opt">
         <option>-list of options</option>
       </arg -->
@@ -77,20 +86,25 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fstack</function> Runs the frysk fstack stack tracing
-     utility.</para>
+    <para><function>fstack</function> Runs the frysk stack tracing utility.</para>
 
     <para>fstack is a small utility that uses the frysk engine to display a process stack in a similar manner to pstack. </para>
 
-    <!-- variablelist>
-      <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
+    <variablelist>
+    <varlistentry>
+	<term><option>--console <replaceable>LOG=LEVEL,...</replaceable></option></term>
 	<listitem>
-          <para> Description of option. </para>
+          <para> Enable logging to the console and at the specified
+          log level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST]. </para>
         </listitem>
       </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
+      <varlistentry>
+	<term><option>--log <replaceable>LOG=LEVEL,...</replaceable></option></term>
+	<listitem>
+          <para> Specify the file logging level. The log level can be: [ OFF | SEVERE | WARNING | INFO | CONFIG | FINE | FINER | FINEST].</para>
+        </listitem>
+      </varlistentry>      
+    </variablelist>
   </refsect1>
   
   <!-- refsect1>
@@ -115,7 +129,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fstack</screen>
+    <screen>fstack pid [...]</screen>
   </refsect1>
    
   <!-- refsect1>
@@ -130,7 +144,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8) ftrace(1)</para>
+    <para>funit(8) fcatch(1) fstack(1) fstep(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>

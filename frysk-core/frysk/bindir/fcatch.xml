@@ -62,7 +62,7 @@
 
   <refnamediv>
     <refname>fcatch</refname>
-    <refpurpose>Runs the frysk fcatch application crash and signal stack tracing utility</refpurpose>
+    <refpurpose>Runs the frysk application crash and signal stack tracing utility</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
@@ -77,7 +77,7 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>fcatch</function> Runs the frysk fcatch application crash stack tracing utility</para>
+    <para><function>fcatch</function> Runs the frysk application crash stack tracing utility</para>
 
     <para>fcatch is a small utility that uses the frysk engine to generate stack backtraces from an application crash, or upon receiving a variety of signals.</para>
 
@@ -131,7 +131,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8) fstack(1) ftrace(1)</para>
+    <para>funit(8) fcore(1) fhpd(1) fstack(1) fstep(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>

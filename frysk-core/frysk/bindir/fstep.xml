@@ -114,7 +114,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>fstep</screen>
+    <screen>fstep command</screen>
   </refsect1>
    
   <!-- refsect1>
@@ -129,7 +129,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>fstrace(1) funit(8) fstack(1)</para>
+    <para>funit(8) fcatch(1) fcore(1) fstack(1) ftrace(1)</para>
   </refsect1>
   
   <!-- refsect1>
