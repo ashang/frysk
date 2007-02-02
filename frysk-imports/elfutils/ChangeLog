@@ -12,6 +12,14 @@
 
 	* Makefile.am: Change to not install for frysk.
 
+2006-11-02  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add EXCEPTION file.
+
+2006-08-29  Roland McGrath  <roland@redhat.com>
+
+	* configure.ac: Use AM_MAINTAINER_MODE.
+
 2006-07-12  Ulrich Drepper  <drepper@redhat.com>
 
 	* configure.ac (internal_function): Don't use internal visibility.

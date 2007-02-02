@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 ##
-## Copyright (C) 1996-2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
+## Copyright (C) 1996-2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
 ## This file is part of Red Hat elfutils.
 ##
 ## Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ AM_CFLAGS = -Wall -Werror -Wextra -std=gnu99 \
 	    $(if $($(*F)_no_Wformat),-Wno-format,-Wformat=2)
 BUILT_RPATH = \$$ORIGIN/../libasm:\$$ORIGIN/../libdw:\$$ORIGIN/../backends:\$$ORIGIN/../libelf
 endif
+CFLAGS := $(filter-out -Wall,$(CFLAGS))
 
 AM_LDFLAGS =
 
@@ -57,7 +58,8 @@ noinst_PROGRAMS = arextract arsymtest newfile saridx scnnames sectiondump \
 		  show-die-info get-files get-lines get-pubnames \
 		  get-aranges allfcts line2addr addrscopes funcscopes \
 		  show-abbrev hash newscn ecp dwflmodtest \
-		  find-prologues funcretval allregs rdwrmmap
+		  find-prologues funcretval allregs rdwrmmap 
+#		  dwfl-bug-addr-overflow
 # get-ciefde
 asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
 	    asm-tst6 asm-tst7 asm-tst8 asm-tst9
@@ -75,6 +77,7 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	run-find-prologues.sh run-allregs.sh run-readelf-test1.sh \
 	run-native-test.sh run-bug1-test.sh
+#	dwfl-bug-addr-overflow
 # run-show-ciefde.sh
 
 if !STANDALONE
@@ -113,7 +116,8 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     testfile26.bz2 testfile27.bz2 \
 	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
-	     testfile29.bz2 testfile29.rdwr.bz2
+	     testfile29.bz2 testfile29.rdwr.bz2 \
+	     testfile30.bz2 testfile31.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -196,6 +200,7 @@ asm_tst8_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 asm_tst9_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 dwflmodtest_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 rdwrmmap_LDADD = $(libelf)
+#dwfl_bug_addr_overflow_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 
 CLEANFILES = xxx *.gcno *.gcda *gconv
 

@@ -1,3 +1,46 @@
+2007-01-10  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (report_kernel): Check asprintf return value
+	directly instead of via side effect, to silence warn_unused_result.
+	(dwfl_linux_kernel_report_offline): Likewise.
+	(dwfl_linux_kernel_find_elf): Likewise.
+	(dwfl_linux_kernel_module_section_address): Likewise.
+	* find-debuginfo.c (try_open): Likewise.
+	* linux-proc-maps.c (find_sysinfo_ehdr): Likewise.
+	(dwfl_linux_proc_report): Likewise.
+
+	* libdwfl.h (dwfl_begin): Require nonnull argument.
+
+2006-12-27  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (compare_modules): Fix address comparison to avoid
+	signed overflow.  Patch by Frank Ch. Eigler <fche@redhat.com>.
+
+2006-10-30  Roland McGrath  <roland@redhat.com>
+
+	* dwfl_module.c (dwfl_report_module): Comment typo fix.
+
+2006-09-05  Roland McGrath  <roland@redhat.com>
+
+	* derelocate.c (cache_sections): Use alloca instead of variable-sized
+	auto array, in function already alloca.
+
+2006-08-14  Roland McGrath  <roland@redhat.com>
+
+	* linux-kernel-modules.c (try_kernel_name): If the call to
+	dwfl_standard_find_debuginfo produces no results, try it again
+	with NULL as DEBUGLINK_FILE to try *FNAME with .debug suffix.
+
+	* find-debuginfo.c (DEFAULT_DEBUGINFO_PATH): Macro moved ...
+	* libdwflP.h: ... to here.
+	* linux-kernel-modules.c (try_kernel_name): Skip manual open if it
+	repeats the first thing dwfl_standard_find_debuginfo will try.
+
+	* linux-kernel-modules.c (MODULE_SECT_NAME_LEN): New macro.
+	(dwfl_linux_kernel_module_section_address): If a /sys file is missing
+	and the section name is >= MODULE_SECT_NAME_LEN, try truncating the
+	section name.
+
 2006-07-12  Ulrich Drepper  <drepper@redhat.com>
 
 	* cu.c: Adjust for internal_function_def removal.

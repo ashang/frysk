@@ -1,3 +1,9 @@
+2007-02-02  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Removed dwfl-bug-addr-overflow.
+	(TESTS): Ditto.
+	(dwfl_bug_addr_overflow_LDADD): Removed.
+
 2006-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (XFAIL_TESTS): Delete.
@@ -15,6 +21,52 @@
 2006-06-23  Stepan Kasal  <kasal@ucw.cz>
 
 	* line2addr.c (main): Avoid using sscanf() to prevent a warning.
+
+2007-01-10  Ulrich Drepper  <drepper@redhat.com>
+
+	* run-elflint-self.sh (runtest): Show which file has the problem.
+
+2007-01-10  Roland McGrath  <roland@redhat.com>
+
+	* dwfl-bug-addr-overflow.c: New file.
+	* Makefile.am (TESTS): Add it.
+	(dwfl_bug_addr_overflow_LDADD): New variable.
+
+2006-12-17  Roland McGrath  <roland@redhat.com>
+
+	* msg_tst.c (libelf_msgs): Fix ELF_E_INVALID_PHDR msg.
+
+2006-09-05  Roland McGrath  <roland@redhat.com>
+
+	* run-strings-test.sh: Export LC_ALL=C for the test.
+
+2006-08-29  Roland McGrath  <roland@redhat.com>
+
+	* run-arextract.sh: Use testrun, tempfiles functions from test-subr.sh.
+	* run-arsymtest.sh: Likewise.
+
+	* run-native-test.sh (native.c compilation): Add some braces.
+
+2006-08-22  Roland McGrath  <roland@redhat.com>
+
+	* allregs.c (dwarf_encoding_string): New function, swiped from readelf.
+	(struct reginfo): New members bits, type.
+	(one_register, match_register): Update to take new args,
+	record and display new info.
+	(main): Display new info.
+	* run-allregs.sh: Update expected results.
+
+2006-08-03  Roland McGrath  <roland@redhat.com>
+
+	* run-allregs.sh: Add sparc cases.
+	* testfile30.bz2: New data file.
+	* testfile31.bz2: New data file.
+	* Makefile.am (EXTRA_DIST): Add them.
+
+2006-07-21  Roland McGrath  <roland@redhat.com>
+
+	* allregs.c (struct reginfo): Increase size of name.
+	(one_register): Assert that it's big enough.
 
 2006-04-04  Roland McGrath  <roland@redhat.com>
 

@@ -43,6 +43,15 @@ higher-level ELF access functionality.  libdw provides access to
 the DWARF debugging information.  libasm provides a programmable
 assembler interface.
 
+%package devel-static
+Summary: Static archives to handle compiled objects.
+Group: Development/Tools
+Requires: elfutils-devel = %{version}-%{release}
+
+%description devel-static
+The elfutils-devel-static archive contains the static archives
+with the code the handle compiled objects.
+
 %package libelf
 Summary: Library to read and write ELF files.
 Group: Development/Tools
@@ -64,6 +73,16 @@ The elfutils-libelf-devel package contains the libraries to create
 applications for handling compiled objects.  libelf allows you to
 access the internals of the ELF object file format, so you can see the
 different sections of an ELF file.
+
+%package libelf-devel-static
+Summary: Static archive of libelf
+Group: Development/Tools
+Requires: elfutils-libelf-devel = %{version}-%{release}
+Conflicts: libelf-devel
+
+%description libelf-devel-static
+The elfutils-libelf-static package contains the static archive
+for libelf.
 
 %prep
 %setup -q
@@ -118,6 +137,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_bindir}/eu-elfcmp
 %{_bindir}/eu-ranlib
 %{_bindir}/eu-strings
+%{_bindir}/eu-objdump
 #%{_bindir}/eu-ld
 #%{_libdir}/libasm-%{version}.so
 %{_libdir}/libdw-%{version}.so
@@ -134,11 +154,13 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_includedir}/elfutils/libebl.h
 %{_includedir}/elfutils/libdw.h
 %{_includedir}/elfutils/libdwfl.h
-#%{_libdir}/libasm.a
 %{_libdir}/libebl.a
-%{_libdir}/libdw.a
 #%{_libdir}/libasm.so
 %{_libdir}/libdw.so
+
+%files devel-static
+%{_libdir}/libdw.a
+#%{_libdir}/libasm.a
 
 %files libelf
 %defattr(-,root,root)
@@ -150,10 +172,37 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_includedir}/libelf.h
 %{_includedir}/gelf.h
 %{_includedir}/nlist.h
-%{_libdir}/libelf.a
 %{_libdir}/libelf.so
 
+%files libelf-devel-static
+%{_libdir}/libelf.a
+
 %changelog
+* Mon Dec 18 2006 Ulrich Drepper <drepper@redhat.com> 0.125-1
+- elflint: Compare DT_GNU_HASH tests.
+- move archives into -static RPMs
+- libelf, elflint: better support for core file handling
+
+* Tue Oct 10 2006 Ulrich Drepper <drepper@redhat.com> 0.124-1
+- libebl: sparc backend support for return value location
+- libebl, libdwfl: backend register name support extended with more info
+- libelf, libdw: bug fixes for unaligned accesses on machines that care
+- readelf, elflint: trivial bugs fixed
+
+* Mon Aug 14 2006 Roland McGrath <roland@redhat.com> 0.123-1
+- libebl: Backend build fixes, thanks to Stepan Kasal.
+- libebl: ia64 backend support for register names, return value location
+- libdwfl: Handle truncated linux kernel module section names.
+- libdwfl: Look for linux kernel vmlinux files with .debug suffix.
+- elflint: Fix checks to permit --hash-style=gnu format.
+
+* Wed Jul 12 2006 Ulrich Drepper <drepper@redhat.com> 0.122-1
+- libebl: add function to test for relative relocation
+- elflint: fix and extend DT_RELCOUNT/DT_RELACOUNT checks
+- elflint, readelf: add support for DT_GNU_HASHlibelf: add elf_gnu_hash
+- elflint, readelf: add support for 64-bit SysV-style hash tables
+- libdwfl: new functions dwfl_module_getsymtab, dwfl_module_getsym.
+
 * Wed Jun 14 2006  <drepper@redhat.com> 0.121-1
 - libelf: bug fixes for rewriting existing files when using mmap.
 - make all installed headers usable in C++ code.

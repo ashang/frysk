@@ -1,3 +1,21 @@
+2006-10-13  Roland McGrath  <roland@redhat.com>
+
+	* elf32_updatenull.c: Look for and accept phdr also for ET_CORE.
+	* elf_error.c (msgstr): Change ELF_E_INVALID_PHDR string.
+
+2006-08-29  Roland McGrath  <roland@redhat.com>
+
+	* elf32_getphdr.c: Don't byteswap phdr fields when EI_DATA matches
+	MY_ELFDATA on !ALLOW_UNALIGNED machines.
+	Reported by Christian Aichinger <Greek0@gmx.net>.
+
+	* Makefile.am (CLEANFILES): Add libelf.so.$(VERSION).
+
+2006-08-08  Ulrich Drepper  <drepper@redhat.com>
+
+	* elf.h (DT_VALNUM): Update.
+	(DT_ADDRNUM): Likewise.
+
 2006-07-12  Ulrich Drepper  <drepper@redhat.com>
 
 	* elf32_updatefile.c: Adjust for internal_function_def removal.

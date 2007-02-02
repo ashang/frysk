@@ -2,7 +2,62 @@
 
 	* Makefile.am: Work around a bug in GNU make -jN by mentioning *.map.
 	* Makefile.am: Mention the *.o files.
-	* Makefile.am (PACKAGE_VERSION): Remove the redundant definition.
+
+2006-10-09  Roland McGrath  <roland@redhat.com>
+
+	* ia64_symbol.c (ia64_reloc_simple_type): Treat SECREL types as simple.
+
+2006-08-29  Roland McGrath  <roland@redhat.com>
+
+	* sparc_retval.c: New file.
+	* Makefile.am (sparc_SRCS): Add it.
+	* sparc_init.c (sparc_init): Initialize return_value_location hook.
+
+2006-08-22  Roland McGrath  <roland@redhat.com>
+
+	* i386_regs.c (i386_register_name): Renamed i386_register_info.
+	Take new args, yield more info.
+	* i386_init.c (i386_init): Update initializer.
+	* ia64_regs.c (ia64_register_name): Likewise.
+	* ia64_init.c (ia64_init): Likewise.
+	* ppc_regs.c (ppc_register_name): Likewise.
+	* ppc64_init.c (ppc64_init): Likewise.
+	* ppc_init.c (ppc_init): Likewise.
+	* s390_regs.c (s390_register_name): Likewise.
+	* s390_init.c (s390_init): Likewise.
+	* sparc_regs.c (sparc_register_name): Likewise.
+	* sparc_init.c (sparc_init): Likewise.
+	* x86_64_regs.c (x86_64_register_name): Likewise.
+	* x86_64_init.c (x86_64_init): Likewise.
+
+2006-08-08  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (%.os): Don't depend on %.o, since we don't actually
+	need static object for anything here.  This rule is the only source of
+	.deps/ files.
+
+2006-06-23  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (PACKAGE_VERSION): Remove superfluous definition.
+
+2006-08-03  Roland McGrath  <roland@redhat.com>
+
+	* sparc_regs.c (sparc_register_name): List 32 FPU regs only for
+	EM_SPARC.  EM_SPARC32PLUS also has 64.
+
+2006-07-21  Roland McGrath  <roland@redhat.com>
+
+	* i386_regs.c (i386_register_name): Fix return value when using stpcpy.
+	* ppc_regs.c (ppc_register_name): Likewise.
+	* s390_regs.c (s390_register_name): Likewise.
+
+	* ia64_retval.c: New file.
+	* Makefile.am (ia64_SRCS): Add it.
+	* ia64_init.c (ia64_init): Install return_value_location hook.
+
+	* ia64_regs.c: New file.
+	* Makefile.am (ia64_SRCS): Add it.
+	* ia64_init.c (ia64_init): Install register_name hook.
 
 2006-07-05  Ulrich Drepper  <drepper@redhat.com>
 

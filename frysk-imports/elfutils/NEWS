@@ -1,3 +1,33 @@
+Version 0.125:
+
+elflint: Compare DT_GNU_HASH tests.
+
+move archives into -static RPMs
+
+libelf, elflint: better support for core file handling
+
+Version 0.124:
+
+libebl: sparc backend support for return value location
+
+libebl, libdwfl: backend register name support extended with more info
+
+libelf, libdw: bug fixes for unaligned accesses on machines that care
+
+readelf, elflint: trivial bugs fixed
+
+Version 0.123:
+
+libebl: Backend build fixes, thanks to Stepan Kasal.
+
+libebl: ia64 backend support for register names, return value location
+
+libdwfl: Handle truncated linux kernel module section names.
+
+libdwfl: Look for linux kernel "vmlinux" files with ".debug" suffix.
+
+elflint: Fix checks to permit --hash-style=gnu format.
+
 Version 0.122:
 
 libebl: add function to test for relative relocation

@@ -1,5 +1,5 @@
 /* Discard section not used at runtime from object files.
-   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
+   Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
@@ -204,7 +204,7 @@ print_version (FILE *stream, struct argp_state *state __attribute__ ((unused)))
 Copyright (C) %s Red Hat, Inc.\n\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
-"), "2006");
+"), "2007");
   fprintf (stream, gettext ("Written by %s.\n"), "Ulrich Drepper");
 }
 
@@ -344,9 +344,9 @@ process_file (const char *fname)
     case ELF_K_AR:
       /* It is not possible to strip the content of an archive direct
 	 the output to a specific file.  */
-      if (unlikely (output_fname != NULL))
+      if (unlikely (output_fname != NULL || debug_fname != NULL))
 	{
-	  error (0, 0, gettext ("%s: cannot use -o when stripping archive"),
+	  error (0, 0, gettext ("%s: cannot use -o or -f when stripping archive"),
 		 fname);
 	  result = 1;
 	}
@@ -399,6 +399,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
     Elf_Scn *newscn;
     struct Ebl_Strent *se;
     Elf32_Word *newsymidx;
+    void *debug_data;
   } *shdr_info = NULL;
   Elf_Scn *scn;
   size_t cnt;
@@ -851,6 +852,37 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
      The ones that are not removed in the stripped file are SHT_NOBITS.  */
   if (debug_fname != NULL)
     {
+      /* libbfd and apps using it don't cope with separate debuginfo objects
+	 with relocation sections against SHT_NOBITS .symtab/.strtab
+	 - libbfd isn't able to look up the .symtab/.strtab in the stripped
+	 object instead.  As a workaround, emit .symtab/.strtab in both
+	 places.  */
+      for (cnt = 1; cnt < shnum; ++cnt)
+	{
+	  if (shdr_info[cnt].idx == 0
+	      && (shdr_info[cnt].shdr.sh_type == SHT_REL
+		  || shdr_info[cnt].shdr.sh_type == SHT_RELA)
+	      && (shdr_info[cnt].shdr.sh_flags & SHF_ALLOC) == 0)
+	    {
+	      Elf32_Word symtabidx = shdr_info[cnt].old_sh_link;
+	      struct shdr_info *si = &shdr_info[symtabidx];
+	      si->debug_data = "";
+	      shdr_info[si->old_sh_link].debug_data = "";
+	      if (si->symtab_idx)
+		shdr_info[si->symtab_idx].debug_data = "";
+
+	      if (si->shdr.sh_type != SHT_SYMTAB
+		  || (si->shdr.sh_flags & SHF_ALLOC)
+		  || shdr_info[si->old_sh_link].shdr.sh_type != SHT_STRTAB
+		  || (shdr_info[si->old_sh_link].shdr.sh_flags & SHF_ALLOC)
+		  || (si->symtab_idx
+		      && (shdr_info[si->symtab_idx].shdr.sh_flags
+			  & SHF_ALLOC)))
+		error (EXIT_FAILURE, 0,
+		       gettext ("invalid symtab/strtab referenced by nonallocated section"));
+	    }
+	}
+
       for (cnt = 1; cnt < shnum; ++cnt)
 	{
 	  scn = elf_newscn (debugelf);
@@ -860,7 +892,8 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		   elf_errmsg (-1));
 
 	  bool discard_section = (shdr_info[cnt].idx > 0
-				  && cnt != ehdr->e_shstrndx);
+				  && cnt != ehdr->e_shstrndx
+				  && shdr_info[cnt].debug_data == NULL);
 
 	  /* Set the section header in the new file.  */
 	  GElf_Shdr debugshdr = shdr_info[cnt].shdr;
@@ -889,6 +922,13 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	  *debugdata = *shdr_info[cnt].data;
 	  if (discard_section)
 	    debugdata->d_buf = NULL;
+	  else if (shdr_info[cnt].debug_data != NULL)
+	    {
+	      shdr_info[cnt].debug_data = xmalloc (debugdata->d_size);
+	      memcpy (shdr_info[cnt].debug_data, debugdata->d_buf,
+		      debugdata->d_size);
+	      debugdata->d_buf = shdr_info[cnt].debug_data;
+	    }
 	}
 
       /* Finish the ELF header.  Fill in the fields not handled by
@@ -1080,7 +1120,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	    shdr_info[shdr_info[cnt].shdr.sh_info].idx;
 
 	/* Get the data from the old file if necessary.  We already
-           created the data for the section header string table.  */
+	   created the data for the section header string table.  */
 	if (cnt < shnum)
 	  {
 	    if (shdr_info[cnt].data == NULL)
@@ -1289,6 +1329,13 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	      if (shdr_info[shdr_info[cnt].old_sh_link].newsymidx == NULL)
 		continue;
 
+	      /* If the symbol table is not discarded, but additionally
+		 duplicated in separate debug file and this section
+		 is discarded, don't adjust anything.  */
+	      if (shdr_info[cnt].idx == 0
+		  && shdr_info[shdr_info[cnt].old_sh_link].debug_data != NULL)
+		continue;
+
 	      Elf32_Word *newsymidx
 		= shdr_info[shdr_info[cnt].old_sh_link].newsymidx;
 	      Elf_Data *d = elf_getdata (shdr_info[cnt].idx == 0
@@ -1345,6 +1392,13 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	      /* We do not have to do anything if the symbol table was
 		 not changed.  */
 	      if (shdr_info[symtabidx].newsymidx == NULL)
+		continue;
+
+	      /* If the symbol table is not discarded, but additionally
+		 duplicated in separate debug file and this section
+		 is discarded, don't adjust anything.  */
+	      if (shdr_info[cnt].idx == 0
+		  && shdr_info[symtabidx].debug_data != NULL)
 		continue;
 
 	      assert (shdr_info[cnt].idx > 0);
@@ -1472,7 +1526,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 			  chain[hidx] = inner;
 			}
 		    }
-	        }
+		}
 	    }
 	  else if (shdr_info[cnt].shdr.sh_type == SHT_GNU_versym)
 	    {
@@ -1483,6 +1537,13 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	      /* We do not have to do anything if the symbol table was
 		 not changed.  */
 	      if (shdr_info[symtabidx].newsymidx == NULL)
+		continue;
+
+	      /* If the symbol table is not discarded, but additionally
+		 duplicated in separate debug file and this section
+		 is discarded, don't adjust anything.  */
+	      if (shdr_info[cnt].idx == 0
+		  && shdr_info[symtabidx].debug_data != NULL)
 		continue;
 
 	      assert (shdr_info[cnt].idx > 0);
@@ -1529,20 +1590,27 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	  else if (shdr_info[cnt].shdr.sh_type == SHT_GROUP)
 	    {
 	      /* Check whether the associated symbol table changed.  */
-	      if (shdr_info[shdr_info[cnt].old_sh_link].newsymidx != NULL)
-		{
-		  /* Yes the symbol table changed.  Update the section
-		     header of the section group.  */
-		  scn = elf_getscn (newelf, shdr_info[cnt].idx);
-		  GElf_Shdr shdr_mem;
-		  GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
-		  assert (shdr != NULL);
+	      if (shdr_info[shdr_info[cnt].old_sh_link].newsymidx == NULL)
+		continue;
 
-		  size_t stabidx = shdr_info[cnt].old_sh_link;
-		  shdr->sh_info = shdr_info[stabidx].newsymidx[shdr->sh_info];
+	      /* If the symbol table is not discarded, but additionally
+		 duplicated in separate debug file and this section
+		 is discarded, don't adjust anything.  */
+	      if (shdr_info[cnt].idx == 0
+		  && shdr_info[shdr_info[cnt].old_sh_link].debug_data != NULL)
+		continue;
 
-		  (void) gelf_update_shdr (scn, shdr);
-		}
+	      /* Yes the symbol table changed.  Update the section
+		 header of the section group.  */
+	      scn = elf_getscn (newelf, shdr_info[cnt].idx);
+	      GElf_Shdr shdr_mem;
+	      GElf_Shdr *shdr = gelf_getshdr (scn, &shdr_mem);
+	      assert (shdr != NULL);
+
+	      size_t stabidx = shdr_info[cnt].old_sh_link;
+	      shdr->sh_info = shdr_info[stabidx].newsymidx[shdr->sh_info];
+
+	      (void) gelf_update_shdr (scn, shdr);
 	    }
 	}
     }
@@ -1672,7 +1740,10 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	 table indices.  */
       if (any_symtab_changes)
 	for (cnt = 1; cnt <= shdridx; ++cnt)
-	  free (shdr_info[cnt].newsymidx);
+	  {
+	    free (shdr_info[cnt].newsymidx);
+	    free (shdr_info[cnt].debug_data);
+	  }
 
       /* Free the memory.  */
       if ((shnum + 2) * sizeof (struct shdr_info) > MAX_STACK_ALLOC)
