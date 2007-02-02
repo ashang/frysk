@@ -328,7 +328,11 @@ $ ( cd build && sudo make install )
 $ frysk
 </pre>
 
-<a name="faq"><h2>Build and Test Questions, with Answers</h2></a>
+<a name="faq"><h2>Developer Questions, such as building and testing
+frysk, and using <tt><a href="#faq-cvs">CVS</a></tt>; with
+answers</h2></a>
+
+<h3>Building and Testing Questions</h3>
 
 <dl>
 
@@ -412,46 +416,7 @@ $ cvs -d... rtag -r BRANCH-branchpoint frysk BRANCH-branch
 </pre>
 </dd>
 
-<dt>How do I add a new third-party import into frysk-imports?</dt>
-<dd>This is a bit tricky.  Lets say the third party source you want
-to import is classpaths getopt command line option parser:
-<ul>
-<li>Create a directory under frysk-imports with an appropriate
-name. In our case <tt>frysk-imports/getopt</tt>.
-<li>Copy the source files into this directory, usually under a
-subdirectory called src. (Which can have further subdirectories as
-required.)
-<li>Change into this directory. This is the important part as cvs
-import will import whatever is in your current directory, this can
-make for awkward messes in the cvs tree with lots and lots of unneeded
-files.
-<li>Run the command:
-<pre>
-$ cvs -d :ext:"user-name"@sourceware.org:/cvs/frysk \
-    import -m "Import Message" \
-    frysk-imports/"directory-name" \
-    vendor-tag release-tag.
-</pre>
-Where:<dl> <dt>"user-name"</dt> <dd>Is your cvs username (you do have
-commit access right?).</dd> <dt>"Import Message"</dt> <dd>is a message
-explaining the import. For example "Importing getopt command line
-parser"</dd> <dt>"directory-name"</dt> <dd>is the directory under
-frysk-imports created to hold the third-party source. In our case
-getopt.</dd> <dt>vendor-tag</dt> <dd> is the name of the third party
-software. In our case classpath-getopt.</dd> <dt>release-tag</dt>
-<dd>is the release tag for the software, for example if we were to
-import getopt on Septemeber 27th 2006 we might use a release tag of
-classpath-getopt_2006_09_21.</dd></dl> So putting this all together
-run:
-<pre>
-$ cvs -d :ext:<user-name>@sourceware.org:/cvs/frysk \
-    import -m "Importing getopt command line parser" \
-    frysk-imports/getopt \
-    classpath-getopt \
-    classpath-getopt_2006_09_27
-</pre>
-Making sure that the current directory
-is<tt>frysk-imports/getopt</tt>.</dd> </dl> </dd>
+</dl>
 
 <dt>How do I add a new dejagnu test?</dt>
 <dd> Most of the work for this is done, just create a test_name.exp file and 
@@ -489,6 +454,121 @@ the last link assumes libgcj.so.6.0.0 is being used.  If that file
 is to be used with the current version of libgcj all occurrences of
 "libgcj.so.6.0.0" must be changed to "libgcj.so.7.0.0" or else no
 suppression will take place.</dd>
+
+<a name="faq-cvs"><h3>CVS Questions, with Answers</h3></a>
+
+<dl>
+
+<dt>How do I do import a third-party (vendor) package into
+frysk-imports?</dt><dd>Lets say you want to import the thirds party
+sources for <tt>elfutils</tt> into <tt>frysk-imports/elfutils</tt>:
+
+<ul>
+
+<li>Obtain a pristine copy of the sources from the vendor
+(a.k.a. upstream).<br>Typically the official sources come as a tar
+ball, download and unpack them in a new directory.  For
+<tt>elfutils</tt>, since upstream is the source rpm, <tt>rpmbuild
+-bp</tt> on the source rpm is used.</li>
+
+<li>Change <b>into</b> the top-level directory of the pristine source
+tree.<br>For instance, for <tt>elfutils</tt> 0.125, that means
+changing into the directory <tt>elfutils-0.125</tt>, for instance:
+
+<pre>
+$ pwd
+.../elfutils-0.125
+</pre>
+</li>
+
+<li>Pick a vendor branch (VENDOR_TAG) and release tags
+(RELEASE_TAG).<br>Make certain that they are meaningful, for instance:
+
+<pre>
+$ VENDOR=elfutils
+$ VERSION=0.125
+$ VENDOR_TAG=ELFUTILS
+$ RELEASE_TAG=elfutils_0_125
+</pre>
+
+Note that the vendor and release tags can not contain periods.</li>
+
+<li>Perform the import using a command like:<br>
+<pre>
+$ cvs -d :ext:${USER}@sourceware.org:/cvs/frysk \
+    import -m "Import of ${VENDOR} version ${VERSION}" \
+    frysk-imports/${VENDOR} \
+    ${VENDOR_TAG} \
+    ${RELEASE_TAG}
+</pre>
+For instance:
+<pre>
+$ pwd
+..../elfutils-0.125
+$ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
+    import -m "Importing elfutils version 0.125" \
+    frysk-imports/elfutils \
+    ELFUTILS \
+    elfutils_0_125
+</pre>
+</ul>
+</dd>
+
+<dt>How do I update a third party package in frysk-imports?</dt>
+<dd>The steps are similar to the initial import above but with a few
+key differences.  Again <tt>elfutils</tt> is used as an example.
+
+<ul>
+
+<li>Checkout a copy of the current sources.</li>
+
+<li>Tag the current sources.<br>This is is so that, should things go
+wrong, it is possible to quickly get back to the pre-merge version.
+Use a tag like: <tt>pre-${RELEASE_TAG}-merge</tt>, for instance
+<tt>pre-elfutils_0_125-merge</tt>.</li>
+
+<li>Force a commit to the current sources.<br>Please note that this
+critical step is missing from the <tt>CVS</tt> documentation.  Without
+it, unmodified files will switch to the new import before you are
+ready.<br>Do this using a command like:
+
+<pre>
+$ cvs -f -R -m "Touching all ${VENDOR} files" frysk-imports/elfutils
+</pre>
+</li>
+
+<li>Obtain and unpack a pristine copy of the sources.<br>See
+above.</li>
+
+<li>Import the pristine copy of the sources onto the vendor
+branch.<br>See above.  Be sure to use the same VENDOR_TAG.</li>
+
+<li>Check out a merged copy of the imported directory.<br>In a new
+directory, enter something like:
+<pre>
+$ cvs -d ... \
+    checkout -j ${OLD_RELEASE_TAG} -j ${NEW_RELEASE_TAG} \
+    frysk-imports/${VENDOR}
+</pre>
+For instance:
+<pre>
+$ cvs -d ... \
+    checkout -j elfutils_0_120 -j elfutils_0_125 \
+    frysk-imports/elfutils
+<pre>
+This will apply all changes between the old and new releases to the
+mainline.  Fix all clashes.
+</li>
+
+<li>Move the updated tree into a full cvs checkout and re-merge, and
+commit</li>
+
+<li>Re-tag with something like <tt>post-${RELEASE_TAG}-merge</tt>,
+e.g. <tt>post-elfutils_0_125-merge</tt>.
+
+</ul>
+</dd>
+
 
 </dl>
               <!-- end text -->
