@@ -55,7 +55,7 @@ public class TestStackFrame
   private String unknown = "0x[\\da-f]+ in \\[unknown\\]";
   public void testDebug ()
   {
-    frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#43");
+    frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#[\\d]+");
   }
   
   public void testNoDebug ()
@@ -70,7 +70,7 @@ public class TestStackFrame
   
   public void testStaticDebug ()
   {
-    frameTest("funit-stackframe-static", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#43");
+    frameTest("funit-stackframe-static", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#[\\d]+");
   }
   
   public void testStaticNoDebug ()
@@ -85,7 +85,7 @@ public class TestStackFrame
   
   public void testAsmNoSize()
   {
-    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-asm.S#48");
+    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-asm.S#[\\d]+");
   }
   
   public void testAsmNoDebugNoSize()
@@ -100,7 +100,7 @@ public class TestStackFrame
   
   public void testStaticAsmNoSize()
   {
-    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#48");    
+    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#[\\d]+");    
   }
   
   public void testStaticAsmNoDebugNoSize()
@@ -144,12 +144,12 @@ public class TestStackFrame
 
       public Action updateSignaled (Task task, int value)
       {
+        String stackTrace = StackFactory.createStackFrame(task).toPrint(false);
         assertTrue(
                    "Stackframe "
-                       + StackFactory.createStackFrame(task).toPrint(false)
+                       + stackTrace
                        + " matches " + result,
-                   StackFactory.createStackFrame(task).toPrint(false).matches(
-                                                                              result));
+                   stackTrace.matches(result));
         Manager.eventLoop.requestStop();
         return Action.CONTINUE;
       }

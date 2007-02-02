@@ -194,9 +194,23 @@ public class StackFrame
   public String getMethodName ()
   {
     if (this.myCursor == null || this.myCursor.getMethodName() == null)
-      return "";
+      return null;
     
     return this.myCursor.getMethodName();
+  }
+  
+  /**
+   * Return the name of the function associated with this stack frame.
+   * This will return null if the function's name is not known.
+   *
+   * @return the name of the function associated with this stack frame.
+   * Or null if not known. 
+   */
+  public String getSymbolName()
+  {
+    Dwfl dwfl = new Dwfl(task.getTid());
+    
+    return dwfl.getModule(getAddress()).getAddressName(getAddress());    
   }
 
   /**
@@ -283,64 +297,31 @@ public class StackFrame
   {
     return outer;
   }
-
-  /**
-   * Return a string representation of this stack frame.
-   * The returned string is suitable for display to the user.
-   */
-  public String frameToString ()
-  {
-    System.out.println("In Custom tostring");
-    StringBuffer builder = new StringBuffer("0x");
-    String addr = Long.toHexString(getAddress());
-    
-    // Pad the address based on the task's word size.
-    int padding = 2 * task.getIsa().getWordSize() - addr.length();
-    for (int i = 0; i < padding; ++i)
-	builder.append('0');
-    
-    builder.append(addr);
-    String mn = getMethodName();
-    
-    if (mn != null && ! "".equals(mn))
-      {
-        builder.append(" in function: ");
-        builder.append(getMethodName());
-      }
-    
-    String sf = getSourceFile();
-    int line = getLineNumber();
-    
-    if (sf != null || line != 0)
-      {
-        builder.append(" (");
-        if (sf != null)
-          builder.append(sf);
-        else
-          builder.append("Unknown source");
-        
-        if (line != 0)
-          {
-            builder.append(":");
-            builder.append(line);
-          }
-        
-        builder.append(")");
-      }
-    
-    return builder.toString();
-  }
   
   /**
    * Return a simple string representation of this stack frame.
+   * The returned string is suitable for display to the user.
    */
   public String toPrint (boolean isSourceWindow)
   {
     if (this.myCursor == null)
       return "Empty stack trace";
     
-    String ret = "";
-    String funcString = this.myCursor.getMethodName();
+    StringBuffer builder = new StringBuffer("0x");
+    
+    String addr = Long.toHexString(getAddress());
+    
+    // Pad the address based on the task's word size.
+    int padding = 2 * task.getIsa().getWordSize() - addr.length();
+    for (int i = 0; i < padding; ++i)
+    builder.append('0');
+    
+    builder.append(addr);
+    
+   String funcString = getSymbolName();
+   
+   //XXX: This has to go, above uses libdwfl, this uses libunwind.
+   funcString = getMethodName();
     
     if (this.dwflLine != null)
       {
@@ -351,16 +332,16 @@ public class StackFrame
         
         if (! isSourceWindow)
           {
-            ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
+            builder.append(" in "
                   + funcString
-                  + this.sourceFile + "#" + this.lineNum;
+                  + this.sourceFile + "#" + this.lineNum);
           }
         else
           {
             String[] fileName = this.sourceFile.split("/");
-            ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
+            builder.append(" in "
                   + funcString
-                  + fileName[fileName.length - 1] + ": line #" + this.lineNum;
+                  + fileName[fileName.length - 1] + ": line #" + this.lineNum);
           }
       }
     else
@@ -369,11 +350,11 @@ public class StackFrame
           funcString = "[unknown]";
         else
           funcString = funcString + " ()";
-        ret = "0x" + Long.toHexString(this.myCursor.getAddress()) + " in "
-              + funcString;
+        builder.append(" in "
+              + funcString);
       }
 
-    return ret;
+    return builder.toString();
   }
   
   public int getEndLine ()
