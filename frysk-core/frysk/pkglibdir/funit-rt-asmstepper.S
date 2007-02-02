@@ -41,13 +41,13 @@
 
 
 main:
-#ifdef __i386__
-	PUSH STACK_BASE_POINTER
-#endif
-	MOVE $0x14, GEN_REG_1
-	MOVE $1, GEN_REG_2
-	MOVE $2, GEN_REG_3
-	MOVE $3, GEN_REG_4
+	
+	ENTER
+	
+	LOAD_IMMED (REG1, 0x14)
+	LOAD_IMMED (REG2, 1)
+	LOAD_IMMED (REG3, 2)
+	LOAD_IMMED (REG4, 3)
 //	INTERRUPT $0x80
 loop:
 	NO_OP
@@ -57,18 +57,15 @@ loop:
 	NO_OP
 	NO_OP ; NO_OP ; NO_OP
 	NO_OP;
-	COMPARE $1, GEN_REG_2
-	JUMP_IF_NOT_EQUAL fail
-	COMPARE $2, GEN_REG_3
-	JUMP_IF_NOT_EQUAL fail
-	COMPARE $3, GEN_REG_4
-	JUMP_IF_NOT_EQUAL fail
-	JUMP loop
-#ifdef __i386__
-	POP %ebp
-#endif
-	RETURN
-fail: JUMP 0
+	COMPARE_IMMED (REG2, 1)
+	JUMP_NE (fail)
+	COMPARE_IMMED (REG3, 2)
+	JUMP_NE (fail)
+	COMPARE_IMMED (REG4, 3)
+	JUMP_NE (fail)
+	JUMP (loop)
+	EXIT
+fail: JUMP (0)
 
 // make the stack non-executable
 .section	.note.GNU-stack,"",@progbits

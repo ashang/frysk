@@ -1,5 +1,19 @@
 2007-02-02  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-asm.h (GEN_REG_1, GEN_REG_2, GEN_REG_3, GEN_REG_4):
+	Replace with REG1, REG2, REG3, REG4.
+	(JUMP): Redefine with LABEL parameter.
+	(ENTER): Define, replace PROLOGUE.
+	(EXIT): Replace RETURN and EPILOGUE.
+	(STACK_BASE_REGISTER, LOAD, STORE_WORD, JUMP_IF_NOT_EQUAL): Delete.
+	(PUSH, POP, RETURN): Delete.
+	(FP_REG): Rename BP_REG.
+	(COMPARE_IMMED): Replace COMPARE.
+	(LOAD_IMMED): Replace SET.
+	* funit-stackframe-static-asm.S: Update.
+	* funit-stackframe-asm.S: Update.
+	* funit-rt-asmstepper.S: Update.
+
 	* funit-asm.h (SP_REG, BP_REG, REG1, REG2, REG3, REG4, NO_OP) 
 	(ENTER, EXIT, SET, LOAD, STORE, MOVE, ADD, ADDC, SUB, COMPARE) 
 	(JUMP, JUMP_EQ, JUMP_NE, CALL, TRAP): Add definitions.

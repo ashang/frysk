@@ -47,52 +47,42 @@
 	.text
 	.global main
 
-//XXX: Replace with macros at end of file.
+#define REG1 %eax
+#define REG2 %ebx
+#define REG3 %ecx
+#define REG4 %edx
+
 #define NO_OP nop
-#define MOVE mov
-#define INTERRUPT int
-#define COMPARE cmp
-#define RETURN ret
-#define PUSH push
-#define POP pop
-#define JUMP jmp
-#define JUMP_IF_NOT_EQUAL jne
+#define ENTER pushl %ebp ; movl %esp, %ebp 
+#define EXIT popl %ebp ; ret
+#define JUMP(LABEL) jmp LABEL
+#define JUMP_NE(LABEL) jne LABEL
 #define CALL(FUNC) call FUNC
-#define STORE_WORD(WORD, REG) movl $WORD, (REG)
-#define STACK_BASE_POINTER %ebp // stack base pointer
-#define GEN_REG_1 %eax // accumulator register
-#define GEN_REG_2 %ebx // base register
-#define GEN_REG_3 %ecx // counter register
-#define GEN_REG_4 %edx // data register
-#define PROLOGUE \
-		pushl %ebp ;\
-		movl %esp, %ebp 
-		
-#define EPILOGUE \
-		popl	%ebp ;\
-		ret		
+#define LOAD_IMMED(DEST_REG,CONSTANT) mov $CONSTANT, DEST_REG
+#define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
+#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+
+//XXX: Replace with macros at end of file.
 
 #elif defined __x86_64__
 
 	.text
 	.global main
 
-//XXX: Replace with macros at end of file.
+#define REG1 %rax
+#define REG2 %rdi
+#define REG3 %rsi
+#define REG4 %rdx
+
 #define NO_OP nop
-#define MOVE mov
-#define INTERRUPT int
-#define COMPARE cmp
-#define RETURN ret
-#define PUSH push
-#define POP pop
-#define JUMP jmp
-#define JUMP_IF_NOT_EQUAL jne
+#define ENTER
+#define EXIT ret
+#define JUMP(LABEL) jmp LABEL
+#define JUMP_NE(LABEL) jne LABEL
 #define CALL(FUNC) call FUNC
-#define STORE_WORD(WORD, REG) movl $WORD, (REG)
-#define GEN_REG_1 %rax
-#define GEN_REG_2 %rdi
-#define GEN_REG_3 %rsi
-#define GEN_REG_4 %rdx
+#define LOAD_IMMED(DEST_REG,CONST) mov $CONSTANT, DEST_REG
+#define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
+#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
 
 #elif defined __powerpc__
 
@@ -111,22 +101,13 @@ main:
 	.global  ._main
 ._main:
 
-//XXX: Replace with macros at end of file.
+#define REG1 %gpr0
+#define REG2 %gpr3
+#define REG3 %gpr4
+#define REG4 %gpr5
+
 #define NO_OP nop
-#define MOVE mov
-#define INTERRUPT int
-#define COMPARE cmp
-#define RETURN ret
-#define PUSH push
-#define POP pop
-#define JUMP jmp
-#define JUMP_IF_NOT_EQUAL jne
-#define CALL(FUNC) call FUNC
-#define STORE_WORD(WORD, REG) movl $WORD, (REG)
-#define GEN_REG_1 %gpr0
-#define GEN_REG_2 %gpr3
-#define GEN_REG_3 %gpr4
-#define GEN_REG_4 %gpr5
+#define CALL(FUNC) brlr FUNC
 
 #endif
 
@@ -136,7 +117,7 @@ main:
 // register before performing any operation.  For instance, to
 // increment a memory location, this sequence is required:
 
-// SET(REG1, foo)       // Set REG1 to address of FOO
+// LOAD_IMMED(REG1, foo)       // Set REG1 to address of FOO
 // LOAD(REG2, REG1)     // Load REG2 with contents of memory at REG1
 // ADDC(REG3, 1)        // Increment
 // STORE(REG2, REG1)    // Store again
@@ -149,8 +130,8 @@ main:
 #ifndef SP_REG
 #define SP_REG Register containing pointer to of top-of-stack
 #endif
-#ifndef BP_REG
-#define BP_REG Register containing pointer to base of current stack frame
+#ifndef FP_REG
+#define FP_REG Register containing pointer to base of current stack frame
 #endif
 #ifndef REG1
 #define REG1 General purpose register, also used for function return
@@ -179,8 +160,8 @@ main:
 #define EXIT destroys the stack frame and exits the function
 #endif
 
-#ifndef SET
-#define SET(REGISTER, CONSTANT) sets REGISTER to CONSTANT
+#ifndef LOAD_IMMED
+#define LOAD_IMMED(REGISTER, IMMED) sets REGISTER to IMMED
 #endif
 #ifndef LOAD
 #define LOAD(DEST_REG,BASE_REG) Load register DEST_REG with value at addres BASE_REG+0
@@ -192,11 +173,11 @@ main:
 #define MOVE(DEST_REG, SOURCE_REG) move SOURCE_REG to DEST_REG
 #endif
 
+#ifndef ADDC
+#define ADD(DEST_REG, CONSTANT) add CONSTANT to DEST_REG
+#endif
 #ifndef ADD
 #define ADD(DEST_REG, SOURCE_REG) adds SOURCE_REG to DEST_REG
-#endif
-#ifndef ADDC
-#define ADDC(DEST_REG, CONSTANT) add CONSTANT to DEST_REG
 #endif
 #ifndef SUB
 #define SUB(DEST_REG, SOURCE_REG) subtracts SOURCE_REG from DEST_REG
@@ -204,6 +185,9 @@ main:
 
 #ifndef COMPARE
 #define COMPARE(LHS_REG,RHS_REG) Set compare flags according to LHS_REG-RHS_REG
+#endif
+#ifndef COMPARE_IMMED
+#define COMPARE_IMMED(REG,IMMED) Set compare flags according to REG-IMMED
 #endif
 #ifndef JUMP
 #define JUMP(LABEL) Jump to label using relative addressing

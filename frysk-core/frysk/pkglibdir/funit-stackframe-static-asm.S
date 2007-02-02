@@ -1,7 +1,6 @@
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,15 +43,16 @@
 	.text
 	.type	foo, @function
 foo:
-	PROLOGUE
-	MOVE	$0, GEN_REG_1
-	STORE_WORD(0, GEN_REG_1)
-	EPILOGUE
+	ENTER
+	LOAD_IMMED (REG1, 0)
+	STORE (REG1, REG1)
+	EXIT
+
 .globl main
 	.type	main, @function
 main:
-	PROLOGUE
+	ENTER
 	CALL(foo)	
-	EPILOGUE
+	EXIT
 	.size	main, .-main
 	.section	.note.GNU-stack,"",@progbits
