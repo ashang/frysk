@@ -85,7 +85,7 @@ public class TestStackFrame
   
   public void testAsmNoSize()
   {
-    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#9");
+    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-asm.S#48");
   }
   
   public void testAsmNoDebugNoSize()
@@ -100,7 +100,7 @@ public class TestStackFrame
   
   public void testStaticAsmNoSize()
   {
-    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#8");    
+    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#49");    
   }
   
   public void testStaticAsmNoDebugNoSize()

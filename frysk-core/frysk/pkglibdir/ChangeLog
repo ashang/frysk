@@ -1,4 +1,10 @@
-2007-02-01  Nurdin Premji  <npremji@redhat.com
+2007-02-02  Nurdin Premji  <npremji@redhat.com>
+
+	funit-asm.h: Added some more macros.
+	funit-stackframe-asm.S: Added (C). Simplified.
+	funit-stackframe-static-asm.S: Ditto.
+
+2007-02-01  Nurdin Premji  <npremji@redhat.com>
 
 	* funit-stacktrace-asm.S: Added.
 	* funit-stacktrace-static-asm.S: Added.

@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
+//XXX: Should be macros with parameters.
 #define NO_OP nop
 #define MOVE mov
 #define INTERRUPT int
@@ -46,6 +46,8 @@
 #define POP pop
 #define JUMP jmp
 #define JUMP_IF_NOT_EQUAL jne
+#define CALL(FUNC) call FUNC
+#define STORE_WORD(WORD, REG) movl $WORD, (REG)
 
 #ifdef __i386__
 
@@ -57,6 +59,13 @@
 #define GEN_REG_2 %ebx // base register
 #define GEN_REG_3 %ecx // counter register
 #define GEN_REG_4 %edx // data register
+#define PROLOGUE \
+		pushl %ebp ;\		
+		movl %esp, %ebp 
+		
+#define EPILOGUE \
+		popl	%ebp ;\
+		ret		
 
 #elif defined __x86_64__
 
