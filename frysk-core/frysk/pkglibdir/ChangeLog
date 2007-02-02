@@ -1,5 +1,7 @@
 2007-02-02  Nurdin Premji  <npremji@redhat.com>
 
+	funit-asm.h: Removed spaces after \.
+
 	funit-asm.h: Added some more macros.
 	funit-stackframe-asm.S: Added (C). Simplified.
 	funit-stackframe-static-asm.S: Ditto.

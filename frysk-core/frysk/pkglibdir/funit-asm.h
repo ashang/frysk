@@ -60,7 +60,7 @@
 #define GEN_REG_3 %ecx // counter register
 #define GEN_REG_4 %edx // data register
 #define PROLOGUE \
-		pushl %ebp ;\		
+		pushl %ebp ;\
 		movl %esp, %ebp 
 		
 #define EPILOGUE \
