@@ -100,7 +100,7 @@ public class TestStackFrame
   
   public void testStaticAsmNoSize()
   {
-    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#49");    
+    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#48");    
   }
   
   public void testStaticAsmNoDebugNoSize()
