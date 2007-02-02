@@ -922,8 +922,8 @@ public class CoredumpAction
 
     public void buildMap (final long addressLow, final long addressHigh,
                           final boolean permRead, final boolean permWrite,
-                          final boolean permExecute, final boolean permPrivate,
-                          final boolean permShared, final long offset,
+                          final boolean permExecute,
+                          final boolean shared, final long offset,
                           final int devMajor, final int devMinor,
                           final int inode, final int pathnameOffset,
                           final int pathnameLength)
@@ -958,8 +958,8 @@ public class CoredumpAction
 
     public void buildMap (final long addressLow, final long addressHigh,
                           final boolean permRead, final boolean permWrite,
-                          final boolean permExecute, final boolean permPrivate,
-                          final boolean permShared, final long offset,
+                          final boolean permExecute,
+                          final boolean shared, final long offset,
                           final int devMajor, final int devMinor,
                           final int inode, final int pathnameOffset,
                           final int pathnameLength)
@@ -991,10 +991,9 @@ public class CoredumpAction
                 writeMap = true;
               if (sfilename.equals("[stack]"))
                 writeMap = true;
-              if ((permRead) && (permPrivate))
-                if ((! permWrite) && (! permExecute))
+              if (permRead && !shared && !permWrite && !permExecute)
                   writeMap = true;
-              if (permShared)
+              if (shared)
                 writeMap = true;
             }
 

@@ -81,8 +81,7 @@ frysk::sys::proc::MapsBuilder::construct (jbyteArray buf)
       jboolean permRead = *p++ == 'r';
       jboolean permWrite = *p++ == 'w';
       jboolean permExecute = *p++ == 'x';
-      jboolean permPrivate = *p++ == 'p';
-      jboolean permShared = *p++ == 's';
+      jboolean shared = *p++ == 's';
       // <offset>
       jlong offset = scanJlong (&p, 16);
       // <major>:<minor>
@@ -101,7 +100,7 @@ frysk::sys::proc::MapsBuilder::construct (jbyteArray buf)
       }
       int pathnameLength = p - start - pathnameOffset;
       buildMap (addressLow, addressHigh,
-		permRead, permWrite, permExecute, permPrivate, permShared, 
+		permRead, permWrite, permExecute, shared, 
 		offset,
 		devMajor, devMinor,
 		inode,

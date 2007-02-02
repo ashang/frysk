@@ -111,7 +111,7 @@ public class TestStackBacktrace
 
       public void buildMap (long addressLow, long addressHigh,
                             boolean permRead, boolean permWrite,
-                            boolean permExecute, boolean permPrivate, boolean permShared,
+                            boolean permExecute, boolean shared,
                             long offset, int devMajor, int devMinor, int inode,
                             int pathnameOffset, int pathnameLength)
       {
