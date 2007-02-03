@@ -1,3 +1,8 @@
+2007-02-02  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-asm.h (LOAD_IMMED): Fixed x86_64 build failure due to
+	'CONSTANT' being undefined.
+	
 2007-02-02  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-asm.h (GEN_REG_1, GEN_REG_2, GEN_REG_3, GEN_REG_4):
