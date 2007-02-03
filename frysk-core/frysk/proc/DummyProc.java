@@ -71,6 +71,10 @@ public class DummyProc extends Proc {
 
 	void sendRefresh() {
 	}
+  
+        protected ProcState getInitialState (boolean procStarting) {
+	        return null;
+	}
 
 	Auxv[] sendrecAuxv() {
 		return null;

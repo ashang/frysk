@@ -76,6 +76,16 @@ public class LinuxPtraceProc
     }
 
     /**
+     * Some constructors in Proc.java need a starting state.
+     * As Proc is abstract and cannot return a state specific
+     * to its subclass, return here in the subclass
+     */
+    protected ProcState getInitialState (boolean procStarting)
+    {
+      return LinuxPtraceProcState.initial(this, procStarting);
+    }
+
+    /**
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */

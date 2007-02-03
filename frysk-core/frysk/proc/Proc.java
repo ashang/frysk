@@ -168,6 +168,8 @@ public abstract class Proc
 
   final BreakpointAddresses breakpoints;
 
+  protected abstract ProcState getInitialState (boolean procStarting);
+
   /**
    * Create a new Proc skeleton. Since PARENT could be NULL, explicitly specify
    * the HOST.
@@ -193,7 +195,7 @@ public abstract class Proc
   protected Proc (Host host, Proc parent, ProcId id)
   {
     this(id, parent, host, null);
-    newState = LinuxPtraceProcState.initial(this, false);
+    newState = getInitialState(false);
     logger.log(Level.FINEST, "{0} new - create unattached running proc\n", this);
   }
 
@@ -208,7 +210,7 @@ public abstract class Proc
   protected Proc (Task task, ProcId forkId)
   {
     this(forkId, task.proc, task.proc.host, task);
-    newState = LinuxPtraceProcState.initial(this, true);
+    newState = getInitialState(true);
     logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
   }
 

@@ -1,3 +1,12 @@
+2007-02-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Proc.java (Proc): Remove setting LinuxPtraceState states.
+	Use getInitialState() to find initial states from sub-classes of
+	Proc.
+	(getInitialState): New. Abstract.
+	* LinuxPtraceProc.java (getInitialState): New. Set initial state.
+	* DummyProc.java (getInitialState): Ditto.
+
 2007-02-02  Mark Wielaard  <mark@klomp.org>
 
 	* StressAttachDetachManyTasks.java (test): Remove #2468 blocker.
