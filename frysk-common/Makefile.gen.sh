@@ -102,7 +102,6 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.mkjava" -print \
     -o -name "[A-Za-z]*\.mkenum" -print \
     -o -name "[A-Za-z]*\.shenum" -print \
-    -o -name "[A-Za-z]*\.desktop" -print \
     -o -name "[A-Za-z]*\.properties" -print \
     -o -name "[A-Za-z]*\.fig" -print \
     -o -name "[A-Za-z]*\.g" -print \

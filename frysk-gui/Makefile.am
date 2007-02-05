@@ -139,7 +139,10 @@ glade.catalog:
 		$@.tmp
 	mv $@.tmp $@
 
-
+# Handle the *.desktop file(s).
+desktopdir = $(datadir)/applications
+dist_desktop_DATA = frysk/gui/frysk.desktop
+
 # frysk's core, which doesn't have a UI gets install-tested using
 # dejagnu.  Add those tests to 
 
