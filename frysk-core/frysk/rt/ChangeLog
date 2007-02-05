@@ -1,3 +1,12 @@
+2007-02-05  Mark Wielaard  <mark@klomp.org>
+
+	* TestStackFrame.java (testDebug): Mark as broken #3968.
+	(testNoDebug): Likewise.
+	(testStripped): Likewise.
+	(testStaticDebug): Likewise.
+	(testStaticNoDebug): Likewise.
+	(testStaticStripped): Likewise.
+
 2007-02-02  Nurdin Premji  <npremji@redhat.com>
 
 	* TestStackFrame.java (frameTest.Terminator.updateSignaled): Optimized to call

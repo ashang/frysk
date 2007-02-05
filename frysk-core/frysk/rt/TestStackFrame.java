@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -55,31 +55,43 @@ public class TestStackFrame
   private String unknown = "0x[\\da-f]+ in \\[unknown\\]";
   public void testDebug ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#[\\d]+");
   }
   
   public void testNoDebug ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe-nodebug", noDebug);
   }
   
   public void testStripped ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe-stripped", unknown);
   }
   
   public void testStaticDebug ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe-static", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#[\\d]+");
   }
   
   public void testStaticNoDebug ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe-static-nodebug", noDebug);
   }
   
   public void testStaticStripped ()
   {
+    if (brokenXXX(3968))
+      return;
     frameTest("funit-stackframe-static-stripped", unknown);
   }
   
