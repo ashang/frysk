@@ -41,6 +41,7 @@
 
 import frysk.junit.Runner;
 import @GEN_PACKAGENAME@.JUnitTests;
+import frysk.Config;
 
 /**
  * Run the JUnit tests from within the build tree.
@@ -53,16 +54,12 @@ public class TestRunner
 	String ABS_BUILDDIR = "@abs_builddir@";
 	String ABS_SRCDIR = "@abs_srcdir@";
 
+	Config config = Config.createBuildConfig (ABS_SRCDIR, ABS_BUILDDIR);
+	Config config32 = Config.createBuild32On64Config (ABS_SRCDIR, ABS_BUILDDIR);
+
 	Runner testRunner = new Runner ("TestRunner", args);
-	int status = testRunner.runTestCases
-	    (ABS_BUILDDIR + "/frysk/bindir",
-	     ABS_BUILDDIR + "/frysk/pkgdatadir/",
-	     ABS_SRCDIR + "/frysk/gui/gladedir",
-	     ABS_SRCDIR + "/frysk/gui/images",
-	     JUnitTests.get (),
-	     ABS_BUILDDIR + "/frysk/pkglibdir/",
-	     JUnitTests.get (),
-	     ABS_BUILDDIR + "/frysk/pkglibdir/arch32/");
+	int status = testRunner.runTestCases (JUnitTests.get (), config,
+					      JUnitTests.get (), config32);
 	System.exit (status);
     }
 }

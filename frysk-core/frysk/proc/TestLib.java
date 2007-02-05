@@ -42,7 +42,7 @@ package frysk.proc;
 
 import frysk.event.SignalEvent;
 import frysk.junit.TestCase;
-import frysk.junit.Paths;
+import frysk.Config;
 import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
@@ -92,7 +92,7 @@ public class TestLib
    */
   protected static String getExecPrefix ()
   {
-    return Paths.getExecPrefix();
+    return Config.getPkgLibDir ();
   }
 
   /**
@@ -100,7 +100,7 @@ public class TestLib
    */
   protected static String getExec32Prefix ()
   {
-    return Paths.getExec32Prefix();
+    return Config.getPkgLib32Dir ();
   }
 
   /**

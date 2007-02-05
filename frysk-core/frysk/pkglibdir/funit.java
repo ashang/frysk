@@ -52,22 +52,18 @@ public class funit
     {
 	Runner testRunner = new Runner ("funit", args);
 
-	LinkedList list = new LinkedList ();
-	list.addAll (frysk.imports.JUnitTests.get ());
-	list.addAll (frysk.core.JUnitTests.get ());
+	LinkedList tests = new LinkedList ();
+	tests.addAll (frysk.imports.JUnitTests.get ());
+	tests.addAll (frysk.core.JUnitTests.get ());
+	Config config = Config.createInstallConfig ();
 	
 	// It's unnecessary for other modules(such as frysk-import) to
 	// do arch32 test, so just add the frysk-core's JUnitTests.
-	LinkedList arch32List = new LinkedList();
-	arch32List.addAll (frysk.core.JUnitTests.get ());
+	LinkedList tests32 = new LinkedList();
+	tests32.addAll (frysk.core.JUnitTests.get ());
+	Config config32 = Config.createInstallConfig ();
 
-	int status = testRunner.runTestCases
-	    (Config.getBinDir (),
-	     Config.getPkgDataDir () + "/",
-	     Config.getGladeDir (),
-	     Config.getImageDir (),
-	     list, Config.getPkgLibDir () + "/",
-	     arch32List, Config.getPkgLib32Dir () + "/");
+	int status = testRunner.runTestCases (tests, config, tests32, config32);
 	System.exit (status);
     }
 }

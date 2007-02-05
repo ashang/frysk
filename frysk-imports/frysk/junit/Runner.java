@@ -552,11 +552,25 @@ public class Runner
 	return parser;
     }
     
-    static int timeout = 5; 
+    private static int timeout = 5; 
     public static int getTimeout()
     {
       return timeout;
     }
+
+    private static String programBasename;
+    /**
+     * Return the TestRunner's true basename - it could be "funit" or
+     * it could be "TestRunner".
+     *
+     * XXX: Hack, shouldn't be using static storage for this.  Should
+     * this go in frysk.Config?
+     */
+    public static String getProgramBasename ()
+    {
+	return programBasename;
+    }
+
     /**
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
@@ -566,11 +580,10 @@ public class Runner
 	// Override the print methods.
 	super (new Results (System.out));
 
-	Paths.setRunnerBasename (programName);
-
 	// Create the command line parser, and use it to parse all
 	// command line options.
 	Parser parser = createCommandLineParser (programName);
+	programBasename = programName;
 	
 	otherArgs = new LinkedList();
 	    
@@ -601,26 +614,18 @@ public class Runner
 	    return EXCEPTION_EXIT;
     }
 
-    public int runTestCases (String binPrefix,
-			     String dataPrefix,
-			     String gladeDirs,
-			     String imageDirs,
-			     Collection archTests,
-			     String execPrefix,
-			     Collection arch32Tests,
-			     String exec32Prefix)
+    public int runTestCases (Collection tests, Config config,
+			     Collection tests32, Config config32)
     {
 	int result = SUCCESS_EXIT;
 
-	Paths.setDataPrefixes (dataPrefix, gladeDirs, imageDirs);
-
 	// Set the path prefixes and then do the common test.
-	Paths.setExecPrefixes (execPrefix, exec32Prefix);
-	result = worstResult (runArchCases (archTests), result);
+	Config.set (config);
+	result = worstResult (runArchCases (tests), result);
 	
-	// Set the execPrefix of arch32 and then do the arch32 test.
-	Paths.setExecPrefixes (exec32Prefix, null);
-	result = worstResult (runArch32Cases (arch32Tests), result);
+	// Set the Config to 32-on-64 and then re-run the tests.
+	Config.set (config32);
+	result = worstResult (runArch32Cases (tests32), result);
 
 	return result;
     }

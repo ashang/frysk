@@ -1,3 +1,10 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunState.java: Replace frysk.junit.Paths.getExecPrefix with
+	getExecPrefix.
+	* TestStackBacktrace.java: Ditto.
+	* TestStepping.java: Ditto.
+
 2007-02-05  Mark Wielaard  <mark@klomp.org>
 
 	* TestStackFrame.java (testDebug): Mark as broken #3968.

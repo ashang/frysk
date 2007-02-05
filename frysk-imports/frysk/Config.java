@@ -46,26 +46,98 @@ package frysk;
 public class Config
 {
     /**
+     * Do not allow extension.
+     */
+    private Config ()
+    {
+    }
+
+    /**
+     * The currently selected Configuration.
+     */
+    static private Config current;
+    /**
+     * Select the specified configuration.
+     */
+    public static final void set (Config config)
+    {
+	current = config;
+    }
+
+    /**
+     * Return the current config.
+     */
+    static final Config get ()
+    {
+	return current;
+    }
+
+    /**
+     * Create the standard install tree configuration.
+     *
+     * The 32-bit and 64-bit specific library paths are set to NULL.
+     */
+    public static native final Config createInstallConfig ();
+
+    /**
+     * Create the 32-bit install tree configuration (used when running
+     * 32-bit tests on a 64-bit install tree).
+     */
+    public static native final Config createInstall32On64Config ();
+
+    /**
+     * Create the standard build-tree configuration.
+     *
+     * The 32-bit and 64-bit specific library paths are set to NULL.
+     */
+    public static native final Config createBuildConfig (String absSrcDir,
+							 String absBuildDir);
+
+    /**
+     * Create the 32-bit on 64-bit build-tree configuration.
+     */
+    public static native final Config createBuild32On64Config (String absSrcDir,
+							       String absBuildDir);
+
+    /**
      * Directory containing the .glade files describing frysk's UI
      * windows.
      */
-    public static final native String getGladeDir ();
+    public static final String getGladeDir ()
+    {
+	return current.theGladeDir;
+    }
+    private String theGladeDir;
 
     /**
-     * Directory containing the frysk help files.
+     * Directory containing the frysk help files.  Does not include
+     * trailing slash.
      */
-    public static final native String getHelpDir ();
+    public static final String getHelpDir ()
+    {
+	return current.theHelpDir;
+    }
+    private String theHelpDir;
 
     /**
-     * Root directory of frysk's images (or icons).
+     * Root directory of frysk's images (or icons).  Does not include
+     * trailing slash.
      */
-    public static final native String getImageDir ();
+    public static final String getImageDir ()
+    {
+	return current.theImageDir;
+    }
+    private String theImageDir;
 
     /**
      * Frysk's shared, and 32-bit and 64-bit independant, data
      * directory.  Typically <tt>/usr/share/frysk</tt>.
      */
-    public static final native String getPkgDataDir ();
+    public static final String getPkgDataDir ()
+    {
+	return current.thePkgDataDir;
+    }
+    private String thePkgDataDir;
 
     /**
      * Frysk's user-visible executable directory.  Typically <tt>/usr/bin</tt>.
@@ -73,7 +145,11 @@ public class Config
      * Used by install-tree testing when specifying the path to
      * installed frysk executables.
      */
-    public static final native String getBinDir ();
+    public static final String getBinDir ()
+    {
+	return current.theBinDir;
+    }
+    private String theBinDir;
 
     /**
      * Frysk's library directory.  Typically either
@@ -82,7 +158,11 @@ public class Config
      * Used by tests when they need to run an executable of the same
      * bit-size as frysk.
      */
-    public static final native String getPkgLibDir ();
+    public static final String getPkgLibDir ()
+    {
+	return current.thePkgLibDir;
+    }
+    private String thePkgLibDir;
 
     /**
      * Frysk's 32-bit library directory.  Typically
@@ -91,7 +171,11 @@ public class Config
      * Solely for use by 32-bit on 64-bit tests when a 32-bit
      * executable is required.
      */
-    public static final native String getPkgLib32Dir ();
+    public static final String getPkgLib32Dir ()
+    {
+	return current.thePkgLib32Dir;
+    }
+    private String thePkgLib32Dir;
 
     /**
      * Frysk's 64-bit library directory.  Typically
@@ -100,7 +184,11 @@ public class Config
      * Solely for use by 32-bit on 64-bit tests when a 64-bit
      * executable is required.
      */
-    public static final native String getPkgLib64Dir ();
+    public static final String getPkgLib64Dir ()
+    {
+	return current.thePkgLib64Dir;
+    }
+    private String thePkgLib64Dir;
 
     /**
      * The frysk version number.  Typically of the form:

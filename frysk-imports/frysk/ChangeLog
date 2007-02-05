@@ -1,5 +1,15 @@
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.java (selectInstallDirs, selectInstall32On64Dirs)
+	(selectBuildDirs, selectBuild32On64Dirs): New.
+	(getGladeDir, getImageDir, getHelpDir, getPkgDataDir, getBinDir)
+	(getPkgLibDir, getPkgLib32Dir, getPkgLib64Dir): Make non-native.
+	(theGladeDir, theHelpDir, theImageDir, thePkgDataDir, theBinDir)
+	(thePkgLibDir, thePkgLib32Dir, thePkgLib64Dir): New private static
+	variables..
+	* cni/Config.cxx: Update.
+	* TestConfig.java: New file.
+	
 	* Config.java: Update all descriptioins.
 	(getBinDir, getPkgLib32Dir): Declare.
 	* cni/Config.cxxin (getBinDir, getPkgLib64Dir): Define.

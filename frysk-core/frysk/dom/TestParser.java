@@ -41,7 +41,7 @@
 package frysk.dom;
 
 import frysk.junit.TestCase;
-import frysk.junit.Paths;
+import frysk.Config;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
@@ -89,7 +89,7 @@ public class TestParser
 	String IMAGE_FILENAME = "Task 28428";
 	String CC_FILE = "./test";
 
-	String execPath = Paths.getExecPrefix () + "/test_main_looper";
+	String execPath = Config.getPkgLibDir () + "test_main_looper";
 	List sources = DOMFactory.getSrcFiles (execPath);
 	assertTrue ("sources.size > 0", sources.size () > 0);
 	
@@ -173,7 +173,7 @@ public class TestParser
     public static void assertDomMatchesBase (File newfile)
 	throws IOException
     {
-	String basedom = Paths.getDataPrefix () + "/test_looper.xml";
+	String basedom = Config.getPkgDataDir () + "test_looper.xml";
 	File baseDomInput = new File (basedom);
     
 	FileInputStream base = new FileInputStream(newfile);

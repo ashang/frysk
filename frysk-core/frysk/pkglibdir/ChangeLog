@@ -1,5 +1,8 @@
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* funit.java: Create 32-on-64 and default install configs.  Pass
+	same to runTestCases.
+
 	* funit.java: Pass Config.getBinDir to testRunner.
 
 2007-02-05  Mark Wielaard  <mark@klomp.org>

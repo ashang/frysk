@@ -42,7 +42,7 @@ package frysk.gui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import frysk.junit.Paths;
+import frysk.Config;
 import frysk.junit.TestCase;
 
 import org.gnu.glade.GladeXMLException;
@@ -79,7 +79,7 @@ public class TestGlade
     LibGlade session_glade = null;
 
     private final String[] imagePaths = new String[] {
-	Paths.getImagePrefix ()
+	Config.getImageDir ()
     };
 
     public void setUp ()
@@ -95,7 +95,7 @@ public class TestGlade
 	// here, depending on where the program is being run from. If
 	// the directory that the src directory is in is used as the
 	// root, this should work without modification
-	String GLADE_PREFIX = Paths.getGladePrefix () + "/";
+	String GLADE_PREFIX = Config.getGladeDir ();
 
 	LibGlade glade = new LibGlade (GLADE_PREFIX + GLADE_FILE, this);
 	LibGlade create_session_glade = new LibGlade(GLADE_PREFIX + CREATE_SESSION_GLADE, this);

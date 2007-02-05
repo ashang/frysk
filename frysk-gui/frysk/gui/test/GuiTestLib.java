@@ -45,7 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.junit.TestCase;
-import frysk.junit.Paths;
+import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -108,7 +108,7 @@ public class GuiTestLib extends TestCase{
 		
 		public TestProc(){
 			logger.log(Level.FINE, "{0} TestProc\n", this);
-			String path = Paths.getExecPrefix () + "funit-child";
+			String path = Config.getPkgLibDir () + "funit-child";
 			path = path.replaceAll("gui", "core");
 			Manager.host.observableProcAddedXXX.addObserver(this);
 			pid = Fork.exec(new String[]{path, "0", "0"});

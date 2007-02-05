@@ -59,7 +59,6 @@ import frysk.proc.TestLib;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.event.Event;
-import frysk.junit.Paths;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -116,7 +115,7 @@ public class TestStepping extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    Paths.getExecPrefix () + "/funit-rt-threadstepper",
+	    getExecPrefix () + "funit-rt-threadstepper",
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -152,7 +151,7 @@ public class TestStepping extends TestLib
     runState.addObserver(lock);
     
     String[] cmd = new String[1];
-    cmd[0] = Paths.getExecPrefix() + "/funit-rt-asmstepper";
+    cmd[0] = getExecPrefix() + "funit-rt-asmstepper";
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);

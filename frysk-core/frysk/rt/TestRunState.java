@@ -52,7 +52,6 @@ import frysk.proc.TestLib;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.event.Event;
-import frysk.junit.Paths;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -102,7 +101,7 @@ public class TestRunState extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    Paths.getExecPrefix () + "/funit-rt-stepper",
+	    getExecPrefix () + "funit-rt-stepper",
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -136,7 +135,7 @@ public class TestRunState extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    Paths.getExecPrefix () + "/funit-rt-stepper",
+	    getExecPrefix () + "funit-rt-stepper",
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});

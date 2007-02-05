@@ -39,7 +39,7 @@
 
 package frysk.gui.test;
 
-import frysk.junit.Paths;
+import frysk.Config;
 import frysk.junit.TestCase;
 
 import frysk.proc.Task;
@@ -70,7 +70,7 @@ public class TestWindowFactorization
   public void setUp ()
   {
     Gtk.init(new String[] {});
-    IconManager.setImageDir(new String[] { Paths.getImagePrefix () });
+    IconManager.setImageDir(new String[] { Config.getImageDir () });
     IconManager.loadIcons();
     IconManager.useSmallIcons();
   }
@@ -115,8 +115,8 @@ public class TestWindowFactorization
 	     java.io.FileNotFoundException,
 	     java.io.IOException
   {
-      gladem = new LibGlade (Paths.getGladePrefix () + "/" + "memorywindow.glade", null);
-      glader = new LibGlade (Paths.getGladePrefix () + "/" + "registerwindow.glade", null);
+      gladem = new LibGlade (Config.getGladeDir () + "memorywindow.glade", null);
+      glader = new LibGlade (Config.getGladeDir () + "registerwindow.glade", null);
       MemoryWindow mw = new MemoryWindow(gladem);
       mw.getClass();
       RegisterWindow rw = new RegisterWindow(glader);

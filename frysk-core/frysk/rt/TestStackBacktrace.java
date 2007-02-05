@@ -55,7 +55,6 @@ import frysk.proc.TestLib;
 import frysk.sys.proc.MapsBuilder;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
-import frysk.junit.Paths;
 
 public class TestStackBacktrace
     extends TestLib
@@ -89,7 +88,7 @@ public class TestStackBacktrace
     TaskCreatedObserver obs = new TaskCreatedObserver();
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
-	    Paths.getExecPrefix () + "/funit-rt-looper",
+	    getExecPrefix () + "funit-rt-looper",
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -197,7 +196,7 @@ public class TestStackBacktrace
 
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
-	    Paths.getExecPrefix () + "/funit-rt-threader",
+	    getExecPrefix () + "funit-rt-threader",
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});

@@ -1,3 +1,10 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* test/GuiTestLib.java: Replace frysk.junit.Paths with frysk.Config.
+	* test/TestIconManager.java: Ditto.
+	* test/TestWindowFactorization.java: Ditto.
+	* TestGlade.java: Ditto.
+
 2007-01-31  sami wagiaalla  <swagiaal@redhat.com>
 
 	* gladedir/procpop.glade: Removed thread view.
