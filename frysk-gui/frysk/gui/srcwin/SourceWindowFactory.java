@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import frysk.Config;
 import frysk.dom.DOMFrysk;
 import frysk.gui.Gui;
 import frysk.gui.monitor.WindowManager;
@@ -72,9 +73,6 @@ import frysk.rt.RunState;
  */
 public class SourceWindowFactory
 {
-
-  private static String[] gladePaths;
-
   private static HashMap map;
 
   public static Hashtable stateTable;
@@ -82,16 +80,6 @@ public class SourceWindowFactory
   public static SourceWindow srcWin = null;
   
   public static Task myTask;
-
-  /**
-   * Sets the paths to look in to find the .glade files needed for the gui
-   * 
-   * @param paths The possible locations of the gui glade files.
-   */
-  public static void setGladePaths (String[] paths)
-  {
-    gladePaths = paths;
-  }
 
   static
     {
@@ -121,41 +109,14 @@ public class SourceWindowFactory
         return;
       }
 
-    int i = 0;
-    LibGlade glade = null;
-
-    for (; i < gladePaths.length; i++)
-      {
-        try
-          {
-            glade = new LibGlade(gladePaths[i] + "/" + SourceWindow.GLADE_FILE,
-                                 null);
-          }
-        catch (Exception e)
-          {
-            if (i < gladePaths.length - 1)
-              // If we don't find the glade file, look at the next file
-              continue;
-            else
-              {
-                e.printStackTrace();
-                System.exit(1);
-              }
-
-          }
-
-        // If we've found it, break
-        break;
-      }
-    // If we don't have a glade file by this point, bail
-    if (glade == null)
-      {
-        System.err.println("Could not file source window glade file in path "
-                           + gladePaths[gladePaths.length - 1] + "! Exiting.");
-        return;
-      }
-
-    sw = new SourceWindow(glade, gladePaths[i], proc);
+    LibGlade glade;
+    try {
+	glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
+    }
+    catch (Exception e) {
+	throw new RuntimeException (e);
+    }
+    sw = new SourceWindow(glade, Config.getGladeDir (), proc);
 
     stateTable.put(proc, sw.getRunState());
     sw.addListener(new SourceWinListener());
@@ -295,42 +256,15 @@ public class SourceWindowFactory
     public Action updateAttached (Task task)
     {
       
-      int i = 0;
-      LibGlade glade = null;
-
-      for (; i < gladePaths.length; i++)
-        {
-          try
-            {
-              glade = new LibGlade(gladePaths[i] + "/" + SourceWindow.GLADE_FILE,
-                                   null);
-            }
-          catch (Exception e)
-            {
-              if (i < gladePaths.length - 1)
-                // If we don't find the glade file, look at the next file
-                continue;
-              else
-                {
-                  e.printStackTrace();
-                  System.exit(1);
-                }
-
-            }
-
-          // If we've found it, break
-          break;
-        }
-      // If we don't have a glade file by this point, bail
-      if (glade == null)
-        {
-          System.err.println("Could not file source window glade file in path "
-                             + gladePaths[gladePaths.length - 1] + "! Exiting.");
-          return Action.CONTINUE;
-        }
-
+      LibGlade glade;
+      try {
+	  glade = new LibGlade(Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
+      }
+      catch (Exception e) {
+	  throw new RuntimeException (e);
+      }
       Proc proc = task.getProc();
-      SourceWindow sw = new SourceWindow(glade, gladePaths[i], proc, this);
+      SourceWindow sw = new SourceWindow (glade, Config.getGladeDir (), proc, this);
 
       stateTable.put(proc, sw.getRunState());
       sw.addListener(new SourceWinListener());

@@ -42,13 +42,13 @@ package frysk.gui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import frysk.Config;
 import frysk.junit.TestCase;
 
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
 
+import frysk.Config;
 import frysk.gui.common.IconManager;
 import frysk.gui.monitor.WindowManager;
 
@@ -77,10 +77,6 @@ public class TestGlade
     LibGlade memory_window = null;
 
     LibGlade session_glade = null;
-
-    private final String[] imagePaths = new String[] {
-	Config.getImageDir ()
-    };
 
     public void setUp ()
     {
@@ -145,7 +141,6 @@ public class TestGlade
 		
 		
 	// TestWindowManager
-        IconManager.setImageDir(imagePaths);
         IconManager.loadIcons();
         IconManager.useSmallIcons();
         Object defaultSet = IconManager.getFactory();

@@ -41,48 +41,19 @@
 
 package frysk.gui;
 
+import frysk.Config;
+
 /**
- * Wrapper class for Gui.java. This is an entry point
- * for the Frysk UI 
+ * Wrapper class for Gui.java. This is an entry point for the Frysk UI
+ * that runs from the build-tree.
  */
 public class FryskGui
 {
     public static void main (String[] args)
     {
-	final String BASE_PATH = "frysk/gui/";
-	final String GLADE_PKG_PATH = "gladedir/";
-	final String HELP_DOC_PATH = "helpdir/";
-	final String SRCDIR = "@srcdir@";
 	final String ABS_SRCDIR = "@abs_srcdir@";
-	Gui.gui (args, new String[] {
-		     GLADE_PKG_PATH,
-		     BASE_PATH + GLADE_PKG_PATH,
-		     // Check both relative ...
-		     SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-		     // ... and absolute.
-		     ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
-		 },
-		 new String[] {
-		     ABS_SRCDIR + "/" + BASE_PATH + "images/"
-		 }, 
-		 new String[] {
-		     "./common",
-		     SRCDIR + "/" + BASE_PATH + "common/",
-		     ABS_SRCDIR + "/" + BASE_PATH + "common/"
-		 },
-		 new String[] {
-		     "./srcwin/testfiles",
-		     SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
-		     ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"
-		 },
-		 new String[] {
-		 	  HELP_DOC_PATH,
-		 	  BASE_PATH + HELP_DOC_PATH,
-		 	  // Check both relative ...
-		 	  SRCDIR + "/" + BASE_PATH + HELP_DOC_PATH,
-		     // ... and absolute.
-		     ABS_SRCDIR + "/" + BASE_PATH + HELP_DOC_PATH,
-		 }
-		 	  );
+	final String ABS_BUILDDIR = "@abs_builddir@";
+	Config.set (Config.createBuildConfig (ABS_SRCDIR, ABS_BUILDDIR));
+	Gui.gui (args);
     }
 }

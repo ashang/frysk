@@ -79,7 +79,6 @@ import frysk.EventLogger;
 import frysk.event.TimerEvent;
 import frysk.event.SignalEvent;
 import frysk.gui.common.IconManager;
-import frysk.gui.common.Messages;
 import frysk.gui.dialogs.DialogManager;
 import frysk.gui.dialogs.ErrorDialog;
 import frysk.gui.dialogs.WarnDialog;
@@ -88,8 +87,6 @@ import frysk.gui.prefs.ColorPreference;
 import frysk.gui.prefs.IntPreference;
 import frysk.gui.prefs.PreferenceGroup;
 import frysk.gui.prefs.PreferenceManager;
-import frysk.gui.disassembler.DisassemblyWindowFactory;
-import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.CoreDebugLogViewer;
 import frysk.gui.monitor.FryskErrorFileHandler;
@@ -99,8 +96,6 @@ import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.datamodels.CoreDebugHandler;
 import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
-import frysk.gui.register.RegisterWindowFactory;
-import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
@@ -141,32 +136,16 @@ public class Gui implements LifeCycleListener, Saveable {
 
 	static Logger logger;
     
-    private static boolean flag = true;
-    
-    private static String argString = "";
-    
-    private static int pid = 0;
+    /**
+     * gui - FryskUI main program.
+     * @param args - args passed from FryskUI
+     */
+    public static void gui (String[] args)
 
-	/**
-	 * gui - FryskUI main program. Loads the window from glade,
-	 * sets logging and preference, signal handlers for duplicate instances. 
-	 * Initializes gtk, and runs the main event loop.
-	 * @param args - args passed from FryskUI
-	 * @param glade_dirs - where the glade files can be found
-	 * @param imagePaths - where the images are
-	 * @param messagePaths - where the message paths are.
-	 * @param testfilePaths - where the testfiles are located
-     * @param helpdocPaths - where the online help docs are
-	 */
-	public static void gui (String[] args, String[] glade_dirs,
-                          String[] imagePaths, String[] messagePaths,
-                          String[] testfilePaths, String[] help_dirs)
-  {
+    {
     
     Parser parser = new Parser("frysk", "1..23", true);
     parser.setHeader("usage: frysk [options]");
-
-    addOptions(parser);
 
     parser.parse(args, new FileArgumentCallback()
     {
@@ -202,7 +181,6 @@ public class Gui implements LifeCycleListener, Saveable {
     DataModelManager.theManager.flatProcObservableLinkedList.getClass();
 
     // Setup Icon Manager singleton
-    IconManager.setImageDir(imagePaths);
     IconManager.loadIcons();
     IconManager.useSmallIcons();
 
@@ -212,19 +190,10 @@ public class Gui implements LifeCycleListener, Saveable {
     // Bootsraps Error Logging
     setupErrorLogging();
 
-    // Sets transaltion bundle paths
-    Messages.setBundlePaths(messagePaths);
-
-    if (flag == false)
-      {
-        gui (args, glade_dirs);
-        return;
-      }
-    
     // Load glade, and setup WindowManager
     try
       {
-        procpop = new Gui(glade_dirs);
+        procpop = new Gui ();
       }
     catch (GladeXMLException e1)
       {
@@ -247,14 +216,6 @@ public class Gui implements LifeCycleListener, Saveable {
     // Hide main for now
     WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
     WindowManager.theManager.mainWindow.hideAll();
-
-    // Now that we now the glade paths are good, send the paths to
-    // the SourceWindowFactory
-    SourceWindowFactory.setGladePaths(glade_dirs);
-    RegisterWindowFactory.setPaths(glade_dirs);
-    MemoryWindowFactory.setPaths(glade_dirs);
-    DisassemblyWindowFactory.setPaths(glade_dirs);
-    FryskHelpManager.setHelpPaths(help_dirs);
 
     // Find and load preferences.
     prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
@@ -306,102 +267,6 @@ public class Gui implements LifeCycleListener, Saveable {
       }
   }
     
-    private static void addOptions (Parser parser)
-    {
-//    parser.add(new Option("new", 'n', "debug new exec", "EXECUTABLE")
-//        {
-//            public void parsed (String arg) throws OptionException
-//            {
-//                File file = null;
-//                try 
-//                {
-//                    file = new File(arg);
-//                    if (!file.exists())
-//                    {
-//                        System.out.println("Cannot find executable!");
-//                        System.exit(1);
-//                    }
-//                    else
-//                      argString = arg;
-//                    
-//                    flag = false;
-//                }
-//                catch (Exception e)
-//            {
-//                OptionException oe = new OptionException("couldn't parse executable: " + arg);
-//                oe.initCause(e);
-//                throw oe;
-//            }
-//        }
-//        });
-    
-//    parser.add(new Option("pid", 'p', "debug running pid", "EXECUTABLE")
-//        {
-//        public void parsed (String arg) throws OptionException
-//        {
-//          flag = false;
-//            try 
-//            {
-//                pid = Integer.parseInt(arg);
-//            }
-//            catch (NumberFormatException nfe)
-//            {
-//                OptionException oe = new OptionException("couldn't parse pid: " + arg);
-//                oe.initCause(nfe);
-//                throw oe;
-//            }
-//        }
-//        });
-    }
-    
-    public static void gui (String[] args, String[] glade_dirs)
-      {
-        
-        Preferences prefs = null;
-        
-        SourceWindowFactory.setGladePaths(glade_dirs);
-        RegisterWindowFactory.setPaths(glade_dirs);
-        MemoryWindowFactory.setPaths(glade_dirs);
-        DisassemblyWindowFactory.setPaths(glade_dirs);
-
-        // Find and load preferences.
-        prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
-        PreferenceManager.setPreferenceModel(prefs);
-        initializePreferences();
-
-        // Startup Trayicon Manager right click menu.
-        buildTrayManager();
-
-        // Bootstrap Core Event Loop
-        startCoreEventLoop();
-        
-//      Add interruption and multiple
-        // invocations handlers
-        addInvocationEvents();
-        
-        if (pid != 0)
-          SourceWindowFactory.attachToPID(pid);
-        else
-          SourceWindowFactory.startNewProc(argString);
-        
-        Gtk.main();
-
-        // Gtk main loop exited, stop core event loop.
-        Manager.eventLoop.requestStop();
-
-        try
-          {
-            // Export the node to a file
-            prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
-                                                     + SETTINGSFILE));
-          }
-        catch (Exception e)
-          {
-            errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
-
-          }
-      }
-	
 	/**
 	 * Creates a lock file in ~/.frysk
 	 * 
@@ -576,50 +441,27 @@ public class Gui implements LifeCycleListener, Saveable {
 		popupMenu.prepend(consoleWindowItem);
 	}
 
-	Gui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
-			IOException {
-		// The location of the glade file may need to be modified
-		// here, depending on where the program is being run from. If
-		// the directory that the src directory is in is used as the
-		// root, this should work without modification
-		String searchPath = new String();
-		for (int i = 0; i < glade_dirs.length; i++) {
-			try {// command line glade_dir
-				glade = new LibGlade(glade_dirs[i] + GLADE_FILE, this);
-				create_session_glade = new LibGlade(glade_dirs[i]
-						+ CREATE_SESSION_GLADE, this);
-				register_window = new LibGlade(glade_dirs[i]
-						+ "/registerwindow.glade", null);
-				memory_window = new LibGlade(glade_dirs[i]
-						+ "/memorywindow.glade", null);
-				disassembler_window = new LibGlade(glade_dirs[i]
-						+ "/disassemblywindow.glade", null);
-				session_glade = new LibGlade(glade_dirs[i]
-						+ SESSION_MANAGER_GLADE, this);
-				process_picker_glade = new LibGlade(glade_dirs[i]
-						+ "/processpicker.glade", null);
-			} catch (FileNotFoundException missingFile) {
-				searchPath += glade_dirs[i] + "\n";
-				if (i == glade_dirs.length - 1) {
-					throw new FileNotFoundException(
-							"Glade file not found in path " + searchPath); //$NON-NLS-1$
-				} else {
-					continue;
-				}
-			}
-			break;
-		}
-
-		try {
-			WindowManager.theManager.initLegacyProcpopWindows(glade);
-			WindowManager.theManager
-					.initSessionDruidWindow(create_session_glade);
-			WindowManager.theManager.initSessionManagerWindow(session_glade);
-			WindowManager.theManager.initProcessPicker(process_picker_glade);
-		} catch (IOException e) {
-			throw e;
-		}
-	}
+    Gui()
+	throws GladeXMLException, FileNotFoundException, IOException
+    {
+	glade = new LibGlade(Config.getGladeDir () + GLADE_FILE, this);
+	create_session_glade = new LibGlade(Config.getGladeDir ()
+					    + CREATE_SESSION_GLADE, this);
+	register_window = new LibGlade(Config.getGladeDir ()
+				       + "registerwindow.glade", null);
+	memory_window = new LibGlade(Config.getGladeDir ()
+				     + "memorywindow.glade", null);
+	disassembler_window = new LibGlade(Config.getGladeDir ()
+					   + "disassemblywindow.glade", null);
+	session_glade = new LibGlade(Config.getGladeDir ()
+				     + SESSION_MANAGER_GLADE, this);
+	process_picker_glade = new LibGlade(Config.getGladeDir ()
+					    + "/processpicker.glade", null);
+	WindowManager.theManager.initLegacyProcpopWindows(glade);
+	WindowManager.theManager.initSessionDruidWindow(create_session_glade);
+	WindowManager.theManager.initSessionManagerWindow(session_glade);
+	WindowManager.theManager.initProcessPicker(process_picker_glade);
+    }
 
 	/**
 	 * Builds a file handler for the frysk ui error logs

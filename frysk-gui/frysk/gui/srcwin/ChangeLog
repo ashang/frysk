@@ -1,3 +1,8 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindowFactory.java (setGladePaths, gladePaths): Delete.
+	(createSourceWindow): Simplify.
+
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Update, frysk.gui.common.dialogs moved to

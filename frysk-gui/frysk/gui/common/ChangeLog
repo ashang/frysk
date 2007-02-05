@@ -1,3 +1,8 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* IconManager.java (IAGES_DIR, setImageDir): Delete.
+	(loadIcons): Simplify.
+
 2007-01-29  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskHelpManager.java: Moved to frysk/gui/, along with ChangeLog

@@ -39,7 +39,7 @@
 
 package frysk.gui;
 
-import java.io.File;
+import frysk.Config;
 import frysk.sys.Fork;
 
 public class FryskHelpManager
@@ -58,26 +58,10 @@ public class FryskHelpManager
   public static void activateHelp ()
   {
     
-    Fork.daemon(new String[] { HELP_PROGRAM, helpPath +
-                                         "/" + HELP_DOC });
-  }
-  
-  /**
-   * setHelpPaths will set the proper help path no matter how it is activated.
-   * 
-   * @param help_dirs is a String[] containing file paths to the online help docs
-   * 
-   */
-  public static void setHelpPaths(String[] help_dirs)
-  {
-    // Search for the help docs in the paths
-    for (int i=0; i < help_dirs.length; i++) {
-      File f = new File(help_dirs[i] + "/" + HELP_DOC);
-      if (f.exists()) {
-        helpPath = help_dirs[i];
-        return;
-      }
-    }
-    helpPath = "";
+      Fork.daemon(new String[]
+	  {
+	      HELP_PROGRAM,
+	      Config.getHelpDir () + HELP_DOC
+	  });
   }
 }

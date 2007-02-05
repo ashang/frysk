@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.RunState;
+import frysk.Config;
 
 /**
  * Factory for creating RegisterWindows - allows multiple RegisterWindows to be
@@ -65,24 +66,9 @@ public class RegisterWindowFactory
   public static RegisterWindow regWin = null;
 
   /* Keeps track of which RegisterWindows belong to which Task. */
-  private static HashMap map;
-  
-  /* Used to instantiate the glade file multiple times */
-  private static String[] gladePaths;
+  private static HashMap map = new HashMap();
   
   private final static String REG_GLADE = "registerwindow.glade";
-
-  /**
-   * Set the paths to look in for the RegisterWindow glade widgets, and initialize
-   * the Hashtables.
-   * 
-   * @param paths   An array of paths containing glade files.
-   */
-  public static void setPaths (String[] paths)
-  {
-    gladePaths = paths;
-    map = new HashMap();
-  }
 
   /**
    * Performs checks to ensure no other RegisterWindow is running on this Task;
@@ -105,41 +91,13 @@ public class RegisterWindowFactory
         return;
       }
     
-    LibGlade glade = null;
-
-    // Look for the right path to load the glade file from
-    int i = 0;
-    for (; i < gladePaths.length; i++)
-      {
-        try
-          {
-            glade = new LibGlade(gladePaths[i] + "/" + REG_GLADE, null);
-          }
-        catch (Exception e)
-          {
-            if (i < gladePaths.length - 1)
-              // If we don't find the glade file, look at the next file
-              continue;
-            else
-              {
-                e.printStackTrace();
-                System.exit(1);
-              }
-
-          }
-
-        // If we've found it, break
-        break;
-      }
-    // If we don't have a glade file by this point, bail
-    if (glade == null)
-      {
-        System.err.println("Could not file source window glade file in path "
-                           + gladePaths[gladePaths.length - 1] + "! Exiting.");
-        return;
-      }
-
-    
+    LibGlade glade;
+    try {
+	glade = new LibGlade(Config.getGladeDir () + REG_GLADE, null);
+    }
+    catch (Exception e) {
+	throw new RuntimeException (e);
+    }
     RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
     
     if (rs == null)

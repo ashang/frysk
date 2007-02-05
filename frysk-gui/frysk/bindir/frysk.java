@@ -49,10 +49,6 @@ class frysk
   public static void main (String[] args)
   {
     Config.set (Config.createInstallConfig ());
-    Gui.gui(args, new String[] { Config.getGladeDir() + "/" },
-            new String[] { Config.getImageDir () },
-            new String[] { Config.getPkgDataDir() + "/" },
-            new String[] { Config.getPkgDataDir() + "/samples" },
-            new String[] { Config.getHelpDir () + "/" } );
+    Gui.gui(args);
   }
 }

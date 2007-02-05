@@ -1,5 +1,23 @@
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* test/TestIconManager.java: Ditto.
+	* TestGlade.java: Do not call IconManager.setImageDir.
+	* FryskGui.javain: Simplify by using Config.set and
+	Config.createBuildConfig.
+	* disassembler/DisassemblyWindowFactory.java (gladePaths, setPaths): Delete.
+	(createDisassemblyWindow): Simplify.
+	* memory/MemoryWindowFactory.java (gladePaths, setPaths): Delete.
+	(createMemoryWindow): Simplify.
+	* register/RegisterWindowFactory.java (gladePaths, setPaths): Delete.
+	(createRegisterWindow): Simplify.
+	* FryskHelpManager.java (setHelpPaths): Delete.
+	(activateHelp): Use Config.getHelpDir.
+	* Gui.java (flag): Delete.
+	(Gui): Delete glade_dirs parameter.
+	(gui): Drop all path parameters leaving only args.
+	(gui(String[],String[])): Delete.
+	(addOptions): Delete.
+	
 	* test/GuiTestLib.java: Replace frysk.junit.Paths with frysk.Config.
 	* test/TestIconManager.java: Ditto.
 	* test/TestWindowFactorization.java: Ditto.
