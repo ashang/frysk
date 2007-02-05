@@ -54,8 +54,7 @@ java_DATA = ftk.jar
 #	src/widgets/ftkstripchartx.h \
 #	src/widgets/ftkeventviewer.h
 
-EXTRA_DIST = $(SRC) \
-	src/widgets/ftkeventviewer.h
+EXTRA_DIST = $(SRC)
 
 CLEANFILES = *.so *.jar
 #SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java \
@@ -165,8 +164,11 @@ libftkjni.so: libftkjni.a
 #                   src/widgets/ftkstripchartx.c \
 #                   src/widgets/ftkeventviewer.c
 libftk_a_SOURCES = src/widgets/ftkeventviewer.c \
+                   src/widgets/ftkeventviewer.h \
                    src/widgets/ftkcustomdrawingarea.c \
+                   src/widgets/ftkcustomdrawingarea.h \
                    src/widgets/ftkcustomatkobject.c \
+                   src/widgets/ftkcustomatkobject.h \
                    src/jni/com_redhat_ftk_CustomAtkObject.c \
                    src/widgets/ftk_marshaller.list
 noinst_LIBRARIES += libftk.a

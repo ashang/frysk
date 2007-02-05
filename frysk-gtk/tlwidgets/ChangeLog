@@ -1,3 +1,9 @@
+2007-02-05  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (libftk_a_SOURCES): Add src/widgets/ftkcustomatkobject.h,
+	src/widgets/ftkcustomdrawingarea.h, and src/widgets/ftkeventviewer.h.
+	* Makefile.am (EXTRA_DIST): Remove src/widgets/ftkeventviewer.h.
+
 2007-01-31  sami wagiaalla  <swagiaal@redhat.com>
 
 	* src/widgets/ftkcustomatkobject.c: Removed debug output. 
