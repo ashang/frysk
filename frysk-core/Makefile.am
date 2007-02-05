@@ -137,25 +137,25 @@ uninstall-dejagnu-testsuite-local:
 	rm -rf $(DESTDIR)$(pkgdatadir)/testsuite
 
 # Create executables for stackframe tests for TestStackFrame.java.
-frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
-	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
-
-frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
-	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
-
-frysk/pkglibdir/funit-stackframe-static-nodebug: frysk/pkglibdir/funit-stackframe-static
-	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-static-nodebug frysk/pkglibdir/funit-stackframe-static
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-nodebug
-
-frysk/pkglibdir/funit-stackframe-static-stripped: frysk/pkglibdir/funit-stackframe-static
-	strip -o frysk/pkglibdir/funit-stackframe-static-stripped frysk/pkglibdir/funit-stackframe-static
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-stripped
+#frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
+#	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
+#
+#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
+#
+#frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
+#	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
+#
+#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
+#
+#frysk/pkglibdir/funit-stackframe-static-nodebug: frysk/pkglibdir/funit-stackframe-static
+#	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-static-nodebug frysk/pkglibdir/funit-stackframe-static
+#
+#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-nodebug
+#
+#frysk/pkglibdir/funit-stackframe-static-stripped: frysk/pkglibdir/funit-stackframe-static
+#	strip -o frysk/pkglibdir/funit-stackframe-static-stripped frysk/pkglibdir/funit-stackframe-static
+#
+#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-stripped
 
 frysk/pkglibdir/funit-stackframe-asm-nodebug: frysk/pkglibdir/funit-stackframe-asm
 	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-asm-nodebug frysk/pkglibdir/funit-stackframe-asm
