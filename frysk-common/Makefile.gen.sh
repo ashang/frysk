@@ -722,12 +722,12 @@ sed -n -e '/dir\// {
     esac
     if eval test -z "\${${dir}_DATA:-}"; then
 	eval ${dir}_DATA=true
-	echo "${dir}_DATA = "
+	echo "dist_${dir}_DATA = "
 	if test -n "${d2}"; then
 	    echo "${dir}dir = \$(${d1}dir)/${d2}"
 	fi
     fi
-    echo "${dir}_DATA += $data"
+    echo "dist_${dir}_DATA += $data"
 done
 
 

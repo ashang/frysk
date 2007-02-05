@@ -1,3 +1,8 @@
+2007-02-05  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.gen.sh (_DATA): Change all "${dir}_DATA" to
+	"dist_${dir}_DATA".
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* common/frysk-common.ac (AC_LANG(JAVA)): Add to make autoconf
