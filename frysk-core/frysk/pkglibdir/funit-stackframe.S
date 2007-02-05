@@ -40,19 +40,69 @@
 #include "funit-asm.h"
 
 	.text
-.globl foo
-	.type	foo, @function
-foo:
+
+# Method that segfaults, has a global symbol, with a defined size.
+.globl global_st_size
+	.type	global_st_size, @function
+global_st_size:
 	ENTER
 	LOAD_IMMED (REG1, 0)
 	STORE (REG1, REG1)
 	EXIT
+	.size	global_st_size, .-global_st_size
+	
+# Method that segfaults, has a local symbol, with a defined size.
+	.type	local_st_size, @function
+local_st_size:
+	ENTER
+	LOAD_IMMED (REG1, 0)
+	STORE (REG1, REG1)
+	EXIT
+	.size	local_st_size, .-local_st_size
 
+# Method that segfaults, has a global symbol, with undefined (0) size.	
+.global global_st_size_0
+	.type	global_st_size_0, @function
+global_st_size_0:
+	ENTER
+	LOAD_IMMED (REG1, 0)
+	STORE (REG1, REG1)
+	EXIT
+	
+# Method that segfaults, has a local symbol, with undefined (0) size.
+	.type local_st_size_0, @function
+local_st_size_0:
+	ENTER
+	LOAD_IMMED (REG1, 0)
+	STORE (REG1, REG1)
+	EXIT
+	
 .globl main
 	.type	main, @function
 main:
+	ENTER_MAIN(REG3, REG4)
 	ENTER
-	CALL (foo)	
+	pushl REG3
+# If argc = 1 run with global_st_size.
+	COMPARE(REG3, 1)
+	JUMP_NE(.L10)
+	CALL(global_st_size)
+.L10:
+# If argc = 2 run with local_st_size.
+	COMPARE(REG3, 2)
+	JUMP_NE(.L12)
+	CALL(local_st_size)
+.L12:
+# If argc = 3 run with global_st_size_0.
+	COMPARE(REG3, 3)
+	JUMP_NE(.L14)
+	CALL(global_st_size_0)
+.L14:
+# If argc = 4 run with local_st_size_0.
+	COMPARE(REG3, 4)
+	JUMP_NE(.L16)
+	CALL(local_st_size_0)
+.L16:
 	EXIT
-	.size	main, .-main
+	.size	main, .-main	
 	.section	.note.GNU-stack,"",@progbits

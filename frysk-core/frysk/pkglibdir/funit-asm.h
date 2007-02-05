@@ -61,6 +61,8 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#define COMPARE(REG,CONST) cmpl $CONST, (REG)
+#define ENTER_MAIN(ARGC_REG, ARGV_REG) leal 4(%esp), ARGC_REG ; andl $-16, %esp; pushl -4(ARGC_REG)	
 
 //XXX: Replace with macros at end of file.
 
@@ -83,6 +85,10 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+
+//XXX: Need the following to be defined in order to compile. See Bug #3968
+#define ENTER_MAIN(ARGC_REG, ARGV_REG)
+#define COMPARE(REG,CONST)
 
 #elif defined __powerpc__
 
@@ -200,6 +206,11 @@ main:
 #endif
 #ifndef CALL
 #define CALL(LABEL) Call the function LABEL
+#endif
+
+#ifndef ENTER_MAIN
+#define ENTER_MAIN (ARGC_REG, ARGV_REG) set ARGC_REG to hold ARGC, and ARGV_REG \
+to hold ARGV.
 #endif
 
 	   // Need something better?

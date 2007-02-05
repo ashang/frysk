@@ -51,81 +51,77 @@ public class TestStackFrame
     extends frysk.proc.TestLib
 {
 
-  private String noDebug = "0x[\\da-f]+ in foo \\(\\)";
   private String unknown = "0x[\\da-f]+ in \\[unknown\\]";
   public void testDebug ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe.c#[\\d]+");
+
+    frameTest("funit-stackframe", "0x[\\da-f]+ in global_st_size \\(\\) from: .*funit-stackframe.S#[\\d]+", 1);
   }
   
   public void testNoDebug ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe-nodebug", noDebug);
+ 
+    frameTest("funit-stackframe-nodebug", "0x[\\da-f]+ in global_st_size \\(\\)", 1);
   }
   
   public void testStripped ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe-stripped", unknown);
+
+    frameTest("funit-stackframe-stripped", unknown, 1);
   }
   
   public void testStaticDebug ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe-static", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static.c#[\\d]+");
+
+    frameTest("funit-stackframe", "0x[\\da-f]+ in local_st_size \\(\\) from: .*funit-stackframe.S#[\\d]+", 2);
   }
   
   public void testStaticNoDebug ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe-static-nodebug", noDebug);
+
+    frameTest("funit-stackframe-nodebug", "0x[\\da-f]+ in local_st_size \\(\\)", 2);
   }
   
   public void testStaticStripped ()
   {
-    if (brokenXXX(3968))
-      return;
-    frameTest("funit-stackframe-static-stripped", unknown);
+
+    frameTest("funit-stackframe-stripped", unknown, 2);
   }
   
-  public void testAsmNoSize()
+  public void testNoSize()
   {
-    frameTest("funit-stackframe-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-asm.S#[\\d]+");
+    frameTest("funit-stackframe", "0x[\\da-f]+ in global_st_size_0 \\(\\) from: .*funit-stackframe.S#[\\d]+", 3);
   }
   
   public void testAsmNoDebugNoSize()
   {
-    frameTest("funit-stackframe-asm-nodebug", noDebug);   
+    frameTest("funit-stackframe-nodebug", "0x[\\da-f]+ in global_st_size_0 \\(\\)", 3);   
   }
   
   public void testAsmStrippedNoSize()
   {
-    frameTest("funit-stackframe-asm-stripped", unknown);    
+    frameTest("funit-stackframe-stripped", unknown, 3);    
   }
   
   public void testStaticAsmNoSize()
   {
-    frameTest("funit-stackframe-static-asm", "0x[\\da-f]+ in foo \\(\\) from: .*funit-stackframe-static-asm.S#[\\d]+");    
+    frameTest("funit-stackframe", "0x[\\da-f]+ in local_st_size_0 \\(\\) from: .*funit-stackframe.S#[\\d]+", 4);    
   }
   
   public void testStaticAsmNoDebugNoSize()
   {
-    frameTest("funit-stackframe-static-asm-nodebug", noDebug);   
+    frameTest("funit-stackframe-nodebug", "0x[\\da-f]+ in local_st_size_0 \\(\\)", 4);   
   }
   
   public void testStaticAsmStrippedNoSize()
   {
-    frameTest("funit-stackframe-static-asm-stripped", unknown);    
+    frameTest("funit-stackframe-stripped", unknown, 4);    
   }
-  public void frameTest (String command, final String result)
+  private void frameTest (String command, final String result, int numberOfArgs)
   {
+    if (brokenX8664XXX(3968))
+      return;
+    
     class Attacher
         extends TaskObserverBase
         implements TaskObserver.Attached
@@ -142,7 +138,14 @@ public class TestStackFrame
     }
 
     Attacher attacher = new Attacher();
-    String[] fullCommand = new String[] { getExecPrefix() + "/" + command };
+    String[] fullCommand = new String[numberOfArgs];
+    fullCommand[0] =  getExecPrefix() + "/" + command;
+    
+    for (int i = 1; i < fullCommand.length; i++)
+      {
+        fullCommand[i] = "0";
+      }
+    
     Manager.host.requestCreateAttachedProc(fullCommand, attacher);
     assertRunUntilStop("Create process");
     Proc proc = Manager.host.getProc(new ProcId(attacher.tid));

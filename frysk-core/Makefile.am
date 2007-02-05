@@ -138,51 +138,14 @@ uninstall-dejagnu-testsuite-local:
 	rm -rf $(DESTDIR)$(pkgdatadir)/testsuite
 
 # Create executables for stackframe tests for TestStackFrame.java.
-#frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
-#	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
-#
-#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
-#frysk_pkglibdir_funit_stackframe_nodebug_SOURCES =
-#
-#frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
-#	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
-#
-#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
-#frysk_pkglibdir_funit_stackframe_stripped_SOURCES =
-#
-#frysk/pkglibdir/funit-stackframe-static-nodebug: frysk/pkglibdir/funit-stackframe-static
-#	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-static-nodebug frysk/pkglibdir/funit-stackframe-static
-#
-#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-nodebug
-#frysk_pkglibdir_funit_stackframe_static_nodebug_SOURCES =
-#
-#frysk/pkglibdir/funit-stackframe-static-stripped: frysk/pkglibdir/funit-stackframe-static
-#	strip -o frysk/pkglibdir/funit-stackframe-static-stripped frysk/pkglibdir/funit-stackframe-static
-#
-#pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-stripped
-#frysk_pkglibdir_funit_stackframe_static_stripped_SOURCES =
+frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
+	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
 
-frysk/pkglibdir/funit-stackframe-asm-nodebug: frysk/pkglibdir/funit-stackframe-asm
-	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-asm-nodebug frysk/pkglibdir/funit-stackframe-asm
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-nodebug
+frysk_pkglibdir_funit_stackframe_nodebug_SOURCES =
 
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-asm-nodebug
-frysk_pkglibdir_funit_stackframe_asm_nodebug_SOURCES =
+frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
+	strip -o frysk/pkglibdir/funit-stackframe-stripped frysk/pkglibdir/funit-stackframe
 
-frysk/pkglibdir/funit-stackframe-asm-stripped: frysk/pkglibdir/funit-stackframe-asm
-	strip -o frysk/pkglibdir/funit-stackframe-asm-stripped frysk/pkglibdir/funit-stackframe-asm
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-asm-stripped
-frysk_pkglibdir_funit_stackframe_asm_stripped_SOURCES =
-
-frysk/pkglibdir/funit-stackframe-static-asm-nodebug: frysk/pkglibdir/funit-stackframe-static-asm
-	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-static-asm-nodebug frysk/pkglibdir/funit-stackframe-static-asm
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-asm-nodebug
-frysk_pkglibdir_funit_stackframe_static_asm_nodebug_SOURCES =
-
-frysk/pkglibdir/funit-stackframe-static-asm-stripped: frysk/pkglibdir/funit-stackframe-static-asm
-	strip -o frysk/pkglibdir/funit-stackframe-static-asm-stripped frysk/pkglibdir/funit-stackframe-static-asm
-
-pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-static-asm-stripped
-frysk_pkglibdir_funit_stackframe_static_asm_stripped_SOURCES =
-
+pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
+frysk_pkglibdir_funit_stackframe_stripped_SOURCES =

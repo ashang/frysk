@@ -1,3 +1,12 @@
+2007-02-05  Nurdin Premji  <npremji@redhat.com>
+
+	* funit-asm.h: Added tags for ENTER_MAIN and COMPARE on 386.
+	* funit-stacframe.S: Added. Contains :
+	* funit-stackframe-asm.S: Removed.
+	* funit-stackframe-static-asm.S: Ditto.
+	* funit-stackframe.c: Removed before.
+	* funit-stackframe-static.c: Ditto.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Create 32-on-64 and default install configs.  Pass
