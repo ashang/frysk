@@ -1,14 +1,14 @@
 <html>
 <body>
 
-This package implements a simplistic version of expect that works with
-JUnit.
+This package implements a simplistic version of expect that is
+suitable for use within the JUnit test framework.
 
 <h2>Overview</h2>
 
 The {@link frysk.expunit} package provides a collection of methods and
-classes that can be used to implement expect based tests within the
-JUnit framework.
+classes that can be used to implement expect like behavior that fits
+in with the the JUnit framework.
 
 <h2>Example One - simple matching</h2>
 
@@ -45,11 +45,11 @@ can occur.
 <pre>
 e.send ("catchthebi");
 // Skip "catch", match "the", leaving "bi".
-e.assertExpect ("the");
+e.expect ("the");
 // Append "rd", making "bird".
 e.send ("rd");
 // Match  the "bird".
-e.assertExpect ("bird");
+e.expect ("bird");
 </pre>
 
 <h2>Example Two - Interacting with a shell</h2>
@@ -71,18 +71,18 @@ e = new Expect (new String[] { "/bin/sh" });
 // Match the initial prompt.  This ensures that things are
 // blocked until the shell is fully running.  As a side effect
 // it also discards all output so far.
-e.assertExpect ("\\$ ");
+e.expect ("\\$ ");
 // Send a command to simplify the prompt, and then match it.
 // Notice how the matching pattern includes the
 // carrage-return, the new-line, and the promt.  That ensures
 // that it doesn't accidently match the command.
 e.send ("PS1='\\$ '\r");
-e.assertExpect ("\r\n\\$ ");
+e.expect ("\r\n\\$ ");
 // Check out the terminal, again be careful to match the
 // prompt.
 e.send ("stty -a\r");
 final StringBuffer g = new StringBuffer ();
-e.assertExpect (new Match[]
+e.expect (new Match[]
 &nbsp;{
 &nbsp;&nbsp;new Regex ("\\s(-brkint)\\s.*\\$ ")
 &nbsp;&nbsp;{

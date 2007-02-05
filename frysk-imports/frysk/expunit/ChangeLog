@@ -1,3 +1,20 @@
+2007-02-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java: Throw EofException, or TimeoutException.
+	(getTimeoutMillis, setTimeoutMillis): New.
+	(millisecondTimeout): Rename maxTimeoutMillis.
+	(expectEOF): Rename assertEOF.
+	(expectWaitStatus): New.
+	* Timeout.java: Delete.
+	* Eof.java: Delete.
+	* TimeoutException.java: New file.
+	* TerminationException.java: New file.
+	* EofException.java: New file.
+	* WaitObserver.java: New file.
+	* TestExpect.java: Update.
+	(testExit, testKill): New.
+	* package.html: Update.
+
 2007-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* package.html: Update examples.

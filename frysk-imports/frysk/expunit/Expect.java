@@ -43,10 +43,9 @@ import frysk.sys.PseudoTerminal;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.Errno;
-// import frysk.sys.Wait;
+import frysk.sys.Wait;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.junit.TestCase;
 
 /**
  * Simple expect like framework, that works within JUnit.
@@ -60,8 +59,6 @@ import frysk.junit.TestCase;
 public class Expect
 {
     static protected Logger logger = Logger.getLogger("frysk");
-    private final int maxTimeoutMillis = 1000; // 1 second
-
 
     private final PseudoTerminal child = new PseudoTerminal ();
     private int pid = -1;
@@ -72,7 +69,7 @@ public class Expect
      */
     public Expect (String[] args)
     {
-	pid = child.addDaemon (args);
+	pid = child.addChild (args);
 	logger.log (Level.FINE, "{0} new {1} pid {2,number,integer}\n",
 		    new Object[] {
 			this,
@@ -104,11 +101,37 @@ public class Expect
 		Signal.tkill (pid, Sig.KILL);
 	    }
 	    catch (Errno e) {
-		// toss it, as cleanup.
+		// Toss it, as cleanup.
 	    }
-	    // Wait.waitAll (pid);
-	    pid = -1;
+	    try {
+		Wait.waitAll (pid, new WaitObserver (0));
+	    }
+	    catch (TerminationException e) {
+		// Toss it, as cleanup.
+	    }
+	    catch (Errno e) {
+		// Toss it, as cleanup.
+	    }
 	}
+    }
+
+    /**
+     * The default timeout, in milli-seconds.
+     */
+    private long millisecondTimeout = 1000; // 1 second
+    /**
+     * Set the default timeout (in milliseconds).
+     */
+    public void setTimeoutMillis (long millisecondTimeout)
+    {
+	this.millisecondTimeout = millisecondTimeout;
+    }
+    /**
+     * Get the default timeout (in milliseconds).
+     */
+    public long getTimeoutMillis ()
+    {
+	return millisecondTimeout;
     }
 
     /**
@@ -184,109 +207,138 @@ public class Expect
     }
 
     /**
-     * Expect one of the specified patterns; if timeoutMills expires,
-     * execute expectTimeout.  If end-of-file is encountered, execute
-     * expectEof.
+     * Expect one of the specified patterns; throw TimeoutException if
+     * timeoutMillis expires; throw EofException if end-of-file is
+     * encountered.
      */
-    public void assertExpect (long timeoutMills, Timeout expectTimeout,
-			      Eof expectEof, Match[] matches)
+    public void expect (long millisecondTimeout, Match[] matches)
     {
-	final long endTime = System.currentTimeMillis () + timeoutMills;
+	final long endTime = System.currentTimeMillis () + millisecondTimeout;
 	while (true) {
 	    if (matches != null) {
 		for (int i = 0; i < matches.length; i++) {
 		    Match p = matches[i];
-		    if (p.find (output)) {
-			logger.log (Level.FINE,
-				    "{0} match <<{1}>>\n",
-				    new Object[] { this, p.group () });
-			p.execute ();
-			// Remove everying up to and including what
-			// matched.
-			if (p.end () >= 0)
-			    output = output.substring (p.end ());
-			return;
+		    if (p != null) {
+			if (p.find (output)) {
+			    logger.log (Level.FINE,
+					"{0} match <<{1}>>\n",
+					new Object[] { this, p.group () });
+			    p.execute ();
+			    // Remove everying up to and including what
+			    // matched.
+			    if (p.end () >= 0)
+				output = output.substring (p.end ());
+			    return;
+			}
 		    }
 		}
 	    }
 	    if (eof) {
 		logger.log (Level.FINE, "{0} match EOF\n", this);
-		if (expectEof != null)
-		    expectEof.eof ();
-		else
-		    TestCase.fail ("eof");
-		return;
+		throw new EofException ();
 	    }
 	    long timeRemaining = endTime - System.currentTimeMillis ();
 	    if (timeRemaining <= 0) {
 		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
-		if (expectTimeout != null)
-		    expectTimeout.timeout ();
-		else
-		    TestCase.fail ("timeout");
-		return;
+		throw new TimeoutException (millisecondTimeout);
 	    }
 	    pollChild (timeRemaining);
 	}
     }
 
     /**
-     * Expect one of the patterns, fail if the specified timeout or
-     * eof is reached
+     * Expect a specified pattern, throw a TimeoutException if the
+     * default timeout expires or EofException if end-of-file is
+     * reached.
      */
-    public void assertExpect (long timeoutMills, Match[] matches)
+    public void expect (Match[] matches)
     {
-	assertExpect (timeoutMills, null, null, matches);
+	expect (millisecondTimeout, matches);
     }
 
     /**
-     * Expect the specified pattern, fail if the specified timeout or
-     * eof is reached
+     * Expect the specified pattern, throw a TimeoutException if the
+     * specified timeout expires or EofException if end-of-file is
+     * reached.
      */
-    public void assertExpect (long timeoutMills, Match match)
+    public void expect (long timeoutMillis, Match match)
     {
-	assertExpect (timeoutMills, new Match[] { match });
+	expect (timeoutMillis, new Match[] { match });
     }
 
     /**
-     * Expect one of the patterns, fail if the default timeout, or eof
-     * is reached.
+     * Expect the specified pattern, throw a TimeoutException if the
+     * default timeout expires or EofException if end-of-file is
+     * reached.
      */
-    public void assertExpect (Match[] matches)
+    public void expect (Match match)
     {
-	assertExpect (maxTimeoutMillis, null, null, matches);
+	expect (millisecondTimeout, match);
     }
 
     /**
-     * Expect the specified pattern, fail if the default timeout, or
-     * eof is reached.
+     * Expect the specified regular expression, throw a
+     * TimeoutException if the specified timeout expires or
+     * EofException if end-of-file is reached.
      */
-    public void assertExpect (Match match)
+    public void expect (long millisecondTimeout, String regex)
     {
-	assertExpect (new Match[] { match });
+	expect (millisecondTimeout, new Regex (regex));
     }
 
     /**
-     * Expect the single regular expression pattern.
+     * Expect the specified regular expression, throw a
+     * TimeoutException if the default timeout expires or EofException
+     * if end-of-file is reached.
      */
-    public void assertExpect (String regex)
+    public void expect (String regex)
     {
-	assertExpect (new Regex (regex));
+	expect (millisecondTimeout, regex);
     }
 
     /**
-     * Confirm that EOF has been reached.
+     * Expect a TimeoutException after millisecondTimeout.
      */
-    public void assertEOF ()
+    public void expect (long millisecondTimeout)
     {
-	assertExpect (maxTimeoutMillis, null,
-		      new Eof ()
-		      {
-			  public void eof ()
-			  {
-			      // discard.
-			  }
-		      },
-		      null);
+	expect (millisecondTimeout, (Match[]) null);
+    }
+
+    /**
+     * Expect a TimeoutException to be thrown after waiting the
+     * default time period.
+     */
+    public void expect ()
+    {
+	expect (millisecondTimeout);
+    }
+
+    /**
+     * Expect an EOF.
+     */
+    public void expectEOF ()
+    {
+	try {
+	    expect ();
+	}
+	catch (EofException e) {
+	    // Just what the doctor ordered.
+	}
+    }
+
+    /**
+     * Expect the child process to have terminated.  A +ve or zero
+     * value indicates an exit status, a -ve value indicates
+     * termination with signal.
+     */
+    public void expectTermination (final int status)
+    {
+	try {
+	    expect ();
+	}
+	catch (EofException e) {
+	    // This is blocking; which probably isn't good.
+	    Wait.waitAll (pid, new WaitObserver (status));
+	}
     }
 }

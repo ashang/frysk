@@ -39,6 +39,8 @@
 
 package frysk.expunit;
 
+import frysk.sys.Sig;
+
 import frysk.junit.TestCase;
 
 /**
@@ -61,7 +63,7 @@ public class TestExpect
     public void testAssertEOF ()
     {
 	e = new Expect (new String[] { "/bin/true" });
-	e.assertEOF ();
+	e.expectEOF ();
     }
 
     /**
@@ -71,13 +73,12 @@ public class TestExpect
     {
 	e = new Expect (new String[] { "/bin/cat" });
 	long oldTime = System.currentTimeMillis ();
-	e.assertExpect (100, new Timeout ()
-	    {
-		public void timeout ()
-		{
-		    // ignore
-		}
-	    }, null, null);
+	try {
+	    e.expect (100, (Match[]) null);
+	}
+	catch (TimeoutException e) {
+	    // What the doctor ordered.
+	}
 	long newTime = System.currentTimeMillis ();
 	assertTrue ("time passed", newTime > oldTime);
     }
@@ -88,8 +89,8 @@ public class TestExpect
     public void testEquals ()
     {
 	e = new Expect (new String[] { "/bin/echo", "catdog" });
-	e.assertExpect (new Equals ("cat"));
-	e.assertExpect (new Equals ("dog"));
+	e.expect (new Equals ("cat"));
+	e.expect (new Equals ("dog"));
     }
 
     /**
@@ -101,11 +102,29 @@ public class TestExpect
 	e = new Expect ("tee");
 	e.send ("catchthebi");
 	// Skip "catch", match "the", leaving "bi".
-	e.assertExpect ("the");
+	e.expect ("the");
 	// Append "rd", making "bird"
 	e.send ("rd");
 	// Match the "bird".
-	e.assertExpect ("bird");
+	e.expect ("bird");
+    }
+
+    /**
+     * Check the exit status.
+     */
+    public void testExit ()
+    {
+	e = new Expect ("exit 1");
+	e.expectTermination (1);
+    }
+
+    /**
+     * Check the signal status.
+     */
+    public void testKill ()
+    {
+	e = new Expect ("kill -HUP $$");
+	e.expectTermination (-Sig.HUP_);
     }
 
     /**
@@ -115,7 +134,7 @@ public class TestExpect
     public void testUnderBash ()
     {
 	e = new Expect ("echo x $$ y");
-	e.assertExpect ("x " + e.getPid () + " y");
+	e.expect ("x " + e.getPid () + " y");
     }
 
     /**
@@ -130,18 +149,18 @@ public class TestExpect
 	// Match the initial prompt.  This ensures that things are
 	// blocked until the shell is fully running.  As a side effect
 	// it also discards all output so far.
-	e.assertExpect ("\\$ ");
+	e.expect ("\\$ ");
 	// Send a command to simplify the prompt, and then match it.
 	// Notice how the matching pattern includes the
 	// carrage-return, the new-line, and the promt.  That ensures
 	// that it doesn't accidently match the command.
 	e.send ("PS1='\\$ '\r");
-	e.assertExpect ("\r\n\\$ ");
+	e.expect ("\r\n\\$ ");
 	// Check out the terminal, again be careful to match the
 	// prompt.
 	e.send ("stty -a\r");
 	final StringBuffer g = new StringBuffer ();
-	e.assertExpect (new Match[]
+	e.expect (new Match[]
 	    {
 		new Regex ("\\s(-brkint)\\s.*\\$ ")
 		{

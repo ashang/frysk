@@ -40,10 +40,22 @@
 package frysk.expunit;
 
 /**
- * Interface used when expecting an end-of-file indication.
+ * Thrown an an end-of-file is encountered and nothing else matches.
  */
 
-public interface Eof
+public class TerminationException
+    extends RuntimeException
 {
-    void eof ();
+    static final long serialVersionUID = 1;
+    static private String expecting (int expectedStatus)
+    {
+	if (expectedStatus >= 0)
+	    return " (expecting exit with status " + expectedStatus + ")";
+	else
+	    return " (expecting kill with signal " + expectedStatus + ")";
+    }
+    TerminationException (int expectedStatus, String s)
+    {
+	super (s + expecting (expectedStatus));
+    }
 }

@@ -40,10 +40,15 @@
 package frysk.expunit;
 
 /**
- * Interface used when expecting a timeout notification.
+ * Thrown an an end-of-file is encountered and nothing else matches.
  */
 
-public interface Timeout
+public class EofException
+    extends RuntimeException
 {
-    void timeout ();
+    static final long serialVersionUID = 1;
+    EofException ()
+    {
+	super ("End-of-file encountered");
+    }
 }
