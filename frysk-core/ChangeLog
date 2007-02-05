@@ -1,3 +1,10 @@
+2007-02-05  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add frysk/pkglibdir/util.h and
+	frysk/pkglibdir/funit-asm.h
+	(funit-stackframe-nodebug, etc.): Add the corresponding empty
+	"_SOURCES" variables.
+
 2007-02-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk/pkglibdir/funit-stackframe-static-stripped)
