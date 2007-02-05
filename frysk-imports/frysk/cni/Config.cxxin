@@ -68,6 +68,12 @@ frysk::Config::getImageDir ()
 }
 
 jstring
+frysk::Config::getBinDir ()
+{
+  return JvNewStringUTF ("@bindir@");
+}
+
+jstring
 frysk::Config::getPkgDataDir ()
 {
   return JvNewStringUTF ("@pkgdatadir@");
@@ -83,6 +89,12 @@ jstring
 frysk::Config::getPkgLib32Dir ()
 {
   return JvNewStringUTF ("@pkglib32dir@");
+}
+
+jstring
+frysk::Config::getPkgLib64Dir ()
+{
+  return JvNewStringUTF ("@pkglib64dir@");
 }
 
 jstring

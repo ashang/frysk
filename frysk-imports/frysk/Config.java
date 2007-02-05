@@ -50,31 +50,58 @@ public class Config
      * windows.
      */
     public static final native String getGladeDir ();
+
     /**
      * Directory containing the frysk help files.
      */
     public static final native String getHelpDir ();
+
     /**
      * Root directory of frysk's images (or icons).
      */
     public static final native String getImageDir ();
+
     /**
      * Frysk's shared, and 32-bit and 64-bit independant, data
-     * directory.
+     * directory.  Typically <tt>/usr/share/frysk</tt>.
      */
     public static final native String getPkgDataDir ();
+
     /**
-     * Frysk's library directory.
+     * Frysk's user-visible executable directory.  Typically <tt>/usr/bin</tt>.
      *
-     * Used by tests when they need to run an executable.
+     * Used by install-tree testing when specifying the path to
+     * installed frysk executables.
+     */
+    public static final native String getBinDir ();
+
+    /**
+     * Frysk's library directory.  Typically either
+     * <tt>/usr/lib/frysk</tt> or <tt>/usr/lib64/frysk</tt>.
+     *
+     * Used by tests when they need to run an executable of the same
+     * bit-size as frysk.
      */
     public static final native String getPkgLibDir ();
+
     /**
-     * Frysk's 32-bit library directory.
+     * Frysk's 32-bit library directory.  Typically
+     * <tt>/usr/lib/frysk</tt>.
      *
-     * Used by 64-bit tests when they need to run 32-bit executables.
+     * Solely for use by 32-bit on 64-bit tests when a 32-bit
+     * executable is required.
      */
     public static final native String getPkgLib32Dir ();
+
+    /**
+     * Frysk's 64-bit library directory.  Typically
+     * <tt>/usr/lib64/frysk</tt>.
+     *
+     * Solely for use by 32-bit on 64-bit tests when a 64-bit
+     * executable is required.
+     */
+    public static final native String getPkgLib64Dir ();
+
     /**
      * The frysk version number.  Typically of the form:
      * MAJOR.MINOR.PATCH.YYYY.MM.DD.
@@ -95,6 +122,7 @@ public class Config
      * such as frysk-imports et.al.
      */
     public static final native String getRootSrcDir ();
+
     /**
      * The absolute source root directory against which the build was
      * created; this is an install time option since, with debug-info
@@ -104,6 +132,7 @@ public class Config
      * such as frysk-imports et.al.
      */
     public static final native String getAbsRootSrcDir ();
+
     /**
      * The word size of the underlying architecture.
      */

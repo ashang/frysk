@@ -62,7 +62,8 @@ public class funit
 	arch32List.addAll (frysk.core.JUnitTests.get ());
 
 	int status = testRunner.runTestCases
-	    (Config.getPkgDataDir () + "/",
+	    (Config.getBinDir (),
+	     Config.getPkgDataDir () + "/",
 	     Config.getGladeDir (),
 	     Config.getImageDir (),
 	     list, Config.getPkgLibDir () + "/",

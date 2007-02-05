@@ -1,3 +1,7 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Pass Config.getBinDir to testRunner.
+
 2007-02-05  Mark Wielaard  <mark@klomp.org>
 
 	* funit-asm.h (STORE __x86_64__): Use mov, not movl.

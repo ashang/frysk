@@ -601,7 +601,8 @@ public class Runner
 	    return EXCEPTION_EXIT;
     }
 
-    public int runTestCases (String dataPrefix,
+    public int runTestCases (String binPrefix,
+			     String dataPrefix,
 			     String gladeDirs,
 			     String imageDirs,
 			     Collection archTests,

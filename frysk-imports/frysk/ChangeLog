@@ -1,3 +1,9 @@
+2007-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.java: Update all descriptioins.
+	(getBinDir, getPkgLib32Dir): Declare.
+	* cni/Config.cxxin (getBinDir, getPkgLib64Dir): Define.
+
 2007-01-30  Nurdin Premji  <npremji@redhat.com>
 
 	* EventLogger.java (setConsoleLog): Added.
