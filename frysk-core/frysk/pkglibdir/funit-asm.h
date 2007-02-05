@@ -81,7 +81,7 @@
 #define JUMP_NE(LABEL) jne LABEL
 #define CALL(FUNC) call FUNC
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
-#define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
+#define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
 
 #elif defined __powerpc__

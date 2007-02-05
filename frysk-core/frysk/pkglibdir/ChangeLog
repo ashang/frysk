@@ -1,3 +1,7 @@
+2007-02-05  Mark Wielaard  <mark@klomp.org>
+
+	* funit-asm.h (STORE __x86_64__): Use mov, not movl.
+
 2007-02-02  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-asm.h (LOAD_IMMED): Fixed x86_64 build failure due to
