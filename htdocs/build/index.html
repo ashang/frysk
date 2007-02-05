@@ -404,20 +404,6 @@ changes dependant on the presence or absence of <tt>ecj</tt>.</dd>
 href=http://bugzilla.gnome.org/show_bug.cgi?id=356003>accessible
 tutorial</a></dd>
 
-<dt>How do I cut a branch?</dt> <dd>First choose a name for your
-branch, it should include both your user name, a terse hint as to the
-branches purpose, and todays date.  For instance
-<tt>pmuldoon-fcore-20061101</tt>, or
-<tt>cagney-triage12345-20061122</tt>.  Two tages will be created,
-first one for the branch point, and second one for the branch:
-<pre>
-$ cvs -d:.. rtag frysk BRANCH-branchpoint
-$ cvs -d... rtag -r BRANCH-branchpoint frysk BRANCH-branch
-</pre>
-</dd>
-
-</dl>
-
 <dt>How do I add a new dejagnu test?</dt>
 <dd> Most of the work for this is done, just create a test_name.exp file and 
 drop it in a directory somewhere under frysk-core/testsuite. Take a look at 
@@ -455,9 +441,24 @@ is to be used with the current version of libgcj all occurrences of
 "libgcj.so.6.0.0" must be changed to "libgcj.so.7.0.0" or else no
 suppression will take place.</dd>
 
+</dl>
+
 <a name="faq-cvs"><h3>CVS Questions, with Answers</h3></a>
 
 <dl>
+
+<a name="How do I cut a branch?"><dt>How do I cut a branch?</dt></a>
+<dd>First choose a name for your branch, it should include both your
+user name, a terse hint as to the branches purpose, and todays date.
+For instance <tt>pmuldoon-fcore-20061101</tt>, or
+<tt>cagney-triage12345-20061122</tt>.  Two tages will be created,
+first one for the branch point, and second one for the branch:
+
+<pre>
+$ cvs -d:.. rtag frysk BRANCH-branchpoint
+$ cvs -d... rtag -r BRANCH-branchpoint frysk BRANCH-branch
+</pre>
+</dd>
 
 <dt>How do I do import a third-party (vendor) package into
 frysk-imports?</dt><dd>Lets say you want to import the thirds party
