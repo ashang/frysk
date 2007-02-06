@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include "funit-asm.h"
+#include "frysk-asm.h"
 
 	.text
 

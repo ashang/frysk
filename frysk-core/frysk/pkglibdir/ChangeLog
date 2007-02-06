@@ -1,3 +1,9 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-asm.h: Delete, moved to frysk-imports/include/frysk-asm.h.
+	* funit-rt-asmstepper.S: Include "frysk-asm.h".
+	* funit-stackframe.S: Include "frysk-asm.h".
+
 2007-02-06  Mark Wielaard  <mark@klomp.org>
 
 	* funit-stackframe.S (main): Use push, not pushl.

@@ -37,10 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#ifndef FRYSK_ASM_H
+#define FRYSK_ASM_H
 
 // This file provides a collection macros that map a very simple
-// load-store virtual machine onto a concrete ISA.  See the end of
-// this file for more details.
+// load-store instruction set archiecture onto a concrete ISA.
+
+// The key here is generality through simplicity, and hence a
+// load-store ISA was chosen.  Please read the notes at the end of
+// this file before making changes and additions.
 
 #ifdef __i386__
 
@@ -117,28 +122,27 @@ main:
 
 #endif
 
+// These macros define a very simple register-sized two-operand
+// load-store instruction set architecture.
 
-// This virtual machine is based on a simple load-store architecture.
-// A load-store architecture must first load each value into a
-// register before performing any operation.  For instance, to
-// increment a memory location, this sequence is required:
+// REGISTER-SIZED: Registers have an implicit size.  Unless othewize
+// stated, all loads and stores are of that implicit size.
 
-// LOAD_IMMED(REG1, foo)       // Set REG1 to address of FOO
-// LOAD(REG2, REG1)     // Load REG2 with contents of memory at REG1
-// ADDC(REG3, 1)        // Increment
-// STORE(REG2, REG1)    // Store again
+// TWO-OPERAND: All instructions involve at most two operands.  One is
+// a register, the other is either a register, an immediate, or an
+// implied address.
 
-// stack, memory and four general purpose registers.  One, the
-// ACC_REG, is used to return function results.  In addition, the
-// virtual machine has a stack-base and stack-top pointer demarking
-// the boundaries of the current stack frame, and a compare flag.
+// LOAD-STORE: A load-store ISA restricts all arithmetic operations
+// (add, subtract, compare, ...) to only registers and immediates.  To
+// perform an arithmetic operation on memory memory it must first be
+// loaded into a register.
 
-#ifndef SP_REG
-#define SP_REG Register containing pointer to of top-of-stack
-#endif
-#ifndef FP_REG
-#define FP_REG Register containing pointer to base of current stack frame
-#endif
+// The ISA has four general purpose registers.  The calling convention
+// assumes that they are all scratch; and that they are used to
+// transfer parameters and the return value.
+
+// The following general purpose registers are available:
+
 #ifndef REG1
 #define REG1 General purpose register, also used for function return
 #endif
@@ -152,35 +156,48 @@ main:
 #define REG4 General purpose register
 #endif
 
-// The virtual machine implements the following instructions.  All
-// instructions are limited to two operands.
+// The following instructions are defined:
 
 #ifndef NO_OP
 #define NO_OP do nothing for exactly one instruction
 #endif
 
 #ifndef ENTER
-#define ENTER creates the stack frame on function entry, allocates no space on the stack
+#define ENTER creates the stack frame on function entry, allocates no scratch space on the stack, and moves no parameters into registers
 #endif
+
+#ifndef ENTER_MAIN
+#define ENTER_MAIN (ARGC_REG, ARGV_REG) set ARGC_REG to hold ARGC, and ARGV_REG \
+to hold ARGV.
+#endif
+
 #ifndef EXIT
 #define EXIT destroys the stack frame and exits the function
 #endif
 
-#ifndef LOAD_IMMED
-#define LOAD_IMMED(REGISTER, IMMED) sets REGISTER to IMMED
-#endif
 #ifndef LOAD
-#define LOAD(DEST_REG,BASE_REG) Load register DEST_REG with value at addres BASE_REG+0
+#define LOAD(DEST_REG,BASE_REG) Perform a register sized load from BASE_REG into DEST_REG
 #endif
+#ifndef LOAD_IMMED
+#define LOAD_IMMED(DEST_REG, IMMED) Sets REGISTER to IMMED
+#endif
+#ifndef LOAD_STACK
+#define LOAD_STACK(DEST_REG, SLOT_NUM) Perform a register sized load from stack slot SLOT_NUM into DEST_REG
+#endif
+
 #ifndef STORE
-#define STORE(SOURCE_REG,BASE_REG) Store register SOURCE_REG into address at BASE_REG+0
+#define STORE(SOURCE_REG,BASE_REG) Perform a register sized store of SOURCE_REG into address at BASE_REG
 #endif
+#ifndef STORE_STACK
+#define STORE_STACK(SOURCE_REG, SLOT_NUM) Perform a register sized store of SOURCE_REG into stack slot SLOT_NUM
+#endif
+
 #ifndef MOVE
 #define MOVE(DEST_REG, SOURCE_REG) move SOURCE_REG to DEST_REG
 #endif
 
-#ifndef ADDC
-#define ADD(DEST_REG, CONSTANT) add CONSTANT to DEST_REG
+#ifndef ADD_IMMED
+#define ADD_IMMED(DEST_REG, IMMED) add IMMED to DEST_REG
 #endif
 #ifndef ADD
 #define ADD(DEST_REG, SOURCE_REG) adds SOURCE_REG to DEST_REG
@@ -205,15 +222,12 @@ main:
 #define JUMP_NE(LABEL) Jump if not equals
 #endif
 #ifndef CALL
-#define CALL(LABEL) Call the function LABEL
+#define CALL(LABEL) Call the function LABEL passing no parameters
 #endif
 
-#ifndef ENTER_MAIN
-#define ENTER_MAIN (ARGC_REG, ARGV_REG) set ARGC_REG to hold ARGC, and ARGV_REG \
-to hold ARGV.
-#endif
-
-	   // Need something better?
+	   // XXX: Need something better?
 #ifndef TRAP
 #define TRAP(NUMBER) Perform system trap NUMBER
+#endif
+
 #endif
