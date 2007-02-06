@@ -1,0 +1,16 @@
+2007-01-26  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am (getopt.jar): Pass JAVACFLAGS to JAVAC.
+
+2006-09-27  Nurdin Premji <npremji@redhat.com>
+	
+	* Makefile.am(EXTRA_DIST, get_opt.jar): Fixed getopt
+	Messages.properties resource problem.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
