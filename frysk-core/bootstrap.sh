@@ -38,6 +38,8 @@
 # version and license this file solely under the GPL without
 # exception.
 
+set -e
+
 # Generate everything (always run with --add-missing).
 
 sh -eu ./common/Makefile.gen.sh frysk prog

@@ -1,3 +1,7 @@
+2007-02-06  Stepan Kasal  <skasal@redhat.com>
+
+	* bootstrap.sh: Add "set -e".
+
 2007-02-06  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (icon_DATA): Use imagesdir.

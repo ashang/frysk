@@ -38,6 +38,8 @@
 # version and license this file solely under the GPL without
 # exception.
 
+set -e
+
 FILE_LIST="frysk \
     inua \
     junit/junit.jar \
@@ -47,9 +49,8 @@ FILE_LIST="frysk \
     jline/jline.jar \
     getopt/getopt.jar \
     lib"
-    
+
 ./common/Makefile.gen.sh --cni $FILE_LIST
-    
 
 # Generate everything (always run with --add-missing).
 

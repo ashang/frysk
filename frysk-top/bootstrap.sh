@@ -38,6 +38,8 @@
 # version and license this file solely under the GPL without
 # exception.
 
+set -e
+
 # CD to the config directory
 cd `dirname $0`
 

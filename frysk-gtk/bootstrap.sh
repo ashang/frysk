@@ -38,6 +38,8 @@
 # version and license this file solely under the GPL without
 # exception.
 
+set -e
+
 ./common/Makefile.gen.sh \
     --cni \
     tlwidgets/ftk.jar \

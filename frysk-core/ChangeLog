@@ -1,3 +1,7 @@
+2007-02-06  Stepan Kasal  <skasal@redhat.com>
+
+	* bootstrap.sh: Add "set -e".
+
 2007-02-05  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (pkglib_PROGRAMS): Removed a bunch of extra tests that have been
