@@ -45,6 +45,7 @@ import frysk.dom.DOMSource;
 import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
+import lib.dw.DwflModule;
 import lib.unwind.FrameCursor;
 
 public class StackFrame
@@ -209,8 +210,11 @@ public class StackFrame
   public String getSymbolName()
   {
     Dwfl dwfl = new Dwfl(task.getTid());
-    
-    return dwfl.getModule(getAddress()).getAddressName(getAddress());    
+    DwflModule dm = dwfl.getModule(getAddress());
+    if (dm != null)
+      return dm.getAddressName(getAddress());
+    else
+      return "";
   }
 
   /**
