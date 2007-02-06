@@ -42,8 +42,9 @@ package frysk.gui.srcwin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -75,7 +76,7 @@ public class SourceWindowFactory
 {
   private static HashMap map;
 
-  public static Hashtable stateTable;
+  public static Map stateMap;
 
   public static SourceWindow srcWin = null;
   
@@ -84,7 +85,7 @@ public class SourceWindowFactory
   static
     {
       map = new HashMap();
-      stateTable = new Hashtable();
+      stateMap = Collections.synchronizedMap(new HashMap());
     }
 
   /**
@@ -118,7 +119,7 @@ public class SourceWindowFactory
     }
     sw = new SourceWindow(glade, Config.getGladeDir (), proc);
 
-    stateTable.put(proc, sw.getRunState());
+    stateMap.put(proc, sw.getRunState());
     sw.addListener(new SourceWinListener());
     sw.grabFocus();
 
@@ -189,10 +190,10 @@ public class SourceWindowFactory
    */
   private static void unblockProc (Proc proc)
   {
-    RunState rs = (RunState) stateTable.get(proc);
+    RunState rs = (RunState) stateMap.get(proc);
     if (rs.getNumObservers() == 0)
       {
-        stateTable.remove(proc);
+        stateMap.remove(proc);
       }
   }
 
@@ -266,7 +267,7 @@ public class SourceWindowFactory
       Proc proc = task.getProc();
       SourceWindow sw = new SourceWindow (glade, Config.getGladeDir (), proc, this);
 
-      stateTable.put(proc, sw.getRunState());
+      stateMap.put(proc, sw.getRunState());
       sw.addListener(new SourceWinListener());
       sw.grabFocus();
 

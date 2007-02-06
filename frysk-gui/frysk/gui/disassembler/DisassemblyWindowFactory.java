@@ -85,7 +85,7 @@ public class DisassemblyWindowFactory
     if (dw != null)
       {
         dw = (DisassemblyWindow) map.get(proc);
-        RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+        RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
         rs.addObserver(dw.getLockObserver());
         dw.showAll();
         return;
@@ -98,13 +98,13 @@ public class DisassemblyWindowFactory
     catch (Exception e) {
 	throw new RuntimeException (e);
     }
-    RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
     
     if (rs == null)
       {
         rs = new RunState();
         rs.setProc(proc);
-        SourceWindowFactory.stateTable.put(proc, rs);
+        SourceWindowFactory.stateMap.put(proc, rs);
         dw = new DisassemblyWindow(glade);
         rs.addObserver(dw.getLockObserver());
       }
@@ -141,10 +141,10 @@ public class DisassemblyWindowFactory
    */
   private static void unblockProc (Proc proc)
   {
-    RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
     if (rs.getNumObservers() == 0)
       {
-        SourceWindowFactory.stateTable.remove(proc);
+        SourceWindowFactory.stateMap.remove(proc);
       }
   }
   
@@ -181,7 +181,7 @@ public class DisassemblyWindowFactory
           Task t = dw.getMyTask();
           Proc p = t.getProc();
           
-          RunState rs = (RunState) SourceWindowFactory.stateTable.get(t.getProc());
+          RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
           
           if (rs.removeObserver(dw.getLockObserver()) == 1)
             {

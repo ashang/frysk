@@ -85,7 +85,7 @@ public class RegisterWindowFactory
     if (rw != null)
       {
         rw = (RegisterWindow) map.get(proc);
-        RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+        RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
         rs.addObserver(rw.getLockObserver());
         rw.showAll();
         return;
@@ -98,13 +98,13 @@ public class RegisterWindowFactory
     catch (Exception e) {
 	throw new RuntimeException (e);
     }
-    RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
     
     if (rs == null)
       {
         rs = new RunState();
         rs.setProc(proc);
-        SourceWindowFactory.stateTable.put(proc, rs);
+        SourceWindowFactory.stateMap.put(proc, rs);
         rw = new RegisterWindow(glade);
         rs.addObserver(rw.getLockObserver());
       }
@@ -141,10 +141,10 @@ public class RegisterWindowFactory
    */
   private static void unblockProc (Proc proc)
   {
-    RunState rs = (RunState) SourceWindowFactory.stateTable.get(proc);
+    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
     if (rs.getNumObservers() == 0)
       {
-        SourceWindowFactory.stateTable.remove(proc);
+        SourceWindowFactory.stateMap.remove(proc);
       }
   }
 
@@ -181,7 +181,7 @@ public class RegisterWindowFactory
           Task t = rw.getMyTask();
           Proc p = t.getProc();
           
-          RunState rs = (RunState) SourceWindowFactory.stateTable.get(t.getProc());
+          RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
           
           if (rs.removeObserver(rw.getLockObserver()) == 1)
             {

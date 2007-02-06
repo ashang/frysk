@@ -1,3 +1,8 @@
+2007-02-06  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: (stateMap): Refactored from stateTable;
+	changed to synchronized HashMap from Hashtable.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java (setGladePaths, gladePaths): Delete.

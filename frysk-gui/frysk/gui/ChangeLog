@@ -46,6 +46,17 @@
 	(clearProcesses): Added. Removes all DebugProcesses from the global list.
 	* sessions/SessionManager.java: Applied GNU formatting.
 
+	* register/RegisterWindowFactory.java (createRegisterWindow): Updated to
+	use SourceWindowFactory's change from Hashtable to synchronized HashMap.
+	(unblockProc): Ditto.
+	(RegWinListener.lifeCycleQuery): Ditto.
+	* memory/MemoryWindowFactory.java (createMemoryWindow): Ditto.
+	(unblockProc): Ditto.
+	(MemWinListener.lifeCycleQuery): Ditto.
+	* disassembler/DisassemblyWindowFactory.java (createDisassemblyWindow): Ditto.
+	(unblockProc): Ditto.
+	(DisWinListener.lifeCycleQuery): Ditto.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* imagesdir/: Rename directory images/.
