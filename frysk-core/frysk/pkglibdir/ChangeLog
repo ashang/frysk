@@ -1,7 +1,11 @@
+2007-02-06  Mark Wielaard  <mark@klomp.org>
+
+	* funit-stackframe.S (main): Use push, not pushl.
+
 2007-02-05  Nurdin Premji  <npremji@redhat.com>
 
 	* funit-asm.h: Added tags for ENTER_MAIN and COMPARE on 386.
-	* funit-stacframe.S: Added. Contains :
+	* funit-stackframe.S: Added. Contains :
 	* funit-stackframe-asm.S: Removed.
 	* funit-stackframe-static-asm.S: Ditto.
 	* funit-stackframe.c: Removed before.

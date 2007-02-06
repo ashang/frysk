@@ -82,7 +82,7 @@ local_st_size_0:
 main:
 	ENTER_MAIN(REG3, REG4)
 	ENTER
-	pushl REG3
+	push REG3
 # If argc = 1 run with global_st_size.
 	COMPARE(REG3, 1)
 	JUMP_NE(.L10)
