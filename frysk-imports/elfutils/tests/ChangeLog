@@ -1,3 +1,7 @@
+2007-02-06  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am: Removed CFLAG line.
+
 2007-02-02  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Removed dwfl-bug-addr-overflow.
