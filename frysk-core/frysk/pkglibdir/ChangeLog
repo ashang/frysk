@@ -1,3 +1,9 @@
+2007-02-06  Nurdin Premji  <npremji@redhat.com>
+
+	* funit-stackframe.S (main): Deleted push command, not needed.
+	Changed COMPAREs to COMPARE_IMMEDs.
+	REMOVED ENTER, ENTER_MAIN now does that as well.
+
 2007-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-asm.h: Delete, moved to frysk-imports/include/frysk-asm.h.

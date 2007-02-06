@@ -81,25 +81,23 @@ local_st_size_0:
 	.type	main, @function
 main:
 	ENTER_MAIN(REG3, REG4)
-	ENTER
-	push REG3
 # If argc = 1 run with global_st_size.
-	COMPARE(REG3, 1)
+	COMPARE_IMMED(REG3, 1)
 	JUMP_NE(.L10)
 	CALL(global_st_size)
 .L10:
 # If argc = 2 run with local_st_size.
-	COMPARE(REG3, 2)
+	COMPARE_IMMED(REG3, 2)
 	JUMP_NE(.L12)
 	CALL(local_st_size)
 .L12:
 # If argc = 3 run with global_st_size_0.
-	COMPARE(REG3, 3)
+	COMPARE_IMMED(REG3, 3)
 	JUMP_NE(.L14)
 	CALL(global_st_size_0)
 .L14:
 # If argc = 4 run with local_st_size_0.
-	COMPARE(REG3, 4)
+	COMPARE_IMMED(REG3, 4)
 	JUMP_NE(.L16)
 	CALL(local_st_size_0)
 .L16:
