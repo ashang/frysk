@@ -107,6 +107,7 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z]*\.g" -print \
     -o -name "[A-Za-z0-9_]*\.glade" -print \
     -o -name "[A-Za-z0-9_]*\.png" -print \
+    -o -name "[A-Za-z0-9_]*\.gif" -print \
     -o -name "[A-Za-z0-9_]*\.xml" -print \
     -o -path "*dir/[A-Za-z_]*\.in" -print \
     -o -path "*dir/[A-Za-z_]*\.uu" -print \

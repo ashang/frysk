@@ -59,6 +59,7 @@ pkglib32dir = $(lib32dir)/@PACKAGE@
 pkglib64dir = $(lib64dir)/@PACKAGE@
 gladedir = $(pkgdatadir)/glade
 helpdir = $(datadir)/gnome/help/frysk/C
+imagesdir = $(pkgdatadir)/images
 
 noinst_LIBRARIES =
 man_MANS =
@@ -233,7 +234,7 @@ SUBST_SED = sed \
 		-e 's,[@]abs_srcdir[@],@abs_top_srcdir@,g' \
 		-e 's,[@]gladedir[@],$(gladedir),g' \
 		-e 's,[@]helpdir[@],$(helpdir),g' \
-		-e 's,[@]imagedir[@],$(imagedir),g' \
+		-e 's,[@]imagesdir[@],$(imagesdir),g' \
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
 		-e 's,[@]pkglib32dir[@],$(pkglib32dir),g' \

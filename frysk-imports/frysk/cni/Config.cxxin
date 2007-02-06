@@ -85,7 +85,7 @@ frysk::Config::createInstallConfig ()
   frysk::Config* config = new frysk::Config ();
   config->theGladeDir = JvNewStringUTF ("@gladedir@/")->intern ();
   config->theHelpDir = JvNewStringUTF ("@helpdir@")->intern ();
-  config->theImageDir = JvNewStringUTF ("@imagedir@")->intern ();
+  config->theImagesDir = JvNewStringUTF ("@imagesdir@")->intern ();
   config->theBinDir = JvNewStringUTF ("@bindir@/")->intern ();
   config->thePkgDataDir = JvNewStringUTF ("@pkgdatadir@/")->intern ();
   config->thePkgLib32Dir = NULL;
@@ -110,7 +110,7 @@ frysk::Config::createBuildConfig (jstring absSrcDir, jstring absBuildDir)
   frysk::Config* config = new frysk::Config ();
   config->theGladeDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/gladedir/"))->intern ();
   config->theHelpDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/helpdir"))->intern ();
-  config->theImageDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/images"))->intern ();
+  config->theImagesDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/imagesdir"))->intern ();
   config->theBinDir = absBuildDir->concat (JvNewStringUTF ("/frysk/bindir/"))->intern ();
   config->thePkgDataDir = absBuildDir->concat (JvNewStringUTF ("/frysk/pkgdatadir/"))->intern ();
   config->thePkgLib32Dir = NULL;

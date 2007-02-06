@@ -213,22 +213,22 @@ public class IconManager
     };
     try {
 	for (int j = 0; j < sizeDirs.length - 1; j++) {
-	    addIconSet(runSet[j], Config.getImageDir (), j, RUN_PNG);
-	    addIconSet(stopSet[j], Config.getImageDir (), j, STOP_PNG);
-	    addIconSet(nextSet[j], Config.getImageDir (), j, NEXT_PNG);
-	    addIconSet(nextAISet[j], Config.getImageDir (), j, NEXT_AI_PNG);
-	    addIconSet(stepSet[j], Config.getImageDir (), j, STEP_PNG);
-	    addIconSet(stepAISet[j], Config.getImageDir (), j, STEP_AI_PNG);
-	    addIconSet(continueSet[j], Config.getImageDir (), j, CONTINUE_PNG);
-	    addIconSet(finishSet[j], Config.getImageDir (), j, FINISH_PNG);
-	    addIconSet(downSet[j], Config.getImageDir (), j, DOWN_PNG);
-	    addIconSet(upSet[j], Config.getImageDir (), j, UP_PNG);
-	    addIconSet(topSet[j], Config.getImageDir (), j, TOP_PNG);
+	    addIconSet(runSet[j], Config.getImagesDir (), j, RUN_PNG);
+	    addIconSet(stopSet[j], Config.getImagesDir (), j, STOP_PNG);
+	    addIconSet(nextSet[j], Config.getImagesDir (), j, NEXT_PNG);
+	    addIconSet(nextAISet[j], Config.getImagesDir (), j, NEXT_AI_PNG);
+	    addIconSet(stepSet[j], Config.getImagesDir (), j, STEP_PNG);
+	    addIconSet(stepAISet[j], Config.getImagesDir (), j, STEP_AI_PNG);
+	    addIconSet(continueSet[j], Config.getImagesDir (), j, CONTINUE_PNG);
+	    addIconSet(finishSet[j], Config.getImagesDir (), j, FINISH_PNG);
+	    addIconSet(downSet[j], Config.getImagesDir (), j, DOWN_PNG);
+	    addIconSet(upSet[j], Config.getImagesDir (), j, UP_PNG);
+	    addIconSet(topSet[j], Config.getImagesDir (), j, TOP_PNG);
 	    
 	    // The only other image we need is the highlight image
 	    IconSet set = new IconSet();
 	    IconSource source = new IconSource();
-	    source.setFilename(Config.getImageDir () + "/" + HIGHLIGHT_PNG);
+	    source.setFilename(Config.getImagesDir () + "/" + HIGHLIGHT_PNG);
 	    source.setSize(IconSize.BUTTON);
 	    set.addSource(source);
 	    factories[j].addIconSet("frysk-highlight", set);
@@ -238,11 +238,11 @@ public class IconManager
 	for (int k = 1; k <= 24; k++) {
 	    IconSet set = new IconSet();
 	    IconSource source = new IconSource();
-	    source.setFilename(Config.getImageDir () + "/icon/" + TRAY_PREFIX
+	    source.setFilename(Config.getImagesDir () + "/icon/" + TRAY_PREFIX
 			       + (k < 10 ? "0" + k : "" + k) + ".png");
 	    
 	    if (k == 24) {
-		windowIcon = new Pixbuf(Config.getImageDir () + "/icon/"
+		windowIcon = new Pixbuf(Config.getImagesDir () + "/icon/"
 					+ TRAY_PREFIX + k + ".png");
 	    }
 	    
@@ -252,11 +252,11 @@ public class IconManager
 	    factories[1].addIconSet("frysk-tray-" + k, set);
 	}
 
-	anim = new PixbufAnimation(Config.getImageDir () + "/"
+	anim = new PixbufAnimation(Config.getImagesDir () + "/"
 				   + "fryskTrayIcon.gif");
 	
 	// Load the spash screen image
-	splashImage = new Pixbuf(Config.getImageDir () + "/" + "SplashScreen.png");
+	splashImage = new Pixbuf(Config.getImagesDir () + "/" + "SplashScreen.png");
 
     }
     catch (Exception e) {

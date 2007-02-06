@@ -123,11 +123,11 @@ public class Config
      * Root directory of frysk's images (or icons).  Does not include
      * trailing slash.
      */
-    public static final String getImageDir ()
+    public static final String getImagesDir ()
     {
-	return current.theImageDir;
+	return current.theImagesDir;
     }
-    private String theImageDir;
+    private String theImagesDir;
 
     /**
      * Frysk's shared, and 32-bit and 64-bit independant, data

@@ -1,5 +1,9 @@
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (files.list): Include .gif files.
+	* Makefile.rules (imagesdir): Define.
+	(SUBST_SED): Set imagesdir, not imagedir.
+
 	* TestRunner.javain: Create 32-on-64 and default build
 	frysk.Config.  Pass to testRunner.
 

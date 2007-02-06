@@ -79,7 +79,7 @@ public class TestConfig
 	// The expected paths are valid.
 	assertNotNull ("getGladeDir", Config.getGladeDir ());
 	assertNotNull ("getHelpDir", Config.getHelpDir ());
-	assertNotNull ("getImageDir", Config.getImageDir ());
+	assertNotNull ("getImagesDir", Config.getImagesDir ());
 	assertNotNull ("getBinDir", Config.getBinDir ());
 	assertNotNull ("getPkgDataDir", Config.getPkgDataDir ());
 	assertNotNull ("getPkgLibDir", Config.getPkgLibDir ());
@@ -96,7 +96,7 @@ public class TestConfig
 	// The expected paths have a trailing "/"
 	validateSlashed ("getGladeDir", Config.getGladeDir ());
 	assertFalse ("getHelpDir has trailing /", Config.getHelpDir ().endsWith ("/"));
-	assertFalse ("getImageDir has trailing /", Config.getImageDir ().endsWith ("/"));
+	assertFalse ("getImagesDir has trailing /", Config.getImagesDir ().endsWith ("/"));
 	validateSlashed ("getBinDir", Config.getBinDir ());
 	validateSlashed ("getPkgDataDir", Config.getPkgDataDir ());
 	validateSlashed ("getPkgLibDir", Config.getPkgLibDir ());
