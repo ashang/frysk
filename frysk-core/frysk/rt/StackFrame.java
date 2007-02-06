@@ -194,8 +194,10 @@ public class StackFrame
    */
   public String getMethodName ()
   {
+    /* If the name can't be resolved, its easier to deal with
+     * an empty string rather than checking for nulls everywhere */
     if (this.myCursor == null || this.myCursor.getMethodName() == null)
-      return null;
+      return "";
     
     return this.myCursor.getMethodName();
   }
@@ -211,10 +213,13 @@ public class StackFrame
   {
     Dwfl dwfl = new Dwfl(task.getTid());
     DwflModule dm = dwfl.getModule(getAddress());
+    
+    /* If the name can't be resolved, its easier to deal with
+     * an empty string rather than checking for nulls everywhere */
     if (dm != null)
       return dm.getAddressName(getAddress());
     else
-      return "";
+      return "";        
   }
 
   /**
@@ -329,7 +334,7 @@ public class StackFrame
     
     if (this.dwflLine != null)
       {
-        if (funcString == null)
+        if (funcString.equals(""))
           funcString = "[unknown] from: ";
         else
           funcString = funcString + " () from: ";
@@ -350,7 +355,7 @@ public class StackFrame
       }
     else
       {
-        if (funcString == null)
+        if (funcString.equals(""))
           funcString = "[unknown]";
         else
           funcString = funcString + " ()";
@@ -446,5 +451,6 @@ public class StackFrame
     // ??? Use something akin to Register interface?
     return this.myCursor.set_reg(reg, val);
   }
+
 }
 

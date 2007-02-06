@@ -2,6 +2,10 @@
 
 	* StackFrame.java (getSymbolName): Check for null DwflModules. Fixes
 	#3981.
+	(getMethodName): Return empty strings rather than null when the name
+	cannot be resolved. Fixes #3983.
+	(toPrint): Changed back to checking for empty strings rather than nulls
+	for unresolvable symbol names.
 
 2007-02-06  Nurdin Premji  <npremji@redhat.com>
 
