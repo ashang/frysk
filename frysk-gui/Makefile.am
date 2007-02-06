@@ -139,9 +139,11 @@ glade.catalog:
 		$@.tmp
 	mv $@.tmp $@
 
-# Handle the *.desktop and *.properties files.
+# Handle the *.desktop, *.properties, and icon files.
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = frysk/gui/frysk.desktop
+icondir = $(datadir)/pixmaps
+icon_DATA = frysk/gui/images/48/fryskTrayIcon48.png
 propertydir = $(pkgdatadir)
 dist_property_DATA = frysk/gui/common/messages.properties
 

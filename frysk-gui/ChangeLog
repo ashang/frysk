@@ -1,5 +1,7 @@
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
+	* Makefile.am (icondir, dist_icon_DATA): New variables, likewise.
+
 	* Makefile.am (propertydir, dist_property_DATA): New variables,
 	handling frysk.properties.
 
