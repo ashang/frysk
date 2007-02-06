@@ -39,6 +39,8 @@
 
 package frysk;
 
+import java.io.File;
+
 /**
  * All the run-time (install time) configuration information.
  */
@@ -102,6 +104,8 @@ public class Config
     /**
      * Directory containing the .glade files describing frysk's UI
      * windows.
+     *
+     * XXX: This is a String so that it works better with Java-GNOME.
      */
     public static final String getGladeDir ()
     {
@@ -110,18 +114,18 @@ public class Config
     private String theGladeDir;
 
     /**
-     * Directory containing the frysk help files.  Does not include
-     * trailing slash.
+     * Directory containing the frysk help files.
      */
-    public static final String getHelpDir ()
+    public static final File getHelpDir ()
     {
 	return current.theHelpDir;
     }
-    private String theHelpDir;
+    private File theHelpDir;
 
     /**
-     * Root directory of frysk's images (or icons).  Does not include
-     * trailing slash.
+     * Root directory of frysk's images (or icons).
+     *
+     * XXX: This is a String so that it works better with Java-GNOME.
      */
     public static final String getImagesDir ()
     {
@@ -133,11 +137,11 @@ public class Config
      * Frysk's shared, and 32-bit and 64-bit independant, data
      * directory.  Typically <tt>/usr/share/frysk</tt>.
      */
-    public static final String getPkgDataDir ()
+    public static final File getPkgDataDir ()
     {
 	return current.thePkgDataDir;
     }
-    private String thePkgDataDir;
+    private File thePkgDataDir;
 
     /**
      * Frysk's user-visible executable directory.  Typically <tt>/usr/bin</tt>.
@@ -145,11 +149,11 @@ public class Config
      * Used by install-tree testing when specifying the path to
      * installed frysk executables.
      */
-    public static final String getBinDir ()
+    public static final File getBinDir ()
     {
 	return current.theBinDir;
     }
-    private String theBinDir;
+    private File theBinDir;
 
     /**
      * Frysk's library directory.  Typically either
@@ -158,11 +162,11 @@ public class Config
      * Used by tests when they need to run an executable of the same
      * bit-size as frysk.
      */
-    public static final String getPkgLibDir ()
+    public static final File getPkgLibDir ()
     {
 	return current.thePkgLibDir;
     }
-    private String thePkgLibDir;
+    private File thePkgLibDir;
 
     /**
      * Frysk's 32-bit library directory.  Typically
@@ -171,11 +175,11 @@ public class Config
      * Solely for use by 32-bit on 64-bit tests when a 32-bit
      * executable is required.
      */
-    public static final String getPkgLib32Dir ()
+    public static final File getPkgLib32Dir ()
     {
 	return current.thePkgLib32Dir;
     }
-    private String thePkgLib32Dir;
+    private File thePkgLib32Dir;
 
     /**
      * Frysk's 64-bit library directory.  Typically
@@ -184,11 +188,11 @@ public class Config
      * Solely for use by 32-bit on 64-bit tests when a 64-bit
      * executable is required.
      */
-    public static final String getPkgLib64Dir ()
+    public static final File getPkgLib64Dir ()
     {
 	return current.thePkgLib64Dir;
     }
-    private String thePkgLib64Dir;
+    private File thePkgLib64Dir;
 
     /**
      * The frysk version number.  Typically of the form:
@@ -196,7 +200,8 @@ public class Config
      */
     public static final native String getVersion ();
 
-    // User's config directory.
+    // User's config directory.  XXX: Should be a File.  XXX: Should
+    // not use user.home property.  XXX: Should be a method.
     public static final String FRYSK_DIR
 	= System.getProperty("user.home") + "/" + ".frysk" + "/";
 

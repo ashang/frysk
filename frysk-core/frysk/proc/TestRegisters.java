@@ -547,7 +547,7 @@ public class TestRegisters
     // Create program making syscalls
     AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
         {
-        getExecPrefix () + "funit-registers"
+	    getExecPath ("funit-registers")
         });
     
     TestI386ModifyXXX t = new TestI386ModifyXXX (ackProc.mainTask.proc.getPid());
@@ -568,9 +568,9 @@ public class TestRegisters
     
     // Create program making syscalls
     AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
-    {
-      getExecPrefix () + "funit-registers"
-    });
+	{
+	    getExecPath ("funit-registers")
+	});
     
     TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.mainTask.proc.getPid());
     
@@ -591,9 +591,9 @@ public class TestRegisters
     
     // Call assembler program making syscalls
     AttachedDaemonProcess ackProc = new AttachedDaemonProcess (new String[]
-    {
-      getExecPrefix () + "funit-registers"
-    });
+	{
+	    getExecPath ("funit-registers")
+	});
     
     TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.mainTask.proc.getPid());
     

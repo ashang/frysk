@@ -72,7 +72,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 	// Run a program that forks wildly.
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
 	    {
-		getExecPrefix () + "funit-forks",
+		getExecPath ("funit-forks"),
 		Integer.toString (numberOfForks),
 		Integer.toString (numberOfForksResident)
 	    });

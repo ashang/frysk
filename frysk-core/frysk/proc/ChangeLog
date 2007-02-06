@@ -1,3 +1,25 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (getExecPrefix): Delete.
+	(getExec32Prefix): Delete.
+	(getAbsolutePrefix, getExecPath, getExec32Path)
+	(getExec64Path): Define.
+	* StressAttachDetachManyTasks.java: Update.
+	* StressAttachDetachRapidlyForkingMainTask.java: Update.
+	* StressAttachDetachRapidlyCloningMainTask.java: Update.
+	* TestBreakpoints.java: Update.
+	* TestIsa.java: Update.
+	* TestMemory.java: Update.
+	* TestProcGet.java: Update.
+	* TestRegisters.java: Update.
+	* TestSyscallRunning.java: Ditto.
+	* TestSyscallSignal.java: Ditto.
+	* TestTaskClonedObserver.java: Update.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskSyscallObserver.java: Update.
+	* TestTaskTerminateObserver.java: Ditto.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Replace frysk.junit.Paths with frysk.Config.

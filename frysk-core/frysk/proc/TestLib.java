@@ -87,21 +87,41 @@ public class TestLib
                  new Object[] { this, new Integer(arg) });
   }
 
-  /**
-   * Return the exec prefix that should be prepended to all programs.
-   */
-  protected static String getExecPrefix ()
-  {
-    return Config.getPkgLibDir ();
-  }
+    /**
+     * Return an absolute path as a string, or null of FILE is null.
+     */
+    private static String getAbsolutePath (File file, String suffix)
+    {
+	if (file != null)
+	    return new File (file, suffix).getAbsolutePath ();
+	else
+	    return null;
+    }
 
-  /**
-   * Return the exec prefix that should be prepended to all programs.
-   */
-  protected static String getExec32Prefix ()
-  {
-    return Config.getPkgLib32Dir ();
-  }
+    /**
+     * Return a String specifying the absolute path of the executable.
+     */
+    protected static String getExecPath (String program)
+    {
+	return getAbsolutePath (Config.getPkgLibDir (), program);
+    }
+  
+    /**
+     * Return a String specifying the absolute path of the executable.
+     */
+    protected static String getExec32Path (String program)
+    {
+	return getAbsolutePath (Config.getPkgLib32Dir (), program);
+    }
+  
+    /**
+     * Return a String specifying the absolute path of the executable.
+     */
+    protected static String getExec64Path (String program)
+    {
+	return getAbsolutePath (Config.getPkgLib64Dir (), program);
+    }
+
 
   /**
    * Run the event loop for a short period of time until it is explicitly
@@ -481,10 +501,10 @@ public class TestLib
   {
     List command = new LinkedList();
     final String sleepTime = "10";
-    command.add(getExecPrefix() + "funit-child");
+    command.add (getExecPath ("funit-child"));
     command.add(busy ? "--wait=busy-loop" : "--wait=suspend");
     if (filename != null)
-      command.add("--filename=" + getExecPrefix() + filename);
+	command.add("--filename=" + getExecPath (filename));
     command.add(sleepTime);
     // Use getpid as this testsuite always runs the event loop
     // from the main thread (which has tid==pid).
@@ -849,7 +869,7 @@ public class TestLib
 
     final String sigToSend = "" + Sig.USR1_;
 
-    command.add(getExecPrefix() + "funit-threads");
+    command.add (getExecPath ("funit-threads"));
     // Use getpid as this testsuite always runs the event loop
     // from the main thread (which has tid==pid).
     command.add(Integer.toString(Pid.get()));

@@ -42,12 +42,25 @@
 #include <gcj/cni.h>
 
 #include <java/lang/String.h>
+#include <java/io/File.h>
 #include "frysk/Config.h"
 
 // Why not use autoconf's config.h?
 
 // Because config.h does not expand variables the way Makefile and
 // SUBST_SED do.
+
+static java::io::File*
+asFile (const char* path)
+{
+  return new java::io::File (JvNewStringUTF (path)->intern ());
+}
+
+static java::io::File*
+asFile (jstring prefix, const char *suffix)
+{
+  return new java::io::File (prefix, JvNewStringUTF (suffix)->intern ());
+}
 
 jstring
 frysk::Config::getVersion ()
@@ -84,13 +97,13 @@ frysk::Config::createInstallConfig ()
 {
   frysk::Config* config = new frysk::Config ();
   config->theGladeDir = JvNewStringUTF ("@gladedir@/")->intern ();
-  config->theHelpDir = JvNewStringUTF ("@helpdir@")->intern ();
+  config->theHelpDir = asFile ("@helpdir@");
   config->theImagesDir = JvNewStringUTF ("@imagesdir@")->intern ();
-  config->theBinDir = JvNewStringUTF ("@bindir@/")->intern ();
-  config->thePkgDataDir = JvNewStringUTF ("@pkgdatadir@/")->intern ();
+  config->theBinDir = asFile ("@bindir@");
+  config->thePkgDataDir = asFile ("@pkgdatadir@");
   config->thePkgLib32Dir = NULL;
   config->thePkgLib64Dir = NULL;
-  config->thePkgLibDir = JvNewStringUTF ("@pkglibdir@/")->intern ();
+  config->thePkgLibDir = asFile ("@pkglibdir@");
   return config;
 }
 
@@ -98,33 +111,35 @@ frysk::Config*
 frysk::Config::createInstall32On64Config ()
 {
   frysk::Config* config = createInstallConfig ();
-  config->thePkgLib32Dir = JvNewStringUTF ("@pkglib32dir@/")->intern ();
-  config->thePkgLib64Dir = JvNewStringUTF ("@pkglib64dir@/")->intern ();
+  config->thePkgLib32Dir = asFile ("@pkglib32dir@");
+  config->thePkgLib64Dir = asFile ("@pkglib64dir@");
   config->thePkgLibDir = config->thePkgLib32Dir;
   return config;
 }
 
 frysk::Config*
-frysk::Config::createBuildConfig (jstring absSrcDir, jstring absBuildDir)
+frysk::Config::createBuildConfig (jstring absSrcDir,
+				  jstring absBuildDir)
 {
   frysk::Config* config = new frysk::Config ();
   config->theGladeDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/gladedir/"))->intern ();
-  config->theHelpDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/helpdir"))->intern ();
+  config->theHelpDir = asFile (absSrcDir, "/frysk/gui/helpdir");
   config->theImagesDir = absSrcDir->concat (JvNewStringUTF ("/frysk/gui/imagesdir"))->intern ();
-  config->theBinDir = absBuildDir->concat (JvNewStringUTF ("/frysk/bindir/"))->intern ();
-  config->thePkgDataDir = absBuildDir->concat (JvNewStringUTF ("/frysk/pkgdatadir/"))->intern ();
+  config->theBinDir = asFile (absBuildDir, "/frysk/bindir/");
+  config->thePkgDataDir = asFile (absBuildDir, "/frysk/pkgdatadir/");
   config->thePkgLib32Dir = NULL;
   config->thePkgLib64Dir = NULL;
-  config->thePkgLibDir = absBuildDir->concat (JvNewStringUTF ("/frysk/pkglibdir/"))->intern ();
+  config->thePkgLibDir = asFile (absBuildDir, "/frysk/pkglibdir/");
   return config;
 }
 
 frysk::Config*
-frysk::Config::createBuild32On64Config (jstring absSrcDir, jstring absBuildDir)
+frysk::Config::createBuild32On64Config (jstring absSrcDir,
+					jstring absBuildDir)
 {
   frysk::Config* config = createBuildConfig (absSrcDir, absBuildDir);
-  config->thePkgLib32Dir = absBuildDir->concat (JvNewStringUTF ("/frysk/pkglibdir/arch32/"))->intern ();
-  config->thePkgLib64Dir = absBuildDir->concat (JvNewStringUTF ("/frysk/pkglibdir/"))->intern ();
+  config->thePkgLib32Dir = asFile (absBuildDir, "/frysk/pkglibdir/arch32/");
+  config->thePkgLib64Dir = asFile (absBuildDir, "/frysk/pkglibdir/");
   config->thePkgLibDir = config->thePkgLib32Dir;
   return config;
 }

@@ -202,7 +202,7 @@ public class TestMemory
 	// Create program making syscalls
 	new AttachedDaemonProcess (new String[]
 	    {
-		getExecPrefix () + "funit-memory"
+		getExecPath ("funit-memory")
 	    }).resume ();
 
 	assertRunUntilStop ("run \"modify\" to exit");

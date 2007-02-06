@@ -59,7 +59,7 @@ public class StressAttachDetachManyTasks
 
 	Child child = new AckDaemonProcess (ackSignal, new String[]
 	    {
-		getExecPrefix () + "funit-threads",
+		getExecPath ("funit-threads"),
 		"--block",
 		Integer.toString (Pid.get ()),
 		Integer.toString (ackSignal.hashCode ()),

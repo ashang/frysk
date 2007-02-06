@@ -63,7 +63,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 
 	Child child = new AckDaemonProcess (ackSignal, new String[]
 	    {
-		getExecPrefix () + "funit-threads",
+		getExecPath ("funit-threads"),
 		Integer.toString (Pid.get ()),
 		Integer.toString (ackSignal.hashCode ()),
 		Integer.toString (timeout), // Seconds

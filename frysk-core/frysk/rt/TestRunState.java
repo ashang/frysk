@@ -101,7 +101,7 @@ public class TestRunState extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    getExecPrefix () + "funit-rt-stepper",
+	    getExecPath ("funit-rt-stepper"),
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -135,7 +135,7 @@ public class TestRunState extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    getExecPrefix () + "funit-rt-stepper",
+	    getExecPath ("funit-rt-stepper"),
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});

@@ -1,3 +1,14 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.java (getHelpDir): Change return type to File.
+	(getPkgDataDir): Ditto.
+	(getBinDir): Ditto.
+	(getPkgLibDir): Ditto.
+	(getPkgLib32Dir): Ditto.
+	(getPkgLib64Dir): Ditto.
+	* TestConfig.java: Update.
+	(validateSlashed): Delete.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.java (getImagesDir, theImageDir): Rename getImageDir and

@@ -65,15 +65,6 @@ public class TestConfig
 	Config.set (old);
     }
 
-    /**
-     * validate that the dir has a single trailing slash.
-     */
-    private void validateSlashed (String what, String dir)
-    {
-	assertTrue (what + " has trailing /", dir.endsWith ("/"));
-	assertFalse (what + " has trailing //", dir.endsWith ("//"));
-    }
-
     private void validate (boolean pure)
     {
 	// The expected paths are valid.
@@ -92,17 +83,6 @@ public class TestConfig
 	    assertNotNull ("getPkgLib64Dir", Config.getPkgLib64Dir ());
 	    assertSame ("getPkgLibDir is getPkgLib32Dir",
 			Config.getPkgLibDir (), Config.getPkgLib32Dir ());
-	}
-	// The expected paths have a trailing "/"
-	validateSlashed ("getGladeDir", Config.getGladeDir ());
-	assertFalse ("getHelpDir has trailing /", Config.getHelpDir ().endsWith ("/"));
-	assertFalse ("getImagesDir has trailing /", Config.getImagesDir ().endsWith ("/"));
-	validateSlashed ("getBinDir", Config.getBinDir ());
-	validateSlashed ("getPkgDataDir", Config.getPkgDataDir ());
-	validateSlashed ("getPkgLibDir", Config.getPkgLibDir ());
-	if (!pure) {
-	    validateSlashed ("getPkgLib32DirDir", Config.getPkgLib32Dir ());
-	    validateSlashed ("getPkgLib64DirDir", Config.getPkgLib64Dir ());
 	}
     }
 

@@ -81,7 +81,7 @@ public class TestSyscallRunning
     super.setUp();
 
     // Create a process that we will communicate with through stdin/out.
-    String command = TestLib.getExecPrefix() + "funit-syscall-running";
+    String command = getExecPath ("funit-syscall-running");
     ForkTestLib.ForkedProcess process;
     process = ForkTestLib.fork(new String[] { command });
     pid = process.pid;

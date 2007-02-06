@@ -88,7 +88,7 @@ public class TestStackBacktrace
     TaskCreatedObserver obs = new TaskCreatedObserver();
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
-	    getExecPrefix () + "funit-rt-looper",
+	    getExecPath ("funit-rt-looper"),
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -196,7 +196,7 @@ public class TestStackBacktrace
 
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL, new String[] {
-	    getExecPrefix () + "funit-rt-threader",
+	    getExecPath ("funit-rt-threader"),
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});

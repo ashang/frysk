@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@ package frysk.proc;
 
 import java.util.Observable;
 import java.util.logging.Level;
-import frysk.Config;
-
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 
@@ -259,18 +257,22 @@ public class TestIsa
   
   public void test64To32Isa ()
   {
-      if (Config.getWordSize () == 32)
+      String exec32 = getExec32Path ("funit-exec");
+      String exec64 = getExec64Path ("funit-exec");
+      if (exec32 == null || exec64 == null) {
+	  System.out.print ("<<SKIP>>");
 	  return;
-    String[] command = new String[] { getExecPrefix()
-                                      + "funit-exec",                                               
-                                      String.valueOf(Pid.get()),
-                                      String.valueOf(Sig.USR2_),
-                                      "5",
-                                      getExec32Prefix() + "funit-exec",
-                                      String.valueOf(Pid.get()),
-                                      String.valueOf(Sig.USR2_),
-                                      "5", "echo",  "hello"};
-    
+      }
+      String[] command = new String[] {
+	  exec64,
+	  String.valueOf(Pid.get()),
+	  String.valueOf(Sig.USR2_),
+	  "5",
+	  exec32,
+	  String.valueOf(Pid.get()),
+	  String.valueOf(Sig.USR2_),
+	  "5", "echo",  "hello"
+      };
       
     Child ackProc = new AckDaemonProcess(Sig.USR2, command);
 
@@ -300,21 +302,26 @@ public class TestIsa
   
   public void test64To32To64 ()
   {
-      if (Config.getWordSize () == 32)
+      String exec32 = getExec32Path ("funit-exec");
+      String exec64 = getExec64Path ("funit-exec");
+      if (exec32 == null && exec64 == null) {
+	  System.out.print ("<<SKIP>>");
 	  return;
-    String[] command = new String[] { getExecPrefix()
-                                      + "funit-exec",                                               
-                                      String.valueOf(Pid.get()),
-                                      String.valueOf(Sig.USR2_),
-                                      "20",
-                                      getExec32Prefix() + "funit-exec",
-                                      String.valueOf(Pid.get()),
-                                      String.valueOf(Sig.USR2_),
-                                      "20", getExecPrefix()
-                                      + "funit-exec",                                               
-                                      String.valueOf(Pid.get()),
-                                      String.valueOf(Sig.USR2_),
-                                      "20", "echo",  "hello"};
+      }
+      String[] command = new String[] {
+	  exec64,
+	  String.valueOf(Pid.get()),
+	  String.valueOf(Sig.USR2_),
+	  "20",
+	  exec32,
+	  String.valueOf(Pid.get()),
+	  String.valueOf(Sig.USR2_),
+	  "20",
+	  exec64,
+	  String.valueOf(Pid.get()),
+	  String.valueOf(Sig.USR2_),
+	  "20", "echo",  "hello"
+      };
     
       
     Child ackProc = new AckDaemonProcess(Sig.USR2, command);

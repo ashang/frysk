@@ -85,11 +85,11 @@ public class TestTaskForkedObserver
     ForkObserver forkObserver = new ForkObserver();
 
     // Run a program that forks wildly.
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] {
-                                                                          getExecPrefix()
-                                                                              + "funit-fib-fork",
-                                                                          Integer.toString(n) });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-fib-fork"),
+	    Integer.toString(n)
+	});
 
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
     child.mainTask.requestAddForkedObserver(forkObserver);

@@ -259,11 +259,11 @@ public class TestTaskSyscallObserver
     // return;
 
     int count = 5;
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] {
-                                                                          getExecPrefix()
-                                                                              + "funit-syscallloop",
-                                                                          Integer.toString(count), });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-syscallloop"),
+	    Integer.toString(count)
+	});
 
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
@@ -334,12 +334,11 @@ public class TestTaskSyscallObserver
 
     int count = 5;
 
-    Manager.host.requestCreateAttachedProc(
-                                           new String[] {
-                                                         getExecPrefix()
-                                                             + "funit-syscallloop",
-                                                         Integer.toString(count), },
-                                           attachedObserver);
+    Manager.host.requestCreateAttachedProc(new String[]
+	{
+	    getExecPath ("funit-syscallloop"),
+	    Integer.toString(count)
+	}, attachedObserver);
 
     // assertRunUntilStop("run until program exits");
     assertRunUntilStop("run until program exits");
@@ -361,9 +360,10 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] { getExecPrefix()
-                                                                           + "funit-syscalls" });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-syscalls")
+	});
 
     // Add a syscall observer. XXX: This doesn't work - system
     // call tracing doesn't get enabled enabled.
@@ -454,9 +454,10 @@ public class TestTaskSyscallObserver
     // return;
 
     // Create program making syscalls
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] { getExecPrefix()
-                                                                           + "funit-syscalls" });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-syscalls")
+	});
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
 
     SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver(
@@ -494,10 +495,12 @@ public class TestTaskSyscallObserver
 
     PipeReadChild (boolean restart)
     {
-      this(new String[] { getExecPrefix() + "funit-syscallint",
-                         Integer.toString(Pid.get()),
-                         Integer.toString(ackSignal.hashCode()),
-                         Integer.toString(restart ? 1 : 0) });
+	this(new String[] {
+		 getExecPath ("funit-syscallint"),
+		 Integer.toString(Pid.get()),
+		 Integer.toString(ackSignal.hashCode()),
+		 Integer.toString(restart ? 1 : 0)
+	     });
     }
   }
 

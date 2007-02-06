@@ -41,7 +41,7 @@
 package lib.elf.tests;
 
 import java.math.BigInteger;
-
+import java.io.File;
 import frysk.Config;
 import frysk.junit.TestCase;
 import lib.elf.Elf;
@@ -61,7 +61,8 @@ public class TestElf
 {
   public void testCore () throws ElfException, ElfFileException
   {
-      Elf testElf = new Elf (Config.getPkgDataDir () + "test-core",
+      Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core")
+			     .getAbsolutePath (),
 			     ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
@@ -129,8 +130,9 @@ public class TestElf
 
   public void testObjectFile () throws ElfException, ElfFileException
   {
-    Elf testElf = new Elf(Config.getPkgDataDir () + "helloworld.o",
-                          ElfCommand.ELF_C_READ);
+      Elf testElf = new Elf (new File (Config.getPkgDataDir (), "helloworld.o")
+			     .getAbsolutePath (),
+			     ElfCommand.ELF_C_READ);
 
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
     assertEquals(testElf.getBase(), 0);

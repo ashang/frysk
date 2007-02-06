@@ -573,7 +573,7 @@ public class TestTaskObserverBlocked
 
       String fibonacciProgram ()
       {
-        return getExecPrefix() + "funit-fib-clone";
+	  return getExecPath ("funit-fib-clone");
       }
     }
     new CloneFibonacci();
@@ -610,7 +610,7 @@ public class TestTaskObserverBlocked
 
       String fibonacciProgram ()
       {
-        return getExecPrefix() + "funit-fib-fork";
+	  return getExecPath ("funit-fib-fork");
       }
     }
     new ForkFibonacci();

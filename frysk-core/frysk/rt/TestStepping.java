@@ -115,7 +115,7 @@ public class TestStepping extends TestLib
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.POLL,
 	 new String[] {
-	    getExecPrefix () + "funit-rt-threadstepper",
+	    getExecPath ("funit-rt-threadstepper"),
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
@@ -153,7 +153,7 @@ public class TestStepping extends TestLib
     runState.addObserver(lock);
     
     String[] cmd = new String[1];
-    cmd[0] = getExecPrefix() + "funit-rt-asmstepper";
+    cmd[0] = getExecPath ("funit-rt-asmstepper");
     
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);

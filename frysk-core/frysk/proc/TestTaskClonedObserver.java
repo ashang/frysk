@@ -80,11 +80,11 @@ public class TestTaskClonedObserver
     }
     CloneCounter cloneCounter = new CloneCounter();
 
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] {
-                                                                          getExecPrefix()
-                                                                              + "funit-fib-clone",
-                                                                          Integer.toString(fibCount) });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-fib-clone"),
+	    Integer.toString(fibCount)
+	});
 
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
 

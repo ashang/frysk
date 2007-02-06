@@ -85,7 +85,7 @@ public class TestBreakpoints
     super.setUp();
 
     // Create a process that we will communicate with through stdin/out.
-    String command = TestLib.getExecPrefix() + "funit-breakpoints";
+    String command = getExecPath ("funit-breakpoints");
     ForkTestLib.ForkedProcess process;
     process = ForkTestLib.fork(new String[] { command });
     pid = process.pid;

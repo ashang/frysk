@@ -139,7 +139,7 @@ public class TestStackFrame
 
     Attacher attacher = new Attacher();
     String[] fullCommand = new String[numberOfArgs];
-    fullCommand[0] =  getExecPrefix() + "/" + command;
+    fullCommand[0] =  getExecPath (command);
     
     for (int i = 1; i < fullCommand.length; i++)
       {

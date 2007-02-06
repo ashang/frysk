@@ -61,12 +61,12 @@ public class TestProcGet
   {
     TmpFile tmpFile = new TmpFile();
 
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] {
-                                                                          getExecPrefix()
-                                                                              + "funit-print-auxv",
-                                                                          tmpFile.toString(),
-                                                                          "/dev/null" });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-print-auxv"),
+	    tmpFile.toString(),
+	    "/dev/null"
+	});
 
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
     // Grab the AUXV from the process sitting at its entry point.

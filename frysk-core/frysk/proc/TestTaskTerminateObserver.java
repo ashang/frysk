@@ -92,11 +92,11 @@ public class TestTaskTerminateObserver
       return;
 
     // Start the program.
-    AttachedDaemonProcess child = new AttachedDaemonProcess(
-                                                            new String[] {
-                                                                          getExecPrefix()
-                                                                              + "funit-exit",
-                                                                          Integer.toString(expected) });
+    AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
+	{
+	    getExecPath ("funit-exit"),
+	    Integer.toString(expected)
+	});
 
     // Bail once it has exited.
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
@@ -242,15 +242,13 @@ public class TestTaskTerminateObserver
   {
     final int timeout = 5; // XXX: Should be constant in TestLib.
 
-    AckProcess daemon = new DetachedAckProcess(
-                                               ackSignal,
-                                               new String[] {
-                                                             getExecPrefix()
-                                                                 + "funit-threadexit",
-                                                             Integer.toString(Pid.get()),
-                                                             Integer.toString(ackSignal.hashCode()),
-                                                             Integer.toString(timeout), // Seconds
-                                               });
+    AckProcess daemon = new DetachedAckProcess(ackSignal, new String[]
+	{
+	    getExecPath ("funit-threadexit"),
+	    Integer.toString(Pid.get()),
+	    Integer.toString(ackSignal.hashCode()),
+	    Integer.toString(timeout), // Seconds
+	});
 
     // Find the main task, and get a terminate observer bound to
     // it; as a side effect it will pick up the terminated but not
