@@ -1,3 +1,8 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* include/frysk-asm.h: Moved to here from
+	frysk-core/frysk/pkglibdir/funit-asm.h.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* getopt/Makefile.am (getopt.jar): Pass JAVACFLAGS to JAVAC.
