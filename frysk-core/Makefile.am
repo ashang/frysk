@@ -106,7 +106,6 @@ endif
 
 EXTRA_DIST += frysk/cli/hpd/doc-files/parsetree.png
 EXTRA_DIST += frysk/pkglibdir/util.h
-EXTRA_DIST += frysk/pkglibdir/funit-asm.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.
