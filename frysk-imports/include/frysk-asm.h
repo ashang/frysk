@@ -65,9 +65,8 @@
 #define CALL(FUNC) call FUNC
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
-#define COMPARE_IMMED(REG,CONST) cmp $CONST, (REG)
-#define ENTER_MAIN(ARGC_REG, ARGV_REG) leal 4(%esp), ARGC_REG ; andl $-16, %esp; \
-pushl -4(ARGC_REG); pushl %ebp ; movl %esp, %ebp 
+#define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#define ENTER_MAIN(ARGC_REG, ARGV_REG) movl 4(%esp), ARGC_REG; pushl %ebp ; movl %esp, %ebp 
 
 //XXX: Replace with macros at end of file.
 

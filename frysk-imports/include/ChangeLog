@@ -1,5 +1,9 @@
 2007-02-06  Nurdin Premji  <npremji@redhat.com>
 
+	* frysk-asm.h (i386.COMPARE_IMMED): Removed brackets, those are for memory 
+	addresses. Fixes 3979.
+	(i386.ENTER_MAIN): Fixed to store argc properly to the ARGC_REG.
+
 	* frysk-asm.h (i386.ENTER_MAIN): Added ENTER code to this as well.
 	(i386.COMPARE_IMMED): Added missing brackets.
 	(i386.COMPARE): Removed definition, was wrong.
