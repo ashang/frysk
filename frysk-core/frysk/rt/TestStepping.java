@@ -131,9 +131,6 @@ public class TestStepping extends TestLib
   
   public void testASMStepping ()
   {
-
-    if (brokenXXX(3979))
-      return;
     if (MachineType.getMachineType() == MachineType.PPC
         || MachineType.getMachineType() == MachineType.PPC64)
       {
