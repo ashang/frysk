@@ -1,3 +1,8 @@
+2007-02-06  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (propertydir, dist_property_DATA): New variables,
+	handling frysk.properties.
+
 2007-02-05  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (desktopdir, dist_desktop_DATA): New variables, handling
