@@ -1,3 +1,7 @@
+2007-02-06  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am (icon_DATA): Use imagesdir.
+
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (icondir, dist_icon_DATA): New variables, likewise.

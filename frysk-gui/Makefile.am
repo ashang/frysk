@@ -143,7 +143,7 @@ glade.catalog:
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = frysk/gui/frysk.desktop
 icondir = $(datadir)/pixmaps
-icon_DATA = frysk/gui/images/48/fryskTrayIcon48.png
+icon_DATA = frysk/gui/imagesdir/48/fryskTrayIcon48.png
 propertydir = $(pkgdatadir)
 dist_property_DATA = frysk/gui/common/messages.properties
 
