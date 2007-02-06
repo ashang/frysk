@@ -86,5 +86,7 @@ noinst_LIBRARIES += lib/opcodes/libbfd_get.a
 GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
 
 # Need to get this into the distribution
-noinstdir = $(srcdir)
-noinst_HEADERS = include/linux.ptrace.h include/linux.syscall.h
+noinst_HEADERS = \
+	include/frysk-asm.h \
+	include/linux.ptrace.h \
+	include/linux.syscall.h
