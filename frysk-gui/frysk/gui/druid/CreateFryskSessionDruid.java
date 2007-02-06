@@ -40,8 +40,9 @@
 
 package frysk.gui.druid;
 
+import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.LinkedList;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
@@ -87,6 +88,7 @@ import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
+import frysk.gui.srcwin.SourceWindowFactory;
 
 public class CreateFryskSessionDruid
     extends Dialog
@@ -116,6 +118,8 @@ public class CreateFryskSessionDruid
   private Entry nameEntry;
 
   private Notebook notebook;
+  
+  private Button debugButton;
 
   private Button nextButton;
 
@@ -130,6 +134,8 @@ public class CreateFryskSessionDruid
   private int processSelected = 0;
 
   private boolean editSession;
+  
+  private boolean loadSession;
 
   private String oldSessionName;
 
@@ -158,6 +164,7 @@ public class CreateFryskSessionDruid
     nextButton.setSensitive(false);
     backButton.showAll();
     backButton.setSensitive(false);
+    debugButton.showAll();
     finishButton.hideAll();
     saveButton.hideAll();
     cancelButton.showAll();
@@ -191,10 +198,69 @@ public class CreateFryskSessionDruid
       }
 
     processSelected = currentSession.getProcesses().size();
+    
+    LinkedList oldSessionProcesses = new LinkedList(this.currentSession.getProcesses());
+    LinkedList allProcs = new LinkedList();
+    HashSet observers = new HashSet();
+    LinkedList observersList = new LinkedList();
+    
+    Iterator i = oldSessionProcesses.iterator();
+    String prev = "";
+    
+    /* Find all possible obsevers that were requested for this session, and 
+     * keep track of them. Then collect all proceses from the model
+     * with this name. */
+    while (i.hasNext())
+      {
+        DebugProcess dp = (DebugProcess) i.next();
+        if (prev.equals(dp.getName()))
+          continue;
+        
+        Iterator j = dp.getObservers().iterator();
+        while (j.hasNext())
+          {
+            ObserverRoot or = (ObserverRoot) j.next();
+            if (!observers.contains(or.getBaseName()))
+              {
+                observers.add(or.getBaseName());
+                observersList.add(or);
+              }
+          }
+        
+        prev = dp.getName();
+        this.dataModel.collectProcs(prev, allProcs);
+      }
+    
+    this.currentSession.clearProcesses();
+    i = allProcs.iterator();
+    
+    /* Create new DebugProcesses for each of the collected GuiProcs. */
+    while (i.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) i.next();
+        
+        DebugProcess dp = new DebugProcess(guiProc.getExecutableName(),
+                                                         guiProc.getExecutableName(), 
+                                                         guiProc.getNiceExecutablePath());
+        
+        dp.addProc(guiProc);
+        Iterator j = observersList.iterator();
+        while (j.hasNext())
+          {
+            dp.addObserver((ObserverRoot) j.next());
+          }                      
+        currentSession.addProcess(dp);
+      }
+    
+    oldSessionProcesses = null;
+    observers = null;
+    
+    
     attachLinkedListsToWidgets();
 
     notebook.setShowTabs(true);
     notebook.setCurrentPage(0);
+    debugButton.hideAll();
     finishButton.hideAll();
     nextButton.hideAll();
     backButton.hideAll();
@@ -211,10 +277,93 @@ public class CreateFryskSessionDruid
     observerSelectionTreeView.setSensitive(true);
 
   }
+  
+  public void loadSessionMode (Session givenSession)
+  {
+    currentSession = givenSession;
+    if (currentSession == null)
+      {
+        currentSession = new Session();
+      }
+
+    processSelected = currentSession.getProcesses().size();
+    
+    LinkedList oldSessionProcesses = new LinkedList(this.currentSession.getProcesses());
+    LinkedList allProcs = new LinkedList();
+    HashSet observers = new HashSet();
+    LinkedList observersList = new LinkedList();
+    
+    Iterator i = oldSessionProcesses.iterator();
+    String prev = "";
+    /* Find all possible obsevers that were requested for this session, and 
+     * keep track of them. Then collect all proceses from the model
+     * with this name. */
+    while (i.hasNext())
+      {
+        DebugProcess dp = (DebugProcess) i.next();
+        if (prev.equals(dp.getName()))
+          continue;
+        
+        Iterator j = dp.getObservers().iterator();
+        while (j.hasNext())
+          {
+            ObserverRoot or = (ObserverRoot) j.next();
+            if (!observers.contains(or.getBaseName()))
+              {
+                observers.add(or.getBaseName());
+                observersList.add(or);
+              }
+          }
+        
+        prev = dp.getName();
+        this.dataModel.collectProcs(prev, allProcs);
+      }
+    
+    this.currentSession.clearProcesses();
+    i = allProcs.iterator();
+    
+    /* Create new DebugProcesses for each of the collected GuiProcs. */
+    while (i.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) i.next();
+        
+        DebugProcess dp = new DebugProcess(guiProc.getExecutableName(),
+                                                         guiProc.getExecutableName(), 
+                                                         guiProc.getNiceExecutablePath());
+        
+        dp.addProc(guiProc);
+        Iterator j = observersList.iterator();
+        while (j.hasNext())
+          {
+            dp.addObserver((ObserverRoot) j.next());
+          }                      
+        currentSession.addProcess(dp);
+      }
+    
+    oldSessionProcesses = null;
+    observers = null;
+    
+    attachLinkedListsToWidgets();
+
+    notebook.setShowTabs(false);
+    notebook.setCurrentPage(0);
+    debugButton.showAll();
+    nextButton.setSensitive(true);
+    nextButton.showAll();
+    cancelButton.showAll();
+    saveButton.hideAll();
+    saveButton.setSensitive(false);
+    loadSession = true;
+    oldSessionName = currentSession.getName();
+    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+    warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
+    unFilterData();
+    filterDataInSession();
+    observerSelectionTreeView.setSensitive(true);
+  }
 
   private void filterDataInSession ()
   {
-
     // Does the current session have any processes?
     if (currentSession.getProcesses() == null)
       {
@@ -225,47 +374,48 @@ public class CreateFryskSessionDruid
     final Iterator i = currentSession.getProcesses().iterator();
     if (i != null)
       {
+        String altName = "";
         while (i.hasNext())
           {
 
             // Get the first process iteration.
             final DebugProcess currentDebugProcess = (DebugProcess) i.next();
-            if (currentDebugProcess == null)
+            if (altName.equals(currentDebugProcess.getName()))
+              continue;
+            
+            Iterator j = this.dataModel.searchAllNames(currentDebugProcess.getName()).iterator();
+            while (j.hasNext())
               {
-                continue;
-              }
-
-            // Find process in the tree data model, via name
-            // return either null or path to process
-            final TreePath processPath = dataModel.searchName(currentDebugProcess.getName());
+            TreePath processPath = (TreePath) j.next();
 
             if (processPath != null)
               {
 
                 // Covert to iter from path
-                final TreeIter foundIter = procWiseTreeView.psDataModel.getModel().getIter(
+                final TreeIter foundIter = procWiseTreeView.dataModel.getModel().getIter(
                                                                                            processPath);
-                if (procWiseTreeView.psDataModel.getModel().isIterValid(
+                if (procWiseTreeView.dataModel.getModel().isIterValid(
                                                                         foundIter))
                   {
 
                     // Get the process alternate name
-                    final String altName = procWiseTreeView.psDataModel.getModel().getValue(
+                    altName = procWiseTreeView.dataModel.getModel().getValue(
                                                                                             foundIter,
-                                                                                            procWiseTreeView.psDataModel.getNameDC());
-
-                    // set the names
-                    currentDebugProcess.setRealName(currentDebugProcess.getName());
-                    currentDebugProcess.setAlternativeDisplayName(altName);
-                    currentDebugProcess.setName(altName);
+                                                                                            procWiseTreeView.dataModel.getNameDC());
 
                     // Set in tree
-                    procWiseTreeView.psDataModel.getModel().setValue(
+                    procWiseTreeView.dataModel.getModel().setValue(
                                                                      foundIter,
-                                                                     procWiseTreeView.psDataModel.getSelectedDC(),
+                                                                     procWiseTreeView.dataModel.getSelectedDC(),
                                                                      true);
                   }
               }
+              }
+        //  }
+            // set the names
+            currentDebugProcess.setRealName(currentDebugProcess.getName());
+            currentDebugProcess.setAlternativeDisplayName(altName);
+            currentDebugProcess.setName(altName);
           }
       }
 
@@ -279,80 +429,43 @@ public class CreateFryskSessionDruid
    * @param setSelected - set the selected value.
    * @param setChildren - cascade down to children if true.
    */
-  private void setTreeSelected (TreeIter selected, boolean setSelected,
-                                boolean setChildren)
+  private void setTreeSelected (TreeIter selected, boolean setSelected)
   {
-    dataModel.setSelected(selected, setSelected, setChildren);
+    dataModel.setSelected(selected, setSelected);
   }
 
   /**
-   * If a child is a selected in a tree, we have to add the child's parent also.
-   * This is because only process groups can be added in the druid (PIDs and
-   * individual processes have no meaning inbetween sessions. This is a utility
+   * If a child is a selected in a tree, we have to add the child's parent
+   * also. This is because only process groups can be added in the druid (PIDs
+   * and individual processes have no meaning inbetween sessions. This is a utility
    * function that given a Iter, will add that tree iters parent as well.
    * 
    * @param unfilteredProcessIter - parent
    */
-  private void addProcessParent (TreeIter unfilteredProcessIter)
+ 
+  private void addProcessParent(TreeIter unfilteredProcessIter) 
   {
-    if (unfilteredProcessIter == null)
+     if (unfilteredProcessIter == null)
+       return;
+     if (!dataModel.getModel().isIterValid(unfilteredProcessIter))
+       return;
+
+     GuiProc guiProc = (GuiProc) dataModel.getModel().getValue(
+							    unfilteredProcessIter, dataModel.getObjectDC());
+     if (guiProc == null)
       {
-        return;
+        final TreeIter childIter = unfilteredProcessIter.getChild(0);
+        guiProc = (GuiProc) dataModel.getModel().getValue(childIter,
+                                                    dataModel.getObjectDC());
       }
-
-    if (! dataModel.getModel().isIterValid(unfilteredProcessIter))
-      {
-        return;
-      }
-
-    GuiProc proc = (GuiProc) dataModel.getModel().getValue(
-                                                           unfilteredProcessIter,
-                                                           dataModel.getObjectDC());
-    if (proc == null)
-      {
-        if (unfilteredProcessIter.getChildCount() > 0)
-          {
-            final TreeIter childIter = unfilteredProcessIter.getChild(0);
-            proc = (GuiProc) dataModel.getModel().getValue(
-                                                           childIter,
-                                                           dataModel.getObjectDC());
-          }
-      }
-
-    final DebugProcess debugProcess = new DebugProcess(
-                                                       proc.getExecutableName(),
-                                                       dataModel.getModel().getValue(
-                                                                                     unfilteredProcessIter,
-                                                                                     dataModel.getNameDC()),
-                                                       proc.getNiceExecutablePath());
-    currentSession.addProcess(debugProcess);
-
+     
+     final DebugProcess debugProcess = new DebugProcess(guiProc.getExecutableName(),
+							 dataModel.getModel().getValue(unfilteredProcessIter,
+							 dataModel.getNameDC()), guiProc.getNiceExecutablePath());
+     debugProcess.addProc(guiProc);
+     currentSession.addProcess(debugProcess);
   }
 
-  /**
-   * Hack to test is a TreePath is a child or a parent noe. The JG
-   * implementation is buggy
-   * 
-   * @param pathTest - path to test
-   * @return - boolean, true if child
-   */
-  private boolean isChild (TreePath pathTest)
-  {
-    // Minor hack. Sometimes path.up() returns a boolean
-    // that indicates it has a parent and the up() changed the
-    // state of the Path. However all operations on that then
-    // return NP which indicates a false positive. Fix locally,
-    // and file upstream bug.
-
-    if (pathTest.toString().split(":").length > 1)
-      {
-        return true;
-      }
-    else
-      {
-        return false;
-      }
-  }
 
   /**
    * Convert a TreeModelFilterIter to a TreePath
@@ -390,7 +503,6 @@ public class CreateFryskSessionDruid
 
     if (selectedProcs.length > 0)
       {
-
         // Build the TreeRowReference. De filter from the model if needed.
         for (int i = 0; i < selectedProcs.length; i++)
           {
@@ -398,96 +510,32 @@ public class CreateFryskSessionDruid
               {
                 continue;
               }
-            if (filtered)
-              {
-                unfilteredProcessIter = dataModel.getModel().getIter(
-                                                                     deFilterPath(
-                                                                                  tree,
-                                                                                  selectedProcs[i]));
 
-              }
+            if (filtered)
+              unfilteredProcessIter = dataModel.getModel().getIter(
+                                                                   deFilterPath(
+                                                                                tree,
+                                                                                selectedProcs[i]));
             else
-              {
-                unfilteredProcessIter = dataModel.getModel().getIter(
-                                                                     selectedProcs[i]);
-              }
+              unfilteredProcessIter = dataModel.getModel().getIter(
+                                                                   selectedProcs[i]);
+
             paths[i] = new TreeRowReference(dataModel.getModel(),
                                             unfilteredProcessIter.getPath());
-          }
-        for (int i = 0; i < paths.length; i++)
-          {
-            // Scenario 1: Tree iter has children (a process group); selected
-            // the parent
-            if (paths[i] == null)
+
+            if (state)
               {
-                continue;
-              }
-            if (dataModel.getModel().getIter(paths[i].getPath()).getChildCount() > 0)
-              {
-                if (state)
-                  {
-                    processSelected += dataModel.getModel().getIter(
-                                                                    paths[i].getPath()).getChildCount() + 1;
-                    addProcessParent(dataModel.getModel().getIter(
-                                                                  paths[i].getPath()));
-                  }
-                else
-                  {
-                    processSelected -= dataModel.getModel().getIter(
-                                                                    paths[i].getPath()).getChildCount() + 1;
-                  }
-                setTreeSelected(
-                                dataModel.getModel().getIter(paths[i].getPath()),
-                                state, true);
+                processSelected++;
+                addProcessParent(dataModel.getModel().getIter(
+                                                              paths[i].getPath()));
               }
             else
-              {
-                // Scenario 2: A child in the process group has been selected,
-                // also select the parent and siblings.
-                final TreePath parent_path = paths[i].getPath();
-                if (isChild(parent_path))
-                  {
-                    // we are a child that has a parent; sibilings and parent
-                    parent_path.up();
-                    // Save parent iter
-                    final TreeIter parent_iter = dataModel.getModel().getIter(
-                                                                              parent_path);
-                    // Move the parent and children.
-                    if (parent_iter.getChildCount() > 0)
-                      {
-                        if (state)
-                          {
-                            processSelected += dataModel.getModel().getIter(
-                                                                            paths[i].getPath()).getChildCount() + 1;
-                            addProcessParent(parent_iter);
-                          }
-                        else
-                          {
-                            processSelected -= dataModel.getModel().getIter(
-                                                                            paths[i].getPath()).getChildCount() + 1;
-                          }
-                        setTreeSelected(parent_iter, state, true);
-                      }
-                  }
-                else
-                  {
-                    if (state)
-                      {
-                        addProcessParent(dataModel.getModel().getIter(
-                                                                      paths[i].getPath()));
-                        processSelected++;
-                      }
-                    else
-                      {
-                        processSelected--;
-                      }
-                    // Scenario 3: No children, or siblings
-                    setTreeSelected(
-                                    dataModel.getModel().getIter(
-                                                                 paths[i].getPath()),
-                                    state, false);
-                  }
-              }
+              processSelected--;
+          }
+        for (int i = selectedProcs.length - 1; i >= 0; i--)
+          {
+            setTreeSelected(dataModel.getModel().getIter(paths[i].getPath()),
+                            state);
           }
       }
     setProcessNext(processSelected);
@@ -498,7 +546,7 @@ public class CreateFryskSessionDruid
    */
   private void setProcessNext (int processCount)
   {
-    if (editSession == false)
+    if (editSession == false && loadSession == false)
       {
         if (processCount > 0
             && nameEntry.getText().length() > 0
@@ -530,14 +578,14 @@ public class CreateFryskSessionDruid
 
   private void unFilterData ()
   {
-    procWiseTreeView.psDataModel.unFilterData();
+    procWiseTreeView.dataModel.unFilterData();
   }
 
   private void getProcessSelectionControls (LibGlade glade)
   {
 
-    Button addProcessGroupButton;
-    Button removeProcessGroupButton;
+    Button addProcessButton;
+    Button removeProcessButton;
 
     // Page 1 of the Druid. Initial Process Selection.
 
@@ -572,7 +620,7 @@ public class CreateFryskSessionDruid
     addedProcsTreeView = new ListView(
                                       glade.getWidget(
                                                       "sessionDruid_addedProcsTreeView").getHandle());
-    addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
+    addedProcsTreeView.watchGuiProcs(currentSession.getProcesses());
     addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
     addedProcsTreeView.addListener(new TreeViewListener()
     {
@@ -630,10 +678,10 @@ public class CreateFryskSessionDruid
     sizeGroup.addWidget(procWiseTreeView);
     sizeGroup.addWidget(addedProcsTreeView);
 
-    addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
-    removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
+    addProcessButton = (Button) glade.getWidget("sessionDruid_addProcessButton");
+    removeProcessButton = (Button) glade.getWidget("sessionDruid_removeProcessButton");
 
-    addProcessGroupButton.addListener(new ButtonListener()
+    addProcessButton.addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent event)
       {
@@ -650,19 +698,23 @@ public class CreateFryskSessionDruid
       }
     });
 
-    removeProcessGroupButton.addListener(new ButtonListener()
+    removeProcessButton.addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent event)
       {
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
+            if (addedProcsTreeView.getSelectedObjects() == null)
+              return;
+            
             final Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
             if (i != null)
               {
                 while (i.hasNext())
                   {
                     final DebugProcess currentDebugProcess = (DebugProcess) i.next();
-                    final TreePath foo = dataModel.searchName(currentDebugProcess.getRealName());
+                    GuiProc gp = (GuiProc) currentDebugProcess.getProcs().getFirst();
+                    TreePath foo = dataModel.searchPid(gp.getProc().getPid());
                     changeGroupState(procWiseTreeView, new TreePath[] { foo },
                                      false, false);
                     currentSession.removeProcess(currentDebugProcess);
@@ -701,7 +753,7 @@ public class CreateFryskSessionDruid
     observerDescBuffer = new TextBuffer();
     observerDescriptionTextView.setBuffer(observerDescBuffer);
 
-    processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+    processObserverSelectionTreeView.watchGuiProcs(currentSession.getProcesses());
     processObserverSelectionTreeView.getSelection().addListener(
                                                                 new TreeSelectionListener()
                                                                 {
@@ -785,8 +837,24 @@ public class CreateFryskSessionDruid
 
   private void getDruidStructureControls (LibGlade glade)
   {
-
     notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
+    
+    this.debugButton = (Button) glade.getWidget("sessionDruid_debugButton");
+    this.debugButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+            while (i.hasNext())
+              {
+                SourceWindowFactory.createSourceWindow(((GuiProc) ((DebugProcess) i.next()).getProcs().getFirst()).getProc());
+              }
+            hide();
+          }
+      }
+    });
 
     nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
     nextButton.addListener(new ButtonListener()
@@ -821,10 +889,21 @@ public class CreateFryskSessionDruid
       {
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
-            SessionManager.theManager.addSession(currentSession);
+            Iterator i = currentSession.getProcesses().iterator();
+            while (i.hasNext())
+              ((DebugProcess) i.next()).addObservers();
+            
+            if (!loadSession)
+              SessionManager.theManager.addSession(currentSession);
+            
             SessionManager.theManager.save();
-            currentSession = null;
-            currentSession = new Session();
+            LinkedList ll = new LinkedList();
+            ll.add(WindowManager.theManager.mainWindow);
+            IconManager.trayIcon.setPopupWindows(ll);
+            WindowManager.theManager.mainWindow.setSession(currentSession);
+            WindowManager.theManager.mainWindow.buildTerminal();
+            WindowManager.theManager.mainWindow.showAll();
+            WindowManager.theManager.sessionManager.hideAll();
             hide();
           }
       }
@@ -881,8 +960,8 @@ public class CreateFryskSessionDruid
       {
         nameEntry.setText(currentSession.getName());
       }
-    addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
-    processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+    addedProcsTreeView.watchGuiProcs(currentSession.getProcesses());
+    processObserverSelectionTreeView.watchGuiProcs(currentSession.getProcesses());
   }
 
   private void nextPage ()
@@ -908,6 +987,7 @@ public class CreateFryskSessionDruid
     if (page == 0)
       {
         backButton.setSensitive(false);
+        nextButton.setSensitive(true);
       }
     else
       {

@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import java.util.HashMap;
@@ -59,266 +60,411 @@ import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.CellRendererTextListener;
 
+import frysk.gui.sessions.DebugProcess;
+
 /**
- * A widget that combines the TreeView and DataModel and displays
- * a simple linear list. Meant to take away all the complexities of
- * setting up a treeView and a model.
- * Inherits from TreeView so it can be initialized by a handle retrieved
- * from a glade file. 
- * */
-public class ListView extends TreeView implements Observer {
-	protected HashMap map;
-	protected ListStore listStore;
-	
-	protected DataColumnString nameDC;
-	protected DataColumnObject objectDC;
-	protected ObservableLinkedList watchedList;
-	
-	private ItemAddedObserver itemAddedObserver;
-	private ItemRemovedObserver itemRemovedObserver;
-	
-	private CellRendererText cellRendererText;
-	private boolean stickySelect = false;
-	
-	public ListView(){
-		super();
-		this.init();
-	}
-	
-	public ListView(Handle handle){
-		super(handle);
-		this.init();
-	}
-	
-	public void setStickySelect(boolean selectMode)
-	{
-		this.stickySelect = selectMode;
-	}
+ * A widget that combines the TreeView and DataModel and displays a simple
+ * linear list. Meant to take away all the complexities of setting up a treeView
+ * and a model. Inherits from TreeView so it can be initialized by a handle
+ * retrieved from a glade file.
+ */
+public class ListView
+    extends TreeView
+    implements Observer
+{
+  protected HashMap map;
 
-	public void addEditListener(CellRendererTextListener listener)
-	{
-		if ((cellRendererText != null) && (listener != null) &&
-			(listener instanceof CellRendererTextListener))
-		{
-			cellRendererText.setBooleanProperty("editable",true);
-			cellRendererText.addListener((CellRendererTextListener)listener);
-		}
+  protected ListStore listStore;
 
-	}
-	
-	protected void initListStore(){
-		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
-	}
-	
+  protected DataColumnString nameDC;
 
-	public void setSort()
-	{
-		this.listStore.setSortColumn(nameDC,SortType.ASCENDING);
-		this.setReorderable(true);		
-	}
-	
-	protected void initTreeView() {
-		cellRendererText = new CellRendererText();
-		TreeViewColumn nameCol = new TreeViewColumn();
-		nameCol.packStart(cellRendererText, false);
-		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		
-		this.appendColumn(nameCol);	
-		
-	}
-	
-	private void init(){
-		this.setHeadersVisible(false);
-	
-		this.itemAddedObserver = new ItemAddedObserver();
-		this.itemRemovedObserver = new ItemRemovedObserver();
-		
-		this.map = new HashMap();
-		
-		this.nameDC = new DataColumnString();
-		this.objectDC = new DataColumnObject();
-		
-		this.initListStore();
-		this.setModel(listStore);
-		this.initTreeView();
-	
-	}
-	
-	public LinkedList getSelectedObjects(){
+  protected DataColumnObject objectDC;
 
-		LinkedList selecteds = new LinkedList();
-		TreePath[] selectedPaths = this.getSelection().getSelectedRows();
+  protected ObservableLinkedList watchedList;
 
-		/* Check for no selected rows */
-		if (selectedPaths.length > 0) {
+  private ItemAddedObserver itemAddedObserver;
 
-			for (int i = 0; i < selectedPaths.length; i++) {
-				selecteds.add((GuiObject) this.listStore.getValue(this.listStore.getIter(selectedPaths[i]), objectDC));
-			}
-		return selecteds;
-		} else { return null; }
-	}
-		
-	public GuiObject getSelectedObject(){
+  private ItemRemovedObserver itemRemovedObserver;
+  
+  private DebugProcessObserver debugProcessObserver;
 
-		GuiObject selected = null;
-		
-		/* Check for no selected rows */
-		if(this.getSelection().getSelectedRows().length > 0){
-			selected = (GuiObject) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
-		}
-		return selected;
-	}
+  private CellRendererText cellRendererText;
 
-	public void add(GuiObject object){
-		TreeIter treeIter = listStore.appendRow();
-		if (!map.containsKey(object))
-		{
-			this.add(object, treeIter);
-		}
-		
-		if (this.stickySelect)
-			setSelectedObject(object);
-		 else if (getSelectedObject() == null)
-                        setSelectedObject(object);
+  private boolean stickySelect = false;
 
-	}
-	
-	/**
-	 * Set the selection to the item that represents
-	 * the given object.
-	 * @param object the object that is to be displayed as selected.
-	 * */
-	public void setSelectedObject(GuiObject object){
-		TreeIter iter = (TreeIter) this.map.get(object);
-		if(iter == null){
-			throw new IllegalArgumentException("The object passed ["+ object +"] is not a member of this list"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		this.getSelection().select(iter);
-	}
-	
-	/**
-	 * Add the given object at the given index
-	 * @param object object to be added
-	 * @param index the position to insert the given object at.
-	 * */
-	public void add(GuiObject object, int index){
-		TreeIter treeIter = listStore.insertRow(index);
-		this.add(object, treeIter);
-		if (this.stickySelect)
-			setSelectedObject(object);
-		else if (getSelectedObject() == null)
-			setSelectedObject(object);
-	}
-	
-	/**
-	 * Add the given object at the given treeIter
-	 * @param object object to be added
-	 * @param treeIter a @link TreeIter pointing to the
-	 * position to insert the given object at.
-	 * */
-	public void add(GuiObject object, TreeIter treeIter){
-		listStore.setValue(treeIter, nameDC, object.getName());
-		listStore.setValue(treeIter, objectDC, object);
-		this.map.put(object, treeIter);
-		object.addObserver(this);	
-		if (this.stickySelect)
-			setSelectedObject(object);
-		else if (getSelectedObject() == null)
-				setSelectedObject(object);
-	}
-	
-	public void remove(GuiObject object){
-		TreeIter treeIter = (TreeIter) this.map.get(object);
-		listStore.removeRow(treeIter);
-		this.map.remove(object);
-		object.deleteObserver(this);
-	}
-	
-	public void unwatchList(){
-		this.clear();
-		this.watchedList.itemAdded.deleteObserver(itemAddedObserver);
-		this.watchedList.itemRemoved.deleteObserver(itemRemovedObserver);
-		this.watchedList = null;
-		
-	}
-	
-	public void clear(){
-		Set set = this.map.keySet();
-		Iterator iterator = set.iterator();
-		while (iterator.hasNext()) {
-			GuiObject element = (GuiObject) iterator.next();
-			element.deleteObserver(this);
-		}
-		this.listStore.clear();
-		this.map.clear();
-	}
-	
-	public void update(Observable guiObject, Object object) {
-		TreeIter treeIter = (TreeIter) this.map.get(guiObject);
-		listStore.setValue(treeIter, nameDC, ((GuiObject)guiObject).getName());
-	}
-	
-	/**
-	 * Tell this ListView to initialize itself with the given list
-	 * and watch the given ObservableLinkedList and update itself 
-	 * when the list changes. Clients will then not have to worry
-	 * about updating the ComboBox.
-	 * @param linkedList the list to be watched.
-	 * */
-	public void watchLinkedList(ObservableLinkedList linkedList){
-		if(this.watchedList != null){
-			this.unwatchList();
-		}
-		
-		this.watchedList = linkedList;
-		Iterator iterator = linkedList.iterator();
-		
-		linkedList.itemAdded.addObserver(this.itemAddedObserver);
-		linkedList.itemRemoved.addObserver(this.itemRemovedObserver);
-		
-		while (iterator.hasNext()) {
-			GuiObject object = (GuiObject) iterator.next();
-			this.add(object);
-		}
-	}
-	
-	/**
-	 * Set the selection to the first item with the text that matches
-	 * the give text. If the given text is not found an exception is
-	 * thrown.
-	 * @param text the text that is to be matched and the match selected.
-	 * */
-	public void setSelectedText(String text){
-		TreePath treePath = this.listStore.getFirstIter().getPath();
-		
-		String displayedText;
-		TreeIter iter = this.listStore.getIter(treePath);
+  public ListView ()
+  {
+    super();
+    this.init();
+  }
 
-		while(iter != null){
-			displayedText = (String) this.listStore.getValue(iter, nameDC);
+  public ListView (Handle handle)
+  {
+    super(handle);
+    this.init();
+  }
 
-			if(text.equals(displayedText)){
-				this.getSelection().select(iter);
-				return;
-			}
-			treePath.next();
-			iter = this.listStore.getIter(treePath);
-		}
-		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	
-	class ItemAddedObserver implements Observer{
-		public void update(Observable arg0, Object object) {
-			GuiObject guiObject = (GuiObject) object;
-			int index = watchedList.indexOf(guiObject);
-			add(guiObject, index);
-		}
-	}
-	
-	class ItemRemovedObserver implements Observer{
-		public void update(Observable arg0, Object object) {
-			remove((GuiObject) object);
-		}
-	}
+  public void setStickySelect (boolean selectMode)
+  {
+    this.stickySelect = selectMode;
+  }
+
+  public void addEditListener (CellRendererTextListener listener)
+  {
+    if ((cellRendererText != null) && (listener != null)
+        && (listener instanceof CellRendererTextListener))
+      {
+        cellRendererText.setBooleanProperty("editable", true);
+        cellRendererText.addListener((CellRendererTextListener) listener);
+      }
+
+  }
+
+  protected void initListStore ()
+  {
+    this.listStore = new ListStore(new DataColumn[] { nameDC, objectDC });
+  }
+
+  public void setSort ()
+  {
+    this.listStore.setSortColumn(nameDC, SortType.ASCENDING);
+    this.setReorderable(true);
+  }
+
+  protected void initTreeView ()
+  {
+    cellRendererText = new CellRendererText();
+    TreeViewColumn nameCol = new TreeViewColumn();
+    nameCol.packStart(cellRendererText, false);
+    nameCol.addAttributeMapping(cellRendererText,
+                                CellRendererText.Attribute.TEXT, nameDC);
+
+    this.appendColumn(nameCol);
+
+  }
+
+  private void init ()
+  {
+    this.setHeadersVisible(false);
+
+    this.itemAddedObserver = new ItemAddedObserver();
+    this.itemRemovedObserver = new ItemRemovedObserver();
+    this.debugProcessObserver = new DebugProcessObserver();
+
+    this.map = new HashMap();
+
+    this.nameDC = new DataColumnString();
+    this.objectDC = new DataColumnObject();
+
+    this.initListStore();
+    this.setModel(listStore);
+    this.initTreeView();
+
+  }
+
+  public LinkedList getSelectedObjects ()
+  {
+
+    LinkedList selecteds = new LinkedList();
+    TreePath[] selectedPaths = this.getSelection().getSelectedRows();
+
+    /* Check for no selected rows */
+    if (selectedPaths.length > 0)
+      {
+
+        for (int i = 0; i < selectedPaths.length; i++)
+          {
+            selecteds.add((GuiObject) this.listStore.getValue(
+                                                              this.listStore.getIter(selectedPaths[i]),
+                                                              objectDC));
+          }
+        return selecteds;
+      }
+    else
+      {
+        return null;
+      }
+  }
+
+  public GuiObject getSelectedObject ()
+  {
+
+    GuiObject selected = null;
+
+    /* Check for no selected rows */
+    if (this.getSelection().getSelectedRows().length > 0)
+      {
+        selected = (GuiObject) this.listStore.getValue(
+                                                       this.listStore.getIter(this.getSelection().getSelectedRows()[0]),
+                                                       objectDC);
+      }
+    return selected;
+  }
+
+  public void add (GuiObject object)
+  {
+    TreeIter treeIter = listStore.appendRow();
+    if (! map.containsKey(object))
+      {
+        this.add(object, treeIter);
+      }
+
+    if (this.stickySelect)
+      setSelectedObject(object);
+    else if (getSelectedObject() == null)
+      setSelectedObject(object);
+
+  }
+
+  public void addDP (DebugProcess dp)
+  {
+    TreeIter treeIter = listStore.appendRow();
+    if (! map.containsKey(dp))
+      {
+        addDP(dp, treeIter);
+      }
+
+    if (this.stickySelect)
+      setSelectedObject(dp);
+    else if (getSelectedObject() == null)
+      setSelectedObject(dp);
+  }
+  
+  public void addDP (DebugProcess dp, TreeIter treeIter)
+  {
+    GuiProc gp = (GuiProc) dp.getProcs().getFirst();
+    listStore.setValue(treeIter, nameDC, gp.getNiceExecutablePath() + " " + gp.getProc().getPid());
+    listStore.setValue(treeIter, objectDC, dp);
+    this.map.put((GuiObject) dp, treeIter);
+    dp.addObserver(debugProcessObserver);
+  }
+
+  /**
+   * Set the selection to the item that represents the given object.
+   * 
+   * @param object the object that is to be displayed as selected.
+   */
+  public void setSelectedObject (GuiObject object)
+  {
+    TreeIter iter = (TreeIter) this.map.get(object);
+    if (iter == null)
+      {
+        throw new IllegalArgumentException(
+                                           "The object passed [" + object + "] is not a member of this list"); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+    this.getSelection().select(iter);
+  }
+
+  /**
+   * Add the given object at the given index
+   * 
+   * @param object object to be added
+   * @param index the position to insert the given object at.
+   */
+  public void add (GuiObject object, int index)
+  {
+    TreeIter treeIter = listStore.insertRow(index);
+    this.add(object, treeIter);
+    if (this.stickySelect)
+      setSelectedObject(object);
+    else if (getSelectedObject() == null)
+      setSelectedObject(object);
+  }
+  
+  public void addDP (DebugProcess dp, int index)
+  {
+    TreeIter treeIter = listStore.insertRow(index);
+    this.addDP(dp, treeIter);
+    if (this.stickySelect)
+      setSelectedObject(dp);
+    else if (getSelectedObject() == null)
+      setSelectedObject(dp);
+  }
+
+  /**
+   * Add the given object at the given treeIter
+   * 
+   * @param object object to be added
+   * @param treeIter a
+   * @link TreeIter pointing to the position to insert the given object at.
+   */
+  public void add (GuiObject object, TreeIter treeIter)
+  {
+    listStore.setValue(treeIter, nameDC, object.getName());
+    listStore.setValue(treeIter, objectDC, object);
+    this.map.put(object, treeIter);
+    object.addObserver(this);
+    if (this.stickySelect)
+      setSelectedObject(object);
+    else if (getSelectedObject() == null)
+      setSelectedObject(object);
+  }
+
+  public void remove (GuiObject object)
+  {
+    TreeIter treeIter = (TreeIter) this.map.get(object);
+    if (listStore.isIterValid(treeIter))
+      listStore.removeRow(treeIter);
+    this.map.remove(object);
+    try
+    {
+      object.deleteObserver(this.debugProcessObserver);
+    }
+    catch (IllegalArgumentException iae)
+    {
+      object.deleteObserver(this);
+    }
+  }
+
+  public void unwatchList ()
+  {
+    this.clear();
+    this.watchedList.itemAdded.deleteObserver(itemAddedObserver);
+    this.watchedList.itemRemoved.deleteObserver(itemRemovedObserver);
+    this.watchedList = null;
+
+  }
+
+  public void clear ()
+  {
+    Set set = this.map.keySet();
+    Iterator iterator = set.iterator();
+    while (iterator.hasNext())
+      {
+        GuiObject element = (GuiObject) iterator.next();
+        element.deleteObserver(this);
+      }
+    this.listStore.clear();
+    this.map.clear();
+  }
+
+  public void update (Observable guiObject, Object object)
+  {
+    TreeIter treeIter = (TreeIter) this.map.get(guiObject);
+    listStore.setValue(treeIter, nameDC, ((GuiObject) guiObject).getName());
+  }
+
+  /**
+   * Tell this ListView to initialize itself with the given list and watch the
+   * given ObservableLinkedList and update itself when the list changes. Clients
+   * will then not have to worry about updating the ComboBox.
+   * 
+   * @param linkedList the list to be watched.
+   */
+  public void watchLinkedList (ObservableLinkedList linkedList)
+  {
+    if (this.watchedList != null)
+      {
+        this.unwatchList();
+      }
+
+    this.watchedList = linkedList;
+    Iterator iterator = linkedList.iterator();
+
+    linkedList.itemAdded.addObserver(this.itemAddedObserver);
+    linkedList.itemRemoved.addObserver(this.itemRemovedObserver);
+
+    while (iterator.hasNext())
+      {
+        GuiObject object = (GuiObject) iterator.next();
+        this.add(object);
+      }
+  }
+
+  public void watchGuiProcs (ObservableLinkedList linkedList)
+  {
+    if (this.watchedList != null)
+      {
+        this.unwatchList();
+      }
+
+    this.watchedList = linkedList;
+    Iterator iterator = linkedList.iterator();
+
+    this.itemAddedObserver.setDP(true);
+    linkedList.itemAdded.addObserver(this.itemAddedObserver);
+    linkedList.itemRemoved.addObserver(this.itemRemovedObserver);
+
+    while (iterator.hasNext())
+      {
+        DebugProcess dp = (DebugProcess) iterator.next();
+        this.addDP(dp);
+      }
+  }
+
+  /**
+   * Set the selection to the first item with the text that matches the give
+   * text. If the given text is not found an exception is thrown.
+   * 
+   * @param text the text that is to be matched and the match selected.
+   */
+  public void setSelectedText (String text)
+  {
+    TreePath treePath = this.listStore.getFirstIter().getPath();
+
+    String displayedText;
+    TreeIter iter = this.listStore.getIter(treePath);
+
+    while (iter != null)
+      {
+        displayedText = (String) this.listStore.getValue(iter, nameDC);
+
+        if (text.equals(displayedText))
+          {
+            this.getSelection().select(iter);
+            return;
+          }
+        treePath.next();
+        iter = this.listStore.getIter(treePath);
+      }
+    throw new IllegalArgumentException(
+                                       "the passes text argument [" + text + "] does not match any of the items in this ComboBox"); //$NON-NLS-1$ //$NON-NLS-2$
+  }
+  
+  class DebugProcessObserver implements Observer
+  {
+    public void update (Observable ob, Object o)
+    {
+      DebugProcess dp = (DebugProcess) ob;
+      TreeIter treeIter = (TreeIter) map.get(dp);
+      GuiProc gp = (GuiProc) dp.getProcs().getFirst();
+      listStore.setValue(treeIter, nameDC, gp.getNiceExecutablePath() + " " + gp.getProc().getPid());
+    }
+  }
+
+  class ItemAddedObserver
+      implements Observer
+  {
+    boolean dp = false;
+    
+    public void setDP (boolean dp)
+    {
+      this.dp = dp;
+    }
+    
+    public void update (Observable arg0, Object object)
+    {
+      if (!dp)
+        {
+          GuiObject guiObject = (GuiObject) object;
+          int index = watchedList.indexOf(guiObject);
+          add(guiObject, index);
+        }
+      else
+        {
+          DebugProcess dp = (DebugProcess) object;
+          int index = watchedList.indexOf(dp);
+          addDP(dp, index);
+        }
+    }
+  }
+
+  class ItemRemovedObserver
+      implements Observer
+  {
+    public void update (Observable arg0, Object object)
+    {
+      remove((GuiObject) object);
+    }
+  }
 }

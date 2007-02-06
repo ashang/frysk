@@ -42,59 +42,65 @@ package frysk.gui.monitor;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
 
 public class ProcWiseTreeView
     extends TreeView
 {
 
-  public ProcWiseDataModel psDataModel;
+  public ProcWiseDataModel dataModel;
 
   private TreeModelFilter removedProcFilter;
+  
+  private TreeStore treeStore;
+  
+  private final TreeViewColumn pwtvTVC[] = new TreeViewColumn[6];
 
   public ProcWiseTreeView (Handle handle, ProcWiseDataModel model)
   {
     super(handle);
+    this.treeStore = model.getModel();
+    this.dataModel = model;
     this.mountDataModel(model);
-    this.psDataModel = model;
   }
 
   private void mountDataModel (final ProcWiseDataModel dataModel)
   {
-    // this.setModel(dataModel.getModel());
-
-    CellRendererText cellRendererText = new CellRendererText();
-    TreeViewColumn nameCol = new TreeViewColumn();
-    nameCol.packStart(cellRendererText, false);
-    nameCol.addAttributeMapping(cellRendererText,
-                                CellRendererText.Attribute.TEXT,
-                                dataModel.getNameDC());
+    //this.setModel(dataModel.getModel());
     // nameCol.addAttributeMapping(cellRendererText,
     // CellRendererText.Attribute.STRIKETHROUGH, dataModel.getSensitiveDC());
-    this.appendColumn(nameCol);
+    setUpColumns();
+    
+    this.setHeadersClickable(true);
+    this.setHeadersVisible(true);
+
+    this.appendColumn(this.pwtvTVC[0]);
+    this.appendColumn(this.pwtvTVC[1]);
+    this.appendColumn(this.pwtvTVC[2]);
+    this.appendColumn(this.pwtvTVC[3]);
+    this.appendColumn(this.pwtvTVC[4]);
+    this.appendColumn(this.pwtvTVC[5]);
+
+    this.setEnableSearch(true);
+    this.treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
 
     this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
 
-    removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
+    this.removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
     {
 
       public boolean filter (TreeModel model, TreeIter iter)
       {
-
-        // FIXME: this should be changed to set the row to insensitive
-        // instead of completely filtering it out. Once the java-gnome
-        // patch for doing so is in FC
-        if (model.getValue(iter, psDataModel.getSensitiveDC()) == false)
-          {
-            return false;
-          }
-
-        if (model.getValue(iter, psDataModel.getSelectedDC()) == false)
+        if (model.getValue(iter, dataModel.getSelectedDC()) == false)
           {
             return true;
           }
@@ -107,6 +113,222 @@ public class ProcWiseTreeView
     });
 
     this.setModel(removedProcFilter);
+    this.pwtvTVC[0].setVisible(true);
+    this.pwtvTVC[1].setVisible(true);
+    this.pwtvTVC[2].setVisible(true);
+    this.pwtvTVC[3].setVisible(true);
+    this.pwtvTVC[4].setVisible(true);
+    this.pwtvTVC[5].setVisible(true);
+    this.expandAll();
+    
+  }
+  
+  private void setUpColumns ()
+  {
+    this.pwtvTVC[0] = new TreeViewColumn();
+    this.pwtvTVC[0].setClickable(true);
+    CellRendererText renderNameText = new CellRendererText();
+    this.pwtvTVC[0].packStart(renderNameText, true);
+    this.pwtvTVC[0].setTitle("Process Name");
+    this.pwtvTVC[0].addAttributeMapping(renderNameText,
+                                   CellRendererText.Attribute.TEXT, this.dataModel.getNameDC());
+    this.pwtvTVC[0].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[0].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getNameDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[0].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[0].setSortOrder(SortType.ASCENDING);
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(true);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+
+      }
+    });
+
+    this.pwtvTVC[0].setReorderable(true);
+    this.pwtvTVC[0].setSortOrder(SortType.ASCENDING);
+    this.pwtvTVC[0].setSortIndicator(true);
+    this.pwtvTVC[1] = new TreeViewColumn();
+    this.pwtvTVC[1].setClickable(true);
+    this.pwtvTVC[1].setReorderable(true);
+    CellRendererText renderPIDText = new CellRendererText();
+    this.pwtvTVC[1].packStart(renderPIDText, true);
+    this.pwtvTVC[1].setTitle("PID");
+    this.pwtvTVC[1].addAttributeMapping(renderPIDText,
+                                  CellRendererText.Attribute.TEXT, this.dataModel.getPIDDC());
+
+    this.pwtvTVC[1].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[1].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getPIDDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[1].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getPIDDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[1].setSortOrder(SortType.ASCENDING);
+
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(true);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+      }
+    });
+    this.pwtvTVC[2] = new TreeViewColumn();
+    CellRendererText renderDirText = new CellRendererText();
+    this.pwtvTVC[2].packStart(renderDirText, true);
+    this.pwtvTVC[2].setTitle("Location");
+    this.pwtvTVC[2].addAttributeMapping(renderDirText,
+                                  CellRendererText.Attribute.TEXT,
+                                  this.dataModel.getLocationDC());
+
+    this.pwtvTVC[2].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[2].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getLocationDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[2].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getLocationDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[2].setSortOrder(SortType.ASCENDING);
+
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(true);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+
+      }
+    });
+    this.pwtvTVC[2].setReorderable(true);
+    this.pwtvTVC[2].setClickable(true);
+    this.pwtvTVC[3] = new TreeViewColumn();
+    CellRendererText renderVSZText = new CellRendererText();
+    this.pwtvTVC[3].packStart(renderVSZText, true);
+    this.pwtvTVC[3].setTitle("VSZ (kb)");
+    this.pwtvTVC[3].addAttributeMapping(renderVSZText,
+                                  CellRendererText.Attribute.TEXT,
+                                  this.dataModel.getVszDC());
+
+    this.pwtvTVC[3].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[3].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getVszDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[3].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getVszDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[3].setSortOrder(SortType.ASCENDING);
+
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(true);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+
+      }
+    });
+    this.pwtvTVC[3].setReorderable(true);
+    this.pwtvTVC[3].setClickable(true);
+    
+    this.pwtvTVC[4] = new TreeViewColumn();
+    CellRendererText renderRSSText = new CellRendererText();
+    this.pwtvTVC[4].packStart(renderRSSText, true);
+    this.pwtvTVC[4].setTitle("RSS (kb)");
+    this.pwtvTVC[4].addAttributeMapping(renderRSSText,
+                                  CellRendererText.Attribute.TEXT,
+                                  this.dataModel.getRssDC());
+
+    this.pwtvTVC[4].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[4].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getRssDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[4].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getRssDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[4].setSortOrder(SortType.ASCENDING);
+
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(true);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+
+      }
+    });
+    this.pwtvTVC[4].setReorderable(true);
+    this.pwtvTVC[4].setClickable(true);
+    
+    this.pwtvTVC[5] = new TreeViewColumn();
+    CellRendererText renderTimeText = new CellRendererText();
+    this.pwtvTVC[5].packStart(renderTimeText, true);
+    this.pwtvTVC[5].setTitle("TIME");
+    this.pwtvTVC[5].addAttributeMapping(renderTimeText,
+                                  CellRendererText.Attribute.TEXT,
+                                  this.dataModel.getTimeDC());
+
+    this.pwtvTVC[5].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (ProcWiseTreeView.this.pwtvTVC[5].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(dataModel.getTimeDC(), SortType.DESCENDING);
+            ProcWiseTreeView.this.pwtvTVC[5].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(dataModel.getTimeDC(), SortType.ASCENDING);
+            ProcWiseTreeView.this.pwtvTVC[5].setSortOrder(SortType.ASCENDING);
+
+          }
+        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
+        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(true);
+
+      }
+    });
+    this.pwtvTVC[5].setReorderable(true);
+    this.pwtvTVC[5].setClickable(true);
   }
 
 }

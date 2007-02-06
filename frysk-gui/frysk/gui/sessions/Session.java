@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.sessions;
 
 import org.jdom.Element;
@@ -45,104 +46,121 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * A Session object is used to hold and save user
- * preferences with respect to a debug session.
+ * A Session object is used to hold and save user preferences with respect to a
+ * debug session.
  */
-public class Session extends GuiObject {
+public class Session
+    extends GuiObject
+{
 
-	private ObservableLinkedList procs;
+  private ObservableLinkedList procs;
 
-	/**
-	 * Creates a new empty session object, with an empty list processes.
-	 * 
-	 * Debug processes should be added to this session. 
-	 */
-	public Session() {
-		super();
-		procs = new ObservableLinkedList();
-	}
+  /**
+   * Creates a new empty session object, with an empty list processes. Debug
+   * processes should be added to this session.
+   */
+  public Session ()
+  {
+    super();
+    procs = new ObservableLinkedList();
+  }
 
-	/**
-	 * Creates a new session, which is clone of the 
-	 * session that is passed in as a paraemter
-	 * 
-	 * @param other - the session you want this
-	 * session to clone.
-	 */
-	public Session(final Session other) {
-		super(other);
+  /**
+   * Creates a new session, which is clone of the session that is passed in as a
+   * paraemter
+   * 
+   * @param other - the session you want this session to clone.
+   */
+  public Session (final Session other)
+  {
+    super(other);
 
-		procs = new ObservableLinkedList(other.procs);
-	}
+    procs = new ObservableLinkedList(other.procs);
+  }
 
-	/**
-	 * Creates a new empty session object, with an empty list processes.
-	 * 
-	 * Debug processes should be added to this session. 
-	 * 
-	 * @param name - the name of the session
-	 * @param toolTip - the tool-tip or additional associative information.
-	 */
-	public Session(final String name, final String toolTip) {
-		super(name, toolTip);
-		procs = new ObservableLinkedList();
-	}
+  /**
+   * Creates a new empty session object, with an empty list processes. Debug
+   * processes should be added to this session.
+   * 
+   * @param name - the name of the session
+   * @param toolTip - the tool-tip or additional associative information.
+   */
+  public Session (final String name, final String toolTip)
+  {
+    super(name, toolTip);
+    procs = new ObservableLinkedList();
+  }
 
-	/* (non-Javadoc)
-	 * @see frysk.gui.monitor.GuiObject#setName(java.lang.String)
-	 */
-	public void setName(final String name) {
-		super.setName(name);
-	}
-	
-	/**
-	 * Add a debug process to this session
-	 * 
-	 * @param process - The Debug Process that is to be added.
-	 */
-	public void addProcess(final DebugProcess process) {
-		procs.add(process);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see frysk.gui.monitor.GuiObject#setName(java.lang.String)
+   */
+  public void setName (final String name)
+  {
+    super.setName(name);
+  }
 
-	/**
-	 * Remove a debug process from this session.
-	 * 
-	 * @param process - a reference to the debug process
-	 * that is to be removed.
-	 */
-	public void removeProcess(final DebugProcess process) {
-		procs.remove(process);
-	}
-	
-	/* (non-Javadoc)
-	 * @see frysk.gui.monitor.GuiObject#getCopy()
-	 */
-	public GuiObject getCopy() {
-		return new Session(this);
-	}
+  /**
+   * Add a debug process to this session
+   * 
+   * @param process - The Debug Process that is to be added.
+   */
+  public void addProcess (final DebugProcess process)
+  {
+    procs.add(process);
+  }
 
-	/**
-	 * Return a list of debug process that are contained within
-	 * this session object
-	 * 
-	 * @return ObservableLinkedList of Debug Processes.
-	 */
-	public ObservableLinkedList getProcesses() {
-		return procs;
-	}
+  /**
+   * Remove a debug process from this session.
+   * 
+   * @param process - a reference to the debug process that is to be removed.
+   */
+  public void removeProcess (final DebugProcess process)
+  {
+    procs.remove(process);
+  }
 
-	public void load(final Element node) {
-		super.load(node);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see frysk.gui.monitor.GuiObject#getCopy()
+   */
+  public GuiObject getCopy ()
+  {
+    return new Session(this);
+  }
 
-		final Element procsXML = node.getChild("procs");
-		procs.load(procsXML);
-	}
+  /**
+   * Return a list of debug process that are contained within this session
+   * object
+   * 
+   * @return ObservableLinkedList of Debug Processes.
+   */
+  public ObservableLinkedList getProcesses ()
+  {
+    return procs;
+  }
 
-	public void save(final Element node) {
-		super.save(node);
-		final Element procsXML = new Element("procs");
-		procs.save(procsXML);
-		node.addContent(procsXML);
-	}
+  public void clearProcesses ()
+  {
+    this.procs.clear();
+  }
+
+  public void load (final Element node)
+  {
+    super.load(node);
+
+    final Element procsXML = node.getChild("procs");
+    procs.load(procsXML);
+  }
+
+  public void save (final Element node)
+  {
+    super.save(node);
+    final Element procsXML = new Element("procs");
+    procs.save(procsXML);
+    node.addContent(procsXML);
+  }
 
 }

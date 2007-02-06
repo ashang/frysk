@@ -40,8 +40,8 @@
 
 package frysk.gui.monitor;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -59,6 +59,7 @@ import org.gnu.gtk.TreeStore;
 import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.sys.proc.Stat;
 
 /**
  * A data model that groups PID's by executable name.
@@ -72,7 +73,15 @@ public class ProcWiseDataModel
 
   private DataColumnString nameDC;
 
-  private DataColumnInt childCountDC;
+  private DataColumnString locationDC;
+
+  private DataColumnInt pidDC;
+  
+  private DataColumnString vszDC;
+  
+  private DataColumnString rssDC;
+  
+  private DataColumnString timeDC;
 
   private DataColumnObject objectDC;
 
@@ -86,92 +95,63 @@ public class ProcWiseDataModel
 
   // private TimerEvent refreshTimer;
 
-  private Hashtable iterHash;
+  private HashMap iterMap;
 
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+  
+  private Stat stat;
 
   public ProcWiseDataModel ()
   {
-    this.iterHash = new Hashtable();
+    this.iterMap = new HashMap();
 
     this.nameDC = new DataColumnString();
+    this.locationDC = new DataColumnString();
+    this.pidDC = new DataColumnInt();
+    this.vszDC = new DataColumnString();
+    this.rssDC = new DataColumnString();
+    this.timeDC = new DataColumnString();
     this.objectDC = new DataColumnObject();
     this.selectedDC = new DataColumnBoolean();
     this.sensitiveDC = new DataColumnBoolean();
-    this.childCountDC = new DataColumnInt();
 
     this.treeStore = new TreeStore(new DataColumn[] { this.nameDC,
+                                                     this.locationDC,
+                                                     this.pidDC, this.vszDC,
+                                                     this.rssDC, this.timeDC,
                                                      this.objectDC,
                                                      this.selectedDC,
-                                                     this.sensitiveDC,
-                                                     this.childCountDC });
+                                                     this.sensitiveDC });
+    
 
     this.procCreatedObserver = new ProcCreatedObserver();
     this.procDestroyedObserver = new ProcDestroyedObserver();
 
     Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
     Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
-
+    
+    this.stat = new Stat();
   }
 
-  public void unFilterData() {
-	  TreeIter iter = treeStore.getFirstIter();
-	  do {
-		  if (treeStore.isIterValid(iter))
-			  treeStore.setValue(iter, selectedDC, false);
-		  iter = iter.getNextIter();
-	  } while (iter != null);
-	  
-  }
-  private void setRow (TreeIter row, String name, GuiProc data, int childcount,
-                       boolean selected)
+  /**
+   * Run through the model and set all selectedDCs to false.
+   */
+  public void unFilterData ()
   {
-    try
+    TreeIter iter = treeStore.getFirstIter();
+    do
       {
-        treeStore.setValue(row, nameDC, name);
-        treeStore.setValue(row, objectDC, data);
-        treeStore.setValue(row, selectedDC, selected);
-        treeStore.setValue(row, childCountDC, childcount);
-        treeStore.setValue(row, sensitiveDC, false);
+        if (treeStore.isIterValid(iter))
+          treeStore.setValue(iter, selectedDC, false);
+        iter = iter.getNextIter();
       }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "ProcWiseDataModel.setRow: unable to store value: " + name
-                         + " in treeStore");
-        return;
-      }
-    if (data != null)
-      if (data.isOwned())
-        {
-          treeStore.setValue(row, sensitiveDC, true);
-          TreePath path = row.getPath();
-
-          if (path != null)
-            {
-              String pathString = path.toString();
-              if (pathString.contains(":"))
-                {
-                  String parentString = pathString.substring(
-                                                             0,
-                                                             pathString.lastIndexOf(":"));
-                  TreeIter parent = null;
-                  parent = treeStore.getIter(parentString);
-
-                  if (parent != null)
-                    if (treeStore.isIterValid(parent))
-                      treeStore.setValue(parent, sensitiveDC, true);
-                }
-            }
-          else
-            {
-              errorLog.log(Level.WARNING,
-                           "ProcWiseDataModel.setRow: Cannot discern path from TreePath");
-              return;
-            }
-        }
+    while (iter != null);
   }
 
+  /**
+   * Return the first TreePath whose DebugProcess matches the parameter
+   * String.
+   */
   public TreePath searchName (String name)
   {
     TreeIter iter = treeStore.getFirstIter();
@@ -191,49 +171,91 @@ public class ProcWiseDataModel
       }
     return null;
   }
-
-  public DataColumnString getNameDC ()
+  
+  /**
+   * Dump all objectDCs whose name match the String parameter into the
+   * given LinkedList.
+   */
+  public void collectProcs (String name, LinkedList procs)
   {
-    return nameDC;
+    TreeIter iter = treeStore.getFirstIter();
+    while (iter != null)
+      {
+        if (treeStore.isIterValid(iter))
+          {
+            String split[] = treeStore.getValue(iter, getNameDC()).split("\t");
+            if (split.length > 0)
+              {
+                split[0] = split[0].trim();
+                if (split[0].split(" ")[0].equalsIgnoreCase(name))
+                  procs.add(treeStore.getValue(iter, getObjectDC()));
+              }
+          }
+        iter = iter.getNextIter();
+      }
+  }
+  
+  /**
+   * Create a new LinkedList and put all objectDCs whose name match
+   * the String parameter into it.
+   */
+  public LinkedList searchAllNames (String name)
+  {
+    LinkedList treePaths = new LinkedList();
+    
+    TreeIter iter = treeStore.getFirstIter();
+    while (iter != null)
+      {
+        if (treeStore.isIterValid(iter))
+          {
+            String split[] = treeStore.getValue(iter, getNameDC()).split("\t");
+            if (split.length > 0)
+              {
+                split[0] = split[0].trim();
+                if (split[0].split(" ")[0].equalsIgnoreCase(name))
+                  treePaths.add(iter.getPath());
+              }
+          }
+        iter = iter.getNextIter();
+      }
+    return treePaths;
+  }
+  
+  /**
+   * Search the model for objectDCs whose PID matches the parameter.
+   */
+  public TreePath searchPid (int pid)
+  {
+    TreeIter iter = treeStore.getFirstIter();
+    int p = 0;
+    while (iter != null)
+      {
+        if (treeStore.isIterValid(iter))
+          {
+            p = treeStore.getValue(iter, this.pidDC);
+            if (pid == p)
+              {
+                return iter.getPath();
+              }
+          }
+        iter = iter.getNextIter();
+      }
+    return null;
   }
 
-  public DataColumnObject getObjectDC ()
-  {
-    return objectDC;
-  }
-
-  public DataColumnBoolean getSelectedDC ()
-  {
-    return selectedDC;
-  }
-
-  public DataColumnBoolean getSensitiveDC ()
-  {
-    return sensitiveDC;
-  }
-
-  public void setSelected (TreeIter iter, boolean type, boolean setChildren)
+  public void setSelected (TreeIter iter, boolean type)
   {
     if (iter != null)
       if (treeStore.isIterValid(iter))
         {
           treeStore.setValue(iter, getSelectedDC(), type);
-          if (setChildren)
-            {
-              int children = iter.getChildCount();
-              for (int count = 0; count < children; count++)
-                if (iter.getChild(count) != null)
-                  if (treeStore.isIterValid(iter.getChild(count)))
-                    treeStore.setValue(iter.getChild(count), getSelectedDC(),
-                                       type);
-            }
         }
   }
 
-  public ArrayList dumpSelectedProcesses ()
+  public LinkedList dumpSelectedProcesses ()
   {
 
-    ArrayList processData = new ArrayList();
+    LinkedList processData = new LinkedList();
     // TODO: Very unsafe (process might be deleted by observers
     // behind the scenes. Rewrite
     for (int i = 0; true; i++)
@@ -265,66 +287,58 @@ public class ProcWiseDataModel
         public void run ()
         {
           GuiProc guiProc = null;
-          TreeIter parent = null;
+          
           try
-            {
-              guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-            }
+          {
+            guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+          }
           catch (Exception e)
-            {
-              errorLog.log(Level.WARNING,
-                           "ProcWiseDataModel.ProcCreatedObserver: Cannot "
-                               + "get proc: " + proc + " from factory");
-              return;
-            }
-
-          if (guiProc != null)
-            {
-              try
-                {
-                  parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
-                }
-              catch (Exception e)
-                {
-                  errorLog.log(Level.WARNING,
-                               "ProcWiseDataModel.ProcCreatedObserver: Cannot "
-                                   + "get proc: " + proc + " from hash");
-                  return;
-                }
-            }
-          else
+          {
+            errorLog.log(Level.WARNING, "ProcWiseDataModel.ProcCreatedObserver: Cannot get " + proc + " from factory");
+          }
+          
+          if (guiProc == null)
             {
               errorLog.log(Level.WARNING,
                            "ProcWiseDataModel.ProcCreatedObserver: GuiProc == null");
               return;
             }
+          
+          if (!guiProc.isOwned())
+            return;
+          
+          TreeIter parent = (TreeIter) iterMap.get(proc.getId());
 
           if (parent == null)
             {
               // new process name
               parent = treeStore.appendRow(null);
               if (parent != null)
-                {
-                  iterHash.put(guiProc.getExecutableName(), parent);
-                  setRow(parent, guiProc.getExecutableName(), guiProc, 1, false);
-                }
+                iterMap.put(proc.getId(), parent);
             }
-          else
-            {
-              int childCount = treeStore.getValue(parent, childCountDC);
-              childCount++;
-              treeStore.setValue(parent, childCountDC, childCount);
-              String parentName = treeStore.getValue(parent, nameDC);
-              String[] comp = parentName.split("\\(");
-              String processVerb = "process";
-              processVerb = "processes";
-              parentName = comp[0].trim() + " (" + childCount + " "
-                           + processVerb + ")";
+          
+              treeStore.setValue(parent, nameDC, guiProc.getExecutableName());
+              treeStore.setValue(parent, locationDC, guiProc.getNiceExecutablePath());
+              treeStore.setValue(parent, pidDC, proc.getPid());
+              treeStore.setValue(parent, selectedDC, false);
+              treeStore.setValue(parent, sensitiveDC, false);
+              treeStore.setValue(parent, objectDC, guiProc);
 
-              treeStore.setValue(parent, nameDC, parentName);
-            }
+              ProcWiseDataModel.this.stat.refresh(proc.getPid());
+              treeStore.setValue(parent, vszDC, "" + (stat.vsize / 1024));
+              treeStore.setValue(parent, rssDC, "" + (stat.rss * 4));
+              treeStore.setValue(parent, selectedDC, false);
+              
+              long t = (stat.cstime + stat.cutime + stat.stime + stat.utime) / 100;
+              
+              long sec = t % 60;
+              long min = t / 60;
+              
+              if (sec < 10)
+                treeStore.setValue(parent, timeDC, min + ":0" + sec);
+              else
+                treeStore.setValue(parent, timeDC, min + ":" + sec);
         }
-
       });
     }
   }
@@ -340,24 +354,13 @@ public class ProcWiseDataModel
       {
         public void run ()
         {
-          GuiProc guiProc = null;
           TreeIter parent = null;
-          try
-            {
-              guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-            }
-          catch (Exception e)
-            {
-              errorLog.log(Level.WARNING,
-                           "ProcWiseDataModel.ProcDestroyedObserver: Cannot "
-                               + "get proc: " + proc + " from factory");
-              return;
-            }
-          if (guiProc != null)
+
+          if (proc != null)
             {
               try
                 {
-                  parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
+                  parent = (TreeIter) iterMap.get(proc.getId());
                 }
               catch (Exception e)
                 {
@@ -380,7 +383,7 @@ public class ProcWiseDataModel
                            Level.WARNING,
                            "ProcWiseDataModel.ProcDestroyedObserver: proc "
                                + proc
-                               + "Not found in TreeIter HasTable. Cannot be removed");
+                               + "Not found in TreeIter HashMap. Cannot be removed");
               return;
             }
 
@@ -392,46 +395,12 @@ public class ProcWiseDataModel
               return;
             }
 
-          int n = treeStore.getValue(parent, childCountDC);
+          treeStore.removeRow(parent);
+          iterMap.remove(proc.getId());
 
-          if (n == 1)
-            {
-              try
-                {
-                  treeStore.removeRow(parent);
-                  iterHash.remove(guiProc.getExecutableName());
-                }
-              catch (Exception e)
-                {
-                  errorLog.log(Level.WARNING,
-                               "ProcWiseDataModel.ProcDestroyedObserver: Cannot remove parents' children");
-                }
-              return;
-            }
-
-          if (n > 1)
-            {
-
-              int childCount = treeStore.getValue(parent, childCountDC);
-              childCount--;
-              treeStore.setValue(parent, childCountDC, childCount);
-              String parentName = treeStore.getValue(parent, nameDC);
-              String[] comp = parentName.split("\\(");
-              String processVerb = "process";
-              //if (childCount > 1)
-              processVerb = "processes";
-
-              if (childCount > 1)
-            	  parentName = comp[0].trim() + " (" + childCount + " "
-            	  		+ processVerb + ")";
-              else
-            	  parentName = comp[0].trim();
-
-              treeStore.setValue(parent, nameDC, parentName);
-
-            }
-
+          return;
         }
+
       });
     }
   }
@@ -439,6 +408,51 @@ public class ProcWiseDataModel
   public TreeStore getModel ()
   {
     return this.treeStore;
+  }
+  
+  public DataColumnString getNameDC ()
+  {
+    return this.nameDC;
+  }
+  
+  public DataColumnString getLocationDC ()
+  {
+    return this.locationDC;
+  }
+  
+  public DataColumnInt getPIDDC ()
+  {
+    return this.pidDC;
+  }
+  
+  public DataColumnString getVszDC ()
+  {
+    return this.vszDC;
+  }
+  
+  public DataColumnString getRssDC ()
+  {
+    return this.rssDC;
+  }
+  
+  public DataColumnString getTimeDC ()
+  {
+    return this.timeDC;
+  }
+  
+  public DataColumnObject getObjectDC ()
+  {
+    return this.objectDC;
+  }
+  
+  public DataColumnBoolean getSelectedDC ()
+  {
+    return this.selectedDC;
+  }
+
+  public DataColumnBoolean getSensitiveDC ()
+  {
+    return this.sensitiveDC;
   }
 
 }

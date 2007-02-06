@@ -41,7 +41,6 @@
 package frysk.gui.monitor;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
@@ -49,7 +48,6 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnInt;
@@ -61,14 +59,10 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.pango.Weight;
 
 import frysk.gui.Gui;
-import frysk.gui.monitor.GuiProc.GuiProcFactory;
-import frysk.gui.monitor.GuiTask.GuiTaskFactory;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.ProcTasksObserver;
-import frysk.proc.ProcObserver.ProcTasks;
 import frysk.sys.proc.Stat;
 
 public class SessionProcDataModel
@@ -112,15 +106,6 @@ public class SessionProcDataModel
 
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
-  /**
-   * { Local Observers
-   */
-  // private ProcCreatedObserver procCreatedObserver;
-  // private ProcDestroyedObserver procDestroyedObserver;
-  // private TaskCreatedObserver taskCreatedObserver;
-  // private TaskDestroyedObserver taskDestroyedObserver;
-  /** } */
-
   private Session currentSession;
 
   public SessionProcDataModel() throws IOException
@@ -149,19 +134,7 @@ public class SessionProcDataModel
                                                      vszDC, rssDC, timeDC,
                                                      ppidDC, stateDC, niceDC});
 
-    // Change to HashMap from HashTable
     this.iterHash = new HashMap();
-
-    // this.procCreatedObserver = new ProcCreatedObserver();
-    // this.procDestroyedObserver = new ProcDestroyedObserver();
-    // this.taskCreatedObserver = new TaskCreatedObserver();
-    // this.taskDestroyedObserver = new TaskDestroyedObserver ();
-
-    // Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
-    // Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
-    // Manager.host.observableTaskAddedXXX.addObserver (taskCreatedObserver);
-    // Manager.host.observableTaskRemovedXXX.addObserver
-    // (taskDestroyedObserver);
   }
   
   public TreeStore getTreeStore()
@@ -176,7 +149,6 @@ public class SessionProcDataModel
     // if (this.currentSession != session) { // removed until session window is
     // re-implemented
     this.currentSession = session;
-    //session.populateProcs();
 
     Iterator i = this.currentSession.getProcesses().iterator();
     while (i.hasNext())
@@ -185,14 +157,14 @@ public class SessionProcDataModel
         Iterator j = debugProcess.getProcs().iterator();
         while (j.hasNext())
           {
-            this.addProc((GuiProc) j.next());
+            GuiProc gp = (GuiProc) j.next();
+            this.addProc(gp);
           }
 
         debugProcess.getProcs().itemAdded.addObserver(new Observer()
         {
           public void update (Observable arg0, Object obj)
           {
-            //System.out.println(this + ": .update() " + obj);
             addProc((GuiProc) obj);
           }
         });
@@ -205,7 +177,6 @@ public class SessionProcDataModel
           }
         });
       }
-
   }
   
   public Session getSession()
@@ -225,18 +196,8 @@ public class SessionProcDataModel
       }
 
     TreeIter iter;
-    try
-      {
         iter = treeStore.appendRow(null);
         iterHash.put(proc.getId(), iter);
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.addTask: Cannot store proc " + proc
-                         + " in hash.", e);
-        return;
-      }
 
     try
       {
@@ -245,6 +206,7 @@ public class SessionProcDataModel
     		treeStore.setValue(iter, commandDC, guiProc.getName());		
     	else
     		treeStore.setValue(iter, commandDC, proc.getCommand());
+        
         treeStore.setValue(iter, tidDC, proc.getPid());
         treeStore.setValue(iter, procDataDC,
                            (GuiProc.GuiProcFactory.getGuiProc(proc)));
@@ -264,62 +226,6 @@ public class SessionProcDataModel
                          + proc + "to treestore, but failed.", e);
         return;
       }
-
-    new ProcTasksObserver(proc, new ProcTasks()
-    {
-      public void deletedFrom(Object observable)
-      {
-      }
-
-      public void addFailed(Object observable, Throwable w)
-      {
-        errorLog.log(Level.WARNING, new Date() + "EventLogger.addFailed"
-                                   + "(Object o, Throwable w): " + observable
-                                   + " failed " + "to add");
-//        WindowManager.theManager.logWindow.print(new Date()
-//                                                 + "EventLogger.addFailed(Object o, Throwable w): "
-//                                                 + observable
-//                                                 + " failed to add");
-//        throw new RuntimeException(w);
-      }
-
-      public void addedTo(Object observable)
-      {
-      }
-
-      public void existingTask(Task task)
-      {
-        addTask(task);
-      }
-
-      public void taskRemoved(final Task task)
-      {
-        CustomEvents.addEvent(new Runnable()
-        {
-          Task realTask = task;
-
-          public void run()
-          {
-            removeTask(realTask);
-          }
-
-        });
-      }
-
-      public void taskAdded(final Task task)
-      {
-        CustomEvents.addEvent(new Runnable()
-        {
-          Task realTask = task;
-
-          public void run()
-          {
-            addTask(realTask);
-          }
-
-        });
-      }
-    });
   }
 
   /**
@@ -379,121 +285,6 @@ public class SessionProcDataModel
       }
   }
   
-  /**
-   * Update the information listed in the thread TreeView, specifically the
-   * new memory information and updated CPU time.
-   */
-  public void refreshThreadRead (GuiProc gp)
-  {
-    Iterator i = gp.getTasks().iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) ((GuiTask) i.next()).getTask();
-        TreeIter iter = (TreeIter) this.iterHash.get(t.getTaskId());
-        statRead(null, t, iter);
-      }
-  }
-  
-  
-  public void addTask(Task task)
-  {
-    // get an iterator pointing to the parent
-    TreeIter parent;
-    parent = (TreeIter) iterHash.get(task.getProc().getId());
-    TreeIter iter = null;
-
-    try
-      {
-        if (treeStore.isIterValid(parent))
-          iter = treeStore.appendRow(parent);
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.addTask: Trying to add task " + task
-                         + "but failed.", e);
-        return;
-      }
-
-    try
-      {
-        iterHash.put(task.getTaskId(), iter);
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.addTask: Cannot place task " + task
-                         + " in iterHash.", e);
-        return;
-      }
-
-    try
-      {
-        treeStore.setValue(iter, commandDC,
-                           Long.toHexString(task.getEntryPointAddress()));
-        treeStore.setValue(iter, tidDC, task.getTid());
-        treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
-        treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
-        treeStore.setValue(iter, isThreadDC, true);
-
-        treeStore.setValue(iter, procDataDC,
-                           GuiTask.GuiTaskFactory.getGuiTask(task));
-        treeStore.setValue(iter, sensitiveDC, true);
-        
-        statRead(null, task, iter);
-
-        GuiTask guiTask = GuiTaskFactory.getGuiTask(task);
-        GuiProc guiProc = GuiProcFactory.getGuiProc(task.getProc());
-        guiProc.addGuiTask(guiTask);
-        guiTask.setParent(guiProc);
-
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.addTask: treeStore setvalue on  "
-                         + task + " failed.", e);
-        return;
-      }
-
-  }
-
-  public void removeTask(Task task)
-  {
-
-    TreeIter iter;
-    try
-      {
-        iter = (TreeIter) iterHash.get(task.getTaskId());
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.removeTask: Cannot find value in Hash for: "
-                         + task, e);
-        return;
-      }
-
-    try
-      {
-        GuiTask guiTask = GuiTaskFactory.getGuiTask(task);
-
-        treeStore.removeRow(iter);
-        iterHash.remove(task.getTaskId());
-
-        GuiProc guiProc = GuiProcFactory.getGuiProc(task.getProc());
-        guiProc.removeGuiTask(guiTask);
-
-      }
-    catch (Exception e)
-      {
-        errorLog.log(Level.WARNING,
-                     "SessionProcDataModel.removeTask: Cannot remove from treeStore for: "
-                         + task, e);
-        return;
-      }
-  }
-
   public void removeProc(GuiProc guiProc)
   {
     Proc proc = guiProc.getProc();
@@ -514,7 +305,6 @@ public class SessionProcDataModel
       {
         treeStore.removeRow(iter);
         iterHash.remove(proc.getId());
-        System.out.println("SessionProcDataModel.removeProc()");
       }
     catch (Exception e)
       {
@@ -604,84 +394,6 @@ public class SessionProcDataModel
   public TreeModel getModel()
   {
     return this.treeStore;
-  }
-
-  class TaskDestroyedObserver
-      implements Observer
-  {
-    public void update(Observable o, final Object obj)
-    {
-      org.gnu.glib.CustomEvents.addEvent(new Runnable()
-      {
-        public void run()
-        {
-          final Task task = (Task) obj;
-          TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-          // System.out.println(" TaskDestroyedObserver.update() trying to
-          // remove Task " + task.getTid()+ " " + iter );
-          try
-            {
-              if (iter == null)
-                {
-                  throw new NullPointerException(
-                                                 "task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-
-              // get an iterator pointing to the parent
-              TreeIter parent;
-              if (task.getProc() == null)
-                {
-                  parent = null;
-                }
-              else
-                {
-                  parent = (TreeIter) iterHash.get(task.getProc().getId());
-                }
-
-              if (getThreadCount(parent) == 1)
-                {
-                  // treeStore.setValue(parent, sensitiveDC, true);
-                  treeStore.setValue(parent, sensitiveDC, false);
-                }
-              else
-                {
-                  // treeStore.setValue(parent, sensitiveDC, false);
-                  treeStore.setValue(parent, sensitiveDC, true);
-                }
-
-              treeStore.removeRow(iter);
-              iterHash.remove(task.getTaskId());
-
-            }
-          catch (NullPointerException e)
-            {
-              errorLog.log(
-                           Level.WARNING,
-                           "trying to remove task " + task + "before it is added", e); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-      });
-    }
-  }
-
-  private int getThreadCount(TreeIter iter)
-  {
-    int n = iter.getChildCount();
-    int threadCount = 0;
-    // System.out.println("ProcDestroyedObserver.update() iter not null checking
-    // children n: " + n );
-    for (int i = 0; i < n; i++)
-      {
-        if (treeStore.getValue(iter.getChild(i), isThreadDC) == true)
-          {
-            threadCount++;
-          }
-      }
-    // System.out.println(this + ": ProcDataModel.getThreadCount() " +
-    // treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter,
-    // tidDC) + " "+ threadCount);
-    return threadCount;
-
   }
 
 }

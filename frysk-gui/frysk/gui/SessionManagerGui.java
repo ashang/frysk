@@ -46,13 +46,10 @@ import java.util.LinkedList;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.RadioButton;
-import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-import org.gnu.gtk.event.ToggleEvent;
-import org.gnu.gtk.event.ToggleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewEvent;
@@ -63,11 +60,8 @@ import frysk.gui.common.Util;
 import frysk.gui.FryskHelpManager;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
-import frysk.gui.sessions.ProcessPicker;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
-import frysk.gui.srcwin.SourceWindowFactory;
-import frysk.proc.Proc;
 
 /**
  * 
@@ -85,12 +79,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 
 	RadioButton terminalSession;
 
-	RadioButton previousSession;
-
-	RadioButton debugSingleProcess;
-
-	Button debugSingleProcessAction;
-
 	private Button editSession;
 
 	private Button copySession;
@@ -102,8 +90,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	private Button openButton;
     
     private Button helpButton;
-
-	private ProcessPicker processPicker;
 	
 	private LinkedList popupControl = new LinkedList();
 	
@@ -122,51 +108,11 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 
 		getManagerControls(glade);
 		getSessionManagementControls(glade);
-		getDebugSingleProcess(glade);
 		setButtonStates();
 		
 		popupControl.add(this);
 		IconManager.trayIcon.setPopupWindows(popupControl);
 	}
-
-	/**
-	 * Setup the Debug single process chooser dialog
-	 * 
-	 * Allow the user to choose a single running process
-	 * and sends that process to the source window
-	 * 
-	 * @param glade - glade file the Session Manager
-	 */
-	private void getDebugSingleProcess(LibGlade glade) {
-		debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
-		
-		debugSingleProcess.setState(false);
-		debugSingleProcess.addListener(new ToggleListener() {
-			public void toggleEvent(ToggleEvent arg0) {
-				setButtonStates();
-			}
-		});
-
-		debugSingleProcessAction = (Button) glade
-				.getWidget("SessionManager_singleProcessChooser");
-		
-		debugSingleProcessAction.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK)) {
-					WindowManager.theManager.pickProcDialog.showAll();
-					final int response = WindowManager.theManager.pickProcDialog.run();
-					final Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
-					if (response == ResponseType.OK.getValue()) {
-						if (chosenProc != null) {
-							SourceWindowFactory.createSourceWindow(chosenProc);
-						}
-					}
-				}
-			}
-		});
-
-	}
-
 
 	/**
 	 * Sets the button states depending on the state of the 
@@ -175,8 +121,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	 */
 	private void setButtonStates() {
 		
-		// if the previous sessions radio button is selected
-		if (previousSession.getState()) {
 			// Set the treeview to be interactive
 			previousSessions.setSensitive(true);
 			
@@ -185,42 +129,29 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 			
 			// If there are no previous saved sessions, then
 			// disable the edit, copy and delete buttons.
-			if (previousSessions.getSelectedObject() == null) {
-				editSession.setSensitive(false);
-				copySession.setSensitive(false);
-				deleteSession.setSensitive(false);
-			} else {
-				// If there are previous sessions, enable them.
-				editSession.setSensitive(true);
-				copySession.setSensitive(true);
-				deleteSession.setSensitive(true);
-			}
-		} else {
-			
-			// If the previous session radio button is not
-			// selected, disallow all ui interactions with
-			// session management controls
-			previousSessions.setSensitive(false);
-			editSession.setSensitive(false);
-			copySession.setSensitive(false);
-			deleteSession.setSensitive(false);
-			newSession.setSensitive(false);
-		}
+	if (previousSessions.getSelectedObject() == null)
+      {
+        editSession.setSensitive(false);
+        copySession.setSensitive(false);
+        deleteSession.setSensitive(false);
+      }
+    else
+      {
+        // If there are previous sessions, enable them.
+        editSession.setSensitive(true);
+        copySession.setSensitive(true);
+        deleteSession.setSensitive(true);
+      }
 
 		// Set whether the open button should be interactive.
-		if (previousSessions.getSelectedObject() != null && previousSession.getState()) {
-			openButton.setSensitive(true);
-		} else {
-			openButton.setSensitive(false);
-		}
-
-		// If the debug single process radio button is 
-		// active, then allow the user to choose a process to debug
-		if (debugSingleProcess.getState()) {
-			debugSingleProcessAction.setSensitive(true);
-		} else {
-			debugSingleProcessAction.setSensitive(false);
-		}
+    if (previousSessions.getSelectedObject() != null)
+      {
+        openButton.setSensitive(true);
+      }
+    else
+      {
+        openButton.setSensitive(false);
+      }
 	}
 
 	/**
@@ -231,21 +162,6 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	 * @param glade - - the glade file for the Session Manager.
 	 */
 	private void getSessionManagementControls(LibGlade glade) {
-
-		
-		// Previous session radio button. This gates the session
-		// edit/new/delete abilities, and the ability to launch
-		// an existing session.
-		previousSession = (RadioButton) glade
-				.getWidget("SessionManager_startSessionButton");
-		previousSession.setState(true);
-		
-		previousSession.addListener(new ToggleListener() {
-			public void toggleEvent(ToggleEvent arg0) {
-				setButtonStates();
-			}
-		});
-
 		
 		// Previous Session (ie saved) List View
 		previousSessions = new ListView(glade.getWidget(
@@ -464,27 +380,18 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	}
 
 	/**
-	 * Open a session. When the open button is clicked, run process picker.
-	 * The process picker will decide what PIDS are to be launched into th
-	 * monitor.
-	 */
-	public void openSession() {
+   * Open a session. When the open button is clicked, run through the druid. The user will
+   * then choose which specific processes they want in this session, and which observers
+   * to use as well.	
+   */
+  public void openSession ()
+  {
+    final Session s = (Session) previousSessions.getSelectedObject();
 
-		processPicker = new ProcessPicker(WindowManager.theManager.processPickerGlade);
-		final Session s = (Session) previousSessions.getSelectedObject();
-
-		// If this is not a terminal session, hide the terminal and run process picker
-		if (previousSession.getState()) {
-			processPicker.checkSession(s);
-			WindowManager.theManager.mainWindow.buildTerminal();
-			sessionLaunched = true;
-			popupControl.clear();
-			popupControl.add(WindowManager.theManager.mainWindow);
-			IconManager.trayIcon.setPopupWindows(popupControl);
-			//WindowManager.theManager.mainWindow.hideTerminal();
-		}
-		
-	}
+    sessionLaunched = true;
+    WindowManager.theManager.createFryskSessionDruid.loadSessionMode(s);
+    WindowManager.theManager.createFryskSessionDruid.show();
+  }
     
     /**
      * Start the Frysk help system.

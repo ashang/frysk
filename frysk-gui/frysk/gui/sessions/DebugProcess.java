@@ -180,7 +180,7 @@ public class DebugProcess
    */
   public void addObservers ()
   {
-    Iterator procIter = allProcsList.iterator();
+    Iterator procIter = procs.iterator();
     while (procIter.hasNext())
       {
         GuiProc guiProc = (GuiProc) procIter.next();
@@ -324,12 +324,8 @@ public class DebugProcess
     {
       public void update (Observable observable, Object arg)
       {
-        // System.out.println(".update()");
         GuiProc guiProc = (GuiProc) arg;
-        // if (guiProc.getNiceExecutablePath().equals(executablePath))
-        // {
         removeProc(guiProc);
-        // }
       }
     });
   }
@@ -425,7 +421,6 @@ public class DebugProcess
    */
   public void removeObserverByName (String observerName)
   {
-
 	Iterator i = observers.iterator();
 	while (i.hasNext())
 	{
