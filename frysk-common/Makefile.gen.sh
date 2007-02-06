@@ -150,6 +150,16 @@ EOF
     echo "$@" 1>&2
 }
 
+# Called as:   set_variable foodir = '$(datadir)/foo'
+# set variable $1 to value $3, if this is the fist time called:
+set_variable ()
+{
+    if eval test -z "\${${1}_set:-}"; then
+	eval ${1}_set=true
+	echo "$@"
+    fi
+} 
+
 check_MANS ()
 {
     # bin/ directories require a man page.
@@ -708,10 +718,12 @@ sed -n -e '/dir\// {
     # Given a/bdir/c/d/e; read a/bdir/c/d/e bcd e
     # Given a/bdir/c; read a/bdir/c b
     dir="${d1}${d2}"
+    dist_prefix=dist_
     case "$f" in
 	*.bz2.uu )
 	    data=`expr "$f" : '\(.*\).bz2.uu'`
             echo "EXTRA_DIST += $f"
+	    dist_prefix=nodist_
 	    ;;
 	*/bindir/* | */pkglibdir/* )
 	    # skip, not a DATA dir.
@@ -721,14 +733,11 @@ sed -n -e '/dir\// {
 	    data="$f"
 	    ;;
     esac
-    if eval test -z "\${${dir}_DATA:-}"; then
-	eval ${dir}_DATA=true
-	echo "dist_${dir}_DATA = "
-	if test -n "${d2}"; then
-	    echo "${dir}dir = \$(${d1}dir)/${d2}"
-	fi
+    if test -n "${d2}"; then
+	set_variable "${dir}dir" = "\$(${d1}dir)/${d2}"
     fi
-    echo "dist_${dir}_DATA += $data"
+    set_variable "${dist_prefix}${dir}_DATA" =
+    echo "${dist_prefix}${dir}_DATA += $data"
 done
 
 
