@@ -1,0 +1,37 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-asm.h: Moved to here from
+	frysk-core/frysk/pkglibdir/funit-asm.h.
+
+2007-01-23  Mark Wielaard  <mark@klomp.org>
+
+	* linux.syscall.h: Define MAX_ERRNO if not yet defined.
+
+2006-09-04  Mark Wielaard  <mark@klomp.org>
+
+	* linux.syscall.h: include errno.h.
+
+2006-06-23  Nurdin Premji <npremji@redhat.com>
+	
+	* linux.syscall.h: Changed from undef def to ifndef.
+
+2006-06-21  Stepan Kasal  <kasal@ucw.cz>
+
+	* linux.syscall.h: Include the headers necessary to use
+	the macros defined here, users do not have to include them.
+
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* linux.syscall.h: New file.
+
+2005-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* linux.ptrace.h: Copy to here from frysk-sys/include/.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
