@@ -78,6 +78,11 @@ public class GuiObservable
     this.list.add(observer);
     super.addObserver(observer);
   }
+  
+  public boolean fastDeleteObserver (Observer victim)
+  {
+    return this.list.remove(victim);
+  }
 
   public synchronized void deleteObserver (Observer victim)
   {

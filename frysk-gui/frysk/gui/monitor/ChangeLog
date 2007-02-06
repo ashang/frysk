@@ -1,3 +1,63 @@
+2007-02-06  Mike Cvet  <mcvet@redhat.com>
+
+	* GuiObservable.java (fastDeleteObserver): Added. Returns false instead
+	of raising exception if the requested Observer is not in the Observer list.
+	* ListView.java (debugProcessObserver): Added.
+	(init): Initialize above object.
+	(addDP): Added. Specializes in adding DebugProcesses.
+	(addDP): Overloaded method. Specializes in storing useful GuiProc
+	specific information.
+	(addDP): Ditto.
+	(remove): Attempt to delete debugProcessObserver from the incoming
+	GuiObject.
+	(watchGuiProcs): Added. Watches a special list containing GuiProcs,
+	so that their useful information can be used.
+	(DebugProcessObserver): Added. Updates when DebugProcess events
+	occur.
+	(clear): Change to testing with GuiObservable.fastDeleteObserver(). 
+	Fixes #3980.
+	* ProcWiseDataModel.java (childCountDC): Removed.
+	(pidDC): Added.
+	(vszDC): Ditto.
+	(rssDC): Ditto.
+	(timeDC): Ditto.
+	(stat): Ditto.
+	(iterMap): Refactored from iterHash, changed to HashMap.
+	(ProcWiseDataModel): Initialize new DataColumns and Stat. 
+	Fixes #3920.
+	(setRow): Removed.
+	(collectProcs): Added. Adds processes matching a name string into
+	a LinkedList.
+	(searchAllNames): Added. Returns a new LinkedList containing processes
+	of the same name contained in the model.
+	(searchPid): Finds a process matching PID parameter in the model.
+	(setSelected): Removed tree child specific code.
+	(ProcCreatedObserver.update): Removed process group code, added new
+	stat code.
+	(ProcDestroyedObserver): Removed tree child code.
+	(getNameDC): Added.
+	(getLocationDC): Ditto.
+	(getPIDDC): Ditto.
+	(getVszDC): Ditto.
+	(getRssDC): Ditto.
+	(getTimeDC): Ditto.
+	(getObjectDC): Ditto.
+	(getSelectedDC): Ditto.
+	* ProcWiseTreeView.java (dataModel): Changed from psDataModel.
+	(treeStore): Added.
+	(pwtvTVC): Added. TreeViewColumn array.
+	(ProcWiseTreeView): Set global TreeModel to parameter.
+	(mountDataModel): Set new column properties, append them to this
+	TreeView. Fixed up the TreeModelFilter.
+	(setUpColumns): Added. Initializes all columns, sets all their
+	information, sets properties such as sorting.
+	* SessionProcDataModel.java (addProc): Removed redundant try
+	statement.
+	(ProcTasksObserver): Removed.
+	(removeProc): Removed.
+	(TaskDestroyedObserver): Removed.
+	(getThreadCount): Removed.
+
 2007-01-31  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ThreadView.java: Removed. Defunct class.

@@ -329,10 +329,12 @@ public class ListView
   {
     Set set = this.map.keySet();
     Iterator iterator = set.iterator();
+    GuiObject element = null;
     while (iterator.hasNext())
       {
-        GuiObject element = (GuiObject) iterator.next();
-        element.deleteObserver(this);
+        element = (GuiObject) iterator.next();
+        if (!element.fastDeleteObserver(this))
+          element.deleteObserver(this.debugProcessObserver);
       }
     this.listStore.clear();
     this.map.clear();

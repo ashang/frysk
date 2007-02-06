@@ -1,3 +1,51 @@
+2007-02-06  Mike Cvet  <mcvet@redhat.com>
+
+	* SessionManagerGui.java (previousSession): Removed.
+	(debugSingleProcess): Ditto.
+	(debugSingleProcessAction): Ditto.
+	(processPicker): Ditto.
+	(getDebugSingleProcess): Ditto.
+	(setButtonStates): Removed references to debugging state.
+	(getSessionManagementControls): Removed references to RadioButtons.
+	(openSession): No longer initializes a ProcessPicker, builds a Terminal,
+	or handles popup windows. Hands the selected process to the druid. Fixes 
+	#3978, #3921.
+	* druid/CreateFryskSessionDruid.java (debugButton): Added.
+	(loadSession): Ditto.
+	(setNewSession): Make sure to enable 'quick debug' button. Fixes #3922.
+	(setEditSessionMode): Collects all DebugProcesses and Observers from
+	saved session; add all currently-running processes of the same name as
+	saved processes to the current session. Also add all saved observers to 
+	all DebugProcesses.
+	(loadSessionMode): Added. Functionally similar to setEditSessionMode(),
+	makes safe assumptions about saved process and observer combinations.
+	Linked directly to the monitor window. Fixes #3978. 
+	(filterDataInSession): Re-arranged to work with the elimination of 
+	generic process groups.
+	(setTreeSelected): Removed redundant parameter.
+	(addProcessParent): Cleaned up.
+	(changeGroupState): Removed two of three scenarios due to the elimination
+	of process groups. Extensively cleaned up to work with new implementation.
+	(setProcessNext): Made aware that the druid now loads sessions as well.
+	(getProcessSelectionControls): Removed references to process groups. Tells 
+	the ListView to watch GuiProcs instead of DebugProcesses. Null checks,	
+	fixes #3931. Search for specific processes using PIDs.
+	(getProcessObserverControls): Tells the ListView to watch GuiProcs instead
+	of DebugProcesses.
+	(getDruidStructureControls): Added code for debugging button. The finish
+	button now sets up the terminal and session for the monitor window.
+	(attachLinkedListsToWidgets): Watch GuiProcs instead of DebugProcesses.
+	(setUpCurrentPage): Set next button sensitive with page 0, fixes button bug.
+	* gladedir/frysk_create_session_druid.glade: Resized, added button for
+	launching the SourceWindow.
+	* gladedir/frysk_session_manager.glade: Removed radio buttons and 
+	SourceWindow launch button.
+	* sessions/DebugProcess.java (addObservers): Iterate through the 'procs'
+	LinkedList rather than 'allProcsList' to add the observers.
+	* sessions/Session.java: Applied GNU formatting.
+	(clearProcesses): Added. Removes all DebugProcesses from the global list.
+	* sessions/SessionManager.java: Applied GNU formatting.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* imagesdir/: Rename directory images/.
