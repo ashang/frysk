@@ -753,3 +753,18 @@ checked-for-java-util-vector: files-java.list
 		exit 1 ; \
 	fi
 	mv $@.tmp $@
+
+# Check that java.util.Hasntable isn't being used - old school.
+
+# all-local: checked-for-java-util-hashtable
+CLEANFILES += checked-for-java-util-hashtable
+checked-for-java-util-hashtable: files-java.list
+	xargs grep -H -n -e 'java.util.Hashtable' \
+		< files-java.list \
+		> $@.tmp \
+		|| :
+	if test -s $@.tmp ; then \
+		sed -e 's,$$,: Hashtable is old-school,' $@.tmp ; \
+		exit 1 ; \
+	fi
+	mv $@.tmp $@

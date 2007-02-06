@@ -1,3 +1,8 @@
+2007-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (checked-for-java-util-hashtable): New rule, do
+	not enable.
+
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.gen.sh (_DATA): Use "dist_${dir}_DATA" or
