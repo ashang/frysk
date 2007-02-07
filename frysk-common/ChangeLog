@@ -1,3 +1,8 @@
+2007-02-07  Stan Cox  <scox@redhat.com>
+
+	* Makefile.rules (checked-ecj-compile): Build *.class files for
+	generated *.java with nowarn.
+
 2007-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (checked-for-java-util-hashtable): New rule, do

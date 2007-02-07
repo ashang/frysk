@@ -549,8 +549,6 @@ class ExprSymTab
     if (varDie == null)
       return (null);
 
-    Variable v;
-
     for (int i = 0; i < variableAccessor.length; i++)
       {
         try

@@ -59,13 +59,13 @@ import javax.naming.NameNotFoundException;
 
 import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
-import frysk.proc.Action;
+// import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-import frysk.proc.TaskObserver;
+// import frysk.proc.TaskObserver;
 import frysk.rt.RunState;
 import frysk.rt.StackFrame;
 
@@ -839,9 +839,9 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
-      ArrayList params = cmd.getParameters();
-      String filename = (String)params.get(0);
-      int lineNumber = Integer.parseInt((String)params.get(1));
+//      ArrayList params = cmd.getParameters();
+//      String filename = (String)params.get(0);
+//      int lineNumber = Integer.parseInt((String)params.get(1));
     }
   }
 
@@ -932,7 +932,7 @@ public class CLI
   // alias
   private Hashtable aliases;
   // breakpoints
-  private Hashtable breakpoints;
+//  private Hashtable breakpoints;
 
   /*
    * Public methods
@@ -1189,7 +1189,7 @@ public class CLI
 	}
       if (bpt != null) 
 	{
-	  RunState.LineBreakpoint lpt = bpt.getLineBreakpoint();
+//	  RunState.LineBreakpoint lpt = bpt.getLineBreakpoint();
 	  System.out.println("breakpoint hit file " + bpt.toString());
 	}
     }
