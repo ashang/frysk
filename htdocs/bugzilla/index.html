@@ -222,15 +222,16 @@ accessing the bug database you will need to create a <a
 href="/bugzilla/createaccount.cgi">new account</a>. </dd>
 
 <dt>Before submitting a new bug must I first check for an existing
-bug?</dt> <dd>No. <br> Duplicate bug reports are helpful; for instance,
+bug?</dt> <dd>No.<br>Duplicate bug reports are helpful; for instance,
 when multiple people report the same bug there's a strong indicator of
-a more critical problem. </dd>
+a more critical problem.</dd>
 
-<dt>Should I submit JUnit test failures? </dt> <dd>Yes. <br> Just one
+<dt>Should I submit JUnit test failures?</dt> <dd>Yes.<br>Just one
 request.  When submitting the bug, please use the first line of the
 failure as the summary (and the entire trace back in the description).
 Doing this makes checking for duplicates easier.  For instance, given
 the failure:
+
 <pre>
 testClone(frysk.util.TestFStack)junit.framework.AssertionFailedError:
 event loop run explictly stopped (test)
@@ -249,19 +250,31 @@ event loop run explictly stopped (test)
 </pre>
 </dd>
 
-<dt>Should I submit a bug when the root-cause is likely not
-<em>frysk</em>?  <br> (What happens when the root-cause is either the
-build (Java-GNOME, GCJ) or runtime (kernel) environment?)  </dt> <dd>
-Yes. <br> If the root cause of a bug is determined to be something
+<a name="Should I submit a bug when the root-cause is likely not
+frysk"><dt>Should I submit a bug when the root-cause is likely not
+<em>frysk</em>?<br>(What do I do when the root-cause is either the
+build (Java-GNOME, GCJ) or runtime (kernel) environment?)</dt></a>
+<dd>Yes.<br>If the root cause of a bug is determined to be something
 other than <em>frysk</em>, then the following action is normally
-taken: <ul> <li> A bug report is filed against the root-cause, and
-cross referenced to the local bug. <li> A reproducer is found, and
-added to <tt>frysk-imports/tests</tt> under <tt>fryskNNNN</tt>. <br>
-PASS indicates that it must work. FAIL if a work around is
-available. <li> The local bug is closed; and the test case
-monitored. </ul> Doing this has proven to greatly simplify the task of
-monitoring for regressions in <em>frysk</em>'s build dependencies, and
-that is, unfortunatly, a relatively common occurance. </dd>
+taken:
+
+<ul>
+
+<li>A bug report is filed against the root-cause, and cross referenced
+to the local bug.</li>
+
+<li>A reproducer is found, and added to <tt>frysk-imports/tests</tt>
+under <tt>fryskNNNN</tt>.<br>PASS indicates that it must work.<br>XFAIL
+if a work around is available.</li>
+
+<li>The local bug is SUSPENDED; when the root-cause is fixed the bug
+is closed.</li>
+
+</ul>
+
+Doing this has proven to greatly simplify the task of monitoring for
+regressions in <em>frysk</em>'s build dependencies, and that is,
+unfortunatly, a relatively common occurance.</dd>
 
 <dt>Why are tracker bugs <a
 href="/bugzilla/buglist.cgi?product=frysk&bug_status=SUSPENDED&&order=bugs.priority,bugs.bug_id">SUSPENDED</a>?
