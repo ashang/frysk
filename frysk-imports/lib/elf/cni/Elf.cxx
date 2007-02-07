@@ -61,7 +61,8 @@ extern "C"
 
 
 void
-lib::elf::Elf::elf_begin (jstring file, jint command, jboolean write){
+lib::elf::Elf::elf_begin (jstring file, jint command)
+{
 	int fileNameLen = JvGetStringUTFLength(file);
 	char fileName[fileNameLen + 1];
 	
@@ -69,29 +70,45 @@ lib::elf::Elf::elf_begin (jstring file, jint command, jboolean write){
 	fileName[fileNameLen]='\0';
 
 	errno = 0;
-    if (write == false)
-  	    fd = open (fileName, O_RDONLY);
-    else
-	    fd = open (fileName, O_RDWR | O_CREAT,00644);
-	if(errno != 0){
+	switch (command)
+	  {
+
+	  case ELF_C_READ:
+	  case ELF_C_READ_MMAP:  
+	  case ELF_C_READ_MMAP_PRIVATE: fd = open (fileName, O_RDONLY);
+	    break;
+	  case ELF_C_WRITE:
+	  case ELF_C_WRITE_MMAP: fd = open (fileName, O_RDWR | O_CREAT,00644);
+	    break;
+	  case ELF_C_RDWR:
+	  case ELF_C_RDWR_MMAP:  fd  = open(fileName, O_RDWR);
+	    break;
+	  default:
+	    throw new lib::elf::ElfFileException(JvNewStringUTF("Invalid Elf_Command specified in elf_begin"));
+	  }
+
+	if(errno != 0)
+	  {
 		char* message = "Could not open %s";
 		char error[strlen(fileName) + strlen(message) - 2];
 		sprintf(error, message, fileName);
 		throw new lib::elf::ElfFileException(JvNewStringUTF(error),
 		    file);
-	}
+	  }
 	
-	if(::elf_version(EV_CURRENT) == EV_NONE) {
+	if(::elf_version(EV_CURRENT) == EV_NONE) 
+	  {
 		::close(fd);
 		throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
-	}
+	  }
 	errno = 0;	
 	::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
 	
-	if(errno != 0 || !new_elf) {
+	if(errno != 0 || !new_elf) 
+	  {
 		::close(fd);
 		throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
-	}
+	  }
 	
 	this->pointer = (jlong) new_elf;
 }

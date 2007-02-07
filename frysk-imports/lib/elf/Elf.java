@@ -69,24 +69,9 @@ public class Elf
       ElfException
   {
 
-    elf_begin(file, command.getValue(),false);
+    elf_begin(file, command.getValue());
   }
 
-  /**
-   * Creates a new elf object, on a new file
-   * 
-   * @param file The file to create the elf object too
-   * @param command The appropriate {@see ElfCommand}
-   */
-  public Elf(String file, ElfCommand command,  boolean write) throws ElfFileException,
-      ElfException
-  {
-
-    if (write)	
-       elf_begin(file, command.getValue(),true);
-    else
-       elf_begin(file, command.getValue(),false);
-  }
 
   /**
    * Creates a new Elf object.
@@ -113,7 +98,7 @@ public class Elf
   {
     try 
       {
-	elf_begin("/proc/" + pid + "/exe", command.getValue(),false);
+	elf_begin("/proc/" + pid + "/exe", command.getValue());
       }
     catch (ElfFileException e)
       {
@@ -459,7 +444,7 @@ public class Elf
     elf_end();
   }
 
-  protected native void elf_begin (String file, int __cmd, boolean write) throws ElfException,
+  protected native void elf_begin (String file, int __cmd) throws ElfException,
       ElfFileException;
 
   protected native long elf_clone (int __cmd);
