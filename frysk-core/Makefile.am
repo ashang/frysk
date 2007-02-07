@@ -148,3 +148,17 @@ frysk/pkglibdir/funit-stackframe-stripped: frysk/pkglibdir/funit-stackframe
 
 pkglib_PROGRAMS += frysk/pkglibdir/funit-stackframe-stripped
 frysk_pkglibdir_funit_stackframe_stripped_SOURCES =
+
+if DO_ARCH32_TEST
+frysk/pkglibdir/arch32/funit-stackframe-nodebug: frysk/pkglibdir/arch32/funit-stackframe
+	strip --strip-debug -o frysk/pkglibdir/arch32/funit-stackframe-nodebug frysk/pkglibdir/arch32/funit-stackframe
+
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-stackframe-nodebug
+frysk_pkglibdir_arch32_funit_stackframe_nodebug_SOURCES =
+
+frysk/pkglibdir/arch32/funit-stackframe-stripped: frysk/pkglibdir/arch32/funit-stackframe
+	strip -o frysk/pkglibdir/arch32/funit-stackframe-stripped frysk/pkglibdir/arch32/funit-stackframe
+
+pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-stackframe-stripped
+frysk_pkglibdir_arch32_funit_stackframe_stripped_SOURCES =
+endif

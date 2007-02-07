@@ -1,3 +1,8 @@
+2007-02-07  Nurdin Premji  <npremji@redhat.com>
+	
+	* Makefile.am (pkglib32_PROGRAMS): Added funit-stackframe-nodebug,
+	and funit-stackframe-stripped.
+
 2007-02-07  Stan Cox  <scox@redhat.com>
 
 	* Makefile.rules (prune_ecj): Only include generated *.java files.
@@ -163,10 +168,10 @@
 
 	* Makefile.am (prune_ecj): Add antlr generated source files.
 
-2006-09-08  Alexandre Oliva  <aoliva@redhat.com>
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Link in libunwind-ptrace.a.
-	* Makefile.in: Rebuild.
+    * Makefile.in: Rebuild.
 
 2006-08-29  Yong Zheng  <zhengyo@cn.ibm.com>
 
