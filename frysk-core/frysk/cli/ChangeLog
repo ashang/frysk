@@ -1,3 +1,10 @@
+2007-02-07  Tim Moore  <timoore@redhat.com>	
+
+	* hpd/CLI.java (addMessage): New version that takes string and
+	message type.
+	(CLI): Reformat to GNU standards, use new addMessage convenience
+	method.
+	
 2007-02-07  Tim Moore  <timoore@redhat.com>
 
 	* hpd/CLI.java (attachedObserver): Remove.
