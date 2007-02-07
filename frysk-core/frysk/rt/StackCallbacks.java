@@ -103,8 +103,8 @@ public class StackCallbacks
   public long accessReg (long as, long regnum)
   {
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: reading from register {0}\n",
-               registerName);
+    logger.log(Level.FINE, "Libunwind: reading from register {0}, regnum: {1}\n",
+               new Object[] {registerName, new Long(regnum)});
 
     long value = isa.getRegisterByName(registerName).get(myTask);
 
