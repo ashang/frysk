@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -74,6 +74,9 @@ public class TestBreakpoints
   // Monitor to notify and wait on for state of event changes..
   static Object monitor = new Object();
 
+  // Whether or not to install an Instruction observer
+  boolean installInstructionObserver;
+
   /**
    * Launch our test program and setup clean environment with a runner
    * eventLoop.
@@ -83,6 +86,9 @@ public class TestBreakpoints
     // Make sure everything is setup so spawned processes are recognized
     // and destroyed in tearDown().
     super.setUp();
+
+    // Some tests run with an InstructionObserver. Default is not.
+    installInstructionObserver = false;
 
     // Create a process that we will communicate with through stdin/out.
     String command = getExecPath ("funit-breakpoints");
@@ -185,6 +191,15 @@ public class TestBreakpoints
 	  }
       }
 
+    // Test can run with or without stepping.
+    InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
+    InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
+    if (installInstructionObserver)
+      {
+        task.requestAddInstructionObserver(io1);
+        task.requestAddInstructionObserver(io2);
+      }
+
     // Put in breakpoint observers
     CodeObserver code1 = new CodeObserver(breakpoint1);
     task.requestAddCodeObserver(code1, breakpoint1);
@@ -210,7 +225,7 @@ public class TestBreakpoints
     // Unblock and tell the process to go some rounds!
     task.requestUnblock(ao);
 
-    out.writeByte(42);
+    out.writeByte(7);
     out.flush();
     
     // Sanity check that the functions have actually been run.
@@ -219,11 +234,27 @@ public class TestBreakpoints
     line = in.readLine();
     int bp2 = Integer.decode(line).intValue();
 
-    assertEquals(42, bp1);
-    assertEquals(42, bp2);
+    assertEquals(7, bp1);
+    assertEquals(7, bp2);
 
-    assertEquals(42, code1.getTriggered());
-    assertEquals(42, code2.getTriggered());
+    assertEquals(7, code1.getTriggered());
+    assertEquals(7, code2.getTriggered());
+
+    // Remove the stepper
+    if (installInstructionObserver)
+      {
+	assertEquals(7, io1.getAddrHit());
+	assertEquals(7, io2.getAddrHit());
+
+        task.requestDeleteInstructionObserver(io1);
+        task.requestDeleteInstructionObserver(io2);
+      }
+    else
+      {
+	// Shouldn't be triggered.
+	assertEquals(0, io1.getAddrHit());
+	assertEquals(0, io2.getAddrHit());
+      }
 
     // We are all done, you can go now.
     out.writeByte(0);
@@ -270,6 +301,12 @@ public class TestBreakpoints
     assertFalse(exitSignal);
   }
 
+  public void testSteppingtestHitAndRun() throws IOException
+  {
+    installInstructionObserver = true;
+    testHitAndRun();
+  }
+
   public void testInsertRemove() throws IOException
   {
     // Start an EventLoop so there's no need to poll for events all
@@ -307,6 +344,15 @@ public class TestBreakpoints
 		// Ignored
 	      }
 	  }
+      }
+
+    // Test can run with or without stepping.
+    InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
+    InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
+    if (installInstructionObserver)
+      {
+        task.requestAddInstructionObserver(io1);
+        task.requestAddInstructionObserver(io2);
       }
 
     // Put in breakpoint observers
@@ -430,6 +476,22 @@ public class TestBreakpoints
 	  }
       }
 
+    // Remove the stepper
+    if (installInstructionObserver)
+      {
+	assertEquals(13, io1.getAddrHit());
+	assertEquals(13, io2.getAddrHit());
+
+        task.requestDeleteInstructionObserver(io1);
+        task.requestDeleteInstructionObserver(io2);
+      }
+    else
+      {
+	// Shouldn't be triggered.
+	assertEquals(0, io1.getAddrHit());
+	assertEquals(0, io2.getAddrHit());
+      }
+
     // And we are done.
     out.writeByte(0);
     out.flush();
@@ -480,6 +542,12 @@ public class TestBreakpoints
     assertEquals(3, code2.getTriggered());
   }
 
+  public void testSteppingtestInsertRemove() throws IOException
+  {
+    installInstructionObserver = true;
+    testInsertRemove();
+  }
+
   public void testAddLots() throws IOException
   {
     // Start an EventLoop so there's no need to poll for events all
@@ -517,6 +585,15 @@ public class TestBreakpoints
 		// Ignored
 	      }
 	  }
+      }
+
+    // Test can run with or without stepping.
+    InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
+    InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
+    if (installInstructionObserver)
+      {
+        task.requestAddInstructionObserver(io1);
+        task.requestAddInstructionObserver(io2);
       }
 
     // Put in breakpoint observers
@@ -562,7 +639,7 @@ public class TestBreakpoints
     task.requestUnblock(ao);
 
     // Run a couple of times.
-    out.writeByte(42);
+    out.writeByte(7);
     out.flush();
 
     // Sanity check that the functions have actually been run.
@@ -571,8 +648,24 @@ public class TestBreakpoints
     line = in.readLine();
     int bp2 = Integer.decode(line).intValue();
 
-    assertEquals(42, bp1);
-    assertEquals(42, bp2);
+    assertEquals(7, bp1);
+    assertEquals(7, bp2);
+
+    // Remove the stepper
+    if (installInstructionObserver)
+      {
+	assertEquals(7, io1.getAddrHit());
+	assertEquals(7, io2.getAddrHit());
+
+        task.requestDeleteInstructionObserver(io1);
+        task.requestDeleteInstructionObserver(io2);
+      }
+    else
+      {
+	// Shouldn't be triggered.
+	assertEquals(0, io1.getAddrHit());
+	assertEquals(0, io2.getAddrHit());
+      }
 
     // And we are done.
     out.writeByte(0);
@@ -627,11 +720,16 @@ public class TestBreakpoints
 
     for (int i = 0; i < 1512; i++)
       {
-	assertEquals(42, codes1[i].getTriggered());
-	assertEquals(42, codes2[i].getTriggered());
+	assertEquals(7, codes1[i].getTriggered());
+	assertEquals(7, codes2[i].getTriggered());
       }
   }
   
+  public void testSteppingAddLots() throws IOException
+  {
+    installInstructionObserver = true;
+    testAddLots();
+  }
 
   class AttachedObserver implements TaskObserver.Attached
   {
@@ -781,6 +879,56 @@ public class TestBreakpoints
       return removed;
     }
   }
+
+  static class InstructionObserver implements TaskObserver.Instruction
+  { 
+    boolean added;
+    boolean deleted;
+
+    private final Task task; 
+    private final long addr;
+    private int addr_hit;
+
+    public void addedTo(Object o)
+    {
+      added = true;
+    }
+
+    public void deletedFrom(Object o)
+    {
+      deleted = true;
+    }
+
+    public void addFailed (Object o, Throwable w)
+    {
+      fail("add to " + o + " failed, because " + w);
+    }
+
+    InstructionObserver(Task task, long addr)
+    {
+      this.task = task;
+      this.addr = addr;
+    }
+
+    // Always continue, just counts steps on specified address.
+    public Action updateExecuted(Task task)
+    {
+      if (! task.equals(this.task))
+        throw new IllegalStateException("Wrong Task, given " + task
+                                        + " not equals expected "
+                                        + this.task);
+
+      if (task.getIsa().pc(task) == addr)
+	addr_hit++;
+      return Action.CONTINUE;
+    }
+
+    public int getAddrHit()
+    {
+      return addr_hit;
+    }
+  }
+
 
   static class EventLoopRunner extends Thread
   {

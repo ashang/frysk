@@ -1,3 +1,11 @@
+2007-02-07  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c (send_hup, receive_hup): New static ints.
+	(trap_handler): Renamed to ...
+	(signal_handler): Now also handles SIGHUP.
+	(dummy): Send SIGHUP. Add SIGTRAP signal install workaround.
+	(main): Check both hup and trap counts.
+
 2007-02-06  Nurdin Premji  <npremji@redhat.com>
 
 	* funit-stackframe.S: (main): Updated to reflect changes to ENTER_MAIN.

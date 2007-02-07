@@ -304,6 +304,27 @@ public class IsaIA32 implements Isa
     return stepped;
   }
 
+  /**
+   * Returns true if the last instruction executed by the given Task
+   * was a trapping instruction that will be handled by the
+   * kernel. This method should distinquish instructions that are
+   * handled by the kernel (like syscall enter instructions) and those
+   * that generate a trap signal. True is returned only when the
+   * instruction shouldn't generate a signal. Called from the state
+   * machine when a trap event has been detected that cannot be
+   * attributed to entering a signal handler or a normal step
+   * instruction notification.
+   * <p>
+   * ia32 generate spurious trap events on "int 0x80" instructions
+   * that should trap into a kernel syscall.
+   */
+  public boolean hasExecutedSpuriousTrap(Task task)
+  {
+    long address = pc(task);
+    return (task.getMemory().getByte(address - 1) == (byte) 0x80
+	    && task.getMemory().getByte(address - 2) == (byte) 0xcd);
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxIa32Syscall.syscallList;

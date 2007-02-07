@@ -198,7 +198,10 @@ abstract public class Task
       }
   }
 
-  // Send operation to corresponding underlying [kernel] task.
+  // Send operation to corresponding underlying [kernel] task.  The
+  // continue, syscall and step methods should sig_send and set/reset
+  // step_send to indicate that last reques tot the Task was a single
+  // step.
   protected abstract void sendContinue (int sig);
 
   protected abstract void sendSyscallContinue (int sig);
@@ -897,6 +900,12 @@ abstract public class Task
   // Used in the running task state when a trap event occurs after
   // a step has been issued. Null when no step is being performed.
   Breakpoint steppingBreakpoint;
+
+  // Whether the last request to the process was a step request.
+  boolean step_send;
+
+  // The signal, or zero, send last to the task.
+  int sig_send;
 
   /**
    * Notify all Code observers of the breakpoint. Return the number of

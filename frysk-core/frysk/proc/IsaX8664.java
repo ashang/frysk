@@ -295,6 +295,25 @@ public class IsaX8664 implements Isa
     return stepped;
   }
 
+  /**
+   * Returns true if the last instruction executed by the given Task
+   * was a trapping instruction that will be handled by the
+   * kernel. This method should distinquish instructions that are
+   * handled by the kernel (like syscall enter instructions) and those
+   * that generate a trap signal. True is returned only when the
+   * instruction shouldn't generate a signal. Called from the state
+   * machine when a trap event has been detected that cannot be
+   * attributed to entering a signal handler or a normal step
+   * instruction notification.
+   * 
+   * x86_64 doesn't generate spurious trap events and this method
+   * always returns false on this architecture.
+   */
+  public boolean hasExecutedSpuriousTrap(Task task)
+  {
+    return false;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxX8664Syscall.syscallList;

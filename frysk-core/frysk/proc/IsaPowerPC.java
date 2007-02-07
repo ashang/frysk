@@ -124,6 +124,15 @@ abstract class IsaPowerPC
     return false;
   }
 
+  /**
+   * FIXME. Not checked whether or not spurious trap events are
+   * generated on PowerPC.
+   */
+  public boolean hasExecutedSpuriousTrap(Task task)
+  {
+    return false;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxPowerPCSyscall.syscallList;

@@ -116,6 +116,17 @@ public interface Isa
   boolean isTaskStepped(Task task);
 
   /**
+   * Returns true if the last instruction executed by the given Task was
+   * a trapping instruction. This method should distinquish instructions
+   * that are handled by the kernel (like syscall enter instructions) and
+   * those that generate a trap signal. True is returned only when the
+   * instruction should generate a signal. Called from the state machine
+   * when a trap event has been detected that cannot be attributed to
+   * entering a signal handler or a normal step instruction notification.
+   */
+  boolean hasExecutedSpuriousTrap(Task task);
+
+  /**
    * Return an array of ByteBuffers for accessing the register
    * banks. It's possible for different elements of the array to be
    * shared.

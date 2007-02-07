@@ -131,6 +131,8 @@ public class LinuxPtraceTask
   protected void sendContinue (int sig)
   {
     logger.log(Level.FINE, "{0} sendContinue\n", this);
+    step_send = false;
+    sig_send = sig;
     try
       {
         Ptrace.cont(getTid(), sig);
@@ -144,6 +146,8 @@ public class LinuxPtraceTask
   protected void sendSyscallContinue (int sig)
   {
     logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
+    step_send = false;
+    sig_send = sig;
     try
       {
         Ptrace.sysCall(getTid(), sig);
@@ -157,6 +161,8 @@ public class LinuxPtraceTask
   protected void sendStepInstruction (int sig)
   {
     logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
+    step_send = true;
+    sig_send = sig;
     try
       {
         Ptrace.singleStep(getTid(), sig);

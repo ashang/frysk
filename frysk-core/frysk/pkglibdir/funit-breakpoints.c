@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,33 +58,40 @@ static pid_t pid;
 static int send_trap;
 static int received_trap;
 
+static int send_hup;
+static int received_hup;
+
 static sigjmp_buf env;
 
 static void
-trap_handler(int sig)
+signal_handler(int sig)
 {
-  if (sig != SIGTRAP)
+  if (sig == SIGHUP)
+    {
+      received_hup++;
+    }
+  else if (sig == SIGTRAP)
+    {
+      received_trap++;
+      // Trap handler is triggered by inline invalide instruction in dummy()
+      // longjmp around it.
+      siglongjmp(env, SIGTRAP);
+    }
+  else
     {
       fprintf (stderr, "Wrong signal recieved %d\n", sig);
       exit (-1);
     }
-
-  received_trap++;
-
-  // Trap handler is triggered by inline invalide instruction in
-  // dummy().
-  if (received_trap % 2 == 0)
-    siglongjmp(env, SIGTRAP);
 }
 
-// Tries to trick frysk by sending trap signals and by having its
+// Tries to trick frysk by sending sighup signals and by having its
 // own trap instruction.
 static void
 dummy()
 {
-  // Sending ourselves a trap signal.
-  kill (pid, SIGTRAP);
-  send_trap++;
+  // Sending ourselves an HUP signal.
+  kill (pid, SIGHUP);
+  send_hup++;
 
   // Generating a trap event ourselves, simulating "bad code".  Setup
   // a sigsetjump so we can handle it and return from this function
@@ -93,6 +100,7 @@ dummy()
   // instructions. So this makes sure we skip it when we return.
   if (sigsetjmp (env, 1) == 0)
     {
+      send_trap++;
 #if defined(__i386__) || defined(__x86_64__)
       asm("int3");
 #elif defined(__powerpc64__) || defined(__powerpc__)
@@ -100,10 +108,15 @@ dummy()
 #else
       #error unsuported architecture
 #endif
+      abort(); // Should never be reached.
     }
   else
     {
       // Returned from signal handler through longjmp.
+      // XXX - Note that bug #3997 causes the trap sig handler to be reset
+      // on some kernels when single stepping.
+      // So for now we explicitly set it just to make this testcase work.
+      signal (SIGTRAP, &signal_handler);
       return;
     }
 }
@@ -128,7 +141,11 @@ main (int argc, char *argv[], char *envp[])
   pid = getpid();
   received_trap = 0;
   send_trap = 0;
-  signal (SIGTRAP, &trap_handler);
+  received_hup = 0;
+  send_hup = 0;
+
+  signal (SIGTRAP, &signal_handler);
+  signal (SIGHUP, &signal_handler);
 
   // The number of runs the tester wants us to do.
   // Zero when we should terminate.
@@ -179,9 +196,14 @@ main (int argc, char *argv[], char *envp[])
     }
 
   // Have our own trap signals and trap instructions triggered?
-  if (2 * send_trap != received_trap)
+  if (send_trap != received_trap)
     {
-      fprintf (stderr, "send: %d, recv: %d\n", send_trap, received_trap);
+      fprintf (stderr, "TRAP send: %d, recv: %d\n", send_trap, received_trap);
+      exit (-1);
+    }
+  if (send_hup != received_hup)
+    {
+      fprintf (stderr, "HUP send: %d, recv: %d\n", send_hup, received_hup);
       exit (-1);
     }
 
