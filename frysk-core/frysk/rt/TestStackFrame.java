@@ -119,8 +119,6 @@ public class TestStackFrame
   }
   private void frameTest (String command, final String result, int numberOfArgs)
   {
-    if (brokenX8664XXX(3968))
-      return;
     
     class Attacher
         extends TaskObserverBase

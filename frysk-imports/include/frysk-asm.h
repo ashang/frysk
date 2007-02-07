@@ -66,7 +66,11 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
-#define ENTER_MAIN(ARGC_REG, ARGV_REG) movl 4(%esp), ARGC_REG; pushl %ebp ; movl %esp, %ebp 
+#define ENTER_MAIN \
+	pushl %ebp ; \
+	movl %esp, %ebp ; \
+	movl 8(%ebp), REG1 ; \
+	movl 12(%ebp), REG2
 
 //XXX: Replace with macros at end of file.
 
@@ -81,7 +85,7 @@
 #define REG4 %rdx
 
 #define NO_OP nop
-#define ENTER
+#define ENTER pushq %rbp; movq %rsp, %rbp
 #define EXIT ret
 #define JUMP(LABEL) jmp LABEL
 #define JUMP_NE(LABEL) jne LABEL
@@ -91,7 +95,12 @@
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
 
 //XXX: Need the following to be defined in order to compile. See Bug #3968
-#define ENTER_MAIN(ARGC_REG, ARGV_REG)
+//Intel moves from right to left.
+#define ENTER_MAIN \
+	pushq %rbp ; \
+	movq %rsp, %rbp ; \
+	movq %rdi, REG1 ; \
+	movq %rsi, REG2
 
 #elif defined __powerpc__
 
@@ -165,8 +174,7 @@ main:
 #endif
 
 #ifndef ENTER_MAIN
-#define ENTER_MAIN (ARGC_REG, ARGV_REG) set ARGC_REG to hold ARGC, and ARGV_REG \
-to hold ARGV.
+#define ENTER_MAIN creates the stack frame on function entry, allocates no scratch space on the stack, and stores argc in REG1, argv in REG2.
 #endif
 
 #ifndef EXIT

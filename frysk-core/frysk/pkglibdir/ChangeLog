@@ -1,5 +1,7 @@
 2007-02-06  Nurdin Premji  <npremji@redhat.com>
 
+	* funit-stackframe.S: (main): Updated to reflect changes to ENTER_MAIN.
+
 	* funit-stackframe.S (main): Deleted push command, not needed.
 	Changed COMPAREs to COMPARE_IMMEDs.
 	REMOVED ENTER, ENTER_MAIN now does that as well.
