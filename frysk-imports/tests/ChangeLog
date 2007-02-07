@@ -1,3 +1,8 @@
+2007-02-07  Mark Wielaard  <mark@klomp.org>
+
+	* frysk3997/ptrace_step_sig.c: New test.
+	* Makefile (systests_PASS_PROGRAM): Add frysk3997/ptrace_step_sig.c,
+
 2006-12-26  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (cdtparserversion/CDTParserTest.class):

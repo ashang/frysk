@@ -484,3 +484,7 @@ systests_PASS_PROGRAM += frysk3491/x-state
 frysk3595_detach_multi_thread_SOURCES = frysk3595/detach-multi-thread.c
 frysk3595_detach_multi_thread_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk3595/detach-multi-thread
+
+# ptrace singlestep through a sigtrap handler should NOT reset it.
+# On some kernels the handler is sometimes mysteriously cleared.
+systests_PASS_PROGRAM += frysk3997/ptrace_step_sig
