@@ -630,7 +630,7 @@ public class CoredumpAction
   {
 
     // Start new elf file
-    local_elf = new Elf(getConstructedFileName(), ElfCommand.ELF_C_WRITE, true);
+    local_elf = new Elf(getConstructedFileName(), ElfCommand.ELF_C_WRITE);
 
     // Build elf header
     int endianType = buildElfHeader(local_elf);
