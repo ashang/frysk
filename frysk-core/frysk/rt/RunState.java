@@ -1020,20 +1020,32 @@ public class RunState extends Observable implements TaskObserver.Instruction
       this.lineBreakpoint = lineBreakpoint;
     }
     
-    LineBreakpoint lineBreakpoint;
+    private LineBreakpoint lineBreakpoint;
 
+    public LineBreakpoint getLineBreakpoint()
+    {
+      return lineBreakpoint;
+    }
+    
     public Action updateHit(Task task, long address)
     {
       state = STOPPED;
       breakpointMap.put(task, this);
+      notifyObservers(task);
       return Action.BLOCK;
     }
-    
-
   }
 
+  public SourceBreakpoint getTaskSourceBreakpoint(Task task)
+  {
+    return (SourceBreakpoint)breakpointMap.get(task);
+  }
+  
   public class LineBreakpoint
   {
+    private String fileName;
+    private int lineNumber;
+    private int column;
     private LinkedList dwflAddrs;
     private LinkedList breakpoints;
     
@@ -1042,10 +1054,34 @@ public class RunState extends Observable implements TaskObserver.Instruction
       breakpoints = new LinkedList();
     }
 
-    LineBreakpoint(Task task, String fileName, int lineNo, int column) 
+    LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
     {
       this();
-      dwflAddrs = getDwfl(task).getLineAddresses(fileName, lineNo, column);
+      this.fileName = fileName;
+      this.lineNumber = lineNumber;
+      this.column = column;
+      dwflAddrs = getDwfl(task).getLineAddresses(fileName, lineNumber, column);
+    }
+
+    public String getFileName() 
+    {
+      return fileName;
+    }
+    
+    public int getLineNumber() 
+    {
+      return lineNumber;
+    }
+    
+    public int getColumn() 
+    {
+      return column;
+    }
+    
+    public String toString() 
+    {
+      return "breakpoint file " + getFileName() + " line " + getLineNumber() 
+	+ " column " + getColumn();
     }
     
     public void addBreakpoint(Task task)

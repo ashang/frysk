@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.LinkedList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Observer;
+import java.util.Observable;
 
 import java.text.ParseException;
 import java.lang.RuntimeException;
@@ -64,10 +66,10 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.rt.RunState;
 import frysk.rt.StackFrame;
 
 import lib.dw.BaseTypes;
-
 
 public class CLI 
 {
@@ -80,8 +82,9 @@ public class CLI
     int stackLevel = 0;
     static Object monitor = new Object();
     static boolean attached;
-    AttachedObserver attachedObserver = null;
-
+    RunState runState;
+  private RunStateObserver runStateObserver;
+  
     /**
      * Handle ConsoleReader Completor
      * @param buffer Input buffer.
@@ -325,7 +328,6 @@ public class CLI
         {
           ArrayList params = cmd.getParameters();
           boolean cli = true;
-          attachedObserver = new AttachedObserver();
 
           if (params.size() < 2)
             {
@@ -361,7 +363,6 @@ public class CLI
                 {
                 }});
               Manager.eventLoop.run();
-              //Proc proc = Manager.host.getProc(new ProcId(pid));
               CLIEventLoop eventLoop = new CLIEventLoop();
               eventLoop.start();
             }
@@ -384,8 +385,15 @@ public class CLI
           
           if (cli)
             {
-              
-              task.requestAddAttachedObserver(attachedObserver);
+	      // At some point we will be able to use a RunState object
+	      // created elsewhere e.g., by the SourceWindowFactory.
+	      if (runState == null) 
+		{
+		  runState = new RunState();
+		  runStateObserver = new RunStateObserver();
+		  runState.addObserver(runStateObserver);
+		}
+	      runState.setProc(proc);
               // Wait till we are attached.
               synchronized (monitor)
                 {
@@ -412,8 +420,17 @@ public class CLI
         {
           ArrayList params = cmd.getParameters();
 
-          if (attachedObserver != null)
-            task.requestDeleteAttachedObserver(attachedObserver);
+          if (runState != null) 
+	    {
+	      // Delete all breakpoints.
+	      runState.removeObserver(runStateObserver);
+	      runState.run(proc.getTasks()); // redundant with line
+					     // above?
+	      runState = null;
+	      proc = null;
+	      task = null;
+	    }
+	  attached = false;
           if (params.size() > 0)
             {
               addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
@@ -763,6 +780,62 @@ public class CLI
         }
       }
     }
+
+    class BreakpointHandler implements CommandHandler
+    {
+	public void handle(Command cmd) throws ParseException 
+	{
+	    ArrayList params = cmd.getParameters();
+	    String filename = (String)params.get(0);
+	    int lineNumber = Integer.parseInt((String)params.get(1));
+	    runState.addBreakpoint(task, filename, lineNumber);
+	}
+	
+    }
+
+    class DeleteBreakpointHandler implements CommandHandler
+    {
+	public void handle(Command cmd) throws ParseException 
+	{
+	    ArrayList params = cmd.getParameters();
+	    String filename = (String)params.get(0);
+	    int lineNumber = Integer.parseInt((String)params.get(1));
+	}
+    }
+
+    class GoHandler implements CommandHandler
+    {
+      public void handle(Command cmd) throws ParseException 
+      {
+	if (runState != null)
+	  {
+	    runState.run(proc.getTasks());
+	  }
+	else
+	  {
+	    addMessage(new Message("Not attached to any process", 
+				   Message.TYPE_ERROR));
+	  }
+      }
+    }
+
+  class HaltHandler
+    implements CommandHandler
+  {
+    public void handle(Command cmd)
+      throws ParseException
+    {
+      if (runState != null)
+	{
+	  runState.stop(null);
+	}
+      else
+	{
+	  addMessage(new Message("Not attached to any process", 
+				 Message.TYPE_ERROR));
+	}
+    }
+  }
     
 	class QuitHandler implements CommandHandler
     {
@@ -814,6 +887,8 @@ public class CLI
 
 	// alias
 	private Hashtable aliases;
+	// breakpoints
+	private Hashtable breakpoints;
 
 	/*
 	 * Public methods
@@ -823,15 +898,15 @@ public class CLI
 	 * Constructor
 	 * @param prompt String initially to be used as the prompt
 	 */
-	public CLI (String prompt, PrintStream out)
+	public CLI(String prompt, PrintStream out)
 	{
-		this.prompt = prompt;
-		CLI.out = out;
+	  this.prompt = prompt;
+	  CLI.out = out;
 
-		prepro = new Preprocessor();
-		handlers = new Hashtable();
-		userhelp = new UserHelp();
-		dbgvars = new DbgVariables();
+	  prepro = new Preprocessor();
+	  handlers = new Hashtable();
+	  userhelp = new UserHelp();
+	  dbgvars = new DbgVariables();
         handlers.put("alias", new AliasHandler());
         handlers.put("assign", new PrintHandler());
         handlers.put("attach", new AttachHandler());
@@ -852,6 +927,9 @@ public class CLI
         handlers.put("what", new WhatHandler());
         handlers.put("where", new WhereHandler());
         handlers.put("whichsets", new WhichsetsHandler());
+	handlers.put("break", new BreakpointHandler());
+	handlers.put("go", new GoHandler());
+	handlers.put("halt", new HaltHandler());
 
 		// initialize PT set stuff
 		setparser = new SetNotationParser();
@@ -1051,40 +1129,25 @@ public class CLI
       }
     }
     
-    class AttachedObserver implements TaskObserver.Attached
+  private class RunStateObserver implements Observer 
+  {
+    public void update(Observable observable, Object arg)
     {
-      private boolean added;
-
-      public Action updateAttached(Task taskp)
-      {
-        synchronized (monitor)
-          {
-            attached = true;
-            monitor.notifyAll();
-          }
-        return Action.BLOCK;
-      }
-
-      public void addFailed(Object observable, Throwable w)
-      {
-        w.printStackTrace();
-      }
-      public void addedTo(Object observable)
-      {
-        synchronized (monitor)
-          {
-            added = true;
-            monitor.notifyAll();
-          }
-      }
-
-      public boolean isAdded()
-      {
-        return added;
-      }
-
-      public void deletedFrom(Object observable)
-      {
-      }
+      RunState runState = (RunState)observable;
+      Task task = (Task)arg;
+      RunState.SourceBreakpoint bpt = null;
+      
+      synchronized (monitor) 
+	{
+	  attached = true;
+	  bpt = runState.getTaskSourceBreakpoint(task);
+	  monitor.notifyAll();
+	}
+      if (bpt != null) 
+	{
+	  RunState.LineBreakpoint lpt = bpt.getLineBreakpoint();
+	  System.out.println("breakpoint hit file " + bpt.toString());
+	}
     }
+  }
 }

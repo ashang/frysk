@@ -80,108 +80,126 @@ class UserHelp
 	}
 	
 	TreeMap commandHelp;
-
+	void addHelp(String commandName, String description, String syntax,
+		     String full)
+        {
+	  commandHelp.put(commandName, 
+			  new CommandHelp(commandName, description, syntax,
+					  full));
+	}
+  
 	public UserHelp()
 	{
 		String temp = null;
 		commandHelp = new TreeMap();
 		
         temp = "Create or view user-define commands.";
-        commandHelp.put("alias", new CommandHelp("alias",
-                                                    "Create or view user-define commands.",
-                                                    "\nCreate alias: alias command-name command-body\n"+
-                                                    "View alias: alias [command-name]",
-                                                    temp));
+        addHelp("alias",
+		"Create or view user-define commands.",
+		("\nCreate alias: alias command-name command-body\n"+
+		 "View alias: alias [command-name]"),
+		temp);
 
         temp = "Evaluate expression and assign value to variable.";
-        commandHelp.put("assign", new CommandHelp("assign",
-                                                    "Assign value of expression.",
-                                                    "assign variable expression",
-                                                    temp));
+        addHelp("assign",
+		"Assign value of expression.",
+		"assign variable expression",
+		temp);
         
         temp = "Attach to a running process.";
-        commandHelp.put("attach", new CommandHelp("attach",
-                                                    "Attach to a running process.",
-                                                    "attach executable pid {-task tid} {-cli}",
-                                                    temp));
+        addHelp("attach",
+		"Attach to a running process.",
+		"attach executable pid {-task tid} {-cli}",
+		temp);
         
 		temp = "Creates a new set \"set-name\" with members specified in \"p/t-set\" set notation.";
-		commandHelp.put("defset", new CommandHelp("defset",
-													"Define a named proc/task set.",
-													"defset set-name p/t-set",
-													temp));
+		addHelp("defset",
+			"Define a named proc/task set.",
+			"defset set-name p/t-set",
+			temp);
 
         temp = "Detach from a running process.";
-        commandHelp.put("detach", new CommandHelp("detach",
-                                                    "Detach from a running process.",
-                                                    "detach",
-                                                    temp));
+        addHelp("detach",
+		"Detach from a running process.",
+		"detach",
+		temp);
         
-		temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
-		commandHelp.put("focus", new CommandHelp("focus",
-													"Change current set.",
-													"focus [p/t-set]",
-													temp));
+        temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
+        addHelp("focus",
+		"Change current set.",
+		"focus [p/t-set]",
+		temp);
 
         temp = "Display source code lines.";
-        commandHelp.put("list", new CommandHelp("list",
-                                                    "Display source code lines.",
-                                                    "\nList source: list\n"+
-                                                    "list",
-                                                    temp));
+        addHelp("list",
+		"Display source code lines.",
+		"\nList source: list\nlist",
+		temp);
         
         temp = "Print value of expression.";
-        commandHelp.put("print", new CommandHelp("print",
-                                                    "Print value of expression.",
-                                                    "print expression { -format x|d|o }",
-                                                    temp));
+        addHelp("print",
+		"Print value of expression.",
+		"print expression { -format x|d|o }",
+		temp);
         
         temp = "Change value or \"debugger-var\" to \"value\". View value of \"debugger-var\" variable or " + 
         "of all variables if none is specified.";
-        commandHelp.put("set", new CommandHelp("set",
-                                            "Change or view a debugger variable.",
-                                            "\nChange variable: set debugger-var = value\n" +
-                                            "View variable: set [debugger-var]",
-                                            temp));
+        addHelp("set",
+		"Change or view a debugger variable.",
+		("\nChange variable: set debugger-var = value\n" +
+		 "View variable: set [debugger-var]"),
+		temp);
 
         temp = "Remove previously defined command.";
-        commandHelp.put("unalias", new CommandHelp("unalias",
-                                                    "Create or view user-define commands.",
-                                                    "unalias { command-name | -all }",
-                                                    temp));
+        addHelp("unalias",
+		"Create or view user-define commands.",
+		"unalias { command-name | -all }",
+		temp);
 
         temp = "Undefine an earlier defined set \"set-name\", or ";
         temp += "all user-defined sets if option \"-all\" is present.";
-        commandHelp.put("undefset", new CommandHelp("undefset",
-                                                    "Undefine a named proc/task set.",
-                                                    "undefset {set-name | -all}",
-                                                    temp));
+        addHelp("undefset",
+		"Undefine a named proc/task set.",
+		"undefset {set-name | -all}",
+		temp);
 
         temp = "Revert value of \"debugger-var\" variable to default, or of all variables if \"-all\" is present instead.";
-        commandHelp.put("unset", new CommandHelp("unset",
-                                                    "Revert variable value to default.",
-                                                    "unset { debugger-var | -all }",
-                                                    temp));
+        addHelp("unset",
+		"Revert variable value to default.",
+		"unset { debugger-var | -all }",
+		temp);
         
         temp = "List the members of a proc/task set \"set-name\",";
         temp += "or of all user-defined sets if no set is specified.";
-        commandHelp.put("viewset", new CommandHelp("viewset",
-                                                    "List members of a proc/task set.",
-                                                    "viewset [set-name]",
-                                                    temp));
+        addHelp("viewset",
+		"List members of a proc/task set.",
+		"viewset [set-name]",
+		temp);
 
         temp = "Print data type of expression.";
-        commandHelp.put("what", new CommandHelp("what",
-                                                    "Print data type of expression.",
-                                                    "what expression",
-                                                    temp));
+        addHelp("what",
+		"Print data type of expression.",
+		"what expression",
+		temp);
 
         temp = "For every proc/task in \"p/t-set\" list user-defined set to which it belongs. ";
         temp += "If no \"p/t-set\" is specified default to the current target p/t-set.";
-        commandHelp.put("whichsets", new CommandHelp("whichsets",
-                                                    "List all user-defined set to which a proc/task belongs.",
-                                                    "whichsets [p/t-set]",
-                                                    temp));
+        addHelp("whichsets",
+		"List all user-defined set to which a proc/task belongs.",
+		"whichsets [p/t-set]",
+		temp);
+
+        temp = "Continue running a process, returning without blocking.";
+        addHelp("go",
+		"Continue a process.",
+		"go",
+		temp);
+
+        temp = "Stop a process.";
+        addHelp("halt",
+		"Stop a process which is already attached.",
+		"halt",
+		temp);
 	}
 
 	public boolean isValidCommand(String cmd)

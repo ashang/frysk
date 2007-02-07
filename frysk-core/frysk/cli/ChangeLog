@@ -1,3 +1,18 @@
+2007-02-07  Tim Moore  <timoore@redhat.com>
+
+	* hpd/CLI.java (attachedObserver): Remove.
+	(runState, runStateObserver, AttachHandler, DetachHandler): Start
+	and stop processes using RunState object.
+	(BreakpointHandler, DeleteBreakpointHandler): Handlers for
+	manipulating source breakpoints.
+	(GoHandler, HaltHandler): Handlers for starting and stopping a
+	process.
+	(CLI constructor): Add new handlers to handler table.
+	(RunStateObserver): New local class for interacting with RunState.
+	* hpd/UserHelp.java (addHelp): Convenience function.
+	(UserHelp constructor): Use it. Add help for "go" and "halt" commands.
+	
+
 2007-01-29  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (byteType,shortType,intType,floatType,doubleType): New.
