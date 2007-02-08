@@ -1,3 +1,8 @@
+2007-02-08  sami wagiaalla  <swagiaal@redhat.com>
+
+	* SourceWindow.java: now hides instead of destroys itself upon
+	Destroy event. Fix for bz3380.
+
 2007-02-06  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java: (stateMap): Refactored from stateTable;

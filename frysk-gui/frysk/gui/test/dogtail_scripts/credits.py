@@ -49,39 +49,31 @@ Summary:        Simple, demo/prototype dogtail test script for Fryske
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
-from dogtail import tree
+from FryskHelpers import *
+from fryskTestCase import *
+from TestRunObject import TestRunObject
 from dogtail import predicate
+from dogtail import tree
+import FryskHandler
+
+import dogtail.tc
+import os
+import sys
+import unittest
+import xml.sax
 
 # Setup to parse test input data (XML file)
-import xml.sax
-import FryskHandler
-import sys
-import os
 
 # Set up for logging
-import dogtail.tc
 
 # Set up for unit test framework
-import unittest
 
 # Test support functions
-from FryskHelpers import *
-from TestRunObject import TestRunObject
 
-class credits (unittest.TestCase):
+class credits (fryskTestCase):
 
     def setUp(self):
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk 
-        self.FryskBinary = os.getenv('fryskBinary')  
-        self.funitChildBinary = os.getenv('funitChild')  
-        
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()  
+        fryskTestCase.setUp(self);
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
@@ -98,10 +90,8 @@ class credits (unittest.TestCase):
         # creating the session, param #4 = walk thru all the GUI nodes 
         createMinimalSession (self.frysk, self.theSession, False, False)
         
-    def tearDown(self):    
-        # Exit Frysk
-        endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+#    def tearDown(self):    
+#        fryskTestCase.tearDown(self);
 
     def testCredits(self):      
         """test = credits.testCredits - Check that the credits text is correct"""   
@@ -129,7 +119,7 @@ class credits (unittest.TestCase):
    
         # As of 2006/04/26, the text is blank - so just exit for now    
         # Compare the expected license string with the actual string, log the results
-        self.TestString.compare(self.theLogWriter.scriptName, 'test passed', 'test passed')
+        self.TestString.compare(self.theLogWriter.fileName, 'test passed', 'test passed')
         self.assertEqual('test passed', 'test passed')
         
         closeButton = creditsFrame.button('Close')

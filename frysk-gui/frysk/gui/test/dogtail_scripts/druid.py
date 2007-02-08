@@ -51,6 +51,7 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 from dogtail import tree
 from dogtail.utils import run
 from dogtail import predicate
+from fryskTestCase import fryskTestCase
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -80,21 +81,11 @@ from FryskHelpers import FRYSK_SESSION_FILES
 from FryskHelpers import createMinimalSession
 from FryskHelpers import createBigSession
 
-class druid ( unittest.TestCase ):
+class druid ( fryskTestCase ):
  
    def setUp(self):
         
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk 
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
- 
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
+        fryskTestCase.setUp(self);
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
@@ -131,7 +122,7 @@ class druid ( unittest.TestCase ):
         self.theSession.setProcessesDict(self.theSessionProcesses)
 
         if self.theSession.isequal (newlyCreatedSession):
-            self.TestString.compare(self.theLogWriter.scriptName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
+            self.TestString.compare(self.theLogWriter.fileName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
             self.assertEqual(newlyCreatedSession.getName(), self.theSession.getName() )            
         else:
             self.fail ('FAIL - the session objects do not match')
@@ -139,7 +130,7 @@ class druid ( unittest.TestCase ):
    def tearDown(self):    
        # Exit Frysk
        endFrysk (self.startObject)
-       self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+       self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
        
 def suite():
         suite = unittest.TestSuite()

@@ -51,6 +51,7 @@ __author__ = 'Nurdin Premji <npremji@redhat.com>'
 # Imports
 from dogtail import tree
 from dogtail import predicate
+from fryskTestCase import fryskTestCase
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -67,13 +68,13 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class test2985 (unittest.TestCase):
+class test2985 (fryskTestCase):
 
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+        self.theLogWriter = self.TestString.logger
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' starting'  })
 
         # Start up Frysk
         self.FryskBinary = os.getenv('fryskBinary')
@@ -100,10 +101,14 @@ class test2985 (unittest.TestCase):
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
    
     def testBug2985(self):  
-        """test = test2985.testBug2985 - Check that bug 2985 has been resolved"""  
+        """test = test2985.testBug2985 - Check that bug 2985 has been resolved"""
+        
+        if brokenTest(3982):
+            return
+            
         monitor = self.frysk.child(MONITOR)
         funitChild = self.frysk.child('funit-child')
         funitChild.grabFocus()

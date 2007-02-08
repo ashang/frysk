@@ -1120,6 +1120,7 @@
 		      <property name="spacing">12</property>
 		      <accessibility>
 			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox54</atkproperty>
+			<atkproperty name="AtkObject::accessible_description" translatable="yes">vbox54</atkproperty>
 		      </accessibility>
 
 		      <child>

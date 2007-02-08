@@ -94,6 +94,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
@@ -103,21 +105,21 @@ import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
-import frysk.gui.prefs.BooleanPreference;
-import frysk.gui.prefs.PreferenceManager;
-import frysk.gui.prefs.PreferenceWindow;
-import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.disassembler.DisassemblyWindowFactory;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
+import frysk.gui.prefs.BooleanPreference;
+import frysk.gui.prefs.PreferenceManager;
+import frysk.gui.prefs.PreferenceWindow;
+import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.Isa;
 import frysk.rt.RunState;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
@@ -297,6 +299,18 @@ public class SourceWindow
   {
     this(glade, gladePath, proc);
     this.attachedObserver = ao;
+    
+    this.addListener(new LifeCycleListener() {
+        public void lifeCycleEvent(LifeCycleEvent event) {}
+       public boolean lifeCycleQuery(LifeCycleEvent event) {
+           if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+               event.isOfType(LifeCycleEvent.Type.DELETE)) {
+             SourceWindow.this.hideAll();
+           }    
+           return true;
+       }
+    });
+    
   }
   
   /**
@@ -607,7 +621,8 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent action)
       {
-        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+//        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
       }
     });
     AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x,

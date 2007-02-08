@@ -258,17 +258,17 @@ def startFrysk ( FryskBinary, funitChildBinary, logWriter ):
     if AT_SPI_output != 'true':
         print '\n***AT SPI is not enabled - exiting now***'
         print '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'
-        logWriter.writeResult({'SEVERE' :  '***AT SPI is not enabled - exiting now***'  })
-        logWriter.writeResult({'SEVERE' :  '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'  })       
+        logWriter.log({'SEVERE' :  '***AT SPI is not enabled - exiting now***'  })
+        logWriter.log({'SEVERE' :  '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'  })       
         sys.exit(77)
    
     # Make sure that Frysk is not still running or in a funny state after previous tests
     # This is a brutal way to do this - is there a better way?
     try:
         killFrysk()
-        logWriter.writeResult({'WARNING' :  'Frysk was still running at start of test- killed it - ok to start test'  })
+        logWriter.log({'WARNING' :  'Frysk was still running at start of test- killed it - ok to start test'  })
     except:
-        logWriter.writeResult({'INFO' :  'Frysk not running at start of test - ok to start test'  })
+        logWriter.log({'INFO' :  'Frysk not running at start of test - ok to start test'  })
    
     # Start up funit-child process that will be needed as a target for
     # the creation of the test startup session
@@ -352,7 +352,7 @@ def getEventType ( eventClassName ):
     return returnString
 
 # ---------------------
-def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolean):
+def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolean = False):
     """ This function is used to create a minimal session object - this
         is needed as all tests that access the FryskGui must either create
         a session or access an existing session.
@@ -452,13 +452,22 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolea
     hbox77 = sessionDruid_sessionNoteBook.child('hbox77')
     vbox52 = hbox77.child('vbox52')
     SessionDruid_processObserverTreeView = vbox52.child('SessionDruid_processObserverTreeView')
-    print 'FOUND ' + SessionDruid_processObserverTreeView.name
+    #print 'FOUND ' + SessionDruid_processObserverTreeView.name
     theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
     
     #print 'The process list: ', theProcessList
     
     for processName in theProcessList:
         resolvedName = extractString (str(processName), 'name')
+        
+        # get the process name form the resolvedName
+        # which looks like this /bin/bash 0123
+        # we are looking for this    ^^^^
+        myList = resolvedName.split()
+        myList = myList[0].split('/')
+        resolvedProcessName = myList[len(myList)-1]
+        print "resolvedProcessName ", resolvedProcessName
+        
         tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
         tempProc.grabFocus()
          # Correct, but not optimal: tempProc.actions['activate'].do()
@@ -468,7 +477,7 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean, walkGuiBoolea
         SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
         theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), True)
         theDictionary = createProcessDict (theList)
-        userSelectedObservers = userSelectedObserverDict[resolvedName]
+        userSelectedObservers = userSelectedObserverDict[resolvedProcessName]
     
         for x in userSelectedObservers:
             tempObserver = theDictionary[x]
@@ -516,7 +525,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
     sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
     vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
     sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
-    sessionNameText.text = "all processes and observers"
+#    sessionNameText.text = "all processes and observers"
+    sessionNameText.text = sessionObject.getName()
     
     hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
         

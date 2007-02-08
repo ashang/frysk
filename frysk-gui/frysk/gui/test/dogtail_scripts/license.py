@@ -47,40 +47,31 @@ Summary:        Simple, demo/prototype dogtail test script for Frysk
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
-from dogtail import tree
+from FryskHelpers import *
 from dogtail import predicate
+from dogtail import tree
+from fryskTestCase import fryskTestCase
+import FryskHandler
+import dogtail.tc
+import os
+import sys
+import unittest
+import xml.sax
 
 # Setup to parse test input data (XML file)
-import xml.sax
-import FryskHandler
-import sys
-import os
 
 # Set up for logging
-import dogtail.tc
 
 # Set up for unit test framework
-import unittest
 
 # Test support functions
-from FryskHelpers import *
 
-class license (unittest.TestCase):
+class license (fryskTestCase):
 
     def setUp(self):
         
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self);
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
@@ -99,7 +90,7 @@ class license (unittest.TestCase):
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
 
     def testLicense(self):      
         """test = license.testLicense - Check that the license text is correct"""   

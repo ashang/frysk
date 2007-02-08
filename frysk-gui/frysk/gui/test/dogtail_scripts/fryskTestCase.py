@@ -38,28 +38,15 @@
 # version and license this file solely under the GPL without
 # exception.
 
-'''
-Script name:    TestEventViewerMarkers.py
-Script author:  npremji
-Creation date:  July 2006
-Purpose:        Verify eventviewer markers can be seen.
-Summary:        Simple, demo/prototype dogtail test script for Fryske
-'''
-
-__author__ = 'Nurdin Premji <npremji@redhat.com>'
-
 # Imports
 from dogtail import tree
 from dogtail import predicate
-from dogtail.config import config
 
 # Setup to parse test input data (XML file)
 import xml.sax
 import FryskHandler
 import sys
 import os
-
-import re
 
 # Set up for logging
 import dogtail.tc
@@ -69,68 +56,33 @@ import unittest
 
 # Test support functions
 from FryskHelpers import *
-from fryskTestCase import fryskTestCase
+from TestRunObject import TestRunObject
 
-class eventViewerAccessibilityInfo (fryskTestCase):
+# a base class for all the test cases
+# all common code should be moved up to here
+class fryskTestCase (unittest.TestCase):
 
     def setUp(self):
-        fryskTestCase.setUp(self);
-        
-        # Load up Session object
-        self.parser = xml.sax.make_parser(  )
-        self.handler = FryskHandler.FryskHandler(  )
-        self.parser.setContentHandler(self.handler)
+        # Set up for logging
+        self.TestString=dogtail.tc.TCString()
+        self.theLogWriter = self.TestString.logger
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' --STARTING--'  })
 
-        # Mechanism to allow multiple tests to be assembled into test suite,
-        # and have the test input data files be specified in the suite defiition,
-        # not the test script. 
-        self.parser.parse(os.getenv('TestDruid_FILE') )
-        self.theSession = self.handler.theDebugSession
-
-        # Create a Frysk session - True = quit the FryskGui after
-        # creating the session
-        createMinimalSession (self.frysk, self.theSession, False, False)
+        tree.logger.stdOut = False
+        self.theLogWriter.stdOut = False
         
-    def tearDown(self):    
-        pass
+        # Start up Frysk 
+        self.FryskBinary = os.getenv('fryskBinary')  
+        self.funitChildBinary = os.getenv('funitChild')  
         
-    def testEVAccessibilityInfo(self):  
-        """test = eventViewerAccessibilityInfotestEVAccessibilityInfo - Test that EV provides A11y info""" 
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()  
         
-#        if brokenTest(3282):
-#            return
-                             
+    def tearDown(self):
+        # Exit Frysk
+        endFrysk (self.startObject)
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + '--ENDING--'  })
         
-        monitor = self.frysk.child(MONITOR)
-
-        #procBox = self.frysk.child(description = 'funit-childTimeLinesVBox')
-        #procBox = self.frysk.findChild(predicate.GenericPredicate(name = name, roleName = roleName, description= description, label = label), recursive = recursive, debugName=debugName))
-#       procBox.blink(10);
-
-        timeLines =  self.frysk.findChildren(predicate.GenericPredicate(description = 'TimeLine'))
-        timeLine = timeLines[0]
-        #timeLine = procBox.children[0]
-#       timeLine.blink(10);
-         
-          
-        if (timeLine == 0):
-            self.fail ( 'Error - TimeLine cannot be found' )
-            
-        statusWidget = monitor.child('statusWidget')
-        
-        #Ensure that there are the proper number of monitors.
-
-        # Positive test
-        if len(timeLine.children) == 0:
-            self.fail ( 'Error - TimeLine does not provide A11y info for events' )
-          
-       
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(eventViewerAccessibilityInfo('testEVAccessibilityInfo'))
-    return suite
-
 if __name__ == '__main__':
   #unittest.main()
   unittest.TextTestRunner(verbosity=2).run(suite())
-

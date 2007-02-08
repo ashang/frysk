@@ -71,23 +71,14 @@ from DebugSession import DebugSession
 
 # Support routines for Frysk GUI Dogtail test scripts
 from FryskHelpers import *
+from fryskTestCase import fryskTestCase
 
-class stressDruid ( unittest.TestCase ):
+class stressDruid ( fryskTestCase ):
 
    def setUp(self):
 
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self)
+       
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
@@ -98,11 +89,14 @@ class stressDruid ( unittest.TestCase ):
         # not the test script.
         self.parser.parse(os.getenv('TestDruid_FILE') )
         self.theSession = self.handler.theDebugSession
-
+        print "self.theSession.getProcesses()1 ",self.theSession.getProcesses(),"\n"
+        
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
-        createBigSession (self.frysk, self.theSession, False)
-
+        #createBigSession (self.frysk, self.theSession, False)
+        createMinimalSession (self.frysk, self.theSession, False)
+        print "self.theSession.getProcesses()2 ",self.theSession.getProcesses(),"\n"
+        
    def testSessionFile( self ):      
         """test = stressDruid.testSessionFile - Verify that the session object just created and presisted under $HOME/.frysk/Sessions
            matches the test input"""   
@@ -117,12 +111,14 @@ class stressDruid ( unittest.TestCase ):
 
         newlyCreatedSessionProcesses = newlyCreatedSession.getProcesses()
         self.theSessionProcesses = self.theSession.getProcesses()
-
+        print "self.theSession.getProcesses()3 ",self.theSession.getProcesses(),"\n"
+        
         newlyCreatedSession.setProcessesDict(newlyCreatedSessionProcesses)
         self.theSession.setProcessesDict(self.theSessionProcesses)
-
+        print "self.theSession.getProcesses()4 ",self.theSession.getProcesses(),"\n"
+        
         if self.theSession.isequal (newlyCreatedSession):
-            self.TestString.compare(self.theLogWriter.scriptName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
+            self.TestString.compare(self.theLogWriter.fileName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
             self.assertEqual(newlyCreatedSession.getName(), self.theSession.getName() )            
         else:
             self.fail ('FAIL - the session objects do not match')
@@ -130,7 +126,7 @@ class stressDruid ( unittest.TestCase ):
    def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
   
  
 def suite():

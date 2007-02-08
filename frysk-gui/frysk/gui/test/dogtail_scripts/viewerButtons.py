@@ -72,8 +72,8 @@ class viewerButtons (unittest.TestCase):
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+        self.theLogWriter = self.TestString.logger
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' starting'  })
 
         # Start up Frysk
         self.FryskBinary = os.getenv('fryskBinary')
@@ -100,7 +100,7 @@ class viewerButtons (unittest.TestCase):
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
         
     def testEVButtons(self):  
         """test = viewerButtons.testEVButtons - Check that GUI buttons can be acccessed""" 

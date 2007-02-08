@@ -129,22 +129,14 @@ from FryskHelpers import *
 from DebugExistingProcessDialog import *
 import time
 
-class guiWalktest ( unittest.TestCase ):
+from fryskTestCase import fryskTestCase
+
+class guiWalktest ( fryskTestCase ):
 
     def setUp( self ):
         
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  } )
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv( 'fryskBinary' )
-        self.funitChildBinary = os.getenv( 'funitChild' )
-
-        self.startObject = startFrysk( self.FryskBinary, self.funitChildBinary, self.theLogWriter )
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self)
+        
         # Load up Session object
         self.parser = xml.sax.make_parser()
         self.handler = FryskHandler.FryskHandler()
@@ -159,7 +151,7 @@ class guiWalktest ( unittest.TestCase ):
     def tearDown( self ):    
         # Exit Frysk
         endFrysk ( self.startObject )
-        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  } )
+        self.theLogWriter.log( {'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  } )
    
     def testPath_1( self ):      
         """test = guiWalkTest.testPath_1 - Check that the GUI elements can be accessed and acted upon"""   
@@ -380,7 +372,7 @@ class guiWalktest ( unittest.TestCase ):
         customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         showChildren_new ( customObservers, "table cell", "activate" )
         
-        # Press 'New'
+        # s 'New'
         newObserverButton = customObservers.button( 'New' )
         newObserverButton.click()
         observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )   

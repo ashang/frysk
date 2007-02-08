@@ -66,22 +66,13 @@ import unittest
 
 # Test support functions
 from FryskHelpers import *
+from fryskTestCase import *
 
-class test2866 (unittest.TestCase):
+class test2866 (fryskTestCase):
 
     def setUp(self):
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self);
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
@@ -100,7 +91,7 @@ class test2866 (unittest.TestCase):
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  }) 
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  }) 
         
     def testEditObservers( self ): 
         """test = test2866.testEditObservers - Check that bug 2866 has been resolved"""  
@@ -147,7 +138,7 @@ class test2866 (unittest.TestCase):
             observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerDescription = observerDetails.child( name = 'observerDescriptionTextView', roleName = 'text' )
             
-            self.TestString.compare(self.theLogWriter.scriptName + '.testEditObservers()', observerDescription.text, newDescription)
+            self.TestString.compare(self.theLogWriter.fileName + '.testEditObservers()', observerDescription.text, newDescription)
             self.assertEqual(observerDescription.text, newDescription)                
             
             observerDescription.text = originalDescription

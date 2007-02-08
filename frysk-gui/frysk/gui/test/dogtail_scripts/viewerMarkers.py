@@ -73,8 +73,8 @@ class viewerMarkers (unittest.TestCase):
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+        self.theLogWriter = self.TestString.logger
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' starting'  })
 
         # Start up Frysk
         self.FryskBinary = os.getenv('fryskBinary')
@@ -101,7 +101,7 @@ class viewerMarkers (unittest.TestCase):
     def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
         
     def testEVMarkers(self):  
         """test = viewerMarkers.testEVMarkers - Check that GUI buttons can be acccessed""" 
@@ -121,7 +121,7 @@ class viewerMarkers (unittest.TestCase):
         for observerName in theObserverList:
             try:
                 tempObserver = statusWidget.child(observerName)
-                self.theLogWriter.writeResult({'INFO' :  'positive test passed - observer ' + observerName + ' found'  })
+                self.theLogWriter.log({'INFO' :  'positive test passed - observer ' + observerName + ' found'  })
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerName )
                 sys.exit(1)
@@ -139,7 +139,7 @@ class viewerMarkers (unittest.TestCase):
                 self.fail ( 'Error - located a non-existent Observer with name = ' + observerName )
                 sys.exit(1)
             except dogtail.tree.SearchError:
-                self.theLogWriter.writeResult({'INFO' :  'negative test passed - non-existent observer ' + observerName + ' not found'  })
+                self.theLogWriter.log({'INFO' :  'negative test passed - non-existent observer ' + observerName + ' not found'  })
 
 def suite():
     suite = unittest.TestSuite()

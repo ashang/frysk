@@ -67,22 +67,14 @@ from FryskHelpers import *
 from DebugExistingProcessDialog import *
 import time
 
-class test3380 ( unittest.TestCase ):
+from fryskTestCase import fryskTestCase
+
+class test3380 ( fryskTestCase ):
 
     def setUp( self ):
         
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  } )
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv( 'fryskBinary' )
-        self.funitChildBinary = os.getenv( 'funitChild' )
-
-        self.startObject = startFrysk( self.FryskBinary, self.funitChildBinary, self.theLogWriter )
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self);
+        
         # Load up Session object
         self.parser = xml.sax.make_parser()
         self.handler = FryskHandler.FryskHandler()
@@ -94,11 +86,7 @@ class test3380 ( unittest.TestCase ):
         self.parser.parse( os.getenv( 'TestDruid_FILE' ) )
         self.theSession = self.handler.theDebugSession
                
-    def tearDown( self ):    
-        # Exit Frysk
-        endFrysk ( self.startObject )
-        self.theLogWriter.writeResult( {'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  } )
-
+    
     def runTheTest ( self, thePID ):        
         
         # Start at the top level Frysk gui

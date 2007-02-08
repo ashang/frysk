@@ -145,9 +145,14 @@ public class MainWindow extends Window implements Saveable{
 													{
 														
 														shellTask = task;
-														GuiProc shellProc = new GuiProc(task.getProc());
+														final GuiProc shellProc = new GuiProc(task.getProc());
 														shellProc.setName("Frysk Terminal Process");
-														sessionProcTreeView.procDataModel.addProc(shellProc);
+                                                        CustomEvents.addEvent(new Runnable() {
+                                                          GuiProc realShellProc = shellProc; 
+                                                          public void run() {
+                                                            sessionProcTreeView.procDataModel.addProc(realShellProc);
+                                                          }
+                                                        });
 														return Action.CONTINUE;
 													}
 													public void addedTo(Object observable)
@@ -167,13 +172,10 @@ public class MainWindow extends Window implements Saveable{
 		term.setForegroundColor(Color.BLACK);
 		term.setBackgroudColor(Color.WHITE);
 
-		CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				terminalWidget.addWithViewport(term);
-				term.showAll();
-				terminalWidget.showAll();
-			}
-		});  	
+		
+		terminalWidget.addWithViewport(term);
+		term.showAll();
+		terminalWidget.showAll();  	
 	}
 
 	public void killTerminalShell()

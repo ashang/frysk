@@ -72,22 +72,13 @@ import os
 from Observer import Observer
 from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
+from fryskTestCase import fryskTestCase
 
-class observerData ( unittest.TestCase ):
+class observerData ( fryskTestCase ):
         
     def setUp(self):
-        # Set up for logging
-        self.TestString=dogtail.tc.TCString()
-        self.theLogWriter = self.TestString.writer
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
-
-        # Start up Frysk
-        self.FryskBinary = os.getenv('fryskBinary')
-        self.funitChildBinary = os.getenv('funitChild')
-
-        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
-
+        fryskTestCase.setUp(self);
+        
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
@@ -106,7 +97,7 @@ class observerData ( unittest.TestCase ):
     def tearDown( self ):    
         # Exit Frysk
         endFrysk (self.startObject)
-        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        self.theLogWriter.log({'INFO' :  'test script: ' + self.theLogWriter.fileName + ' ending'  })
 
     def deleteTheObserver(self):
         observersItem = self.frysk.menuItem( OBSERVERS )
@@ -135,8 +126,8 @@ class observerData ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:  
-                self.theLogWriter.writeResult({'INFO' :  'No error - successfully found ' + observerNameToVerify })
-                self.TestString.compare(self.theLogWriter.scriptName + '.teardown()', observerNameToVerify, observerNameToVerify)
+                self.theLogWriter.log({'INFO' :  'No error - successfully found ' + observerNameToVerify })
+                self.TestString.compare(self.theLogWriter.fileName + '.teardown()', observerNameToVerify, observerNameToVerify)
                 self.assertEqual(observerNameToVerify, observerNameToVerify)
                 
         # Resturn to the Frysk main menu
@@ -169,7 +160,7 @@ class observerData ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
-                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.TestString.compare(self.theLogWriter.fileName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
                 self.assertEqual(observerNameToVerify, observerNameToVerify)                
                 
             editButton = customObservers.button( 'Edit' )
@@ -388,8 +379,8 @@ class observerData ( unittest.TestCase ):
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
                 #print 'Successfully created new Observer with name = ' + newObserverName
-                self.theLogWriter.writeResult({'INFO' :  'Successfully created new Observer with name = ' + newObserverName})
-                self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newObserverName, newObserverName)
+                self.theLogWriter.log({'INFO' :  'Successfully created new Observer with name = ' + newObserverName})
+                self.TestString.compare(self.theLogWriter.fileName + '.setUp()', newObserverName, newObserverName)
                 self.assertEqual(newObserverName, newObserverName)
   
         # end loop --------
@@ -422,7 +413,7 @@ class observerData ( unittest.TestCase ):
 
         if self.theObserver.isequal (newlyCreatedObserver):
             # print 'PASS - the observer objects match'
-            self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newlyCreatedObserver.getName(), self.theObserver.getName() )
+            self.TestString.compare(self.theLogWriter.fileName + '.setUp()', newlyCreatedObserver.getName(), self.theObserver.getName() )
             self.assertEqual(newlyCreatedObserver.getName(), self.theObserver.getName() )
         else:
             self.fail ('FAIL - the observer objects do not match: ' + newlyCreatedObserver.getName() + ', ' + self.theObserver.getName() )
@@ -461,7 +452,7 @@ class observerData ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
-                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.TestString.compare(self.theLogWriter.fileName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
                 self.assertEqual(observerNameToVerify, observerNameToVerify)                
                 
             editButton = customObservers.button( 'Edit' )
