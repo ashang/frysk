@@ -440,7 +440,9 @@ public class LinuxIa32Syscall
     new Ia32Syscall ("sync_file_range", 314),
     new Ia32Syscall ("tee", 315),
     new Ia32Syscall ("vmsplice", 316),
-    new Ia32Syscall ("move_pages", 317)
+    new Ia32Syscall ("move_pages", 317),
+    new Ia32Syscall ("getcpu", 318),
+    new Ia32Syscall ("epoll_pwait", 319)
     };
 
 

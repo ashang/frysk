@@ -126,7 +126,8 @@ public class TestSyscallsWithAudit
     assertNull("MAX_SYSCALL_NUM", AuditLibs.syscallToName(MAX_SYSCALL_NUM,
 							  machine));
 
-    // We should have names up to the highest number auditlib knows about.
-    assertEquals("max-syscall-num", highestNum, syscallList.length - 1);
+    // We should have names up to at least the highest number auditlib
+    // knows about.
+    assertTrue("max-syscall-num", highestNum <= syscallList.length - 1);
   }
 }
