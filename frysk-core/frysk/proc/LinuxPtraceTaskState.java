@@ -204,7 +204,7 @@ abstract class LinuxPtraceTaskState
 	 */
         TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
@@ -214,7 +214,7 @@ abstract class LinuxPtraceTaskState
         TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return this;
 	}
@@ -423,7 +423,7 @@ abstract class LinuxPtraceTaskState
 		TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
-		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    logger.log (Level.FINE, "{0} handleAddObservationr\n", task);
 		    // XXX - This should most likely test needsSuspendedAction
 		    observation.add();
 		    return this;
@@ -489,7 +489,7 @@ abstract class LinuxPtraceTaskState
 		TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
-		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
                 }
@@ -520,7 +520,7 @@ abstract class LinuxPtraceTaskState
 		TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
-		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
 		}
@@ -562,7 +562,7 @@ abstract class LinuxPtraceTaskState
 	}
 	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    // XXX most likely need to check needsSuspendedAction
 	    observation.add();
 	    return this;
@@ -570,7 +570,7 @@ abstract class LinuxPtraceTaskState
 	TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    // XXX most likely need to check needsSuspendedAction
 	    observation.delete();
 	    return this;
@@ -956,7 +956,7 @@ abstract class LinuxPtraceTaskState
 
 	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    if (! observation.needsSuspendedAction())
 		observation.add();
 	    else
@@ -971,7 +971,7 @@ abstract class LinuxPtraceTaskState
 	TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    if (! observation.needsSuspendedAction())
 		observation.delete();
 	    else
@@ -1150,7 +1150,7 @@ abstract class LinuxPtraceTaskState
 	}
 	TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
@@ -1173,7 +1173,7 @@ abstract class LinuxPtraceTaskState
 	
 	TaskState handleDeleteObservation(Task task, TaskObservation observation)
 	{
-	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
@@ -1294,7 +1294,7 @@ abstract class LinuxPtraceTaskState
 	    TaskState handleAddObservation(Task task,
 					   TaskObservation observation)
 	    {
-		logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 		Observable observable = observation.getTaskObservable();
 		Observer observer = observation.getTaskObserver();
 		observer.addFailed (task, new RuntimeException ("destroyed"));
@@ -1306,7 +1306,7 @@ abstract class LinuxPtraceTaskState
 	    TaskState handleDeleteObservation(Task task,
 					      TaskObservation observation)
 	    {
-		logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+		logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 		observation.delete();
 		return destroyed;
 	    }

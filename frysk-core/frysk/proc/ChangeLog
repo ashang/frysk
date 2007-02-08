@@ -1,3 +1,9 @@
+2007-02-08  Tim Moore  <timoore@redhat.com>
+
+	* LinuxPtraceTaskState.java (handleAddObservation,
+	handleDeleteObservation): Fix typo in log message in every state's
+	implementations of these methods.
+
 2007-02-08  Mark Wielaard  <mark@klomp.org>
 
 	* LinuxIa32Syscall.java (syscallList): Add getcpu and epoll_pwait.

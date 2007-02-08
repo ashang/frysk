@@ -1,3 +1,7 @@
+2007-02-08  Tim Moore  <timoore@redhat.com>
+
+	* fhpd.java (main): Add command line option to enable logging.
+
 2007-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFcore.java: Note broken with bug 4004.

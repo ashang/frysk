@@ -931,7 +931,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   protected class Breakpoint implements TaskObserver.Code
   {
-    private long address;
+    protected long address;
 
     private int triggered;
 
@@ -1030,6 +1030,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     public Action updateHit(Task task, long address)
     {
       state = STOPPED;
+      System.out.println("Hit " + address + " | " + this.address + " " + task);
       breakpointMap.put(task, this);
       notifyObservers(task);
       return Action.BLOCK;

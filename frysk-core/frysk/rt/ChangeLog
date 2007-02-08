@@ -1,3 +1,9 @@
+2007-02-08  Tim Moore  <timoore@redhat.com>
+
+	* RunState.java (Breakpoint): Make address field protected.
+	(SourceBreakpoint.updateHit): Print out debugging message like
+	Breakpoint.
+
 2007-02-07  Nurdin Premji <npremji@redhat.com>
 
 	* StackCallbacks.java (accesReg): Added regNum to logging output.

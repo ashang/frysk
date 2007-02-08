@@ -45,6 +45,11 @@ import frysk.cli.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
 
+import gnu.classpath.tools.getopt.Parser;
+
+import frysk.Config;
+import frysk.EventLogger;
+
 public class fhpd 
 {
     
@@ -64,6 +69,9 @@ public class fhpd
   public static void main (String[] argv) 
   {
     CLI cli;
+    Parser parser = new Parser ("fhpd", Config.getVersion(), true);
+    EventLogger.addConsoleOptions(parser);
+    parser.parse(argv);
     cli = new CLI("(fhpd) ", System.out);
     ConsoleReader reader = null; // the jline reader
     String line = "";
