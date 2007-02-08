@@ -56,8 +56,9 @@ public class ElfCommand
   public static final ElfCommand ELF_C_FDREAD = new ElfCommand(7);
   public static final ElfCommand ELF_C_READ_MMAP = new ElfCommand(8);
   public static final ElfCommand ELF_C_RDWR_MMAP = new ElfCommand(9);
-  public static final ElfCommand ELF_C_READ_MMAP_PRIVATE = new ElfCommand(10);
-  public static final ElfCommand ELF_C_EMPTY = new ElfCommand(11);
+  public static final ElfCommand ELF_C_WRITE_MMAP = new ElfCommand(10);
+  public static final ElfCommand ELF_C_READ_MMAP_PRIVATE = new ElfCommand(11);
+  public static final ElfCommand ELF_C_EMPTY = new ElfCommand(12);
 	
   private static ElfCommand[] commands = {ELF_C_NULL, 
 					  ELF_C_READ, 
@@ -69,6 +70,7 @@ public class ElfCommand
 					  ELF_C_FDREAD,
 					  ELF_C_READ_MMAP,
 					  ELF_C_RDWR_MMAP, 
+					  ELF_C_WRITE_MMAP,
 					  ELF_C_READ_MMAP_PRIVATE, 
 					  ELF_C_EMPTY
   };
