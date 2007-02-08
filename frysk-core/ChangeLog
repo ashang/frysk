@@ -1,3 +1,10 @@
+2007-02-07  Andrew Cagney  <cagney@redhat.com>
+
+	* testsuite/: Delete directory.
+	* Makefile.am (AUTOMAKE_OPTIONS): Do not add dejagnu.
+	(RUNTESTDEFAULTFLAGS): Delete.
+	(install-dejagnu-testsuite-local): Delete.
+
 2007-02-07  Nurdin Premji  <npremji@redhat.com>
 	
 	* Makefile.am (pkglib32_PROGRAMS): Added funit-stackframe-nodebug,

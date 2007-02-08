@@ -58,11 +58,6 @@ ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 # Prune files.list so these antlr generated files are not run through ecj
 prune_ecj = -e CppParser.java -e CppTreeParser.java -e CppParserTokenTypes.java -e CppTreeParserTokenTypes.java -e CppLexer.java
 
-# Add dejagnu, remember to clean up.
-AUTOMAKE_OPTIONS = dejagnu
-RUNTESTDEFAULTFLAGS = --srcdir $(srcdir)/testsuite #--tool expr
-CLEANFILES += *.sum *.log
-
 GEN_SOURCEPATH += ../frysk-imports/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
 GEN_CLASSPATH += ../frysk-imports/jline.jar
@@ -114,28 +109,6 @@ installcheck-local: installcheck-funit
 installcheck-funit:
 	$(DESTDIR)$(pkglibdir)/funit
 
-
-# frysk's core, which doesn't have a UI gets install-tested using
-# dejagnu.  Add those tests to 
-
-install-data-local: install-dejagnu-testsuite-local
-uninstall-local: uninstall-dejagnu-testsuite-local
-.PHONY: install-dejagnu-testsuite-local uninstall-dejagnu-testsuite-local
-install-dejagnu-testsuite-local:
-	set -e ; \
-	( \
-		cd $(srcdir) ; \
-		find testsuite \
-			-name CVS -prune \
-			-o -type f -print \
-		| tar cTf - - \
-	) | ( \
-		cd $(DESTDIR)$(pkgdatadir) ; \
-		tar xpf - \
-	)
-uninstall-dejagnu-testsuite-local:
-	rm -rf $(DESTDIR)$(pkgdatadir)/testsuite
-
 # Create executables for stackframe tests for TestStackFrame.java.
 frysk/pkglibdir/funit-stackframe-nodebug: frysk/pkglibdir/funit-stackframe
 	strip --strip-debug -o frysk/pkglibdir/funit-stackframe-nodebug frysk/pkglibdir/funit-stackframe
