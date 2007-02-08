@@ -17,11 +17,13 @@
 	* test/dogtail_scripts/frysk_suite.in: removed imports of viewerButtons
 	and vidwerMarkers.
 	Added import eventviewerAccessibilityInfo.
+	Added check for required Dogtail version.
 	* test/dogtail_scripts/FryskHelpers.py: changed logWriter.writeResult
 	to logWriter.log (port to 0.6.1).
 	made code parse for process name when adding observer (compat with
 	monitor changes).
 	* test/dogtail_scripts/fryskTestCase.py: New file.
+	Added check for required Dogtail version.
 
 2007-02-06  Mike Cvet  <mcvet@redhat.com>
 

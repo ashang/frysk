@@ -74,6 +74,9 @@ import stressDruid
 import guiWalkTest
 import eventViewerAccessibilityInfo
 
+from dogtail import version
+from dogtail import distro
+
 # Define the test input files
 os.environ.__setitem__('TestDruid_FILE', src + 'another_new_session.xml')
 os.environ.__setitem__('fryskBinary', frysk)
@@ -85,8 +88,6 @@ licenseSuite = license.suite()
 creditsSuite = credits.suite()
 druidSuite = druid.suite()
 observerSuite = observerData.suite()
-viewerButtonsSuite = viewerButtons.suite()
-viewerMarkersSuite = viewerMarkers.suite()
 test2866Suite = test2866.suite()
 test2985Suite = test2985.suite()
 test3380Suite = test3380.suite()
@@ -99,8 +100,6 @@ suite.addTest(licenseSuite)
 suite.addTest(creditsSuite)
 suite.addTest(druidSuite)
 suite.addTest(observerSuite)
-suite.addTest(viewerButtonsSuite)
-suite.addTest(viewerMarkersSuite)
 suite.addTest(test2866Suite)
 suite.addTest(test2985Suite)
 suite.addTest(eventViewerAccessibilityInfo)
@@ -110,6 +109,14 @@ suite.addTest(guiWalkTestSuite)
 # Commented out - test aborts as of 20061019 - bug #3380
 # suite.addTest(test3380Suite)
 
+#check dogtail version
+dogtailVersion = distro.packageDb.getVersion("dogtail")
+        
+if dogtailVersion < distro.Version.fromString("0.6.1"):
+    print "these tests are not compatable with dogtail version ", dogtailVersion
+    print "version 0.6.1 or higher required ", dogtailVersion
+    sys.exit();
+                
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)
 

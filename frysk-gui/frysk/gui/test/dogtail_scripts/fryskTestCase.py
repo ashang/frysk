@@ -58,11 +58,22 @@ import unittest
 from FryskHelpers import *
 from TestRunObject import TestRunObject
 
+from dogtail import version
+from dogtail import distro
+
 # a base class for all the test cases
 # all common code should be moved up to here
 class fryskTestCase (unittest.TestCase):
 
     def setUp(self):
+        
+        dogtailVersion = distro.packageDb.getVersion("dogtail")
+        
+        if dogtailVersion < distro.Version.fromString("0.6.1"):
+            print "these tests are not compatable with dogtail version ", dogtailVersion
+            print "version 0.6.1 or higher required ", dogtailVersion
+            sys.exit();
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.logger
