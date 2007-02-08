@@ -1,3 +1,9 @@
+2007-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3486/waitpid-masked-sigchld.c: New file.
+	* Makefile.am (systests_PASS_PROGRAM): Add
+	frysk3486/waitpid-masked-sigchild.
+
 2007-02-07  Mark Wielaard  <mark@klomp.org>
 
 	* frysk3997/ptrace_step_sig.c: New test.
