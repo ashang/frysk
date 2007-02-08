@@ -1,5 +1,10 @@
 2007-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* expr/20061115-2.c, expr/20061115-1.c: Delete. Merged into
+	frysk-core/frysk/pkglibdir/hpd-c.c.
+	* expr/CppParser.exp: Delete.  Replaced by JUnit based ExpUnit
+	test in frysk-core/frysk/bindir/.
+
 	* util/fcore.exp, util/fstack.exp: Delete.  Replaced by JUnit
 	based ExpUnit tests in frysk-core/frysk/bindir/.
 

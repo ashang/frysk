@@ -195,9 +195,9 @@ public class Expect
     }
 
     /**
-     * Sends "string" to the child process.
+     * Send "string" to the child process.
      */
-    void send (String string)
+    public void send (String string)
     {
 	logger.log (Level.FINE,
 		    "{0} send <<{1}>>\n",

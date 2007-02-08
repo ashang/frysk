@@ -49,7 +49,7 @@ import java.io.File;
  * functionality.
  */
 
-public class TestFstack
+public class TestFhd
     extends TestCase
 {
     Expect e;
@@ -64,22 +64,97 @@ public class TestFstack
 	child = null;
     }
 
-    public void testBackTrace ()
+    public void testHpd ()
     {
-	if (brokenXXX (4004))
+	if (brokenXXX (4001))
 	    return;
 	child = new Expect (new String[]
 	    {
-		new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
-		"5", "0", "0"
+		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
 	    });
+	String prompt = "\\(fhpd\\) ";
 	e = new Expect (new String[]
 	    {
-		new File (Config.getBinDir (), "fstack").getAbsolutePath (),
-		child.getPid () + ""
+		new File (Config.getBinDir (), "fhpd").getPath ()
 	    });
-	// Just look for main.
-	e.expect (" in main ");
+	e.expect (prompt);
+	// Add
+	e.send ("print 2+2\n");
+	e.expect ("\r\n4\r\n" + prompt);
+	// Attach
+	e.send ("attach loop.x " + child.getPid () + " -cli\n");
+	e.expect ("attach.*" + prompt);
+	// Where
+	e.send ("where\n");
+	e.expect ("where.*#0.*" + prompt);
+	// int_21
+	e.send ("print int_21\n");
+	e.expect ("print.*2.*" + prompt);
+	// Up
+	e.send ("up\n");
+	e.expect ("up.*#1.*" + prompt);
+	// int_21
+	e.send ("print int_21\n");
+	e.expect ("print.*21.*(fhpd)");
+	// char_21
+	e.send ("print char_21\n");
+	e.expect ("print.*a.*" + prompt);
+	// Down
+	e.send ("down\n");
+	e.expect ("down.*#0.*" + prompt);
+	// long_21
+	e.send ("print long_21\n");
+	e.expect ("print.*10.*" + prompt);
+	// float_21
+	e.send ("print float_21\n");
+	e.expect ("print.*1\\.1.*" + prompt);
+	// double_21
+	e.send ("print double_21\n");
+	e.expect ("print.*1\\.2.*" + prompt);
+	// static_int
+	e.send ("print static_int\n");
+	e.expect ("print.*4.*" + prompt);
+	// static_class
+	e.send ("print static_class\n");
+	e.expect ("print.*12\\.34.*" + prompt);
+	// class
+	e.send ("print class_1\n");
+	e.expect ("print.*15.*" + prompt);
+	// arr_1
+	e.send ("print arr_1\n");
+	e.expect ("print.*30.=1.31.=2.*" + prompt);
+	// arr_2
+	e.send ("print arr_2\n");
+	e.expect ("print.*4,4.=9.4,5.=0.*" + prompt);
+	// arr_3
+	e.send ("print arr_3\n");
+	e.expect ("print.*3,3.=10\\.8.3,4.=1.9.*" + prompt);
+	e.send ("print arr_4\n");
+	// arr_4
+	e.expect ("print.*" + prompt);
+    }
+
+    public void testRunCppParser ()
+    {
+	if (brokenXXX (4002))
+	    return;
+	// XXX: This is not good must be able to run in both build and
+	// install trees.
+	File runCppParser = new File ("./frysk/expr/RunCppParser");
+	String prompt = "\\$ ";
+	e = new Expect (new String[]
+	    {
+		runCppParser.getAbsolutePath ()
+	    });
+	e.expect (prompt);
+	// rcp assign
+	e.send ("xyz=3\n");
+	e.expect ("xyz=3.*" + prompt);
+	// rcp assign
+	e.send ("xya=4\n");
+	e.expect ("xya=4.*" + prompt);
+	// rcp tab
+	e.send ("xy\t");
+	e.expect ("xyz.*xya.*" + prompt);
     }
 }
-

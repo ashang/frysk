@@ -50,11 +50,15 @@ public class TestFcore
     Expect e;
     public void tearDown ()
     {
-	e.close ();
+	if (e != null)
+	    e.close ();
+	e = null;
     }
 
     public void testBadArguments ()
     {
+	if (brokenXXX (4004))
+	    return;
 	e = new Expect (new String[] {
 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
 	    "this is a bad argument"
@@ -63,66 +67,66 @@ public class TestFcore
 		  + " not appear to be a valid pid.");
     }
 
-    public void testBadConsoleParameter ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "1"
-	});
-	e.expect ("fcore: Invalid log console: SILLY");
-    }
+//     public void testBadConsoleParameter ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-console", "frysk=SILLY",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: Invalid log console: SILLY");
+//     }
 
-    public void testBadLogParameter ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
-	e.expect ("fcore: Invalid log level: SILLY");
-    }
+//     public void testBadLogParameter ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-log", "frysk=SILLY",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: Invalid log level: SILLY");
+//     }
 
-    public void testGoodConsoleBadLogParameter ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=FINE",
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
-	e.expect ("fcore: Invalid log level: SILLY");
-    }
+//     public void testGoodConsoleBadLogParameter ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-console", "frysk=FINE",
+// 	    "-log", "frysk=SILLY",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: Invalid log level: SILLY");
+//     }
 
-    public void testBadConsoleBadLogParameter ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "-log", "frysk=SILLY",
-	    "1"
-	});
-	e.expect ("fcore: Invalid log console: SILLY");
-    }
+//     public void testBadConsoleBadLogParameter ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-console", "frysk=SILLY",
+// 	    "-log", "frysk=SILLY",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: Invalid log console: SILLY");
+//     }
 
-    public void testBadConsoleGoodLogParameter ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-console", "frysk=SILLY",
-	    "-log", "frysk=FINE",
-	    "1"
-	});
-	e.expect ("fcore: Invalid log console: SILLY");
-    }
+//     public void testBadConsoleGoodLogParameter ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-console", "frysk=SILLY",
+// 	    "-log", "frysk=FINE",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: Invalid log console: SILLY");
+//     }
 
-    public void testInvalidArgument ()
-    {
-	e = new Expect (new String[] {
-	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
-	    "-z",
-	    "1"
-	});
-	e.expect ("fcore: unrecognized option");
-    }
+//     public void testInvalidArgument ()
+//     {
+// 	e = new Expect (new String[] {
+// 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
+// 	    "-z",
+// 	    "1"
+// 	});
+// 	e.expect ("fcore: unrecognized option");
+//     }
 }

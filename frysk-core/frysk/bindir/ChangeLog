@@ -1,5 +1,11 @@
 2007-02-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestFcore.java: Note broken with bug 4004.
+	* TestFstack.java: Ditto.
+
+	* TestFhd.java: New.  Translation of old dejagnu test from
+	frysk-core/testsuite/expr/.
+
 	* TestFstack.java, TestFcore: New.  Translation of old dejagnu
 	tests from frysk-core/testsuite/utils/.
 
