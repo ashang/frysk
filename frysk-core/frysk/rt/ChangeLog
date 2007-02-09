@@ -1,3 +1,32 @@
+2007-02-09  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (setUp): Refactored from setUpStep().
+	(setUpLineStep): Used to specifically set up line stepping; 
+	meat of initialization now done in setUp().
+	(stepIn): Added a special case for when step-over requires
+	a line step.
+	(setUpStepOver): Finalized workflow - correctly sets up states
+	for stepping over, for single-threaded process. 
+	(stepOver): Finalized workflow - correctly sets breakpoint 
+	for single-threaded stepping-over. Not visible from
+	SourceWindow until libunwind bugs are resolved.
+	(finishStepOver): Removed.
+	(setUpStepOut): Finalized workflow - correctly sets up
+	breakpoint and info for stepping-out. Not visible until
+	libunwind bugs are resolved.
+	(stepOut): Properly removes breakpoint and cleans up after
+	a step-out.
+	(updateExecuted): Cleaned up; correctly behaves for stepping
+	over and out.
+	(Breakpoint.updateHit): Re-adds the RunState InstructionObserver
+	after hitting the breakpoint. Returns blocking state.
+	(Breakpoint.addedTo): Removes the RunState InstructionObserver.
+	* TestRunState.java (testLineStepping): Changed to use refactored
+	RunState.setUpLineStep().
+	(stepAssertions): Ditto.
+	* TestStepping.java (setUpTest): Ditto.
+	(stepAssertions): Ditto.
+
 2007-02-08  Tim Moore  <timoore@redhat.com>
 
 	* RunState.java (Breakpoint): Make address field protected.

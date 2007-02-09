@@ -1,3 +1,7 @@
+2007-02-09  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (doStep): Calls updated RunState.setUpLineStep().
+
 2007-02-08  sami wagiaalla  <swagiaal@redhat.com>
 
 	* SourceWindow.java: now hides instead of destroys itself upon

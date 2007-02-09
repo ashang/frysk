@@ -99,6 +99,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+//import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
@@ -390,7 +391,7 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
-    
+//    SymTab.flushExperSymTabStackFrame();
     this.frames = frames;
 
     /* Initialization */
@@ -1138,8 +1139,8 @@ public class SourceWindow
     this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-    //this.next.setSensitive(true);
-    //this.finish.setSensitive(true);
+//    this.next.setSensitive(true);
+//    this.finish.setSensitive(true);
     //this.cont.setSensitive(true);
     this.nextAsm.setSensitive(true);
     //this.stepAsm.setSensitive(true);
@@ -1591,7 +1592,7 @@ public class SourceWindow
     
     desensitize();
 
-    this.runState.setUpStep(this.swProc.getTasks());
+    this.runState.setUpLineStep(this.swProc.getTasks());
     
     removeTags();
   }

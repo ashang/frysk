@@ -194,7 +194,7 @@ public class TestStepping extends TestLib
       }
     else if (testState == (STEP_IN))
       {
-        runState.setUpStep(myProc.getTasks());
+        runState.setUpLineStep(myProc.getTasks());
       }
     else if (testState == ASM_INSTRUCTION_STEP)
       {
@@ -455,7 +455,7 @@ public class TestStepping extends TestLib
     if (count != 50)
       {
         if (testState == STEP_IN)
-          runState.setUpStep(tasks);
+          runState.setUpLineStep(tasks);
         else if (testState == ASM_INSTRUCTION_STEP)
           runState.stepInstruction(tasks);
       }

@@ -183,7 +183,7 @@ public class TestRunState extends TestLib
         runState.stepInstruction(myProc.getTasks());
       }
     else
-      runState.setUpStep(myProc.getTasks());
+      runState.setUpLineStep(myProc.getTasks());
   }
   
   public synchronized void stepAssertions (Task task)
@@ -228,7 +228,7 @@ public class TestRunState extends TestLib
         if (testState == INSTRUCTION_STEP)
           runState.stepInstruction(l);
         else
-          runState.setUpStep(l);
+          runState.setUpLineStep(l);
       }
     
     if (testState == INSTRUCTION_STEP)
@@ -389,7 +389,7 @@ public class TestRunState extends TestLib
             this.lineMap.put(task, new Integer(lineNum));
             LinkedList tasks = new LinkedList();
             tasks.add(task);
-            runState.setUpStep(tasks);
+            runState.setUpLineStep(tasks);
           }
       }
     
