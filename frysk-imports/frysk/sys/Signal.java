@@ -53,4 +53,9 @@ public class Signal
      * Deliver SIG to task (or thread) LWP.
      */
     public static native void tkill (int lwp, Sig sig);
+    /**
+     * Momentarialy sets the signal handler for Sig to SIGIGN so that
+     * any pending signals are discarded.
+     */
+    public static native void drain (Sig sig);
 }

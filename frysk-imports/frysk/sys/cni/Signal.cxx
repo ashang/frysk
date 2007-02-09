@@ -41,6 +41,7 @@
 #include <signal.h>
 #include <linux/unistd.h>
 #include <errno.h>
+#include <stdio.h>
 
 #include <gcj/cni.h>
 
@@ -66,4 +67,24 @@ frysk::sys::Signal::kill (jint pid, frysk::sys::Sig* sig)
   errno = 0;
   if (::kill (pid, signum) < 0)
     throwErrno (errno, "kill", "process", pid);
+}
+
+void
+frysk::sys::Signal::drain (frysk::sys::Sig* sig)
+{
+  int signum = sig->hashCode ();
+//   sigset_t set;
+//   sigpending (&set);
+//   printf ("Before: %d (%s) pending? %s\n", signum, strsignal (signum),
+// 	  sigismember (&set, signum) ? "YES" : "NO");
+  struct sigaction oldAct = { };
+  struct sigaction newAct = { };
+  newAct.sa_handler = SIG_IGN;
+  if (::sigaction (signum, &newAct, &oldAct))
+    throwErrno (errno, "sigaction", "signal", signum);
+  if (::sigaction (signum, &oldAct, NULL))
+    throwErrno (errno, "sigaction", "signal", signum);
+//   sigpending (&set);
+//   printf ("After: %d (%s) pending? %s\n", signum, strsignal (signum),
+// 	  sigismember (&set, signum) ? "YES" : "NO");
 }

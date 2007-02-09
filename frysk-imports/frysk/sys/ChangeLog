@@ -1,3 +1,8 @@
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Signal.java (drain(Sig)): Declare.
+	* cni/Signal.cxx (drain): Define.
+
 2007-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* FileDescriptor.java (ready(long)): New.
