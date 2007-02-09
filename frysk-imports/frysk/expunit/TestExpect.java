@@ -74,7 +74,7 @@ public class TestExpect
 	e = new Expect (new String[] { "/bin/cat" });
 	long oldTime = System.currentTimeMillis ();
 	try {
-	    e.expect (100, (Match[]) null);
+	    e.expectMilliseconds (100, (Match[]) null);
 	}
 	catch (TimeoutException e) {
 	    // What the doctor ordered.

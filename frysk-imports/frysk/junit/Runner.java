@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import junit.textui.ResultPrinter;
 import junit.textui.TestRunner;
+import frysk.expunit.Expect;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -528,12 +529,14 @@ public class Runner
 		}
 	    });
     
-    parser.add(new Option ("timeout", "Specify a timeout to use for " +
+    parser.add(new Option ("timeout",
+			   "Specify a timeout (in seconds) to use for " +
             "assertRunUntilStop", "<timeout>")
             {
               public void parsed (String arg0)
               {
                 timeout = Integer.parseInt(arg0);
+		Expect.setDefaultTimeoutSeconds (timeout);
               }
             });
 

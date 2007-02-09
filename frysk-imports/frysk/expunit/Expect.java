@@ -112,22 +112,36 @@ public class Expect
     }
 
     /**
-     * The default timeout, in milli-seconds.
+     * The global default timeout (in seconds).
      */
-    private long millisecondTimeout = 1000; // 1 second
+    static private long defaultTimeoutSeconds = 1; // 1 seconds.
     /**
-     * Set the default timeout (in milliseconds).
+     * Set the global default timeout (in seconds).  Any expect
+     * classes inherit this value.
      */
-    public void setTimeoutMillis (long millisecondTimeout)
+    static public void setDefaultTimeoutSeconds (long defaultTimeoutSeconds)
     {
-	this.millisecondTimeout = millisecondTimeout;
+	Expect.defaultTimeoutSeconds = defaultTimeoutSeconds;
+    }
+
+    /**
+     * The current timeout (in seconds).
+     */
+    private long timeoutSeconds = defaultTimeoutSeconds;
+
+    /**
+     * Set the default timeout (in seconds).
+     */
+    public void setTimeoutSeconds (long timeoutSeconds)
+    {
+	this.timeoutSeconds = timeoutSeconds;
     }
     /**
-     * Get the default timeout (in milliseconds).
+     * Get the default timeout (in seconds).
      */
-    public long getTimeoutMillis ()
+    public long getTimeoutSeconds ()
     {
-	return millisecondTimeout;
+	return timeoutSeconds;
     }
 
     /**
@@ -158,39 +172,6 @@ public class Expect
     private boolean eof = false;
     
     /**
-     * Block waiting on the inferior for more output, appending it to
-     * the buffer IN.  When the child exits this sees an EOF
-     * indication.
-     */
-    private void pollChild (long millisecondTimeout)
-    {
-	if (eof) {
-	    logger.log (Level.FINE, "{0} pollChild -> already EOF\n", this);
-	    return;
-	}
-	if (child.ready (millisecondTimeout)) {
-	    byte[] bytes = new byte[100];
-	    int nr = child.read (bytes, 0, bytes.length);
-	    switch (nr) {
-	    case -1:
-		logger.log (Level.FINE, "{0} pollChild -> EOF\n", this);
-		eof = true;
-		break;
-	    case 0:
-		logger.log (Level.FINE, "{0} pollChild -> no data!\n", this);
-		break;
-	    default:
-		String read = new String (bytes, 0, nr);
-		output = output + read;
-		logger.log (Level.FINE,
-			    "{0} pollChild -> read <<{1}>> giving <<{2}>>\n",
-			    new Object[] { this, read, output });
-		break;
-	    }
-	}
-    }
-
-    /**
      * Send "string" to the child process.
      */
     public void send (String string)
@@ -204,12 +185,16 @@ public class Expect
 
     /**
      * Expect one of the specified patterns; throw TimeoutException if
-     * timeoutMillis expires; throw EofException if end-of-file is
+     * timeoutSecond expires; throw EofException if end-of-file is
      * encountered.
+     *
+     * This is package visible so that TestExpect can use it, but no
+     * one else.
      */
-    public void expect (long millisecondTimeout, Match[] matches)
+    void expectMilliseconds (long timeoutMilliseconds, Match[] matches)
     {
-	final long endTime = System.currentTimeMillis () + millisecondTimeout;
+	final long endTime = (System.currentTimeMillis ()
+			      + timeoutMilliseconds);
 	while (true) {
 	    if (matches != null) {
 		for (int i = 0; i < matches.length; i++) {
@@ -236,10 +221,43 @@ public class Expect
 	    long timeRemaining = endTime - System.currentTimeMillis ();
 	    if (timeRemaining <= 0) {
 		logger.log (Level.FINE, "{0} match TIMEOUT\n", this);
-		throw new TimeoutException (millisecondTimeout);
+		throw new TimeoutException (timeoutSeconds);
 	    }
-	    pollChild (timeRemaining);
+
+	    logger.log (Level.FINE,
+		    "{0} poll for {1,number,integer} milliseconds\n",
+			new Object[] { this, new Long (timeRemaining) });
+	    if (child.ready (timeRemaining)) {
+		byte[] bytes = new byte[100];
+		int nr = child.read (bytes, 0, bytes.length);
+		switch (nr) {
+		case -1:
+		    logger.log (Level.FINE, "{0} poll -> EOF\n", this);
+		    eof = true;
+		    break;
+		case 0:
+		    logger.log (Level.FINE, "{0} poll -> no data!\n", this);
+		    break;
+		default:
+		    String read = new String (bytes, 0, nr);
+		    output = output + read;
+		    logger.log (Level.FINE,
+				"{0} poll -> <<{1}>> giving <<{2}>>\n",
+				new Object[] { this, read, output });
+		    break;
+		}
+	    }
 	}
+    }
+
+    /**
+     * Expect one of the specified patterns; throw TimeoutException if
+     * timeoutSecond expires; throw EofException if end-of-file is
+     * encountered.
+     */
+    public void expect (long timeoutSeconds, Match[] matches)
+    {
+	expectMilliseconds (timeoutSeconds * 1000, matches);
     }
 
     /**
@@ -249,7 +267,7 @@ public class Expect
      */
     public void expect (Match[] matches)
     {
-	expect (millisecondTimeout, matches);
+	expect (timeoutSeconds, matches);
     }
 
     /**
@@ -257,9 +275,9 @@ public class Expect
      * specified timeout expires or EofException if end-of-file is
      * reached.
      */
-    public void expect (long timeoutMillis, Match match)
+    public void expect (long timeoutSeconds, Match match)
     {
-	expect (timeoutMillis, new Match[] { match });
+	expect (timeoutSeconds, new Match[] { match });
     }
 
     /**
@@ -269,7 +287,7 @@ public class Expect
      */
     public void expect (Match match)
     {
-	expect (millisecondTimeout, match);
+	expect (timeoutSeconds, match);
     }
 
     /**
@@ -277,9 +295,9 @@ public class Expect
      * TimeoutException if the specified timeout expires or
      * EofException if end-of-file is reached.
      */
-    public void expect (long millisecondTimeout, String regex)
+    public void expect (long timeoutSeconds, String regex)
     {
-	expect (millisecondTimeout, new Regex (regex));
+	expect (timeoutSeconds, new Regex (regex));
     }
 
     /**
@@ -289,15 +307,15 @@ public class Expect
      */
     public void expect (String regex)
     {
-	expect (millisecondTimeout, regex);
+	expect (timeoutSeconds, regex);
     }
 
     /**
-     * Expect a TimeoutException after millisecondTimeout.
+     * Expect a TimeoutException after timeoutSeconds.
      */
-    public void expect (long millisecondTimeout)
+    public void expect (long timeoutSeconds)
     {
-	expect (millisecondTimeout, (Match[]) null);
+	expect (timeoutSeconds, (Match[]) null);
     }
 
     /**
@@ -306,7 +324,7 @@ public class Expect
      */
     public void expect ()
     {
-	expect (millisecondTimeout);
+	expect (timeoutSeconds);
     }
 
     /**

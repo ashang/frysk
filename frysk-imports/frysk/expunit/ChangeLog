@@ -1,5 +1,15 @@
 2007-02-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Expect.java (setDefaultTimeoutSeconds)
+	(defaultTimeoutSeconds): New.
+	(getTimeoutSeconds, setTimeoutSeconds, timeoutSeconds): Replace
+	millisecondTimeout.  Initialize to defaultTimeoutSeconds.  Update
+	all references.
+	(pollChild): Delete.
+	(expectMilliseconds): New.
+	(expect(long,Match[]): Use expectMilliseconds.
+	* TestExpect.java (testTimeout): Call expectMilliseconds.
+
 	* Expect.java (close): Use frysk.sys.Wait.drain, and
 	frysk.sys.Signal.drain to drain pending SIGCHLDs and waitpid
 	events.
