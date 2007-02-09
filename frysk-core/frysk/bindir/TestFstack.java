@@ -66,8 +66,6 @@ public class TestFstack
 
     public void testBackTrace ()
     {
-	if (brokenXXX (4004))
-	    return;
 	child = new Expect (new String[]
 	    {
 		new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
@@ -82,4 +80,3 @@ public class TestFstack
 	e.expect (" in main ");
     }
 }
-

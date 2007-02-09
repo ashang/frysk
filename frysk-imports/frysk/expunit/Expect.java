@@ -91,6 +91,9 @@ public class Expect
 
     /**
      * Clean up.
+     *
+     * XXX: This drains all outstanding WAITPID events, and SIGCHLD
+     * events.
      */
     public void close ()
     {
@@ -103,16 +106,9 @@ public class Expect
 	    catch (Errno e) {
 		// Toss it, as cleanup.
 	    }
-	    try {
-		Wait.waitAll (pid, new WaitObserver (0));
-	    }
-	    catch (TerminationException e) {
-		// Toss it, as cleanup.
-	    }
-	    catch (Errno e) {
-		// Toss it, as cleanup.
-	    }
+	    Wait.drain (pid);
 	}
+	Signal.drain (Sig.CHLD);
     }
 
     /**

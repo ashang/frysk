@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -288,4 +288,36 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
     throwErrno (myErrno, "waitpid", "process", wpid);
   // Process the result.
   processStatus (pid, status, observer);
+}
+
+/** Drain wait events.  */
+
+void frysk::sys::Wait::drain (jint wpid)
+{
+  while (1) {
+    int status;
+    errno = 0;
+    pid_t pid = ::waitpid (wpid, &status, __WALL);
+    int err = errno;
+    log (pid, status, err);
+    if (err == ESRCH || err == ECHILD)
+      break;
+    if (pid <= 0)
+      throwErrno (err, "waitpid", "process", wpid);
+  }
+}
+
+void frysk::sys::Wait::drainNoHang (jint wpid)
+{
+  while (1) {
+    int status;
+    errno = 0;
+    pid_t pid = ::waitpid (wpid, &status, __WALL| WNOHANG);
+    int err = errno;
+    log (pid, status, err);
+    if (err == ESRCH || err == ECHILD)
+      break;
+    if (pid <= 0)
+      throwErrno (err, "waitpid", "process", wpid);
+  }
 }

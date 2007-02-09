@@ -43,8 +43,6 @@ import frysk.junit.TestCase;
 import frysk.expunit.Expect;
 import frysk.Config;
 import java.io.File;
-import frysk.sys.Signal;
-import frysk.sys.Sig;
 
 public class TestFcore
     extends TestCase
@@ -55,7 +53,6 @@ public class TestFcore
 	if (e != null)
 	    e.close ();
 	e = null;
-	Signal.drain (Sig.CHLD);
     }
 
     public void testBadArguments ()

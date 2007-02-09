@@ -1,5 +1,8 @@
 2007-02-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Wait.java (drain, drainNoHang): Declare.
+	* cni/Wait.cxx (drain, drainNoHang): Define.
+
 	* Signal.java (drain(Sig)): Declare.
 	* cni/Signal.cxx (drain): Define.
 

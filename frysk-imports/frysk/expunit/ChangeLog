@@ -1,3 +1,9 @@
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java (close): Use frysk.sys.Wait.drain, and
+	frysk.sys.Signal.drain to drain pending SIGCHLDs and waitpid
+	events.
+
 2007-02-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java (send): Make public.

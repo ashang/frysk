@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -128,4 +128,12 @@ public final class Wait
      */
     public native static void waitAll (int pid, Observer observer);
 
+    /**
+     * Non-blocking drain of all pending wait events belonging to pid.
+     */
+    public native static void drainNoHang (int pid);
+    /**
+     * Blocking drain of all pending wait events belonging to pid.
+     */
+    public native static void drain (int pid);
 }
