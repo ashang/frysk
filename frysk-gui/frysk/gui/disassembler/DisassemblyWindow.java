@@ -332,8 +332,6 @@ public class DisassemblyWindow
     this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
-
-    this.diss = new Disassembler(myTask.getMemory());
     this.model.clear();
     this.fromSpin.setValue((double) pc_inc);
     this.lastKnownFrom = pc_inc;

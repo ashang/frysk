@@ -442,8 +442,6 @@ public class MemoryWindow
     long end = pc_inc + 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
-
-    this.diss = new Disassembler(myTask.getMemory());
     this.model.clear();
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setValue((double) end);

@@ -1,3 +1,9 @@
+2008-02-09  Mike Cvet  <mcvet@redhat.com>
+
+	* disassembler/DisassemblyWindow.java (resetTask): Removed redundant 
+	Disassembler initialization.
+	* memory/MemoryWindow.java (resetTask): Ditto.
+
 2007-02-08  sami wagiaalla  <swagiaal@redhat.com>
 
 	* test/dogtail_scripts/credits.py: changed logWriter.writeResult
