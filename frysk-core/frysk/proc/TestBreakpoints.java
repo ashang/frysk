@@ -225,7 +225,7 @@ public class TestBreakpoints
     // Unblock and tell the process to go some rounds!
     task.requestUnblock(ao);
 
-    out.writeByte(7);
+    out.writeByte(3);
     out.flush();
     
     // Sanity check that the functions have actually been run.
@@ -234,17 +234,17 @@ public class TestBreakpoints
     line = in.readLine();
     int bp2 = Integer.decode(line).intValue();
 
-    assertEquals(7, bp1);
-    assertEquals(7, bp2);
+    assertEquals(3, bp1);
+    assertEquals(3, bp2);
 
-    assertEquals(7, code1.getTriggered());
-    assertEquals(7, code2.getTriggered());
+    assertEquals(3, code1.getTriggered());
+    assertEquals(3, code2.getTriggered());
 
     // Remove the stepper
     if (installInstructionObserver)
       {
-	assertEquals(7, io1.getAddrHit());
-	assertEquals(7, io2.getAddrHit());
+	assertEquals(3, io1.getAddrHit());
+	assertEquals(3, io2.getAddrHit());
 
         task.requestDeleteInstructionObserver(io1);
         task.requestDeleteInstructionObserver(io2);
@@ -639,7 +639,7 @@ public class TestBreakpoints
     task.requestUnblock(ao);
 
     // Run a couple of times.
-    out.writeByte(7);
+    out.writeByte(3);
     out.flush();
 
     // Sanity check that the functions have actually been run.
@@ -648,14 +648,14 @@ public class TestBreakpoints
     line = in.readLine();
     int bp2 = Integer.decode(line).intValue();
 
-    assertEquals(7, bp1);
-    assertEquals(7, bp2);
+    assertEquals(3, bp1);
+    assertEquals(3, bp2);
 
     // Remove the stepper
     if (installInstructionObserver)
       {
-	assertEquals(7, io1.getAddrHit());
-	assertEquals(7, io2.getAddrHit());
+	assertEquals(3, io1.getAddrHit());
+	assertEquals(3, io2.getAddrHit());
 
         task.requestDeleteInstructionObserver(io1);
         task.requestDeleteInstructionObserver(io2);
@@ -720,8 +720,8 @@ public class TestBreakpoints
 
     for (int i = 0; i < 1512; i++)
       {
-	assertEquals(7, codes1[i].getTriggered());
-	assertEquals(7, codes2[i].getTriggered());
+	assertEquals(3, codes1[i].getTriggered());
+	assertEquals(3, codes2[i].getTriggered());
       }
   }
   

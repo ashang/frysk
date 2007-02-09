@@ -113,10 +113,6 @@ dummy()
   else
     {
       // Returned from signal handler through longjmp.
-      // XXX - Note that bug #3997 causes the trap sig handler to be reset
-      // on some kernels when single stepping.
-      // So for now we explicitly set it just to make this testcase work.
-      signal (SIGTRAP, &signal_handler);
       return;
     }
 }
