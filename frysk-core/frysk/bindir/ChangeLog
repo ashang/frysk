@@ -1,3 +1,9 @@
+2007-02-09  Mark Wielaard  <mark@klomp.org>
+
+	* fstep.java: Fix output to say fstep, no fstack.
+	(updateTerminated): Show whether Task terminated by a signal or not
+	and mention exit code or signal number.
+
 2007-02-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFcore.java: Enable all tests.

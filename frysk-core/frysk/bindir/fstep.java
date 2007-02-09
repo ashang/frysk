@@ -140,13 +140,13 @@ public class fstep
     if ((command == null || command.length == 0)
 	&& pid == 0)
       {
-	System.err.println("fstack: Neither command line nor pid provided");
+	System.err.println("fstep: Neither command line nor pid provided");
 	parser.printHelp();
 	System.exit(-1);
       }
     if (command != null && command.length != 0 && pid != 0)
       {
-	System.err.println("fstack: Provide either a command line or a pid");
+	System.err.println("fstep: Provide either a command line or a pid");
 	parser.printHelp();
 	System.exit(-1);
       }
@@ -196,6 +196,11 @@ public class fstep
     int tid = task.getTid();
     long steps = ((Long) tasks.get(task)).longValue();
     System.err.println("Total steps [" + tid + "]: " + steps);
+    if (signal)
+      System.err.println("[" + tid + "] Terminated by signal: " + exit);
+    else
+      System.err.println("[" + tid + "] Exited: " + exit);
+
     tasks.remove(task);
     if (tasks.isEmpty())
       Manager.eventLoop.requestStop();
