@@ -1,3 +1,21 @@
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk3595_detach_multi_thread_SOURCES) 
+	(frysk3491_x_state_SOURCES, frysk3525_exit47_SOURCES) 
+	(frysk3205_ptrace_detach_bad_signal_SOURCES) 
+	(frysk3231_ptrace_detach_looses_signal_SOURCES) 
+	(audit_test_audit_libs_SOURCES) 
+	(frysk2595_ptrace_peek_wrong_thread_SOURCES) 
+	(frysk2595_ptrace_after_forked_thread_exits_SOURCES) 
+	(frysk2595_ptrace_before_forked_thread_exits_SOURCES) 
+	(frysk2595_ptrace_after_exec_SOURCES) 
+	(frysk2595_ptrace_after_exec_of_thread_SOURCES) 
+	(vfork_exec_vfork_exec_SOURCES): Delete.
+	* frysk3205/ptrace-detach-bad-signal.c: Rename
+	frysk/3205/ptrace-test.c.
+	* frysk3231/ptrace-detach-looses-signal.c: Rename
+	frysk3231/ptrace-test.c
+
 2007-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk3486/waitpid-masked-sigchld.c: New file.

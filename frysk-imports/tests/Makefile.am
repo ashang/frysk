@@ -279,28 +279,23 @@ frysk2137/Gcov.sh:
 
 # test for kernel ptrace - from a thread other than the attacher
 frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
-frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
 systests_XFAIL_PROGRAM += frysk2595/ptrace_peek_wrong_thread
 
 # test for kernel ptrace - fork from thread, and ptrace after thread exit
 frysk2595_ptrace_after_forked_thread_exits_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk2595/ptrace_after_forked_thread_exits
-frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_forked_thread_exits.c
 
 # test for kernel ptrace - fork from thread, and ptrace before thread exit
 frysk2595_ptrace_before_forked_thread_exits_LDFLAGS = -lpthread
 systests_XFAIL_PROGRAM += frysk2595/ptrace_before_forked_thread_exits
-frysk2595_ptrace_before_forked_thread_exits_SOURCES = frysk2595/ptrace_before_forked_thread_exits.c
 
 # test for kernel ptrace - ptrace after main thread execs - YES
 # THIS REALLY DOES WORK.
 frysk2595_ptrace_after_exec_LDFLAGS = -lpthread
-frysk2595_ptrace_after_exec_SOURCES = frysk2595/ptrace_after_exec.c
 systests_PASS_PROGRAM += frysk2595/ptrace_after_exec
 
 # test for kernel ptrace - ptrace after exec, child of other thread
 frysk2595_ptrace_after_exec_of_thread_LDFLAGS = -lpthread
-frysk2595_ptrace_after_exec_of_thread_SOURCES = frysk2595/ptrace_after_exec_of_thread.c
 systests_PASS_PROGRAM += frysk2595/ptrace_after_exec_of_thread
 
 process_TESTS = \
@@ -412,7 +407,6 @@ frysk2670/gcj.sh:
 # Frysk, when creating test processes uses the sequence vfork -> fork
 # -> exec to create a process of known pid that has process 1 as its
 # parent.
-vfork_exec_vfork_exec_SOURCES = vfork-exec/vfork-exec.c
 systests_PASS_PROGRAM += vfork-exec/vfork-exec
 
 # Indexing an array with a class pointer makes no sense but it compiles.
@@ -451,7 +445,6 @@ frysk2760/barriertest: $(frysk2760_FILES)
 		frysk2760/barriertest.o
 
 TESTS += audit/test-audit-libs
-audit_test_audit_libs_SOURCES = audit/test-audit-libs.c
 audit_test_audit_libs_LDADD = -laudit
 noinst_PROGRAMS += audit/test-audit-libs
 
@@ -462,26 +455,21 @@ noinst_PROGRAMS += frysk3228/LoggerParent
 
 # The FC-6 kernel screws up signal delivery during ptrace attach,
 # check this is fixed.
-frysk3231_ptrace_detach_looses_signal_SOURCES = frysk3231/ptrace-test.c
 systests_PASS_PROGRAM += frysk3231/ptrace-detach-looses-signal
 
 # Legacy ptrace inhibits some ptrace requests (PTRACE_DETACH, possibly
 # PTRACE_CONT, and maybe others) if the accompanying signal is invalid.
 # This test makes sure that behaviour hasn't been "fixed."
-frysk3205_ptrace_detach_bad_signal_SOURCES = frysk3205/ptrace-test.c
 systests_PASS_PROGRAM += frysk3205/ptrace-detach-bad-signal
 
 # A daemon can produce double or plain wrong exit events.
-frysk3525_exit47_SOURCES = frysk3525/exit47.c
 systests_PASS_PROGRAM += frysk3525/exit47
 
 # A non-joined but exited thread should end up in state 'X'
-frysk3491_x_state_SOURCES = frysk3491/x-state.c
 frysk3491_x_state_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk3491/x-state
 
 # A hang during a brutal detach from a multi-threaded program.
-frysk3595_detach_multi_thread_SOURCES = frysk3595/detach-multi-thread.c
 frysk3595_detach_multi_thread_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk3595/detach-multi-thread
 
@@ -489,4 +477,6 @@ systests_PASS_PROGRAM += frysk3595/detach-multi-thread
 # On some kernels the handler is sometimes mysteriously cleared.
 systests_PASS_PROGRAM += frysk3997/ptrace_step_sig
 
+# Confirm that SIGCHLD remains around after waitpid events have been
+# drained.
 systests_PASS_PROGRAM += frysk3486/waitpid-masked-sigchld
