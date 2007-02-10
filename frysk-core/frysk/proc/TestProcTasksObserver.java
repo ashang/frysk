@@ -257,14 +257,14 @@ public class TestProcTasksObserver extends TestLib {
 	
     public void testCloneThenKillAttached() 
     {
-	if (brokenUtraceXXX (3486))
+	if (brokenIfUtraceXXX (3486))
 	    return;
 	AckProcess ackProcess = new AttachedAckProcess ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteAttached() {
-	if (brokenUtraceXXX (3486))
+	if (brokenIfUtraceXXX (3486))
 	    return;
 	AckProcess ackProcess = new AttachedAckProcess (1);
 	delete(ackProcess);

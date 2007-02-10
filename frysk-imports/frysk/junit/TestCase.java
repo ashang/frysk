@@ -96,22 +96,30 @@ public class TestCase
      */
     private static Uname uname;
     /**
-     * A method that returns true, and prints skip, when the build
-     * kernel is utrace.
+     * A method that returns true, and prints broken, when the running
+     * kernel matches the supplied list.
      */
-    protected static boolean brokenUtraceXXX (int bug)
+    protected static boolean brokenIfKernelXXX (int bug, String[] kernels)
     {
 	if (uname == null)
 	    uname = Uname.get ();
-	String[] badKernels = {
-	    "2.6.18-1.2849.fc6",
-	    "2.6.18-1.2239.fc5"
-	};
-	for (int i = 0; i < badKernels.length; i++) {
-	    if (badKernels[i].equals (uname.getRelease ()))
+	for (int i = 0; i < kernels.length; i++) {
+	    String kernel = kernels[i];
+	    if (uname.getRelease ().startsWith (kernel))
 		return brokenXXX (bug);
 	}
 	return false;
     }
-
+    /**
+     * A method that returns true, and prints broken, when the build
+     * kernel includes UTRACE.
+     */
+    protected static boolean brokenIfUtraceXXX (int bug)
+    {
+	return brokenIfKernelXXX (bug, new String[]
+	    {
+		"2.6.18-1.2849.fc6",
+		"2.6.18-1.2239.fc5"
+	    });
+    }
 }

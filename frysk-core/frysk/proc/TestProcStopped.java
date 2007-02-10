@@ -103,7 +103,7 @@ public class TestProcStopped
 
   public void testMultiThreadedStoppedAckDaemon ()
   {
-      if (brokenUtraceXXX (3595))
+      if (brokenIfUtraceXXX (3595))
 	  return;
     AckProcess ackProc = new AckDaemonProcess(2);
     stopped(ackProc, 3);
@@ -112,7 +112,7 @@ public class TestProcStopped
 
   public void testMultiThreadedStoppedDetached ()
   {
-      if (brokenUtraceXXX (3595))
+      if (brokenIfUtraceXXX (3595))
 	  return;
     AckProcess ackProc = new DetachedAckProcess(2);
     stopped(ackProc, 3);

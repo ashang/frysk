@@ -88,7 +88,7 @@ public class TestTaskTerminateObserver
    */
   public void check (int expected, int terminating, int terminated)
   {
-    if ((expected == 47 || expected == - 9) && brokenUtraceXXX(3489))
+    if ((expected == 47 || expected == - 9) && brokenIfUtraceXXX(3489))
       return;
 
     // Start the program.

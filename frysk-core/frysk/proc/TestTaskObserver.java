@@ -249,14 +249,14 @@ public class TestTaskObserver
     /** {@link #detachExitingTask} */
     public void testDetachExitingMainTask ()
     {
-	if (brokenUtraceXXX (3737))
+	if (brokenIfUtraceXXX (3737))
 	    return;
 	detachExitingTask (0, true);
     }
     /** {@link #detachExitingTask} */
     public void testDetachExitingOtherTask ()
     {
-	if (brokenUtraceXXX (3737))
+	if (brokenIfUtraceXXX (3737))
 	    return;
 	detachExitingTask (1, false);
     }

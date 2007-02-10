@@ -49,6 +49,11 @@ import java.io.IOException;
 public class TestBreakpoints
   extends TestLib
 {
+  private boolean brokenSignals ()
+  {
+     return brokenIfKernelXXX (4019, new String[] { "2.6.18-1.2257.fc5" });
+  }
+
   // Process id and Proc representation of our test program.
   int pid;
   Proc proc;
@@ -303,12 +308,16 @@ public class TestBreakpoints
 
   public void testSteppingtestHitAndRun() throws IOException
   {
+    if (brokenSignals ())
+      return;
     installInstructionObserver = true;
     testHitAndRun();
   }
 
   public void testInsertRemove() throws IOException
   {
+    if (brokenSignals ())
+      return;
     // Start an EventLoop so there's no need to poll for events all
     // the time.
     eventLoop = new EventLoopRunner();
@@ -550,6 +559,9 @@ public class TestBreakpoints
 
   public void testAddLots() throws IOException
   {
+    if (brokenSignals ())
+      return;
+
     // Start an EventLoop so there's no need to poll for events all
     // the time.
     eventLoop = new EventLoopRunner();
