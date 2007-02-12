@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,47 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-// <<prefix>>: <<strerror(err)>>
-extern void throwErrno (int err, const char *prefix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
-// <<message>>
-extern void throwRuntimeException (const char *message);
-// <<message>> (<<suffix>> <<val>>)
-extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 
-/**
- * Like asprintf, only it returns a java string.
- */
-extern jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
+#include <gcj/cni.h>
 
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/FileDescriptor.h"
+#include "frysk/sys/Pipe.h"
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
-
-/**
- * Convert ARGV, a String[], into a C char* array allocated on the
- * stack.
- */
-extern size_t sizeof_argv (jstringArray argv);
-extern char** fill_argv (void* p, jstringArray argv);
-#define ALLOCA_ARGV(ARGV) (fill_argv (alloca (sizeof_argv (ARGV)), (ARGV)))
-/**
- * Convert S, a String, into a C char* alocated on the stack.
- */
-extern size_t sizeof_string (jstring s);
-extern char* fill_string (void* p, jstring s);
-#define ALLOCA_STRING(S) (fill_string (alloca (sizeof_string (S)), (S)))
+JArray<frysk::sys::FileDescriptor*>*
+frysk::sys::Pipe::pipe ()
+{
+  int gc_count = 0;
+  const int nfds = 2;
+  int filedes[nfds];
+  while (::pipe (filedes) < 0) {
+    int err = errno;
+    // ::printf ("err = %d %s\n", err, strerror (err));
+    switch (err) {
+    case EMFILE:
+      tryGarbageCollect (gc_count, err, "pipe");
+      continue;
+    default:
+      throwErrno (err, "pipe");
+    }
+  }
+  // printf ("pipe [%d, %d]\n", filedes[0], filedes[1]);
+  JArray<frysk::sys::FileDescriptor*>* fds
+    = ( JArray<frysk::sys::FileDescriptor*>*)
+    JvNewObjectArray (nfds, &frysk::sys::FileDescriptor::class$, NULL);
+  for (int i = 0; i < nfds; i++) {
+    elements(fds)[i] = new frysk::sys::FileDescriptor (filedes[i]);
+  }
+  return fds;
+}

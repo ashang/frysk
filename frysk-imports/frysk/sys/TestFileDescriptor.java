@@ -53,16 +53,22 @@ import java.util.Iterator;
 public class TestFileDescriptor
     extends TestCase
 {
-    FileDescriptor in;
-    FileDescriptor out;
+    private Pipe pipe;
     public void setUp ()
     {
-	FileDescriptor[] pipe = FileDescriptor.pipe ();
-	in = pipe[0];
-	out = pipe[1];
+	pipe = new Pipe ();
+    }
+    public void tearDown ()
+    {
+	try {
+	    pipe.close ();
+	}
+	catch (Errno e) {
+	    // Toss it, tear down.
+	}
     }
 
-    void assertBecomesReady (FileDescriptor fd)
+    private void assertBecomesReady (FileDescriptor fd)
     {
 	final int maxDelay = 100;
 	int delay;
@@ -84,9 +90,9 @@ public class TestFileDescriptor
      * written to it.*/
     public void testReady ()
     {
-	assertFalse ("empty pipe not ready", in.ready ());
-	out.write ((byte) 1);
-	assertTrue ("non-empty pipe ready", in.ready ());
+	assertFalse ("empty pipe not ready", pipe.in.ready ());
+	pipe.out.write ((byte) 1);
+	assertTrue ("non-empty pipe ready", pipe.in.ready ());
     }
 
     /**
@@ -96,55 +102,58 @@ public class TestFileDescriptor
     {
 	byte[] values = "hello".getBytes ();
 	for (int i = 0; i < values.length; i++ ) {
-	    out.write (values[i]);
+	    pipe.out.write (values[i]);
 	}
 	// This is risky, could hang.
 	for (int i = 0; i < values.length; i++) {
-	    assertTrue ("ready", in.ready ());
-	    assertEquals ("value " + i, in.read (), values[i]);
+	    assertTrue ("ready", pipe.in.ready ());
+	    assertEquals ("value " + i, pipe.in.read (), values[i]);
 	}
     }
+
+    private final String hello = "hello";
+    private final String xxxhelloyyy = "xxxhelloyyy";
 
     /**
      * Test passing arrays of bytes through a pipe.
      */
     public void testArrayIO ()
     {
-	String hello = "hello";
-	String xxxhelloyyy = "xxxhelloyyy";
-
 	//  Simple read/write.
-	{
-	    out.write (hello.getBytes (), 0, hello.length ());
-	    // This is risky, could hang.
-	    assertTrue ("ready", in.ready ());
-	    byte[] bytesIn = new byte[100];
-	    int bytesRead = in.read (bytesIn, 0, bytesIn.length);
-	    assertEquals ("bytes transfered", hello.length (), bytesRead);
-	    assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
-	}
+	pipe.out.write (hello.getBytes (), 0, hello.length ());
+	// This is risky, could hang.
+	assertTrue ("ready", pipe.in.ready ());
+	byte[] bytesIn = new byte[100];
+	int bytesRead = pipe.in.read (bytesIn, 0, bytesIn.length);
+	assertEquals ("bytes transfered", hello.length (), bytesRead);
+	assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
+    }
+    /**
+     * Test a sub-buffer write.
+     */
+    public void testArraySubBufferWrite ()
+    {
+	pipe.out.write (xxxhelloyyy.getBytes (), 3, hello.length ());
+	// This is risky, could hang.
+	assertTrue ("ready", pipe.in.ready ());
+	byte[] bytesIn = new byte[100];
+	int bytesRead = pipe.in.read (bytesIn, 0, bytesIn.length);
+	assertEquals ("bytes transfered", hello.length (), bytesRead);
+	assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
+    }
 
-	// Write a sub-buffer
-	{
-	    out.write (xxxhelloyyy.getBytes (), 3, hello.length ());
-	    // This is risky, could hang.
-	    assertTrue ("ready", in.ready ());
-	    byte[] bytesIn = new byte[100];
-	    int bytesRead = in.read (bytesIn, 0, bytesIn.length);
-	    assertEquals ("bytes transfered", hello.length (), bytesRead);
-	    assertEquals ("contents", hello, new String (bytesIn, 0, bytesRead));
-	}
-
-	// Read a sub-buffer
-	{
-	    out.write (hello.getBytes (), 0, hello.length ());
-	    // This is risky, could hang.
-	    assertTrue ("ready", in.ready ());
-	    byte[] bytesIn = "xxxHELLOyyy".getBytes ();
-	    int bytesRead = in.read (bytesIn, 3, bytesIn.length);
-	    assertEquals ("bytes transfered", hello.length (), bytesRead);
-	    assertEquals ("contents", xxxhelloyyy, new String (bytesIn));
-	}
+    /**
+     * Test a sub-buffer read.
+     */
+    public void testArraySubBufferRead ()
+    {
+	pipe.out.write (hello.getBytes (), 0, hello.length ());
+	// This is risky, could hang.
+	assertTrue ("ready", pipe.in.ready ());
+	byte[] bytesIn = "xxxHELLOyyy".getBytes ();
+	int bytesRead = pipe.in.read (bytesIn, 3, bytesIn.length);
+	assertEquals ("bytes transfered", hello.length (), bytesRead);
+	assertEquals ("contents", xxxhelloyyy, new String (bytesIn));
     }
 
     /**
@@ -152,9 +161,9 @@ public class TestFileDescriptor
      */
     public void testByteEOF ()
     {
-	out.close ();
-	assertBecomesReady (in);
-	int b = in.read ();
+	pipe.out.close ();
+	assertBecomesReady (pipe.in);
+	int b = pipe.in.read ();
 	assertEquals ("eof", -1, b);
     }
 
@@ -163,9 +172,9 @@ public class TestFileDescriptor
      */
     public void testArrayEOF ()
     {
-	out.close ();
-	assertBecomesReady (in);
-	int b = in.read (new byte[10], 0, 10);
+	pipe.out.close ();
+	assertBecomesReady (pipe.in);
+	int b = pipe.in.read (new byte[10], 0, 10);
 	assertEquals ("eof", -1, b);
     }
 
@@ -175,12 +184,37 @@ public class TestFileDescriptor
     public void testInputOutputStreams ()
 	throws java.io.IOException
     {
-	InputStream ins = in.getInputStream ();
-	OutputStream outs = out.getOutputStream ();
+	InputStream ins = pipe.in.getInputStream ();
+	OutputStream outs = pipe.out.getOutputStream ();
 	assertEquals ("input stream available", ins.available (), 0);
 	outs.write (1);
 	assertEquals ("input stream available", ins.available (), 1);
 	assertEquals ("read back", ins.read (), 1);
+    }
+
+    /**
+     * Try duping the output of a Pipe back to its input.
+     */
+    public void testDupPipeOutToIn ()
+	throws java.io.IOException
+    {
+	assertFalse ("input available on pipe.in", pipe.in.ready());
+	pipe.out.getOutputStream ().write ((byte) 1);
+	assertTrue ("input available on pipe.in", pipe.in.ready());
+	pipe.out.dup (pipe.in);
+	assertTrue ("input available on pipe.out", pipe.out.ready());
+	assertEquals ("read worked", 1, pipe.out.read ());
+    }
+
+    /**
+     * Try opening a random file and reading it.  Looking for an error
+     * to be thrown.
+     */
+    public void testOpenEtcPasswd ()
+    {
+	FileDescriptor f = new FileDescriptor ("/etc/passwd",
+					       FileDescriptor.RDONLY);
+	f.read ();
     }
 
     /**
@@ -200,8 +234,8 @@ public class TestFileDescriptor
 	
 	for (int i = 0; i < 2000; i++) {
 	    setUp ();
-	    fds.put (in, null);
-	    fds.put (out, null);
+	    fds.put (pipe.in, null);
+	    fds.put (pipe.out, null);
 	}
 	// Close out any FileDescriptors not yet garbage collected.
 	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {

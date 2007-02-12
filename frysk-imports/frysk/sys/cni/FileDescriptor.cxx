@@ -41,6 +41,10 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/poll.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <alloca.h>
+#include <fcntl.h>
 
 #include <gcj/cni.h>
 
@@ -141,30 +145,48 @@ frysk::sys::FileDescriptor::read (jbyteArray bytes, jint off, jint len)
 {
   return doRead (fd, elements(bytes) + off, len);
 }
-
-JArray<frysk::sys::FileDescriptor*>*
-frysk::sys::FileDescriptor::pipe ()
+
+jint
+frysk::sys::FileDescriptor::open (jstring file, jint f)
 {
+  const char* pathname = ALLOCA_STRING (file);
+  printf ("Opening <<%s>>\n", pathname);
+  int flags = 0;
+  if (f & frysk::sys::FileDescriptor::RDONLY)
+    flags |= O_RDONLY;
+  if (f & frysk::sys::FileDescriptor::WRONLY)
+    flags |= O_WRONLY;
+  int gc_count;
+  while (1) {
+    errno = 0;
+    int fd = ::open (pathname, flags);
+    int err = errno;
+    if (fd >= 0)
+      return fd;
+    switch (err) {
+    case EMFILE:
+      tryGarbageCollect (gc_count, err, "open");
+      continue;
+    default:
+      throwErrno (errno, "open");
+    }
+  }
+}
+
+void
+frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
+{
+  errno = 0;
   int gc_count = 0;
-  const int nfds = 2;
-  int filedes[nfds];
-  while (::pipe (filedes) < 0) {
+  while (::dup2 (old->fd, fd) < 0) {
     int err = errno;
     // ::printf ("err = %d %s\n", err, strerror (err));
     switch (err) {
     case EMFILE:
-      tryGarbageCollect (gc_count, err, "pipe");
+      tryGarbageCollect (gc_count, err, "dup2");
       continue;
     default:
-      throwErrno (err, "pipe");
+      throwErrno (err, "dup2");
     }
   }
-  // printf ("pipe [%d, %d]\n", filedes[0], filedes[1]);
-  JArray<frysk::sys::FileDescriptor*>* fds
-    = ( JArray<frysk::sys::FileDescriptor*>*)
-    JvNewObjectArray (nfds, &frysk::sys::FileDescriptor::class$, NULL);
-  for (int i = 0; i < nfds; i++) {
-    elements(fds)[i] = new frysk::sys::FileDescriptor (filedes[i]);
-  }
-  return fds;
 }

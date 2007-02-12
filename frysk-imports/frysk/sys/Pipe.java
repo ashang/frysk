@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,47 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
-// <<prefix>>: <<strerror(err)>>
-extern void throwErrno (int err, const char *prefix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
-// <<message>>
-extern void throwRuntimeException (const char *message);
-// <<message>> (<<suffix>> <<val>>)
-extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+package frysk.sys;
 
 /**
- * Like asprintf, only it returns a java string.
+ * Open a Pipe.
  */
-extern jstring vajprintf (const char *fmt, ...)
-  __attribute__ ((format (printf, 1, 2)));
 
+public class Pipe
+{
+    /**
+     * Use this end for reading.
+     */
+    public final FileDescriptor in;
+    /**
+     * Use this end for writing.
+     */
+    public final FileDescriptor out;
 
-/**
- * Attempt a garbage collect, if count is up, throw errno anyway.
- */
-extern int tryGarbageCollect (int &count);
-extern void tryGarbageCollect (int &count, int err, const char *prefix);
-extern void tryGarbageCollect (int &count, int err, const char *prefix,
-			       const char *suffix, int val);
-
-/**
- * Convert ARGV, a String[], into a C char* array allocated on the
- * stack.
- */
-extern size_t sizeof_argv (jstringArray argv);
-extern char** fill_argv (void* p, jstringArray argv);
-#define ALLOCA_ARGV(ARGV) (fill_argv (alloca (sizeof_argv (ARGV)), (ARGV)))
-/**
- * Convert S, a String, into a C char* alocated on the stack.
- */
-extern size_t sizeof_string (jstring s);
-extern char* fill_string (void* p, jstring s);
-#define ALLOCA_STRING(S) (fill_string (alloca (sizeof_string (S)), (S)))
+    /**
+     * Create a bi-directional pipe.
+     */
+    public Pipe ()
+    {
+	FileDescriptor[] filedes = pipe();
+	in = filedes[0];
+	out = filedes[1];
+    }
+
+    public void close ()
+    {
+	in.close ();
+	out.close ();
+    }
+
+    /**
+     * Really create the pipe.
+     */
+    private native FileDescriptor[] pipe ();
+}

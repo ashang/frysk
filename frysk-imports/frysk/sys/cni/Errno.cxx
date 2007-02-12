@@ -192,3 +192,69 @@ tryGarbageCollect (int &count, int err, const char *prefix,
   if (tryGarbageCollect (count) == 0)
     throwErrno (err, prefix, suffix, val);
 }
+
+
+// Returns the total size required by ARGS an a unix argv[] array.
+size_t
+sizeof_argv (jstringArray args)
+{
+  size_t required = 0;
+  // Convert args into argv, argc.
+  int argc = JvGetArrayLength (args);
+  required += (argc + 1) * sizeof (char*);
+  for (int i = 0; i < argc; i++) {
+    jstring arg = elements (args)[i];
+    int len = JvGetStringUTFLength (arg);
+    required += len + 1;
+  }
+  return required;
+}
+
+// Converts ARGS into an argv[] array storing it into BUF, which is
+// returned.
+char**
+fill_argv (void *p, jstringArray args)
+{
+  char* buf = (char*) p;
+  // Convert args into argv, argc.
+  int argc = JvGetArrayLength (args);
+  char** argv = (char**) buf;
+  buf += ((argc + 1) * sizeof (char*));
+  for (int i = 0; i < argc; i++) {
+    jstring arg = elements (args)[i];
+    int len = JvGetStringUTFLength (arg);
+    argv[i] = (char*) buf;
+    buf += (len + 1);
+    JvGetStringUTFRegion (arg, 0, arg->length (), argv[i]);
+    argv[i][len] = '\0';
+  }
+  argv[argc] = 0;
+  return argv;
+}
+
+// Return the number of bytes needed to store the String with a
+// trailing null.  If ARG is NULL, 1 is returned, thus ensuring that a
+// zero size buffer is never allocated.
+size_t
+sizeof_string (jstring s)
+{
+  if (s != NULL)
+    return JvGetStringUTFLength (s) + 1;
+  else
+    return 1;
+}
+
+// Converts S into a char *string stored into BUF, which is returned.
+// If S is NULL, NULL is returned.
+char*
+fill_string (void *p, jstring s)
+{
+  char *c = (char*)p;
+  if (s != NULL) {
+    JvGetStringUTFRegion (s, 0, s->length (), c);
+    c[JvGetStringUTFLength (s)] = '\0';
+    return c;
+  }
+  else
+    return NULL;
+}

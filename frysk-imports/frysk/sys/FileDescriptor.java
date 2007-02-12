@@ -52,15 +52,57 @@ import java.io.IOException;
 public class FileDescriptor
 {
     protected final int fd;
+    /**
+     * Package local file descriptor used by various classes when
+     * returning a file descriptor.
+     */
     FileDescriptor (int fd)
     {
 	this.fd = fd;
     }
+    /**
+     * Create a file descriptor for the specified FILE, open with MODE.
+     */
+    public FileDescriptor (String file, int flags)
+    {
+	this.fd = open (file, flags);
+    }
+    /**
+     * Open file read-only.
+     */
+    public static final int RDONLY = 1;
+    /**
+     * Open file write-only
+     */
+    public static final int WRONLY = 2;
 
     public int getFd ()
     {
 	return fd;
     }
+
+    /**
+     * File descriptor corresponding to standard input.
+     */
+    static public final FileDescriptor in = new FileDescriptor (0);
+    /**
+     * File descriptor corresponding to standard output
+     */
+    static public final FileDescriptor out = new FileDescriptor (1);
+    /**
+     * File descriptor corresponding to standard error.
+     */
+    static public final FileDescriptor err = new FileDescriptor (2);
+
+    /**
+     * Make this a dup of the old file descriptor.
+     */
+    public native void dup (FileDescriptor old);
+
+    /**
+     * Open the specified FILE in FLAGS.
+     */
+    private native static int open (String file, int flags);
 
     /**
      * Poll the file descriptor determining if there is there at least
@@ -113,13 +155,6 @@ public class FileDescriptor
 	if (fd >= 0)
 	    close ();
     }
-
-    /**
-     * Create a pipe pair.
-     *
-     * This makes for easier testing.
-     */
-    static public native FileDescriptor[] pipe ();
 
     /**
      * Return an input stream that can read this file descriptor.
