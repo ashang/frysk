@@ -314,6 +314,27 @@ public class IsaX8664 implements Isa
     return false;
   }
 
+  /**
+   * Returns true if the given Task is at an instruction that will invoke
+   * the sig return system call.
+   *
+   * On x86_64 this is when the pc is at a 'syscall' instruction and the
+   * rax register contains 0x0f.
+   */
+  public boolean isAtSyscallSigReturn(Task task)
+  {
+    long address = pc(task);
+    boolean result = (task.getMemory().getByte(address) == (byte) 0x0f
+		      && task.getMemory().getByte(address + 1) == (byte) 0x05);
+    if (result)
+      {
+	Register rax = getRegisterByName("rax");
+	long syscall_num = rax.get(task);
+	result &= syscall_num == 0x0f;
+      }
+    return result;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxX8664Syscall.syscallList;

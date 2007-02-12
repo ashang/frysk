@@ -907,6 +907,11 @@ abstract public class Task
   // The signal, or zero, send last to the task.
   int sig_send;
 
+  // When the last request to the process was a step request, whether
+  // it was a request to step a sigreturn syscall.
+  // Set by sendStepInstruction().
+  boolean syscall_sigret;
+
   /**
    * Notify all Code observers of the breakpoint. Return the number of
    * blocking observers or -1 if no Code observer were installed on this

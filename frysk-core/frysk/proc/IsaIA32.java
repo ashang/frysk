@@ -325,6 +325,27 @@ public class IsaIA32 implements Isa
 	    && task.getMemory().getByte(address - 2) == (byte) 0xcd);
   }
 
+  /**
+   * Returns true if the given Task is at an instruction that will invoke
+   * the sig return system call.
+   *
+   * On x86 this is when the pc is at a int 0x80 instruction and the
+   * eax register contains 0x77.
+   */
+  public boolean isAtSyscallSigReturn(Task task)
+  {
+    long address = pc(task);
+    boolean result = (task.getMemory().getByte(address) == (byte) 0xcd
+		      && task.getMemory().getByte(address + 1) == (byte) 0x80);
+    if (result)
+      {
+	Register eax = getRegisterByName("eax");
+	long syscall_num = eax.get(task);
+	result &= syscall_num == 0x77;
+      }
+    return result;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxIa32Syscall.syscallList;

@@ -942,6 +942,7 @@ abstract class LinuxPtraceTaskState
 		  // architectures).
 		  if (task.step_send
 		      && (task.sig_send != 0
+			  || task.syscall_sigret
 			  || isa.hasExecutedSpuriousTrap(task)))
 		    {
 		      sendContinue(task, 0);
@@ -1167,7 +1168,7 @@ abstract class LinuxPtraceTaskState
 	    newState = insyscall ? inSyscallRunningTraced : syscallRunning;
 	  else
 	    newState = running;
-	  newState.sendContinue(task, 0);
+	  newState.sendContinue(task, sig);
 	  return newState;
 	}
 	

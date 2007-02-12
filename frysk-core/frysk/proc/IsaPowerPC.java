@@ -133,6 +133,18 @@ abstract class IsaPowerPC
     return false;
   }
 
+  /**
+   * Returns true if the given Task is at an instruction that will invoke
+   * the sig return system call.
+   *
+   * FIXME On powerpc this method is not yet implemented and always
+   * return false.
+   */
+  public boolean isAtSyscallSigReturn(Task task)
+  {
+    return false;
+  }
+
   public Syscall[] getSyscallList ()
   {
     return LinuxPowerPCSyscall.syscallList;
