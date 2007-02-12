@@ -556,6 +556,9 @@ public class Runner
     }
     
     private static int timeout = 5; 
+    /**
+     * Return the current time out (it is in seconds).
+     */
     public static int getTimeout()
     {
       return timeout;
@@ -582,6 +585,9 @@ public class Runner
     {
 	// Override the print methods.
 	super (new Results (System.out));
+
+	// Tell expect the default timeout.
+	Expect.setDefaultTimeoutSeconds (timeout);
 
 	// Create the command line parser, and use it to parse all
 	// command line options.
