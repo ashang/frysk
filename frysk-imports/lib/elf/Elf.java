@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -439,6 +439,18 @@ public class Elf
     return elf_get_last_error_no();
   }
 
+  /**
+   * @return Elf data packaged in ElfData class from
+   * given offset and size.
+   *
+   */
+  public ElfData getRawData(long offset, long size)
+  {
+
+    return elf_get_raw_data(offset,size);
+  }
+
+
   protected void finalize () throws Throwable
   {
     elf_end();
@@ -511,5 +523,7 @@ public class Elf
   protected native String elf_get_last_error_msg();
 
   protected native int elf_get_last_error_no();
+
+  protected native ElfData elf_get_raw_data(long offset, long size);
 
 }

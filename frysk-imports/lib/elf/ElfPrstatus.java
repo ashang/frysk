@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006,2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,11 +40,12 @@
 package lib.elf;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.math.BigInteger;
 
 
 /**
- * Java Representation of the the PRSTATUS notes seciont
+ * Java Representation of the the PRSTATUS notes secion
  * found in core files
  **/
 public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
@@ -57,12 +58,44 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private long pr_sigpend;
   private long pr_sighold;
   private long pr_cursig;
+  private long pr_info_si_signo;
+  private long pr_info_si_code;
+  private long pr_info_si_errno;
+  private int pr_fpvalid;
+
   private ArrayList pr_reg = new ArrayList();
   private long raw_registers[];
+  private byte raw_core_registers[];
   private int reg_length = 0;
 
+  ArrayList internalThreads = new ArrayList();
   public ElfPrstatus()
   {  
+  }
+
+  /** 
+   * 
+   * Extract note information from a section
+   * containing note data
+   *
+   */
+  public  ElfPrstatus(ElfData noteData)
+  {
+    getNoteData(noteData);
+  }
+
+  /** 
+   * Returns the raw byte[] data 
+   * representing the register data.
+   */
+  public byte[] getRawCoreRegisters()
+  {
+    return raw_core_registers;
+  }
+
+  public ArrayList getThreadData()
+  {
+    return internalThreads;
   }
   
   /**
@@ -200,7 +233,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
    * 
    * @return pr_cursig
    */
-  public long getPrCurSigd()
+  public long getPrCurSig()
   {
     return this.pr_cursig;
   }
@@ -218,7 +251,53 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     pr_reg.add(index,value);
   }
 
-  /**
+  public Iterator getPrGPRegIterator()
+  {
+    return pr_reg.iterator();
+  }
+
+  public void setPrInfoSiSigno(long pr_info_si_signo)
+  {
+    this.pr_info_si_signo = pr_info_si_signo;
+  }
+
+  public long getPrInfoSiSigno()
+  {
+    return this.pr_info_si_signo;
+  }
+
+  public void setPrInfoSiCode(long pr_info_si_code)
+  {
+    this.pr_info_si_code = pr_info_si_code;
+  }
+
+  public long getPrInfoSiCode()
+  {
+    return this.pr_info_si_code;
+  }
+
+  public void setPrInfoSiErrno(long pr_info_si_errno)
+  {
+    this.pr_info_si_errno = pr_info_si_errno;
+  }
+
+  public long getPrInfoSiErrno()
+  {
+    return this.pr_info_si_errno;
+  }
+
+  public void setPrFPValid(int pr_fpvalid)
+  {
+    this.pr_fpvalid = pr_fpvalid;
+  }
+
+  public long getPrFPValid()
+  {
+    return this.pr_fpvalid;
+  }
+ 
+
+  /** 
    * Convert the array of BigIntegers to longs 
    *
    */
@@ -232,6 +311,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
       }
   }
 
+  public native long getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }

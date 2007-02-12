@@ -53,6 +53,7 @@
 #include "lib/elf/ElfEHeader.h"
 #include "lib/elf/ElfPHeader.h"
 #include "lib/elf/ElfArchiveHeader.h"
+#include "lib/elf/ElfData.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -397,6 +398,16 @@ lib::elf::Elf::elf_getarsym (jlong ptr){
 jint
 lib::elf::Elf::elf_cntl (jint command){
 	return ::elf_cntl((::Elf*) this->pointer, (Elf_Cmd) command);
+}
+
+lib::elf::ElfData* lib::elf::Elf::elf_get_raw_data (jlong offset, jlong size)
+{
+  char *mem = gelf_rawchunk((::Elf*) this->pointer,offset,size);
+  jbyteArray bytes = JvNewByteArray(size);
+  memcpy(elements(bytes),mem,size);
+  lib::elf::ElfData *data = new lib::elf::ElfData(bytes,this);
+  gelf_freechunk((::Elf*) this->pointer,mem);
+  return data;
 }
 
 jstring

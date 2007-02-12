@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006,2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,6 +44,11 @@
 #include <stdint.h>
 
 #include "lib/elf/ElfPrAuxv.h"
+#include "lib/elf/ElfData.h"
+#include "lib/elf/ElfException.h"
+#include "libelf.h"
+#include "elf.h"
+#include "gelf.h"
 
 // Returns the entry size associated with this notes buffer
 
@@ -69,6 +74,45 @@ lib::elf::ElfPrAuxv::fillMemRegion(jbyteArray buffer, jlong startAddress)
   return JvGetArrayLength(this->auxBuffer);
 }
 
+extern jbyteArray auxBuffer;
 
+jlong
+lib::elf::ElfPrAuxv::getNoteData(ElfData *data)
+{
+  void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
+  GElf_Nhdr *nhdr = (GElf_Nhdr *)elf_data;
+  long note_loc =0;
+  long note_data_loc = 0;
 
+  // Find auxv note data. If the first note header is not auxv
+  // loop through, adding up header + align + data till we find the
+  // next header. Continue until section end to find correct header.
+  while ((nhdr->n_type != NT_AUXV) && (note_loc <= data->getSize()))
+    {
+      note_loc += (sizeof (GElf_Nhdr) + ((nhdr->n_namesz + 0x03) & ~0x3)) + nhdr->n_descsz;
+      if (note_loc >= data->getSize())
+	break;
+      nhdr = (GElf_Nhdr *) (((unsigned char *)elf_data) + note_loc);
+    }
+
+  // If loop through entire note section, and header not found, return
+  // here with abnormal return code.
+  if (nhdr->n_type != NT_AUXV)
+      return 1;
+
+  // Find data at current header + alignment
+  note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
+
+  // Run some sanity checks, as we will be doing void pointer -> cast math.
+  if ((nhdr->n_descsz > data->getSize())  || (nhdr->n_descsz > (data->getSize()-note_data_loc)))
+    {
+      throw new lib::elf::ElfException(JvNewStringUTF("note size and elf_data size mismatch"));
+    }
+
+  auxBuffer = JvNewByteArray(nhdr->n_descsz);
+
+  memcpy(elements(this->auxBuffer),((unsigned char  *)elf_data)+note_data_loc, nhdr->n_descsz);
+  
+  return 0;
+}
 

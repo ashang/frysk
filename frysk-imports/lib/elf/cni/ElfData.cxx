@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005,2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,9 +49,21 @@ extern "C"
 {
 #endif
 
+  Elf_Data *native = NULL; 
+
 void
 lib::elf::ElfData::elf_data_finalize (){
 //	free((Elf_Data*) this->pointer);
+  JvFree(native);
+}
+
+
+jlong
+lib::elf::ElfData::elf_data_create_native ()
+{
+  native = (Elf_Data*)JvMalloc(sizeof(Elf_Data));  
+  native->d_type = ELF_T_BYTE;
+  return (jlong) native;
 }
 
 jbyte
@@ -69,10 +81,11 @@ lib::elf::ElfData::elf_data_get_byte (jlong offset)
 extern jbyteArray internal_buffer;
 
 void
-lib::elf::ElfData::elf_data_set_buff (){
+lib::elf::ElfData::elf_data_set_buff (jlong size){
 
         jbyte *bytes = elements(internal_buffer);
 	((Elf_Data*) this->pointer)->d_buf = bytes;
+	((Elf_Data*) this->pointer)->d_size = size;
 }
 
 

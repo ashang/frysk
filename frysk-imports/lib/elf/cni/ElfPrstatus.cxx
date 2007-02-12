@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat, Inc.
+// Copyright 2006,2007 Red Hat, Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,8 +49,16 @@ typedef __u64 u64;
 typedef __u32 u32;
 #endif
 
-#include "lib/elf/ElfPrstatus.h"
+#include "elf.h"
+#include "libelf.h"
+#include "gelf.h"
+
 #include "asm/elf.h"
+#include "lib/elf/ElfPrstatus.h"
+#include "lib/elf/ElfData.h"
+#include "lib/elf/ElfException.h"
+#include <java/util/ArrayList.h>
+#include <java/math/BigInteger.h>
 
 using namespace std;
 using namespace java::lang;
@@ -171,6 +179,80 @@ lib::elf::ElfPrstatus::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	return sizeof(struct elf_prstatus);
 }
 
+
+extern ArrayList internalThreads;
+jlong
+lib::elf::ElfPrstatus::getNoteData(ElfData *data)
+{
+  void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
+  GElf_Nhdr *nhdr = (GElf_Nhdr *)elf_data;
+  elf_prstatus *prstatus;
+  long note_loc =0;
+  long note_data_loc = 0;
+
+
+  // Can have more that on Prstatus note per core file. Collect all of them.
+  while (note_loc <= data->getSize())
+    {
+      // Find Prstatus note data. If the first note header is not prstatus
+      // loop through, adding up header + align + data till we find the
+      // next header. Continue until section end to find correct header.
+      
+      while ((nhdr->n_type != NT_PRSTATUS) && (note_loc <= data->getSize()))
+	{
+	  note_loc += (sizeof (GElf_Nhdr) + ((nhdr->n_namesz + 0x03) & ~0x3)) + nhdr->n_descsz;
+	  if (note_loc >= data->getSize())
+	    break;
+	  nhdr = (GElf_Nhdr *) (((unsigned char *)elf_data) + note_loc);
+	}
+      
+      // If loop through entire note section, and header not found, return
+      // here with abnormal return code.
+      if (nhdr->n_type != NT_PRSTATUS)
+	return -1;
+      
+      // Find data at current header + alignment
+      note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
+      
+      // Run some sanity checks, as we will be doing void pointer -> cast math.
+      if ((nhdr->n_descsz > sizeof(struct elf_prstatus)) || (nhdr->n_descsz > data->getSize()) 
+	  || (nhdr->n_descsz > (data->getSize()-note_data_loc)))
+	{
+	  throw new lib::elf::ElfException(JvNewStringUTF("note size and elf_data size mismatch"));
+	}
+      
+      // Point to the data, and cast.
+      prstatus = (elf_prstatus *) (((unsigned char *) elf_data) + note_data_loc);
+      
+      // Fill Java class structures
+      
+      this->pr_info_si_signo = prstatus->pr_info.si_signo;
+      this->pr_info_si_code =  prstatus->pr_info.si_code;
+      this->pr_info_si_errno = prstatus->pr_info.si_errno;
+      
+      this->pr_cursig = prstatus->pr_cursig;
+      this->pr_sigpend = prstatus->pr_sigpend;
+      this->pr_sighold = prstatus->pr_sighold;
+      
+      this->pr_pid = prstatus->pr_pid;
+      this->pr_ppid = prstatus->pr_ppid;
+      this->pr_pgrp = prstatus->pr_pgrp;
+      this->pr_sid = prstatus->pr_sid;
+      this->pr_fpvalid = prstatus->pr_fpvalid;
+      
+      raw_core_registers = JvNewByteArray(sizeof (prstatus->pr_reg));
+  
+      memcpy(elements(raw_core_registers),prstatus->pr_reg,sizeof(prstatus->pr_reg));
+      
+      internalThreads->add(this);
+
+      // Move pointer along, now we have processed the first thread
+      note_loc += (sizeof (GElf_Nhdr) + ((nhdr->n_namesz + 0x03) & ~0x3)) + nhdr->n_descsz;
+      nhdr = (GElf_Nhdr *) (((unsigned char *)elf_data) + note_loc);
+    }
+  
+  return 0;
+}
 #ifdef __cplusplus
 }
 #endif

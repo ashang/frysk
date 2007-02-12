@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,6 +48,18 @@ public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
 
   byte[] auxBuffer;
 
+
+  /** 
+   *
+   * Extract note information from a section
+   * containing note data
+   *
+   */
+  public ElfPrAuxv(ElfData noteData)
+  {
+    getNoteData(noteData);
+  }
+
   public ElfPrAuxv()
   {
   }
@@ -67,6 +79,20 @@ public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
     this.auxBuffer = buffer;
   }
 
+  /**
+   *
+   * Return auxv data, in raw form
+   *
+   * @return: buffer - byte[] array containing buffer
+   *
+   */
+  public byte[] getAuxvBuffer()
+  {
+    return this.auxBuffer;
+  }
+
+
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
+  public native long getNoteData(ElfData data);
 }

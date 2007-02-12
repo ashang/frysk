@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005,2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@
 // exception.
 package lib.elf;
 
-
 /**
  * An ElfData is a descriptor of data that will be converted to or
  * from memory format
@@ -49,6 +48,19 @@ public class ElfData {
 	private Elf parent;
 	public byte[] internal_buffer;
 	
+  
+        /**
+	 *
+	 * Package buffer in an  ElfData object.
+	 *
+	 */
+        public ElfData(byte[] buffer, Elf parent)
+        {
+           this.parent = parent;
+           this.pointer = elf_data_create_native();
+	   setBuffer(buffer);
+        }
+
 	protected ElfData(long ptr, Elf parent){
 		this.pointer = ptr;
 		this.parent = parent;
@@ -62,7 +74,7 @@ public class ElfData {
 	public void setBuffer(byte[] e_buffer) {
 		internal_buffer = e_buffer;
 		if (internal_buffer != null)
-			elf_data_set_buff();
+			elf_data_set_buff(e_buffer.length);
 	}
 	/**
 	 * Returns the byte at the provided offset into the data
@@ -188,8 +200,9 @@ public class ElfData {
 		return this.parent;
 	}
 	
+        native protected long elf_data_create_native();
 	native protected void elf_data_finalize();
-	native protected void elf_data_set_buff();
+	native protected void elf_data_set_buff(long length);
 	native protected byte elf_data_get_byte(long offset);
 	native protected int elf_data_get_type();
 	native protected void elf_data_set_type(int type);

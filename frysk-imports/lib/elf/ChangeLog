@@ -1,3 +1,30 @@
+2007-02-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Elf.java (getRawData): New. Return raw elf data.
+	* cni/Elf.cxx (elf_get_raw_data): Return raw byte data.
+
+	* tests/TestElf.java (testElfCorePrpsNotes): New.Test Prpsinfo notes.
+	(testElfCorePrstatusNotes): New. Test Prstatus notes.
+	(testElfCorePrAuxvNotes): New. Test Auxv notes.
+	
+	* cni/ElfPrpsinfo.cxx (getNoteData): New. Parse raw note
+	data and find relevant note section.
+	* cni/ElfPrAuxv.cxx (getNoteData): Ditto
+	* cni/ElfPrstatus.cxx (getNoteData): Ditto
+	* cni/ElfData.cxx (elf_data_create_native): New. Create underlying
+	native data structures.
+
+	* ElfPrstatus.java (ElfPrstatus): New Constructor.
+	(getRawCoreRegisters): New.
+	(getThreadData): New.
+	(getPrCurSig): Rename.
+	* ElfPrpsinfo.java (ElfPrpsinfo): New Constructor.
+	* ElfPrAuxv.java (ElfPrAuxv): New Constructor.
+	(getAuxvBuffer): Return auxv data in raw form.	
+	* ElfData.java (ElfData): New constructor to take raw byte[] data
+	and package into an ElfData class.
+	(setBuffer): Take a size argument.
+
 2007-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfCommand.java: GNU indent.

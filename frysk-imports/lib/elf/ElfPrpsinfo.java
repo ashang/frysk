@@ -1,6 +1,7 @@
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, IBM Inc.
+// Copyright 2007, Red Hat, Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -75,7 +76,18 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   {
     
   }
-  
+
+  /** 
+   * 
+   * Extract note information from a section
+   * containing note data
+   *
+   */
+  public ElfPrpsinfo(ElfData noteData)
+  {
+    getNoteData(noteData);
+  }
+
   public void setPrState(char state)
   {
     this.pr_state = state;
@@ -220,7 +232,8 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
     return this.pr_psargs;
   }
  
-  
+ 
+  public native long getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }
