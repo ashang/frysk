@@ -1,3 +1,7 @@
+2007-02-12  Nurdin Premji <npremji@redhat.com>
+
+	* htdocs/build/index.html: Fixed cvs branching faq.
+
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
 	* bootstrap.sh: Add "set -e".
