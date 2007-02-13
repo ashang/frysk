@@ -56,7 +56,6 @@ import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.Stat;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -66,7 +65,6 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.LogManager;
 
 /**
  * Utility for JUnit tests.
@@ -128,7 +126,7 @@ public class TestLib
    * stopped (using EventLoop . requestStop). During this period poll for
    * external events. XXX: Static to avoid gcc bugs.
    */
-  static void assertRunUntilStop (int timeout, String reason)
+  static void assertRunUntilStop (long timeout, String reason)
   {
     logger.log(Level.FINE, "{0} assertRunUntilStop start: {1}\n",
                new Object[] { TestLib.class, reason });
@@ -138,22 +136,6 @@ public class TestLib
                new Object[] { TestLib.class, reason });
   }
 
-  static int assertRunTime = 5;
-  static
-    {
-      assertRunTime = frysk.junit.Runner.getTimeout();
-      Enumeration logEnum = LogManager.getLogManager().getLoggerNames();
-
-      while (logEnum.hasMoreElements())
-        {
-          Object logName = logEnum.nextElement();
-          Level logLevel = Logger.getLogger((String) logName).getLevel();
-          if (Level.FINE.equals(logLevel) || Level.FINER.equals(logLevel)
-              || Level.FINEST.equals(logLevel))
-            assertRunTime *= 5;
-        }
-    }
-
   /**
    * Run the event loop for a short period of time until it is explicitly
    * stopped (using EventLoop . requestStop). During this period poll for
@@ -161,7 +143,7 @@ public class TestLib
    */
   protected static void assertRunUntilStop (String reason)
   {
-    assertRunUntilStop(assertRunTime, reason);
+      assertRunUntilStop(getTimeoutSeconds (), reason);
   }
 
   /**

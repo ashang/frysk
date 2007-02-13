@@ -535,8 +535,9 @@ public class Runner
             {
               public void parsed (String arg0)
               {
-                timeout = Integer.parseInt(arg0);
-		Expect.setDefaultTimeoutSeconds (timeout);
+		  long timeout = Integer.parseInt(arg0);
+		  TestCase.setTimeoutSeconds (timeout);
+		  Expect.setDefaultTimeoutSeconds (timeout);
               }
             });
 
@@ -555,15 +556,6 @@ public class Runner
 	return parser;
     }
     
-    private static int timeout = 5; 
-    /**
-     * Return the current time out (it is in seconds).
-     */
-    public static int getTimeout()
-    {
-      return timeout;
-    }
-
     private static String programBasename;
     /**
      * Return the TestRunner's true basename - it could be "funit" or
@@ -587,7 +579,7 @@ public class Runner
 	super (new Results (System.out));
 
 	// Tell expect the default timeout.
-	Expect.setDefaultTimeoutSeconds (timeout);
+	Expect.setDefaultTimeoutSeconds (TestCase.getTimeoutSeconds ());
 
 	// Create the command line parser, and use it to parse all
 	// command line options.

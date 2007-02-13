@@ -51,6 +51,30 @@ public class TestCase
     extends junit.framework.TestCase
 {
     /**
+     * Set the second-timeout.
+     */
+    static void setTimeoutSeconds (long timeoutSeconds)
+    {
+	TestCase.timeoutSeconds = timeoutSeconds;
+    }
+    static private long timeoutSeconds = 5;
+
+    /**
+     * A second timeout.
+     */
+    protected static long getTimeoutSeconds ()
+    {
+	return timeoutSeconds;
+    }
+    /**
+     * A milli-second timeout.
+     */
+    protected static long getTimeoutMilliseconds ()
+    {
+	return timeoutSeconds * 1000;
+    }
+
+    /**
      * A variable that has the value true.  Used by code trying to
      * stop the optimizer realise that there's dead code around.
      */

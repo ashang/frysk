@@ -1,5 +1,10 @@
 2007-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java (timeout, getTimeout): Delete.
+	(Runner): Call TestCase.setTimeoutSeconds.
+	* TestCase.java (timeoutSeconds, getTimeoutSeconds)
+	(getTimeoutMilliseconds, setTimeoutSeconds): New.
+
 	* Runner.java (Runner): Tell expect the default timeout.
 
 2007-02-09  Andrew Cagney  <cagney@redhat.com>
