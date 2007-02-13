@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -225,11 +225,12 @@ public interface TaskObserver
      * Task has been attached can its internals be manipulated
      * (registers, memory, auxv).
      *
-     * Adding this observer does not cause a Task to be attached.
+     * XXX: This observer only works on un-attached tasks.
      *
-     * XXX: Place holder until a better named observer comes to be.
+     * XXX: This is an internal observer used to test the attached /
+     * detached state transitions.
      */
-    public interface Attached
+    interface Attached
 	extends TaskObserver
     {
 	/**
