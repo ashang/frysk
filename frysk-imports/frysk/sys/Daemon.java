@@ -40,43 +40,26 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * Spawns a daemon-process, a.k.a. a process with init or process 1 as
+ * the parent.
  */
 
-public class Pipe
+public final class Daemon
+    extends ProcessIdentifier
 {
     /**
-     * Use this end for reading.
+     * Create a daemon process (child of process 1 a.k.a. init) that
+     * redirects its I/O to REDIRECT, and executes EXEC.
+     *
+     * Package private.
      */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
+    private static native int daemon (Redirect redirect, Execute exec);
 
     /**
-     * Create a bi-directional pipe.
+     * Create a daemon wired to REDIRECT, and running EXEC.
      */
-    public Pipe ()
+    Daemon (Redirect redirect, Execute exec)
     {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+	super (daemon (redirect, exec));
     }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
 }

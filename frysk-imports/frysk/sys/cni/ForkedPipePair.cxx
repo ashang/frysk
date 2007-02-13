@@ -37,46 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-/**
- * Open a Pipe.
- */
+#include <gcj/cni.h>
 
-public class Pipe
-{
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
+#include <java/lang/Object.h>
 
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
-}
+#include "frysk/sys/FileDescriptor.h"
+#include "frysk/sys/Pipe.h"
+#include "frysk/sys/PipePair.h"
+#include "frysk/sys/ForkedPipePair.h"
+#include "frysk/sys/cni/Errno.hxx"

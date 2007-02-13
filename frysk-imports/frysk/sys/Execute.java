@@ -40,43 +40,10 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * Interface for a simple execute method.
  */
 
-public class Pipe
+public interface Execute
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+    void execute ();
 }

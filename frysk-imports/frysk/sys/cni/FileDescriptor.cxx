@@ -56,7 +56,7 @@
 void
 frysk::sys::FileDescriptor::close ()
 {
-  // ::printf ("closing %d\n", (int)fd);
+  // ::fprintf (stderr, "%d closing %d\n", getpid(), (int)fd);
   errno = 0;
   ::close (fd);
   if (errno != 0)
@@ -71,7 +71,7 @@ frysk::sys::FileDescriptor::write (jint b)
   errno = 0;
   ::write (fd, &c, 1);
   int err = errno;
-  // ::printf ("wrote <<%c>>\n", c);
+  // ::fprintf (stderr, "wrote <<%c>>\n", c);
   if (err != 0)
     throwErrno (err, "write", "fd", fd);
 }
@@ -82,7 +82,7 @@ frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
   errno = 0;
   ::write (fd, elements(bytes) + off, len);
   int err = errno;
-  // ::printf ("wrote <<%c>>\n", (char) b);
+  // ::fprintf (stderr, "wrote <<%c>>\n", (char) b);
   if (err != 0)
     throwErrno (err, "write", "fd", fd);
 }
@@ -90,10 +90,11 @@ frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
 jboolean
 frysk::sys::FileDescriptor::ready (jlong timeout)
 {
+  // ::fprintf (stderr, "%d %d ready %ld?\n", getpid (), (int)fd, (long) timeout);
   struct pollfd pollfd = { fd, POLLIN, 0 };
   int count = ::poll (&pollfd, 1, timeout);
   int err = errno;
-  // ::printf ("ready count %d\n", count);
+  // ::fprintf (stderr, "%d ready count %d\n", getpid (), count);
   switch (count) {
   case 1:
     return (pollfd.revents & (POLLIN | POLLHUP)) != 0;
@@ -110,7 +111,7 @@ doRead (jint fd, void *bytes, jint len)
   errno = 0;
   int nr = ::read (fd, bytes, len);
   int err = errno;
-  // ::printf ("nr %d errno %d (%s)\n", nr, err, strerror (err));
+  // ::fprintf (stderr, "nr %d errno %d (%s)\n", nr, err, strerror (err));
   switch (nr) {
   case 0:
     return -1; // EOF
@@ -150,7 +151,7 @@ jint
 frysk::sys::FileDescriptor::open (jstring file, jint f)
 {
   const char* pathname = ALLOCA_STRING (file);
-  printf ("Opening <<%s>>\n", pathname);
+  // ::fprintf ("opening <<%s>>\n", pathname);
   int flags = 0;
   if (f & frysk::sys::FileDescriptor::RDONLY)
     flags |= O_RDONLY;
@@ -178,9 +179,10 @@ frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
 {
   errno = 0;
   int gc_count = 0;
+  // ::fprintf (stderr, "%d dup (%d, %d)\n", getpid (), (int)old->fd, (int)fd);
   while (::dup2 (old->fd, fd) < 0) {
     int err = errno;
-    // ::printf ("err = %d %s\n", err, strerror (err));
+    // ::fprintf (stderr, "err = %d %s\n", err, strerror (err));
     switch (err) {
     case EMFILE:
       tryGarbageCollect (gc_count, err, "dup2");
@@ -189,4 +191,5 @@ frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
       throwErrno (err, "dup2");
     }
   }
+  // ::fprintf (stderr, "%d dup done\n", getpid ());
 }

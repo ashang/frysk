@@ -37,46 +37,67 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <alloca.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-/**
- * Open a Pipe.
- */
+#include <gcj/cni.h>
 
-public class Pipe
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/Daemon.h"
+#include "frysk/sys/Redirect.h"
+#include "frysk/sys/Execute.h"
+
+jint
+frysk::sys::Daemon::daemon (frysk::sys::Redirect* redirect,
+			    frysk::sys::Execute* exec)
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
+  volatile int pid = -1;
 
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+  // This is executed by the child with the parent blocked, the final
+  // process id ends up in PID.
+  errno = 0;
+  register int v = vfork ();
+  switch (v) {
+  case -1:
+    throwErrno (errno, "vfork");
+  case 0:
+    // vforked child
+    // ::fprintf (stderr, "%d is vfork child\n", getpid ());
+    pid = fork ();
+    switch (pid) {
+    case -1:
+      // error handled by parent; look for pid<0.
+      _exit (0);
+    case 0:
+      // ::fprintf (stderr, "%d child calls redirect\n", getpid ());
+      redirect->reopen ();
+      // ::fprintf (stderr, "%d child calls execute\n", getpid ());
+      exec->execute ();
+      _exit (0);
+    default:
+      _exit (0);
     }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+  default:
+    // Reach here after the vfork child - or middle player - exits.
+    // Save the fork's error status.
+    int fork_errno = errno;
+    // Consume the middle players wait.
+    errno = 0;
+    pid_t wpid = ::waitpid (v, NULL, 0);
+    int wait_errno = errno;
+    // Did the fork succeed?  If not throw its status.
+    if (pid < 0)
+      throwErrno (fork_errno, "fork");
+    // Did the wait succeed?  If not throw its status.
+    if (wpid < 0)
+      throwErrno (wait_errno, "waitpid", "process", v);
+    // printf ("v %d pid %d\n", v, pid);
+    redirect->close ();
+    return pid;
+  }
 }

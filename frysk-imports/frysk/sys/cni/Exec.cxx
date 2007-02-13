@@ -37,46 +37,26 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <errno.h>
+#include <alloca.h>
+#include <unistd.h>
 
-/**
- * Open a Pipe.
- */
+#include <gcj/cni.h>
 
-public class Pipe
+#include "frysk/sys/Exec.h"
+#include "frysk/sys/cni/Errno.hxx"
+
+void
+frysk::sys::Exec::execute ()
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+  // ::fprintf (stderr, "%d exec\n", getpid ());
+  char* theFile = ALLOCA_STRING (file);
+  char** theArgv = ALLOCA_ARGV (argv);
+  errno = 0;
+  ::execvp (theFile, theArgv);
+  int err = errno;
+  // This should not happen.
+  ::perror ("execvp");
+  ::_exit (err);
 }

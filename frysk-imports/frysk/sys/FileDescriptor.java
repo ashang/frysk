@@ -248,4 +248,9 @@ public class FileDescriptor
 		}
 	    };
     }
+
+    public String toString ()
+    {
+	return "{fd=" + fd + "}";
+    }
 }

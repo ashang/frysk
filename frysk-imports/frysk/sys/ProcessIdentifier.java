@@ -40,43 +40,43 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * Identifies a process.
  */
-
-public class Pipe
+class ProcessIdentifier
+    implements Comparable
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
+    private int pid;
+    protected ProcessIdentifier (int pid)
     {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+	this.pid = pid;
     }
-
+    public int hashCode ()
+    {
+	return pid;
+    }
+    public int compareTo (Object o)
+    {
+	return ((ProcessIdentifier)o).pid - this.pid;
+    }
+    public boolean equals (Object o)
+    {
+	if (o instanceof ProcessIdentifier)
+	    return ((ProcessIdentifier)o).pid == this.pid;
+	else
+	    return false;
+    }
     public String toString ()
     {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
+	return "[" + pid + "]";
     }
 
-    public void close ()
+    public void kill ()
     {
-	in.close ();
-	out.close ();
+	Signal.kill (pid, Sig.KILL);
     }
 
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+    public void drainWait ()
+    {
+	Wait.drain (pid);
+    }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,44 +39,24 @@
 
 package frysk.sys;
 
-/**
- * Open a Pipe.
- */
-
-public class Pipe
+public class Child
+    extends ProcessIdentifier
 {
     /**
-     * Use this end for reading.
+     * Create a child process (direct decendant of this process) that
+     * redirects its I/O to REDIRECT, and executes EXEC.
+     *
+     * Private.
      */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
+    private static native int child (Redirect redirect, Execute exec);
 
     /**
-     * Create a bi-directional pipe.
+     * Create a child wired to IO redirect, running exec.
+     *
+     * Package private.
      */
-    public Pipe ()
+    Child (Redirect redirect, Execute exec)
     {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+	super (child (redirect, exec));
     }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
 }

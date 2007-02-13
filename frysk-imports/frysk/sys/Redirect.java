@@ -40,43 +40,16 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * Class for re-directing I/O after a fork.
  */
-
-public class Pipe
+abstract class Redirect
 {
     /**
-     * Use this end for reading.
+     * For child, re-open STDIO streams.
      */
-    public final FileDescriptor in;
+    abstract void reopen ();
     /**
-     * Use this end for writing.
+     * For parent, child has forked, close this end.
      */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+    abstract void close ();
 }

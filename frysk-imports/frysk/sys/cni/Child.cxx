@@ -37,46 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <alloca.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-/**
- * Open a Pipe.
- */
+#include <gcj/cni.h>
 
-public class Pipe
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/Child.h"
+#include "frysk/sys/Redirect.h"
+#include "frysk/sys/Execute.h"
+
+jint
+frysk::sys::Child::child (frysk::sys::Redirect* redirect,
+			  frysk::sys::Execute* exec)
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
-
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+  // Fork/exec
+  errno = 0;
+  pid_t pid = fork ();
+  switch (pid) {
+  case -1:
+    // Fork failed.
+    throwErrno (errno, "fork");
+  case 0:
+    // Child
+    // ::fprintf (stderr, "%d child calls reopen\n", getpid ());
+    redirect->reopen ();
+    // ::fprintf (stderr, "%d child calls execute\n", getpid ());
+    exec->execute ();
+    ::_exit (0);
+  default:
+    redirect->close ();
+    return pid;
+  }
 }

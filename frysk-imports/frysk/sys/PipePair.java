@@ -40,43 +40,115 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * An abstract class for creating a pair of pipes wired up to a child
+ * process, with OUT wired to the child's STDIN, and IN wired to the
+ * child's stdout.
+ *
+ * The child process is created using the method spawn.
  */
 
-public class Pipe
+public abstract class PipePair
 {
     /**
-     * Use this end for reading.
+     * Write to this file descriptor.
+     */
+    public final FileDescriptor out;
+    /**
+     * Read from this file descriptor.
      */
     public final FileDescriptor in;
     /**
-     * Use this end for writing.
+     * File descriptor of process wired to the pipe.
      */
-    public final FileDescriptor out;
+    public final ProcessIdentifier pid;
+    /**
+     * Create a pipe-pair and then wire it up.
+     *
+     * this > out.out|out.in > child > in.out|in.in > this
+     *
+     * Spawn is parameterized with the Object o, allowing custom
+     * behavior.  The child must close to.out and from.in.
+     */
+    private PipePair (Execute execute)
+    {
+	final Pipe out = new Pipe ();
+	final Pipe in = new Pipe ();
+	// Wire: this.out > to.out
+	this.out = out.out;
+	// Wire: from.in > this.in
+	this.in = in.in;
+	// Wire: out.in > child > to.out
+	pid = spawn (new RedirectPipes (out, in), execute);
+    }
+
+    private static class RedirectPipes
+	extends Redirect
+    {
+	private Pipe out;
+	private Pipe in;
+	RedirectPipes (Pipe out, Pipe in)
+	{
+	    this.out = out;
+	    this.in = in;
+	}
+	/**
+	 * Executed by the child process - re-direct child's end of
+	 * pipes to STDIN and STDOUT.
+	 */
+	protected void reopen ()
+	{
+	    FileDescriptor.in.dup (out.in);
+	    FileDescriptor.out.dup (in.out);
+	    in.close ();
+	    out.close ();
+	}
+	/**
+	 * Executed by the parent process (this) - close child's ends
+	 * of pipes.
+	 */
+	protected void close ()
+	{
+	    out.in.close ();
+	    in.out.close ();
+	}
+    }
 
     /**
-     * Create a bi-directional pipe.
+     * Called from the context of the child process.
      */
-    public Pipe ()
-    {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
-    }
+    protected abstract ProcessIdentifier spawn (Redirect redirect,
+						Execute exec);
 
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
-
+    /**
+     * Shut down the pipes.
+     */
     public void close ()
     {
 	in.close ();
 	out.close ();
     }
 
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+    public static PipePair child (String[] argv)
+    {
+	return new PipePair (new Exec (argv))
+	    {
+		protected ProcessIdentifier spawn (Redirect redirect,
+						   Execute exec)
+		{
+		    return new Child (redirect, exec);
+		}
+	    };
+    }
+
+    public static PipePair daemon (String[] argv)
+    {
+	return new PipePair (new Exec (argv))
+	    {
+		protected ProcessIdentifier spawn (Redirect redirect,
+						   Execute exec)
+		{
+		    return new Daemon (redirect, exec);
+		}
+	    };
+    }
 }

@@ -39,44 +39,70 @@
 
 package frysk.sys;
 
+import frysk.junit.TestCase;
+
 /**
- * Open a Pipe.
+ * Test creation of a process wired up to a pipe.
  */
 
-public class Pipe
+public class TestPipePair
+    extends TestCase
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
+    private PipePair pipe;
+    public void tearDown ()
     {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+	if (pipe != null) {
+	    try {
+		pipe.close ();
+	    }
+	    catch (Errno e) {
+		// discard - tearDown
+	    }
+	    try {
+		pipe.pid.kill ();
+	    }
+	    catch (Errno e) {
+		// discard - tearDown
+	    }
+	    pipe.pid.drainWait ();
+	    Signal.drain (Sig.CHLD);
+	    pipe = null;
+	}
     }
 
-    public String toString ()
-    {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
-    }
+    final String[] tee = new String[] { "/usr/bin/tee" };
 
-    public void close ()
+    /**
+     * Verify that what goes in comes out.
+     */
+    public void verifyIO ()
     {
-	in.close ();
-	out.close ();
+	assertFalse ("pipe.in.ready at start", pipe.in.ready ());
+	pipe.out.write ('a');
+	assertTrue ("pipe.in.ready with data",
+		    pipe.in.ready (getTimeoutMilliseconds ()));
+	assertEquals ("pipe.in.read", 'a', pipe.in.read ());
+	pipe.out.write ('b');
+	assertTrue ("pipe.in.ready with data",
+		    pipe.in.ready (getTimeoutMilliseconds ()));
+	assertEquals ("pipe.in.read", 'b', pipe.in.read ());
+	pipe.out.close ();
+	assertTrue ("pipe.in.ready with EOF", 
+		    pipe.in.ready (getTimeoutMilliseconds ()));
+	assertEquals ("pipe.in.read", -1, pipe.in.read ());
     }
 
     /**
-     * Really create the pipe.
+     * Test a daemon Pipe pair.
      */
-    private native FileDescriptor[] pipe ();
+    public void testDaemonTee ()
+    {
+	pipe = PipePair.daemon (tee);
+	verifyIO ();
+    }
+    public void testChildTee ()
+    {
+	pipe = PipePair.child (tee);
+	verifyIO ();
+    }
 }

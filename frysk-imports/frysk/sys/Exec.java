@@ -40,43 +40,22 @@
 package frysk.sys;
 
 /**
- * Open a Pipe.
+ * Local class, used to perform an exec call after a fork.
  */
-
-public class Pipe
+final class Exec
+    implements Execute
 {
-    /**
-     * Use this end for reading.
-     */
-    public final FileDescriptor in;
-    /**
-     * Use this end for writing.
-     */
-    public final FileDescriptor out;
-
-    /**
-     * Create a bi-directional pipe.
-     */
-    public Pipe ()
+    protected String file;
+    protected String[] argv;
+    Exec (String file, String[] argv)
     {
-	FileDescriptor[] filedes = pipe();
-	in = filedes[0];
-	out = filedes[1];
+	this.file = file;
+	this.argv = argv;
     }
-
-    public String toString ()
+    Exec (String[] argv)
     {
-	return "[" + out.getFd () + "|" + in.getFd () + "]";
+	this.file = argv[0];
+	this.argv = argv;
     }
-
-    public void close ()
-    {
-	in.close ();
-	out.close ();
-    }
-
-    /**
-     * Really create the pipe.
-     */
-    private native FileDescriptor[] pipe ();
+    public native void execute ();
 }
