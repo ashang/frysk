@@ -105,4 +105,34 @@ public class TestPipePair
 	pipe = new ChildPipePair (tee);
 	verifyIO ();
     }
+
+    /**
+     * Test a daemon assembly file.
+     */
+    public void testDaemonExecute ()
+    {
+	pipe = new DaemonPipePair (new Tee ());
+	verifyIO ();
+    }
+
+    /**
+     * Test a child assembly file.
+     */
+    public void testChildExecute ()
+    {
+	pipe = new ChildPipePair (new Tee ());
+	verifyIO ();
+    }
+
+    /**
+     * XXX: Instead of having TestPipePair implement Execute, this
+     * static nested class is used.  This is to avoid having a native
+     * class that extends junit.framework.TestCase - a header file for
+     * which which isn't available.
+     */
+    static class Tee
+	implements Execute
+    {
+	public native void execute ();
+    }
 }

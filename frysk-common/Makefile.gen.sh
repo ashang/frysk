@@ -91,8 +91,6 @@ JARS=`echo ${JARS}`
 
 (
     find ${dirs} -name 'CVS' -prune \
-    -o -name "[A-Za-z]*\.s" -print \
-    -o -name "[A-Za-z]*\.S" -print \
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
     -o -name "[A-Za-z]*\.cpp" -print \
@@ -110,6 +108,7 @@ JARS=`echo ${JARS}`
     -o -name "[A-Za-z0-9_]*\.png" -print \
     -o -name "[A-Za-z0-9_]*\.gif" -print \
     -o -name "[A-Za-z0-9_]*\.xml" -print \
+    -o -path "*dir/[A-Za-z_]*\.[sS]" -print \
     -o -path "*dir/[A-Za-z_]*\.in" -print \
     -o -path "*dir/[A-Za-z_]*\.uu" -print \
     -o -path "*dir/[A-Za-z]*\.sh" -print \
@@ -119,7 +118,8 @@ JARS=`echo ${JARS}`
 	find ${dirs} \
 	    -path '*/cni/[A-Za-z]*\.hxx' -print \
 	    -o -path '*/cni/[A-Za-z]*\.cxxin' -print \
-	    -o -path '*/cni/[A-Za-z]*\.cxx' -print
+	    -o -path '*/cni/[A-Za-z]*\.cxx' -print \
+	    -o -path '*/cni/[A-Za-z]*\.[sS]' -print
     fi
 ) | sort -f > files.tmp
 
@@ -203,7 +203,7 @@ echo_arch32_COMPILER()
 }
 
 # usage:
-#	echo_arch32_PROGRAMS ${name} ${file} $(COMPILE_CMD) ${arch32_cflag_name}
+#	echo_arch32_PROGRAMS ${name} ${file}
 echo_arch32_PROGRAMS()
 {
     case "$1" in
@@ -219,11 +219,23 @@ echo_arch32_PROGRAMS()
 	    local name_=`echo ${name} | sed -e 'y,/-,__,'`
 	    local ldflags="${name_}_LDFLAGS = -m32 -g"
 	    
-	    local compiler="$3"
-	    local cflag="$4"
+	    local compiler=
+	    local cflag=
 	    
+	    case "${file}" in
+		*.S | *.s )
+		  compiler=CCASCOMPILE
+		  cflag=AS_CFLAGS
+		  ;;
+		* )
+		  compiler=ARCH32_COMPILE
+		  cflag=CFLAGS
+		  ;;
+	    esac
+
 	    echo 
 	    echo "if DO_ARCH32_TEST"
+	    echo "${name_}_${cflag} = -m32 -g"
 	    echo "${name_}_SOURCES = ${file}"
 	    echo "am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
 	    echo "${ldflags}"
@@ -298,6 +310,9 @@ has_main ()
 	    ;;
         *.c | *.cxx )
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
+	    ;;
+        *.S | *.s )
+	    grep "main:" $1 > /dev/null 2>&1
 	    ;;
 	* )
 	    false
@@ -506,7 +521,7 @@ for suffix in .cxxin ; do
     done
 done
 
-for suffix in .cxx .c .hxx ; do
+for suffix in .cxx .c .hxx .s .S ; do
     print_header "... ${suffix}"
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
@@ -518,50 +533,16 @@ for suffix in .cxx .c .hxx ; do
 	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
-	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
+	    if grep 'pthread\.h' ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
 
-           # Generate the rules for arch32 test
-           if [ -z "${arch32_cflag_name+set}" ]; then
-               arch32_cflag_name=`echo ${d}/arch32 | sed -e 'y,/-,__,'`_CFLAGS
-               # Set unconditionally, see the comment in echo_arch32_COMPILER.
-               echo "${arch32_cflag_name}=-m32 -g"
-           fi
-
-           echo_arch32_PROGRAMS ${name} ${file} "ARCH32_COMPILE" ${arch32_cflag_name}
-
+            # Generate the rules for arch32 test
+	    echo_arch32_PROGRAMS ${name} ${file}
 	else
 	    echo "${sources} += ${file}"
 	fi
     done
-    # arch32_cflag_name is empty again, the pipe created a subshell.
-done
-
-#
-# Generate rules for .S/.s assembly files
-#
-for suffix in .s .S ; do
-    print_header "... ${suffix}"
-    grep -e "\\${suffix}\$" files.list | while read file ; do
-        d=`dirname ${file}`
-        b=`basename ${file} ${suffix}`
-        name=${d}/${b}
-        name_=`echo ${name} | sed -e 'y,/-,__,'`
-	
-	echo "${name_}_SOURCES = ${file}"
-	echo_PROGRAMS ${name}
-
-	# Generate the rules for arch32 test
-	if [ -z "${arch32_as_cflag_name+set}" ]; then
-	    arch32_as_cflag_name=`echo ${d}/arch32 | sed -e 'y,/-,__,'`_AS_CFLAGS
-            # Set unconditionally, see the comment in echo_arch32_COMPILER.
-	    echo "${arch32_as_cflag_name}=-m32 -g"
-	fi
-
-	echo_arch32_PROGRAMS ${name} ${file} "CCASCOMPILE" ${arch32_as_cflag_name}
-    done
-    # arch32_as_cflag_name is empty again, the pipe created a subshell.
 done
 
 # Grep the cni/*.cxx files forming a list of included files.  Assume
