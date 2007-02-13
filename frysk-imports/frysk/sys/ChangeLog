@@ -1,5 +1,9 @@
 2007-02-12  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Daemon.cxx: Explictly include parent class
+	frys/sys/ProcessIdentifier.h.
+	* cni/Child.cxx: Ditto.
+
 	* PipePair.java (daemon, child): Move to sub-classes.
 	* TestPipePair.java: Update.
 	* DaemonPipePair.java: New file.

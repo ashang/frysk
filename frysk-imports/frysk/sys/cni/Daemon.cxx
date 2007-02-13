@@ -48,6 +48,7 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/ProcessIdentifier.h"
 #include "frysk/sys/Daemon.h"
 #include "frysk/sys/Redirect.h"
 #include "frysk/sys/Execute.h"
