@@ -39,70 +39,25 @@
 
 package frysk.sys;
 
-import frysk.junit.TestCase;
-
 /**
- * Test creation of a process wired up to a pipe.
+ * A pair of pipes wired to a daemon process.
  */
 
-public class TestPipePair
-    extends TestCase
+public class DaemonPipePair
+    extends PipePair
 {
-    private PipePair pipe;
-    public void tearDown ()
+    protected ProcessIdentifier spawn (Redirect redirect,
+				       Execute exec)
     {
-	if (pipe != null) {
-	    try {
-		pipe.close ();
-	    }
-	    catch (Errno e) {
-		// discard - tearDown
-	    }
-	    try {
-		pipe.pid.kill ();
-	    }
-	    catch (Errno e) {
-		// discard - tearDown
-	    }
-	    pipe.pid.drainWait ();
-	    Signal.drain (Sig.CHLD);
-	    pipe = null;
-	}
+	return new Daemon (redirect, exec);
+    }
+    public DaemonPipePair (String[] argv)
+    {
+	super (new Exec (argv));
     }
 
-    final String[] tee = new String[] { "/usr/bin/tee" };
-
-    /**
-     * Verify that what goes in comes out.
-     */
-    public void verifyIO ()
+    public DaemonPipePair (Execute exec)
     {
-	assertFalse ("pipe.in.ready at start", pipe.in.ready ());
-	pipe.out.write ('a');
-	assertTrue ("pipe.in.ready with data",
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", 'a', pipe.in.read ());
-	pipe.out.write ('b');
-	assertTrue ("pipe.in.ready with data",
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", 'b', pipe.in.read ());
-	pipe.out.close ();
-	assertTrue ("pipe.in.ready with EOF", 
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", -1, pipe.in.read ());
-    }
-
-    /**
-     * Test a daemon Pipe pair.
-     */
-    public void testDaemonTee ()
-    {
-	pipe = new DaemonPipePair (tee);
-	verifyIO ();
-    }
-    public void testChildTee ()
-    {
-	pipe = new ChildPipePair (tee);
-	verifyIO ();
+	super (exec);
     }
 }

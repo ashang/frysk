@@ -69,7 +69,7 @@ public abstract class PipePair
      * Spawn is parameterized with the Object o, allowing custom
      * behavior.  The child must close to.out and from.in.
      */
-    private PipePair (Execute execute)
+    protected PipePair (Execute execute)
     {
 	final Pipe out = new Pipe ();
 	final Pipe in = new Pipe ();
@@ -126,29 +126,5 @@ public abstract class PipePair
     {
 	in.close ();
 	out.close ();
-    }
-
-    public static PipePair child (String[] argv)
-    {
-	return new PipePair (new Exec (argv))
-	    {
-		protected ProcessIdentifier spawn (Redirect redirect,
-						   Execute exec)
-		{
-		    return new Child (redirect, exec);
-		}
-	    };
-    }
-
-    public static PipePair daemon (String[] argv)
-    {
-	return new PipePair (new Exec (argv))
-	    {
-		protected ProcessIdentifier spawn (Redirect redirect,
-						   Execute exec)
-		{
-		    return new Daemon (redirect, exec);
-		}
-	    };
     }
 }
