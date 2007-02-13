@@ -1,3 +1,7 @@
+2007-02-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add test-core-mt-fp core file.
+
 2007-02-06  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (noinst_HEADERS): Add include/frysk-asm.h.

@@ -61,6 +61,7 @@ EXTRA_DIST += \
 	lib/opcodes/ChangeLog \
 	lib/stdcpp/ChangeLog \
 	frysk/pkgdatadir/test-core.bz2.uu \
+	frysk/pkgdatadir/test-core-mt-fp.bz2.uu \
 	frysk/pkgdatadir/helloworld.o.bz2.uu
 
 GEN_CLASSPATH += getopt.jar
