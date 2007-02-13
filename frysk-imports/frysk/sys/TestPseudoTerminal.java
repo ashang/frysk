@@ -52,28 +52,29 @@ public class TestPseudoTerminal extends TestCase
     /**
      * Some tests have a child process, keep it in this PID.
      */
-    int pid;
+    ProcessIdentifier pid;
 
     /**
      * During setup, clear the daemon process.
      */
     public void setUp ()
     {
-	pid = -1;
+	pid = null;
     }
     /**
      * During teardown, kill any daemon process, if present.
      */
     public void tearDown ()
     {
-	if (pid > 0) {
+	if (pid != null) {
 	    try {
-		Signal.tkill (pid, Sig.KILL);
+		pid.kill ();
 	    }
 	    catch (Errno e) {
 		// toss it; don't care
 	    }
 	}
+	pid = null;
     }
 
     /**

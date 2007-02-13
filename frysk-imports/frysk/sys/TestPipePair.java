@@ -64,7 +64,7 @@ public class TestPipePair
 	    catch (Errno e) {
 		// discard - tearDown
 	    }
-	    pipe.pid.drainWait ();
+	    pipe.pid.blockingDrain ();
 	    Signal.drain (Sig.CHLD);
 	    pipe = null;
 	}

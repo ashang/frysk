@@ -76,26 +76,67 @@ public class PseudoTerminal
      */
     private static native int open ();
 
+    /**
+     * Redirect stdin, stdout, and stderr to this PseudoTerminal.
+     *
+     * The file descriptors are created in the parent process so that
+     * child does not need to run the risk of running out of
+     * descriptors et.al. and recover from that.
+     */
+    static private class RedirectStdio
+	extends Redirect
+    {
+	private FileDescriptor in;
+	private FileDescriptor out;
+	private FileDescriptor err;
+	RedirectStdio (String name)
+	{
+	    in = new FileDescriptor (name, FileDescriptor.RDONLY);
+	    out = new FileDescriptor (name, FileDescriptor.WRONLY);
+	    err = new FileDescriptor (name, FileDescriptor.WRONLY);
+	}
+	/**
+	 * Execute in context of child.
+	 */
+	public void reopen ()
+	{
+	    FileDescriptor.in.dup (in);
+	    FileDescriptor.out.dup (out);
+	    FileDescriptor.err.dup (err);
+	    in.close ();
+	    out.close ();
+	    err.close ();
+	}
+	/**
+	 * Executed in context of parent.
+	 */
+	public void close ()
+	{
+	    in.close ();
+	    out.close ();
+	    err.close ();
+	}
+    }
 
     /**
      * Convenience method, adds a child process bound to this
      * pseudo-terminal.
      */
-    public int addChild (String[] args)
+    public ProcessIdentifier addChild (String[] args)
     {
 	// setUpForConsole ();
-	String name = getName ();
-	return Fork.exec (name, name, name, args);
+	return new Child (new RedirectStdio (getName ()),
+			  new Exec (args));
     }
 
     /**
      * Convenience method, adds a daemon process bound to this
      * pseudo-terminal.
      */
-    public int addDaemon (String[] args)
+    public ProcessIdentifier addDaemon (String[] args)
     {
 	// setUpForConsole ();
-	String name = getName ();
-	return Fork.daemon (name, name, name, args);
+	return new Daemon (new RedirectStdio (getName ()),
+			   new Exec (args));
     }
 }

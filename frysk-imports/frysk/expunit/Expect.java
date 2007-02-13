@@ -39,11 +39,11 @@
 
 package frysk.expunit;
 
+import frysk.sys.Errno;
+import frysk.sys.ProcessIdentifier;
 import frysk.sys.PseudoTerminal;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import frysk.sys.Errno;
-import frysk.sys.Wait;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +61,7 @@ public class Expect
     static protected Logger logger = Logger.getLogger("frysk");
 
     private final PseudoTerminal child = new PseudoTerminal ();
-    private int pid = -1;
+    private ProcessIdentifier pid = null;
 
     /**
      * Create an expect instance running the specified program and
@@ -70,12 +70,8 @@ public class Expect
     public Expect (String[] args)
     {
 	pid = child.addChild (args);
-	logger.log (Level.FINE, "{0} new {1} pid {2,number,integer}\n",
-		    new Object[] {
-			this,
-			child,
-			new Integer (pid)
-		    });
+	logger.log (Level.FINE, "{0} new {1} pid {2}\n",
+		    new Object[] { this, child, pid });
     }
 
     /**
@@ -97,17 +93,18 @@ public class Expect
      */
     public void close ()
     {
-	if (pid >= 0) {
+	if (pid != null) {
 	    logger.log (Level.FINE, "{0} close\n", this);
 	    child.close ();
 	    try {
-		Signal.tkill (pid, Sig.KILL);
+		pid.kill ();
 	    }
 	    catch (Errno e) {
 		// Toss it, as cleanup.
 	    }
-	    Wait.drain (pid);
+	    pid.blockingDrain ();
 	}
+	pid = null;
 	Signal.drain (Sig.CHLD);
     }
 
@@ -155,7 +152,7 @@ public class Expect
     /**
      * Return the Process ID of the child.
      */
-    public int getPid ()
+    public ProcessIdentifier getPid ()
     {
 	return pid;
     }
@@ -200,6 +197,9 @@ public class Expect
 		for (int i = 0; i < matches.length; i++) {
 		    Match p = matches[i];
 		    if (p != null) {
+			logger.log (Level.FINE,
+				    "{0} find {1} in <<{2}>>?\n",
+				    new Object[] { this, p, output });
 			if (p.find (output)) {
 			    logger.log (Level.FINE,
 					"{0} match <<{1}>>\n",
@@ -352,7 +352,7 @@ public class Expect
 	}
 	catch (EofException e) {
 	    // This is blocking; which probably isn't good.
-	    Wait.waitAll (pid, new WaitObserver (status));
+	    pid.blockingWait (new WaitObserver (status));
 	}
     }
 }

@@ -42,7 +42,7 @@ package frysk.sys;
 /**
  * Identifies a process.
  */
-class ProcessIdentifier
+public class ProcessIdentifier
     implements Comparable
 {
     private int pid;
@@ -65,18 +65,37 @@ class ProcessIdentifier
 	else
 	    return false;
     }
+    /**
+     * Represent the ProcessIdentifier textually.  Return the PID as a
+     * number so that it can be used directly.
+     */
     public String toString ()
     {
-	return "[" + pid + "]";
+	return Integer.toString (pid);
     }
 
+    /**
+     * Send a fatal signal (SIGKILL) to this process.
+     */
     public void kill ()
     {
 	Signal.kill (pid, Sig.KILL);
     }
 
-    public void drainWait ()
+    /**
+     * Perform a blocking drain of all wait events from this process.
+     * Only returns when the process has disappeared.
+     */
+    public void blockingDrain ()
     {
 	Wait.drain (pid);
+    }
+
+    /**
+     * Perform a blocking wait for a single event from this process.
+     */
+    public void blockingWait (Wait.Observer o)
+    {
+	Wait.waitAll (pid, o);
     }
 }
