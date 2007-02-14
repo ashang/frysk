@@ -229,17 +229,17 @@ public class SourceWindow
   private ToggleAction toggleDisassemblyWindow;
 
   private ToggleAction toggleConsoleWindow;
-  
+
   private ToggleAction toggleThreadDialog;
-  
+
   private ToggleAction toggleStepDialog;
-  
+
   private ThreadSelectionDialog threadDialog = null;
-  
+
   private StepDialog stepDialog = null;
 
   private DOMFrysk dom;
-  
+
   private Proc swProc;
 
   private CurrentStackView stackView;
@@ -247,27 +247,27 @@ public class SourceWindow
   private VariableWatchView watchView;
 
   private ConsoleWindow conWin;
-  
+
   protected boolean SW_active = false;
-  
+
   private StackFrame currentFrame;
-  
+
   private Task currentTask;
-  
+
   private StackFrame[] frames;
-  
+
   private RunState runState;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
-  
-  //private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+
+  // private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
-  
+
   private SourceWindowFactory.AttachedObserver attachedObserver;
-  
+
   private LockObserver lock;
 
   /**
@@ -295,29 +295,35 @@ public class SourceWindow
     this.runState.setProc(proc);
   }
 
-  public SourceWindow (LibGlade glade, String gladePath, Proc proc, 
+  public SourceWindow (LibGlade glade, String gladePath, Proc proc,
                        SourceWindowFactory.AttachedObserver ao)
   {
     this(glade, gladePath, proc);
     this.attachedObserver = ao;
-    
-    this.addListener(new LifeCycleListener() {
-        public void lifeCycleEvent(LifeCycleEvent event) {}
-       public boolean lifeCycleQuery(LifeCycleEvent event) {
-           if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
-               event.isOfType(LifeCycleEvent.Type.DELETE)) {
-             SourceWindow.this.hideAll();
-           }    
-           return true;
-       }
+
+    this.addListener(new LifeCycleListener()
+    {
+      public void lifeCycleEvent (LifeCycleEvent event)
+      {
+      }
+
+      public boolean lifeCycleQuery (LifeCycleEvent event)
+      {
+        if (event.isOfType(LifeCycleEvent.Type.DESTROY)
+            || event.isOfType(LifeCycleEvent.Type.DELETE))
+          {
+            SourceWindow.this.hideAll();
+          }
+        return true;
+      }
     });
-    
+
   }
-  
+
   /**
-   * Initializes the rest of the members of the SourceWindow not handled by 
-   * the constructor. Most of these depend on the Tasks of the process
-   * being blocked.
+   * Initializes the rest of the members of the SourceWindow not handled by the
+   * constructor. Most of these depend on the Tasks of the process being
+   * blocked.
    * 
    * @param proc The Proc to be examined by mw.
    */
@@ -328,16 +334,16 @@ public class SourceWindow
     this.listener = new SourceWindowListener(this);
     this.watchView = new VariableWatchView();
     this.tips = new ToolTips();
-    
+
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
-    
+
     AccelGroup ag = new AccelGroup();
     ((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
-    
+
     ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
 
     this.populateStackBrowser(frames);
-    
+
     if (this.attachedObserver != null)
       {
         Iterator i = this.swProc.getTasks().iterator();
@@ -352,7 +358,7 @@ public class SourceWindow
     this.createMenus();
     this.createToolBar();
     this.createSearchBar();
-    
+
     this.attachEvents();
 
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
@@ -360,13 +366,13 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-    
+
     this.setTitle(this.getTitle() + this.swProc.getCommand() + " - process "
                   + this.swProc.getPid());
 
-    this.run.setSensitive(true);
+    this.cont.setSensitive(true);
     this.stop.setSensitive(false);
-    
+
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
   }
@@ -391,7 +397,6 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[] frames)
   {
-//    SymTab.flushExperSymTabStackFrame();
     this.frames = frames;
 
     /* Initialization */
@@ -399,30 +404,30 @@ public class SourceWindow
       {
         this.stackView = new CurrentStackView(frames);
         StackFrame temp = null;
-        
+
         temp = CurrentStackView.getCurrentFrame();
-        
+
         StackFrame curr = temp;
         this.currentFrame = temp;
-        
+
         if (curr.getDwflLine() == null)
           {
             while (curr != null && curr.getDwflLine() == null)
               curr = curr.getOuter();
           }
-        
+
         if (curr != null)
           {
             this.currentFrame = curr;
             this.currentTask = curr.getTask();
             this.view = new SourceView(curr, this);
-            
+
             SourceView v = (SourceView) this.view;
             SourceBuffer b = (SourceBuffer) v.getBuffer();
-            
+
             for (int j = 0; j < frames.length; j++)
               {
-				 b.highlightLine(frames[j], true);
+                b.highlightLine(frames[j], true);
               }
           }
         else
@@ -430,23 +435,23 @@ public class SourceWindow
             this.view = new SourceView(temp, this);
             this.currentTask = temp.getTask();
           }
-        
+
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
-        this.watchView.setView((SourceView) this.view); 
+        this.watchView.setView((SourceView) this.view);
         stackView.expandAll();
         stackView.showAll();
         this.view.showAll();
         return;
       }
-    
+
     SourceView sv = (SourceView) this.view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
-    
+
     StackFrame curr = null;
     StackFrame taskMatch = null;
-    
+
     String currentMethodName = this.currentFrame.getMethodName();
     boolean flag = false;
 
@@ -470,7 +475,7 @@ public class SourceWindow
             if (currentMethodName.equals(curr.getMethodName()))
               {
                 flag = true;
-//                this.currentFrame = curr;
+                // this.currentFrame = curr;
                 break;
               }
 
@@ -482,25 +487,29 @@ public class SourceWindow
       {
         if (taskMatch != null)
           {
-//            this.currentFrame = taskMatch;
+            //this.stackView.selectRow(taskMatch);
             updateShownStackFrame(taskMatch);
           }
         else
           {
-//            this.currentFrame = this.stackView.getFirstFrameSelection();
-            updateShownStackFrame(this.stackView.getFirstFrameSelection());
+            StackFrame frame = this.stackView.getFirstFrameSelection();
+            //this.stackView.selectRow(frame);
+            updateShownStackFrame(frame);
           }
       }
     else
-      updateShownStackFrame(curr);
-    
+      {
+       // this.stackView.selectRow(curr);
+        updateShownStackFrame(curr);
+      }
+
     this.stackView.resetView(frames);
     this.stackView.expandAll();
-    
+
     /* Update the variable watch as well */
     this.watchView.refreshList();
   }
-  
+
   /**
    * Adds the selected variable to the variable trace window
    * 
@@ -515,12 +524,12 @@ public class SourceWindow
   {
     this.watchView.removeTrace(var);
   }
-  
+
   public void updateThreads ()
   {
     executeTasks(this.threadDialog.getBlockTasks());
   }
-  
+
   /**
    * A request for an instruction step on one or more tasks.
    * 
@@ -530,37 +539,37 @@ public class SourceWindow
   {
     if (tasks.size() == 0)
       return;
-    
+
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping");
-    
+
     desensitize();
-    
+
     this.runState.stepInstruction(tasks);
     removeTags();
   }
-  
+
   /**
    * Called from SourceWindowFactory when all Tasks have notified that they are
-   * blocked and new stack traces have been generated. This is called after
-   * the StackView has been re-populated, allowing the SourceWindow to be 
-   * sensitive again. 
+   * blocked and new stack traces have been generated. This is called after the
+   * StackView has been re-populated, allowing the SourceWindow to be sensitive
+   * again.
    */
   protected void procReblocked ()
   {
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-    
+
     this.runState.runCompleted();
     this.runState.stepCompleted();
     resensitize();
-    
-    //this.SW_state = STOPPED;
+
+    // this.SW_state = STOPPED;
   }
-  
-  /***************************************
+
+  /*****************************************************************************
    * Getters and Setters
-   ***************************************/
+   ****************************************************************************/
 
   public void setSwProc (Proc myProc)
   {
@@ -578,18 +587,18 @@ public class SourceWindow
   {
     return this.dom;
   }
-  
+
   public View getView ()
   {
     return this.view;
   }
-  
+
   public RunState getRunState ()
   {
     return this.runState;
   }
-  
-  public LockObserver getLockObserver()
+
+  public LockObserver getLockObserver ()
   {
     return this.lock;
   }
@@ -622,7 +631,7 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent action)
       {
-//        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+        // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
         SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
       }
     });
@@ -709,10 +718,13 @@ public class SourceWindow
       }
     });
     this.stop.setSensitive(false);
-    
-    //  Thread-specific starting and stopping
-    this.toggleThreadDialog = new ToggleAction("threads", "Start/Stop Threads",
-                              "Start or Stop thread execution", "frysk-thread");
+
+    // Thread-specific starting and stopping
+    this.toggleThreadDialog = new ToggleAction(
+                                               "threads",
+                                               "Start/Stop Threads",
+                                               "Start or Stop thread execution",
+                                               "frysk-thread");
     this.toggleThreadDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
@@ -720,9 +732,12 @@ public class SourceWindow
         SourceWindow.this.toggleThreadDialog();
       }
     });
-    
-    this.toggleStepDialog = new ToggleAction("step", "Instruction Stepping",
-                                               "Instruction stepping multiple threads", "frysk-thread");
+
+    this.toggleStepDialog = new ToggleAction(
+                                             "step",
+                                             "Instruction Stepping",
+                                             "Instruction stepping multiple threads",
+                                             "frysk-thread");
     this.toggleStepDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent arg0)
@@ -832,7 +847,7 @@ public class SourceWindow
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
     this.stepAsm.connectAccelerator();
-    this.stepAsm.setSensitive(false);
+    this.stepAsm.setSensitive(true);
 
     // Next assembly instruction action
     this.nextAsm = new org.gnu.gtk.Action("nextAsm",
@@ -852,13 +867,11 @@ public class SourceWindow
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
     this.nextAsm.connectAccelerator();
-    this.nextAsm.setSensitive(true);
+    this.nextAsm.setSensitive(false);
 
     // top of stack action
-    this.stackTop = new org.gnu.gtk.Action("stackTop",
-                                              "To top of Stack",
-                                              "To top of Stack",
-                                              "frysk-top");
+    this.stackTop = new org.gnu.gtk.Action("stackTop", "To top of Stack",
+                                           "To top of Stack", "frysk-top");
     this.stackTop.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
@@ -1013,10 +1026,12 @@ public class SourceWindow
 
     mi = (MenuItem) this.run.createMenuItem();
     tmp.append(mi);
+    mi = (MenuItem) this.cont.createMenuItem();
+    tmp.append(mi);
     mi = (MenuItem) this.stop.createMenuItem();
     tmp.append(mi);
-//    mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
-//    tmp.append(mi);
+    // mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
+    // tmp.append(mi);
     mi = (MenuItem) this.toggleStepDialog.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
@@ -1024,8 +1039,6 @@ public class SourceWindow
     mi = (MenuItem) this.next.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.finish.createMenuItem();
-    tmp.append(mi);
-    mi = (MenuItem) this.cont.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.terminate.createMenuItem();
     tmp.append(mi);
@@ -1068,17 +1081,17 @@ public class SourceWindow
     item = (ToolItem) this.run.createToolItem();
     item.setToolTip(this.tips, "Run Program", "");
     toolbar.insert(item, 0);
-    item = (ToolItem) this.stop.createToolItem();
-    item.setToolTip(this.tips, "Stops execution", "");
-    toolbar.insert(item, 1);
-    item = (ToolItem) this.step.createToolItem();
-    item.setToolTip(this.tips, "Step", "");
-    toolbar.insert(item, 2);
-    item = (ToolItem) this.next.createToolItem();
-    item.setToolTip(this.tips, "Next", "");
-    toolbar.insert(item, 3);
     item = (ToolItem) this.cont.createToolItem();
     item.setToolTip(this.tips, "Continue Execution", "");
+    toolbar.insert(item, 1);
+    item = (ToolItem) this.stop.createToolItem();
+    item.setToolTip(this.tips, "Stops execution", "");
+    toolbar.insert(item, 2);
+    item = (ToolItem) this.step.createToolItem();
+    item.setToolTip(this.tips, "Step", "");
+    toolbar.insert(item, 3);
+    item = (ToolItem) this.next.createToolItem();
+    item.setToolTip(this.tips, "Next", "");
     toolbar.insert(item, 4);
     item = (ToolItem) this.finish.createToolItem();
     item.setToolTip(this.tips, "Finish Function Call", "");
@@ -1104,13 +1117,13 @@ public class SourceWindow
     toolbar.showAll();
     toolbar.setToolTips(true);
   }
-  
+
   private void desensitize ()
   {
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
-    
-    //  Set status of actions
+
+    // Set status of actions
     this.run.setSensitive(false);
     this.stop.setSensitive(true);
     this.step.setSensitive(false);
@@ -1128,22 +1141,22 @@ public class SourceWindow
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
   }
-  
+
   private void resensitize ()
   {
-    //  Set status of toolbar buttons
+    // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
-    
-    //  Set status of actions
-    this.run.setSensitive(true);
+
+    // Set status of actions
+//    this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-//    this.next.setSensitive(true);
-//    this.finish.setSensitive(true);
-    //this.cont.setSensitive(true);
-    this.nextAsm.setSensitive(true);
-    //this.stepAsm.setSensitive(true);
+    // this.next.setSensitive(true);
+    // this.finish.setSensitive(true);
+     this.cont.setSensitive(true);
+    // this.nextAsm.setSensitive(true);
+    this.stepAsm.setSensitive(true);
 
     this.stackTop.setSensitive(true);
     this.stackUp.setSensitive(true);
@@ -1208,7 +1221,7 @@ public class SourceWindow
         TreeIter iter = store.appendRow();
         store.setValue(iter, (DataColumnString) cols[0], (String) funcs.get(i));
       }
-    
+
     completion.setModel(store);
     completion.setTextColumn(cols[0].getColumn());
     ((Entry) this.glade.getWidget("toolbarGotoBox")).setCompletion(completion);
@@ -1441,16 +1454,18 @@ public class SourceWindow
 
   private void updateShownStackFrame (StackFrame selected)
   {
-    
+
     if (selected == null)
       return;
 
-   //System.out.println("updateSHownstackframe " + selected.getMethodName() + " " + selected.getDOMFunction().getFunctionCall()+ " " + selected.getData().getFileName());
+    // System.out.println("updateSHownstackframe " + selected.getMethodName() +
+    // " " + selected.getDOMFunction().getFunctionCall()+ " " +
+    // selected.getData().getFileName());
     DOMSource source = selected.getData();
     if (source == null && selected.getSourceFile() == "")
-    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                          + "Unknown File"
-                                                          + "</b>");
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + "Unknown File"
+                                                            + "</b>");
     else if (source == null && selected.getSourceFile() != "")
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + selected.getSourceFile()
@@ -1461,13 +1476,14 @@ public class SourceWindow
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 
-        if (source != null && selected.getDOMFunction() != null)
+    if (source != null && selected.getDOMFunction() != null)
       {
 
         DOMSource oldSource = this.currentFrame.getData();
-        
-       //System.out.println(oldSource.getFileName() + " " + source.getFileName());
-            if (oldSource == null
+
+        // System.out.println(oldSource.getFileName() + " " +
+        // source.getFileName());
+        if (oldSource == null
             || ! source.getFileName().equals(oldSource.getFileName()))
           {
             removeTags();
@@ -1501,16 +1517,16 @@ public class SourceWindow
               this.view.scrollToLine(selected.getLineNumber());
           }
       }
-      
+
     currentFrame = selected;
     this.view.showAll();
   }
-  
-  private void removeTags()
+
+  private void removeTags ()
   {
     SourceView sv = (SourceView) view;
     SourceBuffer sb = (SourceBuffer) sv.getBuffer();
-    
+
     for (int i = 0; i < this.frames.length; i++)
       {
         sb.highlightLine(frames[i], false);
@@ -1522,16 +1538,7 @@ public class SourceWindow
    */
   private void doRun ()
   {
-    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Running");
-    
-    desensitize();
 
-//    this.SW_state = RUNNING;
-
-    this.runState.run(this.swProc.getTasks());
-    
-    removeTags();
   }
 
   private void doStop ()
@@ -1546,9 +1553,8 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    //this.pbo.requestAddObservers(this.myProc.getMainTask());
-    
-    
+    // this.pbo.requestAddObservers(this.myProc.getMainTask());
+
     if (this.threadDialog == null)
       {
         this.runState.stop(null);
@@ -1558,7 +1564,7 @@ public class SourceWindow
         this.runState.stop(this.threadDialog.getBlockTasks());
       }
   }
-  
+
   private void toggleThreadDialog ()
   {
     if (this.threadDialog == null)
@@ -1569,7 +1575,7 @@ public class SourceWindow
     else
       this.threadDialog.showAll();
   }
-  
+
   private void toggleStepDialog ()
   {
     if (this.stepDialog == null)
@@ -1580,7 +1586,6 @@ public class SourceWindow
     else
       this.stepDialog.showAll();
   }
- 
 
   /**
    * Tells the debugger to step the program
@@ -1589,11 +1594,11 @@ public class SourceWindow
   {
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping");
-    
+
     desensitize();
 
     this.runState.setUpLineStep(this.swProc.getTasks());
-    
+
     removeTags();
   }
 
@@ -1603,12 +1608,12 @@ public class SourceWindow
   private void doNext ()
   {
     System.out.println("Step Over");
-    
+
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping Over");
-    
+
     desensitize();
-    
+
     this.runState.setUpStepOver(this.swProc.getTasks(), this.currentFrame);
     removeTags();
   }
@@ -1618,22 +1623,28 @@ public class SourceWindow
    */
   private void doContinue ()
   {
-    System.out.println("Continue");
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Running");
+
+    desensitize();
+
+    this.runState.run(this.swProc.getTasks());
+
+    removeTags();
   }
 
   /**
-   * Tells the debugger to finish executing the current function
-   * "Step out"
+   * Tells the debugger to finish executing the current function "Step out"
    */
   private void doFinish ()
   {
     System.out.println("Step Out");
-    
+
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping Out");
-    
+
     desensitize();
-    
+
     this.runState.setUpStepOut(this.swProc.getTasks(), this.currentFrame);
     removeTags();
   }
@@ -1651,14 +1662,6 @@ public class SourceWindow
    */
   private void doAsmStep ()
   {
-    System.out.println("Asm Step");
-  }
-
-  /**
-   * Tells the debugger to execute the next assembly instruction
-   */
-  private void doAsmNext ()
-  {
     if (this.stepDialog == null)
       {
         this.stepDialog = new StepDialog(glade, this);
@@ -1666,6 +1669,14 @@ public class SourceWindow
       }
     else
       this.stepDialog.showAll();
+  }
+
+  /**
+   * Tells the debugger to execute the next assembly instruction
+   */
+  private void doAsmNext ()
+  {
+
   }
 
   /**
@@ -1839,17 +1850,16 @@ public class SourceWindow
       }
   }
 
-  private Isa getProcIsa()
+  private Isa getProcIsa ()
   {
-      return swProc.getMainTask().getIsa();
+    return swProc.getMainTask().getIsa();
   }
-  
+
   private void toggleMemoryWindow ()
   {
     Isa isa = getProcIsa();
-    if (!(isa instanceof frysk.proc.IsaIA32 
-	  || isa instanceof frysk.proc.IsaPPC))
-            {
+    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC))
+      {
         WarnDialog dialog = new WarnDialog(
                                            " The Memory Window is yet not supported\n"
                                                + " on 64-bit architectures! ");
@@ -1875,8 +1885,7 @@ public class SourceWindow
   private void toggleDisassemblyWindow ()
   {
     Isa isa = getProcIsa();
-    if (!(isa instanceof frysk.proc.IsaIA32 
-	  || isa instanceof frysk.proc.IsaPPC))
+    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC))
       {
         WarnDialog dialog = new WarnDialog(
                                            " The Disassembly Window is yet not supported\n"
@@ -1907,7 +1916,7 @@ public class SourceWindow
     else
       this.conWin.showAll();
   }
-  
+
   private synchronized void executeTasks (LinkedList tasks)
   {
     this.runState.executeTasks(tasks);
@@ -1915,7 +1924,7 @@ public class SourceWindow
 
   private StackFrame[] generateProcStackTrace (StackFrame[] frames, Task[] tasks)
   {
-    
+
     int size = this.swProc.getTasks().size();
     if (frames == null || tasks == null)
       {
@@ -1957,7 +1966,7 @@ public class SourceWindow
                                * frames, not just the top one
                                */
           {
-            
+
             if (this.dom == null && curr.getDwflLine() != null)
               {
                 try
@@ -1992,7 +2001,9 @@ public class SourceWindow
 
                 try
                   {
-                    s = this.dom.getImage(tasks[j].getProc().getMainTask().getName()).getSource(filename);
+                    s = this.dom.getImage(
+                                          tasks[j].getProc().getMainTask().getName()).getSource(
+                                                                                                filename);
                     if (s != null)
                       f = s.findFunction(line.getLineNum());
                   }
@@ -2009,7 +2020,7 @@ public class SourceWindow
             curr = curr.getOuter();
           }
       }
-    
+
     DOMFactory.clearDOMSourceMap(this.swProc);
     return frames;
   }
@@ -2120,8 +2131,8 @@ public class SourceWindow
     {
       if (newFrame == null)
         return;
-      
-      if (SourceWindow.this.currentFrame != null 
+
+      if (SourceWindow.this.currentFrame != null
           && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
         {
           DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
@@ -2136,7 +2147,7 @@ public class SourceWindow
           if (regWin != null && regWin.getClosed() == false)
             regWin.resetTask(newFrame.getTask());
         }
-      
+
       // TreePath path = stackView.getSelection().getSelectedRows()[0];
       // int selected = path.getIndices()[0];
 
@@ -2152,21 +2163,20 @@ public class SourceWindow
     }
 
   }
-  
+
   /**
-   * Local Observer class used to poke this window from RunState when
-   * all the Tasks belonging to this window's Proc have been
-   * blocked. These Tasks could have ben running, stepping, or neither
-   * and were just blocked once to allow this window to finish
-   * building. This observer is synchronized between this windowand
-   * the Memory, Register, and Disassembly windows.
+   * Local Observer class used to poke this window from RunState when all the
+   * Tasks belonging to this window's Proc have been blocked. These Tasks could
+   * have ben running, stepping, or neither and were just blocked once to allow
+   * this window to finish building. This observer is synchronized between this
+   * windowand the Memory, Register, and Disassembly windows.
    */
   private class LockObserver
       implements Observer
   {
 
     private Task lockTask;
-    
+
     /**
      * Builtin Observer method - called whenever the Observable we're concerned
      * with - in this case the RunState - has changed.
@@ -2180,8 +2190,10 @@ public class SourceWindow
       if (arg == null)
         return;
 
-      /* The very first time all the Tasks are blocked is when we're
-       * initializing this window. */
+      /*
+       * The very first time all the Tasks are blocked is when we're
+       * initializing this window.
+       */
       if (SW_active == false)
         {
           SW_active = true;
@@ -2196,9 +2208,11 @@ public class SourceWindow
           return;
         }
 
-      /* Otherwise, this callback was called because all our Proc's Tasks were
+      /*
+       * Otherwise, this callback was called because all our Proc's Tasks were
        * blocked because of some state change operation. Re-generate the stack
-       * trace information and refresh the window. */
+       * trace information and refresh the window.
+       */
       CustomEvents.addEvent(new Runnable()
       {
         public void run ()
@@ -2211,5 +2225,5 @@ public class SourceWindow
       });
     }
   }
-  
+
 }

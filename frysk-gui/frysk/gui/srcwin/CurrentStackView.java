@@ -220,6 +220,30 @@ public class CurrentStackView
   {
     return this.head;
   }
+  
+  public void selectRow (StackFrame frame) 
+  {
+    TreeIter iter = this.treeModel.getFirstIter().getChild(0);
+    TreeIter first = iter;
+    System.out.println("Got the iter: " + iter + " stackframe " + frame);
+    while (iter != null && this.treeModel.isIterValid(iter))
+      {
+        System.out.println("Iterating  " + iter);
+        StackFrame rowFrame = (StackFrame) this.treeModel.getValue(iter, (DataColumnObject) stackColumns[1]);
+        System.out.println("grabbing stackframe " + rowFrame);
+        if (frame.getCFA() == rowFrame.getCFA())
+          {
+            System.out.println("Zomg equal");
+            this.setCursor(iter.getPath(), null, false);
+            this.grabFocus();
+            return;
+          }
+        iter = iter.getNextIter();
+      }
+    System.out.println("setcursor");
+    this.setCursor(first.getPath(), null, false);
+    this.grabFocus();
+  }
 
   public void selectionChangedEvent (TreeSelectionEvent arg0)
   {

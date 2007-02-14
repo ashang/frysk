@@ -1,3 +1,14 @@
+2007-02-14  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (finishSourceWin): Set continue button to
+	sensitive, not run button. Fixes #4009.
+	(createActions): Updated to fix #4009.
+	(createMenus): Ditto.
+	(resensitize): Ditto.
+	(doRun): Moved code to doContinue().
+	(doContinue): doRun()s code moved here.
+	* CurrentStackView.java (selectRow): Added.
+
 2007-02-09  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doStep): Calls updated RunState.setUpLineStep().

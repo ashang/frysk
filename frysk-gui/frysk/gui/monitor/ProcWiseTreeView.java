@@ -40,6 +40,8 @@
 
 package frysk.gui.monitor;
 
+import java.util.LinkedList;
+
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.SortType;
@@ -47,6 +49,7 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
@@ -329,6 +332,30 @@ public class ProcWiseTreeView
     });
     this.pwtvTVC[5].setReorderable(true);
     this.pwtvTVC[5].setClickable(true);
+  }
+  
+  public LinkedList getSelectedObjects ()
+  {
+
+    LinkedList selecteds = new LinkedList();
+    TreePath[] selectedPaths = this.getSelection().getSelectedRows();
+
+    /* Check for no selected rows */
+    if (selectedPaths.length > 0)
+      {
+
+        for (int i = 0; i < selectedPaths.length; i++)
+          {
+            selecteds.add((GuiObject) this.treeStore.getValue(
+                                                              this.treeStore.getIter(selectedPaths[i]),
+                                                              this.dataModel.getObjectDC()));
+          }
+        return selecteds;
+      }
+    else
+      {
+        return null;
+      }
   }
 
 }

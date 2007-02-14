@@ -846,12 +846,27 @@ public class CreateFryskSessionDruid
       {
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
-            Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
-            while (i.hasNext())
+            if (addedProcsTreeView.getSelectedObjects() != null)
               {
-                SourceWindowFactory.createSourceWindow(((GuiProc) ((DebugProcess) i.next()).getProcs().getFirst()).getProc());
+                Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+                while (i.hasNext())
+                  {
+                    SourceWindowFactory.createSourceWindow(((GuiProc) ((DebugProcess) i.next()).getProcs().getFirst()).getProc());
+                  }
+                hide();
               }
-            hide();
+            else
+              {
+                if (procWiseTreeView.getSelectedObjects() != null)
+                  {
+                    Iterator i = procWiseTreeView.getSelectedObjects().iterator();
+                    while (i.hasNext())
+                      {
+                        SourceWindowFactory.createSourceWindow(((GuiProc) i.next()).getProc());
+                      }
+                    hide();
+                  }
+              }
           }
       }
     });
