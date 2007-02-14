@@ -1,3 +1,14 @@
+2007-02-14  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackBacktrace.java (testFramePushing): Added. New test case for
+	instruction stepping through pushing a new frame on the stack.
+	(testFramePopping): Added. New test case for instruction stepping
+	though popping a frame off of the stack.
+	(setUpTest): Added. Sets up data structures for above two tests.
+	(pushPopAssertions): Added. Sets up testing process for assertions and
+	begins asserting when appropriate.
+	(LockObserver): Added. Link to RunState.
+
 2007-02-09  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (setUp): Refactored from setUpStep().

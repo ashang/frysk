@@ -40,8 +40,17 @@
 
 package frysk.rt;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
+import lib.dw.Dwfl;
+import lib.dw.DwflLine;
+
 import inua.eio.ByteBuffer;
 import inua.eio.ULong;
+import frysk.event.Event;
 import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -221,6 +230,118 @@ public class TestStackBacktrace
     frameAssertions();
   }
   
+  private boolean initial;
+  private RunState runState;
+  private LockObserver lock;
+  private HashMap dwflMap;
+  private HashMap lineMap;
+  private int testState;
+  private static int PUSH = 0;
+  private static int PUSH_GO = 1;
+  private static int PUSH_STEPPING = 2;
+  private static int POP = 3;
+  private static int POP_GO = 4;
+  private static int POP_STEPPING = 5;
+  private Proc myProc;
+  
+  /**
+   * Test instruction stepping through pushing a new frame onto the stack.
+   */
+  public void testFramePushing ()
+  {
+
+    if (brokenPpcXXX (3277))
+      return;
+  
+  initial = true;
+  this.dwflMap = new HashMap();
+  this.lineMap = new HashMap();
+  
+  lock = new LockObserver();
+  runState = new RunState();
+  runState.addObserver(lock);
+  
+  testState = PUSH;
+  
+  AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+  
+  myTask = process.findTaskUsingRefresh(true);
+  myProc = myTask.getProc();
+  assertNotNull(myProc);
+  
+  runState.setProc(myProc);
+
+  assertRunUntilStop("Attempting to add observer");
+  }
+  
+  /**
+   * Test instruction stepping through popping a frame off the stack
+   */
+  public void testFramePopping ()
+  {
+
+    if (brokenPpcXXX (3277))
+      return;
+  
+  initial = true;
+  this.dwflMap = new HashMap();
+  this.lineMap = new HashMap();
+  
+  lock = new LockObserver();
+  runState = new RunState();
+  runState.addObserver(lock);
+  
+  testState = POP;
+  
+  AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+  
+  myTask = process.findTaskUsingRefresh(true);
+  myProc = myTask.getProc();
+  assertNotNull(myProc);
+  
+  runState.setProc(myProc);
+
+  assertRunUntilStop("Attempting to add observer");
+  }
+  
+  /**
+   * Set up all the HashMaps and such.
+   */
+  public void setUpTest ()
+  {
+
+    if (this.dwflMap.get(myTask) == null)
+      {
+        Dwfl d = new Dwfl(myTask.getTid());
+        DwflLine line = null;
+        line = d.getSourceLine(myTask.getIsa().pc(myTask));
+
+        if (line == null)
+          {
+            this.dwflMap.put(myTask, d);
+            this.lineMap.put(myTask, new Integer(0));
+            this.runState.setUpLineStep(myTask.getProc().getTasks());
+          }
+
+        this.dwflMap.put(myTask, d);
+        this.lineMap.put(myTask, new Integer(line.getLineNum()));
+      }
+
+    this.runState.setUpLineStep(myTask.getProc().getTasks());
+  }
+  
   /**
    * Sort the matrix by TID and compare its contents to the actual source file.
    */
@@ -367,6 +488,155 @@ public class TestStackBacktrace
     assertEquals(0, Integer.parseInt(this.frameTracker[next][3][4]));
   }
   
+  public void pushPopAssertions ()
+  {
+    if (this.testState == PUSH || this.testState == POP)
+      {
+        DwflLine line = null;
+        try
+          {
+            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
+                                                                                      myTask));
+          }
+        catch (NullPointerException npe)
+          {
+            Dwfl d = new Dwfl(myTask.getTid());
+            line = null;
+            line = d.getSourceLine(myTask.getIsa().pc(myTask));
+            if (line != null)
+              {
+                this.dwflMap.put(myTask, d);
+                this.lineMap.put(myTask, new Integer(line.getLineNum()));
+              }
+          }
+
+        int lineNum;
+            if (line == null)
+              {
+                lineNum = 0;
+              }
+            else
+              {
+                lineNum = line.getLineNum();
+              }
+            this.lineMap.put(myTask, new Integer(lineNum));
+            if (this.testState == PUSH)
+              this.testState = PUSH_GO;
+            else if (this.testState == POP)
+              this.testState = POP_GO;
+            
+            this.runState.setUpLineStep(myTask.getProc().getTasks());
+          }
+    else
+      {
+        DwflLine line = null;
+        try
+          {
+            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
+                                                                                      myTask));
+          }
+        catch (NullPointerException npe)
+          {
+            npe.printStackTrace();
+            Dwfl d = new Dwfl(myTask.getTid());
+            line = null;
+            line = d.getSourceLine(myTask.getIsa().pc(myTask));
+            assertNotNull(line);
+            if (line != null)
+              {
+                this.dwflMap.put(myTask, d);
+                this.lineMap.put(myTask, new Integer(line.getLineNum()));
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+          }
+        
+        /* Stepping has been set up - now to continue line stepping until 
+         * the important sections of code have been reached. */
+        if (this.testState != PUSH_STEPPING && this.testState != POP_STEPPING)
+          {
+            int prev = ((Integer) this.lineMap.get(myTask)).intValue();
+            this.lineMap.put(myTask, new Integer(line.getLineNum()));
+
+            if (this.testState == PUSH_GO)
+              {
+                /* About to push a frame on the stack */
+                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                  {
+                    this.testState = PUSH_STEPPING;
+                    this.runState.stepInstruction(myTask.getProc().getTasks());
+                    return;
+                  }
+               this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            else if (this.testState == POP_GO)
+              {
+                /* About to pop a frame off of the stack */
+                if (line.getLineNum() == 63)
+                  {
+                    this.testState = POP_STEPPING;
+                    this.runState.stepInstruction(myTask.getProc().getTasks());
+                    return;
+                  }
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            else
+              {
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                return;
+              }
+          }
+        
+        /* Otherwise, the testcase is in the section of code critical to the test */
+        else if (this.testState == PUSH_STEPPING)
+          {
+            if (line.getLineNum() > 62)
+              {
+                Manager.eventLoop.requestStop();
+                return;
+              }
+            else
+              {
+                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
+
+                /* Make sure we're not missing any frames */
+                if (frame.getLineNumber() > 95)
+                  {
+                    assertTrue(frame.getMethodName().equals("jump"));
+                    frame = frame.getOuter();
+                  }
+                assertTrue(frame.getMethodName().equals("foo"));
+                frame = frame.getOuter();
+                assertTrue(frame.getMethodName().equals("main"));
+                
+                runState.stepInstruction(myTask.getProc().getTasks());
+                return;
+              }
+          }
+        else if (this.testState == POP_STEPPING)
+          {
+            if (line.getLineNum() > 68)
+              {
+                Manager.eventLoop.requestStop();
+                return;
+              }
+            else
+              {
+                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
+
+                /* Make sure we're not missing any frames */
+                assertTrue(frame.getMethodName().equals("jump"));
+                frame = frame.getOuter();
+                assertTrue(frame.getMethodName().equals("foo"));
+                frame = frame.getOuter();
+                assertTrue(frame.getMethodName().equals("main"));
+                
+                runState.stepInstruction(myTask.getProc().getTasks());
+                return;
+              }
+          }
+      }
+  }
+  
   
   /*****************************
    * Observer Classes          *
@@ -473,6 +743,58 @@ public class TestStackBacktrace
       }
     else
       return;
-
   }
+  
+  class LockObserver implements Observer
+  {
+    
+    /**
+     * Builtin Observer method - called whenever the Observable we're concerned
+     * with - in this case the RunState - has changed.
+     * 
+     * @param o The Observable we're watching
+     * @param arg An Object argument, usually a Task when important
+     */
+    public synchronized void update (Observable o, Object arg)
+    {
+      if (arg == null)
+        return;
+      
+      Task task = (Task) arg;
+      if (task.getTid() == task.getProc().getPid())
+        myTask = task;
+      else
+        {
+          Proc p = (Proc) task.getProc();
+          Iterator i = p.getTasks().iterator();
+          while (i.hasNext())
+            {
+              Task t = (Task) i.next();
+              if (t.getTid() == p.getPid())
+                {
+                  myTask = t;
+                  break;
+                }
+            }
+        }
+      
+      Manager.eventLoop.add(new Event()
+      {
+        public void execute ()
+        {
+          if (initial == true)
+            {
+              initial = false;
+              setUpTest();
+              return;
+            }
+          else
+            {
+                pushPopAssertions();
+            }
+        }
+      });
+    }
+    
+  } 
 }
