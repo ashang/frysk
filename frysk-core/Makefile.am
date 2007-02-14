@@ -55,8 +55,6 @@ EXTRA_DIST += \
 
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
-# Prune files.list so these antlr generated files are not run through ecj
-prune_ecj = -e CppParser.java -e CppTreeParser.java -e CppParserTokenTypes.java -e CppTreeParserTokenTypes.java -e CppLexer.java
 
 GEN_SOURCEPATH += ../frysk-imports/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/

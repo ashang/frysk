@@ -68,7 +68,7 @@ pkglib64dir = $(lib64dir)/@PACKAGE@
 gladedir = $(pkgdatadir)/glade
 helpdir = $(datadir)/gnome/help/frysk/C
 imagesdir = $(pkgdatadir)/images
-
+GENERATED_DO_NOT_JLINT =
 noinst_LIBRARIES =
 man_MANS =
 LDADD = 
@@ -76,7 +76,9 @@ LDADD =
 check_SCRIPTS =
 check_PROGRAMS =
 TESTS =
+# Space separated list of .jar files that contain java code.x
 GEN_CLASSPATH =
+# Space separated list of directories that contain java code.
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
@@ -562,22 +564,20 @@ clean-classes-dir:
 	rm -rf $(GEN_CLASSDIR)
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
-# habit of silently compiling invalid Java code (garbage in, garbage out),
-# fortunately ECJ rejects it.  The file list can optionally be pruned first.
+# habit of silently compiling invalid Java code (garbage in, garbage
+# out), fortunately ECJ rejects it.
 
 # This is part of all-local, since, if this fails the build won't fly.
 
 all-local: checked-ecj-compile
-CLEANFILES += checked-ecj-compile
+CLEANFILES += checked-ecj-compile files-java-gen.list
 checked-ecj-compile: files-java.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ
-	$(if $(prune_ecj), \
-	grep -v $(prune_ecj) $(top_builddir)/files-java.list > $(top_builddir)/files-java.list.ecj;, \
-	cp $(top_builddir)/files-java.list $(top_builddir)/files-java.list.ecj;) \
-	$(if $(prune_ecj), \
-	find . -name '*.java' > $(top_builddir)/files-genjava.list.ecj; \
+	echo Creating a list of build-dir files, compiling them.
+	find * -name '[A-Za-z]*.java' > files-java-gen.list
+	echo Compiling all the generated files.
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
@@ -586,7 +586,8 @@ if HAVE_ECJ
 		-warn:none \
 		-sourcepath $(SOURCEPATH) \
 		-classpath $(CLASSPATH) \
-		@$(top_builddir)/files-genjava.list.ecj)
+		@files-java-gen.list
+	echo Compiling all the source files, excluding . from search list
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
@@ -594,8 +595,8 @@ if HAVE_ECJ
 		-d ecj \
 		-warn:+semicolon \
 		-sourcepath $(subst :.:,:,$(SOURCEPATH)) \
-		-classpath $(CLASSPATH):$(top_builddir)/ecj \
-		@$(top_builddir)/files-java.list.ecj \
+		-classpath $(top_builddir)/ecj:$(CLASSPATH) \
+		@files-java.list \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \
 	then rm $@.log ; false ; \
