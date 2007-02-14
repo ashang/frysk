@@ -1,3 +1,9 @@
+2007-02-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* tests/TestElf.java: (testElfCorePrpsNotes): Disable on x86_64 and PPC for now.
+        (testElfCorePrstatusNotes): Ditto.
+
+
 2007-02-12  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Elf.java (getRawData): New. Return raw elf data.
