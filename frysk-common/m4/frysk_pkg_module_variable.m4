@@ -45,7 +45,7 @@ corresponding autoconf variable is already defined).
 
 AC_DEFUN([FRYSK_PKG_MODULE_VARIABLE],
 [
-    AC_MSG_CHECKING([$1])
+    AC_MSG_CHECKING([for $1])
     if test x"${$1}" = x ; then
         $1=`$PKG_CONFIG --variable $2 "$3"`
         test x"${$1}" = x && AC_MSG_ERROR([package variable $2 for $3 empty, set environment variable $1])
