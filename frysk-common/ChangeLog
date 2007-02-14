@@ -1,3 +1,8 @@
+2007-02-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.DEFAULT): Provide a default rule that ignores
+	missing files.
+
 2007-02-14  Stepan Kasal  <skasal@redhat.com>
 
 	* m4/frysk_pkg_module_variable.m4: Improve woring.

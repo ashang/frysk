@@ -36,7 +36,15 @@
 # modification, you must delete this exception statement from your
 # version and license this file solely under the GPL without
 # exception.
-
+
+# Empty default rule so that any missing files are ignored by make.
+# Instead the command that needs to use the missing file will die.
+# Doing this means that .Po files that contain missing .java files get
+# re-generated, but doing this might also also mean that things
+# occasionally and mysteriously die with non-existant files.
+.DEFAULT:
+	@echo " >>>>> .DEFAULT: $@ <<<<<"
+
 # Initialize everything to empty and then use += to add things in.
 
 noinst_SCRIPTS =
