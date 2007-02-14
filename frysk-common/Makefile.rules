@@ -290,8 +290,6 @@ SUFFIXES += .cxxin
 SUFFIXES += .javain
 .javain.java:
 	$(SUBST)
-$(GEN_SOURCENAME)/Build.java: common/Build.javain
-	$(SUBST)
 TestRunner.java: common/TestRunner.javain
 	$(SUBST)
 $(GEN_SOURCENAME)/JUnitTests.java: files.list
@@ -543,6 +541,7 @@ files-java.list: files.list
 		-e 's,\(^.*\.java$$\),$(top_srcdir)/\1, p' -e 't' \
 		-e 's,\(^.*\)\..*java.*,$(top_builddir)/\1.java, p' -e 't' \
 		-e 's,\(^.*\)\..*enum$$,$(top_builddir)/\1.java, p' -e 't'
+	echo $(GEN_SOURCENAME)/JUnitTests.java >> $@.tmp
 	mv $@.tmp $@
 ${GEN_DIRNAME}.jar: files-java.list
 	rm -rf $(GEN_CLASSDIR)
@@ -576,7 +575,9 @@ checked-ecj-compile: files-java.list $(GEN_DIRNAME).jar
 	mkdir -p ecj
 if HAVE_ECJ
 	echo Creating a list of build-dir files, compiling them.
-	find * -name '[A-Za-z]*.java' > files-java-gen.list
+	find * -ignore_readdir_race \
+		-name '[A-Za-z]*.java' \
+		> files-java-gen.list
 	echo Compiling all the generated files.
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
@@ -588,14 +589,22 @@ if HAVE_ECJ
 		-classpath $(CLASSPATH) \
 		@files-java-gen.list
 	echo Compiling all the source files, excluding . from search list
+	sourcepath=:
+	for s in $(GEN_SOURCEPATH) ; do \
+		b=`basename $$s` ; \
+		d=`dirname $$s` ; \
+		test x$$s = x. && continue ; \
+		if test -r $$d/$$b/$$b.jar ; then \
+			sourcepath="$${sourcepath}:$$d/$$b/$$b.jar" ; \
+		fi ; \
+	done ; \
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
 		\
 		-d ecj \
 		-warn:+semicolon \
-		-sourcepath $(subst :.:,:,$(SOURCEPATH)) \
-		-classpath $(top_builddir)/ecj:$(CLASSPATH) \
+		-classpath $(top_builddir)/ecj:$(CLASSPATH)$${sourcepath} \
 		@files-java.list \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \

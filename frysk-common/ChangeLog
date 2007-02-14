@@ -1,10 +1,16 @@
 2007-02-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (files-java.list): Add JUnitTests.java.
+	($(GEN_SOURCENAME)/Build.java): Delete rule.
+	(checked-ecj-compile): Convert GEN_SOURCEPATH into a list of jar
+	files and pass that.
+	(CLEANFILES): Add files-java-gen.list
+
 	* Makefile.rules (GEN_CLASSPATH, GEN_SOURCEPATH): Add
 	descriptions.
 	(checked-ecj-compile): Simplify, clarify that no generated files
 	are checked.
-
+	
 2007-02-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.DEFAULT): Provide a default rule that ignores
