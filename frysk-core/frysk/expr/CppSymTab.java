@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,5 +50,6 @@ public interface CppSymTab
   void put(String s, Variable v) throws NameNotFoundException;
   Variable get(String s) throws NameNotFoundException;
   Variable get(String s, ArrayList v) throws NameNotFoundException;
+  Variable get(ArrayList v) throws NameNotFoundException;
   boolean putUndefined();
 }

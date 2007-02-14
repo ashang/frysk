@@ -122,6 +122,7 @@ imaginaryTokenDefinitions
         ARG_LIST
         ARRAY_REF
         CAST
+        CLASS_REF
         COND_EXPR
         EXPR_LIST
         FUNC_CALL
@@ -367,11 +368,11 @@ variable! throws TabException
             (   options {warnWhenFollowAmbig = false;}
 
             : LSQUARE expr1:expressionList RSQUARE
-                { astPostExpr = #([ARRAY_REF, "ArrayReference"], 
+                { astPostExpr = #([ARRAY_REF, "Array Reference"],
 								#astPostExpr, #expr1); }
             |   LPAREN (expr2:expressionList)? RPAREN
                 { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
-            |   DOT
+            |   DOT!
                 (   tb:TAB
                     {
                         bTabPressed = true;
@@ -380,7 +381,16 @@ variable! throws TabException
                 |   id_expr1:id_expression
                     { astDotExpr = #id_expr1;}
                 )
-                {astPostExpr = #(DOT, #astPostExpr, #astDotExpr); }
+                // a.b.c => (Class Reference (Expr list a b c))
+                {if (astPostExpr.getFirstChild() != null)
+                    astPostExpr.getFirstChild().addChild(astDotExpr);
+                 else
+                    {
+                       AST elements = null;
+                       elements = #(#[EXPR_LIST, "Expr list"], #astPostExpr, #astDotExpr);
+                       #astPostExpr = #(#[CLASS_REF,"Class Reference"], elements);
+                    }
+                }
             |   POINTERTO id_expr2:id_expression
                 { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
             |   PLUSPLUS
@@ -414,12 +424,13 @@ constant
     |   CharLiteral
     |   (StringLiteral)+
     |   FLOAT
+    |   DOUBLE
     |   "true"
     |   "false"
     ;
 
 id_expression
-    :   IDENT 
+    :   IDENT
     ;
 
 tid_expression
@@ -498,9 +509,6 @@ BITWISEOR       : '|'	  ;
 BITWISEOREQUAL  : "|="  ;
 BITWISEXOR      : '^'	  ;
 BITWISEXOREQUAL : "^="  ;
-
-protected
-DOT	    : '.'   ;
 
 protected
 ELLIPSIS  : "..." ;
@@ -629,47 +637,81 @@ Vocabulary
     :	'\3'..'\377'
     ;
 
+// a numeric literal
 NUM
-    :	( (Digit)+ ('.' | 'e' | 'E') )=> 
-        (Digit)+
-        (   '.' (Digit)* (Exponent)?  //{_ttype = FLOATONE;} //Zuo 3/12/01
-	    |   Exponent              //{_ttype = FLOATTWO;} //Zuo 3/12/01
-        )                          //{_ttype = DoubleDoubleConst;}
-        (   FloatSuffix               //{_ttype = FloatDoubleConst;}
-        |   LongSuffix                //{_ttype = LongDoubleConst;}
-        )?			   {_ttype = FLOAT;}
+	{Token t=null;}
+	:	'.' {_ttype = DOT;}
+		(	'.' '.' {_ttype = ELLIPSIS;}
+		|	(	('0'..'9')+ (EXPONENT)? (f1:FLOAT_SUFFIX {t=f1;})?
+				{
+				if (t != null && t.getText().toUpperCase().indexOf('F')>=0) {
+					_ttype = FLOAT;
+				}
+				else {
+					_ttype = DOUBLE; // assume double
+				}
+				}
+			)?
+		)
 
-    |	("...")=> "..."            {_ttype = ELLIPSIS;}
+	|	(	'0' {_ttype = DECIMALINT;} // special case for just '0'
+			(	('x'|'X')
+				(											// hex
+					// the 'e'|'E' and float suffix stuff look
+					// like hex digits, hence the (...)+ doesn't
+					// know when to stop: ambig.  ANTLR resolves
+					// it correctly by matching immediately.  It
+					// is therefor ok to hush warning.
+					options {
+						warnWhenFollowAmbig=false;
+					}
+				:	HEX_DIGIT
+				)+					{_ttype = HEXADECIMALINT;}
 
-    |   '.'                     {_ttype = DOT;}
-        ((Digit)+ (Exponent)?         //{_ttype = FLOATONE;} //Zuo 3/12/01
-            (   FloatSuffix           //{_ttype = FloatDoubleConst;}
-            |   LongSuffix            //{_ttype = LongDoubleConst;}
-            )?
-        )?			   {_ttype = FLOAT;}
+			|	//float or double with leading zero
+				(('0'..'9')+ ('.'|EXPONENT|FLOAT_SUFFIX)) => ('0'..'9')+
 
-    |   ('0' ('0'..'7'))=>
-        '0' ('0'..'7')*            //{_ttype = IntOctalConst;}
-        (   LongSuffix                //{_ttype = LongOctalConst;}
-        |   UnsignedSuffix            //{_ttype = UnsignedOctalConst;}
-        )*                         {_ttype = OCTALINT;}
+			|	('0'..'7')+			{_ttype = OCTALINT;}
+			)?
+		|	('1'..'9') ('0'..'9')*  {_ttype = DECIMALINT;}
+		)
+		(	('l'|'L') { _ttype = DECIMALINT; }
 
-    |	('0' ('x' | 'X'))=>
-        '0' ('x' | 'X') ('a'..'f' | 'A'..'F' | Digit)+
-        //{_ttype = IntHexConst;}
-        (   LongSuffix                //{_ttype = LongHexConst;}
-        |   UnsignedSuffix            //{_ttype = UnsignedHexConst;}
-        )*                         {_ttype = HEXADECIMALINT;}   
-    |	('0' | ('1'..'9' (Digit)*))          //{_ttype = IntIntConst;}
-        (   LongSuffix                //{_ttype = LongIntConst;}
-        |   UnsignedSuffix            //{_ttype = UnsignedIntConst;}
-        )*                         {_ttype = DECIMALINT;}  
+		// only check to see if it's a float if looks like decimal so far
+		|	{_ttype == DECIMALINT}?
+			(	'.' ('0'..'9')* (EXPONENT)? (f2:FLOAT_SUFFIX {t=f2;})?
+			|	EXPONENT (f3:FLOAT_SUFFIX {t=f3;})?
+			|	f4:FLOAT_SUFFIX {t=f4;}
+			)
+			{
+			if (t != null && t.getText().toUpperCase() .indexOf('F') >= 0) {
+				_ttype = FLOAT;
+			}
+			else {
+				_ttype = DOUBLE; // assume double
+			}
+			}
+		)?
+	;
 
-    ;
 
-/*----------------------------------------------------------------------------
-  * The Tree Parser/Walker (evaluator)
-  *---------------------------------------------------------------------------*/
+// Protected methods to assist in matching floating point numbers
+// hexadecimal digit (again, note it's protected!)
+protected
+HEX_DIGIT
+	:	('0'..'9'|'A'..'F'|'a'..'f')
+	;
+protected
+EXPONENT
+	:	('e'|'E') ('+'|'-')? ('0'..'9')+
+	;
+
+
+protected
+FLOAT_SUFFIX
+	:	'f'|'F'|'d'|'D'
+	;
+
 
 class CppTreeParser extends TreeParser;
 
@@ -723,7 +765,7 @@ exprlist returns [ArrayList el=new ArrayList()]
 expr returns [Variable returnVar=null] throws InvalidOperatorException,
 OperationNotDefinedException,
 NameNotFoundException
-{ Variable v1, v2, log_expr; String s1; ArrayList el;}
+{ Variable v1, v2, log_expr; String s1, s2; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
     |   ( #(MINUS expr expr) )=> #( MINUS v1=expr v2=expr ) 
         { returnVar = v1.getType().subtract(v1, v2);  }
@@ -801,6 +843,14 @@ NameNotFoundException
     	       l -= 1;
             returnVar = FloatType.newFloatVariable (
                 floatType, Float.parseFloat(f.getText().substring(0, l)));
+        }
+    |   d:DOUBLE  {
+    	    char c = d.getText().charAt(d.getText().length() - 1);
+    	    int l = d.getText().length();
+    	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
+    	       l -= 1;
+            returnVar = DoubleType.newDoubleVariable (
+                doubleType, Double.parseDouble(d.getText().substring(0, l)));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())
@@ -905,6 +955,9 @@ NameNotFoundException
     |   #(ARRAY_REF s1=identifier el=exprlist) { 
           returnVar = (Variable)cppSymTabRef.get(s1, el);
 	      }
+    |   #(CLASS_REF el=exprlist) {
+          returnVar = (Variable)cppSymTabRef.get(el);
+          }
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {

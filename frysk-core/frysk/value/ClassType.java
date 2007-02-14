@@ -55,6 +55,8 @@ public class ClassType
   ArrayList members;
 
   ArrayList names;
+  
+  ArrayList offsets;
 
   /**
    * Iterate through the class members.
@@ -77,8 +79,7 @@ public class ClassType
       idx += 1;
       if (idx < members.size())
         return true;
-      else
-        return false;
+      return false;
     }
 
     public String nextName ()
@@ -89,18 +90,19 @@ public class ClassType
     public Object next ()
     {
       Type type = ((Type) (members.get(idx)));
+      int off = ((Long)offsets.get(idx)).intValue();
       if (type._typeId == BaseTypes.baseTypeChar)
-        return new Integer(v.getByte(idx * type.getSize()));
+        return new Integer(v.getByte(off));
       else if (type._typeId == BaseTypes.baseTypeShort)
-        return new Integer(v.getShort(idx * type.getSize()));
+        return new Integer(v.getShort(off));
       else if (type._typeId == BaseTypes.baseTypeInteger)
-        return new Integer(v.getInt(idx * type.getSize()));
+        return new Integer(v.getInt(off));
       else if (type._typeId == BaseTypes.baseTypeLong)
-        return new Integer(v.getInt(idx * type.getSize()));
+        return new Integer(v.getInt(off));
       else if (type._typeId == BaseTypes.baseTypeFloat)
-        return new Float(v.getFloat(idx * type.getSize()));
+        return new Float(v.getFloat(off));
       else if (type._typeId == BaseTypes.baseTypeDouble)
-        return new Double(v.getDouble(idx * type.getSize()));
+        return new Double(v.getDouble(off));
       else
         return null;
     }
@@ -137,12 +139,14 @@ public class ClassType
     super(0, endian, 0, "class");
     members = new ArrayList();
     names = new ArrayList();
+    offsets = new ArrayList();
   }
 
-  public void addMember (Type member, String name)
+  public void addMember (Type member, String name, long offset)
   {
     members.add(member);
     names.add(name);
+    offsets.add(new Long(offset));
   }
 
   public Variable newVariable (Type type, Variable val)

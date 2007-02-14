@@ -283,7 +283,6 @@ public class DwarfDie
  
   /**
    * @param fbreg_and_disp Base pointer and displacement (out).
-   * @param scope Scope DW_AT_frame_base is desired for.
    * @param pc PC DW_AT_frame_base is desired for.
    */
   public void getFrameBase (long[] fbreg_and_disp, long pc)
@@ -299,19 +298,18 @@ public class DwarfDie
   /**
    * @param fbreg_and_disp Get DW_FORM_data for current die.
    * Typically this is from a location list.
-   * @param scope - Scope of current die. 
    * @param pc - PC
    */
   public void getFormData (long[] fbreg_and_disp, long pc)
   {
-    for (int i = this.scopeIndex; i < this.scopes.length; i++)
-      {
-        get_formdata(fbreg_and_disp, this.getPointer(), this.scopes[i].pointer, pc);
-        if (fbreg_and_disp[0] != -1)
-          break;
-      }
+    get_formdata(fbreg_and_disp, this.getPointer(), pc);
   }
 
+  public long getDataMemberLocation ()
+  {
+    return get_data_member_location(this.getPointer());
+  }
+  
   /**
    * @return True if this is an inlined instance of a function, false otherwise
    */
@@ -400,7 +398,9 @@ public class DwarfDie
   
   private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
 
-  private native void get_formdata (long[] fbreg_and_disp, long addr, long scope, long pc);
+  private native void get_formdata (long[] fbreg_and_disp, long addr, long pc);
+
+  private native long get_data_member_location (long addr);
   
   private native boolean is_inline_func ();
 

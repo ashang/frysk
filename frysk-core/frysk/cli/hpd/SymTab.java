@@ -234,11 +234,15 @@ public class SymTab
         {
           throw new NameNotFoundException("No symbol table is available.");
         }
+        public Variable get(String s) throws NameNotFoundException 
+        {
+          throw new NameNotFoundException("No symbol table is available.");
+        }
         public Variable get(String s, ArrayList v) throws NameNotFoundException 
         {
           throw new NameNotFoundException("No symbol table is available.");
         }
-        public Variable get(String s) throws NameNotFoundException 
+        public Variable get(ArrayList v) throws NameNotFoundException 
         {
           throw new NameNotFoundException("No symbol table is available.");
         }

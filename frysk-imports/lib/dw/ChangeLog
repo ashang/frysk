@@ -1,3 +1,8 @@
+2007-02-14  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getDataMemberLocation): New.
+	* cni/DwarfDie.cxx (get_data_member_location): New.
+
 2007-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java: Replace frysk.junit.Paths with

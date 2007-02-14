@@ -424,7 +424,7 @@ lib::dw::DwarfDie::get_framebase (jlongArray fbreg_and_disp, jlong var_die,
 
 void
 lib::dw::DwarfDie::get_formdata (jlongArray fbreg_and_disp, jlong var_die,
-				  jlong scope_arg, jlong pc)
+				 jlong pc)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Attribute loc_attr;
@@ -453,6 +453,25 @@ lib::dw::DwarfDie::get_formdata (jlongArray fbreg_and_disp, jlong var_die,
 	}
       return;
     }
+}
+
+jlong
+lib::dw::DwarfDie::get_data_member_location (jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  Dwarf_Attribute loc_attr;
+  Dwarf_Op *fb_expr;
+  int code;
+  size_t fb_len;
+  jlong disp = -1;
+  
+  if (dwarf_attr_integrate (die, DW_AT_data_member_location, &loc_attr) >= 0)
+    {
+      code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      if (fb_len > 0 && fb_expr[0].atom == DW_OP_plus_uconst)
+	disp = fb_expr[0].number;
+    }
+  return disp;
 }
 
 /*

@@ -662,29 +662,30 @@ class ExprSymTab
                 subrange = type.getChild();
                 int bufSize = 1;
                 ClassType classType = new ClassType(byteorder);
-                int typeSize = 0;
+                long typeSize = 0;
                 while (subrange != null)
                   {
-                    typeSize += BaseTypes.getTypeSize(subrange.getType().getBaseType());
+                    long offset = subrange.getDataMemberLocation();
+                    typeSize = offset + BaseTypes.getTypeSize(subrange.getType().getBaseType());
                     switch (subrange.getType().getBaseType())
                       {
                       case BaseTypes.baseTypeChar:
-                        classType.addMember(byteType, subrange.getName());
+                        classType.addMember(byteType, subrange.getName(), offset);
                         break;
                       case BaseTypes.baseTypeShort:
-                        classType.addMember(shortType, subrange.getName());
+                        classType.addMember(shortType, subrange.getName(), offset);
                         break;
                       case BaseTypes.baseTypeInteger:
-                        classType.addMember(intType, subrange.getName());
+                        classType.addMember(intType, subrange.getName(), offset);
                         break;
                       case BaseTypes.baseTypeLong:
-                        classType.addMember(longType, subrange.getName());
+                        classType.addMember(longType, subrange.getName(), offset);
                         break;
                       case BaseTypes.baseTypeFloat:
-                        classType.addMember(floatType, subrange.getName());
+                        classType.addMember(floatType, subrange.getName(), offset);
                         break;
                       case BaseTypes.baseTypeDouble:
-                        classType.addMember(doubleType, subrange.getName());
+                        classType.addMember(doubleType, subrange.getName(), offset);
                         break;
                       default:
                         return null;
@@ -692,7 +693,7 @@ class ExprSymTab
                     subrange = subrange.getSibling();
                   }
 
-                byte buf[] = new byte[typeSize];
+                byte buf[] = new byte[(int)typeSize];
                 for (int j = 0; j < typeSize; j++)
                   buffer.get(addr + j, buf, j, 1);
                 ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
@@ -797,7 +798,98 @@ class ExprSymTab
        }
      return null;
   }
+  
+  public Variable get (ArrayList components)
+  {
+    VariableAccessor[] variableAccessor = { new AccessDW_FORM_block(),
+                                            new AccessDW_FORM_data() };
 
+    String s = (String)components.get(0);
+    DwarfDie varDie = getDie(s);
+    
+    if (varDie == null)
+      return (null);
+
+    DwarfDie type = varDie.getType();
+    Iterator ci = components.iterator();
+    String component;
+    if (ci.hasNext())
+      component = (String)ci.next();           
+
+    try
+    {
+      DwarfDie subrange;
+      long addr = variableAccessor[0].getAddr(s);
+      if (addr == 0)
+        return null;
+      if (ci.hasNext())
+        component = (String)ci.next();
+      else
+        return null;
+      
+      subrange = type.getChild();
+      while (subrange != null)
+        {
+          for (int i = 0; i < variableAccessor.length; i++)
+            {
+              long offset = subrange.getDataMemberLocation();
+              if (subrange.getName().equals(component))
+                switch (subrange.getType().getBaseType())
+                {
+                case BaseTypes.baseTypeLong:
+                {
+                  long longVal = variableAccessor[i].getLong(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return LongType.newLongVariable(longType, s, longVal);
+                }
+                case BaseTypes.baseTypeInteger:
+                {
+                  int intVal = variableAccessor[i].getInt(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return IntegerType.newIntegerVariable(intType, s, intVal);
+                }
+                case BaseTypes.baseTypeShort:
+                {
+                  short shortVal = variableAccessor[i].getShort(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return ShortType.newShortVariable(shortType, s, shortVal);
+                }
+                case BaseTypes.baseTypeChar:
+                {
+                  byte byteVal = variableAccessor[i].getByte(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return ByteType.newByteVariable(byteType, s, byteVal);
+                }
+                case BaseTypes.baseTypeFloat:
+                {
+                  float floatVal = variableAccessor[i].getFloat(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return FloatType.newFloatVariable(floatType, s, floatVal);
+                }
+                case BaseTypes.baseTypeDouble:
+                {
+                  double doubleVal = variableAccessor[i].getDouble(varDie, offset);
+                  if (variableAccessor[i].isSuccessful() == false)
+                    continue;
+                  return DoubleType.newDoubleVariable(doubleType, s, doubleVal);
+                }                 
+                default:
+                }
+            }
+          subrange = subrange.getSibling();
+        }
+    }
+    catch (Errno ignore)
+    {
+    }
+    return null;
+  }
+  
   /**
    * Get the current stack frame.
    * 

@@ -1,3 +1,12 @@
+2007-02-14  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (CppParser.DOT): Handle class members.
+	(CppLexer.NUM): Rewritten.
+	(CppTreeParser.CLASS_REF): New.
+	* CppSymTab.java (get): New for class members.
+	* RunCppParser.java (SymTab.get): Likewise.
+	* RunCppTreeParser.java (rctpsymTab.get): Likewise.
+
 2007-01-29  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppTreeParser.expr): Add identifier and exprlist.

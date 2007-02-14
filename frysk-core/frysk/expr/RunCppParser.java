@@ -86,10 +86,14 @@ public class RunCppParser
 	    return (Variable) symTab.get(s);
 	}
 
-    public Variable get (String s, ArrayList v)
-    {
-        return (Variable) symTab.get(s);
-    }
+        public Variable get (String s, ArrayList v)
+        {
+	    return (Variable) symTab.get(s);
+    	}
+        public Variable get (ArrayList v)
+        {
+	    return (Variable) symTab.get(v.get(0));
+    	}
 	public boolean putUndefined ()
 	{
 	    return true;
