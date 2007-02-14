@@ -98,7 +98,15 @@ public class SymTab
       {}
       exprSymTab = new ExprSymTab (task, pid, frame);
     }
-    
+
+   /**
+    * Synchronize the symbol table with the current state of the task.
+    */
+   public void refresh()
+   {
+     exprSymTab.refreshCurrentFrame();
+   }
+  
     /**
      * Handle ConsoleReader Completor
      * @param buffer Input buffer.

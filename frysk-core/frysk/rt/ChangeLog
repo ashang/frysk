@@ -1,3 +1,20 @@
+2007-02-15  Tim Moore  <timoore@redhat.com>
+
+	* RunState.java (RunState): Add logger member.
+	(STOPPED, RUNNING, INSTRUCTION_STEP, STEP_IN, STEP_OVER, STEP_OUT,
+	STEP_OVER_LINE_STEP): Make public.
+	(run): call requestUnblock on the instruction observer.
+	(Breakpoint.address, Breakpoint.triggered, Breakpoint.added,
+	Breakpoint.removed): Make protected.
+	(Breakpoint): Print out address in hex.
+	(logHit): New method.
+	(Breakpoint.updateHit): Change uses of System.out.println to
+	logging calls.
+	(SourceBreakpoint.updateHit): More logging, call setChanged, call
+	super.updateHit.
+	(SourceBreakpoint.addedTo): Override method; don't delete the
+	RunState as instruction observer.
+
 2007-02-14  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackBacktrace.java (testFramePushing): Added. New test case for

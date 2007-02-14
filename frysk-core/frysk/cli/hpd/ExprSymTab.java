@@ -138,6 +138,14 @@ class ExprSymTab
     symTab = new HashMap();
   }
 
+  /**
+   * Refresh the current frame.
+   */
+  void refreshCurrentFrame()
+  {
+    currentFrame = StackFactory.createStackFrame(task);
+  }
+
   interface VariableAccessor
   {
     int DW_OP_addr = 0x03;

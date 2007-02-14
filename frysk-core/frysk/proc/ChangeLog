@@ -1,3 +1,9 @@
+2007-02-15  Tim Moore  <timoore@redhat.com>
+
+	* LinuxPtraceTaskState.java
+	(Attached.WaitForUnblock.handleUnblock): Add some more logging at
+	FINEST level.
+
 2007-02-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskObserver.java (Attached): Make package private.

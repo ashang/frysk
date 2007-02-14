@@ -47,6 +47,10 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 //import frysk.cli.hpd.SymTab;
@@ -67,7 +71,8 @@ import frysk.proc.TaskObserver;
  */
 public class RunState extends Observable implements TaskObserver.Instruction
 {
-
+  protected static Logger logger = Logger.getLogger ("frysk");
+  
   /* Keeps track of the Dwfl objects for teach Task; not necessary to
    * re-generate these each time a step is done. */
   private HashMap dwflMap;
@@ -92,13 +97,13 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   private int state = 0;
 
-  protected static final int STOPPED = 0;
-  protected static final int RUNNING = 1;
-  protected static final int INSTRUCTION_STEP = 2;
-  protected static final int STEP_IN = 3;
-  protected static final int STEP_OVER = 4;
-  protected static final int STEP_OUT = 5;
-  protected static final int STEP_OVER_LINE_STEP = 6;
+  public static final int STOPPED = 0;
+  public static final int RUNNING = 1;
+  public static final int INSTRUCTION_STEP = 2;
+  public static final int STEP_IN = 3;
+  public static final int STEP_OVER = 4;
+  public static final int STEP_OUT = 5;
+  public static final int STEP_OVER_LINE_STEP = 6;
   
   private Proc stateProc;
   
@@ -418,27 +423,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             this.runningTasks.add(t);
             t.requestDeleteInstructionObserver(this);
-          }
-      }
-  }
-
-  /**
-   * Continue from a breakpoint
-   * 
-   * @param tasks   The list of Tasks to be run
-   */
-  public void continueTasks(LinkedList tasks)
-  {
-    this.state = RUNNING;
-    this.numRunningTasks = tasks.size();
-    notifyNotBlocked();
-    Iterator i = tasks.iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        if (! this.runningTasks.contains(t))
-          {
-            this.runningTasks.add(t);
+	    t.requestUnblock(this);
 	    Breakpoint bpt = (Breakpoint)breakpointMap.get(t);
 	    if (bpt != null) 
 	      {
@@ -975,36 +960,48 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     protected long address;
 
-    private int triggered;
+    protected int triggered;
 
-    private boolean added;
+    protected boolean added;
 
-    private boolean removed;
+    protected boolean removed;
 
     Breakpoint (long address)
     {
-      System.out.println("Setting address to " + address);
+      System.out.println("Setting address to 0x" + Long.toHexString(address));
       this.address = address;
       if (monitor == null)
         monitor = new Object();
     }
 
+    protected void logHit(Task task, long address, String message)
+    {
+      if (logger.isLoggable(Level.FINEST))
+	{
+	  Object[] logArgs = {task,
+			      Long.toHexString(address),
+			      Long.toHexString(task.getIsa().pc(task)),
+			      Long.toHexString(this.address)};
+	  logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
+		      message, logArgs);
+	}
+    }
+    
     public Action updateHit (Task task, long address)
     {
-      System.out.println("Hit " + address + " | " + this.address + " " + task);
+      logHit(task, address, "task {0} at 0x{1}\n");
       if (address != this.address)
         {
-          System.out.println("Hit wrong address!");
+	  logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
+		      "Hit wrong address!");
           return Action.CONTINUE;
         }
       else
         {
           addy = address;
-          long pc = task.getIsa().pc(task);
-          System.out.println("Breakpoint -> updateHit adding instructionobserver " + task + " " + pc);
+	  logHit(task, address, "adding instructionobserver {0} 0x{2}");
           task.requestAddInstructionObserver(RunState.this);
         }
-
       triggered++;
       return Action.BLOCK;
     }
@@ -1074,14 +1071,31 @@ public class RunState extends Observable implements TaskObserver.Instruction
     
     public Action updateHit(Task task, long address)
     {
+      logger.entering("RunState.SourceBreakpoint", "updateHit");
       state = STOPPED;
-      System.out.println("Hit " + address + " | " + this.address + " " + task);
+      if (runningTasks.contains(task))
+	{
+	  runningTasks.remove(task);
+	  numRunningTasks--;
+	}
+      else
+	logger.logp(Level.WARNING, "RunState.SourceBreakpoint", "updateHit",
+		    "task {0} not in runningTasks", task);
       breakpointMap.put(task, this);
+      setChanged();
       notifyObservers(task);
-      return Action.BLOCK;
+      return super.updateHit(task, address);
     }
-    
 
+    public void addedTo (Object observable)
+    {
+      synchronized (monitor)
+        {
+          added = true;
+          removed = false;
+          monitor.notifyAll();
+        }
+    }
   }
 
   public SourceBreakpoint getTaskSourceBreakpoint(Task task)

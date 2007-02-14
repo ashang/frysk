@@ -78,6 +78,7 @@ public class CLI
   int pid = 0;
   int tid = 0;
   SymTab symtab = null;
+  boolean symtabNeedsRefresh = false;
   StackFrame frame = null;
   int stackLevel = 0;
   static Object monitor = new Object();
@@ -116,11 +117,20 @@ public class CLI
       }
     return 1;
   }
-    
+  // Superclass refreshes symbol table if necessary.
+  private void refreshSymtab()
+  {
+    if (symtabNeedsRefresh && symtab != null)
+      {
+	symtab.refresh();
+	symtabNeedsRefresh = false;
+      }
+  }
+  
   /*
    * Command handlers
    */
-
+  
   /*
    * Set commands
    */
@@ -128,6 +138,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       String setname = null;
       String setnot = null;
@@ -161,6 +172,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       if (cmd.getParameters().size() == 1)
 	{
 	  String setname = (String)cmd.getParameters().get(0);
@@ -196,6 +208,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       PTSet tempset = null;
       TaskData temptd = null;
       String setname = "";
@@ -240,6 +253,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       PTSet searchset = null;
       PTSet tempset = null;
       TaskData temptd = null;
@@ -284,6 +298,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       if (cmd.getParameters().size() <= 1)
 	{
 	  if (cmd.getParameters().size() == 1)
@@ -305,6 +320,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       if (params.size() <= 2)
 	{
@@ -341,6 +357,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();	// XXX ?
       ArrayList params = cmd.getParameters();
       boolean cli = true;
 
@@ -414,7 +431,7 @@ public class CLI
 	  // Wait till we are attached.
 	  synchronized (monitor)
 	    {
-	      while (! attached)
+	      while (!attached)
 		{
 		  try
 		    {
@@ -422,8 +439,11 @@ public class CLI
 		    }
 		  catch (InterruptedException ie)
 		    {
+		      addMessage("Attach interrupted.", Message.TYPE_ERROR);
+		      return;
 		    }
 		}
+	      addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
 	    }
 	}
 
@@ -435,6 +455,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
 
       if (runState != null) 
@@ -462,6 +483,7 @@ public class CLI
   {
     public void handle(Command cmd)  throws ParseException
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       if (params.size() == 1)
 	{
@@ -496,7 +518,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-        
+      refreshSymtab();
       if (proc == null)
 	{
 	  addMessage("No symbol table is available.", Message.TYPE_NORMAL);
@@ -553,6 +575,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       String temp;
       if (params.size() == 3 && ((String)params.get(1)).equals("=") )
@@ -601,6 +624,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       String temp;
       if (params.size() == 1)
@@ -630,6 +654,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       int level = 1;
       StackFrame tmpFrame = null;
       StackFrame currentFrame = symtab.getCurrentFrame();
@@ -661,6 +686,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       int level = 0;
       StackFrame tmpFrame = null;
         
@@ -696,6 +722,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       if (cmd.getParameters().size() == 0)
 	return;
         
@@ -725,6 +752,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      refreshSymtab();
       if (cmd.getParameters().size() == 0)
 	return;
 
@@ -828,6 +856,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       ArrayList params = cmd.getParameters();
       String filename = (String)params.get(0);
       int lineNumber = Integer.parseInt((String)params.get(1));
@@ -839,6 +868,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
 //      ArrayList params = cmd.getParameters();
 //      String filename = (String)params.get(0);
 //      int lineNumber = Integer.parseInt((String)params.get(1));
@@ -849,6 +879,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       if (runState != null)
 	{
 	  runState.run(proc.getTasks());
@@ -867,6 +898,7 @@ public class CLI
     public void handle(Command cmd)
       throws ParseException
     {
+      refreshSymtab();
       if (runState != null)
 	{
 	  runState.stop(null);
@@ -883,6 +915,7 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      refreshSymtab();
       DetachHandler detachHandler = new DetachHandler();
       Command command = new Command ("detach");
       detachHandler.handle(command);
@@ -1180,10 +1213,17 @@ public class CLI
       RunState runState = (RunState)observable;
       Task task = (Task)arg;
       RunState.SourceBreakpoint bpt = null;
-      
+
+      System.out.println("runState state = " + runState.getState());
       synchronized (monitor) 
 	{
-	  attached = true;
+	  if (runState.getState() != RunState.RUNNING)
+	    {
+	      attached = true;
+	      symtabNeedsRefresh = true;
+	    }
+	  else
+	    attached = false;
 	  bpt = runState.getTaskSourceBreakpoint(task);
 	  monitor.notifyAll();
 	}

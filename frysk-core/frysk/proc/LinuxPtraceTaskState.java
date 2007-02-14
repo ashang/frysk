@@ -299,7 +299,10 @@ abstract class LinuxPtraceTaskState
 	    TaskState handleUnblock (Task task,
 				     TaskObserver observer)
 	    {
-		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		logger.log (Level.FINE, "{0} handleUnblock\n", task);
+		logger.logp(Level.FINEST, "Attached.WaitForUnblock",
+			    "handleUnblock", "{0} blockers",
+			    new Integer(task.blockers.size()));
 		task.blockers.remove (observer);
 		if (task.blockers.size () == 0)
 		    return transitionToRunningState(task, signal);
