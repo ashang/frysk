@@ -252,6 +252,10 @@ public class TestStackBacktrace
 
     if (brokenPpcXXX (3277))
       return;
+    
+    /* Only applies to i386 */
+    if (brokenXXX(4059))
+      return;
   
   initial = true;
   this.dwflMap = new HashMap();
@@ -287,6 +291,10 @@ public class TestStackBacktrace
   {
 
     if (brokenPpcXXX (3277))
+      return;
+    
+    /* Only applies to i386 */
+    if (brokenXXX(4059))
       return;
   
   initial = true;

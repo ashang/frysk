@@ -1,5 +1,8 @@
 2007-02-15  Mike Cvet  <mcvet@redhat.com>
 
+	* TestStackBacktrace.java (testFramePopping): Marked broken for
+	#4059.
+	(testFramePushing): Ditto.
 	* StackFrame.java (getDOMSource): Refactored from getData().
 	Changed to match getDOMFunction().
 	* RunState.java (STEP_INSTRUCTION): Refactored from
