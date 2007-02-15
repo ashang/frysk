@@ -46,7 +46,7 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMLine;
-import frysk.dom.DOMFactory;
+import frysk.dom.DOMCommon;
 import frysk.dom.StaticParser;
 import frysk.dom.cparser.CDTParser;
 
@@ -90,13 +90,13 @@ public class TestParser
 	String CC_FILE = "./test";
 
 	String execPath = Config.getPkgLibDir () + "test_main_looper";
-	List sources = DOMFactory.getSrcFiles (execPath);
+	List sources = DOMCommon.getSrcFiles (execPath);
 	assertTrue ("sources.size > 0", sources.size () > 0);
 	
 	// Get the list of include file paths associated with this
 	// image
 	String[] includePaths = (String[])
-	    DOMFactory.getIncludePaths(execPath).toArray (new String[0]);
+	    DOMCommon.getIncludePaths(execPath).toArray (new String[0]);
 
 	DOMFrysk dom = new DOMFrysk ("TaskTask");
 	dom.addImage (IMAGE_FILENAME, CC_FILE, CC_FILE);

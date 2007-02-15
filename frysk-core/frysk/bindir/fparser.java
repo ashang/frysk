@@ -41,9 +41,9 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMLine;
-import frysk.dom.DOMFactory;
 import frysk.dom.StaticParser;
 import frysk.dom.cparser.CDTParser;
+import frysk.dom.DOMCommon;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -148,7 +148,7 @@ public class fparser
         return;
       }
 
-    ArrayList arraysourcelist = DOMFactory.getSrcFiles(filepath);
+    ArrayList arraysourcelist = DOMCommon.getSrcFiles(filepath);
 
     if (arraysourcelist.size() == 0)
       {
@@ -157,11 +157,11 @@ public class fparser
       }
 
     // Convert ArrayList to String Array
-    String sourcelist[] = (String[]) arraysourcelist.toArray(new String[arraysourcelist.size()]);
+    String sourcelist[] = (String[]) arraysourcelist.toArray(new String[0]);
 
     // Get the list of include file paths associated with this image
-    ArrayList arrayincludepaths = DOMFactory.getIncludePaths(filepath);
-    String includepaths[] = (String[]) arrayincludepaths.toArray(new String[arrayincludepaths.size()]);
+    ArrayList arrayincludepaths = DOMCommon.getIncludePaths(filepath);
+    String includepaths[] = (String[]) arrayincludepaths.toArray(new String[0]);
 
     dom = new DOMFrysk("TaskTask");
     dom.addImage(IMAGE_FILENAME, filepath, filepath);

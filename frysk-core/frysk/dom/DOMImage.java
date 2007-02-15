@@ -39,8 +39,17 @@
 
 package frysk.dom;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import frysk.dom.cparser.CDTParser;
+import frysk.proc.Proc;
+import frysk.rt.StackFrame;
 
 import org.jdom.Element;
 
@@ -59,6 +68,7 @@ public class DOMImage
 	public static final String NAME_ATTR = "filename";
 	public static final String PATH_ATTR = "filepath";
     public DOMFrysk dom;
+    public DOMImage image;
     
     /* Keep a cache of DOMSources contained within this image. Prevents
      * excessive new JDOM Object creation and iteration. This is important
@@ -102,7 +112,55 @@ public class DOMImage
     {
 		this.addSource(new DOMSource(source_name, path, incpaths));
 	}
+    
+    /**
+     * adds a source element under this DOMImage
+     * @param proc - the proc image for this source
+     * @param frame - the frame for this source
+     * 
+     */
 	
+    public DOMSource addSource (Proc proc, StackFrame frame, DOMFrysk dom) throws IOException
+    {
+//    Get the list of include file paths associated with this image
+      ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExe());
+      String includepaths[] = (String[]) arrayincpaths.toArray(new String[0]);
+      String sourcefile = frame.getSourceFile();
+
+      String filename = sourcefile.substring(sourcefile.lastIndexOf("/") + 1);
+      String path = sourcefile.substring(0, sourcefile.lastIndexOf("/"));
+      
+      DOMSource source = new DOMSource(filename, path, includepaths);
+
+      // Read the file lines from disk
+      // XXX: Remote file access?
+      BufferedReader reader = new BufferedReader(
+                                                 new FileReader(
+                                                                new File(
+                                                                         sourcefile)));
+      int offset = 0;
+      int lineNum = 0;
+
+      while (reader.ready())
+        {
+          String text = reader.readLine();
+          // XXX: detect executable lines?
+          DOMLine l = new DOMLine(lineNum++, text + "\n", offset, false,
+                                  false, Long.parseLong("deadbeef", 16));
+          source.addLine(l);
+
+          offset += text.length() + 1;
+        }
+        // Parse the file and populate the DOM if the Frame says this is the
+        // current source file
+        StaticParser parser = new CDTParser();
+        parser.parse(dom, source, this.image);
+        source.setParsed(true);
+        
+        addSource(source);
+        return source;
+      
+    }
 	/**
 	 * Adds the given DOMSource as a source in this image
 	 * @param source The source to add
