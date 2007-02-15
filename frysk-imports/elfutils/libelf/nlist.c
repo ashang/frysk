@@ -1,5 +1,5 @@
 /* Extract symbol list from binary.
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2005 Red Hat, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2005, 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -108,7 +108,7 @@ nlist (const char *filename, struct nlist *nl)
   /* Now get an ELF descriptor.  */
   elf = INTUSE(elf_begin) (fd, ELF_C_READ_MMAP, NULL);
   if (elf == NULL)
-    goto fail;
+    goto fail_fd;
 
   /* Find a symbol table.  We prefer the real symbol table but if it
      does not exist use the dynamic symbol table.  */
@@ -230,6 +230,9 @@ nlist (const char *filename, struct nlist *nl)
   /* We do not need the ELF descriptor anymore.  */
   (void) INTUSE(elf_end) (elf);
 
+  /* Neither the file descriptor.  */
+  (void) close (fd);
+
   return 0;
 
  fail_dealloc:
@@ -238,6 +241,10 @@ nlist (const char *filename, struct nlist *nl)
  fail_close:
   /* We do not need the ELF descriptor anymore.  */
   (void) INTUSE(elf_end) (elf);
+
+ fail_fd:
+  /* Neither the file descriptor.  */
+  (void) close (fd);
 
  fail:
   /* We have to set all entries to zero.  */

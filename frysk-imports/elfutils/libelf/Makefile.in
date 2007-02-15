@@ -749,7 +749,7 @@ uninstall-am: uninstall-euincludeHEADERS uninstall-includeHEADERS \
 @MUDFLAP_FALSE@libelf.so: libelf_pic.a libelf.map
 @MUDFLAP_FALSE@	$(LINK) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 @MUDFLAP_FALSE@		-Wl,--version-script,$(srcdir)/libelf.map,--no-undefined \
-@MUDFLAP_FALSE@		-Wl,--soname,$@.$(VERSION),-z,-defs
+@MUDFLAP_FALSE@		-Wl,--soname,$@.$(VERSION),-z,-defs,-z,relro
 @MUDFLAP_FALSE@	if readelf -d $@ | fgrep -q TEXTREL; then exit 1; fi
 @MUDFLAP_FALSE@	ln -fs $@ $@.$(VERSION)
 

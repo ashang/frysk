@@ -48,7 +48,8 @@ noinst_PROGRAMS = arextract$(EXEEXT) arsymtest$(EXEEXT) \
 	funcscopes$(EXEEXT) show-abbrev$(EXEEXT) hash$(EXEEXT) \
 	newscn$(EXEEXT) ecp$(EXEEXT) dwflmodtest$(EXEEXT) \
 	find-prologues$(EXEEXT) funcretval$(EXEEXT) allregs$(EXEEXT) \
-	rdwrmmap$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_3)
+	rdwrmmap$(EXEEXT) dwfl-bug-addr-overflow$(EXEEXT) \
+	arls$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_3)
 # run-show-ciefde.sh
 @STANDALONE_FALSE@am__append_3 = msg_tst
 @STANDALONE_FALSE@am__append_4 = msg_tst
@@ -95,6 +96,9 @@ allregs_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_4)
 arextract_SOURCES = arextract.c
 arextract_OBJECTS = arextract.$(OBJEXT)
 arextract_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
+arls_SOURCES = arls.c
+arls_OBJECTS = arls.$(OBJEXT)
+arls_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
 arsymtest_SOURCES = arsymtest.c
 arsymtest_OBJECTS = arsymtest.$(OBJEXT)
 arsymtest_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
@@ -138,6 +142,11 @@ asm_tst9_SOURCES = asm-tst9.c
 asm_tst9_OBJECTS = asm-tst9.$(OBJEXT)
 asm_tst9_DEPENDENCIES = $(am__DEPENDENCIES_5) $(am__DEPENDENCIES_2) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_4)
+dwfl_bug_addr_overflow_SOURCES = dwfl-bug-addr-overflow.c
+dwfl_bug_addr_overflow_OBJECTS = dwfl-bug-addr-overflow.$(OBJEXT)
+dwfl_bug_addr_overflow_DEPENDENCIES = $(am__DEPENDENCIES_3) \
+	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_4)
 dwflmodtest_SOURCES = dwflmodtest.c
 dwflmodtest_OBJECTS = dwflmodtest.$(OBJEXT)
 dwflmodtest_DEPENDENCIES = $(am__DEPENDENCIES_3) $(am__DEPENDENCIES_2) \
@@ -233,23 +242,24 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arsymtest.c \
-	asm-tst1.c asm-tst2.c asm-tst3.c asm-tst4.c asm-tst5.c \
-	asm-tst6.c asm-tst7.c asm-tst8.c asm-tst9.c dwflmodtest.c \
-	ecp.c find-prologues.c funcretval.c funcscopes.c get-aranges.c \
-	get-files.c get-lines.c get-pubnames.c hash.c line2addr.c \
-	msg_tst.c newfile.c newscn.c rdwrmmap.c saridx.c scnnames.c \
-	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
-	test-nlist.c update1.c update2.c update3.c update4.c
-DIST_SOURCES = addrscopes.c allfcts.c allregs.c arextract.c \
+SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arls.c \
 	arsymtest.c asm-tst1.c asm-tst2.c asm-tst3.c asm-tst4.c \
 	asm-tst5.c asm-tst6.c asm-tst7.c asm-tst8.c asm-tst9.c \
-	dwflmodtest.c ecp.c find-prologues.c funcretval.c funcscopes.c \
-	get-aranges.c get-files.c get-lines.c get-pubnames.c hash.c \
-	line2addr.c msg_tst.c newfile.c newscn.c rdwrmmap.c saridx.c \
-	scnnames.c sectiondump.c show-abbrev.c show-die-info.c \
-	showptable.c test-nlist.c update1.c update2.c update3.c \
-	update4.c
+	dwfl-bug-addr-overflow.c dwflmodtest.c ecp.c find-prologues.c \
+	funcretval.c funcscopes.c get-aranges.c get-files.c \
+	get-lines.c get-pubnames.c hash.c line2addr.c msg_tst.c \
+	newfile.c newscn.c rdwrmmap.c saridx.c scnnames.c \
+	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
+	test-nlist.c update1.c update2.c update3.c update4.c
+DIST_SOURCES = addrscopes.c allfcts.c allregs.c arextract.c arls.c \
+	arsymtest.c asm-tst1.c asm-tst2.c asm-tst3.c asm-tst4.c \
+	asm-tst5.c asm-tst6.c asm-tst7.c asm-tst8.c asm-tst9.c \
+	dwfl-bug-addr-overflow.c dwflmodtest.c ecp.c find-prologues.c \
+	funcretval.c funcscopes.c get-aranges.c get-files.c \
+	get-lines.c get-pubnames.c hash.c line2addr.c msg_tst.c \
+	newfile.c newscn.c rdwrmmap.c saridx.c scnnames.c \
+	sectiondump.c show-abbrev.c show-die-info.c showptable.c \
+	test-nlist.c update1.c update2.c update3.c update4.c
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -265,7 +275,7 @@ BUILD_STATIC_FALSE = @BUILD_STATIC_FALSE@
 BUILD_STATIC_TRUE = @BUILD_STATIC_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS := $(filter-out -Wall,$(CFLAGS))
+CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
@@ -399,7 +409,8 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist update1 \
 	run-ranlib-test3.sh run-ranlib-test4.sh run-addrscopes.sh \
 	run-strings-test.sh run-funcscopes.sh run-find-prologues.sh \
 	run-allregs.sh run-readelf-test1.sh run-native-test.sh \
-	run-bug1-test.sh $(am__append_4) $(am__append_6)
+	run-bug1-test.sh dwfl-bug-addr-overflow run-addrname-test.sh \
+	$(am__append_4) $(am__append_6)
 EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     run-show-die-info.sh run-get-files.sh run-get-lines.sh \
 	     run-get-pubnames.sh run-get-aranges.sh \
@@ -415,6 +426,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     run-ranlib-test3.sh run-ranlib-test4.sh \
 	     run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	     run-find-prologues.sh run-allregs.sh run-native-test.sh \
+	     run-addrname-test.sh \
 	     testfile15.bz2 testfile15.debug.bz2 \
 	     testfile16.bz2 testfile16.debug.bz2 \
 	     testfile17.bz2 testfile17.debug.bz2 \
@@ -426,7 +438,8 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
 	     testfile29.bz2 testfile29.rdwr.bz2 \
-	     testfile30.bz2 testfile31.bz2
+	     testfile30.bz2 testfile31.bz2 testfile32.bz2 testfile33.bz2 \
+	     testfile34.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -493,6 +506,8 @@ asm_tst8_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 asm_tst9_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 dwflmodtest_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 rdwrmmap_LDADD = $(libelf)
+dwfl_bug_addr_overflow_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
+arls_LDADD = $(libelf) $(libmudflap)
 CLEANFILES = xxx *.gcno *.gcda *gconv
 all: all-am
 
@@ -542,6 +557,9 @@ allregs$(EXEEXT): $(allregs_OBJECTS) $(allregs_DEPENDENCIES)
 arextract$(EXEEXT): $(arextract_OBJECTS) $(arextract_DEPENDENCIES) 
 	@rm -f arextract$(EXEEXT)
 	$(LINK) $(arextract_LDFLAGS) $(arextract_OBJECTS) $(arextract_LDADD) $(LIBS)
+arls$(EXEEXT): $(arls_OBJECTS) $(arls_DEPENDENCIES) 
+	@rm -f arls$(EXEEXT)
+	$(LINK) $(arls_LDFLAGS) $(arls_OBJECTS) $(arls_LDADD) $(LIBS)
 arsymtest$(EXEEXT): $(arsymtest_OBJECTS) $(arsymtest_DEPENDENCIES) 
 	@rm -f arsymtest$(EXEEXT)
 	$(LINK) $(arsymtest_LDFLAGS) $(arsymtest_OBJECTS) $(arsymtest_LDADD) $(LIBS)
@@ -572,6 +590,9 @@ asm-tst8$(EXEEXT): $(asm_tst8_OBJECTS) $(asm_tst8_DEPENDENCIES)
 asm-tst9$(EXEEXT): $(asm_tst9_OBJECTS) $(asm_tst9_DEPENDENCIES) 
 	@rm -f asm-tst9$(EXEEXT)
 	$(LINK) $(asm_tst9_LDFLAGS) $(asm_tst9_OBJECTS) $(asm_tst9_LDADD) $(LIBS)
+dwfl-bug-addr-overflow$(EXEEXT): $(dwfl_bug_addr_overflow_OBJECTS) $(dwfl_bug_addr_overflow_DEPENDENCIES) 
+	@rm -f dwfl-bug-addr-overflow$(EXEEXT)
+	$(LINK) $(dwfl_bug_addr_overflow_LDFLAGS) $(dwfl_bug_addr_overflow_OBJECTS) $(dwfl_bug_addr_overflow_LDADD) $(LIBS)
 dwflmodtest$(EXEEXT): $(dwflmodtest_OBJECTS) $(dwflmodtest_DEPENDENCIES) 
 	@rm -f dwflmodtest$(EXEEXT)
 	$(LINK) $(dwflmodtest_LDFLAGS) $(dwflmodtest_OBJECTS) $(dwflmodtest_LDADD) $(LIBS)
@@ -661,6 +682,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/allfcts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/allregs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arextract.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arls.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arsymtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm-tst1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm-tst2.Po@am__quote@
@@ -671,6 +693,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm-tst7.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm-tst8.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/asm-tst9.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwfl-bug-addr-overflow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwflmodtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ecp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/find-prologues.Po@am__quote@

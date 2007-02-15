@@ -1,7 +1,6 @@
-/* Initialization of IA-64 specific backend library.
-   Copyright (C) 2002, 2003, 2005, 2006, 2007 Red Hat, Inc.
-   This file is part of Red Hat elfutils.
-   Written by Ulrich Drepper <drepper@redhat.com>, 2002.
+/* Functions to handle creation of Linux archives.
+   Copyright (C) 2007 Red Hat, Inc.
+   Written by Ulrich Drepper <drepper@redhat.com>, 2007.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by the
@@ -28,36 +27,24 @@
 # include <config.h>
 #endif
 
-#define BACKEND		ia64_
-#define RELOC_PREFIX	R_IA64_
-#include "libebl_CPU.h"
+#include <error.h>
+#include <libintl.h>
+#include <limits.h>
+#include <string.h>
+#include <sys/param.h>
 
-/* This defines the common reloc hooks based on ia64_reloc.def.  */
-#include "common-reloc.c"
+#include "arlib.h"
 
-const char *
-ia64_init (elf, machine, eh, ehlen)
-     Elf *elf __attribute__ ((unused));
-     GElf_Half machine __attribute__ ((unused));
-     Ebl *eh;
-     size_t ehlen;
+
+/* Add long file name FILENAME of length FILENAMELEN to the symbol table
+   SYMTAB.  Return the offset into the long file name table.  */
+long int
+arlib_add_long_name (const char *filename, size_t filenamelen)
 {
-  /* Check whether the Elf_BH object has a sufficent size.  */
-  if (ehlen < sizeof (Ebl))
-    return NULL;
+  int retval = obstack_object_size (&symtab.longnamesob);
 
-  /* We handle it.  */
-  eh->name = "Intel IA-64";
-  ia64_init_reloc (eh);
-  HOOK (eh, reloc_simple_type);
-  HOOK (eh, segment_type_name);
-  HOOK (eh, section_type_name);
-  HOOK (eh, dynamic_tag_name);
-  HOOK (eh, dynamic_tag_check);
-  HOOK (eh, machine_flag_check);
-  HOOK (eh, machine_section_flag_check);
-  HOOK (eh, register_info);
-  HOOK (eh, return_value_location);
+  obstack_grow (&symtab.longnamesob, filename, filenamelen);
+  obstack_grow (&symtab.longnamesob, "/\n", 2);
 
-  return MODVERSION;
+  return retval;
 }

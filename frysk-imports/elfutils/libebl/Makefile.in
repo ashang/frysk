@@ -70,6 +70,7 @@ am__objects_1 = eblopenbackend.$(OBJEXT) eblclosebackend.$(OBJEXT) \
 	eblbackendname.$(OBJEXT) eblshflagscombine.$(OBJEXT) \
 	eblwstrtab.$(OBJEXT) eblgstrtab.$(OBJEXT) \
 	eblosabiname.$(OBJEXT) eblmachineflagcheck.$(OBJEXT) \
+	eblmachinesectionflagcheck.$(OBJEXT) \
 	eblreloctypecheck.$(OBJEXT) eblrelocvaliduse.$(OBJEXT) \
 	eblrelocsimpletype.$(OBJEXT) ebldynamictagcheck.$(OBJEXT) \
 	eblcorenotetypename.$(OBJEXT) eblobjnotetypename.$(OBJEXT) \
@@ -227,7 +228,8 @@ gen_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 	      eblsymboltypename.c ebldynamictagname.c eblsectionname.c \
 	      eblobjecttypename.c eblsymbolbindingname.c \
 	      eblbackendname.c eblshflagscombine.c eblwstrtab.c \
-	      eblgstrtab.c eblosabiname.c eblmachineflagcheck.c \
+	      eblgstrtab.c eblosabiname.c \
+	      eblmachineflagcheck.c eblmachinesectionflagcheck.c \
 	      eblreloctypecheck.c eblrelocvaliduse.c eblrelocsimpletype.c \
 	      ebldynamictagcheck.c eblcorenotetypename.c eblobjnotetypename.c \
 	      eblcorenote.c eblobjnote.c ebldebugscnp.c \
@@ -330,6 +332,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblgstrtab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblmachineflagcheck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblmachineflagname.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblmachinesectionflagcheck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblnonerelocp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblobjecttypename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eblobjnote.Po@am__quote@
