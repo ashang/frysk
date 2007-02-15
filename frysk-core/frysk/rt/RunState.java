@@ -423,6 +423,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             this.runningTasks.add(t);
             t.requestDeleteInstructionObserver(this);
+	    // This seems to be required to unblock the process when
+	    // there are code observers installed. Filed as bz4051.
 	    t.requestUnblock(this);
 	    Breakpoint bpt = (Breakpoint)breakpointMap.get(t);
 	    if (bpt != null) 
