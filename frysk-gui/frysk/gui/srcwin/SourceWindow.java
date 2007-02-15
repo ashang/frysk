@@ -104,6 +104,7 @@ import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
+import frysk.dom.DOMImage;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
@@ -2160,11 +2161,17 @@ public class SourceWindow
                 // System.out.println("got filename");
                 filename = filename.substring(filename.lastIndexOf("/") + 1);
 
+                DOMImage image = null;
                 try
                   {
-                    s = this.dom.getImage(
-                                          tasks[j].getProc().getMainTask().getName()).getSource(
-                                                                                                filename);
+                    image = this.dom.getImage(tasks[j].getProc().getMainTask().getName());
+                    s = image.getSource(filename);
+                    if ( s == null || !s.isParsed())
+                      {
+                        // source has not been parsed, go put it in the DOM and
+                        // parse it
+                        s = image.addSource(this.swProc, curr, this.dom);
+                      }
                     if (s != null)
                       f = s.findFunction(line.getLineNum());
                   }
@@ -2174,6 +2181,10 @@ public class SourceWindow
                     s = null;
                     f = null;
                   }
+                catch (IOException e)
+                {
+                  e.printStackTrace();
+                }
               }
 
             curr.setDOMSource(s);

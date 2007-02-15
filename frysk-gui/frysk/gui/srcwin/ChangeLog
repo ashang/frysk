@@ -1,3 +1,8 @@
+2007-02-15  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Add logic to only
+	parse source file when necessary.
+
 2007-02-15  Mike Cvet  <mcvet@redhat.com>
 
 	* CurrentStackView.java (buildTree): Set row text to 
