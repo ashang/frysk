@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (C) 2005 Red Hat, Inc.
+# Copyright (C) 2005, 2007 Red Hat, Inc.
 # This file is part of Red Hat elfutils.
 # Written by Ulrich Drepper <drepper@redhat.com>, 2005.
 #
@@ -31,5 +31,11 @@ testfiles testfile18
 testrun_compare ../src/elflint --gnu-ld testfile18 <<\EOF
 section [ 8] '.rela.dyn': relocation 1: copy relocation against symbol of type FUNC
 EOF
+
+testfiles testfile32
+testrun ../src/elflint -q testfile32
+
+testfiles testfile33
+testrun ../src/elflint -q testfile33
 
 exit 0

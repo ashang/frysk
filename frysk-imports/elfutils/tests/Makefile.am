@@ -58,7 +58,7 @@ noinst_PROGRAMS = arextract arsymtest newfile saridx scnnames sectiondump \
 		  get-aranges allfcts line2addr addrscopes funcscopes \
 		  show-abbrev hash newscn ecp dwflmodtest \
 		  find-prologues funcretval allregs rdwrmmap 
-#		  dwfl-bug-addr-overflow
+		  dwfl-bug-addr-overflow arls
 # get-ciefde
 asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
 	    asm-tst6 asm-tst7 asm-tst8 asm-tst9
@@ -75,8 +75,8 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-ranlib-test2.sh run-ranlib-test3.sh run-ranlib-test4.sh \
 	run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	run-find-prologues.sh run-allregs.sh run-readelf-test1.sh \
-	run-native-test.sh run-bug1-test.sh
-#	dwfl-bug-addr-overflow
+	run-native-test.sh run-bug1-test.sh \
+	dwfl-bug-addr-overflow run-addrname-test.sh
 # run-show-ciefde.sh
 
 if !STANDALONE
@@ -105,6 +105,7 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     run-ranlib-test3.sh run-ranlib-test4.sh \
 	     run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	     run-find-prologues.sh run-allregs.sh run-native-test.sh \
+	     run-addrname-test.sh \
 	     testfile15.bz2 testfile15.debug.bz2 \
 	     testfile16.bz2 testfile16.debug.bz2 \
 	     testfile17.bz2 testfile17.debug.bz2 \
@@ -116,7 +117,8 @@ EXTRA_DIST = run-arextract.sh run-arsymtest.sh \
 	     coverage.sh test-subr.sh test-wrapper.sh run-readelf-test1.sh \
 	     run-bug1-test.sh testfile28.bz2 testfile28.rdwr.bz2 \
 	     testfile29.bz2 testfile29.rdwr.bz2 \
-	     testfile30.bz2 testfile31.bz2
+	     testfile30.bz2 testfile31.bz2 testfile32.bz2 testfile33.bz2 \
+	     testfile34.bz2
 
 installed_TESTS_ENVIRONMENT = libdir=$(DESTDIR)$(libdir) \
 			      bindir=$(DESTDIR)$(bindir) \
@@ -199,7 +201,8 @@ asm_tst8_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 asm_tst9_LDADD = $(libasm) $(libebl) $(libelf) $(libmudflap) -ldl
 dwflmodtest_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
 rdwrmmap_LDADD = $(libelf)
-#dwfl_bug_addr_overflow_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
+dwfl_bug_addr_overflow_LDADD = $(libdw) $(libebl) $(libelf) $(libmudflap) -ldl
+arls_LDADD = $(libelf) $(libmudflap)
 
 CLEANFILES = xxx *.gcno *.gcda *gconv
 
