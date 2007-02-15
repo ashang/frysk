@@ -150,7 +150,7 @@ public class CurrentStackView
             parent = treeModel.appendRow(null);
 
             treeModel.setValue(parent, (DataColumnString) stackColumns[0],
-                               "tid: " + task.getTid());
+                               "Thread ID: " + task.getTid());
             treeModel.setValue(parent, (DataColumnObject) stackColumns[1], frame);
             
             if (task.getTid() == task.getProc().getMainTask().getTid())
@@ -164,9 +164,9 @@ public class CurrentStackView
                 hasInlinedCode = false;
 
                 // Check for inlined code
-                if (frame.getData() != null)
+                if (frame.getDOMSource() != null)
                   {
-                    DOMLine line = frame.getData().getLine(frame.getLineNumber());
+                    DOMLine line = frame.getDOMSource().getLine(frame.getLineNumber());
                     if (line != null && line.hasInlinedCode())
                       {
                         hasInlinedCode = true;

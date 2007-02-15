@@ -905,7 +905,7 @@ public class SourceView
     if (this.buf.getScope() == null)
       return false;
 
-    DOMSource source = this.buf.getScope().getData();
+    DOMSource source = this.buf.getScope().getDOMSource();
 
     if (source == null)
       return false;

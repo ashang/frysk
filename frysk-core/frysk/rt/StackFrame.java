@@ -150,7 +150,7 @@ public class StackFrame
    * 
    * @param f   The DOMFunction for this StackFrame.
    */
-  public void setDOMFunction(DOMFunction f)
+  public void setDOMFunction (DOMFunction f)
   {
     this.func = f;
   }
@@ -161,7 +161,7 @@ public class StackFrame
    * 
    * @param s   The DOMSource for the executable this StackFrame belongs to.
    */
-  public void setDOMSource(DOMSource s)
+  public void setDOMSource (DOMSource s)
   {
     this.data = s;
   }
@@ -172,7 +172,7 @@ public class StackFrame
    * 
    * @return This StackFrame's function.
    */
-  public DOMFunction getDOMFunction()
+  public DOMFunction getDOMFunction ()
   {
     return this.func;
   }
@@ -183,7 +183,7 @@ public class StackFrame
    * 
    * @return This StackFrame's source code.
    */
-  public DOMSource getData()
+  public DOMSource getDOMSource ()
   {
     return this.data;
   }
@@ -209,7 +209,7 @@ public class StackFrame
    * @return the name of the function associated with this stack frame.
    * Or null if not known. 
    */
-  public String getSymbolName()
+  public String getSymbolName ()
   {
     Dwfl dwfl = new Dwfl(task.getTid());
     DwflModule dm = dwfl.getModule(getAddress());

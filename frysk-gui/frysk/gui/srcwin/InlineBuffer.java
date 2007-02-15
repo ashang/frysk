@@ -193,7 +193,7 @@ public class InlineBuffer
    */
   public Variable getVariable (TextIter iter)
   {
-    DOMLine line = this.scope.getData().getLine(
+    DOMLine line = this.scope.getDOMSource().getLine(
                                                 iter.getLineNumber()
                                                     + this.declaration.getStartingLine());
 
@@ -270,7 +270,7 @@ public class InlineBuffer
    */
   protected void createTags ()
   {
-    Iterator lines = this.scope.getData().getLines();
+    Iterator lines = this.scope.getDOMSource().getLines();
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -308,7 +308,7 @@ public class InlineBuffer
 
           } // end tags.hasNext()
 
-        Iterator inlines = this.scope.getData().getInlines(line.getLineNum());
+        Iterator inlines = this.scope.getDOMSource().getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {
@@ -324,7 +324,7 @@ public class InlineBuffer
       }// end lines.hasNext()
 
     // Now iterate through the comments
-    CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getDOMSource().getFileName());
 
     while (list != null)
       {

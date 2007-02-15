@@ -221,6 +221,16 @@ public class SourceWindow
   private org.gnu.gtk.Action stackDown;
 
   private org.gnu.gtk.Action stackTop;
+  
+  private org.gnu.gtk.Action stepInDialog;
+  
+  private org.gnu.gtk.Action stepOverDialog;
+  
+  private org.gnu.gtk.Action stepOutDialog;
+  
+  private org.gnu.gtk.Action stepInstructionDialog;
+  
+  private org.gnu.gtk.Action stepInstructionNextDialog;
 
   private ToggleAction toggleRegisterWindow;
 
@@ -531,25 +541,6 @@ public class SourceWindow
   }
 
   /**
-   * A request for an instruction step on one or more tasks.
-   * 
-   * @param tasks The list of tasks to step.
-   */
-  protected void stepInstruction (LinkedList tasks)
-  {
-    if (tasks.size() == 0)
-      return;
-
-    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
-    sbar.push(0, "Stepping");
-
-    desensitize();
-
-    this.runState.stepInstruction(tasks);
-    removeTags();
-  }
-
-  /**
    * Called from SourceWindowFactory when all Tasks have notified that they are
    * blocked and new stack traces have been generated. This is called after the
    * StackView has been re-populated, allowing the SourceWindow to be sensitive
@@ -563,8 +554,6 @@ public class SourceWindow
     this.runState.runCompleted();
     this.runState.stepCompleted();
     resensitize();
-
-    // this.SW_state = STOPPED;
   }
 
   /*****************************************************************************
@@ -965,6 +954,61 @@ public class SourceWindow
         SourceWindow.this.toggleConsoleWindow();
       }
     });
+    
+    // Thread specific line stepping
+    this.stepInDialog = new org.gnu.gtk.Action("StepIn", "Step into functions...",
+                                          "Step One Line", "frysk-step");
+    this.stepInDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        SourceWindow.this.handleDialog(0);
+      }
+    });
+    
+    // Thread specific stepping over
+    this.stepOverDialog = new org.gnu.gtk.Action("StepOut", "Step over functions...",
+                                          "Step Over Function", "frysk-next");
+    this.stepOverDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        SourceWindow.this.handleDialog(1);
+      }
+    });
+    
+    // Thread specific stepping out
+    this.stepOutDialog = new org.gnu.gtk.Action("StepOut", "Step out of functions...",
+                                          "Step out of frame", "frysk-finish");
+    this.stepOutDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        SourceWindow.this.handleDialog(2);
+      }
+    });
+    
+    // Thread specific instruction stepping
+    this.stepInstructionDialog = new org.gnu.gtk.Action("StepInstruction", "Step single instructions...",
+                                          "Step single instruction", "frysk-stepAI");
+    this.stepInstructionDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        SourceWindow.this.handleDialog(3);
+      }
+    });
+    
+    // Thread specific instruction next stepping
+    this.stepInstructionNextDialog = new org.gnu.gtk.Action("StepInstructionNext", "Step next instructions...",
+                                          "Step next instruction", "frysk-nextAI");
+    this.stepInstructionNextDialog.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        SourceWindow.this.handleDialog(4);
+      }
+    });
   }
 
   /*
@@ -1032,8 +1076,8 @@ public class SourceWindow
     tmp.append(mi);
     // mi = (MenuItem) this.toggleThreadDialog.createMenuItem();
     // tmp.append(mi);
-    mi = (MenuItem) this.toggleStepDialog.createMenuItem();
-    tmp.append(mi);
+//    mi = (MenuItem) this.toggleStepDialog.createMenuItem();
+//    tmp.append(mi);
     mi = (MenuItem) this.step.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.next.createMenuItem();
@@ -1065,7 +1109,24 @@ public class SourceWindow
 
     menu.setSubmenu(tmp);
     ((MenuBar) this.glade.getWidget("menubar")).append(menu);
-
+    
+    menu = new MenuItem("Threads", false);
+    tmp = new Menu();
+    
+    mi = (MenuItem) this.stepInDialog.createMenuItem();
+    tmp.append(mi);
+//    mi = (MenuItem) this.stepOverDialog.createMenuItem();
+//    tmp.append(mi);
+//    mi = (MenuItem) this.stepOutDialog.createMenuItem();
+//    tmp.append(mi);
+    mi = (MenuItem) this.stepInstructionDialog.createMenuItem();
+    tmp.append(mi);
+//    mi = (MenuItem) this.stepInstructionNextDialog.createMenuItem();
+//    tmp.append(mi);
+    
+    menu.setSubmenu(tmp);
+    ((MenuBar) this.glade.getWidget("menubar")).append(menu);
+    
     ((MenuBar) this.glade.getWidget("menubar")).showAll();
   }
 
@@ -1122,6 +1183,9 @@ public class SourceWindow
   {
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+    
+    if (this.stepDialog != null)
+      this.stepDialog.desensitize();
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -1148,6 +1212,9 @@ public class SourceWindow
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
 
+    if (this.stepDialog != null)
+      this.stepDialog.resensitize();
+    
     // Set status of actions
 //    this.run.setSensitive(true);
     this.stop.setSensitive(false);
@@ -1155,8 +1222,8 @@ public class SourceWindow
     // this.next.setSensitive(true);
     // this.finish.setSensitive(true);
      this.cont.setSensitive(true);
-    // this.nextAsm.setSensitive(true);
-    this.stepAsm.setSensitive(true);
+//     this.nextAsm.setSensitive(true);
+     this.stepAsm.setSensitive(true);
 
     this.stackTop.setSensitive(true);
     this.stackUp.setSensitive(true);
@@ -1461,7 +1528,7 @@ public class SourceWindow
     // System.out.println("updateSHownstackframe " + selected.getMethodName() +
     // " " + selected.getDOMFunction().getFunctionCall()+ " " +
     // selected.getData().getFileName());
-    DOMSource source = selected.getData();
+    DOMSource source = selected.getDOMSource();
     if (source == null && selected.getSourceFile() == "")
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + "Unknown File"
@@ -1479,7 +1546,7 @@ public class SourceWindow
     if (source != null && selected.getDOMFunction() != null)
       {
 
-        DOMSource oldSource = this.currentFrame.getData();
+        DOMSource oldSource = this.currentFrame.getDOMSource();
 
         // System.out.println(oldSource.getFileName() + " " +
         // source.getFileName());
@@ -1590,14 +1657,31 @@ public class SourceWindow
   /**
    * Tells the debugger to step the program
    */
-  private void doStep ()
+  private synchronized void doStep ()
   {
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping");
 
     desensitize();
 
-    this.runState.setUpLineStep(this.swProc.getTasks());
+    LinkedList l = new LinkedList();
+    l.add(this.currentTask);
+    this.runState.setUpLineStep(l);
+
+    removeTags();
+  }
+  
+  protected void doStep (LinkedList tasks)
+  {
+    if (tasks.size() == 0)
+      return;
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping");
+
+    desensitize();
+
+    this.runState.setUpLineStep(tasks);
 
     removeTags();
   }
@@ -1613,8 +1697,20 @@ public class SourceWindow
     sbar.push(0, "Stepping Over");
 
     desensitize();
+    LinkedList l = new LinkedList();
+    l.add(this.currentTask);
+    this.runState.setUpStepOver(l, this.currentFrame);
+    removeTags();
+  }
+  
+  protected void doNext (LinkedList tasks)
+  {
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping Over");
 
-    this.runState.setUpStepOver(this.swProc.getTasks(), this.currentFrame);
+    desensitize();
+
+    this.runState.setUpStepOver(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -1645,7 +1741,22 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpStepOut(this.swProc.getTasks(), this.currentFrame);
+    LinkedList l = new LinkedList();
+    l.add(this.currentTask);
+    this.runState.setUpStepOut(l, this.currentFrame);
+    removeTags();
+  }
+  
+  protected void doFinish (LinkedList tasks)
+  {
+    System.out.println("Step Out");
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping Out");
+
+    desensitize();
+
+    this.runState.setUpStepOut(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -1660,15 +1771,34 @@ public class SourceWindow
   /**
    * Tells the debugger to step an assembly instruction
    */
-  private void doAsmStep ()
+  private synchronized void doAsmStep ()
   {
-    if (this.stepDialog == null)
-      {
-        this.stepDialog = new StepDialog(glade, this);
-        this.stepDialog.showAll();
-      }
-    else
-      this.stepDialog.showAll();
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping instruction");
+
+    desensitize();
+
+    this.runState.stepInstruction(this.currentTask);
+    removeTags();
+  }
+  
+  /**
+   * A request for an instruction step on one or more tasks.
+   * 
+   * @param tasks The list of tasks to step.
+   */
+  protected void doStepAsm (LinkedList tasks)
+  {
+    if (tasks.size() == 0)
+      return;
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping");
+
+    desensitize();
+
+    this.runState.stepInstruction(tasks);
+    removeTags();
   }
 
   /**
@@ -1676,7 +1806,27 @@ public class SourceWindow
    */
   private void doAsmNext ()
   {
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping next instruction");
 
+    desensitize();
+
+    this.runState.setUpStepNextInstruction(this.currentTask, this.currentFrame);
+    removeTags();
+  }
+  
+  protected void doAsmNext (LinkedList tasks)
+  {
+    if (tasks.size() == 0)
+      return;
+    
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping next instruction");
+
+    desensitize();
+
+    this.runState.setUpStepNextInstruction(tasks, this.currentFrame);
+    removeTags();
   }
 
   /**
@@ -1916,6 +2066,17 @@ public class SourceWindow
     else
       this.conWin.showAll();
   }
+  
+  private void handleDialog (int type)
+  {
+    if (this.stepDialog == null)
+      {
+        this.stepDialog = new StepDialog(glade, this);
+      }
+      
+      this.stepDialog.setType(type);
+      this.stepDialog.showAll();
+  }
 
   private synchronized void executeTasks (LinkedList tasks)
   {
@@ -2131,6 +2292,10 @@ public class SourceWindow
     {
       if (newFrame == null)
         return;
+      
+      if (newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
+        SourceWindow.this.currentTask = newFrame.getTask();
+        
 
       if (SourceWindow.this.currentFrame != null
           && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())

@@ -90,6 +90,8 @@ public class StepDialog
   private LinkedList stepTasks;
   
   private SourceWindow sw;
+  
+  private int state;
 
   /**
    * On initialization, set the glade file, the titles for CheckBox options,
@@ -119,7 +121,7 @@ public class StepDialog
         Task t = (Task) i.next();
         TreeIter iter = model.appendRow();
         model.setValue(iter, (DataColumnBoolean) cols[0], false);
-        model.setValue(iter, (DataColumnString) cols[1], "tid: " + t.getTid());
+        model.setValue(iter, (DataColumnString) cols[1], "Thread ID: " + t.getTid());
       }
     
     TreeViewColumn col = new TreeViewColumn();
@@ -158,7 +160,6 @@ public class StepDialog
           {
             grabTasks();
             StepDialog.this.hideAll();
-            StepDialog.this.sw.stepInstruction(stepTasks);
           }
       }
     });
@@ -170,7 +171,26 @@ public class StepDialog
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             grabTasks();
-            StepDialog.this.sw.stepInstruction(stepTasks);
+            switch (StepDialog.this.state)
+            {
+              case 0:
+                StepDialog.this.sw.doStep(stepTasks);
+                break;
+              case 1:
+                StepDialog.this.sw.doNext(stepTasks);
+                break;
+              case 2:
+                StepDialog.this.sw.doFinish(stepTasks);
+                break;
+              case 3:
+                StepDialog.this.sw.doStepAsm(stepTasks);
+                break;
+              case 4:
+                StepDialog.this.sw.doAsmNext(stepTasks);
+                break;
+              default:
+                break;
+            }
           }
       }
     });
@@ -204,6 +224,35 @@ public class StepDialog
     });
   }
   
+  public void setType (int type)
+  {
+    this.state = type;
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("Frysk / Threaded ");
+    switch (type)
+    {
+      case 0:
+        buffer.append("step into");
+        break;
+      case 1:
+        buffer.append("step over");
+        break;
+      case 2:
+        buffer.append("step out");
+        break;
+      case 3:
+        buffer.append("step instruction");
+        break;
+      case 4:
+        buffer.append("step next instruction");
+        break;
+      default:
+        break;
+    }
+    
+    this.setTitle(buffer.toString());
+  }
+  
   public void grabTasks()
   {
     int length = this.tasks.size();
@@ -229,7 +278,17 @@ public class StepDialog
   {
     return this.stepTasks;
   }
+  
+  public void desensitize ()
+  {
+    this.setSensitive(false);
+  }
 
+  public void resensitize ()
+  {
+    this.setSensitive(true);
+  }
+  
   /**
    * Save the preferences contained in this Preferences node, apply to all 
    * options represented by the TreeIters in this dialog.

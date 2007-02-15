@@ -221,10 +221,10 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return lineNo <= this.getLineCount();
 
-    if (this.scope == null || this.scope.getData() == null)
+    if (this.scope == null || this.scope.getDOMSource() == null)
       return false;
 
-    DOMLine line = this.scope.getData().getLine(lineNo + 1);
+    DOMLine line = this.scope.getDOMSource().getLine(lineNo + 1);
 
     if (line == null)
       return false;
@@ -244,10 +244,10 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return false;
 
-    if (this.scope == null || this.scope.getData() == null)
+    if (this.scope == null || this.scope.getDOMSource() == null)
       return false;
     
-    DOMLine line = this.scope.getData().getLine(lineNo + 1);
+    DOMLine line = this.scope.getDOMSource().getLine(lineNo + 1);
     if (line == null)
       return false;
 
@@ -273,7 +273,7 @@ public class SourceBuffer
     if (! this.isLineExecutable(lineNum))
       return false;
 
-    DOMLine line = this.scope.getData().getLine(lineNum + 1);
+    DOMLine line = this.scope.getDOMSource().getLine(lineNum + 1);
     if (line == null)
       return false;
 
@@ -384,7 +384,7 @@ public class SourceBuffer
    */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
-    if (frame == null || this.scope.getData() == null)
+    if (frame == null || this.scope.getDOMSource() == null)
       return;
 
     /* Check for debuginfo in this frame */
@@ -431,8 +431,8 @@ public class SourceBuffer
                                            + lineStart.getCharsInLine()), true);
       }
 
-    if (frame.getData() == null
-        || frame.getData().getFileName().equals(this.fileName))
+    if (frame.getDOMSource() == null
+        || frame.getDOMSource().getFileName().equals(this.fileName))
       {
         // System.out.println("file is null or match - finishing " +
         // frame.getMethodName() + " " + frame.getLineNumber() + " " +
@@ -456,10 +456,10 @@ public class SourceBuffer
      * SourceBuffer. */
     while (curr != null)
       {
-        if (curr.getData() != null)
+        if (curr.getDOMSource() != null)
           {
             if (newFrame == true
-                && ! curr.getData().getFileName().equals(this.fileName))
+                && ! curr.getDOMSource().getFileName().equals(this.fileName))
               {
                 curr = curr.getOuter();
                 continue;
@@ -729,10 +729,10 @@ public class SourceBuffer
    */
   public Variable getVariable (TextIter iter)
   {
-    if (this.scope == null || this.scope.getData() == null)
+    if (this.scope == null || this.scope.getDOMSource() == null)
       return null;
 
-    DOMSource source = this.scope.getData();
+    DOMSource source = this.scope.getDOMSource();
 
     if (mode != SOURCE_MODE || source == null)
       return null;
@@ -866,10 +866,10 @@ public class SourceBuffer
   {
     CommentList comment = new CommentList(lineStart, colStart, lineEnd, colEnd);
 
-    CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getDOMSource().getFileName());
 
     if (list == null)
-      comments.put(this.scope.getData().getFileName(), comment);
+      comments.put(this.scope.getDOMSource().getFileName(), comment);
     else
       {
         while (list.getNextComment() != null)
@@ -891,10 +891,10 @@ public class SourceBuffer
     if (this.scope == null)
       return 0;
 
-    DOMSource source = this.scope.getData();
+    DOMSource source = this.scope.getDOMSource();
 
     if (mode == SOURCE_MODE && source != null)
-      return this.scope.getData().getLineCount();
+      return this.scope.getDOMSource().getLineCount();
     else
       return this.getEndIter().getLineNumber();
   }
@@ -918,7 +918,7 @@ public class SourceBuffer
     if (this.scope == null)
       return false;
 
-    DOMSource source = this.scope.getData();
+    DOMSource source = this.scope.getDOMSource();
     // TODO: Inline code with assembly?
     if (mode != SOURCE_MODE || source == null)
       return false;
@@ -940,7 +940,7 @@ public class SourceBuffer
     if (this.scope == null)
       return null;
 
-    Iterator iter = this.scope.getData().getInlines(lineNumber + 1);
+    Iterator iter = this.scope.getDOMSource().getInlines(lineNumber + 1);
     if (! iter.hasNext())
       return null;
 
@@ -972,7 +972,7 @@ public class SourceBuffer
     this.anchor = null;
     this.functions.clear();
     this.scope = scope;
-    DOMSource data = scope.getData();
+    DOMSource data = scope.getDOMSource();
     String file = "";
     
     if (data != null)
@@ -1183,7 +1183,7 @@ public class SourceBuffer
     if (this.scope == null)
       return;
 
-    DOMSource source = this.scope.getData();
+    DOMSource source = this.scope.getDOMSource();
     
     if (source == null)
       {
@@ -1200,9 +1200,9 @@ public class SourceBuffer
         StackFrame curr = this.scope;
         while (curr != null)
           {
-            if (curr.getData() != null)
+            if (curr.getDOMSource() != null)
               {
-                source = curr.getData();
+                source = curr.getDOMSource();
                 break;
               }
             if (curr.getSourceFile() != "")
@@ -1320,7 +1320,7 @@ public class SourceBuffer
   protected void createTags ()
   {
     //System.out.println("Creating tags for " + this.scope.getMethodName());
-    Iterator lines = this.scope.getData().getLines();
+    Iterator lines = this.scope.getDOMSource().getLines();
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -1367,7 +1367,7 @@ public class SourceBuffer
               }
           }
 
-        Iterator inlines = this.scope.getData().getInlines(line.getLineNum());
+        Iterator inlines = this.scope.getDOMSource().getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {
@@ -1382,7 +1382,7 @@ public class SourceBuffer
       }// end lines.hasNext()
 
     // Now iterate through the comments
-    CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getDOMSource().getFileName());
 
     while (list != null)
       {

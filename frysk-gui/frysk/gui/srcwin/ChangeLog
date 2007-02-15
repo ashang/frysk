@@ -1,3 +1,44 @@
+2007-02-15  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (buildTree): Set row text to 
+	"Thread ID:" and use updated StackFrame.getDOMSource().
+	* InlineBuffer.java: Updated to use StackFrame.getDOMSource().
+	* SourceView.java: Ditto.
+	* SourceBuffer.java: Ditto.
+	* SourceWindow.java: Added several new Actions for thread-specific
+	stepping dialog box.
+	(stepInstruction): Removed.
+	(createActions): Initialized new dialog box actions.
+	(createMenus): Removed old thread stepping dialog entry. Added new 
+	Menu for thread manipulation; added entries for above Actions.
+	(desensitize): Make sure to desensitize thread dialog box during
+	a step or continue.
+	(resensitize): Make sure to resensitize thread dialog box when signaled
+	by RunState.
+	(doStep): Now steps currently-selected Task only, instead of automatically
+	stepping all threads of the process. Leaves the latter task to the new 
+	thread dialog box.
+	(doNext): Ditto.
+	(doFinish): Ditto.
+	(doAsmStep): Ditto.
+	(doNext): Overloaded above method. Called from threading dialog box.
+	(doFinish): Ditto.
+	(doAsmStep): Ditto.
+	(doAsmNext): Just implemented. Perform an instruction-level step-over.
+	Steps the currently selected Task.
+	(doAsmNext): Overloaded above method. Called from threading dialog box.
+	(handleDialog): Added. If thread dialog is null, creates it. Sets the
+	type of stepping performed by the dialog based on which Action calls it.
+	(currentStackChanged): Update the current Task.
+	* StepDialog.java (state): Added. Determines which type of action is 
+	performed on selected Tasks.
+	(StepDialog): Changed string from "tid" to "Thread ID:", removed call to 
+	stepInstruction() from OK button. Added switch to "step" button, performing
+	various actions depending on the requested type from the user.
+	(setType): Sets the state and title for the dialog box.
+	(desensitize): Added.
+	(resensitize): Added.
+
 2007-02-14  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (finishSourceWin): Set continue button to

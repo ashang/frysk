@@ -99,11 +99,13 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
   public static final int STOPPED = 0;
   public static final int RUNNING = 1;
-  public static final int INSTRUCTION_STEP = 2;
+  public static final int STEP_INSTRUCTION = 2;
   public static final int STEP_IN = 3;
   public static final int STEP_OVER = 4;
   public static final int STEP_OUT = 5;
   public static final int STEP_OVER_LINE_STEP = 6;
+  public static final int STEP_INSTRUCTION_NEXT = 7;
+  public static final int STEP_INSTRUCTION_NEXT_OVER = 8;
   
   private Proc stateProc;
   
@@ -143,8 +145,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   /*****************************************************************************
    * STEP HANDLING METHODS
    ****************************************************************************/
-
-  
   
   /**
    * Sets up stepping information - which tasks are stepping, how many there, 
@@ -153,7 +153,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param tasks   The list of Tasks to step
    */
-  public void setUp(LinkedList tasks)
+  public void setUp (LinkedList tasks)
   {
     this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
@@ -164,7 +164,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
       {
         Task t = (Task) i.next();
        //System.out.println("SetupStep.iterate " + t);
-        if (lineMap.get(t) == null)
+        if (this.lineMap.get(t) == null)
           {
             Dwfl d = getDwfl(t);
             DwflLine line = null;
@@ -173,7 +173,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
             if (line == null)
               {
                //System.out.println("Coulnd't get DwflLine, assigning 0");
-                zeroCount++;
+                ++zeroCount;
                 this.lineMap.put(t, new Integer(0));
                 this.lineCountMap.put(t, new Integer(0));
                 continue;
@@ -191,7 +191,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         this.dwflMap.clear();
         this.lineMap.clear();
         this.lineCountMap.clear();
-        this.state = INSTRUCTION_STEP;
+        this.state = STEP_INSTRUCTION;
       }
     
     i = tasks.iterator();
@@ -217,18 +217,68 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param tasks   The list of Tasks to step one instruction
    */
+  public synchronized void stepInstruction (Task task)
+  {
+    this.state = STEP_INSTRUCTION;
+    ++this.taskStepCount;
+    notifyNotBlocked();
+    task.requestUnblock(this);
+  }
+  
+  
   public void stepInstruction (LinkedList tasks)
   {
-    //System.out.println("Instruction step");
-    this.state = INSTRUCTION_STEP;
+    this.state = STEP_INSTRUCTION;
     this.taskStepCount = tasks.size();
-    Iterator i = tasks.iterator();
     notifyNotBlocked();
+    Iterator i = tasks.iterator();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        //System.out.println("Requesitng unblock for " + t);
         t.requestUnblock(this);
+      }
+  }
+  
+  public void setUpStepNextInstruction (Task task, StackFrame lastFrame)
+  {
+    this.state = STEP_INSTRUCTION_NEXT_OVER;
+    ++this.taskStepCount;
+    this.lastFrame = lastFrame;
+    notifyNotBlocked();
+    task.requestUnblock(this);
+  }
+  
+  public void setUpStepNextInstruction (LinkedList tasks, StackFrame lastFrame)
+  {
+//    Iterator i = tasks.iterator();
+//    notifyNotBlocked();
+//    while (i.hasNext())
+//      {
+//        Task t = (Task) i.next();
+//        t.requestUnblock(this);
+//      }
+  }
+  
+  public void stepNextInstruction (Task task)
+  {
+    StackFrame newFrame = null;
+    newFrame = StackFactory.createStackFrame(task, 2);
+   
+    /* The two frames are the same; treat this step-over as an instruction step. */
+    if (newFrame.getCFA() == this.lastFrame.getCFA())
+      {
+        this.setChanged();
+        this.notifyObservers(task);
+        return;
+      }
+    else
+      {
+        /* There is a different innermost frame on the stack - run until
+         * it exits - success!. */
+        StackFrame frame = newFrame.getOuter();
+        this.state = STEP_INSTRUCTION_NEXT;
+        this.breakpoint = new Breakpoint(frame.getAddress());
+        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
       }
   }
 
@@ -260,23 +310,23 @@ public class RunState extends Observable implements TaskObserver.Instruction
     if (lineNum != prev)
       {
         this.lineMap.put(task, new Integer(lineNum));
-        if (this.state == STEP_OVER_LINE_STEP && stepOutCount > 0)
+        if (this.state == STEP_OVER_LINE_STEP && this.stepOutCount > 0)
           {
             task.requestUnblock (this);
-            stepOutCount = 0;
+            this.stepOutCount = 0;
             return;
           }
-        --taskStepCount;
+        --this.taskStepCount;
         return;
       }
     else
       {
         int count = ((Integer) this.lineCountMap.get(task)).intValue();
-        count++;
+        ++count;
         if (count > 10)
           {
            //System.out.println("single line broke");
-            --taskStepCount;
+            --this.taskStepCount;
             return;
           }
         else
@@ -301,7 +351,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
     this.state = STEP_OVER_LINE_STEP;
-    stepOutCount = 1;
+    this.stepOutCount = 1;
     this.lastFrame = lastFrame;
     this.taskStepCount =  1;
 
@@ -318,13 +368,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepOver (Task task)
   {
-   
     StackFrame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 2);
    
-    System.out.println("RunState -> stepOver " + newFrame.getCFA() + " " + lastFrame.getCFA());
-    System.out.println("Comparing frame names " + newFrame.getMethodName() + " " + lastFrame.getMethodName());
-    
     /* The two frames are the same; treat this step-over as a line step. */
     if (newFrame.getCFA() == this.lastFrame.getCFA())
       {
@@ -336,12 +382,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
       {
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
-        long pc = task.getIsa().pc(task);
-        System.out.println("RunState.stepOver Sucess " + lastFrame + " " + newFrame + " " + pc);
         StackFrame frame = newFrame.getOuter();
         this.state = STEP_OVER;
         this.breakpoint = new Breakpoint(frame.getAddress());
-        task.requestAddCodeObserver(breakpoint, frame.getAddress());
+        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
       }
   }
   
@@ -362,7 +406,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.taskStepCount =  tasks.size();
     
     Task t = lastFrame.getTask();
-    t.requestAddCodeObserver(breakpoint, lastFrame.getOuter().getAddress());
+    t.requestAddCodeObserver(this.breakpoint, lastFrame.getOuter().getAddress());
   }
   
   /**
@@ -372,12 +416,13 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepOut (Task task)
   {
-    task.requestDeleteCodeObserver(breakpoint, addy);
+    task.requestDeleteCodeObserver(this.breakpoint, this.addy);
     cleanUpBreakPoint(task);
   }
   
   public void cleanUpBreakPoint (Task task)
   {
+    this.breakpoint = null;
     this.setChanged();
     this.notifyObservers(task);
   }
@@ -773,19 +818,17 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public Action updateExecuted (Task task)
   {
    //System.out.println("UpdateExecuted " + task + " " + taskStepCount);
-    if (state >= INSTRUCTION_STEP && state <= STEP_OVER_LINE_STEP)
+    if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT)
       {
         switch (RunState.this.state)
           {
-          case INSTRUCTION_STEP:
-            this.taskStepCount--;
+          case STEP_INSTRUCTION:
+            --this.taskStepCount;
             break;
           case STEP_IN:
             stepIn(task);
             break;
           case STEP_OVER:
-            long pc = task.getIsa().pc(task);
-            System.out.println("RunState.update -> STEP OVER " + task + " " + pc);
             task.requestDeleteCodeObserver(breakpoint, addy);
             taskStepCount = 0;
             break;
@@ -793,8 +836,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
             stepOut(task);
             break;
           case STEP_OVER_LINE_STEP:
-            System.out.println("RunState.update -> STEPOVERLINESTEP " + task);
             stepIn(task);
+          case STEP_INSTRUCTION_NEXT:
+            task.requestDeleteCodeObserver(breakpoint, addy);
+            taskStepCount = 0;
+            break;
+          case STEP_INSTRUCTION_NEXT_OVER:
+            --this.taskStepCount;
+            stepNextInstruction(task);
             break;
           }
 
@@ -945,7 +994,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             Task t = (Task) i.next();
             t.requestAddInstructionObserver(RunState.this);
-            requestAddObservers(t);
+//            requestAddObservers(t);
           }
       }
     });
@@ -976,17 +1025,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
         monitor = new Object();
     }
 
-    protected void logHit(Task task, long address, String message)
+    protected void logHit (Task task, long address, String message)
     {
       if (logger.isLoggable(Level.FINEST))
-	{
-	  Object[] logArgs = {task,
-			      Long.toHexString(address),
-			      Long.toHexString(task.getIsa().pc(task)),
-			      Long.toHexString(this.address)};
-	  logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
-		      message, logArgs);
-	}
+        {
+          Object[] logArgs = { task, Long.toHexString(address),
+                              Long.toHexString(task.getIsa().pc(task)),
+                              Long.toHexString(this.address) };
+          logger.logp(Level.FINEST, "RunState.Breakpoint", "updateHit",
+                      message, logArgs);
+        }
     }
     
     public Action updateHit (Task task, long address)
@@ -994,17 +1042,18 @@ public class RunState extends Observable implements TaskObserver.Instruction
       logHit(task, address, "task {0} at 0x{1}\n");
       if (address != this.address)
         {
-	  logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
-		      "Hit wrong address!");
+          logger.logp(Level.WARNING, "RunState.Breakpoint", "updateHit",
+                      "Hit wrong address!");
           return Action.CONTINUE;
         }
       else
         {
           addy = address;
-	  logHit(task, address, "adding instructionobserver {0} 0x{2}");
+          logHit(task, address, "adding instructionobserver {0} 0x{2}");
           task.requestAddInstructionObserver(RunState.this);
         }
-      triggered++;
+
+      ++triggered;
       return Action.BLOCK;
     }
 

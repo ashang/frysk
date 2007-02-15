@@ -1,3 +1,22 @@
+2007-02-15  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (getDOMSource): Refactored from getData().
+	Changed to match getDOMFunction().
+	* RunState.java (STEP_INSTRUCTION): Refactored from
+	INSTRUCTION_STEP to match other macros.
+	(STEP_INSTRUCTION_NEXT, STEP_INSTRUCTION_NEXT_OVER): Added for
+	instruction-level 'step over.'
+	(stepInstruction): Added - new overloaded method for instruction
+	stepping; takes a Task.
+	(setUpStepNextInstruction): Added - new method for instruction
+	step-over. 
+	(setUpStepNextInstruction): Added - overloaded above.
+	(stepNextInstruction): Added. Performs instruction-level step-over.
+	(stepOver): Removed debugging statements.
+	(cleanUpBreakPoint): Nullify breakpoint.
+	(LockObserver.update): Added new cases for instruction step-over.
+	(LockObserver.blockTask): Removed redundant call for adding observer.
+
 2007-02-15  Tim Moore  <timoore@redhat.com>
 
 	* RunState.java (RunState): Add logger member.
