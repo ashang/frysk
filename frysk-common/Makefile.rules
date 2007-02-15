@@ -215,7 +215,7 @@ MKENUM = $(srcdir)/common/mkenum.sh
 SUFFIXES += .mkenum
 .mkenum.java:
 	rm -f $*.tmp
-	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkjava > $*.tmp $@
+	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkenum > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
 
