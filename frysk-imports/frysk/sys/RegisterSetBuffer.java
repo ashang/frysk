@@ -94,7 +94,7 @@ public class RegisterSetBuffer
   protected int peek (long index) 
   {
     refresh();
-    return (int)bankBytes[(int)index];
+    return bankBytes[(int)index];
   }
   
   protected void poke (long index, int value)
