@@ -57,7 +57,7 @@ noinst_PROGRAMS = arextract arsymtest newfile saridx scnnames sectiondump \
 		  show-die-info get-files get-lines get-pubnames \
 		  get-aranges allfcts line2addr addrscopes funcscopes \
 		  show-abbrev hash newscn ecp dwflmodtest \
-		  find-prologues funcretval allregs rdwrmmap 
+		  find-prologues funcretval allregs rdwrmmap \
 		  dwfl-bug-addr-overflow arls
 # get-ciefde
 asm_TESTS = asm-tst1 asm-tst2 asm-tst3 asm-tst4 asm-tst5 \
