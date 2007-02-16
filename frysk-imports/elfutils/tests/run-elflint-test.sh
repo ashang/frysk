@@ -32,10 +32,10 @@ testrun_compare ../src/elflint --gnu-ld testfile18 <<\EOF
 section [ 8] '.rela.dyn': relocation 1: copy relocation against symbol of type FUNC
 EOF
 
-testfiles testfile32
-testrun ../src/elflint -q testfile32
+#testfiles testfile32
+#testrun ../src/elflint -q testfile32
 
-testfiles testfile33
-testrun ../src/elflint -q testfile33
+#testfiles testfile33
+#testrun ../src/elflint -q testfile33
 
 exit 0

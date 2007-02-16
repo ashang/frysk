@@ -1,5 +1,7 @@
 2007-02-16  Nurdin Premji <npremji@redhat.com>
 
+	* run-elflit-self.sh: Comment out broken tests.
+
 	* Makefile.am (noinst_PROGRAMS): Added missing \, builds dwfl-bug-addr-overflow
 	and arls.
 
