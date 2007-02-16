@@ -86,16 +86,16 @@ abstract class ByteOrdered
 	    int peekUShort (ByteBuffer b, long cursor) { return (int) b.peekBig (cursor, 2); }
 	    int peekInt (ByteBuffer b) { return (int) b.peekBig (4); }
 	    int peekInt (ByteBuffer b, long cursor) { return (int) b.peekBig (cursor, 4); }
-	    long peekUInt (ByteBuffer b) { return (long) b.peekBig (4); }
-	    long peekUInt (ByteBuffer b, long cursor) { return (long) b.peekBig (cursor, 4); }
-	    long peekULong (ByteBuffer b) { return (long) b.peekBig (8); }
-	    long peekULong (ByteBuffer b, long cursor) { return (long) b.peekBig (cursor, 8); }
-	    long peekLong (ByteBuffer b) { return (long) b.peekBig (8); }
-	    long peekLong (ByteBuffer b, long cursor) { return (long) b.peekBig (cursor, 8); }
-	    float peekFloat (ByteBuffer b) { return (float) b.peekBigFloat (4); }
-	    float peekFloat (ByteBuffer b, long cursor) { return (float) b.peekBigFloat (cursor, 4); }
-	    double peekDouble (ByteBuffer b) { return (double) b.peekBigDouble (8); }
-	    double peekDouble (ByteBuffer b, long cursor) { return (double) b.peekBigDouble (cursor, 8); }
+	    long peekUInt (ByteBuffer b) { return b.peekBig (4); }
+	    long peekUInt (ByteBuffer b, long cursor) { return b.peekBig (cursor, 4); }
+	    long peekULong (ByteBuffer b) { return b.peekBig (8); }
+	    long peekULong (ByteBuffer b, long cursor) { return b.peekBig (cursor, 8); }
+	    long peekLong (ByteBuffer b) { return b.peekBig (8); }
+	    long peekLong (ByteBuffer b, long cursor) { return b.peekBig (cursor, 8); }
+	    float peekFloat (ByteBuffer b) { return b.peekBigFloat (4); }
+	    float peekFloat (ByteBuffer b, long cursor) { return b.peekBigFloat (cursor, 4); }
+	    double peekDouble (ByteBuffer b) { return b.peekBigDouble (8); }
+	    double peekDouble (ByteBuffer b, long cursor) { return b.peekBigDouble (cursor, 8); }
 	    
 	    void pokeShort (ByteBuffer b, short v) { b.pokeBig (2, v); }
 	    void pokeShort (ByteBuffer b, long cursor, short v) { b.pokeBig (cursor, 2, v); }
@@ -122,16 +122,16 @@ abstract class ByteOrdered
 	    int peekUShort (ByteBuffer b, long cursor) { return (int) b.peekLittle (cursor, 2); }
 	    int peekInt (ByteBuffer b) { return (int) b.peekLittle (4); }
 	    int peekInt (ByteBuffer b, long cursor) { return (int) b.peekLittle (cursor, 4); }
-	    long peekUInt (ByteBuffer b) { return (long) b.peekLittle (4); }
-	    long peekUInt (ByteBuffer b, long cursor) { return (long) b.peekLittle (cursor, 4); }
-	    long peekULong (ByteBuffer b) { return (long) b.peekLittle (8); }
-	    long peekULong (ByteBuffer b, long cursor) { return (long) b.peekLittle (cursor, 8); }
-	    long peekLong (ByteBuffer b) { return (long) b.peekLittle (8); }
-	    long peekLong (ByteBuffer b, long cursor) { return (long) b.peekLittle (cursor, 8); }
-	    float peekFloat (ByteBuffer b) { return (float) b.peekLittleFloat (4); }
-	    float peekFloat (ByteBuffer b, long cursor) { return (float) b.peekLittleFloat (cursor, 4); }
-	    double peekDouble (ByteBuffer b) { return (double) b.peekLittleDouble (8); }
-	    double peekDouble (ByteBuffer b, long cursor) { return (double) b.peekLittleDouble (cursor, 8); }
+	    long peekUInt (ByteBuffer b) { return b.peekLittle (4); }
+	    long peekUInt (ByteBuffer b, long cursor) { return b.peekLittle (cursor, 4); }
+	    long peekULong (ByteBuffer b) { return b.peekLittle (8); }
+	    long peekULong (ByteBuffer b, long cursor) { return b.peekLittle (cursor, 8); }
+	    long peekLong (ByteBuffer b) { return b.peekLittle (8); }
+	    long peekLong (ByteBuffer b, long cursor) { return b.peekLittle (cursor, 8); }
+	    float peekFloat (ByteBuffer b) { return b.peekLittleFloat (4); }
+	    float peekFloat (ByteBuffer b, long cursor) { return b.peekLittleFloat (cursor, 4); }
+	    double peekDouble (ByteBuffer b) { return b.peekLittleDouble (8); }
+	    double peekDouble (ByteBuffer b, long cursor) { return b.peekLittleDouble (cursor, 8); }
 	    void pokeShort (ByteBuffer b, short v) { b.pokeLittle (2, v); }
 	    void pokeShort (ByteBuffer b, long cursor, short v) { b.pokeLittle (cursor, 2, v); }
 	    void pokeUShort (ByteBuffer b, int v) { b.pokeLittle (2, v); }

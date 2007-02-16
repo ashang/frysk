@@ -1,5 +1,9 @@
 2007-02-16  Mark Wielaard  <mark@klomp.org>
 
+	* eio/ByteOrdered.java: Removed unnecessary int, long and float casts.
+
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
 	* util/PrintWriter.java (printp(int,char,long)): Pass on padding.
 
 2007-01-04  Nurdin Premji  <npremji@redhat.com>
