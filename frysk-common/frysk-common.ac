@@ -111,8 +111,8 @@ esac
 JAVACFLAGS_WARN=$JAVACFLAGS
 JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
 AC_COMPILE_IFELSE([public class conftest{}],
-	[GCJFLAGS="$GCJFLAGS -fsource=1.4"],
-	[JAVACFLAGS=$JAVACFLAGS_WARN])
+	[GCJFLAGS="$GCJFLAGS -fsource=1.4";GCJ_FSOURCE="yes"],
+	[JAVACFLAGS=$JAVACFLAGS_WARN;GCJ_FSOURCE="no"])
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 
@@ -127,12 +127,13 @@ AC_SUBST([JAVA])
 # Check for the ECJ compiler.  If available, enable rules that push
 # all the java code through that compiler.  Doing this adds an
 # additional (but optional) code check -- ECJ tends to find more
-# errors than GCJ.
+# errors than GCJ. Ignore when gcj support -fsource since then it
+# already uses a source -> byte code compiler that is sane.
 
 ECJ_JAR=${ECJ_JAR:-/usr/share/java/eclipse-ecj.jar}
 AC_SUBST([ECJ_JAR])
 AC_CHECK_PROGS([ECJ], [ecj], [no])
-AM_CONDITIONAL(HAVE_ECJ, test x"${ECJ}" != xno)
+AM_CONDITIONAL(HAVE_ECJ, test x"${ECJ}" != xno -a x"${GCJ_FSOURCE}" != xyes)
 
 # Check for the availablity of fig2dev
 

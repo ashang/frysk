@@ -1,3 +1,8 @@
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-common.ac (HAVE_ECJ): Only enable when gcj doesn't support
+	-fsource=1.4.
+
 2007-02-15  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.rules (SUFFIXES.mkenum): Fixed typo so enums get built.
