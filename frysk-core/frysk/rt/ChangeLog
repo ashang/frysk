@@ -1,3 +1,9 @@
+2007-02-16  npremji  <npremji@redhat.com>
+
+	* StackFrame.java (getSymbolName): Fixed to return "" instead of null
+	if symbol name is null.
+	(toPrint): Changed to just use getSymbolName.
+
 2007-02-16  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (swContinue): Added. Temporary workaround for 

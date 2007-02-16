@@ -216,10 +216,15 @@ public class StackFrame
     
     /* If the name can't be resolved, its easier to deal with
      * an empty string rather than checking for nulls everywhere */
-    if (dm != null)
-      return dm.getAddressName(getAddress());
-    else
-      return "";        
+    if (dm == null)
+      return "";
+     
+    String symbolName = dm.getAddressName(getAddress());   
+    
+    if (symbolName == null)
+      return "";
+    
+    return symbolName;
   }
 
   /**
@@ -328,10 +333,7 @@ public class StackFrame
     builder.append(addr);
     
    String funcString = getSymbolName();
-   
-   //XXX: This has to go, above uses libdwfl, this uses libunwind.
-   funcString = getMethodName();
-    
+       
     if (this.dwflLine != null)
       {
         if (funcString.equals(""))
