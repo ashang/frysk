@@ -1,5 +1,11 @@
 2007-02-16  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (ARCH32_COMPILE, ARCH32_CCASCOMPILE)
+	(ARCH32_LINK, ARCH32_CXXLINK, ARCH32_CXXCOMPILE): Define.
+	* Makefile.gen.sh (echo_arch32_COMPILER): Delete.
+	(echo_arch32_PROGRAMS: Simplify.  Always set _LINK, use ARCH32_
+	variables.
+
 	* frysk-common.ac: Add call to FRYSK_DO_ARCH32_TEST.
 
 2007-02-16  Mark Wielaard  <mark@klomp.org>

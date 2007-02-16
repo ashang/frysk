@@ -434,6 +434,19 @@ SUFFIXES += .db
 	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
 	rm -f $*.log
 
+
+# Get things building on 64-bit-X-32-bit environment.  Mainly need to
+# remove any attempt to force the compile to 64-bit.
+
+if DO_ARCH32_TEST
+ARCH32_COMPILE = $(subst $(space)-m64$(space), ,$(COMPILE)) -m32
+ARCH32_CXXCOMPILE = $(subst $(space)-m64$(space), ,$(CXXCOMPILE)) -m32
+ARCH32_CCASCOMPILE = $(subst $(space)-m64$(space), ,$(CCASCOMPILE)) -m32
+ARCH32_LINK = $(subst $(space)-m64$(space), ,$(LINK)) -m32
+ARCH32_CXXLINK = $(subst $(space)-m64$(space), ,$(CXXLINK)) -m32
+endif
+
+
 # Build a version of frysk that behaves like the Java interpreter
 # (while it is set up to be run anywhere it is not installed -- there
 # is one of these per-directory).

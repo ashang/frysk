@@ -191,17 +191,6 @@ echo_PROGRAMS ()
     esac
 }
 
-echo_arch32_COMPILER()
-{
-	# FIXME: This variable should outputted only when a rule uses it.
-	# As a workaround, we omit the "if DO_ARCH32_TEST", as not all
-	# configure scripts call FRYSK_DO_ARCH32_TEST.
-	#echo "if DO_ARCH32_TEST"
-	echo "ARCH32_COMPILE=\$(CC) \$(DEFAULT_INCLUDES) \$(INCLUDES) \
-	      \$(AM_CPPFLAGS) \$(CPPFLAGS) \$(AM_CFLAGS)"
-	#echo "endif"
-}
-
 # usage:
 #	echo_arch32_PROGRAMS ${name} ${file}
 echo_arch32_PROGRAMS()
@@ -225,34 +214,30 @@ echo_arch32_PROGRAMS()
 	    case "${file}" in
 		*.S | *.s )
 		  compiler=CCASCOMPILE
-		  cflag=AS_CFLAGS
+		  linker=LINK
+		  ;;
+		*.cxx )
+		  compiler=CXXCOMPILE
+		  linker=CXXLINK
 		  ;;
 		* )
-		  compiler=ARCH32_COMPILE
-		  cflag=CFLAGS
+		  compiler=COMPILE
+		  linker=LINK
 		  ;;
 	    esac
 
-	    echo 
 	    echo "if DO_ARCH32_TEST"
-	    echo "${name_}_${cflag} = -m32 -g"
-	    echo "${name_}_SOURCES = ${file}"
-	    echo "am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)"
-	    echo "${ldflags}"
-	    
-	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
-
 cat <<EOF
-${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibdir/arch32/\$(am__dirstamp)
-	@ARCH32_COMPILE=\`echo "\$(${compiler}) " | sed -e 's, -m64 , ,g'\`; \\
-	\$\$ARCH32_COMPILE \$(${cflag}) -c -o \$@ $<
-
-${dir_name}/arch32/${base_name}\$(EXEEXT): \$(${name_}_OBJECTS) \$(${name_}_DEPENDENCIES) ${dir_name}/arch32/\$(am__dirstamp)
-	@rm -f \$@
-	@ARCH32_LINK=\`echo "\$(LINK) " | sed -e 's, -m64 , ,g'\`; \\
-	\$\$ARCH32_LINK \$(${name_}_LDFLAGS) \$(${name_}_OBJECTS) \$(${name_}_LDADD) \$(LIBS)
+${name_}_SOURCES = ${file}
+# why am_?
+am_${name_}_OBJECTS = ${dir_name}/arch32/${base_name}.\$(OBJEXT)
+${name_}_LINK = \$(ARCH32_${linker})
 ${dir}32_PROGRAMS += ${dir_name}/arch32/${base_name}
 MOSTLYCLEANFILES += ${dir_name}/arch32/${base_name}.\$(OBJEXT)
+${dir_name}/arch32/${base_name}.\$(OBJEXT): \$(${name_}_SOURCES) frysk/pkglibdir/arch32/\$(am__dirstamp)
+	source='\$<' object='\$@' libtool=no \
+	DEPDIR=\$(DEPDIR) \$(CCDEPMODE) \$(depcomp) \
+	\$(ARCH32_${compiler}) -c -o \$@ $<
 EOF
 
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
@@ -506,9 +491,6 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
 	fi
     done || exit 1
 done
-
-# output the compile for arch32
-echo_arch32_COMPILER
 
 for suffix in .cxxin ; do
     print_header "... ${suffix}"
