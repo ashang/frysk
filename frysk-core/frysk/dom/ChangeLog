@@ -1,5 +1,9 @@
 2007-02-15  Rick Moseley  <rmoseley@redhat.com>
 
+	* DOMFactory.java: Remove debug stuff.
+
+2007-02-15  Rick Moseley  <rmoseley@redhat.com>
+
 	* DOMCommon.java: New.
 	* DomImage.java: Add addSource method to call parser when
 	adding source element to DOM.

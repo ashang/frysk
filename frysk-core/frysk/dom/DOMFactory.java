@@ -51,7 +51,7 @@ import org.jdom.output.XMLOutputter;
 
 public class DOMFactory
 {
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static HashMap hashmap = new HashMap();
 
