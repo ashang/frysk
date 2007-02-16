@@ -470,7 +470,7 @@ public class TestElf
    * Helper routine that give an Elf object, find the
    * note segment and returns the contents in ElfData
    */
-  private ElfData findNoteSegment(Elf testElf) throws ElfException, ElfFileException
+  private ElfData findNoteSegment(Elf testElf)
   {
     // Get Elf Header.
     ElfEHeader eHeader = testElf.getEHeader();

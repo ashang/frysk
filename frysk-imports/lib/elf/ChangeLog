@@ -1,7 +1,11 @@
+2007-02-16  Mark Wielaard  <mark@klomp.org>
+
+	* tests/TestElf.java (findNoteSegment): Doesn't throw.
+
 2007-02-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* tests/TestElf.java: (testElfCorePrpsNotes): Disable on x86_64 and PPC for now.
-        (testElfCorePrstatusNotes): Ditto.
+	(testElfCorePrstatusNotes): Ditto.
 
 
 2007-02-12  Phil Muldoon  <pmuldoon@redhat.com>
