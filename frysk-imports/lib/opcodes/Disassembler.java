@@ -97,5 +97,6 @@ public final class Disassembler
     this.current = new Instruction();
   }
 
-  private native void disassemble (long address, long count);
+  private native void disassemble (long address, long count)
+    throws OpcodesException;
 }

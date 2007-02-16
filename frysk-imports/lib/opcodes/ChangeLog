@@ -1,3 +1,8 @@
+2007-01-16  Mark Wielaard  <mark@klomp.org>
+
+	* Disassembler.java (disassemble): Mark native method as throwing
+	OpcodesException.
+
 2007-01-15  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestOpcodes.java: Replace Build.BUILD_ARCH with
@@ -44,7 +49,7 @@
 
 2006-08-04  Yao Qi  <qiyaoltc@cn.ibm.com>
 
-        * lib/opcodes/tests/TestOpcodes.java: Replace "ppc" with
+	* lib/opcodes/tests/TestOpcodes.java: Replace "ppc" with
 	"powerpc" to match Build.BUILD_ARCH.
 
 2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
