@@ -235,7 +235,7 @@ public class PrintWriter
 	int length = toDec (l);
 	if (l > 0)
 	    buffer[--length] = '+';
-	return printBuffer (width, ' ', length);
+	return printBuffer (width, padding, length);
     }
     /**
      * Print V in decimal, always include a leading sign.  If L is
