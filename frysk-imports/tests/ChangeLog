@@ -1,5 +1,9 @@
 2007-02-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk3228/LoggerParent): Add to TESTS.
+
+2007-02-09  Andrew Cagney  <cagney@redhat.com>
+
 	* Makefile.am (frysk3595_detach_multi_thread_SOURCES) 
 	(frysk3491_x_state_SOURCES, frysk3525_exit47_SOURCES) 
 	(frysk3205_ptrace_detach_bad_signal_SOURCES) 

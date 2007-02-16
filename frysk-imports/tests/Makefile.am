@@ -448,7 +448,8 @@ TESTS += audit/test-audit-libs
 audit_test_audit_libs_LDADD = -laudit
 noinst_PROGRAMS += audit/test-audit-libs
 
-XFAIL_TESTS += frysk3228/LoggerParent
+# Failed with gcj 4.1 and earlier versions of 4.2
+TESTS += frysk3228/LoggerParent
 frysk3228_LoggerParent_SOURCES = frysk3228/LoggerParent.java
 frysk3228_LoggerParent_LDFLAGS = --main=LoggerParent
 noinst_PROGRAMS += frysk3228/LoggerParent
