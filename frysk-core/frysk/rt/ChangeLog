@@ -1,3 +1,8 @@
+2007-02-16  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (swContinue): Added. Temporary workaround for 
+	#4057.
+
 2007-02-15  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackBacktrace.java (testFramePopping): Marked broken for

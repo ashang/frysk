@@ -1725,7 +1725,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.run(this.swProc.getTasks());
+    this.runState.swContinue(this.swProc.getTasks());
 
     removeTags();
   }
