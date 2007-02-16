@@ -79,6 +79,8 @@ public class StackFrame
   
   private DwflLine dwflLine;
   
+  private FrameIdentifier frameIdentifier;
+  
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
    * 
@@ -135,6 +137,9 @@ public class StackFrame
           }
         this.dwflLine = line;
       }
+    
+    this.frameIdentifier = new FrameIdentifier(
+                        this.myCursor.getMethodName(), this.myCursor.getCfa());
   }
   
   public StackFrame (Task task)
@@ -217,7 +222,7 @@ public class StackFrame
     /* If the name can't be resolved, its easier to deal with
      * an empty string rather than checking for nulls everywhere */
     if (dm == null)
-      return "";
+      return "";        
      
     String symbolName = dm.getAddressName(getAddress());   
     
@@ -332,8 +337,9 @@ public class StackFrame
     
     builder.append(addr);
     
-   String funcString = getSymbolName();
-       
+//   String funcString = getSymbolName();
+    String funcString = this.myCursor.getMethodName();
+   
     if (this.dwflLine != null)
       {
         if (funcString.equals(""))
@@ -452,6 +458,11 @@ public class StackFrame
   {
     // ??? Use something akin to Register interface?
     return this.myCursor.set_reg(reg, val);
+  }
+  
+  public FrameIdentifier getFrameIdentifier ()
+  {
+    return this.frameIdentifier;
   }
 
 }

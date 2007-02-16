@@ -1,3 +1,14 @@
+2007-02-16  Mike Cvet  <mcvet@redhat.com>
+
+	* FrameIdentifier.java: Added. Uses a StackFrame name and CFA to
+	identify a StackFrame. Fixes #4062.
+	* StackFrame.java (toPrint): Changed back to 
+	FrameCursor.getMethodName() since getSymbolName is broken, via
+	#4063.
+	(frameIdentifier): Added.
+	(StackFrame): Initialize above member.
+	(getFrameIdentifier): Added.
+
 2007-02-16  npremji  <npremji@redhat.com>
 
 	* StackFrame.java (getSymbolName): Fixed to return "" instead of null
