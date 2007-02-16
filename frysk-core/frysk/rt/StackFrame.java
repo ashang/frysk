@@ -336,9 +336,8 @@ public class StackFrame
     builder.append('0');
     
     builder.append(addr);
-    
 //   String funcString = getSymbolName();
-    String funcString = this.myCursor.getMethodName();
+    String funcString = getMethodName();
    
     if (this.dwflLine != null)
       {
