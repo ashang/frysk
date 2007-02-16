@@ -50,7 +50,7 @@ public class UnwindNative
   native int initRemote (RawDataManaged cursor, RawDataManaged addressSpace,
                          Accessors accessors);
   
-  native int getRegister(RawDataManaged cursor, RawDataManaged regNum,
+  native int getRegister(RawDataManaged cursor, int regNum,
                            RawDataManaged word);
   
   native RawDataManaged createAddressSpace (ByteOrder byteOrder);

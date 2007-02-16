@@ -1,5 +1,10 @@
 2007-02-16  Nurdin Premji  <npremji@redhat.com>
 
+	* Unwind.java (getRegister): Changed to pass regNum as int rather than
+	RawDataManaged.
+	* UnwindNative.java: Ditto.
+	* cni/UnwindNative.cxx: Ditto.
+
 	* Cursor.java: Added.
 	* UnwindNative.java: Ditto.	
 	* AddressSpace.java: Ditto.	

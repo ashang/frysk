@@ -50,7 +50,7 @@ public abstract class Unwind
                           Accessors accessors);
   
   //Not really needed, local.
-  abstract int getRegister(RawDataManaged cursor, RawDataManaged regnum,
+  abstract int getRegister(RawDataManaged cursor, int regNum,
                            RawDataManaged word);
   
   abstract RawDataManaged createAddressSpace (ByteOrder byteOrder);

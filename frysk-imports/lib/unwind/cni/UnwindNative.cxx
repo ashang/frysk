@@ -76,10 +76,10 @@ gnu::gcj::RawDataManaged* addressSpace, lib::unwind::Accessors* accessors)
 
 jint
 lib::unwind::UnwindNative::getRegister(gnu::gcj::RawDataManaged* cursor,
-gnu::gcj::RawDataManaged* regnum, gnu::gcj::RawDataManaged* word)
+jint regNum, gnu::gcj::RawDataManaged* word)
 {
 	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-	(::unw_regnum_t) regnum, (::unw_word_t *) word);
+	(::unw_regnum_t) regNum, (::unw_word_t *) word);
 }
 
 /*
