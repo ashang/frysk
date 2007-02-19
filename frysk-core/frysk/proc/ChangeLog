@@ -1,3 +1,8 @@
+2007-02-19  Mark Wielaard  <mark@klomp.org>
+
+	* LinuxPtraceTaskState.java (Attached.handleDeleteObservation):
+	Also unblock observer.
+
 2007-02-15  Tim Moore  <timoore@redhat.com>
 
 	* LinuxPtraceTaskState.java

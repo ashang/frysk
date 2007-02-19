@@ -216,7 +216,7 @@ abstract class LinuxPtraceTaskState
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
-	    return this;
+	    return handleUnblock(task, observation.getTaskObserver());
 	}
 	/**
 	 * Once the task is both unblocked and continued, should
