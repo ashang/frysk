@@ -40,6 +40,7 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -101,8 +102,8 @@ public class TestPseudoTerminal extends TestCase
 	
 	int master = pty.getFd ();
 	assertFalse ("master is invalid", master == -1);
-	String name = pty.getName ();
-	assertNotNull ("name is null", name);
+	File file = pty.getFile ();
+	assertNotNull ("file", file);
 	pty.write ((byte) b);
     }
 

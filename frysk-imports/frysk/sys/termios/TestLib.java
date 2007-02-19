@@ -64,7 +64,7 @@ public class TestLib
     public void setUp ()
     {
 	pty = new PseudoTerminal ();
-	fd = new FileDescriptor (pty.getName (), FileDescriptor.RDONLY);
+	fd = new FileDescriptor (pty.getFile (), FileDescriptor.RDONLY);
 	termios = new Termios (fd);
 	// Don't keep FD, open, prevents seeing EOF when reading PTY.
 	fd.close ();
@@ -96,7 +96,7 @@ public class TestLib
      */
     protected void setPseudoTerminal (Termios termios)
     {
-	fd = new FileDescriptor (pty.getName (), FileDescriptor.RDONLY);
+	fd = new FileDescriptor (pty.getFile (), FileDescriptor.RDONLY);
 	termios.set (fd);
 	fd.close ();
 	fd = null;
@@ -107,7 +107,7 @@ public class TestLib
      */
     protected void getPseudoTerminal (Termios termios)
     {
-	fd = new FileDescriptor (pty.getName (), FileDescriptor.RDONLY);
+	fd = new FileDescriptor (pty.getFile (), FileDescriptor.RDONLY);
 	termios.get (fd);
 	fd.close ();
 	fd = null;

@@ -1,5 +1,7 @@
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Use PseudoTerminal .getFile.
+	
 	* Action.java: New file.
 	* Control.java: New file.
 	* Flow.java: New file.

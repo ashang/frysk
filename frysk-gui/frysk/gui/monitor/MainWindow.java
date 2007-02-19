@@ -134,7 +134,7 @@ public class MainWindow extends Window implements Saveable{
   	public void buildTerminal()
   	{
 		PseudoTerminal pty = new PseudoTerminal ();
-		String name = pty.getName();
+		String name = pty.getFile ().getPath ();
 	  	final Terminal term = new Terminal();
 		
 		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());

@@ -39,6 +39,8 @@
 
 package frysk.sys;
 
+import java.io.File;
+
 /**
  * Open a pty
  */
@@ -46,22 +48,35 @@ package frysk.sys;
 public class PseudoTerminal
     extends FileDescriptor
 {
+    private final String name;
+    private final File file;
+
     /**
      * Open a pseudo-terminal, a.k.a. pty, not wired to anything.
      */
     public PseudoTerminal ()
     {
 	super (open ());
+	name = getName ();
+	file = new File (name);
     }
 
     /**
      * Returns the pathname of corrsponding to the fd
      */
-    public native String getName();
+    private native String getName ();
 
     public String toString ()
     {
 	return getName ();
+    }
+
+    /**
+     * Return the path of the pseudo-terminal's slave.
+     */
+    public File getFile ()
+    {
+	return file;
     }
 
     /**
@@ -117,9 +132,7 @@ public class PseudoTerminal
      */
     public ProcessIdentifier addChild (String[] args)
     {
-	// setUpForConsole ();
-	return new Child (new RedirectStdio (getName ()),
-			  new Exec (args));
+	return new Child (new RedirectStdio (name), new Exec (args));
     }
 
     /**
@@ -128,8 +141,6 @@ public class PseudoTerminal
      */
     public ProcessIdentifier addDaemon (String[] args)
     {
-	// setUpForConsole ();
-	return new Daemon (new RedirectStdio (getName ()),
-			   new Exec (args));
+	return new Daemon (new RedirectStdio (name), new Exec (args));
     }
 }

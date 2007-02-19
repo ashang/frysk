@@ -1,5 +1,11 @@
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
+	* FileDescriptor.java (FileDescriptor(File,int): New constructor.
+	* PseudoTerminal.java (getFile): New method.
+	(getName): Make private.
+	(name, file): New private members.
+	* TestPseudoTerminal.java: Update.
+
 	* PseudoTerminal.java (setUpForConsole): Delete.
 	* cni/PseudoTerminal.cxx: Ditto.
 

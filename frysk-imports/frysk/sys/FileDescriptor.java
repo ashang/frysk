@@ -39,6 +39,7 @@
 
 package frysk.sys;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -66,6 +67,13 @@ public class FileDescriptor
     public FileDescriptor (String file, int flags)
     {
 	this.fd = open (file, flags);
+    }
+    /**
+     * Create a file descriptor for the specified FILE, open with MODE.
+     */
+    public FileDescriptor (File file, int flags)
+    {
+	this.fd = open (file.getAbsolutePath (), flags);
     }
     /**
      * Open file read-only.

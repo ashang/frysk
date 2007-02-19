@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ public class ConsoleWidget extends Bin {
 		pty = new PseudoTerminal ();
 		
 		int master = pty.getFd ();
-		String name = pty.getName ();
+		File name = pty.getFile ();
 		System.out.println ("master = " + master + " name = " + name);
 
 		term = new Terminal();
@@ -171,7 +171,7 @@ public class ConsoleWidget extends Bin {
 
 		System.out.println ("master = " + master + " name = " + name);
 
-		rd = new reader(name);
+		rd = new reader(name.getPath ());
 		new Thread(rd).start();
     }
 
