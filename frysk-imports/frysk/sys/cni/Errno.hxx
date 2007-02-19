@@ -48,10 +48,12 @@ extern void throwErrno (int err, const char *prefix, const char *suffix,
 			int val)
   __attribute__ ((noreturn));
 // <<message>>
-extern void throwRuntimeException (const char *message);
+extern void throwRuntimeException (const char *message)
+  __attribute__ ((noreturn));
 // <<message>> (<<suffix>> <<val>>)
 extern void throwRuntimeException (const char *message, const char *suffix,
-				   int val);
+				   int val)
+  __attribute__ ((noreturn));
 
 /**
  * Like asprintf, only it returns a java string.

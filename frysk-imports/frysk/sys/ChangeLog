@@ -1,3 +1,10 @@
+2007-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestPseudoTerminal.java (pid): Add local private.  Use instead
+	of local variables.
+	(tearDown): Kill the pid, and drain Sig.CHLD.
+	* cni/Errno.hxx (throwRuntimeException): Add "noreturn" attribute.
+
 2007-02-16  Mark Wielaard  <mark@klomp.org>
 
 	* RegisterSetBuffer.java (peek): Remove unnecessary int cast.

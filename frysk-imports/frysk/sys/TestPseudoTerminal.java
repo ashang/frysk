@@ -52,7 +52,12 @@ public class TestPseudoTerminal extends TestCase
     /**
      * Some tests have a child process, keep it in this PID.
      */
-    ProcessIdentifier pid;
+    private ProcessIdentifier pid;
+
+    /**
+     * Some tests use a pty that needs closing.
+     */
+    private PseudoTerminal pty;
 
     /**
      * During setup, clear the daemon process.
@@ -60,6 +65,7 @@ public class TestPseudoTerminal extends TestCase
     public void setUp ()
     {
 	pid = null;
+	pty = null;
     }
     /**
      * During teardown, kill any daemon process, if present.
@@ -74,7 +80,15 @@ public class TestPseudoTerminal extends TestCase
 		// toss it; don't care
 	    }
 	}
-	pid = null;
+	if (pty != null) {
+	    try {
+		pty.close ();
+	    }
+	    catch (Errno e) {
+		// toss it; don't care
+	    }
+	}
+	Signal.drain (Sig.CHLD);
     }
 
     /**
@@ -82,7 +96,7 @@ public class TestPseudoTerminal extends TestCase
      */
     public void testOpen ()
     {
-	PseudoTerminal pty = new PseudoTerminal();
+	pty = new PseudoTerminal();
 	final int b = 0x3f;
 	
 	int master = pty.getFd ();
@@ -99,23 +113,22 @@ public class TestPseudoTerminal extends TestCase
 	throws java.io.IOException, InterruptedException
     {
 	int delay;
-	final int maxDelay = 100;
+	final long maxDelay = getTimeoutMilliseconds ();
 	for (delay = 0; delay < maxDelay; delay++) {
 	    if (in.available () > 0)
-		break;
-	    Thread.sleep (1);
+		return;
+	    Thread.sleep (10);
 	}
-	assertTrue ("something available before timeout", delay < maxDelay);
+	fail ("assertBecomesAvailable timeout");
     }
 
     /**
      * Create a pseudo-terminal with an attached daemon process.
      */
-    private PseudoTerminal getPseudoTerminalDaemon (String[] args)
+    private void createPseudoTerminalDaemon (String[] args)
     {
-	PseudoTerminal pty = new PseudoTerminal ();
+	pty = new PseudoTerminal ();
 	pid = pty.addDaemon (args);
-	return pty;
     }
 
     /**
@@ -126,8 +139,8 @@ public class TestPseudoTerminal extends TestCase
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	PseudoTerminal echo = getPseudoTerminalDaemon (new String[] { "/bin/echo", hi });
-	InputStream in = echo.getInputStream ();
+	createPseudoTerminalDaemon (new String[] { "/bin/echo", hi });
+	InputStream in = pty.getInputStream ();
 	assertBecomesAvailable (in);
 	// Read back the message
 	byte[] bytes = new byte[100];
@@ -144,9 +157,9 @@ public class TestPseudoTerminal extends TestCase
 	throws java.io.IOException, InterruptedException
     {
 	String hi = "hello";
-	PseudoTerminal tee = getPseudoTerminalDaemon (new String[] { "/usr/bin/tee" });
-	InputStream in = tee.getInputStream ();
-	OutputStream out = tee.getOutputStream ();
+	createPseudoTerminalDaemon (new String[] { "/usr/bin/tee" });
+	InputStream in = pty.getInputStream ();
+	OutputStream out = pty.getOutputStream ();
 	out.write (hi.getBytes ());
 	assertBecomesAvailable (in);
 	byte[] bytes = new byte[100];
@@ -161,11 +174,11 @@ public class TestPseudoTerminal extends TestCase
     public void testEOF ()
 	throws java.io.IOException, InterruptedException
     {
-	PseudoTerminal exit = getPseudoTerminalDaemon (new String [] { "/bin/true" });
-	InputStream in = exit.getInputStream ();
+	createPseudoTerminalDaemon (new String [] { "/bin/true" });
+	InputStream in = pty.getInputStream ();
 	assertBecomesAvailable (in);
 	byte[] bytes = new byte[100];
 	int bytesRead = in.read (bytes);
 	assertEquals ("eof read", -1, bytesRead);
     }
-  }
+}
