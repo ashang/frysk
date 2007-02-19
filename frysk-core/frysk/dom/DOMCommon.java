@@ -51,12 +51,18 @@ import java.util.ArrayList;
 
 /**
  * DOMCommon contains some static methods needed by various pieces of the
- * DOM/Parser code. 
+ * DOM/Parser code. It is called from several places in the code to perform
+ * such duties as getting the include files for an executable and it can
+ * pull the list of source files from the executable if need be.
  *
  */
 
 public class DOMCommon
 {
+  
+  private static final String GLOBAL_INCLUDE = "/usr/include";
+  private static final String LOCAL_INCLUDE = "/usr/local/include";
+  
   /*
    * getSrcFiles gets the source files for this image from the elf/dwarf header
    * The path from the ELF/DWARF header is used for the path for the initial
@@ -67,9 +73,6 @@ public class DOMCommon
    * @param executable is a String containing the path to the executable
    * @return an ArrayList with the path(s) of the source file(s)
    */
-  
-  private static final String GLOBAL_INCLUDE = "/usr/include";
-  private static final String LOCAL_INCLUDE = "/usr/local/include";
   
   public static ArrayList getSrcFiles (String executable)
   {
@@ -167,21 +170,22 @@ public class DOMCommon
    * "/usr/include" and "/usr/local/include" are special cases and are added at the end
    * automatically.
    * 
-   * @param filelist is a String array containing the heretofore added include files
+   * @param filelist is an ArrayList containing the heretofore added include files
    * @param newfile is a String with the candidate include path to be added
    * @return true if the include is already in the list, false if not
    * 
    */
   public static boolean alreadyAdded(ArrayList filelist, String newfile )
   {
-    System.out.println("newfile = " + newfile);
     int j = newfile.lastIndexOf("/");
+    // Loop thru the already accumulated list to see if the new one is already there
     for (int i = 0; i < filelist.size(); i++)
       {
         if (filelist.get(i).equals(newfile.substring(0, j))) {
               return true;
             }
       }
+    // See if the file is the global/local include file, if so say we have it
     if (newfile.substring(0,j).equals(GLOBAL_INCLUDE) ||
             newfile.substring(0,j).equals(LOCAL_INCLUDE))
       return true;

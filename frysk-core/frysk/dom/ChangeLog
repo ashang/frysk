@@ -4,6 +4,8 @@
 	substring going beyond the end of the line.
 	* DOMCommon.java (alreadyAdded): Fix adding duplicate includes,
 	bz #4077.
+	* DOMCommon.java: Correct javadoc and comments and pull debug
+	statement.
 
 2007-02-15  Rick Moseley  <rmoseley@redhat.com>
 
