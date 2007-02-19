@@ -81,22 +81,3 @@ frysk::sys::PseudoTerminal::getName ()
     throwErrno (errno, "ptsname");
   return JvNewStringUTF (pts_name);
 }
-
-// sets up the pty for use with jline
-void
-frysk::sys::PseudoTerminal::setUpForConsole ()
-{
-  char *pts_name = ::ptsname (fd);
-  
-  if (pts_name == NULL)
-    throwErrno (errno, "ptsname");
-
-  char *cmd;
-  asprintf (&cmd, "stty -F %s -icanon min 1", pts_name);
-  ::system(cmd);
-  free (cmd);
-
-  asprintf (&cmd, "stty -F %s -echo", pts_name);
-  ::system(cmd);
-  free (cmd);
-}

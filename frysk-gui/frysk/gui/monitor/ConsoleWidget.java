@@ -153,7 +153,6 @@ public class ConsoleWidget extends Bin {
 		cmdargs[0] = "-1";
 
 		pty = new PseudoTerminal ();
-		pty.setUpForConsole();
 		
 		int master = pty.getFd ();
 		String name = pty.getName ();

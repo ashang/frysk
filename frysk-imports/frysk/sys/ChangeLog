@@ -1,5 +1,8 @@
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
+	* PseudoTerminal.java (setUpForConsole): Delete.
+	* cni/PseudoTerminal.cxx: Ditto.
+
 	* termios/: New directory.
 
 	* TestPseudoTerminal.java (pid): Add local private.  Use instead

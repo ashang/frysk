@@ -65,13 +65,6 @@ public class PseudoTerminal
     }
 
     /**
-     * Set pseudo-terminal parameters to set up for use in jline.
-     *
-     * XXX: This uses system() which is dangerous.
-     */
-    public native void setUpForConsole();
-
-    /**
      * Returns an open master fd for a pseudo-terminal.
      */
     private static native int open ();
