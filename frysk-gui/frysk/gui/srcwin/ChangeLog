@@ -1,3 +1,7 @@
+2007-02-19  Mark Wielaard  <mark@klomp.org>
+
+	* SourceWindow.java (doContinue): Call RunState.run().
+
 2007-02-16  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doContinue): Temporarily calls

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -478,24 +478,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
   }
   
-  public void swContinue (LinkedList tasks)
-  {
-    this.state = RUNNING;
-    this.numRunningTasks = tasks.size();
-    notifyNotBlocked();
-    Iterator i = tasks.iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        if (! this.runningTasks.contains(t))
-          {
-            this.runningTasks.add(t);
-            t.requestDeleteInstructionObserver(this);
-          }
-      }
-  }
-  
-
   /**
    * Re-blocks all running Tasks except for those in the incoming LinkedList.
    * If the list is null or has size zero, than by default all Tasks are 
