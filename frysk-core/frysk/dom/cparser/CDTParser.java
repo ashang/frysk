@@ -224,6 +224,9 @@ public class CDTParser
 //            line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
 //          }
 //      }
+    if (debug)
+      printDOM();
+    
   }
   
   /*
@@ -433,6 +436,8 @@ public class CDTParser
 
     public void enterFunctionBody (IASTFunction arg0)
     {
+      if (debug) 
+        System.out.println("enterFunctionBody.....name = " + arg0.getName());
     
       // The return type of the function may not be on the same line as the name
       DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
@@ -440,9 +445,13 @@ public class CDTParser
       if (line == null || nameLine == null)
           return;
 
-      String lineText = line.getText();
-      String nameText = nameLine.getText();
-      
+      String lineText = line.getText().trim();
+      String nameText = nameLine.getText().trim();
+      if (debug)
+        {
+          System.out.println(".....lineText = " + lineText);
+          System.out.println(".....nameText = " + nameText);
+        }
       // Check to see if the character string we are parsing is in one of the lines
       if (!checkScope(arg0.getName(), lineText) && !checkScope(arg0.getName(), nameText))
         return;
@@ -451,24 +460,28 @@ public class CDTParser
       // them weirdly so when that occurs we must adjust the length of the substring parameters
       int startingcharindex = arg0.getStartingOffset() - line.getOffset();
       int endingcharindex = arg0.getNameOffset() - line.getOffset();
-      // Chop off any characters that might be tagged on the end such as CR/LF
+      // Make sure the following substring does not go beyond the line length
       if (endingcharindex > lineText.length())
-        {
-          endingcharindex = lineText.length() - 1;
-        }
+        endingcharindex = lineText.length();
+      
       line.addTag(DOMTagTypes.KEYWORD,
                   lineText.substring(startingcharindex, endingcharindex),
                   arg0.getStartingOffset() - line.getOffset());
       nameLine.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getNameOffset()
                                                       - nameLine.getOffset());
-
+      
       // start building the full name of the function for jump-to purposes
       String functionName = arg0.getName() + "(";
 
       Iterator iter = arg0.getParameters();
+
       while (iter.hasNext())
         {
           IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
+          
+          // If no parameter has been returned from the parser, skip this
+          if (param.getName().equals(""))
+            break;
 
           DOMLine typeLine = null, paramLine = null;
           String typeText = "";
@@ -509,6 +522,7 @@ public class CDTParser
                                            - typeLine.getOffset(),
                                            param.getNameOffset()
                                                - typeLine.getOffset());
+
           String name = param.getName();
 
           typeLine.addTag(DOMTagTypes.KEYWORD, type, param.getStartingOffset()
@@ -527,6 +541,7 @@ public class CDTParser
 
       line.addTag(DOMTagTypes.FUNCTION_CALL, functionName, 0);
       // Create a DOMFunction(let exitFunctionBody set the ending line and char #'s)
+
       source.addFunction(arg0.getName(), arg0.getStartingLine() - 1,
                         0, arg0.getStartingOffset(), 0, functionName);
     }
@@ -1008,8 +1023,6 @@ public class CDTParser
 
     public void exitCompilationUnit (IASTCompilationUnit arg0)
     {
-      if (debug) 
-        printDOM();
     }
 
     public CodeReader createReader (String arg0, Iterator arg1)
