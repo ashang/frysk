@@ -1,3 +1,13 @@
+2007-02-19  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (createActions): Enabled step-over and
+	instruction step-over.
+	(resensitize): Set above actions to sensitive.
+	(doContinue): Update call to RunState.continueExecution().
+	(generateProcStackTrace): Assign DwflLine before DOM creation.
+	Removed warning dialog for missing source code, print errors
+	instead. Check for null DOMFrysks.
+
 2007-02-19  Mark Wielaard  <mark@klomp.org>
 
 	* SourceWindow.java (doContinue): Call RunState.run().

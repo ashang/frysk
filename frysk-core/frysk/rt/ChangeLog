@@ -1,3 +1,27 @@
+2007-02-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TestRunState.java (testStepOver): Added.
+	(testInstructionNext): Added.
+	(stepOverAssertions): Added. Assertions for above step-over tests.
+	* RunState.java: Added some more state macros.
+	(setUpNextInstruction): Assign both the current frame's
+	FrameIdentifier, as well as the outer frame's for use later.
+	(stepNextInstruction): Use FrameIdentifier to compare StackFrames.
+	Due to #4060, check for a missing frame and re-step an instruction.
+	(stepIn): Removed step-over double-step hack.
+	(frameIdentifier, outerFrameIdentifier): New. FrameIdentifiers for
+	the outer, and double-outer StackFrames upon return from a step-over
+	or step-out call.
+	(setUpStepOver): Set taskStepCount properly. Set FrameIdentifiers.
+	(setUpStepOut): Ditto.
+	(stepOver): Compare frames using FrameIdentifier instead of CFA.
+	Check for missing frames via #4060.
+	(continueExecution): Refactored from run(). Removes ambiguity from
+	functionality. 
+	(run): Added. Will restart the process from scratch.
+	(updateExecuted): Improved stepping cases. Added code to deal with
+	instruction level step-over.
+
 2007-02-19  Mark Wielaard  <mark@klomp.org>
 
 	* RunState.java (swContinue): Removed.
@@ -47,8 +71,8 @@
 	(stepNextInstruction): Added. Performs instruction-level step-over.
 	(stepOver): Removed debugging statements.
 	(cleanUpBreakPoint): Nullify breakpoint.
-	(LockObserver.update): Added new cases for instruction step-over.
-	(LockObserver.blockTask): Removed redundant call for adding observer.
+	(updateExecuted): Added new cases for instruction step-over.
+	(blockTask): Removed redundant call for adding observer.
 
 2007-02-15  Tim Moore  <timoore@redhat.com>
 

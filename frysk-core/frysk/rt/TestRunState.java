@@ -80,6 +80,15 @@ public class TestRunState extends TestLib
   protected static final int STEP_IN = 1;
   protected static final int STEP_OVER = 2;
   protected static final int STEP_OUT = 3;
+  protected static final int INSTRUCTION_STEP_NEXT = 4;
+  
+  protected static final int STEP_OVER_GO = 5;
+  protected static final int INSTRUCTION_STEP_NEXT_GO  =6;
+  
+  protected static final int STEP_OVER_STEPPING = 7;
+  protected static final int INSTRUCTION_STEP_NEXT_STEPPING = 8;
+  
+  private boolean insStepFlag = true;
   
   private LockObserver lock;
   
@@ -139,6 +148,74 @@ public class TestRunState extends TestLib
 	    "" + Pid.get (),
 	    "" + Sig.POLL_
 	});
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+  }
+  
+  public void testStepOver ()
+  {
+      if (brokenPpcXXX (3277))
+      return;
+
+    initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
+    
+    runState = new RunState();
+    lock = new LockObserver();
+    runState.addObserver(lock);
+    testState = STEP_OVER;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+  }
+  
+  public void testInstructionNext ()
+  {
+      if (brokenPpcXXX (3277))
+      return;
+
+    initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
+    
+    runState = new RunState();
+    lock = new LockObserver();
+    runState.addObserver(lock);
+    testState = INSTRUCTION_STEP_NEXT;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
     
     Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
@@ -400,6 +477,160 @@ public class TestRunState extends TestLib
       }
   }
   
+  public void stepOverAssertions (Task myTask)
+  {
+    if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT)
+      {
+        DwflLine line = null;
+        try
+          {
+            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
+                                                                                      myTask));
+          }
+        catch (NullPointerException npe)
+          {
+            Dwfl d = new Dwfl(myTask.getTid());
+            line = null;
+            line = d.getSourceLine(myTask.getIsa().pc(myTask));
+            if (line != null)
+              {
+                this.dwflMap.put(myTask, d);
+                this.lineMap.put(myTask, new Integer(line.getLineNum()));
+              }
+          }
+
+        int lineNum;
+            if (line == null)
+              {
+                lineNum = 0;
+              }
+            else
+              {
+                lineNum = line.getLineNum();
+              }
+            this.lineMap.put(myTask, new Integer(lineNum));
+            if (this.testState == STEP_OVER)
+              {
+                this.testState = STEP_OVER_GO;
+                LinkedList l = new LinkedList();
+                l.add(myTask);
+//                this.runState.setUpStepOver(l, StackFactory.createStackFrame(myTask, 3));
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            else if (this.testState == INSTRUCTION_STEP_NEXT)
+              {
+                this.testState = INSTRUCTION_STEP_NEXT_GO;
+                LinkedList l = new LinkedList();
+                l.add(myTask);
+                //this.runState.setUpStepNextInstruction(myTask, StackFactory.createStackFrame(myTask, 3));
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            
+          }
+    else
+      {
+        DwflLine line = null;
+        try
+          {
+            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
+                                                                                      myTask));
+          }
+        catch (NullPointerException npe)
+          {
+            npe.printStackTrace();
+            Dwfl d = new Dwfl(myTask.getTid());
+            line = null;
+            line = d.getSourceLine(myTask.getIsa().pc(myTask));
+            assertNotNull(line);
+            if (line != null)
+              {
+                this.dwflMap.put(myTask, d);
+                this.lineMap.put(myTask, new Integer(line.getLineNum()));
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+          }
+        
+        /* Stepping has been set up - now to continue line stepping until 
+         * the important sections of code have been reached. */
+        if (this.testState != STEP_OVER_STEPPING
+            && this.testState != INSTRUCTION_STEP_NEXT_STEPPING)
+          {
+            int prev = ((Integer) this.lineMap.get(myTask)).intValue();
+            this.lineMap.put(myTask, new Integer(line.getLineNum()));
+
+            if (this.testState == STEP_OVER_GO)
+              {
+                /* About to push a frame on the stack */
+                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                  {
+                    this.testState = STEP_OVER_STEPPING;
+                    LinkedList l = new LinkedList();
+                    l.add(myTask);
+                    this.runState.setUpStepOver(l, StackFactory.createStackFrame(myTask, 3));
+                    return;
+                  }
+               this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
+              {
+                /* About to pop a frame off of the stack */
+                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                  {
+                    if (insStepFlag)
+                      {
+                        insStepFlag = false;
+                        this.runState.stepInstruction(myTask);
+                      }
+                    else
+                      {
+                        this.testState = INSTRUCTION_STEP_NEXT_STEPPING;
+                        this.runState.setUpStepNextInstruction(myTask, StackFactory.createStackFrame(myTask, 3));
+                      }
+                    return;
+                  }
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
+            else
+              {
+                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                return;
+              }
+          }
+        
+        /* Otherwise, the testcase is in the section of code critical to the test */
+        else if (this.testState == STEP_OVER_STEPPING)
+          {
+                StackFrame frame = StackFactory.createStackFrame(myTask, 2);
+
+                /* Make sure we're not missing any frames */
+                  
+                assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+                
+                assertTrue(frame.getMethodName().equals("foo"));
+                frame = frame.getOuter();
+                assertTrue(frame.getMethodName().equals("main"));
+                
+                Manager.eventLoop.requestStop();
+                return;
+          }
+        else if (this.testState == INSTRUCTION_STEP_NEXT_STEPPING)
+          {
+            StackFrame frame = StackFactory.createStackFrame(myTask, 2);
+
+            /* Make sure we're not missing any frames */
+              
+            assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+            
+            assertTrue(frame.getMethodName().equals("foo"));
+            frame = frame.getOuter();
+            assertTrue(frame.getMethodName().equals("main"));
+            
+            Manager.eventLoop.requestStop();
+            return;
+          }
+      }
+  }
+  
   class LockObserver implements Observer
   {
     
@@ -427,7 +658,10 @@ public class TestRunState extends TestLib
               return;
             }
          //System.out.println("Lock.update");
-          stepAssertions(myProc.getMainTask());
+          if (testState <= STEP_IN)
+            stepAssertions(myProc.getMainTask());
+          else
+            stepOverAssertions(myProc.getMainTask());
         }
       });
     }

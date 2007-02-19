@@ -766,7 +766,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(false);
+    this.next.setSensitive(true);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -857,7 +857,7 @@ public class SourceWindow
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
     this.nextAsm.connectAccelerator();
-    this.nextAsm.setSensitive(false);
+    this.nextAsm.setSensitive(true);
 
     // top of stack action
     this.stackTop = new org.gnu.gtk.Action("stackTop", "To top of Stack",
@@ -1220,10 +1220,10 @@ public class SourceWindow
 //    this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-    // this.next.setSensitive(true);
-    // this.finish.setSensitive(true);
+     this.next.setSensitive(true);
+//     this.finish.setSensitive(true);
      this.cont.setSensitive(true);
-//     this.nextAsm.setSensitive(true);
+     this.nextAsm.setSensitive(true);
      this.stepAsm.setSensitive(true);
 
     this.stackTop.setSensitive(true);
@@ -1692,8 +1692,6 @@ public class SourceWindow
    */
   private void doNext ()
   {
-    System.out.println("Step Over");
-
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stepping Over");
 
@@ -1725,7 +1723,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.run(this.swProc.getTasks());
+    this.runState.continueExecution(this.swProc.getTasks());
 
     removeTags();
   }
@@ -2129,32 +2127,31 @@ public class SourceWindow
                                */
           {
 
-            if (this.dom == null && curr.getDwflLine() != null)
+            line = curr.getDwflLine();
+            if (this.dom == null && line != null)
               {
                 try
                   {
                     this.dom = DOMFactory.createDOM(curr, this.swProc);
                   }
 
-                // If we don't have a dom, tell the task to continue
                 catch (NoDebugInfoException e)
                   {
                   }
                 catch (IOException e)
                   {
-                    this.runState.run(this.swProc.getTasks());
-                    WarnDialog dialog = new WarnDialog("File not found",
-                                                       "Error loading source code: "
-                                                           + e.getMessage());
-                    dialog.showAll();
-                    dialog.run();
-                    return null;
+                    System.err.println("Can't find source code!");
+//                    this.runState.run(this.swProc.getTasks());
+//                    WarnDialog dialog = new WarnDialog("File not found",
+//                                                       "Error loading source code: "
+//                                                           + e.getMessage());
+//                    dialog.showAll();
+//                    dialog.run();
+//                    return null;
                   }
               }
 
-            line = curr.getDwflLine();
-
-            if (line != null)
+            if (line != null && dom != null)
               {
                 // System.out.println("Line not null");
                 String filename = line.getSourceFile();
