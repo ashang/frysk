@@ -1,0 +1,35 @@
+2007-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Action.java: New file.
+	* Control.java: New file.
+	* Flow.java: New file.
+	* Flush.java: New file.
+	* Input.java: New file.
+	* Local.java: New file.
+	* Mode.java: New file.
+	* Output.java: New file.
+	* Special.java: New file.
+	* Speed.java: New file.
+	* Termios.java: New file.
+	* TestLib.java: New file.
+	* TestMode.java: New file.
+	* TestSpecial.java: New file.
+	* TestSpeed.java: New file.
+	* TestTermios.java: New file.
+	* cni/Control.cxx: New file.
+	* cni/Flow.cxx: New file.
+	* cni/Flush.cxx: New file.
+	* cni/Input.cxx: New file.
+	* cni/Local.cxx: New file.
+	* cni/Output.cxx: New file.
+	* cni/Special.cxx: New file.
+	* cni/Speed.cxx: New file.
+	* cni/Termios.cxx: New file.
+
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

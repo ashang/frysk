@@ -1,5 +1,7 @@
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
+	* termios/: New directory.
+
 	* TestPseudoTerminal.java (pid): Add local private.  Use instead
 	of local variables.
 	(tearDown): Kill the pid, and drain Sig.CHLD.
