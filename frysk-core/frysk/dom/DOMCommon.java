@@ -174,11 +174,10 @@ public class DOMCommon
    */
   public static boolean alreadyAdded(ArrayList filelist, String newfile )
   {
+    System.out.println("newfile = " + newfile);
     int j = newfile.lastIndexOf("/");
     for (int i = 0; i < filelist.size(); i++)
       {
-        if (newfile.substring(0,j) == GLOBAL_INCLUDE)
-        if (newfile.substring(0,j).equals(GLOBAL_INCLUDE))
         if (filelist.get(i).equals(newfile.substring(0, j))) {
               return true;
             }

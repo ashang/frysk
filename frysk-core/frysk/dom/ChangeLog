@@ -2,6 +2,8 @@
 
 	* cparser/CDTParser.java (enterFunctionBody): Fix errors with
 	substring going beyond the end of the line.
+	* DOMCommon.java (alreadyAdded): Fix adding duplicate includes,
+	bz #4077.
 
 2007-02-15  Rick Moseley  <rmoseley@redhat.com>
 
