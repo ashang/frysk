@@ -111,7 +111,7 @@ javadoc: all
 		CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
 			$(JAVADOC) \
 			-$$scope \
-			$$(reflection) \
+			$${reflection} \
 			-validhtml \
 			-link http://developer.classpath.org/doc/ \
 			-link $${jg}/glib-java-0.4.0/api/ \
