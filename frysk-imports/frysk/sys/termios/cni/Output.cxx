@@ -48,6 +48,7 @@
 
 #include "frysk/sys/FileDescriptor.h"
 #include "frysk/sys/termios/Termios.h"
+#include "frysk/sys/termios/Mode.h"
 #include "frysk/sys/termios/Output.h"
 #include "frysk/sys/cni/Errno.hxx"
 

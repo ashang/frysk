@@ -1,3 +1,9 @@
+2007-02-20  Tim Moore  <timoore@redhat.com>
+
+	* cni/Control.cxx, cni/Input.cxx, cni/Local.cxx, cni/Output.cxx:
+	Include Mode.h explicitly in order to force correct dependency
+	generation.
+
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Use PseudoTerminal .getFile.
