@@ -39,59 +39,60 @@
 
 package frysk.rt;
 
-/**
- * Note: this class has a natural ordering that is inconsistent with equals.
- *
- */
-public class FrameIdentifier implements Comparable
+public class FrameIdentifier
 {
-  
-  private String name;
+
+  private long address;
   private long cfa;
   
-  public FrameIdentifier (String name, long cfa)
+  public FrameIdentifier (long address, long cfa)
   {
-    this.name = name;
+    this.address = address;
     this.cfa = cfa;
   }
   
-  public int compareTo (Object o)
+  public boolean innerTo (FrameIdentifier fi)
   {
-    try
-    {
-      return compareTo ((FrameIdentifier) o);
-    }
-    catch (ClassCastException cce)
-    {
-      cce.printStackTrace();
-      return -3;
-    }
+    return this.cfa < fi.getCfa();
   }
   
-  public int compareTo (FrameIdentifier fi)
+  public boolean outerTo (FrameIdentifier fi)
   {
-    long fiCfa = fi.getCfa();
-    String fiName = fi.getName();
-    boolean eq = this.name.equals(fiName);
-    
-    if (this.cfa == fiCfa && eq)
-        return 0;
-    else if (this.cfa == fiCfa)
-      return -1;
-    else if (eq)
-      return 1;
-    else
-      return -2;
+    return this.cfa > fi.getCfa();
+  }
+  
+  public boolean equals (FrameIdentifier fi)
+  {
+    return (this.cfa == fi.getCfa() && this.address == fi.getAddress());
   }
 
   public long getCfa ()
   {
-    return cfa;
+    return this.cfa;
   }
 
-  public String getName ()
+  public long getAddress ()
   {
-    return name;
+    return this.address;
+  }
+  
+  public int hashCode ()
+  {
+    return (int) (this.cfa ^ this.address);
+  }
+  
+  public String toString ()
+  {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("{");
+    buffer.append(super.toString());
+    buffer.append(",address=");
+    buffer.append(this.address);
+    buffer.append(",cfa=");
+    buffer.append(this.cfa);
+    buffer.append("}");
+    
+    return buffer.toString();
   }
   
 }

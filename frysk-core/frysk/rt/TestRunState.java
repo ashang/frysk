@@ -84,9 +84,13 @@ public class TestRunState extends TestLib
   
   protected static final int STEP_OVER_GO = 5;
   protected static final int INSTRUCTION_STEP_NEXT_GO  =6;
+  protected static final int STEP_OUT_GO =7;
   
-  protected static final int STEP_OVER_STEPPING = 7;
-  protected static final int INSTRUCTION_STEP_NEXT_STEPPING = 8;
+  protected static final int STEP_OVER_STEPPING = 8;
+  protected static final int INSTRUCTION_STEP_NEXT_STEPPING = 9;
+  protected static final int STEP_OUT_STEPPING = 10;
+  
+
   
   private boolean insStepFlag = true;
   
@@ -163,6 +167,9 @@ public class TestRunState extends TestLib
   
   public void testStepOver ()
   {
+      if (brokenXXX(4083))
+        return;
+    
       if (brokenPpcXXX (3277))
       return;
 
@@ -197,6 +204,9 @@ public class TestRunState extends TestLib
   
   public void testInstructionNext ()
   {
+    if (brokenXXX(4083))
+      return;
+    
       if (brokenPpcXXX (3277))
       return;
 
@@ -229,6 +239,44 @@ public class TestRunState extends TestLib
     assertRunUntilStop("Attempting to add observer");
   }
   
+  
+  public void testStepOut ()
+  {
+    if (brokenXXX(4083))
+      return;
+    
+      if (brokenPpcXXX (3277))
+      return;
+
+    initial = true;
+    this.dwflMap = new HashMap();
+    this.lineMap = new HashMap();
+    
+    runState = new RunState();
+    lock = new LockObserver();
+    runState.addObserver(lock);
+    testState = STEP_OUT;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+  }
+
   
   public void setUpTest ()
   {
@@ -479,7 +527,8 @@ public class TestRunState extends TestLib
   
   public void stepOverAssertions (Task myTask)
   {
-    if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT)
+    if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT
+        || this.testState == STEP_OUT)
       {
         DwflLine line = null;
         try
@@ -514,16 +563,22 @@ public class TestRunState extends TestLib
                 this.testState = STEP_OVER_GO;
                 LinkedList l = new LinkedList();
                 l.add(myTask);
-//                this.runState.setUpStepOver(l, StackFactory.createStackFrame(myTask, 3));
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                this.runState.setUpLineStep(l);
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT)
               {
                 this.testState = INSTRUCTION_STEP_NEXT_GO;
                 LinkedList l = new LinkedList();
                 l.add(myTask);
-                //this.runState.setUpStepNextInstruction(myTask, StackFactory.createStackFrame(myTask, 3));
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                this.runState.setUpLineStep(l);
+              }
+            else if (this.testState == STEP_OUT)
+              {
+                System.err.println("Setting to step_out_go");
+                this.testState = STEP_OUT_GO;
+                LinkedList l = new LinkedList();
+                l.add(myTask);
+                this.runState.setUpLineStep(l);
               }
             
           }
@@ -553,7 +608,8 @@ public class TestRunState extends TestLib
         /* Stepping has been set up - now to continue line stepping until 
          * the important sections of code have been reached. */
         if (this.testState != STEP_OVER_STEPPING
-            && this.testState != INSTRUCTION_STEP_NEXT_STEPPING)
+            && this.testState != INSTRUCTION_STEP_NEXT_STEPPING
+            && this.testState != STEP_OUT_STEPPING)
           {
             int prev = ((Integer) this.lineMap.get(myTask)).intValue();
             this.lineMap.put(myTask, new Integer(line.getLineNum()));
@@ -590,6 +646,18 @@ public class TestRunState extends TestLib
                   }
                 this.runState.setUpLineStep(myTask.getProc().getTasks());
               }
+            else if (this.testState == STEP_OUT_GO)
+              {
+                if (line.getLineNum() >= 60 && line.getLineNum() <= 67)
+                  {
+                    this.testState = STEP_OUT_STEPPING;
+                    LinkedList l = new LinkedList();
+                    l.add(myTask);
+                    this.runState.setUpStepOut(l, StackFactory.createStackFrame(myTask, 3));
+                  }
+                else
+                  this.runState.setUpLineStep(myTask.getProc().getTasks());
+              }
             else
               {
                 this.runState.setUpLineStep(myTask.getProc().getTasks());
@@ -614,6 +682,21 @@ public class TestRunState extends TestLib
                 return;
           }
         else if (this.testState == INSTRUCTION_STEP_NEXT_STEPPING)
+          {
+            StackFrame frame = StackFactory.createStackFrame(myTask, 2);
+
+            /* Make sure we're not missing any frames */
+              
+            assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+            
+            assertTrue(frame.getMethodName().equals("foo"));
+            frame = frame.getOuter();
+            assertTrue(frame.getMethodName().equals("main"));
+            
+            Manager.eventLoop.requestStop();
+            return;
+          }
+        else if (this.testState == STEP_OUT_STEPPING)
           {
             StackFrame frame = StackFactory.createStackFrame(myTask, 2);
 

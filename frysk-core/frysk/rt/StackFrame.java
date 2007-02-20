@@ -138,8 +138,7 @@ public class StackFrame
         this.dwflLine = line;
       }
     
-    this.frameIdentifier = new FrameIdentifier(
-                        this.myCursor.getMethodName(), this.myCursor.getCfa());
+    this.frameIdentifier = new FrameIdentifier(this.myCursor.getAddress(), this.myCursor.getCfa());
   }
   
   public StackFrame (Task task)

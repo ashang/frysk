@@ -89,7 +89,7 @@ public class StackFactory
       {
         StackFrame current = toReturn;
         FrameCursor currentCursor = innermost.getOuter();
-        for (int i = 0; i < num - 1; i++)
+        while (num > 0 && currentCursor != null)
           {
             StackFrame outerFrame = new StackFrame(currentCursor, task, current);
 
@@ -100,6 +100,7 @@ public class StackFactory
             current = outerFrame;
 
             currentCursor = currentCursor.getOuter();
+            --num;
           }
       }
     return toReturn;

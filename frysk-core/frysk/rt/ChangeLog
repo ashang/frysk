@@ -1,3 +1,28 @@
+2007-02-20  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFactory.java (createStackFrame): Added check for number of
+	StackFrames being iterated over.
+	* TestRunState.java (testStepOver): Added brokenXXX for #4083.
+	(testInstructionNext): Ditto.
+	(testStepOut): Added, test for step-out. Marked brokenXXX for #4083.
+	* RunState.java (updateExecuted): Added cases for step-out.
+	(setUpStepOut): Implemented.
+	(stepOut): Implemented; commented out pending #4083.
+	(stepOver): Ditto.
+	(stepNextInstruction): Ditto.
+	* StackFrame.java (StackFrame): Update initialization of FrameIdentifier
+	with address instead of name.
+	* FrameIdentifier.java (FrameIdentifier): Removed frame name field, and
+	instead use StackFrame current address.
+	(innerTo): Added. Returns true if the StackFrame represented by this
+	FrameIdentifier is inner to the incoming FrameIdentifier's StackFrame.
+	(outerTo): Ditto, for being an outer frame.
+	(equals): Returns true if the CFA and current address of both
+	FrameIdentifiers match.
+	(compareTo): Removed.
+	(hashCode): Added. Returns CFA XOR'd with address.
+	(toString): Added.
+
 2007-02-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TestRunState.java (testStepOver): Added.

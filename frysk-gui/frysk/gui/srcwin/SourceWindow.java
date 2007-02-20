@@ -766,7 +766,7 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
                          ModifierType.MOD1_MASK, true);
     this.next.connectAccelerator();
-    this.next.setSensitive(true);
+    this.next.setSensitive(false);
 
     // Finish action
     this.finish = new org.gnu.gtk.Action("finish", "Finish",
@@ -857,7 +857,7 @@ public class SourceWindow
                          ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK),
                          true);
     this.nextAsm.connectAccelerator();
-    this.nextAsm.setSensitive(true);
+    this.nextAsm.setSensitive(false);
 
     // top of stack action
     this.stackTop = new org.gnu.gtk.Action("stackTop", "To top of Stack",
@@ -1220,10 +1220,10 @@ public class SourceWindow
 //    this.run.setSensitive(true);
     this.stop.setSensitive(false);
     this.step.setSensitive(true);
-     this.next.setSensitive(true);
+//     this.next.setSensitive(true);
 //     this.finish.setSensitive(true);
      this.cont.setSensitive(true);
-     this.nextAsm.setSensitive(true);
+//     this.nextAsm.setSensitive(true);
      this.stepAsm.setSensitive(true);
 
     this.stackTop.setSensitive(true);
