@@ -46,4 +46,14 @@ AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext dist-bzip2 tar
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gtk frysk-gui])
 AM_PROG_GCJ
+
+# Need to call PKG_CHECK_MODULES to get PKG_CONFIG set; used by javadoc.
+PKG_CHECK_MODULES(FRYSK_GNOME, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 
+glade-java >= 2.7.0 glib-java >= 0.2 cairo-java >= 1.0 vte-java >= 
+0.11.11 pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >= 1.10.0])
+FRYSK_PKG_MODULE_VARIABLE(FRYSK_GNOME_JARS, classpath, [gtk+-2.0 >= 2.7.0 
+gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 
+cairo-java >= 1.0 vte-java 
+>= 0.11.11 pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >= 1.10.0])
+
 AC_OUTPUT

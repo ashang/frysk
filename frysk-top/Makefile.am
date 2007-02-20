@@ -48,12 +48,16 @@ SUBDIRS = \
 empty=
 space=$(empty) $(empty)
 
+# Find local macros.
+ACLOCAL_AMFLAGS = -I common/m4
+
 # Note the dir/. is needed, causes the file copy to put the contents
 # into the top level directory.
 
 SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%/frysk,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%/frysk,$(SUBDIRS)) \
+	$(srcdir)/frysk-imports/lib \
 	$(srcdir)/frysk-imports/inua \
 	$(top_builddir)/frysk-imports/inua \
 	$(srcdir)/frysk-imports/getopt/src/getopt/gnu \
@@ -94,24 +98,39 @@ javadoc: all
 		done ; \
 		case $$scope in \
 			public ) find javadoc/source/$$scope \
-				-name '*Test*' -print \
-				-o -name '*Stress*' -print \
-				| xargs rm ; \
+				-name 'Test[A-Z]*' -print \
+				-o -name 'Stress[A-Z]*' -print \
+				| xargs rm \
+				;; \
 		esac ; \
-		CLASSPATH=$(JAVADOC_CLASSPATH) $(JAVADOC) \
+		case $$scope in \
+			public ) reflection=-reflection ;; \
+			private ) reflection= ;; \
+		esac ; \
+		jg=http://developer.gnome.org/doc/API/java-gnome ; \
+		CLASSPATH=$(JAVADOC_CLASSPATH):$(subst $(space),:,$(FRYSK_GNOME_JARS)) \
+			$(JAVADOC) \
 			-$$scope \
-			-link http://developer.classpath.org/doc/ \
-			-link http://java-gnome.sourceforge.net/docs/javadoc/ \
+			$$(reflection) \
 			-validhtml \
+			-link http://developer.classpath.org/doc/ \
+			-link $${jg}/glib-java-0.4.0/api/ \
+			-link $${jg}/cairo-java-1.0.6/api/ \
+			-link $${jg}/libgtk-java-2.10.0/api/ \
+			-link $${jg}/libglade-java-2.12.7/api/ \
+			-link $${jg}/libgnome-java-2.12.6/api/ \
+			-link $${jg}/libgconf-java-2.12.5/api/ \
+			-link $${jg}/libvte-java-0.12.2/api/ \
 			-overview $(srcdir)/overview.html \
 			-source 1.4 \
 			-d javadoc/$$scope \
 			-use \
 			-linksource \
-			-doctitle '<em>frysk</em> - Execution Analysis Technology' \
+			-doctitle '<em>frysk</em> - Execution Analysis And Debugging Technology' \
 			-windowtitle 'FRYSK' \
 			-group "<em>frysk</em> Packages" 'frysk*' \
 			-group "Imported Packages" 'inua*:jline*:junit*:gnu*' \
+			-group "Native Bindings" 'lib*' \
 			-sourcepath javadoc/source/$$scope \
 			-all \
 		; \
