@@ -311,15 +311,11 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	| grep \
 		-e 'Test[A-Z].*\.java$$' \
 		-e 'Stress[A-Z].*\.java$$' \
-	| while read test ; do \
-		main=`$(JV_SCAN) --print-main $(srcdir)/$${test}` ; \
-		if test "$$main"x = x ; then \
-			echo $${test} | sed \
-				-e 's,/,.,g' \
-				-e 's,.java$$,.class,' \
-				-e 's,\(.*\),    list.add(\1);,' ; \
-		fi ; \
-	  done >> $@.tmp
+	| sed \
+		-e 's,/,.,g' \
+		-e 's,.java$$,.class,' \
+		-e 's,\(.*\),    list.add(\1);,' \
+	>> $@.tmp
 	echo >> $@.tmp '    return list;'
 	echo >> $@.tmp '  }'
 	echo >> $@.tmp '}'
