@@ -1,5 +1,8 @@
 2007-02-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java): Simplify,
+	remove check for a main program in the test file.
+
 	* frysk-common.ac (JV_SCAN): Default to "no".
 	(HAVE_JV_SCAN): Set using AM_CONDITIONAL.
 	* Makefile.rules (.java.o): Wrap use of JV_SCAN in HAVE_JV_SCAN.
