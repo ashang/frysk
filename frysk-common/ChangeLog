@@ -1,5 +1,8 @@
 2007-02-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (has_java_main): New function.
+	(has_main): Use.
+
 	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java): Simplify,
 	remove check for a main program in the test file.
 

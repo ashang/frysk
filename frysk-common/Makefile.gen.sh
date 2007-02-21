@@ -277,12 +277,17 @@ echo_LDFLAGS ()
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
 }
 
+has_java_main ()
+{
+    grep ' main[ ]*[(]' $1 > /dev/null 2>&1
+}
+
 has_main ()
 {
     case "$1" in
 	*.javain )
             # .javain files must always have main
-            if jv-scan --print-main $1 | grep .  > /dev/null 2>&1 ; then
+            if has_java_main $1 ; then
 		:
 	    else
 		echo "$1 must have a main" 1>&2
@@ -291,7 +296,7 @@ has_main ()
             true
 	    ;;
 	*.java )
-	    jv-scan --print-main $1 | grep .  > /dev/null 2>&1
+	    has_java_main $1
 	    ;;
         *.c | *.cxx )
 	    grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1
