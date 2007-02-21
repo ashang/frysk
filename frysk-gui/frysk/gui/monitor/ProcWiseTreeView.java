@@ -73,14 +73,36 @@ public class ProcWiseTreeView
     super(handle);
     this.treeStore = model.getModel();
     this.dataModel = model;
-    this.mountDataModel(model);
+  }
+  
+  private boolean shown;
+  
+  public void setFilter (boolean shown)
+  {
+    this.shown = shown;
+    this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
+
+    this.removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
+    {
+
+      public boolean filter (TreeModel model, TreeIter iter)
+      {
+        if (model.getValue(iter, dataModel.getSelectedDC()) == false)
+          {
+            return ProcWiseTreeView.this.shown;
+          }
+        else
+          {
+            return !ProcWiseTreeView.this.shown;
+          }
+      }
+    });
+    
+    mountDataModel(this.dataModel);
   }
 
-  private void mountDataModel (final ProcWiseDataModel dataModel)
+  public void mountDataModel (final ProcWiseDataModel dataModel)
   {
-    //this.setModel(dataModel.getModel());
-    // nameCol.addAttributeMapping(cellRendererText,
-    // CellRendererText.Attribute.STRIKETHROUGH, dataModel.getSensitiveDC());
     setUpColumns();
     
     this.setHeadersClickable(true);
@@ -95,25 +117,6 @@ public class ProcWiseTreeView
 
     this.setEnableSearch(true);
     this.treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
-
-    this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
-
-    this.removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
-    {
-
-      public boolean filter (TreeModel model, TreeIter iter)
-      {
-        if (model.getValue(iter, dataModel.getSelectedDC()) == false)
-          {
-            return true;
-          }
-        else
-          {
-            return false;
-          }
-      }
-
-    });
 
     this.setModel(removedProcFilter);
     this.pwtvTVC[0].setVisible(true);
@@ -130,6 +133,7 @@ public class ProcWiseTreeView
   {
     this.pwtvTVC[0] = new TreeViewColumn();
     this.pwtvTVC[0].setClickable(true);
+    this.pwtvTVC[0].setReorderable(true);
     CellRendererText renderNameText = new CellRendererText();
     this.pwtvTVC[0].packStart(renderNameText, true);
     this.pwtvTVC[0].setTitle("Process Name");
@@ -139,29 +143,28 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[0].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[0].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getNameDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[0].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[0].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[0].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[0].setSortOrder(SortType.ASCENDING);
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(true);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+        pwtvTVC[0].setSortIndicator(true);
+        pwtvTVC[1].setSortIndicator(false);
+        pwtvTVC[2].setSortIndicator(false);
+        pwtvTVC[3].setSortIndicator(false);
+        pwtvTVC[4].setSortIndicator(false);
+        pwtvTVC[5].setSortIndicator(false);
 
       }
     });
-
-    this.pwtvTVC[0].setReorderable(true);
     this.pwtvTVC[0].setSortOrder(SortType.ASCENDING);
     this.pwtvTVC[0].setSortIndicator(true);
+    
     this.pwtvTVC[1] = new TreeViewColumn();
     this.pwtvTVC[1].setClickable(true);
     this.pwtvTVC[1].setReorderable(true);
@@ -175,23 +178,23 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[1].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[1].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getPIDDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[1].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[1].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getPIDDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[1].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[1].setSortOrder(SortType.ASCENDING);
 
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(true);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+        pwtvTVC[0].setSortIndicator(false);
+        pwtvTVC[1].setSortIndicator(true);
+        pwtvTVC[2].setSortIndicator(false);
+        pwtvTVC[3].setSortIndicator(false);
+        pwtvTVC[4].setSortIndicator(false);
+        pwtvTVC[5].setSortIndicator(false);
       }
     });
     this.pwtvTVC[2] = new TreeViewColumn();
@@ -206,28 +209,29 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[2].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[2].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getLocationDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[2].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[2].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getLocationDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[2].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[2].setSortOrder(SortType.ASCENDING);
 
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(true);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+        pwtvTVC[0].setSortIndicator(false);
+        pwtvTVC[1].setSortIndicator(false);
+        pwtvTVC[2].setSortIndicator(true);
+        pwtvTVC[3].setSortIndicator(false);
+        pwtvTVC[4].setSortIndicator(false);
+        pwtvTVC[5].setSortIndicator(false);
 
       }
     });
     this.pwtvTVC[2].setReorderable(true);
     this.pwtvTVC[2].setClickable(true);
+    
     this.pwtvTVC[3] = new TreeViewColumn();
     CellRendererText renderVSZText = new CellRendererText();
     this.pwtvTVC[3].packStart(renderVSZText, true);
@@ -240,23 +244,23 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[3].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[3].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getVszDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[3].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[3].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getVszDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[3].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[3].setSortOrder(SortType.ASCENDING);
 
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(true);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+        pwtvTVC[0].setSortIndicator(false);
+        pwtvTVC[1].setSortIndicator(false);
+        pwtvTVC[2].setSortIndicator(false);
+        pwtvTVC[3].setSortIndicator(true);
+        pwtvTVC[4].setSortIndicator(false);
+        pwtvTVC[5].setSortIndicator(false);
 
       }
     });
@@ -275,23 +279,23 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[4].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[4].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getRssDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[4].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[4].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getRssDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[4].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[4].setSortOrder(SortType.ASCENDING);
 
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(true);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(false);
+        pwtvTVC[0].setSortIndicator(false);
+        pwtvTVC[1].setSortIndicator(false);
+        pwtvTVC[2].setSortIndicator(false);
+        pwtvTVC[3].setSortIndicator(false);
+        pwtvTVC[4].setSortIndicator(true);
+        pwtvTVC[5].setSortIndicator(false);
 
       }
     });
@@ -310,23 +314,23 @@ public class ProcWiseTreeView
     {
       public void columnClickedEvent (TreeViewColumnEvent event)
       {
-        if (ProcWiseTreeView.this.pwtvTVC[5].getSortOrder() == SortType.ASCENDING)
+        if (pwtvTVC[5].getSortOrder() == SortType.ASCENDING)
           {
             treeStore.setSortColumn(dataModel.getTimeDC(), SortType.DESCENDING);
-            ProcWiseTreeView.this.pwtvTVC[5].setSortOrder(SortType.DESCENDING);
+            pwtvTVC[5].setSortOrder(SortType.DESCENDING);
           }
         else
           {
             treeStore.setSortColumn(dataModel.getTimeDC(), SortType.ASCENDING);
-            ProcWiseTreeView.this.pwtvTVC[5].setSortOrder(SortType.ASCENDING);
+            pwtvTVC[5].setSortOrder(SortType.ASCENDING);
 
           }
-        ProcWiseTreeView.this.pwtvTVC[0].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[1].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[2].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[3].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[4].setSortIndicator(false);
-        ProcWiseTreeView.this.pwtvTVC[5].setSortIndicator(true);
+        pwtvTVC[0].setSortIndicator(false);
+        pwtvTVC[1].setSortIndicator(false);
+        pwtvTVC[2].setSortIndicator(false);
+        pwtvTVC[3].setSortIndicator(false);
+        pwtvTVC[4].setSortIndicator(false);
+        pwtvTVC[5].setSortIndicator(true);
 
       }
     });
@@ -346,8 +350,10 @@ public class ProcWiseTreeView
 
         for (int i = 0; i < selectedPaths.length; i++)
           {
+            
+            TreePath realPath = this.removedProcFilter.convertPathToChildPath(selectedPaths[i]);
             selecteds.add((GuiObject) this.treeStore.getValue(
-                                                              this.treeStore.getIter(selectedPaths[i]),
+                                                              this.treeStore.getIter(realPath),
                                                               this.dataModel.getObjectDC()));
           }
         return selecteds;
@@ -357,5 +363,20 @@ public class ProcWiseTreeView
         return null;
       }
   }
+  
+  public GuiObject getSelectedObject ()
+  {
 
+    GuiObject selected = null;
+
+    /* Check for no selected rows */
+    if (this.getSelection().getSelectedRows().length > 0)
+      {
+        TreePath realPath = this.removedProcFilter.convertPathToChildPath(this.getSelection().getSelectedRows()[0]);
+        selected = (GuiObject) this.treeStore.getValue(
+                                                       this.treeStore.getIter(realPath),
+                                                       this.dataModel.getObjectDC());
+      }
+    return selected;
+  }
 }

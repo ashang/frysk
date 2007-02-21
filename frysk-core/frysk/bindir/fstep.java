@@ -39,6 +39,7 @@
 
 
 import frysk.Config;
+import frysk.EventLogger;
 import frysk.proc.*;
 import lib.opcodes.*;
 import gnu.classpath.tools.getopt.*;
@@ -76,6 +77,7 @@ public class fstep
     instrs = 1;
 
     final Parser parser = new Parser("fstep", Config.getVersion ());
+    EventLogger.addConsoleOptions(parser);
     parser.add(new Option("sample", 's',
 			  "how often to print the current instruction",
 			  "samples")

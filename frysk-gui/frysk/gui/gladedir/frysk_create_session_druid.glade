@@ -466,7 +466,6 @@
 
 			      <child>
 				<widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
-				  <property name="width_request">450</property>
 				  <property name="visible">True</property>
 				  <property name="tooltip" translatable="yes">Select from this treeview the Process Groups you wish to monitor. Add them by either double-clicking on the Process Group, or clicking the Add icon.</property>
 				  <property name="can_focus">True</property>

@@ -40,6 +40,7 @@
 
 package frysk.gui.druid;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,8 +99,8 @@ public class CreateFryskSessionDruid
   private ProcWiseDataModel dataModel;
 
   private ProcWiseTreeView procWiseTreeView;
-
-  private ListView addedProcsTreeView;
+  
+  private ProcWiseTreeView addedProcsTreeView;
 
   private CheckedListView observerSelectionTreeView;
 
@@ -138,6 +139,8 @@ public class CreateFryskSessionDruid
   private boolean loadSession;
 
   private String oldSessionName;
+  
+  private HashMap procMap;
 
   /**
    * Create a new instance of the Session Assistant
@@ -149,6 +152,7 @@ public class CreateFryskSessionDruid
     super(glade.getWidget("SessionDruid").getHandle());
     setIcon(IconManager.windowIcon);
 
+    this.procMap = new HashMap();
     getDruidStructureControls(glade);
     getProcessSelectionControls(glade);
     getProcessObserverControls(glade);
@@ -464,6 +468,7 @@ public class CreateFryskSessionDruid
 							 dataModel.getNameDC()), guiProc.getNiceExecutablePath());
      debugProcess.addProc(guiProc);
      currentSession.addProcess(debugProcess);
+     this.procMap.put(guiProc, debugProcess);
   }
 
 
@@ -595,6 +600,7 @@ public class CreateFryskSessionDruid
                                             glade.getWidget(
                                                             "sessionDruid_procWiseTreeView").getHandle(),
                                             dataModel);
+    procWiseTreeView.setFilter(true);
 
     procWiseTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
 
@@ -616,11 +622,11 @@ public class CreateFryskSessionDruid
       }
     });
 
-    // Create a New ListView and mount the Linked List from Session data
-    addedProcsTreeView = new ListView(
-                                      glade.getWidget(
-                                                      "sessionDruid_addedProcsTreeView").getHandle());
-    addedProcsTreeView.watchGuiProcs(currentSession.getProcesses());
+    addedProcsTreeView = new ProcWiseTreeView(
+                                            glade.getWidget(
+                                                            "sessionDruid_addedProcsTreeView").getHandle(),
+                                            dataModel);
+    addedProcsTreeView.setFilter(false);
     addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
     addedProcsTreeView.addListener(new TreeViewListener()
     {
@@ -690,6 +696,7 @@ public class CreateFryskSessionDruid
             changeGroupState(procWiseTreeView,
                              procWiseTreeView.getSelection().getSelectedRows(),
                              true, true);
+//            changeGroupState(addedProcsTreeView, addedProcsTreeView.getSelection().getSelectedRows(), true, true);
           }
         if (! currentSession.getProcesses().isEmpty())
           {
@@ -707,18 +714,17 @@ public class CreateFryskSessionDruid
             if (addedProcsTreeView.getSelectedObjects() == null)
               return;
             
-            final Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+            Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
             if (i != null)
               {
                 while (i.hasNext())
                   {
-                    final DebugProcess currentDebugProcess = (DebugProcess) i.next();
-                    GuiProc gp = (GuiProc) currentDebugProcess.getProcs().getFirst();
+                    GuiProc gp = (GuiProc) i.next();
+                    DebugProcess currentDebugProcess = (DebugProcess) procMap.remove(gp);
                     TreePath foo = dataModel.searchPid(gp.getProc().getPid());
                     changeGroupState(procWiseTreeView, new TreePath[] { foo },
                                      false, false);
                     currentSession.removeProcess(currentDebugProcess);
-
                   }
               }
 
@@ -911,6 +917,7 @@ public class CreateFryskSessionDruid
             if (!loadSession)
               SessionManager.theManager.addSession(currentSession);
             
+            procMap.clear();
             SessionManager.theManager.save();
             LinkedList ll = new LinkedList();
             ll.add(WindowManager.theManager.mainWindow);
@@ -975,7 +982,6 @@ public class CreateFryskSessionDruid
       {
         nameEntry.setText(currentSession.getName());
       }
-    addedProcsTreeView.watchGuiProcs(currentSession.getProcesses());
     processObserverSelectionTreeView.watchGuiProcs(currentSession.getProcesses());
   }
 
