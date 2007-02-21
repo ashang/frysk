@@ -1,3 +1,7 @@
+2007-02-21  Stan Cox  <scox@redhat.com>
+
+	* fhpd.java (main): Add pid option.
+
 2007-02-21  Nurdin Premji  <npremji@redhat.com>
 
 	* fstep.java (main): Added console options.

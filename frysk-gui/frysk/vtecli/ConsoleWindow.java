@@ -72,7 +72,7 @@ public class ConsoleWindow
 
       try
         {
-          cli = new CLI("(frysk) ",
+          cli = new CLI("(frysk) ", "",
                         new PrintStream(new FileOutputStream(new File(fname))));
         }
       catch (IOException ioe)

@@ -70,6 +70,12 @@
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>fhpd</command>
+      <arg choice="opt">
+        <replaceable>pid</replaceable>
+      </arg>
+       <arg choice="opt">
+        <option>-p <replaceable>pid,...</replaceable></option>
+      </arg>
       <!-- arg choice="opt">
         <option>-list of options</option>
       </arg -->
@@ -80,7 +86,7 @@
     <title>DESCRIPTION</title>
 
     <para><function>fhpd</function> 
-    A command line oriented debugger based on the Frysk framework that
+    is a command line oriented debugger based on the Frysk framework that
     follows the HPD Version 1 standard.
     </para>
 

@@ -1,3 +1,7 @@
+2007-02-21  Stan Cox  <scox@redhat.com>
+
+	* ConsoleWidget.java (reader): Add CLI initial command line parameter.
+
 2007-02-21  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcWiseTreeView.java (ProcWiseTreeView): Remove explicit call to

@@ -68,7 +68,7 @@ public class ConsoleWidget extends Bin {
 
 			try
 			{
-				cli = new CLI("(frysk) ", new PrintStream( new FileOutputStream(new File(fname)) ) );
+			  cli = new CLI("(frysk) ", "", new PrintStream( new FileOutputStream(new File(fname)) ) );
 			}
 			catch (IOException ioe)
 			{

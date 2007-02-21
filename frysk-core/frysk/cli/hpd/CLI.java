@@ -361,14 +361,14 @@ public class CLI
       ArrayList params = cmd.getParameters();
       boolean cli = true;
 
-      if (params.size() < 2)
+      if (params.size() < 1)
 	{
 	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
 		     Message.TYPE_NORMAL);
 	  return;
 	}
  
-      for (int idx = 2; idx < params.size(); idx++)
+      for (int idx = 0; idx < params.size(); idx++)
 	{
 	  if (((String)params.get(idx)).equals("-cli"))
 	    cli = true;
@@ -379,8 +379,15 @@ public class CLI
 	      idx += 1;
 	      tid = Integer.parseInt(((String)params.get(idx)));
 	    }
+	  else if (((String)params.get(idx)).indexOf('-') == 0)
+	    {
+	      addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
+			 Message.TYPE_NORMAL);
+	      return;
+	    }
+	  else if (((String)params.get(idx)).matches("[0-9]+"))
+	    pid = Integer.parseInt((String)params.get(idx)); 
 	}
-      pid = Integer.parseInt((String)params.get(1));
 
       if (cli)
 	{
@@ -753,10 +760,14 @@ public class CLI
     public void handle(Command cmd) throws ParseException
     {
       refreshSymtab();
-      if (cmd.getParameters().size() == 0)
-	return;
-
       ArrayList params = cmd.getParameters();
+      if (cmd.getParameters().size() == 0
+          || (((String)params.get(0)).equals("-help")))
+        {
+          addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
+             Message.TYPE_NORMAL);
+          return;
+        }
       boolean haveFormat = false;
       int outputFormat = DECIMAL;
 
@@ -793,7 +804,8 @@ public class CLI
 	  int i = sInput.indexOf(' ');
 	  if (i == -1) 
 	    {
-	      cmd.getOut().println ("Usage: assign Lhs Expression");
+          addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
+                     Message.TYPE_NORMAL);          
 	      return;
 	    }
 	  sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
@@ -975,7 +987,7 @@ public class CLI
    * Constructor
    * @param prompt String initially to be used as the prompt
    */
-  public CLI(String prompt, PrintStream out)
+  public CLI(String prompt, String command, PrintStream out)
   {
     this.prompt = prompt;
     CLI.out = out;
@@ -1025,6 +1037,8 @@ public class CLI
     //initialize alias table
     aliases = new Hashtable();
     aliases.toString(); // avoid unused variable warnings
+    if (command.length() > 0)
+      execCommand(command);
   }
 
   public String getPrompt()

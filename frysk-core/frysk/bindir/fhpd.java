@@ -45,6 +45,9 @@ import frysk.cli.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
 
+import gnu.classpath.tools.getopt.FileArgumentCallback;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
 import frysk.Config;
@@ -52,7 +55,8 @@ import frysk.EventLogger;
 
 public class fhpd 
 {
-    
+  static int pid;
+
   final static class FhpdCompletor implements Completor
   {
     CLI cli;
@@ -66,13 +70,49 @@ public class fhpd
     }
   }
 
-  public static void main (String[] argv) 
+  public static void main (String[] args)
   {
     CLI cli;
     Parser parser = new Parser ("fhpd", Config.getVersion(), true);
     EventLogger.addConsoleOptions(parser);
-    parser.parse(argv);
-    cli = new CLI("(fhpd) ", System.out);
+    parser.add(new Option('p', "pid to trace", "PID") 
+    {
+      public void parsed(String arg) throws OptionException
+      {
+        try 
+          {
+            pid = Integer.parseInt(arg);
+          } 
+        catch (NumberFormatException e) 
+          {
+            OptionException oe = new OptionException("couldn't parse pid: " + arg);
+            oe.initCause(e);
+            throw oe;
+          }
+      }
+    });
+    parser.setHeader("Usage: fhpd <PID>");
+    parser.parse(args, new FileArgumentCallback() {
+      public void notifyFile(String arg) throws OptionException
+      {
+        // Is the first argument a pid?
+        try 
+        {
+          pid = Integer.parseInt(arg);
+          return;
+        } 
+        catch (NumberFormatException e) 
+        {
+          OptionException oe = new OptionException("couldn't parse pid: " + arg);
+          oe.initCause(e);
+          throw oe;
+        }
+      }
+    });
+    String command = "";
+    if (pid > 0)
+      command = "attach " + pid;
+    cli = new CLI("(fhpd) ", command, System.out);
     ConsoleReader reader = null; // the jline reader
     String line = "";
 
