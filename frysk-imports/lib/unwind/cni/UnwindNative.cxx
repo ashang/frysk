@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -57,30 +57,11 @@
 #include "lib/unwind/Cursor.h"
 #include "lib/unwind/ByteOrder.h"
 #include "lib/unwind/CachingPolicy.h"
+#include "lib/unwind/ProcInfo.h"
+#include "lib/unwind/ProcName.h"
+#include "lib/unwind/ProcInfo.h"
 
-jint
-lib::unwind::UnwindNative::getContext(gnu::gcj::RawDataManaged* context)
-{
-	return (jint) unw_getcontext((::unw_context_t *) context);
-}
-
-jint
-lib::unwind::UnwindNative::initRemote(gnu::gcj::RawDataManaged* cursor, 
-gnu::gcj::RawDataManaged* addressSpace, lib::unwind::Accessors* accessors)
-{
-	cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));	
-	jint ret = unw_init_remote((::unw_cursor_t *)cursor, 
-	(::unw_addr_space_t) addressSpace, (void *) accessors);		
-	return ret;	
-} 
-
-jint
-lib::unwind::UnwindNative::getRegister(gnu::gcj::RawDataManaged* cursor,
-jint regNum, gnu::gcj::RawDataManaged* word)
-{
-	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-	(::unw_regnum_t) regNum, (::unw_word_t *) word);
-}
+#include "frysk/sys/cni/Errno.hxx"
 
 /*
  * Get misc. proc info
@@ -89,20 +70,43 @@ int native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 		    ::unw_proc_info_t *pip, int need_unwind_info,
 		    void *arg)
 {
-	return ((lib::unwind::Accessors *)arg)->findProcInfo (
-	(inua::eio::ByteBuffer *) ip, 
-	(gnu::gcj::RawDataManaged *) pip, 
-	(jint) need_unwind_info);
+	lib::unwind::ProcInfo* procInfo = ((lib::unwind::Accessors *)arg)->findProcInfo ( (long) ip,
+	(jboolean) need_unwind_info);
+
+	if (procInfo == NULL)
+		return -1;
+
+	pip->start_ip = (unw_word_t) procInfo->startIP;
+	pip->end_ip = (unw_word_t) procInfo->endIP;
+	pip->lsda = (unw_word_t) procInfo->lsda;
+	pip->handler = (unw_word_t) procInfo->handler;
+	pip->gp = (unw_word_t) procInfo->gp;
+	pip->flags = (unw_word_t) procInfo->flags;
+	pip->format = (int) procInfo->format;
+	pip->unwind_info_size = (int) procInfo->unwindInfoSize;
+	pip->unwind_info = (void *) procInfo->unwindInfo;
+
+	return 0;
 }
 
 /*
  * Free space allocated during find_proc_info
  */
-void native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *pip,
+void native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		      void *arg)
 {
-	((lib::unwind::Accessors *)arg)->putUnwindInfo (
-	(gnu::gcj::RawDataManaged *)pip);
+	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo();
+	procInfo->startIP = (jlong) proc_info->start_ip;
+  	procInfo->endIP = (jlong) proc_info->end_ip;
+  	procInfo->lsda = (jlong) proc_info->lsda;
+  	procInfo->handler = (jlong) proc_info->handler;
+  	procInfo->gp = (jlong) proc_info->gp;
+  	procInfo->flags = (jlong) proc_info->flags;
+  	procInfo->format = (jint) proc_info->format;
+  	procInfo->unwindInfoSize = (jint) proc_info->unwind_info_size;
+  	procInfo->unwindInfo = (gnu::gcj::RawData *) proc_info->unwind_info;
+	
+	((lib::unwind::Accessors *)arg)->putUnwindInfo (procInfo);
 }
 
 /*
@@ -111,8 +115,9 @@ void native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *pip,
 int native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 			    void *arg)
 {
-	return ((lib::unwind::Accessors *)arg)->getDynInfoListAddr (
-	(inua::eio::ByteBuffer *) dilap);
+	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+	memcpy (elements(tmp), dilap, JvGetArrayLength(tmp));
+	return ((lib::unwind::Accessors *)arg)->getDynInfoListAddr (tmp);
 }
 
 /*
@@ -121,10 +126,13 @@ int native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 int native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 		::unw_word_t *valp, int write, void *arg) 
 {
+	jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
+	memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
+	
 	return ((lib::unwind::Accessors *) arg)->accessMem(
-	(inua::eio::ByteBuffer *) addr, 
-	(inua::eio::ByteBuffer *) valp, 
-	(jint) write);
+	(long) addr, 
+	tmp, 
+	(jboolean) write);
 }
 
 /*
@@ -133,10 +141,17 @@ int native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 int native_access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	       ::unw_word_t *valp, int write, void *arg)
 {
-	return ((lib::unwind::Accessors *) arg)->accessReg(
+	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+	memcpy (elements (tmp), valp, JvGetArrayLength(tmp));
+	
+	int ret = ((lib::unwind::Accessors *) arg)->accessReg(
 	(jint) regnum, 
-	(inua::eio::ByteBuffer *) valp, 
+	tmp, 
 	(jint) write);
+		
+	memcpy(valp, elements (tmp), JvGetArrayLength(tmp));
+	
+	return ret;
 }
 
 /*
@@ -145,10 +160,13 @@ int native_access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 int native_access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 		 ::unw_fpreg_t *fpvalp, int write, void *arg)
 { 	
+	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
+	memcpy (elements (tmp), fpvalp, JvGetArrayLength(tmp));
+	
 	return ((lib::unwind::Accessors *) arg)->accessFPReg(
 	(jint) regnum, 
-	(inua::eio::ByteBuffer *) fpvalp, 
-	(jint) write);
+	tmp, 
+	(jboolean) write);
 }
 
 /*
@@ -168,15 +186,51 @@ int native_get_proc_name(::unw_addr_space_t as,
 		  ::unw_word_t addr, char *bufp,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
-	return ((lib::unwind::Accessors *)arg)->getProcName (
-	(inua::eio::ByteBuffer *) addr, 
-	(java::lang::String *) bufp, 
-	(jsize) buf_len, 
-	(inua::eio::ByteBuffer *) offp);
+	lib::unwind::ProcName *procName = ((lib::unwind::Accessors *)arg)->getProcName (
+	(long) addr);
+	
+	if (procName == NULL)
+		return -1;
+	
+	bufp = (char *) JvGetStringChars(procName->name);
+	buf_len =  JvGetStringUTFLength(procName->name);
+	offp = (unw_word_t *) procName->address;
+	
+	return 0;
 }
 
+
+jint
+lib::unwind::UnwindNative::getContext(gnu::gcj::RawDataManaged* context)
+{
+	return (jint) unw_getcontext((::unw_context_t *) context);
+}
+
+jint
+lib::unwind::UnwindNative::initRemote(gnu::gcj::RawDataManaged* cursor, 
+gnu::gcj::RawDataManaged* addressSpace, lib::unwind::Accessors* accessors)
+{
+	cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
+	
+	unw_addr_space_t *address_space = (unw_addr_space_t *) addressSpace;
+	
+	jint ret = unw_init_remote((unw_cursor_t *) cursor, 
+	*address_space, (void *) accessors);
+
+	return ret;	
+} 
+
+jint
+lib::unwind::UnwindNative::getRegister(gnu::gcj::RawDataManaged* cursor,
+jint regNum, gnu::gcj::RawDataManaged* word)
+{
+	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
+	(::unw_regnum_t) regNum, (::unw_word_t *) word);
+}
+
+
 gnu::gcj::RawDataManaged*
-lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byte_order)
+lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
 {
 	static unw_accessors_t accessors = {
 		native_find_proc_info ,
@@ -188,12 +242,10 @@ lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byte_orde
 		native_resume, 
 		native_get_proc_name};
 		
-	gnu::gcj::RawDataManaged *addressSpace = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_addr_space_t));
-	addressSpace = (gnu::gcj::RawDataManaged *) unw_create_addr_space( &accessors, (int) byte_order->hashCode());
+	unw_addr_space_t *address_space = (unw_addr_space_t *) JvAllocBytes (sizeof (unw_addr_space_t));
+	*address_space = unw_create_addr_space( &accessors, (int) byteOrder->hashCode());
 
-	return addressSpace; 
-
-	//return (gnu::gcj::RawDataManaged *) unw_create_addr_space( &accessors, (int) byte_order);
+	return (gnu::gcj::RawDataManaged *) address_space; 
 }
 
 void

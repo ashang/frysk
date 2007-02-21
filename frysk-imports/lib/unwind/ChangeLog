@@ -1,3 +1,21 @@
+2007-02-21  Nurdin Premji  <npremji@redhat.com>
+
+	* Cursor.java (Cursor): Throw Exception if initRemote fails.	
+	* Unwind.java: Fix copyright year.
+	* UnwindNative.java: Ditto.
+	* AddressSpace.java: Ditto.	
+	* ProcInfo.java: New.
+	* ProcName.java: New.
+	* PtraceAccessors: New.	
+	* cni/PtraceAccessors.cxx: New.
+	* Accessors.java: Use byte arrays instead of ByteBuffers.
+	Use longs for address references.
+	Use ProcInfo and ProcName classes
+	* TestUnwind.java: Reflect Accessors changes. Added test case that uses
+	PtraceAccessors.
+	* cni/UnwindNative.cxx: Use ProcInfo and ProcName classes. 
+	Reflect Accessor changes.
+
 2007-02-16  Nurdin Premji  <npremji@redhat.com>
 
 	* Unwind.java (getRegister): Changed to pass regNum as int rather than

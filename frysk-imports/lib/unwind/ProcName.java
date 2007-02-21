@@ -39,30 +39,15 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawDataManaged;
-import java.lang.RuntimeException;
-
-public class Cursor
+public class ProcName
 {
-  RawDataManaged cursor; 
-  AddressSpace addressSpace;
-  Unwind unwinder;
+
+  public final long address;
+  public final String name;
   
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
+  ProcName(long address, String name)
   {
-    this.addressSpace = addressSpace; 
-    unwinder = addressSpace.unwinder;
-   if ( unwinder.initRemote(cursor, addressSpace.addressSpace, accessors) != 0)
-     throw new RuntimeException("Create cursor failed");
-  }
-  
-  public boolean isSignalFrame()
-  {
-    return (unwinder.isSignalFrame(cursor) == 1);
-  }
-  
-  public void step()
-  {
-    unwinder.step(cursor);
+    this.address = address;
+    this.name = name;
   }
 }

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,9 @@
 
 package lib.unwind;
 
-import inua.eio.ByteBuffer;
+
 import frysk.junit.TestCase;
+import frysk.sys.TestLib;
 
 public class TestUnwind
     extends TestCase
@@ -59,39 +60,45 @@ public class TestUnwind
     
      Cursor cursor = new Cursor(addr, new Accessors(){
 
-       int getPid()
-       {
-         return 0;
-       }
-       
       //@Override
-      int accessFPReg (int regnum, ByteBuffer fpvalp, int write)
+      int accessFPReg (int regnum, byte[] fpvalp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      int accessMem (ByteBuffer addr, ByteBuffer valp, int write)
+      int accessMem (long addr, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      int accessReg (int regnum, ByteBuffer valp, int write)
+      int accessReg (int regnum, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      int getDynInfoListAddr (ByteBuffer dilap)
+      ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
+      {
+        return null;
+      }
+
+      //@Override
+      int getDynInfoListAddr (byte[] dilap)
       {
         return 0;
       }
 
       //@Override
-      int getProcName (ByteBuffer addr, String bufp, int buf_len, ByteBuffer offp)
+      ProcName getProcName (long addr)
       {
-        return 0;
+        return null;
+      }
+
+      //@Override
+      void putUnwindInfo (ProcInfo procInfo)
+      {
       }
 
       //@Override
@@ -100,18 +107,31 @@ public class TestUnwind
         return 0;
       }
 
-      //@Override
-      int findProcInfo (ByteBuffer ip, Object pip, int needUnwindInfo)
-      {
-        return 0;
-      }
-
-      //@Override
-      void putUnwindInfo (Object pip)
-      {
-      }});
+     });
     
-    assertNull("AddressSpace not null", cursor.cursor);
+    assertNull("Cursor not null", cursor.cursor);
   }
   
+  
+  public void testMyProcess()
+  {
+  	if (true)
+  		return;
+    //Start a bash process.
+    final int pid = TestLib.forkIt();
+    
+    PtraceAccessors.attachXXX(pid);
+    
+    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    
+    PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
+    
+    Cursor cursor = new Cursor(addr, ptraceAccessors);
+    
+    
+   // System.err.println("Is this cursor a signal frame? : " + cursor.isSignalFrame());
+   
+    //XXX:Should not be null.
+    assertNull("Cursor not null", cursor.cursor);
+  }
 }

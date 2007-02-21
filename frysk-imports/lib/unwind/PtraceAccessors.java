@@ -39,30 +39,52 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawDataManaged;
-import java.lang.RuntimeException;
+import gnu.gcj.RawData;
 
-public class Cursor
+public class PtraceAccessors
+    extends Accessors
 {
-  RawDataManaged cursor; 
-  AddressSpace addressSpace;
-  Unwind unwinder;
+  protected final RawData ptArgs;
   
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
-  {
-    this.addressSpace = addressSpace; 
-    unwinder = addressSpace.unwinder;
-   if ( unwinder.initRemote(cursor, addressSpace.addressSpace, accessors) != 0)
-     throw new RuntimeException("Create cursor failed");
-  }
+  private native RawData createPtArg (int pid);
   
-  public boolean isSignalFrame()
-  {
-    return (unwinder.isSignalFrame(cursor) == 1);
-  }
+  protected final RawData addressSpace;
   
-  public void step()
+  private native RawData createAddressSpace(ByteOrder byteOrder);
+
+  native protected void finalize();
+  
+  PtraceAccessors (int pid, ByteOrder byteOrder) 
   {
-    unwinder.step(cursor);
+    this.addressSpace = createAddressSpace(byteOrder);
+    ptArgs = createPtArg(pid);  
   }
+
+  native public static int attachXXX(int pid); 
+  
+  //@Override
+  native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+
+  //@Override
+  native int accessMem (long addr, byte[] valp, boolean write);
+
+  //@Override
+  native int accessReg (int regnum, byte[] valp, boolean write);
+
+  //@Override
+  native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+
+  //@Override
+  native int getDynInfoListAddr (byte[] dilap);
+
+  //@Override
+  native ProcName getProcName (long addr);
+
+  //@Override
+  native void putUnwindInfo (ProcInfo procInfo);
+
+  //@Override
+  native int resume (Cursor cursor);
+  
+  
 }

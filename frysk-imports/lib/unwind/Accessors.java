@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,28 +40,36 @@
 
 package lib.unwind;
 
-import inua.eio.ByteBuffer;
-
 public abstract class Accessors
 {
   Unwind unwinder;
 
-  abstract int findProcInfo (ByteBuffer ip, Object pip, int needUnwindInfo);
+  /**
+   * Locate the information needed to unwind a particular procedure.
+   * @param ip the instruction-address inside the procedure whose information is
+   *  needed.
+   * @param needUnwindInfo whether the format, unwind_info_size and unwind_info
+   *  fields of the returned ProcInfo should be set.
+   * @return A ProcInfo object holding the processes info.
+   */
+  abstract ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
 
-  abstract void putUnwindInfo (Object pip);
+  /**
+   * Used to free a ProcInfo object created with needUnwindInfo as true.
+   * @param procInfo the procInfo object to be freed.
+   */
+  abstract void putUnwindInfo (ProcInfo procInfo);
 
-  abstract int getDynInfoListAddr (ByteBuffer dilap);
+  abstract int getDynInfoListAddr (byte[] dilap);
 
-  abstract int accessMem (ByteBuffer addr, ByteBuffer valp, int write);
+  abstract int accessMem (long addr, byte[] valp, boolean write);
 
-  abstract int accessReg (int regnum, ByteBuffer valp, int write);
+  abstract int accessReg (int regnum, byte[] valp, boolean write);
 
-  abstract int accessFPReg (int regnum, ByteBuffer fpvalp, int write);
+  abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
   abstract int resume (Cursor cursor);
 
-  abstract int getProcName (ByteBuffer addr, String bufp, int buf_len,
-                            ByteBuffer offp);
+  abstract ProcName getProcName (long addr);
 
-  abstract int getPid ();
 }
