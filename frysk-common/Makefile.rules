@@ -424,11 +424,16 @@ SUFFIXES += .db
 # and then checking that it is empty.
 
 .java.o:
+if HAVE_JV_SCAN
 	dups=`$(JV_SCAN) --list-class $< \
 		| tr '[ ]' '[\n]' \
 		| sed -n -e 's,^.*$$\([A-Z]\),\1,p' \
 		| sort | uniq -d` ; \
-	if test x"$$dups" != x ; then echo "Duplicate class names tickle a GCJ bug: $$dups" ; exit 1 ; fi
+	if test x"$$dups" != x ; then \
+		echo "Duplicate class names tickle a GCJ bug: $$dups" ; \
+		exit 1 ; \
+	fi
+endif
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
 	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
 	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi

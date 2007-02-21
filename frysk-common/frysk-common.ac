@@ -74,8 +74,13 @@ test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
 AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
-AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [jv-scan])
 AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
+
+# GCJ for Java 1.5 does not include jv-scan.  If it wasn't found, mark
+# it as such.
+AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [no])
+AM_CONDITIONAL([HAVE_JV_SCAN], test x"${JV_SCAN}" != xno)
+
 
 # Always use GCJ as the Java compiler.  While other, possibly better,
 # alternatives might be available, using those alternatives can (and
