@@ -323,34 +323,21 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 
 # Generate a .h file (using CNI) from the corresponding .java file.
 
-# A single .java file can result in multiple .class files (due to
-# inner classes) and they in turn lead to multiple .h files.  Instead
-# of trying to track all of them just generate the main .h file
-# filling in the others as a side-effect.
-
 # Need to store the intermediate .class files in a separate directory
 # as otherwise GCJ will include a possibly out-dated .class file
 # instead of the latest .java file leading to screwed up in
 # dependencies.
 
-# jv-scan occasionally gets it wrong generating extra classes
-# (actually it is that jv-scan's output doesn't necessarily agree
-# with that of JAVAC), work around this by checking that each class
-# really exists.
-
 .java.h:
-	classes=`$(JV_SCAN) --list-class '$<'` ; \
-	echo "$$classes" ; \
-	tmpdir=`echo $$classes | ( read a b ; echo $$a )`.tmp ; \
+	tmpdir=`basename '$<' .java`.tmp ; \
 	rm -rf $$tmpdir ; \
 	mkdir -p $$tmpdir ; \
 	$(GCJCOMPILE) -C -d $$tmpdir '$<' || exit 1 ; \
+	classes=`cd $$tmpdir; find * -name \*.class | sed "s/.class//g"` ; \
+        echo "$$classes" ; \
 	for class in $$classes ; do \
 		echo $$class ; \
-		file=`echo $${class} | tr '[.]' '[/]'`.class ; \
-		if test -r $$tmpdir/$${file} ; then \
-			$(GCJH) -I $$tmpdir -d . $(GCJHFLAGS) $$class ; \
-		fi ; \
+		$(GCJH) -I $$tmpdir -d . $(GCJHFLAGS) $$class ; \
 	done ; \
 	rm -rf $$tmpdir
 

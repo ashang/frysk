@@ -71,7 +71,7 @@ test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 
 # Find all the GCJ utilities.  Prefer gcc4.
 
-AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
+AC_CHECK_PROGS([GCJH], [gcjh4 gcjh gjavah])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
 AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
 AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
