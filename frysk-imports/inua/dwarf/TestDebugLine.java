@@ -39,10 +39,10 @@ package inua.dwarf;
 
 import inua.util.Misc;
 
-class TestDebugLine
+public class TestDebugLine
     extends TestLib
 {
-    public static void main (String[] args)
+    public void test ()
     {
 	TestLib test = new TestLib ();
 	test.debugLine = new short[] {

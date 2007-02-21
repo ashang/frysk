@@ -36,10 +36,12 @@
 // exception.
 package inua.dwarf;
 
+import junit.framework.TestCase;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 
 class TestLib
+    extends TestCase
     implements Dwarf
 {
     short[] debugAbbrev;
