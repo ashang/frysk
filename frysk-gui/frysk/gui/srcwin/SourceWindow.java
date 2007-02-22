@@ -1681,9 +1681,9 @@ public class SourceWindow
 
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.runState.setUpLineStep(l);
-
-    removeTags();
+    
+    if (this.runState.setUpLineStep(l))
+      removeTags();
   }
   
   protected void doStep (LinkedList tasks)
@@ -1696,9 +1696,8 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpLineStep(tasks);
-
-    removeTags();
+    if (this.runState.setUpLineStep(tasks))
+      removeTags();
   }
 
   /**
@@ -1791,8 +1790,8 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.stepInstruction(this.currentTask);
-    removeTags();
+    if (this.runState.stepInstruction(this.currentTask))
+      removeTags();
   }
   
   /**
@@ -1810,8 +1809,8 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.stepInstruction(tasks);
-    removeTags();
+    if (this.runState.stepInstruction(tasks))
+      removeTags();
   }
 
   /**

@@ -210,10 +210,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param tasks   The Tasks to be stepped.
    */
-  public void setUpLineStep (LinkedList tasks)
+  public boolean setUpLineStep (LinkedList tasks)
   {
+    if (this.state != STOPPED)
+      return false;
+    
     this.state = STEP_IN;
     setUp(tasks);
+    
+    return true;
   }
   
   /**
@@ -222,17 +227,24 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param tasks   The list of Tasks to step one instruction
    */
-  public synchronized void stepInstruction (Task task)
+  public boolean stepInstruction (Task task)
   {
+    if (this.state != STOPPED)
+      return false;
+    
     this.state = STEP_INSTRUCTION;
     ++this.taskStepCount;
     notifyNotBlocked();
     task.requestUnblock(this);
+    return true;
   }
   
   
-  public void stepInstruction (LinkedList tasks)
+  public boolean stepInstruction (LinkedList tasks)
   {
+    if (this.state != STOPPED)
+      return false;
+    
     this.state = STEP_INSTRUCTION;
     this.taskStepCount = tasks.size();
     notifyNotBlocked();
@@ -242,6 +254,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
         Task t = (Task) i.next();
         t.requestUnblock(this);
       }
+    
+    return true;
   }
   
   public void setUpStepNextInstruction (Task task, StackFrame lastFrame)
@@ -897,7 +911,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
 //   System.out.println("UpdateExecuted " + task + " " + taskStepCount);
     if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_OVER)
       {
-        switch (RunState.this.state)
+        switch (this.state)
           {
           case STEP_INSTRUCTION:
             --this.taskStepCount;
@@ -934,20 +948,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
         /* No more Tasks have to be blocked */
         if (taskStepCount == 0)
           {
-            if (RunState.this.state == STEP_OVER_LINE_STEP
-                || RunState.this.state == STEP_OVER_MISSING_FRAME_STEP)
+            if (this.state == STEP_OVER_LINE_STEP
+                || this.state == STEP_OVER_MISSING_FRAME_STEP)
               {
                 stepOver(task);
                 return Action.BLOCK;
               }
-            else if (RunState.this.state == STEP_INS_NEXT_MISSING_FRAME_STEP)
+            else if (this.state == STEP_INS_NEXT_MISSING_FRAME_STEP)
               {
                 stepNextInstruction(task);
                 return Action.BLOCK;
               }
             
-            RunState.this.setChanged();
-            RunState.this.notifyObservers(task);
+            this.setChanged();
+            this.notifyObservers(task);
           }
       }
     else
@@ -958,8 +972,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
          * and this is the first time this method has been called. */
         if (numRunningTasks == 0)
           {
-            RunState.this.setChanged();
-            RunState.this.notifyObservers(task);
+            this.setChanged();
+            this.notifyObservers(task);
           }
       }
 

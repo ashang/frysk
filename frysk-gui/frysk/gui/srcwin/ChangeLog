@@ -5,6 +5,9 @@
 	the buffer. Fixes #4008.
 	(loadFile): Upon loading the buffer from a new process without debuginfo, 
 	disassemble it by default.
+	* SourceWindow.java (doStep): Only bother removing buffer TextTags if 
+	RunState returns sucessfully from the stepping request.
+	(doAsmStep): Ditto.
 
 2007-02-20  Mike Cvet  <mcvet@redhat.com>
 

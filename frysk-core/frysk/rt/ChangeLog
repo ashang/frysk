@@ -7,6 +7,9 @@
 	FrameIdentifiers.
 	* StackFrame.java (hasDebugInfo): Added. Returns true if the StackFrame
 	has debuginfo.
+	* RunState.java (setUpLineStep): Made more threading-aware. Returns a
+	boolean if RunState is in the proper state for step work.
+	(stepInstruction): Ditto.
 
 2007-02-20  Mike Cvet  <mcvet@redhat.com>
 
