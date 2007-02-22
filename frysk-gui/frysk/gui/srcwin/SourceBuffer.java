@@ -52,6 +52,10 @@ import java.util.List;
 
 import javax.naming.NameNotFoundException;
 
+import lib.opcodes.Disassembler;
+import lib.opcodes.Instruction;
+import lib.opcodes.OpcodesException;
+
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
@@ -963,7 +967,6 @@ public class SourceBuffer
     while (i.hasNext())
       {
         String del = (String) i.next();
-        //System.out.println(">>> " + del);
         this.deleteMark(del);
       }
     
@@ -1005,7 +1008,6 @@ public class SourceBuffer
     if (scope != null)
       {
         this.fileName = file;
-//        this.setCurrentLine(scope);
         this.highlightLine(scope, true);
       }
   }
@@ -1015,6 +1017,51 @@ public class SourceBuffer
     this.setScope(this.getScope(), mode);
   }
 
+  public void disassembleFrame (StackFrame frame)
+  {
+    Task task = frame.getTask();
+    LinkedList instructionsList = null;
+    
+    this.firstLoad = false;
+    
+    StringBuffer buffer = new StringBuffer();
+    Disassembler diss = new Disassembler(task.getMemory());
+
+    long address = frame.getAddress();
+    
+    this.deleteText(this.getStartIter(), this.getEndIter());
+
+    try
+      {
+        instructionsList = diss.disassembleInstructions(address, 40);
+      }
+    catch (OpcodesException oe)
+      {
+        System.out.println(oe.getMessage());
+      }
+
+    Iterator iter = instructionsList.iterator();
+    Instruction ins = (Instruction) iter.next();
+
+    while (iter.hasNext())
+      {
+        StringBuffer buf = new StringBuffer();
+        buf.append("<frame address+");
+        buf.append(ins.address - address);
+        buf.append(">: ");
+        buf.append("0x");
+        buf.append(Long.toHexString(ins.address));
+        buf.append(" ");
+        buf.append(ins.instruction);
+        buf.append("\n");
+
+        buffer.append(buf.toString());
+        ins = (Instruction) iter.next();
+      }
+    
+    this.insertText(buffer.toString());
+  }
+  
   /**
    * Creates the anchor at the current line that will to which the inlined code
    * will be attached. If a previous anchor exists it will be overridden.
@@ -1218,7 +1265,8 @@ public class SourceBuffer
         /* There really were no frames with debuginfo */
         if (curr == null)
           {
-            this.insertText("No debug information available for this stack frame");
+//            this.insertText("No debug information available for this stack frame");
+            disassembleFrame(this.scope);
             this.firstLoad = false;
             return;
           }

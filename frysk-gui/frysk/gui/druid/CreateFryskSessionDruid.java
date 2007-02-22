@@ -852,12 +852,14 @@ public class CreateFryskSessionDruid
       {
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
-            if (addedProcsTreeView.getSelectedObjects() != null)
+            LinkedList list = addedProcsTreeView.getListedObjects();
+            if (list != null && list.size() > 0)
               {
-                Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+                Iterator i = list.iterator();
+                
                 while (i.hasNext())
                   {
-                    SourceWindowFactory.createSourceWindow(((GuiProc) ((DebugProcess) i.next()).getProcs().getFirst()).getProc());
+                    SourceWindowFactory.createSourceWindow(((GuiProc) i.next()).getProc());
                   }
                 hide();
               }

@@ -1526,15 +1526,12 @@ public class SourceWindow
     if (selected == null)
       return;
 
-    // System.out.println("updateSHownstackframe " + selected.getMethodName() +
-    // " " + selected.getDOMFunction().getFunctionCall()+ " " +
-    // selected.getData().getFileName());
     DOMSource source = selected.getDOMSource();
-    if (source == null && selected.getSourceFile() == "")
+    if (source == null && selected.getSourceFile().equals(""))
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + "Unknown File"
                                                             + "</b>");
-    else if (source == null && selected.getSourceFile() != "")
+    else if (source == null && !selected.getSourceFile().equals(""))
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + selected.getSourceFile()
                                                             + "</b>");
@@ -1544,23 +1541,29 @@ public class SourceWindow
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 
-    if (source != null && selected.getDOMFunction() != null)
+    if (!selected.hasDebugInfo())
+    {
+      SourceView v = (SourceView) SourceWindow.this.view;
+      SourceBuffer b = (SourceBuffer) v.getBuffer();
+      
+      removeTags();
+      v.load(selected);
+      
+      b.disassembleFrame(selected);
+    }
+    else if (source != null && selected.getDOMFunction() != null)
       {
-
         DOMSource oldSource = this.currentFrame.getDOMSource();
 
-        // System.out.println(oldSource.getFileName() + " " +
-        // source.getFileName());
         if (oldSource == null
             || ! source.getFileName().equals(oldSource.getFileName()))
           {
             removeTags();
 
-            // System.out.println("about to load");
             this.view.load(selected);
 
-            SourceView v = (SourceView) SourceWindow.this.view;
-            SourceBuffer b = (SourceBuffer) v.getBuffer();
+//            SourceView v = (SourceView) SourceWindow.this.view;
+//            SourceBuffer b = (SourceBuffer) v.getBuffer();
 
             StackFrame curr = selected;
 
@@ -1571,14 +1574,14 @@ public class SourceWindow
             while (curr.getInner() != null)
               curr = curr.getInner();
 
-            b.highlightLine(curr, true);
+//            b.highlightLine(curr, true);
+            createTags();
 
             this.view.scrollToFunction(selected.getDOMFunction().getFunctionCall());
           }
 
         else
           {
-            currentFrame = selected;
             if (selected.getLineNumber() == 0)
               return;
             else
@@ -1586,7 +1589,7 @@ public class SourceWindow
           }
       }
 
-    currentFrame = selected;
+    this.currentFrame = selected;
     this.view.showAll();
   }
 
@@ -1598,6 +1601,17 @@ public class SourceWindow
     for (int i = 0; i < this.frames.length; i++)
       {
         sb.highlightLine(frames[i], false);
+      }
+  }
+  
+  private void createTags ()
+  {
+    SourceView sv = (SourceView) view;
+    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+
+    for (int i = 0; i < this.frames.length; i++)
+      {
+        sb.highlightLine(frames[i], true);
       }
   }
 
@@ -2150,6 +2164,9 @@ public class SourceWindow
 //                    return null;
                   }
               }
+            
+            s = null;
+            f = null;
 
             if (line != null && dom != null)
               {

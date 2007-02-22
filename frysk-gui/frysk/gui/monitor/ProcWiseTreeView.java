@@ -379,4 +379,24 @@ public class ProcWiseTreeView
       }
     return selected;
   }
+  
+  public LinkedList getListedObjects ()
+  {
+    LinkedList list = new LinkedList();
+    TreeIter iter = this.treeStore.getFirstIter();
+
+    if (iter == null)
+      return null;
+
+    while (iter != null && this.treeStore.isIterValid(iter))
+      {
+        if (this.treeStore.getValue(iter, this.dataModel.getSelectedDC()) == true)
+          list.add((GuiObject) this.treeStore.getValue(
+                                                       iter,
+                                                       this.dataModel.getObjectDC()));
+        iter = iter.getNextIter();
+      }
+    
+    return list;
+  }
 }

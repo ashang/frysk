@@ -413,6 +413,11 @@ public class StackFrame
     return this.dwflLine;
   }
   
+  public boolean hasDebugInfo ()
+  {
+    return this.dwflLine != null;
+  }
+  
   /**
    * Sets whether or not this frame is a signal frame - meaning it has been
    * sent an interrupt, and we should not decrement its address when trying

@@ -5,6 +5,8 @@
 	the same stack. Fixes #4091.
 	(StackFrameTest): Added. Dummy StackFrame class for testing
 	FrameIdentifiers.
+	* StackFrame.java (hasDebugInfo): Added. Returns true if the StackFrame
+	has debuginfo.
 
 2007-02-20  Mike Cvet  <mcvet@redhat.com>
 

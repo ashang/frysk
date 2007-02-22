@@ -1,3 +1,11 @@
+2007-02-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (disassembleFrame): Added. Disassembles instructions
+	from a region of memory given by a StackFrame, and inserts it into
+	the buffer. Fixes #4008.
+	(loadFile): Upon loading the buffer from a new process without debuginfo, 
+	disassemble it by default.
+
 2007-02-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (resensitize): Remove sensitivity for step-out
