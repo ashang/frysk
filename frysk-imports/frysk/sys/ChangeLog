@@ -1,3 +1,10 @@
+2007-02-22  Andrew Cagney  <cagney@redhat.com>
+
+	* PseudoTerminal.java (RedirectStdio.reopen): Make native.
+	* cni/PseudoTerminal.cxx (reopen): Implement; handle controlling
+	terminal guff.
+	* TestPseudoTerminal.java (testDevTty): Add.
+
 2007-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* FileDescriptor.java (FileDescriptor(File,int): New constructor.

@@ -182,4 +182,24 @@ public class TestPseudoTerminal extends TestCase
 	int bytesRead = in.read (bytes);
 	assertEquals ("eof read", -1, bytesRead);
     }
+
+    /**
+     * Check that <tt>/dev/tty</tt> is wired back into the pty.
+     */
+    public void testDevTty ()
+    {
+	pty = new PseudoTerminal (true); // controlling
+	pid = pty.addDaemon (new String []
+	    {
+		"/bin/bash",
+		"-c",
+		"/bin/echo hi > /dev/tty"
+	    });
+	int[] hi = new int[] { 'h', 'i', '\r', '\n', -1 };
+	for (int i = 0; i < hi.length; i++) {
+	    assertTrue ("pty ready", pty.ready (getTimeoutMilliseconds ()));
+	    int ch = pty.read ();
+	    assertEquals ("read <<" + (char)hi[i] + ">> from pty", hi[i], ch);
+	}
+    }
 }

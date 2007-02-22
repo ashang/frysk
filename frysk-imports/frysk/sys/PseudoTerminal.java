@@ -54,11 +54,15 @@ public class PseudoTerminal
     /**
      * Open a pseudo-terminal, a.k.a. pty, not wired to anything.
      */
-    public PseudoTerminal ()
+    public PseudoTerminal (boolean controllingTerminal)
     {
-	super (open ());
+	super (open (controllingTerminal));
 	name = getName ();
 	file = new File (name);
+    }
+    public PseudoTerminal ()
+    {
+	this (false);
     }
 
     /**
@@ -82,7 +86,7 @@ public class PseudoTerminal
     /**
      * Returns an open master fd for a pseudo-terminal.
      */
-    private static native int open ();
+    private static native int open (boolean controllingTerminal);
 
     /**
      * Redirect stdin, stdout, and stderr to this PseudoTerminal.
@@ -94,35 +98,20 @@ public class PseudoTerminal
     static private class RedirectStdio
 	extends Redirect
     {
-	private FileDescriptor in;
-	private FileDescriptor out;
-	private FileDescriptor err;
+	protected final String name;
 	RedirectStdio (String name)
 	{
-	    in = new FileDescriptor (name, FileDescriptor.RDONLY);
-	    out = new FileDescriptor (name, FileDescriptor.WRONLY);
-	    err = new FileDescriptor (name, FileDescriptor.WRONLY);
+	    this.name = name;
 	}
 	/**
 	 * Execute in context of child.
 	 */
-	public void reopen ()
-	{
-	    FileDescriptor.in.dup (in);
-	    FileDescriptor.out.dup (out);
-	    FileDescriptor.err.dup (err);
-	    in.close ();
-	    out.close ();
-	    err.close ();
-	}
+	public native void reopen ();
 	/**
 	 * Executed in context of parent.
 	 */
 	public void close ()
 	{
-	    in.close ();
-	    out.close ();
-	    err.close ();
 	}
     }
 

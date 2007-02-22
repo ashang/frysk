@@ -37,6 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _XOPEN_SOURCE
+#include <sys/ioctl.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -45,17 +48,19 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/PseudoTerminal.h"
+#include "frysk/sys/PseudoTerminal$RedirectStdio.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 jint
-frysk::sys::PseudoTerminal::open ()
+frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
 {
   int master;
 
-  master = ::getpt ();
+  int flags = O_RDWR | (controllingTerminal ? O_NOCTTY : 0);
+  master = ::posix_openpt (flags);
   if (master < 0) {
     int err = errno;
-    throwErrno (err, "getpt");
+    throwErrno (err, "posix_openpt");
   }
 
   if (::grantpt (master) < 0) {
@@ -67,7 +72,7 @@ frysk::sys::PseudoTerminal::open ()
   if (::unlockpt (master) < 0) {
     int err = errno;
     ::close (master);
-    throwErrno (err, "grantpt", "fd", master);
+    throwErrno (err, "unlockpt", "fd", master);
   }
 
   return master;
@@ -80,4 +85,68 @@ frysk::sys::PseudoTerminal::getName ()
   if (pts_name == NULL)
     throwErrno (errno, "ptsname");
   return JvNewStringUTF (pts_name);
+}
+
+void
+frysk::sys::PseudoTerminal$RedirectStdio::reopen ()
+{
+  // Detach from the existing controlling terminal.
+  int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
+  if (fd < 0) {
+    ::perror ("open (old controlling terminal)");
+  }
+  if (fd >= 0) {
+    if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
+      ::perror ("ioctl (/dev/tty, TIOCNOTTY)");
+    ::close (fd);
+  }
+
+  // Verify that the detach worked, this open should fail.
+  fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
+  if (fd >= 0) {
+    ::perror ("open (re-open old controlling terminal)");
+    ::exit (1);
+  }
+  
+  // Make this process the session leader.
+  if (::setsid () < 0) {
+    ::perror ("setsid");
+  }
+
+  if (::getpgrp () != ::getpid ()) {
+    perror ("grp and pid differ");
+    exit (1);
+  }
+
+//   // Move this to the session's process group.
+//   if (::setpgid (0, getpid ()) < 0) {
+//     perror ("setpgrp");
+//   }
+
+  // Open the new pty.
+  char *pty = ALLOCA_STRING (name);
+  int tty = open (pty, O_RDWR|O_NOCTTY);
+  if (tty < 0) {
+    perror ("open.pty");
+    exit (1);
+  }
+
+  // Make the pty's tty the new controlling terminal.
+  if (::ioctl (tty, TIOCSCTTY, NULL) < 0) {
+    ::perror ("ioctl.TIOSCTTY");
+    exit (1);
+  }
+
+  if (::dup2 (tty, STDIN_FILENO) < 0) {
+    perror ("dup2.STDIN");
+    exit (1);
+  }
+  if (::dup2 (tty, STDOUT_FILENO) < 0) {
+    perror ("dup2.STDOUT");
+    exit (1);
+  }
+  if (::dup2 (tty, STDERR_FILENO) < 0) {
+    perror ("dup2.STDERR");
+    exit (1);
+  }
 }
