@@ -1,3 +1,11 @@
+2007-02-22  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackFrame.java (testFrameIdentifier): Added. Tests the 
+	relationships between FrameIdentifiers belonging to different frames in
+	the same stack. Fixes #4091.
+	(StackFrameTest): Added. Dummy StackFrame class for testing
+	FrameIdentifiers.
+
 2007-02-20  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFactory.java (createStackFrame): Added check for number of

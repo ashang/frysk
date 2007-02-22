@@ -52,6 +52,7 @@ public class TestStackFrame
 {
 
   private String unknown = "0x[\\da-f]+ in \\[unknown\\]";
+  
   public void testDebug ()
   {
 
@@ -171,6 +172,69 @@ public class TestStackFrame
     proc.getMainTask().requestAddSignaledObserver(new Terminator());
     proc.getMainTask().requestDeleteAttachedObserver(attacher);
     assertRunUntilStop("Destroying Process");
-
   }
+  
+  
+  public void testFrameIdentifier ()
+  {
+    Manager.eventLoop.start();
+
+    StackFrameTest sfTest = new StackFrameTest(0, 1, null);
+
+    StackFrameTest curr = sfTest;
+    while (curr != null)
+      {
+        
+        if (curr.next != null)
+          {
+            StackFrameTest nextPrev = curr.next.prev;
+            assertTrue(curr.frameIdentifier.innerTo(curr.next.frameIdentifier));
+            assertTrue(!curr.frameIdentifier.outerTo(curr.next.frameIdentifier));
+            assertTrue(curr.frameIdentifier.equals(nextPrev.frameIdentifier));
+            assertTrue(curr.next.frameIdentifier.outerTo(curr.frameIdentifier));
+            assertTrue(!curr.next.frameIdentifier.innerTo(curr.frameIdentifier));
+          }
+        
+        if (curr.prev != null)
+          {
+            StackFrameTest prevNext = curr.prev.next;
+            assertTrue(curr.frameIdentifier.outerTo(curr.prev.frameIdentifier));
+            assertTrue(!curr.frameIdentifier.innerTo(curr.prev.frameIdentifier));
+            assertTrue(curr.frameIdentifier.equals(prevNext.frameIdentifier));
+            assertTrue(curr.prev.frameIdentifier.innerTo(curr.frameIdentifier));
+            assertTrue(!curr.prev.frameIdentifier.outerTo(curr.frameIdentifier));
+          }
+        
+        assertEquals(curr.address, curr.frameIdentifier.getAddress());
+        assertEquals(curr.cfa, curr.frameIdentifier.getCfa());
+        curr = curr.next;
+      }
+
+    Manager.eventLoop.requestStop();
+  }
+  
+  
+  class StackFrameTest
+  {
+
+    public FrameIdentifier frameIdentifier;
+    public Task task;
+    public StackFrameTest next;
+    public StackFrameTest prev;
+    public int cfa;
+    public int address;
+
+    public StackFrameTest (int cfa, int address, StackFrameTest prev)
+    {
+      this.prev = prev;
+      this.cfa = cfa;
+      this.address = address;
+
+      this.frameIdentifier = new FrameIdentifier(address, cfa);
+
+      if (cfa < 5)
+        this.next = new StackFrameTest(++cfa, ++address, this);
+    }
+
+  }    
 }
