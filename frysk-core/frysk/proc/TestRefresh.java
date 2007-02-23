@@ -394,11 +394,13 @@ public class TestRefresh
      */
     public void testRefreshZombie ()
     {
-	if (brokenIfKernelXXX (3488, new String[] {
-				   "2.6.18-1.2257.fc5",
-				   "2.6.18-1.2849.fc6",
-				   "2.6.18-1.2239.fc5"
-			       }))
+	if (brokenIfKernelXXX (3488, new String[]
+	    {
+		"2.6.18-1.2257.fc5",
+		"2.6.18-1.2849.fc6",
+		"2.6.18-1.2239.fc5",
+		"2.6.19-1.2288.fc5"
+	    }))
 	    return;
 	// Create the zombie maker, and then get it to create one
 	// child.

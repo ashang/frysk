@@ -51,7 +51,11 @@ public class TestBreakpoints
 {
   private boolean brokenSignals ()
   {
-     return brokenIfKernelXXX (4019, new String[] { "2.6.18-1.2257.fc5" });
+     return brokenIfKernelXXX (4019, new String[]
+	 {
+	     "2.6.18-1.2257.fc5",
+	     "2.6.19-1.2288.fc5"
+	 });
   }
 
   // Process id and Proc representation of our test program.
