@@ -121,6 +121,9 @@ public class fparser
       {
         output_dom = true;
         dompath = args[1];
+        // Assume the current dir if full path not given
+        if (dompath.lastIndexOf("/") == -1)
+          dompath = "./" + dompath;
         // Check to see if the path exists and is writeable by the current user
         File f = new File(dompath.substring(0,dompath.lastIndexOf("/")));
         System.out.println("dom output file = " + f.toString());
@@ -238,8 +241,7 @@ public class fparser
                 else
                   return;
               }
-            BufferedWriter out = new BufferedWriter(new FileWriter(filepath
-                                                                   + ".xml"));
+            BufferedWriter out = new BufferedWriter(new FileWriter(dompath));
             writeDOM(dom, out);
             System.out.println("A DOM has been generated and output to "
                                + dompath);
