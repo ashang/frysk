@@ -58,19 +58,28 @@
 #include "frysk/sys/cni/Errno.hxx"
 
 /**
+ * Like asprintf, only it returns a Java string.
+ */
+jstring
+ajprintf (const char *fmt, ...)
+{
+  va_list ap;
+  va_start (ap, fmt);
+  jstring jmessage = vajprintf(fmt, ap);
+  va_end (ap);
+  return jmessage;
+}
+
+/**
  * Like vasprintf, only it returns a Java string.
  */
 jstring
-vajprintf (const char *fmt, ...)
+vajprintf (const char *fmt, va_list ap)
 {
-  jstring jmessage;
   char* message = NULL;
-  va_list ap;
-  va_start (ap, fmt);
   if (::vasprintf (&message, fmt, ap) < 0)
     throw new frysk::sys::Errno ();
-  va_end (ap);
-  jmessage = JvNewStringLatin1 (message, strlen (message));
+  jstring jmessage = JvNewStringUTF (message);
   ::free (message);
   return jmessage;
 }
@@ -119,13 +128,13 @@ throwErrno (int err, jstring jmessage)
 void
 throwErrno (int err, const char *prefix, const char *suffix)
 {
-  throwErrno (err, vajprintf ("%s: %s (%s)", prefix, strerror (err), suffix));
+  throwErrno (err, ajprintf ("%s: %s (%s)", prefix, strerror (err), suffix));
 }
 
 void
 throwErrno (int err, const char *prefix, const char *suffix, int val)
 {
-  throwErrno (err, vajprintf ("%s: %s (%s %d)", prefix, strerror (err),
+  throwErrno (err, ajprintf ("%s: %s (%s %d)", prefix, strerror (err),
 			      suffix, val));
 
 }
@@ -133,7 +142,7 @@ throwErrno (int err, const char *prefix, const char *suffix, int val)
 void
 throwErrno (int err, const char *prefix)
 {
-  throwErrno (err, vajprintf ("%s: %s", prefix, strerror (err)));
+  throwErrno (err, ajprintf ("%s: %s", prefix, strerror (err)));
 }
 
 void
@@ -157,7 +166,7 @@ void
 throwRuntimeException (const char *message, const char *suffix, int val)
 {
   throw new java::lang::RuntimeException
-    (vajprintf ("%s (%s %d)", message, suffix, val));
+    (ajprintf ("%s (%s %d)", message, suffix, val));
 }
 
 int
@@ -257,4 +266,58 @@ fill_string (void *p, jstring s)
   }
   else
     return NULL;
+}
+
+/**
+ * Print a log message to a java logger, uses printf notation.
+ */
+void 
+logMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
+char *message, ...)
+{
+	if (logger->isLoggable(level))
+		return;
+		 
+	va_list argp;
+	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
+
+	elements(params)[0] = myThis;
+	
+	va_start(argp, message);
+	jstring jmessage = vajprintf(message, argp);	
+	va_end(argp);
+	
+	elements(params)[1] = jmessage;
+
+	logger->log(level, JvNewStringUTF("{0} {1}\n"), params);
+}
+
+/*
+ * Print a log message to a java logger, uses java objects, in a vararg format.
+ */
+void
+jLogMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
+char *message, ...)
+{
+	if (logger->isLoggable(level))
+		return;
+	
+	int count = 0;
+	va_list argp;	
+	
+	va_start(argp, message);
+	while (va_arg(argp, jobject) != NULL)
+		count++;
+	va_end(argp);
+	
+	jobjectArray params = JvNewObjectArray(count+1, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
+	va_start(argp, message);
+	for (int i = 1; i < count + 1; i++)
+	{
+		elements(params)[i] = va_arg(argp, jobject);
+	}	
+	va_end(argp);
+	
+	logger->log(level, ajprintf("{0} %s", message), params);
 }

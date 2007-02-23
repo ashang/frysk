@@ -37,6 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdarg.h>
+
+#include "java/util/logging/Logger.h"
+#include "java/util/logging/Level.h"
+
 // <<prefix>>: <<strerror(err)>>
 extern void throwErrno (int err, const char *prefix)
   __attribute__ ((noreturn));
@@ -58,8 +63,10 @@ extern void throwRuntimeException (const char *message, const char *suffix,
 /**
  * Like asprintf, only it returns a java string.
  */
-extern jstring vajprintf (const char *fmt, ...)
+extern jstring ajprintf (const char *fmt, ...)
   __attribute__ ((format (printf, 1, 2)));
+  
+extern jstring vajprintf (const char *fmt, va_list ap);
 
 
 /**
@@ -83,3 +90,16 @@ extern char** fill_argv (void* p, jstringArray argv);
 extern size_t sizeof_string (jstring s);
 extern char* fill_string (void* p, jstring s);
 #define ALLOCA_STRING(S) (fill_string (alloca (sizeof_string (S)), (S)))
+
+/**
+ * Print a log message to a java logger, uses printf notation.
+ */
+extern void logMessage(jobject myThis, java::util::logging::Logger* logger, 
+	java::util::logging::Level* level, char *message, ...)	
+	__attribute__ ((format (printf, 4, 5)));
+
+/*
+ * Print a log message to a java logger, uses java objects, in a vararg format.
+ */
+extern void jLogMessage(jobject myThis, java::util::logging::Logger* logger, 
+	java::util::logging::Level* level, char *message, ...);

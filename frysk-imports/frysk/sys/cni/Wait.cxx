@@ -113,11 +113,11 @@ log (pid_t pid, int status, int err)
       sig = WTERMSIG (status);
       sig_name = strsignal (sig);
     }
-    message = vajprintf ("frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
+    message = ajprintf ("frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
 			 pid, status, wif_name, sig, sig_name);
   }
   else
-    message = vajprintf ("frysk.sys.Wait pid %d errno %d (%s)\n",
+    message = ajprintf ("frysk.sys.Wait pid %d errno %d (%s)\n",
 			 pid, err, strerror (err));
   // Lacks "{0}"
   logger->log (java::util::logging::Level::FINE, message);

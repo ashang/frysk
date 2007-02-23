@@ -1,3 +1,12 @@
+2007-02-23  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Errno.hxx (ajprintf): Added
+	(vajprintf): Changed format to be similar to vasprintf.
+	(logMessage): Added.
+	(jLogMessage): Added.
+	* cni/Errno.cxx: Ditto.
+	* cni/Wait.cxx: Reflect changes to vajprintf and introduction of ajprintf.
+
 2007-02-22  Andrew Cagney  <cagney@redhat.com>
 
 	* PseudoTerminal.java (RedirectStdio.reopen): Make native.
