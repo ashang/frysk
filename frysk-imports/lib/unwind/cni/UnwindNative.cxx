@@ -72,7 +72,8 @@
 /*
  * Get misc. proc info
  */
-int native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip, 
+int 
+native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip, 
 		    ::unw_proc_info_t *pip, int need_unwind_info,
 		    void *arg)
 {
@@ -98,7 +99,8 @@ int native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 /*
  * Free space allocated during find_proc_info
  */
-void native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
+void 
+native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		      void *arg)
 {
 	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo();
@@ -118,7 +120,8 @@ void native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info
 /*
  * Get the head of the dynamic unwind registration list.
  */
-int native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
+int 
+native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 			    void *arg)
 {
 	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
@@ -129,7 +132,8 @@ int native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 /*
  * Perform memory read/write.
  */
-int native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
+int 
+native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 		::unw_word_t *valp, int write, void *arg) 
 {
 	jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
@@ -144,7 +148,8 @@ int native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 /*
  * perform register read/write
  */
-int native_access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
+int 
+native_access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	       ::unw_word_t *valp, int write, void *arg)
 {
 	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
@@ -163,7 +168,8 @@ int native_access_reg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 /*
  * Perform a floating point register read/write
  */
-int native_access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
+int 
+native_access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 		 ::unw_fpreg_t *fpvalp, int write, void *arg)
 { 	
 	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
@@ -178,7 +184,8 @@ int native_access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 /*
  * Resumes the process at the provided stack level
  */
-int native_resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
+int 
+native_resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 {	
 	return (int) ((lib::unwind::Accessors *)arg)->resume (
 	(lib::unwind::Cursor *) cp);
@@ -188,7 +195,8 @@ int native_resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
  * Returns the name of the procedure that the provided address is in as well as
  * the offset from the start of the procedure.
  */
-int native_get_proc_name(::unw_addr_space_t as,
+int 
+native_get_proc_name(::unw_addr_space_t as,
 		  ::unw_word_t addr, char *bufp,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
@@ -209,7 +217,7 @@ gnu::gcj::RawDataManaged*
 lib::unwind::UnwindNative::initRemote(gnu::gcj::RawData* addressSpace, 
 lib::unwind::Accessors* accessors)
 {
-	logMessage(this, logger, java::util::logging::Level::FINE, "native initRemote");
+	logFine(this, logger, "native initRemote");
 	gnu::gcj::RawDataManaged *cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
 		
 	unw_init_remote((unw_cursor_t *) cursor, 
@@ -221,8 +229,7 @@ lib::unwind::Accessors* accessors)
 gnu::gcj::RawData*
 lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
 {
-	logMessage(this, logger, java::util::logging::Level::FINE, 
-	"createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
+	logFine(this, logger, "createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
 	static unw_accessors_t accessors = {
 		native_find_proc_info ,
 		native_put_unwind_info, 
@@ -239,6 +246,7 @@ lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder
 void
 lib::unwind::UnwindNative::destroyAddressSpace(gnu::gcj::RawData* addressSpace)
 {
+	jLogFine(this, logger, "destroyAddressSpace addressSpace: {1}", addressSpace);
 	unw_destroy_addr_space((unw_addr_space_t) addressSpace);	
 }
 
@@ -246,6 +254,8 @@ void
 lib::unwind::UnwindNative::setCachingPolicy(gnu::gcj::RawData* addressSpace, 
 lib::unwind::CachingPolicy* cachingPolicy)
 {
+	jLogFine(this, logger, "setCachingPolicy addressSpace: {1}, cachingPolicy: {2}", 
+	addressSpace, cachingPolicy);
 	unw_set_caching_policy((unw_addr_space_t) addressSpace, 
 	(unw_caching_policy_t) cachingPolicy->hashCode());
 }
@@ -253,19 +263,23 @@ lib::unwind::CachingPolicy* cachingPolicy)
 jint
 lib::unwind::UnwindNative::isSignalFrame(gnu::gcj::RawDataManaged* cursor)
 {
+	jLogFine(this, logger, "isSignalFrame cursor: {1}", cursor);
 	return unw_is_signal_frame((unw_cursor_t *) cursor);
 }
 
 jint
 lib::unwind::UnwindNative::step(gnu::gcj::RawDataManaged* cursor)
 {
+	jLogFine (this, logger, "step cursor: {1}", cursor);
 	return unw_step((unw_cursor_t *) cursor);
 }
 
 lib::unwind::ProcName*
 lib::unwind::UnwindNative::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameSize)
 {
-	logMessage(this, logger, java::util::logging::Level::FINE, "getProcName");
+	jLogFine (this, logger, "getProcName: cursor: {1}.", cursor);
+	logFine (this, logger, "getProcName: maxNameSize: %d", (int) maxNameSize);
+	
 	char bufp[maxNameSize];
 	unw_word_t offset;
 	unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);

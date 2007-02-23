@@ -57,6 +57,8 @@
 #include "lib/unwind/AddressSpace.h"
 #include "lib/unwind/ByteOrder.h"
 
+#include "frysk/sys/cni/Errno.hxx"
+
 static inline unw_word_t* getWord(jbyteArray value)
 {
 	return (unw_word_t *) elements(value);
@@ -65,6 +67,7 @@ jint
 lib::unwind::PtraceAccessors::accessFPReg (jint regnum, jbyteArray fpvalp, 
 										   jboolean write)
 {
+	logFine(this, logger, "accessFPReg regnum: %d write: %d", (int) regnum, (int) write);
 	if ((int) JvGetArrayLength(fpvalp) >= (int) sizeof (unw_fpreg_t))
 		_UPT_access_fpreg((unw_addr_space_t ) addressSpace,
 						  (unw_regnum_t ) regnum,
@@ -77,6 +80,7 @@ jint
 lib::unwind::PtraceAccessors::accessMem (jlong addr, jbyteArray valp, 
 										 jboolean write)
 {
+	logFine (this, logger, "accessMem address: %ld, write: %d", (long) addr, (int) write);
 	if ((int) JvGetArrayLength(valp) >= (int) sizeof (unw_word_t))
 	return (jint) _UPT_access_mem((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
 					getWord(valp), (int) write, (void *) ptArgs);
@@ -88,6 +92,7 @@ jint
 lib::unwind::PtraceAccessors::accessReg (jint regnum, jbyteArray valp, 
 										 jboolean write)
 {
+	logFine(this, logger, "accessReg regnum: %d, write: %d", (int) regnum, (int) write);
 	jint ret = -1;
 	
 	if ((int) JvGetArrayLength(valp) >= (int) sizeof (unw_word_t))
@@ -100,6 +105,7 @@ lib::unwind::PtraceAccessors::accessReg (jint regnum, jbyteArray valp,
 lib::unwind::ProcInfo*
 lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 {
+	logFine(this, logger, "findProcInfo ip: %ld, needUnwindInfo %d", (long) ip, (int) needUnwindInfo);
 	unw_proc_info_t proc_info = {};
 	_UPT_find_proc_info((unw_addr_space_t) addressSpace, (unw_word_t) ip, &proc_info,
 					(int) needUnwindInfo, (void *) ptArgs);
@@ -121,6 +127,7 @@ lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 jint 
 lib::unwind::PtraceAccessors::getDynInfoListAddr (jbyteArray dilap)
 {
+	logFine(this, logger, "findProcInfo");
 	return (jint) _UPT_get_dyn_info_list_addr((unw_addr_space_t) addressSpace, getWord(dilap), 
 								(void *) ptArgs);
 }
@@ -128,6 +135,7 @@ lib::unwind::PtraceAccessors::getDynInfoListAddr (jbyteArray dilap)
 lib::unwind::ProcName* 
 lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 {	
+	logFine(this, logger, "getProcName address: %ld, maxNameSize: %d", (long) addr, (int) maxNameSize);
 	char buffp[maxNameSize];
 	unw_word_t * offset = NULL;
 	_UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
@@ -141,6 +149,7 @@ lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 void 
 lib::unwind::PtraceAccessors::putUnwindInfo (lib::unwind::ProcInfo *procInfo)
 {
+	jLogFine(this, logger, "putUnwindInfo procInfo: {1}", procInfo);
 	unw_proc_info_t proc_info;
 		
 	proc_info.start_ip = (unw_word_t) procInfo->startIP;
@@ -162,6 +171,7 @@ lib::unwind::PtraceAccessors::putUnwindInfo (lib::unwind::ProcInfo *procInfo)
 jint 
 lib::unwind::PtraceAccessors::resume (lib::unwind::Cursor *cursor)
 {
+	jLogFine(this, logger, "resume cursor : {1}", cursor);
 	return _UPT_resume((unw_addr_space_t) addressSpace, (unw_cursor_t *) cursor->cursor,
 				(void *) ptArgs);
 }
@@ -169,6 +179,7 @@ lib::unwind::PtraceAccessors::resume (lib::unwind::Cursor *cursor)
 gnu::gcj::RawData*
 lib::unwind::PtraceAccessors::createAddressSpace (lib::unwind::ByteOrder* byteOrder)
 {
+	logFine(this, logger, "createAddressSpace: %d",(int) byteOrder->hashCode());	
 	return (gnu::gcj::RawData *) unw_create_addr_space (&_UPT_accessors, byteOrder->hashCode());
 }
 
@@ -203,12 +214,14 @@ lib::unwind::PtraceAccessors::detachXXX(jint pid)
 gnu::gcj::RawData*
 lib::unwind::PtraceAccessors::createPtArg (jint pid)
 {
+	logFine(this, logger, "createPtArg pid: %d", (int) pid);
 	return (gnu::gcj::RawData *) _UPT_create(pid); 
 }
 
 void
 lib::unwind::PtraceAccessors::finalize()
 {
+	logFine(this, logger, "finalize");
 	unw_destroy_addr_space((unw_addr_space_t) addressSpace);
 	addressSpace = NULL;
 	_UPT_destroy ((void*) ptArgs);
