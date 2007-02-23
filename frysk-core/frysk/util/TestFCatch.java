@@ -97,9 +97,19 @@ public class TestFCatch
   {
     private StringBuffer stackTrace = new StringBuffer();
 
-    private int numAdds;
+    protected int numAdds;
 
     private Proc proc;
+
+    protected SignalObserver signalObserver;
+
+    protected int numTasks;
+
+    protected Task sigTask;
+
+    protected int sig;
+
+    private Blocker blocker;
 
     public FCatchTester ()
     {
@@ -147,6 +157,10 @@ public class TestFCatch
         }
     }
 
+    /**
+     * An observer that sets up things once frysk has set up the requested proc
+     * and attached to it.
+     */
     class CatchObserver
         implements TaskObserver.Attached, TaskObserver.Cloned,
         TaskObserver.Terminating, TaskObserver.Terminated
@@ -154,8 +168,11 @@ public class TestFCatch
       public Action updateAttached (Task task)
       {
         logger.log(Level.FINE, "{0} updateAttached", task);
-        SignalObserver sigo = new SignalObserver();
-        task.requestAddSignaledObserver(sigo);
+        // System.err.println("CatchObserver.updateAttached on" + task);
+        if (signalObserver == null)
+          signalObserver = new SignalObserver();
+
+        task.requestAddSignaledObserver(signalObserver);
         task.requestAddClonedObserver(this);
         task.requestAddTerminatingObserver(this);
         task.requestAddTerminatedObserver(this);
@@ -166,6 +183,7 @@ public class TestFCatch
       public Action updateClonedParent (Task parent, Task offspring)
       {
         logger.log(Level.FINE, "{0} updateClonedParent", parent);
+        // System.out.println("Cloned.updateParent");
         parent.requestUnblock(this);
         return Action.BLOCK;
       }
@@ -173,7 +191,11 @@ public class TestFCatch
       public Action updateClonedOffspring (Task parent, Task offspring)
       {
         logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
+        // System.err.println("CatchObserver.updateClonedOffspring " +
+        // offspring);
+        numTasks = offspring.getProc().getTasks().size();
         SignalObserver sigo = new SignalObserver();
+
         offspring.requestAddSignaledObserver(sigo);
         offspring.requestAddTerminatingObserver(this);
         offspring.requestAddClonedObserver(this);
@@ -185,20 +207,25 @@ public class TestFCatch
       public Action updateTerminating (Task task, boolean signal, int value)
       {
         logger.log(Level.FINE, "{0} updateTerminating", task);
-
+        // System.err.println("CatchObserver.updateTerminating on " + task + " "
+        // + value + " " + numTasks);
         return Action.CONTINUE;
       }
 
       public Action updateTerminated (Task task, boolean signal, int value)
       {
         logger.log(Level.FINE, "{0} updateTerminated", task);
+        // System.err.println("CatchObserver.updateTerminated " + task);
+        // if (--FCatch.this.numTasks <= 0)
+        // Manager.eventLoop.requestStop();
+
         return Action.CONTINUE;
       }
 
       public void addedTo (Object observable)
       {
         logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
-        // System.out.println("CatchObserver.addedTo " + numAdds);
+        // System.out.println("CatchObserver.addedTo " + (Task) observable);
         ++numAdds;
         if (numAdds == ((Task) observable).getProc().getTasks().size() * 4)
           Manager.eventLoop.requestStop();
@@ -218,57 +245,51 @@ public class TestFCatch
     class SignalObserver
         implements TaskObserver.Signaled
     {
-      private int triggered;
-
-      private boolean added;
-
-      private boolean removed;
 
       public Action updateSignaled (Task task, int signal)
       {
         logger.log(Level.FINE, "{0} updateSignaled", task);
-
-        switch (signal)
+        // System.err.println("SignalObserver.updateSignaled");
+        sigTask = task;
+        sig = signal;
+        numTasks = task.getProc().getTasks().size();
+        // stackTrace.append("fcatch: from PID " + task.getProc().getPid() + "
+        // TID "
+        // + task.getTid() + ":\n");
+        blocker = new Blocker();
+        Iterator i = task.getProc().getTasks().iterator();
+        while (i.hasNext())
           {
-          case 2:
-            // System.out.println("SIGHUP detected: dumping stack trace");
-            generateStackTrace(task);
-            break;
-          case 3:
-            // System.out.println("SIGQUIT detected: dumping stack trace");
-            generateStackTrace(task);
-            // System.exit(0);
-            break;
-          case 6:
-            // System.out.println("SIGABRT detected: dumping stack trace");
-            generateStackTrace(task);
-            // System.exit(0);
-            break;
-          case 9:
-            // System.out.println("SIGKILL detected: dumping stack trace");
-            generateStackTrace(task);
-            // System.exit(0);
-            break;
-          case 11:
-            // System.out.println("SIGSEGV detected: dumping stack trace");
-            generateStackTrace(task);
-            // System.exit(0);
-            break;
-          case 15:
-            // System.out.println("SIGTERM detected: dumping stack trace");
-            // System.exit(0);
-            break;
-          default:
-            // System.out.println("Signal detected: dumping stack trace");
-            generateStackTrace(task);
+            Task t = (Task) i.next();
+            t.requestAddInstructionObserver(blocker);
           }
-
-        return Action.CONTINUE;
+        return Action.BLOCK;
       }
 
-      int getTriggered ()
+      public void addFailed (Object observable, Throwable w)
       {
-        return triggered;
+        w.printStackTrace();
+      }
+
+      public void addedTo (Object observable)
+      {
+        logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
+        // System.err.println("SignalObserver.addedTo");
+      }
+
+      public void deletedFrom (Object observable)
+      {
+        logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+      }
+    }
+
+    class Blocker
+        implements TaskObserver.Instruction
+    {
+      public Action updateExecuted (Task task)
+      {
+        handleTaskBlock(task);
+        return Action.BLOCK;
       }
 
       public void addFailed (Object observable, Throwable w)
@@ -281,25 +302,16 @@ public class TestFCatch
         logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
       }
 
-      public boolean isAdded ()
-      {
-        return added;
-      }
-
       public void deletedFrom (Object observable)
       {
         logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
-      }
-
-      public boolean isRemoved ()
-      {
-        return removed;
       }
     }
 
     private void generateStackTrace (Task task)
     {
       logger.log(Level.FINE, "{0} generateStackTrace", task);
+      --numTasks;
       StackFrame frame = null;
       try
         {
@@ -314,7 +326,6 @@ public class TestFCatch
       int i = 0;
       while (frame != null)
         {
-          // System.out.println(frame.toPrint(false));
           this.stackTrace.append("#" + i + " ");
           this.stackTrace.append(frame.toPrint(false));
           this.stackTrace.append("\n");
@@ -322,7 +333,6 @@ public class TestFCatch
           i++;
         }
 
-      Manager.eventLoop.requestStop();
       logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
     }
 
@@ -330,6 +340,29 @@ public class TestFCatch
     {
       return this.stackTrace.toString();
     }
-  }
 
+    public String toString ()
+    {
+      String trace = this.stackTrace.toString();
+      System.out.println(trace);
+      return trace;
+    }
+
+    public void handleTaskBlock (Task task)
+    {
+      generateStackTrace(task);
+
+      if (numTasks <= 0)
+        {
+          Manager.eventLoop.requestStop();
+          sigTask.requestUnblock(signalObserver);
+          Iterator i = task.getProc().getTasks().iterator();
+          while (i.hasNext())
+            {
+              Task t = (Task) i.next();
+              t.requestDeleteInstructionObserver(blocker);
+            }
+        }
+    }
+  }
 }

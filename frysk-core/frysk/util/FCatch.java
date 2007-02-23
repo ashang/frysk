@@ -37,17 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.util;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -62,31 +60,39 @@ public class FCatch
 {
 
   private Proc proc;
-  
+
   private int numTasks = 0;
-  
+
   //True if we're tracing children as well.
   boolean traceChildren;
-  
+
   boolean firstCall = true;
-  
+
   private StringBuffer stackTrace = new StringBuffer();
-  
+
+  private Blocker blocker;
+
+  private SignalObserver signalObserver;
+
+  int sig;
+
+  private Task sigTask;
+
   //Set of ProcId objects we trace; if traceChildren is set, we also
   // look for their children.
   HashSet tracedParents = new HashSet();
-  
+
   ProcId procID = null;
-  
+
   protected static final Logger logger = Logger.getLogger("frysk");
-  
+
   StackFrame[] frames;
-  
+
   public void trace (String[] command, boolean attach)
   {
     logger.log(Level.FINE, "{0} trace", this);
     Manager.host.requestRefreshXXX(true);
-    
+
     if (attach == true)
       init();
     else
@@ -96,35 +102,23 @@ public class FCatch
           Manager.host.requestCreateAttachedProc(command, new CatchObserver());
         else
           {
-            System.out.println("fcatch: can't find executable!");
+            System.err.println("fcatch: can't find executable!");
             System.exit(1);
           }
       }
-    
+
     Manager.eventLoop.start();
     logger.log(Level.FINE, "{0} exiting trace", this);
   }
-  
-//  public void trace ()
-//  {
-//    logger.log(Level.FINE, "{0} trace", this);
-//    //System.out.println("trace");
-//    Manager.host.requestRefreshXXX(true);
-//    init();
-//    Manager.eventLoop.start();
-//    logger.log(Level.FINE, "{0} exiting trace", this);
-//  }
 
   private void init ()
   {
     logger.log(Level.FINE, "{0} init", this);
-     //System.out.println("in Init() " + this.procID);
 
     Manager.host.requestFindProc(this.procID, new Host.FindProc()
     {
       public void procFound (ProcId procId)
       {
-        //System.out.println("procFOund " + procId);
         proc = Manager.host.getProc(procId);
         iterateTasks();
       }
@@ -137,17 +131,16 @@ public class FCatch
     });
     logger.log(Level.FINE, "{0} exiting init", this);
   }
-  
+
   private void iterateTasks ()
   {
     Iterator i = proc.getTasks().iterator();
-    //System.out.println("proc: " + proc + proc.getMainTask() + " tasks.size: " + proc.getTasks().size());
     while (i.hasNext())
       {
         ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
       }
   }
-  
+
   synchronized void handleTask (Task task)
   {
     if (firstCall == true)
@@ -156,18 +149,18 @@ public class FCatch
         proc = task.getProc();
       }
   }
-  
-  public void addTracePid(int id)
-    {
-      logger.log(Level.FINE, "{0} addTracePid", new Integer(id));
-      //System.out.println("addtracepid " + id);
-        tracedParents.add(new ProcId(id));
-        this.procID = new ProcId(id);
-    }
+
+  public void addTracePid (int id)
+  {
+    logger.log(Level.FINE, "{0} addTracePid", new Integer(id));
+    tracedParents.add(new ProcId(id));
+    this.procID = new ProcId(id);
+  }
 
   private void generateStackTrace (Task task)
   {
     logger.log(Level.FINE, "{0} generateStackTrace", task);
+    --this.numTasks;
     StackFrame frame = null;
     try
       {
@@ -191,162 +184,175 @@ public class FCatch
 
     logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
   }
-  
-  public final void removeObservers (Proc proc)
-  {
-    proc.requestAbandon();
-    proc.observableDetached.addObserver(new Observer()
-    {
-      public void update (Observable o, Object arg)
-      {
-        Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
-      }
-    });
-  }
-  
-  public String getStackTrace()
+
+  public String getStackTrace ()
   {
     return this.stackTrace.toString();
   }
-  
-  public String toString()
+
+  public String toString ()
   {
     String trace = this.stackTrace.toString();
     System.out.println(trace);
     return trace;
   }
-  
+
+  public void handleTaskBlock (Task task)
+  {
+    switch (sig)
+      {
+      case 2:
+        stackTrace.append("SIGHUP detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      case 3:
+        stackTrace.append("SIGQUIT detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      case 6:
+        stackTrace.append("SIGABRT detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      case 9:
+        stackTrace.append("SIGKILL detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      case 11:
+        stackTrace.append("SIGSEGV detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      case 15:
+        stackTrace.append("SIGTERM detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      default:
+        stackTrace.append("Signal " + sig
+                          + " detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        generateStackTrace(task);
+        break;
+      }
+
+    if (numTasks <= 0)
+      {
+        System.out.println(FCatch.this.stackTrace.toString());
+        sigTask.requestUnblock(signalObserver);
+        Iterator i = task.getProc().getTasks().iterator();
+        while (i.hasNext())
+          {
+            Task t = (Task) i.next();
+            t.requestDeleteInstructionObserver(blocker);
+          }
+      }
+  }
+
   /**
-     * An observer that sets up things once frysk has set up
-     * the requested proc and attached to it.
-     */
-    class CatchObserver
-    implements TaskObserver.Attached, TaskObserver.Cloned,
-    TaskObserver.Terminating, TaskObserver.Terminated
+   * An observer that sets up things once frysk has set up
+   * the requested proc and attached to it.
+   */
+  class CatchObserver
+      implements TaskObserver.Attached, TaskObserver.Cloned,
+      TaskObserver.Terminating, TaskObserver.Terminated
+  {
+    public Action updateAttached (Task task)
     {
-        public Action updateAttached (Task task)
-        {
-          logger.log(Level.FINE, "{0} updateAttached", task);
-          //System.out.println("attached.updateattached");
-            SignalObserver sigo = new SignalObserver();
-            task.requestAddSignaledObserver(sigo);
-            task.requestAddClonedObserver(this);
-            task.requestAddTerminatingObserver(this);
-            task.requestAddTerminatedObserver(this);
-            task.requestUnblock(this);
-            return Action.BLOCK;
-        }
-        
-        public Action updateClonedParent (Task parent, Task offspring)
-        {
-          logger.log(Level.FINE, "{0} updateClonedParent", parent);
-          //System.out.println("Cloned.updateParent");
-          parent.requestUnblock(this);
-          return Action.BLOCK;
-        }
+      logger.log(Level.FINE, "{0} updateAttached", task);
+      //          System.err.println("CatchObserver.updateAttached on" + task);
+      if (signalObserver == null)
+        signalObserver = new SignalObserver();
 
-        public Action updateClonedOffspring (Task parent, Task offspring)
-        {
-          logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
-          //System.out.println("Cloned.updateOffspring " + offspring);
-          
-          FCatch.this.numTasks = offspring.getProc().getTasks().size();
-          SignalObserver sigo = new SignalObserver();
-          
-          offspring.requestAddSignaledObserver(sigo);
-          offspring.requestAddTerminatingObserver(this);
-          offspring.requestAddClonedObserver(this);
-          offspring.requestAddTerminatedObserver(this);
-          offspring.requestUnblock(this);
-          return Action.BLOCK;
-        }
-        
-        public Action updateTerminating (Task task, boolean signal, int value)
-        {
-          logger.log(Level.FINE, "{0} updateTerminating", task);
-          //System.out.println("TermObserver.updateTerminating " + task + " " +  numTasks);
-          if (--FCatch.this.numTasks <= 0)
-            Manager.eventLoop.requestStop();
-
-          return Action.CONTINUE;
-        }
-
-        public Action updateTerminated (Task task, boolean signal, int value)
-        {
-          logger.log(Level.FINE, "{0} updateTerminated", task);
-          //System.out.println("TermObserver.updateTerminated " + task + " " + numTasks);
-//          if (--FCatch.this.numTasks <= 0)
-//            Manager.eventLoop.requestStop();
-          
-          return Action.CONTINUE;
-        }
-        
-        public void addedTo (Object observable)
-        {
-          logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
-            //System.out.println("CatchObserver.addedTo " + (Task) observable);
-        }
-        
-        public void addFailed (Object observable, Throwable w)
-        {
-            throw new RuntimeException("Failed to attach to created proc", w);
-        }
-        
-        public void deletedFrom (Object observable)
-        {
-          logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
-        }
+      task.requestAddSignaledObserver(signalObserver);
+      task.requestAddClonedObserver(this);
+      task.requestAddTerminatingObserver(this);
+      task.requestAddTerminatedObserver(this);
+      task.requestUnblock(this);
+      return Action.BLOCK;
     }
-        
-    class SignalObserver
+
+    public Action updateClonedParent (Task parent, Task offspring)
+    {
+      logger.log(Level.FINE, "{0} updateClonedParent", parent);
+      //System.out.println("Cloned.updateParent");
+      parent.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public Action updateClonedOffspring (Task parent, Task offspring)
+    {
+      logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
+      //          System.err.println("CatchObserver.updateClonedOffspring " + offspring);
+      FCatch.this.numTasks = offspring.getProc().getTasks().size();
+      SignalObserver sigo = new SignalObserver();
+
+      offspring.requestAddSignaledObserver(sigo);
+      offspring.requestAddTerminatingObserver(this);
+      offspring.requestAddClonedObserver(this);
+      offspring.requestAddTerminatedObserver(this);
+      offspring.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+      logger.log(Level.FINE, "{0} updateTerminating", task);
+      //          System.err.println("CatchObserver.updateTerminating on " + task + " " + value + " " + numTasks);
+      return Action.CONTINUE;
+    }
+
+    public Action updateTerminated (Task task, boolean signal, int value)
+    {
+      logger.log(Level.FINE, "{0} updateTerminated", task);
+      //          System.err.println("CatchObserver.updateTerminated " + task);
+      if (--FCatch.this.numTasks <= 0)
+        Manager.eventLoop.requestStop();
+
+      return Action.CONTINUE;
+    }
+
+    public void addedTo (Object observable)
+    {
+      logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
+      //System.out.println("CatchObserver.addedTo " + (Task) observable);
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+    }
+  }
+
+  class SignalObserver
       implements TaskObserver.Signaled
   {
 
     public Action updateSignaled (Task task, int signal)
     {
       logger.log(Level.FINE, "{0} updateSignaled", task);
+      //      System.err.println("SignalObserver.updateSignaled");
+      sigTask = task;
+      FCatch.this.sig = signal;
       FCatch.this.numTasks = task.getProc().getTasks().size();
-      System.out.println("From PID: " + task.getProc().getPid() + " TID: " + task.getTid());
-      switch (signal)
+      stackTrace.append("fcatch: from PID " + task.getProc().getPid() + " TID "
+                        + task.getTid() + ":\n");
+      blocker = new Blocker();
+      Iterator i = task.getProc().getTasks().iterator();
+      while (i.hasNext())
         {
-        case 2:
-          System.out.println("SIGHUP detected: dumping stack trace");
-          generateStackTrace(task);
-          break;
-        case 3:
-          System.out.println("SIGQUIT detected: dumping stack trace");
-          generateStackTrace(task);
-          //System.exit(0);
-          break;
-        case 6:
-          System.out.println("SIGABRT detected: dumping stack trace");
-          generateStackTrace(task);
-          //System.exit(0);
-          break;
-        case 9:
-          System.out.println("SIGKILL detected: dumping stack trace");
-          generateStackTrace(task);
-          //System.exit(0);
-          break;
-        case 11:
-          System.out.println("SIGSEGV detected: dumping stack trace");
-          generateStackTrace(task);
-          //System.exit(0);
-          break;
-        case 15:
-          System.out.println("SIGTERM detected: dumping stack trace");
-          generateStackTrace(task);
-          //System.exit(0);
-          break;
-        default:
-          System.out.println("Signal detected: dumping stack trace");
-          generateStackTrace(task);
-          break;
+          Task t = (Task) i.next();
+          t.requestAddInstructionObserver(blocker);
         }
-
-      System.out.println(FCatch.this.stackTrace.toString());
-      
-      return Action.CONTINUE;
+      return Action.BLOCK;
     }
 
     public void addFailed (Object observable, Throwable w)
@@ -357,7 +363,32 @@ public class FCatch
     public void addedTo (Object observable)
     {
       logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
-      //System.out.println("sig.addedTo");
+      //      System.err.println("SignalObserver.addedTo");
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
+    }
+  }
+
+  class Blocker
+      implements TaskObserver.Instruction
+  {
+    public Action updateExecuted (Task task)
+    {
+      handleTaskBlock(task);
+      return Action.BLOCK;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      w.printStackTrace();
+    }
+
+    public void addedTo (Object observable)
+    {
+      logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
     }
 
     public void deletedFrom (Object observable)

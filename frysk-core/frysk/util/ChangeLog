@@ -1,3 +1,29 @@
+2007-02-23  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java (Blocker): Added. TaskObserver.Instruction blocking
+	observer class.
+	(signalObserver): Added. Add the same SignalObserver to each of the
+	Tasks.
+	(generateStackTrace): Decrement the numTasks counter.
+	(removeObservers): Removed.
+	(handleTaskBlock): Added. Switches on the signal value to appropriate 
+	update the stack trace StringBuffer. If all the tasks of the process 
+	have passed through, prints the StringBuffer and unblocks all the tasks.
+	Fixes #3932.
+	(CatchObserver.updateAttached): Initialize the global SignalObserver if 
+	it is null, and add to each task that passes through.
+	(CatchObserver.updateTerminating): Removed eventloop stopping code.
+	(CatchObserver.updateTerminated): Requests a stop from the eventloop if 
+	all the Tasks have completed stack tracing and are unblocked and
+	terminated. Fixes #3932.
+	(SignalObserver.updateSignaled): Assign some global variables from the 
+	signaled Task. Moved switch statement and stack trace calls to 
+	handleTaskBlock(). Block each of the threads of the process with an
+	InstructionObserver. Fixes #4092.
+	* TestFCatch.java: Added some more fields reflecting the above updates.
+	(FCatchTester.Blocker): Added. Blocking TaskObserver.Instruction observer.
+	(handleTaskBlock): Added.
+
 2007-02-07  Phil Muldoon  <pmuldoon@ups.hsv.redhat.com>
 
 	* CoredumpAction.java (write_elf_file): Remove boolean flag in 
