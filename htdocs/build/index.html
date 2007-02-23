@@ -83,7 +83,7 @@ You will need to install the following:
 
 <pre>
 sudo yum install -y \
-    antlr jdom junit gcc-java gcc-c++ dejagnu \
+    antlr jdom junit gcc-java gcc-c++ \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
     sharutils cvs audit-libs-devel binutils-devel \
@@ -121,7 +121,7 @@ behave weird; and <tt>/proc</tt> is not accessible</li>
 <li>You will need to install a number of packages vis:
 <pre>
 sudo yum install -y \
-    antlr jdom junit gcc-java gcc-c++ dejagnu \
+    antlr jdom junit gcc-java gcc-c++ \
     libglade-java-devel libvte-java-devel \
     automake xmlto transfig eclipse-ecj dogtail \
     sharutils cvs audit-libs-devel yelp
@@ -151,7 +151,7 @@ and <tt><em>frysk</em></tt> RPMs that contain everything needed to
 build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
 
 <pre>
-transfig xmlto passivetex xmltex dejagnu \
+transfig xmlto passivetex xmltex \
 gcc4 gcc4-c++ gcc4-java libgcj4-devel \
 sharutils frysk automake ghostscript yelp
 </pre>
@@ -403,17 +403,6 @@ changes dependant on the presence or absence of <tt>ecj</tt>.</dd>
 <dd>See this link: <a
 href=http://bugzilla.gnome.org/show_bug.cgi?id=356003>accessible
 tutorial</a></dd>
-
-<dt>How do I add a new dejagnu test?</dt>
-<dd> Most of the work for this is done, just create a test_name.exp file and 
-drop it in a directory somewhere under frysk-core/testsuite. Take a look at 
-<pre>frysk-core/testsuite/util/fstack.exp</pre> to see an example.
-</dd>
-<dt>Help "[[:digit:]]" is causing dejagnu to panic with ERROR: (DejaGnu) proc 
-":digit:" does not exist.</dt>
-<dd>Don't use "s to wrap strings in dejagnu/expect/tcl, they cause the symbols 
-inside to be parsed differently. Instead use {}. So this becomes 
-<pre>{[[:digit:]]}</pre></dd>
 
 <dt>Why are @libdir@ and @pkglibdir@ not permitted in man-pages?</dt>
 <dd>Because the path is not identical across 32-bit (e.g.,
