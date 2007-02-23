@@ -41,13 +41,12 @@ package frysk.rt;
 
 public class FrameIdentifier
 {
-
-  private long address;
+  private long functionAddress;
   private long cfa;
   
-  public FrameIdentifier (long address, long cfa)
+  public FrameIdentifier (long functionAddress, long cfa)
   {
-    this.address = address;
+    this.functionAddress = functionAddress;
     this.cfa = cfa;
   }
   
@@ -61,9 +60,11 @@ public class FrameIdentifier
     return this.cfa > fi.getCfa();
   }
   
-  public boolean equals (FrameIdentifier fi)
+  public boolean equals (Object fi)
   {
-    return (this.cfa == fi.getCfa() && this.address == fi.getAddress());
+      FrameIdentifier rhs = (FrameIdentifier)fi;
+      return (this.cfa == rhs.cfa
+	      && this.functionAddress == rhs.functionAddress);
   }
 
   public long getCfa ()
@@ -71,14 +72,14 @@ public class FrameIdentifier
     return this.cfa;
   }
 
-  public long getAddress ()
+  public long getFunctionAddress ()
   {
-    return this.address;
+    return this.functionAddress;
   }
   
   public int hashCode ()
   {
-    return (int) (this.cfa ^ this.address);
+    return (int) (this.cfa ^ this.functionAddress);
   }
   
   public String toString ()
@@ -86,8 +87,8 @@ public class FrameIdentifier
     StringBuffer buffer = new StringBuffer();
     buffer.append("{");
     buffer.append(super.toString());
-    buffer.append(",address=");
-    buffer.append(this.address);
+    buffer.append(",functionAddress=");
+    buffer.append(this.functionAddress);
     buffer.append(",cfa=");
     buffer.append(this.cfa);
     buffer.append("}");

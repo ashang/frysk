@@ -79,8 +79,6 @@ public class StackFrame
   
   private DwflLine dwflLine;
   
-  private FrameIdentifier frameIdentifier;
-  
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
    * 
@@ -137,8 +135,6 @@ public class StackFrame
           }
         this.dwflLine = line;
       }
-    
-    this.frameIdentifier = new FrameIdentifier(this.myCursor.getAddress(), this.myCursor.getCfa());
   }
   
   public StackFrame (Task task)
@@ -465,8 +461,12 @@ public class StackFrame
   
   public FrameIdentifier getFrameIdentifier ()
   {
-    return this.frameIdentifier;
+      if (frameIdentifier != null)
+	  // XXX: This is wrong, it needs to be the function's
+	  // address, and not the current instruction.
+	  frameIdentifier = new FrameIdentifier(myCursor.getAddress(),
+						myCursor.getCfa());
+      return this.frameIdentifier;
   }
-
+  private FrameIdentifier frameIdentifier;
 }
-

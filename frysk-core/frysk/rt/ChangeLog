@@ -1,3 +1,9 @@
+2007-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackFrame.java (testFrameIdentifer): Delete.
+	* TestFrameIdentifier.java: New file.
+	* StackFrame.java: Create the FrameIdentifier on-demand.
+
 2007-02-22  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackFrame.java (testFrameIdentifier): Added. Tests the 
