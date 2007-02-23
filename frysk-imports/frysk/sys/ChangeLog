@@ -1,5 +1,7 @@
 2007-02-23  Nurdin Premji  <npremji@redhat.com>
 
+	* cni/Errno.hxx: Removed below macros.
+
 	* cni/Errno.hxx: Added macros for Level.FINE, FINER, FINEST.
 	* cni/Errno.cxx: Fixed conditional for logging. Should exit if logger is
 	not loggable.

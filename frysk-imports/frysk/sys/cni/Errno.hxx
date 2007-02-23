@@ -42,10 +42,6 @@
 #include "java/util/logging/Logger.h"
 #include "java/util/logging/Level.h"
 
-#define FINE java::util::logging::Level::FINE
-#define FINER java::util::logging::Level::FINER
-#define FINEST java::util::logging::Level::FINEST
-
 // <<prefix>>: <<strerror(err)>>
 extern void throwErrno (int err, const char *prefix)
   __attribute__ ((noreturn));
