@@ -459,14 +459,36 @@ public class StackFrame
     return this.myCursor.set_reg(reg, val);
   }
   
-  public FrameIdentifier getFrameIdentifier ()
-  {
-      if (frameIdentifier != null)
-	  // XXX: This is wrong, it needs to be the function's
-	  // address, and not the current instruction.
-	  frameIdentifier = new FrameIdentifier(myCursor.getAddress(),
-						myCursor.getCfa());
-      return this.frameIdentifier;
-  }
-  private FrameIdentifier frameIdentifier;
+    /**
+     * Return this frame's FrameIdentifier.
+     */
+    public FrameIdentifier getFrameIdentifier ()
+    {
+	if (frameIdentifier != null)
+	    // XXX: This is wrong, it needs to be the function's
+	    // address, and not the current instruction.
+	    frameIdentifier = new FrameIdentifier(myCursor.getAddress(),
+						  myCursor.getCfa());
+	return this.frameIdentifier;
+    }
+    private FrameIdentifier frameIdentifier;
+
+    /**
+     * Return this frame's symbol; UNKNOWN if there is no symbol.
+     */
+    public Symbol getSymbol ()
+    {
+	if (symbol == null) {
+	    String mangledName = myCursor.getProcName ();
+	    if (mangledName == null)
+		symbol = Symbol.UNKNOWN;
+	    else {
+		long address = (myCursor.getAddress ()
+				- myCursor.getProcOffset ());
+		symbol = new Symbol (address, mangledName);
+	    }
+	}
+	return symbol;
+    }
+    private Symbol symbol;
 }

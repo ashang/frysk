@@ -1,6 +1,6 @@
-//This file is part of the program FRYSK.
+// This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,107 +37,92 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
-package lib.unwind;
+package frysk.rt;
 
 import lib.stdcpp.Demangler;
 
-import gnu.gcj.RawDataManaged;
+/**
+ * The object-file symbol.  Typically obtained by reading ELF
+ * information.
+ *
+ * Do not confuse this with higher-level symbolic information, such as
+ * function names, obtained from debug information such as DWARF.
+ */
 
-public class FrameCursor
+public class Symbol
 {
+    /**
+     * A special unknown symbol.
+     */
+    public static final Symbol UNKNOWN = new Symbol (0, -1, "[unknown]")
+	{
+	    public String getDemangledName ()
+	    {
+		return "[unknown]";
+	    }
+	};
 
-  private RawDataManaged nativeCursor;
 
-  protected FrameCursor inner;
+    // The symbol's fields.
+    private long startAddress;
+    private long size;
+    private String name;
 
-  protected FrameCursor outer;
-  
-  protected int signal_frame;
-  
-  protected String demangledMethodName;
-  protected String procName;
-  protected long procOffset;
-  
-  private long cfa;
-  
-  private long address;
+    /**
+     * Create a new symbol.  The SIZE is a field from ELF and defines
+     * the symbol's address range.
+     */
+    Symbol (long startAddress, long size, String name)
+    {
+	this.startAddress = startAddress;
+	this.size = size;
+	this.name = name;
+    }
 
-  protected FrameCursor (long cursor)
-  {
-    create_frame_cursor(cursor);
-    this.demangledMethodName = Demangler.demangle(this.procName);
-  }
+    /**
+     * Create a new Symbol.
+     */
+    Symbol (long startAddress, String name)
+    {
+	this (startAddress, 0, name);
+    }
 
-  /**
-   * 
-   * @return The stack frame cursor from the next inner stack
-   */
-  public FrameCursor getInner ()
-  {
-    return inner;
-  }
+    /**
+     * Return the start address of the symbol.
+     */
+    public long getStartAddress ()
+    {
+	return startAddress;
+    }
+    
+    /**
+     * Return the symbol's size (possibly zero).
+     */
+    public long getSize ()
+    {
+	return size;
+    }
 
-  /**
-   * 
-   * @return The stack frame cursor from the previous outer stack
-   */
-  public FrameCursor getOuter ()
-  {
-    return outer;
-  }
+    /**
+     * Return the mangled name (the raw string found in the symbol
+     * table).  Or NULL, of the name is unknown.
+     */
+    public String getName ()
+    {
+	return name;
+    }
 
-  /**
-   * 
-   * @return The raw pointer to this frame's unwind cursor
-   */
-  public RawDataManaged getNativeCursor ()
-  {
-    return nativeCursor;
-  }
-  
-  public int getIsSignalFrame()
-  {
-    return signal_frame;
-  }
-
-  private native void create_frame_cursor (long cursor);
-
-  public long getAddress ()
-  {
-    return address;
-  }
-
-  public long getCfa ()
-  {
-    return cfa;
-  }
-
-  public boolean isSignalFrame()
-  {
-    // ??? Is this right?
-    return signal_frame == 1;
-  }
-  
-  public void setIsSignalFrame(boolean isSignalFrame)
-  {
-    signal_frame = isSignalFrame? 1 : 0;
-  }
-
-  public String getMethodName ()
-  {
-    return demangledMethodName;
-  }
-  
-  public String getProcName ()
-  {
-    return procName;
-  }
-  public long getProcOffset ()
-  {
-    return procOffset;
-  }
-  
-  public native long get_reg (long reg);
-  public native long set_reg (long reg, long val);
+    /**
+     * Return the demangled name, or "" of the name isn't known.
+     *
+     * XXX: Is returning "" better than null?  Sounds like a cheat for
+     * code that should be conditional on the symbol being known.
+     */
+    public String getDemangledName ()
+    {
+	if (name == null)
+	    return "";
+	else
+	    return Demangler.demangle (name);
+    }
 }

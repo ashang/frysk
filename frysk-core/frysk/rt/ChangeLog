@@ -1,5 +1,9 @@
 2007-02-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSymbol.java: Rename TestStackFrame.java.
+	* Symbol.java: New file.
+	* StackFrame.java (getSymbol): New method.
+
 	* TestStackFrame.java (testFrameIdentifer): Delete.
 	* TestFrameIdentifier.java: New file.
 	* StackFrame.java: Create the FrameIdentifier on-demand.

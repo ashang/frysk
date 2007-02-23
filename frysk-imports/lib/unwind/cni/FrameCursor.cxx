@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -76,8 +76,10 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 
 	this -> cfa = sp;
 
-	if (!unw_get_proc_name (cursor, buf, len, &offset))
-		this -> methodName = JvNewStringUTF (buf);
+	if (!unw_get_proc_name (cursor, buf, len, &offset)) {
+		this->procName = JvNewStringUTF (buf);
+		this->procOffset = offset;
+	}
 }
 
 jlong

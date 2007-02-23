@@ -1,3 +1,10 @@
+2007-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* FrameCursor.java (procName, procOffset): Add.
+	(getProcName, getProcOffset): Add.
+	(demangledMethodName): Rename methodName.
+	* cni/FrameCursor.cxx (create_frame_cursor): Update.
+
 2007-02-23  Nurdin Premji  <npremji@redhat.com>
 
 	* Accessors.java: Changed getProcName to take in maxNameSize parameter.
