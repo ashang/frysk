@@ -91,7 +91,7 @@ public class TestUnwind
       }
 
       //@Override
-      ProcName getProcName (long addr)
+      ProcName getProcName (long addr, int maxNameSize)
       {
         return null;
       }
@@ -109,14 +109,12 @@ public class TestUnwind
 
      });
     
-    assertNull("Cursor not null", cursor.cursor);
+    assertNotNull("Cursor not null", cursor.cursor);
   }
   
   
-  public void testMyProcess()
+  public void testPtraceAccessors()
   {
-  	if (true)
-  		return;
     //Start a bash process.
     final int pid = TestLib.forkIt();
     
@@ -127,11 +125,9 @@ public class TestUnwind
     PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
     
     Cursor cursor = new Cursor(addr, ptraceAccessors);
+     
+    assertNotNull("Cursor not null", cursor.cursor);
     
-    
-   // System.err.println("Is this cursor a signal frame? : " + cursor.isSignalFrame());
-   
-    //XXX:Should not be null.
-    assertNull("Cursor not null", cursor.cursor);
+    PtraceAccessors.detachXXX(pid);
   }
 }

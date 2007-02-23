@@ -70,6 +70,6 @@ public abstract class Accessors
 
   abstract int resume (Cursor cursor);
 
-  abstract ProcName getProcName (long addr);
+  abstract ProcName getProcName (long addr, int maxSize);
 
 }

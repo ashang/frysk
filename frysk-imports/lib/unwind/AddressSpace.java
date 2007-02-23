@@ -39,11 +39,11 @@
 
 package lib.unwind;
 
-import gnu.gcj.RawDataManaged;
+import gnu.gcj.RawData;
 
 public class AddressSpace
 {
-  RawDataManaged addressSpace = null;
+  RawData addressSpace = null;
   Unwind unwinder;
   
   public AddressSpace(ByteOrder byteOrder)
@@ -60,4 +60,8 @@ public class AddressSpace
     unwinder.setCachingPolicy(addressSpace, cachingPolicy);
   }
   
+  protected void finalize()
+  {
+    unwinder.destroyAddressSpace(addressSpace);
+  }
 }

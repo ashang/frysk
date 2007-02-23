@@ -41,26 +41,35 @@
 package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
+import gnu.gcj.RawData;
+import java.util.logging.Logger;
+
 
 public class UnwindNative
     extends Unwind
 {
-  native int getContext (RawDataManaged context);
-
-  native int initRemote (RawDataManaged cursor, RawDataManaged addressSpace,
+  volatile Logger logger = Logger.getLogger("frysk");
+  
+  native RawDataManaged initRemote (RawData addressSpace,
                          Accessors accessors);
-  
-  native int getRegister(RawDataManaged cursor, int regNum,
-                           RawDataManaged word);
-  
-  native RawDataManaged createAddressSpace (ByteOrder byteOrder);
+   
+  native RawData createAddressSpace (ByteOrder byteOrder);
 
-  native void destroyAddressSpace (RawDataManaged addressSpace);
+  native void destroyAddressSpace (RawData addressSpace);
   
-  native void setCachingPolicy (RawDataManaged addressSpace, 
+  native void setCachingPolicy (RawData addressSpace, 
                                 CachingPolicy cachingPolicy);
   
   native int isSignalFrame (RawDataManaged cursor);
   
   native int step (RawDataManaged cursor);
+  
+  native ProcName getProcName(RawDataManaged cursor, int maxNameSize);
+  
+   native int getRegister(RawDataManaged cursor, int regNum,
+                           RawDataManaged word);
+ 
+  
+  native int getContext (RawDataManaged context);
+  
 }

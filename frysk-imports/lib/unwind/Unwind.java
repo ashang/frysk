@@ -40,30 +40,28 @@
 package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
+import gnu.gcj.RawData;
 
 public abstract class Unwind
 {
-  //Not really needed, local
-  abstract int getContext(RawDataManaged context);
-  
-  abstract int initRemote(RawDataManaged cursor, RawDataManaged addressSpace, 
+  abstract RawDataManaged initRemote(RawData addressSpace, 
                           Accessors accessors);
+     
+  abstract RawData createAddressSpace (ByteOrder byteOrder);
   
-  //Not really needed, local.
-  abstract int getRegister(RawDataManaged cursor, int regNum,
-                           RawDataManaged word);
+  abstract void destroyAddressSpace (RawData addressSpace);
   
-  abstract RawDataManaged createAddressSpace (ByteOrder byteOrder);
-  
-  abstract void destroyAddressSpace (RawDataManaged addressSpace);
-  
-  abstract void setCachingPolicy(RawDataManaged addressSpace, 
+  abstract void setCachingPolicy(RawData addressSpace, 
                                  CachingPolicy cachingPolicy);
   
   abstract int isSignalFrame (RawDataManaged cursor);
   
   abstract int step (RawDataManaged cursor);
   
+  abstract ProcName getProcName(RawDataManaged cursor, int maxNameSize);
+  
+  abstract int getRegister(RawDataManaged cursor, int regNum,
+                           RawDataManaged word);
  /*
   int unw_getcontext(unw_context_t *);
   int unw_init_local(unw_cursor_t *, unw_context_t *);
@@ -92,4 +90,6 @@ public abstract class Unwind
   void _U_dyn_register(unw_dyn_info_t *);
   void _U_dyn_cancel(unw_dyn_info_t *);
  */
+ abstract int getContext(RawDataManaged context);
+ 
 }

@@ -40,20 +40,23 @@
 package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
-import java.lang.RuntimeException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Cursor
 {
-  RawDataManaged cursor; 
+  Logger logger = Logger.getLogger("frysk");
+  RawDataManaged cursor = null; 
   AddressSpace addressSpace;
   Unwind unwinder;
-  
+
   public Cursor(AddressSpace addressSpace, Accessors accessors)
   {
+    logger.log(Level.FINE, "{0} Create Cursor\n", this);
     this.addressSpace = addressSpace; 
     unwinder = addressSpace.unwinder;
-   if ( unwinder.initRemote(cursor, addressSpace.addressSpace, accessors) != 0)
-     throw new RuntimeException("Create cursor failed");
+   cursor = unwinder.initRemote(addressSpace.addressSpace, accessors);
+   
   }
   
   public boolean isSignalFrame()
@@ -61,8 +64,14 @@ public class Cursor
     return (unwinder.isSignalFrame(cursor) == 1);
   }
   
-  public void step()
+  public int step()
   {
-    unwinder.step(cursor);
+    return unwinder.step(cursor);
   }
+  
+  public ProcName getProcName(int maxNameSize)
+  {
+    return unwinder.getProcName(cursor, maxNameSize);
+  }
+  
 }

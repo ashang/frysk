@@ -1,3 +1,24 @@
+2007-02-23  Nurdin Premji  <npremji@redhat.com>
+
+	* Accessors.java: Changed getProcName to take in maxNameSize parameter.
+	* AddressSpace.java: Changed addressSpace to RawData.
+	(finalize): Added.
+	* Cursor.java: Reflect change in initRemote binding (returns cursor rather than
+	setting cursor). Added logger. 
+	(getProcName): Added.
+	* PtraceAccessors.java: Reflect Accessor changes. Added logger. 
+	(detachXXX): Added 
+	* TestUnwind: Reflect changes in Accessor. 
+	(testPtraceAccessors): Renamed, was testMyProcess.
+	* Unwind.java: Changed bindings to reflect addressSpace is now RawData.
+	(getProcName): Added.
+	* UnwindNative.java: Ditto.
+	* cni/PtraceAccessors.cxx: Added include statement for Accessors.h.
+	(detachXXX): Added.
+	(getProcName): Changed to use char[] rather than char pointer to store procName.
+	* cni/UnwindNative.cxx: Reflect changes to AddressSpace.
+	 (getProcName): Added.	
+
 2007-02-21  Nurdin Premji  <npremji@redhat.com>
 
 	* Cursor.java (Cursor): Throw Exception if initRemote fails.	

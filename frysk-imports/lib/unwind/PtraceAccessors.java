@@ -40,10 +40,12 @@
 package lib.unwind;
 
 import gnu.gcj.RawData;
+import java.util.logging.Logger;
 
 public class PtraceAccessors
     extends Accessors
 {
+  Logger logger = Logger.getLogger("frysk");
   protected final RawData ptArgs;
   
   private native RawData createPtArg (int pid);
@@ -62,6 +64,8 @@ public class PtraceAccessors
 
   native public static int attachXXX(int pid); 
   
+  native public static int detachXXX(int pid);
+  
   //@Override
   native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
@@ -78,7 +82,7 @@ public class PtraceAccessors
   native int getDynInfoListAddr (byte[] dilap);
 
   //@Override
-  native ProcName getProcName (long addr);
+  native ProcName getProcName (long addr, int maxNameSize);
 
   //@Override
   native void putUnwindInfo (ProcInfo procInfo);
