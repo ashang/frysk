@@ -2,7 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-
+<requires lib="gnome"/>
 
 <widget class="GtkWindow" id="sourceWindow">
   <property name="title" translatable="yes">Frysk Source Window for: </property>
@@ -172,6 +172,7 @@ Mixed</property>
 
       <child>
 	<widget class="GtkHPaned" id="hpaned1">
+	  <property name="width_request">850</property>
 	  <property name="height_request">420</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
@@ -245,7 +246,7 @@ Mixed</property>
 		</widget>
 		<packing>
 		  <property name="shrink">False</property>
-		  <property name="resize">False</property>
+		  <property name="resize">True</property>
 		</packing>
 	      </child>
 
@@ -310,7 +311,7 @@ Mixed</property>
 		</widget>
 		<packing>
 		  <property name="shrink">True</property>
-		  <property name="resize">True</property>
+		  <property name="resize">False</property>
 		</packing>
 	      </child>
 	    </widget>
@@ -322,7 +323,7 @@ Mixed</property>
 
 	  <child>
 	    <widget class="GtkFrame" id="frame3">
-	      <property name="width_request">575</property>
+	      <property name="width_request">550</property>
 	      <property name="visible">True</property>
 	      <property name="label_xalign">0</property>
 	      <property name="label_yalign">0.5</property>
