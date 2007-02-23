@@ -272,23 +272,21 @@ fill_string (void *p, jstring s)
  * Print a log message to a java logger, uses printf notation.
  */
 void 
-logMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
+logMessage (jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
 char *message, ...)
 {
 	if (!(logger->isLoggable(level)))
 		return;
+	
+	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
 	 
 	va_list argp;
-	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
-
-	elements(params)[0] = myThis;
 	
 	va_start(argp, message);
-	jstring jmessage = vajprintf(message, argp);	
-	va_end(argp);
+	elements(params)[1] = vajprintf(message, argp);
+	va_end(argp);	
 	
-	elements(params)[1] = jmessage;
-
 	logger->log(level, JvNewStringUTF("{0} {1}\n"), params);
 }
 
@@ -296,15 +294,15 @@ char *message, ...)
  * Print a log message to a java logger, uses java objects, in a vararg format.
  */
 void
-jLogMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
+jLogMessage (jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
 char *message, ...)
 {
 	if (!(logger->isLoggable(level)))
 		return;
 	
-	int count = 0;
 	va_list argp;	
 	
+	int count = 0;
 	va_start(argp, message);
 	while (va_arg(argp, jobject) != NULL)
 		count++;
@@ -312,6 +310,7 @@ char *message, ...)
 	
 	jobjectArray params = JvNewObjectArray(count+1, &java::lang::Object::class$, NULL);
 	elements(params)[0] = myThis;
+	
 	va_start(argp, message);
 	for (int i = 1; i < count + 1; i++)
 	{
@@ -320,4 +319,94 @@ char *message, ...)
 	va_end(argp);
 	
 	logger->log(level, ajprintf("{0} %s\n", message), params);
+}
+
+void 
+logFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+{
+	if (!(logger->isLoggable(java::util::logging::Level::FINE)))
+		return;
+	
+	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
+	 
+	va_list argp;
+	
+	va_start(argp, message);
+	elements(params)[1] = vajprintf(message, argp);
+	va_end(argp);	
+	
+	logger->log(java::util::logging::Level::FINE, JvNewStringUTF("{0} {1}\n"), params);
+}
+	 
+void 
+logFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+{
+	if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
+		return;
+	
+	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
+	 
+	va_list argp;
+	
+	va_start(argp, message);
+	elements(params)[1] = vajprintf(message, argp);
+	va_end(argp);	
+	
+	logger->log(java::util::logging::Level::FINEST, JvNewStringUTF("{0} {1}\n"), params);
+}
+
+void 
+jLogFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+{
+	if (!(logger->isLoggable(java::util::logging::Level::FINE)))
+		return;
+	
+	va_list argp;	
+	
+	int count = 0;
+	va_start(argp, message);
+	while (va_arg(argp, jobject) != NULL)
+		count++;
+	va_end(argp);
+	
+	jobjectArray params = JvNewObjectArray(count+1, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
+	
+	va_start(argp, message);
+	for (int i = 1; i < count + 1; i++)
+	{
+		elements(params)[i] = va_arg(argp, jobject);
+	}	
+	va_end(argp);
+	
+	logger->log(java::util::logging::Level::FINE, ajprintf("{0} %s\n", message), params);
+}
+
+void
+jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+{
+	if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
+		return;
+	
+	va_list argp;	
+	
+	int count = 0;
+	va_start(argp, message);
+	while (va_arg(argp, jobject) != NULL)
+		count++;
+	va_end(argp);
+	
+	jobjectArray params = JvNewObjectArray(count+1, &java::lang::Object::class$, NULL);
+	elements(params)[0] = myThis;
+	
+	va_start(argp, message);
+	for (int i = 1; i < count + 1; i++)
+	{
+		elements(params)[i] = va_arg(argp, jobject);
+	}	
+	va_end(argp);
+	
+	logger->log(java::util::logging::Level::FINEST, ajprintf("{0} %s\n", message), params);
 }

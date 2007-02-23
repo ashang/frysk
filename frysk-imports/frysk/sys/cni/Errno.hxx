@@ -94,12 +94,25 @@ extern char* fill_string (void* p, jstring s);
 /**
  * Print a log message to a java logger, uses printf notation.
  */
-extern void logMessage(jobject myThis, java::util::logging::Logger* logger, 
+extern void logMessage (jobject myThis, java::util::logging::Logger* logger, 
 	java::util::logging::Level* level, char *message, ...)	
 	__attribute__ ((format (printf, 4, 5)));
 
 /*
  * Print a log message to a java logger, uses java objects, in a vararg format.
  */
-extern void jLogMessage(jobject myThis, java::util::logging::Logger* logger, 
+extern void jLogMessage (jobject myThis, java::util::logging::Logger* logger, 
 	java::util::logging::Level* level, char *message, ...);
+	
+/*
+ * Convenience wrappers for above.
+ */
+extern void logFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+	 __attribute__ ((format (printf, 3, 4)));
+	 
+extern void logFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
+	 __attribute__ ((format (printf, 3, 4)));
+
+extern void jLogFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...);
+
+extern void jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...);
