@@ -275,9 +275,9 @@ void
 logMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
 char *message, ...)
 {
-	if (logger->isLoggable(level))
+	if (!(logger->isLoggable(level)))
 		return;
-		 
+	 
 	va_list argp;
 	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
 
@@ -299,7 +299,7 @@ void
 jLogMessage(jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
 char *message, ...)
 {
-	if (logger->isLoggable(level))
+	if (!(logger->isLoggable(level)))
 		return;
 	
 	int count = 0;
@@ -319,5 +319,5 @@ char *message, ...)
 	}	
 	va_end(argp);
 	
-	logger->log(level, ajprintf("{0} %s", message), params);
+	logger->log(level, ajprintf("{0} %s\n", message), params);
 }
