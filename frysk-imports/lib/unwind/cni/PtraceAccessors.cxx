@@ -38,6 +38,7 @@
 // exception.
 
 #include <stdio.h>
+
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 #include <sys/ptrace.h>
@@ -48,6 +49,7 @@
 
 #include "gnu/gcj/RawData.h"
 
+#include "lib/unwind/Accessors.h"
 #include "lib/unwind/PtraceAccessors.h"
 #include "lib/unwind/ProcInfo.h"
 #include "lib/unwind/ProcName.h"
@@ -124,13 +126,12 @@ lib::unwind::PtraceAccessors::getDynInfoListAddr (jbyteArray dilap)
 }
 
 lib::unwind::ProcName* 
-lib::unwind::PtraceAccessors::getProcName (jlong addr)
-{
-	char *buffp = NULL;
-	size_t buff_len = 0;
+lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
+{	
+	char buffp[maxNameSize];
 	unw_word_t * offset = NULL;
 	_UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
-					   buffp, buff_len, offset, (void *) ptArgs);
+					   buffp, (size_t) maxNameSize, offset, (void *) ptArgs);
 	
 	lib::unwind::ProcName *procName = new ProcName((jlong) offset, JvNewStringUTF(buffp));
 	
@@ -185,6 +186,18 @@ lib::unwind::PtraceAccessors::attachXXX(jint pid)
 	::waitpid(pid, NULL, 0);
 		
 	return 0;
+}
+
+jint
+lib::unwind::PtraceAccessors::detachXXX(jint pid)
+{
+	int ret;
+	ret = ::ptrace(PTRACE_DETACH, (pid), 0, (void *) 0);
+	
+	if (ret != 0)
+		fprintf(stderr, "Ptrace detach failed\n");
+		
+	return ret;
 }
 
 gnu::gcj::RawData*

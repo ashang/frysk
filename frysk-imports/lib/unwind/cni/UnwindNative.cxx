@@ -39,6 +39,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
@@ -49,6 +51,10 @@
 #define TARGET Native
 
 #include "java/lang/String.h"
+#include "java/lang/Object.h"
+
+#include "java/util/logging/Logger.h"
+#include "java/util/logging/Level.h"
 #include "inua/eio/ByteBuffer.h"
 
 #include "lib/unwind/Unwind.h"
@@ -187,51 +193,36 @@ int native_get_proc_name(::unw_addr_space_t as,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
 	lib::unwind::ProcName *procName = ((lib::unwind::Accessors *)arg)->getProcName (
-	(long) addr);
+	(jlong) addr, (jint) buf_len);
 	
 	if (procName == NULL)
 		return -1;
-	
-	bufp = (char *) JvGetStringChars(procName->name);
-	buf_len =  JvGetStringUTFLength(procName->name);
+
+	strncpy (bufp, (const char *) JvGetStringChars(procName->name), buf_len);
 	offp = (unw_word_t *) procName->address;
 	
 	return 0;
 }
 
 
-jint
-lib::unwind::UnwindNative::getContext(gnu::gcj::RawDataManaged* context)
+gnu::gcj::RawDataManaged*
+lib::unwind::UnwindNative::initRemote(gnu::gcj::RawData* addressSpace, 
+lib::unwind::Accessors* accessors)
 {
-	return (jint) unw_getcontext((::unw_context_t *) context);
-}
+	logMessage(this, logger, java::util::logging::Level::FINE, "native initRemote");
+	gnu::gcj::RawDataManaged *cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
+		
+	unw_init_remote((unw_cursor_t *) cursor, 
+	(unw_addr_space_t) addressSpace, (void *) accessors);
 
-jint
-lib::unwind::UnwindNative::initRemote(gnu::gcj::RawDataManaged* cursor, 
-gnu::gcj::RawDataManaged* addressSpace, lib::unwind::Accessors* accessors)
-{
-	cursor = (gnu::gcj::RawDataManaged *) JvAllocBytes (sizeof (::unw_cursor_t));
-	
-	unw_addr_space_t *address_space = (unw_addr_space_t *) addressSpace;
-	
-	jint ret = unw_init_remote((unw_cursor_t *) cursor, 
-	*address_space, (void *) accessors);
-
-	return ret;	
+	return cursor;	
 } 
 
-jint
-lib::unwind::UnwindNative::getRegister(gnu::gcj::RawDataManaged* cursor,
-jint regNum, gnu::gcj::RawDataManaged* word)
-{
-	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-	(::unw_regnum_t) regNum, (::unw_word_t *) word);
-}
-
-
-gnu::gcj::RawDataManaged*
+gnu::gcj::RawData*
 lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder)
 {
+	logMessage(this, logger, java::util::logging::Level::FINE, 
+	"createAddressSpace, byteOrder %d", (int) byteOrder->hashCode());
 	static unw_accessors_t accessors = {
 		native_find_proc_info ,
 		native_put_unwind_info, 
@@ -242,20 +233,17 @@ lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder
 		native_resume, 
 		native_get_proc_name};
 		
-	unw_addr_space_t *address_space = (unw_addr_space_t *) JvAllocBytes (sizeof (unw_addr_space_t));
-	*address_space = unw_create_addr_space( &accessors, (int) byteOrder->hashCode());
-
-	return (gnu::gcj::RawDataManaged *) address_space; 
+	return (gnu::gcj::RawData *) unw_create_addr_space( &accessors, (int) byteOrder->hashCode());
 }
 
 void
-lib::unwind::UnwindNative::destroyAddressSpace(gnu::gcj::RawDataManaged* addressSpace)
+lib::unwind::UnwindNative::destroyAddressSpace(gnu::gcj::RawData* addressSpace)
 {
 	unw_destroy_addr_space((unw_addr_space_t) addressSpace);	
 }
 
 void
-lib::unwind::UnwindNative::setCachingPolicy(gnu::gcj::RawDataManaged* addressSpace, 
+lib::unwind::UnwindNative::setCachingPolicy(gnu::gcj::RawData* addressSpace, 
 lib::unwind::CachingPolicy* cachingPolicy)
 {
 	unw_set_caching_policy((unw_addr_space_t) addressSpace, 
@@ -272,4 +260,29 @@ jint
 lib::unwind::UnwindNative::step(gnu::gcj::RawDataManaged* cursor)
 {
 	return unw_step((unw_cursor_t *) cursor);
+}
+
+lib::unwind::ProcName*
+lib::unwind::UnwindNative::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameSize)
+{
+	logMessage(this, logger, java::util::logging::Level::FINE, "getProcName");
+	char bufp[maxNameSize];
+	unw_word_t offset;
+	unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
+	return new lib::unwind::ProcName((jlong) offset, JvNewStringUTF(bufp));
+}
+
+jint
+lib::unwind::UnwindNative::getRegister(gnu::gcj::RawDataManaged* cursor,
+jint regNum, gnu::gcj::RawDataManaged* word)
+{
+	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
+	(::unw_regnum_t) regNum, (::unw_word_t *) word);
+}
+
+
+jint
+lib::unwind::UnwindNative::getContext(gnu::gcj::RawDataManaged* context)
+{
+	return (jint) unw_getcontext((::unw_context_t *) context);
 }
