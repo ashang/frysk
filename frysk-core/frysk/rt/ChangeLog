@@ -1,7 +1,11 @@
+2007-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFrame.java (getSymbolName): Delete.
+	
 2007-02-26  Mike Cvet  <mcvet@redhat.com>
 
-	* TestFrameIdentifier.java (testEquals): Added test for non-FrameIdentifier
-	objects.
+	* TestFrameIdentifier.java (testEquals): Added test for
+	non-FrameIdentifier objects.
 
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 

@@ -45,7 +45,6 @@ import frysk.dom.DOMSource;
 import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
-import lib.dw.DwflModule;
 import lib.unwind.FrameCursor;
 
 public class StackFrame
@@ -186,31 +185,6 @@ public class StackFrame
   public DOMSource getDOMSource ()
   {
     return this.data;
-  }
-
-  /**
-   * Return the name of the function associated with this stack frame.
-   * This will return null if the function's name is not known.
-   *
-   * @return the name of the function associated with this stack frame.
-   * Or null if not known. 
-   */
-  public String getSymbolName ()
-  {
-    Dwfl dwfl = new Dwfl(task.getTid());
-    DwflModule dm = dwfl.getModule(getAddress());
-    
-    /* If the name can't be resolved, its easier to deal with
-     * an empty string rather than checking for nulls everywhere */
-    if (dm == null)
-      return "";        
-     
-    String symbolName = dm.getAddressName(getAddress());   
-    
-    if (symbolName == null)
-      return "";
-    
-    return symbolName;
   }
 
   /**
