@@ -46,6 +46,7 @@ import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 import lib.unwind.FrameCursor;
+import java.io.File;
 
 public class StackFrame
 {
@@ -431,4 +432,36 @@ public class StackFrame
 	return symbol;
     }
     private Symbol symbol;
+
+    /**
+     * Return this frame's list of lines as an array; returns an empty
+     * array if there is no line number information available.
+     */
+    public Line[] getLines ()
+    {
+	if (lines == null) {
+	    if (cursor != null) {
+		Dwfl dwfl = new Dwfl(task.getTid());
+		// The innermost frame and frames which were
+		// interrupted during execution use their PC to get
+		// the line in source. All other frames have their PC
+		// set to the line after the inner frame call and must
+		// be decremented by one.
+		DwflLine dwflLine = dwfl.getSourceLine (getAdjustedAddress ());
+		if (dwflLine != null) {
+		    lines = new Line[] {
+			new Line (new File (dwflLine.getSourceFile ()),
+				  dwflLine.getLineNum (),
+				  dwflLine.getColumn ())
+		    };
+		}
+
+	    }
+	    // If the fetch failed, mark it as unknown.
+	    if (lines == null)
+		lines = new Line[0];
+	}
+	return lines;
+    }
+    private Line[] lines;
 }

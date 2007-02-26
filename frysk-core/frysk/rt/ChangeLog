@@ -1,5 +1,8 @@
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFrame.java (getLines): New.
+	* Line.java: New.
+
 	* StackFrame.java: Rename myCursor to cursor.  Rename myTask to
 	task.
 	(hasDebugInfo): Delete.
