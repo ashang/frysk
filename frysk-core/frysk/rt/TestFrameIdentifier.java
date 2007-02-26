@@ -135,5 +135,8 @@ public class TestFrameIdentifier
 	validateEquals ("outer", outer, new boolean[] {
 			    false, false, false, true
 			});
+    validateEquals("object", new Object(), new boolean[] {
+                false, false, false, false,
+            });
     }
 }
