@@ -1,5 +1,9 @@
 2007-02-26  Nurdin Premji  <npremji@redhat.com>
 
+	* cni/UnwindNative.cxx: (native_access_mem): Fixed to actually copy value back
+	as native_access_reg does.
+	(native_access_fpreg): Ditto.
+
 	* cni/PtraceAccessors.cxx (getProcName): Added another logging message.
 	Simplified return.
 	(findProcInfo): Added another logging message.

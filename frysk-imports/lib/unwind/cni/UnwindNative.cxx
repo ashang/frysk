@@ -139,10 +139,14 @@ native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 	jbyteArray tmp = JvNewByteArray (sizeof (unw_word_t));
 	memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
 	
-	return ((lib::unwind::Accessors *) arg)->accessMem(
+	int ret = ((lib::unwind::Accessors *) arg)->accessMem(
 	(long) addr, 
 	tmp, 
 	(jboolean) write);
+	
+	memcpy(valp, elements(tmp), JvGetArrayLength(tmp));
+	
+	return ret;
 }
 
 /*
@@ -175,10 +179,14 @@ native_access_fpreg(::unw_addr_space_t as, ::unw_regnum_t regnum,
 	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
 	memcpy (elements (tmp), fpvalp, JvGetArrayLength(tmp));
 	
-	return ((lib::unwind::Accessors *) arg)->accessFPReg(
+	int ret = ((lib::unwind::Accessors *) arg)->accessFPReg(
 	(jint) regnum, 
 	tmp, 
 	(jboolean) write);
+	
+	memcpy(fpvalp, elements (tmp), JvGetArrayLength(tmp));
+	
+	return ret;
 }
 
 /*
