@@ -40,7 +40,11 @@
 
 package frysk.rt;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.LogManager;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -54,6 +58,7 @@ public class LineBreakpoint
   private int column;
   private LinkedList dwflAddrs;
   private LinkedList breakpoints;
+  static private Logger logger;
     
   public LineBreakpoint () 
   {
@@ -68,6 +73,18 @@ public class LineBreakpoint
     this.column = column;
     Dwfl dwfl = new Dwfl(task.getTid());
     dwflAddrs = dwfl.getLineAddresses(fileName, lineNumber, column);
+    if (logger == null)
+      logger = LogManager.getLogManager().getLogger("frysk");
+    if (logger != null && logger.isLoggable(Level.FINEST))
+      {
+	Iterator iterator = dwflAddrs.iterator();
+	int i;
+	for (i = 0; iterator.hasNext(); i++)
+	  {
+	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
+			"dwfl[" + i + "]: {0}", iterator.next());
+	  }
+      }
   }
 
   public String getFileName() 

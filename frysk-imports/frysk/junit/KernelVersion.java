@@ -47,12 +47,9 @@ import java.util.regex.Pattern;
  */
 public class KernelVersion
 {
-  private static Pattern kernelPattern =
-    Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)");
-  private static Pattern fedoraPattern =
-    Pattern.compile("^-(\\d+).(\\d+)\\.fc(\\d+)(.*)$");
-  private static Pattern vanillaPattern =
-    Pattern.compile("^\\.(\\d+)$");
+  private static Pattern kernelPattern;
+  private static Pattern fedoraPattern;
+  private static Pattern vanillaPattern;
   private int version = 0;
   private int patchLevel = 0;
   private int subLevel = 0;
@@ -116,8 +113,14 @@ public class KernelVersion
    */
   public KernelVersion(String release)
   {
+    if (kernelPattern == null)
+      {
+	kernelPattern = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)");
+	fedoraPattern = Pattern.compile("^-(\\d+).(\\d+)\\.fc(\\d+)(.*)$");
+	vanillaPattern = Pattern.compile("^\\.(\\d+)$");
+      }
     Matcher kernelMatcher = kernelPattern.matcher(release);
-    if (!kernelMatcher.matches())
+    if (!kernelMatcher.lookingAt())
       throw new IllegalArgumentException(release
 					 + " is not a recognized kernel version number");
     version = Integer.parseInt(kernelMatcher.group(1));
@@ -126,7 +129,7 @@ public class KernelVersion
     int extra = kernelMatcher.end();
     extraVersion = release.substring(extra);
     Matcher fedoraMatcher = fedoraPattern.matcher(extraVersion);
-    if (fedoraMatcher.matches())
+    if (fedoraMatcher.lookingAt())
       {
 	isFedora = true;
 	fedoraMajor = Integer.parseInt(fedoraMatcher.group(1));
@@ -135,7 +138,7 @@ public class KernelVersion
 	return;
       }
     Matcher vanillaMatcher = vanillaPattern.matcher(extraVersion);
-    if (vanillaMatcher.matches())
+    if (vanillaMatcher.lookingAt())
       {
 	isVanilla = true;
 	extraLevel = Integer.parseInt(vanillaMatcher.group(1));
