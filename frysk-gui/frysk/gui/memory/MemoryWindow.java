@@ -490,14 +490,17 @@ public class MemoryWindow
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
     
+    long diff = (long) this.toSpin.getValue() - (long) this.fromSpin.getValue();
+
+    this.lastKnownFrom = pc_inc;
+    this.lastKnownTo = (double) pc_inc + diff;
     
-    long start = (long) this.fromSpin.getValue();
-    long end = (long) this.toSpin.getValue();
-    this.lastKnownFrom = (double) start;
-    this.lastKnownTo = (double) end;
+    this.fromSpin.setValue((double) pc_inc);
+    this.toSpin.setValue(this.lastKnownTo);
+    
     this.model.clear();
     
-    for (long i = start; i < end + 1; i++)
+    for (long i = (long) lastKnownFrom; i < this.lastKnownTo + 1; i++)
       rowAppend(i, null);
     
     refreshList();

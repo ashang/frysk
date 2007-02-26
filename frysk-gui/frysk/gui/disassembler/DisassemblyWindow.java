@@ -404,10 +404,12 @@ public class DisassemblyWindow
   {
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
-    
-    //this.pc = pc_inc;
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    
+    this.lastKnownFrom = pc_inc;
+    this.fromSpin.setValue((double) pc_inc);
+   
     this.model.clear();
     
     for (long i = 0; i < this.numInstructions; i++)
