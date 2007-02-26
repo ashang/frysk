@@ -206,7 +206,10 @@ native_get_proc_name(::unw_addr_space_t as,
 	if (procName == NULL)
 		return -1;
 
-	strncpy (bufp, (const char *) JvGetStringChars(procName->name), buf_len);
+	JvGetStringUTFRegion(procName->name, 0, JvGetStringUTFLength(procName->name),
+	bufp);
+	
+	bufp[JvGetStringUTFLength(procName->name)] = '\0';
 	offp = (unw_word_t *) procName->address;
 	
 	return 0;
@@ -246,7 +249,7 @@ lib::unwind::UnwindNative::createAddressSpace(lib::unwind::ByteOrder * byteOrder
 void
 lib::unwind::UnwindNative::destroyAddressSpace(gnu::gcj::RawData* addressSpace)
 {
-	jLogFine(this, logger, "destroyAddressSpace addressSpace: {1}", addressSpace);
+	logFine(this, logger, "destroyAddressSpace");
 	unw_destroy_addr_space((unw_addr_space_t) addressSpace);	
 }
 
@@ -254,8 +257,8 @@ void
 lib::unwind::UnwindNative::setCachingPolicy(gnu::gcj::RawData* addressSpace, 
 lib::unwind::CachingPolicy* cachingPolicy)
 {
-	jLogFine(this, logger, "setCachingPolicy addressSpace: {1}, cachingPolicy: {2}", 
-	addressSpace, cachingPolicy);
+	jLogFine(this, logger, "setCachingPolicy, cachingPolicy: {1}", 
+	cachingPolicy);
 	unw_set_caching_policy((unw_addr_space_t) addressSpace, 
 	(unw_caching_policy_t) cachingPolicy->hashCode());
 }
@@ -263,26 +266,27 @@ lib::unwind::CachingPolicy* cachingPolicy)
 jint
 lib::unwind::UnwindNative::isSignalFrame(gnu::gcj::RawDataManaged* cursor)
 {
-	jLogFine(this, logger, "isSignalFrame cursor: {1}", cursor);
+	logFine(this, logger, "isSignalFrame");
 	return unw_is_signal_frame((unw_cursor_t *) cursor);
 }
 
 jint
 lib::unwind::UnwindNative::step(gnu::gcj::RawDataManaged* cursor)
 {
-	jLogFine (this, logger, "step cursor: {1}", cursor);
+	logFine (this, logger, "step cursor: %p", cursor);
 	return unw_step((unw_cursor_t *) cursor);
 }
 
 lib::unwind::ProcName*
 lib::unwind::UnwindNative::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameSize)
 {
-	jLogFine (this, logger, "getProcName: cursor: {1}.", cursor);
-	logFine (this, logger, "getProcName: maxNameSize: %d", (int) maxNameSize);
+	logFine (this, logger, "getProcName cursor: %p, maxNameSize: %d", cursor, (int) maxNameSize);
 	
 	char bufp[maxNameSize];
 	unw_word_t offset;
-	unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
+	int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
+	
+	logFinest(this, logger, "getProcName bufp: %s, error: %d", bufp, err);
 	return new lib::unwind::ProcName((jlong) offset, JvNewStringUTF(bufp));
 }
 

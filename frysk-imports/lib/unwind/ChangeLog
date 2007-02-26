@@ -1,3 +1,16 @@
+2007-02-26  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/PtraceAccessors.cxx (getProcName): Added another logging message.
+	Simplified return.
+	(findProcInfo): Added another logging message.
+	* cni/UnwindNative.cxx (native_get_proc_name): Fixed to properly copy over
+	the proc name.
+	(getProcName): Added another logging message.
+	(destroyAddressSpace): Don't log RawData objects, they segfault.
+	(isSignalFrame): Ditto.
+	(setCachingPolicy): Ditto.
+	(step): Ditto.
+
 2007-02-23  Nurdin Premji  <npremji@redhat.com>
 
 	* cni/PtraceAccessors.cxx: Added entry logging messages.

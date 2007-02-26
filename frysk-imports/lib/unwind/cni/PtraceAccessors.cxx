@@ -121,6 +121,7 @@ lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
   	procInfo->unwindInfoSize = (jint) proc_info.unwind_info_size;
   	procInfo->unwindInfo = (gnu::gcj::RawData *) proc_info.unwind_info;
   
+  	jLogFine(this, logger, "findProcInfo procInfo: {1}", procInfo);
   	return procInfo;
 }
 
@@ -140,10 +141,10 @@ lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 	unw_word_t * offset = NULL;
 	_UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
 					   buffp, (size_t) maxNameSize, offset, (void *) ptArgs);
+
+	logFinest(this, logger, "getProcName buffp: %s", buffp);
 	
-	lib::unwind::ProcName *procName = new ProcName((jlong) offset, JvNewStringUTF(buffp));
-	
-	return procName;
+	return new ProcName((jlong) offset, JvNewStringUTF(buffp));	
 }
 
 void 
