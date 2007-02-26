@@ -305,6 +305,8 @@ public class EventLoop
 	    while (true) {
 		// Drain any pending events.
 		for (Event e = remove (); e != null; e = remove ()) {
+		  logger.logp(Level.FINEST, "EventLoop", "runEventLoop",
+			      "executing {0}\n", e);
 		    e.execute ();
 		}
 		// {@link #remove()} will have set {@link

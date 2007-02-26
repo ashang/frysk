@@ -42,6 +42,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,15 +60,15 @@ import javax.naming.NameNotFoundException;
 
 import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
-// import frysk.proc.Action;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-// import frysk.proc.TaskObserver;
 import frysk.rt.RunState;
 import frysk.rt.StackFrame;
+import frysk.rt.LineBreakpoint;
+
 
 import lib.dw.BaseTypes;
 
@@ -85,6 +86,7 @@ public class CLI
   static boolean attached;
   RunState runState;
   private RunStateObserver runStateObserver;
+  private ActionpointTable apTable = new ActionpointTable();
   
   /**
    * Handle ConsoleReader Completor
@@ -564,7 +566,7 @@ public class CLI
                 
 	      if (display)
 		{
-		  cmd.getOut().println(lr.getLineNumber() + flag + "\t "+ str);
+		  outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
 		  flag = "";
 		}
 	    }
@@ -684,8 +686,8 @@ public class CLI
         
       if (tmpFrame == null)
 	tmpFrame = currentFrame;
-      cmd.getOut().print("#" + stackLevel + " ");
-      cmd.getOut().println(tmpFrame.toPrint(false));        
+      outWriter.print("#" + stackLevel + " ");
+      outWriter.println(tmpFrame.toPrint(false));        
     }
   }
   
@@ -715,8 +717,8 @@ public class CLI
       tmpFrame = symtab.getCurrentFrame();
       while (tmpFrame != null)
 	{
-	  cmd.getOut().print("#" + l + " ");
-	  cmd.getOut().println(tmpFrame.toPrint(false));
+	  outWriter.print("#" + l + " ");
+	  outWriter.println(tmpFrame.toPrint(false));
 	  tmpFrame = tmpFrame.getOuter();
 	  l += 1;
 	  if (l == stopLevel)
@@ -742,7 +744,7 @@ public class CLI
       String sInput = ((String)cmd.getParameters().get(0));
       try 
         {
-          cmd.getOut().println(symtab.what(sInput));
+          outWriter.println(symtab.what(sInput));
         }
       catch (NameNotFoundException nnfe)
         {
@@ -804,8 +806,8 @@ public class CLI
 	  int i = sInput.indexOf(' ');
 	  if (i == -1) 
 	    {
-          addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-                     Message.TYPE_NORMAL);          
+	      addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
+			 Message.TYPE_NORMAL);          
 	      return;
 	    }
 	  sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
@@ -834,29 +836,29 @@ public class CLI
           switch (outputFormat)
 	    {
 	    case HEX: 
-	      cmd.getOut().print("0x");
+	      outWriter.print("0x");
 	      break;
 	    case OCTAL: 
-	      cmd.getOut().print("0");
+	      outWriter.print("0");
 	      break;
 	    }
           int resultType = result.getType().getTypeId();
           if (resultType == BaseTypes.baseTypeFloat
               || resultType == BaseTypes.baseTypeDouble)
-            cmd.getOut().println(result.toString());
+            outWriter.println(result.toString());
           else if (resultType == BaseTypes.baseTypeShort
 		   || resultType == BaseTypes.baseTypeInteger
 		   || resultType == BaseTypes.baseTypeLong)
-            cmd.getOut().println(Integer.toString((int)result.getType()
+            outWriter.println(Integer.toString((int)result.getType()
 						  .longValue(result),
 						  outputFormat));
           else if (resultType == BaseTypes.baseTypeChar)
-            cmd.getOut().println(Integer.toString((int)result.getType()
+            outWriter.println(Integer.toString((int)result.getType()
 						  .longValue(result),
 						  outputFormat) + 
                                  " '" + result.toString() + "'");
           else
-            cmd.getOut().println(result.toString());
+            outWriter.println(result.toString());
         }
       catch (InvalidOperatorException ioe)
         {
@@ -872,18 +874,35 @@ public class CLI
       ArrayList params = cmd.getParameters();
       String filename = (String)params.get(0);
       int lineNumber = Integer.parseInt((String)params.get(1));
-      runState.addBreakpoint(task, filename, lineNumber);
+      LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
+      LineBreakpointAdapter adapter
+	= new LineBreakpointAdapter(bpt, runState, task);
+      int id = apTable.add(adapter);
+      adapter.enable();
+      outWriter.println("breakpoint " + id);
     }
   }
 
-  class DeleteBreakpointHandler implements CommandHandler
+  class DeleteHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
     {
       refreshSymtab();
-//      ArrayList params = cmd.getParameters();
-//      String filename = (String)params.get(0);
-//      int lineNumber = Integer.parseInt((String)params.get(1));
+      ArrayList params = cmd.getParameters();
+      int breakpointNumber = Integer.parseInt((String)params.get(0));
+      Actionpoint ap;
+
+      try
+	{
+	  ap = apTable.getActionpoint(breakpointNumber);
+	}
+      catch (IndexOutOfBoundsException e)
+	{
+	  addMessage(breakpointNumber + " is not a valid breakpoint",
+		     Message.TYPE_ERROR);
+	  return;
+	}
+      ap.disable();
     }
   }
 
@@ -922,7 +941,16 @@ public class CLI
 	}
     }
   }
-    
+
+  class ActionsHandler implements CommandHandler
+  {
+    public void handle(Command cmd) throws ParseException
+    {
+      // cmd does need to be parsed
+      apTable.output(outWriter);
+    }
+  }
+  
   class QuitHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -956,7 +984,8 @@ public class CLI
    * Private variables
    */
 
-  private static PrintStream out = null;// = System.out;
+  //private static PrintStream out = null;// = System.out;
+  private PrintWriter outWriter = null;
   private Preprocessor prepro;
   private String prompt; // string to represent prompt, will be moved
   private Hashtable handlers;
@@ -986,23 +1015,29 @@ public class CLI
   /**
    * Constructor
    * @param prompt String initially to be used as the prompt
+   * @param out Stream for output. This really should be a PrintWriter
    */
   public CLI(String prompt, String command, PrintStream out)
   {
     this.prompt = prompt;
-    CLI.out = out;
+    outWriter = new PrintWriter(out, true);
 
     prepro = new Preprocessor();
     handlers = new Hashtable();
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
+    handlers.put("actions", new ActionsHandler());
     handlers.put("alias", new AliasHandler());
     handlers.put("assign", new PrintHandler());
     handlers.put("attach", new AttachHandler());
+    handlers.put("break", new BreakpointHandler());
+    handlers.put("delete", new DeleteHandler());
     handlers.put("defset", new DefsetHandler());
     handlers.put("detach", new DetachHandler());
     handlers.put("down", new UpDownHandler());
     handlers.put("focus", new FocusHandler());
+    handlers.put("go", new GoHandler());
+    handlers.put("halt", new HaltHandler());
     handlers.put("help", new HelpHandler());
     handlers.put("list", new ListHandler());
     handlers.put("print", new PrintHandler());
@@ -1016,9 +1051,6 @@ public class CLI
     handlers.put("what", new WhatHandler());
     handlers.put("where", new WhereHandler());
     handlers.put("whichsets", new WhichsetsHandler());
-    handlers.put("break", new BreakpointHandler());
-    handlers.put("go", new GoHandler());
-    handlers.put("halt", new HaltHandler());
 
     // initialize PT set stuff
     setparser = new SetNotationParser();
@@ -1062,7 +1094,6 @@ public class CLI
 		pcmd = (String)iter.next();
 		command = new Command(pcmd);
 
-		command.setOut (CLI.out);
 		if (command.getAction() != null)
 		  {
 		    handler = (CommandHandler)handlers.get(command.getAction());
@@ -1112,7 +1143,7 @@ public class CLI
 	
   private void flushMessages()
   {
-    String prefix = "";
+    String prefix = null;
     Message tempmsg;
 
     for (Iterator iter = messages.iterator(); iter.hasNext();)
@@ -1124,7 +1155,9 @@ public class CLI
 	  prefix = "Error: ";
 	else if (tempmsg.getType() == Message.TYPE_WARNING)
 	  prefix = "Warning: ";
-	out.println(prefix + tempmsg.getMessage());
+	if (prefix != null)
+	  outWriter.print(prefix);
+	outWriter.println(tempmsg.getMessage());
 	iter.remove();
       }
   }
@@ -1226,9 +1259,9 @@ public class CLI
     {
       RunState runState = (RunState)observable;
       Task task = (Task)arg;
-      RunState.SourceBreakpoint bpt = null;
+      RunState.PersistentBreakpoint bpt = null;
 
-      System.out.println("runState state = " + runState.getState());
+      outWriter.println("runState state = " + runState.getState());
       synchronized (monitor) 
 	{
 	  if (runState.getState() != RunState.RUNNING)
@@ -1238,7 +1271,7 @@ public class CLI
 	    }
 	  else
 	    attached = false;
-	  bpt = runState.getTaskSourceBreakpoint(task);
+	  bpt = runState.getTaskPersistentBreakpoint(task);
 	  monitor.notifyAll();
 	}
       if (bpt != null) 

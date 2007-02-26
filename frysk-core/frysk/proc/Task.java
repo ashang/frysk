@@ -460,13 +460,13 @@ abstract public class Task
   public void requestUnblock (final TaskObserver observerArg)
   {
     logger.log(Level.FINE, "{0} requestUnblock -- observer\n", this);
-    Manager.eventLoop.add(new TaskEvent()
+    Manager.eventLoop.add(new TaskEvent(this)
     {
       TaskObserver observer = observerArg;
 
       public void execute ()
       {
-        newState = oldState().handleUnblock(Task.this, observer);
+        newState = oldState().handleUnblock(task, observer);
       }
     });
   }

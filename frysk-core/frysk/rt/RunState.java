@@ -1208,25 +1208,33 @@ public class RunState extends Observable implements TaskObserver.Instruction
     }
     
   }
-
-  public class SourceBreakpoint extends Breakpoint
+  /**
+   * A breakpoint added by a high-level action e.g., set by the
+   * user. It is not meant to be transient.
+   */
+  public class PersistentBreakpoint extends Breakpoint
   {
-    SourceBreakpoint(long address, LineBreakpoint lineBreakpoint) 
+    BreakpointObserver observer = null;
+    
+    public PersistentBreakpoint(long address) 
     {
       super(address);
-      this.lineBreakpoint = lineBreakpoint;
     }
-    
-    private LineBreakpoint lineBreakpoint;
 
-    public LineBreakpoint getLineBreakpoint()
+    public BreakpointObserver getObserver()
     {
-      return lineBreakpoint;
+      return observer;
+    }
+
+    public void setObserver(BreakpointObserver observer)
+    {
+      this.observer = observer;
     }
     
     public Action updateHit(Task task, long address)
     {
-      logger.entering("RunState.SourceBreakpoint", "updateHit");
+      logger.entering("RunState.PersistentBreakpoint", "updateHit");
+      Action action = super.updateHit(task, address);
       state = STOPPED;
       if (runningTasks.contains(task))
 	{
@@ -1234,12 +1242,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
 	  numRunningTasks--;
 	}
       else
-	logger.logp(Level.WARNING, "RunState.SourceBreakpoint", "updateHit",
+	logger.logp(Level.WARNING, "RunState.PersistentBreakpoint", "updateHit",
 		    "task {0} not in runningTasks", task);
       breakpointMap.put(task, this);
       setChanged();
-      notifyObservers(task);
-      return super.updateHit(task, address);
+      notifyObservers(task);	// RunState observers
+      if (observer != null)
+	observer.updateHit(RunState.this, this, task, address);
+      return action;
     }
 
     public void addedTo (Object observable)
@@ -1253,83 +1263,18 @@ public class RunState extends Observable implements TaskObserver.Instruction
     }
   }
 
-  public SourceBreakpoint getTaskSourceBreakpoint(Task task)
+  public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
   {
-    return (SourceBreakpoint)breakpointMap.get(task);
+    return (PersistentBreakpoint)breakpointMap.get(task);
   }
   
-  public class LineBreakpoint
+  public void addPersistentBreakpoint(Task task, PersistentBreakpoint bp)
   {
-    private String fileName;
-    private int lineNumber;
-    private int column;
-    private LinkedList dwflAddrs;
-    private LinkedList breakpoints;
-    
-    LineBreakpoint () 
-    {
-      breakpoints = new LinkedList();
-    }
-
-    LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
-    {
-      this();
-      this.fileName = fileName;
-      this.lineNumber = lineNumber;
-      this.column = column;
-      dwflAddrs = getDwfl(task).getLineAddresses(fileName, lineNumber, column);
-    }
-
-    public String getFileName() 
-    {
-      return fileName;
-    }
-    
-    public int getLineNumber() 
-    {
-      return lineNumber;
-    }
-    
-    public int getColumn() 
-    {
-      return column;
-    }
-    
-    public String toString() 
-    {
-      return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-	+ " column " + getColumn();
-    }
-    
-    public void addBreakpoint(Task task)
-    {
-      DwflLine line = (DwflLine)dwflAddrs.getFirst();
-      long address = line.getAddress();
-	  
-      SourceBreakpoint breakpoint = new SourceBreakpoint(address, this);
-      breakpoints.add(breakpoint);
-      task.requestAddCodeObserver(breakpoint, address);
-    }
-
-    public void deleteBreakpoint(Task task)
-    {
-      SourceBreakpoint sb = (SourceBreakpoint)breakpoints.getFirst();
-      task.requestDeleteCodeObserver(sb, sb.getAddress());
-      breakpoints.removeFirst();
-    }
+    task.requestAddCodeObserver(bp, bp.getAddress());
   }
 
-  public LineBreakpoint addBreakpoint(Task task, String fileName, int lineNo)
+  public void deletePersistentBreakpoint(Task task, PersistentBreakpoint bp)
   {
-    LineBreakpoint bp = new LineBreakpoint(task, fileName, lineNo, 0);
-    bp.addBreakpoint(task);
-    return bp;
+    task.requestDeleteCodeObserver(bp, bp.getAddress());
   }
-
-  public boolean deleteBreakpoint(Task task, LineBreakpoint lbp)
-  {
-    lbp.deleteBreakpoint(task);
-    return true;
-  }
-  
 }

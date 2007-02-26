@@ -1,3 +1,8 @@
+2007-02-26  Tim Moore  <timoore@redhat.com>
+
+	* Gui.java (setupCoreLogging): Get frysk logger from LogManager,
+	handler from EventHandler.
+
 2007-02-23  Mike Cvet  <mcvet@redhat.com>
 
 	* gladedir/frysk_source.glade: Changed sizing settings.

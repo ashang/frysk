@@ -1,3 +1,8 @@
+2007-02-24  Tim Moore  <timoore@redhat.com>
+
+	* Task.java (requestUnblock): Pass task as argument to TaskEvent 
+	constructor.
+
 2007-02-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java: Add 2.6.19-1.2288.fc5 to list of problem

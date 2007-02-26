@@ -1,3 +1,7 @@
+2007-02-26  Tim Moore  <timoore@redhat.com>
+
+	* CommandlineParser.java: New file.
+
 2007-02-23  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (Blocker): Added. TaskObserver.Instruction blocking

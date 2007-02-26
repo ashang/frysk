@@ -1,3 +1,10 @@
+2007-02-26  Tim Moore  <timoore@redhat.com>
+
+	* KernelMatch.java: New file.
+	* KernelVersion.java: New file.
+	* TestCase.java (brokenIfUtraceXXX): Use KernelVersion class to
+	test for a range of valid kernels.
+
 2007-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Runner.java (timeout, getTimeout): Delete.

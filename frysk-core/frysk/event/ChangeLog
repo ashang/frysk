@@ -1,3 +1,7 @@
+2007-02-24  Tim Moore  <timoore@redhat.com>
+
+	* EventLoop.java (runEventLoop): Add some logging.
+
 2007-01-10  Nurdin Premji  <npremji@redhat.com>
 
 	* EventLoop.java (EventLoop): Use Logger.getLogger instead of EventLogger.get.

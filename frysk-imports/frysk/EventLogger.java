@@ -55,22 +55,45 @@ import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.util.logging.Formatter;
 import java.util.logging.FileHandler;
-
+import java.util.logging.SimpleFormatter;
 
 /**
- * The event looger for internal state.
+ * The event logger for internal state.
  */
 
 public class EventLogger
 {
     protected EventLogger () {}
-    static private Logger logger = null;
-    
-    static public Logger get (String log_subdir, String log_entry)
-    {
-	if (logger != null) {
-	    return logger;
+    static private FileHandler handler = null;
+    static private Logger logger = Logger.getLogger("frysk");
+    static private boolean verbose = false;
+
+    static {
+	LogManager.getLogManager().addLogger(logger);
+    }
+	
+    static private class EventFormatter extends Formatter {
+	private EventFormatter() {
+	    super();
 	}
+	public String format(LogRecord record) {
+	    String loggerName = record.getLoggerName();
+	    if (!loggerName.equals("frysk")) {
+		StringBuffer buf = new StringBuffer(180);
+		buf.append(loggerName).append(' ')
+		    .append(formatMessage(record));
+		return buf.toString();
+	    } else {
+		return formatMessage(record);
+	    }
+	}
+    }
+    
+    static public FileHandler getFileHandler(String log_subdir,
+					     String log_entry)
+    {
+	if (handler != null)
+	    return handler;
 	LogManager manager = LogManager.getLogManager();
 
 	// Read $HOME/.frysk/logging.properties, if present.
@@ -92,30 +115,26 @@ public class EventLogger
 	    System.exit (1);
 	}
 
-	logger = Logger.getLogger ("frysk");
 	try {
 	    File log_dir = new File (Config.FRYSK_DIR + log_subdir + "/");
 
 	    if (!log_dir.exists())
 		log_dir.mkdirs();
 
-	    FileHandler handler = new FileHandler
-		(log_dir.getAbsolutePath() + "/" + log_entry, 1024 * 128, 1);
-	    handler.setFormatter (new Formatter ()
-		{
-		    public String format(LogRecord record)
-		    {
-			return formatMessage(record);
-		    }
-		});
-	    logger.addHandler (handler);
+	    handler
+		= new FileHandler(log_dir.getAbsolutePath() + "/" + log_entry,
+				  false);
+	    if (verbose) {
+		handler.setFormatter(new SimpleFormatter());
+	    } else {
+		handler.setFormatter (new EventFormatter ());
+	    }
 	}
 	catch (IOException e) {
 	    e.printStackTrace ();
 	}
-
-	logger.setUseParentHandlers(false);
-	return logger;
+	return handler;
+	
     }
 
     public static void setConsoleLog(Logger logger, Level consoleLevel)
@@ -138,9 +157,9 @@ public class EventLogger
         + "SEVERE | WARNING | INFO | CONFIG | FINE | FINER | "
         + "FINEST | ALL].";
       
-      parser.add(new Option(
-                            "console",
-                            description + " Example: -console frysk=FINEST", "<LOG=LEVEL,...>")
+      parser.add(new Option("console",
+                            description + " Example: -console frysk=FINEST",
+			    "<LOG=LEVEL,...>")
       {
         public void parsed (String arg0) throws OptionException
         {
@@ -178,20 +197,19 @@ public class EventLogger
       {
         public void parsed (String arg0) throws OptionException
         {
-          get("logs/", "frysk_core_event.log");
+	  FileHandler handler = getFileHandler("logs/", "frysk_core_event.log");
           String[] logs = arg0.split(",");
     
           for (int i = 0; i < logs.length; i++)
             {
               String[] log_level = logs[i].split("=");
-              Logger logger = LogManager.getLogManager().getLogger(log_level[0]);
-    
-              if (logger == null)
-                {
-                  throw new OptionException("Couldn't find logger with name: "
-                                            + log_level[0]);
-                }
-    
+              Logger logger
+		  = LogManager.getLogManager().getLogger(log_level[0]);
+	      if (logger == null)
+		{
+		  throw new OptionException("Couldn't find logger "
+					    + log_level[0]);
+		}
               try
                 {
                   Level level = Level.parse(log_level[1]);
@@ -201,8 +219,17 @@ public class EventLogger
                 {
                   throw new OptionException("Invalid log level: " + log_level[1]);
                 }
+	      logger.addHandler(handler);
+	      logger.setUseParentHandlers(false);
             }
         }
       });
+      parser.add(new Option("verbose", "output verbose logging messages")
+	{
+	  public void parsed (String arg0) throws OptionException
+	  {
+	    verbose = true;
+	  }
+	});
     }
 }

@@ -45,13 +45,10 @@ import frysk.cli.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
 
+import frysk.util.CommandlineParser;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
-
-import frysk.Config;
-import frysk.EventLogger;
 
 public class fhpd 
 {
@@ -73,8 +70,7 @@ public class fhpd
   public static void main (String[] args)
   {
     CLI cli;
-    Parser parser = new Parser ("fhpd", Config.getVersion(), true);
-    EventLogger.addConsoleOptions(parser);
+    CommandlineParser parser = new CommandlineParser ("fhpd");
     parser.add(new Option('p', "pid to trace", "PID") 
     {
       public void parsed(String arg) throws OptionException
