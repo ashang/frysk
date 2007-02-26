@@ -1,3 +1,18 @@
+2007-02-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TaskTimeLine.java: Removed commented out code.
+	* eventviewer/ProcTimeLine.java: Added setting of minimum size.
+	* eventviewer/ProcBox.java: Split widgets returned into a lables group,
+	and a timelines group.
+	Used ProcTasksObserver, instead of GuiProc.getGuiTask().
+	Removed commented out code.
+	* eventviewer/EventViewer2.java: Rewrote layout entirely to support 
+	spreadsheet-like scrolling, use one scrollbar for all timelines, mrege
+	timelines into one group, better align labels with their timelines.
+	Cleaned some commented out code.
+	* SessionProcTreeView.java: Removed ScrolledWindow containg statusWidget.
+	* GuiProc.java: Removed {get/set}GuiTask.
+
 2007-02-22  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcWiseTreeView.java (getlistedObjects): Added. Returns a LinkedList

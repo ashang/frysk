@@ -9,7 +9,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/usr/share/java/glade2.12.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/glib0.2.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar" sourcepath="/home/swagiaal/src"/>
 	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/vte0.12.jar"/>
 	<classpathentry kind="lib" path="build/frysk-core/frysk-core.jar"/>
@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="build/frysk-imports/jdom.jar"/>
 	<classpathentry kind="lib" path="build/frysk-imports/jline.jar"/>
 	<classpathentry kind="lib" path="build/frysk-imports/junit.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

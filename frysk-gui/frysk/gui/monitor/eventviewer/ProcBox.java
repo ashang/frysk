@@ -39,23 +39,19 @@
 
 package frysk.gui.monitor.eventviewer;
 
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-
 import org.gnu.gtk.Label;
-import org.gnu.gtk.PolicyType;
-import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.Widget;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
-import frysk.gui.monitor.ObservableLinkedList;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.Task;
+import frysk.proc.ProcObserver.ProcTasks;
 
 public class ProcBox
-    extends Box
 {
   GuiProc guiProc;
   GuiTask mainGuiTask;
@@ -63,41 +59,20 @@ public class ProcBox
   VBox timeLinesVBox;
   VBox labelsVBox;
   
-  ProcBox (GuiProc guiProc, SizeGroup labelsSizeGroup)
+  ProcBox (GuiProc guiProc)
   {
     super();
-    this.setBorderWidth(6);
     this.mainGutTaskAdded = false;
 
-    this.getAccessible().setName(guiProc.getExecutableName()+"ProcBox");
-    
     this.timeLinesVBox = new VBox(false,0);
     this.timeLinesVBox.getAccessible().setName(guiProc.getExecutableName()+"TimeLinesVBox");
     this.labelsVBox = new VBox(false,0);
     this.labelsVBox.getAccessible().setName(guiProc.getExecutableName()+"LablesVBox");
-    
-    SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
-    sizeGroup.addWidget(labelsVBox);
-    sizeGroup.addWidget(timeLinesVBox);
-    
-    labelsSizeGroup.addWidget(labelsVBox);
-    
-    VBox spacerVbox = new VBox(false,0);
-    spacerVbox.packStart(labelsVBox, false, false, 0);
-    spacerVbox.packStart(new Label(""), true, true, 0);
-    this.packStart(spacerVbox, false, true, 0);
-    
-    //this.packStart(labelsVBox, false, true, 0);
-    ScrolledWindow scrolledWindow = new ScrolledWindow();
-    scrolledWindow.addWithViewport(timeLinesVBox);
-    scrolledWindow.setPolicy(PolicyType.ALWAYS, PolicyType.NEVER);
-    
-    this.packStart(scrolledWindow, true, true, 0);
+        
     this.setProc(guiProc);
   }
 
   private void setProc(GuiProc guiProc){
-    ObservableLinkedList tasks = guiProc.getTasks();
     this.guiProc = guiProc;
     
     ProcTimeLine procTimeLine = new ProcTimeLine(guiProc);
@@ -110,31 +85,32 @@ public class ProcBox
     this.timeLinesVBox.packStart(procTimeLine, true, true, 0);
     this.labelsVBox.packStart(label, true, true, 0);
     
-    tasks.itemAdded.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object object)
+    new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
+
+      public void taskAdded (Task task)
       {
-        GuiTask guiTask = (GuiTask) object;
-        addGuiTask(guiTask);
+        addGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
       }
-    });
-    
-    tasks.itemRemoved.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object object)
+
+      public void taskRemoved (Task task)
       {
-        GuiTask guiTask = (GuiTask) object;
-        removeGuiTask(guiTask);
+        removeGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
       }
-    });
-    
-    Iterator iterator = tasks.iterator();
-    while (iterator.hasNext())
+
+      public void existingTask (Task task)
       {
-        GuiTask task = (GuiTask) iterator.next();
-        addGuiTask(task);
+        addGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
       }
-    
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        System.err.print("Could not add " + this + " to " + observable);
+        w.printStackTrace();
+      }
+
+      public void addedTo (Object observable){}
+      public void deletedFrom (Object observable){}  
+    });  
   }
   
   protected void removeGuiTask (GuiTask guiTask)
@@ -172,46 +148,23 @@ public class ProcBox
     
     Label label = new Label(taskTimeLine.getLabel());
     label.getAccessible().setName(label.getName());
-    this.timeLinesVBox.packStart(taskTimeLine, true, true, 0);
-    this.labelsVBox.packStart(new Label(taskTimeLine.getLabel()), true, true, 0);
+    
     SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
     sizeGroup.addWidget(taskTimeLine);
     sizeGroup.addWidget(label);
     
-    //this.histogram.addTimeLine(taskTimeLine);
-    
-//    int index = this.children.indexOf(taskTimeLine);
-//    taskTimeLine.setSize(getX()+ TIMELINE_LEFT_MARGIN, getY() + (TIMELINE_SPACING*++index), getWidth() - TIMELINE_RIGHT_MARGIN - TIMELINE_LEFT_MARGIN, getHeight());
-//    
-//    if(taskTimeLine.getY()+TIMELINE_SPACING >= this.getHeight()){
-//      this.setSize(this.getX(), this.getY(), this.getWidth(), this.getHeight()+2*TIMELINE_SPACING);
-//    }
-    
-    this.showAll();
+    this.timeLinesVBox.packStart(taskTimeLine, true, true, 0);
+    this.labelsVBox.packStart(new Label(taskTimeLine.getLabel()), true, true, 0);
   }
 
-  
-//  public void setSize(int x, int y, int w, int h){
-//    int index = 0;
-//    super.setSize(x, y, w, h);
-//    
-//    Iterator iter = children.iterator();
-//    
-//    // ProcTimeLine
-//    EventViewerWidget child = (EventViewerWidget) iter.next();
-//    child.setSize(getX() + TIMELINE_LEFT_MARGIN, this.getY() + (TIMELINE_SPACING*++index), getWidth() - TIMELINE_RIGHT_MARGIN - TIMELINE_LEFT_MARGIN, getHeight());
-//    
-//    while (iter.hasNext())
-//      {
-//        child = (EventViewerWidget) iter.next();
-//        child.setSize(getX() + TIMELINE_LEFT_MARGIN, this.getY() + (TIMELINE_SPACING*++index), getWidth() - TIMELINE_RIGHT_MARGIN - TIMELINE_LEFT_MARGIN, getHeight());
-//      }
-//    
-//    if(child.getY()+HISTOGRAM_HEIGHT >= this.getY()+this.getHeight()){
-//      this.setSize(this.getX(), this.getY(), this.getWidth(), this.getHeight()+TIMELINE_SPACING+HISTOGRAM_HEIGHT);
-//    }
-//    
-//    this.histogram.setSize(this.getX(), this.getY()+this.getHeight() - HISTOGRAM_HEIGHT, this.getWidth(), HISTOGRAM_HEIGHT);
-//  }
-  
+  public Widget getTimeLinesWidget ()
+  {
+    return this.timeLinesVBox;
+  }
+
+  public Widget getLablesWidget ()
+  {
+    return this.labelsVBox;
+  }
+
 }

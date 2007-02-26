@@ -56,7 +56,6 @@ public class ProcTimeLine extends TimeLine
     super(guiProc.getExecutableName()+ " " + guiProc.getProc().getPid());
     this.guiProc = guiProc;
     
-    this.setMinimumSize(0 , 100);
   }
 
   public boolean exposeEvent(ExposeEvent exposeEvent) {
@@ -65,17 +64,20 @@ public class ProcTimeLine extends TimeLine
     if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
       return false;
     
+    int w = this.getWindow().getWidth();
+    
     GdkCairo cairo = new GdkCairo(this.getWindow());
     // draw events
     Iterator iterator = EventManager.theManager.getEventsList().iterator();
     while (iterator.hasNext())
       {
-        Event event = (Event) iterator.next();
-        
+        Event event = (Event) iterator.next();        
         if(this.ownsEvent(event)){
           event.drawText(cairo);
         }
       }
+    
+    this.setMinimumSize(w , 60);
     
     return true;
   }

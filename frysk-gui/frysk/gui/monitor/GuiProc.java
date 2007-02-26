@@ -73,9 +73,7 @@ public class GuiProc extends GuiData{
 	private String executablePath;
 	private String niceExecutablePath;
 	
-    private ObservableLinkedList tasks;
-    
-	public GuiProc(Proc proc){
+    public GuiProc(Proc proc){
 		if(proc == null){
 			throw new IllegalArgumentException("proc cannot be null");
 		}
@@ -86,26 +84,13 @@ public class GuiProc extends GuiData{
 		this.setExecutablePath();
         this.setNiceExecutablePath();
         
-        this.tasks = new ObservableLinkedList();
     }
 
-    public ObservableLinkedList getTasks(){
-      return this.tasks;
-    }
-    
-	public Proc getProc() {
+    public Proc getProc() {
 		return proc;
 	}
 	
-    public void addGuiTask(GuiTask guiTask){
-      this.tasks.add(guiTask);
-    }
-    
-    public void removeGuiTask(GuiTask guiTask){
-      this.tasks.remove(guiTask);
-    }
-    
-	private void setNiceExecutablePath(){
+    private void setNiceExecutablePath(){
 		
 		this.niceExecutablePath = this.getFullExecutablePath();
 

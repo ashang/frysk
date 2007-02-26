@@ -43,79 +43,71 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.gnu.glib.Handle;
+import org.gnu.gtk.Adjustment;
+import org.gnu.gtk.AttachOptions;
+import org.gnu.gtk.HScrollBar;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
-import org.gnu.gtk.VBox;
+import org.gnu.gtk.Table;
+import org.gnu.gtk.VScrollBar;
+import org.gnu.gtk.Viewport;
+import org.gnu.gtk.Widget;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 
-public class EventViewer2 extends VBox {
+public class EventViewer2 extends Table {
 	
-//  private static final int MARGIN = 5;
-//  private static final int MIN_WIDTH = 500;
-  
   int x;
   int y;
   int width;
   int height;
   boolean sessionMounted = false;
-  SizeGroup lablesSizeGroup;
+//  SizeGroup lablesSizeGroup;
   
-  //HashMap procHashMap;
+  Table bigTable;
+  int bigTableNumberOfRows; 
+
+  VScrollBar vScrollBar;
+  HScrollBar hScrollBar;
+  
   private Session currentSession;
   
-	public EventViewer2(Handle handle){
-		super(handle);
-        this.setBorderWidth(6);
+  SizeGroup lablesSizeGroup;
   
-        this.lablesSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
+  public EventViewer2(){
+		super(2, 3, false);
+		this.setBorderWidth(6);
         
-//        // watch the event list for updates
-//        // redraw upon updates
-//        ObservableLinkedList eventList = EventManager.theManager.getEventsList();
-//        Observer drawObserver = new Observer()
-//        {
-//          public void update (Observable arg0, Object arg1)
-//          {
-//            EventViewer2.this.draw();
-//          }
-//        
-//        };
-//       eventList.itemAdded.addObserver(drawObserver);
-//       eventList.itemRemoved.addObserver(drawObserver);
-       
-       this.getAccessible().setName("EventViewer");
+        this.lablesSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
+        Label spacerLabel = new Label("");
+        this.lablesSizeGroup.addWidget(spacerLabel);
+        
+        vScrollBar = new VScrollBar((Adjustment)null);
+        hScrollBar = new HScrollBar((Adjustment)null);
+        
+        this.bigTableNumberOfRows = 0;
+        this.bigTable = new Table(bigTableNumberOfRows,2,false);
+        this.bigTable.setBorderWidth(6);
+        
+        Viewport bigViewport = new Viewport(null,vScrollBar.getAdjustment());
+      
+        bigViewport.setMinimumSize(0, 0);
+        
+        bigViewport.add(bigTable);
+        
+        AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
+        this.attach(bigViewport, 0, 2, 0, 1, EXPAND_AND_FILL, EXPAND_AND_FILL, 0, 0);
+        this.attach(vScrollBar, 2, 3, 0, 1, AttachOptions.FILL, EXPAND_AND_FILL, 0, 0);
+        this.attach(hScrollBar, 1, 2, 1, 2, EXPAND_AND_FILL, AttachOptions.FILL, 0, 0);
+        this.attach(spacerLabel, 0, 1, 1, 2, AttachOptions.FILL, AttachOptions.FILL, 0, 0);
+        
+        this.showAll();
+        this.getAccessible().setName("EventViewer");
 	}
 
-//	public boolean exposeEvent(ExposeEvent event) {
-//	  if(event.isOfType(ExposeEvent.Type.NO_EXPOSE) || !event.getWindow().equals(this.getWindow()))
-//	    return false;
-//
-//	  GdkCairo cairo = new GdkCairo(this.getWindow());
-//	  
-//      if(!sessionMounted){
-//        this.mountSession();  
-//      }
-//      
-//      x = event.getArea().getX();
-//      y = event.getArea().getY();
-//      width = event.getArea().getWidth();
-//      height = this.getWindow().getHeight();
-//       
-//      // White background
-//      cairo.setSourceColor(Color.WHITE);
-//      cairo.rectangle(new Point(x,y), new Point(x+width, y+height));
-//      cairo.fill();
-//      
-//      this.showAll();
-//      
-//	  return true;
-//	}
-
-	
 	
     public void setSession(Session session){
       this.currentSession = session;
@@ -123,17 +115,30 @@ public class EventViewer2 extends VBox {
         this.mountSession();  
       }
     }
-    
+     
     private void addProc(GuiProc guiProc){
-      ProcBox procBox = new ProcBox(guiProc, this.lablesSizeGroup);
- //     procBox.setSize(0, 0,MIN_WIDTH,0);
-       this.packStart(procBox, false, false,12);
-    //  this.setMinimumSize(MIN_WIDTH, procBoxList.getHeight());
+      ProcBox procBox = new ProcBox(guiProc);
+      Widget timeLinesWidget = procBox.getTimeLinesWidget();
+      Viewport timelinesViewport = new Viewport(this.hScrollBar.getAdjustment(),null);
+      timelinesViewport.add(timeLinesWidget);
+      
+      timelinesViewport.setMinimumSize(0, 0);
+      
+      Widget lablesWidget = procBox.getLablesWidget();
+      this.lablesSizeGroup.addWidget(lablesWidget);
+      
+      this.bigTableNumberOfRows++;
+      this.bigTable.resize(2,this.bigTableNumberOfRows);
+      
+      AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
+      this.bigTable.attach(lablesWidget     , 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, AttachOptions.FILL, AttachOptions.FILL, 3, 3);
+      this.bigTable.attach(timelinesViewport, 1, 2, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL, AttachOptions.FILL, 3, 3);
+      
+      this.showAll();
     }
     
     private void mountSession(){
-//      this.procBoxList = new BoxList();
-//      this.procBoxList.setSize(0 + MARGIN, 0, this.getWindow().getWidth()- 2*MARGIN, 0);
+
       Iterator i = this.currentSession.getProcesses().iterator();
       while (i.hasNext())
         {

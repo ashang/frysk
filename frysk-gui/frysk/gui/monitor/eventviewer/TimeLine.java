@@ -66,6 +66,7 @@ public abstract class TimeLine
   
   String label;
   
+  private static final int MINIMUM_HEIGHT = 15;
   
   public TimeLine(String label){
     super();
@@ -83,7 +84,7 @@ public abstract class TimeLine
   
     this.setEvents(EventMask.ALL_EVENTS_MASK);
         
-    this.setMinimumSize(0 , 20);
+    this.setMinimumSize(0 , MINIMUM_HEIGHT);
     
     this.eventBuffer = new LinkedList();
     
@@ -111,19 +112,19 @@ public abstract class TimeLine
   
     GdkCairo cairo = new GdkCairo(this.getWindow());
     
-    int x = exposeEvent.getArea().getX();
-    int y = exposeEvent.getArea().getY();
-    int w = exposeEvent.getArea().getWidth();
-    int h = this.getWindow().getHeight();
-   
+    int x = 0;
+    int y = 0;
+    int w = this.getWindow().getWidth();
+    int h = this.getWindow().getHeight();  
+    
+    
     // White background
     cairo.setSourceColor(Color.WHITE);
-    cairo.rectangle(new Point(x,y), new Point(x+w, y+h));
+    cairo.rectangle(new Point(0,0), new Point(w, h));
     cairo.fill();
     
     cairo.save();
-    
-    // line
+      // line
     cairo.setLineWidth(0.1);
     cairo.setSourceColor(Color.BLACK);
 
@@ -133,6 +134,11 @@ public abstract class TimeLine
     cairo.stroke();
     
     cairo.restore();
+    
+    //  Label
+//    Layout layout = new Layout(this.getContext());
+//    layout.setText(this.getLabel());
+//    this.getWindow().drawLayout(x, y, layout);
     
     // draw events
     Iterator iterator = EventManager.theManager.getEventsList().iterator();
@@ -153,12 +159,12 @@ public abstract class TimeLine
       }
     
     if(eventX >= w){
-      this.setMinimumSize(eventX + 3 , h);
+      this.setMinimumSize(w + 3 , h);
     }
     
-    this.showAll();
+//    this.showAll();
     
-    return true;
+    return false;
   }
   
   /**

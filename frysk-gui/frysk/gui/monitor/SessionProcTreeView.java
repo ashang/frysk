@@ -53,8 +53,7 @@ import org.gnu.glade.LibGlade;
 import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.PolicyType;
-import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.HBox;
 import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
@@ -65,7 +64,6 @@ import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
-import org.gnu.gtk.VBox;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
@@ -90,8 +88,6 @@ public class SessionProcTreeView
 
   private TreeModelFilter procFilter;
 
-  //private VBox statusWidget;
-  
   private PIDColumnDialog procPidColumnDialog;
   
   private ProcMenu procMenu;
@@ -123,14 +119,11 @@ public class SessionProcTreeView
     
     this.procMenu = new ProcMenu(this.procPidColumnDialog, this);
   
-    eventViewer = new EventViewer2((new VBox(false,0)).getHandle());
-    ScrolledWindow scrolledWindow = new  ScrolledWindow();
-    scrolledWindow.addWithViewport(eventViewer);
-    scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-    VBox statusWidget = (VBox) glade.getWidget("statusWidget");
-    statusWidget.add(scrolledWindow);
-    statusWidget.showAll();
-//    eventViewer.showAll();
+    eventViewer = new EventViewer2();
+    HBox box = (HBox) glade.getWidget("statusWidget");
+    box.add(eventViewer);
+    box.showAll();
+    
     this.procDataModel = new SessionProcDataModel();
     
     
