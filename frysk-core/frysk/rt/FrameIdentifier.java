@@ -44,44 +44,99 @@ public class FrameIdentifier
   private long functionAddress;
   private long cfa;
   
+  /**
+   * Create a new FrameIdentifier. Identifies a stack frame based on 
+   * its canonical frame address and function starting address.
+   * 
+   * @param functionAddress The address of the start of the frame
+   * @param cfa The canonical frame address of the stack frame
+   */
   public FrameIdentifier (long functionAddress, long cfa)
   {
     this.functionAddress = functionAddress;
     this.cfa = cfa;
   }
   
+  /**
+   * Returns true if this FrameIdentifier is inner to the parameter.
+   * 
+   * @param fi  The FrameIdentifier to compare to
+   * @return   true If this is inner to fi
+   */
   public boolean innerTo (FrameIdentifier fi)
   {
     return this.cfa < fi.getCfa();
   }
   
+  /**
+   * Returns true if this FrameIdentifier is outer to the parameter.
+   * 
+   * @param fi  The FrameIdentifier to compare to
+   * @return   true If this is outer to fi
+   */
   public boolean outerTo (FrameIdentifier fi)
   {
     return this.cfa > fi.getCfa();
   }
   
+  /**
+   * Compares this FrameIdentifier to the parameter and returns true if 
+   * both the cfa and function address match.
+   * 
+   * It is important to use the function address instead of the stack frame's
+   * current address because that address may change in the lifetime of
+   * a stack frame, and thus this method could potentially return false if
+   * one of the frames had been stepped and the other was not. Using the
+   * frame start address guarantees that if two StackFrames are compared,
+   * and they both represent the same frame on the stack, this method will
+   * return true regardless of the state of either frame.
+   * 
+   * @param fi  The FrameIdentifier to compare to.
+   * @return true   If the cfa and function address belonging to this
+   * FrameIdentifier match the cfa and function address in the parameter.
+   */
   public boolean equals (Object fi)
   {
-      FrameIdentifier rhs = (FrameIdentifier)fi;
-      return (this.cfa == rhs.cfa
-	      && this.functionAddress == rhs.functionAddress);
+    if (! (fi instanceof FrameIdentifier))
+      return false;
+    
+    FrameIdentifier rhs = (FrameIdentifier) fi;
+    return (this.cfa == rhs.cfa && this.functionAddress == rhs.functionAddress);
   }
 
+  /**
+   * Returns the canonical frame address from this FrameIdentifier
+   * 
+   * @return cfa    The canonical frame address of the StackFrame
+   * represented by this FrameIdentifier
+   */
   public long getCfa ()
   {
     return this.cfa;
   }
 
+  /**
+   * Returns the function address from this FrameIdentifier
+   * 
+   * @return functionAddress    The start address of the frame
+   * represented by this FrameIdentifier
+   */
   public long getFunctionAddress ()
   {
     return this.functionAddress;
   }
   
+  /**
+   * Returns a hashCode for this object
+   */
   public int hashCode ()
   {
     return (int) (this.cfa ^ this.functionAddress);
   }
   
+  /**
+   * Displays customized String output.
+   */
   public String toString ()
   {
     StringBuffer buffer = new StringBuffer();
