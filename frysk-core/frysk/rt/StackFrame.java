@@ -54,7 +54,7 @@ public class StackFrame
 
   protected StackFrame outer;
   
-  protected FrameCursor myCursor;
+  protected FrameCursor cursor;
 
   private DOMFunction func;
   
@@ -84,9 +84,9 @@ public class StackFrame
    * @param current The FrameCursor representing the current frame.
    * @param task  The Task this StackFrame belongs to.
    */
-  public StackFrame (FrameCursor current, Task myTask)
+  public StackFrame (FrameCursor current, Task task)
   {
-    this(current, myTask, null);
+    this(current, task, null);
   }
 
   /**
@@ -101,23 +101,23 @@ public class StackFrame
    * @param task  The Task this StackFrame belongs to.
    * @param inner   This StackFrame's inner StackFrame.
    */
-  public StackFrame (FrameCursor current, Task myTask, StackFrame inner)
+  public StackFrame (FrameCursor current, Task task, StackFrame inner)
   {
-    this.task = myTask;
-    this.myCursor = current;
+    this.task = task;
+    this.cursor = current;
     this.inner = inner;
-    long address = this.myCursor.getAddress();
+    long address = this.cursor.getAddress();
 
     if (address != 0) /* We were able to pull information from this cursor */
       {
-        Dwfl dwfl = new Dwfl(myTask.getTid());
+        Dwfl dwfl = new Dwfl(task.getTid());
         DwflLine line = null;
         
         /* The innermost frame and frames which were interrupted during
          * execution use their PC to get the line in source. All other 
          * frames have their PC set to the line after the inner frame call
          * and must be decremented by one. */
-        if (inner == null || this.myCursor.isSignalFrame())
+        if (inner == null || this.cursor.isSignalFrame())
           line = dwfl.getSourceLine(address);
         else
           line = dwfl.getSourceLine(address - 1);
@@ -226,7 +226,7 @@ public class StackFrame
    */
   public long getAddress ()
   {
-    return this.myCursor.getAddress();
+    return this.cursor.getAddress();
   }
   
   /**
@@ -236,10 +236,10 @@ public class StackFrame
    */
   public long getAdjustedAddress ()
   {
-    if (this.inner != null && !this.myCursor.isSignalFrame())
-      return this.myCursor.getAddress() - 1;
+    if (this.inner != null && !this.cursor.isSignalFrame())
+      return this.cursor.getAddress() - 1;
     else
-      return this.myCursor.getAddress();
+      return this.cursor.getAddress();
   }
 
   /**
@@ -279,7 +279,7 @@ public class StackFrame
   public String toPrint (boolean isSourceWindow)
   {
       // XXX: There is always an inner cursor.
-      if (this.myCursor == null)
+      if (this.cursor == null)
 	  return "Empty stack trace";
     
       // Pad the address based on the task's word size.
@@ -354,11 +354,6 @@ public class StackFrame
     return this.dwflLine;
   }
   
-  public boolean hasDebugInfo ()
-  {
-    return this.dwflLine != null;
-  }
-  
   /**
    * Sets whether or not this frame is a signal frame - meaning it has been
    * sent an interrupt, and we should not decrement its address when trying
@@ -368,7 +363,7 @@ public class StackFrame
    */
   public void setIsSignalFrame(boolean sigFrame)
   {
-    this.myCursor.setIsSignalFrame(sigFrame);
+    this.cursor.setIsSignalFrame(sigFrame);
   }
   
   /**
@@ -378,13 +373,13 @@ public class StackFrame
    */
   public boolean getIsSignalFrame()
   {
-    return this.myCursor.isSignalFrame();
+    return this.cursor.isSignalFrame();
   }
   
   public long getReg(long reg)
   {
     // ??? Use something akin to Register interface?
-    return this.myCursor.get_reg(reg);
+    return this.cursor.get_reg(reg);
   }
   
   /**
@@ -395,13 +390,13 @@ public class StackFrame
    */
   public long getCFA()
   {
-    return this.myCursor.getCfa();
+    return this.cursor.getCfa();
   }
   
   public long setReg(long reg, long val)
   {
     // ??? Use something akin to Register interface?
-    return this.myCursor.set_reg(reg, val);
+    return this.cursor.set_reg(reg, val);
   }
   
     /**
@@ -412,8 +407,8 @@ public class StackFrame
 	if (frameIdentifier != null)
 	    // XXX: This is wrong, it needs to be the function's
 	    // address, and not the current instruction.
-	    frameIdentifier = new FrameIdentifier(myCursor.getAddress(),
-						  myCursor.getCfa());
+	    frameIdentifier = new FrameIdentifier(cursor.getAddress(),
+						  cursor.getCfa());
 	return this.frameIdentifier;
     }
     private FrameIdentifier frameIdentifier;
@@ -424,12 +419,12 @@ public class StackFrame
     public Symbol getSymbol ()
     {
 	if (symbol == null) {
-	    String mangledName = myCursor.getProcName ();
+	    String mangledName = cursor.getProcName ();
 	    if (mangledName == null)
 		symbol = Symbol.UNKNOWN;
 	    else {
-		long address = (myCursor.getAddress ()
-				- myCursor.getProcOffset ());
+		long address = (cursor.getAddress ()
+				- cursor.getProcOffset ());
 		symbol = new Symbol (address, mangledName);
 	    }
 	}

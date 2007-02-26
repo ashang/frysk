@@ -1,7 +1,11 @@
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFrame.java: Rename myCursor to cursor.  Rename myTask to
+	task.
+	(hasDebugInfo): Delete.
+
 	* StackFrame.java (getSymbolName): Delete.
-	
+
 2007-02-26  Mike Cvet  <mcvet@redhat.com>
 
 	* TestFrameIdentifier.java (testEquals): Added test for

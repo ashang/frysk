@@ -1538,7 +1538,7 @@ public class SourceWindow
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 
-    if (!selected.hasDebugInfo())
+    if (selected.getDwflLine() == null)
     {
       SourceView v = (SourceView) SourceWindow.this.view;
       SourceBuffer b = (SourceBuffer) v.getBuffer();
