@@ -1,5 +1,8 @@
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* SourceBuffer.java: Do not use StackFrame .getStartOffset or
+	.getEndOffset.
+	
 	* SourceWindow.java: Use StackFrame .getDwflLine and not
 	.hasDebugInfo.
 	

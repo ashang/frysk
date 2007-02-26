@@ -69,10 +69,6 @@ public class StackFrame
 
   private int endLine;
 
-  private int startOffset;
-
-  private int endOffset;
-
   private int column;
   
   private String sourceFile = "";
@@ -128,8 +124,6 @@ public class StackFrame
             this.lineNum = line.getLineNum();
             this.startLine = this.lineNum;
             this.endLine = this.lineNum;
-            this.startOffset = 0;
-            this.endOffset = -1;
             this.sourceFile = line.getSourceFile();
             this.column = line.getColumn();
           }
@@ -324,11 +318,6 @@ public class StackFrame
     this.endLine = i;
   }
 
-  public int getEndOffset ()
-  {
-    return endOffset;
-  }
-  
   public int getStartLine ()
   {
     return startLine;
@@ -339,11 +328,6 @@ public class StackFrame
     this.startLine = i;
   }
 
-  public int getStartOffset ()
-  {
-    return startOffset;
-  }
-  
   /**
    * Return the DwflLine Object for this StackFrame. If this is null, it is
    * an excellent indication that this frame has no debuginfo.

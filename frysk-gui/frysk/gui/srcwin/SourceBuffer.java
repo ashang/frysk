@@ -298,86 +298,6 @@ public class SourceBuffer
   }
   
   /**
-   * Sets the current 'line' to the given range
-   * 
-   * @param startLine The line the current instruction starts on
-   * @param startCol The offset (wrt. the start of the line) that the
-   *          instruction starts on
-   * @param endLine The line the current instruction ends on
-   * @param endCol The offset (wrt. the start of the line) that the instruction
-   *          ends on
-   */
-//  protected void setCurrentLine (StackFrame frame)
-//  {
-//
-//    if (frame.getData() == null 
-//        || !frame.getData().getFileName().equals(this.scope.getData().getFileName()))
-//      {
-//        frame = frame.getOuter();
-//        tagFlag = 0;
-//        if (frame != null)
-//          setCurrentLine(frame);
-//        
-//        return;
-//      }
-//      
-//    //System.out.println("setCurrentLine matching: " + frame.getMethodName());
-//      
-//    int startLine = frame.getStartLine();
-//    int startCol = frame.getStartOffset();
-//    int endLine = frame.getEndLine();
-//    int endCol = frame.getEndOffset();
-//    
-//    this.startCurrentLine = this.createMark(
-//                                            "currentLineStart",
-//                                            this.getIter(this.getLineIter(
-//                                                                          startLine - 1).getOffset()
-//                                                         + startCol), true);
-//    if (endCol != -1)
-//      {
-//        this.endCurrentLine = this.createMark(
-//                                              "currentLineEnd",
-//                                              this.getIter(this.getLineIter(
-//                                                                            endLine - 1).getOffset()
-//                                                           + endCol), false);
-//      }
-//    else
-//      {
-//        TextIter lineStart = this.getLineIter(endLine - 1);
-//        this.endCurrentLine = this.createMark(
-//                                              "currentLineEnd",
-//                                              this.getIter(lineStart.getOffset()
-//                                                           + lineStart.getCharsInLine()),
-//                                              true);
-//      }
-//
-//    if (frame.getInner() == null)
-//      {
-//        if (this.tagFlag == 0)
-//          {
-//            // System.out.println("currnetlineapplytag " + frame.getMethodName()
-//            // + " " + frame.getLineNumber());
-//            this.applyTag(this.currentLine,
-//                          this.getIter(this.startCurrentLine),
-//                          this.getIter(this.endCurrentLine));
-//            this.tagFlag = 1;
-//          }
-//      }
-//    else
-//      {
-//        this.applyTag(this.outerLine, this.getIter(this.startCurrentLine),
-//                      this.getIter(this.endCurrentLine));
-//      }
-//    
-//    // Apply the next sections of the 'current line'
-//    frame = frame.getOuter();
-//    if (frame != null)
-//      setCurrentLine(frame);
-//    else
-//      this.tagFlag = 0;
-//  }
-  
-  /**
    * Perform various highlighting operations on the incoming stack trace.
    * Differentiates between innermost and other frames. Depending on the
    * incoming boolean parameter, will either add or remove highlights for
@@ -407,30 +327,18 @@ public class SourceBuffer
       }
 
     int startLine = frame.getStartLine();
-    int startCol = frame.getStartOffset();
     int endLine = frame.getEndLine();
-    int endCol = frame.getEndOffset();
 
     TextMark start = this.createMark(
                                      frame.getSymbol ().getDemangledName (),
                                      this.getIter(this.getLineIter(
                                                                    startLine - 1).getOffset()
-                                                  + startCol), true);
-    TextMark end = null;
-    if (endCol != - 1)
-      {
-        end = this.createMark(
-                              "end",
-                              this.getIter(this.getLineIter(endLine - 1).getOffset()
-                                           + endCol), false);
-      }
-    else
-      {
-        TextIter lineStart = this.getLineIter(endLine - 1);
-        end = this.createMark("end",
-                              this.getIter(lineStart.getOffset()
-                                           + lineStart.getCharsInLine()), true);
-      }
+                                                  + 0), true);
+    TextIter lineStart = this.getLineIter(endLine - 1);
+    TextMark end = this.createMark("end",
+				   this.getIter(lineStart.getOffset()
+						+ lineStart.getCharsInLine()),
+				   true);
 
     if (frame.getDOMSource() == null
         || frame.getDOMSource().getFileName().equals(this.fileName))
@@ -468,30 +376,17 @@ public class SourceBuffer
           }
 
         startLine = curr.getStartLine();
-        startCol = curr.getStartOffset();
         endLine = curr.getEndLine();
-        endCol = curr.getEndOffset();
 
         start = this.createMark(
                                 curr.getSymbol().getDemangledName (),
                                 this.getIter(this.getLineIter(startLine - 1).getOffset()
-                                             + startCol), true);
-        end = null;
-        if (endCol != - 1)
-          {
-            end = this.createMark(
-                                  "end",
-                                  this.getIter(this.getLineIter(endLine - 1).getOffset()
-                                               + endCol), false);
-          }
-        else
-          {
-            TextIter lineStart = this.getLineIter(endLine - 1);
-            end = this.createMark("end",
-                                  this.getIter(lineStart.getOffset()
-                                               + lineStart.getCharsInLine()),
-                                  true);
-          }
+                                             + 0), true);
+	lineStart = this.getLineIter(endLine - 1);
+	end = this.createMark("end",
+			      this.getIter(lineStart.getOffset()
+					   + lineStart.getCharsInLine()),
+			      true);
 
         if (newFrame == true)
           {
