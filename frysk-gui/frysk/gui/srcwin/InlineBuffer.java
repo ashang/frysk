@@ -251,20 +251,6 @@ public class InlineBuffer
   }
 
   /**
-   * Sets the current line, taking into account the offset from the start of the
-   * file
-   */
-  protected void setCurrentLine (StackFrame frame)
-  {
-    frame.setStartLine(frame.getStartLine()
-                       - this.declaration.getStartingLine() + 1);
-    frame.setEndLine(frame.getEndLine() - this.declaration.getStartingLine()
-                     + 1);
-    // super.setCurrentLine(frame);
-    super.highlightLine(frame, true);
-  }
-
-  /**
    * Creates the tags, again taking into account the offset from the start of
    * the file
    */

@@ -326,15 +326,13 @@ public class SourceBuffer
           return;
       }
 
-    int startLine = frame.getStartLine();
-    int endLine = frame.getEndLine();
+    int line = frame.getLines()[0].getLine ();
 
     TextMark start = this.createMark(
                                      frame.getSymbol ().getDemangledName (),
-                                     this.getIter(this.getLineIter(
-                                                                   startLine - 1).getOffset()
+                                     this.getIter(this.getLineIter(line - 1).getOffset()
                                                   + 0), true);
-    TextIter lineStart = this.getLineIter(endLine - 1);
+    TextIter lineStart = this.getLineIter(line - 1);
     TextMark end = this.createMark("end",
 				   this.getIter(lineStart.getOffset()
 						+ lineStart.getCharsInLine()),
@@ -375,14 +373,13 @@ public class SourceBuffer
               }
           }
 
-        startLine = curr.getStartLine();
-        endLine = curr.getEndLine();
+        line = curr.getLines()[0].getLine ();
 
         start = this.createMark(
                                 curr.getSymbol().getDemangledName (),
-                                this.getIter(this.getLineIter(startLine - 1).getOffset()
+                                this.getIter(this.getLineIter(line - 1).getOffset()
                                              + 0), true);
-	lineStart = this.getLineIter(endLine - 1);
+	lineStart = this.getLineIter(line - 1);
 	end = this.createMark("end",
 			      this.getIter(lineStart.getOffset()
 					   + lineStart.getCharsInLine()),

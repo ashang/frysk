@@ -65,10 +65,6 @@ public class StackFrame
 
   private int lineNum;
   
-  private int startLine;
-
-  private int endLine;
-
   private int column;
   
   private String sourceFile = "";
@@ -122,8 +118,6 @@ public class StackFrame
         if (line != null)
           {
             this.lineNum = line.getLineNum();
-            this.startLine = this.lineNum;
-            this.endLine = this.lineNum;
             this.sourceFile = line.getSourceFile();
             this.column = line.getColumn();
           }
@@ -308,26 +302,6 @@ public class StackFrame
       return builder.toString();
   }
   
-  public int getEndLine ()
-  {
-    return endLine;
-  }
-  
-  public void setEndLine (int i)
-  {
-    this.endLine = i;
-  }
-
-  public int getStartLine ()
-  {
-    return startLine;
-  }
-  
-  public void setStartLine (int i)
-  {
-    this.startLine = i;
-  }
-
   /**
    * Return the DwflLine Object for this StackFrame. If this is null, it is
    * an excellent indication that this frame has no debuginfo.
