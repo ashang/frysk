@@ -674,9 +674,11 @@ public class TestRunState extends TestLib
                   
                 assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
                 
-                assertTrue(frame.getMethodName().equals("foo"));
+                assertEquals ("demanged name", "foo",
+			      frame.getSymbol ().getDemangledName());
                 frame = frame.getOuter();
-                assertTrue(frame.getMethodName().equals("main"));
+                assertEquals ("demanged name", "main",
+			      frame.getSymbol ().getDemangledName());
                 
                 Manager.eventLoop.requestStop();
                 return;
@@ -689,9 +691,11 @@ public class TestRunState extends TestLib
               
             assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
             
-            assertTrue(frame.getMethodName().equals("foo"));
+            assertEquals ("demangled name", "foo",
+			  frame.getSymbol ().getDemangledName());
             frame = frame.getOuter();
-            assertTrue(frame.getMethodName().equals("main"));
+            assertEquals ("demangled name", "main",
+			  frame.getSymbol ().getDemangledName());
             
             Manager.eventLoop.requestStop();
             return;
@@ -704,9 +708,11 @@ public class TestRunState extends TestLib
               
             assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
             
-            assertTrue(frame.getMethodName().equals("foo"));
+            assertEquals ("demangled name", "foo",
+			  frame.getSymbol ().getDemangledName ());
             frame = frame.getOuter();
-            assertTrue(frame.getMethodName().equals("main"));
+            assertEquals ("demangled name", "main",
+			  frame.getSymbol ().getDemangledName ());
             
             Manager.eventLoop.requestStop();
             return;

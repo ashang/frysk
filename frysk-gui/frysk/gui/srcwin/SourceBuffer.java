@@ -411,11 +411,8 @@ public class SourceBuffer
     int endLine = frame.getEndLine();
     int endCol = frame.getEndOffset();
 
-//     System.out.println("HIghlighting " + frame.getMethodName() + " " +
-//     frame.getLineNumber() + " " + newFrame);
-
     TextMark start = this.createMark(
-                                     frame.getMethodName(),
+                                     frame.getSymbol ().getDemangledName (),
                                      this.getIter(this.getLineIter(
                                                                    startLine - 1).getOffset()
                                                   + startCol), true);
@@ -475,11 +472,8 @@ public class SourceBuffer
         endLine = curr.getEndLine();
         endCol = curr.getEndOffset();
 
-//        System.out.println("iterating " + curr.getMethodName() + " " +
-//        curr.getLineNumber() + " " + newFrame);
-
         start = this.createMark(
-                                curr.getMethodName(),
+                                curr.getSymbol().getDemangledName (),
                                 this.getIter(this.getLineIter(startLine - 1).getOffset()
                                              + startCol), true);
         end = null;

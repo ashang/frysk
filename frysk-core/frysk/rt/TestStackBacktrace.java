@@ -145,7 +145,7 @@ public class TestStackBacktrace
 
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("baz", frame.getMethodName());
+    assertEquals("baz", frame.getSymbol().getDemangledName ());
     assertNull(frame.getInner());
     
     assertEquals(62, frame.getLineNumber());
@@ -153,33 +153,33 @@ public class TestStackBacktrace
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("bar", frame.getMethodName());
+    assertEquals("bar", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
     assertEquals(71, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("foo", frame.getMethodName());
+    assertEquals("foo", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
     assertEquals(81, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("main", frame.getMethodName());
+    assertEquals("main", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
     assertEquals(117, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertEquals("", frame.getSourceFile());
-    assertEquals("__libc_start_main", frame.getMethodName());
+    assertEquals("__libc_start_main", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());
 
     frame = frame.getOuter();
     assertEquals("", frame.getSourceFile());
-    assertEquals("_start", frame.getMethodName());
+    assertEquals("_start", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
     assertEquals(0, frame.getLineNumber());
 
@@ -609,12 +609,15 @@ public class TestStackBacktrace
                 /* Make sure we're not missing any frames */
                 if (frame.getLineNumber() > 95)
                   {
-                    assertTrue(frame.getMethodName().equals("jump"));
+                    assertEquals ("demangled name", "jump",
+				  frame.getSymbol().getDemangledName());
                     frame = frame.getOuter();
                   }
-                assertTrue(frame.getMethodName().equals("foo"));
+                assertEquals ("demangled name", "foo",
+			      frame.getSymbol().getDemangledName());
                 frame = frame.getOuter();
-                assertTrue(frame.getMethodName().equals("main"));
+                assertEquals ("demangled name", "main",
+			      frame.getSymbol().getDemangledName());
                 
                 runState.stepInstruction(myTask.getProc().getTasks());
                 return;
@@ -632,11 +635,14 @@ public class TestStackBacktrace
                 StackFrame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
-                assertTrue(frame.getMethodName().equals("jump"));
+                assertEquals ("demangled name", "jump",
+			      frame.getSymbol().getDemangledName());
                 frame = frame.getOuter();
-                assertTrue(frame.getMethodName().equals("foo"));
+                assertEquals ("demangled name", "foo",
+			      frame.getSymbol().getDemangledName());
                 frame = frame.getOuter();
-                assertTrue(frame.getMethodName().equals("main"));
+                assertEquals ("demangled name", "main",
+			      frame.getSymbol().getDemangledName());
                 
                 runState.stepInstruction(myTask.getProc().getTasks());
                 return;
@@ -727,7 +733,7 @@ public class TestStackBacktrace
           {
             frameTracker[task_count][i][0] = "" + frame.toString();
             frameTracker[task_count][i][1] = frame.getSourceFile();
-            frameTracker[task_count][i][2] = frame.getMethodName();
+            frameTracker[task_count][i][2] = frame.getSymbol().getDemangledName();
             
             if (frame.getInner() == null)
               frameTracker[task_count][i][3] = "";

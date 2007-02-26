@@ -191,20 +191,6 @@ public class StackFrame
   /**
    * Return the name of the function associated with this stack frame.
    * This will return null if the function's name is not known.
-   */
-  public String getMethodName ()
-  {
-    /* If the name can't be resolved, its easier to deal with
-     * an empty string rather than checking for nulls everywhere */
-    if (this.myCursor == null || this.myCursor.getMethodName() == null)
-      return "";
-    
-    return this.myCursor.getMethodName();
-  }
-  
-  /**
-   * Return the name of the function associated with this stack frame.
-   * This will return null if the function's name is not known.
    *
    * @return the name of the function associated with this stack frame.
    * Or null if not known. 
@@ -318,54 +304,39 @@ public class StackFrame
    */
   public String toPrint (boolean isSourceWindow)
   {
-    if (this.myCursor == null)
-      return "Empty stack trace";
+      // XXX: There is always an inner cursor.
+      if (this.myCursor == null)
+	  return "Empty stack trace";
     
-    StringBuffer builder = new StringBuffer("0x");
-    
-    String addr = Long.toHexString(getAddress());
-    
-    // Pad the address based on the task's word size.
-    int padding = 2 * task.getIsa().getWordSize() - addr.length();
-    for (int i = 0; i < padding; ++i)
-    builder.append('0');
-    
-    builder.append(addr);
-//   String funcString = getSymbolName();
-    String funcString = getMethodName();
-   
-    if (this.dwflLine != null)
-      {
-        if (funcString.equals(""))
-          funcString = "[unknown] from: ";
-        else
-          funcString = funcString + " () from: ";
-        
-        if (! isSourceWindow)
-          {
-            builder.append(" in "
-                  + funcString
-                  + this.sourceFile + "#" + this.lineNum);
-          }
-        else
-          {
-            String[] fileName = this.sourceFile.split("/");
-            builder.append(" in "
-                  + funcString
-                  + fileName[fileName.length - 1] + ": line #" + this.lineNum);
-          }
-      }
-    else
-      {
-        if (funcString.equals(""))
-          funcString = "[unknown]";
-        else
-          funcString = funcString + " ()";
-        builder.append(" in "
-              + funcString);
+      // Pad the address based on the task's word size.
+      StringBuffer builder = new StringBuffer ("0x");
+      String addr = Long.toHexString (getAddress());
+      int padding = 2 * task.getIsa().getWordSize() - addr.length();
+      for (int i = 0; i < padding; ++i)
+	  builder.append('0');
+      builder.append(addr);
+
+      // Print the symbol, if known append ().
+      Symbol symbol = getSymbol ();
+      builder.append(" in ");
+      builder.append (symbol.getDemangledName ());
+      if (symbol != Symbol.UNKNOWN)
+	  builder.append (" ()");
+
+      // If there's line number information append that.
+      if (this.dwflLine != null) {
+	  builder.append (" from: ");
+	  if (! isSourceWindow) {
+	      builder.append(this.sourceFile + "#" + this.lineNum);
+	  }
+	  else {
+	      // XXX: This should be a File, not string.
+	      String[] fileName = this.sourceFile.split("/");
+	      builder.append(fileName[fileName.length - 1] + ": line #" + this.lineNum);
+	  }
       }
 
-    return builder.toString();
+      return builder.toString();
   }
   
   public int getEndLine ()

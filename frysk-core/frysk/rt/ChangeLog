@@ -1,3 +1,9 @@
+2007-02-26  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFrame.java (getMethodName): Delete.
+	(toPrint): Update, use getSymbol.
+	* TestRunState.java: Update, use getSymbol.
+
 2007-02-26  Mike Cvet  <mcvet@redhat.com>
 
 	* FrameIdentifier.java: Added Javadoc.

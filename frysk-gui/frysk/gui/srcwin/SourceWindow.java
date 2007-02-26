@@ -464,7 +464,7 @@ public class SourceWindow
     StackFrame curr = null;
     StackFrame taskMatch = null;
 
-    String currentMethodName = this.currentFrame.getMethodName();
+    String currentMethodName = this.currentFrame.getSymbol ().getDemangledName ();
 
     this.stackView.resetView(frames);
     this.stackView.expandAll();
@@ -489,7 +489,7 @@ public class SourceWindow
           {
             while (curr != null)
               {
-                if (currentMethodName.equals(curr.getMethodName()))
+		if (currentMethodName.equals(curr.getSymbol ().getDemangledName ()))
                   {
                     newFrame = curr;
                     break;
