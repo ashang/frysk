@@ -51,6 +51,7 @@ import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
@@ -221,28 +222,35 @@ public class CurrentStackView
     return this.head;
   }
   
-  public void selectRow (StackFrame frame) 
+  /**
+   * Scan the available stack frames and find the frame which matches
+   * the parameter. Then highlight the row containing that frame.
+   * 
+   * @param frame   The StackFrame whose row to highlight. 
+   */
+  public void selectRow (StackFrame frame)
   {
-    TreeIter iter = this.treeModel.getFirstIter().getChild(0);
-    TreeIter first = iter;
-    System.out.println("Got the iter: " + iter + " stackframe " + frame);
-    while (iter != null && this.treeModel.isIterValid(iter))
+    TreeSelection selection = this.getSelection();
+    TreeIter first = this.treeModel.getFirstIter();
+
+    while (first != null && this.treeModel.isIterValid(first))
       {
-        System.out.println("Iterating  " + iter);
-        StackFrame rowFrame = (StackFrame) this.treeModel.getValue(iter, (DataColumnObject) stackColumns[1]);
-        System.out.println("grabbing stackframe " + rowFrame);
-        if (frame.getCFA() == rowFrame.getCFA())
+        TreeIter iter = first.getFirstChild();
+        while (iter != null && this.treeModel.isIterValid(iter))
           {
-            System.out.println("Zomg equal");
-            this.setCursor(iter.getPath(), null, false);
-            this.grabFocus();
-            return;
+            StackFrame rowFrame = (StackFrame) this.treeModel.getValue(
+                                                                       iter,
+                                                                       (DataColumnObject) stackColumns[1]);
+
+            if (frame.getCFA() == rowFrame.getCFA())
+              {
+                selection.select(iter);
+                return;
+              }
+            iter = iter.getNextIter();
           }
-        iter = iter.getNextIter();
+        first = first.getNextIter();
       }
-    System.out.println("setcursor");
-    this.setCursor(first.getPath(), null, false);
-    this.grabFocus();
   }
 
   public void selectionChangedEvent (TreeSelectionEvent arg0)

@@ -452,6 +452,7 @@ public class SourceWindow
         sw.add(stackView);
         this.watchView.setView((SourceView) this.view);
         stackView.expandAll();
+        this.stackView.selectRow(this.currentFrame);
         stackView.showAll();
         this.view.showAll();
         return;
@@ -464,8 +465,11 @@ public class SourceWindow
     StackFrame taskMatch = null;
 
     String currentMethodName = this.currentFrame.getMethodName();
-    boolean flag = false;
 
+    this.stackView.resetView(frames);
+    this.stackView.expandAll();
+    StackFrame newFrame = null;
+    
     /*
      * Try to find the new StackFrame representing the same frame from before
      * the reset
@@ -480,43 +484,36 @@ public class SourceWindow
           }
 
         sb.highlightLine(curr, true);
-
-        while (curr != null)
+        
+        if (newFrame == null)
           {
-            if (currentMethodName.equals(curr.getMethodName()))
+            while (curr != null)
               {
-                flag = true;
-                // this.currentFrame = curr;
-                break;
+                if (currentMethodName.equals(curr.getMethodName()))
+                  {
+                    newFrame = curr;
+                    break;
+                  }
+                curr = curr.getOuter();
               }
-
-            curr = curr.getOuter();
           }
       }
-
-    if (! flag)
+    
+    if (newFrame == null)
       {
         if (taskMatch != null)
           {
-            //this.stackView.selectRow(taskMatch);
-            updateShownStackFrame(taskMatch);
+            newFrame = taskMatch;
           }
         else
           {
-            StackFrame frame = this.stackView.getFirstFrameSelection();
-            //this.stackView.selectRow(frame);
-            updateShownStackFrame(frame);
+            newFrame = this.stackView.getFirstFrameSelection();
           }
       }
-    else
-      {
-       // this.stackView.selectRow(curr);
-        updateShownStackFrame(curr);
-      }
 
-    this.stackView.resetView(frames);
-    this.stackView.expandAll();
-
+    this.stackView.selectRow(newFrame);
+    updateShownStackFrame(newFrame);
+    
     /* Update the variable watch as well */
     this.watchView.refreshList();
   }
