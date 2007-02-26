@@ -76,9 +76,6 @@ public class StackFactory
           {
             StackFrame outerFrame = new StackFrame(currentCursor, task, current);
 
-            if (currentCursor.getIsSignalFrame() == 1)
-              outerFrame.setIsSignalFrame(true);
-
             current.outer = outerFrame;
             current = outerFrame;
 
@@ -92,10 +89,6 @@ public class StackFactory
         while (num > 0 && currentCursor != null)
           {
             StackFrame outerFrame = new StackFrame(currentCursor, task, current);
-
-            if (currentCursor.getIsSignalFrame() == 1)
-              outerFrame.setIsSignalFrame(true);
-
             current.outer = outerFrame;
             current = outerFrame;
 

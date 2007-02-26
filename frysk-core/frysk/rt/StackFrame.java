@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.rt;
 
 import frysk.dom.DOMFunction;
@@ -51,11 +50,12 @@ import java.io.File;
 public class StackFrame
 {
 
-  protected StackFrame inner;
+  private StackFrame inner;
 
-  protected StackFrame outer;
+  // Accessed by StackFactory.
+  StackFrame outer;
   
-  protected FrameCursor cursor;
+  private FrameCursor cursor;
 
   private DOMFunction func;
   
@@ -353,28 +353,6 @@ public class StackFrame
   public DwflLine getDwflLine ()
   {
     return this.dwflLine;
-  }
-  
-  /**
-   * Sets whether or not this frame is a signal frame - meaning it has been
-   * sent an interrupt, and we should not decrement its address when trying
-   * to get its line number from the Dwfl object.
-   * 
-   * @param sigFrame    Whether or not this frame is a 'signal frame.'
-   */
-  public void setIsSignalFrame(boolean sigFrame)
-  {
-    this.cursor.setIsSignalFrame(sigFrame);
-  }
-  
-  /**
-   * Returns whether or not this frame is a signal frame.
-   * 
-   * @return Whether or not this frame is a signal frame.
-   */
-  public boolean getIsSignalFrame()
-  {
-    return this.cursor.isSignalFrame();
   }
   
   public long getReg(long reg)

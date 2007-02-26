@@ -1,5 +1,10 @@
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFactory.java: Delete call to setIsSignalFrame.
+	* StackFrame.java (setIsSignalFrame, getIsSignalFrame): Delete.
+	(inner, cursor): Make private.
+	(outer): Make package private.
+
 	* StackFrame.java (getLines): New.
 	* Line.java: New.
 
