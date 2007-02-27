@@ -43,6 +43,7 @@ import gnu.gcj.RawData;
 
 public class ProcInfo
 {
+  int error;
   long startIP;
   long endIP;
   long lsda;
@@ -53,4 +54,12 @@ public class ProcInfo
   int unwindInfoSize;
     
   RawData unwindInfo;
+  
+  public String toString()
+  {
+    return "ProcInfo Error " + error + " startIP: " + startIP + " endIP: " + endIP + " lsda: " 
+    + lsda + " handler: " + handler + " gp: " + gp + " flags: " + flags 
+    + " format: " + format + " unwindInfoSize: " + unwindInfoSize 
+    + " hasUnwindInfo?: " + (unwindInfo != null);
+  }
 }

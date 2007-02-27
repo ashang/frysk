@@ -80,7 +80,7 @@ jint
 lib::unwind::PtraceAccessors::accessMem (jlong addr, jbyteArray valp, 
 										 jboolean write)
 {
-	logFine (this, logger, "accessMem address: %ld, write: %d", (long) addr, (int) write);
+	logFine (this, logger, "accessMem address: %lx, write: %d", (long) addr, (int) write);
 	if ((int) JvGetArrayLength(valp) >= (int) sizeof (unw_word_t))
 	return (jint) _UPT_access_mem((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
 					getWord(valp), (int) write, (void *) ptArgs);
@@ -107,10 +107,11 @@ lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 {
 	logFine(this, logger, "findProcInfo ip: %ld, needUnwindInfo %d", (long) ip, (int) needUnwindInfo);
 	unw_proc_info_t proc_info = {};
-	_UPT_find_proc_info((unw_addr_space_t) addressSpace, (unw_word_t) ip, &proc_info,
+	int ret = _UPT_find_proc_info((unw_addr_space_t) addressSpace, (unw_word_t) ip, &proc_info,
 					(int) needUnwindInfo, (void *) ptArgs);
 	
 	lib::unwind::ProcInfo * procInfo = new ProcInfo();
+	procInfo->error = ret;
 	procInfo->startIP = (jlong) proc_info.start_ip;
   	procInfo->endIP = (jlong) proc_info.end_ip;
   	procInfo->lsda = (jlong) proc_info.lsda;

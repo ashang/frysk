@@ -80,8 +80,8 @@ native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 	lib::unwind::ProcInfo* procInfo = ((lib::unwind::Accessors *)arg)->findProcInfo ( (long) ip,
 	(jboolean) need_unwind_info);
 
-	if (procInfo == NULL)
-		return -1;
+	if (procInfo->error != 0)
+		return procInfo->error;
 
 	pip->start_ip = (unw_word_t) procInfo->startIP;
 	pip->end_ip = (unw_word_t) procInfo->endIP;

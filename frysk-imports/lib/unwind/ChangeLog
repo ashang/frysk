@@ -1,3 +1,9 @@
+2007-02-27  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcInfo.java: Added error value.
+	* cni/PtraceAccessors.cxx (findProcInfo): Set ProcInfo error value.
+	* cni/UnwindNative.cxx: (findProcInfo): Return accessors procInfo error value.
+
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* FrameCursor.java (procOffset, getProcOffset): Delete.
