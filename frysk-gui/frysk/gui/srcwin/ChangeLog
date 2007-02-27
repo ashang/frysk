@@ -3,6 +3,8 @@
 	* SourceBuffer.java (highlightLine): Make sure that the StackFrame has 
 	available lines before grabbing them. Fixes #4106.
 	* SourceWindow.java (generateProcStackTrace): Ditto.
+	
+	* SourceBuffer.java (createTags): Return if the scope has no DOMSource.
 
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 

@@ -1255,6 +1255,9 @@ public class SourceBuffer
   protected void createTags ()
   {
     //System.out.println("Creating tags for " + this.scope.getMethodName());
+    if (this.scope.getDOMSource() == null)
+      return;
+    
     Iterator lines = this.scope.getDOMSource().getLines();
 
     // Iterate through all the lines
