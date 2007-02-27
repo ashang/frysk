@@ -545,13 +545,13 @@ public class CLI
  
       frame = symtab.getCurrentFrame();
         
+      Line line = frame.getLines() [0];
       try 
 	{
-	  FileReader fr = new FileReader(frame.getSourceFile());
+	  FileReader fr = new FileReader(line.getFile ());
 	  LineNumberReader lr = new LineNumberReader(fr);
 	  String str;
 	  boolean display = false;
-	  Line line = frame.getLines() [0];
 	  int startLine = (line.getLine() > 10 
 			   ? line.getLine() - 10
 			   : 1); 
@@ -577,7 +577,7 @@ public class CLI
 	}
       catch (IOException e) 
         {
-          addMessage("file " + frame.getSourceFile() + " not found.",
+          addMessage("file " + line.getFile() + " not found.",
 		     Message.TYPE_ERROR);
         }
     }

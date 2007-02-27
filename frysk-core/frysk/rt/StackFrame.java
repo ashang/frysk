@@ -63,8 +63,6 @@ public class StackFrame
   
   private Task task;
 
-  private String sourceFile = "";
-  
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
    * 
@@ -93,27 +91,6 @@ public class StackFrame
     this.task = task;
     this.cursor = current;
     this.inner = inner;
-    long address = this.cursor.getAddress();
-
-    if (address != 0) /* We were able to pull information from this cursor */
-      {
-        Dwfl dwfl = new Dwfl(task.getTid());
-        DwflLine line = null;
-        
-        /* The innermost frame and frames which were interrupted during
-         * execution use their PC to get the line in source. All other 
-         * frames have their PC set to the line after the inner frame call
-         * and must be decremented by one. */
-        if (inner == null || this.cursor.isSignalFrame())
-          line = dwfl.getSourceLine(address);
-        else
-          line = dwfl.getSourceLine(address - 1);
-        
-        if (line != null)
-          {
-            this.sourceFile = line.getSourceFile();
-          }
-      }
   }
   
   public StackFrame (Task task)
@@ -165,18 +142,6 @@ public class StackFrame
   public DOMSource getDOMSource ()
   {
     return this.data;
-  }
-
-  /**
-   * Return the name of the source file associated with this stack
-   * frame.  If the source file is not known, this will return null.
-   */
-  public String getSourceFile ()
-  {
-    if (sourceFile == null)
-      return "";
-    
-    return sourceFile;
   }
 
   /**

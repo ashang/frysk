@@ -137,57 +137,64 @@ public class TestStackBacktrace
     // System.out.println("After maps test");
 
     StackFrame frame = StackFactory.createStackFrame(myTask);
+    Line line;
+    Symbol symbol;
 
     assertNotNull(frame);
-
-    assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("baz", frame.getSymbol().getDemangledName ());
     assertNull(frame.getInner());
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    assertEquals ("file name", "funit-rt-looper.c", line.getFile().getName());
+    assertEquals("line number", 62, line.getLine());
+    assertEquals("symbol", "baz", symbol.getDemangledName ());
     
-    assertEquals(62, frame.getLines()[0].getLine());
-
     frame = frame.getOuter();
-    assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("bar", frame.getSymbol().getDemangledName());
+    assertNotNull (frame);
     assertNotNull(frame.getInner());
-    assertEquals(71, frame.getLines()[0].getLine ());
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
+    assertEquals(71, line.getLine ());
+    assertEquals("symbol", "bar", symbol.getDemangledName());
 
     frame = frame.getOuter();
-    assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("foo", frame.getSymbol().getDemangledName());
+    assertNotNull(frame);
     assertNotNull(frame.getInner());
-    assertEquals(81, frame.getLines()[0].getLine());
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
+    assertEquals("line number", 81, line.getLine());
+    assertEquals("foo", symbol.getDemangledName());
 
     frame = frame.getOuter();
-    assertTrue(frame.getSourceFile().endsWith(
-                                              "/frysk/pkglibdir/funit-rt-looper.c"));
-    assertEquals("main", frame.getSymbol().getDemangledName());
+    assertNotNull(frame);
     assertNotNull(frame.getInner());
-    assertEquals(117, frame.getLines()[0].getLine());
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    assertEquals("file name", "funit-rt-looper.c", line.getFile().getName());
+    assertEquals("line number", 117, line.getLine());
+    assertEquals("symbol name", "main", symbol.getDemangledName());
 
     frame = frame.getOuter();
-    assertEquals("", frame.getSourceFile());
-    assertEquals("__libc_start_main", frame.getSymbol().getDemangledName());
+    assertNotNull(frame);
     assertNotNull(frame.getInner());
-    // No check for line information - dependent on glibc-debuginfo.
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    // No check for file information - depends on glibc-debuginfo.
+    // No check for line information - depends on glibc-debuginfo.
+    assertEquals("symbol", "__libc_start_main", symbol.getDemangledName());
 
     frame = frame.getOuter();
-    assertEquals("", frame.getSourceFile());
-    assertEquals("_start", frame.getSymbol().getDemangledName());
+    assertNotNull(frame);
     assertNotNull(frame.getInner());
-    // No check for line information - dependent on glibc-debuginfo.
+    line = frame.getLines()[0];
+    symbol = frame.getSymbol();
+    // No check for file information - depends on glibc-debuginfo.
+    // No check for line information - depends on glibc-debuginfo.
+    assertEquals("symbol", "_start", symbol.getDemangledName());
 
     frame = frame.getOuter();
-
     assertNull(frame);
-
-    // MyBuilder builder2 = new MyBuilder();
-    // System.out.println("Before maps test");
-    // builder2.construct(myTask.getTid());
-    // System.out.println("After maps test");
   }
 
   
@@ -686,7 +693,7 @@ public class TestStackBacktrace
         while (frame != null)
           {
             frameTracker[task_count][i][0] = "" + frame.toString();
-            frameTracker[task_count][i][1] = frame.getSourceFile();
+            frameTracker[task_count][i][1] = frame.getLines()[0].getFile().getName();
             frameTracker[task_count][i][2] = frame.getSymbol().getDemangledName();
             
             if (frame.getInner() == null)

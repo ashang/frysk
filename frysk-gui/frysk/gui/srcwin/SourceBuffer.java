@@ -1116,7 +1116,7 @@ public class SourceBuffer
         if (! this.firstLoad)
           return;
         
-        if (this.scope.getSourceFile() != "")
+        if (this.scope.getLines().length > 0)
           {
             this.deleteText(this.getStartIter(), this.getEndIter());
             this.insertText(loadUnmarkedText(this.scope));
@@ -1131,7 +1131,7 @@ public class SourceBuffer
                 source = curr.getDOMSource();
                 break;
               }
-            if (curr.getSourceFile() != "")
+            if (curr.getLines().length > 0)
               {
                 this.scope = curr;
                 this.deleteText(this.getStartIter(), this.getEndIter());
@@ -1180,7 +1180,7 @@ public class SourceBuffer
     BufferedReader br = null;
     try
     {
-      br = new BufferedReader(new FileReader(frame.getSourceFile()));
+	br = new BufferedReader(new FileReader(frame.getLines()[0].getFile()));
     }
     catch (FileNotFoundException fnfe)
     {

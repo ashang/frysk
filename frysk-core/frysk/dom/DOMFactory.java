@@ -41,7 +41,7 @@ package frysk.dom;
 
 import java.io.IOException;
 import java.util.HashMap;
-
+import java.io.File;
 import lib.dw.NoDebugInfoException;
 import frysk.proc.Proc;
 import frysk.rt.StackFrame;
@@ -60,9 +60,10 @@ public class DOMFactory
   {
     DOMFrysk dom = null;
 
-    String sourcefile = frame.getSourceFile();
+    File file = frame.getLines()[0].getFile();
+    String sourcefile = file.getPath();
 
-    String filename = sourcefile.substring(sourcefile.lastIndexOf("/") + 1);
+    String filename = file.getName ();
 
     if (hashmap.containsKey(proc))
       {

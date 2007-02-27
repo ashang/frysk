@@ -1,3 +1,8 @@
+2007-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/CLI.java: Replace StackFrame .getSourceFile with Line
+	.getFile.
+
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/CLI.java: Use frysk.rt.Line instead of Frame getLineNumber.

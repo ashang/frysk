@@ -125,10 +125,11 @@ public class DOMImage
 //    Get the list of include file paths associated with this image
       ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExe());
       String includepaths[] = (String[]) arrayincpaths.toArray(new String[0]);
-      String sourcefile = frame.getSourceFile();
+      File file = frame.getLines()[0].getFile();
+      String sourcefile = file.getPath();
 
-      String filename = sourcefile.substring(sourcefile.lastIndexOf("/") + 1);
-      String path = sourcefile.substring(0, sourcefile.lastIndexOf("/"));
+      String filename = file.getName ();
+      String path = file.getParent ();
       
       DOMSource source = new DOMSource(filename, path, includepaths);
 
