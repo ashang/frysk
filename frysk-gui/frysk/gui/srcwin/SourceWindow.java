@@ -2130,8 +2130,12 @@ public class SourceWindow
                                * frames, not just the top one
                                */
           {
-
-	    Line line = curr.getLines()[0];
+            
+            Line line = null;
+            
+            if (curr.getLines().length != 0)
+              line = curr.getLines()[0];
+            
             if (this.dom == null && line != null)
               {
                 try

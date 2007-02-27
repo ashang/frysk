@@ -313,12 +313,14 @@ public class SourceBuffer
       return;
 
     // Find the first frame with source-line information.
-    while (frame.getLines().length == 0) {
-      frame = frame.getOuter ();
-      if (frame == null)
-        return;
-    }
+    while (frame.getOuter() != null && frame.getLines().length == 0)
+      {
+        frame = frame.getOuter();
+        if (frame == null || frame.getLines().length == 0)
+          return;
+      }
 
+    
     int line = frame.getLines()[0].getLine ();
 
     TextMark start = this.createMark(
@@ -366,6 +368,12 @@ public class SourceBuffer
               }
           }
 
+        if (curr.getLines().length == 0)
+          {
+            curr = curr.getOuter();
+            continue;
+          }
+        
         line = curr.getLines()[0].getLine ();
 
         start = this.createMark(
