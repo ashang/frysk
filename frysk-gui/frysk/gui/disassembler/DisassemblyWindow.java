@@ -58,6 +58,7 @@ import org.gnu.gtk.Entry;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
@@ -619,7 +620,7 @@ public class DisassemblyWindow
    */
   public synchronized void handleToSpin (double val)
   {
-    
+
     if (toToggle == true)
       {
         this.toToggle = false;
@@ -628,7 +629,7 @@ public class DisassemblyWindow
 
     if (this.model.getFirstIter() == null)
       return;
-    
+
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
@@ -639,61 +640,51 @@ public class DisassemblyWindow
     if (val > this.lastKnownTo)
       {
         for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          {
-            //this.model.appendRow();
-            this.numInstructions++;
-          }
-        //rowAppend((long) (val - lastKnownTo), null);
+          ++this.numInstructions;
+          
         rowAppend((long) val, null);
-        //this.lastKnownTo = val;
+
         return;
       }
     else
       {
-        return;
-        /* We have a problem here because all the instructions are of a 
-         * different size and we won't know exactly how many rows to take off simply
-         * by the offset from the PC. */
-        
-//        TreeIter i = model.getFirstIter();
-//        while (i != null)
-//          i = i.getNextIter();
-//        
-//        this.numInstructions--;
+        if (this.numInstructions < 1)
+          return;
 
-//        TreeIter i = this.model.getFirstIter();
-//        long j;
-//        //int end = (int) ((val - 2) - this.lastKnownFrom);
-//        for (j = 0; j < this.numInstructions - 1; j++)
-//          {
-//            System.out.println("iterating " + j);
-//            System.out.println("i is " + i);
-//            i = i.getNextIter();
-//          }
-//        System.out.println("i is " + i);
-//        /* Hopefully at the last iter by now */
-//        
-//        Instruction ins = (Instruction) this.model.getValue(i, (DataColumnObject) cols[3]);
-//        System.out.println("Ins is " + ins);
-//       this.toToggle = true;
-//       this.toSpin.setValue((double) ins.address);
-//       
-//        model.removeRow(i);
-//        i = i.getNextIter();
-        
-//        ins = (Instruction) this.model.getValue(i, new DataColumnObject());
-//
-//        //end = (int) (this.lastKnownTo - (val - 2));
-//        //for (j = 0; j < end; j++)
-//        while (ins.address > val)
-//          {
-//            System.out.println("de-iterating " + j);
-//            model.removeRow(i);
-//            i = i.getNextIter();
-//          }
-        
-        //this.lastKnownTo = val;
-        //refreshList();
+        TreeIter i = model.getFirstIter();
+        TreePath path = i.getPath();
+
+        int j;
+        for (j = 1; j < this.numInstructions; j++)
+          {
+            path.next();
+          }
+
+        --this.numInstructions;
+
+        path.previous();
+        Instruction ins = (Instruction) this.model.getValue(
+                                                            this.model.getIter(path),
+                                                            (DataColumnObject) cols[OBJ]);
+        this.toToggle = true;
+        this.toSpin.setValue((double) ins.address);
+
+        this.model.removeRow(this.model.getIter(path));
+        path.previous();
+        ins = (Instruction) this.model.getValue(this.model.getIter(path),
+                                                (DataColumnObject) cols[OBJ]);
+        while (ins.address > val)
+          {
+            model.removeRow(model.getIter(path));
+            path.previous();
+            ins = (Instruction) this.model.getValue(
+                                                    this.model.getIter(path),
+                                                    (DataColumnObject) cols[OBJ]);
+            --this.numInstructions;
+          }
+
+        this.lastKnownTo = ins.address;
+        refreshList();
       }
   }
 
