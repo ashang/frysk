@@ -1,3 +1,10 @@
+2007-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* FrameCursor.java (procOffset, getProcOffset): Delete.
+	(procStart, getProcStart, procEnd, getProcEnd): Define.
+	* cni/FrameCursor.cxx (create_frame_cursor): Set .procStart and
+	.procSize.
+
 2007-02-26  Nurdin Premji  <npremji@redhat.com>
 
 	* cni/UnwindNative.cxx: (native_access_mem): Fixed to actually copy value back

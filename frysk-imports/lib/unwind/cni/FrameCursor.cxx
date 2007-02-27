@@ -58,7 +58,6 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 
 	int len = 256;
 	char buf[len];
-	unw_word_t offset;
 	unw_word_t ip;
 	unw_word_t sp;
 
@@ -76,9 +75,17 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 
 	this -> cfa = sp;
 
-	if (!unw_get_proc_name (cursor, buf, len, &offset)) {
-		this->procName = JvNewStringUTF (buf);
-		this->procOffset = offset;
+	unw_word_t offset;
+        if (!unw_get_proc_name (cursor, buf, len, &offset)) {
+               this->procName = JvNewStringUTF (buf);
+	       this->procStart = ip - offset;
+	       this->procSize = 0;
+        }
+
+	unw_proc_info_t proc_info;
+	if (!unw_get_proc_info (cursor, &proc_info)) {
+		this->procStart = proc_info.start_ip;
+		this->procSize = proc_info.end_ip - proc_info.start_ip;
 	}
 }
 

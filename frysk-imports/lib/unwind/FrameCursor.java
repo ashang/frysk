@@ -1,6 +1,6 @@
-//This file is part of the program FRYSK.
+// This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -57,7 +57,8 @@ public class FrameCursor
   
   protected String demangledMethodName;
   protected String procName;
-  protected long procOffset;
+  private long procStart;
+  private long procSize;
   
   private long cfa;
   
@@ -133,9 +134,13 @@ public class FrameCursor
   {
     return procName;
   }
-  public long getProcOffset ()
+  public long getProcStart ()
   {
-    return procOffset;
+    return procStart;
+  }
+  public long getProcSize ()
+  {
+    return procSize;
   }
   
   public native long get_reg (long reg);

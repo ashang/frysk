@@ -90,7 +90,8 @@ public class TestStepping extends TestLib
   
   public void testRecursiveLineStepping ()
   {
-
+      if (brokenXXX (4103))
+	  return;
       if (brokenPpcXXX (3277))
 	  return;
     
