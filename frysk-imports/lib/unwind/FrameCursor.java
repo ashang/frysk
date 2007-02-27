@@ -57,8 +57,9 @@ public class FrameCursor
   
   protected String demangledMethodName;
   protected String procName;
-  private long procStart;
-  private long procSize;
+  private long procOffset;
+  private long procInfoStart;
+  private long procInfoEnd;
   
   private long cfa;
   
@@ -134,14 +135,19 @@ public class FrameCursor
   {
     return procName;
   }
-  public long getProcStart ()
+  public long getProcOffset ()
   {
-    return procStart;
+    return procOffset;
   }
-  public long getProcSize ()
+  public long getProcInfoStart ()
   {
-    return procSize;
+    return procInfoStart;
   }
+  public long getProcInfoEnd ()
+  {
+    return procInfoEnd;
+  }
+
   
   public native long get_reg (long reg);
   public native long set_reg (long reg, long val);

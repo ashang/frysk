@@ -64,7 +64,7 @@ public class Symbol
 
 
     // The symbol's fields.
-    private long startAddress;
+    private long address;
     private long size;
     private String name;
 
@@ -72,31 +72,31 @@ public class Symbol
      * Create a new symbol.  The SIZE is a field from ELF and defines
      * the symbol's address range.
      */
-    Symbol (long startAddress, long size, String name)
+    Symbol (long address, long size, String name)
     {
-	this.startAddress = startAddress;
+	this.address = address;
 	this.size = size;
 	this.name = name;
     }
 
     /**
-     * Create a new Symbol.
+     * Create a new Symbol; when the size is unknown.
      */
-    Symbol (long startAddress, String name)
+    Symbol (long address, String name)
     {
-	this (startAddress, 0, name);
+	this (address, -1, name);
     }
 
     /**
-     * Return the start address of the symbol.
+     * Return the address of the symbol.
      */
-    public long getStartAddress ()
+    public long getAddress ()
     {
-	return startAddress;
+	return address;
     }
     
     /**
-     * Return the symbol's size (possibly zero).
+     * Return the size of the symbol (possibly zero).
      */
     public long getSize ()
     {
@@ -124,5 +124,13 @@ public class Symbol
 	    return "";
 	else
 	    return Demangler.demangle (name);
+    }
+
+    /**
+     * Dump the symbol's contents.
+     */
+    public String toString ()
+    {
+	return name + "@" + Long.toHexString (address) + ":" + size;
     }
 }

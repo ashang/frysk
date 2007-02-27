@@ -289,9 +289,8 @@ public class StackFrame
 	    if (mangledName == null)
 		symbol = Symbol.UNKNOWN;
 	    else {
-		symbol = new Symbol (cursor.getProcStart (),
-				     cursor.getProcSize (),
-				     mangledName);
+		long address = getAddress () - cursor.getProcOffset();
+		symbol = new Symbol (address, mangledName);
 	    }
 	}
 	return symbol;

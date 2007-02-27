@@ -78,14 +78,13 @@ lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 	unw_word_t offset;
         if (!unw_get_proc_name (cursor, buf, len, &offset)) {
                this->procName = JvNewStringUTF (buf);
-	       this->procStart = ip - offset;
-	       this->procSize = 0;
+	       this->procOffset = offset;
         }
 
 	unw_proc_info_t proc_info;
 	if (!unw_get_proc_info (cursor, &proc_info)) {
-		this->procStart = proc_info.start_ip;
-		this->procSize = proc_info.end_ip - proc_info.start_ip;
+		this->procInfoStart = proc_info.start_ip;
+		this->procInfoEnd = proc_info.end_ip;
 	}
 }
 

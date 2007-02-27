@@ -1,5 +1,11 @@
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
+	* StackFrame.java: Go back to using FrameCursor .getProcOffset.
+	* Symbol.java (Symbol): When size is unknown, set it to -1.
+	(getAddress): Rename getStartAddress.
+	* TestSymbol.java: Check that the Symbol address is non-zero when
+	expected.
+
 	* TestStepping.java (testRecursiveLineStepping): Note problem with
 	4103.
 

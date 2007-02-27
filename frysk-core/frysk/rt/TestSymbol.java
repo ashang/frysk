@@ -47,8 +47,8 @@ import frysk.proc.TaskObserver;
 public class TestSymbol
     extends frysk.proc.TestLib
 {
-    private void frameTest (String command, final String result,
-			    int numberOfArgs)
+    private void frameTest (String command, int numberOfArgs,
+			    String name, boolean addressValid, boolean sizeValid)
     {
 	class RunToCrash
 	    extends TaskObserverBase
@@ -90,8 +90,10 @@ public class TestSymbol
 	// XXX: Need to call frame.getSymbol () and then validate
 	// that.
 	Symbol symbol = frame.getSymbol ();
-	assertEquals ("symbol " + result, result,
-		      symbol.getDemangledName ());
+	assertEquals ("symbol " + name, name, symbol.getDemangledName ());
+	assertEquals ("symbol address valid", addressValid, symbol.getAddress() != 0);
+	// XXX: Can't yet get the size of the symbol
+	// assertEquals ("symbol size valid", sizeValid, symbol.getSize() > 0);
     }
 
     /**
@@ -101,61 +103,61 @@ public class TestSymbol
 
     public void testDebug ()
     {
-	frameTest("funit-stackframe", "global_st_size", 1);
+	frameTest("funit-stackframe", 1, "global_st_size", true, true);
     }
   
     public void testNoDebug ()
     {
-	frameTest("funit-stackframe-nodebug", "global_st_size", 1);
+	frameTest("funit-stackframe-nodebug", 1, "global_st_size", true, true);
     }
   
     public void testStripped ()
     {
-	frameTest("funit-stackframe-stripped", Symbol.UNKNOWN.getName (), 1);
+	frameTest("funit-stackframe-stripped", 1, unknown, false, false);
     }
   
     public void testStaticDebug ()
     {
-	frameTest("funit-stackframe", "local_st_size", 2);
+	frameTest("funit-stackframe", 2, "local_st_size", true, true);
     }
   
     public void testStaticNoDebug ()
     {
-	frameTest("funit-stackframe-nodebug", "local_st_size", 2);
+	frameTest("funit-stackframe-nodebug", 2, "local_st_size", true, true);
     }
   
     public void testStaticStripped ()
     {
-	frameTest("funit-stackframe-stripped", unknown, 2);
+	frameTest("funit-stackframe-stripped", 2, unknown, false, false);
     }
   
     public void testNoSize()
     {
-	frameTest("funit-stackframe", "global_st_size_0", 3);
+	frameTest("funit-stackframe", 3, "global_st_size_0", true, false);
     }
   
     public void testNoDebugNoSize()
     {
-	frameTest("funit-stackframe-nodebug", "global_st_size_0", 3);   
+	frameTest("funit-stackframe-nodebug", 3, "global_st_size_0", true, false);   
     }
   
     public void testStrippedNoSize()
     {
-	frameTest("funit-stackframe-stripped", unknown, 3);    
+	frameTest("funit-stackframe-stripped", 3, unknown, false, false);    
     }
   
     public void testStaticNoSize()
     {
-	frameTest("funit-stackframe", "local_st_size_0", 4);    
+	frameTest("funit-stackframe", 4, "local_st_size_0", true, false);    
     }
   
     public void testStaticNoDebugNoSize()
     {
-	frameTest("funit-stackframe-nodebug", "local_st_size_0", 4);   
+	frameTest("funit-stackframe-nodebug", 4, "local_st_size_0", true, false);   
     }
   
     public void testStaticStrippedNoSize()
     {
-	frameTest("funit-stackframe-stripped", unknown, 4);    
+	frameTest("funit-stackframe-stripped", 4, unknown, false, false);    
     }
 }
