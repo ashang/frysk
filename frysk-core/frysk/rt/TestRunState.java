@@ -53,9 +53,6 @@ import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.event.Event;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
 public class TestRunState extends TestLib
 {
   
@@ -65,10 +62,6 @@ public class TestRunState extends TestLib
   private int testState = 0;
   
   private RunState runState;
-  
-  //private StackFrame frame;
-  
-  private HashMap dwflMap;
 
   private HashMap lineMap;
   
@@ -90,8 +83,6 @@ public class TestRunState extends TestLib
   protected static final int INSTRUCTION_STEP_NEXT_STEPPING = 9;
   protected static final int STEP_OUT_STEPPING = 10;
   
-
-  
   private boolean insStepFlag = true;
   
   private LockObserver lock;
@@ -103,7 +94,6 @@ public class TestRunState extends TestLib
 	  return;
     
     initial = true;
-    this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
     runState = new RunState();
@@ -137,7 +127,6 @@ public class TestRunState extends TestLib
 	  return;
 
     initial = true;
-    this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
     runState = new RunState();
@@ -174,7 +163,6 @@ public class TestRunState extends TestLib
       return;
 
     initial = true;
-    this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
     runState = new RunState();
@@ -211,7 +199,6 @@ public class TestRunState extends TestLib
       return;
 
     initial = true;
-    this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
     runState = new RunState();
@@ -249,7 +236,6 @@ public class TestRunState extends TestLib
       return;
 
     initial = true;
-    this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     
     runState = new RunState();
@@ -285,22 +271,17 @@ public class TestRunState extends TestLib
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        if (this.dwflMap.get(t) == null)
-          {
-            Dwfl d = new Dwfl(t.getTid());
-            DwflLine line = null;
-	    line = d.getSourceLine(t.getIsa().pc(t));
-            if (line == null)
-              {
-                this.dwflMap.put(t, d);
-                this.lineMap.put(t, new Integer(0));
-                continue;
-              }
+        StackFrame frame = StackFactory.createStackFrame(t, 1);
 
-            this.dwflMap.put(t, d);
-            this.lineMap.put(t, new Integer(line.getLineNum()));
+        if (frame.getLines().length == 0)
+          {
+            this.lineMap.put(t, new Integer(0));
+            continue;
           }
+
+        this.lineMap.put(t, new Integer(frame.getLines()[0].getLine()));
       }
+    
     count = 0;
     
     if (testState == INSTRUCTION_STEP)
@@ -315,32 +296,16 @@ public class TestRunState extends TestLib
   { 
    //System.out.println("Test.stepAssertions");
     myTask = task;
-    DwflLine line = null;
-    try
-      {
-        line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(myTask));
-      }
-    catch (NullPointerException npe)
-      {
-        Dwfl d = new Dwfl(task.getTid());
-        line = null;
-	line = d.getSourceLine(task.getIsa().pc(task));
-      if (line != null)
-        {
-          this.dwflMap.put(task, d);
-          this.lineMap.put(task, new Integer(line.getLineNum()));
-        }
-      }
-     
     int lineNum;
+    StackFrame frame = StackFactory.createStackFrame(task, 1);
     
-    if (line == null)
+    if (frame.getLines().length == 0)
       {
         lineNum = 0;
       }
     else
       {
-        lineNum = line.getLineNum();
+        lineNum = frame.getLines()[0].getLine();
       }
 
     int prev = ((Integer) this.lineMap.get(myTask)).intValue();
@@ -530,33 +495,19 @@ public class TestRunState extends TestLib
     if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT
         || this.testState == STEP_OUT)
       {
-        DwflLine line = null;
-        try
-          {
-            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
-                                                                                      myTask));
-          }
-        catch (NullPointerException npe)
-          {
-            Dwfl d = new Dwfl(myTask.getTid());
-            line = null;
-            line = d.getSourceLine(myTask.getIsa().pc(myTask));
-            if (line != null)
-              {
-                this.dwflMap.put(myTask, d);
-                this.lineMap.put(myTask, new Integer(line.getLineNum()));
-              }
-          }
 
         int lineNum;
-            if (line == null)
-              {
-                lineNum = 0;
-              }
-            else
-              {
-                lineNum = line.getLineNum();
-              }
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+        
+        if (sFrame.getLines().length == 0)
+          {
+            lineNum = 0;
+          }
+        else
+          {
+            lineNum = sFrame.getLines()[0].getLine();
+          }
+
             this.lineMap.put(myTask, new Integer(lineNum));
             if (this.testState == STEP_OVER)
               {
@@ -584,26 +535,12 @@ public class TestRunState extends TestLib
           }
     else
       {
-        DwflLine line = null;
-        try
-          {
-            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
-                                                                                      myTask));
-          }
-        catch (NullPointerException npe)
-          {
-            npe.printStackTrace();
-            Dwfl d = new Dwfl(myTask.getTid());
-            line = null;
-            line = d.getSourceLine(myTask.getIsa().pc(myTask));
-            assertNotNull(line);
-            if (line != null)
-              {
-                this.dwflMap.put(myTask, d);
-                this.lineMap.put(myTask, new Integer(line.getLineNum()));
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
-              }
-          }
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+        
+        if (sFrame.getLines().length == 0)
+          this.runState.setUpLineStep(myTask.getProc().getTasks());
+        
+        Line line = sFrame.getLines()[0];
         
         /* Stepping has been set up - now to continue line stepping until 
          * the important sections of code have been reached. */
@@ -612,12 +549,12 @@ public class TestRunState extends TestLib
             && this.testState != STEP_OUT_STEPPING)
           {
             int prev = ((Integer) this.lineMap.get(myTask)).intValue();
-            this.lineMap.put(myTask, new Integer(line.getLineNum()));
+            this.lineMap.put(myTask, new Integer(line.getLine()));
 
             if (this.testState == STEP_OVER_GO)
               {
                 /* About to push a frame on the stack */
-                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     this.testState = STEP_OVER_STEPPING;
                     LinkedList l = new LinkedList();
@@ -630,7 +567,7 @@ public class TestRunState extends TestLib
             else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
               {
                 /* About to pop a frame off of the stack */
-                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     if (insStepFlag)
                       {
@@ -648,7 +585,7 @@ public class TestRunState extends TestLib
               }
             else if (this.testState == STEP_OUT_GO)
               {
-                if (line.getLineNum() >= 60 && line.getLineNum() <= 67)
+                if (line.getLine() >= 60 && line.getLine() <= 67)
                   {
                     this.testState = STEP_OUT_STEPPING;
                     LinkedList l = new LinkedList();

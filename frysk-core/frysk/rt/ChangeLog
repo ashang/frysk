@@ -1,3 +1,9 @@
+2007-02-27  Mike Cvet  <mcvet@redhat.com>
+
+	* TestRunState.java: Removed references to Dwfl objects. Fixes #4103.
+	* TestStepping.java: Ditto.
+	* TestStackBacktrace.java: Ditto.
+
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* StackFrame.java (dwflLine, getDwflLine): Delete - were NULL.

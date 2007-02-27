@@ -45,9 +45,6 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
 import inua.eio.ByteBuffer;
 import inua.eio.ULong;
 import frysk.event.Event;
@@ -73,7 +70,7 @@ public class TestStackBacktrace
   private int task_count;
   
   /*
-   *    [frame.getLineNumber()]
+   *    [frame.getLineber()]
    * [frame.getInner().toString()]
    *    [frame.getMethodName()]
    *    [frame.getSourceFile()]
@@ -233,7 +230,6 @@ public class TestStackBacktrace
   private boolean initial;
   private RunState runState;
   private LockObserver lock;
-  private HashMap dwflMap;
   private HashMap lineMap;
   private int testState;
   private static int PUSH = 0;
@@ -258,7 +254,6 @@ public class TestStackBacktrace
       return;
   
   initial = true;
-  this.dwflMap = new HashMap();
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
@@ -298,7 +293,6 @@ public class TestStackBacktrace
       return;
   
   initial = true;
-  this.dwflMap = new HashMap();
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
@@ -330,23 +324,17 @@ public class TestStackBacktrace
   public void setUpTest ()
   {
 
-    if (this.dwflMap.get(myTask) == null)
+    StackFrame frame = StackFactory.createStackFrame(myTask, 1);
+    
+    if (frame.getLines().length == 0)
       {
-        Dwfl d = new Dwfl(myTask.getTid());
-        DwflLine line = null;
-        line = d.getSourceLine(myTask.getIsa().pc(myTask));
-
-        if (line == null)
-          {
-            this.dwflMap.put(myTask, d);
-            this.lineMap.put(myTask, new Integer(0));
-            this.runState.setUpLineStep(myTask.getProc().getTasks());
-          }
-
-        this.dwflMap.put(myTask, d);
-        this.lineMap.put(myTask, new Integer(line.getLineNum()));
+        this.lineMap.put(myTask, new Integer(0));
+        this.runState.setUpLineStep(myTask.getProc().getTasks());
+        return;
       }
-
+      
+    Line line = frame.getLines()[0];
+    this.lineMap.put(myTask, new Integer(line.getLine()));
     this.runState.setUpLineStep(myTask.getProc().getTasks());
   }
   
@@ -498,34 +486,21 @@ public class TestStackBacktrace
   
   public void pushPopAssertions ()
   {
+    StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+    Line line = null; 
+    
     if (this.testState == PUSH || this.testState == POP)
       {
-        DwflLine line = null;
-        try
-          {
-            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
-                                                                                      myTask));
-          }
-        catch (NullPointerException npe)
-          {
-            Dwfl d = new Dwfl(myTask.getTid());
-            line = null;
-            line = d.getSourceLine(myTask.getIsa().pc(myTask));
-            if (line != null)
-              {
-                this.dwflMap.put(myTask, d);
-                this.lineMap.put(myTask, new Integer(line.getLineNum()));
-              }
-          }
 
         int lineNum;
-            if (line == null)
+            if (sFrame.getLines().length == 0)
               {
                 lineNum = 0;
               }
             else
               {
-                lineNum = line.getLineNum();
+                line = sFrame.getLines()[0];
+                lineNum = line.getLine();
               }
             this.lineMap.put(myTask, new Integer(lineNum));
             if (this.testState == PUSH)
@@ -537,38 +512,17 @@ public class TestStackBacktrace
           }
     else
       {
-        DwflLine line = null;
-        try
-          {
-            line = ((Dwfl) this.dwflMap.get(myTask)).getSourceLine(myTask.getIsa().pc(
-                                                                                      myTask));
-          }
-        catch (NullPointerException npe)
-          {
-            npe.printStackTrace();
-            Dwfl d = new Dwfl(myTask.getTid());
-            line = null;
-            line = d.getSourceLine(myTask.getIsa().pc(myTask));
-            assertNotNull(line);
-            if (line != null)
-              {
-                this.dwflMap.put(myTask, d);
-                this.lineMap.put(myTask, new Integer(line.getLineNum()));
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
-              }
-          }
-        
         /* Stepping has been set up - now to continue line stepping until 
          * the important sections of code have been reached. */
         if (this.testState != PUSH_STEPPING && this.testState != POP_STEPPING)
           {
             int prev = ((Integer) this.lineMap.get(myTask)).intValue();
-            this.lineMap.put(myTask, new Integer(line.getLineNum()));
+            this.lineMap.put(myTask, new Integer(line.getLine()));
 
             if (this.testState == PUSH_GO)
               {
                 /* About to push a frame on the stack */
-                if (line.getLineNum() == 95 && (prev < 95 && prev > 91))
+                if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     this.testState = PUSH_STEPPING;
                     this.runState.stepInstruction(myTask.getProc().getTasks());
@@ -579,7 +533,7 @@ public class TestStackBacktrace
             else if (this.testState == POP_GO)
               {
                 /* About to pop a frame off of the stack */
-                if (line.getLineNum() == 63)
+                if (line.getLine() == 63)
                   {
                     this.testState = POP_STEPPING;
                     this.runState.stepInstruction(myTask.getProc().getTasks());
@@ -597,7 +551,7 @@ public class TestStackBacktrace
         /* Otherwise, the testcase is in the section of code critical to the test */
         else if (this.testState == PUSH_STEPPING)
           {
-            if (line.getLineNum() > 62)
+            if (line.getLine() > 62)
               {
                 Manager.eventLoop.requestStop();
                 return;
@@ -625,7 +579,7 @@ public class TestStackBacktrace
           }
         else if (this.testState == POP_STEPPING)
           {
-            if (line.getLineNum() > 68)
+            if (line.getLine() > 68)
               {
                 Manager.eventLoop.requestStop();
                 return;
@@ -740,7 +694,10 @@ public class TestStackBacktrace
             else
               frameTracker[task_count][i][3] = "" + frame.getInner().toString();
             
-            frameTracker[task_count][i][4] = "" + frame.getLines()[0].getLine();
+            if (frame.getLines().length > 0)
+              frameTracker[task_count][i][4] = "" + frame.getLines()[0].getLine();
+            else
+              frameTracker[task_count][i][4] = "" + 0;
             
             frame = frame.getOuter();
             i++;
