@@ -65,8 +65,6 @@ public class StackFrame
 
   private String sourceFile = "";
   
-  private DwflLine dwflLine;
-  
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
    * 
@@ -115,7 +113,6 @@ public class StackFrame
           {
             this.sourceFile = line.getSourceFile();
           }
-        this.dwflLine = line;
       }
   }
   
@@ -280,17 +277,6 @@ public class StackFrame
       return builder.toString();
   }
   
-  /**
-   * Return the DwflLine Object for this StackFrame. If this is null, it is
-   * an excellent indication that this frame has no debuginfo.
-   * 
-   * @return    dwflLine    The DwflLine Object for this StackFrame
-   */
-  public DwflLine getDwflLine ()
-  {
-    return this.dwflLine;
-  }
-  
   public long getReg(long reg)
   {
     // ??? Use something akin to Register interface?
@@ -350,6 +336,13 @@ public class StackFrame
     /**
      * Return this frame's list of lines as an array; returns an empty
      * array if there is no line number information available.
+     *
+     * The lack of line-number information can be determined with the
+     * test: <<tt>>.getLines().length == 0</tt>.
+     *
+     * XXX: When there are multiple lines, it isn't clear if there is
+     * a well defined ordering of the information; for
+     * instance: outer-to-inner or inner-to-outer.
      */
     public Line[] getLines ()
     {

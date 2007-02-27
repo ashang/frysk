@@ -308,23 +308,16 @@ public class SourceBuffer
    */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
-    if (frame == null || this.scope.getDOMSource() == null)
+    // Quick check.
+    if (this.scope.getDOMSource() == null)
       return;
 
-    /* Check for debuginfo in this frame */
-    if (frame.getDwflLine() == null)
-      {
-        /* No debuginfo? Then check the rest of the stack */
-        while (frame.getOuter() != null && frame.getDwflLine() == null)
-          frame = frame.getOuter();
-
-        /*
-         * Nothing in this call stack had debuginfo, so there's nothing to
-         * highlight
-         */
-        if (frame == null)
-          return;
-      }
+    // Find the first frame with source-line information.
+    while (frame.getLines().length == 0) {
+      frame = frame.getOuter ();
+      if (frame == null)
+        return;
+    }
 
     int line = frame.getLines()[0].getLine ();
 

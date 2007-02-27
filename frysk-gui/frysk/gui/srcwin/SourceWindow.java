@@ -40,6 +40,7 @@
 
 package frysk.gui.srcwin;
 
+import frysk.rt.Line;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -47,10 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
-
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
@@ -421,11 +419,8 @@ public class SourceWindow
         StackFrame curr = temp;
         this.currentFrame = temp;
 
-        if (curr.getDwflLine() == null)
-          {
-            while (curr != null && curr.getDwflLine() == null)
-              curr = curr.getOuter();
-          }
+	while (curr != null && curr.getLines().length == 0)
+	    curr = curr.getOuter();
 
         if (curr != null)
           {
@@ -1538,7 +1533,7 @@ public class SourceWindow
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 
-    if (selected.getDwflLine() == null)
+    if (selected.getLines().length == 0)
     {
       SourceView v = (SourceView) SourceWindow.this.view;
       SourceBuffer b = (SourceBuffer) v.getBuffer();
@@ -2111,7 +2106,6 @@ public class SourceWindow
 
     for (int j = 0; j < size; j++)
       {
-        DwflLine line;
         DOMFunction f = null;
         DOMSource s = null;
 
@@ -2137,7 +2131,7 @@ public class SourceWindow
                                */
           {
 
-            line = curr.getDwflLine();
+	    Line line = curr.getLines()[0];
             if (this.dom == null && line != null)
               {
                 try
@@ -2167,9 +2161,8 @@ public class SourceWindow
             if (line != null && dom != null)
               {
                 // System.out.println("Line not null");
-                String filename = line.getSourceFile();
                 // System.out.println("got filename");
-                filename = filename.substring(filename.lastIndexOf("/") + 1);
+		String filename = line.getFile().getName();
 
                 DOMImage image = null;
                 try
@@ -2183,7 +2176,7 @@ public class SourceWindow
                         s = image.addSource(this.swProc, curr, this.dom);
                       }
                     if (s != null)
-                      f = s.findFunction(line.getLineNum());
+                      f = s.findFunction(line.getLine());
                   }
                 catch (NullPointerException npe)
                   {

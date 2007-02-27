@@ -1,3 +1,9 @@
+2007-02-27  Andrew Cagney  <cagney@redhat.com>
+
+	* StackFrame.java (dwflLine, getDwflLine): Delete - were NULL.
+	* TestStackBacktrace.java: Remove checks on line information for
+	frames outside of "main".
+
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
 	* StackFrame.java (toPrint): Use Line.

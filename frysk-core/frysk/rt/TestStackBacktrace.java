@@ -175,13 +175,13 @@ public class TestStackBacktrace
     assertEquals("", frame.getSourceFile());
     assertEquals("__libc_start_main", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(0, frame.getLines()[0].getLine());
+    // No check for line information - dependent on glibc-debuginfo.
 
     frame = frame.getOuter();
     assertEquals("", frame.getSourceFile());
     assertEquals("_start", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(0, frame.getLines()[0].getLine());
+    // No check for line information - dependent on glibc-debuginfo.
 
     frame = frame.getOuter();
 
