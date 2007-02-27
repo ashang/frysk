@@ -148,40 +148,40 @@ public class TestStackBacktrace
     assertEquals("baz", frame.getSymbol().getDemangledName ());
     assertNull(frame.getInner());
     
-    assertEquals(62, frame.getLineNumber());
+    assertEquals(62, frame.getLines()[0].getLine());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("bar", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(71, frame.getLineNumber());
+    assertEquals(71, frame.getLines()[0].getLine ());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("foo", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(81, frame.getLineNumber());
+    assertEquals(81, frame.getLines()[0].getLine());
 
     frame = frame.getOuter();
     assertTrue(frame.getSourceFile().endsWith(
                                               "/frysk/pkglibdir/funit-rt-looper.c"));
     assertEquals("main", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(117, frame.getLineNumber());
+    assertEquals(117, frame.getLines()[0].getLine());
 
     frame = frame.getOuter();
     assertEquals("", frame.getSourceFile());
     assertEquals("__libc_start_main", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(0, frame.getLineNumber());
+    assertEquals(0, frame.getLines()[0].getLine());
 
     frame = frame.getOuter();
     assertEquals("", frame.getSourceFile());
     assertEquals("_start", frame.getSymbol().getDemangledName());
     assertNotNull(frame.getInner());
-    assertEquals(0, frame.getLineNumber());
+    assertEquals(0, frame.getLines()[0].getLine());
 
     frame = frame.getOuter();
 
@@ -607,7 +607,7 @@ public class TestStackBacktrace
                 StackFrame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
-                if (frame.getLineNumber() > 95)
+                if (frame.getLines()[0].getLine() > 95)
                   {
                     assertEquals ("demangled name", "jump",
 				  frame.getSymbol().getDemangledName());
@@ -740,7 +740,7 @@ public class TestStackBacktrace
             else
               frameTracker[task_count][i][3] = "" + frame.getInner().toString();
             
-            frameTracker[task_count][i][4] = "" + frame.getLineNumber();
+            frameTracker[task_count][i][4] = "" + frame.getLines()[0].getLine();
             
             frame = frame.getOuter();
             i++;

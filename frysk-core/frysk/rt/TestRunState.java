@@ -672,7 +672,8 @@ public class TestRunState extends TestLib
 
                 /* Make sure we're not missing any frames */
                   
-                assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+		int lineNr = frame.getLines()[0].getLine ();
+                assertTrue ("line number", (lineNr == 95 || lineNr == 96));
                 
                 assertEquals ("demanged name", "foo",
 			      frame.getSymbol ().getDemangledName());
@@ -689,7 +690,8 @@ public class TestRunState extends TestLib
 
             /* Make sure we're not missing any frames */
               
-            assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+	    int lineNr = frame.getLines()[0].getLine ();
+	    assertTrue ("line number", (lineNr == 95 || lineNr == 96));
             
             assertEquals ("demangled name", "foo",
 			  frame.getSymbol ().getDemangledName());
@@ -706,7 +708,8 @@ public class TestRunState extends TestLib
 
             /* Make sure we're not missing any frames */
               
-            assertTrue(frame.getLineNumber() == 95 || frame.getLineNumber() == 96);
+	    int lineNr = frame.getLines()[0].getLine ();
+	    assertTrue ("line number", (lineNr == 95 || lineNr == 96));
             
             assertEquals ("demangled name", "foo",
 			  frame.getSymbol ().getDemangledName ());

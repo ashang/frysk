@@ -63,10 +63,6 @@ public class StackFrame
   
   private Task task;
 
-  private int lineNum;
-  
-  private int column;
-  
   private String sourceFile = "";
   
   private DwflLine dwflLine;
@@ -117,9 +113,7 @@ public class StackFrame
         
         if (line != null)
           {
-            this.lineNum = line.getLineNum();
             this.sourceFile = line.getSourceFile();
-            this.column = line.getColumn();
           }
         this.dwflLine = line;
       }
@@ -186,26 +180,6 @@ public class StackFrame
       return "";
     
     return sourceFile;
-  }
-
-  /**
-   * Return the line number of the source code associated with this
-   * stack frame.  Line numbers begin at 1.  If the source line number
-   * is not known, this will return 0.
-   */
-  public int getLineNumber ()
-  {
-    return lineNum;
-  }
-
-  /**
-   * Returns the column in the currently executing line in the source file.
-   * 
-   * @return The column in the currently executing source file line. 
-   */
-  public int getColumn ()
-  {
-    return column;
   }
 
   /**
@@ -287,15 +261,19 @@ public class StackFrame
 	  builder.append (" ()");
 
       // If there's line number information append that.
-      if (this.dwflLine != null) {
+      Line[] lines = getLines ();
+      for (int i = 0; i < lines.length; i++) {
+	  Line line = lines[i];
 	  builder.append (" from: ");
 	  if (! isSourceWindow) {
-	      builder.append(this.sourceFile + "#" + this.lineNum);
+	      builder.append(line.getFile ().getPath ());
+	      builder.append ("#");
+	      builder.append (line.getLine ());
 	  }
 	  else {
-	      // XXX: This should be a File, not string.
-	      String[] fileName = this.sourceFile.split("/");
-	      builder.append(fileName[fileName.length - 1] + ": line #" + this.lineNum);
+	      builder.append (line.getFile ().getName ());
+	      builder.append (": line #");
+	      builder.append (line.getLine ());
 	  }
       }
 

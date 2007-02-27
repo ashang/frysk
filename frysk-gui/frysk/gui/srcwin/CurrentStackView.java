@@ -167,7 +167,7 @@ public class CurrentStackView
                 // Check for inlined code
                 if (frame.getDOMSource() != null)
                   {
-                    DOMLine line = frame.getDOMSource().getLine(frame.getLineNumber());
+		      DOMLine line = frame.getDOMSource().getLine(frame.getLines()[0].getLine());
                     if (line != null && line.hasInlinedCode())
                       {
                         hasInlinedCode = true;
@@ -176,10 +176,7 @@ public class CurrentStackView
 
                 iter = treeModel.appendRow(parent);
 
-                if (frame.getLineNumber() != 0)
-                  row = "# " + (++level) + " " + frame.toPrint(true);
-                else
-                  row = "# " + (++level) + " " + frame.toPrint(true); 
+		row = "# " + (++level) + " " + frame.toPrint(true);
 
                 if (hasInlinedCode)
                   row += " (i)";

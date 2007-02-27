@@ -1579,10 +1579,10 @@ public class SourceWindow
 
         else
           {
-            if (selected.getLineNumber() == 0)
+            if (selected.getLines() == null)
               return;
             else
-              this.view.scrollToLine(selected.getLineNumber());
+	      this.view.scrollToLine(selected.getLines()[0].getLine());
           }
       }
 

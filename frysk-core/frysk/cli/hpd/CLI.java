@@ -36,8 +36,10 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.cli.hpd;
 
+import frysk.rt.Line;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -549,8 +551,9 @@ public class CLI
 	  LineNumberReader lr = new LineNumberReader(fr);
 	  String str;
 	  boolean display = false;
-	  int startLine = (frame.getLineNumber() > 10 
-			   ? frame.getLineNumber() - 10
+	  Line line = frame.getLines() [0];
+	  int startLine = (line.getLine() > 10 
+			   ? line.getLine() - 10
 			   : 1); 
 	  int endLine = startLine + 20;
 	  String flag = "";
@@ -559,7 +562,7 @@ public class CLI
 	    {
 	      if (lr.getLineNumber() == startLine)
 		display = true;
-	      else if (lr.getLineNumber() == frame.getLineNumber())
+	      else if (lr.getLineNumber() == line.getLine())
 		flag = "*";
 	      else if (lr.getLineNumber() == endLine)
 		display = false;
