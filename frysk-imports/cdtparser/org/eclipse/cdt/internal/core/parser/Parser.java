@@ -279,7 +279,7 @@ public class Parser implements IParserData, IParser
 	 */
 	protected void failParse() {
 		try {
-			if (firstErrorOffset == FIRST_ERROR_UNSET){
+			if (firstErrorOffset == FIRST_ERROR_UNSET && LA(1) != null){
 				firstErrorOffset = LA(1).getOffset();
 				firstErrorLine = LA(1).getLineNumber();
 			}

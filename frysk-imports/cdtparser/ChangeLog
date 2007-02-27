@@ -1,3 +1,7 @@
+2007-02-27  Rick Moseley  <rmoseley@redhat.com>
+	* org/eclipse/cdt/internal/core/parser/Parser.java(failParse):
+	Fix bz #4093.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (classdir): Pass JAVACFLAGS to JAVAC
