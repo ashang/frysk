@@ -1,3 +1,8 @@
+2007-02-28  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/check-namespace.sh.in: Backward compatible $(top_builddir) fix
+	for the autoconf-2.59c compatibility.
+
 2007-01-24  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* src/elfxx.c (lookup_symbol): Fix false preceding zero-sized function
