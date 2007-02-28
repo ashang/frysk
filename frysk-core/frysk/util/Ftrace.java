@@ -48,6 +48,8 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 import inua.util.PrintWriter;
 
 import java.util.HashSet;
@@ -60,6 +62,8 @@ public class Ftrace
 	PrintWriter writer;
 	// True if we're tracing children as well.
 	boolean traceChildren;
+    
+    HashSet syscallStackTraceSet = null;
 	
 	// Set of ProcId objects we trace; if traceChildren is set, we also
 	// look for their children.
@@ -81,6 +85,11 @@ public class Ftrace
 	{
 		tracedParents.add(new ProcId(id));
 	}
+    
+    public void setSyscallStackTracing (HashSet syscallSet)
+    {
+      syscallStackTraceSet = syscallSet;
+    }
 
 	public void setWriter(PrintWriter writer)
 	{
@@ -136,6 +145,23 @@ public class Ftrace
 		Manager.host.requestRefreshXXX(true);
 		Manager.eventLoop.start();
 	}
+    
+    synchronized void generateStacKTrace (Task task, String syscallStackTraceName)
+    {
+      StackFrame frame = StackFactory.createStackFrame(task);
+      writer.println("Task: " + task.getTid() 
+      + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
+      
+      int count = 0;
+      while (frame != null)
+        {
+          writer.println("#" + count + " " + frame.toPrint(false));
+          frame = frame.getOuter();
+          ++count;
+        }
+      
+      writer.flush();
+    }
 	
 	synchronized void handleTask (Task task)
 	{
@@ -218,12 +244,20 @@ public class Ftrace
 	/**
 	 * The syscallObserver added to the traced proc.
 	 */
-	private class SyscallObserver implements TaskObserver.Syscall{
+	private class SyscallObserver implements TaskObserver.Syscall
+    {
 		
 		public Action updateSyscallEnter (Task task)
 		{
 			SyscallEventInfo syscallEventInfo;
 			syscallEventInfo = task.getSyscallEventInfo ();
+            
+            /* if this system call is in the stack tracing HashSet, get a 
+             * stack trace before continuing on. */
+            if (syscallStackTraceSet != null 
+    && syscallStackTraceSet.contains(syscallEventInfo.getSyscall(task).getName()))
+              generateStacKTrace(task, syscallEventInfo.getSyscall(task).getName());
+            
 			if (enterHandler != null)
 			    enterHandler.handle(task, syscallEventInfo, SyscallEventInfo.ENTER);
 			return Action.CONTINUE;

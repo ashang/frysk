@@ -129,6 +129,21 @@ class ftrace
                 }
             }
         });
+        parser.add(new Option('s', "stack trace system calls", "CALL[,CALL]...") {
+          public void parsed(String arg) throws OptionException
+          {
+            StringTokenizer st = new StringTokenizer(arg, ",");
+            HashSet set = new HashSet(2);
+            while (st.hasMoreTokens())
+            {
+                String name = st.nextToken();
+                // FIXME: there's no good way to error out if the
+                // syscall is unknown.
+                set.add(name);
+            }
+            tracer.setSyscallStackTracing(set);
+          }
+      });
     }
 
     public void run(String[] args)

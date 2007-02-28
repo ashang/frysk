@@ -1,3 +1,8 @@
+2007-02-28  Mike Cvet  <mcvet@redhat.com>
+
+	* ftrace.java (addOptions): Added new parsing option for syscall stack
+	tracing. Fixes #4112.
+
 2007-02-24  Tim Moore  <timoore@redhat.com>
 
 	* fhpd.java (main): Use CommandlineParser class.
