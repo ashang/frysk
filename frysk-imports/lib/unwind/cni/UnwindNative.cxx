@@ -209,10 +209,10 @@ native_get_proc_name(::unw_addr_space_t as,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
 	lib::unwind::ProcName *procName = ((lib::unwind::Accessors *)arg)->getProcName (
-	(jlong) addr, (jint) buf_len);
-	
-	if (procName == NULL)
-		return -1;
+	(jlong) addr, (jint) buf_len);	
+
+	if (procName->error < 0 && procName->error != -UNW_ENOMEM)
+		return procName->error;
 
 	JvGetStringUTFRegion(procName->name, 0, JvGetStringUTFLength(procName->name),
 	bufp);
@@ -220,7 +220,7 @@ native_get_proc_name(::unw_addr_space_t as,
 	bufp[JvGetStringUTFLength(procName->name)] = '\0';
 	offp = (unw_word_t *) procName->address;
 	
-	return 0;
+	return procName->error;
 }
 
 
@@ -295,7 +295,7 @@ lib::unwind::UnwindNative::getProcName(gnu::gcj::RawDataManaged* cursor, jint ma
 	int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
 	
 	logFinest(this, logger, "getProcName bufp: %s, error: %d", bufp, err);
-	return new lib::unwind::ProcName((jlong) offset, JvNewStringUTF(bufp));
+	return new lib::unwind::ProcName((jint) err, (jlong) offset, JvNewStringUTF(bufp));
 }
 
 jint

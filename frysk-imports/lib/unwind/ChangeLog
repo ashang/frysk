@@ -1,3 +1,12 @@
+2007-02-27  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcName.java: Added error value.
+	* cni/PtraceAccessors.cxx (accessReg):  Added logging message for return value.
+	(getProcName): Pass in a unw_word_t struct rather than a pointer to UPT_get_proc_name.
+	Don't log a message with the buffer if UPT_get_proc_name returns a bad buffer.
+	* cni/UnwindNative.cxx (getProcName): Reflect update to ProcName.
+	(native_get_proc_name): Return the error stored in ProcName.
+
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* FrameCursor.java (procOffset, getProcOffset): Put back.

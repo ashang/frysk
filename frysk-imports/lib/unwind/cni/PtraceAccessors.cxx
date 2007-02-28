@@ -93,13 +93,15 @@ lib::unwind::PtraceAccessors::accessReg (jint regnum, jbyteArray valp,
 										 jboolean write)
 {
 	logFine(this, logger, "accessReg regnum: %d, write: %d", (int) regnum, (int) write);
-	jint ret = -1;
+	int ret = -1;
 	
 	if ((int) JvGetArrayLength(valp) >= (int) sizeof (unw_word_t))
-	ret = (jint) _UPT_access_reg((unw_addr_space_t) addressSpace, (unw_regnum_t) regnum,
+	ret = _UPT_access_reg((unw_addr_space_t) addressSpace, (unw_regnum_t) regnum,
 					getWord(valp), (int) write, (void *) ptArgs);
 	
-	return ret;
+	logFine(this, logger, "accessReg returning: %d", ret);
+	
+	return (jint) ret;
 }										 	
 
 lib::unwind::ProcInfo*
@@ -139,13 +141,20 @@ lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 {	
 	logFine(this, logger, "getProcName address: %ld, maxNameSize: %d", (long) addr, (int) maxNameSize);
 	char buffp[maxNameSize];
-	unw_word_t * offset = NULL;
-	_UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
-					   buffp, (size_t) maxNameSize, offset, (void *) ptArgs);
+	unw_word_t offset = 0;
+	int ret = _UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
+					   buffp, (size_t) maxNameSize, &offset, (void *) ptArgs);
 
-	logFinest(this, logger, "getProcName buffp: %s", buffp);
+	logFinest(this, logger, "getProcName ret: %d", ret);
 	
-	return new ProcName((jlong) offset, JvNewStringUTF(buffp));	
+	if (ret == 0)
+		logFinest(this, logger, "getProcName buffp: %s", buffp);
+	
+
+	if (ret < 0 && ret != -UNW_ENOMEM) 
+		return new ProcName((jint) ret, 0, NULL); 
+	
+	return new ProcName((jint) ret, (jlong) offset, JvNewStringUTF(buffp));	
 }
 
 void 

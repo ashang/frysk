@@ -78,9 +78,11 @@ vajprintf (const char *fmt, va_list ap)
 {
   char* message = NULL;
   if (::vasprintf (&message, fmt, ap) < 0)
-    throw new frysk::sys::Errno ();
-  jstring jmessage = JvNewStringUTF (message);
-  ::free (message);
+    throw new frysk::sys::Errno ();      
+  jstring jmessage = JvNewStringUTF (message);  
+  ::free (message);  
+  if (jmessage == NULL)
+  	throwRuntimeException("JvNewStringUTF failed in vajprintf");  
   return jmessage;
 }
 
@@ -271,31 +273,43 @@ fill_string (void *p, jstring s)
 /**
  * Print a log message to a java logger, uses printf notation.
  */
-void 
-logMessage (jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
-char *message, ...)
+ 
+static void
+vlog (jobject myThis, java::util::logging::Logger* logger, 
+      java::util::logging::Level* level, char *message, va_list argp)
 {
 	if (!(logger->isLoggable(level)))
 		return;
 	
 	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
 	elements(params)[0] = myThis;
-	 
+	 	
+	elements(params)[1] = vajprintf(message, argp);
+		
+	jstring tmp = JvNewStringUTF("{0} {1}\n");
+	fprintf(stderr, "tmp pointer: %p\n", tmp);
+	fprintf(stderr, "params : %lx second: %lx\n", (long) elements(params)[0], (long) elements(params)[1]);
+	logger->log(level, tmp, params);
+	
+}
+
+void 
+logMessage (jobject myThis, java::util::logging::Logger* logger, 
+            java::util::logging::Level* level, char *message, ...)
+{
 	va_list argp;
 	
 	va_start(argp, message);
-	elements(params)[1] = vajprintf(message, argp);
+	vlog (myThis, logger, level, message, argp);
 	va_end(argp);	
-	
-	logger->log(level, JvNewStringUTF("{0} {1}\n"), params);
 }
 
 /*
  * Print a log message to a java logger, uses java objects, in a vararg format.
  */
 void
-jLogMessage (jobject myThis, java::util::logging::Logger* logger, java::util::logging::Level* level, 
-char *message, ...)
+jLogMessage (jobject myThis, java::util::logging::Logger* logger, 
+             java::util::logging::Level* level, char *message, ...)
 {
 	if (!(logger->isLoggable(level)))
 		return;
@@ -321,40 +335,23 @@ char *message, ...)
 	logger->log(level, ajprintf("{0} %s\n", message), params);
 }
 
+
 void 
 logFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
 {
-	if (!(logger->isLoggable(java::util::logging::Level::FINE)))
-		return;
-	
-	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
-	elements(params)[0] = myThis;
-	 
 	va_list argp;
-	
 	va_start(argp, message);
-	elements(params)[1] = vajprintf(message, argp);
-	va_end(argp);	
-	
-	logger->log(java::util::logging::Level::FINE, JvNewStringUTF("{0} {1}\n"), params);
+	vlog(myThis, logger, java::util::logging::Level::FINE, message, argp);
+	va_end(argp);
 }
 	 
 void 
 logFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...)
 {
-	if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
-		return;
-	
-	jobjectArray params = JvNewObjectArray(2, &java::lang::Object::class$, NULL);
-	elements(params)[0] = myThis;
-	 
 	va_list argp;
-	
 	va_start(argp, message);
-	elements(params)[1] = vajprintf(message, argp);
-	va_end(argp);	
-	
-	logger->log(java::util::logging::Level::FINEST, JvNewStringUTF("{0} {1}\n"), params);
+	vlog(myThis, logger, java::util::logging::Level::FINEST, message, argp);
+	va_end(argp);
 }
 
 void 

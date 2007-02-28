@@ -41,12 +41,13 @@ package lib.unwind;
 
 public class ProcName
 {
-
+  int error = 0;
   public final long address;
   public final String name;
   
-  ProcName(long address, String name)
+  ProcName(int error, long address, String name)
   {
+    this.error = error;
     this.address = address;
     this.name = name;
   }
