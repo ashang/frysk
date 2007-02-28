@@ -38,7 +38,7 @@
 // exception.
 
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import frysk.util.FCatch;
@@ -64,7 +64,8 @@ public class fcatch
   
   private boolean requestedPid;
   
-  private static ArrayList arguments;
+//  private static ArrayList arguments;
+  private static String pidString;
 
   private void run (String[] args)
   {
@@ -72,7 +73,7 @@ public class fcatch
     {
       protected void validate () throws OptionException
       {
-        if (! requestedPid && fcatch.arguments == null)
+        if (! requestedPid && fcatch.pidString == null) //fcatch.arguments == null)
           throw new OptionException("no command or PID specified");
       }
     };
@@ -84,15 +85,17 @@ public class fcatch
     {
       public void notifyFile (String arg) throws OptionException
       {
-        if (fcatch.arguments == null)
-          fcatch.arguments = new ArrayList();
-        fcatch.arguments.add(arg);
+//        System.err.println("notifyFile " + arg);
+//        if (fcatch.arguments == null)
+//          fcatch.arguments = new ArrayList();
+//        fcatch.arguments.add(arg);
       }
     });
 
-  if (arguments != null)
+    if (pidString != null)
   {
-      String[] cmd = (String[]) arguments.toArray(new String[0]);
+      //String[] cmd = (String[]) arguments.toArray(new String[0]);
+    String[] cmd = { pidString };
       catcher.trace(cmd, requestedPid);
   }
   }
@@ -109,6 +112,8 @@ public class fcatch
               //System.out.println("Option pid: " + pid);
               catcher.addTracePid(pid);
               requestedPid = true;
+              pidString = new String();
+              pidString = "" + pid; //.add(new Integer(pid));
           } catch (NumberFormatException e) {
               OptionException oe = new OptionException("couldn't parse pid: " + arg);
               oe.initCause(e);

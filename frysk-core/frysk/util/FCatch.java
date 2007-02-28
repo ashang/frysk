@@ -59,8 +59,6 @@ import frysk.rt.StackFactory;
 public class FCatch
 {
 
-  private Proc proc;
-
   private int numTasks = 0;
 
   //True if we're tracing children as well.
@@ -97,6 +95,7 @@ public class FCatch
    */
   public void trace (String[] command, boolean attach)
   {
+//    System.err.println("tracing " + command[0] + " " + attach);
     logger.log(Level.FINE, "{0} trace", this);
     Manager.host.requestRefreshXXX(true);
 
@@ -129,8 +128,7 @@ public class FCatch
     {
       public void procFound (ProcId procId)
       {
-        proc = Manager.host.getProc(procId);
-        iterateTasks();
+        iterateTasks(Manager.host.getProc(procId));
       }
 
       public void procNotFound (ProcId procId, Exception e)
@@ -145,7 +143,7 @@ public class FCatch
   /**
    * Adds a CatchObserver to each of the Tasks belonging to the process.
    */
-  private void iterateTasks ()
+  private void iterateTasks (Proc proc)
   {
     Iterator i = proc.getTasks().iterator();
     while (i.hasNext())
@@ -153,20 +151,6 @@ public class FCatch
         ((Task) i.next()).requestAddAttachedObserver(new CatchObserver());
       }
   }
-
-//  /**
-//   * Sets up the Proc member for this class.
-//   * 
-//   * @param task    The first task to be blocked by a CatchObserver.
-//   */
-//  synchronized void handleTask (Task task)
-//  {
-//    if (firstCall == true)
-//      {
-//        firstCall = false;
-//        proc = task.getProc();
-//      }
-//  }
 
   /**
    * Adds a PID to be traced to this class' HashSet.
@@ -334,7 +318,7 @@ public class FCatch
     public Action updateAttached (Task task)
     {
       logger.log(Level.FINE, "{0} updateAttached", task);
-      //          System.err.println("CatchObserver.updateAttached on" + task);
+//                System.err.println("CatchObserver.updateAttached on" + task);
       if (signalObserver == null)
         signalObserver = new SignalObserver();
 
@@ -393,7 +377,7 @@ public class FCatch
     public void addedTo (Object observable)
     {
       logger.log(Level.FINE, "{0} CatchObserver.addedTo", (Task) observable);
-      //System.out.println("CatchObserver.addedTo " + (Task) observable);
+//      System.out.println("CatchObserver.addedTo " + (Task) observable);
     }
 
     public void addFailed (Object observable, Throwable w)

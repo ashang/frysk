@@ -11,6 +11,11 @@
 	* FCatch.java: Commented.
 	(handleTaskBlock): Added some new special switch cases. Make sure the 
 	stack trace StringBuffer is reset after each trace. Simplified switch.
+	
+	* FCatch.java (proc): Removed.
+	(handleTask): Removed.
+	(iterateTasks): Takes a Proc parameter.
+	(init): Pass returned Proc directly to iterateTasks().
 
 2007-02-26  Tim Moore  <timoore@redhat.com>
 
