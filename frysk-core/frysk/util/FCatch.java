@@ -88,6 +88,13 @@ public class FCatch
 
   StackFrame[] frames;
 
+  /**
+   * Sets up the attached process.
+   * 
+   * @param command Command line arguments, including executable name
+   * @param attach  Whether to create a new process with the above arguments, or
+   * to attach to an already-running process.
+   */
   public void trace (String[] command, boolean attach)
   {
     logger.log(Level.FINE, "{0} trace", this);
@@ -111,6 +118,9 @@ public class FCatch
     logger.log(Level.FINE, "{0} exiting trace", this);
   }
 
+  /**
+   * Attaches FCatch to an already running process.
+   */
   private void init ()
   {
     logger.log(Level.FINE, "{0} init", this);
@@ -132,6 +142,9 @@ public class FCatch
     logger.log(Level.FINE, "{0} exiting init", this);
   }
 
+  /**
+   * Adds a CatchObserver to each of the Tasks belonging to the process.
+   */
   private void iterateTasks ()
   {
     Iterator i = proc.getTasks().iterator();
@@ -141,15 +154,25 @@ public class FCatch
       }
   }
 
-  synchronized void handleTask (Task task)
-  {
-    if (firstCall == true)
-      {
-        firstCall = false;
-        proc = task.getProc();
-      }
-  }
+//  /**
+//   * Sets up the Proc member for this class.
+//   * 
+//   * @param task    The first task to be blocked by a CatchObserver.
+//   */
+//  synchronized void handleTask (Task task)
+//  {
+//    if (firstCall == true)
+//      {
+//        firstCall = false;
+//        proc = task.getProc();
+//      }
+//  }
 
+  /**
+   * Adds a PID to be traced to this class' HashSet.
+   * 
+   * @param id  The PID to be traced
+   */
   public void addTracePid (int id)
   {
     logger.log(Level.FINE, "{0} addTracePid", new Integer(id));
@@ -157,6 +180,13 @@ public class FCatch
     this.procID = new ProcId(id);
   }
 
+  /**
+   * Builds a stack trace from the incoming blocked task, and appends the output
+   * to this class' StringBuffer. Decrements the numTasks variable to let FCatch
+   * know when to unblock the signaled thread.
+   * 
+   * @param task    The Task to be StackTraced
+   */
   private void generateStackTrace (Task task)
   {
     logger.log(Level.FINE, "{0} generateStackTrace", task);
@@ -185,11 +215,19 @@ public class FCatch
     logger.log(Level.FINE, "{0} exiting generateStackTrace", task);
   }
 
+  /**
+   * Returns a String representation of the stack trace thus far.
+   * 
+   * @return The stack trace thus far.
+   */
   public String getStackTrace ()
   {
     return this.stackTrace.toString();
   }
 
+  /**
+   * Prints the stack trace.
+   */
   public String toString ()
   {
     String trace = this.stackTrace.toString();
@@ -197,51 +235,80 @@ public class FCatch
     return trace;
   }
 
+  /**
+   * Depending on the signal, appends the signal type to the stack trace 
+   * StringBuffer and calls generateStackTrace(Task).
+   * If all Tasks have completed their trace, this method unblocks the signaled
+   * thread blocked by a SignaledObserver, and then removes the Blocker
+   * Objects from all the Tasks.
+   * 
+   * @param task    The Task recently blocked.
+   */
   public void handleTaskBlock (Task task)
   {
     switch (sig)
       {
-      case 2:
+      case 1:
         stackTrace.append("SIGHUP detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
+        break;
+      case 2:
+        stackTrace.append("SIGINT detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
         break;
       case 3:
         stackTrace.append("SIGQUIT detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
+        break;
+      case 4:
+        stackTrace.append("SIGILL detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
         break;
       case 6:
         stackTrace.append("SIGABRT detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
         break;
       case 9:
         stackTrace.append("SIGKILL detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
+        break;
+      case 10:
+        stackTrace.append("SIGUSR1 detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
         break;
       case 11:
         stackTrace.append("SIGSEGV detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
+        break;
+      case 12:
+        stackTrace.append("SIGUSR2 detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
+        break;
+      case 13:
+        stackTrace.append("SIGPIPE detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
         break;
       case 15:
         stackTrace.append("SIGTERM detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
+        break;
+      case 17:
+        stackTrace.append("SIGCHLD detected - dumping stack trace for TID "
+                          + task.getTid() + "\n");
         break;
       default:
         stackTrace.append("Signal " + sig
                           + " detected - dumping stack trace for TID "
                           + task.getTid() + "\n");
-        generateStackTrace(task);
         break;
       }
+    
+    generateStackTrace(task);
 
     if (numTasks <= 0)
       {
-        System.out.println(FCatch.this.stackTrace.toString());
+        System.err.println(this.stackTrace.toString());
+        this.stackTrace = new StringBuffer();
         sigTask.requestUnblock(signalObserver);
         Iterator i = task.getProc().getTasks().iterator();
         while (i.hasNext())
@@ -260,6 +327,10 @@ public class FCatch
       implements TaskObserver.Attached, TaskObserver.Cloned,
       TaskObserver.Terminating, TaskObserver.Terminated
   {
+    /**
+     * This Task has been attached to and blocked - attach the rest of this
+     * Object's implemented Observers to it.
+     */
     public Action updateAttached (Task task)
     {
       logger.log(Level.FINE, "{0} updateAttached", task);
@@ -283,6 +354,10 @@ public class FCatch
       return Action.BLOCK;
     }
 
+    /**
+     * One of the Tasks has forked - make sure that the child is also traced
+     * properly.
+     */
     public Action updateClonedOffspring (Task parent, Task offspring)
     {
       logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
@@ -332,10 +407,17 @@ public class FCatch
     }
   }
 
+  /**
+   * Intercepts signals to a Task and deals with them appropriately.
+   */
   class SignalObserver
       implements TaskObserver.Signaled
   {
 
+    /**
+     * The Task received a signal - block all the other tasks, and append to the 
+     * StringBuffer member of FCatch that this Task was signaled.
+     */
     public Action updateSignaled (Task task, int signal)
     {
       logger.log(Level.FINE, "{0} updateSignaled", task);
@@ -372,6 +454,9 @@ public class FCatch
     }
   }
 
+  /**
+   * Blocks threads; makes sure they get stack traced.
+   */
   class Blocker
       implements TaskObserver.Instruction
   {
