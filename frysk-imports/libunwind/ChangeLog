@@ -1,3 +1,7 @@
+2007-02-28  Nurdin Premji  <npremji@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Fix stack smashing buf memcpy.
+
 2007-02-28  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* tests/Makefile.in (clean): No longer remove some source scripts.
