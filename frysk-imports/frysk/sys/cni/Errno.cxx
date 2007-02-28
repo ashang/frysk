@@ -287,8 +287,6 @@ vlog (jobject myThis, java::util::logging::Logger* logger,
 	elements(params)[1] = vajprintf(message, argp);
 		
 	jstring tmp = JvNewStringUTF("{0} {1}\n");
-	fprintf(stderr, "tmp pointer: %p\n", tmp);
-	fprintf(stderr, "params : %lx second: %lx\n", (long) elements(params)[0], (long) elements(params)[1]);
 	logger->log(level, tmp, params);
 	
 }

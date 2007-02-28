@@ -1,5 +1,7 @@
 2007-02-27  Nurdin Premji  <npremji@redhat.com>
 
+	* cni/Errno.cxx (vlog): Remove debug statements.
+
 	* cni/Errno.cxx (vajprintf): throw a runtime exception if the JvNewString
 	call fails.
 	(vlog): Added.
