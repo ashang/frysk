@@ -336,8 +336,11 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	classes=`cd $$tmpdir; find * -name \*.class | sed "s/.class//g"` ; \
         echo "$$classes" ; \
 	for class in $$classes ; do \
-		echo $$class ; \
-		$(GCJH) -I $$tmpdir -d . $(GCJHFLAGS) $$class ; \
+		outputdir=`dirname $$class`; \
+		outputfile=`basename $$class`.h; \
+		echo $$class: $$outputdir/$$outputfile; \
+		$(GCJH) -I $$tmpdir -o $$outputdir/$$outputfile \
+			$(GCJHFLAGS) $$class ; \
 	done ; \
 	rm -rf $$tmpdir
 

@@ -150,9 +150,9 @@ frysk2490/a.out: $(frysk2490_FILES)
 	mkdir -p frysk2490
 	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2490/Parent.java
 	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2490/Child.java
-	$(GCJH) -I. frysk2490.Parent
-	$(GCJH) -I. frysk2490.Child
-	$(GCJH) -I. 'frysk2490.Child$$Nested'
+	$(GCJH) $(GCJHFLAGS) -I. frysk2490.Parent
+	$(GCJH) $(GCJHFLAGS) -I. frysk2490.Child
+	$(GCJH) $(GCJHFLAGS) -I. 'frysk2490.Child$$Nested'
 	$(CXX) -g -I. -c -o frysk2490/native.o $(srcdir)/frysk2490/native.cxx
 	$(GCJ) -g -I. --main=frysk2490.Child -o frysk2490/a.out \
 		$(srcdir)/frysk2490/Parent.java \
@@ -438,7 +438,7 @@ CLEANFILES += frysk2760/TestBarrier.h
 frysk2760/barriertest: $(frysk2760_FILES)
 	mkdir -p frysk2760
 	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2760/TestBarrier.java
-	$(GCJH) -I. frysk2760/TestBarrier
+	$(GCJH) $(GCJHFLAGS) -I. -o frysk2760/TestBarrier.h frysk2760/TestBarrier
 	$(CXX) -g -I. -c -o frysk2760/barriertest.o $(srcdir)/frysk2760/TestBarrier.cxx
 	$(GCJ) -g -I. --main=frysk2760.TestBarrier -o frysk2760/barriertest \
 		$(srcdir)/frysk2760/TestBarrier.java \
