@@ -100,6 +100,9 @@ lib::dw::DwarfDie::get_scopes(jlong addr)
   Dwarf_Die *dies;
   
   int count = dwarf_getscopes(DWARF_DIE_POINTER, (Dwarf_Addr) addr, &dies);
+  if (count == -1)
+    count = 0;
+  
   jlongArray longs = JvNewLongArray((jint) count);
   jlong* longp = elements(longs);
 	
@@ -214,9 +217,11 @@ lib::dw::DwarfDie::get_addr (jlongArray fbreg_and_disp, jlong var_die)
   longp[0] = -1;
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
     {
-      dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
-      longp[0] = fb_expr[0].atom;
-      longp[1] = fb_expr[0].number;
+      if (dwarf_getlocation (&loc_attr, &fb_expr, &fb_len) >= 0)
+	{
+	  longp[0] = fb_expr[0].atom;
+	  longp[1] = fb_expr[0].number;
+	}
     }
 }
 
@@ -387,7 +392,10 @@ lib::dw::DwarfDie::is_external (jlong type_die)
   : (r == DW_OP_breg5) ? 5 : (r == DW_OP_breg6) ? 6 : (r == DW_OP_breg7) ? 7 \
   : (r == DW_OP_reg0) ? 0 : (r == DW_OP_reg1) ? 1			\
   : (r == DW_OP_reg2) ? 2 : (r == DW_OP_reg3) ? 3 : (r == DW_OP_reg4) ? 4 \
-  : (r == DW_OP_reg5) ? 5 : (r == DW_OP_reg6) ? 6 : (r == DW_OP_reg7) ? 7 : 7
+  : (r == DW_OP_reg5) ? 5 : (r == DW_OP_reg6) ? 6 : (r == DW_OP_reg7) ? 7 \
+  : (r == DW_OP_reg8) ? 8 : (r == DW_OP_reg9) ? 9 : (r == DW_OP_reg10) ? 10 \
+  : (r == DW_OP_reg11) ? 11 : (r == DW_OP_reg12) ? 12 : (r == DW_OP_reg13) ? 13 \
+  : (r == DW_OP_reg14) ? 14 : (r == DW_OP_reg15) ? 15 : -1
 
 
 void

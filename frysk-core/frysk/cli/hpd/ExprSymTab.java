@@ -216,13 +216,17 @@ class ExprSymTab
       String[][] x86regnames = { { "eax", "rax" }, { "ecx", "rdx" },
                                 { "edx", "rcx" }, { "ebx", "rbx" },
                                 { "esp", "rsi" }, { "ebp", "rdi" },
-                                { "esi", "rbp" }, { "edi", "rsp" } };
+                                { "esi", "rbp" }, { "edi", "rsp" }, 
+                                { "", "r8" }, { "", "r9" }, { "", "r10"},
+                                { "", "r11"}, { "", "r12"}};
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
 
       pc = currentFrame.getAdjustedAddress();
 
-      long fbreg_and_disp[] = new long[2];
+      long fbreg_and_disp[] = {0, 0};
       varDieP.getAddr(fbreg_and_disp);
+      if (fbreg_and_disp[0] == -1) // location list says no value is accessible
+        return 0;
       if (fbreg_and_disp[0] == DW_OP_addr)
         {
           setSuccessful(true);
@@ -230,36 +234,34 @@ class ExprSymTab
         }
       long addr = fbreg_and_disp[1];
       varDieP.getFrameBase(fbreg_and_disp, pc);
-      if (fbreg_and_disp[0] != - 1) // DW_OP_fbreg
+      if (fbreg_and_disp[0] == -1) // location list says no value is accessible
+        return 0;
+      // DW_OP_fbreg
+      long regval = 0;
+      setSuccessful(true);
+      if (currentFrame.getInner() == null)
         {
-          long regval = 0;
-          setSuccessful(true);
-          if (currentFrame.getInner() == null)
-            {
-              Isa isa = task.getIsa();
+          Isa isa = task.getIsa();
 
-              if (isa instanceof frysk.proc.IsaIA32)
-                regval = isa.getRegisterByName(
-                                               x86regnames[(int) fbreg_and_disp[0]][0]).get(
-                                                                                            task);
-              else if (isa instanceof frysk.proc.IsaX8664)
-                regval = isa.getRegisterByName(
-                                               x86regnames[(int) fbreg_and_disp[0]][1]).get(
-                                                                                            task);
-            }
-          else
-            {
-              Isa isa = currentFrame.getTask().getIsa();
-
-              if (isa instanceof frysk.proc.IsaIA32)
-                regval = currentFrame.getReg(x86regnumbers[(int) fbreg_and_disp[0]]);
-              else if (isa instanceof frysk.proc.IsaX8664)
-                regval = currentFrame.getReg(fbreg_and_disp[0]);
-            }
-
-          addr += fbreg_and_disp[1];
-          addr += regval;
+          if (isa instanceof frysk.proc.IsaIA32)
+            regval = isa.getRegisterByName
+              (x86regnames[(int) fbreg_and_disp[0]][0]).get(task);
+          else if (isa instanceof frysk.proc.IsaX8664)
+            regval = isa.getRegisterByName
+              (x86regnames[(int) fbreg_and_disp[0]][1]).get(task);
         }
+      else
+        {
+          Isa isa = currentFrame.getTask().getIsa();
+
+          if (isa instanceof frysk.proc.IsaIA32)
+            regval = currentFrame.getReg(x86regnumbers[(int) fbreg_and_disp[0]]);
+          else if (isa instanceof frysk.proc.IsaX8664)
+            regval = currentFrame.getReg(fbreg_and_disp[0]);
+        }
+
+      addr += fbreg_and_disp[1];
+      addr += regval;
       return addr;
     }
 
@@ -378,14 +380,14 @@ class ExprSymTab
         isa = currentFrame.getTask().getIsa();
 
       pc = currentFrame.getAdjustedAddress();
-      long fbreg_and_disp[] = new long[2];
+      long fbreg_and_disp[] = {0, 0};
       varDieP.getFormData(fbreg_and_disp, pc);
       if (fbreg_and_disp[0] != - 1)
         {
           setSuccessful(true);
           if (isa instanceof frysk.proc.IsaIA32)
             reg = x86regnumbers[(int) fbreg_and_disp[0]];
-          else if (isa instanceof frysk.proc.IsaIA32)
+          else if (isa instanceof frysk.proc.IsaX8664)
             reg = fbreg_and_disp[0];
         }
 
@@ -395,13 +397,13 @@ class ExprSymTab
     public long getLong (DwarfDie varDieP, long offset)
     {
       long val = currentFrame.getReg(getReg(varDieP));
-      return (long) val;
+      return val;
     }
 
     public void putLong (DwarfDie varDieP, long offset, Variable v)
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getLong());
+      currentFrame.setReg(reg, v.getLong());
     }
 
     public int getInt (DwarfDie varDieP, long offset)
@@ -413,7 +415,7 @@ class ExprSymTab
     public void putInt (DwarfDie varDieP, long offset, Variable v)
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getInt());
+      currentFrame.setReg(reg, v.getInt());
     }
 
     public short getShort (DwarfDie varDieP, long offset)
@@ -425,7 +427,7 @@ class ExprSymTab
     public void putShort (DwarfDie varDieP, long offset, Variable v)
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getShort());
+      currentFrame.setReg(reg, v.getShort());
     }
 
     public byte getByte (DwarfDie varDieP, long offset)
@@ -437,13 +439,14 @@ class ExprSymTab
     public void putByte (DwarfDie varDieP, long offset, Variable v)
     {
       long reg = getReg(varDieP);
-      currentFrame.setReg(reg, (long) v.getByte());
+      currentFrame.setReg(reg, v.getByte());
     }
 
     public float getFloat (DwarfDie varDieP, long offset)
     {
       long val = currentFrame.getReg(getReg(varDieP));
-      return (float) val;
+      float fval = Float.intBitsToFloat((int)val);
+      return fval;
     }
 
     public void putFloat (DwarfDie varDieP, long offset, Variable v)
@@ -455,7 +458,8 @@ class ExprSymTab
     public double getDouble (DwarfDie varDieP, long offset)
     {
       long val = currentFrame.getReg(getReg(varDieP));
-      return (double) val;
+      double dval = Double.longBitsToDouble(val);
+      return dval;
     }
 
     public void putDouble (DwarfDie varDieP, long offset, Variable v)

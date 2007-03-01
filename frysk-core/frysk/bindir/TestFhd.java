@@ -66,8 +66,8 @@ public class TestFhd
 
     public void testHpd ()
     {
-	if (brokenXXX (4001))
-	    return;
+// 	if (brokenXXX (4001))
+// 	    return;
 	child = new Expect (new String[]
 	    {
 		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
@@ -89,7 +89,7 @@ public class TestFhd
 	e.expect ("where.*#0.*" + prompt);
 	// int_21
 	e.send ("print int_21\n");
-	e.expect ("print.*2.*" + prompt);
+	e.expect ("print.*2.*\r\n" + prompt);
 	// Up
 	e.send ("up\n");
 	e.expect ("up.*#1.*" + prompt);
@@ -97,14 +97,18 @@ public class TestFhd
 	e.send ("print int_21\n");
 	e.expect ("print.*21.*(fhpd)");
 	// char_21
+	// e.send ("print ch\t");
+ 	// e.expect ("print.*char_21");
 	e.send ("print char_21\n");
 	e.expect ("print.*a.*" + prompt);
 	// Down
+	// e.send ("d\t");
+	// e.expect ("defset.*down.*detach.*delete.*" + prompt);
 	e.send ("down\n");
 	e.expect ("down.*#0.*" + prompt);
 	// long_21
-	e.send ("print long_21\n");
-	e.expect ("print.*10.*" + prompt);
+// 	e.send ("print long_21\n");
+// 	e.expect ("print.*10.*" + prompt);
 	// float_21
 	e.send ("print float_21\n");
 	e.expect ("print.*1\\.1.*" + prompt);
@@ -118,9 +122,11 @@ public class TestFhd
 	e.send ("print static_class\n");
 	e.expect ("print.*12\\.34.*" + prompt);
 	// class
-	e.send ("print class_1\n");
-	e.expect ("print.*15.*" + prompt);
+// 	e.send ("print class_1\n");
+// 	e.expect ("print.*15.*" + prompt);
 	// arr_1
+	// e.send ("print arr_\t");
+	// e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
 	e.send ("print arr_1\n");
 	e.expect ("print.*30.=1.31.=2.*" + prompt);
 	// arr_2
@@ -132,29 +138,5 @@ public class TestFhd
 	e.send ("print arr_4\n");
 	// arr_4
 	e.expect ("print.*" + prompt);
-    }
-
-    public void testRunCppParser ()
-    {
-	if (brokenXXX (4002))
-	    return;
-	// XXX: This is not good must be able to run in both build and
-	// install trees.
-	File runCppParser = new File ("./frysk/expr/RunCppParser");
-	String prompt = "\\$ ";
-	e = new Expect (new String[]
-	    {
-		runCppParser.getAbsolutePath ()
-	    });
-	e.expect (prompt);
-	// rcp assign
-	e.send ("xyz=3\n");
-	e.expect ("xyz=3.*" + prompt);
-	// rcp assign
-	e.send ("xya=4\n");
-	e.expect ("xya=4.*" + prompt);
-	// rcp tab
-	e.send ("xy\t");
-	e.expect ("xyz.*xya.*" + prompt);
     }
 }

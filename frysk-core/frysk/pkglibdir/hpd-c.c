@@ -131,6 +131,8 @@ extern float assign_float (float);
 extern double assign_double (double);
 extern int loop_(double, int, int, short,
 		  int, float, double, int, int);
+static int func_2 (int x, int y) __attribute__ ((noinline));
+static int func_1 (int x, int y) __attribute__ ((noinline));
 
 
 int static_int = 4;
