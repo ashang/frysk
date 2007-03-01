@@ -50,6 +50,8 @@ public class StackTraceCreator
   
   static Logger logger = Logger.getLogger("frysk");
   
+  static UnwindArgs unwindArgs = null;
+  
   /**
    * Using the provided set of callbacks, initialize libunwind to provide a
    * full stack backtrace
@@ -60,7 +62,13 @@ public class StackTraceCreator
   public static FrameCursor createStackTrace (UnwindCallbacks callbacks)
   {
     logger.log(Level.FINEST, "createStackTrace");
-    return unwind_setup(new UnwindArgs(callbacks));
+    
+    if (unwindArgs != null)
+      unwindArgs.cleanup();
+    
+    unwindArgs = null;
+    unwindArgs = new UnwindArgs(callbacks);
+    return unwind_setup(unwindArgs);
   }
 
   private static native FrameCursor unwind_setup (UnwindArgs args);
@@ -81,22 +89,29 @@ public class StackTraceCreator
       this.UPTarg = null;
       this.unwas = null;
 
-      /* register_hashes must be called later, from within
-	 unwind_setup().  Calling it within an if (false) avoids a
-	 warning about the unused method.  */
+      /*
+       * register_hashes must be called later, from within unwind_setup().
+       * Calling it within an if (false) avoids a warning about the unused
+       * method.
+       */
       if (false)
-	try {
-	  register_hashes (this);
-	} catch (UnwindException _) {
-	}
+        try
+          {
+            register_hashes(this);
+          }
+        catch (UnwindException _)
+          {
+          }
     }
-
-    public void finalize ()
+    
+    public void cleanup ()
     {
-      /* unregister_hashes could be called here, but we call it in
-	 unwind_finish(), to mirror the constructor above.  */
+      /*
+       * unregister_hashes could be called here, but we call it in
+       * unwind_finish(), to mirror the constructor above.
+       */
       if (false)
-	unregister_hashes (this);
+        unregister_hashes(this);
       unwind_finish(this);
     }
   }
