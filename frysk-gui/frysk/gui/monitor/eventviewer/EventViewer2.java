@@ -52,7 +52,6 @@ import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.VScrollBar;
 import org.gnu.gtk.Viewport;
-import org.gnu.gtk.Widget;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.sessions.DebugProcess;
@@ -77,9 +76,13 @@ public class EventViewer2 extends Table {
   
   SizeGroup lablesSizeGroup;
   
+  TimeLineSelectionManager timeLineSelectionManager;
+  
   public EventViewer2(){
 		super(2, 3, false);
 		this.setBorderWidth(6);
+    
+        this.timeLineSelectionManager = new TimeLineSelectionManager();
         
         this.lablesSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
         Label spacerLabel = new Label("");
@@ -117,22 +120,13 @@ public class EventViewer2 extends Table {
     }
      
     private void addProc(GuiProc guiProc){
-      ProcBox procBox = new ProcBox(guiProc);
-      Widget timeLinesWidget = procBox.getTimeLinesWidget();
-      Viewport timelinesViewport = new Viewport(this.hScrollBar.getAdjustment(),null);
-      timelinesViewport.add(timeLinesWidget);
-      
-      timelinesViewport.setMinimumSize(0, 0);
-      
-      Widget lablesWidget = procBox.getLablesWidget();
-      this.lablesSizeGroup.addWidget(lablesWidget);
+      ProcBox procBox = new ProcBox(guiProc,this.hScrollBar.getAdjustment(), timeLineSelectionManager);
       
       this.bigTableNumberOfRows++;
       this.bigTable.resize(2,this.bigTableNumberOfRows);
       
       AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
-      this.bigTable.attach(lablesWidget     , 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, AttachOptions.FILL, AttachOptions.FILL, 3, 3);
-      this.bigTable.attach(timelinesViewport, 1, 2, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL, AttachOptions.FILL, 3, 3);
+      this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 3 , 3);
       
       this.showAll();
     }

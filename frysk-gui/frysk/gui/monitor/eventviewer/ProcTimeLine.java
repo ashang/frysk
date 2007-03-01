@@ -49,39 +49,20 @@ import frysk.gui.monitor.GuiProc;
 public class ProcTimeLine extends TimeLine
 {
 
+  private static final int MINIMUM_HEIGHT = 50;
   private GuiProc guiProc;
 
-  public ProcTimeLine (GuiProc guiProc)
+  public ProcTimeLine (GuiProc guiProc, TimeLineSelectionManager manager)
   {
-    super(guiProc.getExecutableName()+ " " + guiProc.getProc().getPid());
+    super(guiProc.getExecutableName()+ " " + guiProc.getProc().getPid(), manager);
     this.guiProc = guiProc;
     
   }
 
-  public boolean exposeEvent(ExposeEvent exposeEvent) {
-    super.exposeEvent(exposeEvent);
-    
-    if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
-      return false;
-    
-    int w = this.getWindow().getWidth();
-    
-    GdkCairo cairo = new GdkCairo(this.getWindow());
-    // draw events
-    Iterator iterator = EventManager.theManager.getEventsList().iterator();
-    while (iterator.hasNext())
-      {
-        Event event = (Event) iterator.next();        
-        if(this.ownsEvent(event)){
-          event.drawText(cairo);
-        }
-      }
-    
-    this.setMinimumSize(w , 60);
-    
-    return true;
+  protected TimeLineDrawingArea getTimeLineDrawingArea(){
+    return new ProcTimeLineDrawingArea();
   }
-
+  
   private GuiProc getProc ()
   {
     return this.guiProc;
@@ -91,4 +72,39 @@ public class ProcTimeLine extends TimeLine
   {
     return event.getGuiTask().getTask().getProc().getPid() == this.getProc().getProc().getPid();
   }
+
+  
+  protected class ProcTimeLineDrawingArea extends TimeLine.TimeLineDrawingArea{
+    public ProcTimeLineDrawingArea ()
+    {
+      super();
+      this.setMinimumSize(100 , 60);
+    }
+    public boolean exposeEvent(ExposeEvent exposeEvent) {
+      super.exposeEvent(exposeEvent);
+      
+      if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
+        return false;
+      
+      GdkCairo cairo = new GdkCairo(this.getWindow());
+      // draw events
+      Iterator iterator = EventManager.theManager.getEventsList().iterator();
+      while (iterator.hasNext())
+        {
+          Event event = (Event) iterator.next();        
+          if(ProcTimeLine.this.ownsEvent(event)){
+            event.drawText(cairo);
+          }
+        }
+      
+      return true;
+    }
+    
+    public int getMinimumHeight ()
+    {
+      return MINIMUM_HEIGHT;
+    }
+
+  }
+
 }

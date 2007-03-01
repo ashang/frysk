@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -40,42 +40,59 @@
 package frysk.gui.monitor.eventviewer;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
+import frysk.gui.monitor.ObservableLinkedList;
 
-/**
- * @deprecated no longer needed... will be deleted soon
- * A little layout widget responsible for placing the time lines
- * on top of each other. And more complicated layouts if needed.
- */
-public class BoxList
-    extends EventViewerWidgetList
+public class TimeLineSelectionManager
 {
-  int childY;
-  int spacing;
   
-  BoxList(){
-    super(null, null);
-    this.spacing = 10;
-    this.childY = spacing;
+  LinkedList timeLines;
+  private ObservableLinkedList selectedTimeLines;
+  boolean mulitpleSelectionAllowed = false;
+  
+  public TimeLineSelectionManager ()
+  {
+    this.timeLines = new LinkedList();
+    this.selectedTimeLines = new ObservableLinkedList();
   }
   
-  public void addChild(EventViewerWidget child){
+  public void addTimeLine(final TimeLine timeLine){
+    this.timeLines.add(timeLine);
     
-    child.setSize(this.getX(), childY, this.getWidth(), child.getHeight());
-    
-    this.childY += child.getHeight() + spacing;
-     
-    this.setSize(this.getX(), this.getY(), this.getWidth(), childY);
-    super.addChild(child);
-  }
-  
-  public void setSize(int x, int y, int w, int h){
-    super.setSize(x, y, w, h);
-    Iterator iterator = this.children.iterator();
-    while (iterator.hasNext())
-      {
-        EventViewerWidget child = (EventViewerWidget) iterator.next();
-        child.setSize(this.getX(), child.getY(), this.getWidth(), child.getHeight());
+    timeLine.selected.addObserver(new Observer(){
+      TimeLine realTimeLine = timeLine;
+      public void update (Observable observable, Object arg){
+        if(!mulitpleSelectionAllowed){
+          unselectedSelectedTimeLines();
+        }
+        selectedTimeLines.add(realTimeLine);
       }
+    });
+    
+    timeLine.unSelected.addObserver(new Observer(){
+      TimeLine realTimeLine = timeLine;
+      public void update (Observable observable, Object arg){
+        selectedTimeLines.remove(realTimeLine);
+      }
+    });
+    
   }
+  
+  protected void unselectedSelectedTimeLines ()
+  {
+    Iterator iterator = this.selectedTimeLines.iterator();
+    while(iterator.hasNext()){
+      TimeLine timeLine = (TimeLine) iterator.next();
+      timeLine.unselect();
+    }
+  }
+
+  public ObservableLinkedList getSelectedTimeLines(){
+    return this.selectedTimeLines;
+  }
+  
+  
 }

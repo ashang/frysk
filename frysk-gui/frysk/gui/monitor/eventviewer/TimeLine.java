@@ -41,132 +41,173 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
-import org.gnu.atk.Role;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
+import org.gnu.gtk.Adjustment;
+import org.gnu.gtk.EventBox;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.Label;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.Viewport;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
 
 import com.redhat.ftk.CustomAtkObject;
 import com.redhat.ftk.CustomDrawingArea;
 
+import frysk.gui.monitor.GuiObservable;
+
 public abstract class TimeLine
-    extends CustomDrawingArea implements ExposeListener
+    extends HBox implements MouseListener
 {
-  LinkedList eventBuffer;
+  
+  public final GuiObservable selected;
+  public final GuiObservable unSelected;
   
   static int eventIndentation = 0;
   static int eventSpacing = 30;
   
-  String label;
+  private static SizeGroup labelsSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
   
   private static final int MINIMUM_HEIGHT = 15;
   
-  public TimeLine(String label){
-    super();
+  String name;
   
-    CustomAtkObject atkObject = new CustomAtkObject(this);
-    
-    atkObject.setName(label+"TimeLine");
-    atkObject.setDescription("TimeLine");
-    
-    this.setAcessible(atkObject);
-    
-    this.label = label;
-    
-    this.addListener((ExposeListener)this);
+  private Viewport viewport;
+  private boolean isSelected;
   
-    this.setEvents(EventMask.ALL_EVENTS_MASK);
-        
-    this.setMinimumSize(0 , MINIMUM_HEIGHT);
+  public TimeLine(String name, TimeLineSelectionManager manager){
+    super(false,0);
     
-    this.eventBuffer = new LinkedList();
+    this.selected = new GuiObservable();
+    this.unSelected = new GuiObservable();
     
-    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object object)
-      {
-        Event event = (Event)object;
-        eventBuffer.add(event);
-        
-        CustomAtkObject customAtkObject = new CustomAtkObject(TimeLine.this);
-        customAtkObject.setName(event.getName());
-        customAtkObject.setRole(Role.UNKNOWN);
-        
-        ((CustomAtkObject)TimeLine.this.getAccessible()).addChild(customAtkObject);
-        TimeLine.this.draw();
-      }
-    });
+    this.setBorderWidth(1);
     
+    this.name = name;
+    
+    Label label = new Label(name);
+    EventBox labelEventBox = new EventBox();
+    labelEventBox.add(label);
+    
+    labelEventBox.addListener((MouseListener)this);
+    this.addListener((MouseListener)this);
+
+    addToLabelsSizeGroup(label);
+    
+    TimeLineDrawingArea drawingArea = getTimeLineDrawingArea();
+    
+    viewport = new Viewport(null,null);
+    viewport.add(drawingArea);
+    viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
+    
+    this.packStart(labelEventBox, false, false, 0);
+    this.packStart(viewport,true,true,0);
+   
+    manager.addTimeLine(this);
   }
   
-  public boolean exposeEvent(ExposeEvent exposeEvent) {
-    if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
-      return false;
+  public void setHAdjustment(Adjustment adjustment){
+    this.viewport.setHAdjustment(adjustment);
+  }
   
-    GdkCairo cairo = new GdkCairo(this.getWindow());
+  protected TimeLineDrawingArea getTimeLineDrawingArea(){
+    return new TimeLineDrawingArea();
+  }
+  
+  protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener{
+ 
+    public TimeLineDrawingArea ()
+    {
+      CustomAtkObject atkObject = new CustomAtkObject(this);
+      
+      atkObject.setName(name+"TimeLine");
+      atkObject.setDescription("TimeLine");
+      
+      this.setAcessible(atkObject);
+      
+      
+      this.addListener((ExposeListener)this);
     
-    int x = 0;
-    int y = 0;
-    int w = this.getWindow().getWidth();
-    int h = this.getWindow().getHeight();  
-    
-    
-    // White background
-    cairo.setSourceColor(Color.WHITE);
-    cairo.rectangle(new Point(0,0), new Point(w, h));
-    cairo.fill();
-    
-    cairo.save();
-      // line
-    cairo.setLineWidth(0.1);
-    cairo.setSourceColor(Color.BLACK);
-
-    cairo.moveTo(x, y+h-1);
-    cairo.lineTo(x + w, y+h-1);
-    
-    cairo.stroke();
-    
-    cairo.restore();
-    
-    //  Label
-//    Layout layout = new Layout(this.getContext());
-//    layout.setText(this.getLabel());
-//    this.getWindow().drawLayout(x, y, layout);
-    
-    // draw events
-    Iterator iterator = EventManager.theManager.getEventsList().iterator();
-    
-    int eventY = 0;
-    int eventX = 0;
-    
-    while (iterator.hasNext())
-      {
-        Event event = (Event) iterator.next();
-        
-        if(this.ownsEvent(event)){
-          eventX = 0 + eventIndentation + (event.getIndex())*(event.getWidth() + eventSpacing) + eventSpacing;
-          eventY = 0 + h - event.getHeight();
-          event.setSize(eventX, eventY, event.getWidth(), event.getHeight());
-          event.draw(cairo);
-        }
-      }
-    
-    if(eventX >= w){
-      this.setMinimumSize(w + 3 , h);
+      this.setEvents(EventMask.ALL_EVENTS_MASK);
+          
+      this.setMinimumSize(0 , MINIMUM_HEIGHT);
     }
     
-//    this.showAll();
+    public int getMinimumHeight ()
+    {
+      return MINIMUM_HEIGHT;
+    }
+
+    public boolean exposeEvent(ExposeEvent exposeEvent) {
+      if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
+        return false;
+    
+      GdkCairo cairo = new GdkCairo(this.getWindow());
+      
+      int x = 0;
+      int y = 0;
+      int w = this.getWindow().getWidth();
+      int h = this.getWindow().getHeight();  
+      
+      // White background
+      cairo.setSourceColor(Color.WHITE);
+      cairo.rectangle(new Point(x,y), new Point(w, h));
+      cairo.fill();
+      
+      cairo.save();
+      
+      // line
+      cairo.setLineWidth(0.2);
+      cairo.setSourceColor(Color.BLACK);
+
+      cairo.moveTo(x, y+h-1);
+      cairo.lineTo(x + w, y+h-1);
+      
+      cairo.stroke();
+      
+      cairo.restore();
+      
+      // draw events
+      Iterator iterator = EventManager.theManager.getEventsList().iterator();
+      
+      int eventX = 0;
+      int eventY = 0;
+      
+      while (iterator.hasNext())
+        {
+          Event event = (Event) iterator.next();
+          
+          if(TimeLine.this.ownsEvent(event)){
+            eventX = x + eventIndentation + (event.getIndex())*(event.getWidth() + eventSpacing) + eventSpacing;
+            eventY = y + h - event.getHeight();
+            event.setSize(eventX, eventY, event.getWidth(), event.getHeight());
+            event.draw(cairo);
+          }
+        }
+      
+      if(eventX >= w){
+        this.setMinimumSize(w + 3, MINIMUM_HEIGHT);
+      }
+     
+      return false;
+    }
+  }
+    
+  public boolean mouseEvent(MouseEvent event){
+    if(event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+      this.select();
+    }
     
     return false;
   }
-  
   /**
    * Returns wether this time line is associated with the given
    * event
@@ -178,6 +219,27 @@ public abstract class TimeLine
   
   public String getLabel ()
   {
-    return this.label;
+    return this.name;
   }
+  
+  public void select(){
+    this.selected.notifyObservers();
+    this.isSelected = true;
+    this.highlight();
+  }
+  
+  public void unselect(){
+    this.isSelected = false;
+    this.unHighlight();
+    this.unSelected.notifyObservers();
+  }
+  
+  public boolean isSelected(){
+    return this.isSelected;
+  }
+  
+  public static void addToLabelsSizeGroup(Widget widget){
+    labelsSizeGroup.addWidget(widget);
+  }
+  
 }

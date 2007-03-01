@@ -46,9 +46,9 @@ public class TaskTimeLine extends TimeLine
 
   private GuiTask guiTask;
 
-  public TaskTimeLine (GuiTask guiTask)
+  public TaskTimeLine (GuiTask guiTask, TimeLineSelectionManager manager)
   {
-    super(""+guiTask.getTask().getTid());
+    super(""+guiTask.getTask().getTid(), manager);
     this.guiTask = guiTask;
   }
 

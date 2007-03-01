@@ -1,3 +1,18 @@
+2007-03-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/BoxList.java: Removed.
+	* eventviewer/TimeLine.java:  Label is now part of TimeLine.
+	Created inner class for DrawingArea of the TimeLine.
+	Added handling for selecting/deselecting.
+	Rearranged layout.
+	* eventviewer/TaskTimeLine.java: Ditto.
+	* eventviewer/ProcTimeLine.java: Ditto.
+	* eventviewer/ProcBox.java: No longer creates labels for timelines.
+	RearrangedLayout.
+	* eventviewer/EventViewer2.java: Changed layout.
+	Added TimeLineSelectionManager.
+	* eventviewer/TimeLineSelectionManager.java: New file.
+
 2007-02-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/TaskTimeLine.java: Removed commented out code.

@@ -39,11 +39,8 @@
 
 package frysk.gui.monitor.eventviewer;
 
-import org.gnu.gtk.Label;
-import org.gnu.gtk.SizeGroup;
-import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.Adjustment;
 import org.gnu.gtk.VBox;
-import org.gnu.gtk.Widget;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
@@ -51,39 +48,33 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.ProcObserver.ProcTasks;
 
-public class ProcBox
+public class ProcBox extends VBox
 {
   GuiProc guiProc;
   GuiTask mainGuiTask;
   private boolean mainGutTaskAdded;
-  VBox timeLinesVBox;
-  VBox labelsVBox;
+  private Adjustment hAdjustment;
   
-  ProcBox (GuiProc guiProc)
+  TimeLineSelectionManager manager;
+  
+  ProcBox (GuiProc guiProc, Adjustment adjustment, TimeLineSelectionManager manager)
   {
-    super();
+    super(false,0);
+  
+    this.manager = manager;
+    this.hAdjustment = adjustment;
+    
     this.mainGutTaskAdded = false;
 
-    this.timeLinesVBox = new VBox(false,0);
-    this.timeLinesVBox.getAccessible().setName(guiProc.getExecutableName()+"TimeLinesVBox");
-    this.labelsVBox = new VBox(false,0);
-    this.labelsVBox.getAccessible().setName(guiProc.getExecutableName()+"LablesVBox");
-        
     this.setProc(guiProc);
   }
 
   private void setProc(GuiProc guiProc){
     this.guiProc = guiProc;
     
-    ProcTimeLine procTimeLine = new ProcTimeLine(guiProc);
-    
-    Label label = new Label(procTimeLine.getLabel());
-    SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
-    sizeGroup.addWidget(procTimeLine);
-    sizeGroup.addWidget(label);
-    
-    this.timeLinesVBox.packStart(procTimeLine, true, true, 0);
-    this.labelsVBox.packStart(label, true, true, 0);
+    ProcTimeLine procTimeLine = new ProcTimeLine(guiProc, manager);
+    procTimeLine.setHAdjustment(hAdjustment);
+    this.packStart(procTimeLine, true, true, 0);
     
     new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
 
@@ -143,28 +134,10 @@ public class ProcBox
       this.mainGutTaskAdded = true;
     }
     
-    TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask);
-    //this.packEnd(taskTimeLine, true, true, 0);
+    TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask, manager);
+    taskTimeLine.setHAdjustment(hAdjustment);
     
-    Label label = new Label(taskTimeLine.getLabel());
-    label.getAccessible().setName(label.getName());
-    
-    SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
-    sizeGroup.addWidget(taskTimeLine);
-    sizeGroup.addWidget(label);
-    
-    this.timeLinesVBox.packStart(taskTimeLine, true, true, 0);
-    this.labelsVBox.packStart(new Label(taskTimeLine.getLabel()), true, true, 0);
+    this.packStart(taskTimeLine,true,true,0);
   }
-
-  public Widget getTimeLinesWidget ()
-  {
-    return this.timeLinesVBox;
-  }
-
-  public Widget getLablesWidget ()
-  {
-    return this.labelsVBox;
-  }
-
+  
 }
