@@ -1,3 +1,7 @@
+2007-03-01  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am: Always use GCJHFLAGS with GCJH.
+
 2007-02-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (systests_XFAIL_PROGRAMS): Add
