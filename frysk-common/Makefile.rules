@@ -449,7 +449,7 @@ endif
 # local .so files to LDADD.
 
 fryski_SOURCES =
-fryski_LINK = $(GCJLINK)
+fryski_LINK = $(GCJLINK) $(fryski_LDFLAGS)
 noinst_PROGRAMS += fryski
 fryski_LDFLAGS = \
 	-lgij \

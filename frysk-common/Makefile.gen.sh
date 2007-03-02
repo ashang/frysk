@@ -490,7 +490,7 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
 	    echo_PROGRAMS ${name}
 	    check_MANS ${name}
 	    echo "${name_}_SOURCES ="
-	    echo "${name_}_LINK = \$(GCJLINK)"
+	    echo "${name_}_LINK = \$(GCJLINK) \$(${name_}_LDFLAGS)"
 	    echo_LDFLAGS ${name}
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
 	fi
