@@ -40,6 +40,11 @@
 
 package lib.elf;
 
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+import lib.elf.ElfEHeader;
+
 public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
 {
   private char pr_state;
@@ -85,7 +90,62 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
    */
   public ElfPrpsinfo(ElfData noteData)
   {
-    getNoteData(noteData);
+    ByteOrder order = null;
+    byte rawNoteData[] = getNoteData(noteData);
+
+    if (rawNoteData.length <=0)
+      return;
+
+    ByteBuffer noteBuffer = new ArrayByteBuffer(rawNoteData);
+
+    ElfEHeader header = noteData.getParent().getEHeader();
+    switch (header.ident[5])
+      {
+      case ElfEHeader.PHEADER_ELFDATA2LSB: 
+	order = ByteOrder.LITTLE_ENDIAN;
+	break;
+      case ElfEHeader.PHEADER_ELFDATA2MSB:
+	order = ByteOrder.BIG_ENDIAN;
+	break;
+      default:
+	return;
+      }
+
+    noteBuffer.order(order);
+    
+    switch (header.machine)
+      {
+      case ElfEMachine.EM_386:
+      case ElfEMachine.EM_PPC:
+	noteBuffer.wordSize(4);
+	break;
+      case ElfEMachine.EM_X86_64:
+      case ElfEMachine.EM_PPC64:
+	noteBuffer.wordSize(8);
+	break;
+      default:
+	return;
+      }
+   
+    pr_state = (char) noteBuffer.getByte();
+    pr_sname = (char) noteBuffer.getByte();
+    pr_zomb = (char) noteBuffer.getByte();
+    pr_nice = (char) noteBuffer.getByte();
+    pr_flag = noteBuffer.getWord();
+    pr_uid = noteBuffer.getShort();
+    pr_gid = noteBuffer.getShort();
+    pr_pid = noteBuffer.getInt();
+    pr_ppid = noteBuffer.getInt();
+    pr_pgrp = noteBuffer.getInt();
+    pr_sid = noteBuffer.getInt();
+
+    StringBuffer noteStringBuffer = new StringBuffer();
+    noteBuffer.get(noteBuffer.position(), 16, noteStringBuffer);
+    noteBuffer.position(noteBuffer.position()+16);
+    pr_fname = noteStringBuffer.toString();
+    noteBuffer.get(noteBuffer.position(), 80, noteStringBuffer);
+    pr_psargs = noteStringBuffer.toString();
+
   }
 
   public void setPrState(char state)
@@ -159,7 +219,7 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   }
   
   public void setPrPid(int pid)
-  {
+  { 
     this.pr_pid = pid;
   }
   public int getPrPid()
@@ -233,7 +293,7 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   }
  
  
-  public native long getNoteData(ElfData data);
+  public native byte[] getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }

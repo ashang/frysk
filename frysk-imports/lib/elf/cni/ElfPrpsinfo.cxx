@@ -134,12 +134,11 @@ lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 }
 
 
-jlong
+jbyteArray
 lib::elf::ElfPrpsinfo::getNoteData(ElfData *data)
 {
   void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
   GElf_Nhdr *nhdr = (GElf_Nhdr *)elf_data;
-  elf_prpsinfo *prpsinfo;
   long note_loc =0;
   long note_data_loc = 0;
 
@@ -157,37 +156,17 @@ lib::elf::ElfPrpsinfo::getNoteData(ElfData *data)
   // If loop through entire note section, and header not found, return
   // here with abnormal return code.
   if (nhdr->n_type != NT_PRPSINFO)
-      return 1;
+    return NULL;
 
   // Find data at current header + alignment
   note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
 
-  // Run some sanity checks, as we will be doing void pointer -> cast math.
-  if ((nhdr->n_descsz > sizeof(struct elf_prpsinfo)) || (nhdr->n_descsz > data->getSize()) 
-      || (nhdr->n_descsz > (data->getSize()-note_data_loc)))
-    {
-      throw new lib::elf::ElfException(JvNewStringUTF("note size and elf_data size mismatch"));
-    }
-  
-  // Point to the data, and cast.
-  prpsinfo = (elf_prpsinfo *) (((unsigned char *) elf_data) + note_data_loc);
+  printf("Size of note is: %d now printing\n",nhdr->n_descsz);
+  jbyteArray jbuf = JvNewByteArray (nhdr->n_descsz);
+  ::memcpy(elements(jbuf),((unsigned char  *)elf_data)+note_data_loc,  nhdr->n_descsz);
 
-  // Fill Java class structures
-  this->pr_state = prpsinfo->pr_state;
-  this->pr_sname = prpsinfo->pr_sname;
-  this->pr_zomb = prpsinfo->pr_zomb;
-  this->pr_nice = prpsinfo->pr_nice;
-  this->pr_flag = prpsinfo->pr_flag;	
-  this->pr_uid = prpsinfo->pr_uid;
-  this->pr_gid = prpsinfo->pr_gid;
-  this->pr_pid = prpsinfo->pr_pid;
-  this->pr_ppid = prpsinfo->pr_ppid;
-  this->pr_pgrp = prpsinfo->pr_pgrp;
-  this->pr_sid = prpsinfo->pr_sid;
-  this->pr_fname = JvNewStringLatin1(prpsinfo->pr_fname);
-  this->pr_psargs = JvNewStringLatin1(prpsinfo->pr_psargs);
- 
-  return 0;
+  printf("size of unsigned long is %d\n" , sizeof(unsigned long));
+  return jbuf;
 }
 
 #ifdef __cplusplus
