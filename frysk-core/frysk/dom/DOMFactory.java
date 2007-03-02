@@ -88,7 +88,7 @@ public class DOMFactory
     if (source == null)
       {
         DOMImage image = dom.getImage(proc.getMainTask().getName());
-        image.addSource(proc, frame, dom);
+        image.addSource(proc, frame.getLines()[0], dom);
       }
     hashmap.put(proc, dom);
     // if we are debugging the DOM, print it out now

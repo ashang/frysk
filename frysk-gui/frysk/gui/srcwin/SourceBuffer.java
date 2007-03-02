@@ -81,6 +81,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
+import frysk.rt.Line;
 import frysk.rt.StackFrame;
 import frysk.value.Variable;
 
@@ -225,10 +226,10 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return lineNo <= this.getLineCount();
 
-    if (this.scope == null || this.scope.getDOMSource() == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return false;
 
-    DOMLine line = this.scope.getDOMSource().getLine(lineNo + 1);
+    DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(lineNo + 1);
 
     if (line == null)
       return false;
@@ -248,10 +249,10 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return false;
 
-    if (this.scope == null || this.scope.getDOMSource() == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return false;
     
-    DOMLine line = this.scope.getDOMSource().getLine(lineNo + 1);
+    DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(lineNo + 1);
     if (line == null)
       return false;
 
@@ -277,7 +278,7 @@ public class SourceBuffer
     if (! this.isLineExecutable(lineNum))
       return false;
 
-    DOMLine line = this.scope.getDOMSource().getLine(lineNum + 1);
+    DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(lineNum + 1);
     if (line == null)
       return false;
 
@@ -309,7 +310,7 @@ public class SourceBuffer
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
     // Quick check.
-    if (this.scope.getDOMSource() == null)
+    if (this.scope.getLines().length == 0)
       return;
 
     // Find the first frame with source-line information.
@@ -333,8 +334,8 @@ public class SourceBuffer
 						+ lineStart.getCharsInLine()),
 				   true);
 
-    if (frame.getDOMSource() == null
-        || frame.getDOMSource().getFileName().equals(this.fileName))
+    if (frame.getLines().length == 0
+        || frame.getLines()[0].getDOMSource().getFileName().equals(this.fileName))
       {
         // System.out.println("file is null or match - finishing " +
         // frame.getMethodName() + " " + frame.getLineNumber() + " " +
@@ -358,23 +359,24 @@ public class SourceBuffer
      * SourceBuffer. */
     while (curr != null)
       {
-        if (curr.getDOMSource() != null)
-          {
-            if (newFrame == true
-                && ! curr.getDOMSource().getFileName().equals(this.fileName))
-              {
-                curr = curr.getOuter();
-                continue;
-              }
-          }
-
         if (curr.getLines().length == 0)
           {
             curr = curr.getOuter();
             continue;
           }
         
-        line = curr.getLines()[0].getLine ();
+        Line stackLine = curr.getLines()[0];
+        if (curr.getLines()[0].getDOMSource() != null)
+          {
+            if (newFrame == true
+                && ! stackLine.getDOMSource().getFileName().equals(this.fileName))
+              {
+                curr = curr.getOuter();
+                continue;
+              }
+          }
+        
+        line = stackLine.getLine ();
 
         start = this.createMark(
                                 curr.getSymbol().getDemangledName (),
@@ -620,10 +622,10 @@ public class SourceBuffer
    */
   public Variable getVariable (TextIter iter)
   {
-    if (this.scope == null || this.scope.getDOMSource() == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return null;
 
-    DOMSource source = this.scope.getDOMSource();
+    DOMSource source = this.scope.getLines()[0].getDOMSource();
 
     if (mode != SOURCE_MODE || source == null)
       return null;
@@ -755,12 +757,15 @@ public class SourceBuffer
    */
   public void addComment (int lineStart, int colStart, int lineEnd, int colEnd)
   {
+    if (this.scope.getLines().length == 0)
+      return;
+    
     CommentList comment = new CommentList(lineStart, colStart, lineEnd, colEnd);
 
-    CommentList list = (CommentList) comments.get(this.scope.getDOMSource().getFileName());
+    CommentList list = (CommentList) comments.get(this.scope.getLines()[0].getDOMSource().getFileName());
 
     if (list == null)
-      comments.put(this.scope.getDOMSource().getFileName(), comment);
+      comments.put(this.scope.getLines()[0].getDOMSource().getFileName(), comment);
     else
       {
         while (list.getNextComment() != null)
@@ -779,13 +784,13 @@ public class SourceBuffer
    */
   public int getLineCount ()
   {
-    if (this.scope == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return 0;
 
-    DOMSource source = this.scope.getDOMSource();
+    DOMSource source = this.scope.getLines()[0].getDOMSource();
 
     if (mode == SOURCE_MODE && source != null)
-      return this.scope.getDOMSource().getLineCount();
+      return this.scope.getLines()[0].getDOMSource().getLineCount();
     else
       return this.getEndIter().getLineNumber();
   }
@@ -806,10 +811,10 @@ public class SourceBuffer
    */
   public boolean hasInlineCode (int lineNumber)
   {
-    if (this.scope == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return false;
 
-    DOMSource source = this.scope.getDOMSource();
+    DOMSource source = this.scope.getLines()[0].getDOMSource();
     // TODO: Inline code with assembly?
     if (mode != SOURCE_MODE || source == null)
       return false;
@@ -828,10 +833,10 @@ public class SourceBuffer
    */
   public DOMInlineInstance getInlineInstance (int lineNumber)
   {
-    if (this.scope == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return null;
 
-    Iterator iter = this.scope.getDOMSource().getInlines(lineNumber + 1);
+    Iterator iter = this.scope.getLines()[0].getDOMSource().getInlines(lineNumber + 1);
     if (! iter.hasNext())
       return null;
 
@@ -862,7 +867,11 @@ public class SourceBuffer
     this.anchor = null;
     this.functions.clear();
     this.scope = scope;
-    DOMSource data = scope.getDOMSource();
+    DOMSource data = null;
+    
+    if (scope.getLines().length > 0)
+     data = scope.getLines()[0].getDOMSource();
+    
     String file = "";
     
     if (data != null)
@@ -1114,29 +1123,29 @@ public class SourceBuffer
   protected void loadFile () throws FileNotFoundException, JGException
   {
 
-    if (this.scope == null)
+    if (this.scope == null || this.scope.getLines().length == 0)
       return;
 
-    DOMSource source = this.scope.getDOMSource();
+    DOMSource source = this.scope.getLines()[0].getDOMSource();
     
     if (source == null)
       {
         if (! this.firstLoad)
           return;
         
-        if (this.scope.getLines().length > 0)
-          {
-            this.deleteText(this.getStartIter(), this.getEndIter());
-            this.insertText(loadUnmarkedText(this.scope));
-            return;
-          }
+//        if (this.scope.getLines().length == 0)
+//          {
+//            this.deleteText(this.getStartIter(), this.getEndIter());
+//            this.insertText(loadUnmarkedText(this.scope));
+//            return;
+//          }
         
         StackFrame curr = this.scope;
         while (curr != null)
           {
-            if (curr.getDOMSource() != null)
+            if (curr.getLines().length > 0 && curr.getLines()[0].getDOMSource() != null)
               {
-                source = curr.getDOMSource();
+                source = curr.getLines()[0].getDOMSource();
                 break;
               }
             if (curr.getLines().length > 0)
@@ -1186,9 +1195,12 @@ public class SourceBuffer
   private String loadUnmarkedText (StackFrame frame) throws FileNotFoundException
   {
     BufferedReader br = null;
+    if (frame.getLines().length == 0)
+      return "Cannot find source!";
+    
     try
     {
-	br = new BufferedReader(new FileReader(frame.getLines()[0].getFile()));
+      br = new BufferedReader(new FileReader(frame.getLines()[0].getFile()));
     }
     catch (FileNotFoundException fnfe)
     {
@@ -1254,11 +1266,13 @@ public class SourceBuffer
    */
   protected void createTags ()
   {
+    DOMSource source = this.scope.getLines()[0].getDOMSource();
+    
     //System.out.println("Creating tags for " + this.scope.getMethodName());
-    if (this.scope.getDOMSource() == null)
+    if (source == null)
       return;
     
-    Iterator lines = this.scope.getDOMSource().getLines();
+    Iterator lines = source.getLines();
 
     // Iterate through all the lines
     while (lines.hasNext())
@@ -1305,7 +1319,7 @@ public class SourceBuffer
               }
           }
 
-        Iterator inlines = this.scope.getDOMSource().getInlines(line.getLineNum());
+        Iterator inlines = source.getInlines(line.getLineNum());
 
         while (inlines.hasNext())
           {
@@ -1320,7 +1334,7 @@ public class SourceBuffer
       }// end lines.hasNext()
 
     // Now iterate through the comments
-    CommentList list = (CommentList) comments.get(this.scope.getDOMSource().getFileName());
+    CommentList list = (CommentList) comments.get(source.getFileName());
 
     while (list != null)
       {

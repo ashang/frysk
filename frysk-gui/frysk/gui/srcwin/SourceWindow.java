@@ -100,9 +100,7 @@ import org.gnu.gtk.event.MouseListener;
 //import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
-import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
-import frysk.dom.DOMImage;
 import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
@@ -1517,13 +1515,18 @@ public class SourceWindow
 
     if (selected == null)
       return;
-
-    DOMSource source = selected.getDOMSource();
-    if (source == null && selected.getLines().length == 0)
+    
+    DOMSource source = null;
+    Line[] lines = selected.getLines();
+    
+    if (lines.length > 0)
+      source = selected.getLines()[0].getDOMSource();
+    
+    if (lines.length == 0)
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + "Unknown File"
                                                             + "</b>");
-    else if (source == null && selected.getLines().length > 0)
+    else if (source == null && lines.length > 0)
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + selected.getLines()[0].getFile().getPath()
                                                             + "</b>");
@@ -1532,8 +1535,8 @@ public class SourceWindow
                                                             + source.getFileName()
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-
-    if (selected.getLines().length == 0)
+    
+    if (lines.length == 0)
     {
       SourceView v = (SourceView) SourceWindow.this.view;
       SourceBuffer b = (SourceBuffer) v.getBuffer();
@@ -1543,12 +1546,10 @@ public class SourceWindow
       
       b.disassembleFrame(selected);
     }
-    else if (source != null && selected.getDOMFunction() != null)
+    else if (source != null && lines[0].getDOMFunction() != null)
       {
-        DOMSource oldSource = this.currentFrame.getDOMSource();
-
-        if (oldSource == null
-            || ! source.getFileName().equals(oldSource.getFileName()))
+        if (this.currentFrame.getLines().length == 0
+            || ! source.getFileName().equals(this.currentFrame.getLines()[0].getFile().getName()))
           {
             removeTags();
 
@@ -1569,12 +1570,11 @@ public class SourceWindow
 //            b.highlightLine(curr, true);
             createTags();
 
-            this.view.scrollToFunction(selected.getDOMFunction().getFunctionCall());
+            this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
           }
-
         else
           {
-            if (selected.getLines() == null)
+            if (selected.getLines().length == 0)
               return;
             else
 	      this.view.scrollToLine(selected.getLines()[0].getLine());
@@ -2106,8 +2106,8 @@ public class SourceWindow
 
     for (int j = 0; j < size; j++)
       {
-        DOMFunction f = null;
-        DOMSource s = null;
+//        DOMFunction f = null;
+//        DOMSource s = null;
 
         /** Create the stack frame * */
 
@@ -2125,18 +2125,10 @@ public class SourceWindow
 
         /** Stack frame created * */
 
-        while (curr != null) /*
-                               * Iterate and initialize information for all
-                               * frames, not just the top one
-                               */
+        while (curr != null && this.dom == null) 
           {
             
-            Line line = null;
-            
-            if (curr.getLines().length != 0)
-              line = curr.getLines()[0];
-            
-            if (this.dom == null && line != null)
+            if (this.dom == null)
               {
                 try
                   {
@@ -2158,44 +2150,44 @@ public class SourceWindow
 //                    return null;
                   }
               }
-            
-            s = null;
-            f = null;
+//            
+//            s = null;
+//            f = null;
+//
+//            if (line != null && dom != null)
+//              {
+//                // System.out.println("Line not null");
+//                // System.out.println("got filename");
+//		String filename = line.getFile().getName();
+//
+//                DOMImage image = null;
+//                try
+//                  {
+//                    image = this.dom.getImage(tasks[j].getProc().getMainTask().getName());
+//                    s = image.getSource(filename);
+//                    if ( s == null || !s.isParsed())
+//                      {
+//                        // source has not been parsed, go put it in the DOM and
+//                        // parse it
+//                        s = image.addSource(this.swProc, curr, this.dom);
+//                      }
+//                    if (s != null)
+//                      f = s.findFunction(line.getLine());
+//                  }
+//                catch (NullPointerException npe)
+//                  {
+//                    npe.printStackTrace();
+//                    s = null;
+//                    f = null;
+//                  }
+//                catch (IOException e)
+//                {
+//                  e.printStackTrace();
+//                }
+//              }
 
-            if (line != null && dom != null)
-              {
-                // System.out.println("Line not null");
-                // System.out.println("got filename");
-		String filename = line.getFile().getName();
-
-                DOMImage image = null;
-                try
-                  {
-                    image = this.dom.getImage(tasks[j].getProc().getMainTask().getName());
-                    s = image.getSource(filename);
-                    if ( s == null || !s.isParsed())
-                      {
-                        // source has not been parsed, go put it in the DOM and
-                        // parse it
-                        s = image.addSource(this.swProc, curr, this.dom);
-                      }
-                    if (s != null)
-                      f = s.findFunction(line.getLine());
-                  }
-                catch (NullPointerException npe)
-                  {
-                    npe.printStackTrace();
-                    s = null;
-                    f = null;
-                  }
-                catch (IOException e)
-                {
-                  e.printStackTrace();
-                }
-              }
-
-            curr.setDOMSource(s);
-            curr.setDOMFunction(f);
+//            curr.setDOMSource(s);
+//            curr.setDOMFunction(f);
             curr = curr.getOuter();
           }
       }

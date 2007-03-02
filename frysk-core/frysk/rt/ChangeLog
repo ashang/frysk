@@ -1,3 +1,17 @@
+2007-03-02  Mike Cvet  <mcvet@redhat.com>
+
+	* Line.java (proc, source, function): New fields.
+	(Line): Takes an additional Proc.
+	(getDOMFunction): Added. Creates and returns the DOMFunction
+	representing this Line on demand. Fixes #4118.
+	(getDOMSource): Added. Creates and returns the DOMSource 
+	representing this Line on demand. Fixes #4118.
+	* StackFrame.java (setDOMFunction): Removed via #4118.
+	(setDOMSource): Ditto.
+	(getDOMFunction): Ditto.
+	(getDOMSource): Ditto.
+	(getLines): Pass in this StackFrame's Proc to the new Line.
+
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
 	* StackFrame.java: Go back to using FrameCursor .getProcOffset.

@@ -40,6 +40,15 @@
 package frysk.rt;
 
 import java.io.File;
+import java.io.IOException;
+
+import frysk.dom.DOMFactory;
+import frysk.dom.DOMFrysk;
+import frysk.dom.DOMFunction;
+import frysk.dom.DOMImage;
+import frysk.dom.DOMSource;
+
+import frysk.proc.Proc;
 
 /**
  * The source-code line information.
@@ -47,25 +56,80 @@ import java.io.File;
 
 public class Line
 {
-    private final File file;
-    private final int line;
-    private final int column;
-    Line (File file, int line, int column)
-    {
-	this.file = file;
-	this.line = line;
-	this.column = column;
-    }
-    public File getFile()
-    {
-	return file;
-    }
-    public int getLine()
-    {
-	return line;
-    }
-    public int getColumn()
-    {
-	return column;
-    }
+  private final File file;
+
+  private final int line;
+
+  private final int column;
+  
+  private Proc proc;
+  
+  private DOMSource source;
+  
+  private DOMFunction function;
+
+  Line (File file, int line, int column, Proc proc)
+  {
+    this.file = file;
+    this.line = line;
+    this.column = column;
+    this.proc = proc;
+  }
+
+  public File getFile ()
+  {
+    return file;
+  }
+
+  public int getLine ()
+  {
+    return line;
+  }
+
+  public int getColumn ()
+  {
+    return column;
+  }
+  
+  public DOMFunction getDOMFunction ()
+  {
+    if (this.function == null)
+      {
+        if (this.source == null)
+          {
+            if (getDOMSource() == null)
+              return null;
+          }
+        
+        this.function = this.source.findFunction(this.line);
+      }
+    
+    return this.function;
+  }
+  
+  public DOMSource getDOMSource ()
+  {
+    if (this.source == null)
+      {
+        DOMFrysk dom = DOMFactory.getDOM(proc);
+        DOMImage image = dom.getImage(this.proc.getMainTask().getName());
+        this.source = image.getSource(this.file.getName());
+        if (this.source == null || ! this.source.isParsed())
+          {
+            // source has not been parsed, go put it in the DOM and
+            // parse it
+            try
+              {
+                this.source = image.addSource(this.proc, this,
+                                              DOMFactory.getDOM(this.proc));
+              }
+            catch (IOException ioe)
+              {
+                System.err.println(ioe.getMessage());
+              }
+          }
+      }
+
+    return this.source;
+  }
 }

@@ -165,9 +165,10 @@ public class CurrentStackView
                 hasInlinedCode = false;
 
                 // Check for inlined code
-                if (frame.getDOMSource() != null)
+                if (frame.getLines().length > 0 && frame.getLines()[0].getDOMSource() != null)
                   {
-		      DOMLine line = frame.getDOMSource().getLine(frame.getLines()[0].getLine());
+                    DOMLine line = frame.getLines()[0].getDOMSource().getLine(
+                                                 frame.getLines()[0].getLine());
                     if (line != null && line.hasInlinedCode())
                       {
                         hasInlinedCode = true;

@@ -348,7 +348,6 @@ public class SourceView
 
   public void scrollToFunction (String markName)
   {
-
     if (this.buf.getFunctions().contains(markName))
       {
         TextMark mark = this.buf.getMark(markName);
@@ -902,10 +901,12 @@ public class SourceView
     TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                  (int) event.getY());
 
-    if (this.buf.getScope() == null)
+    StackFrame frame = this.buf.getScope();
+    
+    if (frame == null || frame.getLines().length == 0)
       return false;
 
-    DOMSource source = this.buf.getScope().getDOMSource();
+    DOMSource source = frame.getLines()[0].getDOMSource();
 
     if (source == null)
       return false;

@@ -39,8 +39,6 @@
 
 package frysk.rt;
 
-import frysk.dom.DOMFunction;
-import frysk.dom.DOMSource;
 import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -56,12 +54,14 @@ public class StackFrame
   StackFrame outer;
   
   private FrameCursor cursor;
-
-  private DOMFunction func;
-  
-  private DOMSource data;
   
   private Task task;
+  
+  private FrameIdentifier frameIdentifier;
+  
+  private Symbol symbol;
+  
+  private Line[] lines;
 
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
@@ -96,52 +96,6 @@ public class StackFrame
   public StackFrame (Task task)
   {
       this.task = task;
-  }
-  
-  /**
-   * Sets the DOMFunction representing the function which is in turn
-   * represented by this StackFrame.  This method also calls
-   * {@link setData} using the function's source as an argument; if
-   * the function does not have a source, then null is used.
-   * 
-   * @param f   The DOMFunction for this StackFrame.
-   */
-  public void setDOMFunction (DOMFunction f)
-  {
-    this.func = f;
-  }
-  
-  /**
-   * Sets the DOMSource, representing the source code of the
-   * executable.
-   * 
-   * @param s   The DOMSource for the executable this StackFrame belongs to.
-   */
-  public void setDOMSource (DOMSource s)
-  {
-    this.data = s;
-  }
-  
-  /**
-   * Returns this StackFrame's function.  If no function was
-   * previously set using {@link setFunction}, this will return null.
-   * 
-   * @return This StackFrame's function.
-   */
-  public DOMFunction getDOMFunction ()
-  {
-    return this.func;
-  }
-  
-  /**
-   * Returns this StackFrame's source code.  If no source was
-   * previously set using {@link setData}, null is returned.
-   * 
-   * @return This StackFrame's source code.
-   */
-  public DOMSource getDOMSource ()
-  {
-    return this.data;
   }
 
   /**
@@ -268,71 +222,70 @@ public class StackFrame
     /**
      * Return this frame's FrameIdentifier.
      */
-    public FrameIdentifier getFrameIdentifier ()
-    {
-	if (frameIdentifier != null)
-	    // XXX: This is wrong, it needs to be the function's
-	    // address, and not the current instruction.
-	    frameIdentifier = new FrameIdentifier(cursor.getAddress(),
-						  cursor.getCfa());
-	return this.frameIdentifier;
-    }
-    private FrameIdentifier frameIdentifier;
+  public FrameIdentifier getFrameIdentifier ()
+  {
+    if (this.frameIdentifier != null)
+      // XXX: This is wrong, it needs to be the function's
+      // address, and not the current instruction.
+      this.frameIdentifier = new FrameIdentifier(cursor.getAddress(),
+                                            cursor.getCfa());
+    return this.frameIdentifier;
+  }
 
     /**
      * Return this frame's symbol; UNKNOWN if there is no symbol.
      */
-    public Symbol getSymbol ()
-    {
-	if (symbol == null) {
-	    String mangledName = cursor.getProcName ();
-	    if (mangledName == null)
-		symbol = Symbol.UNKNOWN;
-	    else {
-		long address = getAddress () - cursor.getProcOffset();
-		symbol = new Symbol (address, mangledName);
-	    }
-	}
-	return symbol;
-    }
-    private Symbol symbol;
+  public Symbol getSymbol ()
+  {
+    if (this.symbol == null)
+      {
+        String mangledName = cursor.getProcName();
+        if (mangledName == null)
+          this.symbol = Symbol.UNKNOWN;
+        else
+          {
+            long address = getAddress() - cursor.getProcOffset();
+            this.symbol = new Symbol(address, mangledName);
+          }
+      }
+    return this.symbol;
+  }
 
     /**
-     * Return this frame's list of lines as an array; returns an empty
-     * array if there is no line number information available.
-     *
-     * The lack of line-number information can be determined with the
-     * test: <<tt>>.getLines().length == 0</tt>.
-     *
-     * XXX: When there are multiple lines, it isn't clear if there is
-     * a well defined ordering of the information; for
-     * instance: outer-to-inner or inner-to-outer.
+     * Return this frame's list of lines as an array; returns an empty array if
+     * there is no line number information available. The lack of line-number
+     * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
+     * XXX: When there are multiple lines, it isn't clear if there is a well
+     * defined ordering of the information; for instance: outer-to-inner or
+     * inner-to-outer.
      */
-    public Line[] getLines ()
-    {
-	if (lines == null) {
-	    if (cursor != null) {
-		Dwfl dwfl = new Dwfl(task.getTid());
-		// The innermost frame and frames which were
-		// interrupted during execution use their PC to get
-		// the line in source. All other frames have their PC
-		// set to the line after the inner frame call and must
-		// be decremented by one.
-		DwflLine dwflLine = dwfl.getSourceLine (getAdjustedAddress ());
-		if (dwflLine != null) {
-		    lines = new Line[] {
-			new Line (new File (dwflLine.getSourceFile ()),
-				  dwflLine.getLineNum (),
-				  dwflLine.getColumn ())
-		    };
-		}
+  public Line[] getLines ()
+  {
+    if (this.lines == null)
+      {
+        if (this.cursor != null)
+          {
+            Dwfl dwfl = new Dwfl(this.task.getTid());
+            // The innermost frame and frames which were
+            // interrupted during execution use their PC to get
+            // the line in source. All other frames have their PC
+            // set to the line after the inner frame call and must
+            // be decremented by one.
+            DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
+            if (dwflLine != null)
+              {
+                this.lines = new Line[] { new Line(
+                                              new File(dwflLine.getSourceFile()),
+                                              dwflLine.getLineNum(),
+                                              dwflLine.getColumn(),
+                                              this.task.getProc()) };
+              }
 
-	    }
-	    // If the fetch failed, mark it as unknown.
-	    if (lines == null)
-		lines = new Line[0];
-	}
-	return lines;
-    }
-    private Line[] lines;
+          }
+        // If the fetch failed, mark it as unknown.
+        if (this.lines == null)
+          this.lines = new Line[0];
+      }
+    return this.lines;
+  }
 }

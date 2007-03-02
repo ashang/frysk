@@ -49,7 +49,7 @@ import java.util.Iterator;
 
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
-import frysk.rt.StackFrame;
+import frysk.rt.Line;
 
 import org.jdom.Element;
 
@@ -120,12 +120,12 @@ public class DOMImage
      * 
      */
 	
-    public DOMSource addSource (Proc proc, StackFrame frame, DOMFrysk dom) throws IOException
+    public DOMSource addSource (Proc proc, Line line, DOMFrysk dom) throws IOException
     {
 //    Get the list of include file paths associated with this image
       ArrayList arrayincpaths = DOMCommon.getIncludePaths(proc.getExe());
       String includepaths[] = (String[]) arrayincpaths.toArray(new String[0]);
-      File file = frame.getLines()[0].getFile();
+      File file = line.getFile();
       String sourcefile = file.getPath();
 
       String filename = file.getName ();
