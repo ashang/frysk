@@ -1,5 +1,11 @@
 2007-03-02  Mark Wielaard  <mark@klomp.org>
 
+	* Makefile.rules: Define FRYSK_ASCOMPILE and use instead of
+	CCASCOMPILE.
+	* Makefile.gen.sh (echo_arch32_PROGRAMS): Use FRYSK_ASCOMPILE.
+
+2007-03-02  Mark Wielaard  <mark@klomp.org>
+
 	* Makefile.rules (fryski_LINK): Add fryski_LDFLAGS.
 	* Makefile.gen.sh (SOURCES): Add name_LDFLAGS to name_LINK rules.
 

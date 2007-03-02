@@ -213,7 +213,7 @@ echo_arch32_PROGRAMS()
 	    
 	    case "${file}" in
 		*.S | *.s )
-		  compiler=CCASCOMPILE
+		  compiler=FRYSK_ASCOMPILE
 		  linker=LINK
 		  ;;
 		*.cxx )

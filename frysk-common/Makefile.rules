@@ -45,6 +45,11 @@
 .DEFAULT:
 	@echo " >>>>> .DEFAULT: $@ <<<<<"
 
+# CCASCOMPILE isn't documented (and is called CPPASCOMPILE in automake 1.10)
+# So use our own definition.
+FRYSK_ASCOMPILE = $(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS)
+
 # Initialize everything to empty and then use += to add things in.
 
 noinst_SCRIPTS =
@@ -372,7 +377,7 @@ java_DATA =
 # Assembler rule.
 
 .S.o:
-	$(CCASCOMPILE) -c -o $@ $<
+	$(FRYSK_ASCOMPILE) -c -o $@ $<
 
 # Hack to save us constantly editing this file.  The assumption is
 # that all .java and .cxx files are always built.  Recursively call
@@ -432,7 +437,7 @@ endif
 if DO_ARCH32_TEST
 ARCH32_COMPILE = $(subst $(space)-m64$(space), ,$(COMPILE)) -m32
 ARCH32_CXXCOMPILE = $(subst $(space)-m64$(space), ,$(CXXCOMPILE)) -m32
-ARCH32_CCASCOMPILE = $(subst $(space)-m64$(space), ,$(CCASCOMPILE)) -m32
+ARCH32_FRYSK_ASCOMPILE = $(subst $(space)-m64$(space), ,$(FRYSK_ASCOMPILE)) -m32
 ARCH32_LINK = $(subst $(space)-m64$(space), ,$(LINK)) -m32
 ARCH32_CXXLINK = $(subst $(space)-m64$(space), ,$(CXXLINK)) -m32
 endif
