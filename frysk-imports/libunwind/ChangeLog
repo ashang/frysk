@@ -1,3 +1,7 @@
+2007-03-02  Nurdin Premji  <npremji@redhat.com>
+
+	* src/elfxx.c (lookup_symbol): Undo previous correction, buf_len is decremented previously.
+
 2007-02-28  Nurdin Premji  <npremji@redhat.com>
 
 	* src/elfxx.c (lookup_symbol): Fix stack smashing buf memcpy.
