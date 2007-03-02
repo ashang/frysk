@@ -1,3 +1,10 @@
+2007-03-01  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-common.ac: Set GCJHFLAGS depending on program used to -cni
+	or nothing.
+	* Makefile.rules (.java.h): Use -o to specify output directory and
+	file name.
+
 2007-02-21  Mark Wielaard  <mark@klomp.org>
 
 	* frysk-common.ac (AC_CHECK_PROGS): Try gjavah also.
