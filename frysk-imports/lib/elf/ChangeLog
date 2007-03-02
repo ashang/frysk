@@ -1,3 +1,7 @@
+2007-03-02  Mark Wielaard  <mark@klomp.org>
+
+	* cni/ElfPrpsinfo.cxx (getNoteData): Remove debug printfs.
+
 2007-03-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrpsinfo.java (ElfPrpsinfo): Rewrite note data constructor to

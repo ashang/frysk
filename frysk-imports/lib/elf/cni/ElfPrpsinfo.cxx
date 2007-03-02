@@ -161,11 +161,9 @@ lib::elf::ElfPrpsinfo::getNoteData(ElfData *data)
   // Find data at current header + alignment
   note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
 
-  printf("Size of note is: %d now printing\n",nhdr->n_descsz);
   jbyteArray jbuf = JvNewByteArray (nhdr->n_descsz);
   ::memcpy(elements(jbuf),((unsigned char  *)elf_data)+note_data_loc,  nhdr->n_descsz);
 
-  printf("size of unsigned long is %d\n" , sizeof(unsigned long));
   return jbuf;
 }
 
