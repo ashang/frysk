@@ -1,3 +1,8 @@
+2007-03-02  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Fix bz 4120; change String path to
+	File path.
+
 2007-03-02  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java: General fixups with respect to moving

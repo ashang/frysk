@@ -104,6 +104,7 @@ import frysk.dom.DOMFunction;
 import frysk.dom.DOMTagTypes;
 import frysk.dom.StaticParser;
 import frysk.dom.DOMFrysk;
+import frysk.dom.DOMCompilerSuffixes;
 
 public class CDTParser
     implements StaticParser
@@ -128,15 +129,21 @@ public class CDTParser
   {
     this.source = source;
     this.dom = dom;
-
-    String filename = source.getFilePath() + "/" + source.getFileName();
-    ParserLanguage language = ParserLanguage.C;
-    if (filename.endsWith("cpp"))
+    File filename = new File(source.getFilePath(), source.getFileName());
+    ParserLanguage language;
+    // See what kind of file we are handed so we can tell the parser how to scan
+    if (DOMCompilerSuffixes.checkCPP(filename.toString()))
       {
-        if (debug)
-          System.out.println("CDTParser: Language set to c++");
         language = ParserLanguage.CPP;
       }
+    else if (DOMCompilerSuffixes.checkC(filename.toString()))
+      {
+        language = ParserLanguage.C;
+      }
+    // If this is neither a c or a c++ type file, just return
+    else
+      return;
+    
     String [] incPaths = getIncPaths(this.source);
     IScannerInfo buildScanInfo = new ScannerInfo(null, incPaths);
     IScannerInfo scanInfo = new ScannerInfo(buildScanInfo.getDefinedSymbols(),
@@ -145,7 +152,7 @@ public class CDTParser
     ParserCallBack callback = new ParserCallBack();
     IParser parser = ParserFactory.createParser(
                                                 ParserFactory.createScanner(
-                                                                            filename,
+                                                                            filename.toString(),
                                                                             new ScannerInfo(),
                                                                             ParserMode.QUICK_PARSE,
                                                                             language,
@@ -166,7 +173,7 @@ public class CDTParser
     ParserCallBack callback2 = new ParserCallBack();
     IParser parser2 = ParserFactory.createParser(
                                                  ParserFactory.createScanner(
-                                                                             filename,
+                                                                             filename.toString(),
                                                                              scanInfo,
                                                                              ParserMode.COMPLETE_PARSE,
                                                                              language,
