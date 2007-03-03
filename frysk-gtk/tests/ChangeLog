@@ -1,3 +1,7 @@
+2007-03-02  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am: Add AM_LDFLAGS to per target LD_FLAGS.
+
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2333/.cvsignore: Delete.
