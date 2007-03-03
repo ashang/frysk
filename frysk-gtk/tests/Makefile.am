@@ -57,12 +57,12 @@ AM_LDFLAGS = $(FRYSK_GTK_LIBS) \
 TESTS += frysk1497/JNICrash
 noinst_PROGRAMS += frysk1497/JNICrash
 frysk1497_JNICrash_SOURCES = frysk1497/JNICrash.java
-frysk1497_JNICrash_LDFLAGS = --main=frysk1497.JNICrash
+frysk1497_JNICrash_LDFLAGS = $(AM_LDFLAGS) --main=frysk1497.JNICrash
 
 TESTS += frysk1497/IterTest
 noinst_PROGRAMS += frysk1497/IterTest
 frysk1497_IterTest_SOURCES = frysk1497/IterTest.java
-frysk1497_IterTest_LDFLAGS = --main=frysk1497.IterTest
+frysk1497_IterTest_LDFLAGS = $(AM_LDFLAGS) --main=frysk1497.IterTest
 
 TESTS += frysk1497/IterTest.gij
 CLEANFILES += frysk1497/IterTest.class frysk1497/IterTest.gij
@@ -83,12 +83,12 @@ frysk1497/IterTest.gij:
 TESTS += frysk2333/TestGlibTimerGC
 noinst_PROGRAMS += frysk2333/TestGlibTimerGC
 frysk2333_TestGlibTimerGC_SOURCES = frysk2333/TestGlibTimerGC.java
-frysk2333_TestGlibTimerGC_LDFLAGS = --main=frysk2333.TestGlibTimerGC
+frysk2333_TestGlibTimerGC_LDFLAGS = $(AM_LDFLAGS) --main=frysk2333.TestGlibTimerGC
 
 TESTS += frysk3116/RegionAndGCFailure
 noinst_PROGRAMS += frysk3116/RegionAndGCFailure
 frysk3116_RegionAndGCFailure_SOURCES = frysk3116/RegionAndGCFailure.java
-frysk3116_RegionAndGCFailure_LDFLAGS = --main=frysk3116.RegionAndGCFailure
+frysk3116_RegionAndGCFailure_LDFLAGS = $(AM_LDFLAGS) --main=frysk3116.RegionAndGCFailure
 
 # Fake rules for CONFIG_STATUS_DEPENDENCIES:
 $(FRYSK_GTK_JARS):
