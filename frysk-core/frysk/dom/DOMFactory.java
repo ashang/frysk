@@ -60,6 +60,9 @@ public class DOMFactory
   {
     DOMFrysk dom = null;
 
+    if (frame.getLines().length == 0)
+      return null;
+    
     File file = frame.getLines()[0].getFile();
     String sourcefile = file.getPath();
 
