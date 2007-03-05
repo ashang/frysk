@@ -1,3 +1,8 @@
+2007-03-05  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* TestBreakpoints.java: Added 2.6.19-2.2895.fc6, 2.6.19-1.2911.fc6,
+	and 2.6.19-1.2911.6.4.fc6 to list of problem kernels.
+
 2007-02-24  Tim Moore  <timoore@redhat.com>
 
 	* Task.java (requestUnblock): Pass task as argument to TaskEvent 
