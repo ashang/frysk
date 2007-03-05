@@ -1,5 +1,6 @@
 // This file is part of the program FRYSK.
 //
+// Copyright 2007 Oracle Corporation.
 // Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -54,7 +55,9 @@ public class TestBreakpoints
      return brokenIfKernelXXX (4019, new String[]
 	 {
 	     "2.6.18-1.2257.fc5",
-	     "2.6.19-1.2288.fc5"
+	     "2.6.19-1.2288.fc5",
+	     "2.6.19-1.2895.fc6",
+	     "2.6.19-1.2911.fc6"
 	 });
   }
 
