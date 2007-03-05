@@ -117,6 +117,8 @@ public class CDTParser
   private final boolean debug = false;
   
   private final String DEFINE = "#define";
+  
+  private boolean quickparse = true;
 
   /*
    * (non-Javadoc)
@@ -150,6 +152,10 @@ public class CDTParser
                                             buildScanInfo.getIncludePaths());
 
     ParserCallBack callback = new ParserCallBack();
+    if (debug)
+      {
+        System.out.println("\n\n***** Fixing to parse " + filename.toString() + " *****\n\n");
+      }
     IParser parser = ParserFactory.createParser(
                                                 ParserFactory.createScanner(
                                                                             filename.toString(),
@@ -168,8 +174,10 @@ public class CDTParser
                          + parser.getLastErrorLine());
     
     if (debug)
-      System.out.println("\n\n*********** After quick parse ***********\n\n");
+      System.out.println("\n\n*********** After quick parse for " + filename.toString() + 
+                         " ***********\n\n");
 
+    quickparse = false;
     ParserCallBack callback2 = new ParserCallBack();
     IParser parser2 = ParserFactory.createParser(
                                                  ParserFactory.createScanner(
@@ -459,6 +467,8 @@ public class CDTParser
 
     public void enterFunctionBody (IASTFunction arg0)
     {
+      if (quickparse)
+        return;
       if (debug) 
         System.out.println("enterFunctionBody.....name = " + arg0.getName());
     
@@ -472,7 +482,7 @@ public class CDTParser
       String nameText = nameLine.getText().trim();
       if (debug)
           System.out.println(".....lineText = " + lineText.trim() +
-                             ".....nameText = " + nameText.trim());
+                             "\n.....nameText = " + nameText.trim());
       // Check to see if the character string we are parsing is in one of the lines
       if (!checkScope(arg0.getName(), lineText) && !checkScope(arg0.getName(), nameText))
         return;
@@ -495,7 +505,7 @@ public class CDTParser
       String functionName = arg0.getName() + "(";
 
       Iterator iter = arg0.getParameters();
-
+      int length;
       while (iter.hasNext())
         {
           IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
@@ -539,10 +549,12 @@ public class CDTParser
               paramLine = typeLine;
             }
 
+          length = param.getNameOffset() - typeLine.getOffset();
+          if (length > typeText.length())
+            length = typeText.length();
           String type = typeText.substring(param.getStartingOffset()
                                            - typeLine.getOffset(),
-                                           param.getNameOffset()
-                                               - typeLine.getOffset());
+                                           length);
 
           String name = param.getName();
 
@@ -577,7 +589,7 @@ public class CDTParser
       if (line == null || !checkScope(arg0.getName(), line.getText()))
         return;
       if (debug)
-        System.out.println(".....lieText = " + line.getText());
+        System.out.println(".....lineText = " + line.getText());
 
       line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset()
                                                         - line.getOffset());
@@ -1098,6 +1110,8 @@ public class CDTParser
 
     public void exitFunctionBody (IASTFunction arg0)
     {
+      if (quickparse)
+        return;
       if (debug)
         System.out.println("exitFunctionBody....name = " + arg0.getName());
       

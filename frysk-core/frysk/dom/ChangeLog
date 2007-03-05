@@ -1,3 +1,7 @@
+2007-03-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* cparser/CDTParser.java: Fixed bz #4129.
+
 2007-03-05  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMFactory.java (createDOM): Check for debuginfo.
