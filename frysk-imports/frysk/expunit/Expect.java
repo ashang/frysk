@@ -203,12 +203,13 @@ public class Expect
 			if (p.find (output)) {
 			    logger.log (Level.FINE,
 					"{0} match <<{1}>>\n",
-					new Object[] { this, p.group () });
+					new Object[] { this, p });
 			    p.execute ();
-			    // Remove everying up to and including what
-			    // matched.
-			    if (p.end () >= 0)
-				output = output.substring (p.end ());
+			    // FIXME Should remove everying up to and
+			    // including what matched. But Match.end()
+			    // doesn't exist yet...
+			    //if (p.end () >= 0)
+				//output = output.substring (p.end ());
 			    return;
 			}
 		    }
