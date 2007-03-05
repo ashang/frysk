@@ -1544,7 +1544,10 @@ public class SourceWindow
       removeTags();
       v.load(selected);
       
-      b.disassembleFrame(selected);
+      if(runState.getState() == RunState.STOPPED)
+        b.disassembleFrame(selected);
+      else
+        b.deleteText(b.getStartIter(), b.getEndIter());
     }
     else if (source != null && lines[0].getDOMFunction() != null)
       {
@@ -1552,7 +1555,7 @@ public class SourceWindow
             || ! source.getFileName().equals(this.currentFrame.getLines()[0].getFile().getName()))
           {
             removeTags();
-
+            
             this.view.load(selected);
 
 //            SourceView v = (SourceView) SourceWindow.this.view;

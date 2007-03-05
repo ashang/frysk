@@ -1,3 +1,8 @@
+2007-03-05  Adam Jocksch <ajocksch@redhat.com>
+
+	* SourceWindow.java (updateShownStackFrame): Now checks to see if the
+ 	runState is stopped before disassembling a frame.
+
 2007-03-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (highlightLine): Fixed up loop and debuginfo checks.
