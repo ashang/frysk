@@ -53,8 +53,8 @@ public class TestPut
 	assertEquals ("position", 0x0+0*15, idx);
 	b.putByte ((byte) 0x01);
 	b.putShort ((short) 0x0203);
-	b.putInt ((int) 0x04050607);
-	b.putLong ((long) 0x08090a0b0c0d0e0fL);
+	b.putInt (0x04050607);
+	b.putLong (0x08090a0b0c0d0e0fL);
 	check ("+ve BE put... (*)", array, idx,
 		     new int[] {
 			 0x01,
@@ -70,8 +70,8 @@ public class TestPut
 	assertEquals ("position", 0x0+1*15, idx);
 	b.putByte ((byte) 0x10);
 	b.putShort ((short) 0x1112);
-	b.putInt ((int) 0x13141516);
-	b.putLong ((long) 0x1718191a1b1c1d1eL);
+	b.putInt (0x13141516);
+	b.putLong (0x1718191a1b1c1d1eL);
 	check ("+ve LE put... (*)", array, idx,
 		     new int[] {
 			 0x10,
@@ -86,9 +86,9 @@ public class TestPut
 	idx = (int) b.position ();
 	assertEquals ("position", 0x0+2*15, idx);
 	b.putUByte ((short) 0x1f);
-	b.putUShort ((int) 0x2021);
-	b.putUInt ((long) 0x22232425);
-	b.putULong ((long) 0x262728292a2b2c2dL);
+	b.putUShort (0x2021);
+	b.putUInt (0x22232425);
+	b.putULong (0x262728292a2b2c2dL);
 	check ("+ve BE putU... (*)", array, idx,
 		     new int[] {
 			 0x1f,
@@ -103,9 +103,9 @@ public class TestPut
 	idx = (int) b.position ();
 	assertEquals ("position", 0x0+3*15, idx);
 	b.putUByte ((short) 0x2e);
-	b.putUShort ((int) 0x2f30);
-	b.putUInt ((long) 0x31323334);
-	b.putULong ((long) 0x35363738393a3b3cL);
+	b.putUShort (0x2f30);
+	b.putUInt (0x31323334);
+	b.putULong (0x35363738393a3b3cL);
 	check ("+ve LE putU... (*)", array, idx,
 		     new int[] {
 			 0x2e,
@@ -126,8 +126,8 @@ public class TestPut
 	assertEquals ("position", 0x80+0*15, idx);
 	b.putByte ((byte) 0x81);
 	b.putShort ((short) 0x8283);
-	b.putInt ((int) 0x84858687);
-	b.putLong ((long) 0x88898a8b8c8d8e8fL);
+	b.putInt (0x84858687);
+	b.putLong (0x88898a8b8c8d8e8fL);
 	check ("-ve BE put... (*)", array, idx,
 		     new int[] {
 			 0x81,
@@ -143,8 +143,8 @@ public class TestPut
 	assertEquals ("position", 0x80+1*15, idx);
 	b.putByte ((byte) 0x90);
 	b.putShort ((short) 0x9192);
-	b.putInt ((int) 0x93949596);
-	b.putLong ((long) 0x9798999a9b9c9d9eL);
+	b.putInt (0x93949596);
+	b.putLong (0x9798999a9b9c9d9eL);
 	check ("-ve LE put (*)", array, idx,
 		     new int[] {
 			 0x90,
@@ -159,9 +159,9 @@ public class TestPut
 	idx = (int) b.position ();
 	assertEquals ("position", 0x80+2*15, idx);
 	b.putUByte ((short) 0x9f);
-	b.putUShort ((int) 0xa0a1);
-	b.putUInt ((long) 0xa2a3a4a5);
-	b.putULong ((long) 0xa6a7a8a9aaabacadL);
+	b.putUShort (0xa0a1);
+	b.putUInt (0xa2a3a4a5);
+	b.putULong (0xa6a7a8a9aaabacadL);
 	check ("-ve BE putU... (*)", array, idx,
 		     new int[] {
 			 0x9f,
@@ -176,9 +176,9 @@ public class TestPut
 	idx = (int) b.position ();
 	assertEquals ("position", 0x80+3*15, idx);
 	b.putUByte ((short) 0xae);
-	b.putUShort ((int) 0xafb0);
-	b.putUInt ((long) 0xb1b2b3b4);
-	b.putULong ((long) 0xb5b6b7b8b9babbbcL);
+	b.putUShort (0xafb0);
+	b.putUInt (0xb1b2b3b4);
+	b.putULong (0xb5b6b7b8b9babbbcL);
 	check ("-ve LE putU (*)", array, idx,
 		     new int[] {
 			 0xae,
@@ -196,8 +196,8 @@ public class TestPut
 	assertEquals ("position", 0x80+4*15, idx);
 	b.putByte (idx + 0x0, (byte) 0x44);
 	b.putShort (idx + 0x1, (short) 0x4546);
-	b.putInt (idx + 0x3, (int) 0x4748494a);
-	b.putLong (idx + 0x7, (long) 0x4b4c4d4e4f505152L);
+	b.putInt (idx + 0x3, 0x4748494a);
+	b.putLong (idx + 0x7, 0x4b4c4d4e4f505152L);
 	check ("+ve BE put... (*,*)", array, idx,
 		     new int[] {
 			 0x44,
@@ -213,8 +213,8 @@ public class TestPut
 	assertEquals ("position", 0x80+4*15, idx);
 	b.putByte (idx + 0x0, (byte) 0x54);
 	b.putShort (idx + 0x1, (short) 0x5556);
-	b.putInt (idx + 0x3, (int) 0x5758595a);
-	b.putLong (idx + 0x7, (long) 0x5b5c5d5e5f606162L);
+	b.putInt (idx + 0x3, 0x5758595a);
+	b.putLong (idx + 0x7, 0x5b5c5d5e5f606162L);
 	check ("+ve LE put... (*,*)", array, idx,
 		     new int[] {
 			 0x54,
@@ -230,8 +230,8 @@ public class TestPut
 	assertEquals ("position", 0x80+4*15, idx);
 	b.putUByte (idx + 0x0, (byte) 0x63);
 	b.putUShort (idx + 0x1, (short) 0x6465);
-	b.putUInt (idx + 0x3, (int) 0x66676869);
-	b.putULong (idx + 0x7, (long) 0x6a6b6c6d6e6f7071L);
+	b.putUInt (idx + 0x3, 0x66676869);
+	b.putULong (idx + 0x7, 0x6a6b6c6d6e6f7071L);
 	check ("+ve BE putU... (*,*)", array, idx,
 		     new int[] {
 			 0x63,
@@ -247,8 +247,8 @@ public class TestPut
 	assertEquals ("position", 0x80+4*15, idx);
 	b.putUByte (idx + 0x0, (byte) 0x12);
 	b.putUShort (idx + 0x1, (short) 0x1314);
-	b.putUInt (idx + 0x3, (int) 0x15161718);
-	b.putULong (idx + 0x7, (long) 0x191a1b1c1d1e1f20L);
+	b.putUInt (idx + 0x3, 0x15161718);
+	b.putULong (idx + 0x7, 0x191a1b1c1d1e1f20L);
 	check ("+ve LE putU... (*,*)", array, idx,
 		     new int[] {
 			 0x12,
@@ -270,8 +270,8 @@ public class TestPut
 	assertEquals ("position", 0x89, idx);
 	b.putByte (idx + 0x0, (byte) 0x81);
 	b.putShort (idx + 0x1, (short) 0x8283);
-	b.putInt (idx + 0x3, (int) 0x84858687);
-	b.putLong (idx + 0x7, (long) 0x88898a8b8c8d8e8fL);
+	b.putInt (idx + 0x3, 0x84858687);
+	b.putLong (idx + 0x7, 0x88898a8b8c8d8e8fL);
 	check ("-ve BE put... (*,*)", array, idx,
 		     new int[] {
 			 0x81,
@@ -287,8 +287,8 @@ public class TestPut
 	assertEquals ("position", 0x89, idx);
 	b.putByte (idx + 0x0, (byte) 0x90);
 	b.putShort (idx + 0x1, (short) 0x9192);
-	b.putInt (idx + 0x3, (int) 0x93949596);
-	b.putLong (idx + 0x7, (long) 0x9798999a9b9c9d9eL);
+	b.putInt (idx + 0x3, 0x93949596);
+	b.putLong (idx + 0x7, 0x9798999a9b9c9d9eL);
 	check ("-ve LE put... (*,*)", array, idx,
 		     new int[] {
 			 0x90,
@@ -304,8 +304,8 @@ public class TestPut
 	assertEquals ("position", 0x89, idx);
 	b.putUByte (idx + 0x0, (byte) 0x9f);
 	b.putUShort (idx + 0x1, (short) 0xa0a1);
-	b.putUInt (idx + 0x3, (int) 0xa2a3a4a5);
-	b.putULong (idx + 0x7, (long) 0xa6a7a8a9aaabacadL);
+	b.putUInt (idx + 0x3, 0xa2a3a4a5);
+	b.putULong (idx + 0x7, 0xa6a7a8a9aaabacadL);
 	check ("-ve BE putU (*,*)", array, idx,
 		     new int[] {
 			 0x9f,
@@ -321,8 +321,8 @@ public class TestPut
 	assertEquals ("position", 0x89, idx);
 	b.putUByte (idx + 0x0, (byte) 0xae);
 	b.putUShort (idx + 0x1, (short) 0xafb0);
-	b.putUInt (idx + 0x3, (int) 0xb1b2b3b4);
-	b.putULong (idx + 0x7, (long) 0xb5b6b7b8b9babbbcL);
+	b.putUInt (idx + 0x3, 0xb1b2b3b4);
+	b.putULong (idx + 0x7, 0xb5b6b7b8b9babbbcL);
 	check ("-ve LE putU... (*,*)", array, idx,
 		     new int[] {
 			 0xae,
