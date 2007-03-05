@@ -309,18 +309,20 @@ public class SourceBuffer
    */
   protected void highlightLine (StackFrame frame, boolean newFrame)
   {
-    // Quick check.
-    if (this.scope.getLines().length == 0)
-      return;
+//    // Quick check.
+//    if (this.scope.getLines().length == 0)
+//      return;
 
     // Find the first frame with source-line information.
     while (frame.getOuter() != null && frame.getLines().length == 0)
       {
         frame = frame.getOuter();
-        if (frame == null || frame.getLines().length == 0)
+        if (frame.getLines().length == 0)
           return;
       }
 
+    if (frame.getLines().length == 0)
+      return;
     
     int line = frame.getLines()[0].getLine ();
 
