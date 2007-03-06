@@ -87,7 +87,7 @@ reopen (jstring file, const char *mode, FILE *stream);
  * necessary. Otherwise, perform a ptrace operation on a currently running
  * process as a superior task. */
 void
-frysk::sys::Ptrace$PtraceThread::callPtrace ()
+frysk::sys::Ptrace$PtraceThread::execute ()
 {
 		
   if (request == PTRACE_TRACEME) /* New child creation */

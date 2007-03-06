@@ -1,6 +1,6 @@
 //This file is part of the program FRYSK.
 //
-//Copyright 2005, Red Hat Inc.
+//Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 //FRYSK is free software; you can redistribute it and/or modify it
 //under the terms of the GNU General Public License as published by
@@ -174,8 +174,12 @@ public class Ptrace
   /**************************************************************************
    * The new ptrace thread class                                            *
    *************************************************************************/
-  public static class PtraceThread extends Thread {
+    public static class PtraceThread
+	extends Thread
+	implements Execute
+    {
 		
+    volatile Execute op;        /* The operation to be performed.  */
     volatile int request;	/* The ptrace operation request */
     volatile int pid;		/* The pid of the target process */
     volatile int error;		/* Error returned from the ptrace call */
@@ -214,7 +218,7 @@ public class Ptrace
 	      }
 	    /* The data is ready; call ptrace and let Core continue
 	     * when ptrace returns. */
-	    callPtrace();
+	    this.op.execute ();
 	    notify();
 	  }
 	}
@@ -229,7 +233,8 @@ public class Ptrace
 			
       /* Critical section */
       synchronized (lock) {
-				
+			
+	this.op = this;
 	this.request = request;
 	this.pid = pid;
 	this.addr = addr;
@@ -254,7 +259,27 @@ public class Ptrace
 	return result;
       }
     }
-		
+
+      /**
+       * Setup a generic all to the ptrace thread.
+       */
+      public void notifyPtraceThread (Execute op)
+      {
+	  synchronized (lock) {
+	      this.op = op;
+	      synchronized (this) {
+		  // All the data has been set, let the ptrace thread
+		  // do its thing and Core will wait until its done.
+		  notify();
+		  try {
+		      wait();
+		  } catch (InterruptedException ie) {
+		      throw new RuntimeException (ie);
+		  }
+	      }
+	  }
+      }
+
     /**
      * Assign variables representing standard in, out, and error
      */
@@ -281,7 +306,7 @@ public class Ptrace
     /**
      * Make the actual call to ptrace 
      */
-    public native void callPtrace();
+    public native void execute ();
 		
   }
 }
