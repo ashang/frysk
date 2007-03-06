@@ -1,3 +1,7 @@
+2007-03-06  Nurdin Premji  <npremji@redhat.com>
+
+	* Ptrace.java (requestExecute): Added.
+
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Ptrace.java (PtraceThread.op): New member.

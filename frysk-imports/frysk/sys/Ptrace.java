@@ -68,6 +68,14 @@ public class Ptrace
   }
 	
   /**
+   * Execute request from context of ptrace thread.
+   */
+  public static void requestExecute(Execute op)
+  {
+    getPt().notifyPtraceThread(op);
+  }
+  
+  /**
    * Attach to the process specified by PID.
    */
   public static native void attach (int pid);
