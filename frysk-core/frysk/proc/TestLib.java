@@ -790,7 +790,7 @@ public class TestLib
   protected class AttachedAckProcess
       extends AckProcess
   {
-    AttachedAckProcess ()
+    public AttachedAckProcess ()
     {
       super();
     }

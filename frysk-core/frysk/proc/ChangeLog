@@ -1,3 +1,8 @@
+2007-03-06  Nurdin Premji  <npremji@edhat.com>
+
+	* Register.java (getBytes): New.
+	* TestLib.java (AttachedAckProcess.AttachedAckProcess): Made public.
+
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Auxv.java: Use inua.elf.AT, revert 2007-03-06 change.

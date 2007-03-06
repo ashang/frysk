@@ -133,6 +133,20 @@ public class Register
       reverseArray(bytes);
     return new BigInteger(bytes);
   }
+  
+  /**
+   * Returns the value of a register as a byte[].
+   *
+   * @param task the task from which to get the register
+   * @return byte[] value.
+   */
+  public byte[] getBytes(frysk.proc.Task task)
+  {
+    ByteBuffer b = task.getRegisterBank()[bank];
+    byte[] bytes = new byte[length];
+    b.get(offset, bytes, 0, length);
+    return bytes;
+  }
 
   /**
    * Write a register value.
