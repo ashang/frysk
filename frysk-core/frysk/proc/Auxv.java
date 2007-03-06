@@ -53,15 +53,15 @@ public class Auxv
     public String toString ()
     {
 	return ("{Auxv"
-		+ "type=" + inua.elf.AT.toString (type)
+		+ "type=" + lib.elf.ElfAT.toString (type)
 		+ "val=" + val
 		+ "}");
     }
     public PrintWriter print (PrintWriter w)
     {
 	w.print (-5, type);
-	w.print (-21, inua.elf.AT.toString (type));
-	w.print (-32, inua.elf.AT.toPrintString (type));
+	w.print (-21, lib.elf.ElfAT.toString (type));
+	w.print (-32, lib.elf.ElfAT.toPrintString (type));
 	w.print (val);
 	w.println ();
 	return w;

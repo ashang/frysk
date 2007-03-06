@@ -1,3 +1,7 @@
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* Auxv.java: Use lib.elf.ElfAT.
+
 2007-03-05  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* TestBreakpoints.java: Added 2.6.19-2.2895.fc6, 2.6.19-1.2911.fc6,

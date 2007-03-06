@@ -1,3 +1,7 @@
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* ElfAT.shjava: New file. Moved from inua/elf.
+
 2007-03-02  Mark Wielaard  <mark@klomp.org>
 
 	* cni/ElfPrpsinfo.cxx (getNoteData): Remove debug printfs.

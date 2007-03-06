@@ -1,3 +1,9 @@
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* elf/*: Removed.
+	* dwarf/*: Removed.
+	* util/readelf.java: Removed.
+
 2007-03-05  Mark Wielaard  <mark@klomp.org>
 
 	* TestPut.java: Remove unnecessary casts to int and long.
