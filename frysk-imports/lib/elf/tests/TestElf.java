@@ -145,10 +145,6 @@ public class TestElf
   public void testElfCorePrpsNotes () throws ElfException, ElfFileException
   {
     
-    // Disable while being investigated.
-    if (brokenX8664XXX(4047) || brokenPpcXXX(40477))
-	return;
-      
     Elf testElf = new Elf (new File (Config.getPkgDataDir (), "test-core")
 			   .getAbsolutePath (), ElfCommand.ELF_C_READ);
     assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
