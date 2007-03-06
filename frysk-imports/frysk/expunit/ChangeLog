@@ -1,3 +1,14 @@
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* Match.java (start): Reintroduce as abstract protected method.
+	(end): Likewise.
+	* Equals.java (start): Implement.
+	(end): Likewise.
+	* Regex.java (start): Likewise.
+	(end): Likewise.
+	* Expect.java (expectMilliseconds): Use Match.end() to process
+	output.
+
 2007-03-05  Mark Wielaard  <mark@klomp.org>
 
 	* Expect.java (expectMilliseconds): Don't use unimplemented methods.

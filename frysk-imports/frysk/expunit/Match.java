@@ -55,5 +55,16 @@ abstract class Match
     {
 	// pass by default.
     }
+
+   /**
+    * Returns the start of the matched pattern.
+    */
+   abstract protected int start();
+
+   /**
+    * Returns the end the matched pattern plus 1.
+    */
+   abstract protected int end();
+
 }
 

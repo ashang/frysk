@@ -205,11 +205,8 @@ public class Expect
 					"{0} match <<{1}>>\n",
 					new Object[] { this, p });
 			    p.execute ();
-			    // FIXME Should remove everying up to and
-			    // including what matched. But Match.end()
-			    // doesn't exist yet...
-			    //if (p.end () >= 0)
-				//output = output.substring (p.end ());
+			    if (p.end () >= 0)
+				output = output.substring (p.end ());
 			    return;
 			}
 		    }

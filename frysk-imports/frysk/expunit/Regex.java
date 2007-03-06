@@ -72,6 +72,15 @@ public class Regex
     {
 	return matcher.group (g);
     }
+
+    /**
+     * Returns the index of the first character of the match.
+     */
+    protected int start()
+    {
+      return matcher.start();
+    }
+
     protected int start (int g)
     {
 	return matcher.start (g);
@@ -80,6 +89,15 @@ public class Regex
     {
 	return matcher.end (g);
     }
+
+    /**
+     * Returns the index after the last character in the match.
+     */
+    protected int end()
+    {
+      return matcher.end();
+    }
+
     public void execute ()
     {
 	// pass by default.

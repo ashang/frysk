@@ -56,4 +56,20 @@ public class Equals
     {
 	return output.startsWith (s);
     }
+
+    /**
+     * Always returns zero (start of string).
+     */
+    protected final int start()
+    {
+      return 0;
+    }
+
+    /**
+     * Always returns length of String matched.
+     */
+    protected final int end()
+    {
+      return s.length();
+    }
 }
