@@ -636,7 +636,7 @@
 	* SourceWindow.java (generateProcStackTrace): Made sure the DOMFrysk gets
 	generated before every Task is stack-traced.
 
-2006-11-06  Nurdin Premji  <npremji@edhat.com>
+2006-11-06  Nurdin Premji  <npremji@redhat.com>
 
 	* SourceWindow.java (unblockProc): Removed requestDeleteTerminatingObserver
 	* SourceWindowFactory.java (unblockProc): Ditto.
@@ -646,7 +646,7 @@
 	* SourceWindow.java (stepIn): Updated ProcBlockObserver unblock call.
 	(step): Ditto.
 
-2006-11-03  Nurdin Premji  <npremji@edhat.com>
+2006-11-03  Nurdin Premji  <npremji@redhat.com>
 
 	* SourceWindow.java (step): Changed to reflect ProcBlockObserver changes.
 	ProcBlockObserver now has a private task observer rather than implementing

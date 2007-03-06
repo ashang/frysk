@@ -1,4 +1,4 @@
-2007-03-06  Nurdin Premji  <npremji@edhat.com>
+2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
 	* Register.java (getBytes): New.
 	* TestLib.java (AttachedAckProcess.AttachedAckProcess): Made public.
@@ -925,7 +925,7 @@
 	thread addeded.
 	* TestProcStopped.java (stopped): Use Child.sendStopXXX.
 	
-2006-11-06  Nurdin Premji  <npremji@edhat.com>
+2006-11-06  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockObserver.java: Ran GNU Formatter.
 	(taskAddFailed): Added.
@@ -939,7 +939,7 @@
 	registers.
 	* IsaX8664.java (IsaX8664): Add floating point and xmm registers.
 
-2006-11-03  Nurdin Premji  <npremji@edhat.com>
+2006-11-03  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockObserver.java: Split the observer into a main Proc observer and a private
 	Task Observer which gets added to each task individually. Allows for better separation

@@ -1,4 +1,4 @@
-2007-03-06  Nurdin Premji  <npremji@edhat.com>
+2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
 	* TestUnwind.java (testPtraceAccessorsProc0): New.
 	(testPtraceAccessorsProcMax): New.

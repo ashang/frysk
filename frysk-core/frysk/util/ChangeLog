@@ -381,7 +381,7 @@
 	* StacktraceObserver: Switched to use String rather than StringBuffer.
 	Testcases show 40% improvement.
 
-2006-11-06  Nurdin Premji  <npremji@edhat.com>
+2006-11-06  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java: Ran GNU Formatter. 
 	(secondaryClone): Changed to use an array for easy updating of regex.
@@ -389,7 +389,7 @@
 	* StacktraceObserver.java: Ran gnu formatter
 	(taskAddFailed): Changed from taskRemoved.
 
-2006-11-03  Nurdin Premji  <npremji@edhat.com>
+2006-11-03  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFStack.java (secondaryThread): Changed to array to hold all different
 	regexs of a secondary thread.
