@@ -1,3 +1,8 @@
+2007-03-07  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* tests/test-async-sig.c (do_backtrace): Limit maximum backtrace depth
+	to 100 iterations; it workarounds FC6 DWARF-broken glibc.
+
 2007-03-02  Nurdin Premji  <npremji@redhat.com>
 
 	* src/elfxx.c (lookup_symbol): Undo previous correction, buf_len is decremented previously.

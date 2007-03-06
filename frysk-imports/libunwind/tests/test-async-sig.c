@@ -54,6 +54,7 @@ do_backtrace (int may_print, int get_proc_name)
   unw_word_t ip, sp, off;
   unw_context_t uc;
   int ret;
+  int depth = 0;
 
   unw_getcontext (&uc);
   if (unw_init_local (&cursor, &uc) < 0)
@@ -92,6 +93,11 @@ do_backtrace (int may_print, int get_proc_name)
 	  panic ("FAILURE: unw_step() returned %d for ip=%lx\n",
 		 ret, (long) ip);
 	}
+      if (depth++ > 100)
+        {
+	  panic ("FAILURE: unw_step() looping over %d iterations\n", depth);
+	  break;
+        }
     }
   while (ret > 0);
 }
