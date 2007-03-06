@@ -339,11 +339,10 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	mkdir -p $$tmpdir ; \
 	$(GCJCOMPILE) -C -d $$tmpdir '$<' || exit 1 ; \
 	classes=`cd $$tmpdir; find * -name \*.class | sed "s/.class//g"` ; \
-        echo "$$classes" ; \
 	for class in $$classes ; do \
 		outputdir=`dirname $$class`; \
 		outputfile=`basename $$class`.h; \
-		echo $$class: $$outputdir/$$outputfile; \
+		echo "$$class => $$outputdir/$$outputfile"; \
 		$(GCJH) -I $$tmpdir -o $$outputdir/$$outputfile \
 			$(GCJHFLAGS) $$class ; \
 	done ; \

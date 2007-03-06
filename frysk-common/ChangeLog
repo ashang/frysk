@@ -1,3 +1,7 @@
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.rules (.java.h): Echo class and header file only once.
+
 2007-03-02  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.rules: Define FRYSK_ASCOMPILE and use instead of
