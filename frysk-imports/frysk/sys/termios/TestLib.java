@@ -87,6 +87,7 @@ public class TestLib
 	    catch (Errno e) {
 		// Don't care.
 	    }
+	    pid.blockingDrain ();
 	}
 	Signal.drain (Sig.CHLD);
     }
@@ -125,7 +126,12 @@ public class TestLib
 	// descriptor on the PTY slave.
 	assertNull ("file descriptor closed so EOF works", fd);
 	StringBuffer output = new StringBuffer ();
-	pid = pty.addDaemon (new String[] { "/bin/stty", "-a" });
+	// Create a child process, ensure that it has exited and hence
+	// that it finished binding to the pty before trying to read
+	// any output.  This assumes that there is sufficient space
+	// for all the stty output in the pty.
+	pid = pty.addChild (new String[] { "/bin/stty", "-a" });
+	pid.blockingDrain ();
 	while (true) {
 	    assertTrue (pty.ready (getTimeoutMilliseconds ()));
 	    int ch = pty.read ();
