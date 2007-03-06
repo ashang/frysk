@@ -110,11 +110,11 @@ public class TestFhd
 // 	e.send ("print long_21\n");
 // 	e.expect ("print.*10.*" + prompt);
 	// float_21
-	e.send ("print float_21\n");
-	e.expect ("print.*1\\.1.*" + prompt);
+	// e.send ("print float_21\n");
+	// e.expect ("print.*1\\.1.*" + prompt);
 	// double_21
-	e.send ("print double_21\n");
-	e.expect ("print.*1\\.2.*" + prompt);
+	// e.send ("print double_21\n");
+	// e.expect ("print.*1\\.2.*" + prompt);
 	// static_int
 	e.send ("print static_int\n");
 	e.expect ("print.*4.*" + prompt);
