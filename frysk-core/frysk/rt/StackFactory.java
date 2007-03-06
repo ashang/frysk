@@ -40,12 +40,27 @@
 
 package frysk.rt;
 
+import lib.unwind.AddressSpace;
+import lib.unwind.Cursor;
 import lib.unwind.FrameCursor;
 import lib.unwind.StackTraceCreator;
 import frysk.proc.Task;
 
 public class StackFactory
 {
+  
+  public static Frame createStackTrace(Task task)
+  {
+    AddressSpace addressSpace = new AddressSpace(lib.unwind.ByteOrder.DEFAULT);
+    StackAccessors accessors = new StackAccessors(task, 
+                                                  lib.unwind.ByteOrder.DEFAULT);
+    
+    Cursor innermost = new Cursor(addressSpace, accessors);
+    
+    Frame innerFrame = new Frame(innermost);
+        
+    return innerFrame;
+  }
   /**
    * Find and return the stack backtrace for the provided task
    * 
