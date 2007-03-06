@@ -1,3 +1,8 @@
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* elf/AT.shjava: Restore.  Partial revert 2007-03-06 removal of
+	directory.
+
 2007-03-06  Mark Wielaard  <mark@klomp.org>
 
 	* eio/ByteBuffer.java (get(byte[],int,int)): Remove unecessary

@@ -1,3 +1,8 @@
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* ElfAT.shjava: Delete file copied from inua; revert 2007-03-06
+	change.
+
 2007-03-06  Mark Wielaard  <mark@klomp.org>
 
 	* ElfAT.shjava: New file. Moved from inua/elf.

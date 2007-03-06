@@ -1,3 +1,7 @@
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Auxv.java: Use inua.elf.AT, revert 2007-03-06 change.
+
 2007-03-06  Mark Wielaard  <mark@klomp.org>
 
 	* Auxv.java: Use lib.elf.ElfAT.
