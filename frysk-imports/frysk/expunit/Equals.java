@@ -46,21 +46,38 @@ package frysk.expunit;
 public class Equals
     extends Match
 {
-    String s;
+    private String s;
     public Equals (String s)
     {
 	this.s = s;
     }
+    /**
+     * Return the string that will be matched.
+     */
+    public String toString ()
+    {
+	return s;
+    }
+    protected int groupCount ()
+    {
+	return 0;
+    }
     protected String group (int g)
     {
+	if (g != 0)
+	    throw new IndexOutOfBoundsException ();
 	return s;
     }
     protected int start (int g)
     {
+	if (g != 0)
+	    throw new IndexOutOfBoundsException ();
 	return 0;
     }
     protected int end (int g)
     {
+	if (g != 0)
+	    throw new IndexOutOfBoundsException ();
 	return s.length ();
     }
     boolean find (String output)

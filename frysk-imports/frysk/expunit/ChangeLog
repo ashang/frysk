@@ -1,5 +1,16 @@
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Equals.java: Check for invalid group index.
+	(toString): New.
+	(s): Make private.
+	* TestEquals.java: New file.
+	* Regex.java (toString): Add.
+	(execute): Delete.
+	* TestRegex.java: New file.
+	* TestExpect.java (testRegexp): Delete, moved to TestRegexp.
+	(testEquals): Delete, moved to TestEquals.
+	(setUp): New, clear "e".
+	
 	* Regex.java: Revert 2007-03-06 and 2007-03-05 changes.
 	* Equals.java: Ditto.
 	* Expect.java: Ditto.

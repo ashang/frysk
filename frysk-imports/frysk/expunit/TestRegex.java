@@ -39,52 +39,76 @@
 
 package frysk.expunit;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import frysk.junit.TestCase;
 
 /**
- * Match the specified input, and remember what matched.  Loosely
- * modeled on the corresponding Java Pattern and Matcher objects.
+ * Test ExpectUnit framework.
  */
-public class Regex
-    extends Match
+
+public class TestRegex
+    extends TestCase
 {
-    private final Pattern pattern;
-    public Regex (String pattern)
+    Expect e;
+    public void setUp ()
     {
-	this.pattern = Pattern.compile (pattern, Pattern.DOTALL);
+	e = null;
     }
+    public void tearDown ()
+    {
+	if (e != null)
+	    e.close ();
+    }
+
     /**
-     * String representing this object - the patter it matches.
+     * Try to match a regular expression, confirm it was correctly
+     * removed by following it with an anchored match.
      */
-    public String toString ()
+    public void testRegex ()
     {
-	return pattern.pattern ();
+	e = new Expect ("tee");
+	e.send ("catchthebi");
+	// Skip "catch", match "the", leaving "bi".
+	e.expect ("the");
+	// Append "rd", making "bird"
+	e.send ("rd");
+	// Match the "bird".
+	e.expect ("bird");
     }
+
     /**
-     * Find the pattern in the output, normally this is an unanchored
-     * match.
+     * Try to match several grouped items.
      */
-    private Matcher matcher;
-    boolean find (String output)
+    public void testGroups ()
     {
-	matcher = pattern.matcher (output);
-	return matcher.find ();
-    }
-    protected int groupCount ()
-    {
-	return matcher.groupCount ();
-    }
-    protected String group (int g)
-    {
-	return matcher.group (g);
-    }
-    protected int start (int g)
-    {
-	return matcher.start (g);
-    }
-    protected int end (int g)
-    {
-	return matcher.end (g);
+	e = new Expect ("tee");
+	e.send ("zzaabbccaa");
+	e.expect (new Regex ("(a+)([bc]+)a+")
+	    {
+		public void execute ()
+		{
+		    // The goal here is to check that Regex is
+		    // correctly wired up to Java's Matcher, and not
+		    // that Matcher is working.  For instance:
+		    // CLASSPATH Matcher might return -1 instead of
+		    // throwing IndexOutOfBoundsException when the
+		    // group isn't valid, that isn't tested here.
+		    assertEquals ("number groups", 2, groupCount ());
+		    assertEquals ("group", "aabbccaa", group ());
+		    assertEquals ("start", 2, start ());
+		    assertEquals ("end", 10, end ());
+
+		    assertEquals ("group 0", "aabbccaa", group (0));
+		    assertEquals ("start 0", 2, start (0));
+		    assertEquals ("end 0", 10, end (0));
+
+		    assertEquals ("group 1", "aa", group (1)); 
+		    assertEquals ("start 1", 2, start (1));
+		    assertEquals ("end 1", 4, end (1));
+
+		    assertEquals ("group 2", "bbcc", group (2)); 
+		    assertEquals ("start 2", 4, start (2));
+		    assertEquals ("end 2", 8, end (2));
+		}
+	    });
     }
 }

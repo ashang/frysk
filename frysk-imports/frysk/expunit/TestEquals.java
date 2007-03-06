@@ -39,52 +39,63 @@
 
 package frysk.expunit;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import frysk.junit.TestCase;
 
 /**
- * Match the specified input, and remember what matched.  Loosely
- * modeled on the corresponding Java Pattern and Matcher objects.
+ * Test ExpectUnit framework.
  */
-public class Regex
-    extends Match
+
+public class TestEquals
+    extends TestCase
 {
-    private final Pattern pattern;
-    public Regex (String pattern)
+    Expect e;
+    public void setUp ()
     {
-	this.pattern = Pattern.compile (pattern, Pattern.DOTALL);
+	e = null;
     }
+    public void tearDown ()
+    {
+	if (e != null)
+	    e.close ();
+    }
+
     /**
-     * String representing this object - the patter it matches.
+     * Try to match a sequence of simple strings.
      */
-    public String toString ()
+    public void testEquals ()
     {
-	return pattern.pattern ();
-    }
-    /**
-     * Find the pattern in the output, normally this is an unanchored
-     * match.
-     */
-    private Matcher matcher;
-    boolean find (String output)
-    {
-	matcher = pattern.matcher (output);
-	return matcher.find ();
-    }
-    protected int groupCount ()
-    {
-	return matcher.groupCount ();
-    }
-    protected String group (int g)
-    {
-	return matcher.group (g);
-    }
-    protected int start (int g)
-    {
-	return matcher.start (g);
-    }
-    protected int end (int g)
-    {
-	return matcher.end (g);
+	e = new Expect (new String[] { "/bin/echo", "catdog" });
+	e.expect (new Equals ("cat"));
+	e.expect (new Equals ("dog")
+	    {
+		public void execute ()
+		{
+		    assertEquals ("group count", 0, groupCount ());
+		    assertEquals ("group", "dog", group ());
+		    assertEquals ("start", 0, start ());
+		    assertEquals ("end", 3, end ());
+		    assertEquals ("group 0", "dog", group (0));
+		    assertEquals ("start 0", 0, start (0));
+		    assertEquals ("end 0", 3, end (0));
+		    try {
+			group (1);
+			fail ("group 1");
+		    }
+		    catch (IndexOutOfBoundsException e) {
+		    }
+		    try {
+			start (1);
+			fail ("start 1");
+		    }
+		    catch (IndexOutOfBoundsException e) {
+		    }
+		    try {
+			end (1);
+			fail ("end 1");
+		    }
+		    catch (IndexOutOfBoundsException e) {
+		    }
+		}
+	    });
     }
 }

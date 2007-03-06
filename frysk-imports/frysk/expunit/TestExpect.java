@@ -51,6 +51,10 @@ public class TestExpect
     extends TestCase
 {
     Expect e;
+    public void setUp ()
+    {
+	e = null;
+    }
     public void tearDown ()
     {
 	if (e != null)
@@ -81,32 +85,6 @@ public class TestExpect
 	}
 	long newTime = System.currentTimeMillis ();
 	assertTrue ("time passed", newTime > oldTime);
-    }
-
-    /**
-     * Try to match a sequence of simple strings.
-     */
-    public void testEquals ()
-    {
-	e = new Expect (new String[] { "/bin/echo", "catdog" });
-	e.expect (new Equals ("cat"));
-	e.expect (new Equals ("dog"));
-    }
-
-    /**
-     * Try to match a regular expression, confirm it was correctly
-     * removed by following it with an anchored match.
-     */
-    public void testRegex ()
-    {
-	e = new Expect ("tee");
-	e.send ("catchthebi");
-	// Skip "catch", match "the", leaving "bi".
-	e.expect ("the");
-	// Append "rd", making "bird"
-	e.send ("rd");
-	// Match the "bird".
-	e.expect ("bird");
     }
 
     /**
