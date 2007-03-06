@@ -65,48 +65,48 @@ public class TestUnwind
      Cursor cursor = new Cursor(addr, new Accessors(){
 
       //@Override
-      protected int accessFPReg (int regnum, byte[] fpvalp, boolean write)
+      public int accessFPReg (int regnum, byte[] fpvalp, boolean write)
       {
         return 0;
       }
 
 //    @Override 
-      protected int accessMem (long addr, byte[] valp, boolean write)
+      public int accessMem (long addr, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      protected int accessReg (int regnum, byte[] valp, boolean write)
+      public int accessReg (int regnum, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      protected ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
+      public ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
       {
         return null;
       }
 
       //@Override
-      protected int getDynInfoListAddr (byte[] dilap)
+      public int getDynInfoListAddr (byte[] dilap)
       {
         return 0;
       }
 
       //@Override
-      protected ProcName getProcName (long addr, int maxNameSize)
+      public ProcName getProcName (long addr, int maxNameSize)
       {
         return null;
       }
 
       //@Override
-      protected void putUnwindInfo (ProcInfo procInfo)
+      public void putUnwindInfo (ProcInfo procInfo)
       {
       }
 
       //@Override
-      protected int resume (Cursor cursor)
+      public int resume (Cursor cursor)
       {
         return 0;
       }

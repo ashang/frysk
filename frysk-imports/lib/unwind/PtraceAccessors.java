@@ -46,17 +46,17 @@ public class PtraceAccessors
     extends Accessors
 {
   Logger logger = Logger.getLogger("frysk");
-  protected final RawData ptArgs;
+  public final RawData ptArgs;
   
   private native RawData createPtArg (int pid);
   
-  protected final RawData addressSpace;
+  public final RawData addressSpace;
   
   private native RawData createAddressSpace(ByteOrder byteOrder);
 
-  native protected void finalize();
+  native public void finalize();
   
-  protected PtraceAccessors (int pid, ByteOrder byteOrder) 
+  public PtraceAccessors (int pid, ByteOrder byteOrder) 
   {
     this.addressSpace = createAddressSpace(byteOrder);
     ptArgs = createPtArg(pid);  
@@ -67,28 +67,28 @@ public class PtraceAccessors
   native public static int detachXXX(int pid);
   
   //@Override
-  protected native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+  public native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
   //@Override
-  protected native int accessMem (long addr, byte[] valp, boolean write);
+  public native int accessMem (long addr, byte[] valp, boolean write);
 
   //@Override
-  protected native int accessReg (int regnum, byte[] valp, boolean write);
+  public native int accessReg (int regnum, byte[] valp, boolean write);
 
   //@Override
-  protected native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+  public native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
 
   //@Override
-  protected native int getDynInfoListAddr (byte[] dilap);
+  public native int getDynInfoListAddr (byte[] dilap);
 
   //@Override
-  protected native ProcName getProcName (long addr, int maxNameSize);
+  public native ProcName getProcName (long addr, int maxNameSize);
 
   //@Override
-  protected native void putUnwindInfo (ProcInfo procInfo);
+  public native void putUnwindInfo (ProcInfo procInfo);
 
   //@Override
-  protected native int resume (Cursor cursor);
+  public native int resume (Cursor cursor);
   
   
 }

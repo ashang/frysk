@@ -1,5 +1,9 @@
 2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
+	* Accessors.java: Made methods public.
+	* PtraceAccessors.java: Ditto.
+	* TestUnwind.java (testCreateCursor): Ditto.
+
 	* TestUnwind.java (testPtraceAccessorsProc0): New.
 	(testPtraceAccessorsProcMax): New.
 	(testPtraceAccessorsSmallMaxName): New.
