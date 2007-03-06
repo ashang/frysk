@@ -39,17 +39,27 @@
 
 package frysk.gui.monitor.eventviewer;
 
-import frysk.gui.monitor.GuiTask;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
 
-public class TaskTimeLine extends TimeLine
+import frysk.gui.monitor.GuiTask;
+import frysk.gui.srcwin.SourceWindowFactory;
+
+public class TaskTimeLine extends TimeLine implements MouseListener
 {
 
   private GuiTask guiTask;
-
+  
+  private static SizeGroup taskTimeLineSizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
+  
   public TaskTimeLine (GuiTask guiTask, TimeLineSelectionManager manager)
   {
     super(""+guiTask.getTask().getTid(), manager);
     this.guiTask = guiTask;
+    addToTaskTimeLineSizeGroup(this);
+    this.addListener((MouseListener)this);
   }
 
   public boolean ownsEvent (Event event)
@@ -61,4 +71,19 @@ public class TaskTimeLine extends TimeLine
   {
     return this.guiTask;
   }
+  
+  public static void addToTaskTimeLineSizeGroup(TaskTimeLine timeLine){
+    taskTimeLineSizeGroup.addWidget(timeLine);
+  }
+  
+  public boolean mouseEvent(MouseEvent event){
+    super.mouseEvent(event);
+    
+    if(event.getClickType() == MouseEvent.DOUBLE_CLICK){
+      SourceWindowFactory.createSourceWindow(this.getGuiTask().getTask().getProc());
+    }
+    
+    return false;
+  }
+  
 }

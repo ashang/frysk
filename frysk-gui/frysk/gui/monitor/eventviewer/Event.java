@@ -43,12 +43,15 @@ import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.GdkCairo;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class Event extends EventViewerWidget
+public class Event extends GuiObject
 {
  
+  boolean selected;
+  
   String label;
   GuiTask guiTask;
   ObserverRoot observer;
@@ -56,28 +59,38 @@ public class Event extends EventViewerWidget
   
   private int textSlant;
   
+  private int x,y;
+  public static int w,h;
+  
+  static{
+    w = 3;
+    h = 10;
+  }
+  
   public Event(String name, String tooltip, GuiTask guiTask, ObserverRoot observer){
     super(name, tooltip);
   
     this.guiTask = guiTask;
     this.label = new String();
     this.textSlant = 25;
+    
+    this.selected = false;
   }
   
   public GuiTask getGuiTask(){
-    return this.guiTask;
+    return this.guiTask;    
   }
   
-//  /**
-//   * Returns weather this evet is associated with the given GuiObject
-//   * @param object the object to check the association of.
-//   * @return true of the event is assoicated with the given object, false
-//   * other wise.
-//   */
-//  public boolean belongs(GuiObject object){
-//    return (object == this.guiTask);
-//  }
-
+  public void select(){
+    EventManager.theManager.eventSelected(this);
+    this.selected = true;
+  }
+  
+  public void unselect(){
+    EventManager.theManager.eventUnselected(this);
+    this.selected = false;
+  }
+  
   public ObserverRoot getObserver(){
     return this.observer;
   }
@@ -86,16 +99,13 @@ public class Event extends EventViewerWidget
   {
     cairo.save();
     
-    cairo.setSourceColor(Color.BLUE);
-//    cairo.moveTo(x, y);
-//    cairo.relLineTo(0,0);
-//    cairo.relLineTo(width,0);
-//    cairo.relLineTo(width,height+20);
-//    cairo.relLineTo(0,height+20);
-//    cairo.closePath();
-//    cairo.fill();
+    if(this.selected){
+      cairo.setSourceColor(Color.RED);
+    }else{
+      cairo.setSourceColor(Color.BLUE);
+    }
     
-    cairo.rectangle(new Point(this.getX(),this.getY()), new Point(this.getX()+this.getWidth(), this.getY()+this.getHeight()));
+    cairo.rectangle(new Point(this.getX(),this.getY()), new Point(this.getX()+ getWidth(), this.getY()+ getHeight()));
     
     cairo.fill();
     
@@ -125,4 +135,31 @@ public class Event extends EventViewerWidget
   public int getIndex(){
     return this.index;
   }
+  
+  public void setXY(int x, int y){
+    this.x = x;
+    this.y = y;
+  }
+  
+  public static void setSize(int w, int h){
+    Event.w = w;
+    Event.h = h;
+  }
+  
+  public static int getWidth(){
+    return w;
+  }
+  
+  public static int getHeight(){
+    return h;
+  }
+  
+  public int getX (){
+    return x;
+  }
+
+  public int getY (){
+    return y;
+  }
+
 }

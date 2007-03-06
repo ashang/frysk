@@ -42,9 +42,13 @@ package frysk.gui.monitor.eventviewer;
 import java.util.Iterator;
 
 import org.gnu.gdk.GdkCairo;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.event.ExposeEvent;
+import org.gnu.gtk.event.MouseEvent;
 
 import frysk.gui.monitor.GuiProc;
+import frysk.gui.srcwin.SourceWindowFactory;
 
 public class ProcTimeLine extends TimeLine
 {
@@ -52,25 +56,27 @@ public class ProcTimeLine extends TimeLine
   private static final int MINIMUM_HEIGHT = 50;
   private GuiProc guiProc;
 
+  private static SizeGroup procTimeLineSizeGroup = new SizeGroup(SizeGroupMode.VERTICAL);
+  
   public ProcTimeLine (GuiProc guiProc, TimeLineSelectionManager manager)
   {
     super(guiProc.getExecutableName()+ " " + guiProc.getProc().getPid(), manager);
     this.guiProc = guiProc;
-    
+    addToProcTimeLineSizeGroup(this);
   }
 
   protected TimeLineDrawingArea getTimeLineDrawingArea(){
     return new ProcTimeLineDrawingArea();
   }
   
-  private GuiProc getProc ()
+  private GuiProc getGuiProc ()
   {
     return this.guiProc;
   }
 
   public boolean ownsEvent (Event event)
   {
-    return event.getGuiTask().getTask().getProc().getPid() == this.getProc().getProc().getPid();
+    return event.getGuiTask().getTask().getProc().getPid() == this.getGuiProc().getProc().getPid();
   }
 
   
@@ -107,4 +113,18 @@ public class ProcTimeLine extends TimeLine
 
   }
 
+  public static void addToProcTimeLineSizeGroup(ProcTimeLine timeLine){
+    procTimeLineSizeGroup.addWidget(timeLine);
+  }
+  
+  public boolean mouseEvent(MouseEvent event){
+    super.mouseEvent(event);
+    
+    if(event.getClickType() == MouseEvent.DOUBLE_CLICK){
+      SourceWindowFactory.createSourceWindow(this.getGuiProc().getProc());
+    }
+    
+    return false;
+  }
+  
 }

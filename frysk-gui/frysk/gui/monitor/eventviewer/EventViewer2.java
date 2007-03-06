@@ -47,8 +47,6 @@ import org.gnu.gtk.Adjustment;
 import org.gnu.gtk.AttachOptions;
 import org.gnu.gtk.HScrollBar;
 import org.gnu.gtk.Label;
-import org.gnu.gtk.SizeGroup;
-import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.VScrollBar;
 import org.gnu.gtk.Viewport;
@@ -74,8 +72,6 @@ public class EventViewer2 extends Table {
   
   private Session currentSession;
   
-  SizeGroup lablesSizeGroup;
-  
   TimeLineSelectionManager timeLineSelectionManager;
   
   public EventViewer2(){
@@ -84,9 +80,8 @@ public class EventViewer2 extends Table {
     
         this.timeLineSelectionManager = new TimeLineSelectionManager();
         
-        this.lablesSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
         Label spacerLabel = new Label("");
-        this.lablesSizeGroup.addWidget(spacerLabel);
+        TimeLine.addToLabelsSizeGroup(spacerLabel);
         
         vScrollBar = new VScrollBar((Adjustment)null);
         hScrollBar = new HScrollBar((Adjustment)null);

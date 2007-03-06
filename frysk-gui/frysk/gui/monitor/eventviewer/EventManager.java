@@ -39,6 +39,8 @@
 
 package frysk.gui.monitor.eventviewer;
 
+import java.util.Iterator;
+
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -48,35 +50,69 @@ import frysk.gui.monitor.observers.ObserverRoot;
  * and the timeline's.
  * TimeLine widgets are to iterate over this list to find out which events
  * belongs to them. This way a global index of an event can be kept, mapping of
- * event to TimeLine is easyer, and event objects can be shared by different
+ * event to TimeLine is easier, and event objects can be shared by different
  * TimeLines.
  */
 public class EventManager
 {
   public static EventManager theManager = new EventManager();
   
+  private ObservableLinkedList selectedEvents;
   private ObservableLinkedList eventsList;
   int index;
+
+  private boolean allowMultipleSelection;
   
   private EventManager(){
+    this.allowMultipleSelection = false;
     this.eventsList = new ObservableLinkedList();
+    this.selectedEvents = new ObservableLinkedList();
     this.index = 0;
   }
   
   public void addEvent(Event event){
-    
-    event.setSize(event.getWidth()*index, 0, 2, 10);
-
     event.setIndex(index);
     eventsList.add(event);
     index++;
   }
  
-  
   public synchronized ObservableLinkedList getEventsList(){
     return this.eventsList;
   }
+  
   public void observerAdded(GuiTask guiTask, ObserverRoot observer){}
   public void observerRemoved(GuiTask guiTask, ObserverRoot observer){}
+
+  public Event eventAtIndex (int index)
+  {
+    if(index < eventsList.size()){
+      return (Event) this.eventsList.get(index);
+    }else{
+      return null;
+    }
+  }
+  
+  public void eventSelected(Event event){
+    if(!this.allowMultipleSelection){
+      this.unselectAll();
+    }
+    this.selectedEvents.add(event);
+  }
+  
+  public void eventUnselected(Event event){
+    this.selectedEvents.remove(event);
+  }
+  
+  private void unselectAll(){
+    Iterator iterator = this.selectedEvents.iterator();
+    while(iterator.hasNext()){
+      Event event = (Event) iterator.next();
+      event.unselect();
+    }
+  }
+  
+  public ObservableLinkedList getSelectedEvents(){
+    return this.selectedEvents;
+  }
   
 }

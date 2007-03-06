@@ -41,6 +41,8 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
@@ -71,7 +73,6 @@ public abstract class TimeLine
   public final GuiObservable selected;
   public final GuiObservable unSelected;
   
-  static int eventIndentation = 0;
   static int eventSpacing = 30;
   
   private static SizeGroup labelsSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
@@ -112,6 +113,17 @@ public abstract class TimeLine
     this.packStart(viewport,true,true,0);
    
     manager.addTimeLine(this);
+    
+    Observer selectionObserver = new Observer(){
+      public void update (Observable observable, Object obj)
+      {
+        if(ownsEvent((Event) obj)){
+          draw();
+        }
+      }
+    }; 
+    EventManager.theManager.getSelectedEvents().itemAdded.addObserver(selectionObserver);
+    EventManager.theManager.getSelectedEvents().itemRemoved.addObserver(selectionObserver);
   }
   
   public void setHAdjustment(Adjustment adjustment){
@@ -122,7 +134,7 @@ public abstract class TimeLine
     return new TimeLineDrawingArea();
   }
   
-  protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener{
+  protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener, MouseListener{
  
     public TimeLineDrawingArea ()
     {
@@ -135,7 +147,7 @@ public abstract class TimeLine
       
       
       this.addListener((ExposeListener)this);
-    
+      this.addListener((MouseListener) this);
       this.setEvents(EventMask.ALL_EVENTS_MASK);
           
       this.setMinimumSize(0 , MINIMUM_HEIGHT);
@@ -144,6 +156,26 @@ public abstract class TimeLine
     public int getMinimumHeight ()
     {
       return MINIMUM_HEIGHT;
+    }
+
+    /**
+     * Given x and y coordinates returns the Event which
+     * has been drawn there.
+     */
+    private Event xy2Event(double x, double y){
+      int index = (int) ((x)/(Event.getWidth() + eventSpacing));
+      return EventManager.theManager.eventAtIndex(index);
+    }
+    
+    public boolean mouseEvent (MouseEvent mouseEvent)
+    {
+      if(mouseEvent.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+        Event event = this.xy2Event(mouseEvent.getX(), mouseEvent.getY());
+        if(event != null && ownsEvent(event)){
+          event.select();
+        }
+      }
+      return false;
     }
 
     public boolean exposeEvent(ExposeEvent exposeEvent) {
@@ -165,7 +197,7 @@ public abstract class TimeLine
       cairo.save();
       
       // line
-      cairo.setLineWidth(0.2);
+      cairo.setLineWidth(0.5);
       cairo.setSourceColor(Color.BLACK);
 
       cairo.moveTo(x, y+h-1);
@@ -186,9 +218,9 @@ public abstract class TimeLine
           Event event = (Event) iterator.next();
           
           if(TimeLine.this.ownsEvent(event)){
-            eventX = x + eventIndentation + (event.getIndex())*(event.getWidth() + eventSpacing) + eventSpacing;
-            eventY = y + h - event.getHeight();
-            event.setSize(eventX, eventY, event.getWidth(), event.getHeight());
+            eventX = x + eventSpacing/2 + (event.getIndex())*(Event.getWidth() + eventSpacing);
+            eventY = y + h - Event.getHeight();
+            event.setXY(eventX, eventY);
             event.draw(cairo);
           }
         }

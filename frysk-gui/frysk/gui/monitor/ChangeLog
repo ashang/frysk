@@ -1,3 +1,17 @@
+2007-03-06  sami wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Added code to translate click coordinates
+	to events.
+	* eventviewer/ProcTimeLine.java: Now pops up a source window upong
+	double click.
+	* eventviewer/TaskTimeLine.java: Ditto.
+	* eventviewer/EventViewerWidget.java: Removed getX, and getY.
+	* eventviewer/EventViewer2.java: Removed lablesSizeGroup, and used
+	TimeLine static SizeGroup instead.
+	* eventviewer/EventManager.java: Added management for globally
+	setting/getting what event(s) are selected
+	* eventviewer/Event.java: Added Selection handling.
+
 2007-03-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/BoxList.java: Removed.
