@@ -1,5 +1,11 @@
 2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
+	* StackAccessors.java: Have a PtraceAccessor component instead of extending
+	PtraceAccessors.
+	Made all methods public.
+	Added unimplemented Accessors methods.
+	* Testframe.java: Remove unused commented code.
+
 	* TestFrame.java: New. 
 	* Frame.java: New.
 	* StackAccessors.java: New.

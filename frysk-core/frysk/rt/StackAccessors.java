@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.rt;
 
 import java.math.BigInteger;
@@ -45,25 +46,33 @@ import java.util.logging.Level;
 
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.sys.Execute;
 
+import lib.unwind.Accessors;
+import lib.unwind.Cursor;
+import lib.unwind.ProcInfo;
+import lib.unwind.ProcName;
 import lib.unwind.PtraceAccessors;
 import lib.unwind.ByteOrder;
 
 public class StackAccessors
-    extends PtraceAccessors
+    extends Accessors
 {
 
+  PtraceAccessors ptraceAccessors;
+
   Task myTask;
-  
+
   Logger logger = Logger.getLogger("frysk");
-  StackAccessors(Task task, ByteOrder byteOrder)
+
+  StackAccessors (Task task, ByteOrder byteOrder)
   {
-    super(task.getProc().getPid(), byteOrder);
+    ptraceAccessors = new PtraceAccessors(task.getProc().getPid(), byteOrder);
     myTask = task;
   }
 
-  //@Override
-  protected int accessMem (long addr, byte[] valp, boolean write)
+  // @Override
+  public int accessMem (long addr, byte[] valp, boolean write)
   {
     logger.log(Level.FINE, "Libunwind: reading memory at 0x{0}\n",
                Long.toHexString(addr));
@@ -73,46 +82,162 @@ public class StackAccessors
       {
       case 4:
         logger.log(Level.FINEST, "In wordSize case: 4\n");
-       myTask.getMemory().get(addr, valp, 0, valp.length);
+        myTask.getMemory().get(addr, valp, 0, valp.length);
         break;
       case 8:
         logger.log(Level.FINEST, "In wordsize case: 8\n");
-       myTask.getMemory().get(addr, valp, 0, valp.length);
+        myTask.getMemory().get(addr, valp, 0, valp.length);
         break;
       default:
         logger.log(Level.FINEST, "In wordSize case: default\n");
         throw new RuntimeException("Not implemented for this word length yet");
       }
-    
-    logger.log(Level.FINE, "accessMem: read value: 0x{0}\n",  
+
+    logger.log(Level.FINE, "accessMem: read value: 0x{0}\n",
                Long.toHexString(new BigInteger(valp).longValue()));
-    
+
     return 0;
   }
 
-  //@Override
-  protected int accessFPReg (int regnum, byte[] fpvalp, boolean write)
+  // @Override
+  public int accessFPReg (int regnum, byte[] fpvalp, boolean write)
   {
-    return super.accessFPReg(regnum, fpvalp, write);
+    // XXX: TODO.
+    return 0;
   }
 
-  //@Override
-  protected int accessReg (int regnum, byte[] valp, boolean write)
+  // @Override
+  public int accessReg (int regnum, byte[] valp, boolean write)
   {
     Isa isa = myTask.getIsa();
     String registerName = isa.getRegisterNameByUnwindRegnum(regnum);
-    logger.log(Level.FINE, "Libunwind: reading from register {0}, regnum: {1}\n",
-               new Object[] {registerName, new Long(regnum)});
-    
+    logger.log(Level.FINE,
+               "Libunwind: reading from register {0}, regnum: {1}\n",
+               new Object[] { registerName, new Long(regnum) });
+
     byte[] tmp = isa.getRegisterByName(registerName).getBytes(myTask);
-   
+
     for (int i = 0; i < tmp.length; i++)
       valp[i] = tmp[i];
-    
-    logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",  
+
+    logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
                Long.toHexString(new BigInteger(valp).longValue()));
-    
+
     return 0;
   }
-  
+
+  // @Override
+  public ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
+  {
+    // Need to tell ptrace thread to perform the findProcInfo operation.
+    class ExecuteFindProc
+        implements Execute
+    {
+      ProcInfo procInfo;
+      long ip;
+      boolean needUnwindInfo;
+      
+      ExecuteFindProc (long ip, boolean needUnwindInfo)
+      {
+        this.ip = ip;
+        this.needUnwindInfo = needUnwindInfo;
+      }
+      
+      public void execute ()
+      {
+        procInfo = ptraceAccessors.findProcInfo(ip, needUnwindInfo);
+      }
+    }
+    ExecuteFindProc executer = new ExecuteFindProc(ip, needUnwindInfo);
+    frysk.sys.Ptrace.requestExecute(executer);
+    return executer.procInfo;
+  }
+
+  // @Override
+  public int getDynInfoListAddr (byte[] dilap)
+  {
+    // Need to tell ptrace thread to perform the findProcInfo operation.
+    class ExecuterGetDyn
+        implements Execute
+    {
+      int ret;
+
+      byte[] dilap;
+
+      public void execute ()
+      {
+        ret = ptraceAccessors.getDynInfoListAddr(dilap);
+      }
+
+      public ExecuterGetDyn (byte[] dilap)
+      {
+        this.dilap = dilap;
+      }
+    }
+    ExecuterGetDyn executer = new ExecuterGetDyn(dilap);
+    frysk.sys.Ptrace.requestExecute(executer);
+    return executer.ret;
+  }
+
+  // @Override
+  public ProcName getProcName (long addr, int maxNameSize)
+  {
+    // Need to tell ptrace thread to perform the findProcInfo operation.
+    class ExecuteGetProcName
+        implements Execute
+    {
+      ProcName procName;
+      long addr;
+      int maxNameSize;
+      
+      ExecuteGetProcName (long addr, int maxNameSize)
+      {
+        this.addr = addr;
+        this.maxNameSize = maxNameSize;
+      }
+      
+      public void execute ()
+      {
+        procName = ptraceAccessors.getProcName(addr, maxNameSize);
+      }
+    }
+    ExecuteGetProcName executer = new ExecuteGetProcName(addr, maxNameSize);
+    frysk.sys.Ptrace.requestExecute(executer);
+    return executer.procName;
+  }
+
+  // @Override
+  public void putUnwindInfo (final ProcInfo procInfo)
+  {
+    // Need to tell ptrace thread to perform the findProcInfo operation.
+    class ExecutePutUnwind
+        implements Execute
+    {
+      public void execute ()
+      {
+        ptraceAccessors.putUnwindInfo(procInfo);
+      }
+    }
+    frysk.sys.Ptrace.requestExecute(new ExecutePutUnwind());
+  }
+
+  // @Override
+  public int resume (final Cursor cursor)
+  {
+    // Need to tell ptrace thread to perform the findProcInfo operation.
+    class ExecuteResume
+        implements Execute
+    {
+      int ret;
+
+      public void execute ()
+      {
+        ret = ptraceAccessors.resume(cursor);
+      }
+    }
+    ExecuteResume executer = new ExecuteResume();
+    frysk.sys.Ptrace.requestExecute(executer);
+    return executer.ret;
+  }
+
 }

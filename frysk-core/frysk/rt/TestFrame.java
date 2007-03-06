@@ -58,25 +58,6 @@ public class TestFrame
   public void testAttached()
   {
     
-//    Manager.host.requestFindProc(new ProcId(22013), new Host.FindProc(){
-//
-//      public void procFound (ProcId procId)
-//      {
-//        Manager.eventLoop.requestStop();
-//      }
-//
-//      public void procNotFound (ProcId procId, Exception e)
-//     {
-//        fail();
-//      }
-//      
-//    });
-//  
-//   assertRunUntilStop("Finding proc");
-//   Proc proc = Manager.host.getProc(new ProcId(22013));
-//   
-//   Task mainTask =  proc.getMainTask();
-    
     AckProcess ackProc = new AttachedAckProcess();
     
     Task mainTask = ackProc.findTaskUsingRefresh(true);
