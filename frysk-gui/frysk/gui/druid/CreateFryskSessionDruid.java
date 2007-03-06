@@ -273,7 +273,7 @@ public class CreateFryskSessionDruid
     saveButton.setSensitive(true);
     editSession = true;
     oldSessionName = currentSession.getName();
-    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Processes</b> to monitor");
     warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
     editSession = true;
     unFilterData();
@@ -359,7 +359,7 @@ public class CreateFryskSessionDruid
     saveButton.setSensitive(false);
     loadSession = true;
     oldSessionName = currentSession.getName();
-    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+    warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Processes</b> to monitor");
     warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
     unFilterData();
     filterDataInSession();

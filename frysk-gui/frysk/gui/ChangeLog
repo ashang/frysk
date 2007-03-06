@@ -1,3 +1,7 @@
+2007-03-06  Mike Cvet  <mcvet@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java: Removed references to "process groups".
+
 2007-03-06  sami wagiaalla  <swagiaal@redhat.com>
 
 	* gladedir/procpop.glade: Added a toolbar to the main window.
