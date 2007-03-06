@@ -1,5 +1,12 @@
 2007-03-06  Mark Wielaard  <mark@klomp.org>
 
+	* eio/ByteBuffer.java (get(byte[],int,int)): Remove unecessary
+	long cast.
+	(wrap,allocate,allocateDirect): Remove unimplemented and unused
+	methods.
+
+2007-03-06  Mark Wielaard  <mark@klomp.org>
+
 	* elf/*: Removed.
 	* dwarf/*: Removed.
 	* util/readelf.java: Removed.

@@ -294,30 +294,6 @@ public abstract class ByteBuffer
     cursor += len;
   }
 
-  public static ByteBuffer allocateDirect (long capacity)
-      throws IllegalArgumentException
-  {
-    return wrap(new byte[(int) capacity]);
-  }
-
-  public static ByteBuffer allocate (long capacity)
-      throws IllegalArgumentException
-  {
-    return allocateDirect(capacity);
-  }
-
-  public static ByteBuffer wrap (byte[] bytes, long off, long len)
-      throws IndexOutOfBoundsException
-  {
-    // return new ByteArrayBuffer (bytes, off, len);
-    return null;
-  }
-
-  public static ByteBuffer wrap (byte[] bytes)
-  {
-    return wrap(bytes, 0, bytes.length);
-  }
-
   /**
    * Given BUFFER, return a new subBuffer. Used by {@link #slice}.
    */
@@ -362,7 +338,7 @@ public abstract class ByteBuffer
   public ByteBuffer get (byte[] dst, int off, int len)
       throws BufferUnderflowException
   {
-    if (ULong.GT((long)len, remaining()))
+    if (ULong.GT(len, remaining()))
       throw new BufferUnderflowException();
     peek(cursor, dst, off, len);
     cursor += len;
