@@ -56,7 +56,7 @@ public class PtraceAccessors
 
   native protected void finalize();
   
-  PtraceAccessors (int pid, ByteOrder byteOrder) 
+  protected PtraceAccessors (int pid, ByteOrder byteOrder) 
   {
     this.addressSpace = createAddressSpace(byteOrder);
     ptArgs = createPtArg(pid);  
@@ -67,28 +67,28 @@ public class PtraceAccessors
   native public static int detachXXX(int pid);
   
   //@Override
-  native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+  protected native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
   //@Override
-  native int accessMem (long addr, byte[] valp, boolean write);
+  protected native int accessMem (long addr, byte[] valp, boolean write);
 
   //@Override
-  native int accessReg (int regnum, byte[] valp, boolean write);
+  protected native int accessReg (int regnum, byte[] valp, boolean write);
 
   //@Override
-  native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+  protected native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
 
   //@Override
-  native int getDynInfoListAddr (byte[] dilap);
+  protected native int getDynInfoListAddr (byte[] dilap);
 
   //@Override
-  native ProcName getProcName (long addr, int maxNameSize);
+  protected native ProcName getProcName (long addr, int maxNameSize);
 
   //@Override
-  native void putUnwindInfo (ProcInfo procInfo);
+  protected native void putUnwindInfo (ProcInfo procInfo);
 
   //@Override
-  native int resume (Cursor cursor);
+  protected native int resume (Cursor cursor);
   
   
 }

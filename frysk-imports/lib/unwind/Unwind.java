@@ -62,6 +62,8 @@ public abstract class Unwind
   
   abstract int getRegister(RawDataManaged cursor, int regNum,
                            RawDataManaged word);
+  
+  abstract RawDataManaged copyCursor(RawDataManaged cursor);
  /*
   int unw_getcontext(unw_context_t *);
   int unw_init_local(unw_cursor_t *, unw_context_t *);

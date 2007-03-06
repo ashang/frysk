@@ -37,60 +37,64 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.unwind;
+#include <libunwind.h>
 
-import gnu.gcj.RawDataManaged;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+#include <gcj/cni.h>
 
-public class Cursor
+#include "gnu/gcj/RawData.h"
+
+#include "lib/unwind/ProcInfo.h"
+
+jlong
+lib::unwind::ProcInfo::getStartIP()
 {
-  Logger logger = Logger.getLogger("frysk");
-  RawDataManaged cursor = null; 
-  Unwind unwinder;
+	return (jlong) ((unw_proc_info_t *) procInfo)->start_ip;
+}
 
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
-  {
-    this(addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
-         addressSpace.unwinder); 
-  }
-  
-  private Cursor(RawDataManaged cursor, Unwind unwinder)
-  {
-    logger.log(Level.FINE, "{0} Create Cursor\n", this);
-    this.cursor = cursor;
-    this.unwinder = unwinder;
-  }
-  
-  public boolean isSignalFrame()
-  {
-    return (unwinder.isSignalFrame(cursor) == 1);
-  }
-  
-  public int step()
-  {
-    return unwinder.step(cursor);
-  }
-  
-  public ProcName getProcName(int maxNameSize)
-  {
-    return unwinder.getProcName(cursor, maxNameSize);
-  }
-  
-  public Cursor unwind()
-  {
-    logger.log(Level.FINE, "{0}, unwind");
-    Cursor newCursor = new Cursor(unwinder.copyCursor(cursor), unwinder);
-    int step = newCursor.step();
-    
-    logger.log(Level.FINEST, "{0}, unwind, step returned: {1}", 
-               new Object[] {this, new Integer(step)});
-    
-    if (step > 0)
-      return newCursor;
-       
-    return null;
-  }
- 
-  
+jlong
+lib::unwind::ProcInfo::getEndIP()
+{
+	return (jlong) ((unw_proc_info_t *) procInfo)->end_ip;
+}
+
+jlong
+lib::unwind::ProcInfo::getLSDA()
+{
+	return (jlong) ((unw_proc_info_t *) procInfo)->lsda;
+}
+
+jlong
+lib::unwind::ProcInfo::getHandler()
+{
+	return (jlong) ((unw_proc_info_t *) procInfo)->handler;
+}
+
+jlong
+lib::unwind::ProcInfo::getGP()
+{
+	return (jlong) ((unw_proc_info_t *) procInfo)->gp;
+}
+
+jlong
+lib::unwind::ProcInfo::getFlags()
+{
+	return (jlong) ((unw_proc_info_t *) procInfo)->flags;
+}
+
+jint
+lib::unwind::ProcInfo::getFormat()
+{
+	return (jint) ((unw_proc_info_t *) procInfo)->format;
+}
+
+jint
+lib::unwind::ProcInfo::getUnwindInfoSize()
+{
+	return (jint) ((unw_proc_info_t *) procInfo)->unwind_info_size;
+}
+
+gnu::gcj::RawData*
+lib::unwind::ProcInfo::getUnwindInfo()
+{
+	return (gnu::gcj::RawData *) ((unw_proc_info_t *) procInfo)->unwind_info;
 }

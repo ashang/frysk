@@ -40,26 +40,37 @@
 package lib.unwind;
 
 import gnu.gcj.RawData;
+import gnu.gcj.RawDataManaged;
 
 public class ProcInfo
 {
+  RawDataManaged procInfo;
+  
   int error;
-  long startIP;
-  long endIP;
-  long lsda;
-  long handler;
-  long gp;
-  long flags;
-  int format;
-  int unwindInfoSize;
-    
-  RawData unwindInfo;
+  
+  native long getStartIP();
+  native long getEndIP();
+  native long getLSDA();
+  native long getHandler();
+  native long getGP();
+  native long getFlags();
+  
+  native int getFormat();
+  native int getUnwindInfoSize();
+  native RawData getUnwindInfo();
+  
+  ProcInfo(int error, RawDataManaged procInfo)
+  {
+    this.error = error;
+    this.procInfo = procInfo; 
+  }
   
   public String toString()
   {
-    return "ProcInfo Error " + error + " startIP: " + startIP + " endIP: " + endIP + " lsda: " 
-    + lsda + " handler: " + handler + " gp: " + gp + " flags: " + flags 
-    + " format: " + format + " unwindInfoSize: " + unwindInfoSize 
-    + " hasUnwindInfo?: " + (unwindInfo != null);
+    return "ProcInfo Error " + error + " startIP: " + getStartIP() 
+    + " endIP: " + getEndIP() + " lsda: " + getLSDA() + " handler: " +
+    getHandler() + " gp: " + getGP() + " flags: " + getFlags()
+    + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 
+    + " hasUnwindInfo?: " + (getUnwindInfo() != null);
   }
 }

@@ -48,6 +48,7 @@
 #include <gcj/cni.h>
 
 #include "gnu/gcj/RawData.h"
+#include "gnu/gcj/RawDataManaged.h"
 
 #include "lib/unwind/Accessors.h"
 #include "lib/unwind/PtraceAccessors.h"
@@ -80,7 +81,7 @@ jint
 lib::unwind::PtraceAccessors::accessMem (jlong addr, jbyteArray valp, 
 										 jboolean write)
 {
-	logFine (this, logger, "accessMem address: %lx, write: %d", (long) addr, (int) write);
+	logFine (this, logger, "accessMem address: 0x%lx, write: %d", (long) addr, (int) write);
 	if ((int) JvGetArrayLength(valp) >= (int) sizeof (unw_word_t))
 	return (jint) _UPT_access_mem((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
 					getWord(valp), (int) write, (void *) ptArgs);
@@ -99,7 +100,7 @@ lib::unwind::PtraceAccessors::accessReg (jint regnum, jbyteArray valp,
 	ret = _UPT_access_reg((unw_addr_space_t) addressSpace, (unw_regnum_t) regnum,
 					getWord(valp), (int) write, (void *) ptArgs);
 	
-	logFine(this, logger, "accessReg returning: %d", ret);
+	logFine(this, logger, "accessReg returning: 0x%lx return value: %d", (long) *elements(valp), ret);
 	
 	return (jint) ret;
 }										 	
@@ -107,39 +108,32 @@ lib::unwind::PtraceAccessors::accessReg (jint regnum, jbyteArray valp,
 lib::unwind::ProcInfo*
 lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 {
-	logFine(this, logger, "findProcInfo ip: %ld, needUnwindInfo %d", (long) ip, (int) needUnwindInfo);
+	logFine(this, logger, "findProcInfo ip: 0x%lx, needUnwindInfo %d", (long) ip, (int) needUnwindInfo);
 	unw_proc_info_t proc_info = {};
 	int ret = _UPT_find_proc_info((unw_addr_space_t) addressSpace, (unw_word_t) ip, &proc_info,
 					(int) needUnwindInfo, (void *) ptArgs);
+
+	lib::unwind::ProcInfo * procInfo = new ProcInfo((jint) ret,(gnu::gcj::RawDataManaged *) &proc_info);
 	
-	lib::unwind::ProcInfo * procInfo = new ProcInfo();
-	procInfo->error = ret;
-	procInfo->startIP = (jlong) proc_info.start_ip;
-  	procInfo->endIP = (jlong) proc_info.end_ip;
-  	procInfo->lsda = (jlong) proc_info.lsda;
-  	procInfo->handler = (jlong) proc_info.handler;
-  	procInfo->gp = (jlong) proc_info.gp;
-  	procInfo->flags = (jlong) proc_info.flags;
-  	procInfo->format = (jint) proc_info.format;
-  	procInfo->unwindInfoSize = (jint) proc_info.unwind_info_size;
-  	procInfo->unwindInfo = (gnu::gcj::RawData *) proc_info.unwind_info;
-  
-  	jLogFine(this, logger, "findProcInfo procInfo: {1}", procInfo);
+  	jLogFinest(this, logger, "findProcInfo procInfo: {1}", procInfo);
   	return procInfo;
 }
 
 jint 
 lib::unwind::PtraceAccessors::getDynInfoListAddr (jbyteArray dilap)
 {
-	logFine(this, logger, "findProcInfo");
-	return (jint) _UPT_get_dyn_info_list_addr((unw_addr_space_t) addressSpace, getWord(dilap), 
+	logFine(this, logger, "getDynInfoListAddr");
+	int ret = _UPT_get_dyn_info_list_addr((unw_addr_space_t) addressSpace, getWord(dilap), 
 								(void *) ptArgs);
+
+	logFinest(this, logger, "getDynInfoListAddr value of dilap: 0x%lx", (long) *elements(dilap)); 		
+	return (jint) ret;
 }
 
 lib::unwind::ProcName* 
 lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 {	
-	logFine(this, logger, "getProcName address: %ld, maxNameSize: %d", (long) addr, (int) maxNameSize);
+	logFine(this, logger, "getProcName address: 0x%lx, maxNameSize: %d", (long) addr, (int) maxNameSize);
 	char buffp[maxNameSize];
 	unw_word_t offset = 0;
 	int ret = _UPT_get_proc_name((unw_addr_space_t) addressSpace, (unw_word_t) addr, 
@@ -148,7 +142,7 @@ lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 	logFinest(this, logger, "getProcName ret: %d", ret);
 	
 	if (ret == 0)
-		logFinest(this, logger, "getProcName buffp: %s", buffp);
+		logFinest(this, logger, "getProcName buffp: %s, offset 0x%lx", buffp, (long) offset);
 	
 
 	if (ret < 0 && ret != -UNW_ENOMEM) 
@@ -161,21 +155,12 @@ void
 lib::unwind::PtraceAccessors::putUnwindInfo (lib::unwind::ProcInfo *procInfo)
 {
 	jLogFine(this, logger, "putUnwindInfo procInfo: {1}", procInfo);
-	unw_proc_info_t proc_info;
+	unw_proc_info_t* proc_info;
 		
-	proc_info.start_ip = (unw_word_t) procInfo->startIP;
-  	proc_info.end_ip = (unw_word_t) procInfo->endIP;
-  	proc_info.lsda = (unw_word_t) procInfo->lsda;
-  	proc_info.handler = (unw_word_t) procInfo->handler;
-  	proc_info.gp = (unw_word_t) procInfo->gp;
-  	proc_info.flags = (unw_word_t) procInfo->flags;
-  	proc_info.format = (int) procInfo->format;
-  	proc_info.unwind_info_size = (int) procInfo->unwindInfoSize;
-  	proc_info.unwind_info = (void *) procInfo->unwindInfo;
+	proc_info = (unw_proc_info_t *) procInfo->procInfo;
 	
-	_UPT_put_unwind_info((unw_addr_space_t) addressSpace, &proc_info, (void *) ptArgs);
-	
-	procInfo->unwindInfo = NULL;
+	_UPT_put_unwind_info((unw_addr_space_t) addressSpace, proc_info, (void *) ptArgs);
+		
 	procInfo = NULL;
 }
 

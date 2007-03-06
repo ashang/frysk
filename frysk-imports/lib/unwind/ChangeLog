@@ -1,3 +1,34 @@
+2007-03-06  Nurdin Premji  <npremji@edhat.com>
+
+	* TestUnwind.java (testPtraceAccessorsProc0): New.
+	(testPtraceAccessorsProcMax): New.
+	(testPtraceAccessorsSmallMaxName): New.
+	(testCreateCursor.accessMem): Made protected.
+	(testCreateCursor.accessFPReg): Ditto.
+	(testCreateCursor.resume): Ditto.
+	(testCreateCursor.getProcName): Ditto.
+	(testCreateCursor.putUnwindInfo): Ditto.
+	(testCreateCursor.getDynInfoListAddr): Ditto.
+	(testCreateCursor.findProcInfo): Ditto.
+	(testCreateCursor.accessReg):Ditto.
+	(testPtraceAccessors): Step through an entire stack trace.
+	(testCreateAddress): Change assert message.
+	* ProcInfo.java: Use RawData to hold an actual procInfo object.
+	* Accessors.java: Made all methods protected.
+	* PtraceAccessors.java: Ditto. 
+	* Cursor.java: Removed unused addressSpace variable.
+	(unwind): New.
+	* ProcName.java (ProcName): Made public.
+	* Unwind.java (copyCursor): New.
+	* UnwindNative.java: (copyCursor): New.
+	* Error.mkenum: New.
+	* cni/ProcInfo.cxx: New.
+	* cni/PtraceAccessors.cxx: Clean up logging. Change to reflect ProcInfo.java 
+	changes.
+	* cni/UnwindNative.cxx: Ditto.
+	(native_access_mem): Pass a jlong to java, not a long.
+	(copyCursor): Added.
+
 2007-03-01  Mike Cvet  <mcvet@redhat.com>
 
 	* StackTraceCreator.java (UnwindArgs.cleanup): Added. Moved code from 

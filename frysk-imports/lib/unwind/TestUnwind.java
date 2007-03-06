@@ -40,18 +40,22 @@
 package lib.unwind;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import frysk.junit.TestCase;
 import frysk.sys.TestLib;
 
 public class TestUnwind
     extends TestCase
 {
-
+  Logger logger = Logger.getLogger("frysk");
+  
   public void testCreateAddress()
   {  
     AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
     
-    assertNotNull("AddressSpace not null", addr.addressSpace);
+    assertNotNull("AddressSpace should not be null", addr.addressSpace);
   }
   
   public void testCreateCursor()
@@ -61,57 +65,72 @@ public class TestUnwind
      Cursor cursor = new Cursor(addr, new Accessors(){
 
       //@Override
-      int accessFPReg (int regnum, byte[] fpvalp, boolean write)
+      protected int accessFPReg (int regnum, byte[] fpvalp, boolean write)
+      {
+        return 0;
+      }
+
+//    @Override 
+      protected int accessMem (long addr, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      int accessMem (long addr, byte[] valp, boolean write)
+      protected int accessReg (int regnum, byte[] valp, boolean write)
       {
         return 0;
       }
 
       //@Override
-      int accessReg (int regnum, byte[] valp, boolean write)
-      {
-        return 0;
-      }
-
-      //@Override
-      ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
+      protected ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
       {
         return null;
       }
 
       //@Override
-      int getDynInfoListAddr (byte[] dilap)
+      protected int getDynInfoListAddr (byte[] dilap)
       {
         return 0;
       }
 
       //@Override
-      ProcName getProcName (long addr, int maxNameSize)
+      protected ProcName getProcName (long addr, int maxNameSize)
       {
         return null;
       }
 
       //@Override
-      void putUnwindInfo (ProcInfo procInfo)
+      protected void putUnwindInfo (ProcInfo procInfo)
       {
       }
 
       //@Override
-      int resume (Cursor cursor)
+      protected int resume (Cursor cursor)
       {
         return 0;
       }
 
      });
     
-    assertNotNull("Cursor not null", cursor.cursor);
+    assertNotNull("Cursor should not be null", cursor.cursor);
   }
   
+  public void testPtraceAccessorsProc0()
+  {   
+    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    PtraceAccessors ptraceAccessors = new PtraceAccessors(0, ByteOrder.DEFAULT);
+    
+    new Cursor(addr, ptraceAccessors);
+  }
+  
+  public void testPtraceAccessorsProcMax()
+  {
+    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    PtraceAccessors ptraceAccessors = new PtraceAccessors(Integer.MAX_VALUE, ByteOrder.DEFAULT);
+    
+    new Cursor(addr, ptraceAccessors);
+  }
   
   public void testPtraceAccessors()
   {
@@ -124,9 +143,44 @@ public class TestUnwind
     
     PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
     
-    Cursor cursor = new Cursor(addr, ptraceAccessors);
-     
-    assertNotNull("Cursor not null", cursor.cursor);
+    Cursor cursor = new Cursor(addr, ptraceAccessors);     
+    
+    int temp = 1;
+    while (temp > 0)
+      {
+        assertNotNull("Cursor should not be null", cursor.cursor);
+        logger.log(Level.FINE, "testPtraceAccessors returned: {0}\n", 
+                   cursor.getProcName(1000).name);
+        temp = cursor.step();
+      }
+    
+    assertEquals("Cursor step return value should be 0", 0, temp);
+    
+    PtraceAccessors.detachXXX(pid);
+  }
+  
+  public void testPtraceAccessorsSmallMaxName()
+  {
+    //Start a process.
+   final int pid = TestLib.forkIt();
+    
+     PtraceAccessors.attachXXX(pid);
+    
+    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    
+    PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
+    
+    Cursor cursor = new Cursor(addr, ptraceAccessors);     
+    
+    int temp = 1;
+    while (temp > 0)
+      {
+        assertNotNull("Cursor should not be null", cursor.cursor);
+        logger.log(Level.FINE, "testPtraceAccessorsSmallMaxName returned: {0}\n", cursor.getProcName(10).name);
+        temp = cursor.step();
+      }
+    
+    assertEquals("Cursor step return value should be 0", 0, temp);
     
     PtraceAccessors.detachXXX(pid);
   }

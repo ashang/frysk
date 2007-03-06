@@ -52,24 +52,24 @@ public abstract class Accessors
    *  fields of the returned ProcInfo should be set.
    * @return A ProcInfo object holding the processes info.
    */
-  abstract ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+  protected abstract ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
 
   /**
    * Used to free a ProcInfo object created with needUnwindInfo as true.
    * @param procInfo the procInfo object to be freed.
    */
-  abstract void putUnwindInfo (ProcInfo procInfo);
+  protected abstract void putUnwindInfo (ProcInfo procInfo);
 
-  abstract int getDynInfoListAddr (byte[] dilap);
+  protected abstract int getDynInfoListAddr (byte[] dilap);
 
-  abstract int accessMem (long addr, byte[] valp, boolean write);
+  protected abstract int accessMem (long addr, byte[] valp, boolean write);
 
-  abstract int accessReg (int regnum, byte[] valp, boolean write);
+  protected abstract int accessReg (int regnum, byte[] valp, boolean write);
 
-  abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+  protected abstract int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 
-  abstract int resume (Cursor cursor);
+  protected abstract int resume (Cursor cursor);
 
-  abstract ProcName getProcName (long addr, int maxSize);
+  protected abstract ProcName getProcName (long addr, int maxSize);
 
 }

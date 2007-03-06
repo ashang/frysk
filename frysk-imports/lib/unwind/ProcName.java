@@ -45,7 +45,7 @@ public class ProcName
   public final long address;
   public final String name;
   
-  ProcName(int error, long address, String name)
+  public ProcName(int error, long address, String name)
   {
     this.error = error;
     this.address = address;

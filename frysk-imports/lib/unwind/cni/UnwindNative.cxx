@@ -83,15 +83,8 @@ native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 	if (procInfo->error != 0)
 		return procInfo->error;
 
-	pip->start_ip = (unw_word_t) procInfo->startIP;
-	pip->end_ip = (unw_word_t) procInfo->endIP;
-	pip->lsda = (unw_word_t) procInfo->lsda;
-	pip->handler = (unw_word_t) procInfo->handler;
-	pip->gp = (unw_word_t) procInfo->gp;
-	pip->flags = (unw_word_t) procInfo->flags;
-	pip->format = (int) procInfo->format;
-	pip->unwind_info_size = (int) procInfo->unwindInfoSize;
-	pip->unwind_info = (void *) procInfo->unwindInfo;
+	
+	memcpy(pip, procInfo->procInfo, sizeof (unw_proc_info_t));
 
 	return 0;
 }
@@ -103,16 +96,9 @@ void
 native_put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		      void *arg)
 {
-	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo();
-	procInfo->startIP = (jlong) proc_info->start_ip;
-  	procInfo->endIP = (jlong) proc_info->end_ip;
-  	procInfo->lsda = (jlong) proc_info->lsda;
-  	procInfo->handler = (jlong) proc_info->handler;
-  	procInfo->gp = (jlong) proc_info->gp;
-  	procInfo->flags = (jlong) proc_info->flags;
-  	procInfo->format = (jint) proc_info->format;
-  	procInfo->unwindInfoSize = (jint) proc_info->unwind_info_size;
-  	procInfo->unwindInfo = (gnu::gcj::RawData *) proc_info->unwind_info;
+	
+	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo(0, 
+	(gnu::gcj::RawDataManaged *) proc_info);
 	
 	((lib::unwind::Accessors *)arg)->putUnwindInfo (procInfo);
 }
@@ -125,8 +111,11 @@ native_get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 			    void *arg)
 {
 	jbyteArray tmp = JvNewByteArray(sizeof (unw_word_t));
-	memcpy (elements(tmp), dilap, JvGetArrayLength(tmp));
-	return ((lib::unwind::Accessors *)arg)->getDynInfoListAddr (tmp);
+	memcpy (elements(tmp), dilap, sizeof (unw_word_t));
+	int ret = ((lib::unwind::Accessors *)arg)->getDynInfoListAddr (tmp);
+	memcpy(dilap, elements(tmp), sizeof (unw_word_t));
+	
+	return ret;
 }
 
 /*
@@ -140,7 +129,7 @@ native_access_mem (::unw_addr_space_t as, ::unw_word_t addr,
 	memcpy (elements(tmp), valp, JvGetArrayLength(tmp));
 	
 	int ret = ((lib::unwind::Accessors *) arg)->accessMem(
-	(long) addr, 
+	(jlong) addr, 
 	tmp, 
 	(jboolean) write);
 	
@@ -294,7 +283,7 @@ lib::unwind::UnwindNative::getProcName(gnu::gcj::RawDataManaged* cursor, jint ma
 	unw_word_t offset;
 	int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
 	
-	logFinest(this, logger, "getProcName bufp: %s, error: %d", bufp, err);
+	logFinest(this, logger, "getProcName bufp: %s, offset: %lx, error: %d", bufp,(long) offset, err);
 	return new lib::unwind::ProcName((jint) err, (jlong) offset, JvNewStringUTF(bufp));
 }
 
@@ -311,4 +300,15 @@ jint
 lib::unwind::UnwindNative::getContext(gnu::gcj::RawDataManaged* context)
 {
 	return (jint) unw_getcontext((::unw_context_t *) context);
+}
+
+gnu::gcj::RawDataManaged*
+lib::unwind::UnwindNative::copyCursor(gnu::gcj::RawDataManaged* cursor)
+{
+	::unw_cursor_t *nativeCursor = (::unw_cursor_t *) JvAllocBytes (sizeof (::unw_cursor_t));
+
+	// Create a local copy of the unwind cursor
+	memcpy (nativeCursor, cursor, sizeof (::unw_cursor_t));
+	
+	return (gnu::gcj::RawDataManaged *) nativeCursor;
 }

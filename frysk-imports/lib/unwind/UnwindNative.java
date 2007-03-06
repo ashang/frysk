@@ -72,4 +72,5 @@ public class UnwindNative
   
   native int getContext (RawDataManaged context);
   
+  native RawDataManaged copyCursor(RawDataManaged cursor);
 }
