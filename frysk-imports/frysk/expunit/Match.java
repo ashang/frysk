@@ -50,21 +50,58 @@ abstract class Match
      * match.
      */
     abstract boolean find (String output);
-
+    /**
+     * Return the number of matched groups.
+     */
+    protected int groupCount ()
+    {
+	return 0;
+    }
+    /**
+     * Return matched group G.
+     */
+    protected String group (int g)
+    {
+	return null;
+    }
+    /**
+     * Return the entire matched pattern (group 0).
+     */
+    protected final String group ()
+    {
+	return group (0);
+    }
+    /**
+     * Return the start of matched group G.
+     */
+    protected int start (int g)
+    {
+	return -1;
+    }
+    /**
+     * Return the start of the entire matched pattern (group 0).
+     */
+    protected final int start ()
+    {
+	return start (0);
+    }
+    /**
+     * Return the end of matched group G.
+     */
+    protected int end (int g)
+    {
+	return 0;
+    }
+    /**
+     * Return the end of the entire matched pattern (group 0) plus 1.
+     */
+    protected final int end ()
+    {
+	return end (0);
+    }
     public void execute ()
     {
 	// pass by default.
     }
-
-   /**
-    * Returns the start of the matched pattern.
-    */
-   abstract protected int start();
-
-   /**
-    * Returns the end the matched pattern plus 1.
-    */
-   abstract protected int end();
-
 }
 

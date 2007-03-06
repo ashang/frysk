@@ -1,3 +1,10 @@
+2007-03-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Regex.java: Revert 2007-03-06 and 2007-03-05 changes.
+	* Equals.java: Ditto.
+	* Expect.java: Ditto.
+	* Match.java: Ditto.
+
 2007-03-06  Mark Wielaard  <mark@klomp.org>
 
 	* Match.java (start): Reintroduce as abstract protected method.

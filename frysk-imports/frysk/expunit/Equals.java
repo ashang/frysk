@@ -51,25 +51,20 @@ public class Equals
     {
 	this.s = s;
     }
-
+    protected String group (int g)
+    {
+	return s;
+    }
+    protected int start (int g)
+    {
+	return 0;
+    }
+    protected int end (int g)
+    {
+	return s.length ();
+    }
     boolean find (String output)
     {
 	return output.startsWith (s);
-    }
-
-    /**
-     * Always returns zero (start of string).
-     */
-    protected final int start()
-    {
-      return 0;
-    }
-
-    /**
-     * Always returns length of String matched.
-     */
-    protected final int end()
-    {
-      return s.length();
     }
 }
