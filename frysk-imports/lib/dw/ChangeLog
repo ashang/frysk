@@ -1,5 +1,11 @@
 2007-03-06  Stan Cox  <scox@redhat.com>
 
+	* (DwAtEncodings.shenum): Don't assume /usr/include/dwarf.h.
+	* (DwOpEncodings.shenum): Likewise.
+	* (DwTagEncodings.shenum): Likewise.
+
+2007-03-06  Stan Cox  <scox@redhat.com>
+
 	* (DwAtEncodings.shenum): New file.
 	* (DwOpEncodings.shenum): New file.
 	* (DwTagEncodings.shenum): New file.
