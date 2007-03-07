@@ -186,7 +186,6 @@ lib::elf::ElfPrstatus::getNoteData(ElfData *data)
 {
   void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
   GElf_Nhdr *nhdr = (GElf_Nhdr *)elf_data;
-  elf_prstatus *prstatus;
   long note_loc =0;
   long note_data_loc = 0;
 
@@ -214,37 +213,10 @@ lib::elf::ElfPrstatus::getNoteData(ElfData *data)
       // Find data at current header + alignment
       note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
       
-      // Run some sanity checks, as we will be doing void pointer -> cast math.
-      if ((nhdr->n_descsz > sizeof(struct elf_prstatus)) || (nhdr->n_descsz > data->getSize()) 
-	  || (nhdr->n_descsz > (data->getSize()-note_data_loc)))
-	{
-	  throw new lib::elf::ElfException(JvNewStringUTF("note size and elf_data size mismatch"));
-	}
+      jbyteArray jbuf = JvNewByteArray(nhdr->n_descsz);
+      memcpy(elements(jbuf),((unsigned char  *)elf_data)+note_data_loc,  nhdr->n_descsz);
       
-      // Point to the data, and cast.
-      prstatus = (elf_prstatus *) (((unsigned char *) elf_data) + note_data_loc);
-      
-      // Fill Java class structures
-      
-      this->pr_info_si_signo = prstatus->pr_info.si_signo;
-      this->pr_info_si_code =  prstatus->pr_info.si_code;
-      this->pr_info_si_errno = prstatus->pr_info.si_errno;
-      
-      this->pr_cursig = prstatus->pr_cursig;
-      this->pr_sigpend = prstatus->pr_sigpend;
-      this->pr_sighold = prstatus->pr_sighold;
-      
-      this->pr_pid = prstatus->pr_pid;
-      this->pr_ppid = prstatus->pr_ppid;
-      this->pr_pgrp = prstatus->pr_pgrp;
-      this->pr_sid = prstatus->pr_sid;
-      this->pr_fpvalid = prstatus->pr_fpvalid;
-      
-      raw_core_registers = JvNewByteArray(sizeof (prstatus->pr_reg));
-  
-      memcpy(elements(raw_core_registers),prstatus->pr_reg,sizeof(prstatus->pr_reg));
-      
-      internalThreads->add(this);
+      internalThreads->add(jbuf);
 
       // Move pointer along, now we have processed the first thread
       note_loc += (sizeof (GElf_Nhdr) + ((nhdr->n_namesz + 0x03) & ~0x3)) + nhdr->n_descsz;

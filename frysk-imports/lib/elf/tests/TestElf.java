@@ -156,7 +156,7 @@ public class TestElf
     
     ElfPrpsinfo elfPrpsinfo = new ElfPrpsinfo(noteData);
     //assertEquals("note: state", 'R', elfPrpsinfo.getPrState());
-    assertEquals("note zombie", 0, elfPrpsinfo.getPrZomb());
+    assertEquals("note: zombie", 0, elfPrpsinfo.getPrZomb());
     assertEquals("note: nice", 0, elfPrpsinfo.getPrNice());
     assertEquals("note: flags",8390144, elfPrpsinfo.getPrFlag());  //0x00800600
     assertEquals("note: uid", 500, elfPrpsinfo.getPrUid());
@@ -178,10 +178,6 @@ public class TestElf
 
   public void testElfCorePrstatusNotes () throws ElfException,  ElfFileException
   {
-
-    // Disable while being investigated.
-    if (brokenX8664XXX(4047) || brokenPpcXXX(40477))
-	return;
 
     // Matched against eu-read -n on the core file.
     // XXX: This tests need an x86_64 core file, as well.
@@ -206,12 +202,12 @@ public class TestElf
 
     ElfData noteData = findNoteSegment(testElf);
 
-    ElfPrstatus threads =   new ElfPrstatus(noteData);
+    ElfPrstatus threads[] =  ElfPrstatus.decode(noteData);
 
     // Should only be one thread in this core file.
-    assertEquals("Number of  threads",1,threads.getThreadData().size());
+    assertEquals("Number of  threads",1,threads.length);
 
-    ElfPrstatus elfPrstatusInfo = (ElfPrstatus) threads.getThreadData().get(0);
+    ElfPrstatus elfPrstatusInfo = threads[0];
     
     assertEquals("note: Sig Info -> Sig No",6,elfPrstatusInfo.getPrInfoSiSigno());
     assertEquals("note: Sig Info -> Sig code",0,elfPrstatusInfo.getPrInfoSiCode());

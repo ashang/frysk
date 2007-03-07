@@ -1,3 +1,16 @@
+2007-03-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/ElfPrstatus.cxx (getNoteData): Rewrite. Return raw note
+	data instead of trying to deconstruct.
+	* ElfPrstatus.java: Add Timeval variables.
+	(decode): New.
+	(ElfPrstatus): New constructor, take single note data byte[]
+	and parent Elf, and create single thread model.
+	* tests/TestElf.java (testElfCorePrpstatusNotes): Remove
+	brokenX8664XXX/brokenPpcXXX test limiters.
+	Rewrite tests to use .decode.
+: 
+
 2007-03-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* tests/TestElf.java (testElfCorePrpsNotes): Remove
@@ -12,10 +25,12 @@
 
 	* ElfAT.shjava: New file. Moved from inua/elf.
 
+>>>>>>> 1.70
 2007-03-02  Mark Wielaard  <mark@klomp.org>
 
 	* cni/ElfPrpsinfo.cxx (getNoteData): Remove debug printfs.
 
+>>>>>>> 1.67
 2007-03-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrpsinfo.java (ElfPrpsinfo): Rewrite note data constructor to

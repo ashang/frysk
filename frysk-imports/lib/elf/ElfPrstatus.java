@@ -42,6 +42,10 @@ package lib.elf;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.math.BigInteger;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+
 
 
 /**
@@ -61,6 +65,15 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private long pr_info_si_signo;
   private long pr_info_si_code;
   private long pr_info_si_errno;
+  public long pr_utime_sec;
+  public  long pr_utime_usec;
+  public  long pr_stime_sec;
+  public  long pr_stime_usec;
+  public  long pr_cutime_sec;
+  public  long pr_cutime_usec;
+  public  long pr_cstime_sec;
+  public  long pr_cstime_usec;
+
   private int pr_fpvalid;
 
   private ArrayList pr_reg = new ArrayList();
@@ -68,21 +81,92 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private byte raw_core_registers[];
   private int reg_length = 0;
 
-  ArrayList internalThreads = new ArrayList();
+  static ArrayList internalThreads = new ArrayList();
   public ElfPrstatus()
   {  
   }
 
-  /** 
-   * 
-   * Extract note information from a section
-   * containing note data
-   *
-   */
-  public  ElfPrstatus(ElfData noteData)
+  public ElfPrstatus(byte[] singleNoteData, Elf elf)
+  {
+
+    ByteOrder order = null;
+    if (singleNoteData.length <=0)
+      return;
+    ByteBuffer noteBuffer = new ArrayByteBuffer(singleNoteData);
+
+    ElfEHeader header = elf.getEHeader();
+    switch (header.ident[5])
+      {
+      case ElfEHeader.PHEADER_ELFDATA2LSB: 
+	order = ByteOrder.LITTLE_ENDIAN;
+	break;
+      case ElfEHeader.PHEADER_ELFDATA2MSB:
+	order = ByteOrder.BIG_ENDIAN;
+	break;
+      default:
+	return;
+      }
+
+    noteBuffer.order(order);
+    
+    switch (header.machine)
+      {
+      case ElfEMachine.EM_386:
+      case ElfEMachine.EM_PPC:
+	noteBuffer.wordSize(4);
+	break;
+      case ElfEMachine.EM_X86_64:
+      case ElfEMachine.EM_PPC64:
+	noteBuffer.wordSize(8);
+	break;
+      default:
+	return;
+      }
+    //byte[] data = new byte[singleNoteData.length];
+    //noteBuffer.get(data);
+
+    pr_info_si_signo =  noteBuffer.getInt();
+    pr_info_si_code =  noteBuffer.getInt();
+    pr_info_si_errno = noteBuffer.getInt();
+    pr_cursig = noteBuffer.getInt();
+    pr_sigpend = noteBuffer.getUInt();
+    pr_sighold = noteBuffer.getUInt();
+    pr_pid =  noteBuffer.getInt();
+    pr_ppid =  noteBuffer.getInt();
+    pr_pgrp =  noteBuffer.getInt();
+    pr_sid =  noteBuffer.getInt();
+    pr_utime_sec =  noteBuffer.getInt();
+    pr_utime_usec =  noteBuffer.getInt();
+    pr_stime_sec =  noteBuffer.getInt();
+    pr_stime_usec =  noteBuffer.getInt();
+    pr_cutime_sec =  noteBuffer.getInt();
+    pr_cutime_usec =  noteBuffer.getInt();
+    pr_cstime_sec =  noteBuffer.getInt();
+    pr_cutime_usec =  noteBuffer.getInt();
+    
+    raw_core_registers = new byte[(int) ((singleNoteData.length) - noteBuffer.position())];
+    noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length) - noteBuffer.position()));
+
+
+
+  }
+
+  public static ElfPrstatus[] decode(ElfData noteData)
   {
     getNoteData(noteData);
+    ElfPrstatus threadList[] = new  ElfPrstatus[internalThreads.size()];
+
+    int count = 0;
+    Iterator i = internalThreads.iterator();
+    while (i.hasNext())
+      {
+	byte b[]  = (byte[]) i.next();
+	threadList[count] = new ElfPrstatus(b,noteData.getParent());
+      }
+
+    return threadList;
   }
+
 
   /** 
    * Returns the raw byte[] data 
@@ -311,7 +395,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
       }
   }
 
-  public native long getNoteData(ElfData data);
+  public native static long getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }
