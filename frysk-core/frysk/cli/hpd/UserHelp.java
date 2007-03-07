@@ -43,50 +43,18 @@ import java.util.ArrayList;
 
 class UserHelp
 {
-	class CommandHelp
-	{
-		String cmd;
-		String descr;
-		String syntax;
-		String full;
+  TreeMap commandHelp;
+  void addHelp(String commandName, String description, String syntax,
+	       String full)
+  {
+    addHelp(commandName,
+	    new CommandHelp(commandName, description, syntax, full));
+  }
 
-		CommandHelp(String cmd, String descr, String syntax, String full)
-		{
-			this.cmd = cmd;
-			this.descr = descr;
-			this.syntax = syntax;
-			this.full = full;
-		}
-
-		String getCommand()
-		{
-			return cmd;
-		}
-		
-		String getDescription()
-		{
-			return descr;
-		}
-
-		String getSyntax()
-		{
-			return syntax;
-		}
-
-		String getFull()
-		{
-			return full;
-		}
-	}
-	
-	TreeMap commandHelp;
-	void addHelp(String commandName, String description, String syntax,
-		     String full)
-        {
-	  commandHelp.put(commandName, 
-			  new CommandHelp(commandName, description, syntax,
-					  full));
-	}
+  public void addHelp(String commandName, CommandHelp help)
+  {
+    commandHelp.put(commandName, help);
+  }
   
 	public UserHelp()
 	{

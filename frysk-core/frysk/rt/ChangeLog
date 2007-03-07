@@ -1,3 +1,8 @@
+2007-03-07  Tim Moore  <timoore@redhat.com>
+
+	* LineBreakpoint.java (addBreakpoint, deleteBreakpoint): Process
+	all the addresses associated with a source line.
+
 2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java: Have a PtraceAccessor component instead of extending

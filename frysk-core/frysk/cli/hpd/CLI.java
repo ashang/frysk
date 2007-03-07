@@ -84,7 +84,12 @@ public class CLI
   boolean symtabNeedsRefresh = false;
   StackFrame frame = null;
   int stackLevel = 0;
-  static Object monitor = new Object();
+  private CLIEventLoop eventLoop;
+  private static class CLIMonitor
+  {
+    boolean procSearchFinished = false;
+  }
+  static CLIMonitor monitor = new CLIMonitor();
   static boolean attached;
   RunState runState;
   private RunStateObserver runStateObserver;
@@ -167,8 +172,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -202,8 +206,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -247,8 +250,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -292,8 +294,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -313,8 +314,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -351,8 +351,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -367,8 +366,7 @@ public class CLI
 
       if (params.size() < 1)
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	  return;
 	}
  
@@ -385,36 +383,54 @@ public class CLI
 	    }
 	  else if (((String)params.get(idx)).indexOf('-') == 0)
 	    {
-	      addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-			 Message.TYPE_NORMAL);
+	      printUsage(cmd);
 	      return;
 	    }
 	  else if (((String)params.get(idx)).matches("[0-9]+"))
 	    pid = Integer.parseInt((String)params.get(idx)); 
 	}
-
+      startEventLoop();
       if (cli)
 	{
+	  monitor.procSearchFinished = false;
 	  Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
-
 	      public void procFound (ProcId procId)
 	      {
-                  
-		Manager.eventLoop.requestStop();
+		synchronized (monitor)
+		  {
+		    proc = Manager.host.getProc(procId);
+		    monitor.procSearchFinished = true;
+		    monitor.notifyAll();
+		  }
 	      }
 
 	      public void procNotFound (ProcId procId, Exception e)
 	      {
+		synchronized (monitor)
+		  {
+		    proc = null;
+		    monitor.procSearchFinished = true;
+		    monitor.notifyAll();
+		  }
 	      }});
-	  Manager.eventLoop.run();
-	  CLIEventLoop eventLoop = new CLIEventLoop();
-	  eventLoop.start();
+	  synchronized (monitor)
+	    {
+	      while (!monitor.procSearchFinished)
+		{
+		  try
+		    {
+		      monitor.wait();
+		    }
+		  catch (InterruptedException ie)
+		    {
+		      proc = null;
+		    }
+		}
+	    }
 	}
-
-      proc = Manager.host.getProc (new ProcId (pid));
       if (proc == null)
 	{
-	  addMessage("The event manager is not running.", Message.TYPE_ERROR);
+	  addMessage("Couldn't find process " + pid, Message.TYPE_ERROR);
 	  return;
 	}
 
@@ -427,41 +443,65 @@ public class CLI
 	    if (task.getTid () == tid)
 	      break;
 	  }
-          
       if (cli)
 	{
-	  // At some point we will be able to use a RunState object
-	  // created elsewhere e.g., by the SourceWindowFactory.
-	  if (runState == null) 
-	    {
-	      runState = new RunState();
-	      runStateObserver = new RunStateObserver();
-	      runState.addObserver(runStateObserver);
-	    }
-	  runState.setProc(proc);
-	  // Wait till we are attached.
-	  synchronized (monitor)
-	    {
-	      while (!attached)
-		{
-		  try
-		    {
-		      monitor.wait();
-		    }
-		  catch (InterruptedException ie)
-		    {
-		      addMessage("Attach interrupted.", Message.TYPE_ERROR);
-		      return;
-		    }
-		}
-	      addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
-	    }
+	  startAttach(pid, proc, task);
+	  finishAttach();
 	}
-
-      symtab = new SymTab(pid, proc, task, null);
+      else
+	{
+	  // This can't work because the event loop isn't started in
+	  // the non-cli case, so we can't find the proc.
+	  // symtab = new SymTab(pid, proc, task, null); 
+	}
     }
   }
 
+  public void startAttach(int pid, Proc proc, Task task)
+  {
+    // At some point we will be able to use a RunState object
+    // created elsewhere e.g., by the SourceWindowFactory.
+    if (runState == null) 
+      {
+	runState = new RunState();
+	runStateObserver = new RunStateObserver();
+	runState.addObserver(runStateObserver);
+      }
+    this.proc = proc;
+    this.task = task;
+    runState.setProc(proc);
+  }
+  
+  public void startAttach(Task task)
+  {
+    Proc proc = task.getProc();
+
+    // FIXME getId should provide the ID as a number.
+    startAttach(proc.getId().hashCode(), proc, task);
+  }
+
+  public void finishAttach()
+  {
+    // Wait till we are attached.
+    synchronized (monitor)
+      {
+	while (!attached)
+	  {
+	    try
+	      {
+		monitor.wait();
+	      }
+	    catch (InterruptedException ie)
+	      {
+		addMessage("Attach interrupted.", Message.TYPE_ERROR);
+		return;
+	      }
+	  }
+	addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
+      }
+    symtab = new SymTab(pid, proc, task, null);
+  }
+  
   class DetachHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException
@@ -482,11 +522,10 @@ public class CLI
       attached = false;
       if (params.size() > 0)
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
 
-      Manager.eventLoop.requestStop();
+      eventLoop.requestStop();
     }
   }
     
@@ -519,8 +558,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -626,8 +664,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -656,8 +693,7 @@ public class CLI
 	}
       else
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	}
     }
   }
@@ -769,8 +805,7 @@ public class CLI
       if (cmd.getParameters().size() == 0
           || (((String)params.get(0)).equals("-help")))
         {
-          addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()),
-             Message.TYPE_NORMAL);
+          printUsage(cmd);
           return;
         }
       boolean haveFormat = false;
@@ -799,8 +834,7 @@ public class CLI
 
       if (sInput.length() == 0) 
 	{
-	  addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-		     Message.TYPE_NORMAL);
+	  printUsage(cmd);
 	  return;
 	}
 
@@ -809,8 +843,7 @@ public class CLI
 	  int i = sInput.indexOf(' ');
 	  if (i == -1) 
 	    {
-	      addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
-			 Message.TYPE_NORMAL);          
+	      printUsage(cmd);          
 	      return;
 	    }
 	  sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
@@ -1008,13 +1041,22 @@ public class CLI
 
   // alias
   private Hashtable aliases;
-  // breakpoints
-//  private Hashtable breakpoints;
 
   /*
    * Public methods
    */
 
+  /**
+   * Add a CLIHandler, along with its help messages.
+   * @param handler the handler
+   */
+  public void addHandler(CLIHandler handler)
+  {
+    String name = handler.getName(); 
+    handlers.put(name, handler);
+    userhelp.addHelp(name, handler.getHelp());
+  }
+  
   /**
    * Constructor
    * @param prompt String initially to be used as the prompt
@@ -1054,6 +1096,8 @@ public class CLI
     handlers.put("what", new WhatHandler());
     handlers.put("where", new WhereHandler());
     handlers.put("whichsets", new WhichsetsHandler());
+    // New interface
+    addHandler(new RunHandler(this));
 
     // initialize PT set stuff
     setparser = new SetNotationParser();
@@ -1233,7 +1277,7 @@ public class CLI
     return result;
   }
     
-  private static class CLIEventLoop extends Thread
+  private class CLIEventLoop extends Thread
   {
     public void run()
     {
@@ -1253,9 +1297,19 @@ public class CLI
     public void requestStop()
     {
       Manager.eventLoop.requestStop();
+      eventLoop = null;
     }
   }
-    
+
+  public void startEventLoop()
+  {
+    if (eventLoop == null)
+      {
+	eventLoop = new CLIEventLoop();
+	eventLoop.start();
+      }
+  }
+  
   private class RunStateObserver implements Observer 
   {
     public void update(Observable observable, Object arg)
@@ -1283,5 +1337,20 @@ public class CLI
 	  System.out.println("breakpoint hit file " + bpt.toString());
 	}
     }
+  }
+
+  public RunState getRunState()
+  {
+    return runState;
+  }
+
+  /**
+   * Prints a usage message for a command.
+   * @param cmd the command
+   */
+  public void printUsage(Command cmd)
+  {
+    addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
+	       Message.TYPE_NORMAL);
   }
 }

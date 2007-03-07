@@ -110,21 +110,30 @@ public class LineBreakpoint
     
   public void addBreakpoint(RunState runState, Task task)
   {
-    DwflLine line = (DwflLine)dwflAddrs.getFirst();
-    long address = line.getAddress();
-	  
-    RunState.PersistentBreakpoint breakpoint
-      = runState.new PersistentBreakpoint(address);
-    breakpoints.add(breakpoint);
-    runState.addPersistentBreakpoint(task, breakpoint);
+    Iterator lines = dwflAddrs.iterator();
+
+    while (lines.hasNext())
+      {
+	DwflLine line = (DwflLine)lines.next();
+	long address = line.getAddress();
+	RunState.PersistentBreakpoint breakpoint
+	  = runState.new PersistentBreakpoint(address);
+	breakpoints.add(breakpoint);
+	runState.addPersistentBreakpoint(task, breakpoint);
+      }
   }
 
   public void deleteBreakpoint(RunState runState, Task task)
   {
-    RunState.PersistentBreakpoint bpt
-      = (RunState.PersistentBreakpoint)breakpoints.getFirst();
-    breakpoints.removeFirst();
-    runState.deletePersistentBreakpoint(task, bpt);
+    Iterator iterator = breakpoints.iterator();
+
+    while (iterator.hasNext())
+      {
+	RunState.PersistentBreakpoint bpt
+	  = (RunState.PersistentBreakpoint)iterator.next();
+        runState.deletePersistentBreakpoint(task, bpt);
+      }
+    breakpoints.clear();
   }
 
   public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
