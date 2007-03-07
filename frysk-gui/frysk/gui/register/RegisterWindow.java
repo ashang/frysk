@@ -497,7 +497,7 @@ public class RegisterWindow
 		       "0x" + stringUsingView(value, view, 16));
 	// Octal little endian
 	model.setValue(iter, (DataColumnString)cols[5], 
-		       stringUsingView(value, view, 16));
+		       stringUsingView(value, view, 8));
 	BigInteger bigEndValue = swizzleByteOrder(value, bitlength);
 	// Binary big endian
 	model.setValue(iter, (DataColumnString)cols[8], 
@@ -510,7 +510,7 @@ public class RegisterWindow
 		       "0x" + stringUsingView(bigEndValue, view, 16));
         // Octal big-endian
 	model.setValue(iter, (DataColumnString)cols[6],
-		       stringUsingView(bigEndValue, view, 16));
+		       stringUsingView(bigEndValue, view, 8));
 
         iter = iter.getNextIter();
       }
