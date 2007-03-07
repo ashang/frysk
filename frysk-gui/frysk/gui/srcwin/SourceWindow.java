@@ -419,15 +419,14 @@ public class SourceWindow
 
 	while (curr != null && curr.getLines().length == 0)
 	    curr = curr.getOuter();
-
+    
         if (curr != null)
           {
             this.currentFrame = curr;
             this.currentTask = curr.getTask();
             this.view = new SourceView(curr, this);
-
-            SourceView v = (SourceView) this.view;
-            SourceBuffer b = (SourceBuffer) v.getBuffer();
+            
+            SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
 
             for (int j = 0; j < frames.length; j++)
               {
@@ -446,6 +445,17 @@ public class SourceWindow
         this.watchView.setView((SourceView) this.view);
         stackView.expandAll();
         this.stackView.selectRow(this.currentFrame);
+        
+        if (this.currentFrame.getLines().length != 0)
+          {
+            this.view.scrollToLine(this.currentFrame.getLines()[0].getLine());
+          }
+        else
+          {
+            SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+            b.disassembleFrame(this.currentFrame);
+          }
+        
         stackView.showAll();
         this.view.showAll();
         return;

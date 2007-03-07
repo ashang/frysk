@@ -1,3 +1,8 @@
+2007-03-07  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (populateStackBrowser): Make sure to populate 
+	assembly on window creation, fixing #4167.
+
 2007-03-05  Adam Jocksch <ajocksch@redhat.com>
 
 	* SourceWindow.java (updateShownStackFrame): Now checks to see if the
