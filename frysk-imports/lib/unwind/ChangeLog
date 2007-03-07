@@ -1,3 +1,9 @@
+2007-03-07  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/PtraceAccessors.cxx (findProcInfo): Allocate space for the procInfo.
+	* cni/UnwindNative.cxx (native_find_proc_info): Pass a jlong to java, 
+	not a long.
+
 2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
 	* Accessors.java: Made methods public.

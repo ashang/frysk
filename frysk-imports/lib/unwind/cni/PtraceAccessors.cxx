@@ -109,11 +109,13 @@ lib::unwind::ProcInfo*
 lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 {
 	logFine(this, logger, "findProcInfo ip: 0x%lx, needUnwindInfo %d", (long) ip, (int) needUnwindInfo);
-	unw_proc_info_t proc_info = {};
-	int ret = _UPT_find_proc_info((unw_addr_space_t) addressSpace, (unw_word_t) ip, &proc_info,
+	unw_proc_info_t *proc_info = (unw_proc_info_t *)JvAllocBytes(sizeof (unw_proc_info_t));
+	int ret = _UPT_find_proc_info((unw_addr_space_t) addressSpace, 
+	(unw_word_t) ip, proc_info,
 					(int) needUnwindInfo, (void *) ptArgs);
 
-	lib::unwind::ProcInfo * procInfo = new ProcInfo((jint) ret,(gnu::gcj::RawDataManaged *) &proc_info);
+	lib::unwind::ProcInfo *procInfo = new 
+	ProcInfo((jint) ret,(gnu::gcj::RawDataManaged *) proc_info);
 	
   	jLogFinest(this, logger, "findProcInfo procInfo: {1}", procInfo);
   	return procInfo;

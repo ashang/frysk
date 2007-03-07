@@ -77,12 +77,11 @@ native_find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 		    ::unw_proc_info_t *pip, int need_unwind_info,
 		    void *arg)
 {
-	lib::unwind::ProcInfo* procInfo = ((lib::unwind::Accessors *)arg)->findProcInfo ( (long) ip,
-	(jboolean) need_unwind_info);
+	lib::unwind::ProcInfo* procInfo = ((lib::unwind::Accessors *)arg)->findProcInfo ( 
+	(jlong) ip,	(jboolean) need_unwind_info);
 
 	if (procInfo->error != 0)
 		return procInfo->error;
-
 	
 	memcpy(pip, procInfo->procInfo, sizeof (unw_proc_info_t));
 
