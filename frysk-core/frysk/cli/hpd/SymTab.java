@@ -51,6 +51,8 @@ import lib.dw.DwarfCommand;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
+import lib.dw.DwTagEncodings;
+import lib.dw.DwAtEncodings;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import antlr.CommonAST;
@@ -185,16 +187,16 @@ public class SymTab
       if (varDie == null)
         {
           varDie = DwarfDie.getDecl(dwarf, sInput);
-	  if (varDie == null)
+          if (varDie == null)
             throw new NameNotFoundException(sInput + " not found in scope.");
-          if (varDie.isExternal())
+          if (varDie.getAttr(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
           result.append(varDie + " " + varDie.getName());
           DwarfDie parm = varDie.getChild();
           boolean first = true;
-          while (parm != null && parm.isFormalParameter())
+          while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
             {
-              if (parm.isArtificial() == false)
+              if (parm.getAttr(DwAtEncodings.DW_AT_artificial_) == false)
                 {
                   if (first)
                     {
@@ -215,7 +217,7 @@ public class SymTab
         }
       else
         {
-          if (varDie.isExternal())
+          if (varDie.getAttr(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
           result.append(varDie);
         }

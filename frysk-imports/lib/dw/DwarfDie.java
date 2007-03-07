@@ -65,14 +65,6 @@ public class DwarfDie
     return this.parent;
   }
 
-  // public DwarfDie getContainingCompilationUnit(){
-  // long val = dwarf_diecu();
-  // if(val == 0)
-  // return null;
-  //		
-  // return new DwarfDie(val);
-  // }
-
   public long getHighPC ()
   {
     return get_highpc();
@@ -161,6 +153,28 @@ public class DwarfDie
     varNames.add(name);
   }
   
+  public class DwarfOp
+  {
+    public int operator;
+    public int operand1;
+    public int operand2;
+    public int offset;
+    DwarfOp (int op, int op1, int op2, int off)
+    {
+      operator = op;
+      operand1 = op1;
+      operand2 = op2;
+      offset = off;
+    }
+  }
+  private ArrayList DwarfOps;
+  
+  public void addOps (int operator, int operand1, int operand2, int offset)
+  {
+    DwarfOp dwarfOp = new DwarfOp(operator, operand1, operand2, offset);
+    DwarfOps.add(dwarfOp);
+  }
+  
   /**
    * @return Scopes index of this die.
    */
@@ -181,9 +195,11 @@ public class DwarfDie
   /**
    * @param fbreg_and_disp Return ptr+disp.   Typically this is a static address or ptr+disp.
    */
-  public void getAddr (long[] fbreg_and_disp)
+  public List getAddr ()
   {
-    get_addr(fbreg_and_disp, this.getPointer());
+    DwarfOps = new ArrayList();
+    get_addr(this.getPointer(), 0);
+    return DwarfOps;
   }
 
   /**
@@ -204,6 +220,16 @@ public class DwarfDie
     return get_base_type(this.getPointer());
   }
   
+  public boolean getAttr(int attr)
+  {
+    return get_attr(this.getPointer(), attr);
+  }
+  
+  public int getTag()
+  {
+    return get_tag(this.getPointer());
+  }
+  
   /**
    * @return The upper bound for this subrange die.
    */
@@ -212,46 +238,6 @@ public class DwarfDie
     return get_upper_bound(this.getPointer());
   }
 
-  /**
-   * @return True if die describes an array.
-   */
-  public boolean isArrayType()
-  {
-    return is_array_type(this.getPointer());
-  }
-  
-  /**
-   * @return True if die describes a class.
-   */
-  public boolean isClassType()
-  {
-    return is_class_type(this.getPointer());
-  }
-  
-  /**
-   * @return True if die describes a formal parameter
-   */
-  public boolean isFormalParameter()
-  {
-    return is_formal_parameter(this.getPointer());
-  }
- 
-  /**
-   * @return True if die describes a hidden parameter
-   */
-  public boolean isArtificial()
-  {
-    return is_artificial(this.getPointer());
-  }
-  
-  /**
-   * @return True if die describes an extern
-   */
-  public boolean isExternal()
-  {
-    return is_external(this.getPointer());
-  }
-  
   /**
    * @return The child for the current die.
    */
@@ -285,14 +271,16 @@ public class DwarfDie
    * @param fbreg_and_disp Base pointer and displacement (out).
    * @param pc PC DW_AT_frame_base is desired for.
    */
-  public void getFrameBase (long[] fbreg_and_disp, long pc)
+  public List getFrameBase (long pc)
   {
+    DwarfOps = new ArrayList();
     for (int i = this.scopeIndex; i < this.scopes.length; i++)
       {
-        get_framebase(fbreg_and_disp, this.getPointer(), this.scopes[i].pointer, pc);
-        if (fbreg_and_disp[0] != -1)
+        get_framebase(this.getPointer(), this.scopes[i].pointer, pc);
+        if (DwarfOps.size() != 0)
           break;
       }
+    return DwarfOps;
   }
 
   /**
@@ -300,9 +288,11 @@ public class DwarfDie
    * Typically this is from a location list.
    * @param pc - PC
    */
-  public void getFormData (long[] fbreg_and_disp, long pc)
+  public List getFormData (long pc)
   {
-    get_formdata(fbreg_and_disp, this.getPointer(), pc);
+    DwarfOps = new ArrayList();
+    get_addr(this.getPointer(), pc);
+    return DwarfOps;
   }
 
   public long getDataMemberLocation ()
@@ -374,7 +364,7 @@ public class DwarfDie
 
   private native long get_scopevar_names (long[] scopes, String variable);
   
-  private native void get_addr (long[] fbreg_and_disp, long addr);
+  private native void get_addr (long addr, long pc);
   
   private native long get_type (long addr);
   
@@ -384,21 +374,13 @@ public class DwarfDie
   
   private native int get_base_type (long addr);
 
+  private native boolean get_attr (long addr, int attr);
+  
+  private native int get_tag (long var_die);
+  
   private native int get_upper_bound (long addr);
   
-  private native boolean is_array_type (long addr);
-  
-  private native boolean is_class_type (long addr);
-  
-  private native boolean is_formal_parameter (long addr);
-  
-  private native boolean is_artificial (long addr);
-  
-  private native boolean is_external (long addr);
-  
-  private native void get_framebase (long[] fbreg_and_disp, long addr, long scope, long pc);
-
-  private native void get_formdata (long[] fbreg_and_disp, long addr, long pc);
+  private native void get_framebase (long addr, long scope, long pc);
 
   private native long get_data_member_location (long addr);
   

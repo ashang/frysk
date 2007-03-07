@@ -47,6 +47,7 @@ import inua.eio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.lang.Integer;
 import java.util.Map;
 
@@ -54,6 +55,8 @@ import lib.dw.BaseTypes;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
+import lib.dw.DwOpEncodings;
+import lib.dw.DwTagEncodings;
 import frysk.expr.CppSymTab;
 import frysk.value.ArrayType;
 import frysk.value.ByteType;
@@ -148,10 +151,6 @@ class ExprSymTab
 
   interface VariableAccessor
   {
-    int DW_OP_addr = 0x03;
-
-    int DW_OP_fbreg = 0x91;
-
     boolean isSuccessful ();
 
     void setSuccessful (boolean b);
@@ -223,44 +222,47 @@ class ExprSymTab
 
       pc = currentFrame.getAdjustedAddress();
 
-      long fbreg_and_disp[] = {0, 0};
-      varDieP.getAddr(fbreg_and_disp);
-      if (fbreg_and_disp[0] == -1) // location list says no value is accessible
+      List ops = varDieP.getAddr();
+      if (ops.size() == 0 ||
+          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
         return 0;
-      if (fbreg_and_disp[0] == DW_OP_addr)
+      if (((DwarfDie.DwarfOp)ops.get(0)).operator == DwOpEncodings.DW_OP_addr_)
         {
           setSuccessful(true);
-          return fbreg_and_disp[1];
+          return ((DwarfDie.DwarfOp)ops.get(0)).operand1;
         }
-      long addr = fbreg_and_disp[1];
-      varDieP.getFrameBase(fbreg_and_disp, pc);
-      if (fbreg_and_disp[0] == -1) // location list says no value is accessible
+      long addr = ((DwarfDie.DwarfOp)ops.get(0)).operand1;
+      
+      ops = varDieP.getFrameBase(pc);
+      if (ops.size() == 0 ||
+          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
         return 0;
-      // DW_OP_fbreg
+      int reg = ((DwarfDie.DwarfOp)ops.get(0)).operator;
+      reg = (reg >= 0x70) ? reg - 0x70 : reg - 0x50;
       long regval = 0;
+      
+      // DW_OP_fbreg
       setSuccessful(true);
       if (currentFrame.getInner() == null)
         {
           Isa isa = task.getIsa();
 
           if (isa instanceof frysk.proc.IsaIA32)
-            regval = isa.getRegisterByName
-              (x86regnames[(int) fbreg_and_disp[0]][0]).get(task);
+            regval = isa.getRegisterByName(x86regnames[reg][0]).get(task);
           else if (isa instanceof frysk.proc.IsaX8664)
-            regval = isa.getRegisterByName
-              (x86regnames[(int) fbreg_and_disp[0]][1]).get(task);
+            regval = isa.getRegisterByName(x86regnames[reg][1]).get(task);
         }
       else
         {
           Isa isa = currentFrame.getTask().getIsa();
 
           if (isa instanceof frysk.proc.IsaIA32)
-            regval = currentFrame.getReg(x86regnumbers[(int) fbreg_and_disp[0]]);
+            regval = currentFrame.getReg(x86regnumbers[reg]);
           else if (isa instanceof frysk.proc.IsaX8664)
-            regval = currentFrame.getReg(fbreg_and_disp[0]);
+            regval = currentFrame.getReg(reg);
         }
 
-      addr += fbreg_and_disp[1];
+      addr += ((DwarfDie.DwarfOp)ops.get(0)).operand1;
       addr += regval;
       return addr;
     }
@@ -380,16 +382,17 @@ class ExprSymTab
         isa = currentFrame.getTask().getIsa();
 
       pc = currentFrame.getAdjustedAddress();
-      long fbreg_and_disp[] = {0, 0};
-      varDieP.getFormData(fbreg_and_disp, pc);
-      if (fbreg_and_disp[0] != - 1)
-        {
-          setSuccessful(true);
-          if (isa instanceof frysk.proc.IsaIA32)
-            reg = x86regnumbers[(int) fbreg_and_disp[0]];
-          else if (isa instanceof frysk.proc.IsaX8664)
-            reg = fbreg_and_disp[0];
-        }
+      List ops = varDieP.getFormData(pc);
+      
+      if (ops.size() == 0 ||
+          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
+        return 0;
+      
+      reg = ((DwarfDie.DwarfOp)ops.get(0)).operator;
+      reg = (reg >= 0x70) ? reg - 0x70 : reg - 0x50;
+      setSuccessful(true);
+      if (isa instanceof frysk.proc.IsaIA32)
+          reg = x86regnumbers[(int)reg];
 
       return reg;
     }
@@ -566,6 +569,7 @@ class ExprSymTab
         try
           {
             DwarfDie type = varDie.getType();
+            int tag = type.getTag();
             if (type == null)
               return null;
             switch (type.getBaseType())
@@ -613,7 +617,7 @@ class ExprSymTab
                 return DoubleType.newDoubleVariable(doubleType, s, doubleVal);
               }
             }
-            if (type.isArrayType())
+            if (tag == DwTagEncodings.DW_TAG_array_type_)
               {
                 DwarfDie subrange;
                 long addr = variableAccessor[0].getAddr(s);
@@ -665,7 +669,7 @@ class ExprSymTab
                 Variable arrVar = new Variable(arrayType, "", abb);
                 return arrVar;
               }
-            else if (type.isClassType())
+            else if (tag == DwTagEncodings.DW_TAG_structure_type_)
               {
                 DwarfDie subrange;
                 long addr = variableAccessor[0].getAddr(s);

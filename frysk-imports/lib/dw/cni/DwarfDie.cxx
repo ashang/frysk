@@ -45,7 +45,6 @@
 #include "lib/dw/DwarfDie.h"
 #include "lib/dw/BaseTypes.h"
 
-#define DW_OP_fbreg 0x91
 #define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
 
 jlong
@@ -206,22 +205,29 @@ lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
 }
 
 void
-lib::dw::DwarfDie::get_addr (jlongArray fbreg_and_disp, jlong var_die)
+lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Attribute loc_attr;
   Dwarf_Op *fb_expr;
   size_t fb_len;
   
-  jlong* longp = elements(fbreg_and_disp);
-  longp[0] = -1;
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
     {
-      if (dwarf_getlocation (&loc_attr, &fb_expr, &fb_len) >= 0)
-	{
-	  longp[0] = fb_expr[0].atom;
-	  longp[1] = fb_expr[0].number;
-	}
+      int i = 0;
+      int nlocs;
+      if (pc == 0)
+	nlocs = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
+      else
+	nlocs = dwarf_getlocation_addr (&loc_attr, pc, &fb_expr, &fb_len, 1);
+      if (nlocs >= 0)
+	do 
+	  {
+	    addOps (fb_expr[i].atom, fb_expr[i].number, fb_expr[i].number2,
+		    fb_expr[i].offset);
+	    i += 1;
+	  }
+	while (i < nlocs);
     }
 }
 
@@ -329,78 +335,26 @@ lib::dw::DwarfDie::get_upper_bound (jlong var_die)
   return -1;
 }
   
-jboolean
-lib::dw::DwarfDie::is_array_type (jlong type_die)
+jint
+lib::dw::DwarfDie::get_tag (jlong die_p)
 {
-  Dwarf_Die *die = (Dwarf_Die*)type_die;
-
-  if (dwarf_tag (die) == DW_TAG_array_type)
-    return 1;
-  else
-    return 0;
+  Dwarf_Die *die = (Dwarf_Die*)die_p;
+  return dwarf_tag (die);
 }
 
 jboolean
-lib::dw::DwarfDie::is_class_type (jlong type_die)
+lib::dw::DwarfDie::get_attr (jlong die_p, jint attr)
 {
-  Dwarf_Die *die = (Dwarf_Die*)type_die;
-  
-  if (dwarf_tag (die) == DW_TAG_structure_type)
-    return 1;
-  else
-    return 0;
-}
-
-jboolean
-lib::dw::DwarfDie::is_formal_parameter (jlong type_die)
-{
-  Dwarf_Die *die = (Dwarf_Die*)type_die;
-  
-  if (dwarf_tag (die) == DW_TAG_formal_parameter)
-    return 1;
-  else
-    return 0;
-}
-
-jboolean
-lib::dw::DwarfDie::is_artificial (jlong type_die)
-{
-  Dwarf_Die *die = (Dwarf_Die*)type_die;
+  Dwarf_Die *die = (Dwarf_Die*)die_p;
   Dwarf_Attribute type_attr;
-  
-  if (dwarf_attr_integrate (die, DW_AT_artificial, &type_attr))
+  if (dwarf_attr_integrate (die, attr, &type_attr))
     return 1;
   else
     return 0;
 }
-
-jboolean
-lib::dw::DwarfDie::is_external (jlong type_die)
-{
-  Dwarf_Die *die = (Dwarf_Die*)type_die;
-  
-  Dwarf_Attribute type_attr;
-  
-  if (dwarf_attr_integrate (die, DW_AT_external, &type_attr))
-    return 1;
-  else
-    return 0;
-}
-
-#define GETREGNO(r) (r == DW_OP_breg0) ? 0 : (r == DW_OP_breg1) ? 1     \
-  : (r == DW_OP_breg2) ? 2 : (r == DW_OP_breg3) ? 3 : (r == DW_OP_breg4) ? 4 \
-  : (r == DW_OP_breg5) ? 5 : (r == DW_OP_breg6) ? 6 : (r == DW_OP_breg7) ? 7 \
-  : (r == DW_OP_reg0) ? 0 : (r == DW_OP_reg1) ? 1			\
-  : (r == DW_OP_reg2) ? 2 : (r == DW_OP_reg3) ? 3 : (r == DW_OP_reg4) ? 4 \
-  : (r == DW_OP_reg5) ? 5 : (r == DW_OP_reg6) ? 6 : (r == DW_OP_reg7) ? 7 \
-  : (r == DW_OP_reg8) ? 8 : (r == DW_OP_reg9) ? 9 : (r == DW_OP_reg10) ? 10 \
-  : (r == DW_OP_reg11) ? 11 : (r == DW_OP_reg12) ? 12 : (r == DW_OP_reg13) ? 13 \
-  : (r == DW_OP_reg14) ? 14 : (r == DW_OP_reg15) ? 15 : -1
-
 
 void
-lib::dw::DwarfDie::get_framebase (jlongArray fbreg_and_disp, jlong var_die,
-				  jlong scope_arg, jlong pc)
+lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Attribute loc_attr;
@@ -409,10 +363,9 @@ lib::dw::DwarfDie::get_framebase (jlongArray fbreg_and_disp, jlong var_die,
   Dwarf_Attribute *fb_attr;
   size_t fb_len;
   
-  jlong* longp = elements(fbreg_and_disp);
-  longp[0] = -1;
   if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr) >= 0)
     {
+      int i = 0;
       code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
       if (fb_expr[0].atom != DW_OP_fbreg)
 	return;
@@ -422,46 +375,18 @@ lib::dw::DwarfDie::get_framebase (jlongArray fbreg_and_disp, jlong var_die,
 				      &loc_attr);
 
       code = (dwarf_getlocation_addr (fb_attr, pc, &fb_expr, &fb_len, 1));
-      if (code != 1 || fb_len <= 0)
-	return;
-      longp[0] = GETREGNO (fb_expr[0].atom);
-      longp[1] = fb_expr[0].number;
+      if (code > 0 && fb_len > 0)
+	do 
+	  {
+	    addOps (fb_expr[i].atom, fb_expr[i].number, fb_expr[i].number2,
+		    fb_expr[i].offset);
+	    i += 1;
+	  }
+	while (i < code);
       return;
     }
 }
 
-void
-lib::dw::DwarfDie::get_formdata (jlongArray fbreg_and_disp, jlong var_die,
-				 jlong pc)
-{
-  Dwarf_Die *die = (Dwarf_Die*) var_die;
-  Dwarf_Attribute loc_attr;
-  Dwarf_Op *fb_expr;
-  int code;
-  Dwarf_Attribute *fb_attr;
-  size_t fb_len;
-  
-  jlong* longp = elements(fbreg_and_disp);
-  longp[0] = -1;
-  if (dwarf_attr_integrate (die, DW_AT_location, &loc_attr))
-    {
-      code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
-      if (code == -1)		// block form
-	{
-	  fb_attr = dwarf_attr_integrate (die, DW_AT_location, &loc_attr);
-	  code = (dwarf_getlocation_addr (fb_attr, pc, &fb_expr, &fb_len, 1));
-	  if (code > 0)
-	    {
-	      longp[0] = GETREGNO (fb_expr[0].atom);
-	      longp[1] = fb_expr[0].number;
-	      return;
-	    }
-	  else
-	    return;
-	}
-      return;
-    }
-}
 
 jlong
 lib::dw::DwarfDie::get_data_member_location (jlong var_die)

@@ -1,3 +1,10 @@
+2007-03-07  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java (what): Use DwAtEncodings and DwTagEncodings.
+	* hpd/ExprSymTab.java (getBufferAddr): Use DwarfOp and DwOpEncodings.
+	(AccessDW_FORM_data.getReg): Likewise.
+	(get): Use DwTagEncodings.
+
 2007-03-07  Tim Moore  <timoore@redhat.com>
 
 	* CLIHandler.java: New file.

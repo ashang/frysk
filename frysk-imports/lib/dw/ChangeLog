@@ -1,3 +1,28 @@
+2007-03-06  Stan Cox  <scox@redhat.com>
+
+	* (DwAtEncodings.shenum): New file.
+	* (DwOpEncodings.shenum): New file.
+	* (DwTagEncodings.shenum): New file.
+	* DwarfDie.java (DwarfOp): New.
+	(addOps): New.
+	(getAttr): New.
+	(getTag): New.
+	(getAddr): Use DwarfOp.
+	(getFormData): Use DwarfOp.
+	(isArrayType): Remove.
+	(isClassType): Remove.
+	(isFormalParameter): Remove.
+	(isArtificial): Remove.
+	(isExternal): Remove.
+	* cni/DwarfDie.cxx (get_addr): Use addOps.
+	(get_attr): New.
+	(get_tag): New.
+	(is_array_type): Remove.
+	(is_class_type): Remove.
+	(is_formal_parameter): Remove.
+	(is_artificial): Remove.
+	(get_formdata): Remove.
+	
 2007-02-28  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (GETREGNO): Add x8664 specific registers.
