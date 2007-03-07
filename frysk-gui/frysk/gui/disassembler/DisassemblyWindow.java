@@ -64,6 +64,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.EntryEvent;
+import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.SpinEvent;
@@ -123,6 +125,10 @@ public class DisassemblyWindow
   private Entry pcEntryDec;
 
   private Entry pcEntryHex;
+  
+  private Entry fromBox;
+    
+  private Entry toBox;
 
   private ListStore model;
 
@@ -141,6 +147,8 @@ public class DisassemblyWindow
   private Observable observable;
   
   private LockObserver lock;
+  
+  private TreePath lastPath;
   
   private boolean toggle = true;
   
@@ -161,6 +169,8 @@ public class DisassemblyWindow
 
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
+    this.fromBox = (Entry) this.glade.getWidget("fromBox");
+    this.toBox = (Entry) this.glade.getWidget ("toBox");
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.model = new ListStore(cols);
@@ -253,6 +263,7 @@ public class DisassemblyWindow
 
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setValue((double) pc_inc);
+    this.fromBox.setText(Long.toHexString(pc_inc));
     this.lastKnownFrom = pc_inc;
     //this.toSpin.setValue((double) end);
     this.pcEntryDec.setText("" + pc_inc);
@@ -301,8 +312,8 @@ public class DisassemblyWindow
     });
     
     ((Button) this.glade.getWidget("formatButton")).setSensitive(false);
-
-    ((SpinButton) this.glade.getWidget("fromSpin")).addListener(new SpinListener()
+    
+    this.fromSpin.addListener(new SpinListener()
     {
       public void spinEvent (SpinEvent arg0)
       {
@@ -311,12 +322,56 @@ public class DisassemblyWindow
       }
     });
 
-    ((SpinButton) this.glade.getWidget("toSpin")).addListener(new SpinListener()
+    this.toSpin.addListener(new SpinListener()
     {
       public void spinEvent (SpinEvent arg0)
       {
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
           handleToSpin(toSpin.getValue());
+      }
+    });
+    
+    this.fromBox.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent arg0)
+      {
+        if (arg0.getType() == EntryEvent.Type.CHANGED)
+          {
+            String str = arg0.getText();
+            try
+            {
+              double d = (double) Long.parseLong(str, 16);
+              //fromSpin.setValue(d);
+              handleFromSpin(d);
+            }
+            catch (NumberFormatException nfe)
+            {
+              fromBox.setText(Long.toHexString((long) lastKnownFrom));
+            }
+          }
+      }
+    });
+
+    this.toBox.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent arg0)
+      {
+        if (arg0.getType() == EntryEvent.Type.CHANGED)
+          {
+            {
+              String str = arg0.getText();
+              try
+              {
+                double d = (double) Long.parseLong(str, 16);
+                //toSpin.setValue(d);
+                handleToSpin(d);
+              }
+              catch (NumberFormatException nfe)
+              {
+                toBox.setText(Long.toHexString((long) lastKnownTo));
+              }
+            }
+          }
       }
     });
 
@@ -340,8 +395,13 @@ public class DisassemblyWindow
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
     
-    for (long i = 0; i < this.numInstructions; i++)
-      this.model.appendRow();
+    this.model.appendRow();
+    this.lastPath = this.model.getFirstIter().getPath();
+    for (long i = 1; i < this.numInstructions; i++)
+      {
+        this.model.appendRow();
+        this.lastPath.next();
+      }
     
     refreshList();
   }
@@ -366,8 +426,13 @@ public class DisassemblyWindow
         disassemblerView.removeColumn(tvc[i]);
       }
 
-    for (long i = 0; i < this.numInstructions; i++)
-      this.model.appendRow();
+    this.model.appendRow();
+    this.lastPath = this.model.getFirstIter().getPath();
+    for (long i = 1; i < this.numInstructions; i++)
+      {
+        this.model.appendRow();
+        this.lastPath.next();
+      }
       //rowAppend(i, null);
 
     TreeViewColumn col = new TreeViewColumn();
@@ -413,8 +478,13 @@ public class DisassemblyWindow
    
     this.model.clear();
     
-    for (long i = 0; i < this.numInstructions; i++)
-      this.model.appendRow();
+    this.model.appendRow();
+    this.lastPath = this.model.getFirstIter().getPath();
+    for (long i = 1; i < this.numInstructions; i++)
+      {
+        this.model.appendRow();
+        this.lastPath.next();
+      }
     
     refreshList();
   }
@@ -466,6 +536,7 @@ public class DisassemblyWindow
             else
               {
                 this.toSpin.setValue((double) ins.address);
+                this.toBox.setText(Long.toHexString(ins.address));
                 this.lastKnownTo = ins.address;
                 ins = null;
               }
@@ -520,6 +591,7 @@ public class DisassemblyWindow
     while (ins != null && ins.address < i)
       {
         iter = model.appendRow();
+        this.lastPath.next();
         if (ins != null)
           {
             model.setValue(iter, (DataColumnString) cols[1],
@@ -543,6 +615,7 @@ public class DisassemblyWindow
       }
     
     this.toSpin.setValue((double) ins.address);
+    this.toBox.setText(Long.toHexString(ins.address));
     this.lastKnownTo = ins.address;
   }
   
@@ -551,6 +624,8 @@ public class DisassemblyWindow
     this.disassemblerView.setSensitive(false);
     this.fromSpin.setSensitive(false);
     this.toSpin.setSensitive(false);
+    this.fromBox.setSensitive(false);
+    this.toBox.setSensitive(false);
   }
   
   private void resensitize ()
@@ -558,6 +633,8 @@ public class DisassemblyWindow
     this.disassemblerView.setSensitive(true);
     this.fromSpin.setSensitive(true);
     this.toSpin.setSensitive(true);
+    this.fromBox.setSensitive(true);
+    this.toBox.setSensitive(true);
   }
 
   /*****************************************************************************
@@ -579,6 +656,7 @@ public class DisassemblyWindow
     if (val > this.lastKnownTo)
       {
         this.fromSpin.setValue(this.lastKnownTo);
+        this.fromBox.setText(Long.toHexString((long) this.lastKnownTo));
         this.lastKnownFrom = this.lastKnownTo;
         return;
       }
@@ -598,16 +676,14 @@ public class DisassemblyWindow
       {
         for (long i = (long) val; i < lastKnownFrom; i++)
           {
-            //TreeIter newRow = model.prependRow();
-            //rowAppend(i, newRow);
             this.numInstructions++;
             model.prependRow();
-            //model.clear();
-            refreshList();
           }
       }
-    //refreshList();
+    
+    refreshList();
     this.lastKnownFrom = val;
+    this.fromBox.setText(Long.toHexString((long) val));
   }
 
   boolean toToggle = false;
@@ -633,6 +709,7 @@ public class DisassemblyWindow
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
+        this.toBox.setText(Long.toHexString((long) this.lastKnownFrom));
         this.lastKnownTo = this.lastKnownFrom;
         return;
       }
@@ -651,39 +728,28 @@ public class DisassemblyWindow
         if (this.numInstructions < 1)
           return;
 
-        TreeIter i = model.getFirstIter();
-        TreePath path = i.getPath();
-
-        int j;
-        for (j = 1; j < this.numInstructions; j++)
-          {
-            path.next();
-          }
-
-        --this.numInstructions;
-
-        path.previous();
-        Instruction ins = (Instruction) this.model.getValue(
-                                                            this.model.getIter(path),
-                                                            (DataColumnObject) cols[OBJ]);
         this.toToggle = true;
-        this.toSpin.setValue((double) ins.address);
 
-        this.model.removeRow(this.model.getIter(path));
-        path.previous();
-        ins = (Instruction) this.model.getValue(this.model.getIter(path),
+        this.model.removeRow(this.model.getIter(this.lastPath));
+        this.lastPath.previous();
+        --this.numInstructions;
+        
+        Instruction ins = (Instruction) this.model.getValue(this.model.getIter(this.lastPath),
                                                 (DataColumnObject) cols[OBJ]);
+        
+        this.toSpin.setValue((double) ins.address);
+        this.toBox.setText(Long.toHexString(ins.address));
+        
         while (ins.address > val)
           {
-            model.removeRow(model.getIter(path));
-            path.previous();
+            model.removeRow(model.getIter(this.lastPath));
+            this.lastPath.previous();
             ins = (Instruction) this.model.getValue(
-                                                    this.model.getIter(path),
+                                                    this.model.getIter(this.lastPath),
                                                     (DataColumnObject) cols[OBJ]);
             --this.numInstructions;
           }
-
-        this.lastKnownTo = ins.address;
+        
         refreshList();
       }
   }

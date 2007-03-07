@@ -60,6 +60,7 @@ import org.gnu.gtk.Entry;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
@@ -67,6 +68,8 @@ import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
+import org.gnu.gtk.event.EntryEvent;
+import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.SpinEvent;
@@ -112,8 +115,6 @@ public class MemoryWindow
 
   public static String gladePath;
 
-  TreeIter lastIter = null;
-
   private DataColumn[] cols = { new DataColumnString(), /* memory location */
   new DataColumnString(), /* binary little endian */
   new DataColumnString(), /* binary big endian */
@@ -154,6 +155,10 @@ public class MemoryWindow
   private Entry pcEntryDec;
 
   private Entry pcEntryHex;
+  
+  private Entry fromBox;
+  
+  private Entry toBox;
 
   private SimpleComboBox bitsCombo;
 
@@ -181,6 +186,8 @@ public class MemoryWindow
   
   private LockObserver lock;
   
+  private TreePath lastPath;
+  
   private boolean toggle = true;
   
   private boolean closed = false;
@@ -205,6 +212,8 @@ public class MemoryWindow
 
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
+    this.fromBox = (Entry) this.glade.getWidget("fromBox");
+    this.toBox = (Entry) this.glade.getWidget("toBox");
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.bitsCombo = new SimpleComboBox(
@@ -312,6 +321,8 @@ public class MemoryWindow
     this.diss = new Disassembler(myTask.getMemory());
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setValue((double) end);
+    this.fromBox.setText(Long.toHexString(pc_inc));
+    this.toBox.setText(Long.toHexString(end));
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
@@ -411,7 +422,7 @@ public class MemoryWindow
       }
     });
 
-    ((SpinButton) this.glade.getWidget("fromSpin")).addListener(new SpinListener()
+    this.fromSpin.addListener(new SpinListener()
     {
       public void spinEvent (SpinEvent arg0)
       {
@@ -420,7 +431,7 @@ public class MemoryWindow
       }
     });
 
-    ((SpinButton) this.glade.getWidget("toSpin")).addListener(new SpinListener()
+    this.toSpin.addListener(new SpinListener()
     {
       public void spinEvent (SpinEvent arg0)
       {
@@ -428,7 +439,51 @@ public class MemoryWindow
           handleToSpin(toSpin.getValue());
       }
     });
+    
+    this.fromBox.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent arg0)
+      {
+        if (arg0.getType() == EntryEvent.Type.CHANGED)
+          {
+            String str = arg0.getText();
+            try
+            {
+              double d = (double) Long.parseLong(str, 16);
+              //fromSpin.setValue(d);
+              handleFromSpin(d);
+            }
+            catch (NumberFormatException nfe)
+            {
+              fromBox.setText(Long.toHexString((long) lastKnownFrom));
+            }
+          }
+      }
+    });
 
+    this.toBox.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent arg0)
+      {
+        if (arg0.getType() == EntryEvent.Type.CHANGED)
+          {
+            {
+              String str = arg0.getText();
+              try
+              {
+                double d = (double) Long.parseLong(str, 16);
+                //toSpin.setValue(d);
+                handleToSpin(d);
+              }
+              catch (NumberFormatException nfe)
+              {
+                toBox.setText(Long.toHexString((long) lastKnownTo));
+              }
+            }
+          }
+      }
+    });
+    
   }
   
   public void resetTask (Task task)
@@ -469,13 +524,6 @@ public class MemoryWindow
     this.model.clear();
 
     memoryView.setModel(model);
-
-    /* Remove the existing information because we have to change it anyway. */
-//    TreeViewColumn[] tvc = memoryView.getColumns();
-//    for (int i = 0; i < tvc.length; i++)
-//      {
-//        memoryView.removeColumn(tvc[i]);
-//      }
 
     for (long i = start; i < end + 1; i++)
       rowAppend(i, null);
@@ -632,7 +680,12 @@ public class MemoryWindow
   public void rowAppend (long i, TreeIter iter)
   {
     if (iter == null)
-      iter = model.appendRow();
+      {
+        iter = model.appendRow();
+        this.lastPath = iter.getPath();
+      }
+    else
+      this.lastPath.next();
 
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
@@ -697,6 +750,8 @@ public class MemoryWindow
     this.bitsCombo.setSensitive(false);
     this.fromSpin.setSensitive(false);
     this.toSpin.setSensitive(false);
+    this.fromBox.setSensitive(false);
+    this.toBox.setSensitive(false);
   }
   
   private void resensitize ()
@@ -705,6 +760,8 @@ public class MemoryWindow
     this.bitsCombo.setSensitive(true);
     this.fromSpin.setSensitive(true);
     this.toSpin.setSensitive(true);
+    this.fromBox.setSensitive(true);
+    this.toBox.setSensitive(true);
   }
 
   /*****************************************************************************
@@ -777,6 +834,7 @@ public class MemoryWindow
     if (val > this.lastKnownTo)
       {
         this.fromSpin.setValue(this.lastKnownTo);
+        this.fromBox.setText(Long.toHexString((long) this.lastKnownTo));
         this.lastKnownFrom = this.lastKnownTo;
         return;
       }
@@ -799,6 +857,8 @@ public class MemoryWindow
             rowAppend(i, newRow);
           }
       }
+    
+    this.fromBox.setText(Long.toHexString((long) val));
     refreshList();
     this.lastKnownFrom = val;
   }
@@ -812,12 +872,13 @@ public class MemoryWindow
   public void handleToSpin (double val)
   {
     
-    if (this.model.getFirstIter() == null)
+    if (this.model.getFirstIter() == null || val == this.lastKnownTo)
       return;
 
     if (val < this.lastKnownFrom)
       {
         this.toSpin.setValue(lastKnownFrom);
+        this.toBox.setText(Long.toHexString((long) lastKnownFrom));
         this.lastKnownTo = this.lastKnownFrom;
         return;
       }
@@ -826,26 +887,19 @@ public class MemoryWindow
       {
         for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
           rowAppend(i, null);
+        
+        this.lastKnownTo = val;
       }
     else
       {
-        TreeIter i = model.getFirstIter();
-        while (i != null)
-          i = i.getNextIter();
-
-        TreeIter ii = model.getFirstIter();
-        long j;
-        for (j = (long) lastKnownFrom; j < (long) val; j++)
-          ii = ii.getNextIter();
-
-        for (; j < lastKnownTo; j++)
+        for (; this.lastKnownTo > val; this.lastKnownTo--)
           {
-            model.removeRow(ii);
-            ii = ii.getNextIter();
+            this.model.removeRow(this.model.getIter(this.lastPath));
+            this.lastPath.previous();
           }
       }
 
-    this.lastKnownTo = val;
+    this.toBox.setText(Long.toHexString((long) val));
     refreshList();
   }
 

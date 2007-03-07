@@ -2,6 +2,17 @@
 
 	* register/RegisterWindow.java (refreshList): Set radix properly for octal
 	values. Fixes #4140.
+	
+	* memory/MemoryWindow.java (lastPath): Added. Keeps track of the end of the
+	ListStore. Fixes #4136.
+	(handleFromSpin): Updated to use lastPath.
+	(handleToSpin): Updated to use lastPath.
+	* disassembler/DisassemblyWindow.java (lastPath): Added. Keeps track of the
+	end of the ListStore. Fixes #4136.
+	(handleFromSpin): Updated to use lastPath.
+	(handleToSpin): UPdated to use lastPath.
+	* gladedir/disassemblywindow.glade: Updated.
+	* gladedir/memorywindow.glade: Ditto.
 
 2007-03-06  Mike Cvet  <mcvet@redhat.com>
 
