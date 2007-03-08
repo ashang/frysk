@@ -1,3 +1,8 @@
+2007-03-08  Mike Cvet  <mcvet@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (setUpCurrentPage): Hide the 'quick
+	debug' button from the observer page. Fixes #4164.
+
 2007-03-07  Mike Cvet  <mcvet@redhat.com>
 
 	* register/RegisterWindow.java (refreshList): Set radix properly for octal

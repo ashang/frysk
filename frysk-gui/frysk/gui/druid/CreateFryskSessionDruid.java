@@ -1020,11 +1020,13 @@ public class CreateFryskSessionDruid
     if (page == notebook.getNumPages() - 1)
       {
         nextButton.hideAll();
+        debugButton.hideAll();
         finishButton.showAll();
       }
     else
       {
         nextButton.showAll();
+        debugButton.showAll();
         finishButton.hideAll();
       }
 
