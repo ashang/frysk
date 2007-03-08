@@ -1,3 +1,7 @@
+2007-03-08  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am (frysk2631/ice.sh): Grep for 'internal compiler error:'.
+
 2007-03-01  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am: Always use GCJHFLAGS with GCJH.

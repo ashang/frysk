@@ -424,7 +424,7 @@ XFAIL_TESTS += frysk2631/ice.sh
 frysk2631/ice.sh:
 	mkdir -p `dirname $@`
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -I $(srcdir)/frysk2631 -d . $(srcdir)/frysk2631/ClassSwitch.java >> $@.tmp
+	echo "! $(GCJ) -I $(srcdir)/frysk2631 -d . $(srcdir)/frysk2631/ClassSwitch.java 2>&1 | grep 'internal compiler error' > /dev/null " >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
