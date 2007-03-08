@@ -173,9 +173,9 @@ public class VariableWatchView
             Variable v = (Variable) model.getValue(iter,
                          (DataColumnObject) traceColumns[2]);
 
-            this.variables.remove(v);
             if (v.getText().equals(var.getText()))
               {
+                this.variables.remove(v);
                 this.model.removeRow(iter);
                 this.treeSize--;
                 break;

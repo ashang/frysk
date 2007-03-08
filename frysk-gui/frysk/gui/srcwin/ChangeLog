@@ -1,5 +1,6 @@
 2007-03-08  Mike cvet  <mcvet@redhat.com>
 
+	* VariableWatchView.java (removeTrace): Fixed #4170.
 	* SourceWindow.java (generateProcStackTrace): Deleted commented-out
 	dead code. Makes a call to SymTab.setFrames after StackFrame
 	completion.
