@@ -97,7 +97,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
-//import frysk.cli.hpd.SymTab;
+import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
@@ -2119,9 +2119,6 @@ public class SourceWindow
 
     for (int j = 0; j < size; j++)
       {
-//        DOMFunction f = null;
-//        DOMSource s = null;
-
         /** Create the stack frame * */
 
         StackFrame curr = null;
@@ -2154,58 +2151,14 @@ public class SourceWindow
                 catch (IOException e)
                   {
                     System.err.println("Can't find source code!");
-//                    this.runState.run(this.swProc.getTasks());
-//                    WarnDialog dialog = new WarnDialog("File not found",
-//                                                       "Error loading source code: "
-//                                                           + e.getMessage());
-//                    dialog.showAll();
-//                    dialog.run();
-//                    return null;
                   }
               }
-//            
-//            s = null;
-//            f = null;
-//
-//            if (line != null && dom != null)
-//              {
-//                // System.out.println("Line not null");
-//                // System.out.println("got filename");
-//		String filename = line.getFile().getName();
-//
-//                DOMImage image = null;
-//                try
-//                  {
-//                    image = this.dom.getImage(tasks[j].getProc().getMainTask().getName());
-//                    s = image.getSource(filename);
-//                    if ( s == null || !s.isParsed())
-//                      {
-//                        // source has not been parsed, go put it in the DOM and
-//                        // parse it
-//                        s = image.addSource(this.swProc, curr, this.dom);
-//                      }
-//                    if (s != null)
-//                      f = s.findFunction(line.getLine());
-//                  }
-//                catch (NullPointerException npe)
-//                  {
-//                    npe.printStackTrace();
-//                    s = null;
-//                    f = null;
-//                  }
-//                catch (IOException e)
-//                {
-//                  e.printStackTrace();
-//                }
-//              }
-
-//            curr.setDOMSource(s);
-//            curr.setDOMFunction(f);
             curr = curr.getOuter();
           }
       }
 
     DOMFactory.clearDOMSourceMap(this.swProc);
+    SymTab.setFrames(frames);
     return frames;
   }
 
@@ -2315,10 +2268,9 @@ public class SourceWindow
     {
       if (newFrame == null)
         return;
-      
+
       if (newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
         SourceWindow.this.currentTask = newFrame.getTask();
-        
 
       if (SourceWindow.this.currentFrame != null
           && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())

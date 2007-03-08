@@ -159,10 +159,6 @@ public class SourceBuffer
 
   // Hashmap of comments for each file
   protected static HashMap comments = new HashMap();
-  
-  //private HashMap MarkMap;
-  
-//  private int tagFlag = 0;
 
   // Since conceptually each sourcebuffer will only be viewing one file, we
   // don't
@@ -643,9 +639,6 @@ public class SourceBuffer
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Task myTask = this.scope.getTask();
-    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
-    stab.toString();
     Variable var;
     try
       {
@@ -661,7 +654,8 @@ public class SourceBuffer
       }
     catch (NameNotFoundException n)
       {
-	return null;
+        System.err.println(n.getMessage());
+        return null;
       }
 
     return var;
@@ -694,7 +688,7 @@ public class SourceBuffer
       }
     catch (NameNotFoundException n)
       {
-        n.printStackTrace();
+        //n.printStackTrace();
         return ret;
       }
     
@@ -715,9 +709,6 @@ public class SourceBuffer
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Task myTask = this.scope.getTask();
-    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
-    stab.toString();
     Variable var;
     try
       {
@@ -733,6 +724,7 @@ public class SourceBuffer
       }
     catch (NameNotFoundException n)
       {
+          //n.printStackTrace();
 	return null;
       }
 
@@ -844,7 +836,7 @@ public class SourceBuffer
 
     return new DOMInlineInstance((Element) iter.next());
   }
-
+  
   public void setScope (StackFrame scope)
   {
     this.setScope(scope, SOURCE_MODE);

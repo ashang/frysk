@@ -1,3 +1,16 @@
+2007-03-08  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/Symtab.java (task): Not used, removed.
+	(exprSymTab): Changed to an array. Will contain an ExprSymTab for
+	each thread of a process. Fixes #4173.
+	(SymTab): Changed parameter 'pid_p' to 'tid_p'. Initializes the new
+	ExprSymTab array.
+	(print): Moved TmpSymTab initialization inside if statement.
+	Added a while loop to check through all elements of the ExprSymTab
+	array for a variable. Fixes #4173.
+	(setFrames): Added. Static method to be called after a step; updating
+	the ExprSymTab array with fresh StackFrame values.
+
 2007-03-07  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java (what): Use DwAtEncodings and DwTagEncodings.

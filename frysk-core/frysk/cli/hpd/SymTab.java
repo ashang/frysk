@@ -69,16 +69,15 @@ import frysk.expr.CppTreeParser;
 public class SymTab
 {
   Proc proc;
-  Task task;
   int pid;
   Elf elf;
   Dwarf dwarf;
-  static ExprSymTab exprSymTab;
+  
+  static ExprSymTab[] exprSymTab;
 
-
-    public SymTab (int pid_p, Proc proc_p, Task task_p)
+    public SymTab (int tid_p, Proc proc_p, Task task_p)
     {
-      this(pid_p, proc_p, task_p, null);
+      this(tid_p, proc_p, task_p, null);
     }
     /**
      * Create a symbol table object.
@@ -86,11 +85,10 @@ public class SymTab
      * @param proc_p
      * @param task_p
      */
-    public SymTab (int pid_p, Proc proc_p, Task task_p, StackFrame frame)
+    public SymTab (int tid_p, Proc proc_p, Task task_p, StackFrame frame)
     {
-      pid = pid_p;
+      pid = tid_p;
       proc = proc_p;
-      task = task_p;
       try 
       {
         elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
@@ -98,7 +96,8 @@ public class SymTab
       }
       catch (lib.elf.ElfException ee)
       {}
-      exprSymTab = new ExprSymTab (task, pid, frame);
+      exprSymTab = new ExprSymTab[1];
+      exprSymTab[0] = new ExprSymTab (task_p, pid, frame);
     }
 
    /**
@@ -106,7 +105,8 @@ public class SymTab
     */
    public void refresh()
    {
-     exprSymTab.refreshCurrentFrame();
+     for (int i = 0; i < exprSymTab.length; i++)
+       exprSymTab[i].refreshCurrentFrame();
    }
   
     /**
@@ -235,65 +235,123 @@ public class SymTab
      * @return Variable
      * @throws ParseException
      */
-    static public Variable print(String sInput) throws ParseException,NameNotFoundException
+    static public Variable print (String sInput) throws ParseException,
+      NameNotFoundException
+  {
+    Variable result = null;
+    sInput += (char) 3;
+
+    final class TmpSymTab
+        implements CppSymTab
     {
-      final class TmpSymTab
-      implements CppSymTab
+      public void put (String s, Variable v) throws NameNotFoundException
       {
-        public void put (String s, Variable v) throws NameNotFoundException    
-        {
-          throw new NameNotFoundException("No symbol table is available.");
-        }
-        public Variable get(String s) throws NameNotFoundException 
-        {
-          throw new NameNotFoundException("No symbol table is available.");
-        }
-        public Variable get(String s, ArrayList v) throws NameNotFoundException 
-        {
-          throw new NameNotFoundException("No symbol table is available.");
-        }
-        public Variable get(ArrayList v) throws NameNotFoundException 
-        {
-          throw new NameNotFoundException("No symbol table is available.");
-        }
-        public boolean putUndefined() {return false;}
+        throw new NameNotFoundException("No symbol table is available.");
       }
-      TmpSymTab tmpSymTab = new TmpSymTab();
-      Variable result = null;
-      sInput += (char)3;
-      CppLexer lexer = new CppLexer(new StringReader (sInput));
-      CppParser parser = new CppParser(lexer);
-      try {
+
+      public Variable get (String s) throws NameNotFoundException
+      {
+        throw new NameNotFoundException("No symbol table is available.");
+      }
+
+      public Variable get (String s, ArrayList v) throws NameNotFoundException
+      {
+        throw new NameNotFoundException("No symbol table is available.");
+      }
+
+      public Variable get (ArrayList v) throws NameNotFoundException
+      {
+        throw new NameNotFoundException("No symbol table is available.");
+      }
+
+      public boolean putUndefined ()
+      {
+        return false;
+      }
+    }
+
+    CppLexer lexer = new CppLexer(new StringReader(sInput));
+    CppParser parser = new CppParser(lexer);
+    try
+      {
         parser.start();
       }
-      catch (antlr.RecognitionException r)
-      {}
-      catch (antlr.TokenStreamException t)
-      {}
-      catch (frysk.expr.TabException t)
-      {}
+    catch (antlr.RecognitionException r)
+      {
+      }
+    catch (antlr.TokenStreamException t)
+      {
+      }
+    catch (frysk.expr.TabException t)
+      {
+      }
 
-      CommonAST t = (CommonAST)parser.getAST();
-      CppTreeParser treeParser;
-      if (exprSymTab == null)
+    CommonAST t = (CommonAST) parser.getAST();
+    CppTreeParser treeParser;
+    if (exprSymTab == null)
+      {
+        TmpSymTab tmpSymTab = new TmpSymTab();
         treeParser = new CppTreeParser(4, 2, tmpSymTab);
-      else
-        treeParser = new CppTreeParser(4, 2, exprSymTab);
-
-      try {
-        result = treeParser.expr(t);
-      }
-      catch (ArithmeticException ae)  {
-        throw ae;
-      }
+        
+        try
+        {
+          result = treeParser.expr(t);
+        }
+      catch (ArithmeticException ae)
+        {
+          ae.printStackTrace();
+          throw ae;
+        }
       catch (antlr.RecognitionException r)
-      {}
+        {
+        }
       catch (frysk.value.InvalidOperatorException i)
-      {}
+        {
+        }
       catch (frysk.value.OperationNotDefinedException o)
-      {}
+        {
+        }
+      
       return result;
-    }
+      }
+    else
+      {
+        /* If this request has come from the SourceWindow, there's no way to
+         * know which thread the mouse request came from; if there are multiple
+         * innermost frames of multiple threads in the same source file, than all
+         * of the threads have to be checked. If there's only one thread; than
+         * this loop will run only once anyways. */
+        int j = 0;
+        while (result == null && j < exprSymTab.length)
+          {
+            treeParser = new CppTreeParser(4, 2, exprSymTab[j]);
+
+            try
+              {
+                result = treeParser.expr(t);
+              }
+            catch (ArithmeticException ae)
+              {
+                ae.printStackTrace();
+                throw ae;
+              }
+            catch (antlr.RecognitionException r)
+              {
+              }
+            catch (frysk.value.InvalidOperatorException i)
+              {
+              }
+            catch (frysk.value.OperationNotDefinedException o)
+              {
+              }
+
+            ++j;
+          }
+        
+        return result;
+      }
+  }
+   
     
     /**
      * Implement the cli up/down requests.
@@ -303,7 +361,7 @@ public class SymTab
      public StackFrame setCurrentFrame(int level)
      {
        boolean down;
-       StackFrame tmpFrame = exprSymTab.getCurrentFrame();
+       StackFrame tmpFrame = exprSymTab[0].getCurrentFrame();
        if (level < 0)
          {
            down = true;
@@ -321,8 +379,8 @@ public class SymTab
            level -= 1;
          }
        if (tmpFrame != null)
-         exprSymTab.setCurrentFrame(tmpFrame);
-       return exprSymTab.getCurrentFrame();
+         exprSymTab[0].setCurrentFrame(tmpFrame);
+       return exprSymTab[0].getCurrentFrame();
      }
      
      /**
@@ -331,7 +389,7 @@ public class SymTab
       */
      public StackFrame getCurrentFrame ()
      {
-       return exprSymTab.getCurrentFrame();
+       return exprSymTab[0].getCurrentFrame();
      }
      /**
       * Get the most recent stack frame.
@@ -339,6 +397,15 @@ public class SymTab
       */
      public StackFrame getInnerMostFrame ()
      {
-       return exprSymTab.getInnerMostFrame();
+       return exprSymTab[0].getInnerMostFrame();
+     }
+     
+     public static void setFrames (StackFrame newFrames[])
+     {
+       exprSymTab = new ExprSymTab[newFrames.length];
+       for (int i = 0; i < newFrames.length; i++)
+         exprSymTab[i] = new ExprSymTab (newFrames[i].getTask(), 
+                                         newFrames[i].getTask().getTid(), 
+                                         newFrames[i]);
      }
 }

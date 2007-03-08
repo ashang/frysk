@@ -1,3 +1,12 @@
+2007-03-08  Mike cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Deleted commented-out
+	dead code. Makes a call to SymTab.setFrames after StackFrame
+	completion.
+	* SourceBuffer.java (getVariable): Removed SymTab initialization
+	code, and instead this now calls SymTab.print() directly, as the
+	information was updated after the last step.
+
 2007-03-07  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Make sure to populate 
