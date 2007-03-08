@@ -160,8 +160,6 @@ DBPATH = $(subst $(space),:,$(strip \
 
 AM_GCJFLAGS = \
 	$(patsubst %,-I%,$(GEN_SOURCEPATH) $(GEN_CLASSPATH)) \
-	-Werror \
-	-Wall \
 	-fPIC \
 	$(ZZZ)
 
@@ -175,8 +173,6 @@ AM_CXXFLAGS = \
 	-I$(srcdir)/../frysk-imports/elfutils/libdwfl \
 	-I$(srcdir)/../frysk-imports/libunwind/include \
 	-I$(top_builddir)/../frysk-imports/libunwind/include \
-	-Werror \
-	-Wall \
 	-fPIC \
 	$(ZZZ)
 
@@ -184,8 +180,6 @@ AM_CFLAGS = \
 	-I$(top_srcdir)/../frysk-imports/include \
 	-I$(srcdir) \
 	-I$(top_builddir) \
-	-Werror \
-	-Wall \
 	-fPIC \
 	$(ZZZ)
 
