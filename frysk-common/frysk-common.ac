@@ -56,11 +56,11 @@ AC_PROG_RANLIB
 
 AC_PROG_CXX([g++4 g++ c++])
 test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
-CXXFLAGS="$CXXFLAGS -Werror -Wall"
+CXXFLAGS="$CXXFLAGS -Wall"
 AC_PROG_CC([gcc4 gcc cc])
 AM_PROG_CC_C_O
 test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
-CFLAGS="$CFLAGS -Werror -Wall"
+CFLAGS="$CFLAGS -Wall"
 AM_PROG_AS
 
 # XXX: AM_PROG_GCJ doesn't take arguments, hack around it by first
@@ -70,7 +70,7 @@ AM_PROG_AS
 AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-GCJFLAGS="$GCJFLAGS -Werror -Wall"
+GCJFLAGS="$GCJFLAGS -Wall"
 
 
 # Find all the GCJ utilities.  Prefer gcc4.
@@ -196,3 +196,4 @@ AC_SUBST([lib32dir])
 AC_SUBST([lib64dir])
 
 FRYSK_DO_ARCH32_TEST
+FRYSK_WERROR

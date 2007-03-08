@@ -418,10 +418,15 @@ if HAVE_JV_SCAN
 		exit 1 ; \
 	fi
 endif
+if USE_WERROR
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
 	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
 	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
 	rm -f $*.log
+else
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
+	$(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Po" -c -o $@ $<
+endif
 
 
 # Get things building on 64-bit-X-32-bit environment.  Mainly need to
