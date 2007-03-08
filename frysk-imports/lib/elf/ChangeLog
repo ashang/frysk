@@ -1,3 +1,8 @@
+2007-03-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java: Add get/set for timeval variables.
+	Make variables private.
+
 2007-03-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/ElfPrstatus.cxx (getNoteData): Rewrite. Return raw note

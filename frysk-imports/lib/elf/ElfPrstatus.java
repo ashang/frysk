@@ -65,14 +65,15 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private long pr_info_si_signo;
   private long pr_info_si_code;
   private long pr_info_si_errno;
-  public long pr_utime_sec;
-  public  long pr_utime_usec;
-  public  long pr_stime_sec;
-  public  long pr_stime_usec;
-  public  long pr_cutime_sec;
-  public  long pr_cutime_usec;
-  public  long pr_cstime_sec;
-  public  long pr_cstime_usec;
+
+  private long pr_utime_sec;
+  private long pr_utime_usec;
+  private long pr_stime_sec;
+  private long pr_stime_usec;
+  private long pr_cutime_sec;
+  private long pr_cutime_usec;
+  private long pr_cstime_sec;
+  private long pr_cstime_usec;
 
   private int pr_fpvalid;
 
@@ -81,7 +82,9 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   private byte raw_core_registers[];
   private int reg_length = 0;
 
+
   static ArrayList internalThreads = new ArrayList();
+
   public ElfPrstatus()
   {  
   }
@@ -142,7 +145,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     pr_cutime_sec =  noteBuffer.getInt();
     pr_cutime_usec =  noteBuffer.getInt();
     pr_cstime_sec =  noteBuffer.getInt();
-    pr_cutime_usec =  noteBuffer.getInt();
+    pr_cstime_usec =  noteBuffer.getInt();
     
     raw_core_registers = new byte[(int) ((singleNoteData.length) - noteBuffer.position())];
     noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length) - noteBuffer.position()));
@@ -379,7 +382,172 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   {
     return this.pr_fpvalid;
   }
+
+  /**
+   * Get the <code>Pr_Utime_Usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrUtimeUsec()
+  {
+    return pr_utime_usec;
+  }
+
+  /**
+   * Set the <code>Pr_Utime_Usec</code> value.
+   *
+   * @param newPr_Utime_Usec The new Pr_Utime_Usec value.
+   */
+  public final void setPrUtimeUsec(final long newPrUtimeUsec) 
+  {
+    this.pr_utime_usec = newPrUtimeUsec;
+  }
  
+  /**
+   * Get the <code>Pr_Utime_Usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrUtimeSec()
+  {
+    return pr_utime_sec;
+  }
+
+  /**
+   * Set the <code>Pr_Utime_Usec</code> value.
+   *
+   * @param newPr_Utime_Usec The new Pr_Utime_Usec value.
+   */
+  public final void setPrUtimeSec(final long newPrUtimeSec) 
+  {
+    this.pr_utime_sec = newPrUtimeSec;
+  }
+
+
+  /**
+   * Get the <code>pr_cutime_usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrCUtimeUsec()
+  {
+    return pr_cutime_usec;
+  }
+
+  /**
+   * Set the <code>pr_cutime_usec</code> value.
+   *
+   * @param newPrCUtimeUsec The new PrCUtimeUsec value.
+   */
+  public final void setPrCUtimeUsec(final long newPrCUtimeUsec) 
+  {
+    this.pr_cutime_usec = newPrCUtimeUsec;
+  }
+ 
+  /**
+   * Get the <code>pr_cutime_sec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrCUtimeSec()
+  {
+    return pr_cutime_sec;
+  }
+
+  /**
+   * Set the <code>pr_cutime_sec</code> value.
+   *
+   * @param newPrUtimeUsec The new Pr_Utime_Usec value.
+   */
+  public final void setPrCUtimeSec(final long newPrCUtimeSec) 
+  {
+    this.pr_cutime_sec = newPrCUtimeSec;
+  }
+
+  /**
+   * Get the <code>Pr_Stime_Usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrStimeUsec()
+  {
+    return pr_stime_usec;
+  }
+
+  /**
+   * Set the <code>Pr_Stime_Usec</code> value.
+   *
+   * @param newPrStimeUsec The new Pr_Utime_Usec value.
+   */
+  public final void setPrStimeUsec(final long newPrStimeUsec) 
+  {
+    this.pr_stime_usec = newPrStimeUsec;
+  }
+ 
+  /**
+   * Get the <code>Pr_Stime_Usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrStimeSec()
+  {
+    return pr_stime_sec;
+  }
+
+  /**
+   * Set the <code>Pr_Utime_Usec</code> value.
+   *
+   * @param newPr_Utime_Usec The new Pr_Utime_Usec value.
+   */
+  public final void setPrStimeSec(final long newPrStimeSec) 
+  {
+    this.pr_stime_sec = newPrStimeSec;
+  }
+
+  /**
+   * Get the <code>pr_sctime_usec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrCStimeUsec()
+  {
+    return pr_cstime_usec;
+  }
+
+
+  /**
+   * Set the <code>pr_cstime_usec</code> value.
+   *
+   * @param newPrCStimeUsec The new Pr_CStime_Usec value.
+   */
+  public final void setPrCStimeUsec(final long newPrCStimeUsec) 
+  {
+    this.pr_cstime_usec = newPrCStimeUsec;
+  }
+ 
+  /**
+   * Get the <code>>pr_cstime_sec</code> value.
+   *
+   * @return a <code>long</code> value
+   */
+  public final long getPrCStimeSec()
+  {
+    return pr_cstime_sec;
+  }
+
+  /**
+   * Set the <code>pr_cstime_secc</code> value.
+   *
+   * @param newPr_CStime_sec The new Pr_CStime_sec value.
+   */
+  public final void setPrCStimeSec(final long newPrCStimeSec) 
+  {
+    this.pr_cstime_sec = newPrCStimeSec;
+  }
+
+
+
+
 
   /** 
    * Convert the array of BigIntegers to longs 
