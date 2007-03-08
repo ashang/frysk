@@ -1,3 +1,7 @@
+2007-03-08  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* TestBreakpoints.java: Added 2.6.19-1.2911.6.5.fc6 to brokenSignals()
+
 2007-03-06  Nurdin Premji  <npremji@redhat.com>
 
 	* Register.java (getBytes): New.
