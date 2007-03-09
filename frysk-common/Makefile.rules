@@ -405,8 +405,8 @@ SUFFIXES += .db
 # identical names.  Reject any code with duplicate class names.
 
 # XXX: GCJ has a bug where, when given a -Werror fail, it still exits
-# with success.  Hack around this by saving the message in a log file
-# and then checking that it is empty.
+# with success.  Hack around this by, when -Werror was specified,
+# saving the message in a log file and then checking that it is empty.
 
 .java.o:
 if HAVE_JV_SCAN
@@ -419,15 +419,21 @@ if HAVE_JV_SCAN
 		exit 1 ; \
 	fi
 endif
-if USE_WERROR
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
-	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
-	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
+	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 \
+	   | tee $*.log ; then : ; else \
+		rm $*.log ; \
+		exit 1 ; \
+	fi ; \
+	if test -s $*.log \
+	   && expr " $(GCJCOMPILE) " : '.* -Werror ' > /dev/null ; then \
+		rm -f "$$depbase.Tpo"; \
+		rm -f $*.log ; \
+		rm -f $@ ; \
+		exit 1 ; \
+	fi ; \
+	mv -f "$$depbase.Tpo" "$$depbase.Po"; \
 	rm -f $*.log
-else
-	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
-	$(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Po" -c -o $@ $<
-endif
 
 
 # Get things building on 64-bit-X-32-bit environment.  Mainly need to

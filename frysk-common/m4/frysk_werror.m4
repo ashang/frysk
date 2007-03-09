@@ -1,6 +1,7 @@
 # This file is part of the program FRYSK.
 #
 # Copyright 2007 Oracle Corporation.
+# Copyright 2007 Red Hat Ltd.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -49,5 +50,4 @@ AC_ARG_ENABLE([werror],
     [CFLAGS="$GCJFLAGS -Werror"
      CXXFLAGS="$CXXFLAGS -Werror"
      GCJFLAGS="$GCJFLAGS -Werror"])
-AM_CONDITIONAL([USE_WERROR], test "x$enable_werror" != xno)
 ])

@@ -1,3 +1,10 @@
+2007-03-09  Andrew Cagney  <cagney@redhat.com>
+
+	* m4/frysk_werror.m4: Delete setting of USE_WERROR macro.
+	* Makefile.rules (.java.o): Remove USE_WERROR. Rewrite rule to
+	detect -Werror in flags and act accordingly.  When build fails due
+	to warning, remove target object file.
+
 2007-03-08  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* frysk-common.ac (GCJFLAGS, CFLAGS, CXXFLAGS): Remove -Werror, added
