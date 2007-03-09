@@ -102,13 +102,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public static final int STEP_INSTRUCTION = 2;
   public static final int STEP_IN = 3;
   public static final int STEP_OVER = 4;
-  public static final int STEP_OVER_LINE_STEP = 5;
-  public static final int STEP_OVER_MISSING_FRAME_STEP = 6;          /* See #4060 */
+  public static final int STEP_OVER_TEST = 5; /* Test to make sure there's something to actually step over. */
+  public static final int STEP_OVER_MISSING_FRAME_STEP = 6;     /* See #4060 */
   public static final int STEP_OUT = 7;
-  public static final int STEP_OUT_ASM_STEP = 8;                                        /* See #4060 */
+  public static final int STEP_OUT_ASM_STEP = 8;    /* See #4060 */
   public static final int STEP_INSTRUCTION_NEXT = 9;
-  public static final int STEP_INSTRUCTION_NEXT_OVER = 10;
-  public static final int STEP_INS_NEXT_MISSING_FRAME_STEP =11;   /* See #4060 */
+  public static final int STEP_INSTRUCTION_NEXT_TEST = 10; /* Test to make sure there's something to actually step over */
+  public static final int STEP_INS_NEXT_MISSING_FRAME_STEP = 11;   /* See #4060 */
+  public static final int STEP_ADVANCE = 12;
 
   
   private Proc stateProc;
@@ -126,7 +127,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.lineCountMap = new HashMap();
     this.runningTasks = new HashSet();
     this.breakpointMap = new HashMap();
-    
   }
 
   /**
@@ -143,6 +143,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         d = new Dwfl(task.getTid());
         this.dwflMap.put(task, d);
       }
+    
     return d;
   }
   
@@ -171,8 +172,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         if (this.lineMap.get(t) == null)
           {
             Dwfl d = getDwfl(t);
-            DwflLine line = null;
-            line = d.getSourceLine(t.getIsa().pc(t));
+            DwflLine line = d.getSourceLine(t.getIsa().pc(t));
             
             if (line == null)
               {
@@ -208,8 +208,38 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * Set up line stepping by setting the appropriate state and then 
    * setting up the data structures for the step.
    * 
-   * @param tasks   The Tasks to be stepped.
+   * @param task   The Task to be stepped.
    */
+  public boolean setUpLineStep (Task task)
+  {
+    if (this.state != STOPPED)
+      return false;
+
+    this.state = STEP_IN;
+    
+    this.taskStepCount = 1;
+    notifyNotBlocked();
+
+    if (this.lineMap.get(task) == null)
+      {
+        Dwfl d = getDwfl(task);
+        DwflLine line = d.getSourceLine(task.getIsa().pc(task));
+
+        if (line == null)
+          {
+            this.state = STEP_INSTRUCTION;
+            this.dwflMap.clear();
+          }
+        else
+          this.lineMap.put(task, new Integer(line.getLineNum()));
+      }
+    
+    this.lineCountMap.put(task, new Integer(0));
+
+    task.requestUnblock(this);
+    return true;
+  }
+  
   public boolean setUpLineStep (LinkedList tasks)
   {
     if (this.state != STOPPED)
@@ -260,10 +290,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void setUpStepNextInstruction (Task task, StackFrame lastFrame)
   {
-    this.state = STEP_INSTRUCTION_NEXT_OVER;
+    this.state = STEP_INSTRUCTION_NEXT_TEST;
     ++this.taskStepCount;
     this.frameIdentifier = lastFrame.getFrameIdentifier();
-    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
+//    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
     notifyNotBlocked();
     task.requestUnblock(this);
   }
@@ -281,33 +311,26 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void stepNextInstruction (Task task)
   {
-//    StackFrame newFrame = null;
-//    newFrame = StackFactory.createStackFrame(task, 2);
-//   
-//    /* The two frames are the same; treat this step-over as an instruction step. */
-//    if (newFrame.getFrameIdentifier().compareTo(this.frameIdentifier) == 0)
-//      {
-//        this.setChanged();
-//        this.notifyObservers(task);
-//        return;
-//      }
-//    else
-//      {
-//        if (newFrame.getFrameIdentifier().compareTo(this.outerFrameIdentifier) == 0)
-//          {
-//            this.state = STEP_INS_NEXT_MISSING_FRAME_STEP;
-//            notifyNotBlocked();
-//            task.requestUnblock(this);
-//            return;
-//          }
-//        
-//        /* There is a different innermost frame on the stack - run until
-//         * it exits - success!. */
-//        StackFrame frame = newFrame.getOuter();
-//        this.state = STEP_INSTRUCTION_NEXT;
-//        this.breakpoint = new Breakpoint(frame.getAddress());
-//        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
-//      }
+    StackFrame newFrame = null;
+    newFrame = StackFactory.createStackFrame(task, 2);
+   
+    /* The two frames are the same; treat this step-over as an instruction step. */
+    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
+      {
+        this.setChanged();
+        this.notifyObservers(task);
+        return;
+      }
+    else
+      {
+        
+        /* There is a different innermost frame on the stack - run until
+         * it exits - success!. */
+        StackFrame frame = newFrame.getOuter();
+        this.state = STEP_INSTRUCTION_NEXT;
+        this.breakpoint = new Breakpoint(frame.getAddress());
+        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
+      }
   }
 
   /**
@@ -318,8 +341,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public synchronized void stepIn (Task task)
   {
-    DwflLine line = null;
-    line = getDwfl(task).getSourceLine(task.getIsa().pc(task));
+    DwflLine line = getDwfl(task).getSourceLine(task.getIsa().pc(task));
 
     int lineNum;
     int prev;
@@ -347,7 +369,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
         ++count;
         if (count > 10)
           {
-           //System.out.println("single line broke");
             --this.taskStepCount;
             return;
           }
@@ -360,7 +381,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   Breakpoint breakpoint;
   FrameIdentifier frameIdentifier;
-  FrameIdentifier outerFrameIdentifier;
+//  FrameIdentifier outerFrameIdentifier;
   
   /**
    * Sets up for step-over.
@@ -372,9 +393,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
-    this.state = STEP_OVER_LINE_STEP;
+    this.state = STEP_OVER_TEST;
     this.frameIdentifier = lastFrame.getFrameIdentifier();
-    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
+//    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
     this.taskStepCount =  tasks.size();
 
     setUp(tasks);
@@ -390,33 +411,26 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepOver (Task task)
   {
-//    StackFrame newFrame = null;
-//    newFrame = StackFactory.createStackFrame(task, 2);
-//   
-//    /* The two frames are the same; treat this step-over as a line step. */
-//    if (newFrame.getFrameIdentifier().compareTo(this.frameIdentifier) == 0)
-//      {
-//        this.setChanged();
-//        this.notifyObservers(task);
-//        return;
-//      }
-//    else
-//      {
-//        if (newFrame.getFrameIdentifier().compareTo(this.outerFrameIdentifier) == 0)
-//          {
-//            this.state = STEP_OVER_MISSING_FRAME_STEP;
-//            notifyNotBlocked();
-//            task.requestUnblock(this);
-//            return;
-//          }
-//        
-//        /* There is a different innermost frame on the stack - run until
-//         * it exits - success!. */
-//        StackFrame frame = newFrame.getOuter();
-//        this.state = STEP_OVER;
-//        this.breakpoint = new Breakpoint(frame.getAddress());
-//        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
-//      }
+    StackFrame newFrame = null;
+    newFrame = StackFactory.createStackFrame(task, 2);
+   
+    /* The two frames are the same; treat this step-over as a line step. */
+    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
+      {
+        this.setChanged();
+        this.notifyObservers(task);
+        return;
+      }
+    else
+      {
+        
+        /* There is a different innermost frame on the stack - run until
+         * it exits - success!. */
+        StackFrame frame = newFrame.getOuter();
+        this.state = STEP_OVER;
+        this.breakpoint = new Breakpoint(frame.getAddress());
+        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
+      }
   }
   
   /**
@@ -433,7 +447,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.state = STEP_OUT_ASM_STEP;
     this.taskStepCount =  tasks.size();
     this.frameIdentifier = lastFrame.getFrameIdentifier();
-    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
+//    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
     
     Iterator i = tasks.iterator();
     while (i.hasNext())
@@ -450,70 +464,76 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stepOut (Task task)
   {
-//    StackFrame newFrame = null;
-//    newFrame = StackFactory.createStackFrame(task, 3);
-//    this.state = STEP_OUT;
-//
-//    if (newFrame.getFrameIdentifier().compareTo(this.frameIdentifier) == 0)
-//      {
-//        /*
-//         * If it really mattered - this would be the test used to see if the
-//         * step-out was requested when there was a missing frame on the stack.
-//         * However, if the FrameIdentifiers match for the innermost frame right
-//         * now, it won't matter since the breakpoint will still be set on the
-//         * address in the StackFrame one outer from newFrame. 
-//         */
-//
-//        // if (newFrame.getOuter().getFrameIdentifier().compareTo(
-//        // this.outerFrameIdentifier) != 0
-//        // && newFrame.getOuter().getOuter().getFrameIdentifier().compareTo(
-//        // this.outerFrameIdentifier) == 0)
-//        // {
-//        this.breakpoint = new Breakpoint(newFrame.getOuter().getAddress());
-//        task.requestAddCodeObserver(this.breakpoint,
-//                                    newFrame.getOuter().getAddress());
-//        // }
-//      }
-//    else
-//      {
-//        /*
-//         * Oops - the stack-checking instruction step led the Task one
-//         * instruction too far and the current frame is now inside another
-//         * function. Set a breakpoint on the outer-outer frame and proceed as
-//         * normal. This frame would have had to be run through anyways.
-//         */
-//
-//        FrameIdentifier fi = newFrame.getOuter().getFrameIdentifier();
-//        if (fi.compareTo(this.frameIdentifier) == 0)
-//          {
+    StackFrame newFrame = null;
+    newFrame = StackFactory.createStackFrame(task, 3);
+    this.state = STEP_OUT;
+
+    FrameIdentifier fi = newFrame.getFrameIdentifier();
+    
+    if (fi.equals(this.frameIdentifier))
+      {
+        this.breakpoint = new Breakpoint(newFrame.getOuter().getAddress());
+        task.requestAddCodeObserver(this.breakpoint,
+                                    newFrame.getOuter().getAddress());
+      }
+    else
+      {
+        if (fi.outerTo(this.frameIdentifier))
+          {
 //            this.breakpoint = new Breakpoint(newFrame.getOuter().getAddress());
 //            task.requestAddCodeObserver(
 //                                        this.breakpoint,
 //                                        newFrame.getOuter().getOuter().getAddress());
-//          }
-//        else if (fi.compareTo(this.outerFrameIdentifier) == 0)
-//          {
-//            this.breakpoint = new Breakpoint(
-//                                             newFrame.getOuter().getAddress());
-//            task.requestAddCodeObserver(this.breakpoint,
-//                                        newFrame.getOuter().getAddress());
-//          }
-//      }
+            this.setChanged();
+            this.notifyObservers(task);
+            return;
+          }
+        else if (fi.innerTo(this.frameIdentifier))
+          {
+            this.breakpoint = new Breakpoint(
+                                             newFrame.getOuter().getOuter().getAddress());
+            task.requestAddCodeObserver(this.breakpoint,
+                                        newFrame.getOuter().getOuter().getAddress());
+          }
+      }
   }
+  
+  /**
+   * Sets the stage for stepping out of a frame. Runs until a breakpoint on the
+   * return address is hit. 
+   * 
+   * XXX: Needs to work properly with multiple threads.
+   * 
+   * @param tasks   The Tasks to step out.
+   * @param lastFrame
+   */
+  public void setUpStepAdvance (Task task, StackFrame frame)
+  {
+    
+    /* There's nowhere to advance to - this is already the innermost frame */
+    if (frame.getInner() == null)
+      {
+        setUpLineStep(task);
+        return;
+      }
+    
+  this.state = STEP_ADVANCE;
+    
+  ++this.taskStepCount;
+  
+  /* Set a breakpoint on the current address of the given frame, which is
+   * the return address of its inner frame(s). */
+  this.breakpoint = new Breakpoint(frame.getOuter().getAddress());
+  task.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
+  }
+  
   
   public void cleanUpBreakPoint (Task task)
   {
     this.breakpoint = null;
-    this.setChanged();
-    this.notifyObservers(task);
-  }
-  
-  /**
-   * Decrements the number of stepping Tasks
-   */
-  public void decTaskStepCount ()
-  {
-    this.taskStepCount--;
+    this.addy = 0;
+//    this.setChanged();
+//    this.notifyObservers(task);
   }
 
   /**
@@ -562,12 +582,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             this.runningTasks.add(t);
             t.requestDeleteInstructionObserver(this);
-	    Breakpoint bpt = (Breakpoint)breakpointMap.get(t);
-	    if (bpt != null) 
-	      {
-		breakpointMap.remove(t);
-		t.requestUnblock(bpt);
-	      }
+            Breakpoint bpt = (Breakpoint) breakpointMap.get(t);
+            if (bpt != null)
+              {
+                breakpointMap.remove(t);
+                t.requestUnblock(bpt);
+              }
           }
       }
   }
@@ -909,7 +929,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public Action updateExecuted (Task task)
   {
 //   System.out.println("UpdateExecuted " + task + " " + taskStepCount);
-    if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_OVER)
+    if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_TEST)
       {
         switch (this.state)
           {
@@ -921,15 +941,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
             break;
           case STEP_OVER:
             task.requestDeleteCodeObserver(breakpoint, addy);
-            taskStepCount = 0;
+            this.taskStepCount = 0;
             cleanUpBreakPoint(task);
             break;
-          case STEP_OVER_LINE_STEP:
+          case STEP_OVER_TEST:
             stepIn(task);
             break;
           case STEP_OUT:
             task.requestDeleteCodeObserver(breakpoint, addy);
-            taskStepCount = 0;
+            this.taskStepCount = 0;
             cleanUpBreakPoint(task);
             break;
           case STEP_OUT_ASM_STEP:
@@ -937,26 +957,24 @@ public class RunState extends Observable implements TaskObserver.Instruction
             break;
           case STEP_INSTRUCTION_NEXT:
             task.requestDeleteCodeObserver(breakpoint, addy);
-            taskStepCount = 0;
+            this.taskStepCount = 0;
             break;
-          case STEP_INSTRUCTION_NEXT_OVER:
+          case STEP_INSTRUCTION_NEXT_TEST:
             --this.taskStepCount;
             stepNextInstruction(task);
+            break;
+          case STEP_ADVANCE:
+            --this.taskStepCount;
+            task.requestDeleteCodeObserver(breakpoint, addy);
             break;
           }
 
         /* No more Tasks have to be blocked */
-        if (taskStepCount == 0)
+        if (this.taskStepCount == 0)
           {
-            if (this.state == STEP_OVER_LINE_STEP
-                || this.state == STEP_OVER_MISSING_FRAME_STEP)
+            if (this.state == STEP_OVER_TEST)
               {
                 stepOver(task);
-                return Action.BLOCK;
-              }
-            else if (this.state == STEP_INS_NEXT_MISSING_FRAME_STEP)
-              {
-                stepNextInstruction(task);
                 return Action.BLOCK;
               }
             
@@ -970,7 +988,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         
         /* No more Tasks have to be blocked, or this RunState is already blocked
          * and this is the first time this method has been called. */
-        if (numRunningTasks == 0)
+        if (this.numRunningTasks == 0)
           {
             this.setChanged();
             this.notifyObservers(task);

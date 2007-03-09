@@ -1,4 +1,10 @@
-2007-03-08  Mike cvet  <mcvet@redhat.com>
+2007-03-09  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (doStep): Call new Task-only line stepping
+	method in RunState.
+	(doAdvance): Added.
+
+2007-03-08  Mike Cvet  <mcvet@redhat.com>
 
 	* VariableWatchView.java (removeTrace): Fixed #4170.
 	* SourceWindow.java (generateProcStackTrace): Deleted commented-out

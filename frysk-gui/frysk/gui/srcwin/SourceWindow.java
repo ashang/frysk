@@ -1684,10 +1684,7 @@ public class SourceWindow
 
     desensitize();
 
-    LinkedList l = new LinkedList();
-    l.add(this.currentTask);
-    
-    if (this.runState.setUpLineStep(l))
+    if (this.runState.setUpLineStep(this.currentTask))
       removeTags();
   }
   
@@ -1774,6 +1771,17 @@ public class SourceWindow
     desensitize();
 
     this.runState.setUpStepOut(tasks, this.currentFrame);
+    removeTags();
+  }
+  
+  protected void doAdvance ()
+  {
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stepping to current frame");
+    
+    desensitize();
+    
+    this.runState.setUpStepAdvance(this.currentTask, this.currentFrame);
     removeTags();
   }
 

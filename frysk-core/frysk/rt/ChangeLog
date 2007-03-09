@@ -1,3 +1,24 @@
+2007-03-09  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java: General clean-up. 
+	(STEP_OVER_LINE_STEP): Renamed to STEP_OVER_TEST.
+	(STEP_INSTRUCTION_NEXT_OVER): Renamed to STEP_INSTRUCTION_NEXT_TEST.
+	(STEP_ADVANCE): Added.
+	(setUpLineStep): Added - takes just a Task instead of a List.
+	(setUpStepNextInstruction): Removed initialization of secondary
+	FrameIdentifier.
+	(stepNextInstruction): Removed redundant code.
+	(stepOver): Ditto.
+	(stepOut): Ditto.
+	(outerFrameIdentifier): Removed.
+	(setUpStepOver): Removed initialization of secondary FrameIdentifier.
+	(setUpStepOut): Ditto.
+	(setUpStepAdvance): Added. Will step the task until it returns to the 
+	current frame.
+	(decTaskStepCount): Removed.
+	(updateExecuted): Added code for step-advance. Removed redundant code
+	for step over.
+
 2007-03-07  Tim Moore  <timoore@redhat.com>
 
 	* LineBreakpoint.java (addBreakpoint, deleteBreakpoint): Process
