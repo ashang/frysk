@@ -49,6 +49,7 @@ Network licensing program, please visit www.openinventionnetwork.com
 
 #include "libdwflP.h"
 #include <search.h>
+#include <unistd.h>
 
 static void
 free_cu (struct dwfl_cu *cu)
@@ -90,6 +91,11 @@ if (mod->debug.elf != mod->main.elf && mod->debug.elf != NULL)
 elf_end (mod->debug.elf);
 if (mod->main.elf != NULL)
 elf_end (mod->main.elf);
+
+  if (mod->debug.fd != mod->main.fd && mod->debug.fd != -1)
+    close (mod->debug.fd);
+  if (mod->main.fd != -1)
+    close (mod->main.fd);
 
 free (mod->name);
 }
@@ -139,6 +145,8 @@ tailp = &m->next;
 Dwfl_Module *mod = calloc (1, sizeof *mod);
 if (mod == NULL)
 goto nomem;
+  mod->main.fd = -1;
+  mod->debug.fd = -1;
 
 mod->name = strdup (name);
 if (mod->name == NULL)
