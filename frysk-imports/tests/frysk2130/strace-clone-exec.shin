@@ -3,6 +3,16 @@
 # When in build tree, threadexec is in directory below.
 test -d frysk2130 && cd frysk2130
 
+case `uname -r` in
+    2.6.19-1.2895.fc6 | \
+    2.6.19-1.2911.fc6 | \
+    2.6.19-1.2911.6.4.fc6 | \
+    2.6.19-1.2911.6.5.fc6)
+	echo "Not supported on kernel `uname -r`" 1>&2
+	exit 77
+	;;
+esac
+
 if which strace > /dev/null 2>&1 ; then
     strace -f -o /dev/null ./threadexec /bin/echo hi | grep hi
 else
