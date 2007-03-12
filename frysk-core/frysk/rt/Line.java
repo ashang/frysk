@@ -112,6 +112,10 @@ public class Line
     if (this.source == null)
       {
         DOMFrysk dom = DOMFactory.getDOM(proc);
+        
+        if (dom == null)
+          return null;
+        
         DOMImage image = dom.getImage(this.proc.getMainTask().getName());
         this.source = image.getSource(this.file.getName());
         if (this.source == null || ! this.source.isParsed())

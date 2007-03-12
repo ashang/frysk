@@ -2158,7 +2158,6 @@ public class SourceWindow
                   }
                 catch (IOException e)
                   {
-                    System.err.println("Can't find source code!");
                   }
               }
             curr = curr.getOuter();

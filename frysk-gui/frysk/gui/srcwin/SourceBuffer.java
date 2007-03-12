@@ -332,8 +332,8 @@ public class SourceBuffer
 						+ lineStart.getCharsInLine()),
 				   true);
 
-    if (frame.getLines().length == 0
-        || frame.getLines()[0].getDOMSource().getFileName().equals(this.fileName))
+    DOMSource s = frame.getLines()[0].getDOMSource();
+    if (s != null && s.getFileName().equals(this.fileName))
       {
         // System.out.println("file is null or match - finishing " +
         // frame.getMethodName() + " " + frame.getLineNumber() + " " +
@@ -364,7 +364,7 @@ public class SourceBuffer
           }
         
         Line stackLine = curr.getLines()[0];
-        if (curr.getLines()[0].getDOMSource() != null)
+        if (stackLine.getDOMSource() != null)
           {
             if (newFrame == true
                 && ! stackLine.getDOMSource().getFileName().equals(this.fileName))

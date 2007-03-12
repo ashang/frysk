@@ -1,3 +1,8 @@
+2007-03-12  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Removed print statement.
+	* SourceBuffer.java (highlightLine): Check for a potentially numm DOMSource.
+
 2007-03-09  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doStep): Call new Task-only line stepping

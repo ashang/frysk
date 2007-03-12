@@ -1,3 +1,8 @@
+2007-03-12  Mike Cvet  <mcvet@redhat.com>
+
+	* Line.java (getDOMSource): Check that the DOMFrysk coming out of the
+	factory isn't null.
+
 2007-03-09  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java: General clean-up. 
