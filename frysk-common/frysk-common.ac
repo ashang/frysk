@@ -38,6 +38,7 @@
 # version and license this file solely under the GPL without
 # exception.
 
+AC_ARG_VAR([GCJFLAGS], [GCJ compiler flags])
 
 dnl This test is used by `elfutils' and as we share its interface we need
 dnl to have consistent ABI of any structures possibly containing `off_t'.
@@ -56,12 +57,18 @@ AC_PROG_RANLIB
 # AC_PATH_PROGS).
 
 AC_PROG_CXX([g++4 g++ c++])
-test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
-CXXFLAGS="$CXXFLAGS -Wall"
+if test "x$ac_env_CXXFLAGS_set" != xset; then
+  test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
+  CXXFLAGS="$CXXFLAGS -Wall"
+fi
+
 AC_PROG_CC([gcc4 gcc cc])
 AM_PROG_CC_C_O
-test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
-CFLAGS="$CFLAGS -Wall"
+if test "x$ac_env_CFLAGS_set" != xset; then
+  test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
+  CFLAGS="$CFLAGS -Wall"
+fi
+
 AM_PROG_AS
 
 # XXX: AM_PROG_GCJ doesn't take arguments, hack around it by first
@@ -70,7 +77,9 @@ AM_PROG_AS
 
 AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
-test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
+if test "x$ac_env_GCJFLAGS_set" != xset; then
+  test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
+fi
 
 # Find all the GCJ utilities.  Prefer gcc4.
 
@@ -125,13 +134,15 @@ esac
 JAVACFLAGS_WARN=$JAVACFLAGS
 JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
 AC_COMPILE_IFELSE([public class conftest{}],
-	[GCJFLAGS="$GCJFLAGS -fsource=1.4";GCJ_FSOURCE="yes"],
-	[JAVACFLAGS=$JAVACFLAGS_WARN;GCJ_FSOURCE="no"])
+	[test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -fsource=1.4"
+	 GCJ_FSOURCE="yes"],
+	[JAVACFLAGS=$JAVACFLAGS_WARN
+	 GCJ_FSOURCE="no"])
 JAVACFLAGS_WARN=$JAVACFLAGS
 JAVACFLAGS="$JAVACFLAGS -Wall"
 AC_COMPILE_IFELSE([public class conftest{}],
-	[GCJFLAGS="$GCJFLAGS -Wall";GCJ_WALL="yes"],
-	[JAVACFLAGS=$JAVACFLAGS_WARN;GCJ_WALL="no"])
+	[test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -Wall"],
+	[JAVACFLAGS=$JAVACFLAGS_WARN])
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 
