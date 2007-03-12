@@ -1,3 +1,13 @@
+2007-03-12  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* frysk-common.ac: Add AC_ARG_VAR([GCJFLAGS], ...) to register GCJFLAGS
+	as a variable to save when specified in the environment.  Do not change
+	CFLAGS, CXXFLAGS and/or GCJFLAGS if it was set in the environment.  The
+	developer can therefore override configure's choices manually from the
+	commandline.
+	* m4/frysk_werror.m4: Don't touch CFLAGS, CXXFLAGS and/or GCJFLAGS if
+	it was set in the environment.
+
 2007-03-12  Mark Wielaard  <mark@klomp.org>
 
 	* frysk-common.ac (JAVACFLAGS): See if -Wall is available.
