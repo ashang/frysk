@@ -42,12 +42,11 @@ AC_DEFUN([FRYSK_WERROR], [
 AC_ARG_ENABLE([werror],
     [AS_HELP_STRING([--disable-werror],
 	[Disable the interpretation of warnings as errors.])],
-    [if test "x$enable_werror" != xno; then
-	CFLAGS="$CFLAGS -Werror"
-	CXXFLAGS="$CXXFLAGS -Werror"
-	GCJFLAGS="$GCJFLAGS -Werror"
-     fi],
-    [CFLAGS="$GCJFLAGS -Werror"
-     CXXFLAGS="$CXXFLAGS -Werror"
-     GCJFLAGS="$GCJFLAGS -Werror"])
+    [],
+    [enable_werror=yes])
+if test "x$enable_werror" = xyes; then
+  test "x$ac_env_CFLAGS_set" != xset && CFLAGS="$GCJFLAGS -Werror"
+  test "x$ac_env_CXXFLAGS_set" != xset && CXXFLAGS="$CXXFLAGS -Werror"
+  test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -Werror"
+fi
 ])
