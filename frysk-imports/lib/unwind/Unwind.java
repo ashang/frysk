@@ -39,11 +39,15 @@
 
 package lib.unwind;
 
+import java.util.logging.Logger;
+
 import gnu.gcj.RawDataManaged;
 import gnu.gcj.RawData;
 
 public abstract class Unwind
 {
+  volatile Logger logger = Logger.getLogger("frysk");
+  
   abstract RawDataManaged initRemote(RawData addressSpace, 
                           Accessors accessors);
      

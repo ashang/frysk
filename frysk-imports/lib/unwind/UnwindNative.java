@@ -37,19 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.unwind;
 
 import gnu.gcj.RawDataManaged;
 import gnu.gcj.RawData;
-import java.util.logging.Logger;
-
 
 public class UnwindNative
     extends Unwind
 {
-  volatile Logger logger = Logger.getLogger("frysk");
-  
+    
   native RawDataManaged initRemote (RawData addressSpace,
                          Accessors accessors);
    

@@ -1,3 +1,11 @@
+2007-03-12  Nurdin Premji  <npremji@redhat.com>
+
+	* Unwind.java: Put logger here, so anything implementing Unwind will
+	have a logger.
+	* UnwindNative.java: Removed logger.
+	* cni/UnwindH.hxx: Added for generic macro purposes.
+	* cni/UnwindNative.cxx: Use above.
+
 2007-03-07  Nurdin Premji  <npremji@redhat.com>
 
 	* cni/PtraceAccessors.cxx (findProcInfo): Allocate space for the procInfo.
