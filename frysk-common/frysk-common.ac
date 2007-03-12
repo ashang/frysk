@@ -71,8 +71,6 @@ AM_PROG_AS
 AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-GCJFLAGS="$GCJFLAGS -Wall"
-
 
 # Find all the GCJ utilities.  Prefer gcc4.
 
@@ -123,11 +121,17 @@ ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath 
 esac
 # See if -fsource=1.4 can be added, if not only use the warning flags.
 # If it is available also use it for the GCJFLAGS.
+# Some versions of gcj don't support -Wall. So explictily test for it.
 JAVACFLAGS_WARN=$JAVACFLAGS
 JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
 AC_COMPILE_IFELSE([public class conftest{}],
 	[GCJFLAGS="$GCJFLAGS -fsource=1.4";GCJ_FSOURCE="yes"],
 	[JAVACFLAGS=$JAVACFLAGS_WARN;GCJ_FSOURCE="no"])
+JAVACFLAGS_WARN=$JAVACFLAGS
+JAVACFLAGS="$JAVACFLAGS -Wall"
+AC_COMPILE_IFELSE([public class conftest{}],
+	[GCJFLAGS="$GCJFLAGS -Wall";GCJ_WALL="yes"],
+	[JAVACFLAGS=$JAVACFLAGS_WARN;GCJ_WALL="no"])
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 

@@ -1,3 +1,9 @@
+2007-03-12  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-common.ac (JAVACFLAGS): See if -Wall is available.
+	* Makefile.rules (files-java.list): Detect -Werror in flags and act
+	accordingly.
+
 2007-03-09  Andrew Cagney  <cagney@redhat.com>
 
 	* m4/frysk_werror.m4: Delete setting of USE_WERROR macro.

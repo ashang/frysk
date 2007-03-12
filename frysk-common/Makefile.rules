@@ -563,7 +563,8 @@ ${GEN_DIRNAME}.jar: files-java.list
 	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) \
 		@$(top_builddir)/files-java.list \
 		2>&1 | tee $*.log
-	if test -s $*.log ; \
+	if test -s $*.log \
+	   && expr " $(GCJCOMPILE) " : '.* -Werror ' > /dev/null ; \
 	then rm $*.log ; false ; \
 	fi
 	rm -f $*.log
