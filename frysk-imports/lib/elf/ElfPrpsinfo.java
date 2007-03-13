@@ -88,17 +88,13 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
    * containing note data
    *
    */
-  public ElfPrpsinfo(ElfData noteData)
+  private ElfPrpsinfo(byte[] rawNoteData, Elf elf)
   {
     ByteOrder order = null;
-    byte rawNoteData[] = getNoteData(noteData);
-
-    if (rawNoteData.length <=0)
-      return;
 
     ByteBuffer noteBuffer = new ArrayByteBuffer(rawNoteData);
 
-    ElfEHeader header = noteData.getParent().getEHeader();
+    ElfEHeader header = elf.getEHeader();
     switch (header.ident[5])
       {
       case ElfEHeader.PHEADER_ELFDATA2LSB: 
@@ -146,6 +142,13 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
     noteBuffer.get(noteBuffer.position(), 80, noteStringBuffer);
     pr_psargs = noteStringBuffer.toString();
 
+  }
+
+  public static ElfPrpsinfo decode(ElfData noteData)
+  {
+    final byte data[] = getNoteData(noteData);
+    ElfPrpsinfo processData = new ElfPrpsinfo(data,noteData.getParent());
+    return processData;
   }
 
   public void setPrState(char state)
@@ -228,7 +231,8 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   }
   
   public void setPrPpid(int ppid)
-  {
+  {	
+
     this.pr_ppid = ppid;
   }
 
@@ -293,7 +297,7 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
   }
  
  
-  public native byte[] getNoteData(ElfData data);
+  public native static byte[] getNoteData(ElfData data);
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
 }

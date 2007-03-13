@@ -89,7 +89,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
   {  
   }
 
-  public ElfPrstatus(byte[] singleNoteData, Elf elf)
+  private ElfPrstatus(byte[] singleNoteData, Elf elf)
   {
 
     ByteOrder order = null;

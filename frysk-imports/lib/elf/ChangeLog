@@ -1,3 +1,15 @@
+2007-03-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java: Make constructor private. Only
+	allow calls from decode.
+	* tests/TestElf.java (testElfCorePrpsNotes): Use
+	decode function.
+	* ElfPrpsinfo.java (decode): New.
+	(ElfPrpsinfo): Replace public constructor with private
+	constructor. Called from decode.
+	(getNoteData): Make CNI declaration static.
+	
+
 2007-03-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java: Add get/set for timeval variables.

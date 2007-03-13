@@ -154,7 +154,7 @@ public class TestElf
     
     assertNotNull("Cannot find notes section", noteData);
     
-    ElfPrpsinfo elfPrpsinfo = new ElfPrpsinfo(noteData);
+    ElfPrpsinfo elfPrpsinfo =  ElfPrpsinfo.decode(noteData);
     //assertEquals("note: state", 'R', elfPrpsinfo.getPrState());
     assertEquals("note: zombie", 0, elfPrpsinfo.getPrZomb());
     assertEquals("note: nice", 0, elfPrpsinfo.getPrNice());
