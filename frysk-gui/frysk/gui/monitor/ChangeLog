@@ -1,5 +1,10 @@
 2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ProcWiseTreeView.java (mountDataModel): Set all coluns to be
+	resizable. Fix for bz#4153
+	
+2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* eventviewer/TimeLine.java: Fixed alignment problems.
 	* eventviewer/ProcTimeLine.java: Removed PID from timeline label.
 	* eventviewer/ProcBox.java: Fixed bug with main task not being

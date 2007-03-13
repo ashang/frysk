@@ -129,7 +129,13 @@ public class ProcWiseTreeView
     this.pwtvTVC[4].setVisible(true);
     this.pwtvTVC[5].setVisible(true);
     this.expandAll();
-
+    
+    this.pwtvTVC[0].setResizable(true);
+    this.pwtvTVC[1].setResizable(true);
+    this.pwtvTVC[2].setResizable(true);
+    this.pwtvTVC[3].setResizable(true);
+    this.pwtvTVC[4].setResizable(true);
+    this.pwtvTVC[5].setResizable(true);
   }
   
   private void setUpColumns ()
