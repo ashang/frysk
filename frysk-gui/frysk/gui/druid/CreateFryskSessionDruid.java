@@ -142,6 +142,8 @@ public class CreateFryskSessionDruid
   private HashMap procMap;
 
   private String dialogName;
+
+  private String initialSessionName;
   /**
    * Create a new instance of the Session Assistant
    * 
@@ -184,6 +186,7 @@ public class CreateFryskSessionDruid
     notebook.setCurrentPage(0);
     processSelected = 0;
     nameEntry.setText(setInitialName());
+    initialSessionName = nameEntry.getText();
     nameEntry.selectRegion(0, nameEntry.getText().length());
     editSession = false;
     unFilterData();
@@ -202,7 +205,6 @@ public class CreateFryskSessionDruid
       {
         currentSession = new Session();
       }
-    CreateFryskSessionDruid.this.setTitle(dialogName + ": "+ currentSession.getName());
     
     processSelected = currentSession.getProcesses().size();
     
@@ -539,10 +541,14 @@ public class CreateFryskSessionDruid
             else
               processSelected--;
           }
+
         for (int i = selectedProcs.length - 1; i >= 0; i--)
           {
             setTreeSelected(dataModel.getModel().getIter(paths[i].getPath()),
                             state);
+            if(this.initialSessionName.equals(this.currentSession.getName())){
+              this.nameEntry.setText(((GuiProc)dataModel.getObject(paths[i].getPath())).getExecutableName());
+            }
           }
       }
     setProcessNext(processSelected);

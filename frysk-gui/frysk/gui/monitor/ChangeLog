@@ -1,5 +1,6 @@
 2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ProcWiseDataModel.java (getObject): New function.
 	* ProcWiseTreeView.java (mountDataModel): Set all coluns to be
 	resizable. Fix for bz#4153
 	

@@ -1,7 +1,14 @@
 2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (changeGroupState): if a no name is 
+	set for the session the name of the first added process is used. Fix for
+	bz 4155.
+
+2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* druid/CreateFryskSessionDruid.java (setEditSessionMode): Dialog title
 	now contains the name of the session under concideration. Fix for bz# 4154.
+
 2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (deFilterPath): Added call to

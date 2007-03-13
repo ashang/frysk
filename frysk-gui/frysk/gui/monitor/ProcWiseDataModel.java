@@ -172,6 +172,10 @@ public class ProcWiseDataModel
     return null;
   }
   
+  public GuiObject getObject(TreePath treePath){
+    return (GuiObject)treeStore.getValue(treeStore.getIter(treePath), objectDC);
+  }
+  
   /**
    * Dump all objectDCs whose name match the String parameter into the
    * given LinkedList.
