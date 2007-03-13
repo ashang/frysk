@@ -141,6 +141,7 @@ public class CreateFryskSessionDruid
   
   private HashMap procMap;
 
+  private String dialogName;
   /**
    * Create a new instance of the Session Assistant
    * 
@@ -156,6 +157,8 @@ public class CreateFryskSessionDruid
     getProcessSelectionControls(glade);
     getProcessObserverControls(glade);
     this.addListener(this);
+    
+    this.dialogName = this.getName();
   }
 
   /**
@@ -199,7 +202,8 @@ public class CreateFryskSessionDruid
       {
         currentSession = new Session();
       }
-
+    CreateFryskSessionDruid.this.setTitle(dialogName + ": "+ currentSession.getName());
+    
     processSelected = currentSession.getProcesses().size();
     
     LinkedList oldSessionProcesses = new LinkedList(this.currentSession.getProcesses());
@@ -656,9 +660,12 @@ public class CreateFryskSessionDruid
     nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
     nameEntry.addListener(new EntryListener()
     {
+      
       public void entryEvent (EntryEvent arg0)
       {
         currentSession.setName(nameEntry.getText());
+        CreateFryskSessionDruid.this.setTitle(dialogName + ": "+ currentSession.getName());
+        
         if (editSession == false)
           {
             if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
