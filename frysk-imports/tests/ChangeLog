@@ -1,3 +1,7 @@
+2007-03-13  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* strace-clone-exec.shin: Changed the skip message
+
 2007-03-09  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* strace-clone-exec.shin: Do not run on FC6 kernels due to utrace
