@@ -78,6 +78,7 @@ public abstract class TimeLine
   private static SizeGroup labelsSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
   
   private static final int MINIMUM_HEIGHT = 15;
+  private static int MINIMUM_WIDTH = 0 ;
   
   String name;
   
@@ -95,6 +96,7 @@ public abstract class TimeLine
     this.name = name;
     
     Label label = new Label(name);
+    label.setAlignment(1,0.5);
     EventBox labelEventBox = new EventBox();
     labelEventBox.add(label);
     
@@ -103,16 +105,24 @@ public abstract class TimeLine
 
     addToLabelsSizeGroup(label);
     
-    TimeLineDrawingArea drawingArea = getTimeLineDrawingArea();
+    final TimeLineDrawingArea drawingArea = getTimeLineDrawingArea();
     
     viewport = new Viewport(null,null);
     viewport.add(drawingArea);
     viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
     
-    this.packStart(labelEventBox, false, false, 0);
-    this.packStart(viewport,true,true,0);
+    this.packStart(labelEventBox, false, false, 3);
+    this.packStart(viewport,true,true,3);
    
     manager.addTimeLine(this);
+    
+//    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
+//    {
+//      public void update (Observable observable, Object arg)
+//      {
+//        drawingArea.draw();
+//      }
+//    });
     
     Observer selectionObserver = new Observer(){
       public void update (Observable observable, Object obj)
@@ -135,7 +145,7 @@ public abstract class TimeLine
   }
   
   protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener, MouseListener{
- 
+    
     public TimeLineDrawingArea ()
     {
       CustomAtkObject atkObject = new CustomAtkObject(this);
@@ -150,7 +160,7 @@ public abstract class TimeLine
       this.addListener((MouseListener) this);
       this.setEvents(EventMask.ALL_EVENTS_MASK);
           
-      this.setMinimumSize(0 , MINIMUM_HEIGHT);
+      this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
     }
     
     public int getMinimumHeight ()
@@ -179,33 +189,37 @@ public abstract class TimeLine
     }
 
     public boolean exposeEvent(ExposeEvent exposeEvent) {
-      if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
-        return false;
+//      if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
+//        return false;
     
+      this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
+      
       GdkCairo cairo = new GdkCairo(this.getWindow());
       
       int x = 0;
       int y = 0;
       int w = this.getWindow().getWidth();
-      int h = this.getWindow().getHeight();  
+//      int h = this.getWindow().getHeight();  
+//      int w = exposeEvent.getArea().getWidth();
+      int h = exposeEvent.getArea().getHeight();  
       
       // White background
       cairo.setSourceColor(Color.WHITE);
-      cairo.rectangle(new Point(x,y), new Point(w, h));
+      cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
       cairo.fill();
       
-      cairo.save();
-      
-      // line
-      cairo.setLineWidth(0.5);
-      cairo.setSourceColor(Color.BLACK);
-
-      cairo.moveTo(x, y+h-1);
-      cairo.lineTo(x + w, y+h-1);
-      
-      cairo.stroke();
-      
-      cairo.restore();
+//      cairo.save();
+//      
+//      // line
+//      cairo.setLineWidth(0.5);
+//      cairo.setSourceColor(Color.BLACK);
+//
+//      cairo.moveTo(x, y+h-1);
+//      cairo.lineTo(x + w, y+h-1);
+//      
+//      cairo.stroke();
+//      
+//      cairo.restore();
       
       // draw events
       Iterator iterator = EventManager.theManager.getEventsList().iterator();
@@ -226,7 +240,8 @@ public abstract class TimeLine
         }
       
       if(eventX >= w){
-        this.setMinimumSize(w + 3, MINIMUM_HEIGHT);
+        MINIMUM_WIDTH = w + MINIMUM_HEIGHT;
+        this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
       }
      
       return false;

@@ -60,7 +60,7 @@ public class ProcTimeLine extends TimeLine
   
   public ProcTimeLine (GuiProc guiProc, TimeLineSelectionManager manager)
   {
-    super(guiProc.getExecutableName()+ " " + guiProc.getProc().getPid(), manager);
+    super(guiProc.getExecutableName()+"  ", manager);
     this.guiProc = guiProc;
     addToProcTimeLineSizeGroup(this);
   }

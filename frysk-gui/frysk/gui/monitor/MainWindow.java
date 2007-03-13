@@ -42,22 +42,24 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.lang.Throwable;
 
+import org.gnu.gdk.Color;
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
+import org.gnu.gnomevte.Terminal;
+import org.gnu.gtk.Notebook;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.Notebook;
-import org.gnu.gdk.Color;
-import org.gnu.gnomevte.Terminal;
+
 import frysk.gui.Gui;
 import frysk.gui.sessions.Session;
-
-import frysk.proc.*;
+import frysk.proc.Action;
+import frysk.proc.Manager;
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.sys.PseudoTerminal;
-import frysk.sys.Signal;
 import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 public class MainWindow extends Window implements Saveable{
 	
@@ -137,7 +139,7 @@ public class MainWindow extends Window implements Saveable{
 		String name = pty.getFile ().getPath ();
 	  	final Terminal term = new Terminal();
 		
-		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
+//		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
 		Manager.host.requestCreateAttachedProc(name, name, name, new String[] {"/bin/sh"},
 												new TaskObserver.Attached()
 												{

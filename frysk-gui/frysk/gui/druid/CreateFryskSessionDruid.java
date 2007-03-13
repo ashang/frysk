@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
@@ -59,10 +60,8 @@ import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeRowReference;
-import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.CellRendererToggleEvent;
@@ -83,9 +82,9 @@ import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
@@ -211,8 +210,8 @@ public class CreateFryskSessionDruid
     Iterator i = oldSessionProcesses.iterator();
     String prev = "";
     
-    /* Find all possible obsevers that were requested for this session, and 
-     * keep track of them. Then collect all proceses from the model
+    /* Find all possible observers that were requested for this session, and 
+     * keep track of them. Then collect all processes from the model
      * with this name. */
     while (i.hasNext())
       {
@@ -479,16 +478,15 @@ public class CreateFryskSessionDruid
    * @param filter - Filtered TreePath
    * @return - TreePath, returns the unfiltered iter in the view
    */
-  private TreePath deFilterPath (TreeView tree, TreePath filter)
+  private TreePath deFilterPath (ProcWiseTreeView tree, TreePath filter)
   {
-    final TreeModelFilter ts = (TreeModelFilter) tree.getModel();
-    return ts.convertPathToChildPath(filter);
+    return tree.deFilterPath(filter);
   }
 
   /**
    * Changes the transition on a group of processes from one tree to the other
    * As the druid removes items from one tree and adds them to another, it must
-   * transport and translate thiose selected TreePaths. Ugly and really needs to
+   * transport and translate those selected TreePaths. Ugly and really needs to
    * be re-written
    * 
    * @param tree - TreeView in question
@@ -497,7 +495,7 @@ public class CreateFryskSessionDruid
    * @param state - What selected state do you want to render the selected
    *          TreePath[]s
    */
-  private void changeGroupState (TreeView tree, TreePath[] selectedProcs,
+  private void changeGroupState (ProcWiseTreeView tree, TreePath[] selectedProcs,
                                  boolean filtered, boolean state)
   {
 
@@ -925,7 +923,7 @@ public class CreateFryskSessionDruid
             ll.add(WindowManager.theManager.mainWindow);
             IconManager.trayIcon.setPopupWindows(ll);
             WindowManager.theManager.mainWindow.setSession(currentSession);
-            WindowManager.theManager.mainWindow.buildTerminal();
+//            WindowManager.theManager.mainWindow.buildTerminal();
             WindowManager.theManager.mainWindow.showAll();
             WindowManager.theManager.sessionManager.hideAll();
             hide();

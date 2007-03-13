@@ -39,6 +39,10 @@
 
 package frysk.gui.monitor.eventviewer;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Adjustment;
 import org.gnu.gtk.VBox;
 
@@ -51,8 +55,8 @@ import frysk.proc.ProcObserver.ProcTasks;
 public class ProcBox extends VBox
 {
   GuiProc guiProc;
-  GuiTask mainGuiTask;
-  private boolean mainGutTaskAdded;
+ 
+  private boolean mainGuiTaskAdded;
   private Adjustment hAdjustment;
   
   TimeLineSelectionManager manager;
@@ -64,33 +68,47 @@ public class ProcBox extends VBox
     this.manager = manager;
     this.hAdjustment = adjustment;
     
-    this.mainGutTaskAdded = false;
+    this.mainGuiTaskAdded = false;
 
     this.setProc(guiProc);
   }
 
   private void setProc(GuiProc guiProc){
     this.guiProc = guiProc;
-    
+
     ProcTimeLine procTimeLine = new ProcTimeLine(guiProc, manager);
     procTimeLine.setHAdjustment(hAdjustment);
     this.packStart(procTimeLine, true, true, 0);
     
     new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
 
-      public void taskAdded (Task task)
+      public void taskAdded (final Task task)
       {
-        addGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
+        CustomEvents.addEvent(new Runnable()
+        {
+          final Task realTask = task;
+          public void run ()
+          {
+            addGuiTask(GuiTask.GuiTaskFactory.getGuiTask(realTask));
+          }
+        });
       }
 
-      public void taskRemoved (Task task)
+      public void taskRemoved (final Task task)
       {
-        removeGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
+        CustomEvents.addEvent(new Runnable()
+        {
+          final Task realTask = task;
+          public void run ()
+          {
+            removeGuiTask(GuiTask.GuiTaskFactory.getGuiTask(realTask));
+          }
+        });
       }
 
       public void existingTask (Task task)
       {
-        addGuiTask(GuiTask.GuiTaskFactory.getGuiTask(task));
+        taskAdded(task);
       }
 
       public void addFailed (Object observable, Throwable w)
@@ -119,25 +137,35 @@ public class ProcBox extends VBox
 //      }
   }
 
+  LinkedList guiTasksBuffer = new LinkedList();
   protected void addGuiTask (GuiTask guiTask)
   {
-    // if a proc has only one task there is no need to have
-    // a time line for the proc and one for the main task
-    // because they will look exactly the same.
-    if(this.mainGuiTask == null){
-      this.mainGuiTask = guiTask;
-      return;
-    }
     
-    if(!this.mainGutTaskAdded && guiTask != this.mainGuiTask){
-      this.addGuiTask(this.mainGuiTask);
-      this.mainGutTaskAdded = true;
+    
+    // if the main task has not been added and this is not it.
+    if(!this.mainGuiTaskAdded && guiTask.getTask().getTid() != guiTask.getTask().getProc().getPid()){
+      this.guiTasksBuffer.add(guiTask);
+      return;
     }
     
     TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask, manager);
     taskTimeLine.setHAdjustment(hAdjustment);
     
     this.packStart(taskTimeLine,true,true,0);
+    
+    // if this was the main task that was just added
+    if(guiTask.getTask().getTid() == guiTask.getTask().getProc().getPid()){
+      this.mainGuiTaskAdded = true;
+      Iterator iterator = guiTasksBuffer.iterator();
+      while(iterator.hasNext()){
+        guiTask = (GuiTask) iterator.next();
+        addGuiTask(guiTask);
+      }
+      guiTasksBuffer.clear();
+      guiTasksBuffer = null;
+    }
+    
+    this.showAll();
   }
   
 }

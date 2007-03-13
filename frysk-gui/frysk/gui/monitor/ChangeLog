@@ -1,3 +1,15 @@
+2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Fixed alignment problems.
+	* eventviewer/ProcTimeLine.java: Removed PID from timeline label.
+	* eventviewer/ProcBox.java: Fixed bug with main task not being
+	the first time line.
+	* ProcWiseTreeView.java: Added deFilterPath function.
+	Added a TreeModel sort to decople sorting from the underlying
+	TreeModel fix for bz# 4152.
+	* GuiTask.java: Removed Commented out code.
+	Removed get/setParent in favor of using task.getProc().
+
 2007-03-06  sami wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLine.java: Added code to translate click coordinates

@@ -49,6 +49,7 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreeModelSort;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
@@ -65,6 +66,7 @@ public class ProcWiseTreeView
   private TreeModelFilter removedProcFilter;
   
   private TreeStore treeStore;
+  private TreeModelSort treeModelSort;
   
   private final TreeViewColumn pwtvTVC[] = new TreeViewColumn[6];
 
@@ -73,6 +75,7 @@ public class ProcWiseTreeView
     super(handle);
     this.treeStore = model.getModel();
     this.dataModel = model;
+    this.treeModelSort = new TreeModelSort(treeStore);
   }
   
   private boolean shown;
@@ -80,7 +83,7 @@ public class ProcWiseTreeView
   public void setFilter (boolean shown)
   {
     this.shown = shown;
-    this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
+    this.removedProcFilter = new TreeModelFilter(treeModelSort);
 
     this.removedProcFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
     {
@@ -116,7 +119,7 @@ public class ProcWiseTreeView
     this.appendColumn(this.pwtvTVC[5]);
 
     this.setEnableSearch(true);
-    this.treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
+    this.treeModelSort.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
 
     this.setModel(removedProcFilter);
     this.pwtvTVC[0].setVisible(true);
@@ -126,7 +129,7 @@ public class ProcWiseTreeView
     this.pwtvTVC[4].setVisible(true);
     this.pwtvTVC[5].setVisible(true);
     this.expandAll();
-    
+
   }
   
   private void setUpColumns ()
@@ -145,12 +148,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[0].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getNameDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getNameDC(), SortType.DESCENDING);
             pwtvTVC[0].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getNameDC(), SortType.ASCENDING);
             pwtvTVC[0].setSortOrder(SortType.ASCENDING);
           }
         pwtvTVC[0].setSortIndicator(true);
@@ -180,12 +183,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[1].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getPIDDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getPIDDC(), SortType.DESCENDING);
             pwtvTVC[1].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getPIDDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getPIDDC(), SortType.ASCENDING);
             pwtvTVC[1].setSortOrder(SortType.ASCENDING);
 
           }
@@ -211,12 +214,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[2].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getLocationDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getLocationDC(), SortType.DESCENDING);
             pwtvTVC[2].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getLocationDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getLocationDC(), SortType.ASCENDING);
             pwtvTVC[2].setSortOrder(SortType.ASCENDING);
 
           }
@@ -246,12 +249,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[3].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getVszDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getVszDC(), SortType.DESCENDING);
             pwtvTVC[3].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getVszDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getVszDC(), SortType.ASCENDING);
             pwtvTVC[3].setSortOrder(SortType.ASCENDING);
 
           }
@@ -281,12 +284,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[4].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getRssDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getRssDC(), SortType.DESCENDING);
             pwtvTVC[4].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getRssDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getRssDC(), SortType.ASCENDING);
             pwtvTVC[4].setSortOrder(SortType.ASCENDING);
 
           }
@@ -316,12 +319,12 @@ public class ProcWiseTreeView
       {
         if (pwtvTVC[5].getSortOrder() == SortType.ASCENDING)
           {
-            treeStore.setSortColumn(dataModel.getTimeDC(), SortType.DESCENDING);
+            treeModelSort.setSortColumn(dataModel.getTimeDC(), SortType.DESCENDING);
             pwtvTVC[5].setSortOrder(SortType.DESCENDING);
           }
         else
           {
-            treeStore.setSortColumn(dataModel.getTimeDC(), SortType.ASCENDING);
+            treeModelSort.setSortColumn(dataModel.getTimeDC(), SortType.ASCENDING);
             pwtvTVC[5].setSortOrder(SortType.ASCENDING);
 
           }
@@ -340,7 +343,10 @@ public class ProcWiseTreeView
   
   public LinkedList getSelectedObjects ()
   {
-
+    
+    
+    
+    
     LinkedList selecteds = new LinkedList();
     TreePath[] selectedPaths = this.getSelection().getSelectedRows();
 
@@ -352,8 +358,8 @@ public class ProcWiseTreeView
           {
             
             TreePath realPath = this.removedProcFilter.convertPathToChildPath(selectedPaths[i]);
-            selecteds.add((GuiObject) this.treeStore.getValue(
-                                                              this.treeStore.getIter(realPath),
+            selecteds.add((GuiObject) this.treeModelSort.getValue(
+                                                              this.treeModelSort.getIter(realPath),
                                                               this.dataModel.getObjectDC()));
           }
         return selecteds;
@@ -366,15 +372,14 @@ public class ProcWiseTreeView
   
   public GuiObject getSelectedObject ()
   {
-
     GuiObject selected = null;
 
     /* Check for no selected rows */
     if (this.getSelection().getSelectedRows().length > 0)
       {
         TreePath realPath = this.removedProcFilter.convertPathToChildPath(this.getSelection().getSelectedRows()[0]);
-        selected = (GuiObject) this.treeStore.getValue(
-                                                       this.treeStore.getIter(realPath),
+        selected = (GuiObject) this.treeModelSort.getValue(
+                                                       this.treeModelSort.getIter(realPath),
                                                        this.dataModel.getObjectDC());
       }
     return selected;
@@ -383,20 +388,30 @@ public class ProcWiseTreeView
   public LinkedList getListedObjects ()
   {
     LinkedList list = new LinkedList();
-    TreeIter iter = this.treeStore.getFirstIter();
+    TreeIter iter = this.treeModelSort.getFirstIter();
 
     if (iter == null)
       return null;
 
     while (iter != null && this.treeStore.isIterValid(iter))
       {
-        if (this.treeStore.getValue(iter, this.dataModel.getSelectedDC()) == true)
-          list.add((GuiObject) this.treeStore.getValue(
+        if (this.treeModelSort.getValue(iter, this.dataModel.getSelectedDC()) == true)
+          list.add((GuiObject) this.treeModelSort.getValue(
                                                        iter,
                                                        this.dataModel.getObjectDC()));
         iter = iter.getNextIter();
       }
     
     return list;
+  }
+
+  public TreePath deFilterPath (TreePath filter)
+  {
+    TreePath realPath = filter;
+    
+    realPath = this.removedProcFilter.convertPathToChildPath(realPath);
+    realPath = this.treeModelSort.convertPathToChildPath(realPath);
+    
+    return realPath;
   }
 }

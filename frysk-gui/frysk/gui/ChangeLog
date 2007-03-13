@@ -1,3 +1,8 @@
+2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (deFilterPath): Added call to
+	ProcWiseTreeview to defilter TreePaths.
+
 2007-03-08  Mike Cvet  <mcvet@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (setUpCurrentPage): Hide the 'quick
