@@ -205,7 +205,7 @@ public class SessionProcDataModel
     	if (guiProc.getName() == "Frysk Terminal Process")
     		treeStore.setValue(iter, commandDC, guiProc.getName());		
     	else
-    		treeStore.setValue(iter, commandDC, proc.getCommand());
+    		treeStore.setValue(iter, commandDC, guiProc.getExecutableName());
         
         treeStore.setValue(iter, tidDC, proc.getPid());
         treeStore.setValue(iter, procDataDC,

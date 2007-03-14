@@ -161,6 +161,7 @@ public class CreateFryskSessionDruid
     this.addListener(this);
     
     this.dialogName = this.getName();
+    this.initialSessionName = new String();
   }
 
   /**
