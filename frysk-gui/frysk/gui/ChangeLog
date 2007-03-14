@@ -1,5 +1,7 @@
 2007-03-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* gladedir/frysk_create_session_druid.glade: Made druid modal Fix for
+	bz 2642.
 	* druid/CreateFryskSessionDruid.java: Initialized initialSessionName.
 
 2007-03-13  Sami Wagiaalla  <swagiaal@redhat.com>

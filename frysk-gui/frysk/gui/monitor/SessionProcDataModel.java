@@ -203,7 +203,7 @@ public class SessionProcDataModel
       {
     	// XXX: Hack, hack, hack. Need to do this properly.
     	if (guiProc.getName() == "Frysk Terminal Process")
-    		treeStore.setValue(iter, commandDC, guiProc.getName());		
+    		treeStore.setValue(iter, commandDC, guiProc.getName());
     	else
     		treeStore.setValue(iter, commandDC, guiProc.getExecutableName());
         
