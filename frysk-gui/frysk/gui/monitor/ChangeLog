@@ -1,5 +1,7 @@
 2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* LogWidget.java: Renamed this..
+	* SummaryWidget.java: ..to this.
 	* observers/TaskExecObserver.java (runActions): Changed runActions argumet
 	to match the new abstract function.
 	* observers/TaskTerminatingObserver.java: Ditto.
