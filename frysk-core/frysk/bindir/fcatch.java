@@ -65,15 +65,16 @@ public class fcatch
   private boolean requestedPid;
   
 //  private static ArrayList arguments;
-  private static String pidString;
+  private static String argString;
 
   private void run (String[] args)
   {
-    Parser parser = new Parser("fcatch", Config.getVersion (), true)
+    Parser parser = new Parser("fcatch", Config.getVersion(), true)
     {
       protected void validate () throws OptionException
       {
-        if (! requestedPid && fcatch.pidString == null) //fcatch.arguments == null)
+        if (! requestedPid && fcatch.argString == null) // fcatch.arguments ==
+                                                        // null)
           throw new OptionException("no command or PID specified");
       }
     };
@@ -85,19 +86,20 @@ public class fcatch
     {
       public void notifyFile (String arg) throws OptionException
       {
-//        System.err.println("notifyFile " + arg);
-//        if (fcatch.arguments == null)
-//          fcatch.arguments = new ArrayList();
-//        fcatch.arguments.add(arg);
+        argString = new String();   
+        argString = arg;
+        // if (fcatch.arguments == null)
+        // fcatch.arguments = new ArrayList();
+        // fcatch.arguments.add(arg);
       }
     });
 
-    if (pidString != null)
-  {
-      //String[] cmd = (String[]) arguments.toArray(new String[0]);
-    String[] cmd = { pidString };
-      catcher.trace(cmd, requestedPid);
-  }
+    if (argString != null)
+      {
+        // String[] cmd = (String[]) arguments.toArray(new String[0]);
+        String[] cmd = { argString };
+        catcher.trace(cmd, requestedPid);
+      }
   }
   
   public void addOptions (Parser p)
@@ -112,8 +114,8 @@ public class fcatch
               //System.out.println("Option pid: " + pid);
               catcher.addTracePid(pid);
               requestedPid = true;
-              pidString = new String();
-              pidString = "" + pid; //.add(new Integer(pid));
+              argString = new String();
+              argString = "" + pid; //.add(new Integer(pid));
           } catch (NumberFormatException e) {
               OptionException oe = new OptionException("couldn't parse pid: " + arg);
               oe.initCause(e);

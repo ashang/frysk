@@ -1,3 +1,8 @@
+2007-03-15  Mike Cvet  <mcvet@redhat.com>
+
+	* fcatch.java (argString): Changed from pidString.
+	(.notifyFile): Catch arguments appropriately. Fixes #4185.
+
 2007-03-06  Stan Cox  <scox@redhat.com>
 
 	* TestFhd.java (testHpd): Comment out float_21 and double_21.
