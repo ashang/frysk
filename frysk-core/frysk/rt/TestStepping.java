@@ -41,19 +41,15 @@
 package frysk.rt;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-//import frysk.proc.Action;
+import frysk.Config;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
-//import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
-//import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
@@ -63,7 +59,6 @@ public class TestStepping extends TestLib
 {
   
   private Task myTask;
-  private Task myAsmTask;
   private Proc myProc;
   
   private int testState = 0;
@@ -74,26 +69,33 @@ public class TestStepping extends TestLib
   
   private boolean initial;
   
-  private int count = 0;
+  int multiCount = 0;
+    
+  protected static final int INITIAL = 0;
+  protected static final int STEPPING = 1;
+  protected static final int FINAL_STEP = 2;
   
-  protected static final int INSTRUCTION_STEP = 0;
-  protected static final int STEP_IN = 1;
-  protected static final int STEP_OVER = 2;
-  protected static final int STEP_OUT = 3;
-  protected static final int ASM_INSTRUCTION_STEP = 4;
-  protected static final int ASM_STEP_IN = 5;
+  private int test = 0; 
+  protected static final int LINE_STEP_FUNCTION_CALL = 1;
+  protected static final int LINE_STEP_IF_PASS = 2;
+  protected static final int LINE_STEP_IF_FAIL = 3;
+  protected static final int LINE_STEP_FUNCTION_RETURN = 4;
+  
+  protected static final int ASM_STEP_SINGLE_INST = 10;
+  protected static final int ASM_STEP_MULTI_LINE = 11;
+  protected static final int ASM_STEP_JUMP = 12;
   
   private LockObserver lock;
   
   private AttachedObserver attachedObserver;
   
+  static String Cfile = Config.getRootSrcDir() 
+                           + "frysk-core/frysk/pkglibdir/funit-rt-steptester.c";
   
-  public void testRecursiveLineStepping ()
+  public void testLineStepFunctionCall ()
   {
-      if (brokenXXX (4103))
-	  return;
-      if (brokenPpcXXX (3277))
-	  return;
+    if (brokenPpcXXX (3277))
+      return;
     
     initial = true;
     this.lineMap = new HashMap();
@@ -102,15 +104,16 @@ public class TestStepping extends TestLib
     runState = new RunState();
     runState.addObserver(lock);
     
-    testState = STEP_IN;
+    testState = INITIAL;
+    test = LINE_STEP_FUNCTION_CALL;
     
     AckDaemonProcess process = new AckDaemonProcess
-	(Sig.POLL,
-	 new String[] {
-	    getExecPath ("funit-rt-threadstepper"),
-	    "" + Pid.get (),
-	    "" + Sig.POLL_
-	});
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-steptester"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
     
     myTask = process.findTaskUsingRefresh(true);
     myProc = myTask.getProc();
@@ -119,9 +122,110 @@ public class TestStepping extends TestLib
     runState.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
   }
   
-  public void testASMStepping ()
+  public void testLineStepIfStatementPass ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = LINE_STEP_FUNCTION_CALL;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-steptester"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
+  public void testLineStepIfStatementFail ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = LINE_STEP_FUNCTION_CALL;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-steptester"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
+  public void testLineStepFunctionReturn ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = LINE_STEP_FUNCTION_RETURN;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-steptester"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
+
+  public void testASMSingleStep ()
   {
     
     if (brokenPpcXXX (3277))
@@ -132,7 +236,8 @@ public class TestStepping extends TestLib
     
     lock = new LockObserver();
     
-    testState = ASM_INSTRUCTION_STEP;
+    testState = INITIAL;
+    test = ASM_STEP_SINGLE_INST;
     
     runState = new RunState();
     runState.addObserver(lock);
@@ -143,289 +248,286 @@ public class TestStepping extends TestLib
     attachedObserver = new AttachedObserver();
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
     
-    assertRunUntilStop("Attempting to add instructionObserver");
+    assertRunUntilStop("Attempting to add attachedObserver");
+    this.lineMap.clear();
   }
   
+  public void testASMMultiStep ()
+  {
+    
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    
+    testState = INITIAL;
+    test = ASM_STEP_MULTI_LINE;
+    
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    multiCount = 0;
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-rt-asmstepper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    this.lineMap.clear();
+  }
+  
+  public void testASMJump ()
+  {
+    
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    
+    testState = INITIAL;
+    test = ASM_STEP_JUMP;
+    
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-rt-asmstepper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    this.lineMap.clear();
+  }
   
   public void setUpTest ()
   {
-    Iterator i = myProc.getTasks().iterator();
+    StackFrame frame = StackFactory.createStackFrame(myTask, 1);
 
-    while (i.hasNext())
+    if (frame.getLines().length == 0)
+      this.lineMap.put(myTask, new Integer(0));
+    else
+      this.lineMap.put(myTask, new Integer(frame.getLines()[0].getLine()));
+
+    if (test < 10)
       {
-        Task t = (Task) i.next();
-        StackFrame frame = StackFactory.createStackFrame(t, 1);
-
-        if (frame.getLines().length == 0)
-          {
-            this.lineMap.put(t, new Integer(0));
-            continue;
-          }
-
-        this.lineMap.put(t, new Integer(frame.getLines()[0].getLine()));
+        runState.setUpLineStep(myTask);
+        return;
       }
-    
-    count = 0;
-
-    if (testState == INSTRUCTION_STEP)
+    else
       {
-        runState.stepInstruction(myProc.getTasks());
-      }
-    else if (testState == (STEP_IN))
-      {
-        runState.setUpLineStep(myProc.getTasks());
-      }
-    else if (testState == ASM_INSTRUCTION_STEP)
-      {
-        runState.stepInstruction(myProc.getTasks());
+        runState.stepInstruction(myTask);
       }
   }
   
-  public synchronized void stepAssertions (LinkedList tasks)
+  public synchronized void assertions ()
   {
-//   System.out.println("Test.stepAssertions " + tasks.size());
-    Iterator i = tasks.iterator();
-    while (i.hasNext())
+    runState.stepCompleted();
+
+    if (this.testState == INITIAL)
       {
-        Task task = (Task) i.next();
-        myTask = task;
-        StackFrame frame = StackFactory.createStackFrame(task, 1);
+
         int lineNum;
-        
-        if (frame.getLines().length == 0)
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+
+        if (sFrame.getLines().length == 0)
           {
-//           System.out.println("line null - assigning 0");
             lineNum = 0;
           }
         else
           {
-            lineNum = frame.getLines()[0].getLine();
+            lineNum = sFrame.getLines()[0].getLine();
           }
+
+        this.lineMap.put(myTask, new Integer(lineNum));
         
-        int prev = ((Integer) this.lineMap.get(task)).intValue();
-       
-//        System.out.println("About to assert " + prev + " " + lineNum);
-       if (lineNum == 244 || lineNum == 0)
-         {
-           continue;
-         }
-        if (testState == STEP_IN)
+        this.testState = STEPPING;
+
+        switch (test)
           {
-            switch (prev)
+          case LINE_STEP_FUNCTION_CALL:
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_IF_PASS:
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_IF_FAIL:
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_FUNCTION_RETURN:
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case ASM_STEP_SINGLE_INST:
+            this.runState.stepInstruction(myTask);
+            break;
+
+          case ASM_STEP_MULTI_LINE:
+            this.runState.stepInstruction(myTask);
+            break;
+            
+          case ASM_STEP_JUMP:
+            this.runState.stepInstruction(myTask);
+            break;
+            
+          default:
+            break;
+          }
+      }
+    else if (testState == STEPPING)
+      {
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+
+        if (sFrame.getLines().length == 0)
+          {
+            this.runState.setUpLineStep(myTask);
+            return;
+          }
+
+        Line line = sFrame.getLines()[0];
+        this.lineMap.put(myTask, new Integer(line.getLine()));
+
+        switch (test)
+          {
+          case LINE_STEP_FUNCTION_CALL:
+            if (line.getLine() == 93)
               {
-                case 0:
-                  break;
-                
-                /* Thread one */
-              case 90:
-                assertEquals(91, lineNum);
-                break;
-              case 91:
-                assertEquals(66, lineNum);
-                break;
-              case 66:
-                assertTrue(lineNum == 66 || lineNum == 67);
-                break;
-              case 67:
-                assertTrue(lineNum == 69 || lineNum == 74);
-                break;
-              case 68:
-                assertEquals(69, lineNum);
-                break;
-              case 69:
-                assertEquals(70, lineNum);
-                break;
-              case 70:
-                assertTrue(lineNum == 66 || lineNum == 67 || lineNum == 77 || lineNum == 92);
-                break;
-              case 73:
-                assertEquals(74, lineNum);
-                break;
-              case 74:
-                assertTrue(lineNum == 70 || lineNum == 91 || lineNum == 77);
-                break;
-              case 75:
-                assertTrue(lineNum == 70 || lineNum == 91);
-                break;
-                  
-                /* Thread two */
-              case 196:
-                assertEquals(197, lineNum);
-                break;
-              case 197:
-                assertEquals(178, lineNum);
-                break;
-              case 179:
-                assertEquals(180, lineNum);
-                break;
-              case 180:
-                assertTrue(lineNum == 181 || lineNum == 183);
-                break;
-              case 181:
-                assertEquals(180, lineNum);
-                break;
-              case 183:
-                assertEquals(164, lineNum);
-                break;
-              case 164:
-                assertEquals(165, lineNum);
-                break;
-              case 165:
-                assertEquals(144, lineNum);
-                break;
-              case 144:
-                assertEquals(145, lineNum);
-                break;
-              case 145:
-                assertTrue(lineNum == 146 || lineNum == 148);
-                break;
-              case 148:
-                assertEquals(150, lineNum);
-                break;
-              case 150:
-                assertEquals(151, lineNum);
-                break;
-              case 151:
-                assertTrue(lineNum == 122 || lineNum == 123);
-                break;
-              case 122:
-                assertTrue(lineNum == 122 || lineNum == 123);
-                break;
-              case 123:
-                assertTrue(lineNum == 124 || lineNum == 126);
-                break;
-              case 124:
-                assertEquals(126, lineNum);
-                break;
-              case 126:
-                assertTrue(lineNum == 128 || lineNum == 134);
-                break;
-              case 127:
-                assertEquals(128, lineNum);
-                break;
-              case 128:
-                assertEquals(129, lineNum);
-                break;
-              case 129:
-                assertTrue(lineNum == 136 || lineNum == 138 || lineNum == 151);
-                break;
-              case 130:
-                assertTrue(lineNum == 136 || lineNum == 151);
-                break;
-              case 133:
-                assertEquals(134, lineNum);
-                break;
-              case 134:
-                assertEquals(135, lineNum);
-                break;
-              case 135:
-                assertEquals(136, lineNum);
-                break;
-              case 136:
-                assertTrue(lineNum == 123 || lineNum == 122 || lineNum == 151 || lineNum == 136);
-                break;
-                
-                /* Main thread */
-              case 100:
-                assertEquals(101, lineNum);
-                break;
-              case 101:
-                assertEquals(103, lineNum);
-                break;
-              case 103:
-                assertTrue(lineNum == 104 || lineNum == 106 || lineNum == 103);
-                break;
-              case 104:
-                assertEquals(104, lineNum);
-                break;
-              case 106:
-                assertEquals(112, lineNum);
-                break;
-              case 112:
-                assertEquals(113, lineNum);
-                break;
-              case 113:
-                assertEquals(114, lineNum);
-                break;
-              case 114:
-                assertEquals(100, lineNum);
-              default:
-                break;
+                this.testState = FINAL_STEP;
               }
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_IF_PASS:
+            if (line.getLine() == 96)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_IF_FAIL:
+            if (line.getLine() == 99)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case LINE_STEP_FUNCTION_RETURN:
+            if (line.getLine() == 86)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.setUpLineStep(myTask);
+            break;
+
+          case ASM_STEP_SINGLE_INST:
+            if (line.getLine() == 53)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.stepInstruction(myTask);
+            break;
+            
+          case ASM_STEP_MULTI_LINE:
+            if (line.getLine() == 55)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.stepInstruction(myTask);
+            break;
+            
+          case ASM_STEP_JUMP:
+            if (line.getLine() == 66)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.stepInstruction(myTask);
+            break;
+
+          default:
+            this.runState.setUpLineStep(myTask);
+            break;
           }
-        else if (testState == ASM_INSTRUCTION_STEP)
+
+      }
+    else if (testState == FINAL_STEP)
+      {
+
+        StackFrame frame = StackFactory.createStackFrame(myTask, 1);
+        if (frame.getLines().length == 0)
           {
-            switch (prev)
-            {
-              case 0:
-                break;
-              
-              case 53:
-                assertEquals(54, lineNum);
-                break;
-              case 54:
-                assertEquals(55, lineNum);
-                break;
-              case 55:
-                assertEquals(56, lineNum);
-                break;
-              case 56:
-                assertTrue(lineNum == 56 || lineNum == 57);
-                break;
-              case 57:
-                assertEquals(58, lineNum);
-                break;
-              case 58:
-                assertTrue(lineNum == 58 || lineNum == 59);
-                break;
-              case 59:
-                assertEquals(60, lineNum);
-                break;
-              case 60:
-                assertEquals(61, lineNum);
-                break;
-              case 61:
-                assertEquals(62, lineNum);
-                break;
-              case 62:
-                assertEquals(63, lineNum);
-                break;
-              case 63:
-                assertEquals(64, lineNum);
-                break;
-              case 64:
-                assertEquals(65, lineNum);
-                break;
-              case 65:
-                assertEquals(66, lineNum);
-                break;
-              case 66:
-                assertEquals(53, lineNum);
-                break;
-                
-                default:
-                  break;
-            }
+            this.runState.setUpLineStep(myTask);
+            return;
           }
-        this.lineMap.put(task, new Integer(lineNum));
-      }
-    //System.out.println("After assertions");
-    
-    count++;
 
-    runState.stepCompleted();
+        int lineNr = frame.getLines()[0].getLine();
 
-    if (count != 40)
-      {
-        if (testState == STEP_IN)
-          runState.setUpLineStep(tasks);
-        else if (testState == ASM_INSTRUCTION_STEP)
-          runState.stepInstruction(tasks);
-      }
-    else
-      {
-        Manager.eventLoop.requestStop();
-        return;
+        switch (test)
+          {
+          case LINE_STEP_FUNCTION_CALL:
+            assertTrue("line number", lineNr == 79);
+            Manager.eventLoop.requestStop();
+            return;
+
+          case LINE_STEP_IF_PASS:
+            assertTrue("line number", lineNr == 97);
+            Manager.eventLoop.requestStop();
+            return;
+
+          case LINE_STEP_IF_FAIL:
+            assertTrue("line number", lineNr == 101);
+            Manager.eventLoop.requestStop();
+            return;
+
+          case LINE_STEP_FUNCTION_RETURN:
+            if (lineNr == 103) /* Strange end-of-function thing */
+              {
+                this.runState.setUpLineStep(myTask);
+                return;
+              }
+            assertTrue("line number", lineNr == 96 || lineNr == 109);
+            Manager.eventLoop.requestStop();
+            return;
+
+          case ASM_STEP_SINGLE_INST:
+            assertTrue("line number", lineNr == 54);
+            Manager.eventLoop.requestStop();
+            return;
+            
+          case ASM_STEP_MULTI_LINE:
+            if (lineNr == 56)
+              {
+                ++multiCount;
+                this.runState.stepInstruction(myTask);
+                return;
+              }
+            
+            assertTrue("line instruction count", multiCount == 3);
+            assertTrue("line number", lineNr == 57);
+            Manager.eventLoop.requestStop();
+            return;
+            
+          case ASM_STEP_JUMP:
+            assertTrue("line number", lineNr == 53);
+            Manager.eventLoop.requestStop();
+            return;
+
+          default:
+            break;
+          }
+
       }
   }
   
@@ -438,9 +540,9 @@ public class TestStepping extends TestLib
     
     public Action updateAttached (Task task)
     {
-      myAsmTask = task;
+      myTask = task;
       myProc = task.getProc();
-      runState.setProc(myProc);
+      myTask.requestDeleteAttachedObserver(this);
       return Action.CONTINUE;
     }
     
@@ -451,7 +553,9 @@ public class TestStepping extends TestLib
     
     public void deletedFrom (Object o)
     {
-      
+      /* Need to give the process some time to get to the looping section */
+      try { Thread.sleep(200); } catch (Exception e) {}
+      runState.setProc(myProc);
     }
   }
   
@@ -466,35 +570,27 @@ public class TestStepping extends TestLib
      * @param arg An Object argument, usually a Task when important
      */
     public synchronized void update (Observable o, Object arg)
-    {//System.out.println("LockObserver.update " + arg);
-      if (arg == null)// && testState != ASM_INSTRUCTION_STEP)
+    {
+      // System.err.println("LockObserver.update " + arg + " " + initial);
+      if (arg == null)
         return;
-      
-      if (testState != ASM_INSTRUCTION_STEP)
-        myTask = (Task) arg;
-      
+
+      myTask = ((Task) arg).getProc().getMainTask();
+
       Manager.eventLoop.add(new Event()
       {
         public void execute ()
         {
           if (initial == true)
             {
-              //System.out.println("initial");
-              
-              if (attachedObserver != null)
-                myAsmTask.requestDeleteAttachedObserver(attachedObserver);
-              
               initial = false;
               setUpTest();
+
               return;
             }
           else
             {
-              //System.out.println("LockObserver.update " + (Task) myTask);
-              if (testState != ASM_INSTRUCTION_STEP)
-                stepAssertions(myTask.getProc().getTasks());
-              else
-                stepAssertions(myAsmTask.getProc().getTasks());
+              assertions();
             }
         }
       });

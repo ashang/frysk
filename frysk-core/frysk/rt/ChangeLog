@@ -1,3 +1,24 @@
+2007-03-15  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java: Deleted old constants, added new ones.
+	(test): Determines which test is running.
+	(CFile): Source file path for test program.
+	(testRecursiveLineStepping): Removed.
+	(testASMStepping): Removed.
+	(testLineStepFunctionCall): Added.
+	(testLineStepIfStatementPass): Added.
+	(testLineStepIfStatementFail): Added.
+	(testLineStepFunctionReturn): Added.
+	(testASMSingleStep): Added.
+	(testASMMultiStep): Added.
+	(testASMJump): Added.
+	(setUpTest): Re-written.
+	(assertions): Added. Cleaner method for making assertions on
+	stepping results.
+	(AttachedObserver.updateAttached): Delete AttachedObserver from task.
+	(AttachedObserver.deletedFrom): Add RunState from here.
+	(LockObserver.update): Cleaned up.
+
 2007-03-15  Stan Cox  <scox@redhat.com>
 
 	* StackFrame.java (subprogram): New.
