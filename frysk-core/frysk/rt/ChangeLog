@@ -1,3 +1,11 @@
+2007-03-15  Stan Cox  <scox@redhat.com>
+
+	* StackFrame.java (subprogram): New.
+	(getSubprogram): New.
+	(setSubprogram): New.
+	* LexicalBlock.java:  Moved from frysk.value.
+	* Subprogram.java:  Moved from frysk.value.
+
 2007-03-12  Mike Cvet  <mcvet@redhat.com>
 
 	* Line.java (getDOMSource): Check that the DOMFrysk coming out of the

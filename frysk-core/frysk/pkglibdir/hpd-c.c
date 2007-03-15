@@ -41,6 +41,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+static int func_1 (int x, int y)  __attribute__ ((noinline));
+static int func_2 (int x, int y)  __attribute__ ((noinline));
+
 int
 loop_ (double d1, int i1, int i2, short s, int i3, float f, double d2, int i4, int i5)
 {

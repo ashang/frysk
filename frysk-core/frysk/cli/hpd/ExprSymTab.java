@@ -45,11 +45,9 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.lang.Integer;
-import java.util.Map;
 
 import lib.dw.BaseTypes;
 import lib.dw.DwarfDie;
@@ -69,8 +67,10 @@ import frysk.value.ShortType;
 import frysk.value.Variable;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.rt.LexicalBlock;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import frysk.rt.Subprogram;
 import frysk.sys.Errno;
 import frysk.sys.PtraceByteBuffer;
 
@@ -82,18 +82,23 @@ class ExprSymTab
   private int pid;
 
   private StackFrame currentFrame;
-
-  Map symTab;
-
-  ByteBuffer buffer;
-
-  ByteType byteType;
-  ShortType shortType;
-  IntegerType intType;
-  LongType longType;
-  FloatType floatType;
-  DoubleType doubleType;
   
+  private Subprogram subprogram;
+
+  private ByteBuffer buffer;
+
+  private ByteType byteType;
+  private ShortType shortType;
+  private IntegerType intType;
+  private LongType longType;
+  private FloatType floatType;
+  private DoubleType doubleType;
+  
+  public void setSubprogram (Subprogram subprogram)
+  {
+    this.subprogram = subprogram;
+  }
+
   public boolean putUndefined ()
   {
     return false;
@@ -107,10 +112,10 @@ class ExprSymTab
    * @param pid_p Pid
    * @param frame StackFrame
    */
-  ExprSymTab (Task task_p, int pid_p, StackFrame frame)
+  ExprSymTab (Task task, int pid, StackFrame frame)
   {
-    task = task_p;
-    pid = pid_p;
+    this.task = task;
+    this.pid = pid;
     // ??? 0x7fffffffffffffff
     buffer = new PtraceByteBuffer(task.getTid(), PtraceByteBuffer.Area.DATA,
                                   0x7fffffffffffffffl);
@@ -137,13 +142,12 @@ class ExprSymTab
     longType = new LongType(8, byteorder);
     floatType = new FloatType(4, byteorder);
     doubleType = new DoubleType(8, byteorder);
-
-    symTab = new HashMap();
   }
 
   /**
    * Refresh the current frame.
    */
+    
   void refreshCurrentFrame()
   {
     currentFrame = StackFactory.createStackFrame(task);
@@ -490,8 +494,20 @@ class ExprSymTab
       return null;
     DwarfDie die = bias.die;
 
+    LexicalBlock b = subprogram.getBlock();
+    Variable vars[] = b.getVariables();
+    DwarfDie varDies[] = b.getVariableDies();
+    DwarfDie varDie;
+    for (int j = 0; j < vars.length; j++)
+      if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
+        {
+          allDies = die.getScopes(pc - bias.bias);
+          varDies[j].setScopes(allDies);
+          return varDies[j];
+        }
+          
     allDies = die.getScopes(pc - bias.bias);
-    DwarfDie varDie = die.getScopeVar(allDies, s);
+    varDie = die.getScopeVar(allDies, s);
     if (varDie == null)
       return null;
     return varDie;
@@ -905,6 +921,33 @@ class ExprSymTab
     }
     return null;
   }
+  
+  public Variable getVariable (DwarfDie varDie)
+  {
+      if (varDie == null)
+      return (null);
+
+    DwarfDie type = varDie.getType();
+    if (type == null)
+      return null;
+    switch (type.getBaseType())
+    {
+    case BaseTypes.baseTypeLong:
+      return LongType.newLongVariable(longType, varDie.getName(), 0);
+    case BaseTypes.baseTypeInteger:
+      return IntegerType.newIntegerVariable(intType, varDie.getName(), 0);
+    case BaseTypes.baseTypeShort:
+      return ShortType.newShortVariable(shortType, varDie.getName(), (short)0);
+    case BaseTypes.baseTypeChar:
+      return ByteType.newByteVariable(byteType, varDie.getName(), (byte)0);
+    case BaseTypes.baseTypeFloat:
+      return FloatType.newFloatVariable(floatType, varDie.getName(), 0);
+    case BaseTypes.baseTypeDouble:
+      return DoubleType.newDoubleVariable(doubleType, varDie.getName(), 0); 
+    }
+    return null;
+  }
+
   
   /**
    * Get the current stack frame.

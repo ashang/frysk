@@ -59,7 +59,9 @@ import antlr.CommonAST;
 import frysk.value.Variable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.LexicalBlock;
 import frysk.rt.StackFrame;
+import frysk.rt.Subprogram;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
 import frysk.expr.CppSymTab;
@@ -74,43 +76,53 @@ public class SymTab
   Dwarf dwarf;
   
   static ExprSymTab[] exprSymTab;
+  
+  static Subprogram[] subprogram;
 
-    public SymTab (int tid_p, Proc proc_p, Task task_p)
+  public SymTab (int tid, Proc proc, Task task)
+  {
+    this(tid, proc, task, null);
+  }
+  
+  /**
+   * Create a symbol table object.
+   * 
+   * @param pid
+   * @param proc
+   * @param task
+   */
+  public SymTab (int tid, Proc proc, Task task, StackFrame f)
     {
-      this(tid_p, proc_p, task_p, null);
-    }
-    /**
-     * Create a symbol table object.
-     * @param pid_p
-     * @param proc_p
-     * @param task_p
-     */
-    public SymTab (int tid_p, Proc proc_p, Task task_p, StackFrame frame)
-    {
-      pid = tid_p;
-      proc = proc_p;
+      this.pid = tid;
+      this.proc = proc;
       try 
       {
         elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
         dwarf = new Dwarf(elf, DwarfCommand.READ, null);
       }
-      catch (lib.elf.ElfException ee)
+      catch (lib.elf.ElfException ignore)
       {}
       exprSymTab = new ExprSymTab[1];
-      exprSymTab[0] = new ExprSymTab (task_p, pid, frame);
+      subprogram = new Subprogram[1];
+      exprSymTab[0] = new ExprSymTab (task, pid, f);
     }
 
    /**
-    * Synchronize the symbol table with the current state of the task.
-    */
+     * Synchronize the symbol table with the current state of the task.
+     */
    public void refresh()
    {
      for (int i = 0; i < exprSymTab.length; i++)
-       exprSymTab[i].refreshCurrentFrame();
+       {
+         exprSymTab[i].refreshCurrentFrame();
+         subprogram[i] = setSubprogram(exprSymTab[i].getCurrentFrame());
+         exprSymTab[i].setSubprogram(subprogram[i]);
+       }
    }
   
     /**
      * Handle ConsoleReader Completor
+     * 
      * @param buffer Input buffer.
      * @param cursor Position of TAB in buffer.
      * @param candidates List that may complete token.
@@ -121,8 +133,7 @@ public class SymTab
       long pc;
       Dwfl dwfl;
       
-      StackFrame currentFrame = getCurrentFrame();
-      pc = currentFrame.getAdjustedAddress();
+      pc = getCurrentFrame().getAdjustedAddress();
 
       dwfl = new Dwfl(pid);
       DwflDieBias bias = dwfl.getDie(pc);
@@ -138,9 +149,9 @@ public class SymTab
       try {
         parser.start();
       }
-      catch (antlr.RecognitionException r)
+      catch (antlr.RecognitionException ignore)
       {}
-      catch (antlr.TokenStreamException t)
+      catch (antlr.TokenStreamException ignore)
       {}
       catch (frysk.expr.TabException t)
       {
@@ -148,7 +159,7 @@ public class SymTab
       }
 
       DwarfDie[] allDies = die.getScopes(pc - bias.bias);
-      List candidates_p = die.getScopeVarNames(allDies, token /*buffer.substring(buffer.indexOf(' ')+1)*/);
+      List candidates_p = die.getScopeVarNames(allDies, token);
       for (Iterator i = candidates_p.iterator(); i.hasNext();)
         {
             String sNext = (String) i.next();
@@ -160,6 +171,7 @@ public class SymTab
     
     /**
      * Implement the cli what request
+     * 
      * @param sInput
      * @return String
      * @throws ParseException
@@ -174,8 +186,7 @@ public class SymTab
       if (proc == null)
         throw new NameNotFoundException("No symbol table is available.");
       
-      StackFrame currentFrame = getCurrentFrame();
-      pc = currentFrame.getAdjustedAddress();
+      pc = getCurrentFrame().getAdjustedAddress();
 
       dwfl = new Dwfl(pid);
       DwflDieBias bias = dwfl.getDie(pc);
@@ -230,11 +241,12 @@ public class SymTab
     }
     
      /**
-     * Implement the cli print request.
-     * @param sInput
-     * @return Variable
-     * @throws ParseException
-     */
+       * Implement the cli print request.
+       * 
+       * @param sInput
+       * @return Variable
+       * @throws ParseException
+       */
     static public Variable print (String sInput) throws ParseException,
       NameNotFoundException
   {
@@ -316,11 +328,13 @@ public class SymTab
       }
     else
       {
-        /* If this request has come from the SourceWindow, there's no way to
+        /*
+         * If this request has come from the SourceWindow, there's no way to
          * know which thread the mouse request came from; if there are multiple
-         * innermost frames of multiple threads in the same source file, than all
-         * of the threads have to be checked. If there's only one thread; than
-         * this loop will run only once anyways. */
+         * innermost frames of multiple threads in the same source file, than
+         * all of the threads have to be checked. If there's only one thread;
+         * than this loop will run only once anyways.
+         */
         int j = 0;
         while (result == null && j < exprSymTab.length)
           {
@@ -355,6 +369,7 @@ public class SymTab
     
     /**
      * Implement the cli up/down requests.
+     * 
      * @param level
      * @return StackFrame
      */
@@ -379,33 +394,130 @@ public class SymTab
            level -= 1;
          }
        if (tmpFrame != null)
-         exprSymTab[0].setCurrentFrame(tmpFrame);
+         {
+           exprSymTab[0].setCurrentFrame(tmpFrame);
+           subprogram[0] = setSubprogram(tmpFrame);
+           exprSymTab[0].setSubprogram(subprogram[0]);
+         }
        return exprSymTab[0].getCurrentFrame();
      }
      
      /**
-      * Get the current stack frame.
-      * @return
-      */
+       * Get the current stack frame.
+       * 
+       * @return
+       */
      public StackFrame getCurrentFrame ()
      {
        return exprSymTab[0].getCurrentFrame();
      }
      /**
-      * Get the most recent stack frame.
-      * @return StackFrame
-      */
+       * Get the most recent stack frame.
+       * 
+       * @return StackFrame
+       */
      public StackFrame getInnerMostFrame ()
      {
        return exprSymTab[0].getInnerMostFrame();
      }
      
-     public static void setFrames (StackFrame newFrames[])
+     private Subprogram setSubprogram(StackFrame sf)
+     {
+       Subprogram subPr = new Subprogram();
+       LexicalBlock block = new LexicalBlock();
+       subPr.setBlock(block);
+       DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
+       DwarfDie parm = varDie.getChild();
+       int nParms = 0;
+ 
+       while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
+         {
+           nParms += 1;
+           parm = parm.getSibling();
+         }
+       parm = varDie.getChild();
+       subPr.setParameters(nParms);
+       Variable parms[] = subPr.getParameters();
+       nParms = 0;
+       while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
+         {
+           if (parm.getAttr(DwAtEncodings.DW_AT_artificial_) == false)
+             parms[nParms] = exprSymTab[0].getVariable(parm);
+           parm = parm.getSibling();
+           nParms += 1;
+         }
+       DwarfDie firstVar = parm;
+       nParms = 0;
+       while (parm != null)
+         {
+           nParms += 1;
+           parm = parm.getSibling();
+         }
+       block.setVariables(nParms);
+       Variable vars[] = block.getVariables();
+       block.setVariableDies(nParms);
+       DwarfDie dies[] = block.getVariableDies();
+       block.setTypeDies(nParms);
+       DwarfDie types[] = block.getTypeDies();
+       parm = firstVar;
+       nParms = 0;
+       while (parm != null)
+         {
+           vars[nParms] = exprSymTab[0].getVariable(parm);
+           if (vars[nParms] == null)
+             {
+               int tag = parm.getTag();
+               switch (tag)
+               {
+                 case DwTagEncodings.DW_TAG_array_type_:
+                 case DwTagEncodings.DW_TAG_base_type_:
+                 case DwTagEncodings.DW_TAG_const_type_:
+                 case DwTagEncodings.DW_TAG_pointer_type_:
+                 case DwTagEncodings.DW_TAG_structure_type_:
+                 case DwTagEncodings.DW_TAG_subrange_type_:
+                 case DwTagEncodings.DW_TAG_typedef_:
+                   types[nParms] = parm;
+               }
+             }
+           else
+             dies[nParms] = parm;
+           parm = parm.getSibling();
+           nParms += 1;
+         }
+       
+       if (false)
+         {
+           Variable p[] = subPr.getParameters ();
+           for (int j = 0; j < p.length; j++)
+             System.out.println(p[j].getText());
+           LexicalBlock b = subPr.getBlock();
+           Variable v[] = b.getVariables();
+           for (int j = 0; j < v.length; j++)
+             if (v[j] != null)
+               System.out.println(v[j].getText());
+           DwarfDie d[] = b.getVariableDies();
+           for (int j = 0; j < d.length; j++)
+             if (d[j] != null)
+               System.out.println(d[j].getName());
+           DwarfDie t[] = b.getTypeDies();
+           for (int j = 0; j < t.length; j++)
+             if (t[j] != null)
+               System.out.println(t[j].getName());
+         }
+       
+       return subPr;
+     }
+     
+     public void setFrames (StackFrame newFrames[])
      {
        exprSymTab = new ExprSymTab[newFrames.length];
+       subprogram = new Subprogram[newFrames.length];
        for (int i = 0; i < newFrames.length; i++)
-         exprSymTab[i] = new ExprSymTab (newFrames[i].getTask(), 
-                                         newFrames[i].getTask().getTid(), 
-                                         newFrames[i]);
+         {
+           exprSymTab[i] = new ExprSymTab (newFrames[i].getTask(), 
+                                           newFrames[i].getTask().getTid(), 
+                                           newFrames[i]);
+           subprogram[i] = setSubprogram(newFrames[i]);
+         }
      }
 }

@@ -62,6 +62,8 @@ public class StackFrame
   private Symbol symbol;
   
   private Line[] lines;
+  
+  private Subprogram subprogram;
 
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
@@ -288,4 +290,14 @@ public class StackFrame
       }
     return this.lines;
   }
+
+    public Subprogram getSubprogram ()
+    {
+      return subprogram;
+    }
+
+    public void setSubprogram (Subprogram subprogram)
+    {
+      this.subprogram = subprogram;
+    }
 }

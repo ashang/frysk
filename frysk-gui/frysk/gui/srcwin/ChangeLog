@@ -1,7 +1,13 @@
+2007-03-15  Stan Cox  <scox@redhat.com>
+
+	* InlineBuffer.java (stab): Moved to member of class.
+	* SourceWindow.java (symTab): New.
+
 2007-03-12  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (generateProcStackTrace): Removed print statement.
-	* SourceBuffer.java (highlightLine): Check for a potentially numm DOMSource.
+	* SourceBuffer.java (highlightLine): Check for a potentially numm
+	DOMSource.
 
 2007-03-09  Mike Cvet  <mcvet@redhat.com>
 

@@ -1,3 +1,7 @@
+2007-03-15  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (setScopes): New.
+
 2007-03-06  Stan Cox  <scox@redhat.com>
 
 	* (DwAtEncodings.shenum): Don't assume /usr/include/dwarf.h.

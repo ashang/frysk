@@ -264,6 +264,8 @@ public class SourceWindow
   private StackFrame[] frames;
 
   private RunState runState;
+  
+  private SymTab symTab;
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -300,6 +302,8 @@ public class SourceWindow
     this.lock = new LockObserver();
     this.runState.addObserver(lock);
     this.runState.setProc(proc);
+    Task myTask = proc.getMainTask();
+    this.symTab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, null);
   }
 
   public SourceWindow (LibGlade glade, String gladePath, Proc proc,
@@ -2165,7 +2169,7 @@ public class SourceWindow
       }
 
     DOMFactory.clearDOMSourceMap(this.swProc);
-    SymTab.setFrames(frames);
+    symTab.setFrames(frames);
     return frames;
   }
 

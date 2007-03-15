@@ -78,6 +78,8 @@ public class InlineBuffer
 
   StackFrame currentFrame;
 
+  private SymTab stab;
+  
   /**
    * Creates a new InlineBuffer to reflect the provided instance
    * 
@@ -91,6 +93,8 @@ public class InlineBuffer
     this.declaration = this.instance.getDeclaration();
     this.currentFrame = frame;
     this.setScope(frame);
+    Task myTask = this.scope.getTask();
+    this.stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
   }
 
   /**
@@ -208,8 +212,6 @@ public class InlineBuffer
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Task myTask = this.scope.getTask();
-    SymTab stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
     stab.toString();
     Variable var;
     try

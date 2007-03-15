@@ -90,6 +90,11 @@ public class DwarfDie
     return get_decl_line(this.getPointer());
   }
 
+  public void setScopes (DwarfDie[] scopes)
+  {
+    this.scopes = scopes;
+  }
+  
   /**
    * 
    * @param addr PC address.
@@ -193,7 +198,7 @@ public class DwarfDie
   }
   
   /**
-   * @param fbreg_and_disp Return ptr+disp.   Typically this is a static address or ptr+disp.
+   * @param Return address of die.   Typically this is a static address or ptr+disp.
    */
   public List getAddr ()
   {
@@ -207,8 +212,10 @@ public class DwarfDie
    */
   public DwarfDie getType ()
   {
+    DwarfDie die = null;
     long type = get_type(this.getPointer());
-    DwarfDie die = new DwarfDie(type, this.parent);
+    if (type != 0)
+      die = new DwarfDie(type, this.parent);
     return die;
   }
 
@@ -268,8 +275,8 @@ public class DwarfDie
   }
  
   /**
-   * @param fbreg_and_disp Base pointer and displacement (out).
-   * @param pc PC DW_AT_frame_base is desired for.
+   * @param pc Program Counter
+   * @return DW_AT_frame_base for current die.
    */
   public List getFrameBase (long pc)
   {
@@ -284,9 +291,8 @@ public class DwarfDie
   }
 
   /**
-   * @param fbreg_and_disp Get DW_FORM_data for current die.
-   * Typically this is from a location list.
    * @param pc - PC
+   * @return DW_FORM_data for current die.  Typically this is from a location list.
    */
   public List getFormData (long pc)
   {
