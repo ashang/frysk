@@ -44,6 +44,8 @@ import java.util.Iterator;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 public class TaskActionPoint
@@ -91,6 +93,7 @@ public class TaskActionPoint
     this.applicableActions.add(new ShowRegWin());
     this.applicableActions.add(new ShowMemWin());
     this.applicableActions.add(new RunExternal());
+    this.applicableActions.add(new CaptureStackFrameAction());
   }
 
   /**
@@ -99,13 +102,13 @@ public class TaskActionPoint
    * @link ActionPoint.
    * @param task the task to perform the actions on.
    */
-  public void runActions (Task task)
+  public void runActions (Task task, TaskObserverRoot observer, Event event)
   {
     Iterator iter = this.items.iterator();
     while (iter.hasNext())
       {
         TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
+        action.execute(task, observer, event);
       }
   }
 

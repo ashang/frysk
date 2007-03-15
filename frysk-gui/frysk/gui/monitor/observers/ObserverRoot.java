@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor.observers;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -57,7 +56,6 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
-import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.eventviewer.EventManager;
@@ -215,7 +213,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
          */
 		protected void setInfo(String info) {
 		  EventLogger.theLogger.getEventLogger().log(Level.INFO, info);
-		  WindowManager.theManager.logWindow.print(new Date() + " " + info +"\n");
 		  this.info = info;
 		}
 	

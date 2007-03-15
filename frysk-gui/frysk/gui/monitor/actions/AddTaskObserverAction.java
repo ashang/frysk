@@ -42,6 +42,7 @@ package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
@@ -68,7 +69,7 @@ public class AddTaskObserverAction
     this.observer = other.observer;
   }
 
-  public void execute (Task task)
+  public void execute (Task task , TaskObserverRoot observer, Event event)
   {
     if (observer != null)
       observer.apply(task.getProc());

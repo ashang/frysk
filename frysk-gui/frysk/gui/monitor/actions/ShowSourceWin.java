@@ -42,6 +42,8 @@ package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Task;
 
@@ -59,7 +61,7 @@ public class ShowSourceWin
     super(other);
   }
 
-  public void execute (Task task)
+  public void execute (Task task, TaskObserverRoot observer, Event event)
   {
     SourceWindowFactory.createSourceWindow(task.getProc());
   }

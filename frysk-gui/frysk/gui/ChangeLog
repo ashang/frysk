@@ -1,3 +1,13 @@
+2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/Session.java: Added specific observers to be added to processes
+	by default. Fix for bz 4165.
+	* sessions/DebugProcess.java: Removed call to logWindow.print().
+	* gladedir/procpop.glade: Renamed Main Log to Summary
+	* druid/CreateFryskSessionDruid.java (.buttonEvent): Added call to hide
+	terminal.
+	* TestGlade.java: Renamed logWindow to summaryWindow.
+
 2007-03-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* gladedir/frysk_create_session_druid.glade: Made druid modal Fix for

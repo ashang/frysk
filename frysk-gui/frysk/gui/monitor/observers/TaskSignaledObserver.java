@@ -135,9 +135,10 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	}
 
 	private void runActions(final Task task, int signal) {
+        Event event = new Event("signaled " + Sig.toString(signal), "task recieved signal " + Sig.toString(signal), GuiTask.GuiTaskFactory.getGuiTask(task), this);
 		super.runActions();
-		taskActionPoint.runActions(task);
-        EventManager.theManager.addEvent(new Event("signaled " + Sig.toString(signal), "task recieved signal " + Sig.toString(signal), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+		taskActionPoint.runActions(task, this, event);
+        EventManager.theManager.addEvent(event);
 	}
 
 	private boolean runFilters(final Task task, int signal) {

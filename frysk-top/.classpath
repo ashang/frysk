@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="build/frysk-imports/junit.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/libgcj-4.1.1.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -938,6 +938,7 @@ public class CreateFryskSessionDruid
             IconManager.trayIcon.setPopupWindows(ll);
             WindowManager.theManager.mainWindow.setSession(currentSession);
 //            WindowManager.theManager.mainWindow.buildTerminal();
+            WindowManager.theManager.mainWindow.hideTerminal();
             WindowManager.theManager.mainWindow.showAll();
             WindowManager.theManager.sessionManager.hideAll();
             hide();

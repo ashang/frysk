@@ -43,6 +43,7 @@ import frysk.gui.dialogs.DialogManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;
+import frysk.gui.monitor.eventviewer.Event;
 import frysk.proc.Action;
 import frysk.proc.Task;
 
@@ -62,7 +63,7 @@ public class ExitNotificationObserver extends TaskTerminatingObserver {
 				"and provide them the option to stop or resume the process");
 		
 		frysk.gui.monitor.actions.TaskAction myAction = new TaskAction(){
-			public void execute(Task task) {
+			public void execute(Task task, TaskObserverRoot observer, Event event) {
 				if(DialogManager.showQueryDialog("Task ["+task+"] is about to exit.\n Would you like to block it")){
 					setReturnAction(Action.BLOCK);
 				}else{
@@ -96,7 +97,7 @@ public class ExitNotificationObserver extends TaskTerminatingObserver {
 		super(other);
 		
 		frysk.gui.monitor.actions.TaskAction myAction = new TaskAction(){
-			public void execute(Task task) {
+			public void execute(Task task, TaskObserverRoot observer, Event event) {
 //				if(DialogManager.showQueryDialog("Task ["+task+"] is about to exit.\n Would you like to block it")){
 //					setReturnAction(Action.BLOCK);
 //				}else{

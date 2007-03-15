@@ -40,13 +40,11 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.Date;
 import java.util.logging.Level;
 
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class LogAction
@@ -81,10 +79,6 @@ public class LogAction
                                                observer.getName()
                                                    + " triggered: "
                                                    + this.argument);
-    WindowManager.theManager.logWindow.print(new Date() + " "
-                                             + observer.getName()
-                                             + " triggered: " + this.argument
-                                             + "\n");
   }
 
   public boolean setArgument (String comment)

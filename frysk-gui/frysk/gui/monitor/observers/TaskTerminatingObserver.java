@@ -145,15 +145,18 @@ public class TaskTerminatingObserver
   private void runActions (Task task, boolean signal, int value)
   {
     // TODO implement action points to take care of signal and value
-    super.runActions();
-    this.taskActionPoint.runActions(task);
     String name = "terminating";
     String tooltip = "task terminating";
+    Event event = new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this);
+    
+    super.runActions();
+    this.taskActionPoint.runActions(task, this, event);
+    
     if(signal){
       name += " sig " + Sig.toPrintString(value);
       tooltip += " with signal " + Sig.toPrintString(value);
     }
-    EventManager.theManager.addEvent(new Event(name, tooltip, GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    EventManager.theManager.addEvent(event);
   }
 
   private boolean runFilters (Task task, boolean signal, int value)

@@ -45,7 +45,8 @@ import java.util.logging.Level;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 public class PrintTask
@@ -62,9 +63,8 @@ public class PrintTask
     super(other);
   }
 
-  public void execute (Task task)
+  public void execute (Task task, TaskObserverRoot observer, Event event)
   {
-    WindowManager.theManager.logWindow.print("Task State : " + task + "\n");
     EventLogger.theLogger.getEventLogger().log(Level.INFO,
                                                "Task State : " + task);
   }

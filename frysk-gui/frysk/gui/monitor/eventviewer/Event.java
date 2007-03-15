@@ -45,7 +45,10 @@ import org.gnu.gdk.GdkCairo;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 
 public class Event extends GuiObject
 {
@@ -60,6 +63,8 @@ public class Event extends GuiObject
   private int textSlant;
   
   private int x,y;
+
+  private StackFrame stackFrame;
   public static int w,h;
   
   static{
@@ -84,6 +89,7 @@ public class Event extends GuiObject
   public void select(){
     EventManager.theManager.eventSelected(this);
     this.selected = true;
+    WindowManager.theManager.summaryWindow.setCurrentObject(this);
   }
   
   public void unselect(){
@@ -105,9 +111,45 @@ public class Event extends GuiObject
       cairo.setSourceColor(Color.BLUE);
     }
     
+    if(this.stackFrame != null){
+      this.drawStackFrameIcon(cairo);
+    }
+    
     cairo.rectangle(new Point(this.getX(),this.getY()), new Point(this.getX()+ getWidth(), this.getY()+ getHeight()));
     
     cairo.fill();
+    
+    cairo.restore();
+  }
+
+  private void drawStackFrameIcon (GdkCairo cairo)
+  {
+    int x = this.getX()+5;
+    int y = this.getY();
+    
+    cairo.save();
+    
+    // line
+    cairo.setSourceColor(Color.BLACK);
+    cairo.setLineWidth(0.3);
+    
+    cairo.moveTo(x, y);
+    cairo.lineTo(x + 10, y);
+    y+=3;
+    
+    cairo.moveTo(x, y);
+    cairo.lineTo(x + 7, y);
+    y+=3;
+    
+    cairo.moveTo(x, y);
+    cairo.lineTo(x + 7, y);
+    y+=3;
+    
+    cairo.moveTo(x, y);
+    cairo.lineTo(x + 7, y);
+    y+=3;
+    
+    cairo.stroke();
     
     cairo.restore();
   }
@@ -160,6 +202,23 @@ public class Event extends GuiObject
 
   public int getY (){
     return y;
+  }
+
+  /**
+   * If a StackFrame was captured this method returns it
+   * otherwise returns null.
+   * @return
+   */
+  public StackFrame getStackFrame(){
+    return stackFrame;
+  }
+  
+  public void setStackFrame (StackFrame frame)
+  {
+    stackFrame = frame;
+    String summary = this.getName() + ": " + this.getToolTip() + "\n" +
+    StackFactory.printStackTrace(frame);
+    this.setSummay(summary);
   }
 
 }

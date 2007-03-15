@@ -38,116 +38,52 @@
 // exception.
 
 
-package frysk.gui.monitor;
+package frysk.gui.monitor.actions;
 
-import org.jdom.Element;
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.proc.Task;
+import frysk.rt.StackFactory;
 
-/**
- * A GuiObject is one that has a name and a tooltip.
- */
-public class GuiObject
-    extends GuiObservable
-    implements SaveableXXX
+public class CaptureStackFrameAction
+    extends TaskAction
 {
 
-  private boolean saveObject = true;
-
-  private String name;
-
-  private String toolTip;
-  private String summary;
-  
-  public GuiObject (String name, String toolTip)
+  public CaptureStackFrameAction ()
   {
-    this.name = name;
-    this.toolTip = toolTip;
-    this.summary = name + " : " + toolTip;
-    this.saveObject = true;
+    super("Capture a stack trace of ", "Capture a stack tracke of the task");
   }
 
-  public GuiObject (GuiObject other)
+  public CaptureStackFrameAction (CaptureStackFrameAction other)
   {
-    this.name = other.name;
-    this.toolTip = other.toolTip;
-    this.saveObject = other.saveObject;
+    super(other);
   }
 
-  public GuiObject ()
+  public void execute (Task task , TaskObserverRoot observer, Event event)
   {
-    this.setName("NoName");
-    this.setToolTip("NoTooltip");
-    this.saveObject = true;
+    event.setStackFrame(StackFactory.createStackFrame(task));
   }
 
   public GuiObject getCopy ()
   {
-    return new GuiObject(this);
+    return new CaptureStackFrameAction(this);
   }
 
-  public void setName (String name)
+  public boolean setArgument (String argument)
   {
-    this.name = name;
-
-    this.notifyObservers();
+    return false;
   }
 
-  public String getName ()
+  public String getArgument ()
   {
-    return name;
+    return null;
   }
 
-  public void setToolTip (String toolTip)
+  public ObservableLinkedList getArgumentCompletionList ()
   {
-    this.toolTip = toolTip;
-
-    this.notifyObservers();
+    return null;
   }
 
-  public String getToolTip ()
-  {
-    return toolTip;
-  }
-
-  public void save (Element node)
-  {
-    node.setAttribute("name", this.getName());
-    node.setAttribute("tooltip", this.getToolTip());
-  }
-
-  public void load (Element node)
-  {
-    this.setName(node.getAttribute("name").getValue());
-    this.setToolTip(node.getAttribute("tooltip").getValue());
-  }
-
-  public boolean shouldSaveObject ()
-  {
-    return this.saveObject;
-  }
-
-  public void doSaveObject ()
-  {
-    this.saveObject = true;
-  }
-
-  public void dontSaveObject ()
-  {
-    this.saveObject = false;
-  }
-
-  public String toString ()
-  {
-    String myString = new String();
-    myString = super.toString() + " " + this.getName();
-    return myString;
-  }
-
-  public String getSummary ()
-  {
-    return summary;
-  }
-
-  public void setSummay(String summary){
-    this.summary = summary;
-  }
 }

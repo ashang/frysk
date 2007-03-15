@@ -52,6 +52,7 @@ import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
 import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.actions.CaptureStackFrameAction;
 
 /**
  * Only once instance.
@@ -122,25 +123,31 @@ public class ObserverManager {
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+		((TaskExecObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
 		
-		//============================================
+        //============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		
-		//============================================
+        ((TaskForkedObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
+        ((TaskForkedObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
+
+        //============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		
+        ((TaskTerminatingObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
+        
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		
+        ((TaskCloneObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
+        ((TaskCloneObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
+
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();

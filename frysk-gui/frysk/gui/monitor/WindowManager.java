@@ -70,7 +70,7 @@ public class WindowManager
 
   public MainWindow mainWindow;
 
-  public LogWidget logWindow;
+  public SummaryWidget summaryWindow;
 
   public PreferencesWindow prefsWindow;
 
@@ -112,7 +112,7 @@ public class WindowManager
     this.splashScreen = new SplashScreenWindow();
     this.mainWindow = new MainWindow(glade);
     this.aboutWindow = new AboutWindow(glade);
-    this.logWindow = new LogWidget(glade);
+    this.summaryWindow = new SummaryWidget(glade);
     this.prefsWindow = new PreferencesWindow(glade);
     // this.programAddWindow = new ProgramAddWindow(glade);
     this.observersDialog = new ObserversDialog(glade);
@@ -144,7 +144,7 @@ public class WindowManager
     mainWindow.save(Preferences.userRoot().node(
                                                 prefs.absolutePath()
                                                     + "/mainWindow"));
-    logWindow.save(Preferences.userRoot().node(
+    summaryWindow.save(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
     programObserverDialog.save(Preferences.userRoot().node(
@@ -157,7 +157,7 @@ public class WindowManager
     mainWindow.load(Preferences.userRoot().node(
                                                 prefs.absolutePath()
                                                     + "/mainWindow"));
-    logWindow.load(Preferences.userRoot().node(
+    summaryWindow.load(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
     programObserverDialog.load(Preferences.userRoot().node(

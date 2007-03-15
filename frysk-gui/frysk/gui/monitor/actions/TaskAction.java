@@ -40,6 +40,8 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 public abstract class TaskAction
@@ -61,13 +63,13 @@ public abstract class TaskAction
     super(other);
   }
 
-  public abstract void execute (Task task);
+  public abstract void execute (Task task, TaskObserverRoot observer, Event event);
 
-  public void execute (Task[] tasks)
+  public void execute (Task[] tasks, TaskObserverRoot observer, Event event)
   {
     for (int i = 0; i < tasks.length; i++)
       {
-        this.execute(tasks[i]);
+        this.execute(tasks[i], observer, event);
       }
   }
 

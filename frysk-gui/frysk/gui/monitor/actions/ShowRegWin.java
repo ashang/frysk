@@ -42,7 +42,8 @@ package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-//import frysk.gui.register.RegisterWindow;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.proc.Task;
 
@@ -60,7 +61,7 @@ public class ShowRegWin
     super(other);
   }
 
-  public void execute (Task task)
+  public void execute (Task task, TaskObserverRoot observer, Event event)
   {
     RegisterWindowFactory.createRegisterWindow(task.getProc());
   }

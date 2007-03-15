@@ -121,9 +121,10 @@ public class TaskExecObserver
 
   private void runActions (Task task)
   {
+    Event event = new Event("exec", "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this);
     super.runActions();
-    this.taskActionPoint.runActions(task);
-    EventManager.theManager.addEvent(new Event("exec", "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    this.taskActionPoint.runActions(task, this, event);
+    EventManager.theManager.addEvent(event);
   }
 
   private boolean runFilters (Task task)

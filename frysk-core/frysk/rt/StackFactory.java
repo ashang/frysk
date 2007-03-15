@@ -142,4 +142,18 @@ public class StackFactory
     return null;
   }
   
+  public static String printStackTrace(StackFrame topFrame){
+    
+    String string = new String();
+    int count = 0;
+    for (StackFrame frame = topFrame;
+    frame != null; frame = frame.getOuter()) {
+      string += "#" + count + " "+ frame.toPrint(false) + "\n";
+          
+      count++;
+    }
+
+    return string;
+  }
+  
 }

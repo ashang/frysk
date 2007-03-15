@@ -44,6 +44,10 @@ import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.observers.TaskCloneObserver;
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.gui.monitor.observers.TaskTerminatingObserver;
 
 /**
  * A Session object is used to hold and save user preferences with respect to a
@@ -108,6 +112,11 @@ public class Session
    */
   public void addProcess (final DebugProcess process)
   {
+    process.addObserver(new TaskTerminatingObserver());
+    process.addObserver(new TaskCloneObserver());
+    process.addObserver(new TaskForkedObserver());
+    process.addObserver(new TaskExecObserver());
+    
     procs.add(process);
   }
 

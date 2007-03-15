@@ -1,3 +1,7 @@
+2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackFactory.java (printStackTrace): new function.
+
 2007-03-15  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java: Deleted old constants, added new ones.

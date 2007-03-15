@@ -227,12 +227,14 @@ public class TaskForkedObserver
   private void runActionsParent (Task task, Task child)
   {
     WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
+    Event event = new Event("forking " + child.getTid(), "parent called fork", GuiTask.GuiTaskFactory.getGuiTask(task), this);
+    
     super.runActions();
     
     // add events to event manager
-    EventManager.theManager.addEvent(new Event("forking " + child.getTid(), "parent called fork", GuiTask.GuiTaskFactory.getGuiTask(task), this));
+    EventManager.theManager.addEvent(event);
     
-    this.parentTaskActionPoint.runActions(task);
+    this.parentTaskActionPoint.runActions(task, this, event);
   }
   
   private boolean runFiltersOffspring (Task task, Task offspring)
@@ -245,12 +247,13 @@ public class TaskForkedObserver
   private void runActionsOffspring (Task task, Task child)
   {
     WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
+    Event event = new Event("forked by " + task.getTid(), "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this);
     super.runActions();
     
     // add events to event manager
-    EventManager.theManager.addEvent(new Event("forked by " + task.getTid(), "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this));
+    EventManager.theManager.addEvent(event);
     
-    this.offspringTaskActionPoint.runActions(child);
+    this.offspringTaskActionPoint.runActions(child, this, event);
   }
 
   public void unapply (Task task)

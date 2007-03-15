@@ -40,18 +40,17 @@
 
 package frysk.gui.sessions;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.gui.Gui;
-import frysk.gui.monitor.WindowManager;
-import java.util.Date;
 
 import org.jdom.Element;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
@@ -547,10 +546,6 @@ public class DebugProcess
                              + " DebugProcess.load(Element node): observer "
                              + elementXML.getAttributeValue("name")
                              + " not found in configuration \n");
-            WindowManager.theManager.logWindow.print(new Date()
-                                                     + " DebugProcess.load(Element node): observer "
-                                                     + elementXML.getAttributeValue("name")
-                                                     + " not found in configuration \n");
           }
         else
           {

@@ -43,8 +43,10 @@ import java.util.ArrayList;
 
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.monitor.actions.TaskAction;
+import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
@@ -63,7 +65,7 @@ public class ProgramObserver {
 		final TaskExecObserver   execObserver = new TaskExecObserver();
 		
 		final TaskAction myTaskAction = new TaskAction("", "") {
-			public void execute(Task task) {
+			public void execute(Task task, TaskObserverRoot observer, Event event) {
 				WarnDialog dialog = new WarnDialog("Fork ya'll");
 				dialog.showAll();
 				dialog.run();

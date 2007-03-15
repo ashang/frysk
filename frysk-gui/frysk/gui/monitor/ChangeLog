@@ -1,3 +1,33 @@
+2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskExecObserver.java (runActions): Changed runActions argumet
+	to match the new abstract function.
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskSyscallObserver.java: Ditto.
+	* observers/TaskCloneObserver.java: Ditto.
+	* observers/TaskSignaledObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/ObserverRoot.java: Removed call to logWindow.print().
+	* observers/ObserverManager.java (initTaskObservers): Initialized
+	certain observers to have a CaptureStackTrace action by default. Fix
+	for bz# 4156.
+	* eventviewer/Event.java: Added StackFrame, setter and getter.
+	* actions/TaskAction.java (execute): Changed abstract function to now 
+	require an ObserverRoot, and an Event.
+	* WindowManager.java: Renamed logWindow to summaryWindow.
+	* ProgramObserver.java (.execute): Changed arguments to match new 
+	abstract function.
+	* actions/PrintProc.java (execute): Ditto.
+	* actions/PrintTask.java (execute): Ditto.
+	* actions/PrintTaskBacktrace.java (execute): Ditto.
+	* actions/AddTaskObserverAction.java (execute): Ditto.
+	* actions/RunExternal.java (execute): Ditto.
+	* actions/ShowRegWin.java (execute): Ditto.
+	* actions/ShowMemWin.java (execute): Ditto.
+	* observers/ExitNotificationObserver.java (.execute): Ditto.
+	* GuiObject.java: Added summary string setter and getter.
+	* actions/CaptureStackFrameAction.java: New file.
+
 2007-03-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SessionProcDataModel.java: used guiProc.getExecutablename() instead

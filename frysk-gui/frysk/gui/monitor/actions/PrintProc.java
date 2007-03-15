@@ -45,7 +45,6 @@ import java.util.logging.Level;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
 
 public class PrintProc
@@ -64,7 +63,6 @@ public class PrintProc
 
   public void execute (Proc proc)
   {
-    WindowManager.theManager.logWindow.print("Proc State : " + proc + "\n");
     EventLogger.theLogger.getEventLogger().log(Level.INFO,
                                                "Proc State : " + proc);
   }

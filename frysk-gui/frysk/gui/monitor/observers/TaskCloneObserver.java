@@ -163,16 +163,18 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
     }
     
     private void runActionsParent(Task task, Task clone){
+        Event event = new Event("cloning " + clone.getTid(), "thread called clone and created " + clone, GuiTask.GuiTaskFactory.getGuiTask(task), this);
         super.runActions();
-        this.parentTaskActionPoint.runActions(task);
-        this.offspringTaskActionPoint.runActions(clone);
-        EventManager.theManager.addEvent(new Event("cloning " + clone.getTid(), "thread called clone and created " + clone, GuiTask.GuiTaskFactory.getGuiTask(task), this));
+        this.parentTaskActionPoint.runActions(task, this, event);
+        this.offspringTaskActionPoint.runActions(clone, this, event);
+        EventManager.theManager.addEvent(event);
     }
     
     private void runActionsOffspring(Task task, Task clone){
+        Event event = new Event("cloned by " + task.getTid(), "this thread was cloned by " + task, GuiTask.GuiTaskFactory.getGuiTask(clone), this);
         super.runActions();
-        this.offspringTaskActionPoint.runActions(clone);
-        EventManager.theManager.addEvent(new Event("cloned by " + task.getTid(), "this thread was cloned by " + task, GuiTask.GuiTaskFactory.getGuiTask(clone), this));
+        this.offspringTaskActionPoint.runActions(clone, this, event);
+        EventManager.theManager.addEvent(event);
     }
     
 	public void apply(Task task){

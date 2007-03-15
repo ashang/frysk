@@ -40,21 +40,22 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.Gui;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
-
-import frysk.proc.Action;
-import frysk.proc.Manager;
-
 import java.io.File;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gnu.glib.CustomEvents;
+
+import frysk.gui.Gui;
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.proc.Action;
+import frysk.proc.Manager;
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
 /**
  * Provides the ability to execute a binary or other program
@@ -88,7 +89,7 @@ public class RunExternal
     this.execString = other.execString;
   }
 
-  public void execute (Task task)
+  public void execute (Task task, TaskObserverRoot observer, Event event)
   {
     // Manager.host.requestCreateAttachedProc(execString.split(" "), new
     // AttachedObserver());

@@ -43,7 +43,8 @@ import java.util.logging.Level;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.eventviewer.Event;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
@@ -72,11 +73,7 @@ public class PrintTaskBacktrace extends TaskAction {
 	 * and to the eventviewer
 	 * 
 	 */
-	public void execute(Task task) {
-		
-		WindowManager.theManager.logWindow.print("Back trace of Task: "
-				+ task.getTid() + " from PID " + task.getProc().getPid()
-				+ "\n\n");
+	public void execute(Task task, TaskObserverRoot observer, Event event) {
 		
 		EventLogger.theLogger.getEventLogger().log(Level.INFO,
 				"Back trace of Task: " 
@@ -87,9 +84,6 @@ public class PrintTaskBacktrace extends TaskAction {
 		for (StackFrame frame = StackFactory.createStackFrame(task);
 		     frame != null; frame = frame.getOuter()) {
 				
-		    WindowManager.theManager.logWindow.print(frame.toString()
-							     + "\n");
-		    
 		    EventLogger.theLogger.getEventLogger().log(Level.INFO,
 						frame.toString());
 		    

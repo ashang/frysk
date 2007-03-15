@@ -91,7 +91,7 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 		item.addListener(new MenuItemListener(){
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.mainWindow.hideAll();
-				WindowManager.theManager.logWindow.hideAll();
+				WindowManager.theManager.summaryWindow.hideAll();
 				WindowManager.theManager.prefsWindow.hideAll();
 			}
 		});

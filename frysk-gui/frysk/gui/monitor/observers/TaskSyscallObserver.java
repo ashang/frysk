@@ -140,15 +140,16 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	private void runEnterActions(Task task) {
+        Event event = new Event("" + SysCallUtilyInfo.getCallInfoFromSyscall(task), SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this);
 		super.runActions();
 		// Sami why do we need to call enteringGenericActionPoint as well as enteringTaskActionPoint?
 		//this.enteringGenericActionPoint.runActions(this);
         // ^ this runs all generic actions (actions that take no arguments)
         // ^ that the user wants to upon entry to the system call 
-		this.enteringTaskActionPoint.runActions(task);
+		this.enteringTaskActionPoint.runActions(task, this,event);
 
         //add events to event manager
-        EventManager.theManager.addEvent(new Event("" + SysCallUtilyInfo.getCallInfoFromSyscall(task), SysCallUtilyInfo.getCallInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+        EventManager.theManager.addEvent(event);
     }
 
 	private boolean runEnterFilters(Task task) {
@@ -178,13 +179,14 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	private void runExitActions(Task task) {
+        Event event = new Event("" + SysCallUtilyInfo.getReturnInfoFromSyscall(task), SysCallUtilyInfo.getReturnInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this);
 		super.runActions();
 		// Sami why do we need to call exitingGenericActionPoint as well as exitingTaskActionPoint?
 		//this.exitingGenericActionPoint.runActions(this);
-		this.exitingTaskActionPoint.runActions(task);
+		this.exitingTaskActionPoint.runActions(task, this, event);
 		
         //add events to event manager
-        EventManager.theManager.addEvent(new Event("" + SysCallUtilyInfo.getReturnInfoFromSyscall(task), SysCallUtilyInfo.getReturnInfoFromSyscall(task), GuiTask.GuiTaskFactory.getGuiTask(task), this));
+        EventManager.theManager.addEvent(event);
     }
 
 	private boolean runExitFilters(Task task) {

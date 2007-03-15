@@ -151,7 +151,7 @@ public class TestGlade
 
         assertNotNull("menuBar",WindowManager.theManager.menuBar);
 	assertNotNull("mainWindow",WindowManager.theManager.mainWindow);
-	assertNotNull("logWindow",WindowManager.theManager.logWindow);
+	assertNotNull("logWindow",WindowManager.theManager.summaryWindow);
 	assertNotNull("prefsWindow",WindowManager.theManager.prefsWindow);
 	assertNotNull("aboutWindow",WindowManager.theManager.aboutWindow);
 	assertNotNull("splashScreen",WindowManager.theManager.splashScreen);
