@@ -190,6 +190,8 @@ public class SymTab
 
       dwfl = new Dwfl(pid);
       DwflDieBias bias = dwfl.getDie(pc);
+      if (bias == null)
+        throw new NameNotFoundException("No symbol table is available.");
       DwarfDie die = bias.die;
       StringBuffer result = new StringBuffer();
 
@@ -423,10 +425,12 @@ public class SymTab
      
      private Subprogram setSubprogram(StackFrame sf)
      {
+       DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
+       if (varDie == null)
+         return null;
        Subprogram subPr = new Subprogram();
        LexicalBlock block = new LexicalBlock();
        subPr.setBlock(block);
-       DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
        DwarfDie parm = varDie.getChild();
        int nParms = 0;
  

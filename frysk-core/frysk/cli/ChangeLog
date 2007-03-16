@@ -1,3 +1,8 @@
+2007-03-16  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java (setSubprogram): Check for no .debug_info.
+	(what): Likewise.
+
 2007-03-15  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java (subprogram): New.  Used to initialize dies in subprogram.
