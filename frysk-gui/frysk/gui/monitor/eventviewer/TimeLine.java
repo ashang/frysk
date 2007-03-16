@@ -65,6 +65,7 @@ import com.redhat.ftk.CustomAtkObject;
 import com.redhat.ftk.CustomDrawingArea;
 
 import frysk.gui.monitor.GuiObservable;
+import frysk.gui.srcwin.SourceWindowFactory;
 
 public abstract class TimeLine
     extends HBox implements MouseListener
@@ -183,6 +184,14 @@ public abstract class TimeLine
         Event event = this.xy2Event(mouseEvent.getX(), mouseEvent.getY());
         if(event != null && ownsEvent(event)){
           event.select();
+        }
+      }
+      
+      if(mouseEvent.getClickType() == MouseEvent.DOUBLE_CLICK && mouseEvent.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+        Event event = this.xy2Event(mouseEvent.getX(), mouseEvent.getY());
+        if(event != null && event.getStackFrame()!=null && ownsEvent(event)){
+           SourceWindowFactory.createSourceWindow(event.getStackFrame());
+          return true;
         }
       }
       return false;
