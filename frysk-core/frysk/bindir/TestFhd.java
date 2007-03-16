@@ -82,7 +82,7 @@ public class TestFhd
 	e.send ("print 2+2\n");
 	e.expect ("\r\n4\r\n" + prompt);
 	// Attach
-	e.send ("attach loop.x " + child.getPid () + " -cli\n");
+	e.send ("attach " + child.getPid () + " -cli\n");
 	e.expect ("attach.*" + prompt);
 	// Where
 	e.send ("where\n");

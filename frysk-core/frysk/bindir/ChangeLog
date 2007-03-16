@@ -1,3 +1,7 @@
+2007-03-16  Stan Cox  <scox@redhat.com>
+
+	* TestFhd.java (testHpd): Don't include executable on attach.
+
 2007-03-15  Mike Cvet  <mcvet@redhat.com>
 
 	* fcatch.java (argString): Changed from pidString.
