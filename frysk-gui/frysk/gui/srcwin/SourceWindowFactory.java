@@ -64,6 +64,7 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.RunState;
+import frysk.rt.StackFrame;
 
 
 /**
@@ -125,6 +126,25 @@ public class SourceWindowFactory
 
     // Store the reference to the source window
     map.put(proc, sw);
+  }
+  
+  public static void createSourceWindow (StackFrame frame)
+  {
+    LibGlade glade;
+    try
+      {
+        glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
+                             null);
+      }
+    catch (Exception e)
+      {
+        throw new RuntimeException(e);
+      }
+    
+    SourceWindow sw = new SourceWindow(glade, Config.getGladeDir(), frame);
+
+    sw.addListener(new SourceWinListener());
+    sw.grabFocus();
   }
   
   public static void attachToPID (int pid)

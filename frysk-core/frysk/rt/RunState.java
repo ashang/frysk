@@ -527,7 +527,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   task.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
   }
   
-  
   public void cleanUpBreakPoint (Task task)
   {
     this.breakpoint = null;
@@ -745,6 +744,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void runCompleted ()
   {
     this.state = STOPPED;
+  }
+  
+  public void setRunning ()
+  {
+    this.state = RUNNING;
   }
   
   /**

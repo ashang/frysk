@@ -305,6 +305,22 @@ public class SourceWindow
     Task myTask = proc.getMainTask();
     this.symTab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, null);
   }
+  
+  public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
+  {
+    super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
+
+    this.setIcon(IconManager.windowIcon);
+
+    this.glade = glade;
+    this.gladePath = gladePath;
+    this.swProc = trace.getTask().getProc();
+    this.runState = new RunState();
+    this.runState.setRunning();
+    finishSourceWin();
+    desensitize();
+    this.stop.setSensitive(false);
+  }
 
   public SourceWindow (LibGlade glade, String gladePath, Proc proc,
                        SourceWindowFactory.AttachedObserver ao)
@@ -335,11 +351,9 @@ public class SourceWindow
    * Initializes the rest of the members of the SourceWindow not handled by the
    * constructor. Most of these depend on the Tasks of the process being
    * blocked.
-   * 
-   * @param proc The Proc to be examined by mw.
    */
-  private void finishSourceWin (Proc proc)
-  {
+  private void finishSourceWin ()
+  { 
     StackFrame[] frames = generateProcStackTrace(null, null);
 
     this.listener = new SourceWindowListener(this);
@@ -456,8 +470,11 @@ public class SourceWindow
           }
         else
           {
-            SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
-            b.disassembleFrame(this.currentFrame);
+            if (this.runState.getState() == RunState.STOPPED)
+              {
+                SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+                b.disassembleFrame(this.currentFrame);
+              }
           }
         
         stackView.showAll();
@@ -1201,6 +1218,16 @@ public class SourceWindow
     this.cont.setSensitive(false);
     this.nextAsm.setSensitive(false);
     this.stepAsm.setSensitive(false);
+    
+    this.stepInDialog.setSensitive(false);
+    this.stepOverDialog.setSensitive(false);
+    this.stepOutDialog.setSensitive(false);
+    this.stepInstructionDialog.setSensitive(false);
+    this.stepInstructionNextDialog.setSensitive(false);
+    
+    this.toggleDisassemblyWindow.setSensitive(false);
+    this.toggleMemoryWindow.setSensitive(false);
+    this.toggleRegisterWindow.setSensitive(false);
 
     this.stackTop.setSensitive(false);
     this.stackUp.setSensitive(false);
@@ -1229,6 +1256,16 @@ public class SourceWindow
      this.cont.setSensitive(true);
 //     this.nextAsm.setSensitive(true);
      this.stepAsm.setSensitive(true);
+     
+     this.stepInDialog.setSensitive(true);
+//     this.stepOverDialog.setSensitive(true);
+//     this.stepOutDialog.setSensitive(true);
+     this.stepInstructionDialog.setSensitive(true);
+//     this.stepInstructionNextDialog.setSensitive(true);
+     
+     this.toggleDisassemblyWindow.setSensitive(true);
+     this.toggleMemoryWindow.setSensitive(true);
+     this.toggleRegisterWindow.setSensitive(true);
 
     this.stackTop.setSensitive(true);
     this.stackUp.setSensitive(true);
@@ -2326,7 +2363,7 @@ public class SourceWindow
       implements Observer
   {
 
-    private Task lockTask;
+//    private Task lockTask;
 
     /**
      * Builtin Observer method - called whenever the Observable we're concerned
@@ -2348,12 +2385,12 @@ public class SourceWindow
       if (SW_active == false)
         {
           SW_active = true;
-          lockTask = (Task) arg;
+//          lockTask = (Task) arg;
           CustomEvents.addEvent(new Runnable()
           {
             public void run ()
             {
-              finishSourceWin(lockTask.getProc());
+              finishSourceWin();
             }
           });
           return;

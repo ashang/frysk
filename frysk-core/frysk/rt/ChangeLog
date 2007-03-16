@@ -1,3 +1,7 @@
+2007-03-16  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (setRunning): Added.
+
 2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java (printStackTrace): new function.

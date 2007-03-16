@@ -1,3 +1,13 @@
+2007-03-16  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Added.  Builds a SourceWindow,
+	disabling all operations on the source, based on a set of StackFrames.
+	Fixes #4205.
+	(populateStackBrowser): Disassemble only when the process is blocked.
+	(finishSourceWin): Removed redundant Proc parameter.
+	* SourceWindowFactory.java (createSourceWindow): Added. Builds a 
+	SourceWindow using a StackFrame stack trace. Fixes #4205.
+
 2007-03-15  Stan Cox  <scox@redhat.com>
 
 	* InlineBuffer.java (stab): Moved to member of class.
