@@ -595,6 +595,13 @@ public class SourceWindow
 
     this.runState.runCompleted();
     this.runState.stepCompleted();
+    
+    if (this.currentFrame.getLines().length== 0)
+      {
+        ((SourceBuffer)((SourceView) this.view).getBuffer())
+                                         .disassembleFrame(this.currentFrame);
+      }
+    
     resensitize();
   }
 

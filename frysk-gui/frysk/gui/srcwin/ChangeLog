@@ -15,6 +15,9 @@
 	(finishSourceWin): Generate a stack trace only when the process is
 	blocked, same for populating the stack browser window.
 	(generateProcStackTrace): Initialize SymTab variable here. Fixes #4207.
+	
+	* SourceWindow.java (procReblocked): Update displayed assembly after a step if there is no
+	debug information for the currently-selected frame.
 
 2007-03-15  Stan Cox  <scox@redhat.com>
 
