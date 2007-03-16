@@ -302,8 +302,6 @@ public class SourceWindow
     this.lock = new LockObserver();
     this.runState.addObserver(lock);
     this.runState.setProc(proc);
-    Task myTask = proc.getMainTask();
-    this.symTab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, null);
   }
   
   public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
@@ -317,7 +315,25 @@ public class SourceWindow
     this.swProc = trace.getTask().getProc();
     this.runState = new RunState();
     this.runState.setRunning();
+    
+    try
+      {
+        this.dom = DOMFactory.createDOM(trace, this.swProc);
+      }
+
+    catch (NoDebugInfoException e)
+      {
+      }
+    catch (IOException e)
+      {
+      }
+    
     finishSourceWin();
+    
+    StackFrame[] newTrace = new StackFrame[1];
+    newTrace[0] = trace;
+    populateStackBrowser(newTrace);
+    
     desensitize();
     this.stop.setSensitive(false);
   }
@@ -354,8 +370,11 @@ public class SourceWindow
    */
   private void finishSourceWin ()
   { 
-    StackFrame[] frames = generateProcStackTrace(null, null);
-
+    StackFrame[] frames = null;
+    if (this.runState.getState() == RunState.STOPPED)
+      frames = generateProcStackTrace(null, null);
+      
+    
     this.listener = new SourceWindowListener(this);
     this.watchView = new VariableWatchView();
     this.tips = new ToolTips();
@@ -367,7 +386,8 @@ public class SourceWindow
 
     ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
 
-    this.populateStackBrowser(frames);
+    if (this.runState.getState() == RunState.STOPPED)
+      this.populateStackBrowser(frames);
 
     if (this.attachedObserver != null)
       {
@@ -2153,6 +2173,8 @@ public class SourceWindow
   {
 
     int size = this.swProc.getTasks().size();
+    int mainTid = this.swProc.getPid();
+    
     if (frames == null || tasks == null)
       {
         if (tasks == null)
@@ -2182,7 +2204,11 @@ public class SourceWindow
             e.printStackTrace();
           }
 
-        /** Stack frame created * */
+        /** Stack frame created */
+        
+        if (tasks[j].getTid() == mainTid)
+          this.symTab = new SymTab(mainTid, this.swProc, tasks[j], frames[j]);
+          
 
         while (curr != null && this.dom == null) 
           {

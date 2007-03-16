@@ -8,6 +8,14 @@
 	* SourceWindowFactory.java (createSourceWindow): Added. Builds a 
 	SourceWindow using a StackFrame stack trace. Fixes #4205.
 
+	* SourceWindow.java (SourceWindow): Removed initialization of SymTab
+	variable.
+	(SourceWindow): Now initializes the DOM and calls populateStackBrowser
+	from here instead of finishSourceWin().
+	(finishSourceWin): Generate a stack trace only when the process is
+	blocked, same for populating the stack browser window.
+	(generateProcStackTrace): Initialize SymTab variable here. Fixes #4207.
+
 2007-03-15  Stan Cox  <scox@redhat.com>
 
 	* InlineBuffer.java (stab): Moved to member of class.
