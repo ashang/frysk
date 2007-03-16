@@ -522,6 +522,7 @@ public class SymTab
                                            newFrames[i].getTask().getTid(), 
                                            newFrames[i]);
            subprogram[i] = setSubprogram(newFrames[i]);
+	   exprSymTab[0].setSubprogram(subprogram[0]);
          }
      }
 }

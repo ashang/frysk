@@ -2,6 +2,7 @@
 
 	* hpd/SymTab.java (setSubprogram): Check for no .debug_info.
 	(what): Likewise.
+	(SetFrames): Set subprogram in ExprSymTab.	
 
 2007-03-15  Stan Cox  <scox@redhat.com>
 
