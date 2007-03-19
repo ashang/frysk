@@ -1,3 +1,7 @@
+2007-03-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java (assertions): Fixed up a couple assertions.
+
 2007-03-16  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (setRunning): Added.

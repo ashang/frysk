@@ -138,7 +138,7 @@ public class TestStepping extends TestLib
     runState.addObserver(lock);
     
     testState = INITIAL;
-    test = LINE_STEP_FUNCTION_CALL;
+    test = LINE_STEP_IF_PASS;
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL,
@@ -171,7 +171,7 @@ public class TestStepping extends TestLib
     runState.addObserver(lock);
     
     testState = INITIAL;
-    test = LINE_STEP_FUNCTION_CALL;
+    test = LINE_STEP_IF_FAIL;
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.POLL,
@@ -477,7 +477,7 @@ public class TestStepping extends TestLib
         switch (test)
           {
           case LINE_STEP_FUNCTION_CALL:
-            assertTrue("line number", lineNr == 79);
+            assertTrue("line number", lineNr == 79 || lineNr == 80);
             Manager.eventLoop.requestStop();
             return;
 
@@ -487,7 +487,7 @@ public class TestStepping extends TestLib
             return;
 
           case LINE_STEP_IF_FAIL:
-            assertTrue("line number", lineNr == 101);
+            assertTrue("line number", lineNr == 102);
             Manager.eventLoop.requestStop();
             return;
 
