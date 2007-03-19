@@ -1,3 +1,8 @@
+2007-03-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* IsaFactory.java (getIsaByElfType): New.
+	* TestIsa.java (testArbitraryISAInstantiation): New.
+
 2007-03-19  Mark Wielaard  <mark@klomp.org>
 
 	* TestBreakpoints.java (brokenSignals): Removed.

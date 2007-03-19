@@ -134,6 +134,15 @@ public class IsaFactory
     }
   }
 
+  /**
+   * Obtain ISA via ElfMachine Type.
+   */
+  public Isa getIsaByElfType(int machineType) 
+  {
+    Isa isa = (Isa)isaHash.get(Integer.valueOf(machineType));
+    return isa;
+  }
+
   public  Isa getIsa(int pid) 
   {
     return getIsa(pid, null);
