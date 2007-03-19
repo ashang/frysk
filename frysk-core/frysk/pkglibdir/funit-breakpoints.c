@@ -85,7 +85,9 @@ signal_handler(int sig)
 }
 
 // Tries to trick frysk by sending sighup signals and by having its
-// own trap instruction.
+// own trap instruction. This doesn't always work. We have a workaround
+// here for the fact that ptrace uses SIGTRAP itself to signal stepping
+// see bug #3997 for a discussion about this.
 static void
 dummy()
 {
@@ -140,7 +142,17 @@ main (int argc, char *argv[], char *envp[])
   received_hup = 0;
   send_hup = 0;
 
-  signal (SIGTRAP, &signal_handler);
+  // To work around a design issue in ptrace we need to define the
+  // SIGTRAP handler as reentrant. See bug #3997 for a discussion.
+  // FIXME - Needed till a non-ptrace mechanism (utrace) is available
+  // that doesn't reuse SIGTRAP to signal attached process about events.
+  struct sigaction action;
+  action.sa_handler = signal_handler;
+  sigemptyset (&action.sa_mask);
+  action.sa_flags = SA_NODEFER;
+  sigaction (SIGTRAP, &action, NULL);
+
+  // The sighup handler doesn't need any special flags.
   signal (SIGHUP, &signal_handler);
 
   // The number of runs the tester wants us to do.

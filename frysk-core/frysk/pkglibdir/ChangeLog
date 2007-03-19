@@ -1,3 +1,8 @@
+2007-03-19  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c (main): Add SA_NODEFER workaround for
+	sigtrap handler.
+	
 2007-03-15  Mike Cvet <mcvet@redhat.com>
 
 	* funit-rt-steptester.c: Added.

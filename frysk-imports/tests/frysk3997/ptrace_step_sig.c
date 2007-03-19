@@ -78,11 +78,16 @@ main (int argc, char **argv)
       {
 	// Child
 
-	// Setup sighup handler.
+	// Setup sigtrap handler.
 	struct sigaction action;
 	action.sa_handler = sig_handler;
 	sigemptyset (&action.sa_mask);
-	action.sa_flags = 0;
+	// Here we need to make the SIGTRAP handler reentrant.  This
+	// is clearly a design issue. The only reason we need to do
+	// this is because stepping a thread with ptrace uses SIGTRAP
+	// to signal the attached ptrace. See bug #3997 for more
+	// discussion about this.
+	action.sa_flags = SA_NODEFER;
 	sigaction (SIGTRAP, &action, NULL);
 
 	while (! stop)

@@ -1,3 +1,9 @@
+2007-03-19  Mark Wielaard  <mark@klomp.org>
+
+	* frysk3997/ptrace_step_sig.c: Add comment about usage of
+	SA_NODEFER in sa_flags to work around ptrace misfeature mention
+	in bug #3997.
+	
 2007-03-13  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* strace-clone-exec.shin: Changed the skip message
