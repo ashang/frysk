@@ -294,7 +294,8 @@ public class TestElf
 
     ElfData noteData = findNoteSegment(testElf);
 
-    final ElfPrAuxv prAuxv = new ElfPrAuxv(noteData);
+    final ElfPrAuxv prAuxv = ElfPrAuxv.decode(noteData);
+
     final int[] expectedIndex = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17};
     final int[] expectedType = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
     final BigInteger[] expectedVal = {new BigInteger("1508352",10),

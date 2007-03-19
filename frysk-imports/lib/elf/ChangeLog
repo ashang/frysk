@@ -1,3 +1,13 @@
+2007-03-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrAuxv.java (ElfPrAuxv):Make constructor private. Only
+	allow calls from decode. Delete old note constructor.
+	(decode): New.
+	(getNoteData): Make declaration static.
+	* cni/ElfPrAuxv.cxx (getNoteData): Do not use extern byte array.
+	Instead return byte[] array.
+	* tests/TestElf.java (testElfCorePrAuxvNotes): Use decode.
+	
 2007-03-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java: Make constructor private. Only

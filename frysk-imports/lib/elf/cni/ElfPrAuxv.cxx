@@ -74,9 +74,8 @@ lib::elf::ElfPrAuxv::fillMemRegion(jbyteArray buffer, jlong startAddress)
   return JvGetArrayLength(this->auxBuffer);
 }
 
-extern jbyteArray auxBuffer;
 
-jlong
+jbyteArray
 lib::elf::ElfPrAuxv::getNoteData(ElfData *data)
 {
   void *elf_data = ((Elf_Data*)data->getPointer())->d_buf;
@@ -98,7 +97,7 @@ lib::elf::ElfPrAuxv::getNoteData(ElfData *data)
   // If loop through entire note section, and header not found, return
   // here with abnormal return code.
   if (nhdr->n_type != NT_AUXV)
-      return 1;
+      return NULL;
 
   // Find data at current header + alignment
   note_data_loc = (note_loc + sizeof(GElf_Nhdr) + ((nhdr->n_namesz +  0x03) & ~0x3));
@@ -108,11 +107,10 @@ lib::elf::ElfPrAuxv::getNoteData(ElfData *data)
     {
       throw new lib::elf::ElfException(JvNewStringUTF("note size and elf_data size mismatch"));
     }
+  jbyteArray jbuf = JvNewByteArray (nhdr->n_descsz);
 
-  auxBuffer = JvNewByteArray(nhdr->n_descsz);
-
-  memcpy(elements(this->auxBuffer),((unsigned char  *)elf_data)+note_data_loc, nhdr->n_descsz);
+  ::memcpy(elements(jbuf),((unsigned char  *)elf_data)+note_data_loc, nhdr->n_descsz);
   
-  return 0;
+  return jbuf;
 }
 

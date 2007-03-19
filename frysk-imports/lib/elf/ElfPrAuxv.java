@@ -39,6 +39,11 @@
 
 package lib.elf;
 
+import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
+
+
 /**
  * Java Representation of the the NT_AUXV notes secion
  * found in core files
@@ -48,20 +53,54 @@ public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
 
   byte[] auxBuffer;
 
-
-  /** 
-   *
-   * Extract note information from a section
-   * containing note data
-   *
-   */
-  public ElfPrAuxv(ElfData noteData)
-  {
-    getNoteData(noteData);
-  }
-
   public ElfPrAuxv()
   {
+  }
+
+  private ElfPrAuxv(byte[] noteData, Elf elf)
+  {
+    ByteOrder order = null;
+
+    ByteBuffer noteBuffer = new ArrayByteBuffer(noteData);
+
+    ElfEHeader header = elf.getEHeader();
+    switch (header.ident[5])
+      {
+      case ElfEHeader.PHEADER_ELFDATA2LSB: 
+	order = ByteOrder.LITTLE_ENDIAN;
+	break;
+      case ElfEHeader.PHEADER_ELFDATA2MSB:
+	order = ByteOrder.BIG_ENDIAN;
+	break;
+      default:
+	return;
+      }
+
+    noteBuffer.order(order);
+    
+    switch (header.machine)
+      {
+      case ElfEMachine.EM_386:
+      case ElfEMachine.EM_PPC:
+	noteBuffer.wordSize(4);
+	break;
+      case ElfEMachine.EM_X86_64:
+      case ElfEMachine.EM_PPC64:
+	noteBuffer.wordSize(8);
+	break;
+      default:
+	return;
+      }
+
+    auxBuffer = new byte[noteData.length];
+    noteBuffer.get(auxBuffer);
+  }
+
+  public static ElfPrAuxv decode(ElfData noteData)
+  {
+    final byte data[] = getNoteData(noteData);
+    ElfPrAuxv auxData = new ElfPrAuxv(data,noteData.getParent());
+    return auxData;
   }
 
   /**
@@ -94,5 +133,5 @@ public class ElfPrAuxv extends ElfNhdr.ElfNoteSectionEntry
 
   public native long getEntrySize();
   public native long fillMemRegion(byte[] buffer, long startAddress);
-  public native long getNoteData(ElfData data);
+  public native static byte[] getNoteData(ElfData data);
 }
