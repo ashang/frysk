@@ -79,11 +79,6 @@ public class SymTab
   
   static Subprogram[] subprogram;
 
-  public SymTab (int tid, Proc proc, Task task)
-  {
-    this(tid, proc, task, null);
-  }
-  
   /**
    * Create a symbol table object.
    * 
@@ -522,7 +517,7 @@ public class SymTab
                                            newFrames[i].getTask().getTid(), 
                                            newFrames[i]);
            subprogram[i] = setSubprogram(newFrames[i]);
-	   exprSymTab[0].setSubprogram(subprogram[0]);
+	   exprSymTab[i].setSubprogram(subprogram[i]);
          }
      }
 }
