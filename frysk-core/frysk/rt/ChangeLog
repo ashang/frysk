@@ -1,3 +1,9 @@
+2007-03-20  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFrame.java (getLines): Prepend the compilation directory to the
+	source file location if the given path is relative, rather than absolute. 
+	Fixes #4220.
+
 2007-03-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java (assertions): Fixed up a couple assertions.

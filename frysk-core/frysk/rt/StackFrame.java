@@ -276,13 +276,21 @@ public class StackFrame
             DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
             if (dwflLine != null)
               {
-                this.lines = new Line[] { new Line(
-                                              new File(dwflLine.getSourceFile()),
-                                              dwflLine.getLineNum(),
-                                              dwflLine.getColumn(),
-                                              this.task.getProc()) };
+                File f = new File (dwflLine.getSourceFile());
+                if (!f.isAbsolute())
+                  {
+                    /* The file refers to a path relative to the compilation
+                     * directory; so prepend the path to that directory in
+                     * front of it. */
+                    File parent = new File(dwflLine.getCompilationDir());
+                    f = new File (parent, dwflLine.getSourceFile());
+                  }
+                
+                this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
+                                                      dwflLine.getColumn(),
+                                                      this.task.getProc()) };
               }
-
+            
           }
         // If the fetch failed, mark it as unknown.
         if (this.lines == null)
