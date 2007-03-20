@@ -1,5 +1,8 @@
 2007-03-19  Chris Moller  <moller@mollerware.com>
 
+	* kernel232837/attachstop.c: Replaced with a version based on
+	attachstop2.c from the bug. 
+
 	* Makefile.am (systests_XFAIL_PROGRAM):
 	* kernel232837/attachstop.c: Per Roland's request, added a test
 	for kernel bug 232837.
