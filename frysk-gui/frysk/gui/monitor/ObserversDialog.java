@@ -65,7 +65,6 @@ public class ObserversDialog extends FryskDialog {
 	Button duplicateObserverButton;
 	
 	Button okButton;
-	Button applyButton;
 	Button cancelButton;
 	
 	/**
@@ -209,16 +208,6 @@ public class ObserversDialog extends FryskDialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserversDialog.this.hideAll();
 					undoChanges();
-				}
-			}
-		});
-		
-		
-		this.applyButton = (Button) glade.getWidget("observersApplyButton");
-		applyButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					commitChanges();
 				}
 			}
 		});

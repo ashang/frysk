@@ -1,3 +1,8 @@
+2007-03-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* gladedir/procpop.glade: Removed apply button from Observers Dialog.
+	Fix for bz 3067
+
 2007-03-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/Session.java: Added specific observers to be added to processes

@@ -1,5 +1,7 @@
 2007-03-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ObserversDialog.java: Removed handling from apply button Fix for bz
+	3067.
 	* ObserverItemRow.java : [-] Button now disables itself when there is only
 	one row is left and the represented filter has been removed from the
 	underlying Observer. Fix for bz 4159.
