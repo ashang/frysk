@@ -116,52 +116,7 @@ public abstract class ObserverItemRow
         return false;
       }
     });
-
-    itemsComboBox = new SimpleComboBox();
-    itemsComboBox.addListener(new ComboBoxListener()
-    {
-      public void comboBoxEvent (ComboBoxEvent event)
-      {
-        if (event.isOfType(ComboBoxEvent.Type.CHANGED))
-          {
-            if (combo != null && combo.isApplied())
-              {
-                Combo tempCombo = (Combo) itemsComboBox.getSelectedObject();
-
-                // un apply the previous combo
-                // if another one has been selected apply that one
-                if (tempCombo != null)
-                  {
-                    combo.unApply();
-                    combo = tempCombo;
-
-                    toolTips.setTip(argumentEntry, combo.getToolTip(), "");
-
-                    ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
-                    if (list != null)
-                      {
-                        argumentEntry.watchList(list);
-                      }
-                    combo.apply();
-                  }
-              }
-          }
-      }
-    });
-
-    addButton = new Button("");
-    addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
-    addButton.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent event)
-      {
-        if (event.isOfType(ButtonEvent.Type.CLICK))
-          {
-            ObserverItemRow.this.table.addRow(null);
-          }
-      }
-    });
-
+    
     removeButton = new Button("");
     removeButton.setImage(new Image(GtkStockItem.REMOVE, IconSize.BUTTON));
     removeButton.addListener(new ButtonListener()
@@ -178,6 +133,7 @@ public abstract class ObserverItemRow
                   {
                     combo.unApply();
                   }
+                removeButton.setSensitive(false);
               }
             else
               {
@@ -190,6 +146,62 @@ public abstract class ObserverItemRow
           }
       }
     });
+    if (ObserverItemRow.this.table.getIndexOfFinalRow() == 1){
+        removeButton.setSensitive(false);
+    }
+    
+    addButton = new Button("");
+    addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
+    addButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            ObserverItemRow.this.table.addRow(null);
+            if(!removeButton.getSensitive()){
+              removeButton.setSensitive(true);
+            }
+          }
+      }
+    });
+
+    itemsComboBox = new SimpleComboBox();
+    itemsComboBox.addListener(new ComboBoxListener()
+    {
+      public void comboBoxEvent (ComboBoxEvent event)
+      {
+        if (event.isOfType(ComboBoxEvent.Type.CHANGED))
+          {
+            Combo newCombo = (Combo) itemsComboBox.getSelectedObject();
+            
+            if (combo != null && combo.isApplied())
+              {
+                // unapply the previous combo
+                combo.unApply();
+              }
+            // if another combo has been selected apply that one
+            if (newCombo != null)
+              {
+                combo = newCombo;
+                
+                if(!removeButton.getSensitive()){
+                  removeButton.setSensitive(true);
+                }
+                
+                toolTips.setTip(argumentEntry, combo.getToolTip(), "");
+
+                ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
+                if (list != null)
+                  {
+                    argumentEntry.watchList(list);
+                  }
+                combo.apply();
+              }
+          }
+      }
+    });
+
   }
 
   public boolean apply ()
