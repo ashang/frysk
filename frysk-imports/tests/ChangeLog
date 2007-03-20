@@ -1,3 +1,10 @@
+2007-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (systests_XFAIL_PROGRAM): Remove attachstop.
+	(systests_PASS_PROGRAM): Add frysk4217/attachstop.
+	* kernel232837/attachstop.c: Renamed to ...
+	* frysk4217/attachstop.c: ... this.
+
 2007-03-20  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* kernel232837/attachstop.c: Extended for
