@@ -1,3 +1,9 @@
+2007-03-19  Chris Moller  <moller@mollerware.com>
+
+	* Makefile.am (systests_XFAIL_PROGRAM):
+	* kernel232837/attachstop.c: Per Roland's request, added a test
+	for kernel bug 232837.
+
 2007-03-19  Mark Wielaard  <mark@klomp.org>
 
 	* frysk3997/ptrace_step_sig.c: Add comment about usage of

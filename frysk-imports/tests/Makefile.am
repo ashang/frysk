@@ -298,6 +298,10 @@ systests_PASS_PROGRAM += frysk2595/ptrace_after_exec
 frysk2595_ptrace_after_exec_of_thread_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk2595/ptrace_after_exec_of_thread
 
+# test for PTRACE_ATTACH of SIGSTOPped process hangs
+#kernel232837_attachstop_LDFLAGS = -lpthread
+systests_XFAIL_PROGRAM += kernel232837/attachstop
+
 process_TESTS = \
 	process/single_exec \
 	process/multi_child_exec \
