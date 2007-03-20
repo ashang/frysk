@@ -1,3 +1,8 @@
+2007-03-20  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* kernel232837/attachstop.c: Extended for
+	the kernel-2.6.20-1.2935.rm2.fc6.x86_64 regression.
+
 2007-03-19  Chris Moller  <moller@mollerware.com>
 
 	* kernel232837/attachstop.c: Replaced with a version based on
