@@ -1,4 +1,4 @@
-2007-03-12  Mark Wielaard  <mark@klomp.org>
+2007-03-12  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* frysk-common.ac: Add AC_ARG_VAR([GCJFLAGS], ...) to register GCJFLAGS
 	as a variable to save when specified in the environment.  Do not change
