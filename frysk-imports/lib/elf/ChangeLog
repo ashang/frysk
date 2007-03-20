@@ -7,6 +7,7 @@
 	* cni/ElfPrAuxv.cxx (getNoteData): Do not use extern byte array.
 	Instead return byte[] array.
 	* tests/TestElf.java (testElfCorePrAuxvNotes): Use decode.
+	* ElfData.java (getParent): Change access to public.
 	
 2007-03-13  Phil Muldoon  <pmuldoon@redhat.com>
 

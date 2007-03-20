@@ -196,7 +196,7 @@ public class ElfData {
 		elf_data_finalize();
 	}
 
-	protected Elf getParent(){
+	public Elf getParent(){
 		return this.parent;
 	}
 	
