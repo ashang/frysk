@@ -682,7 +682,7 @@ class ExprSymTab
                 ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
 
                 abb.order(byteorder);
-                Variable arrVar = new Variable(arrayType, "", abb);
+                Variable arrVar = new Variable(arrayType, s, abb);
                 return arrVar;
               }
             else if (tag == DwTagEncodings.DW_TAG_structure_type_)
@@ -731,7 +731,7 @@ class ExprSymTab
                 ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
 
                 abb.order(byteorder);
-                Variable classVar = new Variable(classType, "", abb);
+                Variable classVar = new Variable(classType, s, abb);
                 return classVar;
               }
           }

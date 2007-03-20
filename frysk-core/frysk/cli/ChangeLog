@@ -1,3 +1,7 @@
+2007-03-20  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (get): Set name when creating arrayType/classType.
+
 2007-03-17  Stan Cox  <scox@redhat.com>	
 
 	* hpd/SymTab.java (complete): Handle help request<HT>.
