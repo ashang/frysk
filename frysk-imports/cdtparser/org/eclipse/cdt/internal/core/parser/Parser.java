@@ -211,8 +211,14 @@ public class Parser implements IParserData, IParser
 	 * @return				The type of that token
 	 * @throws EndOfFileException	if looking ahead encounters EOF, throw EndOfFile
 	 */
-	public int LT(int i) throws EndOfFileException {
+	public int LT(int i) throws EndOfFileException, NullPointerException {
+      if (i < 1 || LA(i) == null)
+        return 0;
+      try {
 		return LA(i).getType();
+      } catch (NullPointerException e) {
+        return 0;
+      }
 	}
 
 	/**
