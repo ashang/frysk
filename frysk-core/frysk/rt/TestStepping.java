@@ -85,6 +85,9 @@ public class TestStepping extends TestLib
   protected static final int ASM_STEP_MULTI_LINE = 11;
   protected static final int ASM_STEP_JUMP = 12;
   
+  protected static final int SIGLONGJMP = 20;
+  protected static final int GOTO = 21;
+  
   private LockObserver lock;
   
   private AttachedObserver attachedObserver;
@@ -308,6 +311,72 @@ public class TestStepping extends TestLib
     this.lineMap.clear();
   }
   
+  public void testStepSigLongJmp ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = SIGLONGJMP;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-siglongjmp"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
+  public void testStepGoto()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = GOTO;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-goto"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
   public void setUpTest ()
   {
     StackFrame frame = StackFactory.createStackFrame(myTask, 1);
@@ -322,9 +391,26 @@ public class TestStepping extends TestLib
         runState.setUpLineStep(myTask);
         return;
       }
-    else
+    else if (test >= 10 && test < 20)
       {
         runState.stepInstruction(myTask);
+      }
+    else
+      {
+        switch (test)
+        {
+          case SIGLONGJMP:
+            runState.setUpLineStep(myTask);
+            return;
+          
+          case GOTO:
+            runState.setUpLineStep(myTask);
+            return;
+            
+          default:
+            break;
+        }
+        
       }
   }
   
@@ -381,6 +467,14 @@ public class TestStepping extends TestLib
             this.runState.stepInstruction(myTask);
             break;
             
+          case SIGLONGJMP:
+            this.runState.setUpLineStep(myTask);
+            break;
+            
+          case GOTO:
+            this.runState.setUpLineStep(myTask);
+            break;
+            
           default:
             break;
           }
@@ -391,7 +485,7 @@ public class TestStepping extends TestLib
 
         if (sFrame.getLines().length == 0)
           {
-            this.runState.setUpLineStep(myTask);
+            this.runState.stepInstruction(myTask);
             return;
           }
 
@@ -456,6 +550,22 @@ public class TestStepping extends TestLib
             this.runState.stepInstruction(myTask);
             break;
 
+          case SIGLONGJMP:
+             if (line.getLine() == 71)
+               {
+                 this.testState = FINAL_STEP;
+               }
+             this.runState.setUpLineStep(myTask);
+             break;
+             
+          case GOTO:
+            if (line.getLine() == 77)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.setUpLineStep(myTask);
+            break;
+            
           default:
             this.runState.setUpLineStep(myTask);
             break;
@@ -521,6 +631,16 @@ public class TestStepping extends TestLib
             
           case ASM_STEP_JUMP:
             assertTrue("line number", lineNr == 53);
+            Manager.eventLoop.requestStop();
+            return;
+            
+          case SIGLONGJMP:
+            assertTrue("line number", lineNr == 80);
+            Manager.eventLoop.requestStop();
+            return;
+            
+          case GOTO:
+            assertTrue("line number", lineNr == 74);
             Manager.eventLoop.requestStop();
             return;
 
