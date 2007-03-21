@@ -43,6 +43,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <pthread.h>
 
 pthread_t tester_thread;
@@ -63,19 +64,32 @@ void
 }
 
 void
+handler (int sig)
+{
+  if (sig == SIGUSR1)
+    {
+      --j;
+      ++j;
+    }
+  else
+    exit (EXIT_FAILURE);
+
+  return;
+}
+
+void
 do_it ()
 {
   lock = 0;
 
- jump_to:
-  --j;
-  ++j;
-  --j;
-  ++j;
-
-  goto jump_to;
-
-  return;
+  while (1)
+    {
+      ++j;
+      --j;
+      ++j;
+      --j;
+      raise (SIGUSR1);
+    }
 }
 
 int
@@ -107,6 +121,13 @@ main (int argc, char ** argv)
   pid = target_pid;
   sig = signal;
 
+  //signal (SIGUSR1, handler);
+  struct sigaction sa;
+  sa.sa_handler = handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  sigaction(SIGUSR1, &sa, NULL) ;
+  
   pthread_create (&tester_thread, NULL, signal_parent, NULL);
 
   do_it ();

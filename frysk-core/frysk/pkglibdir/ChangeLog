@@ -2,6 +2,9 @@
 
 	* funit-rt-siglongjmp.c: Added.
 	* funit-rt-goto.c: Added.
+	
+	* funit-rt-goto.c: Removed some redundant code.
+	* funit-rt-sigraise.c: Added.
 
 2007-03-19  Mark Wielaard  <mark@klomp.org>
 
