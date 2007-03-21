@@ -87,6 +87,8 @@ public class TestStepping extends TestLib
   
   protected static final int SIGLONGJMP = 20;
   protected static final int GOTO = 21;
+  protected static final int SIG_RAISE_ENTER = 22;
+  protected static final int SIG_RAISE_EXIT = 23;
   
   private LockObserver lock;
   
@@ -344,7 +346,7 @@ public class TestStepping extends TestLib
     this.lineMap.clear();
   }
   
-  public void testStepGoto()
+  public void testStepGoto ()
   {
     if (brokenPpcXXX (3277))
       return;
@@ -363,6 +365,39 @@ public class TestStepping extends TestLib
     (Sig.POLL,
      new String[] {
         getExecPath ("funit-rt-goto"),
+        "" + Pid.get (),
+        "" + Sig.POLL_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    runState.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    this.lineMap.clear();
+  }
+  
+  public void testStepSigRaise ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    runState = new RunState();
+    runState.addObserver(lock);
+    
+    testState = INITIAL;
+    test = SIG_RAISE_ENTER;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.POLL,
+     new String[] {
+        getExecPath ("funit-rt-sigraise"),
         "" + Pid.get (),
         "" + Sig.POLL_
     });
@@ -404,6 +439,10 @@ public class TestStepping extends TestLib
             return;
           
           case GOTO:
+            runState.setUpLineStep(myTask);
+            return;
+            
+          case SIG_RAISE_ENTER:
             runState.setUpLineStep(myTask);
             return;
             
@@ -475,6 +514,10 @@ public class TestStepping extends TestLib
             this.runState.setUpLineStep(myTask);
             break;
             
+          case SIG_RAISE_ENTER:
+            this.runState.setUpLineStep(myTask);
+            break;
+            
           default:
             break;
           }
@@ -490,7 +533,6 @@ public class TestStepping extends TestLib
           }
 
         Line line = sFrame.getLines()[0];
-        this.lineMap.put(myTask, new Integer(line.getLine()));
 
         switch (test)
           {
@@ -559,7 +601,28 @@ public class TestStepping extends TestLib
              break;
              
           case GOTO:
-            if (line.getLine() == 77)
+            if (line.getLine() == 74)
+              {
+                this.testState = FINAL_STEP;
+              }
+            this.runState.setUpLineStep(myTask);
+            break;
+            
+          case SIG_RAISE_ENTER:
+            if (((Integer) lineMap.get(myTask)).intValue() != 90)
+              {
+                this.runState.setUpLineStep(myTask);
+                break;
+              }
+            else if (line.getLine() == 91)
+            {
+              this.testState = FINAL_STEP;
+            }
+            this.runState.setUpLineStep(myTask);
+            break;
+            
+          case SIG_RAISE_EXIT:
+            if (line.getLine() == 78)
               {
                 this.testState = FINAL_STEP;
               }
@@ -570,7 +633,8 @@ public class TestStepping extends TestLib
             this.runState.setUpLineStep(myTask);
             break;
           }
-
+        
+        this.lineMap.put(myTask, new Integer(line.getLine()));
       }
     else if (testState == FINAL_STEP)
       {
@@ -640,10 +704,21 @@ public class TestStepping extends TestLib
             return;
             
           case GOTO:
-            assertTrue("line number", lineNr == 74);
+            assertTrue("line number", lineNr == 71);
             Manager.eventLoop.requestStop();
             return;
 
+          case SIG_RAISE_ENTER:
+            assertTrue("line number", lineNr == 69);
+            test = SIG_RAISE_EXIT;
+            testState = STEPPING;
+            runState.setUpLineStep(myTask);
+            return;
+            
+          case SIG_RAISE_EXIT:
+            assertTrue("line number", lineNr == 91);
+            Manager.eventLoop.requestStop();
+            
           default:
             break;
           }
