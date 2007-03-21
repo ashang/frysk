@@ -1,3 +1,8 @@
+2007-03-21  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-rt-siglongjmp.c: Added.
+	* funit-rt-goto.c: Added.
+
 2007-03-19  Mark Wielaard  <mark@klomp.org>
 
 	* funit-breakpoints.c (main): Add SA_NODEFER workaround for
