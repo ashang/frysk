@@ -1,5 +1,7 @@
 2007-03-21  Nurdin Premji  <npremji@redhat.com>
 
+	* cni/UnwindX86.cxx: Removed reference to libunwind-x86.h for now.
+
 	* UnwindX86.java : New	
 	* cni/UnwindX86.cxx: New.
 	* TestUnwind.java (testCreateCursor): Updated change in AddressSpace.
