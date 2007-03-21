@@ -1,3 +1,7 @@
+2007-03-21  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Removed libunwind-x86.h.
+	
 2007-03-14  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Fixed libunwind-cpu.h location
