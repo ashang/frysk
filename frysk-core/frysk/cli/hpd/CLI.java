@@ -105,16 +105,20 @@ public class CLI
   public int complete (String buffer, int cursor, List candidates)
   {
     int first_ws = buffer.indexOf(' ');
-    // Complete the request name
-    if (first_ws == -1)
+    int offset = 0;
+    // Complete the request name for help
+    if (buffer.startsWith("help "))
+      offset = 5;
+    // Complete the request name or help request
+    if (first_ws == -1 || offset > 0)
       {
 	Set commands = handlers.keySet();
 	Iterator it = commands.iterator();
 	while(it.hasNext())
 	  {
 	    String command = (String)it.next();
-	    if (command.startsWith(buffer))
-	      candidates.add(command);
+	    if (command.startsWith(buffer.substring(offset)))
+	      candidates.add(command + " ");
 	  }
       }
     // Otherwise assume a symbol is being completed
@@ -124,7 +128,7 @@ public class CLI
 				 cursor - first_ws, candidates);
 	return cursor + first_ws;
       }
-    return 1;
+    return 1 + offset;
   }
   // Superclass refreshes symbol table if necessary.
   private void refreshSymtab()
@@ -147,8 +151,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       String setname = null;
       String setnot = null;
       PTSet set = null;
@@ -180,10 +189,16 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
-      if (cmd.getParameters().size() == 1)
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+        refreshSymtab();
+      if (params.size() == 1)
 	{
-	  String setname = (String)cmd.getParameters().get(0);
+	  String setname = (String)params.get(0);
 
 	  if (builtinPTSets.contains(setname))
 	    {
@@ -215,19 +230,25 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       PTSet tempset = null;
       TaskData temptd = null;
       String setname = "";
       String output = "";
 
-      if (cmd.getParameters().size() <= 1)
+      if (params.size() <= 1)
 	{
-	  if (cmd.getParameters().size() == 0)
+	  if (params.size() == 0)
 	    tempset = targetset;
-	  else if (cmd.getParameters().size() == 1)
+	  else if (params.size() == 1)
 	    {
-	      setname = (String)cmd.getParameters().get(0);
+	      setname = (String)params.get(0);
 	      if (namedPTSets.containsKey(setname))
 		tempset = (PTSet) namedPTSets.get(setname);
 	      else
@@ -259,6 +280,12 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       PTSet searchset = null;
       PTSet tempset = null;
@@ -266,12 +293,12 @@ public class CLI
       String setname = null;
 
       // ??? check builtin sets
-      if (cmd.getParameters().size() <= 1)
+      if (params.size() <= 1)
 	{
-	  if (cmd.getParameters().size() == 0)
+	  if (params.size() == 0)
 	    searchset = targetset;
-	  else if (cmd.getParameters().size() == 1)
-	    searchset = createSet((String)cmd.getParameters().get(0));
+	  else if (params.size() == 1)
+	    searchset = createSet((String)params.get(0));
 
 	  // start iterating through available sets
 	  for (Iterator it = searchset.getTaskData(); it.hasNext();)
@@ -303,11 +330,17 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
-      if (cmd.getParameters().size() <= 1)
+      if (params.size() <= 1)
 	{
-	  if (cmd.getParameters().size() == 1)
-	    targetset = createSet((String)cmd.getParameters().get(0));
+	  if (params.size() == 1)
+	    targetset = createSet((String)params.get(0));
 	  else
 	    ((CommandHandler)handlers.get("viewset"))
 	      .handle(new Command("viewset"));
@@ -324,8 +357,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       if (params.size() <= 2)
 	{
 	  if (params.size() == 2)
@@ -360,8 +398,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();	// XXX ?
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();	// XXX ?
       boolean cli = true;
 
       if (params.size() < 1)
@@ -506,8 +549,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
 
       if (runState != null) 
 	{
@@ -567,6 +615,12 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       if (proc == null)
 	{
@@ -574,7 +628,7 @@ public class CLI
 	  return;
 	}
 
-      if (cmd.getParameters().size() != 0)
+      if (params.size() != 0)
 	{
 	  addMessage("No options are currently implemented.", 
 		     Message.TYPE_NORMAL);
@@ -625,8 +679,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       String temp;
       if (params.size() == 3 && ((String)params.get(1)).equals("=") )
 	{
@@ -673,8 +732,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       String temp;
       if (params.size() == 1)
 	{
@@ -702,13 +766,19 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       int level = 1;
       StackFrame tmpFrame = null;
       StackFrame currentFrame = symtab.getCurrentFrame();
 
-      if (cmd.getParameters().size() != 0)
-	level = Integer.parseInt((String)cmd.getParameters().get(0));
+      if (params.size() != 0)
+	level = Integer.parseInt((String)params.get(0));
 
       if (cmd.getAction().compareTo("up") == 0)
 	{
@@ -734,6 +804,12 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       int level = 0;
       StackFrame tmpFrame = null;
@@ -744,8 +820,8 @@ public class CLI
 	  return;
 	}
 
-      if (cmd.getParameters().size() != 0)
-	level = Integer.parseInt((String)cmd.getParameters().get(0));
+      if (params.size() != 0)
+	level = Integer.parseInt((String)params.get(0));
  
       int l = stackLevel;
       int stopLevel;
@@ -770,8 +846,14 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
-      if (cmd.getParameters().size() == 0)
+      if (params.size() == 0)
 	return;
         
       if (proc == null)
@@ -780,7 +862,13 @@ public class CLI
 	  return;
 	}
 
-      String sInput = ((String)cmd.getParameters().get(0));
+      if (params.size() == 0
+          || (((String)params.get(0)).equals("-help")))
+        {
+          printUsage(cmd);
+          return;
+        }
+      String sInput = ((String)params.get(0));
       try 
         {
           outWriter.println(symtab.what(sInput));
@@ -800,8 +888,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       if (cmd.getParameters().size() == 0
           || (((String)params.get(0)).equals("-help")))
         {
@@ -885,7 +978,7 @@ public class CLI
           else if (resultType == BaseTypes.baseTypeShort
 		   || resultType == BaseTypes.baseTypeInteger
 		   || resultType == BaseTypes.baseTypeLong)
-            outWriter.println(Integer.toString((int)result.getType()
+            outWriter.println(Long.toString(result.getType()
 						  .longValue(result),
 						  outputFormat));
           else if (resultType == BaseTypes.baseTypeChar)
@@ -906,8 +999,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       String filename = (String)params.get(0);
       int lineNumber = Integer.parseInt((String)params.get(1));
       LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
@@ -923,8 +1021,13 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
-      refreshSymtab();
       ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      refreshSymtab();
       int breakpointNumber = Integer.parseInt((String)params.get(0));
       Actionpoint ap;
 
@@ -946,6 +1049,12 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       if (runState != null)
 	{
@@ -965,6 +1074,12 @@ public class CLI
     public void handle(Command cmd)
       throws ParseException
     {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
       refreshSymtab();
       if (runState != null)
 	{
@@ -1002,16 +1117,25 @@ public class CLI
   {
     public void handle(Command cmd) throws ParseException 
     {
+      ArrayList params = cmd.getParameters();
       String output = "";
       String temp = "";
-
-      for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
-	{
-	  temp = (String)iter.next();
-	  output += temp + " - " + userhelp.getCmdDescription(temp) + "\n";
-	}
-      output += "help\n";
-      output += "quit\n";
+      if (params.size() == 0)
+        for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
+          {  
+            temp = (String)iter.next();
+            output += temp + " - " + userhelp.getCmdDescription(temp) + "\n";
+          }
+      else
+        for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
+          {
+            temp = (String)iter.next();
+            if (temp.compareTo(params.get(0)) == 0)
+              {              
+                output += userhelp.getCmdSyntax(temp) + "\n";
+                output += userhelp.getCmdFullDescr(temp);
+              }
+          }
       addMessage(output, Message.TYPE_NORMAL);
     }
   }
