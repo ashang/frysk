@@ -381,6 +381,9 @@ public class TestStepping extends TestLib
   
   public void testStepSigRaise ()
   {
+    if (brokenXXX(4237))
+      return;
+    
     if (brokenPpcXXX (3277))
       return;
     
@@ -709,7 +712,7 @@ public class TestStepping extends TestLib
             return;
 
           case SIG_RAISE_ENTER:
-            assertTrue("line number", lineNr == 69);
+            assertTrue("line number", lineNr == 68 || lineNr == 69);
             test = SIG_RAISE_EXIT;
             testState = STEPPING;
             runState.setUpLineStep(myTask);

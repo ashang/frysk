@@ -11,7 +11,7 @@
 	(setUpTest): Added code for above two new tests.
 	(assertions): Ditto.
 	
-	* TestStepping.java (testStepSigRaise): Added.
+	* TestStepping.java (testStepSigRaise): Added. Marked broken pending #4237.
 	(setUpTest): Added code for signal raise test.
 	(assertions): Ditto.
 
