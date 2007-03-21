@@ -36,87 +36,81 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+package frysk.cli.hpd;
 
+import java.util.ArrayList;
+import java.text.ParseException;
+import javax.naming.NameNotFoundException;
 
-package frysk.rt;
-
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import lib.dw.DwarfDie;
 
 import frysk.proc.Task;
+import frysk.rt.FunctionBreakpoint;
+import frysk.rt.LineBreakpoint;
 
-public class LineBreakpoint
-  extends BreakpointCollection
+class BreakpointHandler
+  extends CLIHandler
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint () 
+  static final String descr = "set source breakpoint";
+
+  BreakpointHandler(String name, CLI cli)
   {
+    super(name, cli, new CommandHelp(name, descr, "break @file@lineno", descr));
   }
 
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
+  BreakpointHandler(CLI cli)
   {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
+    this("break", cli);
+  }
+
+  public void handle(Command cmd) throws ParseException
+  {
+    cli.refreshSymtab();
+    ArrayList params = cmd.getParameters();
+    if (params.size() != 1)
       {
-	Iterator iterator = getAddrs().iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
+	cli.printUsage(cmd);
+	return;
       }
-  }
+    String breakpt = (String)params.get(0);
+    String fileName;
+    int lineNumber;
+    Actionpoint actionpoint;
+    Task task = cli.getTask();
+    if (breakpt.charAt(0) == '@')
+      {
+	String[] bptParams = breakpt.split("@");
+	if (bptParams.length != 3)
+	  {
+	    // XXX should use notion of "current" source file
+	    throw new ParseException("bad syntax for breakpoint:" + breakpt,
+				     0);
+	  }
+	fileName = bptParams[1];
+	lineNumber = Integer.parseInt((String)bptParams[2]);
+	LineBreakpoint bpt = new LineBreakpoint(task, fileName, lineNumber, 0);
+	actionpoint = new LineBreakpointAdapter(bpt, cli.getRunState(), task);
+      }
+    else
+      {
+	DwarfDie die;
+	try
+	  {
+	    die = cli.symtab.getSymbolDie(breakpt);
+	  }
+	catch (NameNotFoundException e)
+	  {
+	    cli.getPrintWriter().println(e.getMessage());
+	    return;
+	  }
+	FunctionBreakpoint bpt = new FunctionBreakpoint(breakpt, die);
+	actionpoint = new FunctionBreakpointAdapter(bpt, cli.getRunState(),
+						    task);
+      }
 
-  public String getFileName() 
-  {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
-  }
 
-  public long getRawAddress(Object addr)
-  {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    int id = cli.getActionpointTable().add(actionpoint);
+    actionpoint.enable();
+    cli.getPrintWriter().println("breakpoint " + id);
   }
-
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
-						 String filename,
-						 int lineNumber)
-  {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
-    return bpt;
-  }    
 }

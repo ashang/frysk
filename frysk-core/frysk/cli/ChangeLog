@@ -1,3 +1,15 @@
+2007-03-21  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointHandler.java : Class refactored from
+	CLI.java. Implement breakpoints based on function names.
+	* FunctionBreakpointAdapter.java : New class.
+	* CLI.java (BreakpointHandler): remove.
+	(refreshSymtab): Make public.
+	(getActionpointTable, getPrintWriter, getTask, getSymTab): New
+	getter methods to support writing command handlers outside of the
+	CLI class.
+	* Symtab.java (getSymbolDie): New method.
+
 2007-03-20  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): Set name when creating arrayType/classType.

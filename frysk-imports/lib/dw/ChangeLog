@@ -1,3 +1,8 @@
+2007-03-21  Tim Moore  <timoore@redhat.com>
+
+	* DwarfDie.java (getEntryBreakpoints): New method.
+	* cni/DwarfDie.cxx (getEntryBreakpoints): Implement it.
+
 2007-03-15  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (setScopes): New.

@@ -41,6 +41,10 @@
 #include <dwarf.h>
 #include <stdio.h>
 #include <alloca.h>
+#include <stdlib.h>
+
+#include <java/lang/Long.h>
+#include <java/util/ArrayList.h>
 
 #include "lib/dw/DwarfDie.h"
 #include "lib/dw/BaseTypes.h"
@@ -489,4 +493,23 @@ iterate_decl (Dwarf_Die *die_p, char *sym, size_t nfiles)
   while (dwarf_siblingof (die, die) == 0);
   JvFree (die);
   return NULL;
+}
+
+java::util::ArrayList *
+lib::dw::DwarfDie::getEntryBreakpoints()
+{
+  Dwarf_Addr *bkpts = 0;
+  int count = ::dwarf_entry_breakpoints(DWARF_DIE_POINTER, &bkpts);
+  if (count > 0)
+    {
+      java::util::ArrayList *alist = new java::util::ArrayList();
+      for (int i = 0; i < count; i++)
+	{
+	  alist->add(new java::lang::Long((jlong)bkpts[i]));
+	}
+      ::free(bkpts);
+      return alist;
+    }
+  else
+    return 0;
 }

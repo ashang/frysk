@@ -37,86 +37,74 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.rt;
 
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import java.util.LinkedList;
 
 import frysk.proc.Task;
 
-public class LineBreakpoint
-  extends BreakpointCollection
+/**
+ * Class representing a collection of "raw" breakpoints that should be
+ * added or deleted as a group.
+ */
+public abstract class BreakpointCollection
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint () 
+  private LinkedList addrs = null;
+  private LinkedList breakpoints = null;
+
+  public BreakpointCollection()
   {
   }
 
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
+  public BreakpointCollection(LinkedList addrs)
   {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
+    this.addrs = addrs;
+  }
+
+  public LinkedList getAddrs()
+  {
+    return addrs;
+  }
+
+  public void setAddrs(LinkedList addrs)
+  {
+    this.addrs = addrs;
+  }
+
+  /**
+   * Return the address to use as a breakpoint from the object stored
+   * in the list of breakpoints.
+   * @param addr the object stored in the addrs list
+   * @return the raw address at which a breakpoint will be set
+   */
+  abstract long getRawAddress(Object addr);
+  
+  public void addBreakpoint(RunState runState, Task task)
+  {
+    Iterator bpts = addrs.iterator();
+    breakpoints = new LinkedList();
+    while (bpts.hasNext())
       {
-	Iterator iterator = getAddrs().iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
+	Object bpt = bpts.next();
+	long address = getRawAddress(bpt);
+	RunState.PersistentBreakpoint breakpoint
+	  = runState.new PersistentBreakpoint(address);
+	breakpoints.add(breakpoint);
+	runState.addPersistentBreakpoint(task, breakpoint);
       }
   }
 
-  public String getFileName() 
+  public void deleteBreakpoint(RunState runState, Task task)
   {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
-  }
+    Iterator iterator = breakpoints.iterator();
 
-  public long getRawAddress(Object addr)
-  {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    while (iterator.hasNext())
+      {
+	RunState.PersistentBreakpoint bpt
+	  = (RunState.PersistentBreakpoint)iterator.next();
+        runState.deletePersistentBreakpoint(task, bpt);
+      }
+    breakpoints.clear();
   }
-
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
-						 String filename,
-						 int lineNumber)
-  {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
-    return bpt;
-  }    
 }

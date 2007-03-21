@@ -354,6 +354,8 @@ public class DwarfDie
     return die;
   }
 
+  public native ArrayList getEntryBreakpoints();
+  
   private native long get_lowpc ();
 
   private native long get_highpc ();
@@ -393,5 +395,4 @@ public class DwarfDie
   private native boolean is_inline_func ();
 
   private static native long get_decl (long dw, String sym);
-
 }

@@ -40,9 +40,11 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/poll.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/ioctl.h>
 #include <alloca.h>
 #include <fcntl.h>
 
@@ -52,6 +54,7 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/FileDescriptor.h"
+#include "frysk/sys/Size.h"
 
 void
 frysk::sys::FileDescriptor::close ()
@@ -157,6 +160,8 @@ frysk::sys::FileDescriptor::open (jstring file, jint f)
     flags |= O_RDONLY;
   if (f & frysk::sys::FileDescriptor::WRONLY)
     flags |= O_WRONLY;
+  if (f & frysk::sys::FileDescriptor::RDWR)
+    flags |= O_RDWR;
   int gc_count;
   while (1) {
     errno = 0;
@@ -192,4 +197,32 @@ frysk::sys::FileDescriptor::dup (frysk::sys::FileDescriptor *old)
     }
   }
   // ::fprintf (stderr, "%d dup done\n", getpid ());
+}
+
+frysk::sys::Size *
+frysk::sys::FileDescriptor::getSize()
+{
+    struct winsize size;
+
+    errno = 0;
+    if (::ioctl(fd, TIOCGWINSZ, (char *)&size) < 0)
+    {
+	throwErrno(errno, "ioctl");
+    }
+    return new frysk::sys::Size(size.ws_row, size.ws_col);
+}
+
+void
+frysk::sys::FileDescriptor::setSize(frysk::sys::Size *jsize)
+{
+    struct winsize size;
+
+    errno = 0;
+    ::memset(&size, 0, sizeof(size));
+    size.ws_row = jsize->getRows();
+    size.ws_col = jsize->getColumns();
+    if (::ioctl(fd, TIOCSWINSZ, (char *)&size) < 0)
+    {
+	throwErrno(errno, "ioctl");
+    }
 }

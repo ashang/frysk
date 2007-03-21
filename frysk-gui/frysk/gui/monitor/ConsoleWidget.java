@@ -48,6 +48,7 @@ import frysk.sys.PseudoTerminal;
 import frysk.cli.hpd.CLI;
 import jline.ConsoleReader;
 import jline.PtyTerminal;
+//import frysk.util.PtyTerminal;
 
 public class ConsoleWidget extends Bin {
     private Terminal term;

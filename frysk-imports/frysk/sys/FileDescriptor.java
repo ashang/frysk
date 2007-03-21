@@ -83,6 +83,10 @@ public class FileDescriptor
      * Open file write-only
      */
     public static final int WRONLY = 2;
+    /**
+     * Open file read-write
+     */
+    public static final int RDWR = 4;
 
     public int getFd ()
     {
@@ -261,4 +265,15 @@ public class FileDescriptor
     {
 	return "{fd=" + fd + "}";
     }
+
+  /**
+   * Return the size of a terminal window. Can throw an exception if
+   * the file descriptor is not a terminal.
+   */
+  public native Size getSize();
+
+  /**
+   * Set the size of a terminal window.
+   */
+  public native void setSize(Size size);
 }

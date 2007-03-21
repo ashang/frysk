@@ -40,83 +40,35 @@
 
 package frysk.rt;
 
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import lib.dw.DwarfDie;
 
-import frysk.proc.Task;
-
-public class LineBreakpoint
+public class FunctionBreakpoint
   extends BreakpointCollection
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint () 
+  private String name;
+  
+  public FunctionBreakpoint(String name, DwarfDie die)
   {
-  }
-
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
-  {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
+    this.name = name;
+    ArrayList rawAddrs = die.getEntryBreakpoints();
+    if (rawAddrs == null)
       {
-	Iterator iterator = getAddrs().iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
+	throw new IllegalArgumentException(die + "has no entrypoints");
       }
-  }
-
-  public String getFileName() 
-  {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
+    setAddrs(new LinkedList(rawAddrs));
   }
 
   public long getRawAddress(Object addr)
   {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    Long rawAddr = (Long)addr;
+    return rawAddr.longValue();
   }
 
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
-						 String filename,
-						 int lineNumber)
+  public String getName()
   {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
-    return bpt;
-  }    
+    return name;
+  }
 }

@@ -1,3 +1,10 @@
+2007-03-21  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointCollection.java: New superclass for breakpoints.
+	* LineBreakpoint.java (LineBreakpoint): Use it.
+	(addBreakpoint, deleteBreakpoint): Remove.
+	* FunctionBreakpoint.java: New class.
+
 2007-03-20  Mike Cvet  <mcvet@redhat.com>
 
 	* StackFrame.java (getLines): Prepend the compilation directory to the

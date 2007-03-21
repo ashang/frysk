@@ -163,7 +163,20 @@ public class SymTab
 
       return buffer.indexOf(token) + 1;
     }
-    
+
+  /**
+   * Get the DwarfDie for a function symbol
+   */
+  public DwarfDie getSymbolDie(String input)
+    throws NameNotFoundException
+  {
+    DwarfDie result = DwarfDie.getDecl(dwarf, input);
+    if (result == null)
+      throw new NameNotFoundException("symbol " + input + " not found.");
+    else
+      return result;
+  }
+  
     /**
      * Implement the cli what request
      * 

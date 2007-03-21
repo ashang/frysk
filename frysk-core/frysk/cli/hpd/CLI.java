@@ -69,7 +69,6 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.RunState;
 import frysk.rt.StackFrame;
-import frysk.rt.LineBreakpoint;
 
 
 import lib.dw.BaseTypes;
@@ -131,7 +130,7 @@ public class CLI
     return 1 + offset;
   }
   // Superclass refreshes symbol table if necessary.
-  private void refreshSymtab()
+  public void refreshSymtab()
   {
     if (symtabNeedsRefresh && symtab != null)
       {
@@ -995,28 +994,6 @@ public class CLI
     }
   }
 
-  class BreakpointHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      String filename = (String)params.get(0);
-      int lineNumber = Integer.parseInt((String)params.get(1));
-      LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-      LineBreakpointAdapter adapter
-	= new LineBreakpointAdapter(bpt, runState, task);
-      int id = apTable.add(adapter);
-      adapter.enable();
-      outWriter.println("breakpoint " + id);
-    }
-  }
-
   class DeleteHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -1199,7 +1176,8 @@ public class CLI
     handlers.put("alias", new AliasHandler());
     handlers.put("assign", new PrintHandler());
     handlers.put("attach", new AttachHandler());
-    handlers.put("break", new BreakpointHandler());
+    //handlers.put("break", new BreakpointHandler());
+    addHandler(new BreakpointHandler(this));
     handlers.put("delete", new DeleteHandler());
     handlers.put("defset", new DefsetHandler());
     handlers.put("detach", new DetachHandler());
@@ -1463,6 +1441,9 @@ public class CLI
     }
   }
 
+  /**
+   * Return the RunState object for this CLI.
+   */
   public RunState getRunState()
   {
     return runState;
@@ -1476,5 +1457,35 @@ public class CLI
   {
     addMessage("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), 
 	       Message.TYPE_NORMAL);
+  }
+  
+  /**
+   * Return the action point table
+   */
+  public ActionpointTable getActionpointTable()
+  {
+    return apTable;
+  }
+
+  /**
+   * Return output writer.
+   */
+  public PrintWriter getPrintWriter()
+  {
+    return outWriter;
+  }
+
+  /**
+   * Return CLI's current task.
+   */
+
+  public Task getTask()
+  {
+    return task;
+  }
+
+  public SymTab getSymTab()
+  {
+    return symtab;
   }
 }

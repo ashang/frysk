@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,86 +37,50 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.cli.hpd;
 
-package frysk.rt;
-
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
+import java.io.PrintWriter;
+import frysk.rt.FunctionBreakpoint;
+import frysk.rt.RunState;
 import frysk.proc.Task;
 
-public class LineBreakpoint
-  extends BreakpointCollection
+class FunctionBreakpointAdapter
+  extends Actionpoint
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint () 
+  private FunctionBreakpoint breakpoint;
+  private RunState runState;
+  private Task task;		// Actionpoint should hold a PTSet.
+
+  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, RunState runState,
+			    Task task)
   {
+    super();
+    this.breakpoint = breakpoint;
+    this.runState = runState;
+    this.task = task;
   }
 
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
+  public void enable()
   {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
-      {
-	Iterator iterator = getAddrs().iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
-      }
+    super.enable();
+    breakpoint.addBreakpoint(runState, task);
   }
 
-  public String getFileName() 
+  public void disable()
   {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
+    super.disable();
+    breakpoint.deleteBreakpoint(runState, task);
   }
 
-  public long getRawAddress(Object addr)
+  public void delete()
   {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    disable();
+    super.delete();
   }
 
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
-						 String filename,
-						 int lineNumber)
+  public PrintWriter output(PrintWriter writer)
   {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
-    return bpt;
-  }    
+    writer.print(breakpoint.getName());
+    return writer;
+  }
 }

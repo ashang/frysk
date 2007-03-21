@@ -37,86 +37,40 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.sys;
 
-package frysk.rt;
+/**
+ * Container class for the size of a terminal window
+ */
 
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
-import frysk.proc.Task;
-
-public class LineBreakpoint
-  extends BreakpointCollection
+public class Size
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint () 
+  private int row;
+  private int col;
+
+  public Size(int row, int col)
   {
+    this.row = row;
+    this.col = col;
   }
 
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
+  public int getRows()
   {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
-      {
-	Iterator iterator = getAddrs().iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
-      }
+    return row;
   }
 
-  public String getFileName() 
+  public void setRows(int rows)
   {
-    return fileName;
+    row = rows;
   }
-    
-  public int getLineNumber() 
+  
+  public int getColumns()
   {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
+    return col;
   }
 
-  public long getRawAddress(Object addr)
+  public void setColumns(int columns)
   {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    col = columns;
   }
-
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
-						 String filename,
-						 int lineNumber)
-  {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
-    return bpt;
-  }    
 }
