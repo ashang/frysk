@@ -1,5 +1,8 @@
 2007-03-21  Nurdin Premji  <npremji@redhat.com>
 
+	* configure.ac: Disable libunwind-i386.
+	* Makefile.am: Ditto.
+
 	* configure.ac: Add libunwind-i386 directory.
 
 2007-03-14  Nurdin Premji  <npremji@redhat.com>

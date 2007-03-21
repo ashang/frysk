@@ -61,10 +61,10 @@ AC_CONFIG_FILES([
 	junit/Makefile])
 
 
-mkdir -p libunwind-i386
-(
-  cd libunwind-i386
-  $srcdir/libunwind/configure --target=i386-unknown-linux-gnu
-)
+#mkdir -p libunwind-i386
+#(
+#  cd libunwind-i386
+#  $srcdir/libunwind/configure --target=i386-unknown-linux-gnu
+#)
 
 AC_OUTPUT
