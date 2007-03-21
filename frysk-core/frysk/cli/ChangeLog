@@ -1,6 +1,9 @@
 2007-03-20  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): Set name when creating arrayType/classType.
+	(getAddress): New.
+	(getMemory): New.
+	* hpd/SymTab.java (getAddress, getMemory): Likewise.
 
 2007-03-17  Stan Cox  <scox@redhat.com>	
 

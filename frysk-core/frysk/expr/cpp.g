@@ -119,6 +119,7 @@ options {
   */
 imaginaryTokenDefinitions
     :
+	ADDRESS_OF
         ARG_LIST
         ARRAY_REF
         CAST
@@ -126,6 +127,7 @@ imaginaryTokenDefinitions
         COND_EXPR
         EXPR_LIST
         FUNC_CALL
+	MEMORY
     ;
 
 /** 
@@ -294,6 +296,14 @@ unary_expression throws TabException
 unary_expression_simple throws TabException 
     :   TILDE unary_expression
     |   NOT unary_expression
+    |   AMPERSAND prim_expr: id_expression
+        {
+## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
+        }
+    |   STAR mem_expr: id_expression
+        {
+## = #([MEMORY, "Memory"], #mem_expr); 
+        }
     |   cast_expression
 //    |   pm_expression selector* (PLUSPLUS |MINUSMINUS)?
     | pm_expression
@@ -767,12 +777,16 @@ OperationNotDefinedException,
 NameNotFoundException
 { Variable v1, v2, log_expr; String s1, s2; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
-    |   ( #(MINUS expr expr) )=> #( MINUS v1=expr v2=expr ) 
+    |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
         { returnVar = v1.getType().subtract(v1, v2);  }
-    |   #( MINUS v1=expr ) 
+    |   #(MINUS v1=expr ) 
         { returnVar = IntegerType.newIntegerVariable(intType, "0", 0);
-            returnVar = returnVar.getType().subtract(returnVar, v1); }
-    |   #(STAR  v1=expr v2=expr)  {	returnVar = v1.getType().multiply(v1, v2); }
+          returnVar = returnVar.getType().subtract(returnVar, v1); }
+    |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr)  
+	{ returnVar = v1.getType().multiply(v1, v2); }
+    |   #(MEMORY s1=identifier )
+	{ returnVar = LongType.newLongVariable(longType, "0", (long)0);
+          returnVar = (Variable)cppSymTabRef.getMemory(s1); }
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
     |   #(SHIFTLEFT  v1=expr v2=expr)  {	
@@ -804,7 +818,11 @@ NameNotFoundException
     |   #(NOTEQUAL  v1=expr v2=expr)  { returnVar = v1.getType().notEqual(v1, v2);  }
 
     |   #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
-    |   #(AMPERSAND  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseAnd(v1, v2);  }
+    |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr)  
+	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
+    |   #(ADDRESS_OF s1=identifier )
+	{ returnVar = LongType.newLongVariable(longType, "0", (long)0);
+          returnVar = (Variable)cppSymTabRef.getAddress(s1); }
     |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
     |   #(AND  v1=expr v2=expr)  { returnVar = v1.getType().logicalAnd(v1, v2);  }

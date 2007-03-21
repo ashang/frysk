@@ -922,6 +922,43 @@ class ExprSymTab
     return null;
   }
   
+  public Variable getAddress (String s)
+  {
+    AccessDW_FORM_block access = new AccessDW_FORM_block();
+    return LongType.newLongVariable(longType, s, access.getAddr(s)); 
+  }
+  
+  public Variable getMemory (String s)
+  {
+    DwarfDie varDie = getDie(s);
+    
+    if (varDie == null)
+      return (null);
+    
+    DwarfDie type = varDie.getType();
+    AccessDW_FORM_block access = new AccessDW_FORM_block();
+    long addr = access.getAddr(s); 
+    long addrIndirect = buffer.getLong(addr);
+    
+    switch (type.getType().getBaseType())
+      {
+      case BaseTypes.baseTypeChar:
+	return ByteType.newByteVariable(byteType, s, buffer.getByte(addrIndirect));
+      case BaseTypes.baseTypeShort:
+	return ShortType.newShortVariable(shortType, s, buffer.getShort(addrIndirect));
+      case BaseTypes.baseTypeInteger:
+	return IntegerType.newIntegerVariable(intType, s, buffer.getInt(addrIndirect));
+      case BaseTypes.baseTypeLong:
+	return LongType.newLongVariable(longType, s, buffer.getLong(addrIndirect));
+      case BaseTypes.baseTypeFloat:
+	return FloatType.newFloatVariable(floatType, s, buffer.getFloat(addrIndirect));
+      case BaseTypes.baseTypeDouble:
+	return DoubleType.newDoubleVariable(doubleType, s, buffer.getDouble(addrIndirect));
+      default:
+        return null;
+      }
+  }
+  
   public Variable getVariable (DwarfDie varDie)
   {
       if (varDie == null)

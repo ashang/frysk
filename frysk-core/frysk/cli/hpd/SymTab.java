@@ -272,7 +272,16 @@ public class SymTab
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
-
+      
+      public Variable getAddress (String s) throws NameNotFoundException
+      {
+        throw new NameNotFoundException("No symbol table is available.");
+      }
+      public Variable getMemory (String s) throws NameNotFoundException
+      {
+        throw new NameNotFoundException("No symbol table is available.");        
+      }
+      
       public boolean putUndefined ()
       {
         return false;

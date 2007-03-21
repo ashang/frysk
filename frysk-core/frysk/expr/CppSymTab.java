@@ -51,5 +51,7 @@ public interface CppSymTab
   Variable get(String s) throws NameNotFoundException;
   Variable get(String s, ArrayList v) throws NameNotFoundException;
   Variable get(ArrayList v) throws NameNotFoundException;
+  Variable getAddress(String s) throws NameNotFoundException;
+  Variable getMemory(String s) throws NameNotFoundException;
   boolean putUndefined();
 }
