@@ -47,7 +47,7 @@ public class DummyHost extends Host {
 	void sendCreateAttachedProc(String stdin, String stdout,
 				    String stderr, String[] args,
 				    TaskObserver.Attached attached)
-    {
+        {
 	}
 
 	protected Proc sendrecSelf() {
@@ -57,5 +57,15 @@ public class DummyHost extends Host {
   void sendRefresh (ProcId procId, FindProc finder)
   {
   }
+
+  /**
+   * The Constructor in Host.java needs a starting state.
+   * As Host is abstract and cannot return a state specific
+   * to its subclass, return here in the subclass
+   */
+   protected HostState getInitialState ()
+   {
+     return null;
+   }
 
 }

@@ -75,6 +75,16 @@ public class LinuxPtraceHost
   }
 
   /**
+   * The Constructor in Host.java needs a starting state.
+   * As Host is abstract and cannot return a state specific
+   * to its subclass, return here in the subclass
+   */
+   protected HostState getInitialState ()
+   {
+     return  LinuxPtraceHostState.initial (this);
+   }
+
+  /**
    * Either add or update a process, however, before doing that determine the
    * parent and ensure that it has been updated.
    */

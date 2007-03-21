@@ -64,9 +64,11 @@ public abstract class Host
      */
     Host ()
     {
-	newState = LinuxPtraceHostState.initial (this);
+        newState = getInitialState();
 	logger.log (Level.FINE, "{0} Host\n", this);
     }
+  
+    protected abstract HostState getInitialState();
 
     // Maintain a collection of all known Tasks.
 

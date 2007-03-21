@@ -1,3 +1,10 @@
+2007-03-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Host.java (Host): Remove PtraceState. Call getInitialState instead.
+	(getInitialState): Define abstract, protected.
+	* LinuxPtraceHost.java: New. Define starting state.
+	* DummyHost.java: Ditto.
+
 2007-03-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* IsaFactory.java (getIsaByElfType): New.
