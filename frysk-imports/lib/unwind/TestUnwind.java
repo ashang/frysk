@@ -53,14 +53,14 @@ public class TestUnwind
   
   public void testCreateAddress()
   {  
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     
     assertNotNull("AddressSpace should not be null", addr.addressSpace);
   }
   
   public void testCreateCursor()
   {
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     
      Cursor cursor = new Cursor(addr, new Accessors(){
 
@@ -118,7 +118,7 @@ public class TestUnwind
   
   public void testPtraceAccessorsProc0()
   {   
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     PtraceAccessors ptraceAccessors = new PtraceAccessors(0, ByteOrder.DEFAULT);
     
     new Cursor(addr, ptraceAccessors);
@@ -126,7 +126,7 @@ public class TestUnwind
   
   public void testPtraceAccessorsProcMax()
   {
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     PtraceAccessors ptraceAccessors = new PtraceAccessors(Integer.MAX_VALUE, ByteOrder.DEFAULT);
     
     new Cursor(addr, ptraceAccessors);
@@ -139,7 +139,7 @@ public class TestUnwind
     
     PtraceAccessors.attachXXX(pid);
     
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     
     PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
     
@@ -166,7 +166,7 @@ public class TestUnwind
     
      PtraceAccessors.attachXXX(pid);
     
-    AddressSpace addr = new AddressSpace(ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
     
     PtraceAccessors ptraceAccessors = new PtraceAccessors(pid, ByteOrder.DEFAULT);
     

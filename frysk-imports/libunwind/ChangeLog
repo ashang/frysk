@@ -1,3 +1,159 @@
+2007-03-20  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/mapper.c: Change alarm timeout to 80.
+
+2007-03-19  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/Makefile.am: Added test_ptrace_stepper, and test_ptrace_signull
+	to list of tests to run.
+	(XFAIL): Added test_ptrace_signull.
+	* .cvsignore: Added Makefile.in.
+	* doc/.cvsignore: Ditto.
+	* src/.cvsignore: Ditto.
+	* tests/.cvsignore: Ditto.
+
+2007-03-07  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* include/tdep-hppa/libunwind_i.h, include/tdep-ppc64/libunwind_i.h,
+	include/tdep-x86/libunwind_i.h, include/tdep-x86_64/libunwind_i.h
+	(tdep_fetch_proc_info_post): Fixed its UNW_OBJ()-duality.
+	* src/Makefile.am (libunwind_la_SOURCES_x86_common)
+	(libunwind_la_SOURCES_x86, libunwind_x86_la_SOURCES_x86): Fixed
+	x86/Gfetch_proc_info_post.c and x86/Lfetch_proc_info_post.c duality.
+	(libunwind_la_SOURCES_x86_64_common, libunwind_la_SOURCES_x86_64)
+	(libunwind_x86_64_la_SOURCES_x86_64): Fixed
+	x86_64/Gfetch_proc_info_post.c and x86_64/Lfetch_proc_info_post.c
+	duality.
+	* src/x86/Lfetch_proc_info_post.c, src/x86_64/Lfetch_proc_info_post.c:
+	New files.
+
+2007-03-14  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/check-namespace.sh.in: Reverted so lib search to libunwind version.
+
+	* Makefile.am: Added.
+	* configure.in: Added.
+	* config/ltmain.sh: Added.
+	* doc/Makefile.am: Added.
+	* src/Makefile.am: Added.
+	* tests/Makefile.am: Added.
+	* src/dwarf/Lexpr.c: Added.
+	* src/dwarf/Lfde.c: Added
+	* src/dwarf/Lfind_proc_info-lsb.c: Added
+	* src/dwarf/Lparser.c: Added
+	* src/dwarf/Lpe.c: Added
+	* src/dwarf/Lstep.c: Added
+	* src/hppa/Lcreate_addr_space.c: Added
+	* src/hppa/Lget_proc_info.c: Added
+	* src/hppa/Lget_save_loc.c: Added
+	* src/hppa/Lglobal.c: Added
+	* src/hppa/Linit.c: Added
+	* src/hppa/Linit_local.c: Added
+	* src/hppa/Linit_remote.c: Added
+	* src/hppa/Lis_signal_frame.c: Added
+	* src/hppa/Lregs.c: Added
+	* src/hppa/Lresume.c: Added
+	* src/hppa/Lstep.c: Added
+	* src/ia64/Lcreate_addr_space.c: Added
+	* src/ia64/Lget_proc_info.c: Added
+	* src/ia64/Lget_save_loc.c: Added
+	* src/ia64/Lglobal.c: Added
+	* src/ia64/Linit.c: Added
+	* src/ia64/Linit_local.c: Added
+	* src/ia64/Linit_remote.c: Added
+	* src/ia64/Linstall_cursor.S: Added
+	* src/ia64/Lis_signal_frame.c: Added
+	* src/ia64/Lparser.c: Added
+	* src/ia64/Lrbs.c: Added
+	* src/ia64/Lregs.c: Added
+	* src/ia64/Lresume.c: Added
+	* src/ia64/Lscript.c: Added
+	* src/ia64/Lstep.c: Added
+	* src/ia64/Ltables.c: Added
+	* src/mi/Ldestroy_addr_space.c: Added
+	* src/mi/Ldyn-extract.c: Added
+	* src/mi/Lfind_dynamic_proc_info.c: Added
+	* src/mi/Lget_accessors.c: Added
+	* src/mi/Lget_fpreg.c: Added
+	* src/mi/Lget_proc_info_by_ip.c: Added
+	* src/mi/Lget_proc_name.c: Added
+	* src/mi/Lget_reg.c: Added
+	* src/mi/Lput_dynamic_unwind_info.c: Added
+	* src/mi/Lset_caching_policy.c: Added
+	* src/mi/Lset_fpreg.c: Added
+	* src/mi/Lset_reg.c: Added
+	* src/x86/Lcreate_addr_space.c: Added
+	* src/x86/Lget_proc_info.c: Added
+	* src/x86/Lget_save_loc.c: Added
+	* src/x86/Lglobal.c: Added
+	* src/x86/Linit.c: Added
+	* src/x86/Linit_local.c: Added
+	* src/x86/Linit_remote.c: Added
+	* src/x86/Lis_signal_frame.c: Added
+	* src/x86/Lregs.c: Added
+	* src/x86/Lresume.c: Added
+	* src/x86/Lstep.c: Added
+	* src/x86_64/Lcreate_addr_space.c: Added
+	* src/x86_64/Lget_proc_info.c: Added
+	* src/x86_64/Lget_save_loc.c: Added
+	* src/x86_64/Lglobal.c: Added
+	* src/x86_64/Linit.c: Added
+	* src/x86_64/Linit_local.c: Added
+	* src/x86_64/Linit_remote.c: Added
+	* src/x86_64/Lis_signal_frame.c: Added
+	* src/x86_64/Lregs.c: Added
+	* src/x86_64/Lresume.c: Added
+	* src/x86_64/Lstep.c: Added
+	* tests/Lia64-test-nat.c: Added
+	* tests/Lia64-test-rbs.c: Added
+	* tests/Lia64-test-readonly.c: Added
+	* tests/Lia64-test-stack.c: Added
+	* tests/Lperf-simple.c: Added
+	* tests/Ltest-bt.c: Added
+	* tests/Ltest-concurrent.c: Added
+	* tests/Ltest-dyn1.c: Added
+	* tests/Ltest-exc.c: Added
+	* tests/Ltest-init.cxx: Added
+	* tests/Ltest-resume-sig.c: Added
+	* Makefile.in: Removed.
+	* doc/Makefile.in: Removed.
+	* src/Makefile.in: Removed.
+	* tests/Makefile.in: Removed.
+	* configure.ac: Removed.
+	* scripts/kernel-diff.sh: Removed.
+	* scripts/kernel-files.txt: Removed.
+	* scripts/make-L-files: Removed.
+	* src/Make-hpux.in: Removed.
+	* src/Make-linux.in: Removed.
+	* src/hppa/Make-arch.in: Removed.
+	* src/hppa/get_accessors.c: Removed.
+	* src/hppa/tables.c: Removed.
+	* src/ia64/Make-arch.in: Removed.
+	* src/ia64/NOTES: Removed.
+	* src/setjmp/setjmp.c: Removed.
+	* src/setjmp/sigsetjmp.c: Removed.
+	* src/x86/Make-arch.in: Removed.
+	* src/x86_64/Make-arch.in: Removed.
+	* tests/perf-startup: Removed.
+	* include/dwarf.h: Modified.
+	* include/dwarf_i.h: Modified.
+	* include/libunwind-common.h.in: Modified.
+	* include/tdep-x86/libunwind_i.h: Modified.
+	* include/tdep-x86_64/libunwind_i.h: Modified.
+	* src/os-linux.h: Modified.
+	* src/dwarf/Gparser.c: Modified.
+	* src/hppa/init.h: Modified.
+	* src/ia64/setjmp.S: Modified.
+	* src/ia64/sigsetjmp.S: Modified.
+	* src/mi/mempool.c: Modified.
+	* src/ptrace/_UPT_find_proc_info.c: Modified.
+	* src/setjmp/longjmp.c: Modified.
+	* src/setjmp/siglongjmp.c: Modified.
+	* src/x86_64/Ginit.c: Modified.
+	* src/x86_64/Gis_signal_frame.c: Modified.
+	* tests/Gia64-test-readonly.c: Modified.
+	* tests/ia64-test-readonly-asm.S: Modified.
+
 2007-03-07  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* tests/test-async-sig.c (do_backtrace): Limit maximum backtrace depth
@@ -280,9 +436,9 @@
 
 ***********************************************************
 
-	Discontinued.  See bitkeeper log instead at
+ Discontinued.  See git log instead at
 
-		http://unwind.bkbits.net/
+   http://www.kernel.org/git/gitweb.cgi?p=libs/libunwind/libunwind.git;a=log
 
 ***********************************************************
 

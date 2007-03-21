@@ -24,8 +24,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #include <stddef.h>
-#include "libunwind_i.h"
 #include "dwarf_i.h"
+#include "libunwind_i.h"
 
 #define alloc_reg_state()	(mempool_alloc (&dwarf_reg_state_pool))
 #define free_reg_state(rs)	(mempool_free (&dwarf_reg_state_pool, rs))
@@ -487,7 +487,7 @@ flush_rs_cache (struct dwarf_rs_cache *cache)
 }
 
 static inline struct dwarf_rs_cache *
-get_rs_cache(unw_addr_space_t as, intrmask_t *saved_maskp)
+get_rs_cache (unw_addr_space_t as, intrmask_t *saved_maskp)
 {
   struct dwarf_rs_cache *cache = &as->global_cache;
   unw_caching_policy_t caching = as->caching_policy;
@@ -499,10 +499,6 @@ get_rs_cache(unw_addr_space_t as, intrmask_t *saved_maskp)
   if (!spin_trylock_irqsave (&cache->busy, *saved_maskp))
     return NULL;
 #else
-# ifdef HAVE___THREAD
-  if (as->caching_policy == UNW_CACHE_PER_THREAD)
-    cache = &dwarf_per_thread_cache;
-# endif
 # ifdef HAVE_ATOMIC_OPS_H
   if (AO_test_and_set (&cache->busy) == AO_TS_SET)
     return NULL;
@@ -878,7 +874,7 @@ dwarf_find_save_locs (struct dwarf_cursor *c)
         {
           dprintf ("%s: failed to create unwind rs\n", __FUNCTION__);
           ret = -UNW_EUNSPEC;
-          goto out;
+	  goto out;
         }
     }
   cache->buckets[c->prev_rs].hint = rs - cache->buckets;
@@ -897,6 +893,7 @@ apply:
   put_rs_cache (c->as, cache, &saved_mask);
   if ((ret = apply_reg_state (c, rs)) < 0)
     return ret;
+
   return 0;
 }
 

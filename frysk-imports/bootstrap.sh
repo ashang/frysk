@@ -86,4 +86,6 @@ echo "Running autoconf ... for libunwind"
 autoconf -f
 echo "Running autoheader ... for libunwind"
 autoheader
+echo "Running automake ... for libunwind"
+automake
 cd ..

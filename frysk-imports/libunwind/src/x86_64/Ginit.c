@@ -119,12 +119,13 @@ validate_mem (unw_word_t addr)
 
   addr = PAGE_START(addr);
 
-  for (i = 0; i < NLGA; i++) {
-    if (last_good_addr[i] && (addr == last_good_addr[i]))
-      return 0;
-  }
+  for (i = 0; i < NLGA; i++)
+    {
+      if (last_good_addr[i] && (addr == last_good_addr[i]))
+	return 0;
+    }
 
-  if (msync((void *) addr, 1, MS_SYNC) == -1)
+  if (msync ((void *) addr, 1, MS_SYNC) == -1)
     return -1;
 
   victim = lga_victim;
@@ -156,7 +157,7 @@ access_mem (unw_addr_space_t as, unw_word_t addr, unw_word_t *val, int write,
   else
     {
       /* validate address */
-      if (as->acc.validate && validate_mem(addr))
+      if (as->validate && validate_mem(addr))
         return -1;
       *val = *(unw_word_t *) addr;
       Debug (16, "mem[%016lx] -> %lx\n", addr, *val);
@@ -250,8 +251,8 @@ x86_64_local_addr_space_init (void)
   local_addr_space.acc.get_proc_name = get_static_proc_name;
   unw_flush_cache (&local_addr_space, 0, 0);
 
-  local_addr_space.acc.validate = 0;
-  bzero(last_good_addr, sizeof(unw_word_t) * NLGA);
+  local_addr_space.validate = 0;
+  memset (last_good_addr, 0, sizeof (unw_word_t) * NLGA);
   lga_victim = 0;
 }
 

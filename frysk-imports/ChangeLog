@@ -1,3 +1,12 @@
+2007-03-21  Nurdin Premji  <npremji@redhat.com>
+
+	* configure.ac: Add libunwind-i386 directory.
+
+2007-03-14  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Fixed libunwind-cpu.h location
+	* bootstrap.sh: Run automake in libunwind directory.
+
 2007-02-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add test-core-mt-fp core file.

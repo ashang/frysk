@@ -178,7 +178,6 @@ typedef struct unw_accessors
        NULL.  */
     int (*get_proc_name) (unw_addr_space_t, unw_word_t, char *, size_t,
 			  unw_word_t *, void *);
-    int validate;
   }
 unw_accessors_t;
 

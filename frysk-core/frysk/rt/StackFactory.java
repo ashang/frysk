@@ -44,6 +44,9 @@ import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
 import lib.unwind.FrameCursor;
 import lib.unwind.StackTraceCreator;
+import lib.unwind.Unwind;
+import lib.unwind.UnwindNative;
+//import lib.unwind.UnwindX86;
 import frysk.proc.Task;
 
 public class StackFactory
@@ -51,8 +54,13 @@ public class StackFactory
   
   public static Frame createStackTrace(Task task)
   {
-    AddressSpace addressSpace = new AddressSpace(lib.unwind.ByteOrder.DEFAULT);
-    StackAccessors accessors = new StackAccessors(task, 
+    Unwind unwinder;
+//    if (task.getIsa().getWordSize() == 4)
+//      unwinder = new UnwindX86();
+//    else 
+       unwinder = new UnwindNative();
+    AddressSpace addressSpace = new AddressSpace(unwinder, lib.unwind.ByteOrder.DEFAULT);
+    StackAccessors accessors = new StackAccessors(addressSpace, task, 
                                                   lib.unwind.ByteOrder.DEFAULT);
     
     Cursor innermost = new Cursor(addressSpace, accessors);

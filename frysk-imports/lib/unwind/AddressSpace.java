@@ -46,11 +46,10 @@ public class AddressSpace
   RawData addressSpace = null;
   Unwind unwinder;
   
-  public AddressSpace(ByteOrder byteOrder)
+  public AddressSpace(Unwind unwinder, ByteOrder byteOrder)
   {
-    
-    //XXX: Change to use factory.
-    unwinder = new UnwindNative();
+
+    this.unwinder = unwinder;
     
     addressSpace = unwinder.createAddressSpace(byteOrder);
   }

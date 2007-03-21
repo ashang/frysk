@@ -1,3 +1,7 @@
+2007-03-14  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Fixed libunwind-cpu.h location
+
 2007-02-16  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Delete FRYSK_DO_ARCH32_TEST, moved to

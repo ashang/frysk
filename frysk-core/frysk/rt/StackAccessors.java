@@ -49,6 +49,7 @@ import frysk.proc.Task;
 import frysk.sys.Execute;
 
 import lib.unwind.Accessors;
+import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
@@ -62,11 +63,14 @@ public class StackAccessors
   PtraceAccessors ptraceAccessors;
 
   Task myTask;
+  
+  AddressSpace addressSpace;
 
   Logger logger = Logger.getLogger("frysk");
 
-  StackAccessors (Task task, ByteOrder byteOrder)
+  StackAccessors (AddressSpace addressSpace, Task task, ByteOrder byteOrder)
   {
+    this.addressSpace = addressSpace;
     ptraceAccessors = new PtraceAccessors(task.getProc().getPid(), byteOrder);
     myTask = task;
   }

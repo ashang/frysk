@@ -1,3 +1,16 @@
+2007-03-21  Nurdin Premji  <npremji@redhat.com>
+
+	* UnwindX86.java : New	
+	* cni/UnwindX86.cxx: New.
+	* TestUnwind.java (testCreateCursor): Updated change in AddressSpace.
+	(testCreateAddress): Ditto.
+	(testPtraceAccessorsProc0): Ditto. 
+	(testPtraceAccessorsSmallMaxName): Ditto. 
+	(testPtraceAccessorsProcMax): Ditto.
+	(testPtraceAccessors): Ditto.
+	* AddressSpace.java (AddressSpace): Changed to take an Unwinder as a 
+	parameter rather than create one.
+
 2007-03-12  Nurdin Premji  <npremji@redhat.com>
 
 	* Unwind.java: Put logger here, so anything implementing Unwind will

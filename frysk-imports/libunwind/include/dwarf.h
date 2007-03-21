@@ -26,11 +26,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #ifndef dwarf_h
 #define dwarf_h
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_ATOMIC_OPS_H
+# include <atomic_ops.h>
+#endif
+
 #include <libunwind.h>
 
 struct dwarf_cursor;	/* forward-declaration */
 
-#include "tdep/dwarf-config.h"
+#include "dwarf-config.h"
 
 /* DWARF expression opcodes.  */
 
@@ -196,6 +204,9 @@ dwarf_cfa_t;
    used on Linux:  */
 #define DW_EH_PE_funcrel	0x40	/* start-of-procedure-relative */
 #define DW_EH_PE_aligned	0x50	/* aligned pointer */
+
+extern struct mempool dwarf_reg_state_pool;
+extern struct mempool dwarf_cie_info_pool;
 
 typedef enum
   {

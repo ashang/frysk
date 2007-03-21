@@ -28,7 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include <setjmp.h>
 
 #include "libunwind_i.h"
-#include "tdep/jmpbuf.h"
+#include "jmpbuf.h"
 #include "setjmp_i.h"
 
 void

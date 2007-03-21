@@ -8,12 +8,10 @@ fi
 build_plat=@build_arch@
 plat=@arch@
 os=@target_os@
-top_builddir=@top_builddir@
-
 num_errors=0
 
-LIBUNWIND=${top_builddir}/src/libunwind.so
-LIBUNWIND_GENERIC=${top_builddir}/src/libunwind-${plat}.so
+LIBUNWIND=../src/.libs/libunwind.so
+LIBUNWIND_GENERIC=../src/.libs/libunwind-${plat}.so
 
 function fetch_symtab {
     filename=$1

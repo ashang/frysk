@@ -8,27 +8,21 @@
 
 #include "dwarf.h"
 #include "libunwind_i.h"
-#include "mempool.h"
 
-#ifndef dwarf_to_unw_regnum
-# define dwarf_to_unw_regnum_map	UNW_OBJ (dwarf_to_unw_regnum_map)
+#define dwarf_to_unw_regnum_map		UNW_OBJ (dwarf_to_unw_regnum_map)
 
-  extern uint8_t dwarf_to_unw_regnum_map[DWARF_REGNUM_MAP_LENGTH];
+extern uint8_t dwarf_to_unw_regnum_map[DWARF_REGNUM_MAP_LENGTH];
 
-  /* REG is evaluated multiple times; it better be side-effects free!  */
-# define dwarf_to_unw_regnum(reg)					    \
-    (((reg) <= DWARF_REGNUM_MAP_LENGTH) ? dwarf_to_unw_regnum_map[reg] : 0)
-#endif
-
-extern struct mempool dwarf_reg_state_pool;
-extern struct mempool dwarf_cie_info_pool;
+/* REG is evaluated multiple times; it better be side-effects free!  */
+#define dwarf_to_unw_regnum(reg)					  \
+  (((reg) <= DWARF_REGNUM_MAP_LENGTH) ? dwarf_to_unw_regnum_map[reg] : 0)
 
 #ifdef UNW_LOCAL_ONLY
 
 /* In the local-only case, we can let the compiler directly access
    memory and don't need to worry about differing byte-order.  */
 
-typedef union __attribute__ ((packed))
+typedef union
   {
     int8_t s8;
     int16_t s16;
@@ -41,7 +35,7 @@ typedef union __attribute__ ((packed))
     unw_word_t w;
     void *ptr;
   }
-dwarf_misaligned_value_t;
+dwarf_misaligned_value_t __attribute__ ((packed));
 
 static inline int
 dwarf_reads8 (unw_addr_space_t as, unw_accessors_t *a, unw_word_t *addr,

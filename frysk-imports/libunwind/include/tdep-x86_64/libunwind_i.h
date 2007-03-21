@@ -35,6 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 #include <libunwind.h>
 
 #include "elf64.h"
+#include "mempool.h"
 #include "dwarf.h"
 
 struct unw_addr_space
@@ -49,6 +50,7 @@ struct unw_addr_space
     unw_word_t dyn_generation;		/* see dyn-common.h */
     unw_word_t dyn_info_list_addr;	/* (cached) dyn_info_list_addr */
     struct dwarf_rs_cache global_cache;
+    int validate;
    };
 
 struct cursor
@@ -101,7 +103,6 @@ dwarf_getfp (struct dwarf_cursor *c, dwarf_loc_t loc, unw_fpreg_t *val)
   if (DWARF_IS_NULL_LOC (loc))
     return -UNW_EBADREG;
 
-//# warning fix me
   abort ();
 }
 
@@ -111,7 +112,6 @@ dwarf_putfp (struct dwarf_cursor *c, dwarf_loc_t loc, unw_fpreg_t val)
   if (DWARF_IS_NULL_LOC (loc))
     return -UNW_EBADREG;
 
-//# warning fix me
   abort ();
 }
 
@@ -120,10 +120,6 @@ dwarf_get (struct dwarf_cursor *c, dwarf_loc_t loc, unw_word_t *val)
 {
   if (DWARF_IS_NULL_LOC (loc))
     return -UNW_EBADREG;
-
-//  if (DWARF_IS_FP_LOC (loc))
-//#   warning fix me
-//    abort ();
 
   if (DWARF_IS_REG_LOC (loc))
     return (*c->as->acc.access_reg) (c->as, DWARF_GET_LOC (loc), val,
@@ -138,10 +134,6 @@ dwarf_put (struct dwarf_cursor *c, dwarf_loc_t loc, unw_word_t val)
 {
   if (DWARF_IS_NULL_LOC (loc))
     return -UNW_EBADREG;
-
-//  if (DWARF_IS_FP_LOC (loc))
-//#   warning fix me
-//    abort ();
 
   if (DWARF_IS_REG_LOC (loc))
     return (*c->as->acc.access_reg) (c->as, DWARF_GET_LOC (loc), &val,
@@ -160,6 +152,7 @@ dwarf_put (struct dwarf_cursor *c, dwarf_loc_t loc, unw_word_t val)
 #define tdep_get_elf_image		UNW_ARCH_OBJ(get_elf_image)
 #define tdep_access_reg			UNW_OBJ(access_reg)
 #define tdep_access_fpreg		UNW_OBJ(access_fpreg)
+#define tdep_fetch_proc_info_post	UNW_OBJ(fetch_proc_info_post)
 
 #ifdef UNW_LOCAL_ONLY
 # define tdep_find_proc_info(c,ip,n)				\
