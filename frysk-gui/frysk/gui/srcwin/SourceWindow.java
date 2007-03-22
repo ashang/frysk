@@ -2240,7 +2240,7 @@ public class SourceWindow
 
     DOMFactory.clearDOMSourceMap(this.swProc);
     
-    if (this.runState.getState() == RunState.STOPPED)
+    if (this.runState.getState() != RunState.RUNNING)
       symTab.setFrames(frames);
     
     return frames;
