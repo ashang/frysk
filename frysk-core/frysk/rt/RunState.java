@@ -79,11 +79,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
   /* Keeps track of the last executed line in source for each Task */
   private HashMap lineMap;
-  
-  /* Keep track of how many times the task has been unblocked for a particular
-   * line. If it gets too high, assume that the line won't change (while(1))
-   * and finish. */
-  private HashMap lineCountMap;
 
   /* Set of Tasks currently running, or unblocked. */
   private HashSet runningTasks;
@@ -124,7 +119,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
-    this.lineCountMap = new HashMap();
     this.runningTasks = new HashSet();
     this.breakpointMap = new HashMap();
   }
@@ -179,13 +173,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
                //System.out.println("Coulnd't get DwflLine, assigning 0");
                 ++zeroCount;
                 this.lineMap.put(t, new Integer(0));
-                this.lineCountMap.put(t, new Integer(0));
                 continue;
               }
 
             this.lineMap.put(t, new Integer(line.getLineNum()));
           }
-        this.lineCountMap.put(t, new Integer(0));
       }
     
     /* None of these tasks have any debug information, so a 
@@ -195,7 +187,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
       //  System.out.println("setUp --> No frames with debuginfo!");
         this.dwflMap.clear();
         this.lineMap.clear();
-        this.lineCountMap.clear();
         this.state = STEP_INSTRUCTION;
       }
     
@@ -233,8 +224,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
         else
           this.lineMap.put(task, new Integer(line.getLineNum()));
       }
-    
-    this.lineCountMap.put(task, new Integer(0));
 
     task.requestUnblock(this);
     return true;
@@ -365,16 +354,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     else
       {
-        int count = ((Integer) this.lineCountMap.get(task)).intValue();
-        ++count;
-        if (count > 10)
-          {
-            --this.taskStepCount;
-            return;
-          }
-        else
-          this.lineCountMap.put(task, new Integer(count));
-
         task.requestUnblock(this);
       }
   }
@@ -541,7 +520,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void stepCompleted ()
   {
     this.state = STOPPED;
-    this.lineCountMap.clear();
     this.taskStepCount = 0;
   }
 

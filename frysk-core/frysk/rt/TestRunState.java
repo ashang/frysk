@@ -286,10 +286,10 @@ public class TestRunState extends TestLib
     
     if (testState == INSTRUCTION_STEP)
       {
-        runState.stepInstruction(myProc.getTasks());
+        runState.stepInstruction(myProc.getMainTask());
       }
     else
-      runState.setUpLineStep(myProc.getTasks());
+      runState.setUpLineStep(myProc.getMainTask());
   }
   
   public synchronized void stepAssertions (Task task)
@@ -325,9 +325,6 @@ public class TestRunState extends TestLib
       {
         switch (prev)
           {
-          case 56:
-            assertTrue(lineNum == 56);
-            break;
           case 78:
             assertTrue(lineNum == 78 || lineNum == 79);
             break;
