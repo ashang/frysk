@@ -87,7 +87,7 @@ public class LinuxPtraceTask
    */
   LinuxPtraceTask (Proc proc, TaskId id)
   {
-    super(proc, id);
+    super(proc, id, LinuxPtraceTaskState.detachedState());
     //setupMapsXXX();
   }
 
@@ -96,7 +96,7 @@ public class LinuxPtraceTask
    */
   LinuxPtraceTask (Task task, TaskId clone)
   {
-    super(task, clone);
+    super(task, clone, LinuxPtraceTaskState.clonedState(task.getState()));
     //setupMapsXXX();
   }
 
@@ -105,7 +105,7 @@ public class LinuxPtraceTask
    */
   LinuxPtraceTask (Proc proc, TaskObserver.Attached attached)
   {
-    super(proc, attached);
+    super(proc, attached,LinuxPtraceTaskState.mainState());
     //setupMapsXXX();
   }
 

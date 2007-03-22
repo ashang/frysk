@@ -43,7 +43,7 @@ public class DummyTask extends Task {
 
     public DummyTask (Proc parent)
     {
-	super (parent, (TaskObserver.Attached) null);
+      super (parent, (TaskObserver.Attached) null, null);
     }
 	
 	public String getStateString(){

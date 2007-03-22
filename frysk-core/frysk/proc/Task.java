@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -143,32 +143,32 @@ abstract public class Task
   /**
    * Create a new Task skeleton.
    */
-  private Task (TaskId id, Proc proc, Task creator)
+  private Task (TaskId id, Proc proc, Task creator, TaskState state)
   {
     this.proc = proc;
     this.id = id;
     this.creator = creator;
     proc.add(this);
     proc.host.add(this);
+    newState = state;
   }
 
   /**
    * Create a new unattached Task.
    */
-  protected Task (Proc proc, TaskId id)
+  protected Task (Proc proc, TaskId id, TaskState state)
   {
-    this(id, proc, null);
-    newState = LinuxPtraceTaskState.detachedState();
+    this(id, proc, null, state);
     logger.log(Level.FINEST, "{0} new -- create unattached\n", this);
   }
 
   /**
    * Create a new attached clone of Task.
    */
-  protected Task (Task task, TaskId cloneId)
+  protected Task (Task task, TaskId cloneId, TaskState state)
   {
-    this(cloneId, task.proc, task);
-    newState = LinuxPtraceTaskState.clonedState(task.getState());
+    this(cloneId, task.proc, task, state);
+    //newState = LinuxPtraceTaskState.clonedState(task.getState());
     logger.log(Level.FINE, "{0} new -- create attached clone\n", this);
   }
 
@@ -180,10 +180,11 @@ abstract public class Task
    * Conversely, for a Task, while it has the Observable, it doesn't have the
    * containing proc.
    */
-  protected Task (Proc proc, TaskObserver.Attached attached)
+  protected Task (Proc proc, TaskObserver.Attached attached, 
+		 TaskState state)
   {
-    this(new TaskId(proc.getPid()), proc, proc.creator);
-    newState = LinuxPtraceTaskState.mainState();
+    this(new TaskId(proc.getPid()), proc, proc.creator, state);
+    //newState = LinuxPtraceTaskState.mainState();
     if (attached != null)
       {
         TaskObservation ob = new TaskObservation(this, attachedObservers,

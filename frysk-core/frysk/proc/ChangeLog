@@ -1,3 +1,11 @@
+2007-03-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* DummyTask.java: Pass initial state.
+	* Task.java: (Task) Remove Ptrace states. Add new constructor
+	parameter state.
+	* LinuxPtraceTask.java: (LinuxPtraceTask): Pass in starting
+	states.
+
 2007-03-20  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Host.java (Host): Remove PtraceState. Call getInitialState instead.
