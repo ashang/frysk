@@ -328,11 +328,11 @@ public class SourceWindow
       {
       }
     
-    finishSourceWin();
-    
     StackFrame[] newTrace = new StackFrame[1];
     newTrace[0] = trace;
-    populateStackBrowser(newTrace);
+    this.frames = newTrace;
+    
+    finishSourceWin();
     
     desensitize();
     this.stop.setSensitive(false);
@@ -388,6 +388,8 @@ public class SourceWindow
 
     if (this.runState.getState() == RunState.STOPPED)
       this.populateStackBrowser(frames);
+    else
+      this.populateStackBrowser(this.frames);
 
     if (this.attachedObserver != null)
       {
@@ -451,6 +453,9 @@ public class SourceWindow
         StackFrame temp = null;
 
         temp = CurrentStackView.getCurrentFrame();
+        
+        if (temp == null)
+          temp = frames[0];
 
         StackFrame curr = temp;
         this.currentFrame = temp;
@@ -496,7 +501,6 @@ public class SourceWindow
                 b.disassembleFrame(this.currentFrame);
               }
           }
-        
         stackView.showAll();
         this.view.showAll();
         return;
@@ -2441,6 +2445,7 @@ public class SourceWindow
       {
         public void run ()
         {
+          System.err.println("ZOMG LOCKOBSERVER");
           StackFrame[] frames = generateProcStackTrace(null, null);
           populateStackBrowser(frames);
           SourceWindow.this.runState.notifyStopped();

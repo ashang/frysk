@@ -2,6 +2,13 @@
 
 	* SourceWindow.java (generateProcStackTrace): Only set frames for SymTab
 	if the RunState is not running. Addresses #4222.
+	
+	* SourceWindow.java (SourceWindow): Don't call populateStackBrowser() 
+	explicitly; instead set global StackFrame array.
+	(finishSourceWin): If the RunState is not stopped, use the global StackFrame
+	array as a parameter to populateStackTrace().
+	(populateStackBrowser): Set temporary StackFrame to first element of
+	array parameter if the StackView returns no selected frame. Fixes #4222.
 
 2007-03-16  Mike Cvet  <mcvet@redhat.com>
 
