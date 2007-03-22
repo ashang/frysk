@@ -2445,7 +2445,6 @@ public class SourceWindow
       {
         public void run ()
         {
-          System.err.println("ZOMG LOCKOBSERVER");
           StackFrame[] frames = generateProcStackTrace(null, null);
           populateStackBrowser(frames);
           SourceWindow.this.runState.notifyStopped();
