@@ -1,3 +1,9 @@
+2007-03-21  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFrame.java (test32): New test.
+	(backtrace): Refactored backtrace testing code to here.
+	(testAttached): Updated.
+	
 2007-03-20  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java: Add a reference to addressSpace so garbage collector
