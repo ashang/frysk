@@ -1,3 +1,10 @@
+2007-03-22  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointCollection.java: Remove, rename to:
+	* SourceBreakpoint.java: which describes its function more accurately.
+	* LineBreakpoint.java: Change name of superclass.
+	* FunctionBreakpoint.java: Change name of superclass.
+
 2007-03-22  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (lineCountMap): Removed. Fixes #3700.

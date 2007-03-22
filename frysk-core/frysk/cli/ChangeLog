@@ -1,3 +1,13 @@
+2007-03-22  Tim Moore  <timoore@redhat.com>
+
+	* CLI.java (RunStateObserver.update): Print out breakpoint
+	information when a breakpoint is hit.
+	* Actionpoint.java (getRTBreakpoint, setRTBreakpoint): New
+	methods.
+	* ActionpointTable.java (size): New method.
+	* LineBreakpointAdapter.java : Use RTBreakpoint from superclass.
+	* FunctionBreakpointAdapter.java : ditto.
+
 2007-03-21  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointHandler.java : Class refactored from

@@ -1435,8 +1435,23 @@ public class CLI
 	}
       if (bpt != null) 
 	{
-//	  RunState.LineBreakpoint lpt = bpt.getLineBreakpoint();
-	  System.out.println("breakpoint hit file " + bpt.toString());
+	  int size = apTable.size();
+	  int i;
+	  for (i = 0; i < size; i++)
+	    {
+	      Actionpoint ap = apTable.getActionpoint(i);
+	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(bpt))
+		{
+		  outWriter.print("breakpoint " + i + " hit: ");
+		  ap.output(outWriter);
+		  outWriter.println("");
+		  break;
+		}
+	    }
+	  if (i >= size)
+	    {
+	      outWriter.println("unknown breakpoint hit: " + bpt.toString());
+	    }
 	}
     }
   }

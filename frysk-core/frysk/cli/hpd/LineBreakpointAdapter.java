@@ -46,14 +46,13 @@ import frysk.proc.Task;
 
 class LineBreakpointAdapter extends Actionpoint
 {
-  private LineBreakpoint breakpoint;
   private RunState runState;
   private Task task;		// Actionpoint should hold a PTSet.
 
   LineBreakpointAdapter(LineBreakpoint breakpoint, RunState runState, Task task)
   {
     super();
-    this.breakpoint = breakpoint;
+    this.rtBreakpoint = breakpoint;
     this.runState = runState;
     this.task = task;
   }
@@ -61,13 +60,13 @@ class LineBreakpointAdapter extends Actionpoint
   public void enable()
   {
     super.enable();
-    breakpoint.addBreakpoint(runState, task);
+    rtBreakpoint.addBreakpoint(runState, task);
   }
 
   public void disable()
   {
     super.disable();
-    breakpoint.deleteBreakpoint(runState, task);
+    rtBreakpoint.deleteBreakpoint(runState, task);
   }
 
   public void delete()
@@ -78,6 +77,7 @@ class LineBreakpointAdapter extends Actionpoint
 
   public PrintWriter output(PrintWriter writer)
   {
+    LineBreakpoint breakpoint = (LineBreakpoint)rtBreakpoint;
     writer.print("#");
     writer.print(breakpoint.getFileName());
     writer.print("#");

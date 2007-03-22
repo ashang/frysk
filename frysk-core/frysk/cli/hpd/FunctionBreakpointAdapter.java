@@ -47,7 +47,6 @@ import frysk.proc.Task;
 class FunctionBreakpointAdapter
   extends Actionpoint
 {
-  private FunctionBreakpoint breakpoint;
   private RunState runState;
   private Task task;		// Actionpoint should hold a PTSet.
 
@@ -55,7 +54,7 @@ class FunctionBreakpointAdapter
 			    Task task)
   {
     super();
-    this.breakpoint = breakpoint;
+    this.rtBreakpoint = breakpoint;
     this.runState = runState;
     this.task = task;
   }
@@ -63,13 +62,13 @@ class FunctionBreakpointAdapter
   public void enable()
   {
     super.enable();
-    breakpoint.addBreakpoint(runState, task);
+    rtBreakpoint.addBreakpoint(runState, task);
   }
 
   public void disable()
   {
     super.disable();
-    breakpoint.deleteBreakpoint(runState, task);
+    rtBreakpoint.deleteBreakpoint(runState, task);
   }
 
   public void delete()
@@ -80,6 +79,7 @@ class FunctionBreakpointAdapter
 
   public PrintWriter output(PrintWriter writer)
   {
+    FunctionBreakpoint breakpoint = (FunctionBreakpoint)rtBreakpoint;
     writer.print(breakpoint.getName());
     return writer;
   }

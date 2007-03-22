@@ -46,7 +46,7 @@ import java.util.LinkedList;
 import lib.dw.DwarfDie;
 
 public class FunctionBreakpoint
-  extends BreakpointCollection
+  extends SourceBreakpoint
 {
   private String name;
   

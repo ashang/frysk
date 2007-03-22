@@ -51,7 +51,7 @@ import lib.dw.DwflLine;
 import frysk.proc.Task;
 
 public class LineBreakpoint
-  extends BreakpointCollection
+  extends SourceBreakpoint
 {
   private String fileName;
   private int lineNumber;

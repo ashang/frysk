@@ -40,6 +40,8 @@
 package frysk.cli.hpd;
 
 import java.io.PrintWriter;
+
+import frysk.rt.SourceBreakpoint;
 /**
  * Hpd actionpoints. Actionpoints include things like breakpoints and
  * watchpoints.
@@ -63,39 +65,72 @@ public abstract class Actionpoint
   }
 
   /**
-   * Possible states of an actionpoint.
+   * Possible states of an action point.
+   */
+  
+  /**
+   * The action point is enabled and will be "fired" when hit.
    */
   public static final State ENABLED = new State("enabled");
+
+  /**
+   * The action point is disabled and should have no effect in the
+   * running process.
+   */
   public static final State DISABLED = new State("disabled");
+
+  /**
+   * The action point is deleted and should not be reenabled.
+   */
   public static final State DELETED = new State("deleted");
 
   private State state;
 
+  /**
+   * Get the state of an action point.
+   * @return state constant object
+   */
   public State getState()
   {
     return state;
   }
 
+  /**
+   * Create an action point with a given state.
+   * @param state the action point's initial state.
+   */
   public Actionpoint(State state)
   {
     this.state = state;
   }
 
+  /**
+   * Create an action point in the DISABLED state.
+   */
   public Actionpoint()
   {
     this(DISABLED);
   }
 
+  /**
+   * Set the action point's state to enabled.
+   */
   public void enable()
   {
     state = ENABLED;
   }
 
+  /**
+   * Set the action point's state to disabled.
+   */
   public void disable()
   {
     state = DISABLED;
   }
 
+  /**
+   * Set the action point's state to deleted.
+   */
   public void delete()
   {
     state = DELETED;
@@ -107,4 +142,25 @@ public abstract class Actionpoint
    * @return the writer, for chaining method invocations.
    */
   public abstract PrintWriter output(PrintWriter writer);
+
+  protected SourceBreakpoint rtBreakpoint;
+
+  /**
+   * Get the Run Time layer breakpoint object associated with this
+   * action point.
+   */
+  public SourceBreakpoint getRTBreakpoint()
+  {
+    return rtBreakpoint;
+  }
+
+  /**
+   * Set the Run Time layer breakpoint object associated with this
+   * action point.
+   */
+  public void setRTBreakpoint(SourceBreakpoint rtBreakpoint)
+  {
+    this.rtBreakpoint = rtBreakpoint;
+  }
+  
 }

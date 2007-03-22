@@ -45,19 +45,23 @@ import java.util.LinkedList;
 import frysk.proc.Task;
 
 /**
- * Class representing a collection of "raw" breakpoints that should be
- * added or deleted as a group.
+ * Class representing a breakpoint at at location in a program. It
+ * might correspond to multiple breakpoints in the executable due to
+ * inlining. The class manages a collection of "raw" breakpoints that
+ * should be added or deleted as a group by the RunState class. The
+ * subclasses must define a method, getRawAddress, for calculating the
+ * address of a raw breakpoint.
  */
-public abstract class BreakpointCollection
+public abstract class SourceBreakpoint
 {
-  private LinkedList addrs = null;
-  private LinkedList breakpoints = null;
+  private LinkedList addrs = null; // The "raw" addresses
+  private LinkedList breakpoints = null; // RunState breakpoints
 
-  public BreakpointCollection()
+  public SourceBreakpoint()
   {
   }
 
-  public BreakpointCollection(LinkedList addrs)
+  public SourceBreakpoint(LinkedList addrs)
   {
     this.addrs = addrs;
   }
@@ -106,5 +110,10 @@ public abstract class BreakpointCollection
         runState.deletePersistentBreakpoint(task, bpt);
       }
     breakpoints.clear();
+  }
+
+  public boolean containsPersistantBreakpoint(RunState.PersistentBreakpoint bpt)
+  {
+    return breakpoints.contains(bpt);
   }
 }

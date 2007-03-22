@@ -59,6 +59,11 @@ public class ActionpointTable
     return (Actionpoint)actionpoints.get(index);
   }
 
+  public int size()
+  {
+    return actionpoints.size();
+  }
+  
   public PrintWriter output(PrintWriter writer)
   {
     int i;
