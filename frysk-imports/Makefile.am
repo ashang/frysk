@@ -92,11 +92,11 @@ noinst_HEADERS = \
 	include/linux.ptrace.h \
 	include/linux.syscall.h
 
-#all-local: multilib-libunwind
+all-local: multilib-libunwind
 
-#multilib-libunwind:
-#	cd libunwind-i386 && $(MAKE)
+multilib-libunwind:
+	cd libunwind-i386 && $(MAKE)
 
-#.PHONEY: multilib-libunwind
+.PHONEY: multilib-libunwind
 	
-#GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
+GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a

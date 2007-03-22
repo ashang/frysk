@@ -1,3 +1,11 @@
+2007-03-22  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am: Enable building of libunwind-i386.
+
+2007-03-22  Stepan Kasal  <skasal@redhat.com>
+
+	* configure.ac: Enable libunwind-i386.
+
 2007-03-21  Nurdin Premji  <npremji@redhat.com>
 
 	* configure.ac: Disable libunwind-i386.

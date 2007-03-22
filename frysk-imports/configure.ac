@@ -46,8 +46,6 @@ m4_include([common/frysk-common.ac])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
-AC_CONFIG_SUBDIRS([elfutils libunwind])
-
 AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)
 AC_FIND_FILE([libaudit.h], [/usr/include/], LIBAUDIT_H)
@@ -61,10 +59,16 @@ AC_CONFIG_FILES([
 	junit/Makefile])
 
 
-#mkdir -p libunwind-i386
-#(
-#  cd libunwind-i386
-#  $srcdir/libunwind/configure --target=i386-unknown-linux-gnu
-#)
+test -d libunwind-i386 || mkdir libunwind-i386
+(
+  confdir=`(cd "$srcdir";pwd)`
+  cd libunwind-i386
+  # Make sure the inplace build does not break with "already configured"
+  # message; the file is going to regenerated, anyway.
+  rm -f $confdir/libunwind/config.status
+  $confdir/libunwind/configure --target=i386-unknown-linux-gnu
+)
+
+AC_CONFIG_SUBDIRS([elfutils libunwind])
 
 AC_OUTPUT
