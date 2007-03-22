@@ -2239,7 +2239,10 @@ public class SourceWindow
       }
 
     DOMFactory.clearDOMSourceMap(this.swProc);
-    symTab.setFrames(frames);
+    
+    if (this.runState.getState() == RunState.STOPPED)
+      symTab.setFrames(frames);
+    
     return frames;
   }
 

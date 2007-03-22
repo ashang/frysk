@@ -1,3 +1,8 @@
+2007-03-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Only set frames for SymTab
+	if the RunState is stopped. Addresses #4222.
+
 2007-03-16  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Added.  Builds a SourceWindow,
