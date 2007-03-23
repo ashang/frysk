@@ -67,8 +67,8 @@ public class ProcInfo
   
   public String toString()
   {
-    return "ProcInfo Error " + error + " startIP: " + getStartIP() 
-    + " endIP: " + getEndIP() + " lsda: " + getLSDA() + " handler: " +
+    return "ProcInfo Error " + error + " startIP: 0x" + Long.toHexString(getStartIP()) 
+    + " endIP: 0x" + Long.toHexString(getEndIP()) + " lsda: " + getLSDA() + " handler: " +
     getHandler() + " gp: " + getGP() + " flags: " + getFlags()
     + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 
     + " hasUnwindInfo?: " + (getUnwindInfo() != null);

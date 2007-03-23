@@ -1,3 +1,7 @@
+2007-03-23  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcInfo.java (toString): Print ip addresses in hex.
+
 2007-03-21  Nurdin Premji  <npremji@redhat.com>
 
 	* cni/UnwindX86.cxx: Removed reference to libunwind-x86.h for now.
