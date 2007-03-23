@@ -146,6 +146,20 @@ extends LinuxIa32
 	return rawVal;
     }
     
+    public byte[] getBytes(Task task)
+        {
+          byte[] bytes = x8664Reg.getBytes(task);
+          byte[] ret = new byte[4];
+          
+          for (int i = 0; i < 4; i++)
+            {
+              ret[i] = bytes[i];
+            }
+          
+          
+          return ret;
+        }
+
     public BigInteger getBigInteger(Task task) 
     {
       BigInteger rawVal = x8664Reg.getBigInteger(task);

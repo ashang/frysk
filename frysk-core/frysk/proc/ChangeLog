@@ -1,3 +1,7 @@
+2007-03-23  Nurdin Premji  <npremji@redhat.com>
+
+	* LinuxIa32On64.java (IndirectRegister.getBytes): Added.
+
 2007-03-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* DummyTask.java: Pass initial state.
