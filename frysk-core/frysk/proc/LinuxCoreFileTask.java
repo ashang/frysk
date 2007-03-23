@@ -68,7 +68,6 @@ public class LinuxCoreFileTask extends Task
     bankBuffers[0] = gpRegisters;
     registerBank =  bankBuffers;
   }
-gg
 
   /**
    * Create a new unattached Task.

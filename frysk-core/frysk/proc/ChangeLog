@@ -1,3 +1,8 @@
+2007-03-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxCore.java: Fix debug output.
+	* LinuxCoreFileTask.java: Fix build typos.
+
 2007-03-23  Phil Muldoon  <pmuldoon@redjat.com>
 
 	* TestLinuxCore.java: New.

@@ -157,7 +157,6 @@ public class TestLinuxCore
 
     Isa isa = task.getIsa();
 
-    System.out.println("ISA is " + isa.toString());
     assertEquals("ebx register",0x00007b09,
 		 isa.getRegisterByName("ebx").get(task));
     assertEquals("ecx register",0x00007b09,
