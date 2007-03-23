@@ -1171,9 +1171,15 @@ public class SourceBuffer
           }
       }
 
+    String bufferText = source.getContent();
+    
+    if (bufferText == null)
+      {
         Iterator lines = source.getLines();
-        String bufferText = loadLines(lines);
-        
+        bufferText = loadLines(lines);
+        source.setContent(bufferText);
+      }
+    
         this.deleteText(this.getStartIter(), this.getEndIter());
         this.insertText(bufferText);
         this.createTags();

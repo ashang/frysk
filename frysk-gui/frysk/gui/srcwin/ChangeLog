@@ -1,3 +1,8 @@
+2007-03-23  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceBuffer.java (loadFile): Check to see if the source code has
+	already been cached by the DOMSource in use. Addresses #4223.
+
 2007-03-22  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (generateProcStackTrace): Only set frames for SymTab
