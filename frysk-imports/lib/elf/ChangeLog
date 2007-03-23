@@ -1,3 +1,7 @@
+2007-03-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java (decode): Clean out threads list.
+
 2007-03-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrAuxv.java (ElfPrAuxv):Make constructor private. Only
