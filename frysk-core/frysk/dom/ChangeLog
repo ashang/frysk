@@ -1,3 +1,10 @@
+2007-03-23  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMSource.java (content): Added. String cache of the source code
+	represented by the DOMSource. Addresses #4223.
+	(setContent): Added.
+	(getContent): Added.
+
 2007-03-05  Rick Moseley  <rmoseley@redhat.com>
 
 	* cparser/CDTParser.java: Fixed bz #4129.

@@ -79,6 +79,8 @@ public class DOMSource
   
   // include paths of the source file
   public static final String INCLUDES = "includepath";
+  
+  private String content = null;
 
   private Element myElement;
 
@@ -481,5 +483,15 @@ public class DOMSource
   public void setParsed (boolean value)
   {
     this.myElement.setAttribute(IS_PARSED, Boolean.toString(value));
+  }
+  
+  public void setContent (String con)
+  {
+    this.content = con;
+  }
+  
+  public String getContent ()
+  {
+    return this.content;
   }
 }
