@@ -1,3 +1,9 @@
+2007-03-23  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java (accessReg): Check that register sizes are the same.
+	* StackFactory.java (createStackTrace): Use task's ISA to determine which
+	Unwinder to create.
+
 2007-03-22  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointCollection.java: Remove, rename to:

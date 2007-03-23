@@ -121,7 +121,12 @@ public class StackAccessors
 
     byte[] tmp = isa.getRegisterByName(registerName).getBytes(myTask);
 
-    for (int i = 0; i < tmp.length; i++)
+    if (tmp.length != valp.length)
+      {
+        throw new RuntimeException("Register sizes don't match");
+      }
+    
+    for (int i = 0; i < valp.length; i++)
       valp[i] = tmp[i];
 
     logger.log(Level.FINE, "accessReg: read value: 0x{0}\n",
