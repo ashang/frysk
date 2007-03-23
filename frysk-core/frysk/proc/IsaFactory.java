@@ -137,10 +137,26 @@ public class IsaFactory
   /**
    * Obtain ISA via ElfMachine Type.
    */
-  public Isa getIsaByElfType(int machineType) 
+  public Isa getIsaForCoreFile(int machineType) 
   {
-    Isa isa = (Isa)isaHash.get(Integer.valueOf(machineType));
-    return isa;
+
+      // The lookup for corefile should return always the architecture
+      // ISA that the core file represents, not 32on64.The isaHash lookup
+      // tries to be a bit clever. Clobber it here for two cases.
+      // XXX: This needs to be made for elegant.
+      Isa isa = null;
+      switch (machineType)
+	  {
+	  case ElfEMachine.EM_386:
+	      isa = LinuxIa32.isaSingleton();
+	      break;
+	  case ElfEMachine.EM_PPC:
+	      isa = LinuxPPC.isaSingleton();
+	      break;
+	  default:
+	      isa =  (Isa)isaHash.get(Integer.valueOf(machineType));
+	  }
+      return isa;
   }
 
   public  Isa getIsa(int pid) 

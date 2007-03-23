@@ -1,3 +1,19 @@
+2007-03-23  Phil Muldoon  <pmuldoon@redjat.com>
+
+	* TestLinuxCore.java: New.
+	* LinuxCoreFileTaskState.java: New.
+	* LinuxCoreFileTask.java:New.
+	* LinuxCoreFileHostState.java: New.
+	* LinuxCoreFileHost.java:New.
+	* LinuxCoreFileProcState.java: New.
+	* LinuxCoreFileProc.java: New.
+
+	* TestIsa.java: Changed to call getIsaForCoreFile.
+	* IsaFactory.java (getIsaByElfType): Renamed to 
+	getIsaForCoreFile. Also, modified to always return
+	the architecture of the core file, regardless of 
+	32on64 ISA situations.
+
 2007-03-23  Nurdin Premji  <npremji@redhat.com>
 
 	* LinuxIa32On64.java (IndirectRegister.getBytes): Added.
