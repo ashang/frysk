@@ -49,7 +49,7 @@ CHECK_SUBDIRS = \
 	junit \
 	elfutils \
 	getopt
-SUBDIRS = $(CHECK_SUBDIRS) libunwind
+SUBDIRS = $(CHECK_SUBDIRS) libunwind libunwind-i386
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 EXTRA_DIST += \
@@ -75,6 +75,7 @@ GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 GEN_GCJ_LDADD += -lstdc++
 GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
 GEN_GCJ_LDADD += ./libunwind/src/.libs/libunwind-$(libunwind_cpu).a 
+GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
 
 # For CNI code.
 AM_CXXFLAGS += -I$(srcdir)/include
@@ -91,12 +92,3 @@ noinst_HEADERS = \
 	include/frysk-asm.h \
 	include/linux.ptrace.h \
 	include/linux.syscall.h
-
-all-local: multilib-libunwind
-
-multilib-libunwind:
-	cd libunwind-i386 && $(MAKE)
-
-.PHONEY: multilib-libunwind
-	
-GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a

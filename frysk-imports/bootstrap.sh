@@ -52,6 +52,9 @@ FILE_LIST="frysk \
 
 ./common/Makefile.gen.sh --cni $FILE_LIST
 
+# Create a libunwind-i386 directory
+test -d libunwind-i386 || mkdir libunwind-i386
+
 # Generate everything (always run with --add-missing).
 
 echo "Running aclocal ... for frysk-imports"

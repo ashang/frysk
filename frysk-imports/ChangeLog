@@ -1,3 +1,10 @@
+2007-03-22  Nurdin Premji  <npremj@redhat.com>
+
+	* bootstrap.sh: Create dummy libunwind-i386 directory.
+	* .cvsignore: Add libunwind-i386.
+	* Makefile.am: Remove dummy multilib target.
+	(SUB_DIRS): Add libunwind-i386	
+
 2007-03-22  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am: Enable building of libunwind-i386.
