@@ -134,3 +134,19 @@ frysk/pkglibdir/arch32/funit-stackframe-stripped: frysk/pkglibdir/arch32/funit-s
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-stackframe-stripped
 frysk_pkglibdir_arch32_funit_stackframe_stripped_SOURCES =
 endif
+
+# frysk-core code needs to be able to find the core files found in
+# frysk-imports/frysk/pkgdatadir/.  Since frysk-core can only see
+# frysk-core/frysk/pkgdatadir/ add links to the unpacked core files in
+# frysk-imports.
+
+CLEANFILES += frysk/pkgdatadir/test-core
+CLEANFILES += frysk/pkgdatadir/test-core-mt-fp
+noinst_DATA += frysk/pkgdatadir/test-core
+noinst_DATA += frysk/pkgdatadir/test-core-mt-fp
+frysk/pkgdatadir/test-core:
+	mkdir -p `dirname $@`
+	ln -s @abs_top_builddir@/../frysk-imports/$@ $@
+frysk/pkgdatadir/test-core-mt-fp:
+	mkdir -p `dirname $@`
+	ln -s @abs_top_builddir@/../frysk-imports/$@ $@

@@ -1,3 +1,9 @@
+2007-03-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk/pkgdatadir/test-core)
+	(frysk/pkgdatadir/test-core-mt-fp): New targets, link to
+	frysk-imports files.  Add to CLEANFILES and noinst_DATA.
+
 2007-03-22  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Added libunwind-x86.h.
