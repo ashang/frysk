@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -50,367 +50,367 @@ import inua.eio.ArrayByteBuffer;
 public class ArrayType
     extends Type
 {
-  Type type;
+    private final Type type;
 
-  ArrayList dimensions;
+    private final ArrayList dimensions;
 
-  /**
-   * Iterate through the array members.
-   */
-  class Iterator
-      implements java.util.Iterator
-  {
-    int dimCount = dimensions.size();
-
-    int terms[] = new int[dimCount + 1];
-
-    private int idx, dim, element;
-
-    Variable v;
-
-    Iterator (Variable v)
+    /**
+     * Iterate through the array members.
+     */
+    class Iterator
+	implements java.util.Iterator
     {
-      idx = - 1;
-      terms[0] = 1;
-      this.v = v;
+	int dimCount = dimensions.size();
 
-      for (int i = 1; i < dimCount; i++)
-        {
-          int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-          terms[i] = d * terms[i - 1];
-        }
-      terms[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * terms[dimCount - 1]; 
+	int terms[] = new int[dimCount + 1];
+
+	private int idx, dim, element;
+
+	Variable v;
+
+	Iterator (Variable v)
+	{
+	    idx = - 1;
+	    terms[0] = 1;
+	    this.v = v;
+
+	    for (int i = 1; i < dimCount; i++)
+		{
+		    int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
+		    terms[i] = d * terms[i - 1];
+		}
+	    terms[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * terms[dimCount - 1]; 
+	}
+
+	public boolean hasNext ()
+	{
+	    idx += 1;
+	    element = idx;
+	    dim = dimCount;
+
+	    if (idx < terms[dimCount])
+		return true;
+	    return false;
+	}
+
+	/**
+	 * @return The next dimension index for the corresponding array element
+	 */
+	public int nextIdx ()
+	{
+	    dim -= 1;
+	    if (dim > 0)
+		{
+		    if (element >= terms[dim])
+			{
+			    int newDim = element / (terms[dim]);
+			    element = element % (terms[dim]);
+			    return newDim;
+			}
+		    return 0;
+		}
+	    return element;
+	}
+
+	public Object next ()
+	{
+	    if (type.typeId == BaseTypes.baseTypeChar)
+		return new Character((char)v.getByte(idx * type.getSize()));
+	    else if (type.typeId == BaseTypes.baseTypeShort)
+		return new Integer(v.getShort(idx * type.getSize()));
+	    else if (type.typeId == BaseTypes.baseTypeInteger)
+		return new Integer(v.getInt(idx * type.getSize()));
+	    else if (type.typeId == BaseTypes.baseTypeLong)
+		return new Integer(v.getInt(idx * type.getSize()));
+	    else if (type.typeId == BaseTypes.baseTypeFloat)
+		return new Float(v.getFloat(idx * type.getSize()));
+	    else if (type.typeId == BaseTypes.baseTypeDouble)
+		return new Double(v.getDouble(idx * type.getSize()));
+	    else
+		return null;
+	}
+
+	public void remove ()
+	{
+	}
     }
 
-    public boolean hasNext ()
+    public Iterator getIterator (Variable v)
     {
-      idx += 1;
-      element = idx;
-      dim = dimCount;
+	return new Iterator(v);
+    }
 
-      if (idx < terms[dimCount])
-        return true;
-      return false;
+    public String toString (Variable v)
+    {
+	StringBuffer strBuf = new StringBuffer();
+	Iterator e = getIterator(v);
+	boolean isString = false;
+	if (type.typeId == BaseTypes.baseTypeChar)
+	    {
+		isString = true;
+		strBuf.append("\"");
+	    }
+	while (e.hasNext())
+	    {
+		if (!isString)
+		    {
+			strBuf.append("[");
+			int dimCount = e.dimCount;
+			for (int j = dimCount; j >= 1; j--)
+			    {
+				strBuf.append(e.nextIdx());
+				if (j != 1)
+				    strBuf.append(",");
+			    }
+			strBuf.append("]=" + e.next());
+		    }
+		else
+		    {
+			Character ch = (Character)e.next();
+			if ((int)ch.charValue() != 0)
+			    strBuf.append(e.next());
+		    }
+	    }
+	if (isString)
+	    strBuf.append("\"");
+	return strBuf.toString();
     }
 
     /**
-     * @return The next dimension index for the corresponding array element
+     * Create an ArrayType
+     * 
+     * @param typep - Type of each array element
+     * @param dimensionsp - ArrayList of dimension upper bounds.
      */
-    public int nextIdx ()
+    public ArrayType (Type typep, ArrayList dimensionsp)
     {
-      dim -= 1;
-      if (dim > 0)
-        {
-          if (element >= terms[dim])
-            {
-              int newDim = element / (terms[dim]);
-              element = element % (terms[dim]);
-              return newDim;
-            }
-          return 0;
-        }
-      return element;
+	super(0, typep.endian, 0, "array");
+	type = typep;
+	dimensions = dimensionsp;
     }
 
-    public Object next ()
+    public Variable newVariable (Type type, Variable val)
     {
-      if (type._typeId == BaseTypes.baseTypeChar)
-        return new Character((char)v.getByte(idx * type.getSize()));
-      else if (type._typeId == BaseTypes.baseTypeShort)
-        return new Integer(v.getShort(idx * type.getSize()));
-      else if (type._typeId == BaseTypes.baseTypeInteger)
-        return new Integer(v.getInt(idx * type.getSize()));
-      else if (type._typeId == BaseTypes.baseTypeLong)
-        return new Integer(v.getInt(idx * type.getSize()));
-      else if (type._typeId == BaseTypes.baseTypeFloat)
-        return new Float(v.getFloat(idx * type.getSize()));
-      else if (type._typeId == BaseTypes.baseTypeDouble)
-        return new Double(v.getDouble(idx * type.getSize()));
-      else
-        return null;
+	return val.getType().newIntegerVariable((IntegerType) type, val);
     }
 
-    public void remove ()
+    public static Variable newArrayVariable (Type type, String text,
+					     ArrayByteBuffer ab)
     {
+	Location loc = new Location(ab);
+	Variable returnVar = new Variable(type, text, loc);
+	return returnVar;
     }
-  }
 
-  public Iterator getIterator (Variable v)
-  {
-    return new Iterator(v);
-  }
+    public Variable newFloatVariable (FloatType type, Variable val)
+    {
+	return null;
+    }
 
-  public String toString (Variable v)
-  {
-    StringBuffer strBuf = new StringBuffer();
-    Iterator e = getIterator(v);
-    boolean isString = false;
-    if (type._typeId == BaseTypes.baseTypeChar)
-      {
-        isString = true;
-        strBuf.append("\"");
-      }
-    while (e.hasNext())
-      {
-        if (!isString)
-          {
-            strBuf.append("[");
-            int dimCount = e.dimCount;
-            for (int j = dimCount; j >= 1; j--)
-              {
-                strBuf.append(e.nextIdx());
-                if (j != 1)
-                  strBuf.append(",");
-              }
-            strBuf.append("]=" + e.next());
-          }
-        else
-          {
-            Character ch = (Character)e.next();
-            if ((int)ch.charValue() != 0)
-              strBuf.append(e.next());
-          }
-      }
-    if (isString)
-      strBuf.append("\"");
-    return strBuf.toString();
-  }
+    public Variable newDoubleVariable (DoubleType type, Variable val)
+    {
+	return null;
+    }
 
-  /**
-   * Create an ArrayType
-   * 
-   * @param typep - Type of each array element
-   * @param dimensionsp - ArrayList of dimension upper bounds.
-   */
-  public ArrayType (Type typep, ArrayList dimensionsp)
-  {
-    super(0, typep._endian, 0, "array");
-    type = typep;
-    dimensions = dimensionsp;
-  }
+    public Variable newLongVariable (LongType type, Variable val)
+    {
+	return null;
+    }
 
-  public Variable newVariable (Type type, Variable val)
-  {
-    return val.getType().newIntegerVariable((IntegerType) type, val);
-  }
+    public Variable newIntegerVariable (IntegerType type, Variable val)
+    {
+	return null;
+    }
 
-  public static Variable newArrayVariable (Type type, String text,
-                                           ArrayByteBuffer ab)
-  {
-    Location loc = new Location(ab);
-    Variable returnVar = new Variable(type, text, loc);
-    return returnVar;
-  }
+    public Variable newByteVariable (ByteType type, Variable val)
+    {
+	Variable returnVar = new Variable(type, val.getText());
+	returnVar.getLocation().putByte((byte) (val.getChar()));
+	return returnVar;
+    }
 
-  public Variable newFloatVariable (FloatType type, Variable val)
-  {
-    return null;
-  }
+    public Variable newShortVariable (ShortType type, Variable val)
+    {
+	return null;
+    }
 
-  public Variable newDoubleVariable (DoubleType type, Variable val)
-  {
-    return null;
-  }
+    public Variable add (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable newLongVariable (LongType type, Variable val)
-  {
-    return null;
-  }
+    public Variable subtract (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable newIntegerVariable (IntegerType type, Variable val)
-  {
-    return null;
-  }
+    public Variable assign (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable newByteVariable (ByteType type, Variable val)
-  {
-    Variable returnVar = new Variable(type, val.getText());
-    returnVar.getLocation().putByte((byte) (val.getChar()));
-    return returnVar;
-  }
+    public Variable timesEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable newShortVariable (ShortType type, Variable val)
-  {
-    return null;
-  }
+    public Variable divideEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable add (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable minusEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable subtract (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable plusEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable assign (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable modEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable timesEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable shiftLeftEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable divideEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable shiftRightEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable minusEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseAndEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable plusEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseOrEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable modEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseXorEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable shiftLeftEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable multiply (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable shiftRightEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable divide (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable bitWiseAndEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable mod (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable bitWiseOrEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable shiftLeft (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable bitWiseXorEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable shiftRight (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable multiply (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable lessThan (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable divide (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable greaterThan (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable mod (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable greaterThanOrEqualTo (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable shiftLeft (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable lessThanOrEqualTo (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable shiftRight (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable equal (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable lessThan (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable notEqual (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable greaterThan (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseAnd (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable greaterThanOrEqualTo (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseOr (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable lessThanOrEqualTo (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable bitWiseXor (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable equal (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable logicalAnd (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable notEqual (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public Variable logicalOr (Variable var1, Variable var2)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 
-  public Variable bitWiseAnd (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Variable bitWiseOr (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Variable bitWiseXor (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Variable logicalAnd (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public Variable logicalOr (Variable var1, Variable var2)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
-
-  public boolean getLogicalValue (Variable var1)
-      throws InvalidOperatorException
-  {
-    throw (new InvalidOperatorException());
-  }
+    public boolean getLogicalValue (Variable var1)
+	throws InvalidOperatorException
+    {
+	throw (new InvalidOperatorException());
+    }
 }

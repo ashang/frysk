@@ -1,3 +1,14 @@
+2007-03-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TypeTest.java: Delete.
+	* TestValue.java: New.
+	* Location.java: Remove '_' prefix in members.
+	* ArrayType.java: Ditto.
+	* Variable.java: Ditto.
+	* Type.java: Ditto.
+	* ShortType.java: Ditto.
+	* ClassType.java: Ditto.
+
 2007-03-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Frame.java: Import frysk.rt.Subprogram.

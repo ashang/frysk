@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -91,17 +91,17 @@ public class ClassType
     {
       Type type = ((Type) (members.get(idx)));
       int off = ((Long)offsets.get(idx)).intValue();
-      if (type._typeId == BaseTypes.baseTypeChar)
+      if (type.typeId == BaseTypes.baseTypeChar)
         return new Integer(v.getByte(off));
-      else if (type._typeId == BaseTypes.baseTypeShort)
+      else if (type.typeId == BaseTypes.baseTypeShort)
         return new Integer(v.getShort(off));
-      else if (type._typeId == BaseTypes.baseTypeInteger)
+      else if (type.typeId == BaseTypes.baseTypeInteger)
         return new Integer(v.getInt(off));
-      else if (type._typeId == BaseTypes.baseTypeLong)
+      else if (type.typeId == BaseTypes.baseTypeLong)
         return new Integer(v.getInt(off));
-      else if (type._typeId == BaseTypes.baseTypeFloat)
+      else if (type.typeId == BaseTypes.baseTypeFloat)
         return new Float(v.getFloat(off));
-      else if (type._typeId == BaseTypes.baseTypeDouble)
+      else if (type.typeId == BaseTypes.baseTypeDouble)
         return new Double(v.getDouble(off));
       else
         return null;

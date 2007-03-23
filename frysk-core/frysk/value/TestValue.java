@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,26 +37,22 @@
 // version and license this file solely under the GPL without
 // exception.
 
-  package frysk.value;
+package frysk.value;
 
 import inua.eio.ByteOrder;
+import frysk.junit.TestCase;
 
-  public class TypeTest	{
-    public static void main(String[]  args) {
-      Type intType = new IntegerType(4, ByteOrder.BIG_ENDIAN);
-      Type shortType = new ShortType(2, ByteOrder.BIG_ENDIAN);
-
-      try {
+public class TestValue
+    extends TestCase
+{
+    public void testAdd ()
+	throws InvalidOperatorException
+    {
+	Type intType = new IntegerType (4, ByteOrder.BIG_ENDIAN);
+	Type shortType = new ShortType (2, ByteOrder.BIG_ENDIAN);
 	Variable v1 = IntegerType.newIntegerVariable((IntegerType)intType, 4);
-
 	Variable v2 = ShortType.newShortVariable((ShortType)shortType, (short)9);
-
-
 	Variable v3 = v1.getType().add(v1, v2);
-
-	System.out.println(v3.getInt());
-      }	catch(Exception e)  {
-	System.out.println("caught exception: " + e);
-      }
+	assertEquals ("4 + 9", 4 + 9, v3.getInt());
     }
-  }
+}

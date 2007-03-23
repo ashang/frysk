@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,92 +43,92 @@ import inua.eio.ByteOrder;
 import lib.dw.BaseTypes;
 
 /**
- * Holds the type of a Variable and also defines possible operations. 
- * Classes extended from this type will have to define the individual operation that are defined on those types.
- * e.g. addition operation may be defined for the integer type.
+ * Holds the type of a Variable and also defines possible operations.
+ * Classes extended from this type will have to define the individual
+ * operation that are defined on those types.  e.g. addition operation
+ * may be defined for the integer type.
  */
 
 public abstract class Type
 {
-  protected int _size;
-  protected ByteOrder _endian;
-  protected int _typeId;
-  protected String _name;
+    protected final int size;
+    protected final ByteOrder endian;
+    protected final int typeId;
+    protected final String name;
 
-  Type(int size, ByteOrder endian, int typeId)
-  {
-    this(size, endian, typeId, "");
-  }
+    Type(int size, ByteOrder endian, int typeId)
+    {
+	this(size, endian, typeId, "");
+    }
 
-  Type(int size, ByteOrder endian, int typeId, String name)
-  {
-    _size = size;
-    _endian = endian;
-    _typeId = typeId;
-    _name = name;
-  }
+    Type(int size, ByteOrder endian, int typeId, String name)
+    {
+	this.size = size;
+	this.endian = endian;
+	this.typeId = typeId;
+	this.name = name;
+    }
 
-  public int getSize() { return _size;}
-  public ByteOrder getEndian() { return _endian;}
-  public int getTypeId() { return _typeId;}
-  public String getName() { return _name;}
+    public int getSize() { return size;}
+    public ByteOrder getEndian() { return endian;}
+    public int getTypeId() { return typeId;}
+    public String getName() { return name;}
 
-  public String toString() {return _name;}
-  public abstract String toString(Variable v);  
+    public String toString() {return name;}
+    public abstract String toString(Variable v);  
 
-  public long longValue(Variable v)	throws InvalidOperatorException	
-  {
-    if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
-	return v.getByte();
-    if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
-	return v.getShort();
-    if(v.getType().getTypeId() == BaseTypes.baseTypeInteger)
-	return v.getInt();
-    if(v.getType().getTypeId() == BaseTypes.baseTypeLong)
-	return v.getLong();
+    public long longValue(Variable v)	throws InvalidOperatorException	
+    {
+	if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
+	    return v.getByte();
+	if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
+	    return v.getShort();
+	if(v.getType().getTypeId() == BaseTypes.baseTypeInteger)
+	    return v.getInt();
+	if(v.getType().getTypeId() == BaseTypes.baseTypeLong)
+	    return v.getLong();
 
-    throw new InvalidOperatorException("binary operation not defined for type " + _name + "," + v.getType().getName());
-  }
+	throw new InvalidOperatorException("binary operation not defined for type " + name + "," + v.getType().getName());
+    }
 
 
-  public abstract Variable add(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable divide(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable mod(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable lessThan(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException;
-  public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException;
-  public abstract Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable assign(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable add(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable divide(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable mod(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable lessThan(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException;
+    public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException;
+    public abstract Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable assign(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+    public abstract Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
   
-  public abstract boolean getLogicalValue(Variable var1) throws InvalidOperatorException; 
+    public abstract boolean getLogicalValue(Variable var1) throws InvalidOperatorException; 
 
-  public abstract Variable newByteVariable(ByteType type, Variable val);
-  public abstract Variable newShortVariable(ShortType type, Variable val);
-  public abstract Variable newIntegerVariable(IntegerType type, Variable val);
-  public abstract Variable newLongVariable(LongType type, Variable val);
-  public abstract Variable newFloatVariable(FloatType type, Variable val);
-  public abstract Variable newDoubleVariable(DoubleType type, Variable val);
-  public abstract Variable newVariable(Type type, Variable val);
-
+    public abstract Variable newByteVariable(ByteType type, Variable val);
+    public abstract Variable newShortVariable(ShortType type, Variable val);
+    public abstract Variable newIntegerVariable(IntegerType type, Variable val);
+    public abstract Variable newLongVariable(LongType type, Variable val);
+    public abstract Variable newFloatVariable(FloatType type, Variable val);
+    public abstract Variable newDoubleVariable(DoubleType type, Variable val);
+    public abstract Variable newVariable(Type type, Variable val);
 }

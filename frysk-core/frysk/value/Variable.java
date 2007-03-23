@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ import inua.eio.ArrayByteBuffer;
 
 public class Variable
 {
-    protected Type _type;
-    protected Location _location;
-    protected String _text;
+    private final Type type;
+    private final Location location;
+    private final String text;
     
     public Variable(Type type)	{
       this(type, "temp");
@@ -65,111 +65,111 @@ public class Variable
     
     public Variable(Type type, String text, Location location)
     {
-       _type = type;
-       _text = text;
-       _location = location;
+       this.type = type;
+       this.text = text;
+       this.location = location;
     }
 
 
     public Location getLocation()
     {
-      return _location;
+      return location;
     }
 
     public Type getType()
     {
-      return _type;
+      return type;
     }
 
     public String getText() {
-      return _text;
+      return text;
     }
 
     public byte getByte() {
-      return _location.getByte();
+      return location.getByte();
     }
 
     public char getChar() {
-      return (char)_location.getShort();
+      return (char)location.getShort();
     }
 
     public short getShort() {
-      return _location.getShort();
+      return location.getShort();
     }
 
     public int getInt() {
-      return _location.getInt();
+      return location.getInt();
     }
 
     public long getLong() {
-      return _location.getLong();
+      return location.getLong();
     }
 
     public float getFloat() {
-      return _location.getFloat();
+      return location.getFloat();
     }
 
     public double getDouble() {
-      return _location.getDouble();
+      return location.getDouble();
     }
 
     public byte getByte(int idx) {
-      return (byte)_location.getByte(idx);
+      return (byte)location.getByte(idx);
     }
 
     public char getChar(int idx) {
-      return (char)_location.getShort(idx);
+      return (char)location.getShort(idx);
     }
 
     public short getShort(int idx) {
-      return _location.getShort(idx);
+      return location.getShort(idx);
     }
 
     public int getInt(int idx) {
-      return _location.getInt(idx);
+      return location.getInt(idx);
     }
 
     public long getLong(int idx) {
-      return _location.getLong(idx);
+      return location.getLong(idx);
     }
 
     public float getFloat(int idx) {
-      return _location.getFloat(idx);
+      return location.getFloat(idx);
     }
 
     public double getDouble(int idx) {
-      return _location.getDouble(idx);
+      return location.getDouble(idx);
     }
 
     public void putByte(byte val) {
-      _location.putByte(val);
+      location.putByte(val);
     }
 
     public void putChar(char val) {
-      _location.putShort((short)val);
+      location.putShort((short)val);
     }
 
     public void putShort(short val) {
-      _location.putShort(val);
+      location.putShort(val);
     }
 
     public void putInt(int val) {
-      _location.putInt(val);
+      location.putInt(val);
     }
 
     public void putLong(long val) {
-      _location.putLong(val);
+      location.putLong(val);
     }
 
     public void putFloat(float val) {
-      _location.putFloat(val);
+      location.putFloat(val);
     }
 
     public void putDouble(double val) {
-      _location.putDouble(val);
+      location.putDouble(val);
     }
 
     public String toString()  {
-      return _type.toString(this);
+      return type.toString(this);
     }
 }

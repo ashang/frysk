@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,45 +43,46 @@
 
 package frysk.value;
 
-import inua.eio.*;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
 
 class Location
 {
-  ArrayByteBuffer _location;
-  int _index;
+    private final ByteBuffer location;
+    private final int index;
 
-  Location(long capacity)  {
-    this(new ArrayByteBuffer(capacity));
-  }
+    Location (long capacity)  {
+	this (new ArrayByteBuffer(capacity));
+    }
 
-  Location(ArrayByteBuffer location) {
-    this(location, 0);
-  }
+    Location (ByteBuffer location) {
+	this (location, 0);
+    }
 
-  Location(ArrayByteBuffer location, int index) {
-    _location = location;
-    _index = 0;
-  }
+    Location(ByteBuffer location, int index) {
+	this.location = location;
+	this.index = 0;
+    }
 
-  public ByteBuffer getByteBuffer() { return _location;}
-  double getDouble() { return _location.getDouble(_index); }
-  float getFloat() { return _location.getFloat(_index); }
-  long getLong() { return _location.getLong(_index); }
-  int getInt() { return _location.getInt(_index); }
-  short getShort() { return _location.getShort(_index); }
-  byte getByte() { return (byte)_location.getByte(_index); }
+    public ByteBuffer getByteBuffer() { return location;}
+    double getDouble() { return location.getDouble(index); }
+    float getFloat() { return location.getFloat(index); }
+    long getLong() { return location.getLong(index); }
+    int getInt() { return location.getInt(index); }
+    short getShort() { return location.getShort(index); }
+    byte getByte() { return (byte)location.getByte(index); }
 
-  double getDouble(int idx) { return _location.getDouble(idx); }
-  float getFloat(int idx) { return _location.getFloat(idx); }
-  long getLong(int idx) { return _location.getLong(idx); }
-  int getInt(int idx) { return _location.getInt(idx); }
-  short getShort(int idx) { return _location.getShort(idx); }
-  byte getByte(int idx) { return (byte)_location.getByte(idx); }
+    double getDouble(int idx) { return location.getDouble(idx); }
+    float getFloat(int idx) { return location.getFloat(idx); }
+    long getLong(int idx) { return location.getLong(idx); }
+    int getInt(int idx) { return location.getInt(idx); }
+    short getShort(int idx) { return location.getShort(idx); }
+    byte getByte(int idx) { return (byte)location.getByte(idx); }
   
-  void putDouble(double value)  {_location.putDouble(_index, value);}
-  void putFloat(float value)  {_location.putFloat(_index, value);}
-  void putLong(long value)  {_location.putLong(_index, value);}
-  void putInt(int value)  {_location.putInt(_index, value);}
-  void putShort(short value)  {_location.putShort(_index, value);}
-  void putByte(byte value)  {_location.putByte(_index, (byte)value);}
+    void putDouble(double value)  {location.putDouble(index, value);}
+    void putFloat(float value)  {location.putFloat(index, value);}
+    void putLong(long value)  {location.putLong(index, value);}
+    void putInt(int value)  {location.putInt(index, value);}
+    void putShort(short value)  {location.putShort(index, value);}
+    void putByte(byte value)  {location.putByte(index, (byte)value);}
 }
