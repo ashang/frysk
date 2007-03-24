@@ -44,37 +44,39 @@ import java.io.File;
 import java.math.BigInteger;
 
 public class TestLinuxCore
-  extends TestLib
+    extends TestLib
+	    
 {
 
+  Host coreHost = new LinuxCoreFileHost(Manager.eventLoop, 
+					new File(Config.getPkgDataDir (), 
+						 "test-core"));
+  
   public void testLinuxHostPopulation ()
   {
-    Host coreHost = new LinuxCoreFileHost(Manager.eventLoop, 
-					  new File(Config.getPkgDataDir (), 
-						   "test-core"));
-
+    
     assertNotNull("Core File Host Is Null?",coreHost);
     coreHost.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
-
+    
     Proc proc = coreHost.getProc(new ProcId(31497));
-
+    
     assertNotNull("PID 31497 populates from core file?", proc);
     assertEquals("PID  31497 should have one task", 1 ,proc.getTasks().toArray().length);
     assertEquals("LinuxCoreFileProc PID",31497,proc.getPid());
   }
-
-
+  
+  
   public void testLinuxProcPopulation () 
   {
     
-    Host coreHost = new LinuxCoreFileHost(Manager.eventLoop, 
-					  new File(Config.getPkgDataDir (), 
-						   "test-core"));
-
+    
     assertNotNull("Core file Host is Null?",coreHost);
+    
+    
     coreHost.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
+    
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
     assertEquals("PID",31497,proc.getPid());
@@ -87,22 +89,22 @@ public class TestLinuxCore
     assertEquals("getGID",100,proc.getGID());
     assertEquals("getMainTask",31497,proc.getMainTask().getTid());
   }
-
+  
+  
   public void testLinuxProcAuxV () 
   {
-
-    Host coreHost = new LinuxCoreFileHost(Manager.eventLoop, 
-					  new File(Config.getPkgDataDir (), 
-						   "test-core"));
+    
     
     assertNotNull("Core file Host is Null?",coreHost);
+    
     coreHost.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
+    
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
-
+    
     Auxv[] auxv = proc.getAuxv();
-
+    
     final int[] expectedType = {32,33,16,6,17,3,4,5,7,8,9,11,12,13,14,23,15,0};
     final BigInteger[] expectedVal = {new BigInteger("1508352",10),
 				      new BigInteger("1507328",10), 				
@@ -122,7 +124,7 @@ public class TestLinuxCore
 				      new BigInteger("0",10),
 				      new BigInteger("3220187851",10),
 				      new BigInteger("0",10)};
-
+    
     for(int i=0; i<auxv.length; i++)
       {
 	assertEquals("Auxv Type", auxv[i].type, 
@@ -130,19 +132,18 @@ public class TestLinuxCore
 	assertEquals("Auxv Value", auxv[i].val,
 		     expectedVal[i].longValue());
       }
+    
   }
-
-
+  
   public void testLinuxTaskPopulation ()
   {
-    
-    Host coreHost = new LinuxCoreFileHost(Manager.eventLoop, 
-					  new File(Config.getPkgDataDir (), 
-						   "test-core"));
 
     assertNotNull("Core file Host is Null?",coreHost);
+
+
     coreHost.requestRefreshXXX(true);
     Manager.eventLoop.runPending();
+    
     Proc proc = coreHost.getProc(new ProcId(31497));
     assertNotNull("Proc exists in corefile", proc);
     Task task = proc.getMainTask();

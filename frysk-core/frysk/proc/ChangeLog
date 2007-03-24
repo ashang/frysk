@@ -1,6 +1,7 @@
 2007-03-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxCore.java: Fix debug output.
+	Rewrite Class. Use one host, and refresh each test.
 	* LinuxCoreFileTask.java: Fix build typos.
 
 2007-03-23  Phil Muldoon  <pmuldoon@redjat.com>
