@@ -57,7 +57,7 @@ public class ElfData {
         public ElfData(byte[] buffer, Elf parent)
         {
            this.parent = parent;
-           this.pointer = elf_data_create_native();
+           elf_data_create_native();
 	   setBuffer(buffer);
         }
 
@@ -200,8 +200,8 @@ public class ElfData {
 		return this.parent;
 	}
 	
-        native protected long elf_data_create_native();
-	native protected void elf_data_finalize();
+        native private void elf_data_create_native();
+	native private void elf_data_finalize();
 	native protected void elf_data_set_buff(long length);
 	native protected byte elf_data_get_byte(long offset);
 	native protected int elf_data_get_type();

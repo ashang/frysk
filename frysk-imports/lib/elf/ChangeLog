@@ -1,3 +1,11 @@
+2007-03-24  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* ElfData.java (elf_data_create_native): Made decl private.
+	(elf_data_finalize): Ditto.
+	* cni/ElfData.cxx (elf_data_create_native): Use java long
+	pointer instead of native global pointer. Do not return a 
+	pointer.
+	
 2007-03-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java (decode): Clean out threads list.

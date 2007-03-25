@@ -49,21 +49,18 @@ extern "C"
 {
 #endif
 
-  Elf_Data *native = NULL; 
 
 void
 lib::elf::ElfData::elf_data_finalize (){
 //	free((Elf_Data*) this->pointer);
-  JvFree(native);
 }
 
 
-jlong
+void
 lib::elf::ElfData::elf_data_create_native ()
 {
-  native = (Elf_Data*)JvMalloc(sizeof(Elf_Data));  
-  native->d_type = ELF_T_BYTE;
-  return (jlong) native;
+  this->pointer = (long) JvMalloc(sizeof(Elf_Data));  
+  ((::Elf_Data *)this->pointer)->d_type = ELF_T_BYTE;
 }
 
 jbyte
