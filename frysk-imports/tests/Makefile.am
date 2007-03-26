@@ -483,3 +483,11 @@ systests_PASS_PROGRAM += frysk3486/waitpid-masked-sigchld
 
 # test for PTRACE_ATTACH of SIGSTOPped process hangs
 systests_PASS_PROGRAM += frysk4217/attachstop
+
+# A final variable/inner class test.
+
+noinst_PROGRAMS += frysk4282/StackAccessors
+frysk4282_StackAccessors_GCJFLAGS = -I $(srcdir)
+frysk4282_StackAccessors_SOURCES = frysk4282/MyProcName.java frysk4282/StackAccessors.java
+frysk4282_StackAccessors_LDFLAGS = --main=frysk4282.StackAccessors 
+XFAIL_TESTS += frysk4282/StackAccessors
