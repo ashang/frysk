@@ -1,3 +1,8 @@
+2007-03-26  Mark Wielaard  <mark@klomp.org>
+
+	* m4/frysk_werror.m4: Make CFLAGS depend on old value, not on
+	old $GCJFLAGS value.
+
 2007-03-12  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* frysk-common.ac: Add AC_ARG_VAR([GCJFLAGS], ...) to register GCJFLAGS

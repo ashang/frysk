@@ -45,7 +45,7 @@ AC_ARG_ENABLE([werror],
     [],
     [enable_werror=yes])
 if test "x$enable_werror" = xyes; then
-  test "x$ac_env_CFLAGS_set" != xset && CFLAGS="$GCJFLAGS -Werror"
+  test "x$ac_env_CFLAGS_set" != xset && CFLAGS="$CFLAGS -Werror"
   test "x$ac_env_CXXFLAGS_set" != xset && CXXFLAGS="$CXXFLAGS -Werror"
   test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -Werror"
 fi
