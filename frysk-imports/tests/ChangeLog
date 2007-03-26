@@ -1,5 +1,7 @@
 2007-03-26  Nurdin Premji  <npremji@redhat.com>
 
+	* frysk4282/StackAccessors.java: Print addr variable to avoid compiler warnings.
+
 	* Makefile.am (noinst_PROGRAMS): Added StackAccessors.
 	(XFAIL_TESTS): Ditto.
 	* frysk4282/MyProcName.java: Added.

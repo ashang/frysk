@@ -45,7 +45,7 @@ public class StackAccessors
   // @Override
   public Object getProcName (final long addr, final int maxNameSize)
   {
-    System.err.println("The maxNameSize is: " + maxNameSize);
+    System.err.println("The maxNameSize is: " + maxNameSize + " The addr is: " + addr);
   
     class ExecuteGetProcName
     {
