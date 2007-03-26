@@ -168,7 +168,7 @@ public class EditObserverDialog
       }
     });
 
-    observerDescriptionTextView = (TextView) glade.getWidget("observerDescriptionTextView");
+    observerDescriptionTextView = (TextView) glade.getWidget("editObserverDialogObserverDescriptionTextView");
     observerDescBuffer = new TextBuffer();
 
     observerDescriptionTextView.setBuffer(observerDescBuffer);

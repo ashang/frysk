@@ -60,6 +60,9 @@ public class TaskTimeLine extends TimeLine implements MouseListener
     this.guiTask = guiTask;
     addToTaskTimeLineSizeGroup(this);
     this.addListener((MouseListener)this);
+//    if(this.guiTask.getTask().getTid() == this.guiTask.getTask().getProc().getPid()){
+//      this.setLabel("<b>" + guiTask.getTask().getTid()+"</b>");
+//    }
   }
 
   public boolean ownsEvent (Event event)

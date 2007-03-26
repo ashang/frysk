@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -36,70 +36,24 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-/*
- * Created on 5-Jul-05
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-package frysk.gui.monitor;
 
-import java.util.logging.Level;
-import java.util.prefs.Preferences;
+package frysk.gui.monitor.eventviewer;
 
-import org.gnu.glade.LibGlade;
-import org.gnu.gtk.TextBuffer;
-import org.gnu.gtk.TextMark;
-import org.gnu.gtk.TextView;
-import org.gnu.gtk.Widget;
+import org.gnu.gdk.GdkCairo;
 
-/**
- * 
- * Generic log window, just prints out events it receives.
- * */
-public class SummaryWidget extends Widget implements Saveable {
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiTask;
+import frysk.gui.monitor.observers.ObserverRoot;
 
-	public TextView logTextView;
-    private TextBuffer tb;
-    private TextMark tm;
-    private GuiObject currentObject;
-    
-	public SummaryWidget(LibGlade glade){
-		super(glade.getWidget("logWidget").getHandle());
-		this.logTextView = (TextView) glade.getWidget("logTextView");
-		WindowManager.logger.log(Level.FINE, "{0} LogWidget\n", this);
-		tb = logTextView.getBuffer();
-		tm = tb.createMark("endMark", tb.getEndIter(), false);
-	}
-
-	public void setCurrentObject(GuiObject object){
-      this.currentObject = object;
-      tb.deleteText(tb.getStartIter(), tb.getEndIter());
-      print(currentObject.getSummary());
-    }
-    
-    /**
-     * Print the given string to the log window.
-     * 
-     * @param string - string to print.
-     */
-    private void print(String string){
-        tb.insertText(string);
-        tb.moveMark(tm, tb.getEndIter());
-       // logTextView.scrollToMark(tm,0.0);
-    }
-    
-	/* (non-Javadoc)
-	 * @see frysk.gui.monitor.Saveable#save(java.util.prefs.Preferences)
-	 */
-	public void save(Preferences prefs) {
-		
-	}
-	
-	/* (non-Javadoc)
-	 * @see frysk.gui.monitor.Saveable#load(java.util.prefs.Preferences)
-	 */
-	public void load(Preferences prefs) {
-		
-	}
+public class TimeLineStartEvent extends GuiObject
+{
+ 
+  public TimeLineStartEvent(String name, String tooltip, GuiTask guiTask, ObserverRoot observer){
+    super(name, tooltip);
+  }
+   
+  public void draw (GdkCairo cairo)
+  {
+  }
+  
 }

@@ -130,10 +130,12 @@ public class TestObserverSaveLoad extends TestCase{
 
 		ProcNameFilter savedFilter = new ProcNameFilter();
 		savedFilter.setName("1");
+        savedFilter.setFilterBoolean(true);
 		savedFilterPoint.addFilter(savedFilter);
 
 		savedFilter = new ProcNameFilter();
-		savedFilter.setArgument("1");
+		savedFilter.setArgument("2");
+        savedFilter.setFilterBoolean(false);
 		savedFilterPoint.addFilter(savedFilter);
 
 		ObjectFactory.theFactory.saveObject(savedFilterPoint, node);
@@ -143,10 +145,12 @@ public class TestObserverSaveLoad extends TestCase{
 		
 		ProcNameFilter loadedFilter = (ProcNameFilter)i.next(); 
 		assertEquals("FilterName", "1", loadedFilter.getName());
-
+		assertTrue("Filter boolean", loadedFilter.getFilterBoolean());
+        
 		loadedFilter = (ProcNameFilter)i.next(); 
-		assertEquals("FilterName", "1", loadedFilter.getArgument());
-
+		assertEquals("FilterName", "2", loadedFilter.getArgument());
+        assertFalse("Filter boolean", loadedFilter.getFilterBoolean());
+        
 	}
 	
 	public void testActionPointSaveLoad(){

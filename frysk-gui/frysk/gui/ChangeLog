@@ -1,3 +1,11 @@
+2007-03-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestPrototypeCopying.java: Added test for copying of filter
+	boolean value.
+	* test/TestObserverSaveLoad.java: Added test for filter boolean value.
+	* gladedir/procpop.glade: Added "Observer Discription" feild to Edit
+	Observer Dialog.
+
 2007-03-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* gladedir/procpop.glade: Removed apply button from Observers Dialog.

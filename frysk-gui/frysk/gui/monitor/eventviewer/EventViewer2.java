@@ -40,6 +40,7 @@
 package frysk.gui.monitor.eventviewer;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -50,6 +51,8 @@ import org.gnu.gtk.Label;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.VScrollBar;
 import org.gnu.gtk.Viewport;
+import org.gnu.gtk.event.ExposeEvent;
+import org.gnu.gtk.event.ExposeListener;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.sessions.DebugProcess;
@@ -73,12 +76,15 @@ public class EventViewer2 extends Table {
   private Session currentSession;
   
   TimeLineSelectionManager timeLineSelectionManager;
+  LinkedList procBoxes;
   
   public EventViewer2(){
 		super(2, 3, false);
 		this.setBorderWidth(6);
-    
+        
         this.timeLineSelectionManager = new TimeLineSelectionManager();
+        
+        this.procBoxes = new LinkedList();
         
         Label spacerLabel = new Label("");
         TimeLine.addToLabelsSizeGroup(spacerLabel);
@@ -104,6 +110,28 @@ public class EventViewer2 extends Table {
         
         this.showAll();
         this.getAccessible().setName("EventViewer");
+        
+        
+        Observer selectionObserver = new Observer(){
+          public void update (Observable observable, Object obj)
+          {
+              draw();
+          }
+        };
+        timeLineSelectionManager.getSelectedTimeLines().itemAdded.addObserver(selectionObserver);
+        timeLineSelectionManager.getSelectedTimeLines().itemRemoved.addObserver(selectionObserver);
+        
+        this.addListener(new ExposeListener()
+        {
+          public boolean exposeEvent (ExposeEvent event)
+          {
+            // this is a possible performance problem
+            // but gets rid of all the artifacts.
+            // see http://sourceware.org/bugzilla/show_bug.cgi?id=4269
+            draw();
+            return false;
+          }
+        });
 	}
 
 	
@@ -116,6 +144,7 @@ public class EventViewer2 extends Table {
      
     private void addProc(GuiProc guiProc){
       ProcBox procBox = new ProcBox(guiProc,this.hScrollBar.getAdjustment(), timeLineSelectionManager);
+      this.procBoxes.add(procBox);
       
       this.bigTableNumberOfRows++;
       this.bigTable.resize(2,this.bigTableNumberOfRows);
@@ -160,7 +189,13 @@ public class EventViewer2 extends Table {
 
     protected void removeProc (GuiProc proc)
     {
-      // TODO: Should processes be removed or or grayed out ?
-      throw new RuntimeException("This method is not implemented (Nov 4, 2006)");
+      Iterator iterator = this.procBoxes.iterator();
+      while (iterator.hasNext())
+        {
+          ProcBox procBox = (ProcBox) iterator.next();
+          if(procBox.getGuiProc() == proc){
+            procBox.procIsDead();
+          }
+        }
     }
 }

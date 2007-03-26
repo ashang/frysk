@@ -1,3 +1,18 @@
+2007-03-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLineStartEvent.java: New file.
+	* eventviewer/TimeLineEndEvent.java: New file.
+	* eventviewer/TimeLine.java: Added button for removing timelines.
+	* eventviewer/ProcTimeLine.java (getGuiProc): made it public.
+	* eventviewer/ProcBox.java: Added handling for removing dead threads. Fix for
+	bz 4243.
+	* eventviewer/EventViewer2.java: Added and expose listiner to handle redrawing
+	fix for bz# 4269.
+	Added handling for removing dead processes. Fix for bz 4243.
+	* ObserversDialog.java: Added 'Observer Description' field, and handling.
+	* EditObserverDialog.java: Renamed observerDescriptionTextView to 
+	editObserverDialogObserverDescriptionTextView.
+
 2007-03-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ObserversDialog.java: Removed handling from apply button Fix for bz

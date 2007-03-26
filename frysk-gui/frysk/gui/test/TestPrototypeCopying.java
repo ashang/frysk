@@ -69,7 +69,11 @@ public class TestPrototypeCopying extends TestCase{
 //			System.out.println("\n===========================================");
 //			System.out.println("Testing copy of :" + a.getName());
 			if(a instanceof TaskForkedObserver){
-				((TaskForkedObserver)a).offspringTaskFilterPoint.addFilter(new ProcNameFilter());
+              ProcNameFilter procNameFilter = new ProcNameFilter();
+              procNameFilter.setArgument("1");
+              procNameFilter.setFilterBoolean(false);
+              
+				((TaskForkedObserver)a).offspringTaskFilterPoint.addFilter(procNameFilter);
 			}
 			ObserverRoot b = (ObserverRoot) a.getCopy();
 			
@@ -143,4 +147,20 @@ public class TestPrototypeCopying extends TestCase{
 		}
 
 	}
+    
+    public void testProcNameFilterCopying(){
+      ProcNameFilter procNameFilter = new ProcNameFilter();
+      procNameFilter.setArgument("1");
+      procNameFilter.setFilterBoolean(false);
+      
+      ProcNameFilter procNameFilter2 = new ProcNameFilter();
+      procNameFilter.setArgument("2");
+      procNameFilter.setFilterBoolean(true);
+      
+      ProcNameFilter copyOfProcNameFilter = (ProcNameFilter) procNameFilter.getCopy();
+      ProcNameFilter copyOfProcNameFilter2 = (ProcNameFilter) procNameFilter2.getCopy();
+      
+      assertEquals("filters do not have the same boolean", procNameFilter.getFilterBoolean(), copyOfProcNameFilter.getFilterBoolean());
+      assertEquals("filters do not have the same boolean", procNameFilter2.getFilterBoolean(), copyOfProcNameFilter2.getFilterBoolean());
+    }
 }

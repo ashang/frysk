@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ResponseType;
+import org.gnu.gtk.TextView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -67,6 +68,8 @@ public class ObserversDialog extends FryskDialog {
 	Button okButton;
 	Button cancelButton;
 	
+    TextView observerDescriptionTextView;
+    
 	/**
 	 * the old and new scratch lists keep
 	 * a list of what changes the user made so that
@@ -93,9 +96,7 @@ public class ObserversDialog extends FryskDialog {
 		scratchOld = new LinkedList();
 		scratchNew = new LinkedList();
 		
-	//	this.scratchList = new ObservableLinkedList();
 		this.scratchList = ObserverManager.theManager.getTaskObservers();
-		//this.retrieveList();
 		
 		this.observersListView = new ListView(glade.getWidget("observersTreeView").getHandle());
 		this.observersListView.watchLinkedList(scratchList);
@@ -212,7 +213,17 @@ public class ObserversDialog extends FryskDialog {
 			}
 		});
 		
+        this.observerDescriptionTextView =  (TextView) glade.getWidget("observerDescriptionTextView");
+        this.observersListView.getSelection().addListener(new TreeSelectionListener()
+        {
+          public void selectionChangedEvent (TreeSelectionEvent event)
+          {
+            observerDescriptionTextView.getBuffer().setText(observersListView.getSelectedObject().getToolTip());
+          }
+        });
+        
 		this.updateEnabled();
+        
 	}
 	
 	protected void updateEnabled() {

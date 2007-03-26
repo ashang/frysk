@@ -69,7 +69,7 @@ public class ProcTimeLine extends TimeLine
     return new ProcTimeLineDrawingArea();
   }
   
-  private GuiProc getGuiProc ()
+  public GuiProc getGuiProc ()
   {
     return this.guiProc;
   }

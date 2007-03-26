@@ -186,7 +186,7 @@ public class ObserverManager {
 //		forkedObserver.dontSaveObject();
 //
 //		tryAddTaskObserverPrototype(forkedObserver);	
-	} 
+	}
 
 	/**
 	 * Returns a copy of the prototype given.

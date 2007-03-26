@@ -41,19 +41,24 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
 import org.gnu.gtk.Adjustment;
+import org.gnu.gtk.Button;
 import org.gnu.gtk.EventBox;
+import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.HBox;
+import org.gnu.gtk.IconSize;
+import org.gnu.gtk.Image;
+import org.gnu.gtk.Justification;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.StateType;
+import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ExposeEvent;
@@ -86,8 +91,20 @@ public abstract class TimeLine
   private Viewport viewport;
   private boolean isSelected;
   
+  private boolean isDead;
+  Label label;
+  
+  private Button removeButton;
+  
+  int startIndex = 0;
+  int endIndex;
+  
   public TimeLine(String name, TimeLineSelectionManager manager){
     super(false,0);
+  
+    this.removeButton = new Button();
+    this.removeButton.setImage(new Image(GtkStockItem.CLOSE, IconSize.MENU));
+    this.removeButton.setSensitive(false);
     
     this.selected = new GuiObservable();
     this.unSelected = new GuiObservable();
@@ -96,8 +113,10 @@ public abstract class TimeLine
     
     this.name = name;
     
-    Label label = new Label(name);
-    label.setAlignment(1,0.5);
+    label = new Label(name);
+    label.setAlignment(0.4,0.5);
+    label.setJustification(Justification.CENTER);
+    
     EventBox labelEventBox = new EventBox();
     labelEventBox.add(label);
     
@@ -111,30 +130,28 @@ public abstract class TimeLine
     viewport = new Viewport(null,null);
     viewport.add(drawingArea);
     viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
+   
+    VBox vBox = new VBox(false,0);
+    vBox.packEnd(removeButton, false, false, 0);
     
     this.packStart(labelEventBox, false, false, 3);
     this.packStart(viewport,true,true,3);
-   
+    this.packEnd(vBox, false, false, 0);
+    
     manager.addTimeLine(this);
-    
-//    EventManager.theManager.getEventsList().itemAdded.addObserver(new Observer()
-//    {
-//      public void update (Observable observable, Object arg)
-//      {
-//        drawingArea.draw();
-//      }
-//    });
-    
-    Observer selectionObserver = new Observer(){
-      public void update (Observable observable, Object obj)
-      {
-        if(ownsEvent((Event) obj)){
-          draw();
-        }
-      }
-    }; 
-    EventManager.theManager.getSelectedEvents().itemAdded.addObserver(selectionObserver);
-    EventManager.theManager.getSelectedEvents().itemRemoved.addObserver(selectionObserver);
+        
+  }
+  
+  public void setStartIdnex(int index){
+    this.startIndex = index;
+  }
+  
+  public void setEndIndex(int index){
+    this.endIndex = index;
+  }
+  
+  public Button getRemoveButton(){
+    return this.removeButton;
   }
   
   public void setHAdjustment(Adjustment adjustment){
@@ -143,6 +160,10 @@ public abstract class TimeLine
   
   protected TimeLineDrawingArea getTimeLineDrawingArea(){
     return new TimeLineDrawingArea();
+  }
+  
+  public void setLabel(String string){
+    this.label.setMarkup(string);
   }
   
   protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener, MouseListener{
@@ -216,20 +237,7 @@ public abstract class TimeLine
       cairo.setSourceColor(Color.WHITE);
       cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
       cairo.fill();
-      
-//      cairo.save();
-//      
-//      // line
-//      cairo.setLineWidth(0.5);
-//      cairo.setSourceColor(Color.BLACK);
-//
-//      cairo.moveTo(x, y+h-1);
-//      cairo.lineTo(x + w, y+h-1);
-//      
-//      cairo.stroke();
-//      
-//      cairo.restore();
-      
+            
       // draw events
       Iterator iterator = EventManager.theManager.getEventsList().iterator();
       
@@ -253,6 +261,13 @@ public abstract class TimeLine
         this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
       }
      
+      if(isDead){
+        // White background
+        cairo.setSourceRGBA(1,1,1, 0.5);
+        cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
+        cairo.fill();
+      }
+      
       return false;
     }
   }
@@ -294,8 +309,18 @@ public abstract class TimeLine
     return this.isSelected;
   }
   
+  public void timeLineDead(){
+    this.isDead = true;
+    
+    int grayFactor = 3;
+    this.label.setForegroundColor(StateType.NORMAL, new Color(65535/grayFactor, 65535/grayFactor, 65535/grayFactor));
+    
+    this.removeButton.setSensitive(true);
+    
+    this.label.setMarkup(this.label.getText() + "\n<i>terminated</i>");
+  }
+  
   public static void addToLabelsSizeGroup(Widget widget){
     labelsSizeGroup.addWidget(widget);
   }
-  
 }

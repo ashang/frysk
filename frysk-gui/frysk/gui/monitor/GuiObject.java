@@ -150,4 +150,5 @@ public class GuiObject
   public void setSummay(String summary){
     this.summary = summary;
   }
+  
 }

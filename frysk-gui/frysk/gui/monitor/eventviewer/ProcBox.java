@@ -45,6 +45,9 @@ import java.util.LinkedList;
 import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Adjustment;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
@@ -61,10 +64,14 @@ public class ProcBox extends VBox
   
   TimeLineSelectionManager manager;
   
+  LinkedList timeLines;
+  
   ProcBox (GuiProc guiProc, Adjustment adjustment, TimeLineSelectionManager manager)
   {
     super(false,0);
   
+    this.timeLines = new LinkedList();
+    
     this.manager = manager;
     this.hAdjustment = adjustment;
     
@@ -77,8 +84,19 @@ public class ProcBox extends VBox
     this.guiProc = guiProc;
 
     ProcTimeLine procTimeLine = new ProcTimeLine(guiProc, manager);
+    this.timeLines.add(procTimeLine);
+    
     procTimeLine.setHAdjustment(hAdjustment);
     this.packStart(procTimeLine, true, true, 0);
+    procTimeLine.getRemoveButton().addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if(event.isOfType(ButtonEvent.Type.CLICK)){
+          ProcBox.this.removeAllTimeLines();
+        }
+      }
+    });
     
     new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
 
@@ -125,22 +143,25 @@ public class ProcBox extends VBox
   protected void removeGuiTask (GuiTask guiTask)
   {
     
-//    Iterator iter = children.iterator();
-//    while (iter.hasNext())
-//      {
-//        TaskTimeLine child = (TaskTimeLine) iter.next();
-//        if(child.getGuiTask() == guiTask){
-//          this.children.remove(child);
-//          this.histogram.removeTimeLine(child);
-//          break;
-//        }
-//      }
+    Iterator iter = timeLines.iterator();
+    while (iter.hasNext())
+      {
+        Object object = iter.next();
+        if(object instanceof TaskTimeLine){
+          TaskTimeLine child = (TaskTimeLine)object;
+          if(child.getGuiTask() == guiTask){
+            child.timeLineDead();
+            this.remove(child);
+            this.packEnd(child, true, true, 0);
+            break;
+          }
+        }
+      }
   }
 
   LinkedList guiTasksBuffer = new LinkedList();
   protected void addGuiTask (GuiTask guiTask)
   {
-    
     
     // if the main task has not been added and this is not it.
     if(!this.mainGuiTaskAdded && guiTask.getTask().getTid() != guiTask.getTask().getProc().getPid()){
@@ -148,7 +169,20 @@ public class ProcBox extends VBox
       return;
     }
     
-    TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask, manager);
+    final TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask, manager);
+    this.timeLines.add(taskTimeLine);
+    taskTimeLine.getRemoveButton().addListener(new ButtonListener()
+    {
+      TaskTimeLine realTaskTimeLine = taskTimeLine;
+      public void buttonEvent (ButtonEvent event)
+      {
+        if(event.isOfType(ButtonEvent.Type.CLICK)){
+          timeLines.remove(realTaskTimeLine);
+          ProcBox.this.remove(realTaskTimeLine);
+        }
+      }
+    });
+    
     taskTimeLine.setHAdjustment(hAdjustment);
     
     this.packStart(taskTimeLine,true,true,0);
@@ -167,5 +201,35 @@ public class ProcBox extends VBox
     
     this.showAll();
   }
+
+  private void removeAllTimeLines(){
+    Iterator iter = this.timeLines.iterator();
+    while (iter.hasNext())
+      {
+        this.remove((Widget) iter.next());
+      }
+    this.timeLines.clear();
+  }
   
+  public GuiProc getGuiProc ()
+  {
+    return this.guiProc;
+  }
+
+  public void procIsDead ()
+  {
+    Iterator iter = this.timeLines.iterator();
+    while (iter.hasNext())
+      {
+        Object object = iter.next();
+        if(object instanceof ProcTimeLine){
+          ProcTimeLine child = (ProcTimeLine)object;
+          if(child.getGuiProc() == guiProc){
+            child.timeLineDead();
+            break;
+          }
+        }
+      }
+  }
+
 }
