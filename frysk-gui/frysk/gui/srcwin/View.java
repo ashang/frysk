@@ -59,7 +59,7 @@ public interface View{
 	
 	List getFunctions();
 	
-	void load(StackFrame data);
+	void load(StackFrame data, int mode);
 	
 	StackFrame getScope();
 	

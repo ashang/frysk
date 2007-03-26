@@ -150,8 +150,7 @@
 		  <property name="visible">True</property>
 		  <property name="items" translatable="yes">Source
 Assembly
-Source/Assembly
-Mixed</property>
+Source/Assembly</property>
 		  <property name="add_tearoffs">False</property>
 		  <property name="focus_on_click">True</property>
 		</widget>

@@ -240,6 +240,8 @@ public class SourceWindow
   private ToggleAction toggleThreadDialog;
 
   private ToggleAction toggleStepDialog;
+  
+  private ComboBox viewPicker;
 
   private ThreadSelectionDialog threadDialog = null;
 
@@ -384,7 +386,10 @@ public class SourceWindow
     AccelGroup ag = new AccelGroup();
     ((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
 
-    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
+    this.viewPicker = (ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX);
+    this.viewPicker.setActive(0);
+//    this.viewPicker.setSensitive(true);
+//    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0);
 
     if (this.runState.getState() == RunState.STOPPED)
       this.populateStackBrowser(frames);
@@ -506,8 +511,11 @@ public class SourceWindow
         return;
       }
 
-    SourceView sv = (SourceView) this.view;
-    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+    SourceBuffer sb = null;
+    if (this.view instanceof SourceView)
+      sb = (SourceBuffer) ((SourceView) this.view).getBuffer();
+    else
+      sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
 
     StackFrame curr = null;
     StackFrame taskMatch = null;
@@ -633,6 +641,11 @@ public class SourceWindow
   public View getView ()
   {
     return this.view;
+  }
+  
+  public CurrentStackView getStackView ()
+  {
+    return this.stackView;
   }
 
   public RunState getRunState ()
@@ -1267,6 +1280,7 @@ public class SourceWindow
     this.copy.setSensitive(false);
     this.find.setSensitive(false);
     this.prefsLaunch.setSensitive(false);
+    this.viewPicker.setSensitive(false);
   }
 
   private void resensitize ()
@@ -1305,6 +1319,7 @@ public class SourceWindow
     this.copy.setSensitive(true);
     this.find.setSensitive(true);
     this.prefsLaunch.setSensitive(true);
+    this.viewPicker.setSensitive(true);
   }
 
   /**
@@ -1386,8 +1401,10 @@ public class SourceWindow
     });
 
     // Mode box
-    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
-    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+//    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
+//    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+    this.viewPicker.addListener(listener);
+    this.viewPicker.setSensitive(true);
 
     // Stack browser
     this.stackView.addListener(listener);
@@ -1512,7 +1529,13 @@ public class SourceWindow
      */
     if (this.view instanceof SourceView)
       {
+        ((SourceView) this.view).setLineNums(true);
         ((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
+        
+        if (this.currentFrame.getLines().length > 0)
+          {
+            ((SourceView) this.view).scrollToFunction(this.currentFrame.getSymbol().getDemangledName());
+          }
       }
     /*
      * If we're switching from Source/Assembly mode, we need to re-create the
@@ -1526,16 +1549,20 @@ public class SourceWindow
         ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
         this.view.showAll();
       }
+    
+    createTags();
   }
 
   private void switchToAsmMode ()
   {
+    removeTags();
     /*
      * If we're switching from Source or Mixed more, we can just toggle the
      * state
      */
     if (this.view instanceof SourceView)
       {
+        ((SourceView) this.view).setLineNums(false);
         ((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
       }
     /*
@@ -1579,6 +1606,9 @@ public class SourceWindow
 
   private void switchToSourceAsmMode ()
   {
+    if (this.currentFrame.getLines().length ==0)
+      return;
+    
     if (! (this.view instanceof MixedView))
       {
         // Replace the SourceView with a Mixedview to display
@@ -1597,6 +1627,8 @@ public class SourceWindow
 
     if (selected == null)
       return;
+    
+    int mode = this.viewPicker.getActive();
     
     DOMSource source = null;
     Line[] lines = selected.getLines();
@@ -1620,13 +1652,20 @@ public class SourceWindow
     
     if (lines.length == 0)
     {
-      SourceView v = (SourceView) SourceWindow.this.view;
-      SourceBuffer b = (SourceBuffer) v.getBuffer();
+      SourceBuffer b = null;
+      
+      if (mode == 2)
+        switchToAsmMode();
+      
+      if (this.view instanceof SourceView)
+        b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+      else
+        b = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
       
       removeTags();
-      v.load(selected);
+      this.view.load(selected, this.viewPicker.getActive());
       
-      if(runState.getState() == RunState.STOPPED)
+      if (runState.getState() == RunState.STOPPED)
         b.disassembleFrame(selected);
       else
         b.deleteText(b.getStartIter(), b.getEndIter());
@@ -1634,14 +1673,11 @@ public class SourceWindow
     else if (source != null && lines[0].getDOMFunction() != null)
       {
         if (this.currentFrame.getLines().length == 0
-            || ! source.getFileName().equals(this.currentFrame.getLines()[0].getFile().getName()))
+            || ! source.getFileName().equals(this.currentFrame.getLines()[0].getFile().getName()) || mode != 0)
           {
             removeTags();
             
-            this.view.load(selected);
-
-//            SourceView v = (SourceView) SourceWindow.this.view;
-//            SourceBuffer b = (SourceBuffer) v.getBuffer();
+            this.view.load(selected, mode);
 
             StackFrame curr = selected;
 
@@ -1652,17 +1688,42 @@ public class SourceWindow
             while (curr.getInner() != null)
               curr = curr.getInner();
 
-//            b.highlightLine(curr, true);
             createTags();
 
-            this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
+            if (this.currentFrame.getLines().length == 0)
+              {
+                if (mode == 2)
+                  {
+                    this.currentFrame = selected;
+                    switchToSourceAsmMode();
+                  }
+                
+                if (mode == 0)
+                  this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
+                else if (mode == 2)
+                  ((MixedView) this.view).getSourceWidget().scrollToFunction(
+                                                                             lines[0].getDOMFunction().getFunctionCall());
+              }
+            else
+              {
+                if (mode == 0)
+                  this.view.scrollToLine(lines[0].getLine());
+                else if (mode == 2)
+                  ((MixedView) this.view).getSourceWidget().scrollToLine(
+                                                                         lines[0].getLine());
+              }
           }
         else
           {
             if (selected.getLines().length == 0)
               return;
             else
-	      this.view.scrollToLine(selected.getLines()[0].getLine());
+              {
+                if (mode == 0)
+                  this.view.scrollToLine(lines[0].getLine());
+                else if (mode == 2)
+                  ((MixedView) this.view).getSourceWidget().scrollToLine(lines[0].getLine());
+              }
           }
       }
 
@@ -1672,8 +1733,12 @@ public class SourceWindow
 
   private void removeTags ()
   {
-    SourceView sv = (SourceView) view;
-    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+    SourceBuffer sb = null;
+    
+    if (this.view instanceof SourceView)
+      sb = (SourceBuffer) ((SourceView) this.view).getBuffer();
+    else
+      sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
 
     for (int i = 0; i < this.frames.length; i++)
       {
@@ -1683,8 +1748,12 @@ public class SourceWindow
   
   private void createTags ()
   {
-    SourceView sv = (SourceView) view;
-    SourceBuffer sb = (SourceBuffer) sv.getBuffer();
+    SourceBuffer sb = null;
+    
+    if (this.view instanceof SourceView)
+      sb = (SourceBuffer) ((SourceView) this.view).getBuffer();
+    else
+      sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
 
     for (int i = 0; i < this.frames.length; i++)
       {

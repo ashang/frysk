@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.srcwin;
 
 import java.util.List;
@@ -46,83 +47,122 @@ import org.gnu.gtk.ScrolledWindow;
 
 import frysk.rt.StackFrame;
 
-public class MixedView extends HPaned implements View {
+public class MixedView
+    extends HPaned
+    implements View
+{
 
-	private SourceView sourceWidget;
-	private SourceView assemblyWidget;
-	
-	public MixedView(StackFrame scope, SourceWindow parent){
-		super();
-		
-		this.sourceWidget = new SourceView(scope, parent);
-		this.assemblyWidget = new SourceView(scope, parent, SourceBuffer.ASM_MODE);
+  private SourceView sourceWidget;
 
-		ScrolledWindow sw1 = new ScrolledWindow();
-		sw1.add(this.sourceWidget);
-		this.sourceWidget.showAll();
-		this.add1(sw1);
-		
-		ScrolledWindow sw2 = new ScrolledWindow();
-		sw2.add(this.assemblyWidget);
-		this.add2(sw2);
-		
-		this.showAll();
-	}
+  private SourceView assemblyWidget;
 
-	public boolean findNext(String toFind, boolean caseSensitive) {
-		boolean result = this.sourceWidget.findNext(toFind, caseSensitive);
-		if(!result)
-			result = this.assemblyWidget.findNext(toFind, caseSensitive);
-		
-		return result;
-	}
+  public MixedView (StackFrame scope, SourceWindow parent)
+  {
+    super();
 
-	public boolean findPrevious(String toFind, boolean caseSensitive) {
-		// TODO: How do we tell where we're searching back from?
-		return false;
-	}
+    this.sourceWidget = new SourceView(scope, parent, SourceBuffer.SOURCE_MODE);
+    this.assemblyWidget = new SourceView(scope, parent, SourceBuffer.ASM_MODE);
+    this.assemblyWidget.setLineNums(false);
 
-	public boolean highlightAll(String toFind, boolean caseSensitive) {
-		return this.sourceWidget.highlightAll(toFind, caseSensitive) ||
-			this.assemblyWidget.highlightAll(toFind, caseSensitive);
-	}
+    ScrolledWindow sw1 = new ScrolledWindow();
+    sw1.add(this.sourceWidget);
+    this.sourceWidget.showAll();
+    this.add1(sw1);
+//    this.pack1(sw1, true, true);
 
-	public void scrollToFound() {
-		// TODO: same problem as findPrevious
-	}
+    ScrolledWindow sw2 = new ScrolledWindow();
+    sw2.add(this.assemblyWidget);
+    this.add2(sw2);
+//    this.pack2(sw2, true, true);
 
-	public void load(StackFrame data) {
-		this.sourceWidget.load(data);
-		this.assemblyWidget.load(data);
-		this.assemblyWidget.setMode(SourceBuffer.ASM_MODE);
-	}
+    this.setPosition((parent.getWindow().getWidth() + parent.getStackView().getWindow().getWidth()) / 2);
+    
+    this.showAll();
+  }
 
-	public void setSubscopeAtCurrentLine(InlineSourceView child) {
-		// TODO Inlined code for mixed view? How do we do this?
-	}
+  public boolean findNext (String toFind, boolean caseSensitive)
+  {
+    boolean result = this.sourceWidget.findNext(toFind, caseSensitive);
+    if (! result)
+      result = this.assemblyWidget.findNext(toFind, caseSensitive);
 
-	public void clearSubscopeAtCurrentLine() {
-		// TODO Inlined code for mixed view? How do we do this?
-	}
+    return result;
+  }
 
-	public void toggleChild() {
-		// TODO Inlined code for mixed view? How do we do this?
-	}
+  public boolean findPrevious (String toFind, boolean caseSensitive)
+  {
+    // TODO: How do we tell where we're searching back from?
+    return false;
+  }
 
-	public void scrollToFunction(String markName) {
-		
-	}
+  public boolean highlightAll (String toFind, boolean caseSensitive)
+  {
+    return this.sourceWidget.highlightAll(toFind, caseSensitive)
+           || this.assemblyWidget.highlightAll(toFind, caseSensitive);
+  }
 
-	public void scrollToLine(int line) {
-		
-	}
+  public void scrollToFound ()
+  {
+    // TODO: same problem as findPrevious
+  }
 
-	public List getFunctions() {
-		return null;
-	}
+  public void load (StackFrame data, int mode)
+  {
+    if (mode != 3)
+      {
+        this.sourceWidget.load(data, SourceBuffer.SOURCE_MODE);
+        this.assemblyWidget.load(data, SourceBuffer.ASM_MODE);
+      }
+    else
+      {
+        this.sourceWidget.load(data, mode);
+        this.assemblyWidget.load(data, mode);
+      }
+  }
 
-	public StackFrame getScope() {
-		return this.sourceWidget.getScope();
-	}
+  public void setSubscopeAtCurrentLine (InlineSourceView child)
+  {
+    // TODO Inlined code for mixed view? How do we do this?
+  }
+
+  public void clearSubscopeAtCurrentLine ()
+  {
+    // TODO Inlined code for mixed view? How do we do this?
+  }
+
+  public void toggleChild ()
+  {
+    // TODO Inlined code for mixed view? How do we do this?
+  }
+
+  public void scrollToFunction (String markName)
+  {
+
+  }
+
+  public void scrollToLine (int line)
+  {
+
+  }
+
+  public List getFunctions ()
+  {
+    return null;
+  }
+
+  public StackFrame getScope ()
+  {
+    return this.sourceWidget.getScope();
+  }
+  
+  public SourceView getSourceWidget ()
+  {
+    return this.sourceWidget;
+  }
+  
+  public SourceView getAssemblyWidget ()
+  {
+    return this.assemblyWidget;
+  }
 
 }

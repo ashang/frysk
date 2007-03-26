@@ -1,3 +1,45 @@
+2007-03-26  Mike Cvet  <mcvet@redhat.com>
+
+	* View.java (load): Now takes an int parameter, setting the mode of
+	the view.
+	* SourceWindow.java (viewPicker): Added. Combobox variable to select
+	source, assembly, or combination display in the Source Window. Fixes
+	#1711, #4278.
+	(finishSourceWin): Initialize above variable; set default selection.
+	(populateStackBrowser): Check for MixedView and SourceView instead of
+	assuming SourceView default.
+	(getStackView): Added.
+	(desensitize): Added entry for viewPicker.
+	(resensitize): Ditto.
+	(attachEvents): Set viewPicker to sensitive.
+	(switchToSourceMode): Set line numbers to true in the SourceView; scroll
+	to the appropriate function upon call. Create highlighting tags in the
+	SourceBuffer.
+	(switchToAsmMode): Remove highlighting tags from the SourceBuffer.
+	Remove line numbers.
+	(switchToSourceAsmMode): Do nothing if the current frame has no 
+	debuginfo.
+	(updateShownStackFrame): Handle appropriate mode switching between
+	source and assembly views. Notify the SourceBuffer which mode to use.
+	Differentiate between SourceView and MixedView. Fixes #1711, #4278.
+	(removeTags): Differentiate between SourceView and MixedView.
+	(createTags): Ditto.
+	* SourceView.java (setLineNums): Added. Determines whether or not line
+	numbers should be displayed.
+	(load): Takes an int parameter for mode.
+	* SourceBuffer.java (setScope): Changed to protected. Set global mode
+	value at the end of the method. Only highlights text if in source mode.
+	(disassembleFrame): Changed output to use frame name.
+	(loadAssembly): Removed dummy code. Calls disassembleFrame(), and
+	removes text highlighting.
+	* MixedView.java: Applied GNU formatting.
+	(MixedView): Set line numbers to false for assembly view. Set the 
+	position of the horizontal split to half the available view real
+	estate.
+	(load): Explicitly set subwindow modes to either source or assembly.
+	(getSourceWidget): Added.
+	(getAssemblyWidget): Added.
+
 2007-03-23  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (loadFile): Check to see if the source code has

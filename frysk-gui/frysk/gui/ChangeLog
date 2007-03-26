@@ -1,3 +1,8 @@
+2007-03-26  Mike Cvet  <mcvet@redhat.com>
+
+	* gladedir/frysk_source.glade: Temporarily removed "Mixed" from 
+	combobox entries.
+
 2007-03-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestPrototypeCopying.java: Added test for copying of filter

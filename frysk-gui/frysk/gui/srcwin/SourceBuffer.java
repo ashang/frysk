@@ -847,7 +847,7 @@ public class SourceBuffer
    * 
    * @param scope The stack frame to be displayed
    */
-  private void setScope (StackFrame scope, int mode)
+  protected void setScope (StackFrame scope, int mode)
   {
     Iterator i = this.functions.iterator();
     while (i.hasNext())
@@ -855,8 +855,6 @@ public class SourceBuffer
         String del = (String) i.next();
         this.deleteMark(del);
       }
-    
-    this.mode = mode;
 
     this.anchor = null;
     this.functions.clear();
@@ -876,7 +874,7 @@ public class SourceBuffer
         switch (mode)
           {
           case SOURCE_MODE:
-            if (this.fileName.equals("") || ! this.fileName.equals(file))
+            if (this.fileName.equals("") || ! this.fileName.equals(file) || this.mode != SOURCE_MODE)
               {
                 this.firstLoad = true;
                 loadFile();
@@ -888,6 +886,8 @@ public class SourceBuffer
           case MIXED_MODE:
             break;
           }
+        
+        this.mode = mode;
 
       }
     catch (Exception e)
@@ -898,7 +898,8 @@ public class SourceBuffer
     if (scope != null)
       {
         this.fileName = file;
-        this.highlightLine(scope, true);
+        if (mode == SOURCE_MODE)
+          this.highlightLine(scope, true);
       }
   }
 
@@ -936,7 +937,10 @@ public class SourceBuffer
     while (iter.hasNext())
       {
         StringBuffer buf = new StringBuffer();
-        buf.append("<frame address+");
+        buf.append("<");
+        buf.append(frame.getSymbol().getDemangledName());
+        buf.append(" pc");
+        buf.append("+");
         buf.append(ins.address - address);
         buf.append(">: ");
         buf.append("0x");
@@ -1230,14 +1234,8 @@ public class SourceBuffer
 
   protected void loadAssembly ()
   {
-    this.deleteText(this.getStartIter(), this.getEndIter());
-
-    String text = "";
-
-    for (int i = 10000; i < 10100; i++)
-      text += "0x" + Integer.toHexString(i) + " mv $a0 $a1\n";
-
-    this.insertText(text);
+    this.disassembleFrame(this.scope);
+    highlightLine(this.scope, false);
   }
 
   /**

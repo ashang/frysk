@@ -192,6 +192,12 @@ public class SourceView
     return buf;
   }
 
+  public void setLineNums (boolean bool)
+  {
+    this.showingLineNums = bool;
+    this.showingExecMarks = bool;
+  }
+  
   /**
    * Implementation from ExposeListener Interface.
    */
@@ -277,9 +283,9 @@ public class SourceView
    * 
    * @param data The new stack frame to load.
    */
-  public void load (StackFrame data)
+  public void load (StackFrame data, int mode)
   {
-    this.buf.setScope(data);
+    this.buf.setScope(data, mode);
     this.expanded = false;
     this.anchor = null;
   }
