@@ -317,6 +317,11 @@ public class TestStepping extends TestLib
   {
     if (brokenPpcXXX (3277))
       return;
+    if (brokenIfKernelXXX (4289, new String[]
+	{
+	    "2.6.20-1.2307.fc5"
+	}))
+	return;
     
     initial = true;
     this.lineMap = new HashMap();

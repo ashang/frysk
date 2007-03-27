@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -399,7 +399,8 @@ public class TestRefresh
 		"2.6.18-1.2257.fc5",
 		"2.6.18-1.2849.fc6",
 		"2.6.18-1.2239.fc5",
-		"2.6.19-1.2288.fc5"
+		"2.6.19-1.2288.fc5",
+		"2.6.20-1.2307.fc5"
 	    }))
 	    return;
 	// Create the zombie maker, and then get it to create one
