@@ -1,5 +1,8 @@
 2007-03-27  Andrew Cagney  <cagney@redhat.com>
 
+	* StackAccessors.java: Replace frysk.sys.Ptrace.requestExecute
+	with frysk.sys.Server.request.
+
 	* TestStepping.java (testStepSigLongJmp): Note broken on
 	2.6.20-1.2307.fc5.
 

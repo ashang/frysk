@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.sys.Execute;
+import frysk.sys.Server;
 
 import lib.unwind.Accessors;
 import lib.unwind.AddressSpace;
@@ -158,7 +159,7 @@ public class StackAccessors
       }
     }
     ExecuteFindProc executer = new ExecuteFindProc(ip, needUnwindInfo);
-    frysk.sys.Ptrace.requestExecute(executer);
+    Server.request(executer);
     return executer.procInfo;
   }
 
@@ -184,7 +185,7 @@ public class StackAccessors
       }
     }
     ExecuterGetDyn executer = new ExecuterGetDyn(dilap);
-    frysk.sys.Ptrace.requestExecute(executer);
+    Server.request(executer);
     return executer.ret;
   }
 
@@ -211,7 +212,7 @@ public class StackAccessors
       }
     }
     ExecuteGetProcName executer = new ExecuteGetProcName(addr, maxNameSize);
-    frysk.sys.Ptrace.requestExecute(executer);
+    Server.request(executer);
     return executer.procName;
   }
 
@@ -227,7 +228,7 @@ public class StackAccessors
         ptraceAccessors.putUnwindInfo(procInfo);
       }
     }
-    frysk.sys.Ptrace.requestExecute(new ExecutePutUnwind());
+    Server.request(new ExecutePutUnwind());
   }
 
   // @Override
@@ -245,7 +246,7 @@ public class StackAccessors
       }
     }
     ExecuteResume executer = new ExecuteResume();
-    frysk.sys.Ptrace.requestExecute(executer);
+    Server.request(executer);
     return executer.ret;
   }
 

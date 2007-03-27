@@ -54,30 +54,6 @@ public class Ptrace
   public static final int FPREGS = 1;
   public static final int FPXREGS = 2;
 
-  /* The thread explicitly used for ptrace calls */
-  static volatile PtraceThread pt;
-	
-  /**
-   * Return our PtraceThread
-   */
-  static synchronized PtraceThread getPt ()
-  {
-    if (pt == null) {
-      pt = new PtraceThread();
-      pt.setDaemon(true);
-      pt.startThread();
-    }
-    return pt;
-  }
-	
-  /**
-   * Execute request from context of ptrace thread.
-   */
-  public static void requestExecute(Execute op)
-  {
-    getPt().notifyPtraceThread(op);
-  }
-  
   /**
    * Attach to the process specified by PID.
    */
@@ -113,14 +89,20 @@ public class Ptrace
    * event.
    */ 
   public static native long getEventMsg(int pid);
-  /**
-   * Fetch the word located at paddr.
-   */
-  static native long peek(int peekRequest, int pid, RawData paddr);
-  /**
-   * Copy the word in data to child's addr.
-   */
-  static native void poke(int pokeRequest, int pid, RawData paddr, long data);
+    /**
+     * Fetch the word located at paddr.
+     */
+    static long peek(int peekRequest, int pid, RawData paddr)
+    {
+	return ptrace.request (peekRequest, pid, paddr, 0);
+    }
+    /**
+     * Copy the word in data to child's addr.
+     */
+    static void poke(int pokeRequest, int pid, RawData paddr, long data)
+    {
+	ptrace.request (pokeRequest, pid, paddr, data);
+    }
   /**
    * Return the size (in bytes) of a register set.
    *
@@ -150,11 +132,6 @@ public class Ptrace
 					  byte[] data); 
   
   /**
-   * Create an attached child process.  Uses PT_TRACEME.
-   */
-  public static native int child (String in, String out, String err,
-				  String[] args);
-  /**
    * Set PID's trace options.  OPTIONS is formed by or'ing the
    * values returned by the option* methods below.
    */
@@ -181,142 +158,85 @@ public class Ptrace
   public static native long optionTraceExec ();
 	
 	
-  /**************************************************************************
-   * The new ptrace thread class                                            *
-   *************************************************************************/
-    public static class PtraceThread
-	extends Thread
+    /**
+     * Class to encapsulate a PTRACE requests sent to the server.
+     */
+    protected static class PtraceRequest
 	implements Execute
     {
-		
-    volatile Execute op;        /* The operation to be performed.  */
-    volatile int request;	/* The ptrace operation request */
-    volatile int pid;		/* The pid of the target process */
-    volatile int error;		/* Error returned from the ptrace call */
-    volatile long addr;		/* Address used by ptrace (Not yet used) */
-    volatile long data;		/* Data or signals passed to the target */
-    volatile long result;	/* Result of the ptrace call */
-    volatile String in;		/* Standard in */
-    volatile String out;	/* Standard out */
-    volatile String err;	/* Standard error */
-    volatile String[] args;	/* Arguments to be executed */
-		
-    Integer lock = new Integer (0); 	/* Used as a locking object */
-		
-		
-    /**
-     * RUN - Main thread execution method
-     * Loop and wait for notification events, signalling that the core
-     * thread and relevant data are ready to have a ptrace call 
-     * executed and data returned.
-     */
-    public void run() 
-    {
-      /* Critical section */
-      synchronized (this) 
+	int op;	/* The ptrace operation request */
+	int pid;	/* The pid of the target process */
+	RawData addr;	/* Address used by ptrace (Not yet used) */
+	long data;	/* Data or signals passed to the target */
+	long result;	/* Result of the ptrace call */
+
+	/**
+	 * Perform the PTRACE call.
+	 */
+	public native void execute ();
+
+	/**
+	 * Request a ptrace call.
+	 */
+	public synchronized long request (int op, int pid,
+					  RawData addr, long data)
 	{
-	  notify ();
-	  /* Continue serving requests */
-	  while (true) {
-	    try {
-	      wait ();
-	    }
-	    catch (InterruptedException ie)
-	      {
-		System.out.println(ie.getMessage());
-		System.exit(1);
-	      }
-	    /* The data is ready; call ptrace and let Core continue
-	     * when ptrace returns. */
-	    this.op.execute ();
-	    notify();
-	  }
+	    this.op = op;
+	    this.pid = pid;
+	    this.addr = addr;
+	    this.data = data;
+	    Server.request (this);
+	    return result;
 	}
     }
-		
+    private static final PtraceRequest ptrace = new PtraceRequest ();
+    protected static void request (int op, int pid, RawData addr, long data)
+    {
+	ptrace.request (op, pid, addr, data);
+    }
+    
     /**
-     * Setup the data variables and when ready, signal the ptrace thread
-     * to continue while the core thread waits here for its completion.
+     * Pass a fork request through to the server.
      */
-    public long notifyPtraceThread(int request, int pid, long addr,
-				   long data) {
-			
-      /* Critical section */
-      synchronized (lock) {
-			
-	this.op = this;
-	this.request = request;
-	this.pid = pid;
-	this.addr = addr;
-	this.data = data;
-	this.error = 0;
-				
-	/* Critical section */
-	synchronized (this) {
-					
-	  /* All the data has been set, let the ptrace thread
-	   * do its thing and Core will wait until its done. */
-	  notify();
-	  try {
-	    wait();
-	  } catch (InterruptedException ie) {
-	    throw new RuntimeException (ie);
-	  }
+    protected static class ForkRequest
+	implements Execute
+    {
+	private String in;	/* Standard in */
+	private String out;	/* Standard out */
+	private String err;	/* Standard error */
+	private String[] args;	/* Arguments to be executed */
+	private int result;
+
+	public void execute ()
+	{
+	    result = Fork.ptrace (in, out, err, args);
 	}
-				
-	if (error != 0)
-	  Errno.throwErrno (error, "ptrace");
-	return result;
-      }
+
+	/**
+	 * Request a fork using the server thread.
+	 */
+	public synchronized int request (String in, String out, String err,
+					 String[] args)
+	{
+	    this.in = in;
+	    this.out = out;
+	    this.err = err;
+	    this.args = args;
+	    Server.request (this);
+	    return result;
+	}	
+    }
+    private static final ForkRequest fork = new ForkRequest ();
+    /**
+     * Create an attached child process.
+     *
+     * A linux kernel bug means that a PT_TRACEME child must be
+     * created by the same thread that will do later do the attach.
+     */
+    public static int child (String in, String out, String err,
+			     String[] args)
+    {
+	return fork.request (in, out, err, args);
     }
 
-      /**
-       * Setup a generic all to the ptrace thread.
-       */
-      public void notifyPtraceThread (Execute op)
-      {
-	  synchronized (lock) {
-	      this.op = op;
-	      synchronized (this) {
-		  // All the data has been set, let the ptrace thread
-		  // do its thing and Core will wait until its done.
-		  notify();
-		  try {
-		      wait();
-		  } catch (InterruptedException ie) {
-		      throw new RuntimeException (ie);
-		  }
-	      }
-	  }
-      }
-
-    /**
-     * Assign variables representing standard in, out, and error
-     */
-    public void assignFileDescriptors(String in, String out,
-				      String err, String[] args) {
-      this.in = in;
-      this.out = out;
-      this.err = err;
-      this.args = args;
-    }
-		
-    /**
-     * Hack-job thread starting synchronization method 
-     */
-    public synchronized void startThread () {
-      pt.start();
-      try {
-	pt.wait();
-      } catch (InterruptedException ie) {
-	System.exit(1);
-      }
-    }
-		
-    /**
-     * Make the actual call to ptrace 
-     */
-    public native void execute ();
-		
-  }
 }

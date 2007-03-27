@@ -1,5 +1,23 @@
 2007-03-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Ptrace.java: Re-implement using Server.java.
+	(pt): Delete.
+	(getPt): Delete.
+	(requestExecute): Delete.
+	(PtraceThread): Delete.
+	(PtraceRequest): New.
+	(ForkRequest): New.
+	(child): Use RequestFork.
+	(request): New.
+	(peek, poke): Call request.
+	* cni/Ptrace.cxx: Update.
+	(_callPtrace): Delete.
+	(singleStep, cont, sysCall, getEventMsg, peekRegisters,
+	pokeRegisters, setOptions, optionTraceClone): Use request.
+	(reopen): Delete.
+	(child): Delete.
+	(peek, poke): Delete.
+	
 	* Ptrace.java (peek, poke): Change addr type to gnu.gcj.RawData.
 	Make methods package local.
 	* cni/Ptrace.cxx: Update.

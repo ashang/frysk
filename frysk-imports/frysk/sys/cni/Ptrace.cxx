@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,7 +53,9 @@
 
 #include <gcj/cni.h>
 
-#include "frysk/sys/Ptrace$PtraceThread.h"
+#include <gnu/gcj/RawData.h>
+
+#include "frysk/sys/Ptrace$PtraceRequest.h"
 #include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
@@ -80,106 +82,50 @@ static RegisterSetParams regSetParams[] =
 
 int cpid;
 
-static void
-reopen (jstring file, const char *mode, FILE *stream);
+/**
+ * If the operation involves a PTRACE_TRACEME, create a new child and
+ * exec as necessary. Otherwise, perform a ptrace operation on a
+ * currently running process as a superior task.
+ */
 
-/* If the operation involves a PTRACE_TRACEME, create a new child and exec as 
- * necessary. Otherwise, perform a ptrace operation on a currently running
- * process as a superior task. */
 void
-frysk::sys::Ptrace$PtraceThread::execute ()
+frysk::sys::Ptrace$PtraceRequest::execute ()
 {
-		
-  if (request == PTRACE_TRACEME) /* New child creation */
-    {
-      result = fork ();
-      if (result < 0) /* Error */
-	{ 
-	  perror ("Error: could not fork child process");
-	  exit (EXIT_FAILURE);
-	} 
-      else if (result == 0) /* Child */
-	{ 
-      
-	  setsid();
-	  setpgid(0, 0);
-
-	  // Convert args into argv, argc.
-	  int argc = JvGetArrayLength (args);
-	  char **argv = (char **) alloca ((argc + 1) * sizeof (void*));
-	  for (int i = 0; i < argc; i++) {
-	    jstring arg = elements (args)[i];
-	    int len = JvGetStringUTFLength (arg);
-	    argv[i] = (char *) alloca (len + 1);
-	    JvGetStringUTFRegion (arg, 0, arg->length (), argv[i]);
-	    argv[i][len] = '\0';
-	  }
-	  argv[argc] = 0;
-
-	  if (in != NULL)
-	    reopen (in, "r", stdin);
-	  if (out != NULL)
-	    reopen (out, "w", stdout);
-	  if (err != NULL)
-	    reopen (err, "w", stderr);
-      
-	  errno = 0;
-	  result = ::ptrace ((enum __ptrace_request) request, \
-			     pid, (void*) addr, (long) data);
-	  error = errno;
-	  ::execvp (argv[0], argv);
-	  ::perror ("execvp");		
-	}
-      else
-	cpid = result;
-    } 
-  else /* Operations on existing child or other process */
-    { 
-  	
-      errno = 0;
-      result = ::ptrace ((enum __ptrace_request) request, pid, \
-      				(void*) addr, (long) data);
-      error = errno;
-    }
-}
-
-/* Delegates creating a new ptrace_thread, assigning data, and sending the
- * running thread to perform work */
-static long
-_callPtrace (int request, pid_t pid, void *addr, long data, const char *what)
-{
-  return frysk::sys::Ptrace::getPt () -> notifyPtraceThread \
-  					(request, pid, (jlong)addr, data);
+  errno = 0;
+  result = ::ptrace ((enum __ptrace_request) op, pid,
+		     (void*) addr, (long) data);
+  if (errno != 0)
+    throwErrno (errno, "ptrace");
 }
 
 void
 frysk::sys::Ptrace::attach (jint pid)
 {
-  _callPtrace(PTRACE_ATTACH, pid, NULL, 0, "ptrace.attach");
+  request(PTRACE_ATTACH, pid, NULL, 0);
 }
 
 void
 frysk::sys::Ptrace::detach (jint pid, jint sig)
 {
-  _callPtrace(PTRACE_DETACH, pid, NULL, sig, "ptrace.detach");
+  request(PTRACE_DETACH, pid, NULL, sig);
 } 
 
 void
 frysk::sys::Ptrace::singleStep (jint pid, jint sig)
 {
-  _callPtrace(PTRACE_SINGLESTEP, pid, NULL, sig, "ptrace.singlestep");
+  request(PTRACE_SINGLESTEP, pid, NULL, sig);
 } 
 
 void
 frysk::sys::Ptrace::cont (jint pid, jint sig)
 {
-  _callPtrace(PTRACE_CONT, pid, NULL, sig, "ptrace.cont");
+  request(PTRACE_CONT, pid, NULL, sig);
 }
 
 void
 frysk::sys::Ptrace::sysCall (jint pid, jint sig)
 {
-  _callPtrace(PTRACE_SYSCALL, pid, NULL, sig, "ptrace.syscall");
+  request(PTRACE_SYSCALL, pid, NULL, sig);
 }
 
 jlong
@@ -191,25 +137,8 @@ frysk::sys::Ptrace::getEventMsg (jint pid)
      MESSAGE parameter.  include/linux/sched.h declares ptrace_message
      as a long.  */
   long msg;
-  _callPtrace(PTRACE_GETEVENTMSG, pid, NULL, (long) &msg,
-	      			"ptrace.geteventmsg");
+  request(PTRACE_GETEVENTMSG, pid, NULL, (long) &msg);
   return msg;
-}
-
-jlong
-frysk::sys::Ptrace::peek(jint peekRequest, jint pid,
-			 gnu::gcj::RawData *paddr)
-{
-  return _callPtrace((enum __ptrace_request) peekRequest, pid, paddr, 0,
-		     "ptrace.peek");
-}
-
-void
-frysk::sys::Ptrace::poke(jint peekRequest, jint pid, gnu::gcj::RawData* paddr,
-			 jlong data)
-{
-  _callPtrace((enum __ptrace_request) peekRequest, pid, paddr, data,
-	      "ptrace.poke");
 }
 
 jint
@@ -224,21 +153,19 @@ frysk::sys::Ptrace::registerSetSize(jint set)
 void
 frysk::sys::Ptrace::peekRegisters(jint registerSet, jint pid, jbyteArray data)
 {
-  _callPtrace(regSetParams[registerSet].peekRequest, pid, 0,
-	      (long)elements(data), "ptrace.peekRegisters");
+  request(regSetParams[registerSet].peekRequest, pid, 0, (long)elements(data));
 }
 
 void
 frysk::sys::Ptrace::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
 {
-  _callPtrace(regSetParams[registerSet].pokeRequest, pid, 0,
-	      (long)elements(data), "ptrace.pokeRegisters");
+  request(regSetParams[registerSet].pokeRequest, pid, 0, (long)elements(data));
 }
 
 void
 frysk::sys::Ptrace::setOptions (jint pid, jlong options)
 {
-  _callPtrace(PTRACE_SETOPTIONS, pid, 0, options, "ptrace.setoptions");
+  request(PTRACE_SETOPTIONS, pid, 0, options);
 }
 
 jlong
@@ -265,30 +192,4 @@ jlong
 frysk::sys::Ptrace::optionTraceExec ()
 {
   return PTRACE_O_TRACEEXEC;
-}
-
-static void
-reopen (jstring file, const char *mode, FILE *stream)
-{
-  int len = JvGetStringUTFLength (file);
-  char *fileName = (char *) alloca (len + 1);
-  JvGetStringUTFRegion (file, 0, file->length (), fileName);
-  fileName[len] = '\0';
-  errno = 0;
-  ::freopen (fileName, mode, stream);
-  if (errno != 0) {
-    ::perror ("freopen");
-    ::exit (errno);
-  }
-}
-
-jint
-frysk::sys::Ptrace::child (jstring in, jstring out, jstring err,
-			   		jstringArray args)
-{
-  
-  frysk::sys::Ptrace::getPt () -> assignFileDescriptors (in, out, err, args);
-  
-  _callPtrace ((enum __ptrace_request) PTRACE_TRACEME, 0, 0, 0, "ptrace.traceme");
-  return cpid;
 }
