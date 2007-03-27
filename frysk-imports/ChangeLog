@@ -1,3 +1,8 @@
+2007-03-27  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac: Pass on host, build and prefix to libunwind-i386
+	configure (and add FIXME).
+
 2007-03-22  Nurdin Premji  <npremj@redhat.com>
 
 	* bootstrap.sh: Create dummy libunwind-i386 directory.
