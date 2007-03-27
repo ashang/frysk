@@ -1,5 +1,10 @@
 2007-03-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Ptrace.java (peek, poke): Change addr type to gnu.gcj.RawData.
+	Make methods package local.
+	* cni/Ptrace.cxx: Update.
+	* cni/PtraceByteBuffer.cxx (peek, poke): Update.
+	
 	* Server.java (Server): Add private constructor.
 	(Op): Delete, use Execute.
 	(exception): Add member.

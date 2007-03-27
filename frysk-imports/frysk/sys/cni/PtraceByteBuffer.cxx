@@ -46,6 +46,8 @@
 
 #include <gcj/cni.h>
 
+#include <gnu/gcj/RawData.h>
+
 #include "frysk/sys/PtraceByteBuffer.h"
 #include "frysk/sys/PtraceByteBuffer$Area.h"
 #include "frysk/sys/Ptrace.h"
@@ -100,7 +102,8 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr)
   /* Word align the address, transfer one word.  */
   long paddr = addr & -sizeof (long);
 
-  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid,
+				      (gnu::gcj::RawData*) paddr);
 
   return tmp.byte[addr & (sizeof (long) - 1)];
 }
@@ -125,7 +128,8 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   unsigned long paddr = addr & -sizeof (long);
 
   // Read an entire word.
-  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid,
+				      (gnu::gcj::RawData*) paddr);
 
   /* Adjust the xfer size to ensure that it doesn't exceed the size of
      the single word being transfered.  */
@@ -155,11 +159,12 @@ frysk::sys::PtraceByteBuffer::poke (jlong addr, jint byte)
   long paddr = addr & -sizeof (long);
 
   // Perform a read ...
-  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid,
+				      (gnu::gcj::RawData*) paddr);
 
   // ... modify ...
   tmp.byte[addr & (sizeof (long) - 1)] = byte;
 
   // ... write.
-  frysk::sys::Ptrace::poke(pt_poke, pid, (jstring) (char *) paddr, tmp.word);
+  frysk::sys::Ptrace::poke(pt_poke, pid, (gnu::gcj::RawData*) paddr, tmp.word);
 }

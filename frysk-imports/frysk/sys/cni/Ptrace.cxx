@@ -197,18 +197,19 @@ frysk::sys::Ptrace::getEventMsg (jint pid)
 }
 
 jlong
-frysk::sys::Ptrace::peek(jint peekRequest, jint pid, jstring paddr)
+frysk::sys::Ptrace::peek(jint peekRequest, jint pid,
+			 gnu::gcj::RawData *paddr)
 {
-  return _callPtrace((enum __ptrace_request) peekRequest, pid, (char *)paddr,
-                                        0, "ptrace.peek");
+  return _callPtrace((enum __ptrace_request) peekRequest, pid, paddr, 0,
+		     "ptrace.peek");
 }
 
 void
-frysk::sys::Ptrace::poke(jint peekRequest, jint pid, jstring paddr,
-                                        jlong data)
+frysk::sys::Ptrace::poke(jint peekRequest, jint pid, gnu::gcj::RawData* paddr,
+			 jlong data)
 {
-  _callPtrace((enum __ptrace_request) peekRequest, pid, (char *)paddr,
-                                        data, "ptrace.poke");
+  _callPtrace((enum __ptrace_request) peekRequest, pid, paddr, data,
+	      "ptrace.poke");
 }
 
 jint
