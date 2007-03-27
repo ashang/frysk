@@ -1,3 +1,13 @@
+2007-03-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java (Server): Add private constructor.
+	(Op): Delete, use Execute.
+	(exception): Add member.
+	(execute): When exception non-NULL, re-throw.
+	(run): Catch and save RuntimeException-s.
+	TestServer.java: Update.
+	(testThrow): Add.
+
 2007-03-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Server.java: New file.

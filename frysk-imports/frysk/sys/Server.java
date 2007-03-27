@@ -47,11 +47,12 @@ package frysk.sys;
 public class Server
     extends Thread
 {
-    public static interface Op
+    /**
+     * Do not allow extension.
+     */
+    private Server ()
     {
-	Object execute (Object arg);
     }
-
     /**
      * Create a running server thread.
      */
@@ -80,27 +81,26 @@ public class Server
     /**
      * Have the server thread execute a request.
      */
-    public static Object request (Op op, Object arg)
+    public static void request (Execute op)
     {
-	return server.execute (op, arg);
+	server.execute (op);
     }
     
-    private Op op;
-    private Object arg;
-    private Object result;
+    private Execute op;
     private Object serializeRequests = new Object ();
+    private RuntimeException exception;
 
     /**
      * Process the request.
      */
-    private Object execute (Op op, Object arg)
+    private void execute (Execute op)
     {
 	// Requests are serialized - only one client can interact with
 	// the server at any time.
 	synchronized (serializeRequests) {
 	    // Get the server's attention, pass it the request.
 	    this.op = op;
-	    this.arg = arg;
+	    this.exception = null;
 	    synchronized (this) {
 		notify();
 		// Wait for the reply.
@@ -110,7 +110,8 @@ public class Server
 		    throw new RuntimeException (ie);
 		}
 	    }
-	    return result; // Implicit unlock.
+	    if (exception != null)
+		throw exception;
 	}
     }
 
@@ -130,12 +131,17 @@ public class Server
 	    while (true) {
 		try {
 		    wait();
+		    // Been notify()ed that the request is ready,
+		    // execute it.
+		    this.op.execute ();
 		}
-		catch (InterruptedException ie) {
-		    throw new RuntimeException (ie);
+		catch (RuntimeException e) {
+		    exception = e;
 		}
-		// The request is ready, execute and then ack.
-		result = this.op.execute (arg);
+		catch (InterruptedException e) {
+		    exception = new RuntimeException (e);
+		}
+		// And ack back the requester.
 		notify();
 	    }
 	}

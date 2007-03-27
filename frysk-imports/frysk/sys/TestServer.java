@@ -48,68 +48,39 @@ import frysk.junit.TestCase;
 public class TestServer
     extends TestCase
 {
-    private static final Object one = new Integer (1);
-    private static final Object two = new Integer (2);
-
-    public void testArgOneResultOne ()
+    class Request
+	extends Thread
+	implements Execute
     {
-	Object result = Server.request (new Server.Op () {
-		public Object execute (Object o)
-		{
-		    assertEquals ("arg", one, o);
-		    return o;
-		}
-	    }, one);
-	assertEquals ("result", one, result);
+	boolean executed;
+	boolean ran;
+	int i;
+	Request (int i)
+	{
+	    this.i = i;
+	}
+	public void execute ()
+	{
+	    executed = true;
+	}
+	public void run ()
+	{
+	    Server.request (this);
+	    ran = true;
+	}
     }
 
-    public void testArgOneResultNull ()
+    public void testExecuted ()
     {
-	Object result = Server.request (new Server.Op () {
-		public Object execute (Object o)
-		{
-		    assertEquals ("arg", one, o);
-		    return null;
-		}
-	    }, one);
-	assertNull ("result", result);
-    }
-
-    public void testArgNullResultTwo ()
-    {
-	Object result = Server.request (new Server.Op () {
-		public Object execute (Object o)
-		{
-		    assertNull ("arg", o);
-		    return two;
-		}
-	    }, null);
-	assertEquals ("result", two, result);
+	Request request = new Request (0);
+	Server.request (request);
+	assertTrue ("executed", request.executed);
     }
 
     public void testManyRequests ()
 	throws InterruptedException
     {
 	long now = System.currentTimeMillis();
-	class Request
-	    extends Thread
-	    implements Server.Op
-	{
-	    boolean run;
-	    Request (int i)
-	    {
-	    }
-	    public Object execute (Object o)
-	    {
-		assertEquals ("arg", this, o);
-		return this;
-	    }
-	    public void run ()
-	    {
-		Server.request (this, this);
-		run = true;
-	    }
-	}
 	Request[] requests = new Request[10];
 	for (int i = 0; i < requests.length; i++) {
 	    requests[i] = new Request (i);
@@ -122,7 +93,30 @@ public class TestServer
 	    if (System.currentTimeMillis ()
 		> now + getTimeoutMilliseconds ())
 		fail ("timeout");
-	    assertTrue ("run", requests[i].run);
+	    assertTrue ("executed", requests[i].executed);
+	    assertTrue ("ran", requests[i].ran);
 	}
+    }
+
+    public void testThrow ()
+    {
+	class Throw
+	    extends RuntimeException
+	    implements Execute
+	{
+	    static final long serialVersionUID = 1;
+	    public void execute ()
+	    {
+		throw this;
+	    }
+	}
+	Throw exception = null;
+	try {
+	    Server.request (new Throw ());
+	}
+	catch (Throw t) {
+	    exception = t;
+	}
+	assertNotNull ("exception", exception);
     }
 }
