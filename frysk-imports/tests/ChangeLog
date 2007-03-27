@@ -1,3 +1,8 @@
+2007-03-27  Mark Wielaard  <mark@klomp.org>
+
+	Suggested by Thomas Girard (thomas.g.girard@free.fr)
+	* frysk2270/WrongVariable.java: Assign v1 to v2 to suppress warning.
+
 2007-03-26  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk4282/StackAccessors.java: Print addr variable to avoid compiler warnings.

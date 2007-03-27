@@ -7,7 +7,7 @@ public class WrongVariable
 	class SingleName
 	{
 	    int v1 = 1;
-	    int v2 = 1;
+	    int v2 = v1;
 	}
 	return new SingleName ().v2;
     }
