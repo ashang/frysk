@@ -1,3 +1,8 @@
+2007-03-27  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcWiseTreeView.java (getListedObjects): Use the local data model
+	instead of the TreeStoreSort to get info. Fixes #4288.
+
 2007-03-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLineStartEvent.java: New file.

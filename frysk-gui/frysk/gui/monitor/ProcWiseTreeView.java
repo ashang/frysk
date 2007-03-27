@@ -394,15 +394,16 @@ public class ProcWiseTreeView
   public LinkedList getListedObjects ()
   {
     LinkedList list = new LinkedList();
-    TreeIter iter = this.treeModelSort.getFirstIter();
+    TreeStore model = this.dataModel.getModel();
+    TreeIter iter = model.getFirstIter();
 
     if (iter == null)
       return null;
 
     while (iter != null && this.treeStore.isIterValid(iter))
       {
-        if (this.treeModelSort.getValue(iter, this.dataModel.getSelectedDC()) == true)
-          list.add((GuiObject) this.treeModelSort.getValue(
+        if (model.getValue(iter, this.dataModel.getSelectedDC()) == true)
+          list.add((GuiObject) model.getValue(
                                                        iter,
                                                        this.dataModel.getObjectDC()));
         iter = iter.getNextIter();
