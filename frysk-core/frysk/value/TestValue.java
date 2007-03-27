@@ -55,4 +55,54 @@ public class TestValue
 	Variable v3 = v1.getType().add(v1, v2);
 	assertEquals ("4 + 9", 4 + 9, v3.getInt());
     }
+
+//     /**
+//      * Stan I think the way numbers are handled here needs to be
+//      * simplified.  For instance, instead of IntegerType, ShortType,
+//      * ... ; just have NumberType that can be extended to handle all
+//      * the diffeent variants.
+//      */
+//     public void testNumber ()
+//     {
+// 	// Create a Number, check toString returns the original
+// 	// number.  Do this for all the different number variations -
+// 	// big and little endian, 1-8 bytes. ...  The number should
+// 	// take it's name.
+//     }
+
+//     public void testFloatingPoint ()
+//     {
+// 	// Create a FloatingPointType, check toString to return the
+// 	// original value, well hopefully.
+//     }
+
+//     /**
+//      * For the ArrayType, need to be able to fetch elements and
+//      * iterate over it.
+//      */
+//     public void testArrayOfNumber ()
+//     {
+// 	// Create's an array of Number, and then uses toString to
+// 	// check its contents.
+
+// 	// Also separate tests for 0 dimentioned arrays et.al.
+//     }
+
+//     /**
+//      * For an array, needs to be recursive.
+//      */
+//     public void testArrayOfArrayOfNumber ()
+//     {
+// 	// Create a two dimentional array and check toString still
+// 	// works.
+//     }
+
+//     /**
+//      * For a structure, similar to an array.
+//      */
+//     public void testStructureOfNumber ()
+//     {
+// 	// Create a structure containing a single number, check
+// 	// toString works for that.
+//     }
 }
