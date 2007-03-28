@@ -179,11 +179,15 @@ get_proc_name(::unw_addr_space_t as,
 	if (procName->error < 0 && procName->error != -UNW_ENOMEM)
 		return procName->error;
 
-	size_t upper_limit = min(buf_len, JvGetStringUTFLength(procName->name));
+	//The maximum number of characters that can be copied are buf_len -1.
+	//with bufp[buf_len - 1] = '\0'.
+	//Otherwise copy name.length characters, and bufp[name.length] = '\0'
+	size_t upper_limit = min(buf_len - 1 , JvGetStringUTFLength(procName->name));
 
-	JvGetStringUTFRegion(procName->name, 0, upper_limit - 1, bufp);
+	//JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
+	JvGetStringUTFRegion(procName->name, 0, upper_limit, bufp);
 	
-	bufp[upper_limit-1] = '\0';
+	bufp[upper_limit] = '\0';
 	offp = (unw_word_t *) procName->address;
 	
 	if (upper_limit < buf_len)

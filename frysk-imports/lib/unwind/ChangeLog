@@ -1,5 +1,7 @@
 2007-03-28  Nurdin Premji <npremji@redhat.com>
 
+	* cni/UnwindH.hxx: Fix buffer copy off by one bug, comment on it.
+
 	* ProcName.java (ProcName): Added constructors with just error number.
 	Added constructor with just offset and name.
 	Made error, offset and name constructor private.
