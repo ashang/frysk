@@ -157,6 +157,12 @@ resume(::unw_addr_space_t as, ::unw_cursor_t *cp, void *arg)
 	(lib::unwind::Cursor *) cp);
 }
 
+size_t
+min (size_t a, size_t b)
+{
+	return a < b ? a : b;
+}
+
 /*
  * Returns the name of the procedure that the provided address is in as well as
  * the offset from the start of the procedure.
@@ -166,25 +172,28 @@ get_proc_name(::unw_addr_space_t as,
 		  ::unw_word_t addr, char *bufp,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
-	lib::unwind::ProcName *procName = ((lib::unwind::Accessors *)arg)->getProcName (
-	(jlong) addr, (jint) buf_len);	
+	lib::unwind::ProcName *procName
+	  = ((lib::unwind::Accessors *)arg)->getProcName ((jlong) addr, 
+	  												  (jint) buf_len);	
 
 	if (procName->error < 0 && procName->error != -UNW_ENOMEM)
 		return procName->error;
 
-	JvGetStringUTFRegion(procName->name, 0, JvGetStringUTFLength(procName->name),
-	bufp);
+	size_t upper_limit = min(buf_len, JvGetStringUTFLength(procName->name));
+
+	JvGetStringUTFRegion(procName->name, 0, upper_limit - 1, bufp);
 	
-	bufp[JvGetStringUTFLength(procName->name)] = '\0';
+	bufp[upper_limit-1] = '\0';
 	offp = (unw_word_t *) procName->address;
 	
-	return procName->error;
+	if (upper_limit < buf_len)
+		return 0;
+	else
+		return -UNW_ENOMEM;
 }
 }
 
 using namespace TARGET;
-
-
 
 gnu::gcj::RawDataManaged*
 lib::unwind::TARGET::initRemote(gnu::gcj::RawData* addressSpace, 
@@ -258,7 +267,11 @@ lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameS
 	int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
 	
 	logFinest(this, logger, "getProcName bufp: %s, offset: %lx, error: %d", bufp,(long) offset, err);
-	return new lib::unwind::ProcName((jint) err, (jlong) offset, JvNewStringUTF(bufp));
+	
+	if (err < 0)
+		return new lib::unwind::ProcName((jint) err);
+		
+	return new lib::unwind::ProcName((jlong) offset, JvNewStringUTF(bufp));
 }
 
 jint

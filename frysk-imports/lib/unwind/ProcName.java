@@ -45,10 +45,26 @@ public class ProcName
   public final long address;
   public final String name;
   
-  public ProcName(int error, long address, String name)
+  private ProcName(int error, long address, String name)
   {
     this.error = error;
     this.address = address;
     this.name = name;
   }
+  
+  public ProcName(long address, String name)
+  {
+	  this(0, address, name);
+  }
+  
+  public ProcName(int error)
+  {
+	  this(error, 0, null);
+  }
+  
+  public String toString()
+  {
+    return "error: " + error + " name: " + name + " offset: " + Long.toHexString(address);
+  }
+  
 }

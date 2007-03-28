@@ -1,3 +1,11 @@
+2007-03-28  Nurdin Premji <npremji@redhat.com>
+
+	* ProcName.java (ProcName): Added constructors with just error number.
+	Added constructor with just offset and name.
+	Made error, offset and name constructor private.
+	* cni/PtraceAccessors.cxx: Updated ProcName creations.
+	* cni/UnwindH.hxx: Ditto.
+
 2007-03-23  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcInfo.java (toString): Print ip addresses in hex.

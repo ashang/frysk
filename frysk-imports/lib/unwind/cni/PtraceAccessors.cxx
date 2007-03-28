@@ -148,9 +148,9 @@ lib::unwind::PtraceAccessors::getProcName (jlong addr, jint maxNameSize)
 	
 
 	if (ret < 0 && ret != -UNW_ENOMEM) 
-		return new ProcName((jint) ret, 0, NULL); 
+		return new ProcName((jint) ret); 
 	
-	return new ProcName((jint) ret, (jlong) offset, JvNewStringUTF(buffp));	
+	return new ProcName((jlong) offset, JvNewStringUTF(buffp));	
 }
 
 void 
