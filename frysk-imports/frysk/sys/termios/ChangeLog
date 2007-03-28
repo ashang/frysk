@@ -1,3 +1,7 @@
+2007-03-28  Mark Wielaard  <mark@klomp.org>
+
+	* TestLib.java (logger): Use frysk.sys.termios for getLogger().
+
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (verifySttyOutputContains): Create a child process

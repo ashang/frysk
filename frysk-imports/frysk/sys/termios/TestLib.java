@@ -55,7 +55,7 @@ import frysk.sys.Sig;
 public class TestLib
     extends TestCase
 {
-    protected final static Logger logger = Logger.getLogger("frysk");// .sys.termios");
+  protected final static Logger logger = Logger.getLogger("frysk.sys.termios");
     protected PseudoTerminal pty;
     private FileDescriptor fd;
     protected Termios termios;
