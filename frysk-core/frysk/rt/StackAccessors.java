@@ -49,6 +49,9 @@ import frysk.proc.Task;
 import frysk.sys.Execute;
 import frysk.sys.Server;
 
+import lib.dw.Dwfl;
+import lib.dw.DwflModule;
+import lib.dw.SymbolBuilder;
 import lib.unwind.Accessors;
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
@@ -193,25 +196,47 @@ public class StackAccessors
   public ProcName getProcName (long addr, int maxNameSize)
   {
     // Need to tell ptrace thread to perform the findProcInfo operation.
-    class ExecuteGetProcName
-        implements Execute
+    class ExecuteGetProcName 
+        implements Execute, SymbolBuilder
     {
       ProcName procName;
       long addr;
-      int maxNameSize;
       
-      ExecuteGetProcName (long addr, int maxNameSize)
+      ExecuteGetProcName (long addr)
       {
         this.addr = addr;
-        this.maxNameSize = maxNameSize;
+      }
+      
+      public void symbol (String name, long value, long size)
+      {
+	  procName = new ProcName(addr-value, name);
       }
       
       public void execute ()
       {
-        procName = ptraceAccessors.getProcName(addr, maxNameSize);
+        logger.log(Level.FINE, "Looking for addr: {0}", Long.toHexString(addr));
+        Dwfl dwfl = null;
+        dwfl = new Dwfl(myTask.getProc().getPid());
+        
+        DwflModule dwflModule = null;
+        
+        if (dwfl != null)
+        dwflModule = dwfl.getModule(addr);
+        else
+          logger.log(Level.FINE, "dwfl was null");
+                
+        if (dwflModule != null)
+          {
+        dwflModule.getSymbol(addr, this);
+                
+	logger.log(Level.FINE, "ProcName is: {0}\n", procName);
+          }
+        
+        if (procName == null)
+           procName = new ProcName(-lib.unwind.Error.UNW_EUNSPEC_);
       }
     }
-    ExecuteGetProcName executer = new ExecuteGetProcName(addr, maxNameSize);
+    ExecuteGetProcName executer = new ExecuteGetProcName(addr);
     Server.request(executer);
     return executer.procName;
   }

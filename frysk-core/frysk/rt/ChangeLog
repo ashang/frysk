@@ -1,3 +1,7 @@
+2007-03-28  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java (getProcName): Implemented using dwarf bindings.
+
 2007-03-28  Mark Wielaard  <mark@klomp.org>
 
 	* StackCallbacks.java (logger): Use frysk.rt for getLogger().
