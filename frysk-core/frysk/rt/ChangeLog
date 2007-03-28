@@ -1,3 +1,7 @@
+2007-03-28  Mark Wielaard  <mark@klomp.org>
+
+	* StackCallbacks.java (logger): Use frysk.rt for getLogger().
+
 2007-03-27  Andrew Cagney  <cagney@redhat.com>
 
 	* StackAccessors.java: Replace frysk.sys.Ptrace.requestExecute

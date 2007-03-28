@@ -51,7 +51,7 @@ import lib.unwind.UnwindCallbacks;
 public class StackCallbacks
     implements UnwindCallbacks
 {
-  static final Logger logger = Logger.getLogger("frysk");// .rt");
+  static final Logger logger = Logger.getLogger("frysk.rt");
 
   private Task myTask;
 
