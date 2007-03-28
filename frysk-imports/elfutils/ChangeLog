@@ -1,3 +1,16 @@
+2007-03-28  Nurdin Premji  <npremji@redhat.com>
+
+	* libdw/ChangeLog
+	* libdw/libdw.map
+	* libdwfl/ChangeLog
+	* libdwfl/dwfl_module_addrname.c
+	* libdwfl/dwfl_module_addrsym.c
+	* libdwfl/libdwfl.h
+	* libdwfl/libdwflP.h
+	* libdwfl/Makefile.am
+	* NEWS
+	Apply elfutils-0.127 dwfl_module_addrsym patches.
+
 2007-03-09  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* libdwfl/dwfl_module.c: Include files updated.

@@ -332,6 +332,12 @@ extern const char *dwfl_module_getsym (Dwfl_Module *mod, int ndx,
 /* Find the symbol that ADDRESS lies inside, and return its name.  */
 extern const char *dwfl_module_addrname (Dwfl_Module *mod, GElf_Addr address);
 
+/* Find the symbol that ADDRESS lies inside, and return detailed
+   information as for dwfl_module_getsym (above).  */
+extern const char *dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr address,
+					GElf_Sym *sym, GElf_Word *shndxp)
+  __nonnull_attribute__ (3);
+
 
 /*** Dwarf access functions ***/
 
