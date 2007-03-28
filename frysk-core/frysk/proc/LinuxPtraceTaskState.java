@@ -184,6 +184,49 @@ abstract class LinuxPtraceTaskState
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
 		return detaching;
 	    }
+
+	    /**
+	     * Unblocking in attaching state is really a noop since
+	     * no observer should have been triggered yet, so no
+	     * observer should be blocking yet (but we allow a stray
+	     * unblock).
+	     */
+	    TaskState handleUnblock (Task task,
+				     TaskObserver observer)
+	    {
+		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		// Sanity check
+		if (task.blockers.remove(observer))
+		  {
+		    throw new RuntimeException
+		      ("blocked observer in attaching state unblock? "
+		       + observer);
+		  }
+		return this;
+	    }
+
+	    /**
+	     * All observer can be added (but won't trigger yet) in
+	     * attaching state.
+	     */
+	    TaskState handleAddObservation(Task task,
+					   TaskObservation observation)
+	    {
+	      logger.log (Level.FINE, "{0} handleAddObservation\n", task);
+	      observation.add();
+	      return this;
+	    }
+	  
+	    /**
+	     * Deleting an observer is always allowd in attaching state.
+	     */
+	    TaskState handleDeleteObservation(Task task,
+					      TaskObservation observation)
+	    {
+	      logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
+	      observation.delete();
+	      return handleUnblock(task, observation.getTaskObserver());
+	    }
 	};
 
     /**
@@ -218,6 +261,19 @@ abstract class LinuxPtraceTaskState
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
+
+        /**
+	 * While attaching the Task disappeared, go to destroyed.
+	 */
+        TaskState handleTerminatedEvent (Task task, boolean signal,
+					 int value)
+	{
+	  logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task);
+	  task.proc.remove (task);
+	  handleAttachedTerminated (task, signal, value);
+	  return destroyed;
+	}
+
 	/**
 	 * Once the task is both unblocked and continued, should
 	 * transition to the running state.
