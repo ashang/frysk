@@ -73,7 +73,7 @@ import java.util.logging.Logger;
 public class TestLib
     extends TestCase
 {
-  protected final static Logger logger = Logger.getLogger("frysk");// .proc");
+  protected final static Logger logger = Logger.getLogger("frysk.proc");
 
   /**
    * Log the integer ARG squeezed between PREFIX and SUFFIX.

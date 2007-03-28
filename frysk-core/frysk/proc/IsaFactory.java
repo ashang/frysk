@@ -55,7 +55,7 @@ import lib.elf.ElfFileException;
 public class IsaFactory
 {
   private static IsaFactory factory;
-  static final Logger logger = Logger.getLogger ("frysk");//.proc");
+  static final Logger logger = Logger.getLogger("frysk.proc");
   private Hashtable isaHash;
     
   IsaFactory() 

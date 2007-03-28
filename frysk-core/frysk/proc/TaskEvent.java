@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 public abstract class TaskEvent
     implements Event
 {
-    private static Logger logger = Logger.getLogger ("frysk");//.proc");
+    private static Logger logger = Logger.getLogger("frysk.proc");
     protected Task task;
     protected TaskId taskId;
     TaskEvent ()

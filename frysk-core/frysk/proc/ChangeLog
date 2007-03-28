@@ -1,5 +1,19 @@
 2007-03-28  Mark Wielaard  <mark@klomp.org>
 
+	* Host.java (logger): Use fully qualified frysk.proc for getLogger().
+	* IsaFactory.java (logger): Likewise.
+	* LinuxPPC.java (logger): Likewise.
+	* LinuxPPC64.java (logger): Likewise.
+	* Proc.java (logger): Likewise.
+	* ProcEvent.java (logger): Likewise.
+	* ProcTasksObserver.java (logger): Likewise.
+	* State.java (logger): Likewise.
+	* Task.java (logger): Likewise.
+	* TaskEvent.java (logger): Likewise.
+	* TestLib.java (logger): Likewise.
+
+2007-03-28  Mark Wielaard  <mark@klomp.org>
+
 	* LinuxPtraceTaskState.java (attaching):
 	Add handleUnblock, handleAddObservation and handleDeleteObservation.
 	(Attached): Add handleTerminatedEvent.
