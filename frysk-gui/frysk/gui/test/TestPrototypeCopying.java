@@ -41,8 +41,6 @@ package frysk.gui.test;
 
 import java.util.Iterator;
 
-import frysk.junit.TestCase;
-
 import org.gnu.gtk.Gtk;
 
 import frysk.gui.monitor.actions.Action;
@@ -55,6 +53,7 @@ import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskForkedObserver;
 import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.junit.TestCase;
 
 public class TestPrototypeCopying extends TestCase{
 
@@ -75,7 +74,7 @@ public class TestPrototypeCopying extends TestCase{
               
 				((TaskForkedObserver)a).offspringTaskFilterPoint.addFilter(procNameFilter);
 			}
-			ObserverRoot b = (ObserverRoot) a.getCopy();
+			ObserverRoot b = (ObserverRoot) observerManager.getObserverCopy(a);
 			
 			assertCorrectCopy(a, b);
 		}

@@ -52,7 +52,6 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.Window;
 
 import frysk.gui.Gui;
-import frysk.gui.sessions.Session;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -96,10 +95,6 @@ public class MainWindow extends Window implements Saveable{
 		//this.showAll();
 	}
 
-	public void setSession(Session session){
-		this.sessionProcTreeView.setSession(session);
-	}
-	
 	public void save(Preferences prefs) {
 		prefs.putInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
 		prefs.putInt("position.y", this.getPosition().getY()); //$NON-NLS-1$

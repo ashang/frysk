@@ -226,7 +226,7 @@ public class CreateFryskSessionDruid
         if (prev.equals(dp.getName()))
           continue;
         
-        Iterator j = dp.getObservers().iterator();
+        Iterator j = currentSession.getObservers().iterator();
         while (j.hasNext())
           {
             ObserverRoot or = (ObserverRoot) j.next();
@@ -254,11 +254,11 @@ public class CreateFryskSessionDruid
                                                          guiProc.getNiceExecutablePath());
         
         dp.addProc(guiProc);
-        Iterator j = observersList.iterator();
-        while (j.hasNext())
-          {
-            dp.addObserver((ObserverRoot) j.next());
-          }                      
+//        Iterator j = observersList.iterator();
+//        while (j.hasNext())
+//          {
+//            dp.addObserver((ObserverRoot) j.next());
+//          }                      
         currentSession.addProcess(dp);
       }
     
@@ -314,7 +314,7 @@ public class CreateFryskSessionDruid
         if (prev.equals(dp.getName()))
           continue;
         
-        Iterator j = dp.getObservers().iterator();
+        Iterator j = currentSession.getObservers().iterator();
         while (j.hasNext())
           {
             ObserverRoot or = (ObserverRoot) j.next();
@@ -342,11 +342,11 @@ public class CreateFryskSessionDruid
                                                          guiProc.getNiceExecutablePath());
         
         dp.addProc(guiProc);
-        Iterator j = observersList.iterator();
-        while (j.hasNext())
-          {
-            dp.addObserver((ObserverRoot) j.next());
-          }                      
+//        Iterator j = observersList.iterator();
+//        while (j.hasNext())
+//          {
+//            dp.addObserver((ObserverRoot) j.next());
+//          }                      
         currentSession.addProcess(dp);
       }
     
@@ -773,7 +773,7 @@ public class CreateFryskSessionDruid
 
     processObserverSelectionTreeView.watchGuiProcs(currentSession.getProcesses());
     processObserverSelectionTreeView.getSelection().addListener(
-                                                                new TreeSelectionListener()
+    new TreeSelectionListener()
                                                                 {
                                                                   public void selectionChangedEvent (
                                                                                                      TreeSelectionEvent arg0)
@@ -781,7 +781,7 @@ public class CreateFryskSessionDruid
                                                                     final DebugProcess selected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
                                                                     if (selected != null)
                                                                       {
-                                                                        final Iterator i = selected.getObservers().iterator();
+                                                                        final Iterator i = currentSession.getObservers().iterator();
                                                                         observerSelectionTreeView.clearChecked();
                                                                         while (i.hasNext())
                                                                           {
@@ -802,19 +802,11 @@ public class CreateFryskSessionDruid
                                                                                                          CellRendererToggleEvent arg0)
                                                                     {
                                                                       final GuiObject selected = observerSelectionTreeView.getSelectedObject();
-                                                                      final DebugProcess observerProcessSelected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
-                                                                      if (observerSelectionTreeView.isChecked(selected))
-                                                                        {
-                                                                          if (! observerProcessSelected.getObservers().contains(
-                                                                                                                                selected))
-                                                                            {
-                                                                              observerProcessSelected.addObserver((ObserverRoot) selected.getCopy());
-                                                                            }
-                                                                        }
-                                                                      else
-                                                                        {
-                                                                          observerProcessSelected.removeObserverByName(((ObserverRoot) selected).getName());
-                                                                        }
+                                                                      if (observerSelectionTreeView.isChecked(selected)){
+                                                                          currentSession.addObserver((ObserverRoot) selected);
+                                                                      }else{
+                                                                        currentSession.removeObserver((ObserverRoot) selected);
+                                                                      }
                                                                     }
                                                                   });
 
@@ -924,9 +916,6 @@ public class CreateFryskSessionDruid
       {
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
-            Iterator i = currentSession.getProcesses().iterator();
-            while (i.hasNext())
-              ((DebugProcess) i.next()).addObservers();
             
             if (!loadSession)
               SessionManager.theManager.addSession(currentSession);
@@ -936,11 +925,11 @@ public class CreateFryskSessionDruid
             LinkedList ll = new LinkedList();
             ll.add(WindowManager.theManager.mainWindow);
             IconManager.trayIcon.setPopupWindows(ll);
-            WindowManager.theManager.mainWindow.setSession(currentSession);
+            SessionManager.theManager.setCurrentSession(currentSession);
 //            WindowManager.theManager.mainWindow.buildTerminal();
             WindowManager.theManager.mainWindow.hideTerminal();
             WindowManager.theManager.mainWindow.showAll();
-            WindowManager.theManager.sessionManager.hideAll();
+            WindowManager.theManager.sessionManagerDialog.hideAll();
             hide();
           }
       }

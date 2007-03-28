@@ -75,10 +75,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 
 		private ObservableLinkedList actions;
 		private ObservableLinkedList runnables;
-			
-//		Runnable onAdded;
-//		Runnable onDeleted;
-		
+					
 		private String info;
 		
 		private ObservableLinkedList filterPoints;
@@ -90,7 +87,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		
 		private frysk.proc.Action returnAction;
 		
-		public ObserverRoot(){
+        protected ObserverRoot(){
 			super();
 			
 			this.actions      = new ObservableLinkedList();
@@ -103,15 +100,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 			this.genericActionPoint = new GenericActionPoint(" ", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
-
-//          XXX: logging is done though setInfo
-//          so this is not needed for the time being
-//			LogAction logAction = new LogAction();
-//			logAction.dontSaveObject();
-//			this.genericActionPoint.addAction(logAction);
 		}
 		
-		public ObserverRoot(String name, String toolTip){
+        protected ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
 			
 			this.actions      = new ObservableLinkedList();
@@ -124,10 +115,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 			this.genericActionPoint = new GenericActionPoint(" ", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
-
 		}
 		
-		public ObserverRoot(ObserverRoot other) {
+        protected ObserverRoot(ObserverRoot other) {
 			super(other);
 
 			this.actions      = new ObservableLinkedList(other.actions);
@@ -140,10 +130,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
 			this.addActionPoint(genericActionPoint);
-
-//			LogAction logAction = new LogAction();
-//			logAction.dontSaveObject();
-//			this.genericActionPoint.addAction(logAction);
 		}
 
 		public void update(Observable o, Object obj) {
@@ -169,31 +155,11 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.runnables.add(action);
 		}
 			
-//		public void addedTo (Object o) {
-//			if(this.onAdded != null){
-//				CustomEvents.addEvent(this.onAdded);
-//			}
-//		}
-//
-//		public void deletedFrom (Object o) {
-//			if(this.onDeleted != null){
-//				CustomEvents.addEvent(this.onDeleted);
-//			}
-//		}
-
 		public void addFailed (Object o, Throwable w) {
 			
 			EventLogger.logAddFailed("addFailed(Object o, Throwable w)", o);
-			throw new RuntimeException (w);
+			throw new RuntimeException ("Failed to add " + this + " to " + o,w);
 		}
-
-//		public void onAdded(Runnable r){
-//			this.onAdded = r;
-//		}
-//		
-//		public void onDeleted(Runnable r){
-//			this.onDeleted = r;
-//		}
 
 		/**
 		 * Could be called by an action during the update call to get
@@ -329,7 +295,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			}
 		}
 		
-		public GuiObject getCopy() {
+		protected GuiObject getCopy() {
 			return new ObserverRoot(this);
 		}
 		

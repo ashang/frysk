@@ -57,6 +57,7 @@ import org.gnu.gtk.event.ExposeListener;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
+import frysk.gui.sessions.SessionManager;
 
 public class EventViewer2 extends Table {
 	
@@ -121,6 +122,14 @@ public class EventViewer2 extends Table {
         timeLineSelectionManager.getSelectedTimeLines().itemAdded.addObserver(selectionObserver);
         timeLineSelectionManager.getSelectedTimeLines().itemRemoved.addObserver(selectionObserver);
         
+        SessionManager.theManager.currentSessionChanged.addObserver(new Observer()
+        {
+          public void update (Observable observable, Object object)
+          {
+            setSession((Session) object); 
+          }
+        });
+        
         this.addListener(new ExposeListener()
         {
           public boolean exposeEvent (ExposeEvent event)
@@ -135,7 +144,7 @@ public class EventViewer2 extends Table {
 	}
 
 	
-    public void setSession(Session session){
+    private void setSession(Session session){
       this.currentSession = session;
       if(!sessionMounted){
         this.mountSession();  

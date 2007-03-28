@@ -68,7 +68,7 @@ import frysk.gui.sessions.SessionManager;
  * SessionManagerGui - Manage all entry workflows into the UI
  * 
  */
-public class SessionManagerGui extends org.gnu.gtk.Dialog implements
+public class SessionManagerDialog extends org.gnu.gtk.Dialog implements
 		LifeCycleListener {
 
 	private Button quitButton;
@@ -101,7 +101,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements
 	 * 
 	 * @param glade - glade file for the session manager.
 	 */
-	public SessionManagerGui(LibGlade glade) {
+	public SessionManagerDialog(LibGlade glade) {
 		super(glade.getWidget("SessionManager").getHandle());
 		this.addListener(this);
 		setIcon(IconManager.windowIcon);

@@ -356,7 +356,7 @@ public class EditObserverDialog
   {
     oldEditObserverName = "";
     this.observerTypeComboBox.setSensitive(true);
-    this.setAll(new ObserverRoot());
+    this.setAll(ObserverManager.theManager.getBlankObserver());
     setOkButtonState();
   }
 

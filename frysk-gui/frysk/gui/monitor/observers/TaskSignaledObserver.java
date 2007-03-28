@@ -62,7 +62,7 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	 * 
 	 * Provides functionality for the Signaled Frysk Core observer in the UI.
 	 */
-	public TaskSignaledObserver() {
+    protected TaskSignaledObserver() {
 		super("Signaled Observer",
 				"Fires every time this tasks has a pending signal l");
 
@@ -83,7 +83,7 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	 * new TaskSignalOberser from the observer passed as a parameter. This is used in cloning
 	 * the observer.
 	 */
-	public TaskSignaledObserver(final TaskSignaledObserver other) {
+    protected TaskSignaledObserver(final TaskSignaledObserver other) {
 		super(other);
 
 		taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
@@ -145,7 +145,7 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 		return filter(task);
 	}
 
-	public GuiObject getCopy() {
+    protected GuiObject getCopy() {
 		return new TaskSignaledObserver(this);
 	}
 

@@ -46,28 +46,36 @@ import java.util.Iterator;
 import org.jdom.Element;
 
 import frysk.Config;
+import frysk.gui.monitor.GuiObservable;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
 
+/**
+ * SessionManager is a simple singleton design pattern that keeps it own
+ * static reference. Stores a list of sessions, can load and save those
+ * sessions, and allows addition and deletion of sessions.
+ */
 public class SessionManager
 {
 
   public static SessionManager theManager = new SessionManager();
 
   ObservableLinkedList sessions = new ObservableLinkedList();
-
+  
+  private Session currentSession;
+  public final GuiObservable currentSessionChanged;
+  
   private final UniqueHashMap nameHash = new UniqueHashMap();
 
   private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 
-  /**
-   * SessionManager is a simple singleton design pattern that keeps it own
-   * static reference. Stores a list of sessions, can load and save those
-   * sessions, and allows addition and deletion of sessions.
-   */
+  private Session previousSession;
+
   public SessionManager ()
   {
+    this.currentSessionChanged = new GuiObservable();
+    
     ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
     load();
   }
@@ -139,6 +147,33 @@ public class SessionManager
     sessions.remove(session);
   }
 
+  
+  /**
+   * Sets the sesstion that is to be currently examined by frysk.
+   * @param session
+   */
+  public void setCurrentSession(Session session){
+    this.previousSession = currentSession;
+    this.currentSession = session;
+    this.currentSessionChanged.notifyObservers(currentSession);
+  }
+  
+  /**
+   * Returns the session currently being examined by Frysk.
+   * @return
+   */
+  public Session getCurrentSession(){
+    return currentSession;
+  }
+  
+  /**
+   * returns the prevoius session. Needed for clean up perposes
+   * @return
+   */
+  public Session getPrevoiusSession(){
+    return this.previousSession;
+  }
+  
   public void save ()
   {
     final Iterator iterator = getSessions().iterator();

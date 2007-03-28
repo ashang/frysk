@@ -88,12 +88,15 @@ public class ObserverManager {
 	
 	private ObservableLinkedList baseObservers;
 	
+    private ObservableLinkedList defaultObservers;
+    
     public ProgramObserver programObserver;
     
 	public ObserverManager(){
 		this.baseObservers = new ObservableLinkedList();
 		this.taskObservers = new ObservableLinkedList();
-	
+		this.defaultObservers = new ObservableLinkedList();
+        
         this.programObserver = new ProgramObserver();
         
 		this.nameHash = new UniqueHashMap();
@@ -115,20 +118,20 @@ public class ObserverManager {
 		//============================================
 		ObserverRoot observer = new TaskSignaledObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, false);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskExecObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		((TaskExecObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
 		
         //============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
         ((TaskForkedObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
         ((TaskForkedObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
@@ -136,14 +139,14 @@ public class ObserverManager {
         //============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
         ((TaskTerminatingObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
         
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
         ((TaskCloneObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
         ((TaskCloneObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
@@ -151,41 +154,8 @@ public class ObserverManager {
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer);
+		this.tryAddTaskObserverPrototype(observer, false);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		
-//		observer = new ExitNotificationObserver();
-//		tryAddTaskObserverPrototype(observer);	
-		//============================================
-//		final TaskForkedObserver customObserver = new TaskForkedObserver();
-//		customObserver.setName("Custom 'ls' Watcher");
-		
-		
-//		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
-//    forkedObserver.setName("XProgramWatcherX");
-//    forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter());
-//    forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter());
-//    forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter());
-//    forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter());
-//
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-//    forkedObserver.genericActionPoint.addAction(new LogAction());
-		
-		//final TaskExecObserver   execObserver = new TaskExecObserver();
-		
-//		AddTaskObserverAction stickyObserverAction = new AddTaskObserverAction();
-//		stickyObserverAction.setObserver(forkedObserver);
-//		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
-//		
-//		//forkedObserver.apply(proc);
-//		//execObserver.apply(proc);
-//		forkedObserver.dontSaveObject();
-//
-//		tryAddTaskObserverPrototype(forkedObserver);	
 	}
 
 	/**
@@ -248,9 +218,12 @@ public class ObserverManager {
 	 * more up to date and doesnt add.
 	 * @param observer
 	 */
-	public void tryAddTaskObserverPrototype(ObserverRoot observer){
+	public void tryAddTaskObserverPrototype(ObserverRoot observer, boolean defaultObserver){
 		if(!this.nameHash.nameIsUsed(observer.getName())){
 			this.addTaskObserverPrototype(observer);
+            if(defaultObserver){
+              this.defaultObservers.add(observer);
+            }
 		}
 	}
 	
@@ -279,6 +252,10 @@ public class ObserverManager {
 		this.nameHash.remove(observer);
 	}
 	
+    public ObserverRoot getBlankObserver(){
+      return new ObserverRoot();
+    }
+    
 	private void loadObservers(){
 		WindowManager.logger.log(Level.FINE, "{0} loadObservers\n", this);
 		Element node = new Element("Observer");
@@ -326,5 +303,10 @@ public class ObserverManager {
 		}
 		
 	}
+
+  public ObservableLinkedList getDefaultObservers ()
+  {
+    return this.defaultObservers;
+  }
 	
 }

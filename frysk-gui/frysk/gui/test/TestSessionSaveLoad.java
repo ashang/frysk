@@ -52,21 +52,38 @@ import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 
 public class TestSessionSaveLoad extends TestCase {
-	
+
+    SessionManager sessionManager;
+    Session mySavedSession;
+    DebugProcess debugProcess;
+
+    protected void setUp() throws Exception {
+      super.setUp();
+      Gtk.init(new String[]{});
+
+      sessionManager = new SessionManager();
+      mySavedSession = new Session("1", "2");
+      sessionManager.addSession(mySavedSession);
+        
+    }
+    
+    protected void tearDown() throws Exception{
+      super.tearDown();
+      sessionManager.removeSession(mySavedSession);
+    }
+    
 	public void testSaveLoad(){
-		Gtk.init(new String[]{});
 		
-		SessionManager sessionManager = new SessionManager();
-		Session mySavedSession = new Session("1", "2");
-		DebugProcess debugProcess = new DebugProcess("3", "33", "333");
-		
+        debugProcess = new DebugProcess("3", "33", "333");
+        
+        System.out.println("TestSessionSaveLoad.testSaveLoad() size: " + ObserverManager.theManager.getTaskObservers().size());
+        
 		Iterator iterator = ObserverManager.theManager.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
-			debugProcess.addObserver(observer);
+			mySavedSession.addObserver(observer);
 		}
 		mySavedSession.addProcess(debugProcess);
-		sessionManager.addSession(mySavedSession);
 		sessionManager.save();
 		
 		
@@ -78,14 +95,14 @@ public class TestSessionSaveLoad extends TestCase {
 		assertEquals("session tooltip", myLoadedSession.getToolTip(), mySavedSession.getToolTip());
 		assertEquals("number of DebugProcessies", mySavedSession.getProcesses().size(), myLoadedSession.getProcesses().size());
 		
-		DebugProcess savedProc = (DebugProcess) mySavedSession.getProcesses().getFirst();
-		DebugProcess loadedProc = (DebugProcess) myLoadedSession.getProcesses().getFirst();
+//		DebugProcess savedProc = (DebugProcess) mySavedSession.getProcesses().getFirst();
+//		DebugProcess loadedProc = (DebugProcess) myLoadedSession.getProcesses().getFirst();
 		
 		
-		Iterator savedIter = savedProc.getObservers().iterator();
-		Iterator loadedIter = loadedProc.getObservers().iterator();
+		Iterator savedIter = mySavedSession.getObservers().iterator();
+		Iterator loadedIter = myLoadedSession.getObservers().iterator();
 		
-		assertEquals("number of observers", loadedProc.getObservers().size(), savedProc.getObservers().size());
+		assertEquals("number of observers", myLoadedSession.getObservers().size(), mySavedSession.getObservers().size());
 		
 		while(savedIter.hasNext()){
 			ObserverRoot savedObserver = (ObserverRoot) savedIter.next();
@@ -94,6 +111,5 @@ public class TestSessionSaveLoad extends TestCase {
 			assertEquals("name of observer", savedObserver.getName(), loadedObserver.getName());
 		}
 		
-		sessionManager.removeSession(mySavedSession);
 	}
 }

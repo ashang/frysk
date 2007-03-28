@@ -46,10 +46,11 @@ import org.jdom.Element;
  * A GuiObject is one that has a name and a tooltip.
  */
 public class GuiObject
-    extends GuiObservable
     implements SaveableXXX
 {
-
+  
+  public final GuiObservable propertiesChanged;
+  
   private boolean saveObject = true;
 
   private String name;
@@ -59,14 +60,18 @@ public class GuiObject
   
   public GuiObject (String name, String toolTip)
   {
+    this.propertiesChanged = new GuiObservable();
+
     this.name = name;
     this.toolTip = toolTip;
     this.summary = name + " : " + toolTip;
     this.saveObject = true;
   }
 
-  public GuiObject (GuiObject other)
+  protected GuiObject (GuiObject other)
   {
+    this.propertiesChanged = new GuiObservable();
+
     this.name = other.name;
     this.toolTip = other.toolTip;
     this.saveObject = other.saveObject;
@@ -74,12 +79,14 @@ public class GuiObject
 
   public GuiObject ()
   {
+    this.propertiesChanged = new GuiObservable();
+    
     this.setName("NoName");
     this.setToolTip("NoTooltip");
     this.saveObject = true;
   }
 
-  public GuiObject getCopy ()
+  protected GuiObject getCopy ()
   {
     return new GuiObject(this);
   }
@@ -87,8 +94,7 @@ public class GuiObject
   public void setName (String name)
   {
     this.name = name;
-
-    this.notifyObservers();
+    this.propertiesChanged.notifyObservers(this);
   }
 
   public String getName ()
@@ -100,7 +106,7 @@ public class GuiObject
   {
     this.toolTip = toolTip;
 
-    this.notifyObservers();
+    this.propertiesChanged.notifyObservers(this);
   }
 
   public String getToolTip ()

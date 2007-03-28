@@ -65,7 +65,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	public TaskActionPoint parentTaskActionPoint;
 	public TaskActionPoint offspringTaskActionPoint;
 
-	public TaskCloneObserver(){
+    protected TaskCloneObserver(){
 		super("Clone Observer", "Fires when a proc calls clone");
 
 		this.parentTaskFilterPoint = new TaskFilterPoint("cloning thread","Thread that made the clone system call");
@@ -82,7 +82,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		
 	}
 
-	public TaskCloneObserver(TaskCloneObserver other) {
+    protected TaskCloneObserver(TaskCloneObserver other) {
 		super(other);
 		
 		this.parentTaskFilterPoint = new TaskFilterPoint(other.parentTaskFilterPoint);
@@ -181,7 +181,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		task.requestAddClonedObserver(this);
 	}
 	
-	public GuiObject getCopy(){
+    protected GuiObject getCopy(){
 		return new TaskCloneObserver(this);
 	}
 

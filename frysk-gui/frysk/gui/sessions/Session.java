@@ -40,14 +40,21 @@
 
 package frysk.gui.sessions;
 
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jdom.Element;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.observers.TaskCloneObserver;
-import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskForkedObserver;
-import frysk.gui.monitor.observers.TaskTerminatingObserver;
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
  * A Session object is used to hold and save user preferences with respect to a
@@ -58,7 +65,10 @@ public class Session
 {
 
   private ObservableLinkedList procs;
-
+  private ObservableLinkedList observers;
+  
+  private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+  
   /**
    * Creates a new empty session object, with an empty list processes. Debug
    * processes should be added to this session.
@@ -67,6 +77,9 @@ public class Session
   {
     super();
     procs = new ObservableLinkedList();
+    observers = new ObservableLinkedList();
+    this.initListObservers();
+    this.initDefaultObservers();
   }
 
   /**
@@ -80,6 +93,9 @@ public class Session
     super(other);
 
     procs = new ObservableLinkedList(other.procs);
+    observers = new ObservableLinkedList(other.observers);
+    this.initListObservers();
+    this.initDefaultObservers();
   }
 
   /**
@@ -93,8 +109,58 @@ public class Session
   {
     super(name, toolTip);
     procs = new ObservableLinkedList();
+    observers = new ObservableLinkedList();
+    this.initListObservers();
+    this.initDefaultObservers();
   }
 
+  private void initDefaultObservers(){
+    Iterator iterator = ObserverManager.theManager.getDefaultObservers().iterator();
+    while (iterator.hasNext())
+      {
+        ObserverRoot observer = (ObserverRoot) iterator.next();
+        this.observers.add(observer);
+      }
+  }
+  
+  private void initListObservers(){
+    //Every time a process is added add all existing observers to it
+    this.procs.itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        addAllObservers((DebugProcess) object);
+      }
+    });
+    
+    //Every time a process is removed remove all existing observers from it
+    this.procs.itemRemoved.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        removeAllObservers((DebugProcess) object);
+      }
+    });
+    
+    //Every time an observer is added add it to all existing processes
+    this.observers.itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        addObserverToAllProcs( (ObserverRoot) object);
+      }
+    });
+    
+    //Every time an observer is removed remove it from all existing processes
+    this.observers.itemRemoved.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        removeObserverFromAllProcs((ObserverRoot) object);
+      }
+    });
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -105,6 +171,50 @@ public class Session
     super.setName(name);
   }
 
+  public void addObserver(ObserverRoot observer){
+    this.observers.add(observer);
+  }
+  
+  public void removeObserver(ObserverRoot observer){
+    this.observers.remove(observer);
+  }
+  
+  private void addAllObservers(DebugProcess debugProcess){
+    Iterator iterator = this.observers.iterator();
+    while (iterator.hasNext())
+      {
+        ObserverRoot observer = (ObserverRoot) iterator.next();
+        debugProcess.addObserver(observer);
+      }
+  }
+  
+  private void removeAllObservers(DebugProcess debugProcess){
+    Iterator iterator = this.observers.iterator();
+    while (iterator.hasNext())
+      {
+        ObserverRoot observer = (ObserverRoot) iterator.next();
+        debugProcess.removeObserver(observer);
+      }
+  }
+
+  private void addObserverToAllProcs(ObserverRoot observer){
+    Iterator iterator = this.procs.iterator();
+    while (iterator.hasNext())
+      {
+        DebugProcess debugProcess = (DebugProcess) iterator.next();
+        debugProcess.addObserver(observer);
+      }
+  }
+  
+  private void removeObserverFromAllProcs(ObserverRoot observer){
+    Iterator iterator = this.procs.iterator();
+    while (iterator.hasNext())
+      {
+        DebugProcess debugProcess = (DebugProcess) iterator.next();
+        debugProcess.removeObserver(observer);
+      }
+  }
+  
   /**
    * Add a debug process to this session
    * 
@@ -112,11 +222,6 @@ public class Session
    */
   public void addProcess (final DebugProcess process)
   {
-    process.addObserver(new TaskTerminatingObserver());
-    process.addObserver(new TaskCloneObserver());
-    process.addObserver(new TaskForkedObserver());
-    process.addObserver(new TaskExecObserver());
-    
     procs.add(process);
   }
 
@@ -127,7 +232,7 @@ public class Session
    */
   public void removeProcess (final DebugProcess process)
   {
-    procs.remove(process);
+    this.removeAllObservers(process);
   }
 
   /*
@@ -156,12 +261,48 @@ public class Session
     this.procs.clear();
   }
 
+  private void saveObservers(Element node){
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        GuiObject object = (GuiObject) iterator.next();
+        Element elementXML = new Element("element");
+        elementXML.setAttribute("name", object.getName());
+        node.addContent(elementXML);
+      }
+  }
+  
+  private void loadObservers(Element node){
+    List list = node.getChildren("element");
+    Iterator i = list.iterator();
+
+    while (i.hasNext())
+      {
+        Element elementXML = (Element) i.next();
+        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
+        if (observer == null)
+          {
+            errorLog.log(Level.SEVERE,
+                         new Date()
+                             + " DebugProcess.load(Element node): observer "
+                             + elementXML.getAttributeValue("name")
+                             + " not found in configuration \n");
+          }else{
+          observers.add(observer);
+        }
+      }
+  }
+  
   public void load (final Element node)
   {
     super.load(node);
 
     final Element procsXML = node.getChild("procs");
     procs.load(procsXML);
+    
+    final Element observersXML = node.getChild("observers");
+    observers.clear();
+    this.loadObservers(observersXML);
   }
 
   public void save (final Element node)
@@ -170,6 +311,15 @@ public class Session
     final Element procsXML = new Element("procs");
     procs.save(procsXML);
     node.addContent(procsXML);
+    
+    final Element observersXML = new Element("observers");
+    this.saveObservers(observersXML);
+    node.addContent(observersXML);
+  }
+
+  public ObservableLinkedList getObservers ()
+  {
+    return this.observers;
   }
 
 }

@@ -55,11 +55,11 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
-	public TaskObserverRoot(String name, String toolTip) {
+    protected TaskObserverRoot(String name, String toolTip) {
 		super(name, toolTip);
 	}
 
-	public TaskObserverRoot(TaskObserverRoot other) {
+    protected TaskObserverRoot(TaskObserverRoot other) {
 		super(other);
 	}
 

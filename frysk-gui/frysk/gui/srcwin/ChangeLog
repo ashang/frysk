@@ -1,3 +1,8 @@
+2007-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SourceWindowFactory.java: Refactored name of sessionManager to
+	sessionManagerDialog.
+
 2007-03-26  Mike Cvet  <mcvet@redhat.com>
 
 	* View.java (load): Now takes an int parameter, setting the mode of

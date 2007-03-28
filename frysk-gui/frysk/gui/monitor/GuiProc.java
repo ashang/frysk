@@ -54,7 +54,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.gui.Gui;
-import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -135,11 +134,6 @@ public class GuiProc extends GuiData{
                 return;
 			}
 		}
-	}
-	
-	public void add(final TaskObserverRoot observer){
-	  observer.apply(this.proc);
-	  //observers.add(observer);
 	}
 	
 	/**

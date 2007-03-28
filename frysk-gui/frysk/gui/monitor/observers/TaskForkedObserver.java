@@ -76,7 +76,7 @@ public class TaskForkedObserver
 
   public TaskActionPoint offspringTaskActionPoint;
 
-  public TaskForkedObserver ()
+  protected TaskForkedObserver ()
   {
     super("Fork Observer", "Fires when a proc forks");
 
@@ -98,7 +98,7 @@ public class TaskForkedObserver
 
   }
 
-  public TaskForkedObserver (TaskForkedObserver other)
+  protected TaskForkedObserver (TaskForkedObserver other)
   {
     super(other);
 
@@ -212,7 +212,7 @@ public class TaskForkedObserver
     task.requestAddForkedObserver(this);
   }
 
-  public GuiObject getCopy ()
+  protected GuiObject getCopy ()
   {
     return new TaskForkedObserver(this);
   }

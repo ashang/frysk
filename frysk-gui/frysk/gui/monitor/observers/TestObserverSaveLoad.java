@@ -37,11 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.test;
+package frysk.gui.monitor.observers;
 
 import java.util.Iterator;
-
-import frysk.junit.TestCase;
 
 import org.gnu.gtk.Gtk;
 import org.jdom.Element;
@@ -54,9 +52,7 @@ import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.filters.ProcNameFilter;
 import frysk.gui.monitor.filters.TaskFilterPoint;
-import frysk.gui.monitor.observers.ObserverManager;
-import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.junit.TestCase;
 
 public class TestObserverSaveLoad extends TestCase{
 

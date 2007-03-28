@@ -236,7 +236,7 @@ public class ListView
     listStore.setValue(treeIter, nameDC, gp.getNiceExecutablePath() + " " + gp.getProc().getPid());
     listStore.setValue(treeIter, objectDC, dp);
     this.map.put((GuiObject) dp, treeIter);
-    dp.addObserver(debugProcessObserver);
+    dp.propertiesChanged.addObserver(debugProcessObserver);
   }
 
   /**
@@ -293,7 +293,7 @@ public class ListView
     listStore.setValue(treeIter, nameDC, object.getName());
     listStore.setValue(treeIter, objectDC, object);
     this.map.put(object, treeIter);
-    object.addObserver(this);
+    object.propertiesChanged.addObserver(this);
     if (this.stickySelect)
       setSelectedObject(object);
     else if (getSelectedObject() == null)
@@ -308,11 +308,11 @@ public class ListView
     this.map.remove(object);
     try
     {
-      object.deleteObserver(this.debugProcessObserver);
+      object.propertiesChanged.deleteObserver(this.debugProcessObserver);
     }
     catch (IllegalArgumentException iae)
     {
-      object.deleteObserver(this);
+      object.propertiesChanged.deleteObserver(this);
     }
   }
 
@@ -333,14 +333,14 @@ public class ListView
     while (iterator.hasNext())
       {
         element = (GuiObject) iterator.next();
-        if (!element.fastDeleteObserver(this))
-          element.deleteObserver(this.debugProcessObserver);
+        //if (!element.propertiesChanged.deleteObserver(this))
+          element.propertiesChanged.deleteObserver(this.debugProcessObserver);
       }
     this.listStore.clear();
     this.map.clear();
   }
 
-  public void update (Observable guiObject, Object object)
+  public void update (Observable observable, Object guiObject)
   {
     TreeIter treeIter = (TreeIter) this.map.get(guiObject);
     listStore.setValue(treeIter, nameDC, ((GuiObject) guiObject).getName());
@@ -425,9 +425,9 @@ public class ListView
   
   class DebugProcessObserver implements Observer
   {
-    public void update (Observable ob, Object o)
+    public void update (Observable observable, Object object)
     {
-      DebugProcess dp = (DebugProcess) ob;
+      DebugProcess dp = (DebugProcess) object;
       TreeIter treeIter = (TreeIter) map.get(dp);
       GuiProc gp = (GuiProc) dp.getProcs().getFirst();
       listStore.setValue(treeIter, nameDC, gp.getNiceExecutablePath() + " " + gp.getProc().getPid());

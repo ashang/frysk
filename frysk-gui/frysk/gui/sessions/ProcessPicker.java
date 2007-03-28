@@ -40,40 +40,37 @@
 
 package frysk.gui.sessions;
 
-import frysk.gui.sessions.DebugProcess;
-import frysk.gui.sessions.Session;
-import frysk.gui.common.IconManager;
-import frysk.gui.monitor.GuiProc;
-import frysk.gui.monitor.WindowManager;
-
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.gnu.glade.LibGlade;
-
 import org.gnu.gtk.Button;
-import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.ButtonEvent;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
-import org.gnu.gtk.event.TreeViewColumnEvent;
-import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.CellRenderer;
-import org.gnu.gtk.CellRendererToggle;
-import org.gnu.gtk.event.CellRendererToggleListener;
-import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.CellRendererToggle;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.SortType;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.CellRendererToggleEvent;
+import org.gnu.gtk.event.CellRendererToggleListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
+
+import frysk.gui.common.IconManager;
+import frysk.gui.monitor.GuiProc;
+import frysk.gui.monitor.WindowManager;
 
 /**
  * A dialog allowing the user select and de-select processes of the same name,
@@ -134,8 +131,8 @@ public class ProcessPicker
     while (debugprocesses.hasNext())
       {
         DebugProcess dp = (DebugProcess) debugprocesses.next();
-        dp.addRemoveObservers();
-        dp.addProcsMinusObserver();
+//        dp.addRemoveObservers();
+//        dp.addProcsMinusObserver();
         Iterator guiprocs = dp.getProcs().iterator();
         while (guiprocs.hasNext())
           {
@@ -159,11 +156,11 @@ public class ProcessPicker
 
     if (! flag) /* All singleton processes; return the session as-is */
       {
-        Iterator j = s.getProcesses().iterator();
-        while (j.hasNext())
-          ((DebugProcess) j.next()).addObservers();
+//        Iterator j = s.getProcesses().iterator();
+//        while (j.hasNext())
+//          ((DebugProcess) j.next()).addObservers();
 
-        WindowManager.theManager.sessionManager.hideAll();
+        WindowManager.theManager.sessionManagerDialog.hideAll();
         finish(s);
       }
     else /* We've got multiple processes by the same name... Continue. */
@@ -299,7 +296,7 @@ public class ProcessPicker
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             pickProcs();
-            WindowManager.theManager.sessionManager.hideAll();
+            WindowManager.theManager.sessionManagerDialog.hideAll();
             finish(newSession);
           }
       }
@@ -311,14 +308,14 @@ public class ProcessPicker
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
-            Iterator i = newSession.getProcesses().iterator();
-            while (i.hasNext())
-              {
-                DebugProcess dp = (DebugProcess) i.next();
-                dp.removeProcsMinusObserver();
-              }
+//            Iterator i = newSession.getProcesses().iterator();
+//            while (i.hasNext())
+//              {
+//                DebugProcess dp = (DebugProcess) i.next();
+//                dp.removeProcsMinusObserver();
+//              }
             ProcessPicker.this.hideAll();
-            WindowManager.theManager.sessionManager.showAll();
+            WindowManager.theManager.sessionManagerDialog.showAll();
           }
       }
     });
@@ -336,14 +333,14 @@ public class ProcessPicker
         if (arg0.isOfType(LifeCycleEvent.Type.DELETE)
             || arg0.isOfType(LifeCycleEvent.Type.DESTROY))
           {
-            Iterator i = newSession.getProcesses().iterator();
-            while (i.hasNext())
-              {
-                DebugProcess dp = (DebugProcess) i.next();
-                dp.removeProcsMinusObserver();
-              }
+//            Iterator i = newSession.getProcesses().iterator();
+//            while (i.hasNext())
+//              {
+//                DebugProcess dp = (DebugProcess) i.next();
+//                dp.removeProcsMinusObserver();
+//              }
             ProcessPicker.this.hideAll();
-            WindowManager.theManager.sessionManager.showAll();
+            WindowManager.theManager.sessionManagerDialog.showAll();
           }
       }
 
@@ -381,9 +378,9 @@ public class ProcessPicker
         parent = parent.getNextIter();
       }
 
-    Iterator j = newSession.getProcesses().iterator();
-    while (j.hasNext())
-      ((DebugProcess) j.next()).addObservers();
+//    Iterator j = newSession.getProcesses().iterator();
+//    while (j.hasNext())
+//      ((DebugProcess) j.next()).addObservers();
 
   }
 
@@ -396,7 +393,7 @@ public class ProcessPicker
   public void finish (Session s)
   {
     ProcessPicker.this.hideAll();
-    WindowManager.theManager.mainWindow.setSession(s);
+    SessionManager.theManager.setCurrentSession(s);
     WindowManager.theManager.mainWindow.showAll();
   }
 

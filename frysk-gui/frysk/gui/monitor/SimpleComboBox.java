@@ -149,7 +149,7 @@ public class SimpleComboBox
     TreeIter treeIter = (TreeIter) this.map.get(object);
     listStore.removeRow(treeIter);
     this.map.remove(object);
-    object.deleteObserver(this);
+    object.propertiesChanged.deleteObserver(this);
   }
 
   public void clear ()
@@ -159,13 +159,13 @@ public class SimpleComboBox
     while (iterator.hasNext())
       {
         GuiObject element = (GuiObject) iterator.next();
-        element.deleteObserver(this);
+        element.propertiesChanged.deleteObserver(this);
       }
     this.listStore.clear();
     this.map.clear();
   }
 
-  public void update (Observable guiObject, Object object)
+  public void update (Observable observable, Object guiObject)
   {
     TreeIter treeIter = (TreeIter) this.map.get(guiObject);
     listStore.setValue(treeIter, nameDC, ((GuiObject) guiObject).getName());
@@ -251,7 +251,7 @@ public class SimpleComboBox
     listStore.setValue(treeIter, objectDC, object);
 
     this.map.put(object, treeIter);
-    object.addObserver(this);
+    object.propertiesChanged.addObserver(this);
   }
 
   /**

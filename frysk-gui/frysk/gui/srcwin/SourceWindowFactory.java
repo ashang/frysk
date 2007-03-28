@@ -256,8 +256,8 @@ public class SourceWindowFactory
 
               s.hideAll();
               
-              if (WindowManager.theManager.sessionManager != null)
-                WindowManager.theManager.sessionManager.show();
+              if (WindowManager.theManager.sessionManagerDialog != null)
+                WindowManager.theManager.sessionManagerDialog.show();
               else
                 Gui.quitFrysk();
             }

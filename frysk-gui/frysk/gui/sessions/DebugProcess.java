@@ -106,7 +106,7 @@ public class DebugProcess
 
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
-    addProgramObserver();
+    initListObservers();
   }
 
   /**
@@ -132,7 +132,7 @@ public class DebugProcess
 
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
-    addProgramObserver();
+    initListObservers();
   }
 
   /**
@@ -159,43 +159,85 @@ public class DebugProcess
 
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
-    addProgramObserver();
+    initListObservers();
   }
 
-  /**
-   * Adds an obsever to the list of observers to be added to the debug process
-   * on load.
-   * 
-   * @param observer - ObserverRoot to add.
-   */
-  public void addObserver (ObserverRoot observer)
-  {
-    observers.add(observer);
-  }
-
-  /**
-   * Adds all observers from the observer list to the process represented by
-   * this debug process
-   */
-  public void addObservers ()
-  {
-    Iterator procIter = procs.iterator();
-    while (procIter.hasNext())
+  private void initListObservers(){
+    //Every time a process is added add all existing observers to it
+    this.procs.itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
       {
-        GuiProc guiProc = (GuiProc) procIter.next();
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
-            Iterator obIter = observers.iterator();
-            while (obIter.hasNext())
-              {
-                TaskObserverRoot observer = (TaskObserverRoot) obIter.next();
-                guiProc.add(observer);
-              }
-          }
+        addAllObservers((GuiProc) object);
+      }
+    });
+    
+    //Every time a process is removed remove all existing observers from it
+    this.procs.itemRemoved.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        removeAllObservers((GuiProc) object);
+      }
+    });
+    
+    //Every time an observer is added add it to all existing processes
+    this.observers.itemAdded.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        addObserverToAllProcs( (TaskObserverRoot) object);
+      }
+    });
+    
+    //Every time an observer is removed remove it from all existing processes
+    this.observers.itemRemoved.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        removeObserverFromAllProcs((TaskObserverRoot) object);
+      }
+    });
+  }
+  
+  private void addAllObservers(GuiProc guiProc){
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+        observer.apply(guiProc.getProc());
       }
   }
-
-  /**
+  
+  private void removeAllObservers(GuiProc guiProc){
+    Iterator iterator = observers.iterator();
+    while (iterator.hasNext())
+      {
+        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+        observer.unapply(guiProc.getProc());
+      }
+  }
+  
+  private void addObserverToAllProcs(TaskObserverRoot observer){
+    Iterator iterator = procs.iterator();
+    while (iterator.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) iterator.next();
+        observer.apply(guiProc.getProc());
+      }
+  }
+  
+  private void removeObserverFromAllProcs(TaskObserverRoot observer){
+    Iterator iterator = procs.iterator();
+    while (iterator.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) iterator.next();
+        observer.unapply(guiProc.getProc());
+      }
+  }
+  
+  
+    /**
    * Adds a GuiProc to the Debug Process
    * 
    * @param guiProc - GuiProc that is to be added
@@ -249,84 +291,7 @@ public class DebugProcess
 
                                                                  });
 
-    Iterator iterator = observers.iterator();
-    while (iterator.hasNext())
-      {
-        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-        guiProc.add(observer);
-      }
-
     procs.add(guiProc);
-  }
-
-  public void addProcsMinusObserver ()
-  {
-    Iterator iterator = allProcsList.iterator();
-    while (iterator.hasNext())
-      {
-        GuiProc guiProc = (GuiProc) iterator.next();
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
-            procs.add(guiProc);
-          }
-      }
-  }
-
-  /**
-   * Adds a program observer to the debug process
-   */
-  private void addProgramObserver ()
-  {
-    ObserverManager.theManager.programObserver.getProcsList().itemAdded.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object object)
-      {
-
-        GuiProc guiProc = (GuiProc) object;
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
-            addProc(guiProc);
-          }
-      }
-    });
-  }
-
-  /**
-   * Adds the listed debug process observers to the processes that this debug
-   * container represents.
-   */
-  public void addRemoveObservers ()
-  {
-    allProcsList.itemAdded.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object arg)
-      {
-        GuiProc guiProc = (GuiProc) arg;
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
-            // XXX: Hack this out. Needs core investigation. This will be caught
-            // when bash forks().The child fork is named /bin/bash and
-            // it will try to be added to a session here if the parent
-            // had a fork process observer added. However the child will
-            // very soon be exec'd and in a short lived process, die.
-            // This will cause havoc in core state machine, because
-            // we are asking it to do continue attaching observer to a detached
-            // process.
-            // Double Jeopardy.
-
-            // addProc(guiProc);
-          }
-      }
-    });
-
-    allProcsList.itemRemoved.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object arg)
-      {
-        GuiProc guiProc = (GuiProc) arg;
-        removeProc(guiProc);
-      }
-    });
   }
 
   /**
@@ -364,7 +329,7 @@ public class DebugProcess
    * 
    * @return Observable linked list of observers.
    */
-  public ObservableLinkedList getObservers ()
+  protected ObservableLinkedList getObservers ()
   {
     return observers;
   }
@@ -401,19 +366,29 @@ public class DebugProcess
   }
 
   /**
+   * Adds an obsever to the list of observers to be added to the debug process
+   * on load.
+   * 
+   * @param observer - ObserverRoot to add.
+   */
+  protected void addObserver (ObserverRoot observer)
+  {
+    observers.add(observer);    
+  }
+
+  /**
    * Removes an obsever from the list of observers to be added to the debug
    * process on load.
    * 
    * @param observer - ObserverRoot to remove.
    */
-  public void removeObserver (ObserverRoot observer)
+  protected void removeObserver (ObserverRoot observer)
   {
-
     observers.remove(observer);
   }
   
   /**
-   * Removes an obsever from the list of observers to be added to the debug
+   * Removes an observer from the list of observers to be added to the debug
    * process on load.
    * 
    * @param observerName - Observer name to remove
@@ -439,28 +414,7 @@ public class DebugProcess
    */
   public void removeProc (GuiProc guiProc)
   {
-
-    Iterator iterator = observers.iterator();
-    while (iterator.hasNext())
-      {
-        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-        guiProc.add(observer);
-      }
-
     procs.remove(guiProc);
-  }
-
-  public void removeProcsMinusObserver ()
-  {
-    Iterator iterator = allProcsList.iterator();
-    while (iterator.hasNext())
-      {
-        GuiProc guiProc = (GuiProc) iterator.next();
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
-            procs.remove(guiProc);
-          }
-      }
   }
 
   /**
@@ -493,22 +447,46 @@ public class DebugProcess
     realName = name;
   }
 
-  public void save (Element node)
-  {
-    super.save(node);
-
-    node.setAttribute("executablePath", executablePath);
-    Element observersXML = new Element("observers");
-
+  private void saveObservers(Element node){
     Iterator iterator = observers.iterator();
     while (iterator.hasNext())
       {
         GuiObject object = (GuiObject) iterator.next();
         Element elementXML = new Element("element");
         elementXML.setAttribute("name", object.getName());
-        observersXML.addContent(elementXML);
+        node.addContent(elementXML);
       }
+  }
+  
+  private void loadObservers(Element node){
+    List list = node.getChildren("element");
+    Iterator i = list.iterator();
 
+    while (i.hasNext())
+      {
+        Element elementXML = (Element) i.next();
+        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
+        if (observer == null)
+          {
+            errorLog.log(Level.SEVERE,
+                         new Date()
+                             + " DebugProcess.load(Element node): observer "
+                             + elementXML.getAttributeValue("name")
+                             + " not found in configuration \n");
+          }else{
+          observers.add(observer);
+        }
+      }
+  }
+  
+  public void save (Element node)
+  {
+    super.save(node);
+
+    node.setAttribute("executablePath", executablePath);
+    
+    Element observersXML = new Element("observers");
+    this.saveObservers(observersXML);
     node.addContent(observersXML);
 
     //save tagsets
@@ -532,27 +510,8 @@ public class DebugProcess
 
     executablePath = node.getAttribute("executablePath").getValue();
     Element observersXML = node.getChild("observers");
-    List list = observersXML.getChildren("element");
-    Iterator i = list.iterator();
-
-    while (i.hasNext())
-      {
-        Element elementXML = (Element) i.next();
-        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
-        if (observer == null)
-          {
-            errorLog.log(Level.SEVERE,
-                         new Date()
-                             + " DebugProcess.load(Element node): observer "
-                             + elementXML.getAttributeValue("name")
-                             + " not found in configuration \n");
-          }
-        else
-          {
-            observers.add(observer);
-          }
-      }
-
+    this.loadObservers(observersXML);
+    
     // load tagsets
 
     Element tagSetsXML = node.getChild("tagsets");

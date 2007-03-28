@@ -139,7 +139,7 @@ public class CompletingEntry extends Entry implements Observer {
 		TreeIter iter = (TreeIter) hash.get(object);
 		this.listStore.removeRow(iter);
 		this.hash.remove(object);
-		object.deleteObserver(this);
+		object.propertiesChanged.deleteObserver(this);
 	}
 
 	protected void add(GuiObject object, int index) {
@@ -150,10 +150,10 @@ public class CompletingEntry extends Entry implements Observer {
 	protected void add(GuiObject object, TreeIter iter){
 		this.listStore.setValue(iter, dataColumnString, object.getName());
 		this.hash.put(object, iter);
-		object.addObserver(this);
+		object.propertiesChanged.addObserver(this);
 	}
 	
-	public void update(Observable object, Object arg) {
+	public void update(Observable observable, Object object) {
 		TreeIter iter = (TreeIter) hash.get(object);
 		this.listStore.setValue(iter, dataColumnString, ((GuiObject)object).getName());
 	}

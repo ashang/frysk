@@ -63,7 +63,7 @@ public class TaskExecObserver
 
   public TaskActionPoint taskActionPoint;
 
-  public TaskExecObserver ()
+  protected TaskExecObserver ()
   {
     super("Exec Observer", "Fires every time this task executes an exec call");
 
@@ -76,7 +76,7 @@ public class TaskExecObserver
     this.addActionPoint(taskActionPoint);
   }
 
-  public TaskExecObserver (TaskExecObserver other)
+  protected TaskExecObserver (TaskExecObserver other)
   {
     super(other);
 
@@ -137,7 +137,7 @@ public class TaskExecObserver
     task.requestAddExecedObserver(this);
   }
 
-  public GuiObject getCopy ()
+  protected GuiObject getCopy ()
   {
     return new TaskExecObserver(this);
   }

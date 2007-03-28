@@ -46,7 +46,7 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
-import frysk.gui.SessionManagerGui;
+import frysk.gui.SessionManagerDialog;
 import frysk.gui.druid.CreateFryskSessionDruid;
 
 /**
@@ -89,7 +89,7 @@ public class WindowManager
 
   public MainWindowStatusBar mainWindowStatusBar;
 
-  public SessionManagerGui sessionManager;
+  public SessionManagerDialog sessionManagerDialog;
 
   public ProgramObserverDialog programObserverDialog;
   
@@ -126,7 +126,7 @@ public class WindowManager
 
   public void initSessionManagerWindow (LibGlade glade)
   {
-    this.sessionManager = new SessionManagerGui(glade);
+    this.sessionManagerDialog = new SessionManagerDialog(glade);
   }
 
   public void initSessionDruidWindow (LibGlade session) throws IOException

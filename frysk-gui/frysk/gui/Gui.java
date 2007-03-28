@@ -240,7 +240,7 @@ public class Gui implements LifeCycleListener, Saveable {
     addInvocationEvents();
 
     // Show wndow and run
-    WindowManager.theManager.sessionManager.showAll();
+    WindowManager.theManager.sessionManagerDialog.showAll();
     Gtk.main();
 
     WindowManager.theManager.mainWindow.killTerminalShell();

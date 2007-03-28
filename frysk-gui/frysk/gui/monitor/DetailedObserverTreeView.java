@@ -251,7 +251,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 //		System.out.println("DetailedObserverTreeView.remove() removing " + object.getName() + " iter: " + iter );
 		this.map.remove(object);
 		this.treeStore.removeRow(iter);
-		object.deleteObserver(this);
+		object.propertiesChanged.deleteObserver(this);
 	}
 
 	protected void add(GuiObject guiObject, GuiObject parent, int index) {
@@ -264,7 +264,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.treeStore.setValue(iter, nameDC, guiObject.getName());
 		this.treeStore.setValue(iter, objectDC, guiObject);
 		this.map.put(guiObject, iter);
-		guiObject.addObserver(this);
+		guiObject.propertiesChanged.addObserver(this);
 		this.setSelected(guiObject);
 //		System.out.println("\n===========================================");
 //		System.out.println("DetailedObserverTreeView.add() adding " + guiObject.getName() + " " + guiObject );
@@ -308,7 +308,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 
 	public void update(Observable observable, Object object) {
-		GuiObject guiObject = (GuiObject) observable;
+		GuiObject guiObject = (GuiObject) object;
 		TreeIter iter = (TreeIter) this.map.get(guiObject);
 		this.treeStore.setValue(iter, nameDC, guiObject.getName());
 	}

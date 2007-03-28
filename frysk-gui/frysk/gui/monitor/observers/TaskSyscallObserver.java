@@ -69,7 +69,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	public GenericActionPoint enteringGenericActionPoint;
 	public GenericActionPoint exitingGenericActionPoint;
 
-	public TaskSyscallObserver(	) {
+	protected TaskSyscallObserver(	) {
 		super("Syscall Observer", "Fires when a system call is made.");
 		
 		this.enteringTaskFilterPoint = new TaskFilterPoint("task entering syscall","the Task when it is entering the syscall");
@@ -91,7 +91,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.addActionPoint(exitingGenericActionPoint);
 	}
 
-	public TaskSyscallObserver(TaskSyscallObserver other) {
+    protected TaskSyscallObserver(TaskSyscallObserver other) {
 		super(other);
 		
 		this.enteringTaskFilterPoint = new TaskFilterPoint(other.enteringTaskFilterPoint);
@@ -197,7 +197,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		task.requestAddSyscallObserver(this);
 	}
 	
-	public GuiObject getCopy(){
+    protected GuiObject getCopy(){
 		return new TaskSyscallObserver(this);
 	}
 

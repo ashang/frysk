@@ -41,6 +41,8 @@ package frysk.gui.monitor;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -55,10 +57,12 @@ import frysk.gui.common.Util;
 import frysk.gui.dialogs.FryskDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.sessions.SessionManager;
 
 public class ObserversDialog extends FryskDialog {
 	
-	ListView observersListView;
+    
+    CheckedListView observersListView;
 	
 	Button newObserverButton;
 	Button editObserverButton;
@@ -98,7 +102,7 @@ public class ObserversDialog extends FryskDialog {
 		
 		this.scratchList = ObserverManager.theManager.getTaskObservers();
 		
-		this.observersListView = new ListView(glade.getWidget("observersTreeView").getHandle());
+		this.observersListView = new CheckedListView(glade.getWidget("observersTreeView").getHandle());
 		this.observersListView.watchLinkedList(scratchList);
 		this.observersListView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
@@ -107,6 +111,15 @@ public class ObserversDialog extends FryskDialog {
 		});
 		observersListView.setSort();
 		
+        
+        SessionManager.theManager.currentSessionChanged.addObserver(new Observer()
+        {
+          public void update (Observable observable, Object arg)
+          {
+            observersListView.watchCheckedObjectsList(SessionManager.theManager.getCurrentSession().getObservers());
+          }
+        });
+        
 		this.newObserverButton = (Button) glade.getWidget("createObserverButton");
 		this.newObserverButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
@@ -135,7 +148,7 @@ public class ObserversDialog extends FryskDialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
-					ObserverRoot scratchCopy = (ObserverRoot) selected.getCopy();
+					ObserverRoot scratchCopy = ObserverManager.theManager.getObserverCopy(selected);
                    	WindowManager.theManager.editObserverDialog.editObserver(scratchCopy);
 					int response = showEditObserverDialog();
 					if(response == ResponseType.OK.getValue()){

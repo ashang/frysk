@@ -75,7 +75,6 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.monitor.eventviewer.EventViewer2;
-import frysk.gui.sessions.Session;
 
 public class SessionProcTreeView
     extends Widget
@@ -569,12 +568,6 @@ public class SessionProcTreeView
     this.prefs = prefs;
     this.procPidColumnDialog.load(prefs);
     setProcCols();
-  }
-
-  public void setSession (Session session)
-  {
-    this.procDataModel.setSession(session);
-    this.eventViewer.setSession(session);
   }
 
 }

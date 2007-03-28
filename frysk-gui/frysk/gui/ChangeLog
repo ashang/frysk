@@ -1,3 +1,40 @@
+2007-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestSessionSaveLoad.java: Added testing for adding/removing
+	saving/loading of obserers to/from Sessions.
+	* test/TestPrototypeCopying.java: Uses ObserverManager.getCopy()
+	instead of getCopy() directly to the object.
+	* sessions/SessionManager.java: Added support for keeping track
+	and notifiying interested parties of the currently active session.
+	* sessions/Session.java: Added support for add/removing saving
+	and loading Observers at the sesion level.
+	* sessions/ProcessPicker.java: Removed use of 
+	DebugProcess.addRemoveObservers(), and 
+	DebugProcess.addProcsMinusObserver();
+	* sessions/DebugProcess.java: removed addObservers().
+	(initListObservers): New function.
+	(addObserver): Made method protected.
+	(addObservers); Removed.
+	(addAllObservers): New method.
+	(removeAllObservers): New method.
+	(addObserverToAllProcs): New method.
+	(removeObserverFromAllProcs): New method.
+	(addProcsMinusObservers): Removed
+	(addRemoveObservers): Removed
+	(getObservers): Changed from public to Protected.
+	(removeObserver): Ditto.
+	(loadObservers): New method.
+	(saveObservers): New method.
+	* druid/CreateFryskSessionDruid.java: Repaced use of
+	DebugProcess.getObservers() with Session.getObservers().
+	Replaced DebugProcess.addObserver() with Session.addObserver().
+	Replaced WindowManager.setCurrentSession() with
+	SessionManager.setCurrentSession().
+	* SessionManagerGui.java: Renamed this...
+	* SessionManagerDialog.java: ... to this.
+	* Gui.java: Renamed GuiSessionManager to SessionManagerDialog.
+	* TestGlade.java: Ditto.
+	
 2007-03-26  Mike Cvet  <mcvet@redhat.com>
 
 	* gladedir/frysk_source.glade: Temporarily removed "Mixed" from 

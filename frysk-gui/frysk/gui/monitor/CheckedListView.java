@@ -41,6 +41,8 @@ package frysk.gui.monitor;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererToggle;
@@ -57,20 +59,90 @@ public class CheckedListView extends ListView {
 
 	protected DataColumnBoolean toggleDC;
 	private CellRendererToggle cellRendererToggle;
-	
+
+    private ObservableLinkedList watchedCheckedObjectsList;
+    
+    private Observer itemAddedToCheckedObjectsListObserver;
+    private Observer itemRemovedFromCheckedObjectsListObserver;
+    
 	public CheckedListView(){
 		super();
+        this.initCheckedObjectsListObservers();
 	}
 	
 	public CheckedListView(Handle handle){
 		super(handle);
+        this.initCheckedObjectsListObservers();
 	}
 	
+    private void initCheckedObjectsListObservers(){
+      this.itemAddedToCheckedObjectsListObserver = new Observer()
+      {
+        public void update (Observable observable, Object object)
+        {
+          setChecked((GuiObject) object, true);
+        }
+      };
+      
+      this.itemRemovedFromCheckedObjectsListObserver = new Observer()
+      {
+        public void update (Observable observable, Object object)
+        {
+          setChecked((GuiObject) object, false);
+        }
+      };
+      
+      this.addToggleListener(new CellRendererToggleListener()
+      {
+        public void cellRendererToggleEvent (CellRendererToggleEvent event)
+        {
+          if(watchedCheckedObjectsList != null){
+            
+            boolean value = listStore.getValue(listStore.getIter(event.getPath()), toggleDC);
+            Object object = listStore.getValue(listStore.getIter(event.getPath()), objectDC);
+          
+            if(value){
+              watchedCheckedObjectsList.add(object);
+            }else{
+              watchedCheckedObjectsList.remove(object);
+            }
+            
+          }
+        }
+      });
+    }
+    
 	protected void initListStore() {
 		this.toggleDC = new DataColumnBoolean();
 		this.listStore = new ListStore(new DataColumn[]{toggleDC, nameDC, objectDC});
 	}
 	
+    /**
+     * to watch a checkedObjectsList means that objects that are in this list
+     * will be check, objects which are not are not checked.
+     * In tern when the user check or unchecks objects in the list view they
+     * are removed, or added repsectively from the list.
+     * @param checkedObjectsList
+     */
+    public void watchCheckedObjectsList(ObservableLinkedList checkedObjectsList){
+      if(this.watchedCheckedObjectsList != null){
+        this.watchedCheckedObjectsList.itemAdded.deleteObserver(itemAddedToCheckedObjectsListObserver);
+        this.watchedCheckedObjectsList.itemRemoved.deleteObserver(itemRemovedFromCheckedObjectsListObserver);
+      }
+      
+      this.watchedCheckedObjectsList = checkedObjectsList;
+      this.watchedCheckedObjectsList.itemAdded.addObserver(itemAddedToCheckedObjectsListObserver);
+      this.watchedCheckedObjectsList.itemRemoved.addObserver(itemRemovedFromCheckedObjectsListObserver);
+      
+      Iterator iterator = this.watchedCheckedObjectsList.iterator();
+      while (iterator.hasNext())
+        {
+          GuiObject object = (GuiObject) iterator.next();
+          this.setChecked(object, true);
+        }
+   
+    }
+    
 	// Temporarily allow Listener injection until a more robust method
 	// can be implemented.
 	public void addToggleListener(CellRendererToggleListener listener)
@@ -84,7 +156,6 @@ public class CheckedListView extends ListView {
 	}
 		
 	protected void initTreeView() {
-		
 		
 		cellRendererToggle = new CellRendererToggle();
 		cellRendererToggle.setUserEditable(true);
@@ -196,4 +267,6 @@ public class CheckedListView extends ListView {
 				listStore.setValue(iter, toggleDC, false);
 		}
 	}
+
+    
 }

@@ -109,7 +109,7 @@ public class ObserversMenu extends Menu{
 					currentTask.add((TaskObserverRoot)observer);
 			
 				if(currentProc != null)
-					currentProc.add((TaskObserverRoot)observer);
+					((TaskObserverRoot)observer).apply(currentProc.getProc());
 			}
 		});
 

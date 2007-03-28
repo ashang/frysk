@@ -61,6 +61,7 @@ import org.gnu.pango.Weight;
 import frysk.gui.Gui;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
+import frysk.gui.sessions.SessionManager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.sys.proc.Stat;
@@ -135,6 +136,14 @@ public class SessionProcDataModel
                                                      ppidDC, stateDC, niceDC});
 
     this.iterHash = new HashMap();
+    
+    SessionManager.theManager.currentSessionChanged.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+        setSession((Session) object); 
+      }
+    });
   }
   
   public TreeStore getTreeStore()
@@ -142,7 +151,7 @@ public class SessionProcDataModel
     return this.treeStore;
   }
 
-  public void setSession(Session session)
+  private void setSession(Session session)
   {
 
     /* Don't reset the session to itself */

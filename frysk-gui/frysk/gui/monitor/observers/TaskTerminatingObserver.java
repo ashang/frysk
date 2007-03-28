@@ -71,7 +71,7 @@ public class TaskTerminatingObserver
 
   public TaskActionPoint taskActionPoint;
 
-  public TaskTerminatingObserver ()
+  protected TaskTerminatingObserver ()
   {
     super("Terminating Observer", "Fires when this process is exiting");
 
@@ -89,7 +89,7 @@ public class TaskTerminatingObserver
     this.addActionPoint(taskActionPoint);
   }
 
-  public TaskTerminatingObserver (TaskTerminatingObserver other)
+  protected TaskTerminatingObserver (TaskTerminatingObserver other)
   {
     super(other);
 
@@ -174,7 +174,7 @@ public class TaskTerminatingObserver
     task.requestAddTerminatingObserver(this);
   }
 
-  public GuiObject getCopy ()
+  protected GuiObject getCopy ()
   {
     return new TaskTerminatingObserver(this);
   }
