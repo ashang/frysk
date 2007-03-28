@@ -1,3 +1,8 @@
+2007-03-28  Mark Wielaard  <mark@klomp.org>
+
+	Suggested by Thomas Girard (thomas.g.girard@free.fr)
+	* Makefile.gen.sh (print_jar_rule): cp to $1.jar.
+
 2007-03-26  Mark Wielaard  <mark@klomp.org>
 
 	* m4/frysk_werror.m4: Make CFLAGS depend on old value, not on

@@ -337,7 +337,7 @@ print_jar_rule ()
   cat <<EOF
 # print_jar_rule $1 $2
 $1.jar: \$($2_JAR)
-	cp \$($2_JAR) .
+	cp \$($2_JAR) $1.jar
 BUILT_SOURCES += $1.jar
 GEN_JARS += $1.jar
 noinst_LIBRARIES += libfrysk-$1.a
