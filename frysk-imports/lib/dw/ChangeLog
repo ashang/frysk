@@ -1,3 +1,11 @@
+2007-03-28  Nurdin Premji  <npremji@redhat.com>
+
+	* DwflModule.java (getAddressName): Removed.
+	(getSymbol): Added.
+	* SymbolBuilder.java: Added.
+	* cni/DwflModule.cxx (getAddressName): Removed.
+	(getSymbol): Added.
+
 2007-03-21  Tim Moore  <timoore@redhat.com>
 
 	* DwarfDie.java (getEntryBreakpoints): New method.

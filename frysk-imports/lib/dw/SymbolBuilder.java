@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,82 +36,12 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-#include <cstdlib>
-#include "libdwfl.h"
-#include <gcj/cni.h>
 
-#include "lib/dw/DwflModule.h"
-#include "lib/dw/DwflLine.h"
-#include "lib/dw/ModuleElfBias.h"
-#include "lib/dw/SymbolBuilder.h"
-#include "lib/elf/Elf.h"
+package lib.dw;
 
-#define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
-
-jstring
-lib::dw::DwflModule::getName()
+public interface SymbolBuilder
 {
-  if (!name)
-    name = JvNewStringUTF(dwfl_module_info(DWFL_MODULE_POINTER,
-					   0, 0, 0, 0, 0, 0, 0));
-  return name;
-}
 
-lib::dw::ModuleElfBias*
-lib::dw::DwflModule::module_getelf()
-{
-	Dwarf_Addr bias = 0;
-	::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
-	if(elf == NULL)
-		return NULL;
-		
-	lib::dw::ModuleElfBias *ret = new lib::dw::ModuleElfBias();
-	ret->elf = new lib::elf::Elf((jlong) elf);
-	ret->bias = (jlong) bias;
-		
-	return ret;	
-}
+	void symbol (String name, long value, long size);
 
-typedef JArray<lib::dw::DwflLine *> DwflLineArray;
-
-DwflLineArray *
-lib::dw::DwflModule::getLines(jstring filename, jint lineno, jint column)
-{
-  int fileNameLength =  JvGetStringUTFLength(filename);
-  char fileName[fileNameLength + 1];
-  JvGetStringUTFRegion(filename, 0, filename->length(), fileName);
-  fileName[fileNameLength] = 0;
-  ::Dwfl_Line **srcsp = 0;
-  size_t nsrcs = 0;
-  int result = ::dwfl_module_getsrc_file(DWFL_MODULE_POINTER, fileName, lineno,
-					 column, &srcsp, &nsrcs);
-  if (result >= 0)
-    {
-      DwflLineArray *array
-	= (DwflLineArray *)JvNewObjectArray(nsrcs,
-					    &lib::dw::DwflLine::class$,
-					    0);
-      for (size_t i = 0; i < nsrcs; i++)
-	{
-	  lib::dw::DwflLine *line = new lib::dw::DwflLine((jlong)srcsp[i],
-							  getParent());
-	  elements(array)[i] = line;
-	}
-      std::free(srcsp);
-      return array;
-    }
-  return 0;
-} 
-
-void
-lib::dw::DwflModule::getSymbol(jlong address, lib::dw::SymbolBuilder* symbolBuilder)
-{
-	Dwarf_Addr addr = (Dwarf_Addr) address;
-	GElf_Sym closest_sym;
-	
-	const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr, 
-											   &closest_sym, NULL);
-		
-	symbolBuilder->symbol(JvNewStringUTF(methName), closest_sym.st_value, 
-						  closest_sym.st_size);
 }
