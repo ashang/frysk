@@ -65,6 +65,8 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.EntryCompletion;
+import org.gnu.gtk.FileChooserAction;
+import org.gnu.gtk.FileChooserDialog;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
@@ -73,6 +75,7 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
+import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
@@ -92,6 +95,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.FileChooserEvent;
+import org.gnu.gtk.event.FileChooserListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
@@ -188,6 +193,8 @@ public class SourceWindow
 
   // ACTIONS
   private org.gnu.gtk.Action close;
+  
+  private org.gnu.gtk.Action open;
 
   private org.gnu.gtk.Action copy;
 
@@ -280,6 +287,8 @@ public class SourceWindow
   private SourceWindowFactory.AttachedObserver attachedObserver;
 
   private LockObserver lock;
+  
+  private org.gnu.gtk.FileChooserDialog chooser;
 
   /**
    * Creates a new source window with the given properties. This constructor
@@ -676,6 +685,66 @@ public class SourceWindow
    */
   private void createActions (AccelGroup ag)
   {
+    // Open action
+    this.open = new org.gnu.gtk.Action("open", "Open", "Open File",
+                                       GtkStockItem.OPEN.getString());
+    this.open.setAccelGroup(ag);
+    this.open.setAccelPath("<sourceWin>/File/Open");
+    this.open.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+        chooser = new FileChooserDialog(
+                                        "Frysk: Choose an executable file to debug",
+                                        (Window) SourceWindow.this.glade.getWidget(SOURCE_WINDOW),
+                                        FileChooserAction.ACTION_OPEN);
+        chooser.addListener(new LifeCycleListener() {
+          public void lifeCycleEvent(LifeCycleEvent event)
+          {
+          }
+          public boolean lifeCycleQuery(LifeCycleEvent event)
+          {
+            return false;
+          }
+        });
+        
+        chooser.addListener(new FileChooserListener()
+        {
+          public void currentFolderChanged (FileChooserEvent event)
+          {
+          }
+
+          public void selectionChanged (FileChooserEvent event)
+          {
+          }
+
+          public void updatePreview (FileChooserEvent event)
+          {
+          }
+
+          // This method is called when the "Enter" key is pressed to
+          // select a file name
+          public void fileActivated (FileChooserEvent event)
+          {
+            startTask(chooser.getFilename());
+          }
+        });
+        setDefaultIcon(IconManager.windowIcon);
+        chooser.setDefaultResponse(org.gnu.gtk.event.FileChooserEvent.Type.FILE_ACTIVATED.getID());
+        chooser.setCurrentFolder(System.getProperty("user.home"));
+        int response = chooser.open();
+        if (response == ResponseType.CANCEL.getValue())
+          chooser.destroy();
+        // The OK button was clicked, go open a source window for this executable
+        else if (response == ResponseType.OK.getValue())
+          startTask(chooser.getFilename());
+        chooser.destroy();
+      }
+    });
+    AccelMap.changeEntry("<sourceWin>/File/Open", KeyValue.o,
+                         ModifierType.CONTROL_MASK, true);
+    this.open.connectAccelerator();
 
     // Close action
     this.close = new org.gnu.gtk.Action("close", "Close", "Close Window",
@@ -1076,6 +1145,17 @@ public class SourceWindow
       }
     });
   }
+  
+  /**
+   * This method is activated from the FileChooserDialog when a task has been selected
+   * to be run and brought into the source window.
+   * @param filename
+   */
+  
+  private void startTask(String filename)
+  {
+    // No code here yet, waiting for completion of tabbing work
+  }
 
   /*
    * Populates the menus from the actions created earlier.
@@ -1085,8 +1165,12 @@ public class SourceWindow
     // File menu
     MenuItem menu = new MenuItem("File", true);
 
-    MenuItem mi = (MenuItem) this.close.createMenuItem();
+    MenuItem mi = (MenuItem) this.open.createMenuItem();
     Menu tmp = new Menu();
+    tmp.append(mi);
+    mi = new MenuItem(); // Separator
+    tmp.append(mi);
+    mi = (MenuItem) this.close.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);
@@ -1099,11 +1183,11 @@ public class SourceWindow
 
     mi = (MenuItem) this.copy.createMenuItem();
     tmp.append(mi);
-    mi = new MenuItem(); // Seperator
+    mi = new MenuItem(); // Separator
     tmp.append(mi);
     mi = (MenuItem) this.find.createMenuItem();
     tmp.append(mi);
-    mi = new MenuItem(); // Seperator
+    mi = new MenuItem(); // Separator
     tmp.append(mi);
     mi = (MenuItem) this.prefsLaunch.createMenuItem();
     tmp.append(mi);

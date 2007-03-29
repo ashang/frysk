@@ -1,3 +1,8 @@
+2007-03-29  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Added code for bz #4193 to add the ability to
+	select an executable and open a source window for it.
+
 2007-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SourceWindowFactory.java: Refactored name of sessionManager to
