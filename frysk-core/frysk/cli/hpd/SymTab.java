@@ -49,6 +49,7 @@ import javax.naming.NameNotFoundException;
 import lib.dw.Dwarf;
 import lib.dw.DwarfCommand;
 import lib.dw.DwarfDie;
+import lib.dw.DwarfException;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwTagEncodings;
@@ -244,8 +245,15 @@ public class SymTab
         }
       if (varDie != null)
         {
-          result.append(" at " + varDie.getDeclFile()
-                        + "#" + varDie.getDeclLine());
+	  try
+	    {
+	      result.append(" at " + varDie.getDeclFile()
+			    + "#" + varDie.getDeclLine());
+	    }
+	  catch (DwarfException de)
+	    {
+	      result.append(" at <unknown>");
+	    }
         }
       return result.toString();
     }

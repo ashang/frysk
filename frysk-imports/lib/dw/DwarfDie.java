@@ -43,7 +43,7 @@ package lib.dw;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DwarfDie
+abstract public class DwarfDie
 {
 
   private long pointer;
@@ -104,9 +104,10 @@ public class DwarfDie
   {
     long[] vals = get_scopes(addr);
     DwarfDie[] dies = new DwarfDie[vals.length];
+    DwarfDieFactory factory = DwarfDieFactory.getFactory();
     for(int i = 0; i < vals.length; i++)
       if(vals[i] != 0)
-        dies[i] = new DwarfDie(vals[i], this.parent);
+        dies[i] = factory.makeDie(vals[i], this.parent);
       else
         dies[i] = null;
 
@@ -129,7 +130,8 @@ public class DwarfDie
     long val = get_scopevar(die_and_scope, vals, variable);
     if (val >= 0)
       {
-        die = new DwarfDie(die_and_scope[0], this.parent);
+        die = DwarfDieFactory.getFactory().makeDie(die_and_scope[0],
+						   this.parent);
         die.scopes = scopes;
         die.scopeIndex = (int)die_and_scope[1];
       }
@@ -215,7 +217,7 @@ public class DwarfDie
     DwarfDie die = null;
     long type = get_type(this.getPointer());
     if (type != 0)
-      die = new DwarfDie(type, this.parent);
+      die = DwarfDieFactory.getFactory().makeDie(type, this.parent);
     return die;
   }
 
@@ -253,7 +255,7 @@ public class DwarfDie
     long child = get_child(this.getPointer());
     DwarfDie die = null;
     if (child != 0)
-      die = new DwarfDie(child, this.parent);
+      die = DwarfDieFactory.getFactory().makeDie(child, this.parent);
     return die;
   }
 
@@ -265,7 +267,7 @@ public class DwarfDie
     long sibling = get_sibling(this.getPointer());
     DwarfDie die = null;
     if (sibling != 0)
-      die = new DwarfDie(sibling, this.parent);
+      die = DwarfDieFactory.getFactory().makeDie(sibling, this.parent);
     return die;
   }
   
@@ -347,18 +349,26 @@ public class DwarfDie
     DwarfDie die = null;
     if (result > 0)
       {
-        die = new DwarfDie(result, null);
+        die = DwarfDieFactory.getFactory().makeDie(result, null);
         die.scopes = null;
         die.scopeIndex = 0;
       }
     return die;
   }
 
+  abstract public void accept(DieVisitor visitor);
+
   public native ArrayList getEntryBreakpoints();
+
+  public native boolean isInlineDeclaration();
+
+  public native ArrayList getInlinedInstances();
   
   private native long get_lowpc ();
 
   private native long get_highpc ();
+
+  protected native long get_entrypc();
 
   private native String get_diename ();
   
@@ -383,8 +393,9 @@ public class DwarfDie
   private native int get_base_type (long addr);
 
   private native boolean get_attr (long addr, int attr);
-  
-  private native int get_tag (long var_die);
+
+  // Package access for DwarfDieFactory
+  static native int get_tag (long var_die);
   
   private native int get_upper_bound (long addr);
   

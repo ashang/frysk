@@ -36,91 +36,35 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.cli.hpd;
 
-import java.util.ArrayList;
-import java.text.ParseException;
-import javax.naming.NameNotFoundException;
+package lib.dw.die;
 
 import lib.dw.DwarfDie;
-import lib.dw.DwTagEncodings;
+import lib.dw.Dwfl;
+import lib.dw.DieVisitor;
 
-import frysk.proc.Task;
-import frysk.rt.FunctionBreakpoint;
-import frysk.rt.LineBreakpoint;
-
-class BreakpointHandler
-  extends CLIHandler
+/**
+ * Wrapper around Dwarf DW_TAG_condition DIE
+ */
+public class Condition
+  extends DwarfDie
 {
-  static final String descr = "set source breakpoint";
-
-  BreakpointHandler(String name, CLI cli)
+  public Condition(long pointer, Dwfl parent)
   {
-    super(name, cli, new CommandHelp(name, descr, "break @file@lineno", descr));
+    super(pointer, parent);
   }
 
-  BreakpointHandler(CLI cli)
+  public Condition(long pointer)
   {
-    this("break", cli);
+    this(pointer, null);
   }
 
-  public void handle(Command cmd) throws ParseException
+  /**
+   * Accept a visitor.
+   * @param visitor the visitor
+   */
+  public void accept(DieVisitor visitor)
   {
-    cli.refreshSymtab();
-    ArrayList params = cmd.getParameters();
-    if (params.size() != 1)
-      {
-	cli.printUsage(cmd);
-	return;
-      }
-    String breakpt = (String)params.get(0);
-    String fileName;
-    int lineNumber;
-    Actionpoint actionpoint;
-    Task task = cli.getTask();
-    if (breakpt.charAt(0) == '@')
-      {
-	String[] bptParams = breakpt.split("@");
-	if (bptParams.length != 3)
-	  {
-	    // XXX should use notion of "current" source file
-	    throw new ParseException("bad syntax for breakpoint:" + breakpt,
-				     0);
-	  }
-	fileName = bptParams[1];
-	lineNumber = Integer.parseInt((String)bptParams[2]);
-	LineBreakpoint bpt = new LineBreakpoint(task, fileName, lineNumber, 0);
-	actionpoint = new LineBreakpointAdapter(bpt, cli.getRunState(), task);
-      }
-    else
-      {
-	DwarfDie die;
-	try
-	  {
-	    die = cli.symtab.getSymbolDie(breakpt);
-	  }
-	catch (NameNotFoundException e)
-	  {
-	    cli.getPrintWriter().println(e.getMessage());
-	    return;
-	  }
-	if (false)
-	  {
-	    cli.getPrintWriter().println("function die tag: "
-					 + DwTagEncodings.toPrintString(die.getTag()));
-	    if (die.isInlineDeclaration())
-	      {
-		cli.getPrintWriter().println("Is declared inline.");
-	      }
-	  }
-	FunctionBreakpoint bpt = new FunctionBreakpoint(breakpt, die);
-	actionpoint = new FunctionBreakpointAdapter(bpt, cli.getRunState(),
-						    task);
-      }
-
-
-    int id = cli.getActionpointTable().add(actionpoint);
-    actionpoint.enable();
-    cli.getPrintWriter().println("breakpoint " + id);
+    visitor.visit(this);
   }
 }

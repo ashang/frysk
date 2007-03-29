@@ -48,6 +48,9 @@
 
 #include "lib/dw/DwarfDie.h"
 #include "lib/dw/BaseTypes.h"
+#include "lib/dw/DwarfDieFactory.h"
+#include "lib/dw/DwarfException.h"
+#include "lib/dw/DwException.h"
 
 #define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
 
@@ -67,6 +70,16 @@ lib::dw::DwarfDie::get_highpc()
 	return (jlong) highpc;
 }
 
+jlong
+lib::dw::DwarfDie::get_entrypc()
+{
+	Dwarf_Addr entrypc;
+	::dwarf_entrypc(DWARF_DIE_POINTER, &entrypc);
+	return (jlong) entrypc;
+}
+
+
+
 jstring
 lib::dw::DwarfDie::get_diename()
 {
@@ -85,7 +98,7 @@ lib::dw::DwarfDie::get_decl_file(jlong var_die)
   if (name != NULL)
     return JvNewStringLatin1 (name);
   else
-    return JvNewStringLatin1 ("");
+    lib::dw::DwException::throwDwException();
 }
 
 jlong
@@ -93,7 +106,8 @@ lib::dw::DwarfDie::get_decl_line(jlong var_die)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   int lineno;
-  dwarf_decl_line (die, &lineno);
+  if (dwarf_decl_line (die, &lineno) != 0)
+    lib::dw::DwException::throwDwException();
   return lineno;
 }
 
@@ -512,4 +526,39 @@ lib::dw::DwarfDie::getEntryBreakpoints()
     }
   else
     return 0;
+}
+
+jboolean
+lib::dw::DwarfDie::isInlineDeclaration()
+{
+  return dwarf_func_inline(DWARF_DIE_POINTER) != 0;
+}
+
+struct CallbackArgs
+{
+  java::util::ArrayList *arrayList;
+  lib::dw::DwarfDieFactory *factory;
+};
+
+extern "C" int inlineInstanceCallback(Dwarf_Die *instance, void *arg)
+{
+  CallbackArgs *cbArg = static_cast<CallbackArgs *>(arg);
+  if (cbArg->arrayList)
+    cbArg->arrayList = new java::util::ArrayList();
+  cbArg->arrayList->add(cbArg->factory->makeDie((jlong)instance, 0));
+  return DWARF_CB_OK;
+}
+
+java::util::ArrayList*
+lib::dw::DwarfDie::getInlinedInstances()
+{
+  CallbackArgs cbArgs = { 0, lib::dw::DwarfDieFactory::getFactory() };
+
+  if (dwarf_func_inline_instances(DWARF_DIE_POINTER, inlineInstanceCallback,
+				  &cbArgs) != 0)
+    {
+      throw new lib::dw::DwarfException(JvNewStringUTF("Unknown error while searching for inline instances"));
+    }
+  else
+    return cbArgs.arrayList;
 }

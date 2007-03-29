@@ -43,17 +43,4 @@ CC=${CC:-gcc}
 $CC -dD -E $(dirname $0)/../../elfutils/libdw/dwarf.h | awk '
     /DW_TAG/ {gsub(",","",$3)
 	   printf "%s %s\n", $1, $3}
-' 2>&1 | egrep \
-'\<DW_TAG_array_type\>'\
-\|'\<DW_TAG_base_type\>'\
-\|'\<DW_TAG_formal_parameter\>'\
-\|'\<DW_TAG_inlined_subroutine\>'\
-\|'\<DW_TAG_structure_type\>'\
-\|'\<DW_TAG_subprogram\>'\
-\|'\<DW_TAG_typedef\>'\
-\|'\<DW_TAG_const_type\>'\
-\|'\<DW_TAG_pointer_type\>'\
-\|'\<DW_TAG_subrange_type\>'\
-\|'\<DW_TAG_variable\>'
-
-
+' 2>&1

@@ -1,3 +1,9 @@
+2007-03-29  Tim Moore  <timoore@redhat.com>
+
+	* SymTab.java (what): Catch exception if variable file and line
+	number are unknown.
+	* BreakpontHandler.java (handle): Disabled debugging code.
+
 2007-03-22  Tim Moore  <timoore@redhat.com>
 
 	* CLI.java (RunStateObserver.update): Print out breakpoint

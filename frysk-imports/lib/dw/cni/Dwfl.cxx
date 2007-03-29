@@ -46,6 +46,7 @@
 #include "lib/dw/Dwfl.h"
 #include "lib/dw/DwflDieBias.h"
 #include "lib/dw/DwarfDie.h"
+#include "lib/dw/DwarfDieFactory.h"
 #include "lib/dw/DwflModule.h"
 
 #define DWFL_POINTER (::Dwfl *) this->pointer
@@ -147,7 +148,7 @@ lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 		return NULL;
 	
 	lib::dw::DwflDieBias *retval = new lib::dw::DwflDieBias();
-	retval->die = new lib::dw::DwarfDie((jlong) die, this);
+	retval->die = factory->makeDie((jlong) die, this);
 	retval->bias = (jlong) bias;
 	
 	return retval;

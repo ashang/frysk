@@ -51,14 +51,18 @@ public class Dwfl
   protected RawDataManaged callbacks;
 
   private DwflModule[] modules;
+
+  private DwarfDieFactory factory;
   
   public Dwfl (int pid)
   {
+    factory = DwarfDieFactory.getFactory();
     dwfl_begin(pid);
   }
 
   protected Dwfl (long pointer)
   {
+    factory = DwarfDieFactory.getFactory();
     this.pointer = pointer;
   }
 
@@ -183,6 +187,11 @@ public class Dwfl
       }
     
     return false;
+  }
+
+  public DwarfDieFactory getFactory()
+  {
+    return factory;
   }
   
   protected native void dwfl_begin (int pid);

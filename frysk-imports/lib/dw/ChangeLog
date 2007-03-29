@@ -1,3 +1,26 @@
+2007-03-29  Tim Moore  <timoore@redhat.com>
+
+	* DwarfException.java: New class.
+	* DwException.java: New class.
+	* DwarfDieFactory.java: New class.
+	* DieVisitor.java: New class.
+	* DwTagEncodings.shenum: List all Dwarf tags.
+	* DwarfDie.java (DwarfDie class): Make abstract.
+	(getScopes, getScopeVar, getType, getChild, getSibling, getDecl):
+	Use DwarfDieFactory. 
+	(accept): New abstract method.
+	(isInlineDeclaration, getInlinedInstances, get_entrypc): New native
+	methods.
+	(get_tag): Make static, package accessable.
+	* Dwfl.java(getFactory): New method.
+	(Dwfl constructors): use it.
+	* cni/DwarfDie.cxx (get_entrypc): New method implementation.
+	(get_decl_file, get_decl_line): Throw DwException if error.
+	(isInlineDeclaration, getInlinedInstances): New method
+	implementations.
+	* cni/Dwfl.cxx (dwfl_addrdie): Use DwarfDieFactory.
+	* lib/dw/die: New package with wrapper classes for Dwarf Dies.
+
 2007-03-28  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflModule.java (getAddressName): Removed.
