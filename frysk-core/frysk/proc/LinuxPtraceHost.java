@@ -45,6 +45,7 @@ import frysk.event.EventLoop;
 import frysk.event.SignalEvent;
 import frysk.sys.Ptrace;
 import frysk.sys.Wait;
+import frysk.sys.WaitBuilder;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.sys.Tid;
@@ -287,7 +288,7 @@ public class LinuxPtraceHost
       logger.log(Level.FINE, "{0} PollWaitOnSigChld\n", this);
     }
 
-    Wait.Observer waitObserver = new Wait.Observer()
+    WaitBuilder waitObserver = new WaitBuilder()
     {
 	/**
 	 * Maintain a list of fscked up kernel waitpid events - where

@@ -1,3 +1,10 @@
+2007-03-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java (Observer): Replace with separate WaitBuilder class.
+	* WaitBuilder.java: New file.
+	* ProcessIdentifier.java: Update.
+	* cni/Wait.cxx: Update.
+
 2007-03-28  Mark Wielaard  <mark@klomp.org>
 
 	* Wait.java (static): Use frysk.sys for getLogger().

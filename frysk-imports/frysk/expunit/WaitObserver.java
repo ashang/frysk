@@ -39,10 +39,10 @@
 
 package frysk.expunit;
 
-import frysk.sys.Wait;
+import frysk.sys.WaitBuilder;
 
 class WaitObserver
-    implements Wait.Observer
+    implements WaitBuilder
 {
     private final int expectedStatus;
     /**

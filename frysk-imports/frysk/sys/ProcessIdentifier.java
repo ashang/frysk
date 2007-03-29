@@ -94,7 +94,7 @@ public class ProcessIdentifier
     /**
      * Perform a blocking wait for a single event from this process.
      */
-    public void blockingWait (Wait.Observer o)
+    public void blockingWait (WaitBuilder o)
     {
 	Wait.waitAll (pid, o);
     }

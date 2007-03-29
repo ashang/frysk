@@ -52,6 +52,7 @@ import frysk.sys.Sig;
 import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
+import frysk.sys.WaitBuilder;
 import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.Stat;
 
@@ -1263,7 +1264,7 @@ public class TestLib
   }
 
   class IgnoreWaitObserver
-      implements Wait.Observer
+      implements WaitBuilder
   {
     public void cloneEvent (int pid, int clone)
     {
@@ -1301,7 +1302,7 @@ public class TestLib
   }
 
   class FailWaitObserver
-      implements Wait.Observer
+      implements WaitBuilder
   {
     String message;
 
@@ -1596,7 +1597,7 @@ public class TestLib
         while (! pidsToKillDuringTearDown.isEmpty())
           {
             logger.log(Level.FINE, "{0} waitAll -1 ...\n", this);
-            Wait.waitAll(- 1, new Wait.Observer()
+            Wait.waitAll(- 1, new WaitBuilder()
             {
               public void cloneEvent (int pid, int clone)
               {

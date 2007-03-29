@@ -1,3 +1,8 @@
+2007-03-29  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/DwarfDie.cxx (get_decl_file): Ensure it always returns
+	something.
+
 2007-03-29  Tim Moore  <timoore@redhat.com>
 
 	* DwarfDieFactory.java (DwarfDieFactory): Remove gratuitous

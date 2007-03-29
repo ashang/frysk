@@ -1,3 +1,9 @@
+2007-03-29  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Replace frysk.sys.Wait.Observer with
+	frysk.sys.WaitBuilder.
+	* TestLib.java: Ditto.
+
 2007-03-28  Mark Wielaard  <mark@klomp.org>
 
 	* Host.java (logger): Use fully qualified frysk.proc for getLogger().

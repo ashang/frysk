@@ -55,7 +55,7 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Wait.h"
-#include "frysk/sys/Wait$Observer.h"
+#include "frysk/sys/WaitBuilder.h"
 
 /* Unpack the WSTOPEVENT status field.
 
@@ -135,27 +135,27 @@ log (pid_t pid, int status, int err)
 
 static void
 processStatus (int pid, int status,
-	       frysk::sys::Wait$Observer* observer)
+	       frysk::sys::WaitBuilder* builder)
 {
   if (0)
     ;
   else if (WIFEXITED (status))
-    observer->terminated (pid, false, WEXITSTATUS (status),
+    builder->terminated (pid, false, WEXITSTATUS (status),
 			  WCOREDUMP (status));
   else if (WIFSIGNALED (status))
-    observer->terminated (pid, true, WTERMSIG (status), WCOREDUMP (status));
+    builder->terminated (pid, true, WTERMSIG (status), WCOREDUMP (status));
   else if (WIFSTOPPED (status)) {
     switch (WSTOPEVENT (status)) {
     case PTRACE_EVENT_CLONE:
       try {
 	// The event message contains the thread-ID of the new clone.
 	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
-	observer->cloneEvent (pid, clone);
+	builder->cloneEvent (pid, clone);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
-	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid, err);
+	// to a KILL -9).  Notify builder.
+	builder->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_FORK:
@@ -163,12 +163,12 @@ processStatus (int pid, int status,
 	// The event message contains the process-ID of the new
 	// process.
 	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
-	observer->forkEvent (pid, fork);
+	builder->forkEvent (pid, fork);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
-	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid, err);
+	// to a KILL -9).  Notify builder.
+	builder->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_EXIT:
@@ -177,11 +177,11 @@ processStatus (int pid, int status,
 	// to decode that.
 	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
 	if (WIFEXITED (exitStatus)) {
-	  observer->exitEvent (pid, false, WEXITSTATUS (exitStatus),
+	  builder->exitEvent (pid, false, WEXITSTATUS (exitStatus),
 			       WCOREDUMP (exitStatus));
 	}
 	else if (WIFSIGNALED (exitStatus)) {
-	  observer->exitEvent (pid, true, WTERMSIG (exitStatus),
+	  builder->exitEvent (pid, true, WTERMSIG (exitStatus),
 			       WCOREDUMP (exitStatus));
 	}
 	else {
@@ -190,20 +190,20 @@ processStatus (int pid, int status,
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
-	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid, err);
+	// to a KILL -9).  Notify builder.
+	builder->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_EXEC:
-      observer->execEvent (pid);
+      builder->execEvent (pid);
       break;
     case 0:
       {
 	int signum = WSTOPSIG (status);
 	if (signum >= 0x80)
-	  observer->syscallEvent (pid);
+	  builder->syscallEvent (pid);
 	else
-	  observer->stopped (pid, signum);
+	  builder->stopped (pid, signum);
       }
       break;
     default:
@@ -218,7 +218,7 @@ processStatus (int pid, int status,
    until there's nothing left.  */
 
 void
-frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
+frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
 {
   struct WaitResult {
     pid_t pid;
@@ -259,7 +259,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
     throwErrno (myErrno, "waitpid", "process", -1);
   }
 
-  // Now unpack each, notifying the observer.
+  // Now unpack each, notifying the builder.
   /* We need to keep track of the status of the previous item in this queue
    * since some items are duplicated when waitpit() is called from a 
    * multithreaded parent - see #2774 */
@@ -268,7 +268,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   while (head != tail) {
     // Process the result - check for a duplicate entry
     if (old_pid != head->pid || old_status != head->status)
-      processStatus (head->pid, head->status, observer);
+      processStatus (head->pid, head->status, builder);
     old_pid = head->pid; old_status = head->status;
     head = head->next;
   }
@@ -277,7 +277,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
 /* Do a blocking wait.  */
 
 void
-frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
+frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
 {
   int status;
   errno = 0;
@@ -287,7 +287,7 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
   if (pid <= 0)
     throwErrno (myErrno, "waitpid", "process", wpid);
   // Process the result.
-  processStatus (pid, status, observer);
+  processStatus (pid, status, builder);
 }
 
 /** Drain wait events.  */

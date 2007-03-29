@@ -39,49 +39,54 @@
 
 package frysk.sys;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 /**
- * Wait for an event from either a process, task, or all processes and
- * tasks.
+ * Let the Wait client build each wait-pid event.
  */
-
-public final class Wait
+public interface WaitBuilder
 {
-    private static Logger logger;
     /**
-     * Finds, and returns the logger, but only when logging is
-     * enabled..
+     * The task PID got a clone event; CLONE is the new task's ID.
      */
-    static Logger getLogger ()
-    {
-	// Seems that when calling static methods this isn't
-	// initialized, force it.
-	if (logger == null)
-	    logger = Logger.getLogger("frysk.sys");
-	if (logger.isLoggable (Level.FINE))
-	    return logger;
-	else
-	    return null;
-    }
+    void cloneEvent (int pid, int clone);
     /**
-     * Read in all the pending wait events, and then pass them to the
-     * observer.  If there is no outstanding event return immediatly.
+     * The task PID got a fork event; CHILD is the new process ID.
      */
-    public native static void waitAllNoHang (WaitBuilder builder);
+    void forkEvent (int pid, int child);
     /**
-     * Wait for a single process or task event.  Block if no event is
-     * pending (provided that there are still potential events).
+     * The task PID got an exit event; if SIGNAL, VALUE is the +ve
+     * terminating signal, otherwize VALUE is the cardinal exit
+     * status.
      */
-    public native static void waitAll (int pid, WaitBuilder builder);
-
+    void exitEvent (int pid, boolean signal, int value,
+		    boolean coreDumped);
     /**
-     * Non-blocking drain of all pending wait events belonging to pid.
+     * The task PID got an exec event; the process has already
+     * been overlayed.
      */
-    public native static void drainNoHang (int pid);
+    void execEvent (int pid);
     /**
-     * Blocking drain of all pending wait events belonging to pid.
+     * XXX: It isn't currently possible to determine from the
+     * syscall event whether it is entry or exit.  We must
+     * do state transitioning in the upper-level and figure it out.
      */
-    public native static void drain (int pid);
+    void syscallEvent (int pid);
+    /**
+     * The task PID stopped; if SIGNAL is non-zero, then SIGNAL is
+     * pending.
+     */
+    void stopped (int pid, int signal);
+    /**
+     * The task PID terminated (WIFEXITED, WIFSIGNALED); if
+     * SIGNAL, VALUE is the +ve terminating signal, otherwize
+     * VALUE is the cardinal exit status.
+     */
+    void terminated (int pid, boolean signal, int value,
+		     boolean coreDumped);
+    /**
+     * The task PID disappeared.
+     *
+     * Received an event for PID but then that, by the time its
+     * status was checked, the process had vanished.
+     */
+    void disappeared (int pid, Throwable w);
 }

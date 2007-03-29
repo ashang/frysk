@@ -1,3 +1,8 @@
+2007-03-29  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitObserver.java: Replace frysk.sys.Wait.Observer with
+	frysk.sys.WaitBuilder.
+
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Equals.java: Check for invalid group index.
