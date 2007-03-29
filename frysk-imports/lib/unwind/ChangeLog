@@ -1,3 +1,7 @@
+2007-03-29  Nurdin Premji <npremji@redhat.com>
+
+	* cni/UnwindH.hxx (getProcName): Set value of offset pointer.
+
 2007-03-28  Nurdin Premji <npremji@redhat.com>
 
 	* cni/UnwindH.hxx: Fix buffer copy off by one bug, comment on it.

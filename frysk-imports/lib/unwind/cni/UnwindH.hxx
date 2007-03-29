@@ -188,7 +188,8 @@ get_proc_name(::unw_addr_space_t as,
 	JvGetStringUTFRegion(procName->name, 0, upper_limit, bufp);
 	
 	bufp[upper_limit] = '\0';
-	offp = (unw_word_t *) procName->address;
+	
+	*offp = (unw_word_t) procName->address;
 	
 	if (upper_limit < buf_len)
 		return 0;
