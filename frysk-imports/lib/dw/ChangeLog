@@ -1,5 +1,8 @@
 2007-03-29  Tim Moore  <timoore@redhat.com>
 
+	* DwarfDieFactory.java (DwarfDieFactory): Remove gratuitous
+	references to 1.5 generics stuff.
+
 	* DwarfException.java: New class.
 	* DwException.java: New class.
 	* DwarfDieFactory.java: New class.

@@ -41,7 +41,6 @@
 package lib.dw;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -106,7 +105,7 @@ public class DwarfDieFactory
       outer:
 	for (int j = 0; j < constructors.length; j++)
 	  {
-	    Type[] args = constructors[j].getGenericParameterTypes();
+	    Class[] args = constructors[j].getParameterTypes();
 	    if (args.length != 2)
 	      continue;
 	    for (int k = 0; k < 2; k++)
