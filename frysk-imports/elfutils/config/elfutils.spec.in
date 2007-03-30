@@ -179,6 +179,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+* Fri Mar 30 2007 Nurdin Premji <npremji@redhat.com> 0.127-UNFINISHED-1
+- libdwfl: new function dwfl_module_addrsym
+
 * Mon Feb  5 2007 Ulrich Drepper <drepper@redhat.com> 0.126-1
 - new program: ar
 
