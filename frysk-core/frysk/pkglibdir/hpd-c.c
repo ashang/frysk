@@ -140,19 +140,22 @@ static int func_1 (int x, int y) __attribute__ ((noinline));
 
 int static_int = 4;
 struct static_class_t {int class_int_1; float class_float_1;} static_class = {51, 12.34};
+enum cars {bmw, porsche} ssportscar;
 
 static int
 func_2 (int x, int y)
 {
   typedef struct {double class_double_1, class_int_2;} class_t;
   class_t class_1;
-  int *int_p;
+  enum cars {bmw, porsche} sportscar;
+  volatile int *int_p;
   long arr_1 [32];
   int arr_2 [5][6];
   float arr_3 [4][5];
   char arr_4 [4];
   class_t *class_p;
-  int int_22 = 22;
+  sportscar = porsche;
+  volatile int int_22 = 22;
   char char_21 __attribute__((unused)) = assign_char('a');
   short short_21 = assign_short (12);
   int int_21 = assign_int (11);

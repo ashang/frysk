@@ -1,3 +1,11 @@
+2007-03-30  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java: Handle DW_TAG_enumerator.
+	(get): Handle DW_TAG_pointer_type, DW_TAG_enumeration_type, and
+	DW_TAG_enumerator.
+	* hpd/SymTab.java (what): Handle DW_TAG_array_type,
+	DW_TAG_structure_type, and DW_TAG_enumeration.
+
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
 	* CLI.java (DetachHandler.handle): Updated call to 

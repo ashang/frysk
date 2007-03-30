@@ -294,6 +294,13 @@ jint
 lib::dw::DwarfDie::get_base_type (jlong var_die)
 {
   Dwarf_Die *type_die = (Dwarf_Die*) var_die;
+  Dwarf_Attribute type_attr;
+  while (type_die && dwarf_tag (type_die) == DW_TAG_volatile_type)
+    {
+      dwarf_attr_integrate (type_die, DW_AT_type, &type_attr);
+      dwarf_formref_die (&type_attr, type_die);
+    }
+  
   if (dwarf_tag (type_die) == DW_TAG_base_type)
     {
       Dwarf_Word byte_size;
@@ -339,20 +346,6 @@ lib::dw::DwarfDie::get_base_type (jlong var_die)
 }
 
 jint
-lib::dw::DwarfDie::get_upper_bound (jlong var_die)
-{
-  Dwarf_Die *type_die = (Dwarf_Die*) var_die;
-  Dwarf_Word byte_size;
-  Dwarf_Attribute type_attr;
-  if (dwarf_attr_integrate (type_die, DW_AT_upper_bound, &type_attr))
-    {
-      dwarf_formudata (&type_attr, &byte_size);
-      return byte_size;
-    }
-  return -1;
-}
-  
-jint
 lib::dw::DwarfDie::get_tag (jlong die_p)
 {
   Dwarf_Die *die = (Dwarf_Die*)die_p;
@@ -360,7 +353,7 @@ lib::dw::DwarfDie::get_tag (jlong die_p)
 }
 
 jboolean
-lib::dw::DwarfDie::get_attr (jlong die_p, jint attr)
+lib::dw::DwarfDie::get_attr_boolean (jlong die_p, jint attr)
 {
   Dwarf_Die *die = (Dwarf_Die*)die_p;
   Dwarf_Attribute type_attr;
@@ -370,6 +363,20 @@ lib::dw::DwarfDie::get_attr (jlong die_p, jint attr)
     return 0;
 }
 
+jint
+lib::dw::DwarfDie::get_attr_constant (jlong die_p, jint attr)
+{
+  Dwarf_Die *die = (Dwarf_Die*) die_p;
+  Dwarf_Word constant;
+  Dwarf_Attribute type_attr;
+  if (dwarf_attr_integrate (die, attr, &type_attr))
+    {
+      dwarf_formudata (&type_attr, &constant);
+      return constant;
+    }
+  return -1;
+}
+  
 void
 lib::dw::DwarfDie::get_framebase (jlong var_die, jlong scope_arg, jlong pc)
 {
@@ -472,6 +479,17 @@ lib::dw::DwarfDie::get_decl (jlong dbg_p, jstring sym_p)
   return (jlong)0;
 }
 
+jlong
+lib::dw::DwarfDie::get_decl_cu (jlong die_p, jstring sym_p)
+{
+  Dwarf_Die *die = (Dwarf_Die*) die_p;
+  int sym_len = sym_p->length ();
+  char sym[sym_len + 1];
+  JvGetStringUTFRegion (sym_p, 0, sym_len, sym);
+  sym[sym_len] = '\0';
+  return (jlong)iterate_decl(die, sym, 99);
+}
+
 static Dwarf_Die*
 iterate_decl (Dwarf_Die *die_p, char *sym, size_t nfiles)
 {
@@ -485,16 +503,20 @@ iterate_decl (Dwarf_Die *die_p, char *sym, size_t nfiles)
       Dwarf_Attribute attr_mem;
       Dwarf_Attribute *attr = dwarf_attr (die, DW_AT_name, &attr_mem);
       const char *name = dwarf_formstring (attr);
-      if (name == NULL)
+      // Want either a die with a name OR look at its DW_TAG_enumerators
+      if (name == NULL && dwarf_tag (die) != DW_TAG_enumeration_type)
 	continue;
 
       Dwarf_Word fileidx;
       attr = dwarf_attr (die, DW_AT_decl_file, &attr_mem);
-      if (dwarf_formudata (attr, &fileidx) != 0 || (size_t)fileidx >= nfiles)
+      // DW_TAG_enumerator doesn't have a DW_AT_decl_file
+      if ((dwarf_formudata (attr, &fileidx) != 0 || (size_t)fileidx >= nfiles)
+	  && dwarf_tag (die) != DW_TAG_enumerator)
 	continue;
 
-      if (strcmp(name, sym) == 0)
-	return die;
+      if (name)
+	if (strcmp(name, sym) == 0)
+	  return die;
 
       if (dwarf_haschildren (die))
 	{

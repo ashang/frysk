@@ -1,3 +1,13 @@
+2007-03-30  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getAttr): Rename getAttrBoolean.
+	(getUpperBound): Rename getAttrConstant.	
+	(getDeclCU): New.
+	* cni/DwarfDie.cxx (get_base_type): Indirect for DW_TAG_volatile_type.
+	(get_decl_cu): New.
+	(iterate_decl): Handle DW_TAG_enumerator.
+	* DwAtEncodings.shenum (CC): Add DW_AT_const_value.
+
 2007-03-29  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/DwarfDie.cxx (get_decl_file): Ensure it always returns

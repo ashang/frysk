@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,24 +39,21 @@
 
 package frysk.value;
 
-import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
 
-import lib.dw.BaseTypes;
-
 /**
  * Type for a class.
  */
-public class ClassType
+public class EnumType
     extends Type
 {
-  ArrayList members;
+  Type type;
 
   ArrayList names;
   
-  ArrayList offsets;
+  ArrayList values;
 
   /**
    * Iterate through the class members.
@@ -66,18 +63,15 @@ public class ClassType
   {
     private int idx;
 
-    Variable v;
-
-    Iterator (Variable v)
+    Iterator ()
     {
       idx = - 1;
-      this.v = v;
     }
 
     public boolean hasNext ()
     {
       idx += 1;
-      if (idx < members.size())
+      if (idx < names.size())
         return true;
       return false;
     }
@@ -89,22 +83,7 @@ public class ClassType
 
     public Object next ()
     {
-      Type type = ((Type) (members.get(idx)));
-      int off = ((Long)offsets.get(idx)).intValue();
-      if (type.typeId == BaseTypes.baseTypeChar)
-        return new Integer(v.getByte(off));
-      else if (type.typeId == BaseTypes.baseTypeShort)
-        return new Integer(v.getShort(off));
-      else if (type.typeId == BaseTypes.baseTypeInteger)
-        return new Integer(v.getInt(off));
-      else if (type.typeId == BaseTypes.baseTypeLong)
-        return new Integer(v.getInt(off));
-      else if (type.typeId == BaseTypes.baseTypeFloat)
-        return new Float(v.getFloat(off));
-      else if (type.typeId == BaseTypes.baseTypeDouble)
-        return new Double(v.getDouble(off));
-      else
-        return null;
+      return new Long(((Long)values.get(idx)).intValue());
     }
 
     public void remove ()
@@ -112,54 +91,56 @@ public class ClassType
     }
   }
 
-  public Iterator getIterator (Variable v)
+  public Iterator getIterator ()
   {
-    return new Iterator(v);
+    return new Iterator();
   }
 
   public String toString (Variable v)
   {
-    StringBuffer strBuf = new StringBuffer();
-    Iterator e = getIterator(v);
-    while (e.hasNext())
-      {
-        strBuf.append(e.nextName() + "=");
-        strBuf.append(e.next() + ",");
-      }
-    return strBuf.toString();
+    return toString();
   }
   
-  public String getName ()
+  public String toString ()
   {
     StringBuffer strBuf = new StringBuffer();
     strBuf.append("{");
-    for (int i = 0; i < this.members.size(); i++)
+    Iterator e = getIterator();
+    boolean first = true;
+    while (e.hasNext())
       {
-	strBuf.append(((Type)this.members.get(i)).getName() + " ");
-	strBuf.append((String)this.names.get(i) + ";");
+	if (first)
+	  first = false;
+	else
+	  strBuf.append(",");
+        strBuf.append(e.nextName() + "=");
+        strBuf.append(e.next());
       }
     strBuf.append("}");
     return strBuf.toString();
   }
 
+  public String getName ()
+  {
+    return "enum " + this.toString();
+  }
+  
   /**
    * Create an ClassType
    * 
    * @param endian - Endianness of class
    */
-  public ClassType (ByteOrder endian)
+  public EnumType (ByteOrder endian)
   {
     super(0, endian, 0, "class");
-    members = new ArrayList();
     names = new ArrayList();
-    offsets = new ArrayList();
+    values = new ArrayList();
   }
 
-  public void addMember (Type member, String name, long offset)
+  public void addMember (Type member, String name, long value)
   {
-    members.add(member);
     names.add(name);
-    offsets.add(new Long(offset));
+    values.add(new Long(value));
   }
 
   public Variable newVariable (Type type, Variable val)
@@ -167,11 +148,9 @@ public class ClassType
     return val.getType().newIntegerVariable((IntegerType) type, val);
   }
 
-  public static Variable newClassVariable (Type type, String text,
-                                           ArrayByteBuffer ab)
-  {
-    Location loc = new Location(ab);
-    Variable returnVar = new Variable(type, text, loc);
+  public static Variable newEnumVariable (Type type, String text)
+{
+    Variable returnVar = new Variable(type, text);
     return returnVar;
   }
 

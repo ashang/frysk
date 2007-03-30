@@ -54,12 +54,14 @@ import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwOpEncodings;
+import lib.dw.DwAtEncodings;
 import lib.dw.DwTagEncodings;
 import frysk.expr.CppSymTab;
 import frysk.value.ArrayType;
 import frysk.value.ByteType;
 import frysk.value.ClassType;
 import frysk.value.DoubleType;
+import frysk.value.EnumType;
 import frysk.value.FloatType;
 import frysk.value.LongType;
 import frysk.value.IntegerType;
@@ -509,6 +511,8 @@ class ExprSymTab
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);
     if (varDie == null)
+      varDie = DwarfDie.getDeclCU(allDies[0], s);
+    if (varDie == null)
       return null;
     return varDie;
   }
@@ -585,10 +589,9 @@ class ExprSymTab
         try
           {
             DwarfDie type = varDie.getType();
-            int tag = type.getTag();
-            if (type == null)
-              return null;
-            switch (type.getBaseType())
+            // if there is no type then setup a sentinel
+            int baseType = type != null ? type.getBaseType() : 0;
+            switch (baseType)
               {
               case BaseTypes.baseTypeLong:
               {
@@ -633,6 +636,8 @@ class ExprSymTab
                 return DoubleType.newDoubleVariable(doubleType, s, doubleVal);
               }
             }
+            // if there is no type then use this die's tag
+            int tag = type != null ? type.getTag() : varDie.getTag();
             if (tag == DwTagEncodings.DW_TAG_array_type_)
               {
                 DwarfDie subrange;
@@ -644,7 +649,7 @@ class ExprSymTab
                 int bufSize = 1;
                 while (subrange != null)
                   {
-                    int arrDim = subrange.getUpperBound();
+                    int arrDim = subrange.getAttrConstant(DwAtEncodings.DW_AT_upper_bound_);
                     dims.add(new Integer(arrDim));
                     subrange = subrange.getSibling();
                     bufSize *= arrDim + 1;
@@ -682,8 +687,7 @@ class ExprSymTab
                 ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
 
                 abb.order(byteorder);
-                Variable arrVar = new Variable(arrayType, s, abb);
-                return arrVar;
+                return new Variable(arrayType, s, abb);
               }
             else if (tag == DwTagEncodings.DW_TAG_structure_type_)
               {
@@ -731,8 +735,33 @@ class ExprSymTab
                 ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
 
                 abb.order(byteorder);
-                Variable classVar = new Variable(classType, s, abb);
-                return classVar;
+                return new Variable(classType, s, abb);
+              }
+            else if (tag == DwTagEncodings.DW_TAG_pointer_type_)
+              {
+        	long addr = variableAccessor[i].getAddr(s);
+        	return LongType.newLongVariable(longType, s, addr);
+              }
+            else if (tag == DwTagEncodings.DW_TAG_enumeration_type_)
+              {
+                DwarfDie subrange;
+                long addr = variableAccessor[0].getAddr(s);
+                if (addr == 0)
+                  continue;
+                subrange = type.getChild();
+                EnumType enumType = new EnumType(byteorder);
+                while (subrange != null)
+                  {
+                    enumType.addMember(byteType, subrange.getName(), 
+                                       subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+                    subrange = subrange.getSibling();
+                  }
+                return EnumType.newEnumVariable(enumType, s);
+              }
+            // special case members of an enumeration
+            else if (tag == DwTagEncodings.DW_TAG_enumerator_)
+              {
+        	return LongType.newLongVariable(longType, varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
               }
           }
         catch (Errno ignore)
@@ -766,7 +795,7 @@ class ExprSymTab
                 subrange != null;
                 subrange = subrange.getSibling())
              {
-               int arrDim = subrange.getUpperBound();
+               int arrDim = subrange.getAttrConstant(DwAtEncodings.DW_AT_upper_bound_);
                dims.add(new Integer(arrDim));
              }
            int stride [] = new int [dims.size()];

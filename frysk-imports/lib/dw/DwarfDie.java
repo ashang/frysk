@@ -229,9 +229,9 @@ abstract public class DwarfDie
     return get_base_type(this.getPointer());
   }
   
-  public boolean getAttr(int attr)
+  public boolean getAttrBoolean(int attr)
   {
-    return get_attr(this.getPointer(), attr);
+    return get_attr_boolean(this.getPointer(), attr);
   }
   
   public int getTag()
@@ -242,9 +242,9 @@ abstract public class DwarfDie
   /**
    * @return The upper bound for this subrange die.
    */
-  public int getUpperBound ()
+  public int getAttrConstant (int attr)
   {
-    return get_upper_bound(this.getPointer());
+	  return get_attr_constant(this.getPointer(), attr);
   }
 
   /**
@@ -356,6 +356,25 @@ abstract public class DwarfDie
     return die;
   }
 
+  /**
+   * Get die for static symbol sym in CU dw.
+   * @param dw
+   * @param sym
+   * @return die
+   */
+  public static DwarfDie getDeclCU (DwarfDie dw, String sym)
+  {
+    long result = get_decl_cu (dw.getPointer(), sym);
+    DwarfDie die = null;
+    if (result > 0)
+      {
+	die = DwarfDieFactory.getFactory().makeDie(result, null);
+        die.scopes = null;
+        die.scopeIndex = 0;
+      }
+    return die;
+  }
+  
   abstract public void accept(DieVisitor visitor);
 
   public native ArrayList getEntryBreakpoints();
@@ -392,12 +411,12 @@ abstract public class DwarfDie
   
   private native int get_base_type (long addr);
 
-  private native boolean get_attr (long addr, int attr);
-
+  private native boolean get_attr_boolean (long addr, int attr);
+  
+  private native int get_attr_constant (long addr, int attr);
+  
   // Package access for DwarfDieFactory
   static native int get_tag (long var_die);
-  
-  private native int get_upper_bound (long addr);
   
   private native void get_framebase (long addr, long scope, long pc);
 
@@ -406,4 +425,6 @@ abstract public class DwarfDie
   private native boolean is_inline_func ();
 
   private static native long get_decl (long dw, String sym);
+
+  private static native long get_decl_cu (long dw, String sym);
 }

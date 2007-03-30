@@ -90,6 +90,9 @@ public class TestFhd
 	// int_21
 	e.send ("print int_21\n");
 	e.expect ("print.*2.*\r\n" + prompt);
+	// volatile int_22
+	e.send ("print int_22\n");
+	e.expect ("print.*22.*\r\n" + prompt);
 	// Up
 	e.send ("up\n");
 	e.expect ("up.*#1.*" + prompt);
@@ -98,7 +101,7 @@ public class TestFhd
 	e.expect ("print.*21.*(fhpd)");
 	// char_21
 	// e.send ("print ch\t");
- 	// e.expect ("print.*char_21");
+	// e.expect ("print.*char_21");
 	e.send ("print char_21\n");
 	e.expect ("print.*a.*" + prompt);
 	// Down
@@ -129,6 +132,18 @@ public class TestFhd
 	// e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
 	e.send ("print arr_1\n");
 	e.expect ("print.*30.=1.31.=2.*" + prompt);
+	// enumeration
+	e.send ("print ssportscar\n");
+	e.expect ("print.*porsche.*" + prompt);
+	e.send ("print porsche\n");
+	e.expect ("print.*porsche.*1.*" + prompt);
+	// what array
+	e.send ("what arr_2\n");
+	e.expect ("what.*int.*4,5.*hpd-c.c.*" + prompt);
+	// what class
+	e.send ("what static_class\n");
+	e.expect ("what.*class_int.*class_float.*hpd-c.c.*" + prompt);
+
 	// arr_2
 	e.send ("print arr_2\n");
 	e.expect ("print.*4,4.=9.4,5.=0.*" + prompt);

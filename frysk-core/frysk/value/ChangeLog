@@ -1,3 +1,9 @@
+2007-03-30  Stan Cox  <scox@redhat.com>
+
+	* ArrayType.java (getName): New.
+	* ClassType.java (getName): New.
+	* EnumType.java: New file.
+
 2007-03-27  Andrew Cagney  <cagney@redhat.com>
 
 	* TestValue.java: Sketch unit tests.

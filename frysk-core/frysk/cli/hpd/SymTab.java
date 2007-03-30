@@ -211,14 +211,14 @@ public class SymTab
           varDie = DwarfDie.getDecl(dwarf, sInput);
           if (varDie == null)
             throw new NameNotFoundException(sInput + " not found in scope.");
-          if (varDie.getAttr(DwAtEncodings.DW_AT_external_))
+          if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
           result.append(varDie + " " + varDie.getName());
           DwarfDie parm = varDie.getChild();
           boolean first = true;
           while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
             {
-              if (parm.getAttr(DwAtEncodings.DW_AT_artificial_) == false)
+              if (parm.getAttrBoolean(DwAtEncodings.DW_AT_artificial_) == false)
                 {
                   if (first)
                     {
@@ -239,9 +239,17 @@ public class SymTab
         }
       else
         {
-          if (varDie.getAttr(DwAtEncodings.DW_AT_external_))
+          if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
           result.append(varDie);
+          if (varDie.getType().getTag() == DwTagEncodings.DW_TAG_array_type_
+              || varDie.getType().getTag() == DwTagEncodings.DW_TAG_structure_type_
+              || varDie.getType().getTag() == DwTagEncodings.DW_TAG_enumeration_type_)
+            {
+              Variable v = SymTab.print(sInput);
+	      if (v != null)
+		result.append(v.getType().getName());
+            }
         }
       if (varDie != null)
         {
@@ -470,7 +478,7 @@ public class SymTab
        nParms = 0;
        while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
          {
-           if (parm.getAttr(DwAtEncodings.DW_AT_artificial_) == false)
+           if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
              parms[nParms] = exprSymTab[0].getVariable(parm);
            parm = parm.getSibling();
            nParms += 1;
@@ -517,10 +525,12 @@ public class SymTab
        if (false)
          {
            Variable p[] = subPr.getParameters ();
+           System.out.println("Parameters");
            for (int j = 0; j < p.length; j++)
              System.out.println(p[j].getText());
            LexicalBlock b = subPr.getBlock();
            Variable v[] = b.getVariables();
+           System.out.println("Variables");
            for (int j = 0; j < v.length; j++)
              if (v[j] != null)
                System.out.println(v[j].getText());
@@ -529,6 +539,7 @@ public class SymTab
              if (d[j] != null)
                System.out.println(d[j].getName());
            DwarfDie t[] = b.getTypeDies();
+           System.out.println("Types");
            for (int j = 0; j < t.length; j++)
              if (t[j] != null)
                System.out.println(t[j].getName());

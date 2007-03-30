@@ -154,7 +154,7 @@ public class ArrayType
 	    {
 		if (!isString)
 		    {
-			strBuf.append("[");
+		        strBuf.append("[");
 			int dimCount = e.dimCount;
 			for (int j = dimCount; j >= 1; j--)
 			    {
@@ -176,6 +176,21 @@ public class ArrayType
 	return strBuf.toString();
     }
 
+    public String getName ()
+    {
+      StringBuffer strBuf = new StringBuffer();
+      strBuf.append(type.getName());
+      strBuf.append(" [");
+      for(int i = 0; i < this.dimensions.size(); i++)
+        {
+          if (i > 0)
+            strBuf.append(",");
+          strBuf.append(((Integer)this.dimensions.get(i)).toString());
+        }
+      strBuf.append("]");
+      return strBuf.toString();
+    }
+     
     /**
      * Create an ArrayType
      * 
