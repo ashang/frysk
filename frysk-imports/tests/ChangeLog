@@ -1,3 +1,8 @@
+2007-03-31  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk4217/attachstop.c: Conditionally compile code refering to
+	PTRACE_GETREGS.
+
 2007-03-28  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (systests_PASS_PROGRAM): Added frysk3228/LoggerParent.

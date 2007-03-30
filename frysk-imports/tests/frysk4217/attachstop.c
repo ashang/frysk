@@ -70,8 +70,6 @@ handler (int signo)
   exit (1);
 }
 
-static unsigned char regs[0x10000];
-
 static void attach (const char *state)
 {
   int i;
@@ -147,9 +145,13 @@ int main (void)
   ptrace (PTRACE_PEEKUSER, child_pid, NULL, NULL);
   //assert (errno == 0);
   if (errno != 0) error (1, errno, "PTRACE_PEEKUSER");
+  // XXX: PPC64 may not have PTRACE_GETREGS.
+#ifdef PTRACE_GETREGS
+  unsigned char regs[0x10000];
   i = ptrace (PTRACE_GETREGS, child_pid, NULL, regs);
   //assert (i == 0);
   if (i != 0) error (1, errno, "PTRACE_GETREGS");
+#endif
   
   i = ptrace (PTRACE_DETACH, child_pid, NULL, NULL);
   //assert (i == 0);
