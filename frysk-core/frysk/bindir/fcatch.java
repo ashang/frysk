@@ -37,12 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
-//import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import frysk.util.FCatch;
-//import frysk.util.StracePrinter;
 
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -57,15 +54,11 @@ public class fcatch
 
   FCatch catcher = new FCatch();
   
-  //private static Parser parser;
-
-  //private static int pid;
   protected static final Logger logger = Logger.getLogger("frysk");
   
-  private boolean requestedPid;
+  private boolean requestedPid = false;
   
-//  private static ArrayList arguments;
-  private static String argString;
+  private static StringBuffer argString;
 
   private void run (String[] args)
   {
@@ -73,8 +66,7 @@ public class fcatch
     {
       protected void validate () throws OptionException
       {
-        if (! requestedPid && fcatch.argString == null) // fcatch.arguments ==
-                                                        // null)
+        if (! requestedPid && argString == null)
           throw new OptionException("no command or PID specified");
       }
     };
@@ -86,18 +78,17 @@ public class fcatch
     {
       public void notifyFile (String arg) throws OptionException
       {
-        argString = new String();   
-        argString = arg;
-        // if (fcatch.arguments == null)
-        // fcatch.arguments = new ArrayList();
-        // fcatch.arguments.add(arg);
+	     if (argString == null)
+		     argString = new StringBuffer(arg);
+	     else
+		     argString.append(" " + arg);
       }
     });
 
     if (argString != null)
       {
-        // String[] cmd = (String[]) arguments.toArray(new String[0]);
-        String[] cmd = { argString };
+         String[] cmd = argString.toString().split("\\s");
+         
         catcher.trace(cmd, requestedPid);
       }
   }
@@ -114,8 +105,12 @@ public class fcatch
               //System.out.println("Option pid: " + pid);
               catcher.addTracePid(pid);
               requestedPid = true;
-              argString = new String();
-              argString = "" + pid; //.add(new Integer(pid));
+              
+              if (argString == null)
+        	      argString = new StringBuffer(pid);
+              else
+        	      argString.append(" "  + pid);
+              
           } catch (NumberFormatException e) {
               OptionException oe = new OptionException("couldn't parse pid: " + arg);
               oe.initCause(e);

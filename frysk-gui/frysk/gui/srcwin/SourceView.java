@@ -504,6 +504,8 @@ public class SourceView
               }
           }
 
+        //XXX
+        showingExecMarks = false;
         // If it is executable, draw a mark
         if (showingExecMarks && this.buf.isLineExecutable(i))
           {
@@ -523,7 +525,8 @@ public class SourceView
         }
 
         // draw breakpoints
-        if (this.buf.isLineBroken(i))
+        //XXX
+        if (false && this.buf.isLineBroken(i))
           {
             int iconHeight = lineHeight - 8;
 

@@ -98,7 +98,7 @@ public class FCatch
 //    System.err.println("tracing " + command[0] + " " + attach);
     logger.log(Level.FINE, "{0} trace", this);
     Manager.host.requestRefreshXXX(true);
-
+    
     if (attach == true)
       init();
     else
@@ -182,8 +182,7 @@ public class FCatch
       }
     catch (Exception e)
       {
-        System.out.println(e.getMessage());
-        System.exit(1);
+        e.printStackTrace();
       }
 
     int i = 0;
@@ -291,7 +290,7 @@ public class FCatch
 
     if (numTasks <= 0)
       {
-        System.err.println(this.stackTrace.toString());
+        System.out.println(this.stackTrace.toString());
         this.stackTrace = new StringBuffer();
         sigTask.requestUnblock(signalObserver);
         Iterator i = task.getProc().getTasks().iterator();
@@ -317,6 +316,7 @@ public class FCatch
      */
     public Action updateAttached (Task task)
     {
+	    numTasks = task.getProc().getTasks().size();
       logger.log(Level.FINE, "{0} updateAttached", task);
 //                System.err.println("CatchObserver.updateAttached on" + task);
       if (signalObserver == null)
@@ -345,7 +345,7 @@ public class FCatch
     public Action updateClonedOffspring (Task parent, Task offspring)
     {
       logger.log(Level.FINE, "{0} updateClonedOffspring", offspring);
-      //          System.err.println("CatchObserver.updateClonedOffspring " + offspring);
+//                System.err.println("CatchObserver.updateClonedOffspring " + offspring);
       FCatch.this.numTasks = offspring.getProc().getTasks().size();
       SignalObserver sigo = new SignalObserver();
 
@@ -360,14 +360,14 @@ public class FCatch
     public Action updateTerminating (Task task, boolean signal, int value)
     {
       logger.log(Level.FINE, "{0} updateTerminating", task);
-      //          System.err.println("CatchObserver.updateTerminating on " + task + " " + value + " " + numTasks);
+//                System.err.println("CatchObserver.updateTerminating on " + task + " " + value + " " + numTasks);
       return Action.CONTINUE;
     }
 
     public Action updateTerminated (Task task, boolean signal, int value)
     {
       logger.log(Level.FINE, "{0} updateTerminated", task);
-      //          System.err.println("CatchObserver.updateTerminated " + task);
+//                System.err.println("CatchObserver.updateTerminated " + task + " " + numTasks);
       if (--FCatch.this.numTasks <= 0)
         Manager.eventLoop.requestStop();
 
@@ -387,6 +387,7 @@ public class FCatch
 
     public void deletedFrom (Object observable)
     {
+//	    System.err.println("Catch observer deleted");
       logger.log(Level.FINE, "{0} deletedFrom", (Task) observable);
     }
   }
@@ -405,7 +406,7 @@ public class FCatch
     public Action updateSignaled (Task task, int signal)
     {
       logger.log(Level.FINE, "{0} updateSignaled", task);
-      //      System.err.println("SignalObserver.updateSignaled");
+//            System.err.println("SignalObserver.updateSignaled");
       sigTask = task;
       FCatch.this.sig = signal;
       FCatch.this.numTasks = task.getProc().getTasks().size();
@@ -429,7 +430,7 @@ public class FCatch
     public void addedTo (Object observable)
     {
       logger.log(Level.FINE, "{0} SignalObserver.addedTo", (Task) observable);
-      //      System.err.println("SignalObserver.addedTo");
+//            System.err.println("SignalObserver.addedTo");
     }
 
     public void deletedFrom (Object observable)

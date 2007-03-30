@@ -89,6 +89,8 @@ public class ThreadSelectionDialog
   
   private LinkedList blockTasks;
   
+  private LinkedList stopTasks;
+  
   private SourceWindow sw;
 
   /**
@@ -105,6 +107,7 @@ public class ThreadSelectionDialog
     this.sw = sw;
     this.tasks = this.proc.getTasks();
     this.blockTasks = new LinkedList();
+    this.stopTasks = new LinkedList();
 
     this.setIcon(IconManager.windowIcon);
 
@@ -214,6 +217,7 @@ public class ThreadSelectionDialog
     int length = this.tasks.size();
     ListStore model = (ListStore) this.formatList.getModel();
     this.blockTasks.clear();
+    this.stopTasks.clear();
 
     TreeIter iter = model.getFirstIter();
     Iterator taskIter = this.tasks.iterator();
@@ -227,6 +231,9 @@ public class ThreadSelectionDialog
             //System.out.println("DIALOG: Adding to blockers: "  + task);
             this.blockTasks.add(task);
           }
+        else
+          this.stopTasks.add(task);
+        
         iter = iter.getNextIter();
       }
   }
@@ -234,6 +241,11 @@ public class ThreadSelectionDialog
   public LinkedList getBlockTasks()
   {
     return this.blockTasks;
+  }
+  
+  public LinkedList getStopTasks ()
+  {
+    return this.stopTasks;
   }
 
   /**

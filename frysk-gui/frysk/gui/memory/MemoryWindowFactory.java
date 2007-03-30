@@ -186,7 +186,7 @@ public class MemoryWindowFactory
           
           RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
           
-          if (rs.removeObserver(mw.getLockObserver()) == 1)
+          if (rs.removeObserver(mw.getLockObserver(), p) == 1)
             {
               map.remove(p);
               unblockProc(p);

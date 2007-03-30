@@ -1,3 +1,25 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (tasks): Turned into an array, representing threads
+	for multiple processes. Addresses #4214.
+	(continueExecution): Set the current process index.
+	(stop): Added extra parameter, Tasks to be blocked. Call 
+	requestAdd() with explicit Task list parameter. Sets current 
+	process index.
+	(setProc): Set number of running tasks. Properly use new global
+	Task array. Sets current process index to 0.
+	(setProcs): Added. Installs the RunState on an Array of Procs.
+	(getNumTasks): Return the number of tasks for selected Proc.
+	(removeObserver): Added Proc paramter; use it to check its own
+	blockers list, before continuing Tasks.
+	(addFailed): Cast Object parameter to Proc to unblock, instead of
+	global stateProc. Removed System.exit() call.
+	(requestAdd): Removed, no longer overloads requestAdd(LinkedList).
+	(requestAdd): Don't set the number of running tasks or current Tasks
+	list. Removed System.exit() call. Explicitly add RunState to each Task.
+	(requestAddObservers): Removed.
+	(blockTasks): Block Tasks belonging to currently-used Proc.
+
 2007-03-28  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java (getProcName): Implemented using dwarf bindings.

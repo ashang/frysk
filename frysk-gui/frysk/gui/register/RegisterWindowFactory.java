@@ -183,7 +183,7 @@ public class RegisterWindowFactory
           
           RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
           
-          if (rs.removeObserver(rw.getLockObserver()) == 1)
+          if (rs.removeObserver(rw.getLockObserver(), p) == 1)
             {
               map.remove(p);
               unblockProc(p);

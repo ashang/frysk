@@ -104,7 +104,6 @@ public class SourceWindowFactory
 
     if (sw != null)
       {
-        sw = (SourceWindow) map.get(proc);
         RunState rs = sw.getRunState();
         rs.addObserver(sw.getLockObserver());
         sw.showAll();
@@ -112,12 +111,15 @@ public class SourceWindowFactory
       }
 
     LibGlade glade;
-    try {
-	glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
+    try 
+    {
+      glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
     }
-    catch (Exception e) {
-	throw new RuntimeException (e);
+    catch (Exception e) 
+    {
+      throw new RuntimeException (e);
     }
+    
     sw = new SourceWindow(glade, Config.getGladeDir (), proc);
 
     stateMap.put(proc, sw.getRunState());
@@ -126,6 +128,45 @@ public class SourceWindowFactory
 
     // Store the reference to the source window
     map.put(proc, sw);
+  }
+  
+  public static void createSourceWindow (Proc[] procs)
+  {
+    int i;
+    SourceWindow sw = null; 
+    
+    for (i = 0; i < procs.length; i++)
+      {
+        sw = (SourceWindow) map.get(procs[i]);
+        if (sw != null)
+          {
+            RunState rs = sw.getRunState();
+            rs.addObserver(sw.getLockObserver());
+            sw.showAll();
+            return;
+          }
+      }
+
+    LibGlade glade;
+    try 
+    {
+      glade = new LibGlade (Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
+    }
+    catch (Exception e) 
+    {
+      throw new RuntimeException (e);
+    }
+    
+    sw = new SourceWindow(glade, Config.getGladeDir (), procs);
+    sw.addListener(new SourceWinListener());
+    
+    for (i = 0; i < procs.length; i++)
+      {
+        stateMap.put(procs[i], sw.getRunState());
+        map.put(procs[i], sw);
+      }
+
+    sw.grabFocus();
   }
   
   public static void createSourceWindow (StackFrame frame)
@@ -246,12 +287,13 @@ public class SourceWindowFactory
               
               RunState rs = s.getRunState();
               
-              if (rs.removeObserver(s.getLockObserver()) == 1)
+              Proc p = s.getSwProc();
+              
+              if (rs.removeObserver(s.getLockObserver(), p) == 1)
                 {
-                  Proc proc = s.getSwProc();
-                  map.remove(proc);
+                  map.remove(p);
                   
-                  unblockProc(proc);
+                  unblockProc(p);
                 }
 
               s.hideAll();

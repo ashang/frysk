@@ -70,243 +70,280 @@ import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-
 public class StepDialog
-    extends Dialog
-    implements Saveable
+		extends Dialog
+		implements Saveable
 {
 
-  private LibGlade glade;
+	private LibGlade glade;
 
-  private DataColumn[] cols = { new DataColumnBoolean(),
-                               new DataColumnString() };
+	private DataColumn[] cols = { new DataColumnBoolean(),
+					new DataColumnString() };
 
-  private TreeView formatList;
-  
-  private Proc proc;
-  
-  private LinkedList tasks;
-  
-  private LinkedList stepTasks;
-  
-  private SourceWindow sw;
-  
-  private int state;
+	private TreeView formatList;
 
-  /**
-   * On initialization, set the glade file, the titles for CheckBox options,
-   * the columns in this window, and add all the Listeners.
-   * 
-   * @param glade   The glade file containing the needed widgets.
-   */
-  public StepDialog (LibGlade glade, SourceWindow sw)
-  {
-    super(glade.getWidget("stepDialog").getHandle());
-    this.glade = glade;
-    this.proc = sw.getSwProc();
-    this.sw = sw;
-    this.tasks = this.proc.getTasks();
-    this.stepTasks = new LinkedList();
+	private Proc proc;
 
-    this.setIcon(IconManager.windowIcon);
+	private LinkedList tasks;
 
-    this.formatList = (TreeView) this.glade.getWidget("stepView");
-    formatList.setHeadersVisible(false);
+	private LinkedList stepTasks;
 
-    final ListStore model = new ListStore(cols);
+	private SourceWindow sw;
 
-    Iterator i = this.tasks.iterator();
-    while (i.hasNext())
-      {
-        Task t = (Task) i.next();
-        TreeIter iter = model.appendRow();
-        model.setValue(iter, (DataColumnBoolean) cols[0], false);
-        model.setValue(iter, (DataColumnString) cols[1], "Thread ID: " + t.getTid());
-      }
-    
-    TreeViewColumn col = new TreeViewColumn();
-    CellRenderer renderer = new CellRendererToggle();
-    col.packStart(renderer, false);
-    col.addAttributeMapping(renderer, CellRendererToggle.Attribute.ACTIVE,
-                            cols[0]);
-    formatList.appendColumn(col);
-    
-    ((CellRendererToggle) renderer).addListener(new CellRendererToggleListener()
-    {
-      public void cellRendererToggleEvent (CellRendererToggleEvent arg0)
-      {
-        TreePath path = new TreePath(arg0.getPath());
+	private ListStore model;
 
-        TreeIter iter = model.getIter(path);
+	private int state;
 
-        boolean prev = model.getValue(iter, (DataColumnBoolean) cols[0]);
-        model.setValue(iter, (DataColumnBoolean) cols[0], ! prev);
-      }
-    });
+	/**
+	 * On initialization, set the glade file, the titles for CheckBox options,
+	 * the columns in this window, and add all the Listeners.
+	 * 
+	 * @param glade   The glade file containing the needed widgets.
+	 */
+	public StepDialog (LibGlade glade, SourceWindow sw)
+	{
+		super(glade.getWidget("stepDialog").getHandle());
+		this.glade = glade;
+		this.proc = sw.getSwProc();
+		this.sw = sw;
+		this.tasks = this.proc.getTasks();
+		this.stepTasks = new LinkedList();
 
-    col = new TreeViewColumn();
-    renderer = new CellRendererText();
-    col.packStart(renderer, true);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[1]);
-    formatList.appendColumn(col);
+		this.setIcon(IconManager.windowIcon);
 
-    formatList.setModel(model);
+		this.formatList = (TreeView) this.glade.getWidget("stepView");
+		formatList.setHeadersVisible(false);
 
-    ((Button) this.glade.getWidget("stepDialogOkButton")).addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            grabTasks();
-            StepDialog.this.hideAll();
-          }
-      }
-    });
-    
-    ((Button) this.glade.getWidget("stepDialogStepButton")).addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            grabTasks();
-            switch (StepDialog.this.state)
-            {
-              case 0:
-                StepDialog.this.sw.doStep(stepTasks);
-                break;
-              case 1:
-                StepDialog.this.sw.doNext(stepTasks);
-                break;
-              case 2:
-                StepDialog.this.sw.doFinish(stepTasks);
-                break;
-              case 3:
-                StepDialog.this.sw.doStepAsm(stepTasks);
-                break;
-              case 4:
-                StepDialog.this.sw.doAsmNext(stepTasks);
-                break;
-              default:
-                break;
-            }
-          }
-      }
-    });
-    
-    ((Button) this.glade.getWidget("stepDialogCancelButton")).addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent arg0)
-      {
-        if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          {
-            StepDialog.this.hideAll();
-          }
-      }
-    });
+		this.model = new ListStore(cols);
 
-    this.addListener(new LifeCycleListener()
-    {
-      public boolean lifeCycleQuery (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
-          {
-            StepDialog.this.hideAll();
-            return true;
-          }
-        return false;
-      }
+		Iterator i = this.tasks.iterator();
+		while (i.hasNext())
+			{
+				Task t = (Task) i.next();
+				TreeIter iter = model.appendRow();
+				model.setValue(iter,
+						(DataColumnBoolean) cols[0],
+						false);
+				model.setValue(iter,
+						(DataColumnString) cols[1],
+						"Thread ID: " + t.getTid());
+			}
 
-      public void lifeCycleEvent (LifeCycleEvent arg0)
-      {
-      }
-    });
-  }
-  
-  public void setType (int type)
-  {
-    this.state = type;
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("Frysk / Threaded ");
-    switch (type)
-    {
-      case 0:
-        buffer.append("step into");
-        break;
-      case 1:
-        buffer.append("step over");
-        break;
-      case 2:
-        buffer.append("step out");
-        break;
-      case 3:
-        buffer.append("step instruction");
-        break;
-      case 4:
-        buffer.append("step next instruction");
-        break;
-      default:
-        break;
-    }
-    
-    this.setTitle(buffer.toString());
-  }
-  
-  public void grabTasks()
-  {
-    int length = this.tasks.size();
-    ListStore model = (ListStore) this.formatList.getModel();
-    this.stepTasks.clear();
+		TreeViewColumn col = new TreeViewColumn();
+		CellRenderer renderer = new CellRendererToggle();
+		col.packStart(renderer, false);
+		col.addAttributeMapping(renderer,
+					CellRendererToggle.Attribute.ACTIVE,
+					cols[0]);
+		formatList.appendColumn(col);
 
-    TreeIter iter = model.getFirstIter();
-    Iterator taskIter = this.tasks.iterator();
+		((CellRendererToggle) renderer).addListener(new CellRendererToggleListener()
+		{
+			public void cellRendererToggleEvent (
+								CellRendererToggleEvent arg0)
+			{
+				TreePath path = new TreePath(arg0.getPath());
 
-    for (int i = 0; i < length; i++)
-      {
-        Task task = (Task) taskIter.next();
-        boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
-        if (val)
-          {
-            this.stepTasks.add(task);
-          }
-        iter = iter.getNextIter();
-      }
-  }
-  
-  public LinkedList getStepTasks()
-  {
-    return this.stepTasks;
-  }
-  
-  public void desensitize ()
-  {
-    this.setSensitive(false);
-  }
+				TreeIter iter = model.getIter(path);
 
-  public void resensitize ()
-  {
-    this.setSensitive(true);
-  }
-  
-  /**
-   * Save the preferences contained in this Preferences node, apply to all 
-   * options represented by the TreeIters in this dialog.
-   * 
-   * @param prefs   The Preferences node to save.
-   */
-  public void save (Preferences prefs)
-  {
+				boolean prev = model.getValue(
+								iter,
+								(DataColumnBoolean) cols[0]);
+				model.setValue(iter,
+						(DataColumnBoolean) cols[0],
+						! prev);
+			}
+		});
 
-  }
+		col = new TreeViewColumn();
+		renderer = new CellRendererText();
+		col.packStart(renderer, true);
+		col.addAttributeMapping(renderer,
+					CellRendererText.Attribute.TEXT,
+					cols[1]);
+		formatList.appendColumn(col);
 
-  /**
-   * Load the options contained in this Preferences node, apply the changes
-   * to each of the options represented by the TreeIters in this dialog.
-   * 
-   * @param prefs   The Preferences node to load from.
-   */
-  public void load (Preferences prefs)
-  {
-  }
+		formatList.setModel(model);
+
+		((Button) this.glade.getWidget("stepDialogOkButton")).addListener(new ButtonListener()
+		{
+			public void buttonEvent (ButtonEvent arg0)
+			{
+				if (arg0.isOfType(ButtonEvent.Type.CLICK))
+					{
+						grabTasks();
+						StepDialog.this.hideAll();
+					}
+			}
+		});
+
+		((Button) this.glade.getWidget("stepDialogStepButton")).addListener(new ButtonListener()
+		{
+			public void buttonEvent (ButtonEvent arg0)
+			{
+				if (arg0.isOfType(ButtonEvent.Type.CLICK))
+					{
+						grabTasks();
+						switch (StepDialog.this.state)
+							{
+							case 0:
+								StepDialog.this.sw.doStep(stepTasks);
+								break;
+							case 1:
+								StepDialog.this.sw.doNext(stepTasks);
+								break;
+							case 2:
+								StepDialog.this.sw.doFinish(stepTasks);
+								break;
+							case 3:
+								StepDialog.this.sw.doStepAsm(stepTasks);
+								break;
+							case 4:
+								StepDialog.this.sw.doAsmNext(stepTasks);
+								break;
+							default:
+								break;
+							}
+					}
+			}
+		});
+
+		((Button) this.glade.getWidget("stepDialogCancelButton")).addListener(new ButtonListener()
+		{
+			public void buttonEvent (ButtonEvent arg0)
+			{
+				if (arg0.isOfType(ButtonEvent.Type.CLICK))
+					{
+						StepDialog.this.hideAll();
+					}
+			}
+		});
+
+		this.addListener(new LifeCycleListener()
+		{
+			public boolean lifeCycleQuery (LifeCycleEvent arg0)
+			{
+				if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
+					{
+						StepDialog.this.hideAll();
+						return true;
+					}
+				return false;
+			}
+
+			public void lifeCycleEvent (LifeCycleEvent arg0)
+			{
+			}
+		});
+	}
+
+	public void setType (int type)
+	{
+		if (this.sw.getSwProc().getPid() != this.proc.getPid())
+			{
+				this.model.clear();
+				this.proc = this.sw.getSwProc();
+				this.tasks = this.proc.getTasks();
+				Iterator i = this.tasks.iterator();
+				while (i.hasNext())
+					{
+						Task t = (Task) i.next();
+						TreeIter iter = model.appendRow();
+						model.setValue(
+								iter,
+								(DataColumnBoolean) cols[0],
+								false);
+						model.setValue(
+								iter,
+								(DataColumnString) cols[1],
+								"Thread ID: "
+										+ t.getTid());
+					}
+			}
+
+		this.state = type;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("Frysk / Threaded ");
+		switch (type)
+			{
+			case 0:
+				buffer.append("step into");
+				break;
+			case 1:
+				buffer.append("step over");
+				break;
+			case 2:
+				buffer.append("step out");
+				break;
+			case 3:
+				buffer.append("step instruction");
+				break;
+			case 4:
+				buffer.append("step next instruction");
+				break;
+			default:
+				break;
+			}
+
+		this.setTitle(buffer.toString());
+	}
+
+	public void grabTasks ()
+	{
+		int length = this.tasks.size();
+		ListStore model = (ListStore) this.formatList.getModel();
+		this.stepTasks.clear();
+
+		TreeIter iter = model.getFirstIter();
+		Iterator taskIter = this.tasks.iterator();
+
+		for (int i = 0; i < length; i++)
+			{
+				Task task = (Task) taskIter.next();
+				boolean val = model.getValue(
+								iter,
+								(DataColumnBoolean) cols[0]);
+				if (val)
+					{
+						this.stepTasks.add(task);
+					}
+				iter = iter.getNextIter();
+			}
+	}
+
+	public LinkedList getStepTasks ()
+	{
+		return this.stepTasks;
+	}
+
+	public void desensitize ()
+	{
+		this.setSensitive(false);
+	}
+
+	public void resensitize ()
+	{
+		this.setSensitive(true);
+	}
+
+	/**
+	 * Save the preferences contained in this Preferences node, apply to all 
+	 * options represented by the TreeIters in this dialog.
+	 * 
+	 * @param prefs   The Preferences node to save.
+	 */
+	public void save (Preferences prefs)
+	{
+
+	}
+
+	/**
+	 * Load the options contained in this Preferences node, apply the changes
+	 * to each of the options represented by the TreeIters in this dialog.
+	 * 
+	 * @param prefs   The Preferences node to load from.
+	 */
+	public void load (Preferences prefs)
+	{
+	}
 }

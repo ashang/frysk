@@ -1,3 +1,65 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (dom): Now an array. Addresses #4214.
+	(swProc): Ditto.
+	(frames): Now a two-dimensional array. Proc x Task.
+	(current): Added. Process array index integer.
+	(numProcs): Added. Number of processes currently maintained by
+	the SourceWindow.
+	(SourceWindow): New constructor. Takes an array of Procs.
+	(SourceWindow): Other two constructors - edit to properly use
+	new global arrays for DOM, Procs, and StackFrames.
+	(finishSourceWin): Fill up entire StackFrame 2D array. Removed RunState
+	state check before calling populateStackBrowser.
+	(populatStackBrowser): Now takes 2D array. Takes into account new
+	arrays for #4214. Call updateShownStackFrame() with current process
+	index.
+	(setSwProc): Removed.
+	(updateShownStackFrame): Takes new int parameter - new process index.
+	If DOMSource can't be resolved from the StackFrame Lines, add it into 
+	the DOM and re-try. Set the global process index.
+	(removeTags): Only untag current process.
+	(createTags): Only tag current process.
+	(doStop): Use Proc array; send in Task list to RunState.
+	(doContinue): Use Proc array.
+	(toggleRegisterWindow): Ditto.
+	(toggleMemoryWindow): Ditto.
+	(toggleDisassemblyWindow): Ditto.
+	(getProcIsa): Ditto.
+	(generateProcStackTrace): Now only takes a Task LinkedList parameter.
+	More intelligently setup variables for stack tracing. Set up DOM for
+	current process only.
+	(currentStackChanged): Takes process index integer parameter. Calls 
+	updated updateShownStackFrame().
+	(LockObserver.update): Flipped if statement; handle process array.
+	* CurrentStackView.java (StackViewListener): Set currentStackChanged
+	to accept int parameter.
+	(stackArray): Added.
+	(CurrentStackView): Takes 2D array.
+	(refreshProc): Added. Instead of dumping the TreeModel; selectively 
+	replaces rows corresponding to Proc index parameter. Adjusts model
+	length as necessary.
+	(buildTree): Rewritten. Now three levels of rows; Proc, Task, StackFrame.
+	(selectRow): Updated to grab appropriate StackFrame row.
+	(selectionChangedEvent): Updated to use new model. Ignores request if 
+	request was not a StackFrame row.
+	* SourceView.java (drawMargin): Make sure SourceBuffer.isLineBroken()
+	and .isLineExecutable are temporarily disabled.
+	* SourceWindowFactory.java (createSourceWindow): Removed redundant
+	HashMap access.
+	(createSourceWindow): Added - Takes a Proc array. Creates a SourceWindow
+	with multiple processes; keeps track of all processes to the SourceWindow
+	in the HashMap.
+	(SourceWinListener.lifeCycleQuery): Update call to RunState.removeObserver
+	to include Proc.
+	* StepDialog.java (model): Added.
+	(setType): Now will update listed Tasks if the observed process has
+	changed since last call.
+	* ThreadSelectionDialog.java (stopTasks): Added. List of Tasks to be
+	blocked.
+	(grabTasks): Update stopTasks.
+	(getStopTasks): Added.
+
 2007-03-29  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Added code for bz #4193 to add the ability to

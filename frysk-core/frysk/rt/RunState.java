@@ -109,7 +109,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   private Proc stateProc;
   
-  private LinkedList tasks;
+  private LinkedList[] tasks;
   
   /**
    * Constructor - sets the InstructionObserver for this model and initializes
@@ -550,6 +550,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     this.state = RUNNING;
     this.numRunningTasks = tasks.size();
+    this.current = 0;
+    this.tasks[0] = tasks;
     notifyNotBlocked();
     Iterator i = tasks.iterator();
     while (i.hasNext())
@@ -577,30 +579,37 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param unblockTasks    The list of Tasks to not block
    */
-  public void stop (LinkedList unblockTasks)
+  public void stop (LinkedList unblockTasks, LinkedList stopTasks)
   {
     if (unblockTasks == null)
       {
-        requestAdd();
+        requestAdd(stopTasks);
       }
     else
       {
         if (unblockTasks.size() == 0)
-          requestAdd();
+        	{
+        		this.current = 0;
+        		this.tasks[0] = stopTasks;
+        		requestAdd(stopTasks);
+        	}
         else
           {
-            Iterator i = this.runningTasks.iterator();
-            LinkedList blockTasks = new LinkedList();
-            while (i.hasNext())
+            synchronized (this.tasks)
               {
-                Task t = (Task) i.next();
-                if (! unblockTasks.contains(t))
+                Iterator i = this.runningTasks.iterator();
+                LinkedList blockTasks = new LinkedList();
+                while (i.hasNext())
                   {
-                    blockTasks.add(t);
-                    i.remove();
+                    Task t = (Task) i.next();
+                    if (! unblockTasks.contains(t))
+                      {
+                        blockTasks.add(t);
+                        i.remove();
+                      }
                   }
+                blockTask(blockTasks);
               }
-            blockTask(blockTasks);
           }
       }
     this.state = STOPPED;
@@ -830,8 +839,26 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void setProc (Proc proc)
   {
     this.stateProc = proc;
-    this.tasks = proc.getTasks();
-    requestAdd(this.tasks);
+    this.tasks = new LinkedList[1];
+    this.tasks[0] = proc.getTasks();
+    this.numRunningTasks += this.tasks[0].size();
+    requestAdd(proc.getTasks());
+  }
+  
+  private int current = 0;
+  
+  public void setProcs (Proc[]  procs)
+  {
+    this.stateProc = procs[0];
+    this.tasks = new LinkedList[procs.length];
+    this.current = procs.length - 1;
+    
+    for (int i = procs.length - 1; i >= 0; i--)
+      {
+        this.tasks[i] = procs[i].getTasks();
+        this.numRunningTasks += tasks[i].size();
+        requestAdd(tasks[i]);
+      }
   }
   
   /**
@@ -841,7 +868,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public int getNumTasks ()
   {
-    return tasks.size();
+    return tasks[this.current].size();
   }
   
   /*****************************************************************************
@@ -852,16 +879,18 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * Remove the incoming Observer object from this Observable's list of 
    * Observers to notify. If, after removing it, the list is empty, unblock
    * the process and return 1. Otherwise return 0.
+   * @param p The proc to delete the observer from
    * 
    * @return 0 This Observable's Observer list is not empty
    * @return 1 This Observable's Observer list is empty
    */
-  public int removeObserver (Observer o)
+  public int removeObserver (Observer o, Proc p)
   {
     this.deleteObserver(o);
-    if (countObservers() == 0)
+//    if (countObservers() == 0)
+    if (p.observationsSize() == 0)
       {
-        continueExecution(this.stateProc.getTasks());
+        continueExecution(p.getTasks());
         return 1;
       }
     else
@@ -910,7 +939,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-//   System.out.println("UpdateExecuted " + task + " " + taskStepCount);
+   //System.out.println("UpdateExecuted " + task + " " + taskStepCount + " " + numRunningTasks);
     if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_TEST)
       {
         switch (this.state)
@@ -966,7 +995,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     else
       {
-        this.numRunningTasks--;
+        --this.numRunningTasks;
         
         /* No more Tasks have to be blocked, or this RunState is already blocked
          * and this is the first time this method has been called. */
@@ -1002,16 +1031,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void addFailed (Object o, Throwable w)
   {
     w.printStackTrace();
-    stateProc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-    System.exit(1);
-  }
-
-  /**
-   * Request the adding of this observer to all of this Object's Tasks.
-   */
-  public void requestAdd ()
-  {
-    requestAdd(this.stateProc.getTasks());
+    ((Proc) o).requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+    //System.exit(1);
   }
 
   /**
@@ -1021,18 +1042,17 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void requestAdd (LinkedList tasks)
   { 
-    this.tasks = tasks;
-    this.numRunningTasks = tasks.size();
+//    this.tasks[this.current] = tasks;
     
     /*
      * The rest of the construction must be done synchronous to the EventLoop,
      * schedule it. */
     Manager.eventLoop.add(new Event()
     {
-      public void execute ()
+      public synchronized void execute ()
       {
 
-        if (RunState.this.tasks == null)
+        if (RunState.this.tasks[RunState.this.current] == null)
           {
             System.out.println("Couldn't get the tasks");
             System.exit(1);
@@ -1056,27 +1076,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
         if (!(stateProc.getUID() == Manager.host.getSelf().getUID()
             || stateProc.getGID() == Manager.host.getSelf().getGID()))
           {
-            System.err.println("Process " + stateProc + " is not owned by user/group.");
-            System.exit(1);
+          	System.err.println("Process " + stateProc + " is not owned by user/group.");
+          	//System.exit(1);
+          	return;
           }
 
-        Iterator i = RunState.this.tasks.iterator();
+        Iterator i = RunState.this.tasks[RunState.this.current--].iterator();
         while (i.hasNext())
-          requestAddObservers((Task) i.next());
-
+          ((Task) i.next()).requestAddInstructionObserver(RunState.this);
       }
     });
-  }
-
-  /**
-   * Adds the necessary Observers to the incoming Task.
-   * 
-   * @param task The Task to have Observers added to
-   */
-  public void requestAddObservers (Task task)
-  {
-    //System.out.println("Adding instruction observer to " + task);
-    task.requestAddInstructionObserver(this);
   }
 
   /**
@@ -1086,12 +1095,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void blockTask (LinkedList tasks)
   {
-    this.tasks = tasks;
+    this.tasks[this.current] = tasks;
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
       {
-        Iterator i = RunState.this.tasks.iterator();
+        Iterator i = RunState.this.tasks[current].iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();

@@ -183,7 +183,7 @@ public class DisassemblyWindowFactory
           
           RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
           
-          if (rs.removeObserver(dw.getLockObserver()) == 1)
+          if (rs.removeObserver(dw.getLockObserver(), p) == 1)
             {
               map.remove(p);
               unblockProc(p);

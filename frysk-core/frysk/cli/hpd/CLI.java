@@ -559,7 +559,7 @@ public class CLI
       if (runState != null) 
 	{
 	  // Delete all breakpoints.
-	  runState.removeObserver(runStateObserver);
+	  runState.removeObserver(runStateObserver, proc);
 	  runState.continueExecution(proc.getTasks()); // redundant with line
 	  // above?
 	  runState = null;
@@ -1060,7 +1060,7 @@ public class CLI
       refreshSymtab();
       if (runState != null)
 	{
-	  runState.stop(null);
+	  runState.stop(null, proc.getTasks());
 	}
       else
 	{

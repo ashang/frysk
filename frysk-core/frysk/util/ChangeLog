@@ -1,3 +1,9 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java (generateProcStackTrace): Remove System.exit().
+	(handleTask): Changed to stdout instead of stderr.
+	(CatchObserver.updateAttached): set numTasks here.
+
 2007-03-21  Tim Moore  <timoore@redhat.com>
 
 	* PtyTermina.java : New file.

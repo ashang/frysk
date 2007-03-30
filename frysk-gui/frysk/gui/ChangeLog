@@ -1,3 +1,12 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (.buttonEvent): Updated to build
+	array of selected processes to send to SourceWindowFactory, for #4214.
+	* DisassemblyWindowFactory.java (.lifeCycleQuery): Update call to 
+	RunState.removeObserver to include observed process.
+	* MemoryWindowFactory.java (.lifeCycleQuery): Ditto.
+	* RegisterWindowFactory.java (.lifeCycleQuery): Ditto.
+
 2007-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestSessionSaveLoad.java: Added testing for adding/removing

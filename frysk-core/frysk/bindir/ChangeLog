@@ -1,3 +1,11 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* fcatch.java (argString): Now a StringBuffer.
+	(.notifyFile): Append all arguments into above StringBuffer.
+	Fixes #4300.
+	(.run): Split StringBuffer over spaces into array for FCatch.
+	(.parsed): Append PID into above StringBuffer.
+
 2007-03-16  Stan Cox  <scox@redhat.com>
 
 	* TestFhd.java (testHpd): Don't include executable on attach.

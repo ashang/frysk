@@ -1,3 +1,10 @@
+2007-03-30  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (DetachHandler.handle): Updated call to 
+	RunState.removeObserver to include Proc parameter.
+	(HaltHandler.handle): Update call to RunState.stop to 
+	include Task list parameter.
+
 2007-03-29  Tim Moore  <timoore@redhat.com>
 
 	* SymTab.java (what): Catch exception if variable file and line

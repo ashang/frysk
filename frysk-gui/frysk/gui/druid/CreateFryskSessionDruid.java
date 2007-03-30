@@ -90,6 +90,8 @@ import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.SourceWindowFactory;
 
+import frysk.proc.Proc;
+
 public class CreateFryskSessionDruid
     extends Dialog
     implements LifeCycleListener
@@ -861,21 +863,28 @@ public class CreateFryskSessionDruid
               {
                 Iterator i = list.iterator();
                 
+                Proc[] procs = new Proc[list.size()];
+                int j = 0;
                 while (i.hasNext())
                   {
-                    SourceWindowFactory.createSourceWindow(((GuiProc) i.next()).getProc());
+                    procs[j++] = ((GuiProc) i.next()).getProc();
                   }
+                SourceWindowFactory.createSourceWindow(procs);
                 hide();
               }
             else
               {
                 if (procWiseTreeView.getSelectedObjects() != null)
                   {
-                    Iterator i = procWiseTreeView.getSelectedObjects().iterator();
+                    int j = 0;
+                    LinkedList llist = procWiseTreeView.getSelectedObjects();
+                    Proc[] procs = new Proc[llist.size()];
+                    Iterator i = llist.iterator();
                     while (i.hasNext())
                       {
-                        SourceWindowFactory.createSourceWindow(((GuiProc) i.next()).getProc());
+                        procs[j++] = ((GuiProc) i.next()).getProc();
                       }
+                    SourceWindowFactory.createSourceWindow(procs);
                     hide();
                   }
               }
