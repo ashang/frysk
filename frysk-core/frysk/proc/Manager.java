@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.event.EventLoop;
+import frysk.event.PollEventLoop;
 
 /**
  * Manager of all operations within the proc model.
@@ -56,7 +57,7 @@ public class Manager
     // types, register themselves and then have HOST set itself to the
     // most appropriate.
 
-    public static EventLoop eventLoop = new EventLoop ();
+    public static EventLoop eventLoop = new PollEventLoop ();
     public static Host host = new LinuxPtraceHost (eventLoop);
 
     /**
@@ -65,7 +66,7 @@ public class Manager
      */
     static Host resetXXX ()
     {
-	eventLoop = new EventLoop ();
+	eventLoop = new PollEventLoop ();
 	host = new LinuxPtraceHost (eventLoop);
 	return host;
     }

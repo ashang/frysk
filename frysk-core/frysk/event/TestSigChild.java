@@ -52,7 +52,7 @@ public class TestSigChild
 {
     public void stackDump ()
     {
-	EventLoop eventLoop = new EventLoop ();
+	EventLoop eventLoop = new PollEventLoop ();
 	eventLoop.add (new SignalEvent (Sig.CHLD)
 	    {
 		public final void execute ()
