@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.WaitBuilder;
+import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.Stat;
 
@@ -763,25 +764,26 @@ public class TestLib
     void reap ()
     {
       kill();
-      try
-        {
-          while (true)
-            {
-              Wait.waitAll(getPid(), new FailWaitObserver("killing child")
-              {
-                public void terminated (int pid, boolean signal, int value,
-                                        boolean coreDumped)
-                {
-                  // Termination with signal is ok.
-                  assertTrue("terminated with signal", signal);
-                }
-              });
-            }
-        }
-      catch (Errno.Echild e)
-        {
+      try {
+          while (true) {
+	      Wait.waitAll(getPid(), new UnhandledWaitBuilder ()
+		  {
+		      protected void unhandled (String why)
+		      {
+			  fail ("killing child (" + why + ")");
+		      }
+		      public void terminated (int pid, boolean signal,
+					      int value, boolean coreDumped)
+		      {
+			  // Termination with signal is ok.
+			  assertTrue("terminated with signal", signal);
+		      }
+		  });
+	  }
+      }
+      catch (Errno.Echild e) {
           // No more waitpid events.
-        }
+      }
     }
   }
 
@@ -1263,97 +1265,6 @@ public class TestLib
     }
   }
 
-  class IgnoreWaitObserver
-      implements WaitBuilder
-  {
-    public void cloneEvent (int pid, int clone)
-    {
-    }
-
-    public void forkEvent (int pid, int child)
-    {
-    }
-
-    public void exitEvent (int pid, boolean signal, int value,
-                           boolean coreDumped)
-    {
-    }
-
-    public void execEvent (int pid)
-    {
-    }
-
-    public void syscallEvent (int pid)
-    {
-    }
-
-    public void stopped (int pid, int signal)
-    {
-    }
-
-    public void terminated (int pid, boolean signal, int value,
-                            boolean coreDumped)
-    {
-    }
-
-    public void disappeared (int pid, Throwable w)
-    {
-    }
-  }
-
-  class FailWaitObserver
-      implements WaitBuilder
-  {
-    String message;
-
-    FailWaitObserver (String message)
-    {
-      this.message = message;
-    }
-
-    public void cloneEvent (int pid, int clone)
-    {
-      fail(message);
-    }
-
-    public void forkEvent (int pid, int child)
-    {
-      fail(message);
-    }
-
-    public void exitEvent (int pid, boolean signal, int value,
-                           boolean coreDumped)
-    {
-      fail(message);
-    }
-
-    public void execEvent (int pid)
-    {
-      fail(message);
-    }
-
-    public void syscallEvent (int pid)
-    {
-      fail(message);
-    }
-
-    public void stopped (int pid, int signal)
-    {
-      fail(message);
-    }
-
-    public void terminated (int pid, boolean signal, int value,
-                            boolean coreDumped)
-    {
-      fail(message);
-    }
-
-    public void disappeared (int pid, Throwable w)
-    {
-      fail(message);
-    }
-  }
-
   /**
    * An observer that stops the eventloop when the process with the given pid is
    * removed.
@@ -1643,19 +1554,8 @@ public class TestLib
                 // a second exit status behind this first
                 // one, drain that also. Give up when
                 // this PID has no outstanding events.
-                try
-                  {
-                    while (true)
-                      {
-                        log("waitAll ", pid, " ...\n");
-                        Wait.waitAll(pid, new IgnoreWaitObserver());
-                        log("{0} waitAll ", pid, " ok\n");
-                      }
-                  }
-                catch (Errno.Echild e)
-                  {
-                    log("waitAll ", pid, " (failed - ECHLD)\n");
-                  }
+		log("Wait.drain ", pid, "\n");
+		Wait.drain (pid);
                 // Hopefully done with this PID.
                 pidsToKillDuringTearDown.remove(new TaskId(pid));
               }

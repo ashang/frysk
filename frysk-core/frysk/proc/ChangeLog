@@ -1,5 +1,8 @@
 2007-04-02  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (FailWaitObserver, IgnoreWaitObserver): Delete, use
+	UnhandledWaitBuilder and Wait.drain.
+	
 	* Manager.java: Use PollEventLoop.
 
 2007-03-29  Andrew Cagney  <cagney@redhat.com>
