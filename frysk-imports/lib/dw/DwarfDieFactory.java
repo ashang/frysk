@@ -45,10 +45,19 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * Factory class for creating DwarfDie objects with a class corresponding to
+ * the tag in the Dwarf_Die object.
+ *
+ */
 public class DwarfDieFactory
 {
   private static DwarfDieFactory singleton;
 
+  /**
+   * Get the singleton factory.
+   * @return the factory
+   */
   public static synchronized DwarfDieFactory getFactory()
   {
     if (singleton == null)
@@ -125,6 +134,13 @@ public class DwarfDieFactory
       }
   }
 
+  /**
+   * Create a subclass of DwarfDie based on the tag in the Dwarf_Die object
+   * pointed to by pointer.
+   * @param pointer raw Dwarf_Die from libdw
+   * @param parent Dwfl object associated with the DIE, if any
+   * @return subclass of DwarfDie
+   */
   public DwarfDie makeDie(long pointer, Dwfl parent)
   {
     int tag = DwarfDie.get_tag(pointer);

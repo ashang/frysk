@@ -1,3 +1,8 @@
+2007-04-02  Tim Moore  <timoore@redhat.com>
+
+	* hpd/FunctionBreakpointAdapter.java (output): Print differently
+	if function contains inline instances.
+
 2007-03-30  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java: Handle DW_TAG_enumerator.

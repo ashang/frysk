@@ -44,31 +44,53 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import lib.dw.DwarfDie;
+import lib.dw.die.InlinedSubroutine;
 
 public class FunctionBreakpoint
   extends SourceBreakpoint
 {
   private String name;
+  private boolean containsInlineInstances = false;
   
   public FunctionBreakpoint(String name, DwarfDie die)
   {
     this.name = name;
-    ArrayList rawAddrs = die.getEntryBreakpoints();
-    if (rawAddrs == null)
+    ArrayList entryAddrs = die.getEntryBreakpoints();
+    ArrayList inlineDies = null;
+    if (die.isInlineDeclaration())
       {
-	throw new IllegalArgumentException(die + "has no entrypoints");
+        inlineDies = die.getInlinedInstances();
       }
-    setAddrs(new LinkedList(rawAddrs));
+    LinkedList addrs;
+    if (entryAddrs == null)
+      addrs = new LinkedList();
+    else
+      addrs = new LinkedList(entryAddrs);
+    if (inlineDies != null)
+      {
+        addrs.addAll(inlineDies);
+        containsInlineInstances = true;
+      }
+    setAddrs(addrs);
   }
 
   public long getRawAddress(Object addr)
   {
-    Long rawAddr = (Long)addr;
-    return rawAddr.longValue();
+    if (addr instanceof Long)
+      return ((Long)addr).longValue();
+    else if (addr instanceof InlinedSubroutine)
+      return ((InlinedSubroutine)addr).getLowPC();
+    else
+      throw new RuntimeException("Can't get address from " + addr.toString());
   }
 
   public String getName()
   {
     return name;
+  }
+
+  public boolean containsInlineInstances()
+  {
+    return containsInlineInstances;
   }
 }

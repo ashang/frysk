@@ -44,6 +44,11 @@ import frysk.rt.FunctionBreakpoint;
 import frysk.rt.RunState;
 import frysk.proc.Task;
 
+/**
+ * Adapter between the HPD actionpoint and breakpoints based on named
+ * functions.
+ *
+ */
 class FunctionBreakpointAdapter
   extends Actionpoint
 {
@@ -81,6 +86,8 @@ class FunctionBreakpointAdapter
   {
     FunctionBreakpoint breakpoint = (FunctionBreakpoint)rtBreakpoint;
     writer.print(breakpoint.getName());
+    if (breakpoint.containsInlineInstances())
+      writer.print("*");
     return writer;
   }
 }

@@ -52,6 +52,9 @@ import frysk.proc.Task;
  * subclasses must define a method, getRawAddress, for calculating the
  * address of a raw breakpoint.
  */
+/**
+ * 
+ */
 public abstract class SourceBreakpoint
 {
   private LinkedList addrs = null; // The "raw" addresses
@@ -66,11 +69,19 @@ public abstract class SourceBreakpoint
     this.addrs = addrs;
   }
 
+  /**
+   * Get the list of raw address objects
+   * @return the list
+   */
   public LinkedList getAddrs()
   {
     return addrs;
   }
 
+  /**
+   * Set the list of raw address objects.
+   * @param addrs the address objects
+   */
   public void setAddrs(LinkedList addrs)
   {
     this.addrs = addrs;
@@ -84,6 +95,12 @@ public abstract class SourceBreakpoint
    */
   abstract long getRawAddress(Object addr);
   
+   /**
+    * Add this object's raw breakpoints to the process via the RunState object.
+    * @param runState the RunState object
+    * @param task task to which breakpoints are added, although they are in
+    * 	fact added to the entire process.
+    */
   public void addBreakpoint(RunState runState, Task task)
   {
     Iterator bpts = addrs.iterator();
@@ -99,6 +116,11 @@ public abstract class SourceBreakpoint
       }
   }
 
+  /**
+   * Delete the object's raw breakpoints from a process via the RunState.
+   * @param runState the RunState object
+   * @param task task in the process
+   */
   public void deleteBreakpoint(RunState runState, Task task)
   {
     Iterator iterator = breakpoints.iterator();
@@ -112,6 +134,13 @@ public abstract class SourceBreakpoint
     breakpoints.clear();
   }
 
+  /**
+   * Test if RunState breakpoint is contained in this object. This is only
+   * valid if the source breakpoint has been added to (and not deleted from)
+   * the process.
+   * @param bpt
+   * @return
+   */
   public boolean containsPersistantBreakpoint(RunState.PersistentBreakpoint bpt)
   {
     return breakpoints.contains(bpt);
