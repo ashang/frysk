@@ -61,7 +61,7 @@ public class WindowManager
 
   public static WindowManager theManager = new WindowManager();
 
-    public static Logger logger = Logger.getLogger ("frysk");//.gui.monitor");
+  public static Logger logger = Logger.getLogger("frysk.gui.monitor");
 
   /**
    * Public instances of the windows {

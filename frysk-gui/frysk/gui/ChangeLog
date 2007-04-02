@@ -1,3 +1,8 @@
+2007-04-02  Mark Wielaard  <mark@klomp.org>
+
+	* test/GuiTestLib.java (logger): Use frysk.gui.test for getLogger().
+	* monitor/WindowManager.java (logger): Likewise.
+
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (.buttonEvent): Updated to build
