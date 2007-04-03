@@ -1,5 +1,13 @@
 2007-04-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestWait.java: New file.
+	* SignalBuilder.java: New file.
+	* Wait.java (waitAll(long,WaitBuilder,SignalBuilder): Add
+	(sigSet, signalAdd, signalEmpty): Add.
+	* cni/Wait.cxx (waitAll, signalAdd): Implement.
+	(struct wait_jmpbuf, wait_jmpbuf, waitInterrupt)
+	(struct event, waitForEvent): New.
+
 	* Poll.java (Observere): Move to PollBuilder.java.
 	* PollBuilder.java: New file.
 

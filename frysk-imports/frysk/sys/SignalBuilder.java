@@ -39,77 +39,10 @@
 
 package frysk.sys;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 /**
- * Wait for an event from either a process, task, or all processes and
- * tasks.
+ * Notify client of Signal events.
  */
-
-public final class Wait
+public interface SignalBuilder
 {
-    private static Logger logger;
-    /**
-     * Finds, and returns the logger, but only when logging is
-     * enabled..
-     */
-    static Logger getLogger ()
-    {
-	// Seems that when calling static methods this isn't
-	// initialized, force it.
-	if (logger == null)
-	    logger = Logger.getLogger("frysk.sys");
-	if (logger.isLoggable (Level.FINE))
-	    return logger;
-	else
-	    return null;
-    }
-
-    /**
-     * Set of signals checked during poll.
-     */
-    static protected SigSet sigSet = new SigSet ();
-    /**
-     * Add Sig to the set of signals checked during poll.
-     */
-    public static native void signalAdd (Sig sig);
-    /**
-     * Empty the set of signals, and file descriptors, checked during
-     * poll.
-     */
-    public static void signalEmpty ()
-    {
-	// Note that this doesn't restore any signal handlers.
-	sigSet.empty ();
-	signalAdd (Sig.ALRM);
-    }
-
-    /**
-     * Read in all the pending wait events, and then pass them to the
-     * observer.  If there is no outstanding event return immediatly.
-     */
-    public native static void waitAllNoHang (WaitBuilder builder);
-    /**
-     * Wait for a waitpid or signal event.  Returns when either timer
-     * has expired or at least one event has been received.
-     */
-    public native static void waitAll (long millisecondTimeout,
-				       WaitBuilder waitBuilder,
-				       SignalBuilder signalBuilder);
-
-    /**
-     * Wait for a single process or task event.  Block if no event is
-     * pending (provided that there are still potential events).
-     */
-    public native static void waitAll (int pid, WaitBuilder builder);
-
-    /**
-     * Non-blocking drain of all pending wait events belonging to pid.
-     */
-    public native static void drainNoHang (int pid);
-    /**
-     * Blocking drain of all pending wait events belonging to pid.
-     */
-    public native static void drain (int pid);
+    void signal (Sig sig);
 }

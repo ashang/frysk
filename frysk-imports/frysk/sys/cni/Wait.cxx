@@ -37,13 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <alloca.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <linux/unistd.h>
+#include <setjmp.h>
 #include <signal.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
-#include <alloca.h>
 #include "linux.ptrace.h"
 
 #include <gcj/cni.h>
@@ -55,7 +58,11 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Wait.h"
+#include "frysk/sys/Sig.h"
+#include "frysk/sys/cni/SigSet.hxx"
+#include "frysk/sys/SigSet.h"
 #include "frysk/sys/WaitBuilder.h"
+#include "frysk/sys/SignalBuilder.h"
 
 /* Unpack the WSTOPEVENT status field.
 
@@ -319,5 +326,208 @@ void frysk::sys::Wait::drainNoHang (jint wpid)
       break;
     if (pid <= 0)
       throwErrno (err, "waitpid", "process", wpid);
+  }
+}
+
+// A linked list of received events.  This is stored on the stack
+// using alloca.
+struct event {
+  pid_t pid;
+  int status;
+  event* next;
+};
+
+// If there's a signal abort the wait() function using a longjmp
+// (return the signal).  Store which signal was received in SIGNALS.
+// Only bail when STATUS == -1 implying that the waitpid call hasn't
+// yet run.
+
+struct wait_jmpbuf {
+  pid_t tid;
+  int status;
+  sigset_t signals;
+  sigset_t mask;
+  sigjmp_buf buf;
+};
+static struct wait_jmpbuf wait_jmpbuf;
+
+static void
+waitInterrupt (int signum, siginfo_t *siginfo, void *context)
+{
+  // For what ever reason, the signal can come in on the wrong thread.
+  // When that occures, re-direct it (explicitly) to the thread that
+  // can handle the signal.
+  pid_t me = ::syscall (__NR_gettid);
+  if (wait_jmpbuf.tid == me) {
+    sigaddset (&wait_jmpbuf.signals, signum);
+    sigdelset (&wait_jmpbuf.mask, signum);
+    if (wait_jmpbuf.status != -1)
+      siglongjmp (wait_jmpbuf.buf, signum);
+  }
+  else {
+    // XXX: Want to edit this thread's mask so that from now on it
+    // blocks this signal, don't know a way to do it though.
+    ::syscall (__NR_tkill, wait_jmpbuf.tid, signum);
+  }
+}
+
+void
+frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
+{
+  // Add it to the signal set.
+  sigSet->add (sig);
+  // Get the hash code.
+  int signum = sig->hashCode ();
+  // Make certain that the signal is masked (this is ment to be
+  // process wide).  XXX: In a multi-threaded environment this call is
+  // not well defined (although it does help reduce the number of
+  // signals directed to the wrong thread).
+  sigset_t mask;
+  sigemptyset (&mask);
+  sigaddset (&mask, signum);
+  sigprocmask (SIG_BLOCK, &mask, NULL);
+  // Install the above signal handler (it long jumps back to the code
+  // that enabled the signal).  To avoid potential recursion, all
+  // signals are masked while the handler is running.
+  struct sigaction sa;
+  memset (&sa, 0, sizeof (sa));
+  sa.sa_sigaction = waitInterrupt;
+  sa.sa_flags = SA_SIGINFO;
+  sigfillset (&sa.sa_mask);
+  sigaction (signum, &sa, NULL);
+}
+
+static int
+waitForEvent (bool block, bool wait)
+{
+  wait_jmpbuf.status = -1;
+  sigset_t mask = wait_jmpbuf.mask;
+
+  // Establish a jump buf so that, when a signal is delivered, the
+  // waitpid call sequence can be interrupted and this method return.
+  wait_jmpbuf.tid = ::syscall (__NR_gettid);
+  int signum = sigsetjmp (wait_jmpbuf.buf, 1);
+  if (signum > 0) {
+    return -EINTR;
+  }
+
+  // Unmask signals, from this point on, things can be interrupted,
+  // which leads to a race between waitpid() returning and the
+  // interrupt.  For instance, just after waitpid() completes but
+  // before it returns a signal could arrive jumping the code back to
+  // the above.  Detect that waitpid did something by examining the
+  // result buffer.
+  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.UNBLOCK");
+
+  // Try to wait for a child event.  If a signal before the system
+  // call is executed then it will LONGJMP back to the above.  If the
+  // interrupt occured after waitpid returned then it will be allowed
+  // to continue.
+  int status = 0;
+  if (wait) {
+    //fprintf (stderr, "calling waitpid\n");
+    status = ::waitpid (-1, &wait_jmpbuf.status,
+			__WALL | (block ? 0 : WNOHANG));
+  }
+  else if (block) {
+    //fprintf (stderr, "calling select\n");
+    status = ::select (0, NULL, NULL, NULL, NULL);
+  }
+
+  if (status < 0)
+    status = -errno; // Save the errno across the mask sigmask call.
+  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.BLOCK");
+  return status;
+}
+
+void
+frysk::sys::Wait::waitAll (jlong millisecondTimeout,
+			   frysk::sys::WaitBuilder* waitBuilder,
+			   frysk::sys::SignalBuilder* signalBuilder)
+{
+  // Zero any existing timeout, and drain any pending alarm should it
+  // have fired.
+  //fprintf (stderr, "draining existing alarms\n");
+  struct itimerval timeout;
+  setitimer (ITIMER_REAL, &timeout, NULL);
+  memset (&timeout, 0, sizeof (timeout));
+  struct sigaction alarm_action;
+  struct sigaction ignore_action;
+  memset (&ignore_action, 0, sizeof (ignore_action));
+  ignore_action.sa_handler = SIG_IGN;
+  sigaction (SIGALRM, &ignore_action, &alarm_action);
+
+  // Set up a new timeout and it's handler.
+  //fprintf (stderr, "setting up new alarm\n");
+  timeout.it_value.tv_sec = millisecondTimeout / 1000;
+  timeout.it_value.tv_usec = (millisecondTimeout % 1000) * 1000;
+  sigaction (SIGALRM, &alarm_action, NULL);
+  setitimer (ITIMER_REAL, &timeout, NULL);
+
+  // Create a linked list of the waitpid events that are received;
+  // keep it on the stack to avoid malloc() overhead.
+  struct event* firstEvent = (struct event*) alloca (sizeof (struct event));
+  struct event* lastEvent = firstEvent;
+
+  // Get the signal mask of all allowed signals; clear the set of
+  // received signals.
+  wait_jmpbuf.mask = *getRawSet (sigSet);
+  sigemptyset (&wait_jmpbuf.signals);
+ 
+  bool block = (millisecondTimeout > 0);
+  bool wait = true;
+  pid_t pid;
+  while (true) {
+    memset (lastEvent, 0, sizeof (struct event));
+    pid = waitForEvent (block, wait);
+    //fprintf (stderr, "waitForEvent returned %d\n", pid);
+    if (pid > 0) {
+      // There's a waitpid status; do more waitpid calls with blocking
+      // disabled so that all pending waitpid events are collected.
+      lastEvent->pid = pid;
+      lastEvent->status = wait_jmpbuf.status;
+      lastEvent->next = (struct event*) alloca (sizeof (struct event));
+      lastEvent = lastEvent->next;
+      block = false;
+      continue;
+    }
+    else if (pid == -ECHILD) {
+      // Either no children, or all waitpid events have been gathered.
+      // Try again but block but not using waitpid.  If the timer has
+      // expired, don't even block.
+      wait = false;
+      block &= !sigismember (&wait_jmpbuf.signals, SIGALRM);
+    }
+    else if (pid == -EINTR) {
+      // Call was interrupted by a signal, drain any remaining signals
+      // and waitpid events but do not block.
+      block = false;
+    }
+    else
+      break;
+  }
+
+  if (pid < 0)
+    throwErrno (-pid, "waitpid");
+
+  // Deliver any signals received during the waitpid; XXX: Is there a
+  // more efficient way of doing this?
+  for (int i = 1; i < 32; i++) {
+    if (i != SIGALRM && sigismember (&wait_jmpbuf.signals, i)) {
+      // Find the signal object.
+      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
+      // Notify the client of the signal.
+      signalBuilder->signal (sig);
+    }
+  }
+
+  // Deliver all pending waitpid() events.
+  struct event *curr;
+  for (curr = firstEvent; curr != lastEvent; curr = curr->next) {
+    processStatus (curr->pid, curr->status, waitBuilder);
   }
 }
