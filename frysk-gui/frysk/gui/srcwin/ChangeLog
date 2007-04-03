@@ -1,3 +1,8 @@
+2007-04-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java(createActions): More work on bz 4193; added option
+	for opening core file in addition to running executables.
+
 2007-04-03  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (updateShownStackFrame): Set the SymTab to the

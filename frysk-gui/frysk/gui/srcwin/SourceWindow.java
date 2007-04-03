@@ -40,6 +40,7 @@
 
 package frysk.gui.srcwin;
 
+import frysk.Config;
 import frysk.rt.Line;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -178,6 +179,9 @@ public class SourceWindow
 
   // Glade file to use
   public static final String GLADE_FILE = "frysk_source.glade";
+  
+  // Modified FileChooser widget used for executable activation
+  public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
 
   /*
    * END GLADE CONSTANTS
@@ -194,7 +198,9 @@ public class SourceWindow
   // ACTIONS
   private org.gnu.gtk.Action close;
   
-  private org.gnu.gtk.Action open;
+  private org.gnu.gtk.Action open_core;
+  
+  private org.gnu.gtk.Action open_executable;
 
   private org.gnu.gtk.Action copy;
 
@@ -712,25 +718,25 @@ public class SourceWindow
    */
   private void createActions (AccelGroup ag)
   {
-    // Open action
-    this.open = new org.gnu.gtk.Action("open", "Open", "Open File",
+    // Examine core file action
+    this.open_core = new org.gnu.gtk.Action("open", "Examine core file", "Examine core file",
                                        GtkStockItem.OPEN.getString());
-    this.open.setAccelGroup(ag);
-    this.open.setAccelPath("<sourceWin>/File/Open");
-    this.open.addListener(new org.gnu.gtk.event.ActionListener()
+    this.open_core.setAccelGroup(ag);
+    this.open_core.setAccelPath("<sourceWin>/File/Examine core file");
+    this.open_core.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
       {
         // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
-        chooser = new FileChooserDialog(
-                                        "Frysk: Choose an executable file to debug",
+        chooser = new FileChooserDialog("Frysk: Choose a core file to examine",
                                         (Window) SourceWindow.this.glade.getWidget(SOURCE_WINDOW),
                                         FileChooserAction.ACTION_OPEN);
-        chooser.addListener(new LifeCycleListener() {
-          public void lifeCycleEvent(LifeCycleEvent event)
+        
+        chooser.addListener (new LifeCycleListener() {
+          public void lifeCycleEvent (LifeCycleEvent event)
           {
           }
-          public boolean lifeCycleQuery(LifeCycleEvent event)
+          public boolean lifeCycleQuery (LifeCycleEvent event)
           {
             return false;
           }
@@ -754,7 +760,7 @@ public class SourceWindow
           // select a file name
           public void fileActivated (FileChooserEvent event)
           {
-            startTask(chooser.getFilename());
+            examineCoreFile(chooser.getFilename());
           }
         });
         setDefaultIcon(IconManager.windowIcon);
@@ -765,27 +771,55 @@ public class SourceWindow
           chooser.destroy();
         // The OK button was clicked, go open a source window for this executable
         else if (response == ResponseType.OK.getValue())
-          startTask(chooser.getFilename());
+          examineCoreFile(chooser.getFilename());
         chooser.destroy();
       }
     });
-    AccelMap.changeEntry("<sourceWin>/File/Open", KeyValue.o,
+    AccelMap.changeEntry("<sourceWin>/File/Examine core file", KeyValue.o,
                          ModifierType.CONTROL_MASK, true);
-    this.open.connectAccelerator();
+    this.open_core.connectAccelerator();
 
-    // Close action
-    this.close = new org.gnu.gtk.Action("close", "Close", "Close Window",
-                                        GtkStockItem.CLOSE.getString());
-    this.close.setAccelGroup(ag);
-    this.close.setAccelPath("<sourceWin>/File/Close");
-    this.close.addListener(new org.gnu.gtk.event.ActionListener()
-    {
-      public void actionEvent (ActionEvent action)
+    // Run executable action
+    this.open_executable = new org.gnu.gtk.Action("start executable",
+                                                  "Run executable",
+                                                  "Run an executable file",
+                                                  GtkStockItem.OPEN.getString());
+    this.open_executable.setAccelGroup(ag);
+    this.open_executable.setAccelPath("<sourceWin>/File/Run executable");
+    this.open_executable.addListener(new org.gnu.gtk.event.ActionListener()
       {
-        // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
-        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
-      }
-    });
+	public void actionEvent (ActionEvent action)
+	  {
+	    try {
+		  glade = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
+		}
+	    catch (Exception e) 
+	      {
+		throw new RuntimeException (e);
+	      }
+	    startTask("test");
+	  }
+      });
+    AccelMap.changeEntry("<sourceWin>/File/Run Executable file",
+		         KeyValue.o, ModifierType.CONTROL_MASK,
+		         true);
+    this.open_executable.connectAccelerator();
+
+	// Close action
+	this.close = new org.gnu.gtk.Action("close",
+					    "Close",
+					    "Close Window",
+					    GtkStockItem.CLOSE.getString());
+	this.close.setAccelGroup(ag);
+	this.close.setAccelPath("<sourceWin>/File/Close");
+	this.close.addListener(new org.gnu.gtk.event.ActionListener()
+	  {
+	    public void actionEvent (ActionEvent action)
+              {
+                // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+                SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
+              }
+          });
     AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x,
                          ModifierType.CONTROL_MASK, true);
     this.close.connectAccelerator();
@@ -1181,9 +1215,19 @@ public class SourceWindow
   
   private void startTask(String filename)
   {
-    // No code here yet, waiting for completion of tabbing work
+    // No code here yet, work in progress
   }
 
+  /**
+   * This method will activate a window to allow the user to exemaine a core file
+   * 
+   * @param filename - String containing the path to the core file
+   *
+   */
+  private void examineCoreFile(String filename)
+    {
+      // No core here yet
+    }
   /*
    * Populates the menus from the actions created earlier.
    */
@@ -1192,8 +1236,10 @@ public class SourceWindow
     // File menu
     MenuItem menu = new MenuItem("File", true);
 
-    MenuItem mi = (MenuItem) this.open.createMenuItem();
+    MenuItem mi = (MenuItem) this.open_core.createMenuItem();
     Menu tmp = new Menu();
+    tmp.append(mi);
+    mi = (MenuItem) this.open_executable.createMenuItem();
     tmp.append(mi);
     mi = new MenuItem(); // Separator
     tmp.append(mi);
