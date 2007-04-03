@@ -358,18 +358,18 @@ abstract public class DwarfDie
 
   /**
    * Get die for static symbol sym in CU dw.
-   * @param dw
+   * @param scopes
    * @param sym
    * @return die
    */
-  public static DwarfDie getDeclCU (DwarfDie dw, String sym)
+  public static DwarfDie getDeclCU (DwarfDie[] scopes, String sym)
   {
-    long result = get_decl_cu (dw.getPointer(), sym);
+    long result = get_decl_cu (scopes[0].getPointer(), sym);
     DwarfDie die = null;
     if (result > 0)
       {
 	die = DwarfDieFactory.getFactory().makeDie(result, null);
-        die.scopes = null;
+        die.scopes = scopes;
         die.scopeIndex = 0;
       }
     return die;

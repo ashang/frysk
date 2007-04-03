@@ -1,3 +1,7 @@
+2007-04-03  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (getDecl): Pass scopes to getDeclCU.
+
 2007-04-02  Tim Moore  <timoore@redhat.com>
 
 	* hpd/FunctionBreakpointAdapter.java (output): Print differently

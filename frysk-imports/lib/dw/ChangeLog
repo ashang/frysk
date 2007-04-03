@@ -1,3 +1,7 @@
+2007-04-03  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (getDeclCU): Set scopes.
+
 2007-03-30  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getAttr): Rename getAttrBoolean.

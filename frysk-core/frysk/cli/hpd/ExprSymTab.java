@@ -510,8 +510,9 @@ class ExprSymTab
           
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);
+    // Do we have something above didn't find, e.g. DW_TAG_enumerator?
     if (varDie == null)
-      varDie = DwarfDie.getDeclCU(allDies[0], s);
+      varDie = DwarfDie.getDeclCU(allDies, s);
     if (varDie == null)
       return null;
     return varDie;
