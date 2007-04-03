@@ -40,8 +40,7 @@
 
 package frysk.gui.srcwin;
 
-import frysk.Config;
-import frysk.rt.Line;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -103,6 +102,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import frysk.Config;
 import frysk.cli.hpd.SymTab;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
@@ -124,6 +124,7 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.Line;
 import frysk.rt.RunState;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
@@ -179,7 +180,7 @@ public class SourceWindow
 
   // Glade file to use
   public static final String GLADE_FILE = "frysk_source.glade";
-  
+
   // Modified FileChooser widget used for executable activation
   public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
 
@@ -199,7 +200,7 @@ public class SourceWindow
   private org.gnu.gtk.Action close;
   
   private org.gnu.gtk.Action open_core;
-  
+
   private org.gnu.gtk.Action open_executable;
 
   private org.gnu.gtk.Action copy;
@@ -665,6 +666,42 @@ public class SourceWindow
     
     resensitize();
   }
+  
+  protected void addProc (File exe)
+  {
+	desensitize();
+	this.stop.setSensitive(false);
+  	SourceWindowFactory.startNewProc(exe);
+  }
+  
+  protected void appendProc (Task task)
+  {
+	  Proc proc = task.getProc();
+	  int oldSize = this.numProcs;
+	  ++this.numProcs;
+	  
+	  StackFrame[][] newFrames = new StackFrame[numProcs][];
+	  DOMFrysk[] newDom = new DOMFrysk[numProcs];
+	  SymTab[] newSymTab = new SymTab[numProcs];
+	  Proc[] newSwProc = new Proc[numProcs];
+	  
+	  for (int i = 0; i < oldSize; i++)
+		  {
+			  newFrames[i] = new StackFrame[this.frames[i].length];
+			  System.arraycopy(this.frames[i], 0, newFrames[i], 0, oldSize);
+		  }
+	  System.arraycopy(this.dom, 0, newDom, 0, oldSize);
+	  System.arraycopy(this.symTab, 0, newSymTab, 0, oldSize);
+	  System.arraycopy(this.swProc, 0, newSwProc, 0, oldSize);
+	  
+	  this.frames = newFrames;
+	  this.dom = newDom;
+	  this.symTab = newSymTab;
+	  this.swProc = newSwProc;
+	  
+	  this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
+	  this.swProc[oldSize] = proc;
+  }
 
   /*****************************************************************************
    * Getters and Setters
@@ -731,12 +768,11 @@ public class SourceWindow
         chooser = new FileChooserDialog("Frysk: Choose a core file to examine",
                                         (Window) SourceWindow.this.glade.getWidget(SOURCE_WINDOW),
                                         FileChooserAction.ACTION_OPEN);
-        
-        chooser.addListener (new LifeCycleListener() {
-          public void lifeCycleEvent (LifeCycleEvent event)
+        chooser.addListener(new LifeCycleListener() {
+          public void lifeCycleEvent(LifeCycleEvent event)
           {
           }
-          public boolean lifeCycleQuery (LifeCycleEvent event)
+          public boolean lifeCycleQuery(LifeCycleEvent event)
           {
             return false;
           }
@@ -805,21 +841,21 @@ public class SourceWindow
 		         true);
     this.open_executable.connectAccelerator();
 
-	// Close action
+    // Close action
 	this.close = new org.gnu.gtk.Action("close",
 					    "Close",
 					    "Close Window",
-					    GtkStockItem.CLOSE.getString());
-	this.close.setAccelGroup(ag);
-	this.close.setAccelPath("<sourceWin>/File/Close");
-	this.close.addListener(new org.gnu.gtk.event.ActionListener()
-	  {
-	    public void actionEvent (ActionEvent action)
-              {
-                // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
-                SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
-              }
-          });
+                                        GtkStockItem.CLOSE.getString());
+    this.close.setAccelGroup(ag);
+    this.close.setAccelPath("<sourceWin>/File/Close");
+    this.close.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+        // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+        SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
+      }
+    });
     AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x,
                          ModifierType.CONTROL_MASK, true);
     this.close.connectAccelerator();
@@ -2630,6 +2666,8 @@ public class SourceWindow
 
   }
 
+  private boolean SW_add = false;
+  
   /**
    * Local Observer class used to poke this window from RunState when all the
    * Tasks belonging to this window's Proc have been blocked. These Tasks could
@@ -2656,6 +2694,8 @@ public class SourceWindow
 
       if (SW_active)
         {
+        	if (SW_add == false)
+        		{
           /*
            * This callback was called because all our Proc's Tasks were blocked
            * because of some state change operation. Re-generate the stack trace
@@ -2673,6 +2713,11 @@ public class SourceWindow
               procReblocked();
             }
           });
+        }
+        	else
+        		{
+        			appendProc ((Task) arg);
+        		}
         }
       else
         {

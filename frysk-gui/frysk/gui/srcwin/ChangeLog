@@ -33,6 +33,9 @@
 	array index specified by parameter.
 	(LockObserver.update): Send global process index int into
 	generateProcStackTrace().
+	(addProc): Added.
+	(appendProc): Added.
+	(SW_add): Added.
 
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
