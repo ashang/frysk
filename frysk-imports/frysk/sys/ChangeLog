@@ -1,3 +1,8 @@
+2007-04-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Poll.java (Observere): Move to PollBuilder.java.
+	* PollBuilder.java: New file.
+
 2007-04-02  Andrew Cagney  <cagney@redhat.com>
 
 	* UnhandledWaitBuilder.java: New file.

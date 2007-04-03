@@ -40,62 +40,10 @@
 package frysk.sys;
 
 /**
- * Poll like interface for waiting on kernel events.
- *
- * This object, loosely based on the poll and pselect interfaces,
- * provides a call blocks until a UNIX event (signal, FD ready), the
- * timeout expires, or an unexpected interrupt occures.  The client
- * (which extends this object) is notified via the abstract notify
- * methods.
+ * Notify client of Poll events.
  */
-
-public final class Poll
+public interface PollBuilder
 {
-    /**
-     * Set of signals checked during poll.
-     */
-    static protected SigSet sigSet = new SigSet ();
-    private static native void addSignalHandler (Sig sig);
-    /**
-     * Add Sig to the set of signals checked during poll.
-     */
-    public static void add (Sig sig)
-    {
-	sigSet.add (sig);
-	addSignalHandler (sig);
-    }
-    /**
-     * Empty the set of signals, and file descriptors, checked during
-     * poll.
-     */
-    public static void empty ()
-    {
-	// Note that this doesn't restore any signal handlers.
-	sigSet.empty ();
-    }
-
-    /**
-     * Manage the file descriptors watched by the poll call.
-     */
-    public static final class Fds
-    {
-	gnu.gcj.RawDataManaged fds;
-	int numFds;
-	private native void init ();
-	public final native void addPollIn (int fd);
-	public Fds ()
-	{
-	    init ();
-	}
-    }
-    static protected Fds pollFds = new Fds ();
-
-    /**
-     * Poll the system for either FD, or signal events.  Block for
-     * timeout milliseconds (if timeout is +ve or zero), or until the
-     * next event (if timeout is -ve).  Return when an event might
-     * have occured.
-     */
-    public static native void poll (PollBuilder observer,
-				    long timeout);
+    void signal (Sig sig);
+    void pollIn (int fd);
 }

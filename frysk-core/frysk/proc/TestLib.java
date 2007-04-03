@@ -47,6 +47,7 @@ import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
 import frysk.sys.Poll;
+import frysk.sys.PollBuilder;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.SigSet;
@@ -1587,7 +1588,7 @@ public class TestLib
     // extra signals - for instance a SIGUSR1 from a detached
     // child that notices that it's parent just exited.
     class SignalDrain
-        implements Poll.Observer
+        implements PollBuilder
     {
       SigSet pending = new SigSet();
 

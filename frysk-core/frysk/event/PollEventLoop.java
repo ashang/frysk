@@ -40,6 +40,7 @@
 package frysk.event;
 
 import frysk.sys.Poll;
+import frysk.sys.PollBuilder;
 import frysk.sys.Sig;
 import frysk.sys.Tid;
 import java.util.List;
@@ -268,13 +269,13 @@ public class PollEventLoop
     /**
      * Handle anything that comes back from the poll call.
      */
-    private Poll.Observer pollObserver = new Poll.Observer () {
+    private PollBuilder pollObserver = new PollBuilder () {
 	    public String toString ()
 	    {
 		return ("{" + super.toString () + "}");
 	    }
 	    public void signal (Sig sig) {
-		logger.log (Level.FINEST, "{0} Poll.Observer.signal Sig\n", this); 
+		logger.log (Level.FINEST, "{0} PollBuilder.signal Sig\n", this); 
 		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.

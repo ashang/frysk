@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include "frysk/sys/SigSet.h"
 #include "frysk/sys/cni/SigSet.hxx"
 #include "frysk/sys/Poll$Fds.h"
-#include "frysk/sys/Poll$Observer.h"
+#include "frysk/sys/PollBuilder.h"
 
 
 // If there's a signal abort the wait() function using a longjmp (and
@@ -158,7 +158,7 @@ frysk::sys::Poll$Fds::addPollIn (jint fd)
 
 
 void
-frysk::sys::Poll::poll (frysk::sys::Poll$Observer* pollObserver,
+frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
 			jlong timeout)
 {
   // Set up a SIGSETJMP call that jumps back to here when any watched
