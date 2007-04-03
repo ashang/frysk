@@ -1,3 +1,8 @@
+2007-04-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* gladedir/frysk_filechooser.glade: New.
+	* gladedir/frysk_filechooser.gladep: New.
+
 2007-04-03  Mike Cvet  <mcvet@redhat.com>
 
 	* RegisterWindowFactory.java: Removed references to SourceWindowFactory
