@@ -1,3 +1,13 @@
+2007-04-03  Mike Cvet  <mcvet@redhat.com>
+
+	* RegisterWindowFactory.java: Removed references to SourceWindowFactory
+	data structures.
+	(unblockProc): Removed.
+	* MemoryWindowFactory.java: Ditto.
+	(unblockProc): Ditto.
+	* DisassemblyWindowFactory.java: Ditto.
+	(unblockProc): Ditto.
+
 2007-04-02  Mark Wielaard  <mark@klomp.org>
 
 	* test/GuiTestLib.java (logger): Use frysk.gui.test for getLogger().

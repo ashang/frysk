@@ -61,15 +61,11 @@ import frysk.rt.RunState;
  */
 public class MemoryWindowFactory
 {
-
   /* Instance of this class used by the SourceWindow to ensure singularity */
   public static MemoryWindow memWin = null;
   
   /* Keeps track of which MemoryWindows belong to which Task. */
   private static HashMap map = new HashMap();
-  
-  /* Keeps track of which ProcBlockCounter belongs to the Task. */
-  //private static Hashtable blockerTable;
   
   private final static String MEM_GLADE = "memorywindow.glade";
 
@@ -81,48 +77,47 @@ public class MemoryWindowFactory
    * @param proc    The Proc to be examined by the new MemoryWindow.
    */
   public static void createMemoryWindow (Proc proc)
-  {
-    MemoryWindow mw = (MemoryWindow) map.get(proc);
+		{
+				MemoryWindow mw = (MemoryWindow) map.get(proc);
 
-    /* Check if there is already a MemoryWindow running on this task */
-    if (mw != null)
-      {
-        mw = (MemoryWindow) map.get(proc);
-        RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-        rs.addObserver(mw.getLockObserver());
-        mw.showAll();
-        return;
-      }
-    
-    LibGlade glade;
-    try {
-	glade = new LibGlade(Config.getGladeDir () + MEM_GLADE, null);
-    }
-    catch (Exception e) {
-	throw new RuntimeException (e);
-    }
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    
-    if (rs == null)
-      {
-        rs = new RunState();
-        rs.setProc(proc);
-        SourceWindowFactory.stateMap.put(proc, rs);
-        mw = new MemoryWindow(glade);
-        rs.addObserver(mw.getLockObserver());
-      }
-    else
-      {
-        mw = new MemoryWindow(glade);
-        rs.addObserver(mw.getLockObserver());
-        mw.finishMemWin(proc);
-        mw.setObservable(rs);
-      }
+				/* Check if there is already a MemoryWindow running on this task */
+				if (mw != null)
+						{
+								mw = (MemoryWindow) map.get(proc);
+								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
+								mw.showAll();
+								return;
+						}
 
-    map.put(proc, mw);
-    mw.addListener(new MemWinListener());
-    mw.grabFocus();
-  }
+				LibGlade glade;
+				try
+						{
+								glade = new LibGlade(Config.getGladeDir() + MEM_GLADE, null);
+						}
+				catch (Exception e)
+						{
+								throw new RuntimeException(e);
+						}
+
+				if (SourceWindowFactory.runState == null)
+						{
+								SourceWindowFactory.runState = new RunState();
+								SourceWindowFactory.runState.setProc(proc);
+								mw = new MemoryWindow(glade);
+								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
+						}
+				else
+						{
+								mw = new MemoryWindow(glade);
+								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
+								mw.finishMemWin(proc);
+								mw.setObservable(SourceWindowFactory.runState);
+						}
+
+				map.put(proc, mw);
+				mw.addListener(new MemWinListener());
+				mw.grabFocus();
+		}
   
   /**
    * Used by the SourceWindow to assign the static memWin object which it uses
@@ -133,22 +128,6 @@ public class MemoryWindowFactory
   public static void setMemWin(Proc proc)
   {
     memWin = (MemoryWindow) map.get(proc);
-  }
-  
-  /**
-   * Check to see if this instance is the last one blocking the Proc - if so,
-   * request to unblock it. If not, then just decrement the block count and
-   * clean up.
-   * 
-   * @param proc    The Proc to be unblocked.
-   */
-  private static void unblockProc (Proc proc)
-  {
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    if (rs.getNumObservers() == 0)
-      {
-        SourceWindowFactory.stateMap.remove(proc);
-      }
   }
   
   /**
@@ -184,12 +163,9 @@ public class MemoryWindowFactory
           Task t = mw.getMyTask();
           Proc p = t.getProc();
           
-          RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
-          
-          if (rs.removeObserver(mw.getLockObserver(), p) == 1)
+          if (SourceWindowFactory.runState.removeObserver(mw.getLockObserver(), p) == 1)
             {
               map.remove(p);
-              unblockProc(p);
             }
 
           mw.hideAll();

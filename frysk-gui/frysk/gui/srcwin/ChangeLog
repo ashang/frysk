@@ -5,10 +5,18 @@
 	view.
 	(generateProcStackTrace): Cleaned up.
 		
-	* SourceWindowFactory.java (startNewProc): Now takes a File parameter.
-	(AttachedObserver.updateAttached): Check for the existence of a
-	SourceWindow for the given Proc, append the process to that window's
-	RunState. Addresses #4312.
+	* SourceWindowFactory.java (map): Removed.
+	(stateMap): Removed.
+	(runState): Added.
+	(createSourceWindow): References the static SourceWindow only. Recreate
+	the SourceWindow from scratch upon successive calls. Assign static
+	RunState from constructed SourceWindow object.
+	(unblockProc): Removed.
+	(lifeCycleQuery): Removed references to HashMaps. Nullifies
+	SourceWindow upon deletion event.
+	(startNewProc): Now takes a File parameter.
+	(AttachedObserver.updateAttached): Appends given Proc to current 
+	SourceWindow, if not null. Addresses #4312.
 
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 

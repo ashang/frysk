@@ -78,48 +78,47 @@ public class RegisterWindowFactory
    * @param proc    The Proc to be examined by the new RegisterWindow.
    */
   public static void createRegisterWindow (Proc proc)
-  {
-    RegisterWindow rw = (RegisterWindow) map.get(proc);
+		{
+				RegisterWindow rw = (RegisterWindow) map.get(proc);
 
-    /* Check if there is already a RegisterWindow running on this task */
-    if (rw != null)
-      {
-        rw = (RegisterWindow) map.get(proc);
-        RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-        rs.addObserver(rw.getLockObserver());
-        rw.showAll();
-        return;
-      }
-    
-    LibGlade glade;
-    try {
-	glade = new LibGlade(Config.getGladeDir () + REG_GLADE, null);
-    }
-    catch (Exception e) {
-	throw new RuntimeException (e);
-    }
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    
-    if (rs == null)
-      {
-        rs = new RunState();
-        rs.setProc(proc);
-        SourceWindowFactory.stateMap.put(proc, rs);
-        rw = new RegisterWindow(glade);
-        rs.addObserver(rw.getLockObserver());
-      }
-    else
-      {
-        rw = new RegisterWindow(glade);
-        rs.addObserver(rw.getLockObserver());
-        rw.finishRegWin(proc);
-        rw.setObservable(rs);
-      }
+				/* Check if there is already a RegisterWindow running on this task */
+				if (rw != null)
+						{
+								rw = (RegisterWindow) map.get(proc);
+								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
+								rw.showAll();
+								return;
+						}
 
-    map.put(proc, rw);
-    rw.addListener(new RegWinListener());
-    rw.grabFocus();
-  }
+				LibGlade glade;
+				try
+						{
+								glade = new LibGlade(Config.getGladeDir() + REG_GLADE, null);
+						}
+				catch (Exception e)
+						{
+								throw new RuntimeException(e);
+						}
+
+				if (SourceWindowFactory.runState == null)
+						{
+								SourceWindowFactory.runState = new RunState();
+								SourceWindowFactory.runState.setProc(proc);
+								rw = new RegisterWindow(glade);
+								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
+						}
+				else
+						{
+								rw = new RegisterWindow(glade);
+								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
+								rw.finishRegWin(proc);
+								rw.setObservable(SourceWindowFactory.runState);
+						}
+
+				map.put(proc, rw);
+				rw.addListener(new RegWinListener());
+				rw.grabFocus();
+		}
 
   /**
    * Used by the SourceWindow to assign the static regWin object which it uses
@@ -130,22 +129,6 @@ public class RegisterWindowFactory
   public static void setRegWin (Proc proc)
   {
     regWin = (RegisterWindow) map.get(proc);
-  }
-
-  /**
-   * Check to see if this instance is the last one blocking the Proc - if so,
-   * request to unblock it. If not, then just decrement the block count and
-   * clean up.
-   * 
-   * @param task    The Task to be unblocked.
-   */
-  private static void unblockProc (Proc proc)
-  {
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    if (rs.getNumObservers() == 0)
-      {
-        SourceWindowFactory.stateMap.remove(proc);
-      }
   }
 
   /**
@@ -181,12 +164,9 @@ public class RegisterWindowFactory
           Task t = rw.getMyTask();
           Proc p = t.getProc();
           
-          RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
-          
-          if (rs.removeObserver(rw.getLockObserver(), p) == 1)
+          if (SourceWindowFactory.runState.removeObserver(rw.getLockObserver(), p) == 1)
             {
               map.remove(p);
-              unblockProc(p);
             }
 
           rw.hideAll();

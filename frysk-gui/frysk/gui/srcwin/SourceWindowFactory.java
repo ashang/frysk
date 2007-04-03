@@ -42,9 +42,6 @@ package frysk.gui.srcwin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -75,19 +72,11 @@ import frysk.rt.StackFrame;
  */
 public class SourceWindowFactory
 {
-  private static HashMap map;
-
-  public static Map stateMap;
-
-  public static SourceWindow srcWin = null;
+  protected static SourceWindow srcWin = null;
+  
+  public static RunState runState = null;
   
   public static Task myTask;
-
-  static
-    {
-      map = new HashMap();
-      stateMap = Collections.synchronizedMap(new HashMap());
-    }
 
   /**
    * Creates a new source window using the given task. The SourceWindows
@@ -100,15 +89,6 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Proc proc)
   {
-    SourceWindow sw = (SourceWindow) map.get(proc);
-
-    if (sw != null)
-      {
-        RunState rs = sw.getRunState();
-        rs.addObserver(sw.getLockObserver());
-        sw.showAll();
-        return;
-      }
 
     LibGlade glade;
     try 
@@ -120,32 +100,16 @@ public class SourceWindowFactory
       throw new RuntimeException (e);
     }
     
-    sw = new SourceWindow(glade, Config.getGladeDir (), proc);
+    srcWin = new SourceWindow(glade, Config.getGladeDir (), proc);
 
-    stateMap.put(proc, sw.getRunState());
-    sw.addListener(new SourceWinListener());
-    sw.grabFocus();
-
-    // Store the reference to the source window
-    map.put(proc, sw);
+    srcWin.addListener(new SourceWinListener());
+    runState = srcWin.getRunState();
+    
+    srcWin.grabFocus();
   }
   
   public static void createSourceWindow (Proc[] procs)
   {
-    int i;
-    SourceWindow sw = null; 
-    
-    for (i = 0; i < procs.length; i++)
-      {
-        sw = (SourceWindow) map.get(procs[i]);
-        if (sw != null)
-          {
-            RunState rs = sw.getRunState();
-            rs.addObserver(sw.getLockObserver());
-            sw.showAll();
-            return;
-          }
-      }
 
     LibGlade glade;
     try 
@@ -157,16 +121,11 @@ public class SourceWindowFactory
       throw new RuntimeException (e);
     }
     
-    sw = new SourceWindow(glade, Config.getGladeDir (), procs);
-    sw.addListener(new SourceWinListener());
+    srcWin = new SourceWindow(glade, Config.getGladeDir (), procs);
+    srcWin.addListener(new SourceWinListener());
+    runState = srcWin.getRunState();
     
-    for (i = 0; i < procs.length; i++)
-      {
-        stateMap.put(procs[i], sw.getRunState());
-        map.put(procs[i], sw);
-      }
-
-    sw.grabFocus();
+    srcWin.grabFocus();
   }
   
   public static void createSourceWindow (StackFrame frame)
@@ -182,10 +141,11 @@ public class SourceWindowFactory
         throw new RuntimeException(e);
       }
     
-    SourceWindow sw = new SourceWindow(glade, Config.getGladeDir(), frame);
-
-    sw.addListener(new SourceWinListener());
-    sw.grabFocus();
+    SourceWindow srcWin = new SourceWindow(glade, Config.getGladeDir(), frame);
+    srcWin.addListener(new SourceWinListener());
+    runState = srcWin.getRunState();
+    
+    srcWin.grabFocus();
   }
   
   public static void attachToPID (int pid)
@@ -240,21 +200,6 @@ public class SourceWindowFactory
       }
   }
 
-  /**
-   * Unblocks the Proc being examined and removes all Observers on it, and
-   * removes it from the tables watching it.
-   * 
-   * @param proc The Proc to be unblocked.
-   */
-  private static void unblockProc (Proc proc)
-  {
-    RunState rs = (RunState) stateMap.get(proc);
-    if (rs.getNumObservers() == 0)
-      {
-        stateMap.remove(proc);
-      }
-  }
-
   /*
    * The responsibility of this class that whenever a SourceWindow is closed the
    * corresponding task is removed from the HashMap. This tells
@@ -278,29 +223,18 @@ public class SourceWindowFactory
        */
       if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
         {
-          if (map.containsValue(arg0.getSource()))
-            {
-              SourceWindow s = (SourceWindow) arg0.getSource();
+              Proc p = srcWin.getSwProc();
               
-              RunState rs = s.getRunState();
-              
-              Proc p = s.getSwProc();
-              
-              if (rs.removeObserver(s.getLockObserver(), p) == 1)
-                {
-                  map.remove(p);
-                  
-                  unblockProc(p);
-                }
+              runState.removeObserver(srcWin.getLockObserver(), p);
 
-              s.hideAll();
+//             srcWin.hideAll();
+				srcWin = null;
               
               if (WindowManager.theManager.sessionManagerDialog != null)
                 WindowManager.theManager.sessionManagerDialog.show();
               else
                 Gui.quitFrysk();
             }
-        }
 
       return true;
     }
@@ -314,39 +248,38 @@ public class SourceWindowFactory
     }
     
     public Action updateAttached (Task task)
+		{
+			Proc proc = task.getProc();
+			
+			if (srcWin != null)
 				{
-						Proc proc = task.getProc();
-						SourceWindow sw = (SourceWindow) map.get(proc);
-
-						if (sw != null)
-								{
-										RunState rs = sw.getRunState();
-										rs.addProc(proc);
-										return Action.BLOCK;
-								}
-
-						LibGlade glade;
-						try
-								{
-										glade = new LibGlade(Config.getGladeDir()
-																				 + SourceWindow.GLADE_FILE, null);
-								}
-						catch (Exception e)
-								{
-										throw new RuntimeException(e);
-								}
-
-						sw = new SourceWindow(glade, Config.getGladeDir(), proc, this);
-
-						stateMap.put(proc, sw.getRunState());
-						sw.addListener(new SourceWinListener());
-						sw.grabFocus();
-
-						// Store the reference to the source window
-						map.put(proc, sw);
-
-						return Action.BLOCK;
+					runState.addProc(proc);
+					return Action.BLOCK;
 				}
+
+			LibGlade glade;
+			try
+				{
+					glade = new LibGlade(
+								Config.getGladeDir()
+										+ SourceWindow.GLADE_FILE,
+								null);
+				}
+			catch (Exception e)
+				{
+					throw new RuntimeException(e);
+				}
+
+			srcWin = new SourceWindow(glade, Config.getGladeDir(),
+							proc, this);
+
+			srcWin.addListener(new SourceWinListener());
+			runState = srcWin.getRunState();
+
+			srcWin.grabFocus();
+
+			return Action.BLOCK;
+		}
     
     public void addFailed  (Object observable, Throwable w)
     {

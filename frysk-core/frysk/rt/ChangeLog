@@ -1,3 +1,10 @@
+2007-04-03  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (addProc): Added. Appends a new process to the current
+	RunState. Addresses #4312.
+	(removeObserver): Unblock process if the number of observations is
+	equal to the number of its Tasks.
+
 2007-04-02  Tim Moore  <timoore@redhat.com>
 
 	* FunctionBreakpoint.java (constructor): Look for inline instances

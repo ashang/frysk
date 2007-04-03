@@ -78,48 +78,47 @@ public class DisassemblyWindowFactory
    * @param proc    The Proc to be examined by the new DisassemblyWindow.
    */
   public static void createDisassemblyWindow (Proc proc)
-  {
-    DisassemblyWindow dw = (DisassemblyWindow) map.get(proc);
+		{
+				DisassemblyWindow dw = (DisassemblyWindow) map.get(proc);
 
-    /* Check if there is already a DisassemblyWindow running on this task */
-    if (dw != null)
-      {
-        dw = (DisassemblyWindow) map.get(proc);
-        RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-        rs.addObserver(dw.getLockObserver());
-        dw.showAll();
-        return;
-      }
+				/* Check if there is already a DisassemblyWindow running on this task */
+				if (dw != null)
+						{
+								dw = (DisassemblyWindow) map.get(proc);
+								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
+								dw.showAll();
+								return;
+						}
 
-    LibGlade glade;
-    try {
-	glade = new LibGlade(Config.getGladeDir () + DIS_GLADE, null);
-    }
-    catch (Exception e) {
-	throw new RuntimeException (e);
-    }
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    
-    if (rs == null)
-      {
-        rs = new RunState();
-        rs.setProc(proc);
-        SourceWindowFactory.stateMap.put(proc, rs);
-        dw = new DisassemblyWindow(glade);
-        rs.addObserver(dw.getLockObserver());
-      }
-    else
-      {
-        dw = new DisassemblyWindow(glade);
-        rs.addObserver(dw.getLockObserver());
-        dw.finishDisWin(proc);
-        dw.setObservable(rs);
-      }
+				LibGlade glade;
+				try
+						{
+								glade = new LibGlade(Config.getGladeDir() + DIS_GLADE, null);
+						}
+				catch (Exception e)
+						{
+								throw new RuntimeException(e);
+						}
 
-    map.put(proc, dw);
-    dw.addListener(new DisWinListener());
-    dw.grabFocus();
-  }
+				if (SourceWindowFactory.runState == null)
+						{
+								SourceWindowFactory.runState = new RunState();
+								SourceWindowFactory.runState.setProc(proc);
+								dw = new DisassemblyWindow(glade);
+								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
+						}
+				else
+						{
+								dw = new DisassemblyWindow(glade);
+								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
+								dw.finishDisWin(proc);
+								dw.setObservable(SourceWindowFactory.runState);
+						}
+
+				map.put(proc, dw);
+				dw.addListener(new DisWinListener());
+				dw.grabFocus();
+		}
   
   /**
    * Used by the SourceWindow to assign the static memWin object which it uses
@@ -130,22 +129,6 @@ public class DisassemblyWindowFactory
   public static void setDisWin(Proc proc)
   {
     disWin = (DisassemblyWindow) map.get(proc);
-  }
-  
-  /**
-   * Check to see if this instance is the last one blocking the Proc - if so,
-   * request to unblock it. If not, then just decrement the block count and
-   * clean up.
-   * 
-   * @param proc    The Proc to be unblocked.
-   */
-  private static void unblockProc (Proc proc)
-  {
-    RunState rs = (RunState) SourceWindowFactory.stateMap.get(proc);
-    if (rs.getNumObservers() == 0)
-      {
-        SourceWindowFactory.stateMap.remove(proc);
-      }
   }
   
   /**
@@ -181,12 +164,9 @@ public class DisassemblyWindowFactory
           Task t = dw.getMyTask();
           Proc p = t.getProc();
           
-          RunState rs = (RunState) SourceWindowFactory.stateMap.get(t.getProc());
-          
-          if (rs.removeObserver(dw.getLockObserver(), p) == 1)
+          if (SourceWindowFactory.runState.removeObserver(dw.getLockObserver(), p) == 1)
             {
               map.remove(p);
-              unblockProc(p);
             }
 
           dw.hideAll();

@@ -861,6 +861,23 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
   }
   
+  public boolean addProc (Proc proc)
+  {
+  		if (this.state != STOPPED)
+  				return false;
+  		
+  		LinkedList[] list = new LinkedList[this.tasks.length + 1];
+  		System.arraycopy(this.tasks, 0, list, 0, this.tasks.length);
+  		
+  		this.current = list.length - 1;
+  		list[this.current] = proc.getTasks();
+  		this.numRunningTasks += list[this.current].size();
+  		this.tasks = list;
+  		
+  		requestAdd(this.tasks[this.current]);
+  		return true;
+  }
+  
   /**
    * Get the number of Tasks this RunState is concerned with.
    * 
@@ -887,8 +904,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public int removeObserver (Observer o, Proc p)
   {
     this.deleteObserver(o);
-//    if (countObservers() == 0)
-    if (p.observationsSize() == 0)
+    if (p.observationsSize() == p.getTasks().size())
       {
         continueExecution(p.getTasks());
         return 1;
@@ -1057,6 +1073,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
             System.out.println("Couldn't get the tasks");
             System.exit(1);
           }
+        
+        stateProc = (Proc) ((Task)(RunState.this.tasks[RunState.this.current].getFirst())).getProc();
 
         /* XXX: deprecated hack. */
         // proc.sendRefresh();
