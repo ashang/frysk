@@ -209,12 +209,11 @@ public class SourceWindowFactory
     });
   }
   
-  public static void startNewProc (String file)
+  public static void startNewProc (File file)
   {
-    File exe = new File(file);
     String[] cmd = new String[1];
-    cmd[0] = file;
-    if (exe.exists())
+    cmd[0] = file.getAbsolutePath();
+    if (file.exists())
       Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
     else
       {
@@ -223,8 +222,6 @@ public class SourceWindowFactory
       }
   }
   
-  
-
   /**
    * Print out the DOM in XML format
    * 
@@ -317,27 +314,39 @@ public class SourceWindowFactory
     }
     
     public Action updateAttached (Task task)
-    {
-      
-      LibGlade glade;
-      try {
-	  glade = new LibGlade(Config.getGladeDir () + SourceWindow.GLADE_FILE, null);
-      }
-      catch (Exception e) {
-	  throw new RuntimeException (e);
-      }
-      Proc proc = task.getProc();
-      SourceWindow sw = new SourceWindow (glade, Config.getGladeDir (), proc, this);
+				{
+						Proc proc = task.getProc();
+						SourceWindow sw = (SourceWindow) map.get(proc);
 
-      stateMap.put(proc, sw.getRunState());
-      sw.addListener(new SourceWinListener());
-      sw.grabFocus();
+						if (sw != null)
+								{
+										RunState rs = sw.getRunState();
+										rs.addProc(proc);
+										return Action.BLOCK;
+								}
 
-      // Store the reference to the source window
-      map.put(proc, sw);
-      
-      return Action.BLOCK;
-    }
+						LibGlade glade;
+						try
+								{
+										glade = new LibGlade(Config.getGladeDir()
+																				 + SourceWindow.GLADE_FILE, null);
+								}
+						catch (Exception e)
+								{
+										throw new RuntimeException(e);
+								}
+
+						sw = new SourceWindow(glade, Config.getGladeDir(), proc, this);
+
+						stateMap.put(proc, sw.getRunState());
+						sw.addListener(new SourceWinListener());
+						sw.grabFocus();
+
+						// Store the reference to the source window
+						map.put(proc, sw);
+
+						return Action.BLOCK;
+				}
     
     public void addFailed  (Object observable, Throwable w)
     {

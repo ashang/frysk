@@ -4,6 +4,11 @@
 	currently-selected process after new process is selected from the stack
 	view.
 	(generateProcStackTrace): Cleaned up.
+		
+	* SourceWindowFactory.java (startNewProc): Now takes a File parameter.
+	(AttachedObserver.updateAttached): Check for the existence of a
+	SourceWindow for the given Proc, append the process to that window's
+	RunState. Addresses #4309.
 
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
