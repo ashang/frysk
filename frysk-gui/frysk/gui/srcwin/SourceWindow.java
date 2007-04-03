@@ -278,7 +278,7 @@ public class SourceWindow
 
   private RunState runState;
   
-  private SymTab symTab;
+  private SymTab symTab[];
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -315,6 +315,7 @@ public class SourceWindow
     this.swProc = new Proc[this.numProcs];
     this.swProc[this.current] = proc;
     this.frames = new StackFrame[1][];
+    this.symTab = new SymTab[1];
     this.runState = new RunState();
     this.lock = new LockObserver();
     this.runState.addObserver(lock);
@@ -331,7 +332,8 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.numProcs = procs.length;
     this.swProc = procs;
-    this.frames = new StackFrame[procs.length][];
+    this.frames = new StackFrame[this.numProcs][];
+    this.symTab = new SymTab[this.numProcs];
     this.runState = new RunState();
     this.lock = new LockObserver();
     this.dom = new DOMFrysk[this.numProcs];
@@ -352,6 +354,7 @@ public class SourceWindow
     this.swProc = new Proc[0];
     this.swProc[this.current] = trace.getTask().getProc();
     this.frames = new StackFrame[1][];
+    this.symTab = new SymTab[1];
     this.dom = new DOMFrysk[1];
     
     try
@@ -411,7 +414,7 @@ public class SourceWindow
     if (this.runState.getState() == RunState.STOPPED)
       {
         for (int j = 0; j < numProcs; j++)
-          this.frames[j] = generateProcStackTrace(this.swProc[j]);
+          this.frames[j] = generateProcStackTrace(this.swProc[j], j);
       }
     
     this.listener = new SourceWindowListener(this);
@@ -458,8 +461,8 @@ public class SourceWindow
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
-	if (this.runState.getState() != RunState.RUNNING)
-	  this.symTab.setFrames(this.frames[this.current]);
+//	if (this.runState.getState() != RunState.RUNNING)
+//	  this.symTab.setFrames(this.frames[this.current]);
 
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -1797,8 +1800,16 @@ public class SourceWindow
         	
             this.view.load(selected, mode);
             
-        	if (current != this.current && this.runState.getState() != RunState.RUNNING)
-        	  this.symTab.setFrames(this.frames[current]);
+        	if (current != this.current
+				&& this.runState.getState() != RunState.RUNNING)
+			  {
+				this.symTab[current] = new SymTab(
+												  this.swProc[current].getPid(),
+												  this.swProc[current],
+												  this.swProc[current].getMainTask(),
+												  this.frames[current][0]);
+				this.symTab[current].setFrames(this.frames[current]);
+			  }
         	
             this.current = current;
             
@@ -1898,8 +1909,6 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-
-    // this.pbo.requestAddObservers(this.myProc.getMainTask());
 
     if (this.threadDialog == null)
       {
@@ -2367,10 +2376,10 @@ public class SourceWindow
     this.runState.executeTasks(tasks);
   }
 
-  private StackFrame[] generateProcStackTrace (Proc proc)
+  private StackFrame[] generateProcStackTrace (Proc proc, int current)
   {
 	int size = proc.getTasks().size();
-	int mainTid = proc.getPid();
+	int main = proc.getPid();
 	Task[] tasks = new Task[size];
 	StackFrame[] frames = new StackFrame[size];
 
@@ -2402,9 +2411,11 @@ public class SourceWindow
 
 		/** Stack frame created */
 
-		if (tasks[j].getTid() == mainTid)
-		  this.symTab = new SymTab(mainTid, this.swProc[this.current],
-								   tasks[j], frames[j]);
+		if (tasks[j].getTid() == main)
+		  {
+			this.symTab[current] = new SymTab(proc.getPid(), proc, tasks[j], 
+			                                  frames[j]);
+		  }
 
 		while (curr != null && this.dom[this.current] == null)
 		  {
@@ -2432,9 +2443,9 @@ public class SourceWindow
 	  }
 
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-
+	
 	if (this.runState.getState() != RunState.RUNNING)
-	  this.symTab.setFrames(frames);
+	  this.symTab[this.current].setFrames(frames);
 
 	return frames;
   }
@@ -2609,7 +2620,8 @@ public class SourceWindow
             public void run ()
             {
               SourceWindow.this.frames[SourceWindow.this.current] 
-  = generateProcStackTrace(SourceWindow.this.swProc[SourceWindow.this.current]);
+  = generateProcStackTrace(SourceWindow.this.swProc[SourceWindow.this.current], 
+                           SourceWindow.this.current);
               populateStackBrowser(SourceWindow.this.frames);
               SourceWindow.this.runState.notifyStopped();
               procReblocked();

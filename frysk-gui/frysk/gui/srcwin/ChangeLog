@@ -18,6 +18,17 @@
 	(AttachedObserver.updateAttached): Appends given Proc to current 
 	SourceWindow, if not null. Addresses #4312.
 
+	* SourceWindow.java (symTab): Now an array.
+	(SourceWindow): Allocate the SymTab array to a length the same as the
+	number of observed Processes by the SourceWindow.
+	(finishSourceWindow): Send index into generateProcStackTrace().
+	(updateShownStackFrame): Re-initialize current SymTab for given 
+	process before refreshing its StackFrames. Fixes #4308.
+	(generateProcStackTrace): Takes an int parameter. Initialize SymTab
+	array index specified by parameter.
+	(LockObserver.update): Send global process index int into
+	generateProcStackTrace().
+
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (dom): Now an array. Addresses #4214.
