@@ -1,3 +1,10 @@
+2007-04-03  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (updateShownStackFrame): Set the SymTab to the
+	currently-selected process after new process is selected from the stack
+	view.
+	(generateProcStackTrace): Cleaned up.
+
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (dom): Now an array. Addresses #4214.

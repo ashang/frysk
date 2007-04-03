@@ -457,6 +457,9 @@ public class SourceWindow
 
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
+    
+	if (this.runState.getState() != RunState.RUNNING)
+	  this.symTab.setFrames(this.frames[this.current]);
 
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -1791,11 +1794,15 @@ public class SourceWindow
             || mode != 0
             || current != this.current)
           {
+        	
+            this.view.load(selected, mode);
+            
+        	if (current != this.current && this.runState.getState() != RunState.RUNNING)
+        	  this.symTab.setFrames(this.frames[current]);
+        	
             this.current = current;
             
             removeTags();
-            
-            this.view.load(selected, mode);
 
             StackFrame curr = selected;
 
@@ -1814,13 +1821,11 @@ public class SourceWindow
                   {
                     this.currentFrame = selected;
                     switchToSourceAsmMode();
+                    ((MixedView) this.view).getSourceWidget().scrollToFunction(
+                                                                               lines[0].getDOMFunction().getFunctionCall());
                   }
-                
-                if (mode == 0)
+                else if (mode == 0)
                   this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
-                else if (mode == 2)
-                  ((MixedView) this.view).getSourceWidget().scrollToFunction(
-                                                                             lines[0].getDOMFunction().getFunctionCall());
               }
             else
               {
@@ -1833,21 +1838,12 @@ public class SourceWindow
           }
         else
           {
-            if (selected.getLines().length == 0)
-              return;
-            else
-              {
-                if (mode == 0)
-                  this.view.scrollToLine(lines[0].getLine());
-                else if (mode == 2)
-                  ((MixedView) this.view).getSourceWidget().scrollToLine(lines[0].getLine());
-              }
+            if (mode == 0)
+              this.view.scrollToLine(lines[0].getLine());
+            else if (mode == 2)
+              ((MixedView) this.view).getSourceWidget().scrollToLine(lines[0].getLine());
           }
       }
-
-
-//    if (this.current != current && this.runState.getState() != RunState.RUNNING)
-//	    symTab.setFrames(frames[current]);
     
     this.current = current;
     this.currentFrame = selected;
@@ -2372,80 +2368,76 @@ public class SourceWindow
   }
 
   private StackFrame[] generateProcStackTrace (Proc proc)
-	{
-		int size = proc.getTasks().size();
-		int mainTid = proc.getPid();
-		Task[] tasks = new Task[size];
-		StackFrame[] frames = new StackFrame[size];
+  {
+	int size = proc.getTasks().size();
+	int mainTid = proc.getPid();
+	Task[] tasks = new Task[size];
+	StackFrame[] frames = new StackFrame[size];
 
-		Iterator iter = proc.getTasks().iterator();
-		int k = 0;
-		while (iter.hasNext())
-			{
-				tasks[k] = (Task) iter.next();
-				++k;
-			}
+	Iterator iter = proc.getTasks().iterator();
+	int k = 0;
+	while (iter.hasNext())
+	  {
+		tasks[k] = (Task) iter.next();
+		++k;
+	  }
 
-		frames = new StackFrame[size];
+	frames = new StackFrame[size];
 
-		for (int j = 0; j < size; j++)
-			{
-				/** Create the stack frame * */
+	for (int j = 0; j < size; j++)
+	  {
+		/** Create the stack frame * */
 
-				StackFrame curr = null;
+		StackFrame curr = null;
+		try
+		  {
+			frames[j] = StackFactory.createStackFrame(tasks[j]);
+			curr = frames[j];
+		  }
+		catch (Exception e)
+		  {
+			System.out.println("Error generating stack trace");
+			e.printStackTrace();
+		  }
+
+		/** Stack frame created */
+
+		if (tasks[j].getTid() == mainTid)
+		  this.symTab = new SymTab(mainTid, this.swProc[this.current],
+								   tasks[j], frames[j]);
+
+		while (curr != null && this.dom[this.current] == null)
+		  {
+			if (this.dom[this.current] == null)
+			  {
 				try
-					{
-						frames[j] = StackFactory.createStackFrame(tasks[j]);
-						curr = frames[j];
-					}
-				catch (Exception e)
-					{
-						System.out.println("Error generating stack trace");
-						e.printStackTrace();
-					}
+				  {
+					this.dom[this.current] = DOMFactory.createDOM(
+																  curr,
+																  this.swProc[this.current]);
+				  }
 
-				/** Stack frame created */
+				catch (NoDebugInfoException e)
+				  {
+				  }
+				catch (IOException e)
+				  {
+				  }
+			  }
+			else
+			  break;
+			
+			curr = curr.getOuter();
+		  }
+	  }
 
-				if (tasks[j].getTid() == mainTid)
-					this.symTab = new SymTab(
-									mainTid,
-									this.swProc[this.current],
-									tasks[j],
-									frames[j]);
+	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 
-				while (curr != null
-					&& this.dom[this.current] == null)
-					{
-						if (this.dom[this.current] == null)
-							{
-								try
-									{
-										this.dom[this.current] = DOMFactory.createDOM(
-																curr,
-																this.swProc[this.current]);
-									}
+	if (this.runState.getState() != RunState.RUNNING)
+	  this.symTab.setFrames(frames);
 
-								catch (NoDebugInfoException e)
-									{
-									}
-								catch (IOException e)
-									{
-									}
-								catch (NullPointerException npe)
-									{
-									}
-							}
-						curr = curr.getOuter();
-					}
-			}
-
-		DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-
-		if (this.runState.getState() != RunState.RUNNING)
-			symTab.setFrames(frames);
-
-		return frames;
-	}
+	return frames;
+  }
 
   private class SourceWindowListener
       implements ButtonListener, EntryListener, ComboBoxListener,
