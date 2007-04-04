@@ -82,9 +82,8 @@ static void
 log (pid_t pid, int status, int err)
 {
   java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
-  if (logger == NULL)
+  if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
     return;
-  jstring message;
   if (pid > 0) {
     const char *wif_name = "<unknown>";
     int sig = -1;
@@ -120,14 +119,14 @@ log (pid_t pid, int status, int err)
       sig = WTERMSIG (status);
       sig_name = strsignal (sig);
     }
-    message = ajprintf ("frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
-			 pid, status, wif_name, sig, sig_name);
+    logFinest (&frysk::sys::Wait::class$, logger,
+	       "frysk.sys.Wait pid %d status 0x%x %s %d (%s)\n",
+	       pid, status, wif_name, sig, sig_name);
   }
   else
-    message = ajprintf ("frysk.sys.Wait pid %d errno %d (%s)\n",
-			 pid, err, strerror (err));
-  // Lacks "{0}"
-  logger->log (java::util::logging::Level::FINE, message);
+    logFinest (&frysk::sys::Wait::class$, logger,
+	       "frysk.sys.Wait pid %d errno %d (%s)\n",
+	       pid, err, strerror (err));
 }
 
 /* Decode a wait status notification using the WIFxxx macros,
@@ -352,7 +351,7 @@ struct wait_jmpbuf {
 static struct wait_jmpbuf wait_jmpbuf;
 
 static void
-waitInterrupt (int signum, siginfo_t *siginfo, void *context)
+waitInterrupt (int signum)
 {
   // For what ever reason, the signal can come in on the wrong thread.
   // When that occures, re-direct it (explicitly) to the thread that
@@ -361,8 +360,10 @@ waitInterrupt (int signum, siginfo_t *siginfo, void *context)
   if (wait_jmpbuf.tid == me) {
     sigaddset (&wait_jmpbuf.signals, signum);
     sigdelset (&wait_jmpbuf.mask, signum);
-    if (wait_jmpbuf.status != -1)
+    if (wait_jmpbuf.status == -1) {
+      // waitpid hasn't returned a meaningful result, abort call.
       siglongjmp (wait_jmpbuf.buf, signum);
+    }
   }
   else {
     // XXX: Want to edit this thread's mask so that from now on it
@@ -372,12 +373,33 @@ waitInterrupt (int signum, siginfo_t *siginfo, void *context)
 }
 
 void
+frysk::sys::Wait::signalEmpty ()
+{
+  // Static CNI methods do not trigger a class to be initialized, work
+  // around it.
+  if (sigSet == NULL)
+    sigSet = new frysk::sys::SigSet ();
+  // Note that this doesn't restore any signal handlers.
+  sigSet->empty ();
+  // Disable and mask SIGALRM
+  signal (SIGALRM, SIG_IGN);
+  sigset_t mask;
+  sigemptyset (&mask);
+  sigaddset (&mask, SIGALRM);
+  sigprocmask (SIG_BLOCK, &mask, NULL);
+}
+
+
+void
 frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
 {
-  // Add it to the signal set.
-  sigSet->add (sig);
+  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Get the hash code.
   int signum = sig->hashCode ();
+  logFinest (&frysk::sys::Wait::class$, logger,
+	     "adding %d (%s)\n", signum, strsignal (signum));
+  // Add it to the signal set.
+  sigSet->add (sig);
   // Make certain that the signal is masked (this is ment to be
   // process wide).  XXX: In a multi-threaded environment this call is
   // not well defined (although it does help reduce the number of
@@ -387,12 +409,11 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
   sigaddset (&mask, signum);
   sigprocmask (SIG_BLOCK, &mask, NULL);
   // Install the above signal handler (it long jumps back to the code
-  // that enabled the signal).  To avoid potential recursion, all
-  // signals are masked while the handler is running.
+  // that enabled the signal).  The handler's mask is set to F..F to
+  // ensure that the handler can't be pre-empted with another signal.
   struct sigaction sa;
   memset (&sa, 0, sizeof (sa));
-  sa.sa_sigaction = waitInterrupt;
-  sa.sa_flags = SA_SIGINFO;
+  sa.sa_handler = waitInterrupt;
   sigfillset (&sa.sa_mask);
   sigaction (signum, &sa, NULL);
 }
@@ -400,7 +421,6 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
 static int
 waitForEvent (bool block, bool wait)
 {
-  wait_jmpbuf.status = -1;
   sigset_t mask = wait_jmpbuf.mask;
 
   // Establish a jump buf so that, when a signal is delivered, the
@@ -411,30 +431,41 @@ waitForEvent (bool block, bool wait)
     return -EINTR;
   }
 
-  // Unmask signals, from this point on, things can be interrupted,
-  // which leads to a race between waitpid() returning and the
-  // interrupt.  For instance, just after waitpid() completes but
-  // before it returns a signal could arrive jumping the code back to
-  // the above.  Detect that waitpid did something by examining the
-  // result buffer.
+  // Set the STATUS to something that waitpid() will not return.  When
+  // a waitpid() system call completes successfully STATUS gets
+  // changed, and waitInterrupt() can use that to detect the success.
+  wait_jmpbuf.status = -1;
+
+  // Unmask signals, from this point on, things can be interrupted.
   errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   if (errno != 0)
     throwErrno (errno, "pthread_sigmask.UNBLOCK");
 
-  // Try to wait for a child event.  If a signal before the system
-  // call is executed then it will LONGJMP back to the above.  If the
-  // interrupt occured after waitpid returned then it will be allowed
-  // to continue.
+  // Block waiting for a waitpid or signal event.
+
+  // A signal delivered here will see that STATUS==-1, indicating that
+  // the waitpid() call has not completed successfully, will long-jump
+  // back to the above sigsetjmp causing the waitpid() call to be
+  // aborted.
+
   int status = 0;
   if (wait) {
-    //fprintf (stderr, "calling waitpid\n");
     status = ::waitpid (-1, &wait_jmpbuf.status,
 			__WALL | (block ? 0 : WNOHANG));
   }
   else if (block) {
-    //fprintf (stderr, "calling select\n");
     status = ::select (0, NULL, NULL, NULL, NULL);
   }
+
+  // A signal delivered here that sees STATUS!=-1, indicating that
+  // waitpid() has completed and is in the process of returning the
+  // PID, will return normally allowing this code to resume and ensure
+  // that the waitpid event is not lost.
+
+  // A signal delivered here that sees STATUS==-1, indicating that
+  // either the waitpid() call failed (no result) or select() was
+  // called, will long-jump back to the above sigsetjmp and cause any
+  // error status to be abandoned.
 
   if (status < 0)
     status = -errno; // Save the errno across the mask sigmask call.
@@ -449,23 +480,25 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
 			   frysk::sys::WaitBuilder* waitBuilder,
 			   frysk::sys::SignalBuilder* signalBuilder)
 {
-  // Zero any existing timeout, and drain any pending alarm should it
-  // have fired.
-  //fprintf (stderr, "draining existing alarms\n");
+  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
+  // Zero the existing timeout, and drain any pending SIGALRM
+  logFinest (&frysk::sys::Wait::class$, logger,
+	     "flush old timeout & SIGALRM\n");
   struct itimerval timeout;
-  setitimer (ITIMER_REAL, &timeout, NULL);
   memset (&timeout, 0, sizeof (timeout));
-  struct sigaction alarm_action;
-  struct sigaction ignore_action;
-  memset (&ignore_action, 0, sizeof (ignore_action));
-  ignore_action.sa_handler = SIG_IGN;
-  sigaction (SIGALRM, &ignore_action, &alarm_action);
+  setitimer (ITIMER_REAL, &timeout, NULL);
+  signal (SIGALRM, SIG_IGN);
 
   // Set up a new timeout and it's handler.
-  //fprintf (stderr, "setting up new alarm\n");
+  logFinest (&frysk::sys::Wait::class$, logger,
+	     "install new timeout & SIGALRM\n");
+  struct sigaction alarm_action;
+  memset (&alarm_action, 0, sizeof (alarm_action));
+  alarm_action.sa_handler = waitInterrupt;
+  sigfillset (&alarm_action.sa_mask);
+  sigaction (SIGALRM, &alarm_action, NULL);
   timeout.it_value.tv_sec = millisecondTimeout / 1000;
   timeout.it_value.tv_usec = (millisecondTimeout % 1000) * 1000;
-  sigaction (SIGALRM, &alarm_action, NULL);
   setitimer (ITIMER_REAL, &timeout, NULL);
 
   // Create a linked list of the waitpid events that are received;
@@ -474,18 +507,21 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
   struct event* lastEvent = firstEvent;
 
   // Get the signal mask of all allowed signals; clear the set of
-  // received signals.
+  // received signals.  Need to include SIGALRM.
   wait_jmpbuf.mask = *getRawSet (sigSet);
+  sigaddset (&wait_jmpbuf.mask, SIGALRM);
   sigemptyset (&wait_jmpbuf.signals);
  
   bool block = (millisecondTimeout > 0);
-  bool wait = true;
+  bool wait = waitBuilder != NULL;
   pid_t pid;
   while (true) {
-    memset (lastEvent, 0, sizeof (struct event));
+    logFinest (&frysk::sys::Wait::class$, logger,
+	       "waitForEvent block=%d wait=%d...\n", block, wait);
     pid = waitForEvent (block, wait);
-    //fprintf (stderr, "waitForEvent returned %d\n", pid);
     if (pid > 0) {
+      logFinest (&frysk::sys::Wait::class$, logger,
+		 "waitForEvent returned pid %d\n", pid);
       // There's a waitpid status; do more waitpid calls with blocking
       // disabled so that all pending waitpid events are collected.
       lastEvent->pid = pid;
@@ -496,6 +532,8 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
       continue;
     }
     else if (pid == -ECHILD) {
+      logFinest (&frysk::sys::Wait::class$, logger,
+		 "waitForEvent returned ECHILD\n");
       // Either no children, or all waitpid events have been gathered.
       // Try again but block but not using waitpid.  If the timer has
       // expired, don't even block.
@@ -503,12 +541,17 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
       block &= !sigismember (&wait_jmpbuf.signals, SIGALRM);
     }
     else if (pid == -EINTR) {
+      logFinest (&frysk::sys::Wait::class$, logger,
+		 "waitForEvent returned EINTR\n");
       // Call was interrupted by a signal, drain any remaining signals
       // and waitpid events but do not block.
       block = false;
     }
-    else
+    else {
+      logFinest (&frysk::sys::Wait::class$, logger,
+		 "waitForEvent returned %d (%s)\n", pid, strerror (-pid));
       break;
+    }
   }
 
   if (pid < 0)

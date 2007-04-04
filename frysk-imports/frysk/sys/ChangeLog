@@ -1,3 +1,20 @@
+2007-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestWait.java (testNoWaitBuilder): Add.
+	(tearDown, startTime, endTime): Add.
+	(testSignals): Use getTimeoutMilliseconds.
+	* Wait.java (signalEmpty): Do not install SIGALRM.
+	(getLogger): Always return the logger.
+	(signalEmpty): Make native.
+	* cni/Wait.cxx (waitInterrupt): Remove siginfo_t and context
+	parameters.  Fix STATUS check.
+	(signalAdd): Update.  Add logFinest calls.
+	(waitForEvent): Add "wait" parameter.  Add more comments.
+	(waitAll): Set "wait" according to waitBuilder's NULLness.  Add
+	logFinest calls.
+	(signalEmpty): Implement here.
+	(log): Use logFinest.
+	
 2007-04-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestWait.java: New file.

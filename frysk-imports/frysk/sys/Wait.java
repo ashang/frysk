@@ -40,7 +40,6 @@
 package frysk.sys;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * Wait for an event from either a process, task, or all processes and
@@ -56,20 +55,17 @@ public final class Wait
      */
     static Logger getLogger ()
     {
-	// Seems that when calling static methods this isn't
+	// Seems that when calling a native static methods this isn't
 	// initialized, force it.
 	if (logger == null)
-	    logger = Logger.getLogger("frysk.sys");
-	if (logger.isLoggable (Level.FINE))
-	    return logger;
-	else
-	    return null;
+	    logger = Logger.getLogger("frysk");
+	return logger;
     }
 
     /**
      * Set of signals checked during poll.
      */
-    static protected SigSet sigSet = new SigSet ();
+    static protected SigSet sigSet;
     /**
      * Add Sig to the set of signals checked during poll.
      */
@@ -78,12 +74,7 @@ public final class Wait
      * Empty the set of signals, and file descriptors, checked during
      * poll.
      */
-    public static void signalEmpty ()
-    {
-	// Note that this doesn't restore any signal handlers.
-	sigSet.empty ();
-	signalAdd (Sig.ALRM);
-    }
+    public static native void signalEmpty ();
 
     /**
      * Read in all the pending wait events, and then pass them to the

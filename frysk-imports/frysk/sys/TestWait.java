@@ -48,15 +48,22 @@ import frysk.junit.TestCase;
 public class TestWait
     extends TestCase
 {
-    final int shortTimeout = 100;
-    private final UnhandledWaitBuilder unhandledWaitBuilder = new UnhandledWaitBuilder ()
+    /**
+     * Builder that fails any wait event that it sees.
+     */
+    private final UnhandledWaitBuilder unhandledWaitBuilder =
+	new UnhandledWaitBuilder ()
 	{
 	    protected void unhandled (String what)
 	    {
 		fail (what);
 	    }
 	};
-    private final SignalBuilder unhandledSignalBuilder = new SignalBuilder ()
+    /**
+     * Builder that fails any signal that it sees.
+     */
+    private final SignalBuilder unhandledSignalBuilder =
+	new SignalBuilder ()
 	{
 	    public void signal (Sig sig)
 	    {
@@ -64,9 +71,22 @@ public class TestWait
 	    }
 	};
 
+
+    private final int shortTimeout = 100;
+    private long startTime;
+    private long endTime;
+
     public void setUp ()
     {
 	Wait.signalEmpty ();
+	startTime = System.currentTimeMillis ();
+    }
+
+    public void tearDown ()
+    {
+	endTime = System.currentTimeMillis ();
+	assertTrue ("timeout",
+		     startTime + getTimeoutMilliseconds () > endTime);
     }
 
     public void testZeroTimeout ()
@@ -76,11 +96,10 @@ public class TestWait
 
     public void testShortTimeout ()
     {
-	long time = System.currentTimeMillis ();
 	Wait.waitAll (shortTimeout, unhandledWaitBuilder,
 		      unhandledSignalBuilder);
-	assertTrue ("some time passed",
-		    System.currentTimeMillis () > time + shortTimeout);
+	assertTrue ("more than shortTime passed",
+		    System.currentTimeMillis () > startTime + shortTimeout);
     }
     
     public void testSignals ()
@@ -97,7 +116,8 @@ public class TestWait
 	}
 	Signals signals = new Signals ();
 	Signal.tkill (Tid.get (), Sig.USR1);
-	Wait.waitAll (shortTimeout, unhandledWaitBuilder, signals);
+	Wait.waitAll (getTimeoutMilliseconds (),
+		      unhandledWaitBuilder, signals);
 	assertTrue ("signals.received", signals.received);
     }
 
@@ -143,5 +163,10 @@ public class TestWait
 	assertEquals ("pid", pid, waitOnChild.pid);
 	assertEquals ("signal", false, waitOnChild.signal);
 	assertEquals ("value", 1, waitOnChild.value);
+    }
+
+    public void testNoWaitBuilder ()
+    {
+	Wait.waitAll (0, null, unhandledSignalBuilder);
     }
 }
