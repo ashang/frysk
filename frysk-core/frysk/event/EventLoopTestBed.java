@@ -46,22 +46,27 @@ import frysk.sys.Tid;
 import frysk.junit.TestCase;
 
 /**
- * Test the EventLoop object.
- *
- * Creates two timer events, then uses the underlying OS to also
- * schedule a signal tiggered by an operating system timer.  Confirms
- * that all three are delivered.
+ * Framework for testing different event loops.
  */
 
-public class TestEventLoop
+abstract class EventLoopTestBed
     extends TestCase
 {
-    EventLoop eventLoop;
-    int eventTid;
+    private EventLoop eventLoop;
+    private int eventTid;
 
+    /**
+     * Return the event loop to be tested.
+     */
+    protected abstract EventLoop newEventLoop ();
+
+    /**
+     * Re-create the event loop ready for the next test.  Always
+     * include a CNTRL-C handler so that the tests can be aborted.
+     */
     public void setUp ()
     {
-	eventLoop = new PollEventLoop ();
+	eventLoop = newEventLoop ();
 	eventLoop.add (new SignalEvent (Sig.INT)
 	    {
 		public void execute ()
@@ -75,7 +80,7 @@ public class TestEventLoop
     /**
      * Test countdown timers, and signals.
      */
-    public void testEventLoop ()
+    public void testCountDownTimersAndSignals ()
     {
 	class Counters
 	{
@@ -88,8 +93,10 @@ public class TestEventLoop
 		Counters count = counters;
 		public void execute ()
 		{
-		    assertEquals (0, count.numberOfSignalEvents);
-		    assertEquals (0, count.numberOfTimerEvents);
+		    assertEquals ("count.numberOfSignalEvents",
+				  0, count.numberOfSignalEvents);
+		    assertEquals ("count.numberOfTimerEvents",
+				  0, count.numberOfTimerEvents);
 		    count.numberOfTimerEvents += 1;
 		}
 	    });
@@ -98,8 +105,10 @@ public class TestEventLoop
 		Counters count = counters;
 		public void execute ()
 		{
-		    assertEquals (0, count.numberOfSignalEvents);
-		    assertEquals (1, count.numberOfTimerEvents);
+		    assertEquals ("count.numberOfSignalEvents",
+				  0, count.numberOfSignalEvents);
+		    assertEquals ("count.numberOfTimerEvents",
+				  1, count.numberOfTimerEvents);
 		    count.numberOfSignalEvents += 1;
 		}
 	    });
@@ -108,8 +117,10 @@ public class TestEventLoop
 		Counters count = counters;
 		public void execute ()
 		{
-		    assertEquals (1, count.numberOfSignalEvents);
-		    assertEquals (1, count.numberOfTimerEvents);
+		    assertEquals ("count.numberOfSignalEvents",
+				  1, count.numberOfSignalEvents);
+		    assertEquals ("count.numberOfTimerEvents",
+				  1, count.numberOfTimerEvents);
 		    count.numberOfTimerEvents++;
 		    eventLoop.requestStop ();
 		}

@@ -1,3 +1,9 @@
+2007-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* TestEventLoop.java: Delete.  Mostly copied to ...
+	* EventLoopTestBed.java: ... here.  New file.
+	* TestPollEventLoop.java: New file.
+	
 2007-04-03  Andrew Cagney  <cagney@redhat.com>
 
 	* PollEventLoop.java: Replace frysk.sys.Poll.Observer with

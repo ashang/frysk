@@ -304,13 +304,14 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 	echo >> $@.tmp '  public static LinkedList get ()'
 	echo >> $@.tmp '  {'
 	echo >> $@.tmp '    LinkedList list = new LinkedList ();'
-	grep -v \
+	grep \
+		-e '\/Test[A-Z].*\.java$$' \
+		-e '\/Stress[A-Z].*\.java$$' \
+		$(srcdir)/files.list \
+	| grep -v \
 		-e 'TestLib' \
 		-e 'TestCase' \
-		$(srcdir)/files.list \
-	| grep \
-		-e 'Test[A-Z].*\.java$$' \
-		-e 'Stress[A-Z].*\.java$$' \
+		-e 'TestBed' \
 	| sed \
 		-e 's,/,.,g' \
 		-e 's,.java$$,.class,' \
