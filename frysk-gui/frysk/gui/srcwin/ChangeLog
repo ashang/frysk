@@ -4,6 +4,8 @@
 	resensitize widgets after completion. Addresses #4312.
 	(finishSourceWin): Set current SymTab object before showing window.
 	(SourceWindow): Fixed array initialization bug.
+	(updateShownStackFrame): Update SourceWindow titlebar for currently selected
+	process.
 	* CurrentStackView.java (appendRows): Added. Does row appening work for 
 	tree editing methods.
 	(addProc): Added. Will append a Proc and its rows to the stack view. 

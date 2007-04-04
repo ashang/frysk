@@ -1895,6 +1895,10 @@ public class SourceWindow
 												  this.swProc[current].getMainTask(),
 												  this.frames[current][0]);
 				this.symTab[current].setFrames(this.frames[current]);
+				
+			    setTitle("Frysk Source Window for: " 
+			             + this.swProc[current].getCommand() + " - process "
+			             + this.swProc[current].getPid());
 			  }
         	
             this.current = current;
@@ -2225,7 +2229,7 @@ public class SourceWindow
 
 	int selected;
 
-	if (path.getDepth() == 1)
+	if (path.getDepth() == 2)
 	  {
 		selected = path.getIndices()[0];
 
@@ -2244,11 +2248,10 @@ public class SourceWindow
 		if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
 		  this.stackUp.setSensitive(false);
 	  }
-
 	else
 	  {
 
-		selected = path.getIndices()[1];
+		selected = path.getIndices()[2];
 
 		// Can't move above top stack
 		if (selected == 0)
@@ -2287,7 +2290,7 @@ public class SourceWindow
 
     int selected;
 
-    if (path.getDepth() == 1)
+    if (path.getDepth() == 2)
       {
         selected = path.getIndices()[0];
 
@@ -2309,7 +2312,7 @@ public class SourceWindow
       }
     else
       {
-        selected = path.getIndices()[1];
+        selected = path.getIndices()[2];
 
         try
           {
