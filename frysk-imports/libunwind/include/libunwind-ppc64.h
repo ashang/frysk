@@ -48,9 +48,9 @@ extern "C" {
    relatively cheap and unwind-state copying is relatively rare, so we
    want to err on making it rather too big than too small.  
 
-   XXX: how big should this be for ppc64.  */
+   XXX: how big should this be for ppc64?  127 was too small.  */
 
-#define UNW_TDEP_CURSOR_LEN	127
+#define UNW_TDEP_CURSOR_LEN	255
 
 typedef uint64_t unw_word_t;
 typedef int64_t unw_sword_t;

@@ -109,6 +109,12 @@ handler (int sig)
         {
 	  char buf[512];
 
+	  if (stepno > 100)
+	    {
+	      panic ("Too many steps (%d)\n", stepno);
+	      break;
+	    }
+
 	  if ((ret = unw_get_proc_name (&c, buf, sizeof (buf), NULL)) < 0)
 	    panic ("unw_get_proc_name(%d) failed: ret=%d\n", stepno, ret);
 	  else

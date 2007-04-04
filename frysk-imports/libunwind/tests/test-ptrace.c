@@ -48,6 +48,7 @@ main (int argc, char **argv)
 #include <sys/wait.h>
 
 int nerrors;
+static const int nerrors_max = 100;
 int verbose;
 int print_names = 1;
 
@@ -178,6 +179,11 @@ do_backtrace (pid_t target_pid)
 		 (long) start_ip);
 	  break;
 	}
+      if (nerrors > nerrors_max)
+        {
+	  panic ("Too many errors (%d)!\n", nerrors);
+	  break;
+	}
     }
   while (ret > 0);
 
@@ -286,7 +292,7 @@ main (int argc, char **argv)
 
   ui = _UPT_create (target_pid);
 
-  while (1)
+  while (nerrors <= nerrors_max)
     {
       pid = wait4 (-1, &status,  0, 0);
       if (pid == -1)

@@ -47,6 +47,14 @@ flush_cache:
         bv      %r0(%rp)
         .procend
 
+#elif defined(__powerpc64__) || defined(__powerpc__)
+
+# warning FIX ME!!
+
+	.globl flush_cache
+flush_cache:
+	blr
+
 #else
 # error Need flush_cache code for this architecture.
 #endif

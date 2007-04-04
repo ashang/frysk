@@ -5,6 +5,26 @@
 	config/mkinstalldirs: Removed the autotools generated files.
 	* .cvsignore: `config' is no longer a repository stored directory.
 
+	* include/libunwind-ppc64.h (UNW_TDEP_CURSOR_LEN): Fixed for assert()s.
+	* include/tdep-ppc64/libunwind_i.h (mempool.h): Version update even for
+	the ppc64 architecture.
+	* src/Makefile.am (ppc64): Version forward-ported the ppc64 port.
+	* src/ppc64/Ginit.c (ppc64_local_addr_space_init): Removed VALIDATE
+	initialization as it is no longer a cross-architecture field.
+	* src/ppc64/Lcreate_addr_space.c, src/ppc64/Lget_proc_info.c,
+	src/ppc64/Lget_save_loc.c, src/ppc64/Lglobal.c, src/ppc64/Linit.c,
+	src/ppc64/Linit_local.c, src/ppc64/Linit_remote.c,
+	src/ppc64/Lis_signal_frame.c, src/ppc64/Lregs.c, src/ppc64/Lresume.c,
+	src/ppc64/Lstep.c: New files.
+	* src/ppc64/setcontext.S: Removed file as it had invalid unused content.
+	* src/ppc64/siglongjmp.S (_UI_siglongjmp_cont): New stub function.
+	* tests/flush-cache.S (flush_cache): New stub function for ppc64.
+	* tests/test-ptrace-stepper.c (lockup): New ppc64 and crossplatform
+	implementations.
+
+	* tests/Gtest-dyn1.c, tests/Gtest-resume-sig.c, tests/test-async-sig.c,
+	tests/test-ptrace.c: Fixed lockups on broken libunwind (as ppc64 is).
+
 2007-03-31  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.in (AM_MAINTAINER_MODE): Delete.

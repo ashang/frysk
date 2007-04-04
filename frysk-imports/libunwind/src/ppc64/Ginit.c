@@ -144,7 +144,6 @@ ppc64_local_addr_space_init (void)
   local_addr_space.acc.get_proc_name = get_static_proc_name;
   unw_flush_cache (&local_addr_space, 0, 0);
 
-  local_addr_space.acc.validate = 0;
   bzero(last_good_addr, sizeof(unw_word_t) * NLGA);
   lga_victim = 0;
 }

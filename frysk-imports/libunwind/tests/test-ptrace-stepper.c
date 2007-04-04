@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include <assert.h>
+/* For `UNW_TARGET_*'.  */
+#include <libunwind.h>
 
 volatile int lock;
 volatile pid_t pid;
@@ -67,8 +69,19 @@ void foo ()
     }
 }
 
+#if defined (UNW_TARGET_X86_64) || defined (UNW_TARGET_X86)
 asm (".cfi_startproc\n.globl lockup\n.type lockup,@function\nlockup: jmp lockup\n.cfi_endproc");
 extern void lockup (void);
+#elif defined (UNW_TARGET_PPC64)
+asm (".cfi_startproc\n.globl lockup\n.type lockup,@function\nlockup: b   lockup\n.cfi_endproc");
+extern void lockup (void);
+#else
+#warning "FIXME: Test may not work."
+static void lockup (void)
+{
+  for (;;);
+}
+#endif
 
 void prefoo ()
 {

@@ -29,5 +29,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 	.globl _UI_siglongjmp_cont
 
-/*_UI_siglongjmp_cont:
-	retq */
+# warning FIX ME!!
+
+_UI_siglongjmp_cont:
+	blr
