@@ -122,12 +122,17 @@ lib::elf::ElfPrpsinfo::fillMemRegion(jbyteArray buffer, jlong startAddress)
 	
 	prpsinfo->pr_sid = this->pr_sid;
 
-	JvGetStringUTFRegion (this->pr_fname, 0, this->pr_fname->length (), prpsinfo->pr_fname);
-	prpsinfo->pr_fname[this->pr_fname->length()] = '\0';
+	int name_length = JvGetStringUTFLength(this->pr_fname);
+	if (name_length > 15)
+	  name_length = 15;
+	JvGetStringUTFRegion (this->pr_fname, 0, name_length, prpsinfo->pr_fname);
+	prpsinfo->pr_fname[name_length] = '\0';
 
-	JvGetStringUTFRegion (this->pr_psargs, 0, this->pr_psargs->length (), prpsinfo->pr_psargs);
-	prpsinfo->pr_psargs[this->pr_psargs->length()] = '\0';
-
+	int args_length = JvGetStringUTFLength(this->pr_psargs);
+	if (args_length > 79)
+	  args_length = 79;
+	JvGetStringUTFRegion (this->pr_psargs, 0, args_length, prpsinfo->pr_psargs);
+	prpsinfo->pr_psargs[args_length] = '\0';
 	memcpy(bs + startAddress, prpsinfo, sizeof(struct elf_prpsinfo));
 	
 	return sizeof(struct elf_prpsinfo);

@@ -1,3 +1,8 @@
+2007-04-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/ElfPrpsinfo.cxx (fillMemRegion): Construct name
+	and args strings correctly (#4316).
+
 2007-03-24  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* ElfData.java (elf_data_create_native): Made decl private.
