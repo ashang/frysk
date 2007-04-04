@@ -358,7 +358,7 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.runState = new RunState();
     this.runState.setRunning();
-    this.swProc = new Proc[0];
+    this.swProc = new Proc[1];
     this.swProc[this.current] = trace.getTask().getProc();
     this.frames = new StackFrame[1][];
     this.symTab = new SymTab[1];
@@ -2213,66 +2213,66 @@ public class SourceWindow
    */
   private void doStackUp ()
   {
-    TreePath path = null;
-    try
-      {
-        path = this.stackView.getSelection().getSelectedRows()[0];
-      }
-    catch (ArrayIndexOutOfBoundsException ae)
-      {
-        return;
-      }
+	TreePath path = null;
+	try
+	  {
+		path = this.stackView.getSelection().getSelectedRows()[0];
+	  }
+	catch (ArrayIndexOutOfBoundsException ae)
+	  {
+		return;
+	  }
 
-    int selected;
+	int selected;
 
-    if (path.getDepth() == 1)
-      {
-        selected = path.getIndices()[0];
+	if (path.getDepth() == 1)
+	  {
+		selected = path.getIndices()[0];
 
-        // Can't move above top stack
-        if (selected == 0)
-          {
-            this.stackUp.setSensitive(false);
-            return;
-          }
+		// Can't move above top stack
+		if (selected == 0)
+		  {
+			this.stackUp.setSensitive(false);
+			return;
+		  }
 
-        this.stackView.getSelection().select(
-                                             this.stackView.getModel().getIter(
-                                                                               ""
-                                                                                   + (selected - 1)));
+		this.stackView.getSelection().select(
+											 this.stackView.getModel().getIter(
+																			   ""
+											+ (selected - 1)));
 
-        if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
-          this.stackUp.setSensitive(false);
-      }
+		if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
+		  this.stackUp.setSensitive(false);
+	  }
 
-    else
-      {
+	else
+	  {
 
-        selected = path.getIndices()[1];
+		selected = path.getIndices()[1];
 
-        // Can't move above top stack
-        if (selected == 0)
-          return;
+		// Can't move above top stack
+		if (selected == 0)
+		  return;
 
-        this.stackView.getSelection().select(
-                                             this.stackView.getModel().getIter(
-                                                                               ""
-                                                                                   + path.getIndices()[0]
-                                                                                   + ":"
-                                                                                   + (selected - 1)));
+		this.stackView.getSelection().select(
+											 this.stackView.getModel().getIter(
+																			   ""
+																				   + path.getIndices()[0]
+																				   + ":"
+																				   + (selected - 1)));
 
-        if (this.stackView.getModel().getIter(
-                                              "" + path.getIndices()[0] + ":"
-                                                  + (selected - 1)) == null)
-          this.stackUp.setSensitive(false);
-      }
+		if (this.stackView.getModel().getIter(
+											  "" + path.getIndices()[0] + ":"
+												  + (selected - 1)) == null)
+		  this.stackUp.setSensitive(false);
+	  }
 
-    this.stackDown.setSensitive(true);
+	this.stackDown.setSensitive(true);
   }
 
   /**
-   * Tells the debugger to move to the following stack frame
-   */
+     * Tells the debugger to move to the following stack frame
+     */
   private void doStackDown ()
   {
     TreePath path = null;
@@ -2509,8 +2509,8 @@ public class SourceWindow
 			  {
 				try
 				  {
-					this.dom[this.current] = DOMFactory.createDOM(
-					curr, this.swProc[this.current]);
+					this.dom[this.current] = DOMFactory.createDOM(curr, 
+					                                 this.swProc[this.current]);
 				  }
 
 				catch (NoDebugInfoException e)
