@@ -65,377 +65,419 @@ import frysk.proc.Task;
 import frysk.rt.StackFrame;
 
 public class CurrentStackView
-    extends TreeView
-    implements TreeSelectionListener
+	extends TreeView
+	implements TreeSelectionListener
 {
 
   public interface StackViewListener
   {
-    void currentStackChanged (StackFrame newFrame, int current);
+	void currentStackChanged (StackFrame newFrame, int current);
   }
 
-  private DataColumn[] stackColumns = new DataColumn[] { new DataColumnString(),
-                                                        new DataColumnObject() };
+  private DataColumn[] stackColumns = new DataColumn[] {
+														new DataColumnString(),
+														new DataColumnObject() };
 
   private static StackFrame currentFrame;
 
   private LinkedList observers;
-  
+
   private StackFrame head = null;
-  
+
   private TreeStore treeModel = new TreeStore(stackColumns);
-  
+
   private Object[] stackArray;
-  
+
   public CurrentStackView (StackFrame[][] frames)
   {
-    super();
-    this.setName("currentStackView");
-    this.getAccessible().setName("currentStackView_showsCurrentStack");
-    this.getAccessible().setDescription(
-                                        "Displays the current stack frame as well as the current stack");
+	super();
+	this.setName("currentStackView");
+	this.getAccessible().setName("currentStackView_showsCurrentStack");
+	this.getAccessible().setDescription(
+										"Displays the current stack frame as well as the current stack");
 
-    this.setHeadersVisible(false);
+	this.setHeadersVisible(false);
 
-    this.observers = new LinkedList();
-    this.stackArray = new Object[frames.length];
-    
-    buildTree(frames);
-    
-    this.setModel(treeModel);
+	this.observers = new LinkedList();
+	this.stackArray = new Object[frames.length];
 
-    TreeViewColumn column = new TreeViewColumn();
-    CellRenderer renderer = new CellRendererText();
-    column.packStart(renderer, true);
-    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                               stackColumns[0]);
-    this.appendColumn(column);
+	buildTree(frames);
 
-    this.getSelection().setMode(SelectionMode.SINGLE);
+	this.setModel(treeModel);
 
-    this.getSelection().addListener(this);
+	TreeViewColumn column = new TreeViewColumn();
+	CellRenderer renderer = new CellRendererText();
+	column.packStart(renderer, true);
+	column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+							   stackColumns[0]);
+	this.appendColumn(column);
+
+	this.getSelection().setMode(SelectionMode.SINGLE);
+
+	this.getSelection().addListener(this);
   }
-  
+
   public void refreshProc (StackFrame[] frames, int current)
   {
-    TreeIter iter = null;
-    TreePath path = ((TreeRowReference) this.stackArray[current]).getPath();
+	TreeIter iter = null;
+	TreePath path = ((TreeRowReference) this.stackArray[current]).getPath();
 
-    path.down();
-    TreeIter taskIter = treeModel.getIter(path);
+	path.down();
+	TreeIter taskIter = treeModel.getIter(path);
 
-    for (int j = frames.length - 1; j >= 0; j--)
-      {
-        StackFrame frame = frames[j];
+	Task task = frames[0].getTask();
+	Isa isa = null;
 
-        boolean hasInlinedCode = false;
-        String row = "";
-        Task task = frame.getTask();
-        Isa isa = null;
+	isa = task.getIsa();
+	if (isa == null
+		|| ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
+	  {
+		iter = treeModel.appendRow(null);
+		treeModel.setValue(iter, (DataColumnString) stackColumns[0],
+						   "Unknown file : Unknown function");
+		treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frames[0]);
+		return;
+	  }
 
-        isa = task.getIsa();
-        if (isa == null
-            || ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
-          {
-            iter = treeModel.appendRow(null);
-            row = "Unknown file : Unknown function";
-            treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-            treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
-            break;
-          }
-        else
-          {
-            int level = 0;
-            treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1],
-                               null);
-//                               frame);
-            path.down();
-            iter = taskIter.getFirstChild();
+	for (int j = frames.length - 1; j >= 0; j--)
+	  {
+		StackFrame frame = frames[j];
 
-            if (task.getTid() == task.getProc().getMainTask().getTid())
-              {
-                StackFrame out = frame.getOuter();
-                if (out != null)
-                  {
-                    currentFrame = out;
-                    this.head = out;
-                  }
-                else
-                  {
-                    currentFrame = frame;
-                    head = frame;
-                  }
-              }
+		boolean hasInlinedCode = false;
+		String row = "";
+		int level = 0;
+		treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1], null);
+		path.down();
+		iter = taskIter.getFirstChild();
 
-            while (frame != null)
-              {
-                hasInlinedCode = false;
+		if (task.getTid() == task.getProc().getMainTask().getTid())
+		  {
+			StackFrame out = frame.getOuter();
+			if (out != null)
+			  {
+				currentFrame = out;
+				this.head = out;
+			  }
+			else
+			  {
+				currentFrame = frame;
+				head = frame;
+			  }
+		  }
 
-                if (iter == null || ! treeModel.isIterValid(iter))
-                  iter = treeModel.appendRow(taskIter);
+		while (frame != null)
+		  {
+			hasInlinedCode = false;
 
-                // Check for inlined code
-                if (frame.getLines().length > 0
-                    && frame.getLines()[0].getDOMSource() != null)
-                  {
-                    DOMLine line = frame.getLines()[0].getDOMSource().getLine(
-                                                                              frame.getLines()[0].getLine());
-                    if (line != null && line.hasInlinedCode())
-                      {
-                        hasInlinedCode = true;
-                      }
-                  }
+			if (iter == null || ! treeModel.isIterValid(iter))
+			  iter = treeModel.appendRow(taskIter);
 
-                row = "# " + (++level) + " " + frame.toPrint(true);
+			// Check for inlined code
+			if (frame.getLines().length > 0
+				&& frame.getLines()[0].getDOMSource() != null)
+			  {
+				DOMLine line = frame.getLines()[0].getDOMSource().getLine(
+																		  frame.getLines()[0].getLine());
+				if (line != null && line.hasInlinedCode())
+				  {
+					hasInlinedCode = true;
+				  }
+			  }
 
-                if (hasInlinedCode)
-                  row += " (i)";
+			row = "# " + (++level) + " " + frame.toPrint(true);
 
-                treeModel.setValue(iter, (DataColumnString) stackColumns[0],
-                                   row);
-                treeModel.setValue(iter, (DataColumnObject) stackColumns[1],
-                                   frame);
+			if (hasInlinedCode)
+			  row += " (i)";
 
-                frame = frame.getOuter();
-                iter = iter.getNextIter();
-                row = "";
-              }
-          }
-        
-        taskIter = taskIter.getNextIter();
-        
-        while (iter != null && treeModel.isIterValid(iter))
-          {
-            treeModel.removeRow(iter);
-            iter = iter.getNextIter();
-          }
-      }
+			treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+			treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+
+			frame = frame.getOuter();
+			iter = iter.getNextIter();
+			row = "";
+		  }
+		
+		taskIter = taskIter.getNextIter();
+	  }
+
+	while (iter != null && treeModel.isIterValid(iter))
+	  {
+		treeModel.removeRow(iter);
+		iter = iter.getNextIter();
+	  }
   }
-  
+
   private void buildTree (StackFrame[][] frames)
   {
-    TreeIter iter = null;
-    TreeIter procIter = null;
-    TreeIter taskIter = null;
+	TreeIter iter = null;
+	TreeIter procIter = null;
+	TreeIter taskIter = null;
 
-    for (int i = 0; i < frames.length; i++)
-      {
-        procIter = treeModel.appendRow(null);
+	for (int i = 0; i < frames.length; i++)
+	  {
+		procIter = treeModel.appendRow(null);
+		Task t = frames[i][0].getTask();
 
-        Task t = frames[i][0].getTask();
-        this.stackArray[i] = new TreeRowReference(treeModel, procIter.getPath());
-        
-        treeModel.setValue(procIter, (DataColumnString) stackColumns[0],
-                           "process: " + t.getProc().getCommand() + " PID: "
-                               + t.getProc().getPid());
+		this.stackArray[i] = new TreeRowReference(treeModel, procIter.getPath());
 
-        treeModel.setValue(procIter, (DataColumnObject) stackColumns[1], new Integer(i));
-        
-        for (int j = frames[i].length - 1; j >= 0; j--)
-          {
-            StackFrame frame = frames[i][j];
+		treeModel.setValue(procIter, (DataColumnString) stackColumns[0],
+						   "process: " + t.getProc().getCommand() + " PID: "
+							   + t.getProc().getPid());
 
-            iter = null;
-            boolean hasInlinedCode = false;
-            String row = "";
-            Task task = frame.getTask();
-            Isa isa = null;
+		treeModel.setValue(procIter, (DataColumnObject) stackColumns[1],
+						   new Integer(i));
 
-            isa = task.getIsa();
-            if (isa == null
-                || ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
-              {
-                iter = treeModel.appendRow(null);
-                row = "Unknown file : Unknown function";
-                treeModel.setValue(iter, (DataColumnString) stackColumns[0],
-                                   row);
-                treeModel.setValue(iter, (DataColumnObject) stackColumns[1],
-                                   frame);
-                break;
-              }
-            else
-              {
-                int level = 0;
+		Task task = frames[i][0].getTask();
+		Isa isa = task.getIsa();
 
-                taskIter = treeModel.appendRow(procIter);
+		if (isa == null
+			|| ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
+		  {
+			iter = treeModel.appendRow(null);
+			treeModel.setValue(iter, (DataColumnString) stackColumns[0],
+							   "Unknown file : Unknown function");
+			treeModel.setValue(iter, (DataColumnObject) stackColumns[1],
+							   frames[i][0]);
+			break;
+		  }
 
-                treeModel.setValue(taskIter, (DataColumnString) stackColumns[0],
-                                   "thread ID: " + task.getTid());
-                treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1],
-                                   null);
-//                                   frame);
-                
-                if (i == 0 && task.getTid() == task.getProc().getMainTask().getTid())
-                  {
-                    StackFrame out = frame.getOuter();
-                    if (out != null)
-                      {
-                        currentFrame = out;
-                        this.head = out;
-                      }
-                    else
-                      {
-                        currentFrame = frame;
-                        head = frame;
-                      }
-                  }
+		for (int j = frames[i].length - 1; j >= 0; j--)
+		  {
+			StackFrame frame = frames[i][j];
+			task = frames[i][j].getTask();
 
-                while (frame != null)
-                  {
-                    hasInlinedCode = false;
+			iter = null;
+			taskIter = treeModel.appendRow(procIter);
 
-                    // Check for inlined code
-                    if (frame.getLines().length > 0
-                        && frame.getLines()[0].getDOMSource() != null)
-                      {
-                        DOMLine line = frame.getLines()[0].getDOMSource().getLine(
-                                                                                  frame.getLines()[0].getLine());
-                        if (line != null && line.hasInlinedCode())
-                          {
-                            hasInlinedCode = true;
-                          }
-                      }
+			treeModel.setValue(taskIter, (DataColumnString) stackColumns[0],
+							   "thread ID: " + task.getTid());
+			treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1],
+							   null);
 
-                    iter = treeModel.appendRow(taskIter);
-
-                    row = "# " + (++level) + " " + frame.toPrint(true);
-
-                    if (hasInlinedCode)
-                      row += " (i)";
-
-                    treeModel.setValue(iter,
-                                       (DataColumnString) stackColumns[0], row);
-                    treeModel.setValue(iter,
-                                       (DataColumnObject) stackColumns[1],
-                                       frame);
-
-                    frame = frame.getOuter();
-                    row = "";
-                  }
-              }
-          }
-      }
+			if (i == 0
+				&& task.getTid() == task.getProc().getMainTask().getTid())
+			  {
+				StackFrame out = frame.getOuter();
+				if (out != null)
+				  {
+					currentFrame = out;
+					this.head = out;
+				  }
+				else
+				  {
+					currentFrame = frame;
+					head = frame;
+				  }
+			  }
+			appendRows(frame, taskIter);
+		  }
+	  }
   }
-  
+
+  public void appendRows (StackFrame frame, TreeIter taskIter)
+  {
+	boolean hasInlinedCode;
+	TreeIter iter;
+	String row = "";
+	int level = 0;
+
+	while (frame != null)
+	  {
+		hasInlinedCode = false;
+
+		// Check for inlined code
+		if (frame.getLines().length > 0
+			&& frame.getLines()[0].getDOMSource() != null)
+		  {
+			DOMLine line = frame.getLines()[0].getDOMSource().getLine(
+																	  frame.getLines()[0].getLine());
+			if (line != null && line.hasInlinedCode())
+			  {
+				hasInlinedCode = true;
+			  }
+		  }
+
+		iter = treeModel.appendRow(taskIter);
+
+		row = "# " + (++level) + " " + frame.toPrint(true);
+
+		if (hasInlinedCode)
+		  row += " (i)";
+
+		treeModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+		treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+
+		frame = frame.getOuter();
+		row = "";
+	  }
+  }
+
+  public void addProc (StackFrame[] frames, int current)
+  {
+	int len = this.stackArray.length;
+	Object[] tempArray = new Object[len + 1];
+	System.arraycopy(this.stackArray, 0, tempArray, 0, len);
+	this.stackArray = tempArray;
+
+	TreeIter procIter = this.treeModel.appendRow(null);
+	TreeIter iter;
+	TreeIter taskIter;
+	Task t = frames[0].getTask();
+
+	this.stackArray[current] = new TreeRowReference(treeModel,
+													procIter.getPath());
+
+	treeModel.setValue(procIter, (DataColumnString) stackColumns[0],
+					   "process: " + t.getProc().getCommand() + " PID: "
+						   + t.getProc().getPid());
+
+	treeModel.setValue(procIter, (DataColumnObject) stackColumns[1],
+					   new Integer(current));
+
+	Task task = frames[0].getTask();
+	Isa isa = task.getIsa();
+	if (isa == null
+		|| ! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaX8664))
+	  {
+		iter = treeModel.appendRow(null);
+		treeModel.setValue(iter, (DataColumnString) stackColumns[0],
+						   "Unknown file : Unknown function");
+		treeModel.setValue(iter, (DataColumnObject) stackColumns[1], frames[0]);
+		return;
+	  }
+
+	for (int j = frames.length - 1; j >= 0; j--)
+	  {
+		StackFrame frame = frames[j];
+		iter = null;
+
+		taskIter = treeModel.appendRow(procIter);
+
+		treeModel.setValue(taskIter, (DataColumnString) stackColumns[0],
+						   "thread ID: " + task.getTid());
+		treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1], null);
+
+		appendRows(frame, taskIter);
+	  }
+  }
+
   /**
    * @return The currently selected stack frame
    */
   public static StackFrame getCurrentFrame ()
   {
-    return currentFrame;
+	return currentFrame;
   }
 
   public void addListener (StackViewListener listener)
   {
-    this.observers.add(listener);
+	this.observers.add(listener);
   }
 
   private void notifyObservers (StackFrame newStack, int current)
   {
-    Iterator iter = this.observers.iterator();
+	Iterator iter = this.observers.iterator();
 
-    while (iter.hasNext())
-      {
-        ((StackViewListener) iter.next()).currentStackChanged(newStack, current);
-      }
+	while (iter.hasNext())
+	  {
+		((StackViewListener) iter.next()).currentStackChanged(newStack, current);
+	  }
   }
-  
-  public StackFrame getFirstFrameSelection()
+
+  public StackFrame getFirstFrameSelection ()
   {
-    return this.head;
+	return this.head;
   }
-  
+
   /**
-   * Scan the available stack frames and find the frame which matches
-   * the parameter. Then highlight the row containing that frame.
+   * Scan the available stack frames and find the frame which matches the
+   * parameter. Then highlight the row containing that frame.
    * 
-   * @param frame   The StackFrame whose row to highlight. 
+   * @param frame The StackFrame whose row to highlight.
    */
   public void selectRow (StackFrame frame)
   {
-    TreeSelection selection = this.getSelection();
-    TreeIter first = this.treeModel.getFirstIter();
-    first = first.getFirstChild();
+	TreeSelection selection = this.getSelection();
+	TreeIter first = this.treeModel.getFirstIter();
+	first = first.getFirstChild();
 
-    while (first != null && this.treeModel.isIterValid(first))
-      {
-        TreeIter iter = first.getFirstChild();
-        while (iter != null && this.treeModel.isIterValid(iter))
-          {
-            StackFrame rowFrame = (StackFrame) this.treeModel.getValue(
-                                                                       iter,
-                                                                       (DataColumnObject) stackColumns[1]);
+	while (first != null && this.treeModel.isIterValid(first))
+	  {
+		TreeIter iter = first.getFirstChild();
+		while (iter != null && this.treeModel.isIterValid(iter))
+		  {
+			StackFrame rowFrame = (StackFrame) this.treeModel.getValue(
+																	   iter,
+																	   (DataColumnObject) stackColumns[1]);
 
-            if (frame.getCFA() == rowFrame.getCFA())
-              {
-                selection.select(iter);
-                return;
-              }
-            iter = iter.getNextIter();
-          }
-        first = first.getNextIter();
-      }
+			if (frame.getCFA() == rowFrame.getCFA())
+			  {
+				selection.select(iter);
+				return;
+			  }
+			iter = iter.getNextIter();
+		  }
+		first = first.getNextIter();
+	  }
   }
 
   public void selectionChangedEvent (TreeSelectionEvent arg0)
-	{
+  {
 
-		TreePath[] paths = this.getSelection().getSelectedRows();
-		if (paths.length == 0)
-			return;
+	TreePath[] paths = this.getSelection().getSelectedRows();
+	if (paths.length == 0)
+	  return;
 
-		StackFrame selected = null;
-		Integer current = null;
+	StackFrame selected = null;
+	Integer current = null;
 
-		Object o = treeModel.getValue(
-						treeModel.getIter(paths[0]),
-						(DataColumnObject) stackColumns[1]);
+	Object o = treeModel.getValue(treeModel.getIter(paths[0]),
+								  (DataColumnObject) stackColumns[1]);
 
-		if (o != null)
-			{
+	if (o != null)
+	  {
 
-				if (paths[0].up())
-					{
-						if (paths[0].up())
-							{
-								selected = (StackFrame) o;
+		if (paths[0].up())
+		  {
+			if (paths[0].up())
+			  {
+				selected = (StackFrame) o;
 
-								current = (Integer) treeModel.getValue(
-													treeModel.getIter(paths[0]),
-													(DataColumnObject) stackColumns[1]);
-							}
-						else
-							{
-								return;
-//								current = (Integer) treeModel.getValue(
-//													treeModel.getIter(paths[0]),
-//													(DataColumnObject) stackColumns[1]);
-//								paths[0].down();
-//								paths[0].down();
-//								selected = (StackFrame) treeModel.getValue(
-//														treeModel.getIter(paths[0]),
-//														(DataColumnObject) stackColumns[1]);
-							}
-
-					}
-				else
-					{
-						return;
-//						paths[0].down();
-//						paths[0].down();
-//						selected = (StackFrame) treeModel.getValue(
-//												treeModel.getIter(paths[0]),
-//												(DataColumnObject) stackColumns[1]);
-//						current = (Integer) o;
-					}
-
-				this.notifyObservers(selected,
-							current.intValue());
-				currentFrame = selected;
+				current = (Integer) treeModel.getValue(
+													   treeModel.getIter(paths[0]),
+													   (DataColumnObject) stackColumns[1]);
+			  }
+			else
+			  {
 				return;
-			}
+				// current = (Integer) treeModel.getValue(
+				// treeModel.getIter(paths[0]),
+				// (DataColumnObject) stackColumns[1]);
+				// paths[0].down();
+				// paths[0].down();
+				// selected = (StackFrame) treeModel.getValue(
+				// treeModel.getIter(paths[0]),
+				// (DataColumnObject) stackColumns[1]);
+			  }
+
+		  }
 		else
+		  {
 			return;
-	}
+			// paths[0].down();
+			// paths[0].down();
+			// selected = (StackFrame) treeModel.getValue(
+			// treeModel.getIter(paths[0]),
+			// (DataColumnObject) stackColumns[1]);
+			// current = (Integer) o;
+		  }
+
+		this.notifyObservers(selected, current.intValue());
+		currentFrame = selected;
+		return;
+	  }
+	else
+	  return;
+  }
 
 }

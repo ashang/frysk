@@ -571,7 +571,7 @@ public class SourceWindow
     StackFrame taskMatch = null;
 
     String currentMethodName = this.currentFrame.getSymbol().getDemangledName();
-
+    
     this.stackView.refreshProc(frames[this.current], this.current);
     this.stackView.expandAll();
     StackFrame newFrame = null;
@@ -671,41 +671,46 @@ public class SourceWindow
   {
 	desensitize();
 	this.stop.setSensitive(false);
+	this.SW_add = true;
   	SourceWindowFactory.startNewProc(exe);
   }
   
   protected void appendProc (Task task)
   {
-	  Proc proc = task.getProc();
-	  int oldSize = this.numProcs;
-	  ++this.numProcs;
-	  
-	  StackFrame[][] newFrames = new StackFrame[numProcs][];
-	  DOMFrysk[] newDom = new DOMFrysk[numProcs];
-	  SymTab[] newSymTab = new SymTab[numProcs];
-	  Proc[] newSwProc = new Proc[numProcs];
-	  
-	  for (int i = 0; i < oldSize; i++)
-		  {
-			  newFrames[i] = new StackFrame[this.frames[i].length];
-			  System.arraycopy(this.frames[i], 0, newFrames[i], 0, oldSize);
-		  }
-	  System.arraycopy(this.dom, 0, newDom, 0, oldSize);
-	  System.arraycopy(this.symTab, 0, newSymTab, 0, oldSize);
-	  System.arraycopy(this.swProc, 0, newSwProc, 0, oldSize);
-	  
-	  this.frames = newFrames;
-	  this.dom = newDom;
-	  this.symTab = newSymTab;
-	  this.swProc = newSwProc;
-	  
-	  this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
-	  this.swProc[oldSize] = proc;
+	this.SW_add = false;
+	Proc proc = task.getProc();
+	int oldSize = this.numProcs;
+	++this.numProcs;
+
+	StackFrame[][] newFrames = new StackFrame[numProcs][];
+	DOMFrysk[] newDom = new DOMFrysk[numProcs];
+	SymTab[] newSymTab = new SymTab[numProcs];
+	Proc[] newSwProc = new Proc[numProcs];
+
+	for (int i = 0; i < oldSize; i++)
+	  {
+		newFrames[i] = new StackFrame[this.frames[i].length];
+		System.arraycopy(this.frames[i], 0, newFrames[i], 0, oldSize);
+	  }
+	System.arraycopy(this.dom, 0, newDom, 0, oldSize);
+	System.arraycopy(this.symTab, 0, newSymTab, 0, oldSize);
+	System.arraycopy(this.swProc, 0, newSwProc, 0, oldSize);
+
+	this.frames = newFrames;
+	this.dom = newDom;
+	this.symTab = newSymTab;
+	this.swProc = newSwProc;
+
+	this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
+	this.swProc[oldSize] = proc;
+	this.stackView.addProc(this.frames[oldSize], oldSize);
+	
+	resensitize();
   }
 
-  /*****************************************************************************
-   * Getters and Setters
-   ****************************************************************************/
+  /***************************************************************************
+     * Getters and Setters
+     **************************************************************************/
 
   public Proc getSwProc ()
   {
@@ -1817,7 +1822,6 @@ public class SourceWindow
 
   private void updateShownStackFrame (StackFrame selected, int current)
   {
-
     int mode = this.viewPicker.getActive();
     
     DOMSource source = null;

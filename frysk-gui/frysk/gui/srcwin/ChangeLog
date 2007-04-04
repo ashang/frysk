@@ -1,3 +1,15 @@
+2007-04-04  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (appendProc): Add the new Proc to the stack view, 
+	resensitize widgets after completion. Addresses #4312.
+	* CurrentStackView.java (appendRows): Added. Does row appening work for 
+	tree editing methods.
+	(addProc): Added. Will append a Proc and its rows to the stack view. 
+	Addresses #4312.
+	(buildTree): Cleaned up; removed unnecessary code from inside inner loop,
+	now calls appendRows() for most of tree work.
+	(refreshProc): Also cleaned up; moved code outside of loop.
+
 2007-04-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java(createActions): More work on bz 4193; added option
