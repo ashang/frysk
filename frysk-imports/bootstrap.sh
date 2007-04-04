@@ -83,12 +83,15 @@ cd ..
 
 # Now run a separate aclocal/autoconf/automake for libunwind
 cd libunwind
+mkdir -p config
 echo "Running aclocal ... for libunwind"
 aclocal
-echo "Running autoconf ... for libunwind"
-autoconf -f
+echo "Running libtoolize ... for libunwind"
+libtoolize
 echo "Running autoheader ... for libunwind"
 autoheader
 echo "Running automake ... for libunwind"
-automake
+automake --add-missing
+echo "Running autoconf ... for libunwind"
+autoconf -f
 cd ..
