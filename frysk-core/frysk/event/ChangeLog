@@ -1,5 +1,10 @@
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoopTestBed.java (tearDown): New, drain any signals.
+	(testCountDownTimersAndSignals): Remove use of Itimer.real.
+	* TestWaitEventLoop.java: New.
+	* WaitEventLoop.java: New.
+
 	* TestEventLoop.java: Delete.  Mostly copied to ...
 	* EventLoopTestBed.java: ... here.  New file.
 	* TestPollEventLoop.java: New file.

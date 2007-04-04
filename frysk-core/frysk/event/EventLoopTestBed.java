@@ -39,7 +39,6 @@
 
 package frysk.event;
 
-import frysk.sys.Itimer;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Tid;
@@ -78,7 +77,16 @@ abstract class EventLoopTestBed
     }
 
     /**
-     * Test countdown timers, and signals.
+     * Reap any stray signals.
+     */
+    public void tearDown ()
+    {
+	Signal.drain (Sig.USR1);
+	Signal.drain (Sig.CHLD);
+    }
+
+    /**
+     * Test countdown timers alternating with signals.
      */
     public void testCountDownTimersAndSignals ()
     {
@@ -93,23 +101,24 @@ abstract class EventLoopTestBed
 		Counters count = counters;
 		public void execute ()
 		{
-		    assertEquals ("count.numberOfSignalEvents",
-				  0, count.numberOfSignalEvents);
-		    assertEquals ("count.numberOfTimerEvents",
-				  0, count.numberOfTimerEvents);
 		    count.numberOfTimerEvents += 1;
-		}
-	    });
-	eventLoop.add (new SignalEvent (Itimer.real (500))
-	    {
-		Counters count = counters;
-		public void execute ()
-		{
 		    assertEquals ("count.numberOfSignalEvents",
 				  0, count.numberOfSignalEvents);
 		    assertEquals ("count.numberOfTimerEvents",
 				  1, count.numberOfTimerEvents);
+		    Signal.tkill (eventTid, Sig.USR1);
+		}
+	    });
+	eventLoop.add (new SignalEvent (Sig.USR1)
+	    {
+		Counters count = counters;
+		public void execute ()
+		{
 		    count.numberOfSignalEvents += 1;
+		    assertEquals ("count.numberOfSignalEvents",
+				  1, count.numberOfSignalEvents);
+		    assertEquals ("count.numberOfTimerEvents",
+				  1, count.numberOfTimerEvents);
 		}
 	    });
 	eventLoop.add (new TimerEvent (750)
@@ -117,11 +126,11 @@ abstract class EventLoopTestBed
 		Counters count = counters;
 		public void execute ()
 		{
+		    count.numberOfTimerEvents++;
 		    assertEquals ("count.numberOfSignalEvents",
 				  1, count.numberOfSignalEvents);
 		    assertEquals ("count.numberOfTimerEvents",
-				  1, count.numberOfTimerEvents);
-		    count.numberOfTimerEvents++;
+				  2, count.numberOfTimerEvents);
 		    eventLoop.requestStop ();
 		}
 	    });
