@@ -63,12 +63,12 @@ public class LinuxPtraceTask
       logger.log(Level.FINE, "Begin fillMemory\n", this);
       ByteOrder byteOrder = getIsa().getByteOrder();
       // XXX: For writing at least, PTRACE must be used as /proc/mem
-      // cannot be written to.  For 64-bit address space. Here is only
-      // a workaround, and still not cover all 64-bit
-      // address. UBigInteger is needed here?
+      // cannot be written to.
+      // The length PtraceByteBuffer is given as an 'unsigned' long
+      // (-1 == 0xffffffffffffffff).
       if (getIsa().getWordSize() == 8)
           memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                                        0x7fffffffffffffffl);
+                                        -1L);
       // For 32-bit address space.
       else
           memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
