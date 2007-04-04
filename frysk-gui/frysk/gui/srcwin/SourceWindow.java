@@ -468,8 +468,8 @@ public class SourceWindow
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
-//	if (this.runState.getState() != RunState.RUNNING)
-//	  this.symTab.setFrames(this.frames[this.current]);
+    if (this.runState.getState() != RunState.RUNNING)
+	this.symTab[this.current].setFrames(this.frames[this.current]);
 
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -2510,8 +2510,7 @@ public class SourceWindow
 				try
 				  {
 					this.dom[this.current] = DOMFactory.createDOM(
-																  curr,
-																  this.swProc[this.current]);
+					curr, this.swProc[this.current]);
 				  }
 
 				catch (NoDebugInfoException e)
