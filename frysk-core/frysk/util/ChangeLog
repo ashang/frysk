@@ -1,3 +1,8 @@
+2007-04-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoredumpAction.java (fillENotePrpsinfo): Construct
+	command line inside builder, not manually (#4316).
+	
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (generateProcStackTrace): Remove System.exit().

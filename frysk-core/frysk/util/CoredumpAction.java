@@ -461,34 +461,27 @@ public class CoredumpAction
     class BuildCmdLine
         extends CmdLineBuilder
     {
-      byte[] args;
+      String prettyArgs = "";
 
       public void buildBuffer (byte[] buf)
       {
-        args = buf;
+
       }
 
       public void buildArgv (String[] argv)
       {
-        // Do nothing.
+	
+	for (int i=0; i<argv.length; i++)
+	  prettyArgs += (argv[i] + " ");
+	
+	// Trim end space
+	if (prettyArgs.length() > 0)
+	  prettyArgs = prettyArgs.substring(0,prettyArgs.length()-1);
       }
     }
     BuildCmdLine cmdLine = new BuildCmdLine();
     cmdLine.construct(pid);
-    // XXX: if the byte[3] = { 'l', 'o', 'o','p', 0}, then we will get one
-    // string with length of 5!
-    // However, the length is expected to be 4!
-    int tailZeroChars = 0;
-    int index = cmdLine.args.length;
-    for (; index >= 0; index--)
-      {
-        if (cmdLine.args[index - 1] != 0)
-          break;
-
-        tailZeroChars++;
-      }
-    prpsInfo.setPrPsargs(new String(cmdLine.args, 0, cmdLine.args.length
-                                                     - tailZeroChars).toString());
+    prpsInfo.setPrPsargs(cmdLine.prettyArgs);
     nhdrEntry.setNhdrDesc(ElfNhdrType.NT_PRPSINFO, prpsInfo);
     return 0;
   }
