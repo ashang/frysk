@@ -40,22 +40,17 @@
 
 package frysk.gui.sessions;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jdom.Element;
 
-import frysk.gui.Gui;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.datamodels.DataModelManager;
-import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
@@ -74,7 +69,7 @@ public class DebugProcess
     extends GuiObject
 {
 
-  String executablePath;
+  private String executablePath;
 
   ObservableLinkedList procs;
 
@@ -88,7 +83,7 @@ public class DebugProcess
 
   private String realName;
 
-  private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+//  private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
   /**
    * Create a new Debug Process. A session is comprised of n debug processes. A
@@ -123,12 +118,12 @@ public class DebugProcess
 
     realName = other.realName;
     alternativeDisplayName = other.alternativeDisplayName;
-    executablePath = other.executablePath;
+    setExecutablePath(other.getExecutablePath());
 
     procs = new ObservableLinkedList();
 
-    observers = new ObservableLinkedList(other.observers);
-    tagsets = new ObservableLinkedList(other.tagsets);
+    observers = new ObservableLinkedList(other.observers, true);
+    tagsets = new ObservableLinkedList(other.tagsets, true);
 
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
@@ -150,7 +145,7 @@ public class DebugProcess
 
     realName = name;
     alternativeDisplayName = altName;
-    this.executablePath = executablePath;
+    this.setExecutablePath(executablePath);
 
     procs = new ObservableLinkedList();
 
@@ -168,7 +163,7 @@ public class DebugProcess
     {
       public void update (Observable observable, Object object)
       {
-        addAllObservers((GuiProc) object);
+	addAllObservers((GuiProc) object);
       }
     });
     
@@ -186,7 +181,7 @@ public class DebugProcess
     {
       public void update (Observable observable, Object object)
       {
-        addObserverToAllProcs( (TaskObserverRoot) object);
+	addObserverToAllProcs( (TaskObserverRoot) object);
       }
     });
     
@@ -204,7 +199,7 @@ public class DebugProcess
     Iterator iterator = observers.iterator();
     while (iterator.hasNext())
       {
-        TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+	TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
         observer.apply(guiProc.getProc());
       }
   }
@@ -244,6 +239,9 @@ public class DebugProcess
    */
   public void addProc (GuiProc guiProc)
   {
+    if(this.procs.contains(guiProc)){
+      throw new IllegalArgumentException("You are trying to add a GuiProc which has already been added");
+    }
     // Add terminated observer to catch the procs exit
     guiProc.getProc().getMainTask().requestAddTerminatedObserver(
                                                                  new TaskObserver.Terminated()
@@ -373,6 +371,9 @@ public class DebugProcess
    */
   protected void addObserver (ObserverRoot observer)
   {
+    if(this.observers.contains(observer)){
+      throw new IllegalArgumentException("You are trying to add an observer which has already been added");
+    }
     observers.add(observer);    
   }
 
@@ -446,47 +447,14 @@ public class DebugProcess
   {
     realName = name;
   }
-
-  private void saveObservers(Element node){
-    Iterator iterator = observers.iterator();
-    while (iterator.hasNext())
-      {
-        GuiObject object = (GuiObject) iterator.next();
-        Element elementXML = new Element("element");
-        elementXML.setAttribute("name", object.getName());
-        node.addContent(elementXML);
-      }
-  }
-  
-  private void loadObservers(Element node){
-    List list = node.getChildren("element");
-    Iterator i = list.iterator();
-
-    while (i.hasNext())
-      {
-        Element elementXML = (Element) i.next();
-        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
-        if (observer == null)
-          {
-            errorLog.log(Level.SEVERE,
-                         new Date()
-                             + " DebugProcess.load(Element node): observer "
-                             + elementXML.getAttributeValue("name")
-                             + " not found in configuration \n");
-          }else{
-          observers.add(observer);
-        }
-      }
-  }
   
   public void save (Element node)
   {
     super.save(node);
 
-    node.setAttribute("executablePath", executablePath);
+    node.setAttribute("executablePath", getExecutablePath());
     
     Element observersXML = new Element("observers");
-    this.saveObservers(observersXML);
     node.addContent(observersXML);
 
     //save tagsets
@@ -508,12 +476,9 @@ public class DebugProcess
   {
     super.load(node);
 
-    executablePath = node.getAttribute("executablePath").getValue();
-    Element observersXML = node.getChild("observers");
-    this.loadObservers(observersXML);
-    
-    // load tagsets
+    setExecutablePath(node.getAttribute("executablePath").getValue());
 
+    // load tagsets
     Element tagSetsXML = node.getChild("tagsets");
     List tagList = tagSetsXML.getChildren("element");
     Iterator iterator = tagList.iterator();
@@ -529,5 +494,15 @@ public class DebugProcess
           }
 
       }
+  }
+
+  public void setExecutablePath (String executablePath)
+  {
+    this.executablePath = executablePath;
+  }
+
+  public String getExecutablePath ()
+  {
+    return executablePath;
   }
 }

@@ -1,3 +1,26 @@
+2007-04-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/Session.java: Deleted initDefaultObservers; now
+	done by CreateFryskSessionDruid.
+	Added addGuiProc().
+	Renamed add/removeProcess to add/removeDebugProcess.
+	Removed previousSession reference and getter.
+	* sessions/DebugProcess.java: Added setter and getter for 
+	executablePath.
+	Removed {save/load}Observers(); now down by session.
+	* gladedir/frysk_create_session_druid.glade: Added a constant
+	width to all the dialog buttons.
+	Added close button to be used for instant apply versions.
+	Removed the observers page and replaced it with the content of
+	ObserversDialog.
+	* druid/CreateFryskSessionDruid.java: Delete currentSession
+	reference in favor of using
+	SessionManager.theManager.getCurrentSession().
+	Removed booleans loadSession, and editSession.
+	Added class DruidMode setter and getter for druidMode, and used
+	that instead of booleans.
+	Removed all code wich added/remove observers from Session.
+
 2007-04-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* gladedir/frysk_filechooser.glade: New.

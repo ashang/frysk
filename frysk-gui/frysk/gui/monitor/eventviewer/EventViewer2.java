@@ -51,6 +51,7 @@ import org.gnu.gtk.Label;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.VScrollBar;
 import org.gnu.gtk.Viewport;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 
@@ -65,8 +66,6 @@ public class EventViewer2 extends Table {
   int y;
   int width;
   int height;
-  boolean sessionMounted = false;
-//  SizeGroup lablesSizeGroup;
   
   Table bigTable;
   int bigTableNumberOfRows; 
@@ -141,16 +140,15 @@ public class EventViewer2 extends Table {
             return false;
           }
         });
-	}
+  }
 
 	
     private void setSession(Session session){
+      this.unmountSession();
       this.currentSession = session;
-      if(!sessionMounted){
-        this.mountSession();  
-      }
+      this.mountSession();  
     }
-     
+    
     private void addProc(GuiProc guiProc){
       ProcBox procBox = new ProcBox(guiProc,this.hScrollBar.getAdjustment(), timeLineSelectionManager);
       this.procBoxes.add(procBox);
@@ -164,40 +162,92 @@ public class EventViewer2 extends Table {
       this.showAll();
     }
     
-    private void mountSession(){
+    private void unmountSession(){
 
+      if(currentSession == null){
+	return;
+      }
+      
+      this.currentSession.getProcesses().itemAdded.deleteObserver(debugProcessAddedObserver);
+      this.currentSession.getProcesses().itemRemoved.deleteObserver(debugProcessRemovedObserver);
+      
       Iterator i = this.currentSession.getProcesses().iterator();
       while (i.hasNext())
         {
           DebugProcess debugProcess = (DebugProcess) i.next();
-          
-          Iterator j = debugProcess.getProcs().iterator();
-          while (j.hasNext())
-            {
-              addProc((GuiProc) j.next());
-            }
+          removeDebugProcess(debugProcess);
+        }
 
-          debugProcess.getProcs().itemAdded.addObserver(new Observer()
-          {
-            public void update (Observable arg0, Object obj)
-            {
-              addProc((GuiProc) obj);
-            }
-          });
-
-          debugProcess.getProcs().itemRemoved.addObserver(new Observer()
-          {
-            public void update (Observable arg0, Object obj)
-            {
-              removeProc((GuiProc)obj);
-            }
-          });
-        this.sessionMounted = true;
+      
+      Iterator iterator = this.procBoxes.iterator();
+      while (iterator.hasNext())
+	{
+	  Widget widget = (Widget) iterator.next();
+	  this.remove(widget);
+	}
+      this.procBoxes.clear();
+      this.bigTableNumberOfRows = 0;
+      
+      this.timeLineSelectionManager = new TimeLineSelectionManager();
+//      timeLineSelectionManager.getSelectedTimeLines().itemAdded.addObserver(selectionObserver);
+//      timeLineSelectionManager.getSelectedTimeLines().itemRemoved.addObserver(selectionObserver);
+    }
+    
+    private void mountSession(){
+      this.currentSession.getProcesses().itemAdded.addObserver(debugProcessAddedObserver);
+      this.currentSession.getProcesses().itemRemoved.addObserver(debugProcessRemovedObserver);
+      
+      Iterator i = this.currentSession.getProcesses().iterator();
+      while (i.hasNext())
+        {
+          DebugProcess debugProcess = (DebugProcess) i.next();
+          addDebugProcess(debugProcess);          
       }
+      this.showAll();
     }
 
+    private void addDebugProcess(DebugProcess debugProcess){
+      Iterator j = debugProcess.getProcs().iterator();
+      while (j.hasNext())
+	{
+	  addProc((GuiProc) j.next());
+	}
+      debugProcess.getProcs().itemAdded.addObserver(procAddedObserver);
+      debugProcess.getProcs().itemRemoved.addObserver(procRemovedObserver);          
+    }
+    
+    private void removeDebugProcess(DebugProcess debugProcess){
+      
+      Iterator j = debugProcess.getProcs().iterator();
+      debugProcess.getProcs().itemAdded.deleteObserver(procAddedObserver);
+      debugProcess.getProcs().itemRemoved.deleteObserver(procRemovedObserver);
+      while (j.hasNext())
+	{
+	  removeProc((GuiProc) j.next());
+	}
+    }
+    
     protected void removeProc (GuiProc proc)
     {
+      ProcBox procBox = null;
+      Iterator iterator = this.procBoxes.iterator();
+      while (iterator.hasNext())
+        {
+          procBox = (ProcBox) iterator.next();
+          if(procBox.getGuiProc() == proc){
+            this.bigTable.remove(procBox);
+            
+            this.bigTableNumberOfRows--;
+            this.bigTable.resize(2,this.bigTableNumberOfRows);
+            
+            this.bigTable.showAll();
+            break;
+          }
+        }
+      this.procBoxes.remove(procBox);
+    }
+    
+    private void procIsDead(GuiProc proc){
       Iterator iterator = this.procBoxes.iterator();
       while (iterator.hasNext())
         {
@@ -207,4 +257,37 @@ public class EventViewer2 extends Table {
           }
         }
     }
+    
+    private Observer procAddedObserver = new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+	addProc((GuiProc) object);
+      }
+    };
+    
+    private Observer procRemovedObserver = new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+	procIsDead((GuiProc)object);
+      }
+    };
+    
+    private Observer debugProcessAddedObserver = new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+	addDebugProcess((DebugProcess) object);
+      }
+    };
+    
+    private Observer debugProcessRemovedObserver = new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+	removeDebugProcess((DebugProcess) object);
+      }
+    };
+    
 }

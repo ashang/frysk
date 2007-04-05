@@ -48,18 +48,18 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.TextView;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Util;
-import frysk.gui.dialogs.FryskDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.sessions.SessionManager;
 
-public class ObserversDialog extends FryskDialog {
+public class ObserversDialog extends Widget {
 	
     
     CheckedListView observersListView;
@@ -95,7 +95,7 @@ public class ObserversDialog extends FryskDialog {
 	private ObservableLinkedList scratchList;
 	
 	ObserversDialog(LibGlade glade){
-		super(glade.getWidget("observersDialog").getHandle());
+		super(glade.getWidget("observersWidget").getHandle());
 	
 		scratchOld = new LinkedList();
 		scratchNew = new LinkedList();
@@ -205,7 +205,7 @@ public class ObserversDialog extends FryskDialog {
 		});
 		
 		
-		this.okButton = (Button) glade.getWidget("observersOkButton");
+		this.okButton = (Button) glade.getWidget("sessionDruid_okEditSessionButton");
 		okButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
@@ -216,7 +216,7 @@ public class ObserversDialog extends FryskDialog {
 		});
 		
 		
-		this.cancelButton = (Button) glade.getWidget("observersCancelButton");
+		this.cancelButton = (Button) glade.getWidget("sessionDruid_cancelButton");
 		cancelButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
@@ -315,5 +315,10 @@ public class ObserversDialog extends FryskDialog {
       }
             
       return name;
+    }
+
+    public void present ()
+    {
+      WindowManager.theManager.createFryskSessionDruid.presentEditObserversMode(SessionManager.theManager.getCurrentSession());
     }
 }

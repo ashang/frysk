@@ -1,3 +1,29 @@
+2007-04-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/EventViewer2.java: Added unnountSession().
+	Added handling for removing/adding DebugProcesses.
+	* WindowManager.java: Changed call to ObserversDialog constructor to
+	use druid glade file instead.
+	* UniqueHashMap.java: Added a keyHash map.
+	Added handling to keep the list up to date when the name of an object
+	which belongs to it changes.
+	* ObserversDialog.java: Changed it to extend widget instead of
+	Dialog.
+	redirected okButton, and cancelButton to get ok and cancel buttons
+	from the druid glade file.
+	Added a present call which brings up the druid in EditObserver mode.
+	* ObservableLinkedList.java: Refactored copy constructor to take a
+	boolean telling it wether to copy the content or copy the only
+	the references.
+	Added a check for removing objects which do not belong to the list.
+	Removed commented out code.
+	* LiaisonPoint.java: Changed call to ObservabledLinkedList constructor
+	to match refactoring.
+	* actions/TaskActionPoint.java: Ditto.
+	* observers/ObserverRoot.java: Ditto.
+	* GuiObservable.java: Corrected an error message.
+	* CheckedListView.java: Added unwatchCheckedList().
+
 2007-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskCloneObserver.java:	Made constructors protected.

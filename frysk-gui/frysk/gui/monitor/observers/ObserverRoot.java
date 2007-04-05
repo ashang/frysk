@@ -120,7 +120,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
         protected ObserverRoot(ObserverRoot other) {
 			super(other);
 
-			this.actions      = new ObservableLinkedList(other.actions);
+			this.actions      = new ObservableLinkedList(other.actions, true);
 			this.info         = new String(other.info);
 			this.filterPoints = new ObservableLinkedList(); // do not copy..			
 			this.actionPoints = new ObservableLinkedList();	// ... because children will readd items

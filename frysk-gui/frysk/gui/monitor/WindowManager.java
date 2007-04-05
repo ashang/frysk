@@ -115,7 +115,6 @@ public class WindowManager
     this.summaryWindow = new SummaryWidget(glade);
     this.prefsWindow = new PreferencesWindow(glade);
     // this.programAddWindow = new ProgramAddWindow(glade);
-    this.observersDialog = new ObserversDialog(glade);
     this.editObserverDialog = new EditObserverDialog(glade);
     this.menuBar = new MenuBar(glade);
     // this.pickProcsDialog = new PickProcsDialog(null);
@@ -131,6 +130,7 @@ public class WindowManager
 
   public void initSessionDruidWindow (LibGlade session) throws IOException
   {
+    this.observersDialog = new ObserversDialog(session);
     this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
   }
   

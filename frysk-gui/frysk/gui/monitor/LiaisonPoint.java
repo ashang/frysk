@@ -80,7 +80,7 @@ public abstract class LiaisonPoint
   public LiaisonPoint (LiaisonPoint other)
   {
     super(other);
-    this.items = new ObservableLinkedList(other.items); // Do copy items
+    this.items = new ObservableLinkedList(other.items, true); // Do copy items
   }
 
   /**

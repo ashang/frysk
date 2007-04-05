@@ -1,3 +1,10 @@
+2007-04-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* .settings/org.eclipse.jdt.ui.prefs: Renamed the formatter to
+	FryskFormatting.
+	* .settings/org.eclipse.jdt.core.prefs: Changed indentation to 2,
+	and tab size to 8.
+
 2007-03-28  Nurdin Premji  <npremji@redhat.com>
 
 	* .settings: Changed formatter to only use tabs and set tab size to 8.
