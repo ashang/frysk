@@ -73,7 +73,7 @@ GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 GEN_GCJ_LDADD += -lstdc++
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+GEN_GCJ_LDADD += ./libunwind/src/.libs/libunwind-ptrace.a
 GEN_GCJ_LDADD += ./libunwind/src/.libs/libunwind-$(libunwind_cpu).a 
 GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
 

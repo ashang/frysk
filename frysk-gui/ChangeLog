@@ -1,3 +1,8 @@
+2007-04-05  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Update `libunwind-ptrace.a' path to the
+	libtool compliant one.
+
 2007-03-22  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Added libunwind-x86.h.
