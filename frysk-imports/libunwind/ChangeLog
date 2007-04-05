@@ -12,6 +12,10 @@
 	(target_pid, main): TARGET_PID made static, for target_pid_kill ().
 	(main): Register target_pid_kill () for atexit(3).
 
+	* tests/ia64-test-setjmp.c (doit): New forward declaration.
+	(doit_pointer): New function pointer variable initialized to DOIT.
+	(doit): Self-call made by an unoptimizable volatile indirect call.
+
 2007-04-04  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* acinclude.m4, config/compile, config/config.guess, config/config.sub,
