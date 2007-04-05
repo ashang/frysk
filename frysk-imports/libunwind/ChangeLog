@@ -1,3 +1,13 @@
+2007-04-05  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* src/hppa/getcontext.S, src/hppa/setcontext.S, src/hppa/siglongjmp.S,
+	src/ia64/Ginstall_cursor.S, src/ia64/Linstall_cursor.S,
+	src/ia64/dyn_info_list.S, src/ia64/getcontext.S, src/ia64/longjmp.S,
+	src/ia64/setjmp.S, src/ia64/siglongjmp.S, src/ia64/sigsetjmp.S,
+	src/ppc64/longjmp.S, src/ppc64/siglongjmp.S, src/x86/longjmp.S,
+	src/x86/siglongjmp.S, src/x86_64/longjmp.S, src/x86_64/setcontext.S,
+	src/x86_64/siglongjmp.S: Stack should be non-executable, for SELinux.
+
 2007-04-04  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* acinclude.m4, config/compile, config/config.guess, config/config.sub,
