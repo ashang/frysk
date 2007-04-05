@@ -76,7 +76,7 @@ public class TaskActionPoint
   {
     super(other);
 
-    this.applicableActions = new ObservableLinkedList(other.applicableActions, true);
+    this.applicableActions = new ObservableLinkedList(other.applicableActions);
   }
 
   public ObservableLinkedList getApplicableActions ()

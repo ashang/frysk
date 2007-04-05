@@ -126,7 +126,8 @@ public class CheckedListView extends ListView {
      */
     public void watchCheckedObjectsList(ObservableLinkedList checkedObjectsList){
       if(this.watchedCheckedObjectsList != null){
-        this.unwatchCheckedObjectsList();
+        this.watchedCheckedObjectsList.itemAdded.deleteObserver(itemAddedToCheckedObjectsListObserver);
+        this.watchedCheckedObjectsList.itemRemoved.deleteObserver(itemRemovedFromCheckedObjectsListObserver);
       }
       
       this.watchedCheckedObjectsList = checkedObjectsList;
@@ -142,14 +143,6 @@ public class CheckedListView extends ListView {
    
     }
     
-    public void unwatchCheckedObjectsList()
-    {
-      this.watchedCheckedObjectsList.clear();
-      this.watchedCheckedObjectsList.itemAdded.deleteObserver(itemAddedToCheckedObjectsListObserver);
-      this.watchedCheckedObjectsList.itemRemoved.deleteObserver(itemRemovedFromCheckedObjectsListObserver);
-      this.watchedCheckedObjectsList = null;
-    }
-
 	// Temporarily allow Listener injection until a more robust method
 	// can be implemented.
 	public void addToggleListener(CellRendererToggleListener listener)

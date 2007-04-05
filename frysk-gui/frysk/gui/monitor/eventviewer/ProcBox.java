@@ -131,6 +131,7 @@ public class ProcBox extends VBox
 
       public void addFailed (Object observable, Throwable w)
       {
+        System.err.print("Could not add " + this + " to " + observable);
         w.printStackTrace();
       }
 

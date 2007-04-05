@@ -52,7 +52,6 @@ import org.jdom.Element;
 
 import frysk.gui.Gui;
 import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -80,6 +79,7 @@ public class Session
     procs = new ObservableLinkedList();
     observers = new ObservableLinkedList();
     this.initListObservers();
+    this.initDefaultObservers();
   }
 
   /**
@@ -92,9 +92,10 @@ public class Session
   {
     super(other);
 
-    procs = new ObservableLinkedList(other.procs, true);
-    observers = new ObservableLinkedList(other.observers, false);
+    procs = new ObservableLinkedList(other.procs);
+    observers = new ObservableLinkedList(other.observers);
     this.initListObservers();
+    this.initDefaultObservers();
   }
 
   /**
@@ -110,9 +111,10 @@ public class Session
     procs = new ObservableLinkedList();
     observers = new ObservableLinkedList();
     this.initListObservers();
+    this.initDefaultObservers();
   }
 
-  public void addDefaultObservers(){
+  private void initDefaultObservers(){
     Iterator iterator = ObserverManager.theManager.getDefaultObservers().iterator();
     while (iterator.hasNext())
       {
@@ -127,7 +129,7 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	addAllObservers((DebugProcess) object);
+        addAllObservers((DebugProcess) object);
       }
     });
     
@@ -136,7 +138,7 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	removeAllObservers((DebugProcess) object);
+        removeAllObservers((DebugProcess) object);
       }
     });
     
@@ -145,8 +147,7 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	System.out.println("observers.itemAdded.update() " + object);
-	addObserverToAllProcs( (ObserverRoot) object);
+        addObserverToAllProcs( (ObserverRoot) object);
       }
     });
     
@@ -155,8 +156,7 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	System.out.println("observers.itemAdded.update() " + object);
-	removeObserverFromAllProcs((ObserverRoot) object);
+        removeObserverFromAllProcs((ObserverRoot) object);
       }
     });
   }
@@ -220,7 +220,7 @@ public class Session
    * 
    * @param process - The Debug Process that is to be added.
    */
-  public void addDebugProcess (final DebugProcess process)
+  public void addProcess (final DebugProcess process)
   {
     procs.add(process);
   }
@@ -230,53 +230,11 @@ public class Session
    * 
    * @param process - a reference to the debug process that is to be removed.
    */
-  public void removeDebugProcess (final DebugProcess process)
+  public void removeProcess (final DebugProcess process)
   {
-    procs.remove(process);
+    this.removeAllObservers(process);
   }
 
-  /**
-   * Searches to find if there is already a DebugProcess representing
-   * the executable of the given GuiProc. If so the proc is added to
-   * that DebugProcess. Otherwise a new DebugProcess is created
-   * and added to the session.
-   * @param guiProc
-   */
-  public void addGuiProc(GuiProc guiProc){
-    Iterator iterator = this.procs.iterator();
-    while (iterator.hasNext())
-      {
-	DebugProcess debugProcess = (DebugProcess) iterator.next();
-	if(debugProcess.getExecutablePath().equals(guiProc.getFullExecutablePath())){
-	  debugProcess.addProc(guiProc);
-	  return;
-	}
-      }
-    
-    //no DebugProcess was found create a new one
-    DebugProcess debugProcess = new DebugProcess(guiProc.getExecutableName(), guiProc.getExecutableName(), guiProc.getFullExecutablePath());
-    this.addDebugProcess(debugProcess);
-  }
-  
-  /**
-   * 
-   * @param proc
-   */
-  public void removeGuiProc(GuiProc proc){
-    Iterator iterator = this.procs.iterator();
-    while (iterator.hasNext())
-      {
-	DebugProcess debugProcess = (DebugProcess) iterator.next();
-	if(debugProcess.getExecutablePath().equals(proc.getFullExecutablePath())){
-	  debugProcess.removeProc(proc);
-	  return;
-	}
-      }
-    
-    //no DebugProcess was found
-    throw new IllegalArgumentException("The given proc ["+proc+"] is not a member of this session");
-  }
-  
   /*
    * (non-Javadoc)
    * 
@@ -321,8 +279,7 @@ public class Session
     while (i.hasNext())
       {
         Element elementXML = (Element) i.next();
-//        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
-        ObserverRoot observer = ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name"));
+        ObserverRoot observer = ObserverManager.theManager.getObserverCopy(ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name")));
         if (observer == null)
           {
             errorLog.log(Level.SEVERE,
@@ -331,7 +288,7 @@ public class Session
                              + elementXML.getAttributeValue("name")
                              + " not found in configuration \n");
           }else{
-          addObserver(observer);
+          observers.add(observer);
         }
       }
   }
@@ -344,6 +301,7 @@ public class Session
     procs.load(procsXML);
     
     final Element observersXML = node.getChild("observers");
+    observers.clear();
     this.loadObservers(observersXML);
   }
 
