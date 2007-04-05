@@ -46,8 +46,6 @@ import frysk.Config;
 import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
-import frysk.sys.Poll;
-import frysk.sys.PollBuilder;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.SigSet;
@@ -76,7 +74,7 @@ import java.util.logging.Logger;
 public class TestLib
     extends TestCase
 {
-  protected final static Logger logger = Logger.getLogger("frysk.proc");
+  protected final static Logger logger = Logger.getLogger("frysk");
 
   /**
    * Log the integer ARG squeezed between PREFIX and SUFFIX.
@@ -1583,27 +1581,14 @@ public class TestLib
     // Remove any stray files.
     deleteTmpFiles();
 
-    // Drain the set of pending signals. Note that the process of
-    // killing off the processes used in the test can generate
-    // extra signals - for instance a SIGUSR1 from a detached
-    // child that notices that it's parent just exited.
-    class SignalDrain
-        implements PollBuilder
-    {
-      SigSet pending = new SigSet();
-
-      public void signal (Sig sig)
-      {
-        pending.add(sig);
-      }
-
-      public void pollIn (int in)
-      {
-      }
-
-    }
-    SignalDrain signalDrain = new SignalDrain();
-    Poll.poll(signalDrain, 0);
+    // Drain all the pending signals. Note that the process of killing
+    // off the processes used in the test can generate extra signals -
+    // for instance a SIGUSR1 from a detached child that notices that
+    // it's parent just exited.
+    Signal.drain (Sig.CHLD);
+    Signal.drain (Sig.HUP);
+    Signal.drain (Sig.USR1);
+    Signal.drain (Sig.USR2);
 
     logger.log(Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
   }

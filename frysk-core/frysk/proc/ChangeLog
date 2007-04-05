@@ -1,5 +1,7 @@
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Use Signal.drain to drain pending signals.
+
 	* LinuxPtraceHost.java: Move WaitBuilder implementation to ...
 	* LinuxPtraceWaitBuilder.java: ... here.  New file.
 
