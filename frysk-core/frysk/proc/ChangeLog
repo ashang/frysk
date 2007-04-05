@@ -1,3 +1,8 @@
+2007-04-04  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Move WaitBuilder implementation to ...
+	* LinuxPtraceWaitBuilder.java: ... here.  New file.
+
 2007-04-04  Tim Moore  <timoore@redhat.com>
 
 	* LinuxPtraceTask.java (fillMemory): Allocate PtraceByteBuffer with
