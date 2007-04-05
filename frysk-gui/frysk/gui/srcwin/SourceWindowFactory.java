@@ -227,8 +227,8 @@ public class SourceWindowFactory
               
               runState.removeObserver(srcWin.getLockObserver(), p);
 
-//             srcWin.hideAll();
-				srcWin = null;
+             srcWin.hideAll();
+        		srcWin = null;
               
               if (WindowManager.theManager.sessionManagerDialog != null)
                 WindowManager.theManager.sessionManagerDialog.show();
