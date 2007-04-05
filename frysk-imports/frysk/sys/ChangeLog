@@ -1,3 +1,29 @@
+2007-04-05  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx: Rename to ...
+	* cni/PtraceServer.cxx: ... this.
+	* Ptrace.java: Rename to ...
+	* PtraceServer.java: ... this.
+	* SigSet.java: Rename to ...
+	* SignalSet.java: ... this.
+	* TestSigSet.java: Rename to ...
+	* TestSignalSet.java: ... this.
+	* cni/SigSet.hxx: Rename to ...
+	* cni/SignalSet.hxx: ... this.
+	* cni/SigSet.cxx: Rename to ...
+	* cni/SignalSet.cxx: ... this.
+	* TestPtraceByteBuffer.java: Update.
+	* TestLib.java: Update.
+	* RegisterSetBuffer.java: Update.
+	* cni/Wait.cxx: Update.
+	* cni/Poll.cxx: Update.
+	* cni/PtraceByteBuffer.cxx: Update.
+	* Wait.java: Update.
+	* TestSigSet.java: Update.
+	* TestCallPtrace.java: Update.
+	* StressMapRead.java: Update.
+	* Poll.java: Update.
+
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestWait.java (testNoWaitBuilder): Add.

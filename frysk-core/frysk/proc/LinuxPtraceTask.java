@@ -41,7 +41,7 @@
 package frysk.proc;
 
 import frysk.sys.Errno;
-import frysk.sys.Ptrace;
+import frysk.sys.PtraceServer;
 import frysk.sys.PtraceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -135,7 +135,7 @@ public class LinuxPtraceTask
     sig_send = sig;
     try
       {
-        Ptrace.cont(getTid(), sig);
+        PtraceServer.cont(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -150,7 +150,7 @@ public class LinuxPtraceTask
     sig_send = sig;
     try
       {
-        Ptrace.sysCall(getTid(), sig);
+        PtraceServer.sysCall(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -166,7 +166,7 @@ public class LinuxPtraceTask
     syscall_sigret = getIsa().isAtSyscallSigReturn(this);
     try
       {
-        Ptrace.singleStep(getTid(), sig);
+        PtraceServer.singleStep(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -187,12 +187,12 @@ public class LinuxPtraceTask
       {
         // XXX: Should be selecting the trace flags based on the
         // contents of .observers.
-        ptraceOptions |= Ptrace.optionTraceClone();
-        ptraceOptions |= Ptrace.optionTraceFork();
-        ptraceOptions |= Ptrace.optionTraceExit();
-        // ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
-        ptraceOptions |= Ptrace.optionTraceExec();
-        Ptrace.setOptions(getTid(), ptraceOptions);
+        ptraceOptions |= PtraceServer.optionTraceClone();
+        ptraceOptions |= PtraceServer.optionTraceFork();
+        ptraceOptions |= PtraceServer.optionTraceExit();
+        // ptraceOptions |= PtraceServer.optionTraceSysgood (); not set by default
+        ptraceOptions |= PtraceServer.optionTraceExec();
+        PtraceServer.setOptions(getTid(), ptraceOptions);
       }
     catch (Errno.Esrch e)
       {
@@ -205,7 +205,7 @@ public class LinuxPtraceTask
     logger.log(Level.FINE, "{0} sendAttach\n", this);
     try
       {
-        Ptrace.attach(getTid());
+        PtraceServer.attach(getTid());
 
         /*
          * XXX: Linux kernel has a 'feature' that if a process is already
@@ -236,7 +236,7 @@ public class LinuxPtraceTask
   protected void sendDetach (int sig)
   {
     logger.log(Level.FINE, "{0} sendDetach\n", this);
-    Ptrace.detach(getTid(), sig);
+    PtraceServer.detach(getTid(), sig);
   }
 
   protected Isa sendrecIsa ()
@@ -250,14 +250,14 @@ public class LinuxPtraceTask
   protected void startTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
-    ptraceOptions |= Ptrace.optionTraceSysgood();
+    ptraceOptions |= PtraceServer.optionTraceSysgood();
     this.sendSetOptions();
   }
 
   protected void stopTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
-    ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
+    ptraceOptions &= ~ (PtraceServer.optionTraceSysgood());
     this.sendSetOptions();
   }
 }

@@ -54,14 +54,14 @@ public final class Poll
     /**
      * Set of signals checked during poll.
      */
-    static protected SigSet sigSet = new SigSet ();
+    static protected SignalSet signalSet = new SignalSet ();
     private static native void addSignalHandler (Sig sig);
     /**
      * Add Sig to the set of signals checked during poll.
      */
     public static void add (Sig sig)
     {
-	sigSet.add (sig);
+	signalSet.add (sig);
 	addSignalHandler (sig);
     }
     /**
@@ -71,7 +71,7 @@ public final class Poll
     public static void empty ()
     {
 	// Note that this doesn't restore any signal handlers.
-	sigSet.empty ();
+	signalSet.empty ();
     }
 
     /**

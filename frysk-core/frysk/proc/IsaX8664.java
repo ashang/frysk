@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace;
+import frysk.sys.PtraceServer;
 import frysk.sys.PtraceByteBuffer;
 import frysk.sys.RegisterSetBuffer;
 
@@ -353,7 +353,7 @@ public class IsaX8664 implements Isa
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
     ByteBuffer[] bankBuffers = new ByteBuffer[3];
-    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS };
+    int[] bankNames =  { PtraceServer.REGS, PtraceServer.FPREGS };
     for (int i = 0; i < 2; i++) 
       {
 	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);

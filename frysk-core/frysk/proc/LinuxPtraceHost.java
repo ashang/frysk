@@ -42,7 +42,7 @@ package frysk.proc;
 
 import frysk.event.Event;
 import frysk.event.EventLoop;
-import frysk.sys.Ptrace;
+import frysk.sys.PtraceServer;
 import frysk.sys.Pid;
 import frysk.sys.Tid;
 import frysk.sys.proc.Stat;
@@ -254,7 +254,7 @@ public class LinuxPtraceHost
                                String[] args, TaskObserver.Attached attached)
   {
     logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
-    int pid = Ptrace.child(in, out, err, args);
+    int pid = PtraceServer.child(in, out, err, args);
     // See if the Host knows about this task.
     TaskId myTaskId = new TaskId(Tid.get());
     Task myTask = get(myTaskId);

@@ -45,7 +45,7 @@ import gnu.gcj.RawData;
  * Trace a process.
  */
 
-public class Ptrace
+public class PtraceServer
 {
   /**
    * Constants describing register sets that can be read and written by ptrace.

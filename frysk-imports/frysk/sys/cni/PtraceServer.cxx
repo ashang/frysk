@@ -55,8 +55,8 @@
 
 #include <gnu/gcj/RawData.h>
 
-#include "frysk/sys/Ptrace$PtraceRequest.h"
-#include "frysk/sys/Ptrace.h"
+#include "frysk/sys/PtraceServer$PtraceRequest.h"
+#include "frysk/sys/PtraceServer.h"
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
@@ -89,7 +89,7 @@ int cpid;
  */
 
 void
-frysk::sys::Ptrace$PtraceRequest::execute ()
+frysk::sys::PtraceServer$PtraceRequest::execute ()
 {
   errno = 0;
   result = ::ptrace ((enum __ptrace_request) op, pid,
@@ -99,37 +99,37 @@ frysk::sys::Ptrace$PtraceRequest::execute ()
 }
 
 void
-frysk::sys::Ptrace::attach (jint pid)
+frysk::sys::PtraceServer::attach (jint pid)
 {
   request(PTRACE_ATTACH, pid, NULL, 0);
 }
 
 void
-frysk::sys::Ptrace::detach (jint pid, jint sig)
+frysk::sys::PtraceServer::detach (jint pid, jint sig)
 {
   request(PTRACE_DETACH, pid, NULL, sig);
 } 
 
 void
-frysk::sys::Ptrace::singleStep (jint pid, jint sig)
+frysk::sys::PtraceServer::singleStep (jint pid, jint sig)
 {
   request(PTRACE_SINGLESTEP, pid, NULL, sig);
 } 
 
 void
-frysk::sys::Ptrace::cont (jint pid, jint sig)
+frysk::sys::PtraceServer::cont (jint pid, jint sig)
 {
   request(PTRACE_CONT, pid, NULL, sig);
 }
 
 void
-frysk::sys::Ptrace::sysCall (jint pid, jint sig)
+frysk::sys::PtraceServer::sysCall (jint pid, jint sig)
 {
   request(PTRACE_SYSCALL, pid, NULL, sig);
 }
 
 jlong
-frysk::sys::Ptrace::getEventMsg (jint pid)
+frysk::sys::PtraceServer::getEventMsg (jint pid)
 {
   /* Note: PTRACE_GETEVENTMSG ends up calling the function
      kernel/ptrace.c: ptrace_request() and that uses put_user to store
@@ -142,7 +142,7 @@ frysk::sys::Ptrace::getEventMsg (jint pid)
 }
 
 jint
-frysk::sys::Ptrace::registerSetSize(jint set)
+frysk::sys::PtraceServer::registerSetSize(jint set)
 {
   if (set < (jint)(sizeof(regSetParams) / sizeof(regSetParams[0])))
     return regSetParams[set].size;
@@ -151,45 +151,45 @@ frysk::sys::Ptrace::registerSetSize(jint set)
 }
 
 void
-frysk::sys::Ptrace::peekRegisters(jint registerSet, jint pid, jbyteArray data)
+frysk::sys::PtraceServer::peekRegisters(jint registerSet, jint pid, jbyteArray data)
 {
   request(regSetParams[registerSet].peekRequest, pid, 0, (long)elements(data));
 }
 
 void
-frysk::sys::Ptrace::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
+frysk::sys::PtraceServer::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
 {
   request(regSetParams[registerSet].pokeRequest, pid, 0, (long)elements(data));
 }
 
 void
-frysk::sys::Ptrace::setOptions (jint pid, jlong options)
+frysk::sys::PtraceServer::setOptions (jint pid, jlong options)
 {
   request(PTRACE_SETOPTIONS, pid, 0, options);
 }
 
 jlong
-frysk::sys::Ptrace::optionTraceClone ()
+frysk::sys::PtraceServer::optionTraceClone ()
 {
   return PTRACE_O_TRACECLONE;
 }
 jlong
-frysk::sys::Ptrace::optionTraceFork ()
+frysk::sys::PtraceServer::optionTraceFork ()
 {
   return PTRACE_O_TRACEFORK;
 }
 jlong
-frysk::sys::Ptrace::optionTraceExit ()
+frysk::sys::PtraceServer::optionTraceExit ()
 {
   return PTRACE_O_TRACEEXIT;
 }
 jlong
-frysk::sys::Ptrace::optionTraceSysgood ()
+frysk::sys::PtraceServer::optionTraceSysgood ()
 {
   return PTRACE_O_TRACESYSGOOD;
 }
 jlong
-frysk::sys::Ptrace::optionTraceExec ()
+frysk::sys::PtraceServer::optionTraceExec ()
 {
   return PTRACE_O_TRACEEXEC;
 }

@@ -45,7 +45,7 @@ import gnu.gcj.RawDataManaged;
  * A Signal Set, corresponds to <tt>sigset_t</tt>.
  */
 
-public final class SigSet
+public final class SignalSet
 {
     private RawDataManaged rawSet;
     private native RawDataManaged newRawSet ();
@@ -60,14 +60,14 @@ public final class SigSet
     /**
      * Create an empty signal set.
      */
-    public SigSet ()
+    public SignalSet ()
     {
 	rawSet = newRawSet ();
     }
     /**
      * Create a SigSet containing the signals in the array.
      */
-    public SigSet (Sig[] sigs)
+    public SignalSet (Sig[] sigs)
     {
 	this ();
 	for (int i = 0; i < sigs.length; i++) {
@@ -77,23 +77,23 @@ public final class SigSet
     /**
      * Empty the signal set; return this.
      */
-    public native SigSet empty ();
+    public native SignalSet empty ();
     /**
      * Fill the signal set; return this.
      */
-    public native SigSet fill ();
+    public native SignalSet fill ();
     /**
-     * Add sigNum to the SigSet; return this.
+     * Add sigNum to the SignalSet; return this.
      */
-    public native SigSet add (Sig sig);
+    public native SignalSet add (Sig sig);
     /**
-     * Remove Sig from the SigSet (the underlying code uses
+     * Remove Sig from the SignalSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
      * java); return this.
      */
-    public native SigSet remove (Sig sig);
+    public native SignalSet remove (Sig sig);
     /** 
-     * Does this SigSet contain sigNum (the underlying code uses
+     * Does this SignalSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
      * java.
      */
@@ -102,51 +102,51 @@ public final class SigSet
     /**
      * Get the pending set of signals; return this
      */
-    public native SigSet getPending ();
+    public native SignalSet getPending ();
     /**
-     * Suspend the thread, unblocking signals in SigSet; return this.
+     * Suspend the thread, unblocking signals in SignalSet; return this.
      */
-    public native SigSet suspend ();
+    public native SignalSet suspend ();
 
     /**
-     * Block this SigSet's signals; if oldSet is non-null, return the
+     * Block this SignalSet's signals; if oldSet is non-null, return the
      * previous signal set; return this.
      */
-    public native SigSet blockProcMask (SigSet oldSet);
+    public native SignalSet blockProcMask (SignalSet oldSet);
     /**
-     * Block this SigSet's signals; return this.
+     * Block this SignalSet's signals; return this.
      */
-    public SigSet blockProcMask ()
+    public SignalSet blockProcMask ()
     {
 	return blockProcMask (null);
     }
     /**
-     * Unblock this SigSet's signals; if oldSet is non-null, return
+     * Unblock this SignalSet's signals; if oldSet is non-null, return
      * the previous signal set; return this.
      */
-    public native SigSet unblockProcMask (SigSet oldSet);
+    public native SignalSet unblockProcMask (SignalSet oldSet);
     /**
-     * Unblock this SigSet's signals; return this.
+     * Unblock this SignalSet's signals; return this.
      */
-    public SigSet unblockProcMask ()
+    public SignalSet unblockProcMask ()
     {
 	return unblockProcMask (null);
     }
     /**
-     * Set the signal mask to this SigSet's signals; if oldSet is
+     * Set the signal mask to this SignalSet's signals; if oldSet is
      * non-null, return the previous signal set; return this.
      */
-    public native SigSet setProcMask (SigSet oldSet);
+    public native SignalSet setProcMask (SignalSet oldSet);
     /**
-     * Set the process signal mask to this SigSet's signals; return
+     * Set the process signal mask to this SignalSet's signals; return
      * this.
      */
-    public SigSet setProcMask ()
+    public SignalSet setProcMask ()
     {
 	return setProcMask (null);
     }
     /**
      * Get the current process signal mask; return this.
      */
-    public native SigSet getProcMask ();
+    public native SignalSet getProcMask ();
 }

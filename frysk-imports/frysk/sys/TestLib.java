@@ -68,7 +68,7 @@ public class TestLib
 	    return;
 	// Continue to the death.
 	try {
-	    Ptrace.cont (pid, Sig.KILL_);
+	    PtraceServer.cont (pid, Sig.KILL_);
 	} catch (Exception e) {
 	    // toss it.
 	}

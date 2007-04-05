@@ -56,11 +56,11 @@
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/Ptrace.h"
+#include "frysk/sys/PtraceServer.h"
 #include "frysk/sys/Wait.h"
 #include "frysk/sys/Sig.h"
-#include "frysk/sys/cni/SigSet.hxx"
-#include "frysk/sys/SigSet.h"
+#include "frysk/sys/cni/SignalSet.hxx"
+#include "frysk/sys/SignalSet.h"
 #include "frysk/sys/WaitBuilder.h"
 #include "frysk/sys/SignalBuilder.h"
 
@@ -155,7 +155,7 @@ processStatus (int pid, int status,
     case PTRACE_EVENT_CLONE:
       try {
 	// The event message contains the thread-ID of the new clone.
-	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
+	jint clone = (jint) frysk::sys::PtraceServer::getEventMsg (pid);
 	builder->cloneEvent (pid, clone);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
@@ -168,7 +168,7 @@ processStatus (int pid, int status,
       try {
 	// The event message contains the process-ID of the new
 	// process.
-	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
+	jlong fork = frysk::sys::PtraceServer::getEventMsg (pid);
 	builder->forkEvent (pid, fork);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
@@ -181,7 +181,7 @@ processStatus (int pid, int status,
       try {
 	// The event message contains the pending wait(2) status; need
 	// to decode that.
-	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
+	int exitStatus = frysk::sys::PtraceServer::getEventMsg (pid);
 	if (WIFEXITED (exitStatus)) {
 	  builder->exitEvent (pid, false, WEXITSTATUS (exitStatus),
 			       WCOREDUMP (exitStatus));
@@ -377,10 +377,10 @@ frysk::sys::Wait::signalEmpty ()
 {
   // Static CNI methods do not trigger a class to be initialized, work
   // around it.
-  if (sigSet == NULL)
-    sigSet = new frysk::sys::SigSet ();
+  if (signalSet == NULL)
+    signalSet = new frysk::sys::SignalSet ();
   // Note that this doesn't restore any signal handlers.
-  sigSet->empty ();
+  signalSet->empty ();
   // Disable and mask SIGALRM
   signal (SIGALRM, SIG_IGN);
   sigset_t mask;
@@ -399,7 +399,7 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
   logFinest (&frysk::sys::Wait::class$, logger,
 	     "adding %d (%s)\n", signum, strsignal (signum));
   // Add it to the signal set.
-  sigSet->add (sig);
+  signalSet->add (sig);
   // Make certain that the signal is masked (this is ment to be
   // process wide).  XXX: In a multi-threaded environment this call is
   // not well defined (although it does help reduce the number of
@@ -508,7 +508,7 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
 
   // Get the signal mask of all allowed signals; clear the set of
   // received signals.  Need to include SIGALRM.
-  wait_jmpbuf.mask = *getRawSet (sigSet);
+  wait_jmpbuf.mask = *getRawSet (signalSet);
   sigaddset (&wait_jmpbuf.mask, SIGALRM);
   sigemptyset (&wait_jmpbuf.signals);
  

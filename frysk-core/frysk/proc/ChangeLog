@@ -1,3 +1,12 @@
+2007-04-05  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java: Replace Ptrace with PtraceServer and/or
+	SigSet with SignalSet.
+	* LinuxPtraceHost.java: Ditto.
+	* IsaX8664.java: Ditto.
+	* IsaIA32.java: Ditto.
+	* TestLib.java: Ditto.
+
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Manager.java (newEventLoop): Add, use.

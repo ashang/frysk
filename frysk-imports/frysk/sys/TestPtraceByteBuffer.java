@@ -51,7 +51,7 @@ public class TestPtraceByteBuffer extends TestCase
     protected void setUp()
     {
 	pid = TestLib.forkIt();
-	Ptrace.attach(pid);
+	PtraceServer.attach(pid);
 	TestLib.waitIt(pid);
     }
 

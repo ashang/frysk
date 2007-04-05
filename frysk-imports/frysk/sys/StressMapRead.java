@@ -93,7 +93,7 @@ public class StressMapRead
 	if (brokenXXX(3043))
 	    return;
 	pid = TestLib.forkIt ();
-	Ptrace.attach (pid);
+	PtraceServer.attach (pid);
 	TestLib.waitIt (pid);
 
 	PtraceByteBuffer buffer = new PtraceByteBuffer(pid,

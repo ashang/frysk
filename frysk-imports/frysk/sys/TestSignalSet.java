@@ -45,7 +45,7 @@ import frysk.junit.TestCase;
  * Test manipulation of a signal set.
  */
 
-public class TestSigSet
+public class TestSignalSet
     extends TestCase
 {
     /**
@@ -53,7 +53,7 @@ public class TestSigSet
      */
     public void testFillEmpty ()
     {
-	SigSet set = new SigSet ();
+	SignalSet set = new SignalSet ();
 	assertFalse ("set contains Sig.HUP", set.contains (Sig.HUP));
 	set.fill ();
 	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
@@ -67,7 +67,7 @@ public class TestSigSet
      */
     public void testAddRemove ()
     {
-	SigSet set = new SigSet ();
+	SignalSet set = new SignalSet ();
 	assertFalse ("Sig.HUP is member", set.contains (Sig.HUP));
 	assertFalse ("Sig.USR1 is member", set.contains (Sig.USR1));
 
@@ -85,11 +85,11 @@ public class TestSigSet
     }
 
     /**
-     * Check creating a SigSet from an array.
+     * Check creating a SignalSet from an array.
      */
     public void testList ()
     {
-	SigSet set = new SigSet (new Sig[] { Sig.HUP, Sig.USR1 });
+	SignalSet set = new SignalSet (new Sig[] { Sig.HUP, Sig.USR1 });
 	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
 	assertTrue ("set contains Sig.USR1", set.contains (Sig.USR1));
 	assertFalse ("set contains Sig.USR2", set.contains (Sig.USR2));
@@ -98,9 +98,9 @@ public class TestSigSet
 
     public void testProcMask ()
     {
-	SigSet set = new SigSet (new Sig[] { Sig.WINCH });
-	SigSet old = new SigSet ();
-	SigSet pending = new SigSet ();
+	SignalSet set = new SignalSet (new Sig[] { Sig.WINCH });
+	SignalSet old = new SignalSet ();
+	SignalSet pending = new SignalSet ();
 	set.setProcMask (old);
 
 	// Check that a masked signal becomes pending

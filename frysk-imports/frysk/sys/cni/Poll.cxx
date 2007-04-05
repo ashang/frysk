@@ -58,8 +58,8 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
 #include "frysk/sys/Sig.h"
-#include "frysk/sys/SigSet.h"
-#include "frysk/sys/cni/SigSet.hxx"
+#include "frysk/sys/SignalSet.h"
+#include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/Poll$Fds.h"
 #include "frysk/sys/PollBuilder.h"
 
@@ -168,7 +168,7 @@ frysk::sys::Poll::poll (frysk::sys::PollBuilder* pollObserver,
 
   sigset_t signals;
   sigemptyset (&signals);
-  sigset_t mask = *getRawSet (sigSet);
+  sigset_t mask = *getRawSet (signalSet);
   int signum = sigsetjmp (poll_jmpbuf.buf, 1);
   if (signum > 0) {
     // Remove the signal from the local copy of the signal-mask set,

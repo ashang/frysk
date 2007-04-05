@@ -73,10 +73,10 @@ public class RegisterSetBuffer
 
   public RegisterSetBuffer(int bank, int  pid) 
   {
-    super(0, Ptrace.registerSetSize(bank));
+    super(0, PtraceServer.registerSetSize(bank));
     this.bank = bank;
     this.pid = pid;
-    int bankSize = maxOffset = Ptrace.registerSetSize(bank);
+    int bankSize = maxOffset = PtraceServer.registerSetSize(bank);
   
     if (bankSize == 0) 
       {
@@ -88,7 +88,7 @@ public class RegisterSetBuffer
   
   void refresh() 
   {
-    Ptrace.peekRegisters(bank, pid, bankBytes);
+    PtraceServer.peekRegisters(bank, pid, bankBytes);
   }
   
   protected int peek (long index) 
@@ -101,7 +101,7 @@ public class RegisterSetBuffer
   {
     refresh();
     bankBytes[(int)index] = (byte)value;
-    Ptrace.pokeRegisters(bank, pid, bankBytes);
+    PtraceServer.pokeRegisters(bank, pid, bankBytes);
   }
   
   protected long peek (long index, byte[] bytes, long off, long len) 

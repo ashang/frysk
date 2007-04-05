@@ -65,7 +65,7 @@ public final class Wait
     /**
      * Set of signals checked during poll.
      */
-    static protected SigSet sigSet;
+    static protected SignalSet signalSet;
     /**
      * Add Sig to the set of signals checked during poll.
      */

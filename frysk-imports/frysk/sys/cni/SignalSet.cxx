@@ -43,35 +43,35 @@
 #include <gcj/cni.h>
 #include <gnu/gcj/RawDataManaged.h>
 
-#include "frysk/sys/SigSet.h"
+#include "frysk/sys/SignalSet.h"
 #include "frysk/sys/Sig.h"
-#include "frysk/sys/cni/SigSet.hxx"
+#include "frysk/sys/cni/SignalSet.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 
 sigset_t *
-getRawSet (frysk::sys::SigSet* set)
+getRawSet (frysk::sys::SignalSet* set)
 {
   return (sigset_t*) set->getRawSet ();
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::fill ()
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::fill ()
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigfillset (sigset);
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::remove (frysk::sys::Sig* sig)
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::remove (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigdelset (sigset, sig->hashCode ());
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::add (frysk::sys::Sig* sig)
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::add (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigaddset (sigset, sig->hashCode ());
@@ -79,30 +79,30 @@ frysk::sys::SigSet::add (frysk::sys::Sig* sig)
 }
 
 jboolean
-frysk::sys::SigSet::contains (frysk::sys::Sig* sig)
+frysk::sys::SignalSet::contains (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   return ::sigismember (sigset, sig->hashCode ());
 }
 
 gnu::gcj::RawDataManaged *
-frysk::sys::SigSet::newRawSet ()
+frysk::sys::SignalSet::newRawSet ()
 {
   sigset_t* sigset = (sigset_t*) JvAllocBytes (sizeof (sigset_t));
   ::sigemptyset (sigset);
   return (gnu::gcj::RawDataManaged*) sigset;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::empty ()
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::empty ()
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   ::sigemptyset (sigset);
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::getPending ()
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::getPending ()
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   errno = 0;
@@ -111,8 +111,8 @@ frysk::sys::SigSet::getPending ()
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::suspend()
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::suspend()
 {
   sigset_t *sigset = (sigset_t*) rawSet;
   errno = 0;
@@ -124,8 +124,8 @@ frysk::sys::SigSet::suspend()
 
 
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::blockProcMask (frysk::sys::SigSet* oset)
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::blockProcMask (frysk::sys::SignalSet* oset)
 {
   sigset_t *set = (sigset_t*) rawSet;
   sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->rawSet);
@@ -135,8 +135,8 @@ frysk::sys::SigSet::blockProcMask (frysk::sys::SigSet* oset)
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::unblockProcMask (frysk::sys::SigSet* oset)
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::unblockProcMask (frysk::sys::SignalSet* oset)
 {
   sigset_t *set = (sigset_t*) rawSet;
   sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->rawSet);
@@ -146,8 +146,8 @@ frysk::sys::SigSet::unblockProcMask (frysk::sys::SigSet* oset)
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::setProcMask (frysk::sys::SigSet* oset)
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::setProcMask (frysk::sys::SignalSet* oset)
 {
   sigset_t *set = (sigset_t*) rawSet;
   sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->rawSet);
@@ -157,8 +157,8 @@ frysk::sys::SigSet::setProcMask (frysk::sys::SigSet* oset)
   return this;
 }
 
-frysk::sys::SigSet*
-frysk::sys::SigSet::getProcMask ()
+frysk::sys::SignalSet*
+frysk::sys::SignalSet::getProcMask ()
 {
   sigset_t *set = (sigset_t*) rawSet;
   errno = 0;
