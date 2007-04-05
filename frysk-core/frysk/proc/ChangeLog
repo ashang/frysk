@@ -1,5 +1,11 @@
 2007-04-05  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java: Use Ptrace.optionTraceSysgood,
+	optionTraceClone, optionTraceFork, optionTraceExit,
+	optionTraceExec.
+	* IsaIA32.java: Use Ptrace.REGS, FPREGS, and FPXREGS.
+	* IsaX8664.java: Ditto.
+
 	* LinuxPtraceTask.java: Replace Ptrace with PtraceServer and/or
 	SigSet with SignalSet.
 	* LinuxPtraceHost.java: Ditto.

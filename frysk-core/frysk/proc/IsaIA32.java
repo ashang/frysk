@@ -46,7 +46,7 @@ import inua.eio.ByteOrder;
 import lib.elf.ElfEMachine;
 import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
-import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace;
 import frysk.sys.PtraceByteBuffer;
 
 import frysk.sys.RegisterSetBuffer;
@@ -77,7 +77,7 @@ public class IsaIA32 implements Isa
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
     bankBuffers = new ByteBuffer[4];
-    int[] bankNames =  { PtraceServer.REGS, PtraceServer.FPREGS, PtraceServer.FPXREGS };
+    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS, Ptrace.FPXREGS };
     for (int i = 0; i < 3; i++) 
       {
 	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);

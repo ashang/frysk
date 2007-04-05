@@ -42,6 +42,7 @@ package frysk.proc;
 
 import frysk.sys.Errno;
 import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace;
 import frysk.sys.PtraceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -187,11 +188,11 @@ public class LinuxPtraceTask
       {
         // XXX: Should be selecting the trace flags based on the
         // contents of .observers.
-        ptraceOptions |= PtraceServer.optionTraceClone();
-        ptraceOptions |= PtraceServer.optionTraceFork();
-        ptraceOptions |= PtraceServer.optionTraceExit();
-        // ptraceOptions |= PtraceServer.optionTraceSysgood (); not set by default
-        ptraceOptions |= PtraceServer.optionTraceExec();
+        ptraceOptions |= Ptrace.optionTraceClone();
+        ptraceOptions |= Ptrace.optionTraceFork();
+        ptraceOptions |= Ptrace.optionTraceExit();
+        // ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
+        ptraceOptions |= Ptrace.optionTraceExec();
         PtraceServer.setOptions(getTid(), ptraceOptions);
       }
     catch (Errno.Esrch e)
@@ -250,14 +251,14 @@ public class LinuxPtraceTask
   protected void startTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
-    ptraceOptions |= PtraceServer.optionTraceSysgood();
+    ptraceOptions |= Ptrace.optionTraceSysgood();
     this.sendSetOptions();
   }
 
   protected void stopTracingSyscalls ()
   {
     logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
-    ptraceOptions &= ~ (PtraceServer.optionTraceSysgood());
+    ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
     this.sendSetOptions();
   }
 }

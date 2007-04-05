@@ -48,13 +48,6 @@ import gnu.gcj.RawData;
 public class PtraceServer
 {
   /**
-   * Constants describing register sets that can be read and written by ptrace.
-   */
-  public static final int REGS = 0;
-  public static final int FPREGS = 1;
-  public static final int FPXREGS = 2;
-
-  /**
    * Attach to the process specified by PID.
    */
   public static native void attach (int pid);
@@ -103,14 +96,7 @@ public class PtraceServer
     {
 	ptrace.request (pokeRequest, pid, paddr, data);
     }
-  /**
-   * Return the size (in bytes) of a register set.
-   *
-   * @param set the register set
-   * @returns required size of buffer
-   */
-  public static native int registerSetSize(int set);
-  
+
   /**
    * Read the entire contents of a register set.
    *
@@ -136,27 +122,6 @@ public class PtraceServer
    * values returned by the option* methods below.
    */
   public static native void setOptions (int pid, long options);
-  /**
-   * Return the bitmask for enabling clone tracing.
-   */
-  public static native long optionTraceClone ();
-  /**
-   * Return the bitmask for enabling fork tracing.
-   */
-  public static native long optionTraceFork ();
-  /**
-   * Return the bitmask for enabling exit tracing.
-   */
-  public static native long optionTraceExit ();
-  /**
-   * Return the bitmask for enabling SYSGOOD(?} tracing.
-   */ 
-  public static native long optionTraceSysgood ();
-  /**
-   * Return the bitmask for enabling exec tracing.
-   */
-  public static native long optionTraceExec ();
-	
 	
     /**
      * Class to encapsulate a PTRACE requests sent to the server.

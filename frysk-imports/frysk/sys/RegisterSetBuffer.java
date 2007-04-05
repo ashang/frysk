@@ -73,10 +73,10 @@ public class RegisterSetBuffer
 
   public RegisterSetBuffer(int bank, int  pid) 
   {
-    super(0, PtraceServer.registerSetSize(bank));
+    super(0, Ptrace.registerSetSize(bank));
     this.bank = bank;
     this.pid = pid;
-    int bankSize = maxOffset = PtraceServer.registerSetSize(bank);
+    int bankSize = maxOffset = Ptrace.registerSetSize(bank);
   
     if (bankSize == 0) 
       {

@@ -1,5 +1,13 @@
 2007-04-05  Andrew Cagney  <cagney@redhat.com>
 
+	* PtraceServer.java (REGS, FPREGS, FPXREGS): Delete.
+	(registerSetSize, optionTraceClone, optionTraceFork)
+	(optionTraceExit, optionTraceSysgood, optionTraceExec): Delete.
+	* cni/PtraceServer.cxx: Ditto.
+	* Ptrace.java: Copy PtraceServer.java.
+	* cni/Ptrace.cxx: Copy Ptrace.cxx.
+	* RegisterSetBuffer.java: Use Ptrace.registerSetSize.
+
 	* cni/Ptrace.cxx: Rename to ...
 	* cni/PtraceServer.cxx: ... this.
 	* Ptrace.java: Rename to ...
