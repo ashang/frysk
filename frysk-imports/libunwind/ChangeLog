@@ -16,6 +16,17 @@
 	(doit_pointer): New function pointer variable initialized to DOIT.
 	(doit): Self-call made by an unoptimizable volatile indirect call.
 
+	* src/Makefile.am (LIBRARIES_cdep, lib_LTLIBRARIES_cdep_setjmp):
+	Removed, moved into ...
+	(lib_LTLIBRARIES_cdep) ... here to fix libtool --disable-static.
+	(libunwind_ptrace_a_SOURCES): Renamed to ...
+	(libunwind_ptrace_la_SOURCES) ... here to fix libtool --disable-static.
+	(install-exec-hook): Fixed for conditional compilations.
+	(lib_LIBRARIES): Removed.
+	(lib_LTLIBRARIES): Updated for removed `lib_LTLIBRARIES_cdep_setjmp'.
+	(EXTRA_DIST): Updated for new renamed `libunwind_ptrace_la_SOURCES'.
+        * tests/Makefile.am (test_ptrace_LDADD): Updated for libtool.
+
 2007-04-04  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* acinclude.m4, config/compile, config/config.guess, config/config.sub,

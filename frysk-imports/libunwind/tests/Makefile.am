@@ -92,7 +92,7 @@ LDADD = $(LIBUNWIND)
 
 test_setjmp_LDADD = ../src/libunwind-setjmp.la $(LIBUNWIND_local)
 ia64_test_setjmp_LDADD = ../src/libunwind-setjmp.la $(LIBUNWIND_local)
-test_ptrace_LDADD = ../src/libunwind-ptrace.a $(LIBUNWIND)
+test_ptrace_LDADD = ../src/libunwind-ptrace.la $(LIBUNWIND)
 Ltest_concurrent_LDADD = $(LIBUNWIND) -lpthread
 Gtest_concurrent_LDADD = $(LIBUNWIND) -lpthread
 test_async_sig_LDADD = $(LIBUNWIND) -lpthread
