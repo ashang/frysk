@@ -202,11 +202,16 @@ do_backtrace (pid_t target_pid)
     }
 }
 
+static pid_t target_pid;
+static void target_pid_kill (void)
+{
+  kill (target_pid, SIGKILL);
+}
+
 int
 main (int argc, char **argv)
 {
   int status, pid, pending_sig, optind = 1, state = 1;
-  pid_t target_pid;
 
   as = unw_create_addr_space (&_UPT_accessors, 0);
   if (!as)
@@ -289,6 +294,7 @@ main (int argc, char **argv)
       execve (argv[optind], argv + optind, environ);
       _exit (-1);
     }
+  atexit (target_pid_kill);
 
   ui = _UPT_create (target_pid);
 

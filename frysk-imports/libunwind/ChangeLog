@@ -8,6 +8,10 @@
 	src/x86/siglongjmp.S, src/x86_64/longjmp.S, src/x86_64/setcontext.S,
 	src/x86_64/siglongjmp.S: Stack should be non-executable, for SELinux.
 
+	* tests/test-ptrace.c (target_pid_kill): New function.
+	(target_pid, main): TARGET_PID made static, for target_pid_kill ().
+	(main): Register target_pid_kill () for atexit(3).
+
 2007-04-04  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* acinclude.m4, config/compile, config/config.guess, config/config.sub,
