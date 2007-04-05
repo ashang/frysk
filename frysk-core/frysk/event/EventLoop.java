@@ -41,6 +41,7 @@ package frysk.event;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import frysk.sys.WaitBuilder;
 
 /**
  * Implements an event loop.
@@ -79,6 +80,10 @@ public abstract class EventLoop
      * Remove the pending event.
      */
     public abstract void remove (Event e);
+    /**
+     * Add support for the notification of waitpid events.
+     */
+    public abstract void add (WaitBuilder waitBuilder);
     /**
      * Run the event-loop.  If pendingOnly, stop after processing all
      * pending events.

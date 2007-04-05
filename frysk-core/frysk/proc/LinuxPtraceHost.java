@@ -42,11 +42,7 @@ package frysk.proc;
 
 import frysk.event.Event;
 import frysk.event.EventLoop;
-import frysk.event.SignalEvent;
 import frysk.sys.Ptrace;
-import frysk.sys.Wait;
-import frysk.sys.WaitBuilder;
-import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.sys.Tid;
 import frysk.sys.proc.Stat;
@@ -64,7 +60,7 @@ import java.util.logging.Level;
 public class LinuxPtraceHost
     extends Host
 {
-  EventLoop eventLoop;
+  final EventLoop eventLoop;
 
   /**
    * Construct an instance of the LinuxPtraceHost that uses the specified eventLoop.
@@ -72,7 +68,7 @@ public class LinuxPtraceHost
   LinuxPtraceHost (EventLoop eventLoop)
   {
     this.eventLoop = eventLoop;
-    eventLoop.add(new PollWaitOnSigChld());
+    eventLoop.add(new LinuxPtraceWaitBuilder(LinuxPtraceHost.this));
   }
 
   /**
@@ -269,32 +265,6 @@ public class LinuxPtraceHost
     }
     Proc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
     new LinuxPtraceTask (proc, attached);
-  }
-
-  // When there's a SIGCHLD, poll the kernel's waitpid() queue
-  // appending all the read events to event-queue as WaitEvents.
-  // The are then later processed by the event-loop. The two step
-  // process ensures that the underlying event-loop doesn't suffer
-  // starvation - some actions such as continue lead to further
-  // waitpid events and those new events should only be processed
-  // after all existing events have been handled.
-
-  class PollWaitOnSigChld
-      extends SignalEvent
-  {
-    PollWaitOnSigChld ()
-    {
-      super(Sig.CHLD);
-      logger.log(Level.FINE, "{0} PollWaitOnSigChld\n", this);
-    }
-
-    WaitBuilder waitObserver = new LinuxPtraceWaitBuilder(LinuxPtraceHost.this);
-
-    public final void execute ()
-    {
-      logger.log(Level.FINE, "{0} execute\n", this);
-      Wait.waitAllNoHang(waitObserver);
-    }
   }
 
   /**

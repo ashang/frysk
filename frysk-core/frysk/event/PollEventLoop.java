@@ -43,6 +43,8 @@ import frysk.sys.Poll;
 import frysk.sys.PollBuilder;
 import frysk.sys.Sig;
 import frysk.sys.Tid;
+import frysk.sys.Wait;
+import frysk.sys.WaitBuilder;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.SortedMap;
@@ -246,6 +248,36 @@ public class PollEventLoop
     {
 	logger.log (Level.FINE, "{0} remove Event\n", this); 
 	pendingEvents.remove (e);
+    }
+    /**
+     * Add support for the notification of waitpid events.
+     */
+    public void add (WaitBuilder waitBuilder)
+    {
+	// When there's a SIGCHLD, poll the kernel's waitpid() queue
+	// appending all the read events to event-queue as WaitEvents.
+	// The are then later processed by the event-loop. The two
+	// step process ensures that the underlying event-loop doesn't
+	// suffer starvation - some actions such as continue lead to
+	// further waitpid events and those new events should only be
+	// processed after all existing events have been handled.
+	class PollWaitOnSigChild
+	    extends SignalEvent
+	{
+	    final WaitBuilder waitBuilder;
+	    PollWaitOnSigChild (WaitBuilder waitBuilder)
+	    {
+		super(Sig.CHLD);
+		this.waitBuilder = waitBuilder;
+		logger.log(Level.FINE, "{0} PollWaitOnSigChld\n", this);
+	    }
+	    public final void execute ()
+	    {
+		logger.log(Level.FINE, "{0} execute\n", this);
+		Wait.waitAllNoHang(waitBuilder);
+	    }
+	}
+	add (new PollWaitOnSigChild (waitBuilder));
     }
     /**
      * Remove and return the first pending event, or null if there are

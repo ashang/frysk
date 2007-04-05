@@ -1,5 +1,9 @@
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Add LinuxPtraceWaitBuilder directly to
+	EventLoop.
+	(PollWaitOnSigChld): Delete.
+	
 	* TestLib.java: Use Signal.drain to drain pending signals.
 
 	* LinuxPtraceHost.java: Move WaitBuilder implementation to ...

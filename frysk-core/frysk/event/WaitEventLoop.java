@@ -173,17 +173,6 @@ public class WaitEventLoop
     }
 
     /**
-     * Add FD to events that should be polled.
-     */
-    public synchronized void add (WaitBuilder waitBuilder)
-    {
-	logger.log (Level.FINE, "{0} add PollEvent\n", this);
-	this.waitBuilder = waitBuilder;
-	wakeupIfBlocked ();
-    }
-    private WaitBuilder waitBuilder;
-
-    /**
      * Collection of signals; assume that very few signals are being
      * watched and hence that a small map is sufficient.
      */
@@ -250,6 +239,17 @@ public class WaitEventLoop
 	logger.log (Level.FINE, "{0} remove Event\n", this); 
 	pendingEvents.remove (e);
     }
+    /**
+     * Add support for the notification of waitpid events.
+     */
+    public synchronized void add (WaitBuilder waitBuilder)
+    {
+	logger.log (Level.FINE, "{0} add PollEvent\n", this);
+	this.waitBuilder = waitBuilder;
+	wakeupIfBlocked ();
+    }
+    private WaitBuilder waitBuilder;
+
     /**
      * Remove and return the first pending event, or null if there are
      * no pending event.  Also set the isGoingToBlock flag (after all
