@@ -484,6 +484,9 @@ systests_PASS_PROGRAM += frysk3486/waitpid-masked-sigchld
 # test for PTRACE_ATTACH of SIGSTOPped process hangs
 systests_PASS_PROGRAM += frysk4217/attachstop
 
+# test if PTRACE_CONT with SIGSTOP does not kill the process
+systests_PASS_PROGRAM += frysk4330/stopkills
+
 # A final variable/inner class test.
 
 noinst_PROGRAMS += frysk4282/StackAccessors

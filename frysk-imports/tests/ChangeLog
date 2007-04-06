@@ -1,3 +1,8 @@
+2007-04-06  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* frysk4330/stopkills.c: New file.
+	* Makefile.am (systests_PASS_PROGRAM): Add frysk4330/stopkills.
+
 2007-03-31  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk4217/attachstop.c: Conditionally compile code refering to
