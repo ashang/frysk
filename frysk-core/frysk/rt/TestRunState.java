@@ -387,7 +387,7 @@ public class TestRunState extends TestLib
           }
         count++;
         
-        runState.stepCompleted();
+//        runState.stepCompleted();
         
         if (count != 50)
           {
@@ -469,7 +469,7 @@ public class TestRunState extends TestLib
           }
         count++;
         
-        runState.stepCompleted();
+//        runState.stepCompleted();
         
         if (count != 50)
           {

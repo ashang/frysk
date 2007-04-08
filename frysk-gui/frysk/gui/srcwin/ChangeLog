@@ -1,3 +1,22 @@
+2007-04-08  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Update call to
+	RunState.setRunning().
+	(finishSourceWin): Update switch call to RunState.getState() to
+	getTaskState() and isProcRunning().
+	(populateStackBrowser): Ditto.
+	(procReblocked): Removed calls to RunState.runCompleted() and 
+	stepCompleted().
+	(getState): Added. Returns state of currently-selected Task.
+	(updateShownStackFrame): Checks current sensitivity of SourceWindow
+	versus state of requested Task; enables functionality if it won't break
+	anything. Sets title for SourceWindow if switching to a running process
+	and desensitizes as necessary.
+	(generateProcStackTrace): Changed RunState.getState() to
+	isProcRunning().
+	* SourceView.java (mouseMotionEvent): Changed RunState.getState() to
+	SourceWindow.getState().
+
 2007-04-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (SourceWinListener.lifeCycleQuery): Hide current

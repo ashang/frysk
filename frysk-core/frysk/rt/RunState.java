@@ -39,7 +39,9 @@
 
 package frysk.rt;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Iterator;
 //import java.util.List;
@@ -86,11 +88,13 @@ public class RunState extends Observable implements TaskObserver.Instruction
   /* Tasks that have hit a breakpoint */
   private HashMap breakpointMap;
   
+  private HashMap contextMap;
+  
   private int taskStepCount = 0;
   
-  private int numRunningTasks = 0;
+//  private int numRunningTasks = 0;
   
-  private int state = 0;
+//  private int state = 0;
 
   public static final int STOPPED = 0;
   public static final int RUNNING = 1;
@@ -105,11 +109,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public static final int STEP_INSTRUCTION_NEXT_TEST = 10; /* Test to make sure there's something to actually step over */
   public static final int STEP_INS_NEXT_MISSING_FRAME_STEP = 11;   /* See #4060 */
   public static final int STEP_ADVANCE = 12;
-
   
   private Proc stateProc;
   
   private LinkedList[] tasks;
+  
+  private Map stateMap;
   
   /**
    * Constructor - sets the InstructionObserver for this model and initializes
@@ -117,10 +122,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public RunState ()
   {
+	this.stateMap = Collections.synchronizedMap(new HashMap());
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     this.runningTasks = new HashSet();
     this.breakpointMap = new HashMap();
+    this.contextMap = new HashMap();
   }
 
   /**
@@ -152,7 +159,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param tasks   The list of Tasks to step
    */
-  public void setUp (LinkedList tasks)
+  public void setUp (LinkedList tasks, int state)
   {
     this.taskStepCount = tasks.size();
     Iterator i = tasks.iterator();
@@ -187,12 +194,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
       //  System.out.println("setUp --> No frames with debuginfo!");
         this.dwflMap.clear();
         this.lineMap.clear();
-        this.state = STEP_INSTRUCTION;
+        state = STEP_INSTRUCTION;
       }
     
     i = tasks.iterator();
     while (i.hasNext())
-      ((Task) i.next()).requestUnblock(this);
+      {
+    	Task t = (Task) i.next();
+    	this.stateMap.put(t, new Integer(state));
+    	t.requestUnblock(this);
+      }
   }
   
   /**
@@ -203,12 +214,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public boolean setUpLineStep (Task task)
   {
-    if (this.state != STOPPED)
-      return false;
+	Integer i = (Integer) this.stateMap.get(task);
+	if (i.intValue() != STOPPED)
+	  return false;
 
-    this.state = STEP_IN;
-    
-    this.taskStepCount = 1;
+    ++this.taskStepCount;
     notifyNotBlocked();
 
     if (this.lineMap.get(task) == null)
@@ -218,12 +228,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
         if (line == null)
           {
-            this.state = STEP_INSTRUCTION;
             this.dwflMap.clear();
           }
         else
-          this.lineMap.put(task, new Integer(line.getLineNum()));
+          {
+            this.stateMap.put(task, new Integer(STEP_IN));
+        	this.lineMap.put(task, new Integer(line.getLineNum()));
+          }
       }
+    else
+      this.stateMap.put(task, new Integer(STEP_IN));
 
     task.requestUnblock(this);
     return true;
@@ -231,11 +245,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public boolean setUpLineStep (LinkedList tasks)
   {
-    if (this.state != STOPPED)
-      return false;
-    
-    this.state = STEP_IN;
-    setUp(tasks);
+	if (isProcRunning(tasks))
+	  return false;
+	
+    setUp(tasks, STEP_IN);
     
     return true;
   }
@@ -248,10 +261,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public boolean stepInstruction (Task task)
   {
-    if (this.state != STOPPED)
-      return false;
+	Integer i = (Integer) this.stateMap.get(task);
+	if (i.intValue() != STOPPED)
+	  return false;
     
-    this.state = STEP_INSTRUCTION;
+    this.stateMap.put(task, new Integer(STEP_INSTRUCTION));
+    
     ++this.taskStepCount;
     notifyNotBlocked();
     task.requestUnblock(this);
@@ -261,16 +276,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public boolean stepInstruction (LinkedList tasks)
   {
-    if (this.state != STOPPED)
-      return false;
+	if (isProcRunning(tasks))
+	  return false;
     
-    this.state = STEP_INSTRUCTION;
     this.taskStepCount = tasks.size();
     notifyNotBlocked();
-    Iterator i = tasks.iterator();
-    while (i.hasNext())
+    Iterator iter = tasks.iterator();
+    while (iter.hasNext())
       {
-        Task t = (Task) i.next();
+        Task t = (Task) iter.next();
+    	this.stateMap.put(t, new Integer(STEP_INSTRUCTION));
         t.requestUnblock(this);
       }
     
@@ -279,7 +294,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public void setUpStepNextInstruction (Task task, StackFrame lastFrame)
   {
-    this.state = STEP_INSTRUCTION_NEXT_TEST;
+	this.stateMap.put(task, new Integer(STEP_INSTRUCTION_NEXT_TEST));
     ++this.taskStepCount;
     this.frameIdentifier = lastFrame.getFrameIdentifier();
 //    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
@@ -316,7 +331,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
         StackFrame frame = newFrame.getOuter();
-        this.state = STEP_INSTRUCTION_NEXT;
+        this.stateMap.put(task, new Integer(STEP_INSTRUCTION_NEXT));
         this.breakpoint = new Breakpoint(frame.getAddress());
         task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
       }
@@ -372,12 +387,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
   {
-    this.state = STEP_OVER_TEST;
     this.frameIdentifier = lastFrame.getFrameIdentifier();
 //    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
     this.taskStepCount =  tasks.size();
 
-    setUp(tasks);
+    setUp(tasks, STEP_OVER_TEST);
   }
   
   /**
@@ -406,7 +420,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
         StackFrame frame = newFrame.getOuter();
-        this.state = STEP_OVER;
+        this.stateMap.put(task, new Integer(STEP_OVER));
         this.breakpoint = new Breakpoint(frame.getAddress());
         task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
       }
@@ -423,7 +437,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void setUpStepOut (LinkedList tasks, StackFrame lastFrame)
   {
-    this.state = STEP_OUT_ASM_STEP;
     this.taskStepCount =  tasks.size();
     this.frameIdentifier = lastFrame.getFrameIdentifier();
 //    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
@@ -432,6 +445,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     while (i.hasNext())
       {
         Task t = (Task) i.next();
+        this.stateMap.put(t, new Integer(STEP_OUT_ASM_STEP));
         t.requestUnblock(this);
       }
   }
@@ -445,7 +459,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
     StackFrame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 3);
-    this.state = STEP_OUT;
+//    this.state = STEP_OUT;
+    this.stateMap.put(task, new Integer(STEP_OUT));
 
     FrameIdentifier fi = newFrame.getFrameIdentifier();
     
@@ -496,7 +511,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         return;
       }
     
-  this.state = STEP_ADVANCE;
+    this.stateMap.put(task, new Integer(STEP_ADVANCE));
     
   ++this.taskStepCount;
   
@@ -517,11 +532,12 @@ public class RunState extends Observable implements TaskObserver.Instruction
   /**
    * All stepping has completed, clean up.
    */
-  public void stepCompleted ()
-  {
-    this.state = STOPPED;
-    this.taskStepCount = 0;
-  }
+//  public void stepCompleted ()
+//  {
+////    this.state = STOPPED;
+//	System.err.println("taskStepCount pre-set: " + taskStepCount);
+//    this.taskStepCount = 0;
+//  }
 
   /*****************************************************************************
    * STOP/CONTINUE HANDLING METHODS
@@ -548,10 +564,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void continueExecution (LinkedList tasks)
   {
-    this.state = RUNNING;
-    this.numRunningTasks = tasks.size();
+//    this.numRunningTasks += tasks.size();
     this.current = 0;
     this.tasks[0] = tasks;
+    this.contextMap.put(((Task) tasks.getFirst()).getProc(), new Integer(tasks.size()));
+    
     notifyNotBlocked();
     Iterator i = tasks.iterator();
     while (i.hasNext())
@@ -560,6 +577,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         if (! this.runningTasks.contains(t))
           {
             this.runningTasks.add(t);
+            this.stateMap.put(t, new Integer(RUNNING));
             t.requestDeleteInstructionObserver(this);
             Breakpoint bpt = (Breakpoint) breakpointMap.get(t);
             if (bpt != null)
@@ -577,17 +595,19 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * blocked by the ProcBlockObserver. Otherwise, the list is compared to the
    * set of running tasks and those Tasks not in the list are stopped.
    * 
-   * @param unblockTasks    The list of Tasks to not block
+   * @param keepRunning    The list of Tasks to not block
    */
-  public void stop (LinkedList unblockTasks, LinkedList stopTasks)
+  public void stop (LinkedList keepRunning, LinkedList stopTasks)
   {
-    if (unblockTasks == null)
+    if (keepRunning == null)
       {
+		this.current = 0;
+		this.tasks[0] = stopTasks;
         requestAdd(stopTasks);
       }
     else
       {
-        if (unblockTasks.size() == 0)
+        if (keepRunning.size() == 0)
         	{
         		this.current = 0;
         		this.tasks[0] = stopTasks;
@@ -602,7 +622,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
                 while (i.hasNext())
                   {
                     Task t = (Task) i.next();
-                    if (! unblockTasks.contains(t))
+                    if (! keepRunning.contains(t))
                       {
                         blockTasks.add(t);
                         i.remove();
@@ -612,7 +632,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
               }
           }
       }
-    this.state = STOPPED;
     this.runningTasks.clear();
   }
 
@@ -642,7 +661,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     /* No incoming Tasks and no Tasks already running */
     if (tasks.size() == 0 && this.runningTasks.size() == 0)
       {
-        this.state = STOPPED;
+//        this.state = STOPPED;
         return;
       }
 
@@ -665,7 +684,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
     /* There are incoming Tasks to be run, and no Tasks already running */
     if (this.runningTasks.size() == 0)
       {
-        this.state = RUNNING;
         notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
@@ -673,6 +691,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
             Task t = (Task) i.next();
              //System.out.println("(0) Running " + t);
             this.runningTasks.add(t);
+            this.stateMap.put(t, new Integer(RUNNING));
             t.requestDeleteInstructionObserver(this);
           }
         return;
@@ -682,9 +701,9 @@ public class RunState extends Observable implements TaskObserver.Instruction
        * If they are not already running, unblock the incoming Tasks, and block
        * any running Task not in the incoming list. */
       {
-        this.state = RUNNING;
         HashSet temp = new HashSet();
         // this.runningThreads.clear();
+        int numRunning = 0;
         notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
@@ -695,13 +714,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
             if (! this.runningTasks.remove(t))
               {
                 // System.out.println("unBlocking " + t);
+//            	++this.numRunningTasks;
+            	++numRunning;
+            	this.stateMap.put(t, new Integer(RUNNING));
                 t.requestDeleteInstructionObserver(this);
               }
             else
+              {
               // System.out.println("Already Running");
               /* Put all threads back into a master list */
-              temp.add(t);
+            	temp.add(t);
+              }
           }
+        
+//        this.contextMap.put(((Task) temp.))
 
         /* Now catch the threads which have a block request */
         if (this.runningTasks.size() != 0)
@@ -712,12 +738,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
             while (i.hasNext())
               {
                 Task t = (Task) i.next();
+//                --this.numRunningTasks;
+                --numRunning;
                 l.add(t);
                 // System.out.println("Blocking from runningTasks " + t);
               }
             blockTask(l);
           }
 
+        this.contextMap.put(((Task) tasks.getFirst()).getProc(), new Integer(numRunning));
         this.runningTasks = temp;
         // System.out.println("rt temp" + this.runningThreads.size() + " "
         // + temp.size());
@@ -728,23 +757,27 @@ public class RunState extends Observable implements TaskObserver.Instruction
   /**
    * All Tasks have been reblocked after running.
    */
-  public void runCompleted ()
-  {
-    this.state = STOPPED;
-  }
+//  public void runCompleted ()
+//  {
+//    this.state = STOPPED;
+//  }
   
-  public void setRunning ()
+  public void setRunning (LinkedList tasks)
   {
-    this.state = RUNNING;
+	Iterator i = tasks.iterator();
+	while (i.hasNext())
+	  {
+		this.stateMap.put((Task) i.next(), new Integer(RUNNING));
+	  }
   }
   
   /**
    * Decrement the number of running Tasks.
    */
-  public void decNumRunningTasks ()
-  {
-    this.numRunningTasks--;
-  }
+//  public void decNumRunningTasks ()
+//  {
+//    this.numRunningTasks--;
+//  }
 
   /*****************************************************************************
    * GETTERS AND SETTERS
@@ -775,20 +808,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @return numRunningTasks The number of running Tasks
    */
-  public int getNumRunningTasks ()
-  {
-    return this.numRunningTasks;
-  }
+//  public int getNumRunningTasks ()
+//  {
+//    return this.numRunningTasks;
+//  }
   
   /**
    * Set the number of running Tasks.
    * 
    * @param num The number of running Tasks
    */
-  public void setNumRunningTasks (int num)
-  {
-    this.numRunningTasks = num;
-  }
+//  public void setNumRunningTasks (int num)
+//  {
+//    this.numRunningTasks = num;
+//  }
   
   /**
    * Get the number of Observers watching this Observable.
@@ -806,9 +839,27 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @return state The current state of this RunState
    */
-  public int getState ()
+//  public int getState ()
+//  {
+//    return this.state;
+//  }
+  
+  public int getTaskState (Task task)
   {
-    return this.state;
+	return ((Integer) this.stateMap.get(task)).intValue();
+  }
+  
+  public boolean isProcRunning (LinkedList tasks)
+  {
+	Iterator iter = tasks.iterator();
+	while (iter.hasNext())
+	  {
+		Task t = (Task) iter.next();
+		if (((Integer) this.stateMap.get(t)).intValue() == RUNNING)
+		  return true;
+	  }
+	
+	return false;
   }
   
   /**
@@ -816,10 +867,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
    * 
    * @param s The new state for this RunState
    */
-  public void setState (int s)
-  {
-    this.state = s;
-  }
+//  public void setState (int s)
+//  {
+//    this.state = s;
+//  }
   
   /**
    * Return the Proc this RunState is controlling.
@@ -841,14 +892,24 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.stateProc = proc;
     this.tasks = new LinkedList[1];
     this.tasks[0] = proc.getTasks();
-    this.numRunningTasks += this.tasks[0].size();
-    requestAdd(proc.getTasks());
+//    this.numRunningTasks += this.tasks[0].size();
+    this.contextMap.put(((Task) this.tasks[0].getFirst()).getProc(), new Integer(this.tasks[0].size()));
+    this.current = 0;
+    
+    Iterator iter = this.tasks[0].iterator();
+    while(iter.hasNext())
+      {
+    	this.stateMap.put((Task) iter.next(), new Integer(STOPPED));
+      }
+    
+    requestAdd(this.tasks[0]);
   }
   
   private int current = 0;
   
   public void setProcs (Proc[]  procs)
   {
+//	int numRunning = 0;
     this.stateProc = procs[0];
     this.tasks = new LinkedList[procs.length];
     this.current = procs.length - 1;
@@ -856,22 +917,29 @@ public class RunState extends Observable implements TaskObserver.Instruction
     for (int i = procs.length - 1; i >= 0; i--)
       {
         this.tasks[i] = procs[i].getTasks();
-        this.numRunningTasks += tasks[i].size();
+//        this.numRunningTasks += tasks[i].size();
+        this.contextMap.put(((Task) this.tasks[i].getFirst()).getProc(), new Integer(this.tasks[i].size()));
+        
+        Iterator iter = this.tasks[i].iterator();
+        while(iter.hasNext())
+          {
+        	this.stateMap.put((Task) iter.next(), new Integer(STOPPED));
+          }
+        
         requestAdd(tasks[i]);
       }
   }
   
   public boolean addProc (Proc proc)
   {
-  		if (this.state != STOPPED)
-  				return false;
-  		
   		LinkedList[] list = new LinkedList[this.tasks.length + 1];
   		System.arraycopy(this.tasks, 0, list, 0, this.tasks.length);
   		
   		this.current = list.length - 1;
   		list[this.current] = proc.getTasks();
-  		this.numRunningTasks += list[this.current].size();
+//  		this.numRunningTasks += list[this.current].size();
+  	    this.contextMap.put(((Task) list[this.current].getFirst()).getProc(),
+  	                        						new Integer(list[this.current].size()));
   		this.tasks = list;
   		
   		requestAdd(this.tasks[this.current]);
@@ -955,10 +1023,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-   //System.out.println("UpdateExecuted " + task + " " + taskStepCount + " " + numRunningTasks);
+//   System.err.println("UpdateExecuted " + task + " " + taskStepCount);
+	int state = ((Integer) this.stateMap.get(task)).intValue();
     if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_TEST)
       {
-        switch (this.state)
+        switch (state)
           {
           case STEP_INSTRUCTION:
             --this.taskStepCount;
@@ -999,11 +1068,13 @@ public class RunState extends Observable implements TaskObserver.Instruction
         /* No more Tasks have to be blocked */
         if (this.taskStepCount == 0)
           {
-            if (this.state == STEP_OVER_TEST)
+            if (state == STEP_OVER_TEST)
               {
                 stepOver(task);
                 return Action.BLOCK;
               }
+            
+            this.stateMap.put(task, new Integer(STOPPED));
             
             this.setChanged();
             this.notifyObservers(task);
@@ -1011,15 +1082,20 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     else
       {
-        --this.numRunningTasks;
+//        --this.numRunningTasks;
+    	Integer i = (Integer) this.contextMap.get(task.getProc());
+        
+        this.stateMap.put(task, new Integer(STOPPED));
         
         /* No more Tasks have to be blocked, or this RunState is already blocked
          * and this is the first time this method has been called. */
-        if (this.numRunningTasks == 0)
+        if (i.intValue() == 1)
           {
             this.setChanged();
             this.notifyObservers(task);
           }
+        else
+          this.contextMap.put(task.getProc(), new Integer(i.intValue() - 1));
       }
 
     return Action.BLOCK;
@@ -1099,9 +1175,16 @@ public class RunState extends Observable implements TaskObserver.Instruction
           	return;
           }
 
-        Iterator i = RunState.this.tasks[RunState.this.current--].iterator();
+//        Iterator i = RunState.this.tasks[RunState.this.current--].iterator();
+        Iterator i = stateProc.getTasks().iterator();
         while (i.hasNext())
-          ((Task) i.next()).requestAddInstructionObserver(RunState.this);
+          {
+        	Task t = (Task) i.next();
+        	t.requestAddInstructionObserver(RunState.this);
+          }
+        
+        if (RunState.this.current > 0)
+          --RunState.this.current;
       }
     });
   }
@@ -1113,7 +1196,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void blockTask (LinkedList tasks)
   {
-    this.tasks[this.current] = tasks;
+    this.tasks[++this.current] = tasks;
     Manager.eventLoop.add(new Event()
     {
       public void execute ()
@@ -1123,7 +1206,6 @@ public class RunState extends Observable implements TaskObserver.Instruction
           {
             Task t = (Task) i.next();
             t.requestAddInstructionObserver(RunState.this);
-//            requestAddObservers(t);
           }
       }
     });
@@ -1262,11 +1344,14 @@ public class RunState extends Observable implements TaskObserver.Instruction
     {
       logger.entering("RunState.PersistentBreakpoint", "updateHit");
       Action action = super.updateHit(task, address);
-      state = STOPPED;
+//      state = STOPPED;
+      RunState.this.stateMap.put(task, new Integer(STOPPED));
       if (runningTasks.contains(task))
 	{
 	  runningTasks.remove(task);
-	  numRunningTasks--;
+//	  numRunningTasks--;
+	  Integer i = (Integer) RunState.this.contextMap.get(task.getProc());
+	  RunState.this.contextMap.put(task.getProc(), new Integer(i.intValue() - 1));
 	}
       else
 	logger.logp(Level.WARNING, "RunState.PersistentBreakpoint", "updateHit",

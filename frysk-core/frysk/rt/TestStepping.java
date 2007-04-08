@@ -323,6 +323,9 @@ public class TestStepping extends TestLib
 	}))
 	return;
     
+    if (brokenXXX(4289))
+    	return;
+    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -463,7 +466,7 @@ public class TestStepping extends TestLib
   
   public synchronized void assertions ()
   {
-    runState.stepCompleted();
+//    runState.stepCompleted();
 
     if (this.testState == INITIAL)
       {

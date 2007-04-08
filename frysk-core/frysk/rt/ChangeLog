@@ -1,3 +1,55 @@
+2007-04-08  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (contextMap): Added.
+	(numRunningTasks): Removed.
+	(state): Removed.
+	(stateMap): Added. Allows finer-grained Task control.
+	(RunState): Initialize contextMap and new synchronized stateMap.
+	(setUp): Takes an int state parameter. Records the state of each 
+	Task passing through this method as defined by int parameter.
+	(setUpLineStep): Check state of requested Task before proceeding.
+	Set Task-specific states.
+	(stepInstruction): Ditto.
+	(setUpLineStep): Check to see if any Tasks belonging to the List
+	parameter are not stopped.
+	(stepInstruction): Ditto. Set Task-specific states.
+	(setUpNextInstruction): Set Task-specific states.
+	(stepNextInstruction): Ditto.
+	(setUpStepOver): Ditto.
+	(stepOver): Ditto.
+	(setUpStepOut): Ditto.
+	(stepOut): Ditto.
+	(stepUpStepAdvance): Ditto.
+	(stepCompleted): Removed.
+	(runCompleted): Ditto.
+	(decNumRunningTasks): Ditto.
+	(getNumRunningTasks): Ditto.
+	(setNumRunningTasks): Ditto.
+	(setState): Ditto.
+	(continueExecution): Insert into context map the number of threads
+	designated as running by process. Mark state of each thread 
+	individually as running.
+	(stop): Renamed first parameter. Resets current process index.
+	(executeTasks): Removed references to global state int. Mark individual
+	Task states and number of running Tasks to their Proc in context map.
+	(setRunning): Takes List of Tasks as parameter, sets states to running.
+	(getState): Takes Task parameter, returns state of that Task.
+	(isProcRunning): Added. Returns true if any of the given Tasks are
+	running, as defined by RunState.
+	(setProc): Mark individual Tasks as running, insert number of running
+	Tasks for process into context map.
+	(setProcs): Ditto.
+	(addProc): Insert number of running Tasks for new process into context
+	map.
+	(updateExecuted): Grab state of incoming Task out of stateMap. Update
+	stored state of Task. Update number of running Tasks for its Proc.
+	(PersistentBreakpoint.updateHit): Check state of incoming Task.	Update
+	number of running Tasks for its process.
+	* TestRunState.java (stepAssertions): Removed calls to
+	RunState.stepCompleted().
+	* TestStepping.java (testStepSigLongJmp): Marked broken for #4289.
+	(assertions): Removed call to RunState.stepCompleted().
+
 2007-04-03  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (addProc): Added. Appends a new process to the current

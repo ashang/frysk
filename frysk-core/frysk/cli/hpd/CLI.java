@@ -1420,10 +1420,10 @@ public class CLI
       Task task = (Task)arg;
       RunState.PersistentBreakpoint bpt = null;
 
-      outWriter.println("runState state = " + runState.getState());
+      outWriter.println("runState state = " + runState.getTaskState(task));
       synchronized (monitor) 
 	{
-	  if (runState.getState() != RunState.RUNNING)
+	  if (runState.getTaskState(task) != RunState.RUNNING)
 	    {
 	      attached = true;
 	      symtabNeedsRefresh = true;

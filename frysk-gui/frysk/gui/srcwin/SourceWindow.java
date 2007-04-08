@@ -356,10 +356,10 @@ public class SourceWindow
 
     this.glade = glade;
     this.gladePath = gladePath;
-    this.runState = new RunState();
-    this.runState.setRunning();
     this.swProc = new Proc[1];
     this.swProc[this.current] = trace.getTask().getProc();
+    this.runState = new RunState();
+    this.runState.setRunning(this.swProc[this.current].getTasks());
     this.frames = new StackFrame[1][];
     this.symTab = new SymTab[1];
     this.dom = new DOMFrysk[1];
@@ -418,7 +418,7 @@ public class SourceWindow
   private void finishSourceWin ()
   { 
     /* Only because this wouldn't be the case during a Monitor stack trace */
-    if (this.runState.getState() == RunState.STOPPED)
+    if (this.runState.getTaskState(this.swProc[this.current].getMainTask()) == RunState.STOPPED)
       {
         for (int j = 0; j < numProcs; j++)
           this.frames[j] = generateProcStackTrace(this.swProc[j], j);
@@ -468,8 +468,8 @@ public class SourceWindow
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
-    if (this.runState.getState() != RunState.RUNNING)
-	this.symTab[this.current].setFrames(this.frames[this.current]);
+    if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
+      this.symTab[this.current].setFrames(this.frames[this.current]);
 
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -550,7 +550,7 @@ public class SourceWindow
         else
           {
             /* Only the case during a monitor stack trace */
-            if (this.runState.getState() == RunState.STOPPED)
+            if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
               {
                 SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
                 b.disassembleFrame(this.currentFrame);
@@ -655,8 +655,8 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    this.runState.runCompleted();
-    this.runState.stepCompleted();
+//    this.runState.runCompleted();
+//    this.runState.stepCompleted();
     
     if (this.currentFrame.getLines().length== 0)
       {
@@ -735,6 +735,11 @@ public class SourceWindow
   public RunState getRunState ()
   {
     return this.runState;
+  }
+  
+  public int getState ()
+  {
+	return this.runState.getTaskState(this.currentTask);
   }
 
   public LockObserver getLockObserver ()
@@ -1856,6 +1861,7 @@ public class SourceWindow
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     
+    
     if (lines.length == 0)
     {
       SourceBuffer b = null;
@@ -1871,10 +1877,18 @@ public class SourceWindow
       removeTags();
       this.view.load(selected, this.viewPicker.getActive());
       
-      if (runState.getState() == RunState.STOPPED)
-        b.disassembleFrame(selected);
+      if (runState.getTaskState(selected.getTask()) == RunState.STOPPED)
+    	{
+		  if (this.stop.isSensitive())
+		      resensitize();
+    	  b.disassembleFrame(selected);
+    	}
       else
-        b.deleteText(b.getStartIter(), b.getEndIter());
+    	{
+		    if (!this.stop.isSensitive())
+		      desensitize();
+    	  b.deleteText(b.getStartIter(), b.getEndIter());
+    	}
     }
     else if (source != null && lines[0].getDOMFunction() != null)
       {
@@ -1886,8 +1900,11 @@ public class SourceWindow
         	
             this.view.load(selected, mode);
             
+            boolean running = this.runState.isProcRunning(this.swProc[current].getTasks());
+            
         	if (current != this.current
-				&& this.runState.getState() != RunState.RUNNING)
+        		&& !running)
+//				&& this.runState.getState() != RunState.RUNNING)
 			  {
 				this.symTab[current] = new SymTab(
 												  this.swProc[current].getPid(),
@@ -1899,20 +1916,24 @@ public class SourceWindow
 			    setTitle("Frysk Source Window for: " 
 			             + this.swProc[current].getCommand() + " - process "
 			             + this.swProc[current].getPid());
+			    
+			    if (this.stop.isSensitive())
+			      resensitize();
 			  }
+        	else if (current != this.current && running)
+        	  {
+			    setTitle("Frysk Source Window for: " 
+			             + this.swProc[current].getCommand() + " - process "
+			             + this.swProc[current].getPid());
+			    
+			    if (!this.stop.isSensitive())
+			      desensitize();
+        	  }
         	
             this.current = current;
+            this.currentTask = selected.getTask();
             
             removeTags();
-
-            StackFrame curr = selected;
-
-            /*
-             * Find the innermost frame - want to make sure that we get
-             * everything highlighted
-             */
-            while (curr.getInner() != null)
-              curr = curr.getInner();
 
             createTags();
 
@@ -2532,7 +2553,7 @@ public class SourceWindow
 
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 	
-	if (this.runState.getState() != RunState.RUNNING)
+	if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
 	  this.symTab[this.current].setFrames(frames);
 
 	return frames;
@@ -2697,7 +2718,7 @@ public class SourceWindow
       /* We don't need to worry about this case here */
       if (arg == null)
         return;
-
+      
       if (SW_active)
         {
         	if (SW_add == false)
