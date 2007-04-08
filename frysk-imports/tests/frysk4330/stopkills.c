@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -75,10 +75,25 @@ handler (int signo)
   exit (1);
 }
 
+static void
+expect_signal (pid_t pid, int signo)
+{
+  int status;
+  pid_t i = waitpid (pid, &status, 0);
+  if (i < 0)
+    error (1, errno, "waitpid");
+  else if (i != pid)
+    error (1, 0, "waitpid -> %d != %d", i, pid);
+  else if (!WIFSTOPPED (status))
+    error (1, 0, "waitpid %d -> %#x, not WIFSTOPPED", i, status);
+  else if (WSTOPSIG (status) != signo)
+    error (1, 0, "waitpid %d -> WSTOPSIG %d, not %d",
+	   i, WSTOPSIG (status), signo);
+}
+
 int main (void)
 {
   int i;
-  int status;
   void (*handler_orig) (int signo);
 
   child_pid = fork();
@@ -97,46 +112,21 @@ int main (void)
     }
   /* Parent.  */
 
-  sleep (1);
-
   handler_orig = signal (SIGALRM, handler);
   assert (handler_orig == SIG_DFL);
-  alarm (1);
+  alarm (5);
 
   i = ptrace (PTRACE_ATTACH, child_pid, NULL, NULL);
   //assert (i == 0);
   if (i != 0) error (1, errno, "PTRACE_ATTACH");
-  i = waitpid (child_pid, &status, 0);
-  //  assert (i == child_pid);
-  if (i != child_pid) {
-    if (-1 == i)  error (1, errno, "waitpid");
-    else {
-      fprintf (stderr, "waitpid pid mismatch\n");
-      exit (1);
-    }
-  }
-  //  assert (WIFSTOPPED (status) != 0);
-  if (WIFSTOPPED (status) == 0) {
-    fprintf (stderr, "WIFSTOPPED false\n");
-    exit (1);
-  }
-  //  assert (WSTOPSIG (status) == SIGSTOP);
-  if (WSTOPSIG (status) != SIGSTOP) {
-    fprintf (stderr, "WSTOPSIG !- SIGSTOP\n");
-    exit (1);
-  }
 
-  alarm (0);
-  handler_orig = signal (SIGALRM, handler_orig);
-  assert (handler_orig == handler);
-
-  sleep (1);
+  expect_signal (child_pid, SIGSTOP);
 
   i = ptrace (PTRACE_CONT, child_pid, NULL, (void *) SIGSTOP);
   //assert (i == 0);
   if (i != 0) error (1, errno, "PTRACE_CONT SIGSTOP");
 
-  sleep (1);
+  expect_signal (child_pid, SIGSTOP);
 
   // Here we fail on ESRCH on kernel-2.6.20-1.3045.fc7.x86_64 .
   i = ptrace (PTRACE_DETACH, child_pid, NULL, NULL);
