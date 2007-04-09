@@ -1,3 +1,8 @@
+2007-04-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: More work on bz #4193, added getting of the
+	env variables and commmandline options from the chooser window.
+
 2007-04-08  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Update call to

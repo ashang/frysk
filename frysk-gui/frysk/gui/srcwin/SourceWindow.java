@@ -57,6 +57,7 @@ import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
+import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
@@ -89,6 +90,7 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
+import org.gnu.gtk.event.ActionListener;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
@@ -197,51 +199,51 @@ public class SourceWindow
   // private PreferenceWindow prefWin;
 
   // ACTIONS
-  private org.gnu.gtk.Action close;
+  private Action close;
   
-  private org.gnu.gtk.Action open_core;
+  private Action open_core;
 
-  private org.gnu.gtk.Action open_executable;
+  private Action open_executable;
 
-  private org.gnu.gtk.Action copy;
+  private Action copy;
 
   private ToggleAction find;
 
-  private org.gnu.gtk.Action prefsLaunch;
+  private Action prefsLaunch;
 
-  private org.gnu.gtk.Action run;
+  private Action run;
 
-  private org.gnu.gtk.Action stop;
+  private Action stop;
 
-  private org.gnu.gtk.Action step;
+  private Action step;
 
-  private org.gnu.gtk.Action next;
+  private Action next;
 
-  private org.gnu.gtk.Action cont;
+  private Action cont;
 
-  private org.gnu.gtk.Action finish;
+  private Action finish;
 
-  private org.gnu.gtk.Action terminate;
+  private Action terminate;
 
-  private org.gnu.gtk.Action stepAsm;
+  private Action stepAsm;
 
-  private org.gnu.gtk.Action nextAsm;
+  private Action nextAsm;
 
-  private org.gnu.gtk.Action stackUp;
+  private Action stackUp;
 
-  private org.gnu.gtk.Action stackDown;
+  private Action stackDown;
 
-  private org.gnu.gtk.Action stackTop;
+  private Action stackTop;
   
-  private org.gnu.gtk.Action stepInDialog;
+  private Action stepInDialog;
   
-  private org.gnu.gtk.Action stepOverDialog;
+  private Action stepOverDialog;
   
-  private org.gnu.gtk.Action stepOutDialog;
+  private Action stepOutDialog;
   
-  private org.gnu.gtk.Action stepInstructionDialog;
+  private Action stepInstructionDialog;
   
-  private org.gnu.gtk.Action stepInstructionNextDialog;
+  private Action stepInstructionNextDialog;
 
   private ToggleAction toggleRegisterWindow;
 
@@ -300,6 +302,8 @@ public class SourceWindow
   private LockObserver lock;
   
   private org.gnu.gtk.FileChooserDialog chooser;
+  
+  private FileChooserDialog fc;
 
   /**
    * Creates a new source window with the given properties. This constructor
@@ -766,7 +770,7 @@ public class SourceWindow
   private void createActions (AccelGroup ag)
   {
     // Examine core file action
-    this.open_core = new org.gnu.gtk.Action("open", "Examine core file", "Examine core file",
+    this.open_core = new Action("open", "Examine core file", "Examine core file",
                                        GtkStockItem.OPEN.getString());
     this.open_core.setAccelGroup(ag);
     this.open_core.setAccelPath("<sourceWin>/File/Examine core file");
@@ -810,12 +814,12 @@ public class SourceWindow
           }
         });
         setDefaultIcon(IconManager.windowIcon);
-        chooser.setDefaultResponse(org.gnu.gtk.event.FileChooserEvent.Type.FILE_ACTIVATED.getID());
+        chooser.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
         chooser.setCurrentFolder(System.getProperty("user.home"));
         int response = chooser.open();
         if (response == ResponseType.CANCEL.getValue())
           chooser.destroy();
-        // The OK button was clicked, go open a source window for this executable
+        // The OK button was clicked, go open a source window for this core file
         else if (response == ResponseType.OK.getValue())
           examineCoreFile(chooser.getFilename());
         chooser.destroy();
@@ -826,35 +830,79 @@ public class SourceWindow
     this.open_core.connectAccelerator();
 
     // Run executable action
-    this.open_executable = new org.gnu.gtk.Action("start executable",
-                                                  "Run executable",
-                                                  "Run an executable file",
-                                                  GtkStockItem.OPEN.getString());
+    this.open_executable = new Action("start executable",
+                                      "Run executable",
+                                      "Run an executable file",
+                                      GtkStockItem.OPEN.getString());
     this.open_executable.setAccelGroup(ag);
     this.open_executable.setAccelPath("<sourceWin>/File/Run executable");
-    this.open_executable.addListener(new org.gnu.gtk.event.ActionListener()
+    this.open_executable.addListener(new ActionListener()
       {
 	public void actionEvent (ActionEvent action)
 	  {
 	    try {
 		  glade = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
+		  fc = (FileChooserDialog) glade.getWidget("frysk_filechooserdialog");
+		  fc.addListener(new LifeCycleListener() {
+		    public void lifeCycleEvent(LifeCycleEvent event)
+		      {
+		      }
+		    public boolean lifeCycleQuery(LifeCycleEvent event)
+		      {
+		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+		            event.isOfType(LifeCycleEvent.Type.DESTROY))
+		              fc.destroy();
+		        return false;
+		      }
+		  });
+		  
+		  fc.addListener(new FileChooserListener()
+		  {
+		    public void currentFolderChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void selectionChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void updatePreview (FileChooserEvent event)
+		      {
+		      }
+
+		    // This method is called when the "Enter" key is pressed to
+		    // select a file name
+		    public void fileActivated (FileChooserEvent event)
+		      {
+			Entry envVariables = (Entry) glade.getWidget("envVariables");
+			Entry taskOptions = (Entry) glade.getWidget("taskOptions");
+		        startTask(fc.getFilename(), envVariables.getText(), taskOptions.getText());
+		      }
+		    });
+		  fc.setDecorated(true);
+		  fc.setIcon(IconManager.windowIcon);
+		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
+		  fc.setCurrentFolder(System.getProperty("user.home"));
+		  int response = fc.open();
+		  if (response == ResponseType.OK.getValue())
+		    {
+		      Entry envVariables = (Entry) glade.getWidget("envVariables");
+		      Entry taskOptions = (Entry) glade.getWidget("taskOptions");
+		      startTask(fc.getFilename(), envVariables.getText(), taskOptions.getText());
+		    }
+		   fc.destroy();  
 		}
 	    catch (Exception e) 
 	      {
 		throw new RuntimeException (e);
 	      }
-	    startTask("test");
 	  }
       });
-    AccelMap.changeEntry("<sourceWin>/File/Run Executable file",
-		         KeyValue.o, ModifierType.CONTROL_MASK,
-		         true);
-    this.open_executable.connectAccelerator();
-
+    
     // Close action
-	this.close = new org.gnu.gtk.Action("close",
-					    "Close",
-					    "Close Window",
+    this.close = new Action("close",
+					"Close",
+					"Close Window",
                                         GtkStockItem.CLOSE.getString());
     this.close.setAccelGroup(ag);
     this.close.setAccelPath("<sourceWin>/File/Close");
@@ -871,7 +919,7 @@ public class SourceWindow
     this.close.connectAccelerator();
 
     // Copy action
-    this.copy = new org.gnu.gtk.Action("copy", "Copy",
+    this.copy = new Action("copy", "Copy",
                                        "Copy Selected Text to the Clipboard",
                                        GtkStockItem.COPY.getString());
     this.copy.addListener(new org.gnu.gtk.event.ActionListener()
@@ -909,7 +957,7 @@ public class SourceWindow
     this.find.connectAccelerator();
 
     // Launch preference window action
-    this.prefsLaunch = new org.gnu.gtk.Action(
+    this.prefsLaunch = new Action(
                                               "prefs",
                                               "Frysk Preferences",
                                               "Edit Preferences",
@@ -923,7 +971,7 @@ public class SourceWindow
     });
 
     // Run program action
-    this.run = new org.gnu.gtk.Action("run", "Run", "Run Program", "frysk-run");
+    this.run = new Action("run", "Run", "Run Program", "frysk-run");
     this.run.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
@@ -939,7 +987,7 @@ public class SourceWindow
     this.run.setSensitive(false);
 
     // Stop program action
-    this.stop = new org.gnu.gtk.Action("stop", "Stop",
+    this.stop = new Action("stop", "Stop",
                                        "Stop Program execution", "frysk-stop");
     this.stop.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -978,7 +1026,7 @@ public class SourceWindow
     });
 
     // Step action
-    this.step = new org.gnu.gtk.Action("step", "Step", "Step", "frysk-step");
+    this.step = new Action("step", "Step", "Step", "frysk-step");
     this.step.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
@@ -994,7 +1042,7 @@ public class SourceWindow
     this.step.setSensitive(true);
 
     // Next action
-    this.next = new org.gnu.gtk.Action("next", "Next", "Next", "frysk-next");
+    this.next = new Action("next", "Next", "Next", "frysk-next");
     this.next.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
@@ -1010,7 +1058,7 @@ public class SourceWindow
     this.next.setSensitive(false);
 
     // Finish action
-    this.finish = new org.gnu.gtk.Action("finish", "Finish",
+    this.finish = new Action("finish", "Finish",
                                          "Finish Function Call", "frysk-finish");
     this.finish.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1027,7 +1075,7 @@ public class SourceWindow
     this.finish.setSensitive(false);
 
     // Continue action
-    this.cont = new org.gnu.gtk.Action("continue", "Continue",
+    this.cont = new Action("continue", "Continue",
                                        "Continue Execution", "frysk-continue");
     this.cont.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1044,7 +1092,7 @@ public class SourceWindow
     this.cont.setSensitive(false);
 
     // Terminate action
-    this.terminate = new org.gnu.gtk.Action("terminate", "Terminate",
+    this.terminate = new Action("terminate", "Terminate",
                                             "Kill Currently Executing Program",
                                             "");
     this.terminate.addListener(new org.gnu.gtk.event.ActionListener()
@@ -1061,7 +1109,7 @@ public class SourceWindow
     this.terminate.setSensitive(false);
 
     // Step assembly instruction action
-    this.stepAsm = new org.gnu.gtk.Action("stepAsm",
+    this.stepAsm = new Action("stepAsm",
                                           "Step Assembly Instruction",
                                           "Step Assembly Instruction",
                                           "frysk-stepAI");
@@ -1081,7 +1129,7 @@ public class SourceWindow
     this.stepAsm.setSensitive(true);
 
     // Next assembly instruction action
-    this.nextAsm = new org.gnu.gtk.Action("nextAsm",
+    this.nextAsm = new Action("nextAsm",
                                           "Next Assembly Instruction",
                                           "Next Assembly Instruction",
                                           "frysk-nextAI");
@@ -1101,7 +1149,7 @@ public class SourceWindow
     this.nextAsm.setSensitive(false);
 
     // top of stack action
-    this.stackTop = new org.gnu.gtk.Action("stackTop", "To top of Stack",
+    this.stackTop = new Action("stackTop", "To top of Stack",
                                            "To top of Stack", "frysk-top");
     this.stackTop.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1118,7 +1166,7 @@ public class SourceWindow
     this.stackTop.connectAccelerator();
 
     // Stack down action
-    this.stackDown = new org.gnu.gtk.Action("stackDown",
+    this.stackDown = new Action("stackDown",
                                             "Down One Stack Frame",
                                             "Down One Stack Frame",
                                             "frysk-down");
@@ -1136,7 +1184,7 @@ public class SourceWindow
     this.stackDown.connectAccelerator();
 
     // Stack up action
-    this.stackUp = new org.gnu.gtk.Action("stackUp", "Up One Stack Frame",
+    this.stackUp = new Action("stackUp", "Up One Stack Frame",
                                           "Up One Stack Frame", "frysk-up");
     this.stackUp.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1198,7 +1246,7 @@ public class SourceWindow
     });
     
     // Thread specific line stepping
-    this.stepInDialog = new org.gnu.gtk.Action("StepIn", "Step into functions...",
+    this.stepInDialog = new Action("StepIn", "Step into functions...",
                                           "Step One Line", "frysk-step");
     this.stepInDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1209,7 +1257,7 @@ public class SourceWindow
     });
     
     // Thread specific stepping over
-    this.stepOverDialog = new org.gnu.gtk.Action("StepOut", "Step over functions...",
+    this.stepOverDialog = new Action("StepOut", "Step over functions...",
                                           "Step Over Function", "frysk-next");
     this.stepOverDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1220,7 +1268,7 @@ public class SourceWindow
     });
     
     // Thread specific stepping out
-    this.stepOutDialog = new org.gnu.gtk.Action("StepOut", "Step out of functions...",
+    this.stepOutDialog = new Action("StepOut", "Step out of functions...",
                                           "Step out of frame", "frysk-finish");
     this.stepOutDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1231,7 +1279,7 @@ public class SourceWindow
     });
     
     // Thread specific instruction stepping
-    this.stepInstructionDialog = new org.gnu.gtk.Action("StepInstruction", "Step single instructions...",
+    this.stepInstructionDialog = new Action("StepInstruction", "Step single instructions...",
                                           "Step single instruction", "frysk-stepAI");
     this.stepInstructionDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1242,7 +1290,7 @@ public class SourceWindow
     });
     
     // Thread specific instruction next stepping
-    this.stepInstructionNextDialog = new org.gnu.gtk.Action("StepInstructionNext", "Step next instructions...",
+    this.stepInstructionNextDialog = new Action("StepInstructionNext", "Step next instructions...",
                                           "Step next instruction", "frysk-nextAI");
     this.stepInstructionNextDialog.addListener(new org.gnu.gtk.event.ActionListener()
     {
@@ -1259,9 +1307,10 @@ public class SourceWindow
    * @param filename
    */
   
-  private void startTask(String filename)
+  private void startTask(String filename, String env_variables, String task_options)
   {
     // No code here yet, work in progress
+	  
   }
 
   /**
