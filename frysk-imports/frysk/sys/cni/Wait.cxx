@@ -146,8 +146,7 @@ processStatus (int pid, int status,
   if (0)
     ;
   else if (WIFEXITED (status))
-    builder->terminated (pid, false, WEXITSTATUS (status),
-			  WCOREDUMP (status));
+    builder->terminated (pid, false, WEXITSTATUS (status), false);
   else if (WIFSIGNALED (status))
     builder->terminated (pid, true, WTERMSIG (status), WCOREDUMP (status));
   else if (WIFSTOPPED (status)) {
@@ -184,7 +183,7 @@ processStatus (int pid, int status,
 	int exitStatus = frysk::sys::PtraceServer::getEventMsg (pid);
 	if (WIFEXITED (exitStatus)) {
 	  builder->exitEvent (pid, false, WEXITSTATUS (exitStatus),
-			       WCOREDUMP (exitStatus));
+			       false);
 	}
 	else if (WIFSIGNALED (exitStatus)) {
 	  builder->exitEvent (pid, true, WTERMSIG (exitStatus),

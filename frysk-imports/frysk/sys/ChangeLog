@@ -1,3 +1,10 @@
+2007-04-09  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx: In processStatus (int pid, int status,
+	frysk::sys::WaitBuilder* builder), replace references to
+	WCOREDUMP(status) with 'false' in two places where WCOREDUMP()
+	isn't valid.
+
 2007-04-05  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceServer.java (REGS, FPREGS, FPXREGS): Delete.
