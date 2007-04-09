@@ -79,9 +79,8 @@
 /* Decode and log a waitpid result, but only when logging.  */
 
 static void
-log (pid_t pid, int status, int err)
+log (java::util::logging::Logger *logger, pid_t pid, int status, int err)
 {
-  java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   if (!(logger->isLoggable(java::util::logging::Level::FINEST)))
     return;
   if (pid > 0) {
@@ -225,6 +224,7 @@ processStatus (int pid, int status,
 void
 frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
 {
+  java::util::logging::Logger *logger = getLogger ();
   struct WaitResult {
     pid_t pid;
     int status;
@@ -246,7 +246,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
     errno = 0;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
     myErrno = errno;
-    log (tail->pid, tail->status, errno);
+    log (logger, tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
     tail->next = (WaitResult*) alloca (sizeof (WaitResult));
@@ -288,7 +288,7 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
   errno = 0;
   pid_t pid = ::waitpid (wpid, &status, __WALL);
   int myErrno = errno;
-  log (pid, status, errno);
+  log (getLogger(), pid, status, errno);
   if (pid <= 0)
     throwErrno (myErrno, "waitpid", "process", wpid);
   // Process the result.
@@ -304,7 +304,7 @@ void frysk::sys::Wait::drain (jint wpid)
     errno = 0;
     pid_t pid = ::waitpid (wpid, &status, __WALL);
     int err = errno;
-    log (pid, status, err);
+    log (getLogger (), pid, status, err);
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
@@ -319,7 +319,7 @@ void frysk::sys::Wait::drainNoHang (jint wpid)
     errno = 0;
     pid_t pid = ::waitpid (wpid, &status, __WALL| WNOHANG);
     int err = errno;
-    log (pid, status, err);
+    log (getLogger (), pid, status, err);
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
@@ -344,7 +344,6 @@ struct wait_jmpbuf {
   pid_t tid;
   int status;
   sigset_t signals;
-  sigset_t mask;
   sigjmp_buf buf;
 };
 static struct wait_jmpbuf wait_jmpbuf;
@@ -358,7 +357,6 @@ waitInterrupt (int signum)
   pid_t me = ::syscall (__NR_gettid);
   if (wait_jmpbuf.tid == me) {
     sigaddset (&wait_jmpbuf.signals, signum);
-    sigdelset (&wait_jmpbuf.mask, signum);
     if (wait_jmpbuf.status == -1) {
       // waitpid hasn't returned a meaningful result, abort call.
       siglongjmp (wait_jmpbuf.buf, signum);
@@ -417,63 +415,6 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
   sigaction (signum, &sa, NULL);
 }
 
-static int
-waitForEvent (bool block, bool wait)
-{
-  sigset_t mask = wait_jmpbuf.mask;
-
-  // Establish a jump buf so that, when a signal is delivered, the
-  // waitpid call sequence can be interrupted and this method return.
-  wait_jmpbuf.tid = ::syscall (__NR_gettid);
-  int signum = sigsetjmp (wait_jmpbuf.buf, 1);
-  if (signum > 0) {
-    return -EINTR;
-  }
-
-  // Set the STATUS to something that waitpid() will not return.  When
-  // a waitpid() system call completes successfully STATUS gets
-  // changed, and waitInterrupt() can use that to detect the success.
-  wait_jmpbuf.status = -1;
-
-  // Unmask signals, from this point on, things can be interrupted.
-  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
-  if (errno != 0)
-    throwErrno (errno, "pthread_sigmask.UNBLOCK");
-
-  // Block waiting for a waitpid or signal event.
-
-  // A signal delivered here will see that STATUS==-1, indicating that
-  // the waitpid() call has not completed successfully, will long-jump
-  // back to the above sigsetjmp causing the waitpid() call to be
-  // aborted.
-
-  int status = 0;
-  if (wait) {
-    status = ::waitpid (-1, &wait_jmpbuf.status,
-			__WALL | (block ? 0 : WNOHANG));
-  }
-  else if (block) {
-    status = ::select (0, NULL, NULL, NULL, NULL);
-  }
-
-  // A signal delivered here that sees STATUS!=-1, indicating that
-  // waitpid() has completed and is in the process of returning the
-  // PID, will return normally allowing this code to resume and ensure
-  // that the waitpid event is not lost.
-
-  // A signal delivered here that sees STATUS==-1, indicating that
-  // either the waitpid() call failed (no result) or select() was
-  // called, will long-jump back to the above sigsetjmp and cause any
-  // error status to be abandoned.
-
-  if (status < 0)
-    status = -errno; // Save the errno across the mask sigmask call.
-  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
-  if (errno != 0)
-    throwErrno (errno, "pthread_sigmask.BLOCK");
-  return status;
-}
-
 void
 frysk::sys::Wait::waitAll (jlong millisecondTimeout,
 			   frysk::sys::WaitBuilder* waitBuilder,
@@ -491,70 +432,119 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
   // Set up a new timeout and it's handler.
   logFinest (&frysk::sys::Wait::class$, logger,
 	     "install new timeout & SIGALRM\n");
-  struct sigaction alarm_action;
-  memset (&alarm_action, 0, sizeof (alarm_action));
-  alarm_action.sa_handler = waitInterrupt;
-  sigfillset (&alarm_action.sa_mask);
-  sigaction (SIGALRM, &alarm_action, NULL);
-  timeout.it_value.tv_sec = millisecondTimeout / 1000;
-  timeout.it_value.tv_usec = (millisecondTimeout % 1000) * 1000;
-  setitimer (ITIMER_REAL, &timeout, NULL);
-
-  // Create a linked list of the waitpid events that are received;
-  // keep it on the stack to avoid malloc() overhead.
-  struct event* firstEvent = (struct event*) alloca (sizeof (struct event));
-  struct event* lastEvent = firstEvent;
+  if (millisecondTimeout > 0) {
+    struct sigaction alarm_action;
+    memset (&alarm_action, 0, sizeof (alarm_action));
+    alarm_action.sa_handler = waitInterrupt;
+    sigfillset (&alarm_action.sa_mask);
+    sigaction (SIGALRM, &alarm_action, NULL);
+    timeout.it_value.tv_sec = millisecondTimeout / 1000;
+    timeout.it_value.tv_usec = (millisecondTimeout % 1000) * 1000;
+    setitimer (ITIMER_REAL, &timeout, NULL);
+  }
 
   // Get the signal mask of all allowed signals; clear the set of
   // received signals.  Need to include SIGALRM.
-  wait_jmpbuf.mask = *getRawSet (signalSet);
-  sigaddset (&wait_jmpbuf.mask, SIGALRM);
+  sigset_t mask = *getRawSet (signalSet);
+  sigaddset (&mask, SIGALRM);
+
+  // Set the STATUS to something that waitpid() will not return.  When
+  // a waitpid() system call completes successfully STATUS gets
+  // changed, and waitInterrupt() can use that to detect the success.
+  wait_jmpbuf.status = -1;
   sigemptyset (&wait_jmpbuf.signals);
  
-  bool block = (millisecondTimeout > 0);
-  bool wait = waitBuilder != NULL;
-  pid_t pid;
-  while (true) {
-    logFinest (&frysk::sys::Wait::class$, logger,
-	       "waitForEvent block=%d wait=%d...\n", block, wait);
-    pid = waitForEvent (block, wait);
-    if (pid > 0) {
-      logFinest (&frysk::sys::Wait::class$, logger,
-		 "waitForEvent returned pid %d\n", pid);
-      // There's a waitpid status; do more waitpid calls with blocking
-      // disabled so that all pending waitpid events are collected.
-      lastEvent->pid = pid;
-      lastEvent->status = wait_jmpbuf.status;
-      lastEvent->next = (struct event*) alloca (sizeof (struct event));
-      lastEvent = lastEvent->next;
-      block = false;
-      continue;
-    }
-    else if (pid == -ECHILD) {
-      logFinest (&frysk::sys::Wait::class$, logger,
-		 "waitForEvent returned ECHILD\n");
-      // Either no children, or all waitpid events have been gathered.
-      // Try again but block but not using waitpid.  If the timer has
-      // expired, don't even block.
-      wait = false;
-      block &= !sigismember (&wait_jmpbuf.signals, SIGALRM);
-    }
-    else if (pid == -EINTR) {
-      logFinest (&frysk::sys::Wait::class$, logger,
-		 "waitForEvent returned EINTR\n");
-      // Call was interrupted by a signal, drain any remaining signals
-      // and waitpid events but do not block.
-      block = false;
-    }
-    else {
-      logFinest (&frysk::sys::Wait::class$, logger,
-		 "waitForEvent returned %d (%s)\n", pid, strerror (-pid));
-      break;
-    }
+  // Establish a jump buf so that, when a signal is delivered while
+  // entering the blocking waitpid call, the waitpid call sequence can
+  // be interrupted and control be returned to here.
+  bool block = (millisecondTimeout != 0);
+  wait_jmpbuf.tid = ::syscall (__NR_gettid);
+  int signum = sigsetjmp (wait_jmpbuf.buf, 1);
+  if (signum > 0) {
+    // Interrupted by SIGNUM, disable further blocking.  When multiple
+    // signals are pending, each will cause a longjmp back to here.
+    sigdelset (&mask, signum);
+    block = false;
   }
 
+  // Unmask signals; from this point on, things can be interrupted.
+  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.UNBLOCK");
+
+  // A signal delivered here will see that STATUS==-1, indicating that
+  // the waitpid() call has not completed successfully, will long-jump
+  // back to the above sigsetjmp causing the waitpid() call to be
+  // aborted.
+
+  int pid = 0;
+  if (waitBuilder != NULL) {
+    pid = ::waitpid (-1, &wait_jmpbuf.status,
+			__WALL | (block ? 0 : WNOHANG));
+    if (pid < 0 && errno == ECHILD && block)
+      // No children; block anyway.
+      pid = ::select (0, NULL, NULL, NULL, NULL);
+  }
+  else if (block) {
+    pid = ::select (0, NULL, NULL, NULL, NULL);
+  }
   if (pid < 0)
-    throwErrno (-pid, "waitpid");
+    pid = -errno;
+
+  // A signal delivered here that sees STATUS!=-1, indicating that
+  // waitpid() has completed and is in the process of returning the
+  // PID, will return normally allowing this code to resume and ensure
+  // that the waitpid event is not lost.
+
+  // A signal delivered here that sees STATUS==-1, indicating that
+  // either the waitpid() call failed (no result) or select() was
+  // called, will long-jump back to the above sigsetjmp and cause any
+  // error status to be abandoned.
+
+  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.BLOCK");
+
+  // Made it all the way through a [blocking] waitpid call without
+  // being restarted.
+  log (logger, pid, wait_jmpbuf.status, -pid);
+
+  // Create a linked list of the waitpid events that are received;
+  // keep it on the stack to avoid malloc() overhead.
+  struct event* firstEvent = NULL;
+  if (pid > 0) {
+    // Save the first waitpid status.
+    firstEvent = (struct event*) alloca (sizeof (struct event));
+    firstEvent->pid = pid;
+    firstEvent->status = wait_jmpbuf.status;
+    firstEvent->next = NULL;
+    struct event* lastEvent = firstEvent;
+    // Do more waitpid calls with blocking disabled so that all
+    // pending waitpid events are collected.
+    while (true) {
+      int status;
+      pid = ::waitpid (-1, &status, __WALL|WNOHANG);
+      log (logger, pid, status, errno);
+      if (pid <= 0)
+	break;
+      if (pid == lastEvent->pid && status == lastEvent->status) {
+	// When an attached child process terminats, it generates two
+	// identical waitpid events: one for the parent thread; and one
+	// for the attached thread.  When the parent and attached
+	// threads are different but in the same process, both events
+	// are seen.  Discard the duplicate.
+	continue;
+	logFinest (&frysk::sys::Wait::class$, logger,
+		   "discarding duplicate terminated event for pid %d\n", pid);
+      }
+      // Append the event.
+      lastEvent->next = (struct event*) alloca (sizeof (struct event));
+      lastEvent = lastEvent->next;
+      lastEvent->pid = pid;
+      lastEvent->status = status;
+      lastEvent->next = NULL;
+    }
+  }
 
   // Deliver any signals received during the waitpid; XXX: Is there a
   // more efficient way of doing this?
@@ -569,7 +559,7 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
 
   // Deliver all pending waitpid() events.
   struct event *curr;
-  for (curr = firstEvent; curr != lastEvent; curr = curr->next) {
+  for (curr = firstEvent; curr != NULL; curr = curr->next) {
     processStatus (curr->pid, curr->status, waitBuilder);
   }
 }

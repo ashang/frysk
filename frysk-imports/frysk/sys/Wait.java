@@ -82,10 +82,13 @@ public final class Wait
      */
     public native static void waitAllNoHang (WaitBuilder builder);
     /**
-     * Wait for a waitpid or signal event.  Returns when either timer
-     * has expired or at least one event has been received.
+     * Wait for a waitpid or signal event.  Returns when at least one
+     * event has been received, or the specified timeout has expired.
+     *
+     * Note that this implements the timeout using ITIMER_REAL and
+     * SIGALRM.
      */
-    public native static void waitAll (long millisecondTimeout,
+    public native static void waitAll (long timeoutMilliseconds,
 				       WaitBuilder waitBuilder,
 				       SignalBuilder signalBuilder);
 

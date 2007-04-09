@@ -212,7 +212,8 @@ class LinuxPtraceWaitBuilder
     {
         Task task = getTask(pid, "{0} terminated\n");
 	if (task == null)
-	    logger.log(Level.WARNING, "No task for pid {0}\n", new Integer(pid));
+	    logger.log(Level.WARNING, "No task for pid {0,number,integer}\n",
+		       new Integer(pid));
 	else
 	    task.processTerminatedEvent(signal, value);
     }

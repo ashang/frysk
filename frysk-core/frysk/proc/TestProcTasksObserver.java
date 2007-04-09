@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -257,15 +257,11 @@ public class TestProcTasksObserver extends TestLib {
 	
     public void testCloneThenKillAttached() 
     {
-	if (brokenIfUtraceXXX (3486))
-	    return;
 	AckProcess ackProcess = new AttachedAckProcess ();
 	cloneThenKill(ackProcess);
     }
 	
     public void testDeleteAttached() {
-	if (brokenIfUtraceXXX (3486))
-	    return;
 	AckProcess ackProcess = new AttachedAckProcess (1);
 	delete(ackProcess);
     }

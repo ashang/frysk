@@ -1,3 +1,10 @@
+2007-04-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (log): Add "logger" parameter, update calls.
+	(waitForEvent): Delete.
+	(waitAll): Use "log".  Replace loop calling waitForEvent with
+	multiple waitpid calls.
+
 2007-04-09  Chris Moller  <moller@mollerware.com>
 
 	* cni/Wait.cxx: In processStatus (int pid, int status,
