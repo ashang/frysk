@@ -1,3 +1,9 @@
+2007-04-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* gladedir/frysk_filechooser.glade: Minor change for data entry
+	stuff.
+	* gladedir/frysk_filechooser.gladep: Ditto.
+
 2007-04-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Revert 2007-04-05 Sami Wagiaalla <swagiaal@redhat.com> change.
