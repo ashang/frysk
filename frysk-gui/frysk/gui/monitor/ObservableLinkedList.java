@@ -74,13 +74,16 @@ public class ObservableLinkedList extends LinkedList implements SaveableXXX {
 		this.itemRemoved = new GuiObservable();
 	}
 	
-	public ObservableLinkedList(ObservableLinkedList other){
-//		super(collection);
+	public ObservableLinkedList(ObservableLinkedList other, boolean copyObjects){
+	        super(other);
 
 		this.itemAdded = new GuiObservable();
 		this.itemRemoved = new GuiObservable();
 		
-		this.copyFromList(other);
+		if(copyObjects){
+		  this.clear();
+		  this.copyFromList(other);
+		}
 		
 	}
 	
@@ -89,18 +92,6 @@ public class ObservableLinkedList extends LinkedList implements SaveableXXX {
 		while (iterator.hasNext()) {
 			GuiObject original = (GuiObject) iterator.next() ;
 			GuiObject copy;
-			
-//			Class cls;
-//			try {
-//				cls = Class.forName(original.getClass().getName());
-//				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{original.getClass()});
-//				copy =  constr.newInstance(new Object[] {original});
-//				this.add(copy);
-//			} catch (Exception e) {
-//				System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
-//				System.out.println("ObservableLinkedList.copyFromList() could not find constructor " + original.getClass() +"("+ original.getClass() +")");
-//				e.printStackTrace();
-//			}
 			
 			copy =  original.getCopy();
 			if(copy == null){
@@ -133,8 +124,9 @@ public class ObservableLinkedList extends LinkedList implements SaveableXXX {
 			this.itemRemoved.notifyObservers(o);			
 			return true;
 		}else{
-			return false;
-		} 
+			throw new IllegalArgumentException("You are trying to remove an object which does not belong to this list." +
+					"If this is intentional catch the exception");
+		}
 	}
 	
 	public void clear(){

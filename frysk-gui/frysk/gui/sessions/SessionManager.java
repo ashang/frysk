@@ -62,6 +62,7 @@ public class SessionManager
   public static SessionManager theManager = new SessionManager();
 
   ObservableLinkedList sessions = new ObservableLinkedList();
+//  private Stack backupSessionStack;
   
   private Session currentSession;
   public final GuiObservable currentSessionChanged;
@@ -70,12 +71,10 @@ public class SessionManager
 
   private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 
-  private Session previousSession;
-
   public SessionManager ()
   {
     this.currentSessionChanged = new GuiObservable();
-    
+//    this.backupSessionStack = new Stack();
     ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
     load();
   }
@@ -153,7 +152,6 @@ public class SessionManager
    * @param session
    */
   public void setCurrentSession(Session session){
-    this.previousSession = currentSession;
     this.currentSession = session;
     this.currentSessionChanged.notifyObservers(currentSession);
   }
@@ -165,15 +163,7 @@ public class SessionManager
   public Session getCurrentSession(){
     return currentSession;
   }
-  
-  /**
-   * returns the prevoius session. Needed for clean up perposes
-   * @return
-   */
-  public Session getPrevoiusSession(){
-    return this.previousSession;
-  }
-  
+    
   public void save ()
   {
     final Iterator iterator = getSessions().iterator();
@@ -215,5 +205,11 @@ public class SessionManager
         addSession(loadedSession);
       }
 
+  }
+  
+  protected void finalize () throws Throwable
+  {
+    super.finalize();
+    save();
   }
 }

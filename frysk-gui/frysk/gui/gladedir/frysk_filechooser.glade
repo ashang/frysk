@@ -4,7 +4,6 @@
 <glade-interface>
 
 <widget class="GtkFileChooserDialog" id="frysk_filechooserdialog">
-  <property name="border_width">12</property>
   <property name="visible">True</property>
   <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
   <property name="local_only">True</property>
@@ -41,6 +40,33 @@
 	<widget class="GtkHButtonBox" id="dialog-action_area1">
 	  <property name="visible">True</property>
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
+
+	  <child>
+	    <widget class="GtkButton" id="button1">
+	      <property name="visible">True</property>
+	      <property name="can_default">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label">gtk-cancel</property>
+	      <property name="use_stock">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <property name="response_id">-6</property>
+	    </widget>
+	  </child>
+
+	  <child>
+	    <widget class="GtkButton" id="button2">
+	      <property name="visible">True</property>
+	      <property name="can_default">True</property>
+	      <property name="has_default">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label">gtk-open</property>
+	      <property name="use_stock">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <property name="response_id">-5</property>
+	    </widget>
+	  </child>
 	</widget>
 	<packing>
 	  <property name="padding">0</property>
@@ -76,7 +102,7 @@
       </child>
 
       <child>
-	<widget class="GtkEntry" id="envVariables">
+	<widget class="GtkEntry" id="env_variables">
 	  <property name="visible">True</property>
 	  <property name="tooltip" translatable="yes">Enter any environment variables to be set before task activation separated by commas, e.g., FOO=xyz,BAR=abc</property>
 	  <property name="can_default">True</property>
@@ -99,7 +125,7 @@
       <child>
 	<widget class="GtkLabel" id="label2">
 	  <property name="visible">True</property>
-	  <property name="label" translatable="yes">Options to Pass to the Task on the Commandline(if any)</property>
+	  <property name="label" translatable="yes">Options to Pass to the Task on the Commandline</property>
 	  <property name="use_underline">False</property>
 	  <property name="use_markup">False</property>
 	  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -122,7 +148,7 @@
       </child>
 
       <child>
-	<widget class="GtkEntry" id="taskOptions">
+	<widget class="GtkEntry" id="task_options">
 	  <property name="visible">True</property>
 	  <property name="tooltip" translatable="yes">These options will be added after the task name selected above.</property>
 	  <property name="can_focus">True</property>

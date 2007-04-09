@@ -40,6 +40,8 @@
 package frysk.gui.monitor;
 
 import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * A HashMap of GuiObjects. Makes sure that the objects added to it
@@ -49,10 +51,11 @@ import java.util.HashMap;
 public class UniqueHashMap{
 	
 	private HashMap nameHash;
+	private HashMap keyHash;
 	
 	public UniqueHashMap(){
 		this.nameHash = new HashMap();
-		this.nameHash.clear();
+		this.keyHash = new HashMap();
 	}
 	
 	/**
@@ -66,7 +69,8 @@ public class UniqueHashMap{
 	
 	public void clear()
 	{
-		this.nameHash.clear();
+	  this.nameHash.clear();
+	  this.keyHash.clear();
 	}
 	
 	public void add(GuiObject object){
@@ -74,17 +78,33 @@ public class UniqueHashMap{
 			throw new IllegalArgumentException("The given item name"+"["+ object.getName()+"]"+" is already used");
 		}else{
 			this.nameHash.put(object.getName(), object);
+			this.keyHash.put(object, object.getName());
+			object.propertiesChanged.addObserver(this.nameChangedObserver);
 		}
 	}
 	
 	public void remove(GuiObject object){
-	    //System.out.println(this + ": UniqueHashMap.remove() " + object.getName());
-		if(this.nameHash.remove(object.getName()) == null){
-			throw new RuntimeException("Object ["+object+"] is not in the hashMap");
-		}
+	    if(this.nameHash.remove(object.getName()) == null){
+	      throw new RuntimeException("Object ["+object+"] is not in the hashMap");
+	    }
+	    this.keyHash.remove(object);
+	    object.propertiesChanged.deleteObserver(nameChangedObserver);
 	}
 	
 	public GuiObject get(String name){
-		return (GuiObject) this.nameHash.get(name);
+	  return (GuiObject) this.nameHash.get(name);
 	}
+	
+	Observer nameChangedObserver = new Observer()
+	{
+	  public void update (Observable observable, Object object)
+	  {
+	    String key = (String) keyHash.get(object);
+	    nameHash.remove(key);
+	    keyHash.remove(object);
+	    ((GuiObject) object).propertiesChanged.deleteObserver(nameChangedObserver);
+	    
+	    add((GuiObject) object);
+	  }
+	};
 }

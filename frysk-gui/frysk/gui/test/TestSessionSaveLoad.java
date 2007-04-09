@@ -83,7 +83,7 @@ public class TestSessionSaveLoad extends TestCase {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
 			mySavedSession.addObserver(observer);
 		}
-		mySavedSession.addProcess(debugProcess);
+		mySavedSession.addDebugProcess(debugProcess);
 		sessionManager.save();
 		
 		

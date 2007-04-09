@@ -86,7 +86,7 @@ public class GuiObservable
         throw new IllegalArgumentException(
                                            "the passed item ["
                                                + victim
-                                               + "] is not a member of this Liason point");
+                                               + "] is not a member of this Observable");
       }
     super.deleteObserver(victim);
   }

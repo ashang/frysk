@@ -64,7 +64,6 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 
 	public void apply(Proc proc){
-       
 	    new ProcTasksObserver (proc, new ProcTasks()
 		{
 		    public void taskAdded(Task task)
