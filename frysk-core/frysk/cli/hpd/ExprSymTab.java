@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -74,7 +74,6 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.rt.Subprogram;
 import frysk.sys.Errno;
-import frysk.sys.PtraceByteBuffer;
 
 class ExprSymTab
     implements CppSymTab
@@ -118,11 +117,8 @@ class ExprSymTab
   {
     this.task = task;
     this.pid = pid;
-    // ??? 0x7fffffffffffffff
-    buffer = new PtraceByteBuffer(task.getTid(), PtraceByteBuffer.Area.DATA,
-                                  0x7fffffffffffffffl);
+    buffer = task.getMemory ();
     ByteOrder byteorder = task.getIsa().getByteOrder();
-    buffer = buffer.order(byteorder);
 
     if (frame == null)
       {

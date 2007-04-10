@@ -1,3 +1,9 @@
+2007-04-10  Andrew Cagney  <cagney@redhat.com>
+	    Phil Muldoon  <pmuldoon@redhat.com>
+
+	* hpd/ExprSymTab.java: Replace PtraceByteBuffer with
+	Task.getMemory.
+	
 2007-04-08  Mike Cvet  <mcvet@redhat.com>
 
 	* hpd/CLI.java (RunStateObserver.update): Updated calls to
