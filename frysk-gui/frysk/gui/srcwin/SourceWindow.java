@@ -43,12 +43,13 @@ package frysk.gui.srcwin;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+//import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import lib.dw.NoDebugInfoException;
+
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
@@ -132,6 +133,8 @@ import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.value.Variable;
 import frysk.vtecli.ConsoleWindow;
+
+import lib.dw.NoDebugInfoException;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -301,6 +304,8 @@ public class SourceWindow
 
   private LockObserver lock;
   
+  protected ThreadLifeObserver threadObserver;
+  
   private org.gnu.gtk.FileChooserDialog chooser;
   
   private FileChooserDialog fc;
@@ -331,6 +336,8 @@ public class SourceWindow
     this.lock = new LockObserver();
     this.runState.addObserver(lock);
     this.runState.setProc(proc);
+    this.threadObserver = new ThreadLifeObserver();
+    this.runState.setThreadObserver(this.threadObserver);
   }
   
   public SourceWindow (LibGlade glade, String gladePath, Proc[] procs)
@@ -350,6 +357,8 @@ public class SourceWindow
     this.dom = new DOMFrysk[this.numProcs];
     this.runState.addObserver(lock);
     this.runState.setProcs(procs);
+    this.threadObserver = new ThreadLifeObserver();
+    this.runState.setThreadObserver(this.threadObserver);
   }
   
   public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
@@ -710,6 +719,43 @@ public class SourceWindow
 	this.stackView.addProc(this.frames[oldSize], oldSize);
 	
 	resensitize();
+  }
+  
+  protected void removeProc ()
+  {
+	int oldSize = this.numProcs;
+	--this.numProcs;
+
+	StackFrame[][] newFrames = new StackFrame[numProcs][];
+	DOMFrysk[] newDom = new DOMFrysk[numProcs];
+	SymTab[] newSymTab = new SymTab[numProcs];
+	Proc[] newSwProc = new Proc[numProcs];
+	
+	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
+	this.runState.continueExecution(this.swProc[this.current].getTasks());
+	
+	int j = 0;
+	for (int i = 0; i < oldSize; i++)
+	  {
+		if (i != this.current)
+		  {
+			newFrames[j] = new StackFrame[this.frames[i].length];
+			System.arraycopy(this.frames[i], 0, newFrames[j], 0, this.frames[i].length);
+			newDom[j] = this.dom[i];
+			newSymTab[j] = this.symTab[i];
+			newSwProc[j] = this.swProc[i];
+			++j;
+		  }
+	  }
+	
+	this.frames = newFrames;
+	this.dom = newDom;
+	this.symTab = newSymTab;
+	this.swProc = newSwProc;
+	this.stackView.removeProc(this.current);
+	
+	this.current = 0;
+	this.currentTask = this.swProc[this.current].getMainTask();
   }
 
   /***************************************************************************
@@ -2287,65 +2333,65 @@ public class SourceWindow
    */
   private void doStackUp ()
   {
-	TreePath path = null;
-	try
+    TreePath path = null;
+    try
+      {
+	path = this.stackView.getSelection().getSelectedRows()[0];
+      }
+    catch (ArrayIndexOutOfBoundsException ae)
+      {
+	return;
+      }
+
+    int selected;
+
+    if (path.getDepth() == 2)
+      {
+	selected = path.getIndices()[0];
+
+	// Can't move above top stack
+	if (selected == 0)
 	  {
-		path = this.stackView.getSelection().getSelectedRows()[0];
-	  }
-	catch (ArrayIndexOutOfBoundsException ae)
-	  {
-		return;
-	  }
-
-	int selected;
-
-	if (path.getDepth() == 2)
-	  {
-		selected = path.getIndices()[0];
-
-		// Can't move above top stack
-		if (selected == 0)
-		  {
-			this.stackUp.setSensitive(false);
-			return;
-		  }
-
-		this.stackView.getSelection().select(
-											 this.stackView.getModel().getIter(
-																			   ""
-											+ (selected - 1)));
-
-		if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
-		  this.stackUp.setSensitive(false);
-	  }
-	else
-	  {
-
-		selected = path.getIndices()[2];
-
-		// Can't move above top stack
-		if (selected == 0)
-		  return;
-
-		this.stackView.getSelection().select(
-											 this.stackView.getModel().getIter(
-																			   ""
-																				   + path.getIndices()[0]
-																				   + ":"
-																				   + (selected - 1)));
-
-		if (this.stackView.getModel().getIter(
-											  "" + path.getIndices()[0] + ":"
-												  + (selected - 1)) == null)
-		  this.stackUp.setSensitive(false);
+	    this.stackUp.setSensitive(false);
+	    return;
 	  }
 
-	this.stackDown.setSensitive(true);
+	this.stackView.getSelection().select(
+					     this.stackView.getModel().getIter(
+									       ""
+										   + (selected - 1)));
+
+	if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
+	  this.stackUp.setSensitive(false);
+      }
+    else
+      {
+
+	selected = path.getIndices()[2];
+
+	// Can't move above top stack
+	if (selected == 0)
+	  return;
+
+	this.stackView.getSelection().select(
+					     this.stackView.getModel().getIter(
+									       ""
+										   + path.getIndices()[0]
+										   + ":"
+										   + (selected - 1)));
+
+	if (this.stackView.getModel().getIter(
+					      "" + path.getIndices()[0] + ":"
+						  + (selected - 1)) == null)
+	  this.stackUp.setSensitive(false);
+      }
+
+    this.stackDown.setSensitive(true);
   }
 
   /**
-     * Tells the debugger to move to the following stack frame
-     */
+         * Tells the debugger to move to the following stack frame
+         */
   private void doStackDown ()
   {
     TreePath path = null;
@@ -2741,6 +2787,51 @@ public class SourceWindow
     }
 
   }
+  
+//  private HashSet deadThreads;
+  
+  private class ThreadLifeObserver
+  implements Observer
+  {
+//    public ThreadLifeObserver ()
+//    {
+//      SourceWindow.this.deadThreads = new HashSet();
+//    }
+    
+    public void update (Observable o, Object arg)
+    {      
+//      System.err.println("lifeobserver.update " + arg);
+      if (arg == null)
+	{
+//	  System.err.println("clearing stack view");
+	  setTitle("Frysk Source Window: All processes have exited.");
+	  SourceWindow.this.stackView.clear();
+	  SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
+//	  System.err.println("clearing buffer");
+	  b.clear();
+//	  System.err.println("desensitize");
+	  SourceWindow.this.desensitize();
+	  SourceWindow.this.stop.setSensitive(false);
+//	  System.err.println("runstate clear");
+	  SourceWindow.this.runState.clear();
+	  
+	  return;
+	}
+      
+      Task t = (Task) arg;
+//      SourceWindow.this.deadThreads.add(t);
+      
+      LinkedList tasks = SourceWindow.this.swProc[SourceWindow.this.current].getTasks();
+//      System.err.println("SourceWindow: Task has been killed: " + t);
+      
+      if (tasks.contains(t) && tasks.size() == 1)
+	{
+	  removeProc();
+	  SW_add = false;
+	  lock.update(null, new Object());
+	}
+    }
+  }
 
   private boolean SW_add = false;
   
@@ -2765,53 +2856,54 @@ public class SourceWindow
     public void update (Observable o, Object arg)
     {
       /* We don't need to worry about this case here */
+      //      System.err.println("LockObserver.update " + arg);
       if (arg == null)
-        return;
-      
+	return;
+
       if (SW_active)
-        {
-        	if (SW_add == false)
-        		{
-          /*
-           * This callback was called because all our Proc's Tasks were blocked
-           * because of some state change operation. Re-generate the stack trace
-           * information and refresh the window.
-           */
-          CustomEvents.addEvent(new Runnable()
-          {
-            public void run ()
-            {
-              SourceWindow.this.frames[SourceWindow.this.current] 
-  = generateProcStackTrace(SourceWindow.this.swProc[SourceWindow.this.current], 
-                           SourceWindow.this.current);
-              populateStackBrowser(SourceWindow.this.frames);
-              SourceWindow.this.runState.notifyStopped();
-              procReblocked();
-            }
-          });
-        }
-        	else
-        		{
-        			appendProc ((Task) arg);
-        		}
-        }
+	{
+	  if (SW_add == false)
+	    {
+	      /*
+	       * This callback was called because all our Proc's Tasks were blocked
+	       * because of some state change operation. Re-generate the stack trace
+	       * information and refresh the window.
+	       */
+	      CustomEvents.addEvent(new Runnable()
+	      {
+		public void run ()
+		{
+		  SourceWindow.this.frames[SourceWindow.this.current] = generateProcStackTrace(
+											       SourceWindow.this.swProc[SourceWindow.this.current],
+											       SourceWindow.this.current);
+		  populateStackBrowser(SourceWindow.this.frames);
+		  SourceWindow.this.runState.notifyStopped();
+		  procReblocked();
+		}
+	      });
+	    }
+	  else
+	    {
+	      appendProc((Task) arg);
+	    }
+	}
       else
-        {
-          /*
-           * The very first time all the Tasks are blocked is when we're
-           * initializing this window.
-           */
-          SW_active = true;
-          
-          CustomEvents.addEvent(new Runnable()
-          {
-            public void run ()
-            {
-              finishSourceWin();
-            }
-          });
-          return;
-        }
+	{
+	  /*
+	   * The very first time all the Tasks are blocked is when we're
+	   * initializing this window.
+	   */
+	  SW_active = true;
+
+	  CustomEvents.addEvent(new Runnable()
+	  {
+	    public void run ()
+	    {
+	      finishSourceWin();
+	    }
+	  });
+	  return;
+	}
     }
   }
   

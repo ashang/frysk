@@ -116,13 +116,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   private Map stateMap;
   
+  private ThreadLifeObservable threadLifeObservable;
+  
   /**
    * Constructor - sets the InstructionObserver for this model and initializes
    * the Maps and Set.
    */
   public RunState ()
   {
-	this.stateMap = Collections.synchronizedMap(new HashMap());
+    this.stateMap = Collections.synchronizedMap(new HashMap());
     this.dwflMap = new HashMap();
     this.lineMap = new HashMap();
     this.runningTasks = new HashSet();
@@ -599,40 +601,53 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public void stop (LinkedList keepRunning, LinkedList stopTasks)
   {
-    if (keepRunning == null)
+    if (keepRunning == null || keepRunning.size() == 0)
       {
-		this.current = 0;
-		this.tasks[0] = stopTasks;
-        requestAdd(stopTasks);
+	this.current = 0;
+	this.tasks[0] = stopTasks;
+	requestAdd(stopTasks);
       }
     else
       {
-        if (keepRunning.size() == 0)
-        	{
-        		this.current = 0;
-        		this.tasks[0] = stopTasks;
-        		requestAdd(stopTasks);
-        	}
-        else
-          {
-            synchronized (this.tasks)
-              {
-                Iterator i = this.runningTasks.iterator();
-                LinkedList blockTasks = new LinkedList();
-                while (i.hasNext())
-                  {
-                    Task t = (Task) i.next();
-                    if (! keepRunning.contains(t))
-                      {
-                        blockTasks.add(t);
-                        i.remove();
-                      }
-                  }
-                blockTask(blockTasks);
-              }
-          }
+	synchronized (this.tasks)
+	  {
+	    Iterator i = this.runningTasks.iterator();
+	    LinkedList blockTasks = new LinkedList();
+	    while (i.hasNext())
+	      {
+		Task t = (Task) i.next();
+		if (! keepRunning.contains(t))
+		  {
+		    blockTasks.add(t);
+		    i.remove();
+		  }
+	      }
+	    blockTask(blockTasks);
+	  }
       }
     this.runningTasks.clear();
+  }
+  
+  public void cleanTask (Task task)
+  {
+    this.contextMap.remove(task);
+    this.dwflMap.remove(task);
+    this.lineMap.remove(task);
+    this.runningTasks.remove(task);
+    this.stateMap.remove(task);
+  }
+  
+  public void clear ()
+  {
+    this.breakpointMap.clear();
+    this.contextMap.clear();
+    this.dwflMap.clear();
+    this.lineMap.clear();
+    this.runningTasks.clear();
+    this.stateMap.clear();
+    this.tasks = null;
+    this.threadLifeObservable = null;
+    this.breakpoint = null;
   }
 
   
@@ -771,6 +786,19 @@ public class RunState extends Observable implements TaskObserver.Instruction
 	  }
   }
   
+  public boolean isProcRunning (LinkedList tasks)
+  {
+	Iterator iter = tasks.iterator();
+	while (iter.hasNext())
+	  {
+		Task t = (Task) iter.next();
+		if (((Integer) this.stateMap.get(t)).intValue() == RUNNING)
+		  return true;
+	  }
+	
+	return false;
+  }
+  
   /**
    * Decrement the number of running Tasks.
    */
@@ -823,6 +851,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
 //    this.numRunningTasks = num;
 //  }
   
+  public void setThreadObserver (Observer o)
+  {
+    this.threadLifeObservable.addObserver(o);
+  }
+  
   /**
    * Get the number of Observers watching this Observable.
    * 
@@ -846,20 +879,11 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public int getTaskState (Task task)
   {
-	return ((Integer) this.stateMap.get(task)).intValue();
-  }
-  
-  public boolean isProcRunning (LinkedList tasks)
-  {
-	Iterator iter = tasks.iterator();
-	while (iter.hasNext())
-	  {
-		Task t = (Task) iter.next();
-		if (((Integer) this.stateMap.get(t)).intValue() == RUNNING)
-		  return true;
-	  }
-	
-	return false;
+    Integer i = (Integer) this.stateMap.get(task);
+    if (i == null)
+      return RUNNING;
+    else
+      return i.intValue();
   }
   
   /**
@@ -896,10 +920,15 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.contextMap.put(((Task) this.tasks[0].getFirst()).getProc(), new Integer(this.tasks[0].size()));
     this.current = 0;
     
+    this.threadLifeObservable = new ThreadLifeObservable();
+    
     Iterator iter = this.tasks[0].iterator();
     while(iter.hasNext())
       {
-    	this.stateMap.put((Task) iter.next(), new Integer(STOPPED));
+	Task t = (Task) iter.next();
+	t.requestAddTerminatingObserver(this.threadLifeObservable);
+	t.requestAddClonedObserver(this.threadLifeObservable);
+    	this.stateMap.put(t, new Integer(STOPPED));
       }
     
     requestAdd(this.tasks[0]);
@@ -914,6 +943,8 @@ public class RunState extends Observable implements TaskObserver.Instruction
     this.tasks = new LinkedList[procs.length];
     this.current = procs.length - 1;
     
+    this.threadLifeObservable = new ThreadLifeObservable();
+    
     for (int i = procs.length - 1; i >= 0; i--)
       {
         this.tasks[i] = procs[i].getTasks();
@@ -923,7 +954,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
         Iterator iter = this.tasks[i].iterator();
         while(iter.hasNext())
           {
-        	this.stateMap.put((Task) iter.next(), new Integer(STOPPED));
+            	Task t = (Task) iter.next();
+        	t.requestAddTerminatingObserver(this.threadLifeObservable);
+        	t.requestAddClonedObserver(this.threadLifeObservable);
+        	this.stateMap.put(t, new Integer(STOPPED));
           }
         
         requestAdd(tasks[i]);
@@ -932,25 +966,34 @@ public class RunState extends Observable implements TaskObserver.Instruction
   
   public boolean addProc (Proc proc)
   {
-  		LinkedList[] list = new LinkedList[this.tasks.length + 1];
-  		System.arraycopy(this.tasks, 0, list, 0, this.tasks.length);
-  		
-  		this.current = list.length - 1;
-  		list[this.current] = proc.getTasks();
-//  		this.numRunningTasks += list[this.current].size();
-  	    this.contextMap.put(((Task) list[this.current].getFirst()).getProc(),
-  	                        						new Integer(list[this.current].size()));
-  		this.tasks = list;
-  		
-  		requestAdd(this.tasks[this.current]);
-  		return true;
+    LinkedList[] list = new LinkedList[this.tasks.length + 1];
+    System.arraycopy(this.tasks, 0, list, 0, this.tasks.length);
+
+    this.current = list.length - 1;
+    list[this.current] = proc.getTasks();
+    this.contextMap.put(((Task) list[this.current].getFirst()).getProc(),
+			new Integer(list[this.current].size()));
+    this.tasks = list;
+    
+    Iterator iter = this.tasks[this.current].iterator();
+    while(iter.hasNext())
+      {
+        Task t = (Task) iter.next();
+    	t.requestAddTerminatingObserver(this.threadLifeObservable);
+    	t.requestAddClonedObserver(this.threadLifeObservable);
+    	this.stateMap.put(t, new Integer(STOPPED));
+      }
+
+    requestAdd(this.tasks[this.current]);
+    return true;
   }
   
   /**
-   * Get the number of Tasks this RunState is concerned with.
-   * 
-   * @return tasks.size() The number of Tasks this RunState is concerned with
-   */
+         * Get the number of Tasks this RunState is concerned with.
+         * 
+         * @return tasks.size() The number of Tasks this RunState is concerned
+         *         with
+         */
   public int getNumTasks ()
   {
     return tasks[this.current].size();
@@ -1023,8 +1066,10 @@ public class RunState extends Observable implements TaskObserver.Instruction
    */
   public Action updateExecuted (Task task)
   {
-//   System.err.println("UpdateExecuted " + task + " " + taskStepCount);
 	int state = ((Integer) this.stateMap.get(task)).intValue();
+	
+//	   System.err.println("UpdateExecuted " + task + " " + taskStepCount + " " + state);
+	
     if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_TEST)
       {
         switch (state)
@@ -1123,7 +1168,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   public void addFailed (Object o, Throwable w)
   {
     w.printStackTrace();
-    ((Proc) o).requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+    ((Task) o).getProc().requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
     //System.exit(1);
   }
 
@@ -1210,6 +1255,132 @@ public class RunState extends Observable implements TaskObserver.Instruction
       }
     });
   }
+  
+  /*****************************************************************************
+   * TASKOBSERVER.CLONED/TERMINATED OBSERVER CLASS
+   ****************************************************************************/
+  
+  protected class ThreadLifeObservable 
+  extends Observable
+  implements TaskObserver.Cloned, TaskObserver.Terminating
+  {
+	
+    public Action updateClonedParent (Task parent, Task offspring)
+    {
+      return Action.CONTINUE;
+    }
+
+    public Action updateClonedOffspring (Task parent, Task offspring)
+    {
+      offspring.requestAddInstructionObserver(RunState.this);
+      offspring.requestAddClonedObserver(this);
+      offspring.requestAddTerminatingObserver(this);
+      return Action.CONTINUE;
+    }
+    
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+//      System.err.println("threadlife: Terminating: " + task + " " + value);
+      int pid = task.getProc().getPid();
+
+      RunState.this.runningTasks.remove(task);
+      
+      Integer state = (Integer) RunState.this.stateMap.get(task);
+      if (state.intValue() >= STEP_INSTRUCTION
+	  && state.intValue() <= STEP_ADVANCE)
+	--RunState.this.taskStepCount;
+      
+      RunState.this.stateMap.remove(task);
+
+      int i;
+      for (i = 0; i < RunState.this.tasks.length; i++)
+	{
+	  if (((Task) (RunState.this.tasks[i].getFirst())).getProc().getPid() == pid)
+	    {
+//	      System.err.println("Removing task " + task);
+	      RunState.this.tasks[i].remove(task);
+	      
+	      if (RunState.this.tasks[i].size() > 0)
+		{
+//		  System.err.println("Decrementing numrunningtasks");
+		      this.setChanged();
+		      this.notifyObservers(task);
+		}
+	      else
+		{
+		  RunState.this.tasks[i] = null;
+		  if (RunState.this.tasks.length > 1)
+		    {
+//		      System.err.println("stateProcs.length > 1");
+		      RunState.this.current = 0;
+		      this.setChanged();
+		      this.notifyObservers(task);
+//		      int j = 0;
+//		      while (j < RunState.this.tasks.length)
+//			{
+//			  if (j != i)
+//			    {
+//			      RunState.this.current = j;
+//			      // Task t =
+//                                // RunState.this.stateProcs[j].getMainTask();
+//			      Task t = (Task) (RunState.this.tasks[j].getFirst());
+//			      RunState.this.current = j;
+//			      System.err.println("setting task to " + t);
+//			      RunState.this.contextMap.remove(task.getProc());
+//			      this.setChanged();
+//			      this.notifyObservers(task);
+////			      RunState.this.setChanged();
+////			      RunState.this.notifyObservers(t);
+//			      break;
+//			    }
+//			  ++j;
+//			}
+		    }
+		  else
+		    {
+		      this.setChanged();
+		      this.notifyObservers(null);
+		      System.err.println("Processes exited " + this.countObservers());
+		      return Action.CONTINUE;
+		    }
+		}
+	      break;
+	    }
+	}
+      
+	  LinkedList[] newTasks = new LinkedList[RunState.this.tasks.length - 1];
+	  int j = 0;
+	  for (int k = 0; k < tasks.length; k++)
+	    {
+	      if (k != i)
+		{
+		  newTasks[j] = tasks[k];
+		  ++j;
+		}
+	    }
+	  
+	  RunState.this.tasks = newTasks;
+	                                         
+
+//      return Action.CONTINUE;
+      return Action.BLOCK;
+    }
+
+    public void addedTo (Object observable)
+    {
+//      System.err.println("threadlife addedTo: " + (Task) observable);
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+    }
+  }
+  
   
   /*****************************************************************************
    * TASKOBSERVER.CODE BREAKPOINT CLASS

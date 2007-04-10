@@ -1,3 +1,15 @@
+2007-04-10  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (ThreadLifeObserver): Added. Receives thread
+	creation or destruction notifications from
+	RunState.ThreadLifeObservable. 
+	(removeProc): Added. Cleans up SourceWindow data structures after
+	a Proc has exited.
+	* CurrentStackView.java (refreshProc): Added code to append new Task
+	rows if necessary.
+	(removeProc): Added. Removes a process from the TreeView.
+	* SourceBuffer.java (clear): Added. Clears data from SourceBuffer.
+
 2007-04-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: More work on bz #4193, added getting of the

@@ -1,3 +1,21 @@
+2007-04-10  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (ThreadLifeObservable): New class. Watches for thread
+	creation and exits. 
+	(threadLifeObservable): Added. Global variable for above class.
+	(stop): Combined two if statements.
+	(cleanTask): Added. Cleans out exited Task information from RunState
+	data structures.
+	(clear): Added. Clears out all information from RunState data
+	structures.
+	(setThreadObserver): Added.
+	(getTaskState): Check for nulls.
+	(setProc): Initialized threadLifeObservable, added to any threads of
+	incoming Proc.
+	(setProcs): Ditto.
+	(addProc): Add threadLifeObservable to any incoming threads.
+	(addFailed): Properly get Proc from Object parameter.
+
 2007-04-08  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (contextMap): Added.

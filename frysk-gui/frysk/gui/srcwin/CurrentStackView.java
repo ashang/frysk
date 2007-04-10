@@ -146,6 +146,14 @@ public class CurrentStackView
 		boolean hasInlinedCode = false;
 		String row = "";
 		int level = 0;
+		
+		if (taskIter == null || ! treeModel.isIterValid(taskIter))
+		  {
+		    path.up();
+		    taskIter = treeModel.appendRow(treeModel.getIter(path));
+		    path = ((TreeRowReference) this.stackArray[current]).getPath();
+		  }
+		
 		treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1], null);
 		path.down();
 		iter = taskIter.getFirstChild();
@@ -360,7 +368,41 @@ public class CurrentStackView
 		appendRows(frame, taskIter);
 	  }
   }
+  
+  public void removeProc (int current)
+  {
+	TreePath path = ((TreeRowReference) this.stackArray[current]).getPath();
+	this.treeModel.removeRow(this.treeModel.getIter(path));
+	
+	int len = this.stackArray.length - 1;
+	Object[] tempArray = new Object[len];
+	
+	int j = 0;
+	for (int i = 0; i < this.stackArray.length; i++)
+	  {
+		if (i != current)
+		  tempArray[j++] = this.stackArray[i];
+	  }
+	
+	int loc = 0;
+	TreeIter iter = this.treeModel.getFirstIter();
+	
+	while (iter != null && this.treeModel.isIterValid(iter))
+	  {
+		treeModel.setValue(iter, (DataColumnObject) stackColumns[1],
+				   new Integer(loc));
+		++loc;
+		iter = iter.getNextIter();
+	  }
+	
+	this.stackArray = tempArray;
+  }
 
+  public void clear ()
+  {
+    this.treeModel.clear();
+  }
+  
   /**
    * @return The currently selected stack frame
    */

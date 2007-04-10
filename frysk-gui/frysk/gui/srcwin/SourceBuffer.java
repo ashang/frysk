@@ -1189,6 +1189,11 @@ public class SourceBuffer
         this.createTags();
   }
   
+  public void clear ()
+  {
+    this.deleteText(this.getStartIter(), this.getEndIter());
+  }
+  
   /**
    * The source we're looking at isn't handled by the parser, so just load it in.
    * @param frame   The StackFrame representing the current frame on
