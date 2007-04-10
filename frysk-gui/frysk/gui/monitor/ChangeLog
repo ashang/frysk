@@ -1,3 +1,10 @@
+2007-04-10  swagiaal  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Changed background of labels to white.
+	Selection now results in higlighting of the whole time line area
+	instead of box drawn around it.
+	
+
 2007-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Recommiting 2007-04-05 Sami Wagiaalla <swagiaal@redhat.com> change.

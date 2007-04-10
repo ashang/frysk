@@ -1,3 +1,7 @@
+2007-04-10  swagiaal  <swagiaal@redhat.com>
+
+	* sessions/Session.java: Removed print statements.
+
 2007-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Recommiting 2007-04-05 Sami Wagiaalla <swagiaal@redhat.com> change.

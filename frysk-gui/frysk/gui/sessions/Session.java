@@ -145,7 +145,6 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	System.out.println("observers.itemAdded.update() " + object);
 	addObserverToAllProcs( (ObserverRoot) object);
       }
     });
@@ -155,7 +154,6 @@ public class Session
     {
       public void update (Observable observable, Object object)
       {
-	System.out.println("observers.itemAdded.update() " + object);
 	removeObserverFromAllProcs((ObserverRoot) object);
       }
     });

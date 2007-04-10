@@ -86,7 +86,7 @@ public abstract class TimeLine
   private static final int MINIMUM_HEIGHT = 15;
   private static int MINIMUM_WIDTH = 0 ;
   
-  String name;
+  String labelString;
   
   private Viewport viewport;
   private boolean isSelected;
@@ -98,6 +98,9 @@ public abstract class TimeLine
   
   int startIndex = 0;
   int endIndex;
+  
+  private static Color SELECTED_COLOR = new Color(55535, 55535, 55535);
+  private static Color UNSELECTED_COLOR = Color.WHITE;
   
   public TimeLine(String name, TimeLineSelectionManager manager){
     super(false,0);
@@ -111,18 +114,21 @@ public abstract class TimeLine
     
     this.setBorderWidth(1);
     
-    this.name = name;
+    this.labelString = name;
     
     label = new Label(name);
     label.setAlignment(0.4,0.5);
-    label.setJustification(Justification.CENTER);
+    label.setJustification(Justification.RIGHT);
     
     EventBox labelEventBox = new EventBox();
     labelEventBox.add(label);
+    label.getParent().setBackgroundColor(StateType.NORMAL, UNSELECTED_COLOR);
     
     labelEventBox.addListener((MouseListener)this);
     this.addListener((MouseListener)this);
-
+    Viewport labeViewport = new Viewport(null,null);
+    labeViewport.add(labelEventBox);
+    
     addToLabelsSizeGroup(label);
     
     final TimeLineDrawingArea drawingArea = getTimeLineDrawingArea();
@@ -130,12 +136,12 @@ public abstract class TimeLine
     viewport = new Viewport(null,null);
     viewport.add(drawingArea);
     viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
-   
+    
     VBox vBox = new VBox(false,0);
     vBox.packEnd(removeButton, false, false, 0);
     
-    this.packStart(labelEventBox, false, false, 3);
-    this.packStart(viewport,true,true,3);
+    this.packStart(labeViewport, false, false, 1);
+    this.packStart(viewport,true,true,1);
     this.packEnd(vBox, false, false, 0);
     
     manager.addTimeLine(this);
@@ -163,6 +169,7 @@ public abstract class TimeLine
   }
   
   public void setLabel(String string){
+    this.labelString = string;
     this.label.setMarkup(string);
   }
   
@@ -172,7 +179,7 @@ public abstract class TimeLine
     {
       CustomAtkObject atkObject = new CustomAtkObject(this);
       
-      atkObject.setName(name+"TimeLine");
+      atkObject.setName(labelString+"TimeLine");
       atkObject.setDescription("TimeLine");
       
       this.setAcessible(atkObject);
@@ -229,12 +236,15 @@ public abstract class TimeLine
       int x = 0;
       int y = 0;
       int w = this.getWindow().getWidth();
-//      int h = this.getWindow().getHeight();  
-//      int w = exposeEvent.getArea().getWidth();
       int h = exposeEvent.getArea().getHeight();  
       
       // White background
-      cairo.setSourceColor(Color.WHITE);
+      if(isSelected){
+	cairo.setSourceColor(SELECTED_COLOR);
+      }else{
+	cairo.setSourceColor(UNSELECTED_COLOR);
+      }
+      
       cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
       cairo.fill();
             
@@ -290,18 +300,20 @@ public abstract class TimeLine
   
   public String getLabel ()
   {
-    return this.name;
+    return this.labelString;
   }
   
   public void select(){
-    this.selected.notifyObservers();
     this.isSelected = true;
-    this.highlight();
+    this.label.getParent().setBackgroundColor(StateType.NORMAL, SELECTED_COLOR);
+    this.selected.notifyObservers();
+    this.draw();
   }
   
   public void unselect(){
     this.isSelected = false;
-    this.unHighlight();
+    this.label.setMarkup(this.labelString);
+    this.label.getParent().setBackgroundColor(StateType.NORMAL, UNSELECTED_COLOR);
     this.unSelected.notifyObservers();
   }
   
