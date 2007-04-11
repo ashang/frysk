@@ -1,3 +1,9 @@
+2007-04-10  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestDwfl.java: Use frysk.sys.Pid.get.
+	* tests/cni/TestLib.cxx (getPid): Delete.
+	* tests/TestLib.java (getPid): Delete.
+
 2007-04-03  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getDeclCU): Set scopes.

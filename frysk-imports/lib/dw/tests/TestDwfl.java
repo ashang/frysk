@@ -49,13 +49,14 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 import lib.dw.DwflModule;
+import frysk.sys.Pid;
 
 public class TestDwfl
     extends TestCase
 {
   public void testGetLine ()
   {
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
     assertNotNull(line);
@@ -70,7 +71,7 @@ public class TestDwfl
 
   public void testGetDie ()
   {
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     
     DwflDieBias bias = dwfl.getDie(TestLib.getFuncAddr());
@@ -111,7 +112,7 @@ public class TestDwfl
   // should be there. 
   public void testGetModules() 
   {
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    Dwfl dwfl = new Dwfl(Pid.get());
     DwflModule[] modules = dwfl.getModules();
     assertNotNull(modules);
     // Look for some modules that should be there.
@@ -135,7 +136,7 @@ public class TestDwfl
   // in the DwflLine records returned for a line.
   public void testGetAddresses() 
   {
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
+    Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     long addr = TestLib.getFuncAddr();
     DwflLine line = dwfl.getSourceLine(addr);

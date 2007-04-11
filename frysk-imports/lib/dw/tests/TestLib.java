@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,11 +36,10 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package lib.dw.tests;
 
-public class TestLib {
-
-	public static native int getPid();
-	public static native long getFuncAddr();
-	
+public class TestLib
+{
+    public static native long getFuncAddr();
 }
