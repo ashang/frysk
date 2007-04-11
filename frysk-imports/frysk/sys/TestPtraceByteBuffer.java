@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,9 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
-import inua.eio.*;
+import frysk.testbed.LocalMemory;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 import java.util.Arrays;
 
 public class TestPtraceByteBuffer extends TestCase
@@ -82,20 +84,20 @@ public class TestPtraceByteBuffer extends TestCase
 	// We start in big endian mode.
 	byte[] newBytes = new byte[]
 	    { (byte) 0, (byte) 0, (byte) 0, (byte) 52 };
-	addr = TestLib.getIntValAddr();
+	addr = LocalMemory.getIntValAddr();
 	buffer.position(addr);
 	buffer.putByte(newBytes[0]);
 	buffer.putByte(newBytes[1]);
 	buffer.putByte(newBytes[2]);
 	buffer.putByte(newBytes[3]);
 
-	addr = TestLib.getByteValAddr();
+	addr = LocalMemory.getByteValAddr();
 	buffer.putByte(addr, (byte) 53);
 
 	newBytes = new byte[]
 	    { (byte) 0, (byte) 0, (byte) 0, (byte) 0,
 	      (byte) 0, (byte) 0, (byte) 0, (byte) 54 };
-	addr = TestLib.getLongValAddr();
+	addr = LocalMemory.getLongValAddr();
 	buffer.position(addr);
 	buffer.putByte(newBytes[0]);
 	buffer.putByte(newBytes[1]);
@@ -107,7 +109,7 @@ public class TestPtraceByteBuffer extends TestCase
 	buffer.putByte(newBytes[7]);
 
 	// Int
-	addr = TestLib.getIntValAddr();
+	addr = LocalMemory.getIntValAddr();
 	int intVal = buffer.getInt(addr);
 	assertEquals("Forked child int value", 52, intVal);
 
@@ -115,10 +117,10 @@ public class TestPtraceByteBuffer extends TestCase
 	intVal = buffer.getInt(addr);
 	assertEquals("Forked child int value after poke", 2, intVal);
 
-	assertEquals("Our own int value", 42, TestLib.intVal);
+	assertEquals("Our own int value", 42, LocalMemory.intVal);
 
 	// Byte
-	addr = TestLib.getByteValAddr();
+	addr = LocalMemory.getByteValAddr();
 	byte byteVal = buffer.getByte(addr);
 	assertEquals("Forked child byte value", 53, byteVal);
 
@@ -126,10 +128,10 @@ public class TestPtraceByteBuffer extends TestCase
 	byteVal = buffer.getByte(addr);
 	assertEquals("Forked child long value after poke", 3, byteVal);
 
-	assertEquals("Our own byte value", 43, TestLib.byteVal);
+	assertEquals("Our own byte value", 43, LocalMemory.byteVal);
 
 	// Long
-	addr = TestLib.getLongValAddr();
+	addr = LocalMemory.getLongValAddr();
 	long longVal = buffer.getLong(addr);
 	assertEquals("Forked child long value", 54, longVal);
 
@@ -137,25 +139,25 @@ public class TestPtraceByteBuffer extends TestCase
 	longVal = buffer.getLong(addr);
 	assertEquals("Forked child long value after poke", 4, longVal);
 
-	assertEquals("Our own long value", 44, TestLib.longVal);
+	assertEquals("Our own long value", 44, LocalMemory.longVal);
 
 	// Pretend we have little endian values now
 	newBytes = new byte[]
 	    { (byte) 62, (byte) 0, (byte) 0, (byte) 0 };
-	addr = TestLib.getIntValAddr();
+	addr = LocalMemory.getIntValAddr();
 	buffer.position(addr);
 	buffer.putByte(newBytes[0]);
 	buffer.putByte(newBytes[1]);
 	buffer.putByte(newBytes[2]);
 	buffer.putByte(newBytes[3]);
 
-	addr = TestLib.getByteValAddr();
+	addr = LocalMemory.getByteValAddr();
 	buffer.putByte(addr, (byte) 63);
 
 	newBytes = new byte[]
 	    { (byte) 64, (byte) 0, (byte) 0, (byte) 0,
 	      (byte) 0, (byte) 0, (byte) 0, (byte) 0 };
-	addr = TestLib.getLongValAddr();
+	addr = LocalMemory.getLongValAddr();
 	buffer.position(addr);
 	buffer.putByte(newBytes[0]);
 	buffer.putByte(newBytes[1]);
@@ -169,7 +171,7 @@ public class TestPtraceByteBuffer extends TestCase
 	buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
 
 	// Int
-	addr = TestLib.getIntValAddr();
+	addr = LocalMemory.getIntValAddr();
 	intVal = buffer.getInt(addr);
 	assertEquals("Forked child int value", 62, intVal);
 
@@ -177,10 +179,10 @@ public class TestPtraceByteBuffer extends TestCase
 	intVal = buffer.getInt(addr);
 	assertEquals("Forked child int value after poke", 2, intVal);
 
-	assertEquals("Our own int value", 42, TestLib.intVal);
+	assertEquals("Our own int value", 42, LocalMemory.intVal);
 
 	// Byte
-	addr = TestLib.getByteValAddr();
+	addr = LocalMemory.getByteValAddr();
 	byteVal = buffer.getByte(addr);
 	assertEquals("Forked child byte value", 63, byteVal);
 
@@ -188,10 +190,10 @@ public class TestPtraceByteBuffer extends TestCase
 	byteVal = buffer.getByte(addr);
 	assertEquals("Forked child long value after poke", 3, byteVal);
 
-	assertEquals("Our own byte value", 43, TestLib.byteVal);
+	assertEquals("Our own byte value", 43, LocalMemory.byteVal);
 
 	// Long
-	addr = TestLib.getLongValAddr();
+	addr = LocalMemory.getLongValAddr();
 	longVal = buffer.getLong(addr);
 	assertEquals("Forked child long value", 64, longVal);
 
@@ -199,7 +201,7 @@ public class TestPtraceByteBuffer extends TestCase
 	longVal = buffer.getLong(addr);
 	assertEquals("Forked child long value after poke", 4, longVal);
 
-	assertEquals("Our own long value", 44, TestLib.longVal);
+	assertEquals("Our own long value", 44, LocalMemory.longVal);
     }
 
     /**
@@ -211,8 +213,8 @@ public class TestPtraceByteBuffer extends TestCase
 	buffer = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.DATA,
 				      0xffffffffl);
 
-	long addr = TestLib.getFuncAddr();
-	byte[] bytes = TestLib.getFuncBytes();
+	long addr = LocalMemory.getFuncAddr();
+	byte[] bytes = LocalMemory.getFuncBytes();
 	byte[] childBytes = new byte[4];
 	buffer.get(addr, childBytes, 0, 4);
 	assertTrue("Child function address word",
@@ -226,7 +228,7 @@ public class TestPtraceByteBuffer extends TestCase
 	buffer.putByte(newBytes[1]);
 	buffer.putByte(newBytes[2]);
 	buffer.putByte(newBytes[3]);
-	bytes = TestLib.getFuncBytes();
+	bytes = LocalMemory.getFuncBytes();
 	assertTrue("Our own function bytes after poke",
 		   ! Arrays.equals(bytes, newBytes));
 	buffer.get(addr, childBytes, 0, 4);

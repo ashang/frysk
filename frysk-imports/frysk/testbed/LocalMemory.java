@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,9 +37,43 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.dw.tests;
+package frysk.testbed;
 
-public class TestLib
+public class LocalMemory
 {
+    /**
+     * Known memory values.
+     */
+     public static final byte byteVal = 43;
+     public static final short shortVal = 45;
+     public static final int intVal = 42;
+     public static final long longVal = 44;
+
+    /**
+     * Returns the address of a variable for inspection.
+     */
+    public static native long getByteValAddr();
+    public static native long getShortValAddr();
+    public static native long getIntValAddr();
+    public static native long getLongValAddr();
+
+    /**
+     * Returns the address of a function.
+     */
     public static native long getFuncAddr();
+
+    /**
+     * Returns the line number of a function.
+     */
+    public static native int getFuncLine ();
+
+    /**
+     * Returns the file-name of a function.
+     */
+    public static native String getFuncFile ();
+
+    /*
+     * Returns the first 4 instruction bytes of the getFuncAddr().
+     */
+    public static native byte[] getFuncBytes();
 }

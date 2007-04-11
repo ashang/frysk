@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,19 +37,58 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <gcj/cni.h>
 
-#include "lib/dw/tests/TestLib.h"
+#include "frysk/testbed/LocalMemory.h"
 
+jlong
+frysk::testbed::LocalMemory::getByteValAddr ()
+{
+  return (jlong) &byteVal;
+}
+jlong
+frysk::testbed::LocalMemory::getShortValAddr ()
+{
+  return (jlong) &shortVal;
+}
+jlong
+frysk::testbed::LocalMemory::getIntValAddr ()
+{
+  return (jlong) &intVal;
+}
+jlong
+frysk::testbed::LocalMemory::getLongValAddr ()
+{
+  return (jlong) &longVal;
+}
+
+/**
+ * Function used by getFunc*(), must be on a single line for __LINE__
+ * to work correctly.
+ */
+jint frysk::testbed::LocalMemory::getFuncLine () { return __LINE__; }
+
+jstring
+frysk::testbed::LocalMemory::getFuncFile ()
+{
+  return JvNewStringUTF (__FILE__);
+}
+
+jlong
+frysk::testbed::LocalMemory::getFuncAddr ()
+{
 #ifdef __powerpc64__
-  #define FUNC_ADDR *((jlong*) &getFuncAddr)
+  return *((jlong*) frysk::testbed::LocalMemory::getFuncLine);
 #else
-  #define FUNC_ADDR (jlong) &getFuncAddr;	
+  return (jlong) frysk::testbed::LocalMemory::getFuncLine;
 #endif
+}
 
-// All one one line to make debug line number info predictable
-// Next line is line #58
-jlong lib::dw::tests::TestLib::getFuncAddr(){ return FUNC_ADDR; }
+jbyteArray
+frysk::testbed::LocalMemory::getFuncBytes ()
+{
+  char *addr = (char*)frysk::testbed::LocalMemory::getFuncAddr ();
+  jbyteArray bytes = JvNewByteArray (4);
+  memcpy (elements (bytes), addr, 4);
+  return bytes;
+}

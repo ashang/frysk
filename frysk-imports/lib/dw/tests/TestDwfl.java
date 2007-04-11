@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.dw.tests;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import frysk.junit.TestCase;
@@ -50,6 +50,7 @@ import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 import lib.dw.DwflModule;
 import frysk.sys.Pid;
+import frysk.testbed.LocalMemory;
 
 public class TestDwfl
     extends TestCase
@@ -57,16 +58,16 @@ public class TestDwfl
   public void testGetLine ()
   {
     Dwfl dwfl = new Dwfl(Pid.get());
-    assertNotNull(dwfl);
-    DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
-    assertNotNull(line);
+    assertNotNull("dwfl", dwfl);
+    DwflLine line = dwfl.getSourceLine(LocalMemory.getFuncAddr());
+    assertNotNull("line", line);
     String filename = line.getSourceFile();
-    assertEquals("TestLib.cxx",
-                 filename.substring(filename.lastIndexOf("/") + 1));
+    assertEquals("file",
+		 new File(LocalMemory.getFuncFile()).getName(),
+                 new File(filename).getName());
+    assertEquals("line", LocalMemory.getFuncLine(), line.getLineNum());
 
-    assertEquals(58, line.getLineNum());
-
-    assertEquals(0, line.getColumn());
+    assertEquals("column", 0, line.getColumn());
   }
 
   public void testGetDie ()
@@ -74,7 +75,7 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
     
-    DwflDieBias bias = dwfl.getDie(TestLib.getFuncAddr());
+    DwflDieBias bias = dwfl.getDie(LocalMemory.getFuncAddr());
     assertNotNull(bias);
     
     assertEquals(0, bias.bias);
@@ -82,29 +83,29 @@ public class TestDwfl
     DwarfDie die = bias.die;
     assertNotNull(die);
     
-    assertEquals("TestLib.cxx",
-                 die.getName().substring(die.getName().lastIndexOf("/") + 1));
+    assertEquals("file",
+		 new File(LocalMemory.getFuncFile()).getName(),
+		 new File(die.getName()).getName());
 
-    DwarfDie[] allDies = die.getScopes(TestLib.getFuncAddr() - bias.bias);
+    DwarfDie[] allDies = die.getScopes(LocalMemory.getFuncAddr() - bias.bias);
     assertNotNull(allDies);
 
-    String[] names = { "getFuncAddr", "TestLib.cxx" };
+    String[] names = {
+	"getFuncLine",
+	new File(LocalMemory.getFuncFile()).getName()
+    };
 
     for (int i = 0; i < allDies.length; i++)
       {
-        assertNotNull(allDies[i]);
-        /* Enable this line if you think that checking for inlined code in a test suite
-         * is ok
-         */
+	  assertNotNull("allDies[i]", allDies[i]);
+	  // Enable this line if you think that checking for inlined
+	  // code in a test suite is ok
 //        assertEquals(false, allDies[i].isInlinedFunction());        
-        if (i == 1)
-          assertEquals(
-                       names[i],
-                       allDies[i].getName().substring(
-                                                      die.getName().lastIndexOf(
-                                                                                "/") + 1));
-        else
-          assertEquals(names[i], allDies[i].getName());
+	  if (i == 1)
+	      assertEquals("names[i]", names[i],
+			   new File(allDies[i].getName()).getName());
+	  else
+	      assertEquals(names[i], allDies[i].getName());
       }
   }
 
@@ -138,7 +139,7 @@ public class TestDwfl
   {
     Dwfl dwfl = new Dwfl(Pid.get());
     assertNotNull(dwfl);
-    long addr = TestLib.getFuncAddr();
+    long addr = LocalMemory.getFuncAddr();
     DwflLine line = dwfl.getSourceLine(addr);
     assertNotNull(line);
     List lines = dwfl.getLineAddresses(line.getSourceFile(), 
