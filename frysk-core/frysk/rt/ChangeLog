@@ -1,3 +1,8 @@
+2007-04-11  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (setUpLineStep): Make sure to set instruction stepping
+	state if no debuginfo is present.
+
 2007-04-10  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (ThreadLifeObservable): New class. Watches for thread

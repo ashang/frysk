@@ -221,6 +221,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
 	  return false;
 
     ++this.taskStepCount;
+//    System.err.println("notifyNotBlocked");
     notifyNotBlocked();
 
     if (this.lineMap.get(task) == null)
@@ -231,6 +232,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
         if (line == null)
           {
             this.dwflMap.clear();
+            this.stateMap.put(task, new Integer(STEP_INSTRUCTION));
           }
         else
           {
@@ -241,6 +243,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
     else
       this.stateMap.put(task, new Integer(STEP_IN));
 
+//    System.err.println("task.requestUnblock");
     task.requestUnblock(this);
     return true;
   }
@@ -1068,7 +1071,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
   {
 	int state = ((Integer) this.stateMap.get(task)).intValue();
 	
-//	   System.err.println("UpdateExecuted " + task + " " + taskStepCount + " " + state);
+//    System.err.println("UpdateExecuted " + task + " " + taskStepCount + " " + state + " " + this.stateMap.get(task));
 	
     if (state >= STEP_INSTRUCTION && state <= STEP_INSTRUCTION_NEXT_TEST)
       {
