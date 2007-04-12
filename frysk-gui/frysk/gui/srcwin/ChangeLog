@@ -2,7 +2,10 @@
 
 	* SourceWindow.java (populateStackBrowser): Highlight lines only for current
 	process.
-
+	
+	* CurrentStackView.java (refreshProc): Remove rows by deleting temporary
+	TreeIter instead of iteration variable.
+	
 2007-04-10  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (ThreadLifeObserver): Added. Receives thread

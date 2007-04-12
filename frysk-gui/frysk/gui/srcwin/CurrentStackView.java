@@ -210,8 +210,9 @@ public class CurrentStackView
 
 	while (iter != null && treeModel.isIterValid(iter))
 	  {
-		treeModel.removeRow(iter);
+		TreeIter del = iter;
 		iter = iter.getNextIter();
+		treeModel.removeRow(del);
 	  }
   }
 
