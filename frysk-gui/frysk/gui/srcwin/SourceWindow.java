@@ -535,13 +535,10 @@ public class SourceWindow
             
             SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
 
-            for (int k = 0; k < numProcs; k++)
-              {
-                for (int j = 0; j < frames[k].length; j++)
-                  {
-                    b.highlightLine(frames[k][0], true);
-                  }
-              }
+            for (int j = 0; j < frames[this.current].length; j++)
+			  {
+				b.highlightLine(frames[this.current][0], true);
+			  }
           }
         else
           {
@@ -2077,7 +2074,7 @@ public class SourceWindow
       sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
 
     for (int i = 0; i < this.frames[this.current].length; i++)
-      {   
+      {
         sb.highlightLine(this.frames[this.current][i], false);
       }
   }
