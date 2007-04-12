@@ -50,6 +50,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.gui.Gui;
+import frysk.gui.sessions.SessionManager;
 
 //import frysk.gui.Gui;
 
@@ -103,12 +104,20 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 			}
 		});
 
-//        item = (MenuItem) glade.getWidget("programObserverMenuItem");
-//        item.addListener(new MenuItemListener(){
-//            public void menuItemEvent(MenuItemEvent event) {
-//                WindowManager.theManager.programObserverDialog.showAll();
-//            }
-//        });
+	        item = (MenuItem) glade.getWidget("editSessionMenuItem");
+	        item.addListener(new MenuItemListener(){
+	            public void menuItemEvent(MenuItemEvent event) {
+	              WindowManager.theManager.createFryskSessionDruid.setEditSessionMode(SessionManager.theManager.getCurrentSession());
+	              WindowManager.theManager.createFryskSessionDruid.present();
+	            }
+	        });
+
+	        item = (MenuItem) glade.getWidget("sessionManagerMenuItem");
+	        item.addListener(new MenuItemListener(){
+	            public void menuItemEvent(MenuItemEvent event) {
+//	              WindowManager.theManager.sessionManagerDialog.present();
+	            }
+	        });
 
 	}
 	

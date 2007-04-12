@@ -232,53 +232,6 @@ public class CreateFryskSessionDruid
 
     processSelected = SessionManager.theManager.getCurrentSession().getProcesses().size();
 
-    LinkedList oldSessionProcesses = new LinkedList(
-						    SessionManager.theManager.getCurrentSession().getProcesses());
-    LinkedList allProcs = new LinkedList();
-    // HashSet observers = new HashSet();
-    // LinkedList observersList = new LinkedList();
-
-    Iterator i = oldSessionProcesses.iterator();
-    String prev = "";
-
-    /*
-         * Find all possible observers that were requested for this session, and
-         * keep track of them. Then collect all processes from the model with
-         * this name.
-         */
-    while (i.hasNext())
-      {
-	DebugProcess dp = (DebugProcess) i.next();
-	if (prev.equals(dp.getName()))
-	  continue;
-
-	// Iterator j = SessionManager.theManager.getCurrentSession().getObservers().iterator();
-	// while (j.hasNext())
-	// {
-	// ObserverRoot or = (ObserverRoot) j.next();
-	// // if (!observers.contains(or.getBaseName()))
-	// // {
-	// // observers.add(or.getBaseName());
-	// //// observersList.add(or);
-	// // }
-	// }
-
-	prev = dp.getName();
-	this.dataModel.collectProcs(prev, allProcs);
-      }
-
-    i = allProcs.iterator();
-    while (i.hasNext())
-      {
-	GuiProc guiProc = (GuiProc) i.next();
-	SessionManager.theManager.getCurrentSession().addGuiProc(guiProc);
-      }
-
-    oldSessionProcesses = null;
-    // observers = null;
-
-    setupNameEntry();
-
     oldSessionName = SessionManager.theManager.getCurrentSession().getName();
     // warningLabel.setMarkup("Select a <b>Name</b> for the session, and
         // some <b>Processes</b> to monitor");
@@ -778,12 +731,11 @@ public class CreateFryskSessionDruid
 		while (i.hasNext())
 		  {
 		    GuiProc gp = (GuiProc) i.next();
-		    DebugProcess currentDebugProcess = (DebugProcess) procMap.remove(gp);
+//		    DebugProcess currentDebugProcess = (DebugProcess) procMap.remove(gp);
 		    TreePath foo = dataModel.searchPid(gp.getProc().getPid());
 		    changeGroupState(procWiseTreeView, new TreePath[] { foo },
 				     false, false);
-		    SessionManager.theManager.getCurrentSession().removeDebugProcess(
-										     currentDebugProcess);
+		    SessionManager.theManager.getCurrentSession().removeGuiProc(gp);
 		  }
 	      }
 
@@ -954,6 +906,7 @@ public class CreateFryskSessionDruid
 	if (event.isOfType(ButtonEvent.Type.CLICK))
 	  {
 	    CreateFryskSessionDruid.this.hide();
+	    SessionManager.theManager.save();
 	  }
       }
     });

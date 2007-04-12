@@ -100,7 +100,36 @@
 		      <child>
 			<widget class="GtkMenuItem" id="customObserversMenuItem">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Manage Custom Observers...</property>
+			  <property name="label" translatable="yes">Manage Observers...</property>
+			  <property name="use_underline">True</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+	      </child>
+
+	      <child>
+		<widget class="GtkMenuItem" id="sessionMenuItem">
+		  <property name="visible">True</property>
+		  <property name="label" translatable="yes">Session</property>
+		  <property name="use_underline">True</property>
+
+		  <child>
+		    <widget class="GtkMenu" id="sessionMenuItem_menu">
+
+		      <child>
+			<widget class="GtkMenuItem" id="editSessionMenuItem">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">Edit Session...</property>
+			  <property name="use_underline">True</property>
+			</widget>
+		      </child>
+
+		      <child>
+			<widget class="GtkMenuItem" id="sessionManagerMenuItem">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">Session Manager...</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>

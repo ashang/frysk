@@ -60,13 +60,10 @@ import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Widget;
-import org.gnu.gtk.event.MouseEvent;
-import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
 import org.gnu.gtk.event.TreeModelListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -88,8 +85,6 @@ public class SessionProcTreeView
   private TreeModelFilter procFilter;
 
   private PIDColumnDialog procPidColumnDialog;
-  
-  private ProcMenu procMenu;
   
   private String[] procColNames = {"Command", "VSZ", "RSS", "TIME", "PPID", "STAT", "NICE"}; 
   
@@ -116,8 +111,6 @@ public class SessionProcTreeView
    
     this.procTVC = new TreeViewColumn[8];
     
-    this.procMenu = new ProcMenu(this.procPidColumnDialog, this);
-  
     eventViewer = new EventViewer2();
     HBox box = (HBox) glade.getWidget("statusWidget");
     box.add(eventViewer);
@@ -155,28 +148,6 @@ public class SessionProcTreeView
     });
 
     this.procTreeView.setHeadersClickable(true);
-
-    // Called when a user "right clicks" on a process.
-    this.procTreeView.addListener(new MouseListener()
-    {
-
-      public boolean mouseEvent (MouseEvent event)
-      {
-        if (event.getType() == MouseEvent.Type.BUTTON_PRESS
-            & event.getButtonPressed() == MouseEvent.BUTTON3)
-          {
-
-            GuiProc data = getSelectedProc();
-            if (data != null)
-              procMenu.popup(data);
-
-            // System.out.println("click : " + data); //$NON-NLS-1$
-            return true;
-          }
-        return false;
-      }
-    });
-
   }
 
   public void mountProcModel (final SessionProcDataModel dataModel)
@@ -540,23 +511,23 @@ public class SessionProcTreeView
     return this.procColNames;
   }
   
-  private GuiProc getSelectedProc ()
-  {
-    TreeSelection ts = this.procTreeView.getSelection();
-    TreePath[] tp = ts.getSelectedRows();
-
-    if (tp.length == 0)
-      {
-        return null;
-      }
-
-    TreeModel model = this.procFilter;
-    GuiProc data = (GuiProc) model.getValue(model.getIter(tp[0]),
-                                            this.procDataModel.getProcDataDC());
-    model.getValue(model.getIter(tp[0]), this.procDataModel.getTidDC());
-
-    return data;
-  }
+//  private GuiProc getSelectedProc ()
+//  {
+//    TreeSelection ts = this.procTreeView.getSelection();
+//    TreePath[] tp = ts.getSelectedRows();
+//
+//    if (tp.length == 0)
+//      {
+//        return null;
+//      }
+//
+//    TreeModel model = this.procFilter;
+//    GuiProc data = (GuiProc) model.getValue(model.getIter(tp[0]),
+//                                            this.procDataModel.getProcDataDC());
+//    model.getValue(model.getIter(tp[0]), this.procDataModel.getTidDC());
+//
+//    return data;
+//  }
 
   public void save (Preferences prefs)
   {

@@ -47,12 +47,8 @@ import org.gnu.gdk.Color;
 import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
 import org.gnu.gtk.Adjustment;
-import org.gnu.gtk.Button;
 import org.gnu.gtk.EventBox;
-import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.HBox;
-import org.gnu.gtk.IconSize;
-import org.gnu.gtk.Image;
 import org.gnu.gtk.Justification;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.SizeGroup;
@@ -94,8 +90,6 @@ public abstract class TimeLine
   private boolean isDead;
   Label label;
   
-  private Button removeButton;
-  
   int startIndex = 0;
   int endIndex;
   
@@ -105,10 +99,6 @@ public abstract class TimeLine
   public TimeLine(String name, TimeLineSelectionManager manager){
     super(false,0);
   
-    this.removeButton = new Button();
-    this.removeButton.setImage(new Image(GtkStockItem.CLOSE, IconSize.MENU));
-    this.removeButton.setSensitive(false);
-    
     this.selected = new GuiObservable();
     this.unSelected = new GuiObservable();
     
@@ -138,7 +128,6 @@ public abstract class TimeLine
     viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
     
     VBox vBox = new VBox(false,0);
-    vBox.packEnd(removeButton, false, false, 0);
     
     this.packStart(labeViewport, false, false, 1);
     this.packStart(viewport,true,true,1);
@@ -154,10 +143,6 @@ public abstract class TimeLine
   
   public void setEndIndex(int index){
     this.endIndex = index;
-  }
-  
-  public Button getRemoveButton(){
-    return this.removeButton;
   }
   
   public void setHAdjustment(Adjustment adjustment){
@@ -326,8 +311,6 @@ public abstract class TimeLine
     
     int grayFactor = 3;
     this.label.setForegroundColor(StateType.NORMAL, new Color(65535/grayFactor, 65535/grayFactor, 65535/grayFactor));
-    
-    this.removeButton.setSensitive(true);
     
     this.label.setMarkup(this.label.getText() + "\n<i>terminated</i>");
   }

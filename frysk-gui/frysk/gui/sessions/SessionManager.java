@@ -148,10 +148,13 @@ public class SessionManager
 
   
   /**
-   * Sets the sesstion that is to be currently examined by frysk.
+   * Sets the session that is to be currently examined by frysk.
    * @param session
    */
   public void setCurrentSession(Session session){
+    if(session == this.currentSession){
+      return;
+    }
     this.currentSession = session;
     this.currentSessionChanged.notifyObservers(currentSession);
   }

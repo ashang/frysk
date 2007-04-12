@@ -61,7 +61,7 @@ import frysk.proc.Proc;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class GuiProc extends GuiData{
+public class GuiProc extends GuiCoreObjectWrapper{
 	
 	public static final String PATH_NOT_FOUND = "*Could not retrieve path*";
 

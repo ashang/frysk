@@ -55,9 +55,6 @@ import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
-import frysk.proc.Action;
-import frysk.proc.Task;
-import frysk.proc.TaskObserver;
 
 /**
  * A container that refers to an executable there
@@ -218,7 +215,9 @@ public class DebugProcess
     while (iterator.hasNext())
       {
         GuiProc guiProc = (GuiProc) iterator.next();
-        observer.apply(guiProc.getProc());
+        if(!guiProc.isDead()){
+          observer.apply(guiProc.getProc());
+        }
       }
   }
   
@@ -227,7 +226,9 @@ public class DebugProcess
     while (iterator.hasNext())
       {
         GuiProc guiProc = (GuiProc) iterator.next();
-        observer.unapply(guiProc.getProc());
+        if(!guiProc.isDead()){
+          observer.unapply(guiProc.getProc());
+        }
       }
   }
   
@@ -242,53 +243,6 @@ public class DebugProcess
     if(this.procs.contains(guiProc)){
       throw new IllegalArgumentException("You are trying to add a GuiProc which has already been added");
     }
-    // Add terminated observer to catch the procs exit
-    guiProc.getProc().getMainTask().requestAddTerminatedObserver(
-                                                                 new TaskObserver.Terminated()
-                                                                 {
-
-                                                                   public void addedTo (
-                                                                                        Object observable)
-                                                                   {
-                                                                     // TODO
-                                                                      // Auto-generated
-                                                                      // method
-                                                                      // stub
-
-                                                                   }
-
-                                                                   public void addFailed (
-                                                                                          Object observable,
-                                                                                          Throwable w)
-                                                                   {
-                                                                     // TODO
-                                                                      // Auto-generated
-                                                                      // method
-                                                                      // stub
-
-                                                                   }
-
-                                                                   public void deletedFrom (
-                                                                                            Object observable)
-                                                                   {
-                                                                     // TODO
-                                                                      // Auto-generated
-                                                                      // method
-                                                                      // stub
-
-                                                                   }
-
-                                                                   public Action updateTerminated (
-                                                                                                   Task task,
-                                                                                                   boolean signal,
-                                                                                                   int value)
-                                                                   {
-                                                                     removeProc(GuiProc.GuiProcFactory.getGuiProc(task.getProc()));
-                                                                     return Action.CONTINUE;
-                                                                   }
-
-                                                                 });
-
     procs.add(guiProc);
   }
 

@@ -45,9 +45,6 @@ import java.util.LinkedList;
 import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Adjustment;
 import org.gnu.gtk.VBox;
-import org.gnu.gtk.Widget;
-import org.gnu.gtk.event.ButtonEvent;
-import org.gnu.gtk.event.ButtonListener;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
@@ -88,15 +85,6 @@ public class ProcBox extends VBox
     
     procTimeLine.setHAdjustment(hAdjustment);
     this.packStart(procTimeLine, true, true, 0);
-    procTimeLine.getRemoveButton().addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent event)
-      {
-        if(event.isOfType(ButtonEvent.Type.CLICK)){
-          ProcBox.this.removeAllTimeLines();
-        }
-      }
-    });
     
     new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
 
@@ -170,17 +158,6 @@ public class ProcBox extends VBox
     
     final TaskTimeLine taskTimeLine = new TaskTimeLine(guiTask, manager);
     this.timeLines.add(taskTimeLine);
-    taskTimeLine.getRemoveButton().addListener(new ButtonListener()
-    {
-      TaskTimeLine realTaskTimeLine = taskTimeLine;
-      public void buttonEvent (ButtonEvent event)
-      {
-        if(event.isOfType(ButtonEvent.Type.CLICK)){
-          timeLines.remove(realTaskTimeLine);
-          ProcBox.this.remove(realTaskTimeLine);
-        }
-      }
-    });
     
     taskTimeLine.setHAdjustment(hAdjustment);
     
@@ -201,14 +178,14 @@ public class ProcBox extends VBox
     this.showAll();
   }
 
-  private void removeAllTimeLines(){
-    Iterator iter = this.timeLines.iterator();
-    while (iter.hasNext())
-      {
-        this.remove((Widget) iter.next());
-      }
-    this.timeLines.clear();
-  }
+//  private void removeAllTimeLines(){
+//    Iterator iter = this.timeLines.iterator();
+//    while (iter.hasNext())
+//      {
+//        this.remove((Widget) iter.next());
+//      }
+//    this.timeLines.clear();
+//  }
   
   public GuiProc getGuiProc ()
   {

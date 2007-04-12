@@ -39,89 +39,74 @@
 
 package frysk.gui.monitor.observers;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.proc.Proc;
-import frysk.proc.Task;
-import frysk.proc.ProcTasksObserver;
-import frysk.proc.ProcObserver.ProcTasks;
-import java.util.logging.Level;
-
-
 import frysk.gui.Gui;
-import frysk.gui.monitor.GuiTask;
+import frysk.proc.Proc;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.Task;
+import frysk.proc.ProcObserver.ProcTasks;
 
 public abstract class TaskObserverRoot extends ObserverRoot {
 
-	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+  private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
-    protected TaskObserverRoot(String name, String toolTip) {
-		super(name, toolTip);
-	}
+  protected TaskObserverRoot(String name, String toolTip) {
+    super(name, toolTip);
+  }
 
-    protected TaskObserverRoot(TaskObserverRoot other) {
-		super(other);
-	}
+  protected TaskObserverRoot(TaskObserverRoot other) {
+    super(other);
+  }
 
-	public void apply(Proc proc){
-	    new ProcTasksObserver (proc, new ProcTasks()
-		{
-		    public void taskAdded(Task task)
-		    {
-		      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
-              guiTask.add(TaskObserverRoot.this);
-            }
-		    public void addFailed(Object observable, Throwable w)
-		    {
-		    	errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
-		    	//throw new RuntimeException(w);
-		    }
-		    public void existingTask(Task task)
-		    {
-              GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
-              guiTask.add(TaskObserverRoot.this);
-		    }
-		    public void addedTo(Object observable){}
-		    public void taskRemoved(Task task){}
-		    public void deletedFrom(Object observable){}
-		});
-	}
+  public void apply(Proc proc){
+    new ProcTasksObserver (proc, new ProcTasks()
+    {
+      public void taskAdded(Task task){
+	TaskObserverRoot.this.apply(task);
+      }
+      
+      public void existingTask(Task task){
+	taskAdded(task);
+      }
+      
+      public void addFailed(Object observable, Throwable w){
+	errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
+	//throw new RuntimeException(w);
+      }
+
+      public void addedTo(Object observable){}
+      public void taskRemoved(Task task){}
+      public void deletedFrom(Object observable){}
+    });
+  }
 	
-    public void unapply(Proc proc){
-        new ProcTasksObserver (proc, new ProcTasks()
-        {
-            public void taskAdded(Task task)
-            {
-            unapply(task);
-            }
-            public void addFailed(Object observable, Throwable w)
-            {
-                errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
-                //throw new RuntimeException(w);
-            }
-            public void existingTask(Task task)
-            {
-            unapply(task);
-            }
-            public void addedTo(Object observable){}
-            public void taskRemoved(Task task){}
-            public void deletedFrom(Object observable){}
-        });
+    public void unapply(Proc proc){	
+      new ProcTasksObserver (proc, new ProcTasks()
+      {
+	public void taskAdded(Task task){
+	  unapply(task);
+	}
+	public void addFailed(Object observable, Throwable w)
+	{
+	  errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
+	  //throw new RuntimeException(w);
+	}
+	public void existingTask(Task task)
+	{
+	  unapply(task);
+	}
+	public void addedTo(Object observable){}
+	public void taskRemoved(Task task){}
+	public void deletedFrom(Object observable){}
+      });
     }
     
     public abstract void apply(Task task);
     public abstract void unapply(Task task);
     
-    public void addedTo (Object observable){
-      Task task = (Task) observable;
-      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
-      guiTask.observerAdded(this);
-    }
-    
-    public void deletedFrom (Object observable){
-      Task task = (Task) observable;
-      GuiTask guiTask = GuiTask.GuiTaskFactory.getGuiTask(task);
-      guiTask.observerRemoved(this);      
-    }
+    public void addedTo (Object observable){}
+    public void deletedFrom (Object observable){}
         
 }

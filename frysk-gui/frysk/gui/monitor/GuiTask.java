@@ -40,57 +40,67 @@ package frysk.gui.monitor;
 
 import java.util.HashMap;
 
-import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.gui.monitor.GuiProc.GuiProcFactory;
+import frysk.proc.Action;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver.Terminated;
 
 /**
  * Used to store a pointer to the Task object, and and any data that is relates
  * to the process but is GUI specific. Used to pass data to ActionPool Actions.
  * Actions also manipulate data stored in here to keep it up to date.
  */
-public class GuiTask extends GuiData{
+public class GuiTask extends GuiCoreObjectWrapper{
 
-	private Task task;
+  private Task task;
 	
-    private GuiTask(Task task) {
-		if(task == null){
-			throw new IllegalArgumentException("task cannot be null");
-		}
-		
-		this.task = task;
-	}
-
-	public Task getTask() {
-		return task;
-	}
-	
-	public void add(final TaskObserverRoot observer){
-		observer.apply(this.task);
-	}
-	
-    public void observerAdded(TaskObserverRoot observer){
-        observers.add(observer);
-    }
+  private GuiTask(Task task) {
+    if(task == null){
+      throw new IllegalArgumentException("task cannot be null");
+    }	
+    this.task = task;
     
-    public void observerRemoved(TaskObserverRoot observer){
-      observers.remove(observer);
-    }
+    task.requestAddTerminatedObserver(new Terminated(){
+
+      public Action updateTerminated (Task task, boolean signal, int value)
+      {
+	if(task.getTid() == task.getProc().getPid()){
+	  getGuiProc().objectDied();
+	}
+	GuiTask.this.objectDied();
+	return Action.CONTINUE;
+      }
+
+      public void addFailed (Object observable, Throwable w){}
+      public void addedTo (Object observable){}
+      public void deletedFrom (Object observable){}
+      
+    });
+  }
+
+  public Task getTask() {
+    return task;
+  }
+
+  public GuiProc getGuiProc(){
+    return GuiProcFactory.getGuiProc(this.task.getProc());
+  }
   
-   public static class GuiTaskFactory{
-		static HashMap map = new HashMap();
+  public static class GuiTaskFactory{
+    static HashMap map = new HashMap();
+	
+    public static GuiTask getGuiTask(Task task){
+      GuiTask guiTask;
 		
-		public static GuiTask getGuiTask(Task task){
-			GuiTask guiTask;
-			
-			guiTask = (GuiTask)map.get(task);
-			
-			if(guiTask == null){
-				guiTask = new GuiTask(task);
-				map.put(task, guiTask);
-			}
-			
-			return guiTask;
-		}
-	}
-    
+      guiTask = (GuiTask)map.get(task);
+		
+      if(guiTask == null){
+	guiTask = new GuiTask(task);
+	map.put(task, guiTask);
+      }
+		
+      return guiTask;
+    }
+}
+  
 }

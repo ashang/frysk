@@ -1,3 +1,24 @@
+2007-04-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcMenu.java: Removed.
+	* ObserversMenu.java: Removed.
+	* observers/TaskObserverRoot.java: Removed calls to 
+	guitTask.observerRemoved/Added.
+	* eventviewer/TimeLine.java: Removed 'remove' Button.
+	* eventviewer/ProcBox.java: Removed reference to  of timeLines remove
+	Button.
+	* eventviewer/EventViewer2.java: Rows are now rearranged properly
+	when procs are removed.
+	 (removeAllProcBoxes): New function.
+	 (addAllProcBoxes): New function.
+	* SessionProcTreeView.java: Removed references to ProcMenu.
+	* MenuBar.java: Added handling for Edit Session, and Session Manager
+	menu items.
+	* GuiTask.java: Added code to handle termination of task and proc and
+	notifying the Gui of that.
+	* GuiData.java: Renabmed this...
+	* GuiCoreObjectWrapper.java: ...to this.
+
 2007-04-10  swagiaal  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLine.java: Changed background of labels to white.

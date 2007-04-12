@@ -79,8 +79,8 @@ public class EventViewer2 extends Table {
   LinkedList procBoxes;
   
   public EventViewer2(){
-		super(2, 3, false);
-		this.setBorderWidth(6);
+    super(2, 3, false);
+    this.setBorderWidth(6);
         
         this.timeLineSelectionManager = new TimeLineSelectionManager();
         
@@ -92,7 +92,7 @@ public class EventViewer2 extends Table {
         vScrollBar = new VScrollBar((Adjustment)null);
         hScrollBar = new HScrollBar((Adjustment)null);
         
-        this.bigTableNumberOfRows = 0;
+        this.bigTableNumberOfRows = 1;
         this.bigTable = new Table(bigTableNumberOfRows,2,false);
         this.bigTable.setBorderWidth(6);
         
@@ -151,13 +151,15 @@ public class EventViewer2 extends Table {
     
     private void addProc(GuiProc guiProc){
       ProcBox procBox = new ProcBox(guiProc,this.hScrollBar.getAdjustment(), timeLineSelectionManager);
-      this.procBoxes.add(procBox);
+      guiProc.objectDiedObservable.addObserver(procDeidObserver);
       
-      this.bigTableNumberOfRows++;
-      this.bigTable.resize(2,this.bigTableNumberOfRows);
+      this.procBoxes.add(procBox);
       
       AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
       this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 3 , 3);
+      
+      this.bigTableNumberOfRows++;
+      this.bigTable.resize(2,this.bigTableNumberOfRows);
       
       this.showAll();
     }
@@ -186,7 +188,7 @@ public class EventViewer2 extends Table {
 	  this.remove(widget);
 	}
       this.procBoxes.clear();
-      this.bigTableNumberOfRows = 0;
+      this.bigTableNumberOfRows = 1;
       
       this.timeLineSelectionManager = new TimeLineSelectionManager();
 //      timeLineSelectionManager.getSelectedTimeLines().itemAdded.addObserver(selectionObserver);
@@ -213,11 +215,10 @@ public class EventViewer2 extends Table {
 	  addProc((GuiProc) j.next());
 	}
       debugProcess.getProcs().itemAdded.addObserver(procAddedObserver);
-      debugProcess.getProcs().itemRemoved.addObserver(procRemovedObserver);          
+      debugProcess.getProcs().itemRemoved.addObserver(procRemovedObserver);
     }
     
     private void removeDebugProcess(DebugProcess debugProcess){
-      
       Iterator j = debugProcess.getProcs().iterator();
       debugProcess.getProcs().itemAdded.deleteObserver(procAddedObserver);
       debugProcess.getProcs().itemRemoved.deleteObserver(procRemovedObserver);
@@ -229,33 +230,51 @@ public class EventViewer2 extends Table {
     
     protected void removeProc (GuiProc proc)
     {
+      this.removeAllProcBoxes();
+      Iterator iterator = this.procBoxes.iterator();
+      while(iterator.hasNext()){
+	ProcBox box = (ProcBox) iterator.next();
+	if(box.getGuiProc() == proc){
+	  procBoxes.remove(box);
+	  break;
+	}
+      }
+      this.addAllProcBoxes();
+    }
+    
+    private void removeAllProcBoxes(){
       ProcBox procBox = null;
       Iterator iterator = this.procBoxes.iterator();
-      while (iterator.hasNext())
-        {
-          procBox = (ProcBox) iterator.next();
-          if(procBox.getGuiProc() == proc){
-            this.bigTable.remove(procBox);
-            
-            this.bigTableNumberOfRows--;
-            this.bigTable.resize(2,this.bigTableNumberOfRows);
-            
-            this.bigTable.showAll();
-            break;
-          }
-        }
-      this.procBoxes.remove(procBox);
+      while (iterator.hasNext()){
+	procBox = (ProcBox) iterator.next();
+        this.bigTable.remove(procBox);
+      }
+      this.bigTableNumberOfRows = 1;
+      this.bigTable.resize(2,this.bigTableNumberOfRows);
+    }
+    
+    private void addAllProcBoxes(){
+      ProcBox procBox = null;
+      Iterator iterator = this.procBoxes.iterator();
+      while (iterator.hasNext()){
+	procBox = (ProcBox) iterator.next();
+        
+        AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
+        this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 3 , 3);
+        
+        this.bigTableNumberOfRows++;
+        this.bigTable.resize(2,this.bigTableNumberOfRows);
+      }
     }
     
     private void procIsDead(GuiProc proc){
       Iterator iterator = this.procBoxes.iterator();
-      while (iterator.hasNext())
-        {
-          ProcBox procBox = (ProcBox) iterator.next();
-          if(procBox.getGuiProc() == proc){
-            procBox.procIsDead();
-          }
+      while (iterator.hasNext()){
+        ProcBox procBox = (ProcBox) iterator.next();
+        if(procBox.getGuiProc() == proc){
+          procBox.procIsDead();
         }
+      }
     }
     
     private Observer procAddedObserver = new Observer()
@@ -270,7 +289,7 @@ public class EventViewer2 extends Table {
     {
       public void update (Observable observable, Object object)
       {
-	procIsDead((GuiProc)object);
+	removeProc((GuiProc)object);
       }
     };
     
@@ -290,4 +309,11 @@ public class EventViewer2 extends Table {
       }
     };
     
+    private Observer procDeidObserver = new Observer()
+    {
+      public void update (Observable observable, Object object)
+      {
+	procIsDead((GuiProc) object);
+      }
+    };
 }

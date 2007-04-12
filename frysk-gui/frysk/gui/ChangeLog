@@ -1,3 +1,16 @@
+2007-04-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/SessionManager.java: Added check when setting the current
+	session to avoid resetting the current session to itself.
+	* sessions/DebugProcess.java: Removed handling of process exiting
+	(this is now handled by GuiTask).
+	Added checks for whether a task is alive/dead before applying/
+	removing observers.
+	* gladedir/procpop.glade: Added Edit Session, and Session Manager
+	menue items.
+	* druid/CreateFryskSessionDruid.java: Added a call to save the
+	SessionManager when the close button is hit.
+
 2007-04-10  swagiaal  <swagiaal@redhat.com>
 
 	* sessions/Session.java: Removed print statements.
