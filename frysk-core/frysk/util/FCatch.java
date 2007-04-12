@@ -79,6 +79,8 @@ public class FCatch
   //Set of ProcId objects we trace; if traceChildren is set, we also
   // look for their children.
   HashSet tracedParents = new HashSet();
+  
+  HashSet signaledTasks = new HashSet();
 
   ProcId procID = null;
 
@@ -227,8 +229,10 @@ public class FCatch
    * 
    * @param task    The Task recently blocked.
    */
-  public void handleTaskBlock (Task task)
+  public synchronized void handleTaskBlock (Task task)
   {
+    this.signaledTasks.add(task);
+    
     switch (sig)
       {
       case 1:
@@ -292,6 +296,7 @@ public class FCatch
       {
         System.out.println(this.stackTrace.toString());
         this.stackTrace = new StringBuffer();
+        this.stackTrace.append(omg++ + "\n");
         sigTask.requestUnblock(signalObserver);
         Iterator i = task.getProc().getTasks().iterator();
         while (i.hasNext())
@@ -302,6 +307,7 @@ public class FCatch
       }
   }
 
+  int omg = 0;
   /**
    * An observer that sets up things once frysk has set up
    * the requested proc and attached to it.
@@ -408,8 +414,16 @@ public class FCatch
       logger.log(Level.FINE, "{0} updateSignaled", task);
 //            System.err.println("SignalObserver.updateSignaled");
       sigTask = task;
+      
       FCatch.this.sig = signal;
       FCatch.this.numTasks = task.getProc().getTasks().size();
+      
+      if (FCatch.this.numTasks > 1 && FCatch.this.signaledTasks.contains(task))
+	{
+	  FCatch.this.signaledTasks.remove(task);
+	  return Action.CONTINUE;
+	}
+      
       stackTrace.append("fcatch: from PID " + task.getProc().getPid() + " TID "
                         + task.getTid() + ":\n");
       blocker = new Blocker();

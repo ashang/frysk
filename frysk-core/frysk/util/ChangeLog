@@ -1,3 +1,11 @@
+2007-04-12  Mike Cvet  <mcvet@redhat.com>
+
+	* FCatch.java (signaledTasks): Added. Keeps track of tasks belonging to the
+	signaled process. Fixes #4532.
+	(SignalObserver.updateSignaled): Lets signaled task continue if it is
+	contained in above set, and removes from set.
+	(handleTaskBlock): Adds incoming tasks to signaled set.
+
 2007-04-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoredumpAction.java (fillENotePrpsinfo): Construct
