@@ -445,7 +445,11 @@ frysk::sys::Wait::wait (jint waitPid,
   }
 
   // Get the signal mask of all allowed signals; clear the set of
-  // received signals.  Need to include SIGALRM.
+  // received signals.  Need to include SIGALRM.  Since native calls
+  // don't guarentee that the initialized is called, explictly check
+  // that the set is initialized.
+  if (signalSet == NULL)
+    signalSet = new frysk::sys::SignalSet ();
   sigset_t mask = *getRawSet (signalSet);
   sigaddset (&mask, SIGALRM);
 

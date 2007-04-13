@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,43 +45,110 @@ import frysk.testbed.TearDownProcess;
 public class TestCallPtrace
     extends TestCase
 {
-
-    private int pid;
-
     /**
      * Rip down everything related to PID.
      */
     public void tearDown ()
     {
-	TearDownProcess.tearDown();
+	TearDownProcess.tearDown ();
     }
-	
+ 
     public void testChildContinue ()
     {
-	String[] args = {"/bin/true"};
-
-	pid = PtraceServer.child(null, null, null, args);
-	assertTrue (pid > 0);
-	int temp = TestLib.waitIt(pid);
-	assertEquals("Return from waitpid() after fork", temp, pid);
+	final int pid = PtraceServer.child(null, null, null,
+					   new String[] { "/bin/true" });
+	assertTrue ("pid", pid > 0);
+	TearDownProcess.add (pid);
+	
+	// The initial stop.
+	Wait.waitAll (pid, new UnhandledWaitBuilder ()
+	    {
+		private final int id = pid;
+		protected void unhandled (String why)
+		{
+		    fail (why);
+		}
+		public void stopped (int pid, int signal)
+		{
+		    assertEquals ("stopped pid", id, pid);
+		    assertEquals ("stopped sig", Sig.TRAP_, signal);
+		}
+	    });
 
 	PtraceServer.singleStep(pid, 0);
-	int temp1 = TestLib.waitIt(pid);
-	assertEquals("Return from waitpid() after step", temp1, pid);
+	Wait.waitAll (pid, new UnhandledWaitBuilder ()
+	    {
+		private final int id = pid;
+		protected void unhandled (String why)
+		{
+		    fail (why);
+		}
+		public void stopped (int pid, int signal)
+		{
+		    assertEquals ("stopped pid", id, pid);
+		    assertEquals ("stopped sig", Sig.TRAP_, signal);
+		}
+	    });
 
 	PtraceServer.cont (pid, Sig.TERM_);
-	int temp2 = TestLib.waitIt(pid);
-	assertEquals("Return from waitpid() after cont-TERM", temp2, pid);
+	Wait.waitAll (pid, new UnhandledWaitBuilder ()
+	    {
+		private final int id = pid;
+		protected void unhandled (String why)
+		{
+		    fail (why);
+		}
+		public void terminated (int pid, boolean signal, int value,
+					boolean coreDumped)
+		{
+		    assertEquals ("terminated pid", id, pid);
+		    assertEquals ("terminated signal", true, signal);
+		    assertEquals ("terminated value", Sig.TERM_, value);
+		}
+	    });
     }
 	
     public void testAttach ()
     {
-	pid = TestLib.forkIt();
-	assertTrue(pid > 0);
-	TearDownProcess.add(pid);
+	final int pid = new Daemon (new Execute ()
+	    {
+		public void execute ()
+		{
+		    Itimer.sleep (TestCase.getTimeoutSeconds());
+		}
+	    }).hashCode ();
+	TearDownProcess.add (pid);
+	assertTrue ("pid", pid > 0);
+
 	PtraceServer.attach(pid);
-	int temp = TestLib.waitIt(pid);
-	assertEquals("Return from waitpid()", temp, pid);
+	Wait.waitAll (pid, new UnhandledWaitBuilder ()
+	    {
+		private final int id = pid;
+		protected void unhandled (String why)
+		{
+		    fail (why);
+		}
+		public void stopped (int pid, int signal)
+		{
+		    assertEquals ("stopped pid", id, pid);
+		    assertEquals ("stopped sig", Sig.STOP_, signal);
+		}
+	    });
+
 	PtraceServer.detach (pid, 0);
+	Errno errno = null;
+	try {
+	    Wait.waitAll (pid, new UnhandledWaitBuilder ()
+		{
+		    protected void unhandled (String why)
+		    {
+			fail (why);
+		    }
+		});
+	}
+	catch (Errno e) {
+	    errno = e;
+	}
+	assertEquals ("Errno", Errno.Echild.class, errno.getClass());
     }
 }

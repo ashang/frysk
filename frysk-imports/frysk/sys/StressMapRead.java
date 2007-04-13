@@ -42,6 +42,7 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import frysk.sys.proc.MapsBuilder;
 import frysk.testbed.TearDownProcess;
+import frysk.testbed.AttachedSelf;
 
 public class StressMapRead
     extends TestCase
@@ -93,10 +94,7 @@ public class StressMapRead
     {
 	if (brokenXXX(3043))
 	    return;
-	TearDownProcess.add(TestLib.forkIt ());
-	PtraceServer.attach (pid);
-	TestLib.waitIt (pid);
-
+	pid = new AttachedSelf().hashCode ();
 	PtraceByteBuffer buffer = new PtraceByteBuffer(pid,
 						       PtraceByteBuffer.Area.DATA);
     

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,45 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <pthread.h>
-#include <sys/types.h>
-#include "linux.ptrace.h"
-#include <errno.h>
-#include <alloca.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/wait.h>
+package frysk.testbed;
 
-#include <gcj/cni.h>
+import frysk.junit.TestCase;
+import frysk.sys.Daemon;
+import frysk.sys.Execute;
+import frysk.sys.Itimer;
 
-#include "frysk/sys/Errno.h"
-#include "frysk/sys/Errno$Esrch.h"
-#include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/TestLib.h"
+/**
+ * Fork, and than attach to a sleeping instance of this process.
+ *
+ * This class makes use of the TmpProc class.
+ */
 
-/* Create a dummy process to attach to */
-jint
-frysk::sys::TestLib::forkIt ()
+public class DetachedSelf
+    extends Daemon
 {
-  jint pid = fork(); 
-  
-  if (pid < 0) /* Error */
+    public DetachedSelf ()
     {
-      if (errno != 0)
-	    throwErrno (errno, "frysk.sys.TestLib.forkIt()");
-	  
-      exit(EXIT_FAILURE);
-    } 
-  else if (pid == 0) /* Child */
-    { 
-      sleep(5);
-      exit(EXIT_SUCCESS);
+	super (new Execute ()
+	       {
+		   final int timeout = TestCase.getTimeoutSeconds();
+		   public void execute ()
+		   {
+		       int remaining = timeout;
+		       do
+			   remaining -= Itimer.sleep (remaining);
+		       while (remaining > 0);
+		   }
+	       });
+	TearDownProcess.add (this);
     }
-  return pid; 
-}
-
-jint
-frysk::sys::TestLib::waitIt(jint pid) {
-  return waitpid(pid, NULL, __WALL);
 }

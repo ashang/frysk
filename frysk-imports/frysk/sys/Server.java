@@ -79,11 +79,15 @@ public class Server
     static private Server server = newServer ();
     
     /**
-     * Have the server thread execute a request.
+     * Have the server thread execute a request; if the server thread,
+     * execute the request immediatly.
      */
     public static void request (Execute op)
     {
-	server.execute (op);
+	if (Thread.currentThread () == server)
+	    op.execute ();
+	else
+	    server.execute (op);
     }
     
     private Execute op;

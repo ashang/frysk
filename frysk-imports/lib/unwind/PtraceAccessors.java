@@ -62,10 +62,6 @@ public class PtraceAccessors
     ptArgs = createPtArg(pid);  
   }
 
-  native public static int attachXXX(int pid); 
-  
-  native public static int detachXXX(int pid);
-  
   //@Override
   public native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
 

@@ -1,5 +1,16 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete.
+	* cni/TestLib.cxx: Delete.
+	* cni/Wait.cxx (wait): Ensure that .signalSet is non-NULL.
+	* TestCallPtrace.java: Replace TestLib.waitIt with Wait.  Check
+	status values.
+	* StressMapRead.java: Replace TestLib.forkIt, waitIt, and
+	Ptrace.attach, with frysk.testbed.AttachedSelf.
+	* TestPtraceByteBuffer.java: Ditto.
+	* Server.java (request): Handle requests from the server thread
+	immediatly.
+
 	* Child.java (Child(Execute)): New constructor.
 	* Daemon.java (Daemon(Execute)): New constructor.
 	* TestLib.java (tearDown): Delete.

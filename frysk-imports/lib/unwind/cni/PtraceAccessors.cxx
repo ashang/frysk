@@ -181,34 +181,6 @@ lib::unwind::PtraceAccessors::createAddressSpace (lib::unwind::ByteOrder* byteOr
 	return (gnu::gcj::RawData *) unw_create_addr_space (&_UPT_accessors, byteOrder->hashCode());
 }
 
-jint 
-lib::unwind::PtraceAccessors::attachXXX(jint pid)
-{
-	int ret;
-	ret = ::ptrace(PTRACE_ATTACH, pid, (void *) 0, (void *) 0);
-	
-	if (ret != 0) 
-	{
-		fprintf(stderr, "Ptrace attach failed\n");
-		return ret;
-	}	
-	::waitpid(pid, NULL, 0);
-		
-	return 0;
-}
-
-jint
-lib::unwind::PtraceAccessors::detachXXX(jint pid)
-{
-	int ret;
-	ret = ::ptrace(PTRACE_DETACH, (pid), 0, (void *) 0);
-	
-	if (ret != 0)
-		fprintf(stderr, "Ptrace detach failed\n");
-		
-	return ret;
-}
-
 gnu::gcj::RawData*
 lib::unwind::PtraceAccessors::createPtArg (jint pid)
 {

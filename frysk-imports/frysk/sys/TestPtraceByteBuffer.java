@@ -45,6 +45,7 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.Arrays;
 import frysk.testbed.TearDownProcess;
+import frysk.testbed.AttachedSelf;
 
 public class TestPtraceByteBuffer extends TestCase
 {
@@ -53,10 +54,7 @@ public class TestPtraceByteBuffer extends TestCase
 
     protected void setUp()
     {
-	pid = TestLib.forkIt();
-	TearDownProcess.add(pid);
-	PtraceServer.attach(pid);
-	TestLib.waitIt(pid);
+	pid = new AttachedSelf().hashCode ();
     }
 
     protected void tearDown()

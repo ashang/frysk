@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,10 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+package frysk.testbed;
 
-public class TestLib
+import frysk.junit.TestCase;
+import frysk.sys.PtraceServer;
+import frysk.sys.Sig;
+import frysk.sys.SignalBuilder;
+import frysk.sys.UnhandledWaitBuilder;
+import frysk.sys.Wait;
+
+/**
+ * Fork, and than attach to a sleeping instance of this process.
+ *
+ * This class makes use of the TmpProc class.
+ */
+
+public class AttachedSelf
+    extends DetachedSelf
 {
-    public static native int forkIt ();
-    public static native int waitIt (int pid);
+    public AttachedSelf ()
+    {
+	PtraceServer.attach (this);
+	Wait.wait (this,
+		   new UnhandledWaitBuilder ()
+		   {
+		       protected void unhandled (String why)
+		       {
+			   TestCase.fail (why);
+		       }
+		       public void stopped (int pid, int signal)
+		       {
+			   // cool!
+		       }
+		   },
+		   new SignalBuilder ()
+		   {
+		       public void signal (Sig sig)
+		       {
+			   TestCase.fail ("unexpected signal " + sig);
+		       }
+		   },
+		   TestCase.getTimeoutMilliseconds());
+    }
 }

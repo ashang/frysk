@@ -1,3 +1,11 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* PtraceAccessors.java (attachXXX, detachXX): Delete.
+	* cni/PtraceAccessors.cxx: Ditto.
+	* TestUnwind.java: Replace frysk.sys.TestLib with
+	frysk.testbed.TearDownProcess, and frysk.testbed.AttachedSelf.
+	Run tests on frysk.sys.Server as frysk.sys.Execute objects.
+
 2007-03-29  Nurdin Premji <npremji@redhat.com>
 
 	* cni/UnwindH.hxx (getProcName): Set value of offset pointer.
