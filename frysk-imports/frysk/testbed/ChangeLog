@@ -1,3 +1,9 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TearDownFile.java: New file; largely lifted from
+	frysk-core/frysk/proc/TestLib.java.
+	* TestTearDownFile.java: New.
+
 2007-04-10  Andrew Cagney  <cagney@redhat.com>
 
 	* LocalMemory.java: New.

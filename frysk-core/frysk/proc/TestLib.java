@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.testbed.TearDownFile;
 import frysk.event.SignalEvent;
 import frysk.junit.TestCase;
 import frysk.Config;
@@ -1018,64 +1019,6 @@ public class TestLib
   }
 
   /**
-   * Manipulate a temporary file.. Creates a temporary file that is
-   * automatically removed on test completion.. Unlike File, this doesn't hang
-   * onto the underlying file once created. Consequently, operations such as
-   * "exists()" reflect the current state of the file.
-   */
-  List tmpFiles = new LinkedList();
-
-  protected class TmpFile
-  {
-    private File file;
-
-    public String toString ()
-    {
-      return file.getPath();
-    }
-
-    public File getFile ()
-    {
-      return new File(file.getPath());
-    }
-
-    public boolean stillExists ()
-    {
-      return getFile().exists();
-    }
-
-    public void delete ()
-    {
-      file.delete();
-    }
-
-    TmpFile ()
-    {
-      String name = TestLib.this.getClass().getName();
-      try
-        {
-          File pwd = new File(".");
-          file = File.createTempFile(name + ".", ".tmp", pwd);
-          tmpFiles.add(this);
-        }
-      catch (java.io.IOException e)
-        {
-          fail("Creating temp file " + name);
-        }
-    }
-  }
-
-  private void deleteTmpFiles ()
-  {
-    for (Iterator i = tmpFiles.iterator(); i.hasNext();)
-      {
-        TmpFile tbd = (TmpFile) i.next();
-        i.remove();
-        tbd.delete();
-      }
-  }
-
-  /**
    * Observer that counts the number of tasks <em>frysk</em> reports as added
    * and removed to the system.. This automatically wires itself in using the
    * Proc's procAdded observer.
@@ -1579,7 +1522,7 @@ public class TestLib
       }
 
     // Remove any stray files.
-    deleteTmpFiles();
+    TearDownFile.tearDown();
 
     // Drain all the pending signals. Note that the process of killing
     // off the processes used in the test can generate extra signals -

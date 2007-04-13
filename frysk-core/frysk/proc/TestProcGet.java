@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import frysk.testbed.TearDownFile;
 
 /**
  * Test Proc's public get methods.
@@ -59,7 +60,7 @@ public class TestProcGet
    */
   public void testGetAuxv ()
   {
-    TmpFile tmpFile = new TmpFile();
+    TearDownFile tmpFile = TearDownFile.create();
 
     AttachedDaemonProcess child = new AttachedDaemonProcess(new String[]
 	{
@@ -79,7 +80,7 @@ public class TestProcGet
     // Proc.getAuxv.
     try
       {
-        Scanner reader = new Scanner(tmpFile.getFile());
+        Scanner reader = new Scanner(tmpFile);
         for (int i = 0; i < auxv.length; i++)
           {
             if (auxv[i].type == 0)

@@ -1,3 +1,12 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (TmpFile, tmpFiles, deleteTmpFiles): Delete.
+	Import frysk.testbed.TearDownFile.
+	(tearDown): Call TearDownFile.tearDown().
+	* TestProcGet.java: Use frysk.testbed.TearDownFile.
+	* TestExec.java: Ditto.
+	* TestRun.java: Ditto.
+
 2007-04-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestProcTasksObserver.java (testCloneThenKillAttached)

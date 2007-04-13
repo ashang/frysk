@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import frysk.sys.Signal;
+import frysk.testbed.TearDownFile;
 
 /**
  * Test the exec event. The exec needs to completely replace the existing
@@ -86,7 +87,7 @@ public class TestExec
   {
     // Create a temp file that the exec'd program will remove.
     // That way it's possible to confirm that the exec did work.
-    TmpFile tmpFile = new TmpFile();
+    TearDownFile tmpFile = TearDownFile.create();
     AckProcess child = new DetachedAckProcess(
                                               (String) null,
                                               new String[] { "/bin/rm",
@@ -123,7 +124,7 @@ public class TestExec
 
     // Create a temp file, the exec will remove. That way it's
     // possible to confirm that the exec did work.
-    TmpFile tmpFile = new TmpFile();
+    TearDownFile tmpFile = TearDownFile.create();
     AckProcess child = new DetachedAckProcess(
                                               (String) null,
                                               new String[] { "/bin/rm",

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,10 +40,12 @@
 
 package frysk.proc;
 
+import frysk.testbed.TearDownFile;
+
 /**
- * Check that a program can be run to completion. A scratch file is created. The
- * program "rm -f TMPFILE" is then run. That the tmp file has been removed is
- * then checked.
+ * Check that a program can be run to completion. A scratch file is
+ * created. The program "rm -f TMPFILE" is then run. That the tmp file
+ * has been removed is then checked.
  */
 
 public class TestRun
@@ -54,7 +56,7 @@ public class TestRun
    */
   public void testCreateAttachedContinuedProc ()
   {
-    TmpFile tmpFile = new TmpFile();
+    TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
 
     // Add an observer that counts the number of proc create
@@ -106,7 +108,7 @@ public class TestRun
    */
   public void testCreateAttachedStoppedProc ()
   {
-    TmpFile tmpFile = new TmpFile();
+    TearDownFile tmpFile = TearDownFile.create();
     assertNotNull("temporary file", tmpFile);
 
     // Observe TaskObserver.Attached events; when any occur
