@@ -40,7 +40,6 @@
 
 package frysk.gui.srcwin;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 //import java.util.HashSet;
@@ -677,12 +676,12 @@ public class SourceWindow
     resensitize();
   }
   
-  protected void addProc (File exe)
+  protected void addProc (String exe, String env_variables, String options)
   {
-	desensitize();
-	this.stop.setSensitive(false);
+	//desensitize();
+	// this.stop.setSensitive(false);
 	this.SW_add = true;
-  	SourceWindowFactory.startNewProc(exe);
+  	SourceWindowFactory.startNewProc(exe, env_variables, options);
   }
   
   protected void appendProc (Task task)
@@ -917,9 +916,10 @@ public class SourceWindow
 		    // select a file name
 		    public void fileActivated (FileChooserEvent event)
 		      {
-			Entry envVariables = (Entry) glade.getWidget("envVariables");
-			Entry taskOptions = (Entry) glade.getWidget("taskOptions");
-		        startTask(fc.getFilename(), envVariables.getText(), taskOptions.getText());
+			Entry env_variables = (Entry) glade.getWidget("env_variables");
+			Entry task_options = (Entry) glade.getWidget("task_options");
+		        addProc(fc.getFilename(), env_variables.getText(), 
+		                  task_options.getText());
 		      }
 		    });
 		  fc.setDecorated(true);
@@ -929,9 +929,10 @@ public class SourceWindow
 		  int response = fc.open();
 		  if (response == ResponseType.OK.getValue())
 		    {
-		      Entry envVariables = (Entry) glade.getWidget("envVariables");
-		      Entry taskOptions = (Entry) glade.getWidget("taskOptions");
-		      startTask(fc.getFilename(), envVariables.getText(), taskOptions.getText());
+		      Entry env_variables = (Entry) glade.getWidget("env_variables");
+		      Entry task_options = (Entry) glade.getWidget("task_options");
+		      addProc(fc.getFilename(), env_variables.getText(), 
+		              task_options.getText());
 		    }
 		   fc.destroy();  
 		}
@@ -1343,18 +1344,6 @@ public class SourceWindow
       }
     });
   }
-  
-  /**
-   * This method is activated from the FileChooserDialog when a task has been selected
-   * to be run and brought into the source window.
-   * @param filename
-   */
-  
-  private void startTask(String filename, String env_variables, String task_options)
-  {
-    // No code here yet, work in progress
-	  
-  }
 
   /**
    * This method will activate a window to allow the user to exemaine a core file
@@ -1581,8 +1570,8 @@ public class SourceWindow
   private void resensitize ()
   {
     // Set status of toolbar buttons
-    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+//    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
+//    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
 
     if (this.stepDialog != null)
       this.stepDialog.resensitize();

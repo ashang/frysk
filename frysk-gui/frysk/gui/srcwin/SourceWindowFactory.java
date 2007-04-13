@@ -169,11 +169,21 @@ public class SourceWindowFactory
     });
   }
   
-  public static void startNewProc (File file)
+  public static void startNewProc (String file, String env_variables, String options)
   {
+    System.out.println("file=" + file);
+    File file_path = new File(file);
     String[] cmd = new String[1];
-    cmd[0] = file.getAbsolutePath();
-    if (file.exists())
+    if (env_variables.equals("") && options.equals(""))
+        cmd[0] = file;
+    else if (options.equals(""))
+        cmd[0] = env_variables + " " + file;
+    else if (env_variables.equals(""))
+        cmd[0] = file + " " + options;
+    else 
+	cmd[0] = env_variables + " " + file + " " + options;
+    System.out.println("command =" + cmd[0]);
+    if (file_path.exists())
       Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
     else
       {

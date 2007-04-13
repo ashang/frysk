@@ -1,3 +1,8 @@
+2007-04-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: More work on bz #4193.
+	* SourceWindowFactory.java: Ditto.
+
 2007-04-12  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Highlight lines only for current
