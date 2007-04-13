@@ -1,3 +1,16 @@
+2007-04-13  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* Makefile.rules (fryski): Put the building of fryski under
+	conditional control depending on whether the build is generating
+	GCOV data or not.  Fryski does not link when code is compiled
+	with --coverage.
+	* frysk-common.ac: Use the newly defined FRYSK_COVERAGE defined
+	in...
+	* m4/frysk_coverage.m4: Provide an --enable-coverage option to
+	configure to enable GCOV data creation during the build.  This
+	supports the use of gcov and other tools to calculate coverage
+	metrics on Frysk.
+
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java): Exclude

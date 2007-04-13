@@ -449,6 +449,7 @@ ARCH32_CXXLINK = $(subst $(space)-m64$(space), ,$(CXXLINK)) -m32
 endif
 
 
+if !USE_COVERAGE
 # Build a version of frysk that behaves like the Java interpreter
 # (while it is set up to be run anywhere it is not installed -- there
 # is one of these per-directory).
@@ -488,6 +489,7 @@ gij.sh: Makefile
 	echo 'exec ./fryski "$$@"' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
+endif
 
 SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.jpg:
