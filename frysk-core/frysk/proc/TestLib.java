@@ -41,20 +41,18 @@
 package frysk.proc;
 
 import frysk.testbed.TearDownFile;
+import frysk.testbed.TearDownProcess;
 import frysk.event.SignalEvent;
 import frysk.junit.TestCase;
 import frysk.Config;
 import frysk.sys.Errno;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
-import frysk.sys.PtraceServer;
 import frysk.sys.Sig;
 import frysk.sys.SignalSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
-import frysk.sys.WaitBuilder;
 import frysk.sys.UnhandledWaitBuilder;
-import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.Stat;
 
 import java.io.File;
@@ -395,7 +393,7 @@ public class TestLib
       this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
                                                                 : "/dev/null"),
                             null, argv);
-      killDuringTearDown(new ProcId(pid));
+      TearDownProcess.add(pid);
       ack.await();
     }
 
@@ -1260,24 +1258,6 @@ public class TestLib
   }
 
   /**
-   * A set of children that are killed off after each test run.
-   */
-  private Set pidsToKillDuringTearDown;
-
-  /**
-   * Add the pid to the set of pidsToKillDuringTearDown that should be killed
-   * off during tearDown.
-   */
-  protected final void killDuringTearDown (ProcId tid)
-  {
-    // Had better not try to register process one.
-    assertFalse("child is process one", tid.id == 1);
-    pidsToKillDuringTearDown.add(tid);
-    logger.log(Level.FINE, "{0} killDuringTearDown {1}\n", new Object[] { this,
-                                                                         tid });
-  }
-
-  /**
    * The host being used by the current test.
    */
   protected Host host;
@@ -1285,19 +1265,18 @@ public class TestLib
   public void setUp ()
   {
     logger.log(Level.FINE, "{0} <<<<<<<<<<<<<<<< start setUp\n", this);
-    pidsToKillDuringTearDown = new HashSet();
     // Extract a fresh new Host and EventLoop from the Manager.
     host = Manager.resetXXX();
     // Detect all test processes added to the process tree,
-    // registering each with pidsToKillDuringTearDown list. Look
-    // both for children of this process, and children of any
-    // processes already marked to be killed. The latter is to
-    // catch children of children, such as daemons.
+    // registering each with TearDownProcess list. Look both for
+    // children of this process, and children of any processes already
+    // marked to be killed. The latter is to catch children of
+    // children, such as daemons.
     //
-    // Note that, in addition to this, the Child code also
-    // directly registers its process. That is to ensure that
-    // children that never get entered into the process tree also
-    // get registered with pidsToKillDuringTearDown.
+    // Note that, in addition to this, the Child code also directly
+    // registers its process. That is to ensure that children that
+    // never get entered into the process tree also get registered
+    // with TearDownProcess.
     host.observableProcAddedXXX.addObserver(new Observer()
     {
       public void update (Observable o, Object obj)
@@ -1305,80 +1284,22 @@ public class TestLib
         Proc proc = (Proc) obj;
         if (isChildOfMine(proc))
           {
-            killDuringTearDown(proc.getId());
+            TearDownProcess.add(proc.getPid());
             return;
           }
         Proc parent = proc.getParent();
         if (parent != null)
           {
-            ProcId parentId = proc.getParent().getId();
-            if (pidsToKillDuringTearDown.contains(parentId))
+            int parentPid = proc.getParent().getPid();
+            if (TearDownProcess.contains(parentPid))
               {
-                killDuringTearDown(proc.getId());
+                TearDownProcess.add(proc.getPid());
                 return;
               }
           }
       }
     });
     logger.log(Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
-  }
-
-  /**
-   * Try to blow away the child, catch a failure.
-   */
-  private boolean capturedSendTkill (ProcId pid)
-  {
-    try
-      {
-        Signal.tkill(pid.id, Sig.KILL);
-        log("{0} tkill -KILL ", pid.id, "\n");
-      }
-    catch (Errno.Esrch e)
-      {
-        // Toss it.
-        log("tkill -KILL ", pid.id, " (failed - ESRCH)\n");
-        return false;
-      }
-    return true;
-  }
-
-  /**
-   * Sequence a task through CONT, detach, and KILL. Return false if it is
-   * suspected that the task no longer exists. Detaching with KILL on early
-   * utrace kernels has proven problematic - nothing happened (now fixed) -
-   * avoid any such issues by doing a simple detach followed by a KILL. There is
-   * a problem with both stopped and attached tasks. The Sig.KILL won't be
-   * delivered, and consequently the task won't exit, until that task has been
-   * continued. Work around this by first sending all tasks a continue ...
-   */
-  private boolean capturedSendDetachContKill (int pid)
-  {
-    boolean exists = true;
-    // Do the detach
-    try
-      {
-        PtraceServer.detach(pid, 0);
-        log("detach ", pid, "\n");
-      }
-    catch (Errno.Esrch e)
-      {
-        // Toss it.
-        log("detach ", pid, " (failed - ESRCH)\n");
-      }
-    // Unblock the thread
-    try
-      {
-        Signal.tkill(pid, Sig.CONT);
-        log("tkill -CONT ", pid, "\n");
-      }
-    catch (Errno.Esrch e)
-      {
-        // Toss it.
-        log("tkill -CONT ", pid, " (failed - ESRCH)\n");
-      }
-    // Finally send it a kill to finish things off.
-    exists = capturedSendTkill(new ProcId(pid)) && exists;
-    return exists;
   }
 
   public void tearDown ()
@@ -1397,132 +1318,9 @@ public class TestLib
         assertFalse("pending signal " + sig, pendingSignals.contains(sig));
       }
 
-    // Make a preliminary pass through all the registered
-    // pidsToKillDuringTearDown trying to simply kill
-    // each. Someone else may have waited on their deaths already.
-    for (Iterator i = pidsToKillDuringTearDown.iterator(); i.hasNext();)
-      {
-        ProcId child = (ProcId) i.next();
-        capturedSendTkill(child);
-      }
-
-      // Go through all registered processes / tasks adding any of
-      // their clones to the kill-list. Do this after the initial
-      // blast as, hopefully, that has stopped many of the threads
-      // dead in their tracks.
-      {
-        ProcBuilder missingTidsToKillDuringTearDown = new ProcBuilder()
-        {
-          public void buildId (int id)
-          {
-            killDuringTearDown(new ProcId(id));
-          }
-        };
-        // Iterate over a copy of the tids's collection as the
-        // missingTidsToKillDuringTearDown may modify the
-        // underlying collection.
-        Object[] pidsToKill = pidsToKillDuringTearDown.toArray();
-        for (int i = 0; i < pidsToKill.length; i++)
-          {
-            ProcId child = (ProcId) pidsToKill[i];
-            missingTidsToKillDuringTearDown.construct(child.id);
-          }
-      }
-
-    // Blast all the processes for real.
-    for (Iterator i = pidsToKillDuringTearDown.iterator(); i.hasNext();)
-      {
-        ProcId child = (ProcId) i.next();
-        capturedSendDetachContKill(child.id);
-      }
-
-    // Drain the wait event queue. This ensures that: there are
-    // no outstanding events to confuse the next test run; all
-    // child zombies have been reaped (and eliminated); and
-    // finally makes certain that all attached tasks have been
-    // terminated.
-    //
-    // For attached tasks, which will generate non-exit wait
-    // events (clone et.al.), the task is detached / killed.
-    // Doing that frees up the task so that it can run to exit.
-    try
-      {
-        while (! pidsToKillDuringTearDown.isEmpty())
-          {
-            logger.log(Level.FINE, "{0} waitAll -1 ...\n", this);
-            Wait.waitAll(- 1, new WaitBuilder()
-            {
-              public void cloneEvent (int pid, int clone)
-              {
-                capturedSendDetachContKill(pid);
-              }
-
-              public void forkEvent (int pid, int child)
-              {
-                capturedSendDetachContKill(pid);
-              }
-
-              public void exitEvent (int pid, boolean signal, int value,
-                                     boolean coreDumped)
-              {
-                capturedSendDetachContKill(pid);
-                // Do not remove PID from
-                // pidsToKillDuringTearDown list; need to
-                // let the terminated event behind it
-                // bubble up.
-              }
-
-              public void execEvent (int pid)
-              {
-                capturedSendDetachContKill(pid);
-              }
-
-              public void syscallEvent (int pid)
-              {
-                capturedSendDetachContKill(pid);
-              }
-
-              public void stopped (int pid, int signal)
-              {
-                capturedSendDetachContKill(pid);
-              }
-
-              private void drainTerminated (int pid)
-              {
-                // To be absolutly sure, again make
-                // certain that the thread is detached.
-                capturedSendDetachContKill(pid);
-                // True pidsToKillDuringTearDown can have
-                // a second exit status behind this first
-                // one, drain that also. Give up when
-                // this PID has no outstanding events.
-		log("Wait.drain ", pid, "\n");
-		Wait.drain (pid);
-                // Hopefully done with this PID.
-                pidsToKillDuringTearDown.remove(new TaskId(pid));
-              }
-
-              public void terminated (int pid, boolean signal, int value,
-                                      boolean coreDumped)
-              {
-                drainTerminated(pid);
-              }
-
-              public void disappeared (int pid, Throwable w)
-              {
-                // The task vanished somehow, drain it.
-                drainTerminated(pid);
-              }
-            });
-          }
-      }
-    catch (Errno.Echild e)
-      {
-        // No more events.
-      }
-
     // Remove any stray files.
     TearDownFile.tearDown();
+    TearDownProcess.tearDown();
 
     // Drain all the pending signals. Note that the process of killing
     // off the processes used in the test can generate extra signals -

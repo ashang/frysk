@@ -37,73 +37,67 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+package frysk.testbed;
 
-/**
- * Identifies a process.
- */
-public class ProcessIdentifier
-    implements Comparable
+import frysk.junit.TestCase;
+import frysk.sys.Errno;
+import frysk.sys.Fork;
+import frysk.sys.Wait;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.UnhandledWaitBuilder;
+import frysk.sys.SignalBuilder;
+
+public class TestTearDownProcess
+    extends TestCase
 {
-    private int pid;
-    public ProcessIdentifier (int pid)
+    private void assertGone (int pid)
     {
-	this.pid = pid;
-    }
-    public int hashCode ()
-    {
-	return pid;
-    }
-    public int compareTo (Object o)
-    {
-	return ((ProcessIdentifier)o).pid - this.pid;
-    }
-    public boolean equals (Object o)
-    {
-	if (o instanceof ProcessIdentifier)
-	    return ((ProcessIdentifier)o).pid == this.pid;
-	else
-	    return false;
-    }
-    /**
-     * Represent the ProcessIdentifier textually.  Return the PID as a
-     * number so that it can be used directly.
-     */
-    public String toString ()
-    {
-	return Integer.toString (pid);
+	boolean gone = false;
+	try {
+	    Signal.kill (pid, Sig.NONE);
+	}
+	catch (Errno.Esrch e) {
+	    gone = true;
+	}
+	assertTrue ("process gone", gone);
     }
 
-    /**
-     * Send a fatal signal (SIGKILL) to this process.
-     */
-    public void kill ()
+    public void testForkPtraceUnattached()
     {
-	Signal.kill (pid, Sig.KILL);
+	int pid = Fork.ptrace (new String[] { "/bin/true" });
+	TearDownProcess.add (pid);
+	TearDownProcess.tearDown ();
+	assertGone (pid);
     }
 
-    /**
-     * Send a signal to THIS pid.
-     */
-    public void tkill (Sig sig)
+    public void testForkPtraceAttached()
     {
-	Signal.tkill (pid, sig);
-    }
-
-    /**
-     * Perform a blocking drain of all wait events from this process.
-     * Only returns when the process has disappeared.
-     */
-    public void blockingDrain ()
-    {
-	Wait.drain (pid);
-    }
-
-    /**
-     * Perform a blocking wait for a single event from this process.
-     */
-    public void blockingWait (WaitBuilder o)
-    {
-	Wait.waitAll (pid, o);
+	int pid = Fork.ptrace (new String[] { "/bin/true" });
+	long maxTime = System.currentTimeMillis() + getTimeoutMilliseconds ();
+	Wait.wait (pid,
+		   new UnhandledWaitBuilder ()
+		   {
+		       protected void unhandled (String why)
+		       {
+			   fail (why);
+		       }
+		       public void stopped (int pid, int signal)
+		       {
+			   // Toss.
+		       }
+		   },
+		   new SignalBuilder ()
+		   {
+		       public void signal (Sig sig)
+		       {
+			   fail ("signal " + sig + " received");
+		       }
+		   },
+		   getTimeoutMilliseconds ());
+	assertFalse ("timeout", System.currentTimeMillis() >= maxTime);
+	TearDownProcess.add (pid);
+	TearDownProcess.tearDown ();
+	assertGone (pid);
     }
 }

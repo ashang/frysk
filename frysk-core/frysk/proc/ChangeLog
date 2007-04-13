@@ -1,5 +1,10 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (tearDown): Call TearDownProcess.tearDown().
+	(setUp): Do not clear pidsToKillDuringTearDown.
+	(pidsToKillDuringTearDown, killDuringTearDown): Delete.
+	(capturedSendTkill, capturedSendDetachContKill): Delete.	
+
 	* TestLib.java (TmpFile, tmpFiles, deleteTmpFiles): Delete.
 	Import frysk.testbed.TearDownFile.
 	(tearDown): Call TearDownFile.tearDown().

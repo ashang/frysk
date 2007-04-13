@@ -416,9 +416,10 @@ frysk::sys::Wait::signalAdd (frysk::sys::Sig* sig)
 }
 
 void
-frysk::sys::Wait::waitAll (jlong millisecondTimeout,
-			   frysk::sys::WaitBuilder* waitBuilder,
-			   frysk::sys::SignalBuilder* signalBuilder)
+frysk::sys::Wait::wait (jint waitPid,
+			frysk::sys::WaitBuilder* waitBuilder,
+			frysk::sys::SignalBuilder* signalBuilder,
+			jlong millisecondTimeout)
 {
   java::util::logging::Logger *logger = frysk::sys::Wait::getLogger ();
   // Zero the existing timeout, and drain any pending SIGALRM
@@ -479,8 +480,8 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
 
   int pid = 0;
   if (waitBuilder != NULL) {
-    pid = ::waitpid (-1, &wait_jmpbuf.status,
-			__WALL | (block ? 0 : WNOHANG));
+    pid = ::waitpid (waitPid, &wait_jmpbuf.status,
+		     __WALL | (block ? 0 : WNOHANG));
     if (pid < 0 && errno == ECHILD && block)
       // No children; block anyway.
       pid = ::select (0, NULL, NULL, NULL, NULL);
@@ -523,7 +524,7 @@ frysk::sys::Wait::waitAll (jlong millisecondTimeout,
     // pending waitpid events are collected.
     while (true) {
       int status;
-      pid = ::waitpid (-1, &status, __WALL|WNOHANG);
+      pid = ::waitpid (waitPid, &status, __WALL|WNOHANG);
       log (logger, pid, status, errno);
       if (pid <= 0)
 	break;

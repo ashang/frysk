@@ -1,3 +1,15 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (wait): Replace waitAll.
+	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long)): Add.
+	(wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long)): Add.
+	(waitAll(long,WaitBuilder,SignalBuilder,long)): Implement using
+	wait.
+	* PtraceServer.java (attach(ProcessIdentifer))
+	(detach(ProcessIdentifier,int): New.
+	* ProcessIdentifier.java: Make constructor public.
+	(tkill(Sig)): New.
+
 2007-04-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (intVal, byteVal, longVal): Delete.

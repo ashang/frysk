@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 package frysk.sys.proc;
 
 import gnu.gcj.RawData;
+import frysk.sys.ProcessIdentifier;
 
 /**
  * Scan the <tt>/proc</tt>, or <tt>/proc/</tt>pid<tt>/task</tt>
@@ -65,6 +66,10 @@ public abstract class ProcBuilder
 	    close (dir);
 	}
 	return true;
+    }
+    public final boolean construct (ProcessIdentifier pid)
+    {
+	return construct (pid.hashCode ());
     }
     /**
      * Iterate over the <tt>/proc</tt> directory notifying TaskBuilder

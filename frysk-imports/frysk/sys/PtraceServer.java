@@ -47,14 +47,23 @@ import gnu.gcj.RawData;
 
 public class PtraceServer
 {
-  /**
-   * Attach to the process specified by PID.
-   */
-  public static native void attach (int pid);
-  /**
-   * Detach from the process specified by PID.
-   */
-  public static native void detach(int pid, int sig);
+    /**
+     * Attach to the process specified by PID.
+     */
+    public static native void attach (int pid);
+    public static void attach (ProcessIdentifier pid)
+    {
+	attach (pid.hashCode ());
+    }
+    /**
+     * Detach from the process specified by PID.
+     */
+    public static native void detach(int pid, int sig);
+    public static void detach (ProcessIdentifier pid, int sig)
+    {
+	detach (pid.hashCode (), sig);
+    }
+
   /**
    * Detach from the process specified by PID.
    */

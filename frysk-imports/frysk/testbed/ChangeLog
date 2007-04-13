@@ -1,5 +1,9 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TearDownProcess.java: New file; largely lifted from
+	frysk-core/frysk/proc/TestLib.java.
+	* TestTearDownProcess.java: New.
+
 	* TearDownFile.java: New file; largely lifted from
 	frysk-core/frysk/proc/TestLib.java.
 	* TestTearDownFile.java: New.
