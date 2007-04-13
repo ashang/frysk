@@ -195,6 +195,8 @@ public class SourceWindow
   private String gladePath;
 
   private LibGlade glade;
+  
+  private LibGlade glade_fc;
 
   private View view;
 
@@ -883,17 +885,17 @@ public class SourceWindow
 	public void actionEvent (ActionEvent action)
 	  {
 	    try {
-		  glade = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
-		  fc = (FileChooserDialog) glade.getWidget("frysk_filechooserdialog");
+		  glade_fc = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
+		  fc = (FileChooserDialog) glade_fc.getWidget("frysk_filechooserdialog");
 		  fc.addListener(new LifeCycleListener() {
 		    public void lifeCycleEvent(LifeCycleEvent event)
 		      {
 		      }
 		    public boolean lifeCycleQuery(LifeCycleEvent event)
 		      {
-		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
-		            event.isOfType(LifeCycleEvent.Type.DESTROY))
-		              fc.destroy();
+		       // if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+		       //     event.isOfType(LifeCycleEvent.Type.DESTROY))
+		       //       fc.destroy();
 		        return false;
 		      }
 		  });
@@ -916,10 +918,13 @@ public class SourceWindow
 		    // select a file name
 		    public void fileActivated (FileChooserEvent event)
 		      {
-			Entry env_variables = (Entry) glade.getWidget("env_variables");
-			Entry task_options = (Entry) glade.getWidget("task_options");
-		        addProc(fc.getFilename(), env_variables.getText(), 
-		                  task_options.getText());
+			Entry env_variables = (Entry) glade_fc.getWidget("env_variables");
+			Entry task_options = (Entry) glade_fc.getWidget("task_options");
+			String env_var = env_variables.getText();
+			String task_opt = task_options.getText();
+			String filename = fc.getFilename();
+			fc.destroy();
+		        addProc(filename, env_var, task_opt);
 		      }
 		    });
 		  fc.setDecorated(true);
@@ -929,12 +934,14 @@ public class SourceWindow
 		  int response = fc.open();
 		  if (response == ResponseType.OK.getValue())
 		    {
-		      Entry env_variables = (Entry) glade.getWidget("env_variables");
-		      Entry task_options = (Entry) glade.getWidget("task_options");
-		      addProc(fc.getFilename(), env_variables.getText(), 
-		              task_options.getText());
+		      Entry env_variables = (Entry) glade_fc.getWidget("env_variables");
+		      Entry task_options = (Entry) glade_fc.getWidget("task_options");
+		      String env_var = env_variables.getText();
+		      String task_opt = task_options.getText();
+		      String filename = fc.getFilename();
+		      fc.destroy();
+		      addProc(filename, env_var, task_opt);
 		    }
-		   fc.destroy();  
 		}
 	    catch (Exception e) 
 	      {
@@ -1570,8 +1577,8 @@ public class SourceWindow
   private void resensitize ()
   {
     // Set status of toolbar buttons
-//    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
-//    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
+    this.glade.getWidget("toolbarGotoBox").setSensitive(true);
+    this.glade.getWidget(SourceWindow.SOURCE_WINDOW).setSensitive(true);
 
     if (this.stepDialog != null)
       this.stepDialog.resensitize();

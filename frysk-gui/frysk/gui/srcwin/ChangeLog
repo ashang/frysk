@@ -1,3 +1,8 @@
+2007-04-13  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindowFactory.java: Trim spaces from proc avtivation.
+	* SourceWindow.java: Fix bz #4358.
+
 2007-04-13  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java (startNewProc): If the path to the requested

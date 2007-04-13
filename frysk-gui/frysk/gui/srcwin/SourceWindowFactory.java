@@ -171,7 +171,6 @@ public class SourceWindowFactory
   
   public static void startNewProc (String file, String env_variables, String options)
   {
-    System.out.println("file=" + file);
     File file_path = new File(file);
     String[] cmd = new String[1];
     if (env_variables.equals("") && options.equals(""))
@@ -182,7 +181,17 @@ public class SourceWindowFactory
         cmd[0] = file + " " + options;
     else 
 	cmd[0] = env_variables + " " + file + " " + options;
-    System.out.println("command =" + cmd[0]);
+    
+    if (env_variables.equals("") && options.equals(""))
+        cmd[0] = file;
+    else if (options.equals(""))
+        cmd[0] = env_variables + " " + file;
+    else if (env_variables.equals(""))
+        cmd[0] = file + " " + options;
+    else 
+	cmd[0] = env_variables + " " + file + " " + options;
+    // trim off any extraneous whitespace as the execvp level doesn't like it
+    cmd[0] = cmd[0].trim();
     if (file_path.exists())
       Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
     // else, do nothing.
@@ -250,12 +259,12 @@ public class SourceWindowFactory
   {
     public void addedTo (Object o)
     {
-      System.err.println(this + " added to " + (Task) o);
+      //System.err.println(this + " added to " + (Task) o);
     }
     
     public Action updateAttached (Task task)
     {
-      System.err.println("updateAttached " + task);
+      //System.err.println("updateAttached " + task);
       Proc proc = task.getProc();
 
       if (srcWin != null)
