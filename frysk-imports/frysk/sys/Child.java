@@ -59,4 +59,22 @@ public class Child
     {
 	super (child (redirect, exec));
     }
+
+    /**
+     * Create a child wired to nothing; STDIN is closed, STDOUT/ERROR
+     * are the same as for this process.
+     */
+    public Child (Execute exec)
+    {
+	this (new Redirect ()
+	    {
+		protected void reopen ()
+		{
+		    FileDescriptor.in.close ();
+		}
+		protected void close ()
+		{
+		}
+	    }, exec);
+    }
 }

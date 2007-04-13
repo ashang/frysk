@@ -1,5 +1,8 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestCase.java (getTimeoutSeconds): Make public.
+	(getTimeoutMilliseconds): Make public.
+	
 	* TestCase.java (timeoutSeconds, getTimeoutSeconds)
 	(setTimeoutSeconds): Change type to int, matches sleep(3).
 	* Runner.java: Update.

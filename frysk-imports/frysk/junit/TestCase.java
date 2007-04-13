@@ -62,14 +62,14 @@ public class TestCase
     /**
      * A second timeout.
      */
-    protected static int getTimeoutSeconds ()
+    public static int getTimeoutSeconds ()
     {
 	return timeoutSeconds;
     }
     /**
      * A milli-second timeout.
      */
-    protected static long getTimeoutMilliseconds ()
+    public static long getTimeoutMilliseconds ()
     {
 	return timeoutSeconds * 1000;
     }

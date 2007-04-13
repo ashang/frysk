@@ -1,5 +1,8 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* DetachedSelf.java: New file.
+	* AttachedSelf.java: New file.
+
 	* TearDownProcess.java: New file; largely lifted from
 	frysk-core/frysk/proc/TestLib.java.
 	* TestTearDownProcess.java: New.

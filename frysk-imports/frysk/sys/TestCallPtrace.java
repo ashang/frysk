@@ -40,6 +40,7 @@
 package frysk.sys;
 
 import frysk.junit.TestCase;
+import frysk.testbed.TearDownProcess;
 
 public class TestCallPtrace
     extends TestCase
@@ -52,7 +53,7 @@ public class TestCallPtrace
      */
     public void tearDown ()
     {
-	TestLib.tearDown (pid);
+	TearDownProcess.tearDown();
     }
 	
     public void testChildContinue ()
@@ -77,6 +78,7 @@ public class TestCallPtrace
     {
 	pid = TestLib.forkIt();
 	assertTrue(pid > 0);
+	TearDownProcess.add(pid);
 	PtraceServer.attach(pid);
 	int temp = TestLib.waitIt(pid);
 	assertEquals("Return from waitpid()", temp, pid);

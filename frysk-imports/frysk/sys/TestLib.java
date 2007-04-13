@@ -43,29 +43,4 @@ public class TestLib
 {
     public static native int forkIt ();
     public static native int waitIt (int pid);
-
-    static void tearDown (int pid)
-    {
-	if (pid == 0)
-	    return;
-	// Continue to the death.
-	try {
-	    PtraceServer.cont (pid, Sig.KILL_);
-	} catch (Exception e) {
-	    // toss it.
-	}
-	// Kill it!!!
-	try {
-	    Signal.kill (pid, Sig.KILL);
-	} catch (Exception e) {
-	    // toss it.
-	}
-	// Reap any waitpids
-	int status;
-	do {
-	    status = TestLib.waitIt (pid);
-	} while (status > 0);
-	// Reap any pending signals
-	Signal.drain (Sig.CHLD);
-    }
 }

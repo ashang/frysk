@@ -1,5 +1,11 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Child.java (Child(Execute)): New constructor.
+	* Daemon.java (Daemon(Execute)): New constructor.
+	* TestLib.java (tearDown): Delete.
+	* StressMapRead.java: Use frysk.testbed.TearDownProcess.
+	* TestCallPtrace.java: Ditto.
+
 	* Itimer.java (sleep(int)): Declare.
 	* cni/Itimer.cxx: Implement.
 
