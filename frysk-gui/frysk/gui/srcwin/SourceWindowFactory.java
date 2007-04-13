@@ -185,11 +185,7 @@ public class SourceWindowFactory
     System.out.println("command =" + cmd[0]);
     if (file_path.exists())
       Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
-    else
-      {
-        System.out.println("fcatch: can't find executable!");
-        System.exit(1);
-      }
+    // else, do nothing.
   }
   
   /**
@@ -254,42 +250,40 @@ public class SourceWindowFactory
   {
     public void addedTo (Object o)
     {
-      
+      System.err.println(this + " added to " + (Task) o);
     }
     
     public Action updateAttached (Task task)
-		{
-			Proc proc = task.getProc();
-			
-			if (srcWin != null)
-				{
-					runState.addProc(proc);
-					return Action.BLOCK;
-				}
+    {
+      System.err.println("updateAttached " + task);
+      Proc proc = task.getProc();
 
-			LibGlade glade;
-			try
-				{
-					glade = new LibGlade(
-								Config.getGladeDir()
-										+ SourceWindow.GLADE_FILE,
-								null);
-				}
-			catch (Exception e)
-				{
-					throw new RuntimeException(e);
-				}
+      if (srcWin != null)
+	{
+	  runState.addProc(proc);
+	  return Action.BLOCK;
+	}
 
-			srcWin = new SourceWindow(glade, Config.getGladeDir(),
-							proc, this);
+      LibGlade glade;
+      try
+	{
+	  glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
+			       null);
+	}
+      catch (Exception e)
+	{
+	  throw new RuntimeException(e);
+	}
 
-			srcWin.addListener(new SourceWinListener());
-			runState = srcWin.getRunState();
+      srcWin = new SourceWindow(glade, Config.getGladeDir(), proc, this);
 
-			srcWin.grabFocus();
+      srcWin.addListener(new SourceWinListener());
+      runState = srcWin.getRunState();
 
-			return Action.BLOCK;
-		}
+      srcWin.grabFocus();
+
+      return Action.BLOCK;
+    }
     
     public void addFailed  (Object observable, Throwable w)
     {
