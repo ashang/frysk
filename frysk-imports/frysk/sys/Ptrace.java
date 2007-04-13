@@ -151,4 +151,66 @@ public class Ptrace
      * Return the bitmask for enabling exec tracing.
      */
     public static native long optionTraceExec ();
+
+
+    /**
+     * A ptrace register set that is transfered to/from PID in bulk.
+     */
+    public static class RegisterSet
+    {
+	protected final int ptLength;
+	protected final int ptGet;
+	protected final int ptSet;
+	RegisterSet (int ptLength, int ptGet, int ptSet)
+	{
+	    this.ptLength = ptLength;
+	    this.ptGet = ptGet;
+	    this.ptSet = ptSet;
+	}
+	/**
+	 * Return the size of the register set in bytes.
+	 */
+	public int length ()
+	{
+	    return ptLength;
+	}
+	/**
+	 * Fetch PID's register set into DATA.
+	 */
+	public native void get (int pid, byte[] data);
+	/**
+	 * Store PID's registers from DATA.
+	 */
+	public native void set (int pid, byte[] data);
+	private static native RegisterSet regs ();
+	private static native RegisterSet fpregs ();
+	private static native RegisterSet fpxregs ();
+	public static final RegisterSet REGS = regs ();
+	public static final RegisterSet FPREGS = fpregs ();
+	public static final RegisterSet FPXREGS = fpxregs ();
+    }
+
+    /**
+     * A ptrace address space, that can be peeked or poked a "word" at
+     * a time.
+     */
+    public static class AddressSpace
+    {
+	protected final int ptPeek;
+	protected final int ptPoke;
+	AddressSpace (int ptPeek, int ptPoke)
+	{
+	    this.ptPeek = ptPeek;
+	    this.ptPoke = ptPoke;
+	}
+	public native long length ();
+	public native int peek (int pid, long addr);
+	public native void poke (int pid, long addr, int data);
+	private static native AddressSpace text ();
+	private static native AddressSpace data ();
+	private static native AddressSpace usr ();
+	public static final AddressSpace TEXT = text ();
+	public static final AddressSpace DATA = data ();
+	public static final AddressSpace USR = usr ();
+    }
 }

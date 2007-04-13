@@ -56,6 +56,9 @@
 #include <gnu/gcj/RawData.h>
 
 #include "frysk/sys/Ptrace.h"
+#include "frysk/sys/Ptrace$RegisterSet.h"
+#include "frysk/sys/Ptrace$AddressSpace.h"
+#include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
@@ -196,4 +199,105 @@ jlong
 frysk::sys::Ptrace::optionTraceExec ()
 {
   return PTRACE_O_TRACEEXEC;
+}
+
+void
+frysk::sys::Ptrace$RegisterSet::get (jint pid, jbyteArray data)
+{
+  if (data->length < ptLength)
+    throwErrno (EIO, "ptrace");
+  request (ptGet, pid, NULL, (long)elements (data));
+}
+
+void
+frysk::sys::Ptrace$RegisterSet::set (jint pid, jbyteArray data)
+{
+  if (data->length < ptLength)
+    throwErrno (EIO, "ptrace");
+  request (ptSet, pid, NULL, (long)elements (data));
+}
+
+frysk::sys::Ptrace$RegisterSet*
+frysk::sys::Ptrace$RegisterSet::regs ()
+{
+#if defined(__i386__)|| defined(__x86_64__)
+  return new frysk::sys::Ptrace$RegisterSet (sizeof (user_regs_struct),
+					     PTRACE_GETREGS, PTRACE_SETREGS);
+#else
+  return NULL;
+#endif
+}
+
+frysk::sys::Ptrace$RegisterSet*
+frysk::sys::Ptrace$RegisterSet::fpregs ()
+{
+#if defined(__i386__)|| defined(__x86_64__)
+  return new frysk::sys::Ptrace$RegisterSet (sizeof(user_fpregs_struct),
+					     PTRACE_GETFPREGS,
+					     PTRACE_SETFPREGS);
+#else
+  return NULL;
+#endif
+}
+
+frysk::sys::Ptrace$RegisterSet*
+frysk::sys::Ptrace$RegisterSet::fpxregs ()
+{
+#if defined(__i386__)
+  return new frysk::sys::Ptrace$RegisterSet (sizeof(user_fpxregs_struct),
+					     PTRACE_GETFPXREGS,
+					     PTRACE_SETFPXREGS);
+#else
+  return NULL;
+#endif
+}
+
+union word {
+  long l;
+  char b[sizeof (long)];
+};
+
+jint
+frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
+{
+  union word w;
+  w.l = request (ptPeek, pid, (void*) (addr & -sizeof(long)), 0);
+  return w.b[addr % sizeof(long)];
+}
+
+void
+frysk::sys::Ptrace$AddressSpace::poke (jint pid, jlong addr, jint data)
+{
+  // Implement read-modify-write
+  union word w;
+  w.l = request (ptPeek, pid, (void*)(addr & -sizeof(long)), 0);
+  w.b[addr % sizeof(long)] = data;
+  request (ptPoke, pid, (void*)(addr & -sizeof(long)), w.l);
+}
+
+jlong
+frysk::sys::Ptrace$AddressSpace::length ()
+{
+  return -1UL;
+}
+
+frysk::sys::Ptrace$AddressSpace*
+frysk::sys::Ptrace$AddressSpace::text ()
+{
+  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKTEXT,
+					      PTRACE_POKETEXT);
+}
+
+frysk::sys::Ptrace$AddressSpace*
+frysk::sys::Ptrace$AddressSpace::data ()
+{
+  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKDATA,
+					      PTRACE_POKEDATA);
+}
+
+frysk::sys::Ptrace$AddressSpace*
+frysk::sys::Ptrace$AddressSpace::usr ()
+{
+  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKUSR,
+					      PTRACE_POKEUSR);
 }

@@ -1,5 +1,11 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* PtraceServer.java (RegisterSetRequest, registerSetRequest)
+	(get, put, AddressSpaceRequest, addressSpaceRequest, peek)
+	(poke): Add.
+	* Ptrace.java (RegisterSet, AddressSpace): New classes.
+	* cni/Ptrace.cxx: Implement native methods.
+
 	* TestLib.java: Delete.
 	* cni/TestLib.cxx: Delete.
 	* cni/Wait.cxx (wait): Ensure that .signalSet is non-NULL.

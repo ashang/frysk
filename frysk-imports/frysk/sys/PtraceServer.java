@@ -213,4 +213,116 @@ public class PtraceServer
 	return fork.request (in, out, err, args);
     }
 
+
+    /**
+     * Execute the register-space request on the Server thread.
+     */
+    private static class RegisterSetRequest
+	implements Execute
+    {
+	private Ptrace.RegisterSet registerSet;
+	private int pid;
+	private byte[] data;
+	static private final int GET = 0;
+	static private final int SET = 1;
+	private int op;
+	public void execute ()
+	{
+	    switch (op) {
+	    case GET:
+		registerSet.get (pid, data);
+		break;
+	    case SET:
+		registerSet.set (pid, data);
+		break;
+	    }
+	}
+	private synchronized void request (int op,
+					   Ptrace.RegisterSet registerSet,
+					   int pid, byte[] data)
+	{
+	    this.op = op;
+	    this.registerSet = registerSet;
+	    this.pid = pid;
+	    this.data = data;
+	    Server.request (this);
+	}
+    }
+    private static RegisterSetRequest registerSetRequest
+	= new RegisterSetRequest ();
+    /**
+     * Using the Server, get the specifed register set of PID.
+     */
+    public static void get (Ptrace.RegisterSet registerSet,
+			    int pid, byte[] data)
+    {
+	registerSetRequest.request (RegisterSetRequest.GET,
+				    registerSet, pid, data);
+    }
+    /**
+     * Using the Server, set the specifed register set of PID.
+     */
+    public static void set (Ptrace.RegisterSet registerSet,
+			    int pid, byte[] data)
+    {
+	registerSetRequest.request (RegisterSetRequest.SET,
+				    registerSet, pid, data);
+    }
+
+    /**
+     * Execute the address-space request on the Server thread.
+     */
+    private static class AddressSpaceRequest
+	implements Execute
+    {
+	static private final int PEEK = 0;
+	static private final int POKE = 1;
+	private int op;
+	private Ptrace.AddressSpace addressSpace;
+	private int pid;
+	private long addr;
+	private int data;
+	public void execute ()
+	{
+	    switch (op) {
+	    case PEEK:
+		data = addressSpace.peek (pid, addr);
+		break;
+	    case POKE:
+		addressSpace.poke (pid, addr, data);
+		break;
+	    }
+	}
+	private synchronized int request (int op,
+					  Ptrace.AddressSpace addressSpace,
+					  int pid, long addr, int data)
+	{
+	    this.op = op;
+	    this.addressSpace = addressSpace;
+	    this.pid = pid;
+	    this.addr = addr;
+	    this.data = data;
+	    Server.request (this);
+	    return data;
+	}
+    }
+    private static AddressSpaceRequest addressSpaceRequest = new AddressSpaceRequest ();
+    /**
+     * Using the Server, fetch a byte at ADDR from PID.
+     */
+    public static int peek (Ptrace.AddressSpace addressSpace,
+			    int pid, long addr)
+    {
+	return addressSpaceRequest.request (AddressSpaceRequest.PEEK,
+					    addressSpace, pid, addr, 0);
+    }
+    /**
+     * Using the Server, store a byte at ADDR in PID.
+     */
+    public static void poke (Ptrace.AddressSpace addressSpace,
+			     int pid, long addr, int data)
+    {
+	addressSpaceRequest.request (AddressSpaceRequest.POKE,
+				     addressSpace, pid, addr, data);
+    }
 }
