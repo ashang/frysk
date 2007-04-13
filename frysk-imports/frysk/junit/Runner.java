@@ -535,7 +535,7 @@ public class Runner
             {
               public void parsed (String arg0)
               {
-		  long timeout = Integer.parseInt(arg0);
+		  int timeout = Integer.parseInt(arg0);
 		  TestCase.setTimeoutSeconds (timeout);
 		  Expect.setDefaultTimeoutSeconds (timeout);
               }

@@ -1,5 +1,8 @@
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Itimer.java (sleep(int)): Declare.
+	* cni/Itimer.cxx: Implement.
+
 	* cni/Wait.cxx (wait): Replace waitAll.
 	* Wait.java (wait(int,WaitBuilder,SignalBuilder,long)): Add.
 	(wait(ProcessIdentifier,WaitBuilder,SignalBuilder,long)): Add.

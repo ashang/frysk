@@ -1,3 +1,9 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Expect.java (defaultTimeoutSeconds, setDefaultTimeoutSeconds)
+	(timeoutSeconds, getTimeoutSeconds): Change to "int", matches
+	sleep(3).
+
 2007-03-29  Andrew Cagney  <cagney@redhat.com>
 
 	* WaitObserver.java: Replace frysk.sys.Wait.Observer with

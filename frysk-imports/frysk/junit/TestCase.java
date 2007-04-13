@@ -53,16 +53,16 @@ public class TestCase
     /**
      * Set the second-timeout.
      */
-    static void setTimeoutSeconds (long timeoutSeconds)
+    static void setTimeoutSeconds (int timeoutSeconds)
     {
 	TestCase.timeoutSeconds = timeoutSeconds;
     }
-    static private long timeoutSeconds = 5;
+    static private int timeoutSeconds = 5;
 
     /**
      * A second timeout.
      */
-    protected static long getTimeoutSeconds ()
+    protected static int getTimeoutSeconds ()
     {
 	return timeoutSeconds;
     }

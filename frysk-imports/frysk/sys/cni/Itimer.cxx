@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include <gcj/cni.h>
 
@@ -73,4 +74,10 @@ frysk::sys::Itimer::real (jlong interval, jlong value)
 {
   setItimer (ITIMER_REAL, interval, value);
   return frysk::sys::Sig::ALRM;
+}
+
+jint
+frysk::sys::Itimer::sleep (jint seconds)
+{
+  return ::sleep (seconds);
 }

@@ -59,4 +59,9 @@ public final class Itimer
     {
 	return real (0, value);
     } 
+
+    /**
+     * Wait for the specified time; this is a blocking call.
+     */
+    public native static int sleep (int seconds);
 }

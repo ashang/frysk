@@ -111,12 +111,12 @@ public class Expect
     /**
      * The global default timeout (in seconds).
      */
-    static private long defaultTimeoutSeconds = 1; // 1 seconds.
+    static private int defaultTimeoutSeconds = 1; // 1 seconds.
     /**
      * Set the global default timeout (in seconds).  Any expect
      * classes inherit this value.
      */
-    static public void setDefaultTimeoutSeconds (long defaultTimeoutSeconds)
+    static public void setDefaultTimeoutSeconds (int defaultTimeoutSeconds)
     {
 	Expect.defaultTimeoutSeconds = defaultTimeoutSeconds;
     }
@@ -124,19 +124,19 @@ public class Expect
     /**
      * The current timeout (in seconds).
      */
-    private long timeoutSeconds = defaultTimeoutSeconds;
+    private int timeoutSeconds = defaultTimeoutSeconds;
 
     /**
      * Set the default timeout (in seconds).
      */
-    public void setTimeoutSeconds (long timeoutSeconds)
+    public void setTimeoutSeconds (int timeoutSeconds)
     {
 	this.timeoutSeconds = timeoutSeconds;
     }
     /**
      * Get the default timeout (in seconds).
      */
-    public long getTimeoutSeconds ()
+    public int getTimeoutSeconds ()
     {
 	return timeoutSeconds;
     }

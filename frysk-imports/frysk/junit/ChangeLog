@@ -1,3 +1,9 @@
+2007-04-13  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (timeoutSeconds, getTimeoutSeconds)
+	(setTimeoutSeconds): Change type to int, matches sleep(3).
+	* Runner.java: Update.
+
 2007-02-26  Tim Moore  <timoore@redhat.com>
 	* KernelVersion.java (KernelVersion): Move initialization of
 	static patterns to constructor, in order to avoid
