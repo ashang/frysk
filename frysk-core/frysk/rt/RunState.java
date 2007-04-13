@@ -1275,6 +1275,7 @@ public class RunState extends Observable implements TaskObserver.Instruction
 
     public Action updateClonedOffspring (Task parent, Task offspring)
     {
+      RunState.this.stateMap.put(offspring, new Integer(STOPPED));
       offspring.requestAddInstructionObserver(RunState.this);
       offspring.requestAddClonedObserver(this);
       offspring.requestAddTerminatingObserver(this);

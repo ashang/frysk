@@ -1,3 +1,8 @@
+2007-04-13  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java (ThreadLifeObservable.updateClonedOffspring): Make sure to
+	add new state entry for cloned thread.
+
 2007-04-11  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (setUpLineStep): Make sure to set instruction stepping
