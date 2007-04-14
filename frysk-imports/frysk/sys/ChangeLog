@@ -1,3 +1,8 @@
+2007-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCallPtrace.java: Rename to ...
+	* TestPtraceServer.java: ... this.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceServer.java (RegisterSetRequest, registerSetRequest)

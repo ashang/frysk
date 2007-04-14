@@ -42,7 +42,14 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import frysk.testbed.TearDownProcess;
 
-public class TestCallPtrace
+/**
+ * Check the plumming of PtraceServer.
+ * 
+ * Since PtraceServer is implemented using Ptrace this also checks the
+ * plumming of that underlying object.
+ */
+
+public class TestPtraceServer
     extends TestCase
 {
     /**
