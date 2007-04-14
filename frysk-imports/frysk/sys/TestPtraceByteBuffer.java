@@ -215,8 +215,8 @@ public class TestPtraceByteBuffer extends TestCase
 
 	long addr = LocalMemory.getFuncAddr();
 	byte[] bytes = LocalMemory.getFuncBytes();
-	byte[] childBytes = new byte[4];
-	buffer.get(addr, childBytes, 0, 4);
+	byte[] childBytes = new byte[bytes.length];
+	buffer.get(addr, childBytes, 0, bytes.length);
 	assertTrue("Child function address word",
 		   Arrays.equals(bytes, childBytes));
 
@@ -224,16 +224,13 @@ public class TestPtraceByteBuffer extends TestCase
 	byte[] newBytes = new byte[]
 	    { (byte) 0xcd, (byte) 0x80, (byte) 0xcc, (byte) 0x00 };
 	buffer.position(addr);
-	buffer.putByte(newBytes[0]);
-	buffer.putByte(newBytes[1]);
-	buffer.putByte(newBytes[2]);
-	buffer.putByte(newBytes[3]);
-	bytes = LocalMemory.getFuncBytes();
-	assertTrue("Our own function bytes after poke",
-		   ! Arrays.equals(bytes, newBytes));
+	for (int i = 0; i < newBytes.length; i++) {
+	    buffer.putByte(newBytes[i]);
+	    bytes[i] = newBytes[i];
+	}
 	buffer.get(addr, childBytes, 0, 4);
 	assertTrue("Forked function word after poke",
-		   Arrays.equals(newBytes, childBytes));
+		   Arrays.equals(bytes, childBytes));
     }
   
 }

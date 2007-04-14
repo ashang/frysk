@@ -196,12 +196,18 @@ public class Ptrace
      */
     public static class AddressSpace
     {
+	protected final String name;
 	protected final int ptPeek;
 	protected final int ptPoke;
-	AddressSpace (int ptPeek, int ptPoke)
+	AddressSpace (String name, int ptPeek, int ptPoke)
 	{
+	    this.name = super.toString() + ":" + name;
 	    this.ptPeek = ptPeek;
 	    this.ptPoke = ptPoke;
+	}
+	public String toString ()
+	{
+	    return name;
 	}
 	public native long length ();
 	public native int peek (int pid, long addr);

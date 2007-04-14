@@ -1,5 +1,17 @@
 2007-04-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPtraceByteBuffer.java (testDataFunction): Copy the full
+	LocalMemory.getFuncBytes.length bytes, not just 4.
+	* PtraceServer.java (AddressSpaceRequest.request): Return
+	this.data.
+	* Ptrace.java (AddressSpace.toString, AddressSpace.name): Add,
+	update constructor.
+	* cni/Ptrace.cxx (text, data, usr): Update constructor calls.
+	* TestPtraceServer.java (verifyBytes, verifyPeek)
+	(testTextValBytes, testDataValBytes, testTextFuncBytes)
+	(testDataFuncBytes, verifyPoke, testTextValPoke, testDataValPoke)
+	(testTextFuncPoke, testDataFuncPoke): New.	
+	
 	* TestCallPtrace.java: Rename to ...
 	* TestPtraceServer.java: ... this.
 

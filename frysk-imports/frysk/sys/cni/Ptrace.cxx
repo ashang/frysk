@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
@@ -254,15 +255,20 @@ frysk::sys::Ptrace$RegisterSet::fpxregs ()
 
 union word {
   long l;
-  char b[sizeof (long)];
+  uint8_t b[sizeof (long)];
 };
 
 jint
 frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
 {
   union word w;
-  w.l = request (ptPeek, pid, (void*) (addr & -sizeof(long)), 0);
-  return w.b[addr % sizeof(long)];
+  long paddr = addr & -sizeof(long);
+  // fprintf (stderr, "peek %lx paddr %lx", (long)addr, paddr);
+  w.l = request (ptPeek, pid, (void*)paddr, 0);
+  // fprintf (stderr, " word %lx", w.l);
+  uint8_t byte = w.b[addr % sizeof(long)];
+  // fprintf (stderr, " byte %d/%x\n", byte, byte);
+  return byte;
 }
 
 void
@@ -270,8 +276,12 @@ frysk::sys::Ptrace$AddressSpace::poke (jint pid, jlong addr, jint data)
 {
   // Implement read-modify-write
   union word w;
-  w.l = request (ptPeek, pid, (void*)(addr & -sizeof(long)), 0);
+  long paddr = addr & -sizeof(long);
+  // fprintf (stderr, "poke %lx paddr %lx", (long)addr, paddr);
+  w.l = request (ptPeek, pid, (void*)paddr, 0);
+  // fprintf (stderr, " word %lx\n", w.l);
   w.b[addr % sizeof(long)] = data;
+  // fprintf (stderr, " word %lx\n", w.l);
   request (ptPoke, pid, (void*)(addr & -sizeof(long)), w.l);
 }
 
@@ -284,20 +294,23 @@ frysk::sys::Ptrace$AddressSpace::length ()
 frysk::sys::Ptrace$AddressSpace*
 frysk::sys::Ptrace$AddressSpace::text ()
 {
-  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKTEXT,
+  return new frysk::sys::Ptrace$AddressSpace (JvNewStringUTF ("TEXT"),
+					      PTRACE_PEEKTEXT,
 					      PTRACE_POKETEXT);
 }
 
 frysk::sys::Ptrace$AddressSpace*
 frysk::sys::Ptrace$AddressSpace::data ()
 {
-  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKDATA,
+  return new frysk::sys::Ptrace$AddressSpace (JvNewStringUTF ("DATA"),
+					      PTRACE_PEEKDATA,
 					      PTRACE_POKEDATA);
 }
 
 frysk::sys::Ptrace$AddressSpace*
 frysk::sys::Ptrace$AddressSpace::usr ()
 {
-  return new frysk::sys::Ptrace$AddressSpace (PTRACE_PEEKUSR,
+  return new frysk::sys::Ptrace$AddressSpace (JvNewStringUTF ("USR"),
+					      PTRACE_PEEKUSR,
 					      PTRACE_POKEUSR);
 }

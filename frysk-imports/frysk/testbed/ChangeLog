@@ -1,3 +1,10 @@
+2007-04-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/LocalMemory.cxx (getFuncBytes): Return 32 bytes.
+	(getValBytes, getValAddr): Implement.
+	* LocalMemory.java (getValBytes): Declare.
+	(getValAddr): Declare.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* DetachedSelf.java: New file.

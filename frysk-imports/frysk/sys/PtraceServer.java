@@ -303,7 +303,7 @@ public class PtraceServer
 	    this.addr = addr;
 	    this.data = data;
 	    Server.request (this);
-	    return data;
+	    return this.data;
 	}
     }
     private static AddressSpaceRequest addressSpaceRequest = new AddressSpaceRequest ();

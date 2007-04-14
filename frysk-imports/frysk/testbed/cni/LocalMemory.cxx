@@ -37,8 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
+#include <stdio.h>
+
 #include <gcj/cni.h>
 
+#include "frysk/sys/cni/Errno.hxx"
 #include "frysk/testbed/LocalMemory.h"
 
 jlong
@@ -60,6 +64,21 @@ jlong
 frysk::testbed::LocalMemory::getLongValAddr ()
 {
   return (jlong) &longVal;
+}
+
+jlong
+frysk::testbed::LocalMemory::getValAddr ()
+{
+  return (jlong) &byteVal;
+}
+
+jbyteArray
+frysk::testbed::LocalMemory::getValBytes ()
+{
+  uint8_t *start = (uint8_t*)frysk::testbed::LocalMemory::getValAddr();
+  jbyteArray bytes = JvNewByteArray (32);
+  memcpy (elements (bytes), start, bytes->length);
+  return bytes;
 }
 
 /**
@@ -87,8 +106,8 @@ frysk::testbed::LocalMemory::getFuncAddr ()
 jbyteArray
 frysk::testbed::LocalMemory::getFuncBytes ()
 {
-  char *addr = (char*)frysk::testbed::LocalMemory::getFuncAddr ();
-  jbyteArray bytes = JvNewByteArray (4);
-  memcpy (elements (bytes), addr, 4);
+  uint8_t *start = (uint8_t*)(long)frysk::testbed::LocalMemory::getFuncAddr();
+  jbyteArray bytes = JvNewByteArray (32);
+  memcpy (elements (bytes), start, bytes->length);
   return bytes;
 }

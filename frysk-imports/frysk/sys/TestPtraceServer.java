@@ -41,6 +41,9 @@ package frysk.sys;
 
 import frysk.junit.TestCase;
 import frysk.testbed.TearDownProcess;
+import frysk.testbed.AttachedSelf;
+import frysk.sys.Ptrace.AddressSpace;
+import frysk.testbed.LocalMemory;
 
 /**
  * Check the plumming of PtraceServer.
@@ -115,7 +118,10 @@ public class TestPtraceServer
 	    });
     }
 	
-    public void testAttach ()
+    /**
+     * Check attach (to oneself).
+     */
+    public void testAttachDetach ()
     {
 	final int pid = new Daemon (new Execute ()
 	    {
@@ -157,5 +163,84 @@ public class TestPtraceServer
 	    errno = e;
 	}
 	assertEquals ("Errno", Errno.Echild.class, errno.getClass());
+    }
+
+    private void verifyBytes (String what, int pid,
+			      AddressSpace space,
+			      byte[] bytes, long addr)
+    {
+	for (int i = 0; i < bytes.length; i++) {
+	    assertEquals (what + " " + i + " at " + addr + " in " + space,
+			  bytes[i] & 0xff, // signed - ulgh
+			  PtraceServer.peek (space, pid, addr + i));
+	}
+    }
+
+    private void verifyPeek (String what, AddressSpace space,
+			     byte[] bytes, long addr)
+    {
+	verifyBytes (what, new AttachedSelf ().hashCode(),
+		     space, bytes, addr);
+    }
+
+    public void testTextValBytes ()
+    {
+	verifyPeek ("TextVal", AddressSpace.TEXT,
+		    LocalMemory.getValBytes (),
+		    LocalMemory.getValAddr());
+    }
+    public void testDataValBytes ()
+    {
+	verifyPeek ("DataVal", AddressSpace.DATA,
+		    LocalMemory.getValBytes (),
+		    LocalMemory.getValAddr());
+    }
+    public void testTextFuncBytes ()
+    {
+	verifyPeek ("TextFunc", AddressSpace.TEXT,
+		    LocalMemory.getFuncBytes (),
+		    LocalMemory.getFuncAddr());
+    }
+    public void testDataFuncBytes ()
+    {
+	verifyPoke ("DataFunc", AddressSpace.DATA,
+		    LocalMemory.getFuncBytes (),
+		    LocalMemory.getFuncAddr());
+    }
+
+    public void verifyPoke (String what, AddressSpace space,
+			    byte[] bytes, long addr)
+    {
+	int pid = new AttachedSelf ().hashCode();
+	for (byte i = 4; i < 12; i++) {
+	    PtraceServer.poke (space, pid, addr + i, i);
+	    bytes[i] = i;
+	    verifyBytes (what, pid, space, bytes, addr);
+	}
+    }
+
+    public void testTextValPoke ()
+    {
+	verifyPoke ("TextVal", AddressSpace.TEXT,
+		    LocalMemory.getValBytes (),
+		    LocalMemory.getValAddr ());
+    }
+    public void testDataValPoke ()
+    {
+	verifyPoke ("DataVal", AddressSpace.DATA,
+		    LocalMemory.getValBytes (),
+		    LocalMemory.getValAddr ());
+    }
+    public void testTextFuncPoke ()
+    {
+	verifyPoke ("TextFunc", AddressSpace.TEXT,
+		    LocalMemory.getFuncBytes (),
+		    LocalMemory.getFuncAddr ());
+    }
+    public void testDataFuncPoke ()
+    {
+	verifyPoke ("DataFunc", AddressSpace.DATA,
+		    LocalMemory.getFuncBytes (),
+		    LocalMemory.getFuncAddr ());
     }
 }

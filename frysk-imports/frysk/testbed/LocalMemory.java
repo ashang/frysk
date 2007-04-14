@@ -58,6 +58,15 @@ public class LocalMemory
     public static native long getLongValAddr();
 
     /**
+     * Returns the address of the variables.
+     */
+    public static native long getValAddr ();
+    /**
+     * Returns a copy of 32 data bytes starting at getValAddr.
+     */
+    public static native byte[] getValBytes ();
+
+    /**
      * Returns the address of a function.
      */
     public static native long getFuncAddr();
@@ -73,7 +82,8 @@ public class LocalMemory
     public static native String getFuncFile ();
 
     /*
-     * Returns the first 4 instruction bytes of the getFuncAddr().
+     * Returns a copy of 32 instruction bytes starting at
+     * getFuncAddr().
      */
     public static native byte[] getFuncBytes();
 }
