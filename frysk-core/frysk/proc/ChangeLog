@@ -1,3 +1,13 @@
+2007-04-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxCoreFileProc.java (LinuxCorefileProc) Store backing
+	corefile's name. Store a process's memorymap here.
+	(getMemory): New.
+	* LinuxCoreFileHost.java: Make coreFile protected.
+	* LinuxCoreFileTask.java (getMemory): Ask proc for
+	it's memory-maps.
+	* TestLinuxCore.java (testLinuxTaskMemory): New.
+
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaIA32.java: Replace frysk.sys.RegisterSetBuffer, with

@@ -40,6 +40,8 @@
 package frysk.proc;
 
 import frysk.Config;
+import inua.eio.ByteBuffer;
+
 import java.io.File;
 import java.math.BigInteger;
 
@@ -133,6 +135,29 @@ public class TestLinuxCore
 		     expectedVal[i].longValue());
       }
     
+  }
+  
+  public void testLinuxTaskMemory ()
+  {
+	assertNotNull("Core file Host is Null?",coreHost);
+    
+	coreHost.requestRefreshXXX(true);  
+	Manager.eventLoop.runPending();
+	   
+	Proc proc = coreHost.getProc(new ProcId(31497));
+	assertNotNull("Proc exists in corefile", proc);
+	Task task = proc.getMainTask();
+	assertNotNull("Task exists in proc",task);
+	
+	ByteBuffer buffer = task.getMemory();
+	
+	buffer.position(0x00170000L);
+	
+	assertEquals("Peek a byte at 0x00170000",0x7f,buffer.getByte());
+	assertEquals("Peek a byte at 0x00170001",0x45,buffer.getByte());
+	assertEquals("Peek a byte at 0x00170002",0x4c,buffer.getByte());
+	assertEquals("Peek a byte at 0x00170003",0x46,buffer.getByte());
+	assertEquals("Peek a byte at 0x00170004",0x01,buffer.getByte());
   }
   
   public void testLinuxTaskPopulation ()

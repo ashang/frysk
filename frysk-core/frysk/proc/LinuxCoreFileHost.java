@@ -56,7 +56,7 @@ public class LinuxCoreFileHost
   extends Host 
 {
 
-  File coreFile;
+  protected File coreFile;
   Elf corefileElf;
   EventLoop eventLoop;
 

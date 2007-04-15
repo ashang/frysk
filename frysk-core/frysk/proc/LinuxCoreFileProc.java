@@ -40,24 +40,30 @@
 package frysk.proc;
 
 import lib.elf.ElfData;
+import lib.elf.ElfException;
 import lib.elf.ElfPrpsinfo;
 import lib.elf.ElfPrAuxv;
 import lib.elf.ElfEHeader;
 import lib.elf.ElfPrstatus;
 import frysk.sys.proc.AuxvBuilder;
 import java.util.logging.Level;
+import java.io.File;
+import frysk.proc.corefile.CorefileByteBuffer;
 
 public class LinuxCoreFileProc extends Proc 
 {
   
   private ElfData elfData = null;
   private ElfPrpsinfo elfProc = null;
+  private CorefileByteBuffer memory = null;
+  private File corefileBackEnd = null;
 
-  public LinuxCoreFileProc(ElfData data, Host host, ProcId procId )
+  public LinuxCoreFileProc(ElfData data, LinuxCoreFileHost host, ProcId procId )
   {
     super(host, null, procId);
     this.elfData = data;
     this.elfProc = ElfPrpsinfo.decode(elfData);
+    this.corefileBackEnd = host.coreFile;
   }
 	
   public String getCommand()
@@ -91,6 +97,25 @@ public class LinuxCoreFileProc extends Proc
     return args;
   }
 
+  protected CorefileByteBuffer getMemory()
+  {
+    // Only instantiate the memory access when asked, on demand
+    // This save on fd's as every CorefileByteBuffer will use 
+    // 2.
+
+    if (memory == null)
+      try 
+	{
+	  memory = new CorefileByteBuffer(this.corefileBackEnd);
+	} 
+      catch (ElfException e) 
+	{
+	  throw new RuntimeException(e);
+	}
+
+    return memory;
+  }
+
   void sendRefresh() 
   {
     // Find tasks. Refresh is a misnomer here as 
@@ -103,8 +128,8 @@ public class LinuxCoreFileProc extends Proc
     elfTasks = ElfPrstatus.decode(elfData);
     for (int i=0; i<elfTasks.length; i++)
       {
-	Task newTask = new LinuxCoreFileTask(LinuxCoreFileProc.this, elfTasks[i]);
-	newTask.getClass();
+    	Task newTask = new LinuxCoreFileTask(LinuxCoreFileProc.this, elfTasks[i]);
+    	newTask.getClass();
       }
   }
 

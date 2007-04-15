@@ -49,11 +49,18 @@ public class LinuxCoreFileTask extends Task
 {
 
   ElfPrstatus elfTask = null;
+  LinuxCoreFileProc parent = null;
 
   public void fillMemory ()
   {
-    // XXX: No memory yet...
-    memory = null;
+    // XXX: Get the Proc's memory (memory maps). Task and register
+    // information is handled differently (through notes) in core
+    // files. There's a potential here for task to have its own memory
+    // maps in some architectures, but not in the current ISAs. In an 
+    // attempt to save system resources, get a reference to the proc's 
+    // maps for now.
+
+    memory = this.parent.getMemory();
     logger.log(Level.FINE, "Begin fillMemory\n", this);
   }
 
@@ -72,10 +79,11 @@ public class LinuxCoreFileTask extends Task
   /**
    * Create a new unattached Task.
    */
-  LinuxCoreFileTask (Proc proc, ElfPrstatus elfTask)
+  LinuxCoreFileTask (LinuxCoreFileProc proc, ElfPrstatus elfTask)
   {
     super(proc, new TaskId(elfTask.getPrPid()),LinuxCoreFileTaskState.initial());
     this.elfTask = elfTask;
+    this.parent = proc;
   }
 
 
