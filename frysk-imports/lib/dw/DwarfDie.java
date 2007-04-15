@@ -326,7 +326,7 @@ abstract public class DwarfDie
       typeStr = "int";
     else if (type.getBaseType() == BaseTypes.baseTypeShort)
       typeStr = "short";
-    else if (type.getBaseType() == BaseTypes.baseTypeChar)
+    else if (type.getBaseType() == BaseTypes.baseTypeByte)
       typeStr = "short";
     else if (type.getBaseType() == BaseTypes.baseTypeFloat)
       typeStr = "float";

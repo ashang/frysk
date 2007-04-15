@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import lib.dw.BaseTypes;
 import inua.eio.ArrayByteBuffer;
 
 /**
@@ -167,6 +168,71 @@ public class Variable
 
     public void putDouble(double val) {
       location.putDouble(val);
+    }
+    
+    public int intValue()
+    {
+      switch (type.getTypeId())
+      {
+	case BaseTypes.baseTypeByte:
+	  return location.getByte();
+	case BaseTypes.baseTypeShort:
+       	  return location.getShort();
+	case BaseTypes.baseTypeInteger:
+	  return location.getInt();
+	case BaseTypes.baseTypeLong:
+	  return (int)location.getLong();
+	case BaseTypes.baseTypeFloat:
+	  return (int)location.getFloat();
+	case BaseTypes.baseTypeDouble:
+	  return (int)location.getDouble();
+	default:
+	  return 0;
+      }
+    }
+
+    public long longValue()
+    {
+      if (type.getTypeId() < BaseTypes.baseTypeLong)
+	return this.intValue();
+      switch (type.getTypeId())
+      {
+	case BaseTypes.baseTypeByte:
+	  return location.getByte();
+	case BaseTypes.baseTypeShort:
+       	  return location.getShort();
+	case BaseTypes.baseTypeInteger:
+	  return location.getInt();
+    	case BaseTypes.baseTypeLong:
+	  return location.getLong();
+	case BaseTypes.baseTypeFloat:
+	  return (long)location.getFloat();
+	case BaseTypes.baseTypeDouble:
+	  return (long)location.getDouble();
+	default:
+	  return 0;
+      }
+    }
+    
+    public double doubleValue()
+    {
+      switch (type.getTypeId())
+      {
+	case BaseTypes.baseTypeByte:
+	  return location.getByte();
+	case BaseTypes.baseTypeShort:
+       	  return location.getShort();
+	case BaseTypes.baseTypeInteger:
+	  return location.getInt();
+	case BaseTypes.baseTypeLong:
+	  return location.getLong();
+	case BaseTypes.baseTypeFloat:
+	  return location.getFloat();
+	case BaseTypes.baseTypeDouble:
+	  return location.getDouble();
+	default:
+	  return 0;
+      }
     }
 
     public String toString()  {

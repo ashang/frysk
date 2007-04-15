@@ -1,3 +1,11 @@
+2007-04-15  Stan Cox  <scox@redhat.com>
+
+	* DwarfDie.java (toString): Renamed from baseTypeChar.
+	* BaseTypes.java (baseTypeByte): Renamed from baseTypeChar.
+	(isInteger): New.
+	(isLong): New.
+	(isFloat): New.
+
 2007-04-10  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java: Use frysk.testbed.LocalMemory.

@@ -45,47 +45,106 @@ package lib.dw;
 
 // This is a good candidate for 1.5 enum
 public final class BaseTypes {
-      public final static int baseTypeChar = 1,
-	  baseTypeUnsignedChar = 2,
-	  baseTypeShort = 3,
-	  baseTypeUnsignedShort = 4,
-	  baseTypeUnicode = 4,
-	  baseTypeInteger = 5,
-	  baseTypeUnsignedInteger = 6,
-	  baseTypeLong = 7,
-	  baseTypeUnsignedLong = 8,
-	  baseTypeFloat = 9,
-	  baseTypeDouble = 10,
-	  baseTypeLongDouble = 11;
+  public final static int baseTypeByte = 1,
+  baseTypeUnsignedByte = 2,
+  baseTypeShort = 3,
+  baseTypeUnsignedShort = 4,
+  baseTypeUnicode = 4,
+  baseTypeInteger = 5,
+  baseTypeUnsignedInteger = 6,
+  baseTypeLong = 7,
+  baseTypeUnsignedLong = 8,
+  baseTypeFloat = 9,
+  baseTypeDouble = 10,
+  baseTypeLongDouble = 11;
       
-      public final static int getTypeSize(int type) 
-      {
-        switch (type)
-        {
-          case baseTypeChar:
-            return 1;
-          case baseTypeUnsignedChar:
-            return 1;
-          case baseTypeShort:
-            return 2;
-          case baseTypeUnsignedShort:
-            return 2;
-          case baseTypeInteger:
-            return 4;
-          case baseTypeUnsignedInteger:
-            return 4;
-          case baseTypeLong:
-            return 8;
-          case baseTypeUnsignedLong:
-            return 8;
-          case baseTypeFloat:
-            return 4;
-          case baseTypeDouble:
-            return 8;
-          case baseTypeLongDouble:
-            return 16;
-          default:
-            return 0;
-        }
-      }
+  public final static int getTypeSize(int type) 
+  {
+    switch (type)
+    {
+    case baseTypeByte:
+      return 1;
+    case baseTypeUnsignedByte:
+      return 1;
+    case baseTypeShort:
+      return 2;
+    case baseTypeUnsignedShort:
+      return 2;
+    case baseTypeInteger:
+      return 4;
+    case baseTypeUnsignedInteger:
+      return 4;
+    case baseTypeLong:
+      return 8;
+    case baseTypeUnsignedLong:
+      return 8;
+    case baseTypeFloat:
+      return 4;
+    case baseTypeDouble:
+      return 8;
+    case baseTypeLongDouble:
+      return 16;
+    default:
+      return 0;
+    }
   }
+      
+  /**
+   * @param type
+   * @return true if type is a byte, short, or int.
+   */
+  public final static boolean isInteger(int type)
+  {
+    switch (type)
+    {
+    case baseTypeByte:
+    case baseTypeUnsignedByte:
+    case baseTypeShort:
+    case baseTypeUnsignedShort:
+    case baseTypeInteger:
+    case baseTypeUnsignedInteger:
+      return true;
+    default:
+      return false;
+    }
+  }
+    
+  /**
+   * @param type
+   * @return true if type is a byte, short, int, or long.
+   */
+  public final static boolean isLong(int type)
+  {
+    switch (type)
+    {
+    case baseTypeByte:
+    case baseTypeUnsignedByte:
+    case baseTypeShort:
+    case baseTypeUnsignedShort:
+    case baseTypeInteger:
+    case baseTypeUnsignedInteger:
+    case baseTypeLong:
+    case baseTypeUnsignedLong:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  /**
+   * @param type
+   * @return true if type is a float or double.
+   */
+  public final static boolean isFloat(int type)
+  {
+    switch (type)
+    {
+    case baseTypeFloat:
+    case baseTypeDouble:
+    case baseTypeLongDouble:
+      return true;
+    default:
+      return false;
+    }
+  }
+}

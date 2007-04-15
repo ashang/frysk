@@ -1,3 +1,19 @@
+2007-04-15  Stan Cox  <scox@redhat.com>
+
+	* ArithmeticType.java: New file. Replaces:
+	* ByteType.java: Removed.
+	* ShortType.java: Removed.			
+	* IntegerType.java: Removed.
+	* LongType.java: Removed.
+	* FloatTYpe.java: Removed.
+	* DoubleType.java: Removed.
+	* Variable.java (intValue): New.
+	(longValue): New.
+	(doubleValue): New.
+	* ArrayType.java (Iterator.next): Return Variable instead of value.
+	* Type.java (newVariable): New.
+	* ClassType.java (Iterator.next): Likewise.
+
 2007-03-30  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (getName): New.

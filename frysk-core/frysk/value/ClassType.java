@@ -91,20 +91,23 @@ public class ClassType
     {
       Type type = ((Type) (members.get(idx)));
       int off = ((Long)offsets.get(idx)).intValue();
-      if (type.typeId == BaseTypes.baseTypeChar)
-        return new Integer(v.getByte(off));
-      else if (type.typeId == BaseTypes.baseTypeShort)
-        return new Integer(v.getShort(off));
-      else if (type.typeId == BaseTypes.baseTypeInteger)
-        return new Integer(v.getInt(off));
-      else if (type.typeId == BaseTypes.baseTypeLong)
-        return new Integer(v.getInt(off));
-      else if (type.typeId == BaseTypes.baseTypeFloat)
-        return new Float(v.getFloat(off));
-      else if (type.typeId == BaseTypes.baseTypeDouble)
-        return new Double(v.getDouble(off));
-      else
-        return null;
+      switch (type.typeId)
+      {
+	case BaseTypes.baseTypeByte:
+	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", v.getByte(off));
+	case BaseTypes.baseTypeShort:
+	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", v.getShort(off));
+	case BaseTypes.baseTypeInteger:
+	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", v.getInt(off));
+	case BaseTypes.baseTypeLong:
+	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", v.getLong(off));
+	case BaseTypes.baseTypeFloat:
+	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", v.getFloat(off));
+	case BaseTypes.baseTypeDouble:
+	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", v.getDouble(off));
+	default:
+	  return null;
+      }
     }
 
     public void remove ()
@@ -162,49 +165,12 @@ public class ClassType
     offsets.add(new Long(offset));
   }
 
-  public Variable newVariable (Type type, Variable val)
-  {
-    return val.getType().newIntegerVariable((IntegerType) type, val);
-  }
-
   public static Variable newClassVariable (Type type, String text,
                                            ArrayByteBuffer ab)
   {
     Location loc = new Location(ab);
     Variable returnVar = new Variable(type, text, loc);
     return returnVar;
-  }
-
-  public Variable newFloatVariable (FloatType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newDoubleVariable (DoubleType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newLongVariable (LongType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newIntegerVariable (IntegerType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newByteVariable (ByteType type, Variable val)
-  {
-    Variable returnVar = new Variable(type, val.getText());
-    returnVar.getLocation().putByte((byte) (val.getChar()));
-    return returnVar;
-  }
-
-  public Variable newShortVariable (ShortType type, Variable val)
-  {
-    return null;
   }
 
   public Variable add (Variable var1, Variable var2)

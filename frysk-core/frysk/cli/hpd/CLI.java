@@ -980,7 +980,7 @@ public class CLI
             outWriter.println(Long.toString(result.getType()
 						  .longValue(result),
 						  outputFormat));
-          else if (resultType == BaseTypes.baseTypeChar)
+          else if (resultType == BaseTypes.baseTypeByte)
             outWriter.println(Integer.toString((int)result.getType()
 						  .longValue(result),
 						  outputFormat) + 

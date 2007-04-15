@@ -316,8 +316,8 @@ lib::dw::DwarfDie::get_base_type (jlong var_die)
 	case 1:
 	  switch (encoding)
 	    {
-	    case DW_ATE_signed_char: return lib::dw::BaseTypes::baseTypeChar;
-	    case DW_ATE_unsigned_char: return lib::dw::BaseTypes::baseTypeUnsignedChar;
+	    case DW_ATE_signed_char: return lib::dw::BaseTypes::baseTypeByte;
+	    case DW_ATE_unsigned_char: return lib::dw::BaseTypes::baseTypeUnsignedByte;
 	    }
 	case 2:
 	  switch (encoding)

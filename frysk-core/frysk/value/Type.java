@@ -37,98 +37,220 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.value;
 
 import inua.eio.ByteOrder;
 import lib.dw.BaseTypes;
 
 /**
- * Holds the type of a Variable and also defines possible operations.
- * Classes extended from this type will have to define the individual
- * operation that are defined on those types.  e.g. addition operation
- * may be defined for the integer type.
+ * Holds the type of a Variable and also defines possible operations. Classes
+ * extended from this type will have to define the individual operation that are
+ * defined on those types. e.g. addition operation may be defined for the
+ * integer type.
  */
 
 public abstract class Type
 {
-    protected final int size;
-    protected final ByteOrder endian;
-    protected final int typeId;
-    protected final String name;
+  protected final int size;
 
-    Type(int size, ByteOrder endian, int typeId)
-    {
-	this(size, endian, typeId, "");
-    }
+  protected final ByteOrder endian;
 
-    Type(int size, ByteOrder endian, int typeId, String name)
-    {
-	this.size = size;
-	this.endian = endian;
-	this.typeId = typeId;
-	this.name = name;
-    }
+  protected final int typeId;
 
-    public int getSize() { return size;}
-    public ByteOrder getEndian() { return endian;}
-    public int getTypeId() { return typeId;}
-    public String getName() { return name;}
+  protected final String name;
 
-    public String toString() {return name;}
-    public abstract String toString(Variable v);  
+  Type (int size, ByteOrder endian, int typeId)
+  {
+    this(size, endian, typeId, "");
+  }
 
-    public long longValue(Variable v)	throws InvalidOperatorException	
-    {
-	if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
-	    return v.getByte();
-	if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
-	    return v.getShort();
-	if(v.getType().getTypeId() == BaseTypes.baseTypeInteger)
-	    return v.getInt();
-	if(v.getType().getTypeId() == BaseTypes.baseTypeLong)
-	    return v.getLong();
+  Type (int size, ByteOrder endian, int typeId, String name)
+  {
+    this.size = size;
+    this.endian = endian;
+    this.typeId = typeId;
+    this.name = name;
+  }
 
-	throw new InvalidOperatorException("binary operation not defined for type " + name + "," + v.getType().getName());
-    }
+  public int getSize ()
+  {
+    return size;
+  }
 
+  public ByteOrder getEndian ()
+  {
+    return endian;
+  }
 
-    public abstract Variable add(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable divide(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable mod(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable lessThan(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException;
-    public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException;
-    public abstract Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable assign(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
-    public abstract Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public int getTypeId ()
+  {
+    return typeId;
+  }
+
+  public String getName ()
+  {
+    return name;
+  }
+
+  public String toString ()
+  {
+    return name;
+  }
+
+  public abstract String toString (Variable v);
+
+  public long longValue (Variable v) throws InvalidOperatorException
+  {
+    switch (v.getType().getTypeId())
+      {
+      case BaseTypes.baseTypeByte:
+	return v.getByte();
+      case BaseTypes.baseTypeShort:
+	return v.getShort();
+      case BaseTypes.baseTypeInteger:
+	return v.getInt();
+      case BaseTypes.baseTypeLong:
+	return v.getLong();
+      }
+    throw new InvalidOperatorException("binary operation not defined for type "
+	                               + name + "," + v.getType().getName());
+  }
+
+  public abstract Variable add (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable subtract (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable multiply (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable divide (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable mod (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable shiftLeft (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable shiftRight (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable lessThan (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable greaterThan (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable lessThanOrEqualTo (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable greaterThanOrEqualTo (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable equal (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable notEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseAnd (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseXor (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseOr (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable logicalAnd (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable logicalOr (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable assign (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable timesEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable divideEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable modEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable plusEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable minusEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable shiftLeftEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable shiftRightEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseOrEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseXorEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract Variable bitWiseAndEqual (Variable var1, Variable var2)
+      throws InvalidOperatorException;
+
+  public abstract boolean getLogicalValue (Variable var) throws InvalidOperatorException;
   
-    public abstract boolean getLogicalValue(Variable var1) throws InvalidOperatorException; 
+  public Variable newVariable(Type type, int val)
+    {
+      switch (type.getTypeId())
+      {
+	case BaseTypes.baseTypeByte:
+	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", (byte)val);
+	case BaseTypes.baseTypeShort:
+       	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", (short)val);
+	case BaseTypes.baseTypeInteger:
+	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
+	case BaseTypes.baseTypeLong:
+	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", (long)val);
+	case BaseTypes.baseTypeFloat:
+	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", (float)val);
+	case BaseTypes.baseTypeDouble:
+	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", (double)val);
+      }
+      return null;
+    }
 
-    public abstract Variable newByteVariable(ByteType type, Variable val);
-    public abstract Variable newShortVariable(ShortType type, Variable val);
-    public abstract Variable newIntegerVariable(IntegerType type, Variable val);
-    public abstract Variable newLongVariable(LongType type, Variable val);
-    public abstract Variable newFloatVariable(FloatType type, Variable val);
-    public abstract Variable newDoubleVariable(DoubleType type, Variable val);
-    public abstract Variable newVariable(Type type, Variable val);
+  public Variable newVariable (Type type, long val)
+  {
+    if (type.getTypeId() < BaseTypes.baseTypeLong)
+      return this.newVariable(type, (int) val);
+    switch (type.getTypeId())
+      {
+      case BaseTypes.baseTypeLong:
+	return ArithmeticType.newLongVariable((ArithmeticType) type, "long", val);
+      case BaseTypes.baseTypeFloat:
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+      case BaseTypes.baseTypeDouble:
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", (double) val);
+      }
+    return null;
+  }
+
+  public Variable newVariable (Type type, double val)
+  {
+    switch (type.getTypeId())
+      {
+      case BaseTypes.baseTypeFloat:
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+      case BaseTypes.baseTypeDouble:
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", val);
+      }
+    return null;
+  }
 }

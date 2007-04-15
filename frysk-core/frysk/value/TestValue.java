@@ -39,6 +39,7 @@
 
 package frysk.value;
 
+import lib.dw.BaseTypes;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
@@ -48,10 +49,10 @@ public class TestValue
     public void testAdd ()
 	throws InvalidOperatorException
     {
-	Type intType = new IntegerType (4, ByteOrder.BIG_ENDIAN);
-	Type shortType = new ShortType (2, ByteOrder.BIG_ENDIAN);
-	Variable v1 = IntegerType.newIntegerVariable((IntegerType)intType, 4);
-	Variable v2 = ShortType.newShortVariable((ShortType)shortType, (short)9);
+	Type intType = new ArithmeticType (4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int");
+	Type shortType = new ArithmeticType (2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short");
+	Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "", 4);
+	Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "", (short)9);
 	Variable v3 = v1.getType().add(v1, v2);
 	assertEquals ("4 + 9", 4 + 9, v3.getInt());
     }

@@ -114,20 +114,21 @@ public class ArrayType
 
 	public Object next ()
 	{
-	    if (type.typeId == BaseTypes.baseTypeChar)
-		return new Character((char)v.getByte(idx * type.getSize()));
-	    else if (type.typeId == BaseTypes.baseTypeShort)
-		return new Integer(v.getShort(idx * type.getSize()));
-	    else if (type.typeId == BaseTypes.baseTypeInteger)
-		return new Integer(v.getInt(idx * type.getSize()));
-	    else if (type.typeId == BaseTypes.baseTypeLong)
-		return new Integer(v.getInt(idx * type.getSize()));
-	    else if (type.typeId == BaseTypes.baseTypeFloat)
-		return new Float(v.getFloat(idx * type.getSize()));
-	    else if (type.typeId == BaseTypes.baseTypeDouble)
-		return new Double(v.getDouble(idx * type.getSize()));
-	    else
-		return null;
+	  int off = idx * type.getSize();
+	  if (type.typeId == BaseTypes.baseTypeByte)
+	    return ArithmeticType.newByteVariable((ArithmeticType)type, "", v.getByte((off)));
+	  else if (type.typeId == BaseTypes.baseTypeShort)
+	    return ArithmeticType.newShortVariable((ArithmeticType)type, "", v.getShort(off));
+	  else if (type.typeId == BaseTypes.baseTypeInteger)
+	    return ArithmeticType.newIntegerVariable((ArithmeticType)type, "", v.getInt(off));
+	  else if (type.typeId == BaseTypes.baseTypeLong)
+	    return ArithmeticType.newLongVariable((ArithmeticType)type, "", v.getLong(off));
+	  else if (type.typeId == BaseTypes.baseTypeFloat)
+	    return ArithmeticType.newFloatVariable((ArithmeticType)type, "", v.getFloat(off));
+	  else if (type.typeId == BaseTypes.baseTypeDouble)
+	    return ArithmeticType.newDoubleVariable((ArithmeticType)type, "", v.getDouble(off));
+	  else
+	    return null;
 	}
 
 	public void remove ()
@@ -145,7 +146,7 @@ public class ArrayType
 	StringBuffer strBuf = new StringBuffer();
 	Iterator e = getIterator(v);
 	boolean isString = false;
-	if (type.typeId == BaseTypes.baseTypeChar)
+	if (type.typeId == BaseTypes.baseTypeByte)
 	    {
 		isString = true;
 		strBuf.append("\"");
@@ -164,11 +165,11 @@ public class ArrayType
 			    }
 			strBuf.append("]=" + e.next());
 		    }
-		else
+		else	
 		    {
-			Character ch = (Character)e.next();
-			if ((int)ch.charValue() != 0)
-			    strBuf.append(e.next());
+		      char ch = (char)((Variable)e.next()).getByte();
+		      if (ch != 0)
+			strBuf.append(ch);
 		    }
 	    }
 	if (isString)
@@ -204,49 +205,12 @@ public class ArrayType
 	dimensions = dimensionsp;
     }
 
-    public Variable newVariable (Type type, Variable val)
-    {
-	return val.getType().newIntegerVariable((IntegerType) type, val);
-    }
-
     public static Variable newArrayVariable (Type type, String text,
 					     ArrayByteBuffer ab)
     {
 	Location loc = new Location(ab);
 	Variable returnVar = new Variable(type, text, loc);
 	return returnVar;
-    }
-
-    public Variable newFloatVariable (FloatType type, Variable val)
-    {
-	return null;
-    }
-
-    public Variable newDoubleVariable (DoubleType type, Variable val)
-    {
-	return null;
-    }
-
-    public Variable newLongVariable (LongType type, Variable val)
-    {
-	return null;
-    }
-
-    public Variable newIntegerVariable (IntegerType type, Variable val)
-    {
-	return null;
-    }
-
-    public Variable newByteVariable (ByteType type, Variable val)
-    {
-	Variable returnVar = new Variable(type, val.getText());
-	returnVar.getLocation().putByte((byte) (val.getChar()));
-	return returnVar;
-    }
-
-    public Variable newShortVariable (ShortType type, Variable val)
-    {
-	return null;
     }
 
     public Variable add (Variable var1, Variable var2)

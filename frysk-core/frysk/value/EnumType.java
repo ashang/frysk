@@ -143,47 +143,10 @@ public class EnumType
     values.add(new Long(value));
   }
 
-  public Variable newVariable (Type type, Variable val)
-  {
-    return val.getType().newIntegerVariable((IntegerType) type, val);
-  }
-
   public static Variable newEnumVariable (Type type, String text)
 {
     Variable returnVar = new Variable(type, text);
     return returnVar;
-  }
-
-  public Variable newFloatVariable (FloatType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newDoubleVariable (DoubleType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newLongVariable (LongType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newIntegerVariable (IntegerType type, Variable val)
-  {
-    return null;
-  }
-
-  public Variable newByteVariable (ByteType type, Variable val)
-  {
-    Variable returnVar = new Variable(type, val.getText());
-    returnVar.getLocation().putByte((byte) (val.getChar()));
-    return returnVar;
-  }
-
-  public Variable newShortVariable (ShortType type, Variable val)
-  {
-    return null;
   }
 
   public Variable add (Variable var1, Variable var2)
