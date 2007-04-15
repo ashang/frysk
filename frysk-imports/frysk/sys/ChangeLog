@@ -1,5 +1,12 @@
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* RegisterSetBuffer.java: Delete.
+	* Ptrace.java (peekRegisters, pokeRegisters): Delete.
+	(registerSetSize, TEXT, DATA, USR): Delete.
+	* cni/Ptrace.cxx: Update.
+	* PtraceServer.java (peekRegisters, pokeRegisters): Delete.
+	* cni/PtraceServer.cxx: Update.
+	
 	* cni/Ptrace.cxx (peek(jint,jlong,jlong,jbyteArray,jlong)): Implement.
 	* TestPtraceServer.java (testTextValPeekBytes, testDataValPeekBytes)
 	(testTextValPeekBytes, testDataValPeekBytes, testPeekBytes): New.

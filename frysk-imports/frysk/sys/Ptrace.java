@@ -48,14 +48,6 @@ import gnu.gcj.RawData;
 public class Ptrace
 {
     /**
-     * Constants describing register sets that can be read and written
-     * by ptrace.
-     */
-    public static final int REGS = 0;
-    public static final int FPREGS = 1;
-    public static final int FPXREGS = 2;
-    
-    /**
      * Attach to the process specified by PID.
      */
     public static native void attach (int pid);
@@ -98,34 +90,6 @@ public class Ptrace
      * Copy the word in data to child's addr.
      */
     static native void poke(int pokeRequest, int pid, RawData paddr, long data);
-    /**
-     * Return the size (in bytes) of a register set.
-     *
-     * @param set the register set
-     * @returns required size of buffer
-     */
-    public static native int registerSetSize(int set);
-  
-    /**
-     * Read the entire contents of a register set.
-     *
-     * @param registerSet the register set constant.
-     * @param pid pid of the task
-     * @param data buffer for the register set
-     */
-    public static native void peekRegisters(int registerSet, int pid, 
-					    byte[] data);
-
-    /**
-     * Write the entire contents of a register set.
-     *
-     * @param registerSet the register set constant.
-     * @param pid pid of the task
-     * @param data buffer for the register set
-     */
-    public static native void pokeRegisters(int registerSet, int pid, 
-					    byte[] data); 
-  
     /**
      * Set PID's trace options.  OPTIONS is formed by or'ing the
      * values returned by the option* methods below.

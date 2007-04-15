@@ -61,27 +61,6 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-struct RegisterSetParams
-{
-  int size;
-  int peekRequest;
-  int pokeRequest;
-};
-
-/* There structures and constants are x86-specific.  */
-static RegisterSetParams regSetParams[] =
-  {
-#if defined(__i386__)|| defined(__x86_64__)
-   {sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS},
-   {sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS},
-#if defined(__i386__)
-   {sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS},
-#endif
-#endif
-  };
-
-int cpid;
-
 /**
  * If the operation involves a PTRACE_TRACEME, create a new child and
  * exec as necessary. Otherwise, perform a ptrace operation on a
@@ -139,18 +118,6 @@ frysk::sys::PtraceServer::getEventMsg (jint pid)
   long msg;
   request(PTRACE_GETEVENTMSG, pid, NULL, (long) &msg);
   return msg;
-}
-
-void
-frysk::sys::PtraceServer::peekRegisters(jint registerSet, jint pid, jbyteArray data)
-{
-  request(regSetParams[registerSet].peekRequest, pid, 0, (long)elements(data));
-}
-
-void
-frysk::sys::PtraceServer::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
-{
-  request(regSetParams[registerSet].pokeRequest, pid, 0, (long)elements(data));
 }
 
 void

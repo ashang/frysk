@@ -65,25 +65,6 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-struct RegisterSetParams
-{
-  int size;
-  int peekRequest;
-  int pokeRequest;
-};
-
-/* There structures and constants are x86-specific.  */
-static RegisterSetParams regSetParams[] =
-  {
-#if defined(__i386__)|| defined(__x86_64__)
-   {sizeof(user_regs_struct), PTRACE_GETREGS, PTRACE_SETREGS},
-   {sizeof(user_fpregs_struct), PTRACE_GETFPREGS, PTRACE_SETFPREGS},
-#if defined(__i386__)
-   {sizeof(user_fpxregs_struct), PTRACE_GETFPXREGS, PTRACE_SETFPXREGS},
-#endif
-#endif
-  };
-
 static long
 request (int op, int pid, void* addr, long data)
 {
@@ -135,27 +116,6 @@ frysk::sys::Ptrace::getEventMsg (jint pid)
   long msg;
   request(PTRACE_GETEVENTMSG, pid, NULL, (long) &msg);
   return msg;
-}
-
-jint
-frysk::sys::Ptrace::registerSetSize(jint set)
-{
-  if (set < (jint)(sizeof(regSetParams) / sizeof(regSetParams[0])))
-    return regSetParams[set].size;
-  else
-    return 0;
-}
-
-void
-frysk::sys::Ptrace::peekRegisters(jint registerSet, jint pid, jbyteArray data)
-{
-  request(regSetParams[registerSet].peekRequest, pid, 0, (long)elements(data));
-}
-
-void
-frysk::sys::Ptrace::pokeRegisters(jint registerSet, jint pid, jbyteArray data)
-{
-  request(regSetParams[registerSet].pokeRequest, pid, 0, (long)elements(data));
 }
 
 jlong

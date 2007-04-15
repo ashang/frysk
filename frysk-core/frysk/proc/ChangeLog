@@ -1,3 +1,9 @@
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* IsaIA32.java: Replace frysk.sys.RegisterSetBuffer, with
+	frysk.proc.ptrace.RegisterSetByteBuffer.
+	* IsaX8664.java: Ditto.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (tearDown): Call TearDownProcess.tearDown().

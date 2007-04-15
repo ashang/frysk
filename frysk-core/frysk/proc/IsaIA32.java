@@ -46,10 +46,10 @@ import inua.eio.ByteOrder;
 import lib.elf.ElfEMachine;
 import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace;
-import frysk.sys.PtraceByteBuffer;
-
-import frysk.sys.RegisterSetBuffer;
+import frysk.sys.Ptrace.RegisterSet;
+import frysk.sys.Ptrace.AddressSpace;
+import frysk.proc.ptrace.RegisterSetByteBuffer;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
 
 public class IsaIA32 implements Isa
 {
@@ -72,22 +72,17 @@ public class IsaIA32 implements Isa
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
   
-  private ByteBuffer[] bankBuffers;
-  
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    bankBuffers = new ByteBuffer[4];
-    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS, Ptrace.FPXREGS };
-    for (int i = 0; i < 3; i++) 
-      {
-	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
-	bankBuffers[i].order(getByteOrder());
-      }
-
-    // Debug registers come from the USR area.
-    bankBuffers[3] = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR);
-    bankBuffers[3].order(getByteOrder());
-
+      ByteBuffer[] bankBuffers = new ByteBuffer[] {
+	  new RegisterSetByteBuffer(pid, RegisterSet.REGS),
+	  new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
+	  new RegisterSetByteBuffer(pid, RegisterSet.FPXREGS),
+	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+    };
+    for (int i = 0; i < bankBuffers.length; i++) {
+	  bankBuffers[i].order(getByteOrder());
+    }
     return bankBuffers;
   }
   

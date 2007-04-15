@@ -108,26 +108,6 @@ public class PtraceServer
     }
 
   /**
-   * Read the entire contents of a register set.
-   *
-   * @param registerSet the register set constant.
-   * @param pid pid of the task
-   * @param data buffer for the register set
-   */
-  public static native void peekRegisters(int registerSet, int pid, 
-					  byte[] data);
-
-  /**
-   * Write the entire contents of a register set.
-   *
-   * @param registerSet the register set constant.
-   * @param pid pid of the task
-   * @param data buffer for the register set
-   */
-  public static native void pokeRegisters(int registerSet, int pid, 
-					  byte[] data); 
-  
-  /**
    * Set PID's trace options.  OPTIONS is formed by or'ing the
    * values returned by the option* methods below.
    */

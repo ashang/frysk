@@ -44,9 +44,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace;
-import frysk.sys.PtraceByteBuffer;
-import frysk.sys.RegisterSetBuffer;
+import frysk.sys.Ptrace.RegisterSet;
+import frysk.sys.Ptrace.AddressSpace;
+import frysk.proc.ptrace.RegisterSetByteBuffer;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
 
 import lib.elf.ElfEMachine;
 import lib.unwind.RegisterAMD64;
@@ -352,19 +353,15 @@ public class IsaX8664 implements Isa
 
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    ByteBuffer[] bankBuffers = new ByteBuffer[3];
-    int[] bankNames =  { Ptrace.REGS, Ptrace.FPREGS };
-    for (int i = 0; i < 2; i++) 
-      {
-	bankBuffers[i] = new RegisterSetBuffer(bankNames[i], pid);
-	bankBuffers[i].order(getByteOrder());
+      ByteBuffer[] bankBuffers = new ByteBuffer[] {
+	  new RegisterSetByteBuffer(pid, RegisterSet.REGS),
+	  new RegisterSetByteBuffer(pid, RegisterSet.FPREGS),
+	  new AddressSpaceByteBuffer(pid, AddressSpace.USR)
+      };
+      for (int i = 0; i < bankBuffers.length; i++) {
+	  bankBuffers[i].order(getByteOrder());
       }
-
-    // Debug registers come from the USR area.
-    bankBuffers[2] = new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR);
-    bankBuffers[2].order(getByteOrder());
-    
-    return bankBuffers;
+      return bankBuffers;
   }
 
   public int getElfMachineType()
