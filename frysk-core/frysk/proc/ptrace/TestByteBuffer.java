@@ -40,46 +40,55 @@
 package frysk.proc.ptrace;
 
 import inua.eio.ByteBuffer;
+import frysk.junit.TestCase;
+import frysk.testbed.TearDownProcess;
+import frysk.testbed.AttachedSelf;
+import frysk.testbed.LocalMemory;
+import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
-import frysk.sys.PtraceServer;
 
-public class AddressSpaceByteBuffer
-    extends ByteBuffer
+public class TestByteBuffer
+    extends TestCase
 {
-    private final AddressSpace addressSpace;
-    private final int pid;
-
-    private AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
-				    long lowerExtreem, long upperExtreem)
+    private int pid;
+    public void tearDown()
     {
-	super (lowerExtreem, upperExtreem);
-	this.pid = pid;
-	this.addressSpace = addressSpace;
+	TearDownProcess.tearDown();
+    }
+    public void setUp ()
+    {
+	pid = new AttachedSelf().hashCode();
     }
 
-    public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
+    public void testSliceAddressSpace()
     {
-	this (pid, addressSpace, 0, addressSpace.length ());
-    }
-    protected int peek (long index)
-    {
-	return PtraceServer.peek (addressSpace, pid, index);
-    }
-    protected void poke (long index, int value)
-    {
-	PtraceServer.poke (addressSpace, pid, index, value);
-    }
-    protected long peek (long index, byte[] bytes, long offset, long length)
-    {
-	return PtraceServer.peek (addressSpace, pid, index, length,
-				  bytes, offset);
+	ByteBuffer memoryByteBuffer
+	    = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
+	byte[] funcByteArray = LocalMemory.getFuncBytes();
+	ByteBuffer funcByteBuffer
+	    = memoryByteBuffer.slice (LocalMemory.getFuncAddr(),
+				      funcByteArray.length);
+	for (int i = 0; i < funcByteArray.length; i++) {
+	    assertEquals ("byte at " + i,
+			  funcByteArray[i], funcByteBuffer.get (i));
+	}
     }
 
-    protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
-				    long upperExtreem)
+    public void testSliceRegisterSet()
     {
-	AddressSpaceByteBuffer up = (AddressSpaceByteBuffer)parent;
-	return new AddressSpaceByteBuffer (up.pid, up.addressSpace,
-					   lowerExtreem, upperExtreem);
+	if (RegisterSet.REGS == null) {
+	    System.out.print("<<SKIP>>");
+	    return;
+	}
+	ByteBuffer registerByteBuffer
+	    = new RegisterSetByteBuffer (pid, RegisterSet.REGS);
+	final int count = 4;
+	ByteBuffer sliceByteBuffer
+	    = registerByteBuffer.slice (count, count); //???
+	for (int i = 0; i < count; i++) {
+	    assertEquals ("byte at " + i,
+			  registerByteBuffer.get (count + i),
+			  sliceByteBuffer.get (i));
+	}
     }
 }

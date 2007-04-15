@@ -55,12 +55,18 @@ public class RegisterSetByteBuffer
     private final RegisterSet registerSet;
     private final byte[] bytes;
   
-    public RegisterSetByteBuffer(int pid, RegisterSet registerSet) 
+    private RegisterSetByteBuffer (int pid, RegisterSet registerSet,
+				   long lowerExtreem, long upperExtreem)
     {
-	super(0, registerSet.length ());
+	super(lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.registerSet = registerSet;
 	bytes = new byte[registerSet.length ()];
+    }
+
+    public RegisterSetByteBuffer(int pid, RegisterSet registerSet) 
+    {
+	this (pid, registerSet, 0, registerSet.length());
     }
   
     protected int peek (long index) 
@@ -85,4 +91,11 @@ public class RegisterSetByteBuffer
 	return len;
     }
   
+    protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
+				    long upperExtreem)
+    {
+	RegisterSetByteBuffer up = (RegisterSetByteBuffer)parent;
+	return new RegisterSetByteBuffer (up.pid, up.registerSet,
+					  lowerExtreem, upperExtreem);
+    }
 }
