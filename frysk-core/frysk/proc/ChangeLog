@@ -1,3 +1,9 @@
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* IsaPowerPC.java: Replace frysk.sys.PtraceByteBuffer with
+	frysk.proc.ptrace.AddressSpaceByteBuffer.
+	* LinuxPtraceTask.java: Ditto.
+
 2007-04-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxCoreFileProc.java (LinuxCorefileProc) Store backing

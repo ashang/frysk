@@ -1,3 +1,7 @@
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpaceByteBuffer.java (peek(long,byte[],long,long): Add.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* AddressSpaceByteBuffer.java: New.

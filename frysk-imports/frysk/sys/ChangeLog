@@ -1,5 +1,13 @@
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* PtraceServer.java (peek, poke): Delete.
+	* Ptrace.java (peek, poke): Delete.
+	* cni/Ptrace.cxx: Update.
+	* PtraceByteBuffer.java: Delete.
+	* cni/PtraceByteBuffer.cxx (peek): Delete.
+	* TestPtraceByteBuffer.java: Delete.
+	* StressMapRead.java: Delete.
+
 	* TestPtraceServer.java (testLengthOnBound, testOffsetOnBound): Add.
 	* cni/Ptrace.cxx (peek): Fix length upper bound check.
 	

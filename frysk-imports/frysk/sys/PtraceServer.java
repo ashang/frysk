@@ -92,21 +92,6 @@ public class PtraceServer
    * event.
    */ 
   public static native long getEventMsg(int pid);
-    /**
-     * Fetch the word located at paddr.
-     */
-    static long peek(int peekRequest, int pid, RawData paddr)
-    {
-	return ptrace.request (peekRequest, pid, paddr, 0);
-    }
-    /**
-     * Copy the word in data to child's addr.
-     */
-    static void poke(int pokeRequest, int pid, RawData paddr, long data)
-    {
-	ptrace.request (pokeRequest, pid, paddr, data);
-    }
-
   /**
    * Set PID's trace options.  OPTIONS is formed by or'ing the
    * values returned by the option* methods below.

@@ -62,4 +62,9 @@ public class AddressSpaceByteBuffer
     {
 	PtraceServer.poke (addressSpace, pid, index, value);
     }
+    protected long peek (long index, byte[] bytes, long offset, long length)
+    {
+	return PtraceServer.peek (addressSpace, pid, index, length,
+				  bytes, offset);
+    }
 }

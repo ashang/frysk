@@ -43,7 +43,8 @@ package frysk.proc;
 import frysk.sys.Errno;
 import frysk.sys.PtraceServer;
 import frysk.sys.Ptrace;
-import frysk.sys.PtraceByteBuffer;
+import frysk.sys.Ptrace.AddressSpace;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 
@@ -63,17 +64,7 @@ public class LinuxPtraceTask
   {
       logger.log(Level.FINE, "Begin fillMemory\n", this);
       ByteOrder byteOrder = getIsa().getByteOrder();
-      // XXX: For writing at least, PTRACE must be used as /proc/mem
-      // cannot be written to.
-      // The length PtraceByteBuffer is given as an 'unsigned' long
-      // (-1 == 0xffffffffffffffff).
-      if (getIsa().getWordSize() == 8)
-          memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                                        -1L);
-      // For 32-bit address space.
-      else
-          memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-                                        0xffffffffl);
+      memory = new AddressSpaceByteBuffer(id.id, AddressSpace.DATA);
       memory.order(byteOrder);
       logger.log(Level.FINE, "End fillMemory\n", this); 
   }

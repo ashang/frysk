@@ -118,19 +118,6 @@ frysk::sys::Ptrace::getEventMsg (jint pid)
   return msg;
 }
 
-jlong
-frysk::sys::Ptrace::peek(jint peekRequest, jint pid, gnu::gcj::RawData* paddr)
-{
-  return request (peekRequest, pid, paddr, 0);
-}
-
-void
-frysk::sys::Ptrace::poke(jint pokeRequest, jint pid, gnu::gcj::RawData* paddr,
-			 jlong data)
-{
-  request (pokeRequest, pid, paddr, (long) data);
-}
-
 void
 frysk::sys::Ptrace::setOptions (jint pid, jlong options)
 {

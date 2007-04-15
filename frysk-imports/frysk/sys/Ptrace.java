@@ -39,8 +39,6 @@
 
 package frysk.sys;
 
-import gnu.gcj.RawData;
-
 /**
  * Trace a process.
  */
@@ -82,14 +80,6 @@ public class Ptrace
      * event.
      */ 
     public static native long getEventMsg(int pid);
-    /**
-     * Fetch the word located at paddr.
-     */
-    static native long peek(int peekRequest, int pid, RawData paddr);
-    /**
-     * Copy the word in data to child's addr.
-     */
-    static native void poke(int pokeRequest, int pid, RawData paddr, long data);
     /**
      * Set PID's trace options.  OPTIONS is formed by or'ing the
      * values returned by the option* methods below.

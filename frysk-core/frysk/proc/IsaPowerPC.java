@@ -42,7 +42,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteBuffer;
-import frysk.sys.PtraceByteBuffer;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
+import frysk.sys.Ptrace.AddressSpace;
 
 import inua.eio.ByteOrder;
 
@@ -176,9 +177,8 @@ abstract class IsaPowerPC
 
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
-    ByteBuffer[] result = new ByteBuffer[]
-      { new PtraceByteBuffer(pid, PtraceByteBuffer.Area.USR) };
-    result[0].order(getByteOrder());
-    return result;
+      ByteBuffer registers = new AddressSpaceByteBuffer(pid, AddressSpace.USR);
+      registers.order(getByteOrder());
+      return new ByteBuffer[] { registers };
   }
  }
