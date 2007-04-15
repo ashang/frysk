@@ -1,5 +1,8 @@
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPtraceServer.java (testLengthOnBound, testOffsetOnBound): Add.
+	* cni/Ptrace.cxx (peek): Fix length upper bound check.
+	
 	* RegisterSetBuffer.java: Delete.
 	* Ptrace.java (peekRegisters, pokeRegisters): Delete.
 	(registerSetSize, TEXT, DATA, USR): Delete.

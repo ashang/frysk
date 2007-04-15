@@ -240,7 +240,7 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   if (length < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (offset + length >= bytes->length)
+  if (offset + length > bytes->length)
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   // Clueless implementation for now :-)
   for (jlong i = 0; i < length; i++)

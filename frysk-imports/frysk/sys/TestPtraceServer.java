@@ -295,8 +295,8 @@ public class TestPtraceServer
 			 LocalMemory.getFuncAddr ());
     }
 
-    private void verifyOutOfBounds (String why, long length, byte[] bytes,
-				    int offset)
+    private void verifyOutOfBounds (String why, boolean expected,
+				    long length, byte[] bytes, int offset)
     {
 	int pid = new AttachedSelf().hashCode();
 	boolean caught = false;
@@ -308,22 +308,30 @@ public class TestPtraceServer
 	catch (ArrayIndexOutOfBoundsException e) {
 	    caught = true;
 	}
-	assertTrue ("exceptionCaught", caught);
+	assertEquals (why + " exception", expected, caught);
     }
     public void testLengthUnderBound ()
     {
-	verifyOutOfBounds ("length under bound", -1, new byte[1], 1);
+	verifyOutOfBounds ("length under bound", true, -1, new byte[1], 1);
     }
     public void testOffsetUnderBound ()
     {
-	verifyOutOfBounds ("offset under bound", 1, new byte[1], -1);
+	verifyOutOfBounds ("offset under bound", true, 1, new byte[1], -1);
     }
     public void testLengthOverBound ()
     {
-	verifyOutOfBounds ("length over bound", 1, new byte[0], 0);
+	verifyOutOfBounds ("length over bound", true, 1, new byte[0], 0);
     }
     public void testOffsetOverBound ()
     {
-	verifyOutOfBounds ("offset over bound", 1, new byte[1], 2);
+	verifyOutOfBounds ("offset over bound", true, 1, new byte[1], 2);
+    }
+    public void testLengthOnBound ()
+    {
+	verifyOutOfBounds ("length on bound", false, 1, new byte[1], 0);
+    }
+    public void testOffsetOnBound ()
+    {
+	verifyOutOfBounds ("length on bound", false, 0, new byte[1], 1);
     }
 }
