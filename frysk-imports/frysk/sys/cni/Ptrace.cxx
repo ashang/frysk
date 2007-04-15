@@ -55,6 +55,7 @@
 #include <gcj/cni.h>
 
 #include <gnu/gcj/RawData.h>
+#include <java/lang/ArrayIndexOutOfBoundsException.h>
 
 #include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Ptrace$RegisterSet.h"
@@ -269,6 +270,23 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr)
   uint8_t byte = w.b[addr % sizeof(long)];
   // fprintf (stderr, " byte %d/%x\n", byte, byte);
   return byte;
+}
+
+jlong
+frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
+				       jbyteArray bytes, jlong offset)
+{
+  if (offset < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  if (length < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  if (offset + length >= bytes->length)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  // Clueless implementation for now :-)
+  for (jlong i = 0; i < length; i++)
+    elements(bytes)[offset + i]
+      = frysk::sys::Ptrace$AddressSpace::peek (pid, addr + i);
+  return length;
 }
 
 void

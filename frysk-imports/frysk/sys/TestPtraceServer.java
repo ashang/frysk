@@ -182,26 +182,25 @@ public class TestPtraceServer
 	verifyBytes (what, new AttachedSelf ().hashCode(),
 		     space, bytes, addr);
     }
-
-    public void testTextValBytes ()
+    public void testTextValPeek ()
     {
 	verifyPeek ("TextVal", AddressSpace.TEXT,
 		    LocalMemory.getValBytes (),
 		    LocalMemory.getValAddr());
     }
-    public void testDataValBytes ()
+    public void testDataValPeek ()
     {
 	verifyPeek ("DataVal", AddressSpace.DATA,
 		    LocalMemory.getValBytes (),
 		    LocalMemory.getValAddr());
     }
-    public void testTextFuncBytes ()
+    public void testTextFuncPeek ()
     {
 	verifyPeek ("TextFunc", AddressSpace.TEXT,
 		    LocalMemory.getFuncBytes (),
 		    LocalMemory.getFuncAddr());
     }
-    public void testDataFuncBytes ()
+    public void testDataFuncPeek ()
     {
 	verifyPoke ("DataFunc", AddressSpace.DATA,
 		    LocalMemory.getFuncBytes (),
@@ -218,7 +217,6 @@ public class TestPtraceServer
 	    verifyBytes (what, pid, space, bytes, addr);
 	}
     }
-
     public void testTextValPoke ()
     {
 	verifyPoke ("TextVal", AddressSpace.TEXT,
@@ -242,5 +240,90 @@ public class TestPtraceServer
 	verifyPoke ("DataFunc", AddressSpace.DATA,
 		    LocalMemory.getFuncBytes (),
 		    LocalMemory.getFuncAddr ());
+    }
+
+    private void verifyPeekBytes (String why, AddressSpace space,
+				  byte[] startBytes, long startAddr)
+    {
+	int pid = new AttachedSelf().hashCode();
+	byte[] pidBytes = new byte[startBytes.length];
+	byte[] myBytes = new byte[startBytes.length];
+	for (int addr = 4; addr < 9; addr++) {
+	    for (int length = 0; length < 9; length++) {
+		for (int offset = 0; offset < 9; offset++) {
+		    // Copy the bytes in
+		    PtraceServer.peek (space, pid, startAddr + addr,
+				       length,
+				       pidBytes, offset);
+		    // Mimic the copy using local data.
+		    for (int i = 0; i < length; i++)
+			myBytes[offset + i] = startBytes[addr + i];
+		    // Verify
+		    for (int i = 0; i < myBytes.length; i++)
+			assertEquals (why
+				      + " addr=" + addr
+				      + " length=" + length
+				      + " offset=" + offset
+				      + " i=" + i,
+				      myBytes[i], pidBytes[i]);
+		}
+	    }
+	}
+    }
+    public void testTextValPeekBytes ()
+    {
+	verifyPeekBytes ("TextVal", AddressSpace.TEXT,
+			 LocalMemory.getValBytes (),
+			 LocalMemory.getValAddr ());
+    }
+    public void testDataValPeekBytes ()
+    {
+	verifyPeekBytes ("DataVal", AddressSpace.DATA,
+			 LocalMemory.getValBytes (),
+			 LocalMemory.getValAddr ());
+    }
+    public void testTextFuncPeekBytes ()
+    {
+	verifyPeekBytes ("TextFunc", AddressSpace.TEXT,
+			 LocalMemory.getFuncBytes (),
+			 LocalMemory.getFuncAddr ());
+    }
+    public void testDataFuncPeekBytes ()
+    {
+	verifyPeekBytes ("DataFunc", AddressSpace.DATA,
+			 LocalMemory.getFuncBytes (),
+			 LocalMemory.getFuncAddr ());
+    }
+
+    private void verifyOutOfBounds (String why, long length, byte[] bytes,
+				    int offset)
+    {
+	int pid = new AttachedSelf().hashCode();
+	boolean caught = false;
+	try {
+	    PtraceServer.peek (AddressSpace.DATA, pid,
+			       LocalMemory.getFuncAddr (), length,
+			       bytes, offset);
+	}
+	catch (ArrayIndexOutOfBoundsException e) {
+	    caught = true;
+	}
+	assertTrue ("exceptionCaught", caught);
+    }
+    public void testLengthUnderBound ()
+    {
+	verifyOutOfBounds ("length under bound", -1, new byte[1], 1);
+    }
+    public void testOffsetUnderBound ()
+    {
+	verifyOutOfBounds ("offset under bound", 1, new byte[1], -1);
+    }
+    public void testLengthOverBound ()
+    {
+	verifyOutOfBounds ("length over bound", 1, new byte[0], 0);
+    }
+    public void testOffsetOverBound ()
+    {
+	verifyOutOfBounds ("offset over bound", 1, new byte[1], 2);
     }
 }

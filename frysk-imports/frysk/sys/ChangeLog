@@ -1,3 +1,18 @@
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx (peek(jint,jlong,jlong,jbyteArray,jlong)): Implement.
+	* TestPtraceServer.java (testTextValPeekBytes, testDataValPeekBytes)
+	(testTextValPeekBytes, testDataValPeekBytes, testPeekBytes): New.
+	(testTextValPeek): Rename testTextValPeekBytes.
+	(testDataValPeek): Rename testDataValPeekBytes.
+	(testTextValPeek): Rename testTextValPeekBytes.
+	(testDataValPeek): Rename testDataValPeekBytes.
+	(verifyOutOfBounds, testLengthUnderBound, testOffsetUnderBounds)
+	(testLengthOverBounds, testOffsetOverBounds): Add.
+	* PtraceServer.java (AddressSpaceRequest): Add PEEKS, handle.
+	(peek(AddressSpace,int,long,long,byte[],long)): Add.
+	* Ptrace.java (peek(int,long,long,byte[],long): Add.
+
 2007-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPtraceByteBuffer.java (testDataFunction): Copy the full

@@ -210,8 +210,20 @@ public class Ptrace
 	    return name;
 	}
 	public native long length ();
+	/**
+	 * Fetch a byte at ADDR of process PID.
+	 */
 	public native int peek (int pid, long addr);
+	/**
+	 * Store the byte at ADDR of process PID.
+	 */
 	public native void poke (int pid, long addr, int data);
+	/**
+	 * Fetch up-to LENGTH bytes starting at ADDR of process PID,
+	 * store them in BYTES, starting at OFFSET.
+	 */
+	public native long peek (int pid, long addr, long length,
+				 byte[] bytes, long offset);
 	private static native AddressSpace text ();
 	private static native AddressSpace data ();
 	private static native AddressSpace usr ();

@@ -40,6 +40,7 @@
 package frysk.sys;
 
 import gnu.gcj.RawData;
+import frysk.sys.Ptrace.AddressSpace;
 
 /**
  * Trace a process.
@@ -277,16 +278,23 @@ public class PtraceServer
     {
 	static private final int PEEK = 0;
 	static private final int POKE = 1;
+	static private final int PEEKS = 2;
 	private int op;
-	private Ptrace.AddressSpace addressSpace;
+	private AddressSpace addressSpace;
 	private int pid;
 	private long addr;
 	private int data;
+	private long length;
+	private byte[] bytes;
+	private long offset;
 	public void execute ()
 	{
 	    switch (op) {
 	    case PEEK:
 		data = addressSpace.peek (pid, addr);
+		break;
+	    case PEEKS:
+		length = addressSpace.peek (pid, addr, length, bytes, offset);
 		break;
 	    case POKE:
 		addressSpace.poke (pid, addr, data);
@@ -294,7 +302,7 @@ public class PtraceServer
 	    }
 	}
 	private synchronized int request (int op,
-					  Ptrace.AddressSpace addressSpace,
+					  AddressSpace addressSpace,
 					  int pid, long addr, int data)
 	{
 	    this.op = op;
@@ -305,21 +313,47 @@ public class PtraceServer
 	    Server.request (this);
 	    return this.data;
 	}
+	private synchronized long request (int op, AddressSpace addressSpace,
+					   int pid, long addr, long length,
+					   byte[] bytes, long offset)
+	{
+	    this.op = op;
+	    this.addressSpace = addressSpace;
+	    this.pid = pid;
+	    this.addr = addr;
+	    this.length = length;
+	    this.bytes = bytes;
+	    this.offset = offset;
+	    Server.request (this);
+	    return this.length;
+	}
     }
     private static AddressSpaceRequest addressSpaceRequest = new AddressSpaceRequest ();
     /**
      * Using the Server, fetch a byte at ADDR from PID.
      */
-    public static int peek (Ptrace.AddressSpace addressSpace,
+    public static int peek (AddressSpace addressSpace,
 			    int pid, long addr)
     {
 	return addressSpaceRequest.request (AddressSpaceRequest.PEEK,
 					    addressSpace, pid, addr, 0);
     }
     /**
+     * Using the Server, fetch up-to LENGTH bytes, starting at ADDR,
+     * from PID.
+     */
+    public static long peek (AddressSpace addressSpace,
+			     int pid, long addr, long length,
+			     byte[] bytes, long offset)
+    {
+	return addressSpaceRequest.request (AddressSpaceRequest.PEEKS,
+					    addressSpace, pid, addr, length,
+					    bytes, offset);
+    }
+    /**
      * Using the Server, store a byte at ADDR in PID.
      */
-    public static void poke (Ptrace.AddressSpace addressSpace,
+    public static void poke (AddressSpace addressSpace,
 			     int pid, long addr, int data)
     {
 	addressSpaceRequest.request (AddressSpaceRequest.POKE,
