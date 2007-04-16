@@ -1,3 +1,16 @@
+2007-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Request.java: New.
+	* EventLoop.java (isCurrentThread): New; use.
+	* EventLoopTestBed.java (Request, testRequest, testManyRequests)
+	(testRequestThrow, testRequestImmediate): Replace with ...
+	(EventRequest, RunnableEvent, RunnableExecuteEvent)
+	(RunnableRequestEvent, verifyRunnableEvent, testExecuteRunnable)
+	(testRequestRunnable, verifyMany, testManyExecutes)
+	(testmanyRequests, Throw, verifyThrow, testExecuteThrow)
+	(testRequestThrow, Immediate, verifyImmediate)
+	(testExecuteImmediate, testRequestImmediate): ... these.
+
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoopTestBed.java (testRequest, testManyRequests)

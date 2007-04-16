@@ -101,6 +101,10 @@ public abstract class EventLoop
      * thread will need to be woken up using a Sig.IO.
      */
     private int tid = -1;
+    final boolean isCurrentThread()
+    {
+	return tid == Tid.get();
+    }
     /**
      * The event loop will enter a blocking poll.  This state is
      * entered after the pending event queue, along with any other
@@ -266,13 +270,15 @@ public abstract class EventLoop
     }
     /**
      * Execute the event on the event-loop thread; return when
-     * completed.
+     * completed.  If these requests are ongoing then consider setting
+     * up a dedicated Request object.
      */
     public void execute (Event e)
     {
-	if (tid == Tid.get())
+	if (isCurrentThread()) {
 	    // On event-loop thread, dispatch immediatly.
 	    e.execute();
+	}
 	else {
 	    synchronized (serializeExecuteRequests) {
 		request.request (e);

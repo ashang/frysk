@@ -459,17 +459,34 @@ abstract class EventLoopTestBed
     }
 
 
+
     /**
-     * A class for dispatching requests to the event-loop.
+     * Wrapper class to Request that re-dispatches to the specified
+     * event.
      */
-    private class Request
+    private final class EventRequest
+	extends Request
+    {
+	Event e;
+	EventRequest (EventLoop eventLoop, Event e)
+	{
+	    super(eventLoop);
+	    this.e = e;
+	}
+	public void execute()
+	{
+	    e.execute();
+	}
+    }
+
+    private abstract class RunnableEvent
 	extends Thread
 	implements Event
     {
 	boolean executed;
 	boolean ran;
 	int i;
-	Request (int i)
+	RunnableEvent (int i)
 	{
 	    this.i = i;
 	}
@@ -479,41 +496,86 @@ abstract class EventLoopTestBed
 	}
 	public void run ()
 	{
-	    eventLoop.execute (this);
+	    request ();
 	    ran = true;
 	}
+	public abstract void request();
+	public abstract RunnableEvent create(int i);
     }
-
+    private class RunnableExecuteEvent
+	extends RunnableEvent
+    {
+	RunnableExecuteEvent(int i)
+	{
+	    super(i);
+	}
+	public void request()
+	{
+	    eventLoop.execute(this);
+	}
+	public RunnableEvent create(int i)
+	{
+	    return new RunnableExecuteEvent(i);
+	}
+    }
+    private class RunnableRequestEvent
+	extends RunnableEvent
+    {
+	private final EventRequest r;
+	RunnableRequestEvent(int i)
+	{
+	    super(i);
+	    r = new EventRequest(eventLoop, this);
+	}
+	public void request()
+	{
+	    r.request();
+	}
+	public RunnableEvent create (int i)
+	{
+	    return new RunnableRequestEvent(i);
+	}
+    }
     /**
-     * Test that a simple request, from the event-loop thread, is
-     * handled by the event-loop thread.
+     * Test that a simple request is handled by the event-loop thread.
      */
-    public void testRequest ()
+    private void verifyRunnableEvent (RunnableEvent request)
     {
 	eventLoop.start();
-	Request request = new Request (0);
-	eventLoop.execute (request);
+	request.request();
 	assertTrue ("executed", request.executed);
+    }
+    public void testExecuteRunnable()
+    {
+	verifyRunnableEvent (new RunnableExecuteEvent(0));
+    }
+    public void testRequestRunnable()
+    {
+	verifyRunnableEvent (new RunnableRequestEvent(0));
     }
 
     /**
      * Test that many simultaneous requests, from different threads,
      * are eventually all handled.
      */
-    public void testManyRequests ()
-	throws InterruptedException
+    private void verifyMany (RunnableEvent request)
     {
 	eventLoop.start();
 	long now = System.currentTimeMillis();
-	Request[] requests = new Request[10];
+	RunnableEvent[] requests = new RunnableEvent[10];
 	for (int i = 0; i < requests.length; i++) {
-	    requests[i] = new Request (i);
+	    requests[i] = request.create(i);
 	}
 	for (int i = 0; i < requests.length; i++) {
-	    requests[i].start ();
+	    requests[i].start();
 	}
 	for (int i = 0; i < requests.length; i++) {
-	    requests[i].join (getTimeoutMilliseconds ());
+	    try {
+		requests[i].join (getTimeoutMilliseconds ());
+	    }
+	    catch (InterruptedException e) {
+		throw new RuntimeException (e);
+	    }
 	    if (System.currentTimeMillis ()
 		> now + getTimeoutMilliseconds ())
 		fail ("timeout");
@@ -521,53 +583,105 @@ abstract class EventLoopTestBed
 	    assertTrue ("ran", requests[i].ran);
 	}
     }
+    public void testManyExecutes()
+    {
+	verifyMany (new RunnableExecuteEvent(0));
+    }
+    public void testManyRequests()
+    {
+	verifyMany (new RunnableRequestEvent(0));
+    }
 
+    private abstract class Throw
+	implements Event
+    {
+	final RuntimeException runtimeException = new RuntimeException();
+	public void execute ()
+	{
+	    throw runtimeException;
+	}
+	public abstract void request();
+    }
     /**
      * Test that a throw from within the event-loop thread is
      * propogated back to the requesting thread.
      */
-    public void testRequestThrow ()
+    private void verifyThrow (Throw request)
     {
 	eventLoop.start();
-	class Throw
-	    extends RuntimeException
-	    implements Event
-	{
-	    static final long serialVersionUID = 1;
-	    public void execute ()
-	    {
-		throw this;
-	    }
-	}
-	Throw exception = null;
+	RuntimeException runtimeException = null;
 	try {
-	    eventLoop.execute (new Throw ());
+	    request.request ();
 	}
-	catch (Throw t) {
-	    exception = t;
+	catch (RuntimeException r) {
+	    runtimeException = r;
 	}
-	assertNotNull ("exception", exception);
+	assertEquals ("exception", request.runtimeException,
+		      runtimeException);
+    }
+    public void testExecuteThrow ()
+    {
+	verifyThrow (new Throw ()
+	    {
+		public void request()
+		{
+		    eventLoop.execute(this);
+		}
+	    });
+    }
+    public void testRequestThrow()
+    {
+	verifyThrow (new Throw ()
+	    {
+		Request r = new EventRequest(eventLoop, this);
+		public void request()
+		{
+		    r.request();
+		}
+	    });
     }
 
     /**
-     * Test a request from the event-loop thread gets proccessed immediatly.
+     * Test that multiple requests from the event-loop thread get
+     * proccessed immediatly.
      */
+    private abstract class Immediate
+	implements Event
+    {
+	int count = 0;
+	public abstract void request();
+	public void execute()
+	{
+	    count++;
+	    if (count < 5)
+		request();
+	}
+    }
+    private void verifyImmediate(Immediate immediate)
+    {
+	eventLoop.start();
+	immediate.request();
+	assertEquals ("immediate.count", 5, immediate.count);
+    }
+    public void testExecuteImmediate()
+    {
+	verifyImmediate (new Immediate ()
+	    {
+		public void request()
+		{
+		    eventLoop.execute(this);
+		}
+	    });
+    }
     public void testRequestImmediate()
     {
-	class Local
-	    implements Event
-	{
-	    int count = 0;
-	    public void execute()
+	verifyImmediate (new Immediate ()
 	    {
-		count++;
-		if (count < 5)
-		    eventLoop.execute(this);
-	    }
-	}
-	Local local = new Local();
-	eventLoop.start();
-	eventLoop.execute (local);
-	assertEquals ("local.count", 5, local.count);
+		Request r = new EventRequest (eventLoop, this);
+		public void request()
+		{
+		    r.request();
+		}
+	    });
     }
 }
