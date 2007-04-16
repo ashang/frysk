@@ -1,3 +1,10 @@
+2007-04-16  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (DIST_SUBDIRS): Leave out libunwind-i386.
+
+	* libunwind/acinclude.m4: Add to the CVS, it is primary source
+	used by autoconf.
+
 2007-04-05  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Update `libunwind-ptrace.a' path to the

@@ -49,7 +49,9 @@ CHECK_SUBDIRS = \
 	junit \
 	elfutils \
 	getopt
-SUBDIRS = $(CHECK_SUBDIRS) libunwind libunwind-i386
+# Leave out the libunwind-$arch subdirectories from dist:
+DIST_SUBDIRS = $(CHECK_SUBDIRS) libunwind
+SUBDIRS = $(DIST_SUBDIRS) libunwind-i386
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 EXTRA_DIST += \
