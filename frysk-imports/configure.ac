@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -72,6 +72,6 @@ test -d libunwind-i386 || mkdir libunwind-i386
 	--build=${build} --host=${host} --prefix=${prefix}
 )
 
-AC_CONFIG_SUBDIRS([elfutils libunwind])
+AC_CONFIG_SUBDIRS([elfutils libunwind-i386 libunwind])
 
 AC_OUTPUT
