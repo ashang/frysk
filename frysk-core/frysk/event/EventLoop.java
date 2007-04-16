@@ -100,7 +100,7 @@ public abstract class EventLoop
      * EventLoop thread modifies any of the event queues, the event
      * thread will need to be woken up using a Sig.IO.
      */
-    private int tid = -1;
+    private int tid = Tid.get(); // may change
     final boolean isCurrentThread()
     {
 	return tid == Tid.get();
@@ -349,21 +349,11 @@ public abstract class EventLoop
      * Any existing pending events are always processed before
      * performing the first poll.
      */
-    /**
-     * Run the event-loop.  If pendingOnly, stop after processing all
-     * pending events.
-     *
-     * The event loop is stopped by calling requestStop (that stops
-     * the event loop once all pending events have been processed).
-     * Any existing pending events are always processed before
-     * performing the first poll.
-     */
-    protected void runEventLoop (boolean pendingOnly)
+    private void runEventLoop (boolean pendingOnly)
     {
 	logger.log (Level.FINEST, "{0} runEventLoop\n", this); 
 	try {
 	    // Assert: isGoingToBlock == false
-	    tid = Tid.get ();
 	    stop = pendingOnly;
 	    while (true) {
 		// Drain any pending events.
@@ -474,6 +464,32 @@ public abstract class EventLoop
     public final void run ()
     {
 	logger.log (Level.FINE, "{0} run\n", this); 
+	// Finish initializing, and then ack that the thread is
+	// running.
+	synchronized (running) {
+	    tid = Tid.get();
+	    running.notify();
+	}
 	runEventLoop (false);
     }
+    /**
+     * Start the EventLoop thread; note that this forces a brief
+     * synchronization with that thread to ensure that it is ready.
+     */
+    public synchronized void start()
+    {
+	logger.log (Level.FINE, "{0} start\n", this); 
+	synchronized (running) {
+	    setDaemon(true);
+	    super.start();
+	    // Make certain that the server really is running.
+	    try {
+		running.wait();
+	    }
+	    catch (InterruptedException ie) {
+		throw new RuntimeException (ie);
+	    }
+	}
+    }
+    private Object running = new Object();
 }

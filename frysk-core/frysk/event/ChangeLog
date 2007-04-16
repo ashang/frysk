@@ -1,5 +1,10 @@
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java (start): New; synchronize with event-loop thread
+	before returning.  Mark thread as daemon.
+	(run, running): Provide synchronization.
+	(runEventLoop): Make private, do not set tid.
+
 	* Request.java: New.
 	* EventLoop.java (isCurrentThread): New; use.
 	* EventLoopTestBed.java (Request, testRequest, testManyRequests)

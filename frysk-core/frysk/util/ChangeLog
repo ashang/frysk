@@ -1,3 +1,8 @@
+2007-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* FCatch.java (trace): Run the event-loop from the main task.
+	* Ftrace.java (trace): Ditto.
+
 2007-04-12  Mike Cvet  <mcvet@redhat.com>
 
 	* FCatch.java (signaledTasks): Added. Keeps track of tasks belonging to the

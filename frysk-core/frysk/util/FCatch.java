@@ -115,7 +115,9 @@ public class FCatch
           }
       }
 
-    Manager.eventLoop.start();
+    // Run the event-loop from within this thread - no need to
+    // multi-thread this application.
+    Manager.eventLoop.run();
     logger.log(Level.FINE, "{0} exiting trace", this);
   }
 

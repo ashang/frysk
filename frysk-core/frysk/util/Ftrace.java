@@ -136,14 +136,14 @@ public class Ftrace
 		init();
 		Manager.host.requestCreateAttachedProc(command, new AttachedObserver());
 		// Manager.host.requestRefreshXXX(true);
-		Manager.eventLoop.start();
+		Manager.eventLoop.run();
 	}
 
 	public void trace()
 	{
 		init();
 		Manager.host.requestRefreshXXX(true);
-		Manager.eventLoop.start();
+		Manager.eventLoop.run();
 	}
     
     synchronized void generateStacKTrace (Task task, String syscallStackTraceName)

@@ -175,7 +175,7 @@ public class fstep
     else
       Manager.host.requestCreateAttachedProc(command, step);
     
-    Manager.eventLoop.start();
+    Manager.eventLoop.run();
   }
 
   // TaskObserver.Attached interface
