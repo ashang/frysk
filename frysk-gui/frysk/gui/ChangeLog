@@ -1,3 +1,11 @@
+2007-04-16  swagiaal  <swagiaal@redhat.com>
+
+	* sessions/Session.java (setName): Added check for client trying to set
+	the name of the session to an empty String.
+	* druid/CreateFryskSessionDruid.java (loadSessionMode): Used 
+	collectProcsByExecutablePath() instead of coolectProcs().
+	Made nameEntry ingnore DELETE events.
+
 2007-04-13  Rick Moseley  <rmoseley@redhat.com>
 
 	* gladedir/frysk_filechooser.glade: Remove redundant buttons.
@@ -22,7 +30,9 @@
 2007-04-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Recommiting 2007-04-05 Sami Wagiaalla <swagiaal@redhat.com> change.
-
+	* test/TestSessionSaveLoad.java: Changed mySavedSession.addProcess(debugProcess)
+	to mySavedSession.addDebugProcess(debugProcess).
+	
 2007-04-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* gladedir/frysk_filechooser.glade: Minor change for data entry

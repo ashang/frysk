@@ -166,6 +166,9 @@ public class Session
    */
   public void setName (final String name)
   {
+    if(name.length() == 0){
+      throw new IllegalArgumentException("You cannot set the name of a session to an empty string");
+    }
     super.setName(name);
   }
 

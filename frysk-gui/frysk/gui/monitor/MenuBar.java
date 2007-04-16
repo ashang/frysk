@@ -115,7 +115,8 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 	        item = (MenuItem) glade.getWidget("sessionManagerMenuItem");
 	        item.addListener(new MenuItemListener(){
 	            public void menuItemEvent(MenuItemEvent event) {
-//	              WindowManager.theManager.sessionManagerDialog.present();
+	              WindowManager.theManager.sessionManagerDialog.present();
+	              WindowManager.theManager.sessionManagerDialog.showAll();
 	            }
 	        });
 

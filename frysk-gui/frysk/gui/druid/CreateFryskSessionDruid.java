@@ -307,7 +307,8 @@ public class CreateFryskSessionDruid
 //	  }
 
 	prev = dp.getName();
-	this.dataModel.collectProcs(prev, allProcs);
+	this.dataModel.collectProcsByExecutablePath(dp.getExecutablePath(), allProcs);
+	
       }
 
     /* Add collected GuiProcs */
@@ -664,20 +665,19 @@ public class CreateFryskSessionDruid
 
       public void entryEvent (EntryEvent arg0)
       {
-	SessionManager.theManager.getCurrentSession().setName(
-							      nameEntry.getText());
-	CreateFryskSessionDruid.this.setTitle(dialogName
-					      + ": "
-					      + SessionManager.theManager.getCurrentSession().getName());
-
+	
+	if(arg0.isOfType(EntryEvent.Type.DELETE_TEXT)){
+	  return;
+	}
+	
 	if (getDruidMode() != DruidMode.LOAD_SESSION_MODE
 	    && getDruidMode() != DruidMode.EDIT_SESSION_MODE)
 	  {
 	    if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
 	      {
-
 		warningLabel.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
 		warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
+		return;
 	      }
 	    else
 	      {
@@ -685,6 +685,14 @@ public class CreateFryskSessionDruid
 		warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
 	      }
 	  }
+
+	if(nameEntry.getText().length() != 0){
+	  SessionManager.theManager.getCurrentSession().setName(nameEntry.getText());
+	}
+	CreateFryskSessionDruid.this.setTitle(dialogName
+					      + ": "
+					      + SessionManager.theManager.getCurrentSession().getName());
+
 	setProcessNext(processSelected);
       }
     });
@@ -1049,4 +1057,5 @@ public class CreateFryskSessionDruid
   {
     this.cancelButton.addListener(buttonListener);
   }
+  
 }

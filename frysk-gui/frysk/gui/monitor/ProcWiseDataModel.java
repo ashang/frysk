@@ -40,8 +40,8 @@
 
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -177,23 +177,19 @@ public class ProcWiseDataModel
   }
   
   /**
-   * Dump all objectDCs whose name match the String parameter into the
+   * Dump all objectDCs whose executable path match the String parameter into the
    * given LinkedList.
    */
-  public void collectProcs (String name, LinkedList procs)
+  public void collectProcsByExecutablePath (String name, LinkedList procs)
   {
     TreeIter iter = treeStore.getFirstIter();
     while (iter != null)
       {
         if (treeStore.isIterValid(iter))
           {
-            String split[] = treeStore.getValue(iter, getNameDC()).split("\t");
-            if (split.length > 0)
-              {
-                split[0] = split[0].trim();
-                if (split[0].split(" ")[0].equalsIgnoreCase(name))
-                  procs.add(treeStore.getValue(iter, getObjectDC()));
-              }
+            String path = treeStore.getValue(iter, getLocationDC());
+            if (path.equals(name))
+              procs.add(treeStore.getValue(iter, getObjectDC()));
           }
         iter = iter.getNextIter();
       }

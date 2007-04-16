@@ -41,6 +41,8 @@ package frysk.gui.monitor.eventviewer;
 
 
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
@@ -96,7 +98,7 @@ public abstract class TimeLine
   private static Color SELECTED_COLOR = new Color(55535, 55535, 55535);
   private static Color UNSELECTED_COLOR = Color.WHITE;
   
-  public TimeLine(String name, TimeLineSelectionManager manager){
+  public TimeLine(String name, TimeLineSelectionManager timeLineSelectionManager){
     super(false,0);
   
     this.selected = new GuiObservable();
@@ -133,8 +135,9 @@ public abstract class TimeLine
     this.packStart(viewport,true,true,1);
     this.packEnd(vBox, false, false, 0);
     
-    manager.addTimeLine(this);
-        
+    timeLineSelectionManager.addTimeLine(this);
+    
+    EventManager.theManager.getEventsList().itemAdded.addObserver(redrawObserver);
   }
   
   public void setStartIdnex(int index){
@@ -300,6 +303,7 @@ public abstract class TimeLine
     this.label.setMarkup(this.labelString);
     this.label.getParent().setBackgroundColor(StateType.NORMAL, UNSELECTED_COLOR);
     this.unSelected.notifyObservers();
+    this.draw();
   }
   
   public boolean isSelected(){
@@ -317,5 +321,18 @@ public abstract class TimeLine
   
   public static void addToLabelsSizeGroup(Widget widget){
     labelsSizeGroup.addWidget(widget);
+  }
+  
+  private Observer redrawObserver = new Observer(){
+    public void update (Observable observable, Object arg)
+    {
+      draw();
+    }
+  };
+  
+  protected void finalize () throws Throwable
+  {
+    EventManager.theManager.getEventsList().itemAdded.deleteObserver(redrawObserver);
+    super.finalize();
   }
 }

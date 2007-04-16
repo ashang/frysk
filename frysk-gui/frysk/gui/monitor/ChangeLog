@@ -1,3 +1,15 @@
+2007-04-16  swagiaal  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Added redrawObserver to redraw the widget when it is
+	selected/unselected.
+	* eventviewer/EventViewer2.java: Removed mass expose listiner fix for bz #2469.
+	Removed selection listiner.
+	* UniqueHashMap.java (add): Added check to throw an exception when an object
+	is added more than once.
+	* ProcWiseDataModel.java (collectProcsByExecutablePath): replaced collectProcs with
+	this.
+	* MenuBar.java: Added handling for Session Manager MenuItem.
+
 2007-04-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcMenu.java: Removed.

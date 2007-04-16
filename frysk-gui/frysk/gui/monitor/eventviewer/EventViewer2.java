@@ -52,8 +52,6 @@ import org.gnu.gtk.Table;
 import org.gnu.gtk.VScrollBar;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
-import org.gnu.gtk.event.ExposeEvent;
-import org.gnu.gtk.event.ExposeListener;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.sessions.DebugProcess;
@@ -111,33 +109,11 @@ public class EventViewer2 extends Table {
         this.showAll();
         this.getAccessible().setName("EventViewer");
         
-        
-        Observer selectionObserver = new Observer(){
-          public void update (Observable observable, Object obj)
-          {
-              draw();
-          }
-        };
-        timeLineSelectionManager.getSelectedTimeLines().itemAdded.addObserver(selectionObserver);
-        timeLineSelectionManager.getSelectedTimeLines().itemRemoved.addObserver(selectionObserver);
-        
         SessionManager.theManager.currentSessionChanged.addObserver(new Observer()
         {
           public void update (Observable observable, Object object)
           {
             setSession((Session) object); 
-          }
-        });
-        
-        this.addListener(new ExposeListener()
-        {
-          public boolean exposeEvent (ExposeEvent event)
-          {
-            // this is a possible performance problem
-            // but gets rid of all the artifacts.
-            // see http://sourceware.org/bugzilla/show_bug.cgi?id=4269
-            draw();
-            return false;
           }
         });
   }
@@ -230,6 +206,7 @@ public class EventViewer2 extends Table {
     
     protected void removeProc (GuiProc proc)
     {
+      proc.objectDiedObservable.deleteObserver(procDeidObserver);
       this.removeAllProcBoxes();
       Iterator iterator = this.procBoxes.iterator();
       while(iterator.hasNext()){
