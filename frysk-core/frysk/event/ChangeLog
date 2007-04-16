@@ -1,3 +1,10 @@
+2007-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java (EventLoop): Add constructor.
+	(signalEmpty, signalAdd, block): Add abstract methods.
+	* PollEventLoop.java, WaitEventLoop.java: Refactor common code
+	into EventLoop.java.
+
 2007-04-04  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java (add(WaitBuilder): New.
