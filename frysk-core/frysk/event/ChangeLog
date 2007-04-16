@@ -1,5 +1,8 @@
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoopTestBed.java (testRequest, testManyRequests)
+	(testRequestThrow, testRequestImmediate): New.
+
 	* EventLoop.java (EventLoop): Add constructor.
 	(signalEmpty, signalAdd, block): Add abstract methods.
 	* PollEventLoop.java, WaitEventLoop.java: Refactor common code

@@ -264,6 +264,54 @@ public abstract class EventLoop
 	logger.log (Level.FINE, "{0} remove Event\n", this); 
 	pendingEvents.remove (e);
     }
+    /**
+     * Execute the event on the event-loop thread; return when
+     * completed.
+     */
+    public void execute (Event e)
+    {
+	if (tid == Tid.get())
+	    // On event-loop thread, dispatch immediatly.
+	    e.execute();
+	else {
+	    synchronized (serializeExecuteRequests) {
+		request.request (e);
+	    }
+	}
+    }
+    private Object serializeExecuteRequests = new Object();
+    private class Request
+	implements Event
+    {
+	private Event op;
+	private RuntimeException runtimeException;
+	public synchronized void execute ()
+	{
+	    try {
+		op.execute();
+	    }
+	    catch (RuntimeException r) {
+		runtimeException = r;
+	    }
+	    notify();
+	}
+	private synchronized void request (Event e)
+	{
+	    runtimeException = null;
+	    op = e;
+	    add(this);
+	    try {
+		wait();
+	    }
+	    catch (InterruptedException r) {
+		throw new RuntimeException (r);
+	    }
+	    op = null;
+	    if (runtimeException != null)
+		throw runtimeException;
+	}
+    }
+    private final Request request = new Request();
 
 
     /**
@@ -314,8 +362,8 @@ public abstract class EventLoop
 	    while (true) {
 		// Drain any pending events.
 		for (Event e = remove (); e != null; e = remove ()) {
-		  logger.logp(Level.FINEST, "EventLoop", "runEventLoop",
-			      "executing {0}\n", e);
+		    logger.logp(Level.FINEST, "EventLoop", "runEventLoop",
+				"executing {0}\n", e);
 		    e.execute ();
 		}
 		// {@link #remove()} will have set {@link

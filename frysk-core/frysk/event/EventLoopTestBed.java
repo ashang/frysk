@@ -81,6 +81,8 @@ abstract class EventLoopTestBed
      */
     public void tearDown ()
     {
+	// Make certain that the event loop died.
+	eventLoop.requestStop();
 	Signal.drain (Sig.USR1);
 	Signal.drain (Sig.CHLD);
     }
@@ -454,5 +456,118 @@ abstract class EventLoopTestBed
 	    eventLoop.add (new RequestStopEvent(eventLoop));
 	    Signal.tkill (eventTid, Sig.CHLD);
 	}
+    }
+
+
+    /**
+     * A class for dispatching requests to the event-loop.
+     */
+    private class Request
+	extends Thread
+	implements Event
+    {
+	boolean executed;
+	boolean ran;
+	int i;
+	Request (int i)
+	{
+	    this.i = i;
+	}
+	public void execute ()
+	{
+	    executed = true;
+	}
+	public void run ()
+	{
+	    eventLoop.execute (this);
+	    ran = true;
+	}
+    }
+
+    /**
+     * Test that a simple request, from the event-loop thread, is
+     * handled by the event-loop thread.
+     */
+    public void testRequest ()
+    {
+	eventLoop.start();
+	Request request = new Request (0);
+	eventLoop.execute (request);
+	assertTrue ("executed", request.executed);
+    }
+
+    /**
+     * Test that many simultaneous requests, from different threads,
+     * are eventually all handled.
+     */
+    public void testManyRequests ()
+	throws InterruptedException
+    {
+	eventLoop.start();
+	long now = System.currentTimeMillis();
+	Request[] requests = new Request[10];
+	for (int i = 0; i < requests.length; i++) {
+	    requests[i] = new Request (i);
+	}
+	for (int i = 0; i < requests.length; i++) {
+	    requests[i].start ();
+	}
+	for (int i = 0; i < requests.length; i++) {
+	    requests[i].join (getTimeoutMilliseconds ());
+	    if (System.currentTimeMillis ()
+		> now + getTimeoutMilliseconds ())
+		fail ("timeout");
+	    assertTrue ("executed", requests[i].executed);
+	    assertTrue ("ran", requests[i].ran);
+	}
+    }
+
+    /**
+     * Test that a throw from within the event-loop thread is
+     * propogated back to the requesting thread.
+     */
+    public void testRequestThrow ()
+    {
+	eventLoop.start();
+	class Throw
+	    extends RuntimeException
+	    implements Event
+	{
+	    static final long serialVersionUID = 1;
+	    public void execute ()
+	    {
+		throw this;
+	    }
+	}
+	Throw exception = null;
+	try {
+	    eventLoop.execute (new Throw ());
+	}
+	catch (Throw t) {
+	    exception = t;
+	}
+	assertNotNull ("exception", exception);
+    }
+
+    /**
+     * Test a request from the event-loop thread gets proccessed immediatly.
+     */
+    public void testRequestImmediate()
+    {
+	class Local
+	    implements Event
+	{
+	    int count = 0;
+	    public void execute()
+	    {
+		count++;
+		if (count < 5)
+		    eventLoop.execute(this);
+	    }
+	}
+	Local local = new Local();
+	eventLoop.start();
+	eventLoop.execute (local);
+	assertEquals ("local.count", 5, local.count);
     }
 }
