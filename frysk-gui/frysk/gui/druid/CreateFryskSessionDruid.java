@@ -84,7 +84,9 @@ public class CreateFryskSessionDruid
     implements LifeCycleListener
 {
 
-  private static final int OBSERVERS_PAGE = 1;
+  private static final int INTRODUCTION_PAGE = 0;
+  private static final int SELECT_PROCS_PAGE = 1;
+  private static final int OBSERVERS_PAGE = 2;
 
   private ProcWiseDataModel dataModel;
 
@@ -139,6 +141,12 @@ public class CreateFryskSessionDruid
     public static final DruidMode EDIT_OBSERVER_MODE = new DruidMode();
   }
 
+  private static class WarningType
+  {
+    public static final WarningType NORMAL = new WarningType();
+    
+    public static final WarningType NAME_ALREADY_USED =  new WarningType();
+  }
   /**
          * Create a new instance of the Session Assistant
          * 
@@ -172,7 +180,7 @@ public class CreateFryskSessionDruid
     this.showAll();
 
     nextButton.showAll();
-    nextButton.setSensitive(false);
+    
     finishButton.showAll();
     finishButton.setSensitive(false);
 
@@ -185,7 +193,8 @@ public class CreateFryskSessionDruid
 
     notebook.setShowTabs(false);
     notebook.setCurrentPage(0);
-
+    this.setUpCurrentPage();
+    
     nameEntry.setText("");
 
     setupNameEntry();
@@ -194,7 +203,7 @@ public class CreateFryskSessionDruid
     nameEntry.setText(setInitialName());
     initialSessionName = nameEntry.getText();
     nameEntry.selectRegion(0, nameEntry.getText().length());
-
+    
     unFilterData();
   }
 
@@ -207,7 +216,7 @@ public class CreateFryskSessionDruid
          */
   public void setEditSessionMode (Session givenSession)
   {
-    if (givenSession == null)
+   if (givenSession == null)
       {
 	throw new NullPointerException("trying to edit a null session");
       }
@@ -218,8 +227,9 @@ public class CreateFryskSessionDruid
     this.showAll();
 
     notebook.setShowTabs(true);
-    notebook.setCurrentPage(0);
-
+    notebook.setCurrentPage(1);
+    notebook.getPage(0).hideAll();
+    
     debugButton.hideAll();
     backButton.hideAll();
     nextButton.hideAll();
@@ -233,9 +243,8 @@ public class CreateFryskSessionDruid
     processSelected = SessionManager.theManager.getCurrentSession().getProcesses().size();
 
     oldSessionName = SessionManager.theManager.getCurrentSession().getName();
-    // warningLabel.setMarkup("Select a <b>Name</b> for the session, and
-        // some <b>Processes</b> to monitor");
-    // warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
+
+    setupNameEntry();
 
     unFilterData();
     filterDataInSession();
@@ -243,11 +252,13 @@ public class CreateFryskSessionDruid
 
   public void loadSessionMode (Session givenSession)
   {
-    
     if (givenSession == null)
       {
 	throw new NullPointerException("trying to load a null session");
       }
+
+    this.notebook.setCurrentPage(1);
+    notebook.setShowTabs(false);
 
     this.setDruidMode(DruidMode.LOAD_SESSION_MODE);
     SessionManager.theManager.setCurrentSession(givenSession);
@@ -262,10 +273,7 @@ public class CreateFryskSessionDruid
     saveButton.hideAll();
     cancelButton.showAll();
     closeButton.hideAll();
-
-    notebook.setShowTabs(false);
-    notebook.setCurrentPage(0);
-
+    
     // nextButton.setSensitive(true);
     // nextButton.showAll();
     // saveButton.hideAll();
@@ -311,14 +319,16 @@ public class CreateFryskSessionDruid
 	
       }
 
-    /* Add collected GuiProcs */
-    i = allProcs.iterator();
-    while (i.hasNext())
-      {
+    if(!SessionManager.theManager.getCurrentSession().areProcsAdded()){
+      /* Add collected GuiProcs */
+      i = allProcs.iterator();
+      while (i.hasNext()){
 	GuiProc guiProc = (GuiProc) i.next();
-	SessionManager.theManager.getCurrentSession().addGuiProc(guiProc);
+  	SessionManager.theManager.getCurrentSession().addGuiProc(guiProc);
       }
-
+    }
+    SessionManager.theManager.getCurrentSession().setProcsAdded(true);
+    
     oldSessionProcesses = null;
 
     setupNameEntry();
@@ -331,6 +341,7 @@ public class CreateFryskSessionDruid
 
   public void presentEditObserversMode (Session session)
   {
+    
     SessionManager.theManager.setCurrentSession(session);
     this.setDruidMode(DruidMode.EDIT_OBSERVER_MODE);
     // SessionManager.theManager.backupCurrentSession();
@@ -549,6 +560,10 @@ public class CreateFryskSessionDruid
          */
   private void setProcessNext (int processCount)
   {
+    if(notebook.getCurrentPage() == INTRODUCTION_PAGE){
+      return;
+    }
+    
     if (this.getDruidMode() != DruidMode.LOAD_SESSION_MODE
 	&& this.getDruidMode() != DruidMode.EDIT_SESSION_MODE)
       {
@@ -663,31 +678,30 @@ public class CreateFryskSessionDruid
     nameEntry.addListener(new EntryListener()
     {
 
-      public void entryEvent (EntryEvent arg0)
+      public void entryEvent (EntryEvent event)
       {
 	
-	if(arg0.isOfType(EntryEvent.Type.DELETE_TEXT)){
+//	if(arg0.isOfType(EntryEvent.Type.DELETE_TEXT)){
+//	  return;
+//	}
+	
+	String proposedName = nameEntry.getText();
+	
+	if(proposedName == null){
 	  return;
 	}
 	
-	if (getDruidMode() != DruidMode.LOAD_SESSION_MODE
-	    && getDruidMode() != DruidMode.EDIT_SESSION_MODE)
-	  {
-	    if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
-	      {
-		warningLabel.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
-		warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
-		return;
-	      }
-	    else
-	      {
-		warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
-		warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
-	      }
-	  }
-
-	if(nameEntry.getText().length() != 0){
-	  SessionManager.theManager.getCurrentSession().setName(nameEntry.getText());
+	Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
+	if (theSessionUsingProposedName != null && 
+	    theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
+	      setWarning(WarningType.NAME_ALREADY_USED);
+	      return;
+	}
+	
+	setWarning(WarningType.NORMAL);
+	
+	if(proposedName.length() != 0){
+	  SessionManager.theManager.getCurrentSession().setName(proposedName);
 	}
 	CreateFryskSessionDruid.this.setTitle(dialogName
 					      + ": "
@@ -817,8 +831,7 @@ public class CreateFryskSessionDruid
 	  }
       }
     });
-    nextButton.setSensitive(false);
-
+    
     backButton = (Button) glade.getWidget("sessionDruid_backButton");
     backButton.addListener(new ButtonListener()
     {
@@ -832,7 +845,6 @@ public class CreateFryskSessionDruid
     });
 
     finishButton = (Button) glade.getWidget("sessionDruid_finishButton");
-    finishButton.setSensitive(true);
     finishButton.addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent event)
@@ -843,6 +855,7 @@ public class CreateFryskSessionDruid
 	    if (getDruidMode() == DruidMode.NEW_SESSION_MODE)
 	      {
 		SessionManager.theManager.addSession(SessionManager.theManager.getCurrentSession());
+		SessionManager.theManager.getCurrentSession().setProcsAdded(true);
 	      }
 	    
 	    procMap.clear();
@@ -860,8 +873,7 @@ public class CreateFryskSessionDruid
 	  }
       }
     });
-    finishButton.setSensitive(false);
-
+    
     saveButton = (Button) glade.getWidget("sessionDruid_saveEditSessionButton");
     saveButton.hideAll();
     saveButton.addListener(new ButtonListener()
@@ -967,24 +979,32 @@ public class CreateFryskSessionDruid
 
     this.debugButton.hideAll();
 
-    if (page == 0)
-      {
-	this.debugButton.showAll();
-	backButton.setSensitive(false);
-	nextButton.setSensitive(true);
-	finishButton.setSensitive(true);
-      }
+    if (page == INTRODUCTION_PAGE){
+      debugButton.hideAll();
+      backButton.hideAll();
+      finishButton.hideAll();
+      okButton.hideAll();
+      
+      nextButton.showAll();
+      cancelButton.showAll();
+    }
+    
+    if (page == SELECT_PROCS_PAGE){
+      this.debugButton.showAll();
+      backButton.showAll();
+      nextButton.showAll();
+      finishButton.showAll();
+      setProcessNext(processSelected);
+    }
 
-    if (page == 1)
-      {
-	setProcessNext(processSelected);
-      }
+    if (page == OBSERVERS_PAGE){
+      setProcessNext(processSelected);
+    }
 
-    if (page == notebook.getNumPages() - 1)
-      {
-	nextButton.setSensitive(false);
-	backButton.setSensitive(true);
-      }
+    if (page == notebook.getNumPages() - 1){
+      nextButton.setSensitive(false);
+      backButton.setSensitive(true);
+    }
 
   }
 
@@ -1041,6 +1061,9 @@ public class CreateFryskSessionDruid
   private void setDruidMode (DruidMode druidMode)
   {
     this.druidMode = druidMode;
+//    if(druidMode == DruidMode.NEW_SESSION_MODE){
+//      this.setTitle("Create new Frysk Session");
+//    }
   }
 
   private DruidMode getDruidMode ()
@@ -1058,4 +1081,19 @@ public class CreateFryskSessionDruid
     this.cancelButton.addListener(buttonListener);
   }
   
+  private void setWarning(WarningType warning){
+  
+    if(warning == WarningType.NORMAL){
+      warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+      warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
+      return;
+    }
+    
+    if(warning == WarningType.NAME_ALREADY_USED){
+      warningLabel.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
+      warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
+      return;
+    }
+    
+  }
 }

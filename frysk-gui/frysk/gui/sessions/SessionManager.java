@@ -86,6 +86,9 @@ public class SessionManager
    */
   public void addSession (final Session session)
   {
+    if(this.sessions.contains(session)){
+      throw new IllegalArgumentException("You are adding a session which has already been added");
+    }
     nameHash.add(session);
     sessions.add(session);
   }

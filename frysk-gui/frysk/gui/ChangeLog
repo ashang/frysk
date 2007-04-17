@@ -1,3 +1,23 @@
+2007-04-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/SessionManager.java: Added check for trying to add a 
+	Session which has already been previously added to the manager.
+	* sessions/Session.java: Added boolean setter/getter for checking
+	whether procs have already been added to this session or not.
+	* gladedir/procpop.glade: Left indent the button labeles in Observers
+	Dialog.
+	* gladedir/frysk_session_manager.glade: Changed the dialog title from
+	Frysk Startup Manager to Frysk Session Manager.
+	* gladedir/frysk_create_session_druid.glade: Added first introductory
+	page to the druid.
+	* druid/CreateFryskSessionDruid.java: Added public static variables for
+	page numbers.
+	Fixed bug with name entry not being set when editing session.
+	Fixed bug with incorrect button sensitivity.
+	Added first introductory page handling.
+	Added a private function and global variables for setting warning
+	dialogs.
+
 2007-04-16  swagiaal  <swagiaal@redhat.com>
 
 	* sessions/Session.java (setName): Added check for client trying to set

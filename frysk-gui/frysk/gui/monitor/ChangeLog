@@ -1,3 +1,12 @@
+2007-04-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* eventviewer/TimeLine.java: Fixed bug todo with Terminated threads
+	being labeled like regular threads when reselected.
+	* UniqueHashMap.java: Added check for removing objects which are not
+	in the internal hashTables
+	* GuiObject.java: setName now ignores the call if the name is being
+	set to the same name.
+
 2007-04-16  swagiaal  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLine.java: Added redrawObserver to redraw the widget when it is

@@ -65,7 +65,7 @@ import frysk.gui.sessions.SessionManager;
 
 /**
  * 
- * SessionManagerGui - Manage all entry workflows into the UI
+ * SessionManagerGui - Manage all entry work-flows into the UI
  * 
  */
 public class SessionManagerDialog extends org.gnu.gtk.Dialog implements
@@ -387,7 +387,7 @@ public class SessionManagerDialog extends org.gnu.gtk.Dialog implements
   public void openSession ()
   {
     final Session s = (Session) previousSessions.getSelectedObject();
-
+    
     sessionLaunched = true;
     WindowManager.theManager.createFryskSessionDruid.loadSessionMode(s);
     WindowManager.theManager.createFryskSessionDruid.show();

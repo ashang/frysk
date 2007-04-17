@@ -68,6 +68,8 @@ public class Session
   private ObservableLinkedList procs;
   private ObservableLinkedList observers;
   
+  private boolean procsAdded = false;
+  
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
   
   /**
@@ -80,6 +82,8 @@ public class Session
     procs = new ObservableLinkedList();
     observers = new ObservableLinkedList();
     this.initListObservers();
+    
+    this.setProcsAdded(false);
   }
 
   /**
@@ -95,6 +99,8 @@ public class Session
     procs = new ObservableLinkedList(other.procs, true);
     observers = new ObservableLinkedList(other.observers, false);
     this.initListObservers();
+    
+    this.setProcsAdded(other.areProcsAdded());
   }
 
   /**
@@ -110,6 +116,8 @@ public class Session
     procs = new ObservableLinkedList();
     observers = new ObservableLinkedList();
     this.initListObservers();
+    
+    this.setProcsAdded(false);
   }
 
   public void addDefaultObservers(){
@@ -363,6 +371,16 @@ public class Session
   public ObservableLinkedList getObservers ()
   {
     return this.observers;
+  }
+
+  public void setProcsAdded (boolean procsAdded)
+  {
+    this.procsAdded = procsAdded;
+  }
+
+  public boolean areProcsAdded ()
+  {
+    return procsAdded;
   }
 
 }

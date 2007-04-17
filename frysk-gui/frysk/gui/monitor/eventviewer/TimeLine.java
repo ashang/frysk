@@ -300,7 +300,6 @@ public abstract class TimeLine
   
   public void unselect(){
     this.isSelected = false;
-    this.label.setMarkup(this.labelString);
     this.label.getParent().setBackgroundColor(StateType.NORMAL, UNSELECTED_COLOR);
     this.unSelected.notifyObservers();
     this.draw();
@@ -315,8 +314,8 @@ public abstract class TimeLine
     
     int grayFactor = 3;
     this.label.setForegroundColor(StateType.NORMAL, new Color(65535/grayFactor, 65535/grayFactor, 65535/grayFactor));
-    
-    this.label.setMarkup(this.label.getText() + "\n<i>terminated</i>");
+    this.labelString = this.label.getText() + "\n<i>terminated</i>";
+    this.label.setMarkup(labelString);
   }
   
   public static void addToLabelsSizeGroup(Widget widget){

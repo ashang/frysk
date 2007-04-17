@@ -101,10 +101,14 @@ public class UniqueHashMap{
 	  public void update (Observable observable, Object object)
 	  {
 	    String key = (String) keyHash.get(object);
-	    nameHash.remove(key);
-	    keyHash.remove(object);
+	    if(nameHash.remove(key)==null){
+	      throw new RuntimeException("could not remove key");
+	    }
+	    if(keyHash.remove(object)==null){
+	      throw new RuntimeException("could not remove object");
+	    }
 	    ((GuiObject) object).propertiesChanged.deleteObserver(nameChangedObserver);
-	    
+	
 	    add((GuiObject) object);
 	  }
 	};

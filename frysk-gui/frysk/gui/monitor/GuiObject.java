@@ -93,8 +93,10 @@ public class GuiObject
 
   public void setName (String name)
   {
-    this.name = name;
-    this.propertiesChanged.notifyObservers(this);
+    if(!name.equals(this.name)){
+      this.name = name;
+      this.propertiesChanged.notifyObservers(this);
+    }
   }
 
   public String getName ()
