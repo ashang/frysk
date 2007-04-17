@@ -64,7 +64,7 @@ frysk::sys::termios::Termios::get(frysk::sys::FileDescriptor*file)
 {
   int fd = file->getFd ();
   if (::tcgetattr (fd, (struct termios*) termios) < 0)
-    throwErrno (errno, "tcsetattr", "fd", fd);
+    throwErrno (errno, "tcsetattr", "fd %d", fd);
   return this;
 }
 
@@ -84,7 +84,7 @@ frysk::sys::termios::Termios::set(frysk::sys::FileDescriptor* file,
     throwRuntimeException ("Unknown Termios.Action");
   errno = 0;
   if (tcsetattr (fd, action, (struct termios*) termios) < 0)
-    throwErrno (errno, "tcsetattr", "fd", fd);
+    throwErrno (errno, "tcsetattr", "fd %d", fd);
   return this;
 }
 
@@ -100,12 +100,12 @@ frysk::sys::termios::Termios::sendBreak(frysk::sys::FileDescriptor* fd,
 			       jint duration)
 {
   if (::tcsendbreak (fd->getFd (), duration) < 0)
-    throwErrno (errno, "tcsendbreak", "fd", fd->getFd ());
+    throwErrno (errno, "tcsendbreak", "fd %d", (int)(fd->getFd ()));
 }
 
 void
 frysk::sys::termios::Termios::drain(frysk::sys::FileDescriptor* fd)
 {
   if (::tcdrain (fd->getFd ()) < 0)
-    throwErrno (errno, "tcdrain", "fd", fd->getFd ());
+    throwErrno (errno, "tcdrain", "fd %d", (int)(fd->getFd ()));
 }

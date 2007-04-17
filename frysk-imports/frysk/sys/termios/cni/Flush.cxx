@@ -63,5 +63,5 @@ frysk::sys::termios::Flush::flush (frysk::sys::FileDescriptor*fd,
   else
     throwRuntimeException ("Unrecognized flush queue; untested");
   if (::tcflush (fd->getFd (), queue) < 0)
-    throwErrno (errno, "tcflush", "fd", fd->getFd ());
+    throwErrno (errno, "tcflush", "fd %d", (int)(fd->getFd ()));
 }

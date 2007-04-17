@@ -96,7 +96,7 @@ frysk::sys::Daemon::daemon (frysk::sys::Redirect* redirect,
       throwErrno (fork_errno, "fork");
     // Did the wait succeed?  If not throw its status.
     if (wpid < 0)
-      throwErrno (wait_errno, "waitpid", "process", v);
+      throwErrno (wait_errno, "waitpid", "process %d", v);
     // printf ("v %d pid %d\n", v, pid);
     redirect->close ();
     return pid;

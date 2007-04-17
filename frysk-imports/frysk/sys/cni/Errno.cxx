@@ -128,17 +128,16 @@ throwErrno (int err, jstring jmessage)
 }
 
 void
-throwErrno (int err, const char *prefix, const char *suffix)
+throwErrno (int err, const char *prefix, const char *suffix, ...)
 {
-  throwErrno (err, ajprintf ("%s: %s (%s)", prefix, strerror (err), suffix));
-}
-
-void
-throwErrno (int err, const char *prefix, const char *suffix, int val)
-{
-  throwErrno (err, ajprintf ("%s: %s (%s %d)", prefix, strerror (err),
-			      suffix, val));
-
+  va_list ap;
+  va_start (ap, suffix);
+  char *message = NULL;
+  asprintf(&message, suffix, ap);
+  va_end (ap);
+  jstring jmessage = ajprintf("%s: %s (%s)", prefix, strerror (err), message);
+  free(message);
+  throwErrno (err, jmessage);
 }
 
 void

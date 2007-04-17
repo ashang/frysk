@@ -65,5 +65,5 @@ frysk::sys::termios::Flow::flow (frysk::sys::FileDescriptor* fd,
   else
     throwRuntimeException ("Unknown flow control");
   if (::tcflow (fd->getFd (), flow) < 0)
-    throwErrno (errno, "tcflow", "fd", fd->getFd ());
+    throwErrno (errno, "tcflow", "fd %d", (int)(fd->getFd ()));
 }

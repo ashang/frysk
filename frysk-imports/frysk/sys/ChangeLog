@@ -1,3 +1,17 @@
+2007-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.hxx (throwErrno(int,const char*,const char*))
+	(throwErrno(int,const char*,const char*,int)): Delete.
+	(throwErrno(int,const char*,const char*,...)): Declare.
+	* cni/Errno.cxx (throwErrno): Re-implement.
+	* cni/Wait.cxx (drainNoHang): Ditto.
+	* cni/Signal.cxx (tkill): Ditto.
+	* cni/PseudoTerminal.cxx (open): Ditto.
+	* cni/Fork.cxx (daemon): Ditto.
+	* cni/FileDescriptor.cxx (close): Ditto.
+	* cni/Daemon.cxx (daemon): Update.
+	* cni/Ptrace.cxx (request): Throw a meaningful message.
+
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceServer.java (peek, poke): Delete.

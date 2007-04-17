@@ -57,7 +57,7 @@ frysk::sys::Signal::tkill (jint tid, frysk::sys::Sig* sig)
   int signum = sig->hashCode ();
   errno = 0;
   if (::syscall (__NR_tkill, tid, signum) < 0)
-    throwErrno (errno, "tkill", "task", tid);
+    throwErrno (errno, "tkill", "task %d", (int)tid);
 }
 
 void
@@ -66,7 +66,7 @@ frysk::sys::Signal::kill (jint pid, frysk::sys::Sig* sig)
   int signum = sig->hashCode ();
   errno = 0;
   if (::kill (pid, signum) < 0)
-    throwErrno (errno, "kill", "process", pid);
+    throwErrno (errno, "kill", "process %d", (int)pid);
 }
 
 void
@@ -81,9 +81,9 @@ frysk::sys::Signal::drain (frysk::sys::Sig* sig)
   struct sigaction newAct = { };
   newAct.sa_handler = SIG_IGN;
   if (::sigaction (signum, &newAct, &oldAct))
-    throwErrno (errno, "sigaction", "signal", signum);
+    throwErrno (errno, "sigaction", "signal %d - %s", signum, strsignal(signum));
   if (::sigaction (signum, &oldAct, NULL))
-    throwErrno (errno, "sigaction", "signal", signum);
+    throwErrno (errno, "sigaction", "signal %d - %s", signum, strsignal(signum));
 //   sigpending (&set);
 //   printf ("After: %d (%s) pending? %s\n", signum, strsignal (signum),
 // 	  sigismember (&set, signum) ? "YES" : "NO");

@@ -45,13 +45,10 @@
 // <<prefix>>: <<strerror(err)>>
 extern void throwErrno (int err, const char *prefix)
   __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix)
-  __attribute__ ((noreturn));
-// <<prefix>>: <<strerror(err)>> (<<suffix>> <<val>>)
-extern void throwErrno (int err, const char *prefix, const char *suffix,
-			int val)
-  __attribute__ ((noreturn));
+// <<prefix>>: <<strerror(err)>> (<<suffix>> ...)
+extern void throwErrno (int err, const char *prefix, const char *suffix, ...)
+  __attribute__ ((noreturn)) __attribute__((format (printf, 3, 4)));
+
 // <<message>>
 extern void throwRuntimeException (const char *message)
   __attribute__ ((noreturn));

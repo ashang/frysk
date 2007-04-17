@@ -63,7 +63,7 @@ frysk::sys::FileDescriptor::close ()
   errno = 0;
   ::close (fd);
   if (errno != 0)
-    throwErrno (errno, "close", "fd", fd);
+    throwErrno (errno, "close", "fd %d", (int)fd);
   fd = -1;
 }
 
@@ -76,7 +76,7 @@ frysk::sys::FileDescriptor::write (jint b)
   int err = errno;
   // ::fprintf (stderr, "wrote <<%c>>\n", c);
   if (err != 0)
-    throwErrno (err, "write", "fd", fd);
+    throwErrno (err, "write", "fd %d", (int)fd);
 }
 
 void
@@ -87,7 +87,7 @@ frysk::sys::FileDescriptor::write (jbyteArray bytes, jint off, jint len)
   int err = errno;
   // ::fprintf (stderr, "wrote <<%c>>\n", (char) b);
   if (err != 0)
-    throwErrno (err, "write", "fd", fd);
+    throwErrno (err, "write", "fd %d", (int)fd);
 }
 
 jboolean
@@ -104,7 +104,7 @@ frysk::sys::FileDescriptor::ready (jlong timeout)
   case 0:
     return false;
   default:
-    throwErrno (err, "select", "fd", fd);
+    throwErrno (err, "select", "fd %d", (int)fd);
   }
 }
 
@@ -128,7 +128,7 @@ doRead (jint fd, void *bytes, jint len)
 	  && (pollfd.revents & POLLHUP))
 	return -1;
     }
-    throwErrno (err, "read", "fd", fd);
+    throwErrno (err, "read", "fd %d", (int)fd);
   }
 }
 

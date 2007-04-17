@@ -71,7 +71,8 @@ request (int op, int pid, void* addr, long data)
   errno = 0;
   long result = ::ptrace ((enum __ptrace_request) op, pid, addr, data);
   if (errno != 0)
-    throwErrno (errno, "ptrace");
+    throwErrno (errno, "ptrace", "pt %d, pid %d, addr 0x%lx, data 0x%lx",
+		op, pid, (long)addr, data);
   return result;
 }
 

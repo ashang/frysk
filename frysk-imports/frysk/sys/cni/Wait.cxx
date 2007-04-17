@@ -261,7 +261,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::WaitBuilder* builder)
   case ECHILD:
     break;
   default:
-    throwErrno (myErrno, "waitpid", "process", -1);
+    throwErrno (myErrno, "waitpid", "process %d", -1);
   }
 
   // Now unpack each, notifying the builder.
@@ -290,7 +290,7 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::WaitBuilder* builder)
   int myErrno = errno;
   log (getLogger(), pid, status, errno);
   if (pid <= 0)
-    throwErrno (myErrno, "waitpid", "process", wpid);
+    throwErrno (myErrno, "waitpid", "process %d", (int)wpid);
   // Process the result.
   processStatus (pid, status, builder);
 }
@@ -308,7 +308,7 @@ void frysk::sys::Wait::drain (jint wpid)
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
-      throwErrno (err, "waitpid", "process", wpid);
+      throwErrno (err, "waitpid", "process %d", (int)wpid);
   }
 }
 
@@ -323,7 +323,7 @@ void frysk::sys::Wait::drainNoHang (jint wpid)
     if (err == ESRCH || err == ECHILD)
       break;
     if (pid <= 0)
-      throwErrno (err, "waitpid", "process", wpid);
+      throwErrno (err, "waitpid", "process %d", (int)wpid);
   }
 }
 

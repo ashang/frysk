@@ -66,13 +66,13 @@ frysk::sys::PseudoTerminal::open (jboolean controllingTerminal)
   if (::grantpt (master) < 0) {
     int err = errno;
     ::close (master);
-    throwErrno (err, "grantpt", "fd", master);
+    throwErrno (err, "grantpt", "fd %d", (int)master);
   }
 
   if (::unlockpt (master) < 0) {
     int err = errno;
     ::close (master);
-    throwErrno (err, "unlockpt", "fd", master);
+    throwErrno (err, "unlockpt", "fd %d", (int)master);
   }
 
   return master;
