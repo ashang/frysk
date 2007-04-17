@@ -1,5 +1,7 @@
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java: If the "tid" changes throw a RuntimeException.
+
 	* EventLoop.java (tid): Initialize as -1.
 	(updateTid): New.
 	(wakeupBlockedEventLoop): New.

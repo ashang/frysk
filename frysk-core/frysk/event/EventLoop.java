@@ -114,23 +114,18 @@ public abstract class EventLoop
 	    throw new RuntimeException ("EventLoop.tid botch");
 	frysk.sys.Signal.tkill (tid, Sig.IO);
     }
-//     private Exception firstSet;
+    private Exception firstSet;
     private void updateTid()
     {
 	int newTid = Tid.get();
 	if (tid <= 0) {
-// 	    firstSet = new Exception();
+ 	    firstSet = new Exception();
 	    tid = newTid;
 	    return;
 	}
 	if (tid != newTid) {
-	    // Should be an exception
-	    System.out.println ("WARNING: EventLoop.tid changed");
-// 	    System.out.println ("First set to " + tid + " from ...");
-// 	    firstSet.printStackTrace();
-// 	    System.out.println ("Now set to " + newTid + " from ...");
-// 	    new Exception().printStackTrace();
-	    tid = newTid;
+	    throw new RuntimeException ("EventLoop.tid changing from "
+					+ tid + " to " + newTid, firstSet);
 	}
     }
     /**
