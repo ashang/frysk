@@ -59,9 +59,6 @@ public class TestBreakpoints
   private BufferedReader in;
   private DataOutputStream out;
 
-  // Monitor to notify and wait on for state of event changes..
-  private static Object monitor = new Object();
-
   // Whether or not to install an Instruction observer
   private boolean installInstructionObserver;
 
@@ -146,12 +143,6 @@ public class TestBreakpoints
 
   public void testHitAndRun() throws IOException
   {
-    // Start an EventLoop so there's no need to poll for events all
-    // the time.
-    Manager.eventLoop.start();
-
-    String line;
-    
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
     InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
@@ -168,38 +159,17 @@ public class TestBreakpoints
     task.requestAddCodeObserver(code2, breakpoint2);
 
     // Make sure the observers are properly installed.
-    synchronized (monitor)
-      {
-	while (! code1.isAdded() || ! code2.isAdded())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! code1.isAdded() || ! code2.isAdded())
+	assertRunUntilStop ("code1 and code2 added");
 
     // Unblock and tell the process to go some rounds!
     task.requestUnblock(attachedObserver);
 
-    out.writeByte(3);
-    out.flush();
-    
-    // Sanity check that the functions have actually been run.
-    line = in.readLine();
-    int bp1 = Integer.decode(line).intValue();
-    line = in.readLine();
-    int bp2 = Integer.decode(line).intValue();
+    // XXX: Better name welcome
+    new GoAround(3).goneAround(3);
 
-    assertEquals(3, bp1);
-    assertEquals(3, bp2);
-
-    assertEquals(3, code1.getTriggered());
-    assertEquals(3, code2.getTriggered());
+    assertEquals("code1 triggered", 3, code1.getTriggered());
+    assertEquals("code2 triggered", 3, code2.getTriggered());
 
     // Remove the stepper
     if (installInstructionObserver)
@@ -223,40 +193,16 @@ public class TestBreakpoints
 
     // The process will now exec itself again.
     // Make sure Code Observers have been notified.
-    synchronized (monitor)
-      {
-	while (! (code1.isRemoved() && code2.isRemoved()))
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
+    while (! (code1.isRemoved() && code2.isRemoved()))
+	assertRunUntilStop ("code1 and code2 removed");
 
     // And let it go. We are really done.
     out.writeByte(0);
     out.flush();
 
     // So how did it all go, did it exit properly?
-    synchronized (monitor)
-      {
-	while (! terminatingObserver.terminating)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
+    while (! terminatingObserver.terminating)
+	assertRunUntilStop ("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
     assertFalse("exitSignal", terminatingObserver.exitSignal);
@@ -270,12 +216,6 @@ public class TestBreakpoints
 
   public void testInsertRemove() throws IOException
   {
-    // Start an EventLoop so there's no need to poll for events all
-    // the time.
-    Manager.eventLoop.start();
-
-    String line;
-
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
     InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
@@ -292,36 +232,13 @@ public class TestBreakpoints
     task.requestAddCodeObserver(code2, breakpoint2);
 
     // Make sure the observers are properly installed.
-    synchronized (monitor)
-      {
-	while (! code1.isAdded() || ! code2.isAdded())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! code1.isAdded() || ! code2.isAdded())
+	assertRunUntilStop ("code1 an code2 added");
 
     // Unblock and tell the process to go!
     task.requestUnblock(attachedObserver);
 
-    // Run a couple of times.
-    out.writeByte(3);
-    out.flush();
-
-    // Sanity check that the functions have actually been run.
-    line = in.readLine();
-    int bp1 = Integer.decode(line).intValue();
-    line = in.readLine();
-    int bp2 = Integer.decode(line).intValue();
-
-    assertEquals(3, bp1);
-    assertEquals(3, bp2);
+    new GoAround(3).goneAround(3);
     assertEquals(3, code1.getTriggered());
     assertEquals(3, code2.getTriggered());
 
@@ -329,32 +246,10 @@ public class TestBreakpoints
     task.requestDeleteCodeObserver(code2, breakpoint2);
 
     // Wait for removal
-    synchronized (monitor)
-      {
-        while (! code2.isRemoved())
-          {
-            try
-              {
-                monitor.wait();
-              }
-            catch (InterruptedException ie)
-              {
-                // Ignored
-              }
-          }
-      }
+    while (! code2.isRemoved())
+	assertRunUntilStop ("code 2 removed");
 
-    // And go again for 5 times.
-    out.writeByte(5);
-    out.flush();
-
-    line = in.readLine();
-    bp1 = Integer.decode(line).intValue();
-    line = in.readLine();
-    bp2 = Integer.decode(line).intValue();
-
-    assertEquals(8, bp1);
-    assertEquals(8, bp2);
+    new GoAround(5).goneAround(8);
     assertEquals(8, code1.getTriggered());
     assertEquals(3, code2.getTriggered());
 
@@ -362,49 +257,19 @@ public class TestBreakpoints
     task.requestDeleteCodeObserver(code1, breakpoint1);
 
     // Wait for removal
-    synchronized (monitor)
-      {
-        while (! code1.isRemoved())
-          {
-            try
-              {
-                monitor.wait();
-              }
-            catch (InterruptedException ie)
-              {
-                // Ignored
-              }
-          }
-      }
+    while (! code1.isRemoved())
+	assertRunUntilStop("code1 removed");
 
     // And go again for 5 times.
-    out.writeByte(5);
-    out.flush();
-
-    line = in.readLine();
-    bp1 = Integer.decode(line).intValue();
-    line = in.readLine();
-    bp2 = Integer.decode(line).intValue();
+    new GoAround(5).goneAround(13);
 
     // For fun (and to test exec) insert another one.
     CodeObserver code3 = new CodeObserver(breakpoint1);
     task.requestAddCodeObserver(code3, breakpoint1);
     
     // Make sure the observer is properly installed.
-    synchronized (monitor)
-      {
-	while (! code3.isAdded())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! code3.isAdded())
+	assertRunUntilStop ("code3 added");
 
     // Remove the stepper
     if (installInstructionObserver)
@@ -428,46 +293,20 @@ public class TestBreakpoints
 
     // The process will now exec itself again.
     // Make sure Code Observers have been notified.
-    synchronized (monitor)
-      {
-	while (! code3.isRemoved())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
+    while (! code3.isRemoved())
+	assertRunUntilStop ("code3 removed");
 
     // And let it go. We are really done.
     out.writeByte(0);
     out.flush();
 
     // Wait for termination. How did it all go, did it exit properly?
-    synchronized (monitor)
-      {
-	while (! terminatingObserver.terminating)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
+    while (! terminatingObserver.terminating)
+	assertRunUntilStop ("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
     assertFalse("exitSignal", terminatingObserver.exitSignal);
 
-    assertEquals(13, bp1);
-    assertEquals(13, bp2);
     assertEquals(8, code1.getTriggered());
     assertEquals(3, code2.getTriggered());
   }
@@ -480,12 +319,6 @@ public class TestBreakpoints
 
   public void testAddLots() throws IOException
   {
-    // Start an EventLoop so there's no need to poll for events all
-    // the time.
-    Manager.eventLoop.start();
-
-    String line;
-
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
     InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
@@ -512,43 +345,21 @@ public class TestBreakpoints
       }
 
     // Make sure the observers are properly installed.
-    synchronized (monitor)
-      {
-	boolean allAdded = true;
+    boolean allAdded = true;
+    for (int i = 0; i < 1512 && allAdded; i++)
+	allAdded = codes1[i].isAdded() && codes2[i].isAdded();
+    while (! allAdded) {
+	assertRunUntilStop("allAdded");
+	allAdded = true;
 	for (int i = 0; i < 1512 && allAdded; i++)
-	  allAdded = codes1[i].isAdded() && codes2[i].isAdded();
-	while (! allAdded)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	    
-	    allAdded = true;
-	    for (int i = 0; i < 1512 && allAdded; i++)
-	      allAdded = codes1[i].isAdded() && codes2[i].isAdded();
-	  }
-      }
+	    allAdded = codes1[i].isAdded() && codes2[i].isAdded();
+    }
 
     // Unblock and tell the process to go!
     task.requestUnblock(attachedObserver);
 
     // Run a couple of times.
-    out.writeByte(3);
-    out.flush();
-
-    // Sanity check that the functions have actually been run.
-    line = in.readLine();
-    int bp1 = Integer.decode(line).intValue();
-    line = in.readLine();
-    int bp2 = Integer.decode(line).intValue();
-
-    assertEquals(3, bp1);
-    assertEquals(3, bp2);
+    new GoAround(3).goneAround(3);
 
     // Remove the stepper
     if (installInstructionObserver)
@@ -572,47 +383,23 @@ public class TestBreakpoints
 
     // The process will now exec itself again.
     // Make sure all the observers are notified that they have been removed.
-    synchronized (monitor)
-      {
-	boolean allRemoved = true;
+    boolean allRemoved = true;
+    for (int i = 0; i < 1512 && allRemoved; i++)
+	allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
+    while (! allRemoved) {
+	assertRunUntilStop("allRemoved");
+	allRemoved = true;
 	for (int i = 0; i < 1512 && allRemoved; i++)
-	  allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
-	while (! allRemoved)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	    
-	    allRemoved = true;
-	    for (int i = 0; i < 1512 && allRemoved; i++)
-	      allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
-	  }
-      }
+	    allRemoved = codes1[i].isRemoved() && codes2[i].isRemoved();
+    }
 
     // And let it go. We are really done.
     out.writeByte(0);
     out.flush();
 
     // Wait for termination. How did it all go, did it exit properly?
-    synchronized (monitor)
-      {
-	while (! terminatingObserver.terminating)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
+    while (! terminatingObserver.terminating)
+	assertRunUntilStop("terminating");
 
     assertEquals("exitValue", 0, terminatingObserver.exitValue);
     assertFalse("exitSignal", terminatingObserver.exitSignal);
@@ -661,14 +448,11 @@ public class TestBreakpoints
     int exitValue;
     public Action updateTerminating (Task task, boolean signal, int value)
     {
-      synchronized (monitor)
-	{
-	  terminating = true;
-	  exitValue = value;
-	  exitSignal = signal;
-	  monitor.notifyAll();
-	}
-      return Action.CONTINUE;
+	terminating = true;
+	exitValue = value;
+	exitSignal = signal;
+	Manager.eventLoop.requestStop();
+	return Action.CONTINUE;
     }
 
     public void addFailed(Object observable, Throwable w)
@@ -722,13 +506,9 @@ public class TestBreakpoints
     
     public void addedTo(Object observable)
     {
-      // Hurray! Lets notify everybody.
-      synchronized (monitor)
-	{
-	  added = true;
-	  removed = false;
-	  monitor.notifyAll();
-	}
+	added = true;
+	removed = false;
+	Manager.eventLoop.requestStop();
     }
 
     public boolean isAdded()
@@ -738,12 +518,9 @@ public class TestBreakpoints
     
     public void deletedFrom(Object observable)
     {
-      synchronized (monitor)
-	{
-	  removed = true;
-	  added = true;
-	  monitor.notifyAll();
-	}
+	removed = true;
+	added = true;
+	Manager.eventLoop.requestStop();
     }
 
     public boolean isRemoved()
@@ -801,4 +578,61 @@ public class TestBreakpoints
       return addr_hit;
     }
   }
+
+    /**
+     * Tells the inferior process to loop for COUNT time.
+     */
+    private class GoAround
+	extends Thread
+    {
+	private int bp1;
+	private int bp2;
+	private int count;
+	private boolean ran;
+	private RuntimeException r;
+	GoAround(int count)
+	{
+	    this.count = count;
+	}
+	/**
+	 * Interact with the child process using a separate thread -
+	 * so that the operation is independent of the EventLoop.
+	 */
+	public void run()
+	{
+	    try {
+		out.writeByte(count);
+		out.flush();
+		// Sanity check that the functions have actually been run.
+		bp1 = Integer.decode(in.readLine()).intValue();
+		bp2 = Integer.decode(in.readLine()).intValue();
+	    }
+	    catch (RuntimeException r) {
+		// E.g., NULL pointer when in.readLine() returns NULL.
+		this.r = r;
+	    }
+	    catch (Exception e) {
+		// E.g., when out.writeByte() fails.
+		this.r = new RuntimeException(e);
+	    }
+	    ran = true;
+	    Manager.eventLoop.requestStop();
+	}
+	/**
+	 * In a separate thread (so that the EventLoop remains in the
+	 * main thread).  Tell the inferior to iterate for a few
+	 * times; and then check that it completed ok.
+	 */
+	void goneAround(int result)
+	{
+	    start();
+	    while(!ran)
+		assertRunUntilStop ("go around for " + count);
+	    if (r != null)
+		throw r;
+	    assertEquals("bp1", result, bp1);
+	    assertEquals("bp2", result, bp2);
+	}
+    }
+
 }

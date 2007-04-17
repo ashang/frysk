@@ -1,3 +1,13 @@
+2007-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java (monitor): Delete.
+	(TerminatingObserver.addFailed, CodeObserver.addedTo)
+	(CodeObserver.deletedFrom): Replace "monitor" with call to
+	EventLoop.requestStop.
+	(GoAround): New class.
+	(testHitAndRun, testInsertRemove, testAddLots): Delete call to
+	EventLoop.start; use GoAround class.
+	
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java (setUp): Add the terminating observer.
