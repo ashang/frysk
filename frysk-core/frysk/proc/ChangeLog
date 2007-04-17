@@ -1,5 +1,12 @@
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestBreakpoints.java (AttachedObserver.updateAttatched):
+	Simplify, call eventLoop.requestStop.
+	(AttatchedObserver.addedTo): Simplify, do nothing.
+	(attatched): Delete.
+	(setUp): Add the attatched observer.
+	(attatchedObserver): Add.
+
 	* TestBreakpoints.java: Make everything possible private.
 	(setUp): Use assertRunUntilStop.
 	(EventLoopRunner): Delete, has races.

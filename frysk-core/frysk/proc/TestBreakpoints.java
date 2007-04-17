@@ -59,9 +59,6 @@ public class TestBreakpoints
   private BufferedReader in;
   private DataOutputStream out;
 
-  // Whether we are attached (the AttachedObserver has triggered).
-  private boolean attached;
-
   // How the process exits (set by the TerminatingObserver).
   private boolean terminating;
   private boolean exitSignal;
@@ -76,6 +73,8 @@ public class TestBreakpoints
   // Addresses to put breakpoints on.
   private long breakpoint1;
   private long breakpoint2;
+
+  private AttachedObserver attachedObserver;
 
   /**
    * Launch our test program and setup clean environment with a runner
@@ -104,7 +103,6 @@ public class TestBreakpoints
 	    public void procFound (ProcId procId)
 	    {
 		proc = Manager.host.getProc(procId);
-		attached = false;
 		terminating = false;
 		Manager.eventLoop.requestStop();
 	    }
@@ -126,6 +124,13 @@ public class TestBreakpoints
     catch (NullPointerException e) {
 	fail("parsing breakpoint addresses");
     }
+
+    // Make sure we are attached - XXX - do we need this?  Can't the
+    // requestAddCodeObserver() do that for us?  The observer will
+    // block the task so we can put in the breakpoints.
+    attachedObserver = new AttachedObserver();
+    task.requestAddAttachedObserver(attachedObserver);
+    assertRunUntilStop("adding AttachedObserver");
   }
 
   /**
@@ -146,34 +151,11 @@ public class TestBreakpoints
     // the time.
     Manager.eventLoop.start();
 
-    String line;
-    
-    // Make sure we are attached - XXX - do we need this?  Can't the
-    // requestAddCodeObserver() do that for us?  The observer will
-    // block the task so we can put in the breakpoints.
-
-    AttachedObserver ao = new AttachedObserver();
-    task.requestAddAttachedObserver(ao);
-
     TerminatingObserver to = new TerminatingObserver();
     task.requestAddTerminatingObserver(to);
 
-    // Wait till we are attached.
-    synchronized (monitor)
-      {
-	while (! attached)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
-
+    String line;
+    
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
     InstructionObserver io2 = new InstructionObserver(task, breakpoint2);
@@ -206,7 +188,7 @@ public class TestBreakpoints
       }
 
     // Unblock and tell the process to go some rounds!
-    task.requestUnblock(ao);
+    task.requestUnblock(attachedObserver);
 
     out.writeByte(3);
     out.flush();
@@ -299,26 +281,8 @@ public class TestBreakpoints
     String line;
 
     // Make sure we are attached and look for termination.
-    AttachedObserver ao = new AttachedObserver();
-    task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
     task.requestAddTerminatingObserver(to);
-
-    // Wait till we are attached.
-    synchronized (monitor)
-      {
-	while (! attached)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
 
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
@@ -352,7 +316,7 @@ public class TestBreakpoints
       }
 
     // Unblock and tell the process to go!
-    task.requestUnblock(ao);
+    task.requestUnblock(attachedObserver);
 
     // Run a couple of times.
     out.writeByte(3);
@@ -531,26 +495,8 @@ public class TestBreakpoints
     String line;
 
     // Make sure we are attached and look for termination.
-    AttachedObserver ao = new AttachedObserver();
-    task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
     task.requestAddTerminatingObserver(to);
-
-    // Wait till we are attached.
-    synchronized (monitor)
-      {
-	while (! attached)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
 
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
@@ -601,7 +547,7 @@ public class TestBreakpoints
       }
 
     // Unblock and tell the process to go!
-    task.requestUnblock(ao);
+    task.requestUnblock(attachedObserver);
 
     // Run a couple of times.
     out.writeByte(3);
@@ -701,11 +647,7 @@ public class TestBreakpoints
   {
     public Action updateAttached(Task task)
     {
-      synchronized (monitor)
-	{
-	  attached = true;
-	  monitor.notifyAll();
-	}
+      Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }
     public void addFailed(Object observable, Throwable w)
@@ -714,11 +656,7 @@ public class TestBreakpoints
     }
     public void addedTo(Object observable)
     {
-      // Hurray! Lets notify everybody.
-      synchronized (monitor)
-	{
-	  monitor.notifyAll();
-	}
+      // Ignored
     }
     public void deletedFrom(Object observable)
     {
