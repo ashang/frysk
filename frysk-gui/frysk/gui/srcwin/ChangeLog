@@ -1,6 +1,10 @@
+2007-04-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindowFactory.java: Fix bz #4358(for real this time).
+
 2007-04-13  Rick Moseley  <rmoseley@redhat.com>
 
-	* SourceWindowFactory.java: Trim spaces from proc avtivation.
+	* SourceWindowFactory.java: Trim spaces from proc activation.
 	* SourceWindow.java: Fix bz #4358.
 
 2007-04-13  Mike Cvet  <mcvet@redhat.com>
