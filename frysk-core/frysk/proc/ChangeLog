@@ -1,3 +1,14 @@
+2007-04-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestBreakpoints.java: Make everything possible private.
+	(setUp): Use assertRunUntilStop.
+	(EventLoopRunner): Delete, has races.
+	(AttatchedObserver.added, .isAdded)
+	(TerminatingObserver.added, .isAdded): Delete.
+	(AttatchedObserver.addFailed, TerminatingObserver.addFailed): Do
+	not print stack backtrace when failing.
+	(procTerminated): Delete unused.
+	
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* IsaPowerPC.java: Replace frysk.sys.PtraceByteBuffer with

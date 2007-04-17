@@ -50,33 +50,32 @@ import java.io.IOException;
 public class TestBreakpoints
   extends TestLib
 {
-  // Process id and Proc representation of our test program.
-  int pid;
-  Proc proc;
+  // Process id, Proc, and Task representation of our test program.
+  private int pid;
+  private Proc proc;
+  private Task task;
 
   // How we communicate with the test program.
-  BufferedReader in;
-  DataOutputStream out;
-
-  // The thread that handles the event loop.
-  EventLoopRunner eventLoop;
+  private BufferedReader in;
+  private DataOutputStream out;
 
   // Whether we are attached (the AttachedObserver has triggered).
-  boolean attached;
+  private boolean attached;
 
   // How the process exits (set by the TerminatingObserver).
-  boolean terminating;
-  boolean exitSignal;
-  int exitValue;
-
-  // Whether the proc has really terminited (cannot be seen by the host).
-  boolean procTerminated;
+  private boolean terminating;
+  private boolean exitSignal;
+  private int exitValue;
 
   // Monitor to notify and wait on for state of event changes..
-  static Object monitor = new Object();
+  private static Object monitor = new Object();
 
   // Whether or not to install an Instruction observer
-  boolean installInstructionObserver;
+  private boolean installInstructionObserver;
+
+  // Addresses to put breakpoints on.
+  private long breakpoint1;
+  private long breakpoint2;
 
   /**
    * Launch our test program and setup clean environment with a runner
@@ -100,22 +99,33 @@ public class TestBreakpoints
     out = new DataOutputStream(process.out);
     
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
+    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+	{
+	    public void procFound (ProcId procId)
+	    {
+		proc = Manager.host.getProc(procId);
+		attached = false;
+		terminating = false;
+		Manager.eventLoop.requestStop();
+	    }
+	    public void procNotFound (ProcId procId, Exception e)
+	    {
+	    }
+	});
+    assertRunUntilStop("finding proc");
+    task = proc.getMainTask();
 
-      public void procFound (ProcId procId)
-      {
-      proc = Manager.host.getProc(procId);
-      attached = false;
-      terminating = false;
-      procTerminated = false;
-      Manager.eventLoop.requestStop();
-      }
-
-      public void procNotFound (ProcId procId, Exception e)
-      {
-      }});
-    
-    Manager.eventLoop.run();
+    // Read the addresses to put breakpoints on.
+    try {
+	breakpoint1 = Long.decode(in.readLine()).longValue();
+	breakpoint2 = Long.decode(in.readLine()).longValue();
+    }
+    catch (IOException e) {
+	fail("reading breakpoint addresses");
+    }
+    catch (NullPointerException e) {
+	fail("parsing breakpoint addresses");
+    }
   }
 
   /**
@@ -125,25 +135,7 @@ public class TestBreakpoints
    */
   public void tearDown()
   {
-      if (eventLoop != null) {
-	  // Make sure event loop is gone.
-	  eventLoop.requestStop();
-	  synchronized (monitor)
-	      {
-		  while (!eventLoop.isStopped())
-		      {
-			  try
-			      {
-				  monitor.wait();
-			      }
-			  catch (InterruptedException ie)
-			      {
-				  // Ignored
-			      }
-		      }
-	      }
-      }
-
+      Manager.eventLoop.requestStop();
       // And kill off any remaining processes we spawned
       super.tearDown();
   }
@@ -152,23 +144,13 @@ public class TestBreakpoints
   {
     // Start an EventLoop so there's no need to poll for events all
     // the time.
-    eventLoop = new EventLoopRunner();
-    eventLoop.start();
+    Manager.eventLoop.start();
 
     String line;
     
-    // Request addresses to put breakpoints on.
-    line = in.readLine();
-    long breakpoint1 = Long.decode(line).longValue();
-
-    // Never used.
-    line = in.readLine();
-    long breakpoint2 = Long.decode(line).longValue();
-
-    // Make sure we are attached - XXX - do we need this?
-    // Can't the requestAddCodeObserver() do that for us?
-    // The observer will block the task so we can put in the breakpoints.
-    Task task = proc.getMainTask();
+    // Make sure we are attached - XXX - do we need this?  Can't the
+    // requestAddCodeObserver() do that for us?  The observer will
+    // block the task so we can put in the breakpoints.
 
     AttachedObserver ao = new AttachedObserver();
     task.requestAddAttachedObserver(ao);
@@ -312,20 +294,11 @@ public class TestBreakpoints
   {
     // Start an EventLoop so there's no need to poll for events all
     // the time.
-    eventLoop = new EventLoopRunner();
-    eventLoop.start();
+    Manager.eventLoop.start();
 
     String line;
 
-    // Request addresses to put breakpoints on.
-    line = in.readLine();
-    long breakpoint1 = Long.decode(line).longValue();
-    line = in.readLine();
-    long breakpoint2 = Long.decode(line).longValue();
-
     // Make sure we are attached and look for termination.
-    Task task = proc.getMainTask();
-
     AttachedObserver ao = new AttachedObserver();
     task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
@@ -553,20 +526,11 @@ public class TestBreakpoints
   {
     // Start an EventLoop so there's no need to poll for events all
     // the time.
-    eventLoop = new EventLoopRunner();
-    eventLoop.start();
+    Manager.eventLoop.start();
 
     String line;
 
-    // Request addresses to put breakpoints on.
-    line = in.readLine();
-    long breakpoint1 = Long.decode(line).longValue();
-    line = in.readLine();
-    long breakpoint2 = Long.decode(line).longValue();
-
     // Make sure we are attached and look for termination.
-    Task task = proc.getMainTask();
-
     AttachedObserver ao = new AttachedObserver();
     task.requestAddAttachedObserver(ao);
     TerminatingObserver to = new TerminatingObserver();
@@ -732,10 +696,9 @@ public class TestBreakpoints
     testAddLots();
   }
 
-  class AttachedObserver implements TaskObserver.Attached
+  private class AttachedObserver
+      implements TaskObserver.Attached
   {
-    private boolean added;
-
     public Action updateAttached(Task task)
     {
       synchronized (monitor)
@@ -745,38 +708,27 @@ public class TestBreakpoints
 	}
       return Action.BLOCK;
     }
-
     public void addFailed(Object observable, Throwable w)
     {
-      w.printStackTrace();
       fail(w.getMessage());
     }
-    
     public void addedTo(Object observable)
     {
       // Hurray! Lets notify everybody.
       synchronized (monitor)
 	{
-	  added = true;
 	  monitor.notifyAll();
 	}
     }
-
-    public boolean isAdded()
-    {
-      return added;
-    }
-    
     public void deletedFrom(Object observable)
     {
       // Ignored
     }
   }
 
-  class TerminatingObserver implements TaskObserver.Terminating
+  private class TerminatingObserver
+      implements TaskObserver.Terminating
   {
-    private boolean added;
-    
     public Action updateTerminating (Task task, boolean signal, int value)
     {
       synchronized (monitor)
@@ -791,7 +743,6 @@ public class TestBreakpoints
 
     public void addFailed(Object observable, Throwable w)
     {
-      w.printStackTrace();
       fail(w.getMessage());
     }
     
@@ -800,23 +751,17 @@ public class TestBreakpoints
       // Hurray! Lets notify everybody.
       synchronized (monitor)
 	{
-	  added = true;
 	  monitor.notifyAll();
 	}
     }
-
-    public boolean isAdded()
-    {
-      return added;
-    }
-    
     public void deletedFrom(Object observable)
     {
       // Ignored
     }
   }
 
-  class CodeObserver implements TaskObserver.Code
+  private class CodeObserver
+      implements TaskObserver.Code
   {
     private long address;
     private int triggered;
@@ -881,7 +826,8 @@ public class TestBreakpoints
     }
   }
 
-  static class InstructionObserver implements TaskObserver.Instruction
+  private static class InstructionObserver
+      implements TaskObserver.Instruction
   { 
     boolean added;
     boolean deleted;
@@ -927,44 +873,6 @@ public class TestBreakpoints
     public int getAddrHit()
     {
       return addr_hit;
-    }
-  }
-
-
-  static class EventLoopRunner extends Thread
-  {
-    private boolean stopped;
-
-    public void run()
-    {
-      stopped = false;
-      try
-	{
-	  Manager.eventLoop.run();
-	}
-      finally
-	{
-	  synchronized (monitor)
-	    {
-	      stopped = true;
-	      monitor.notifyAll();
-	    }
-	}
-    }
-
-    public void requestStop()
-    {
-      Manager.eventLoop.requestStop();
-    }
-
-    public boolean isStopped()
-    {
-      return stopped;
-    }
-
-    public String toString()
-    {
-      return "EventLoop-" + super.toString();
     }
   }
 }
