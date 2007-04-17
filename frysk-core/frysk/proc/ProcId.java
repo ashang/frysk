@@ -65,4 +65,13 @@ public class ProcId
     {
 	return (o instanceof ProcId);
     }
+    
+    /**
+     * Get the PID of this ProcessID.
+     * @return the pid
+     */
+    public int intValue()
+    {
+      return id; // field in superclass
+    }
 }

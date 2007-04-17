@@ -123,4 +123,32 @@ class ProcTasks
 
 		return result;
 	}
+
+	public boolean equals(Object obj)
+        {
+	  if (this == obj)
+	    return true;
+	  if (obj == null)
+	    return false;
+	  if (getClass() != obj.getClass())
+	    return false;
+	  final ProcTasks other = (ProcTasks) obj;
+	  if (proc == null)
+	    {
+	      if (other.proc != null)
+	        return false;
+	    }
+	  else if (!proc.equals(other.proc))
+	    return false;
+	  if (tasks == null)
+	    {
+	      if (other.tasks != null)
+	        return false;
+	    }
+	  else if (!tasks.equals(other.tasks))
+	    return false;
+	  return true;
+        }
+	
+	
 }

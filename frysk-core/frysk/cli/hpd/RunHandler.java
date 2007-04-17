@@ -39,10 +39,14 @@
 package frysk.cli.hpd;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.text.ParseException;
 
 import frysk.proc.Action;
 import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -65,6 +69,44 @@ class RunHandler
 
   public Action updateAttached(Task task)
   {
+    final Proc proc = task.getProc();    
+    synchronized (cli)
+      {
+	cli.getRunningProcs().add(proc);
+      }    
+    new ProcTasksObserver(proc, new ProcTasks(){
+      public void existingTask(Task task)
+      {
+      }
+
+      public void addedTo(Object observable)
+      {
+      }
+
+      public void addFailed(Object observable, Throwable w)
+      {
+      }
+
+      public void deletedFrom(Object observable)
+      {
+      }
+
+      public void taskAdded(Task task)
+      {
+      }
+      
+      public void taskRemoved(Task task)
+      {
+	if (proc.getChildren().size() == 0)
+	  {
+	    synchronized (cli)
+	    {
+	      HashSet procs = cli.getRunningProcs();
+	      procs.remove(proc);
+	    }
+	  }
+      }
+    });
     cli.startAttach(task);
     return Action.CONTINUE;
   }

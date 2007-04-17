@@ -1,3 +1,15 @@
+2007-04-17  Tim Moore  <timoore@redhat.com>
+
+	* hpd/CLI.java (CLIMonitor, monitor, procSearchFinished): delete
+	monitor and use the cli	object itself as a lock.
+	(runningProcs, getRunningProcs): New field and accessor
+	(QuitHandler): Kill processes started by the run command.
+	* hpd/RunHandler.java (updateAttached): Keep track of running
+	processes with a ProcessTasksObserver.
+	* hpd/ProcData.java (equals): New method.
+	* hpd/ProcTasks.java (equals): New method.
+	* hpd/StaticPTSet.java (union): New method.
+
 2007-04-15  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (*Type): Use ArithmeticType.

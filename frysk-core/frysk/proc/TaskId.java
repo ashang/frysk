@@ -65,4 +65,13 @@ class TaskId
     {
 	return (o instanceof TaskId);
     }
+    
+    /**
+     * Get the TID for this TaskID.
+     * @return the TID
+     */
+    public int intValue()
+    {
+      return id; // field in superclass
+    }
 }

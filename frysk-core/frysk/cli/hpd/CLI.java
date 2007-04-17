@@ -47,6 +47,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.LinkedList;
@@ -69,7 +70,8 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.RunState;
 import frysk.rt.StackFrame;
-
+import frysk.sys.Signal;
+import frysk.sys.Sig;
 
 import lib.dw.BaseTypes;
 
@@ -84,15 +86,13 @@ public class CLI
   StackFrame frame = null;
   int stackLevel = 0;
   private CLIEventLoop eventLoop;
-  private static class CLIMonitor
-  {
-    boolean procSearchFinished = false;
-  }
-  static CLIMonitor monitor = new CLIMonitor();
-  static boolean attached;
+  boolean procSearchFinished = false;
+  boolean attached;
   RunState runState;
   private RunStateObserver runStateObserver;
   private ActionpointTable apTable = new ActionpointTable();
+  
+  private HashSet runningProcs = new HashSet(); //Processes started with run command
   
   /**
    * Handle ConsoleReader Completor
@@ -434,34 +434,34 @@ public class CLI
       startEventLoop();
       if (cli)
 	{
-	  monitor.procSearchFinished = false;
+	  procSearchFinished = false;
 	  Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
 	      public void procFound (ProcId procId)
 	      {
-		synchronized (monitor)
+		synchronized (CLI.this)
 		  {
 		    proc = Manager.host.getProc(procId);
-		    monitor.procSearchFinished = true;
-		    monitor.notifyAll();
+		    procSearchFinished = true;
+		    notifyAll();
 		  }
 	      }
 
 	      public void procNotFound (ProcId procId, Exception e)
 	      {
-		synchronized (monitor)
+		synchronized (CLI.this)
 		  {
 		    proc = null;
-		    monitor.procSearchFinished = true;
-		    monitor.notifyAll();
+		    procSearchFinished = true;
+		    notifyAll();
 		  }
 	      }});
-	  synchronized (monitor)
+	  synchronized (this)
 	    {
-	      while (!monitor.procSearchFinished)
+	      while (!procSearchFinished)
 		{
 		  try
 		    {
-		      monitor.wait();
+		      wait();
 		    }
 		  catch (InterruptedException ie)
 		    {
@@ -519,28 +519,25 @@ public class CLI
     Proc proc = task.getProc();
 
     // FIXME getId should provide the ID as a number.
-    startAttach(proc.getId().hashCode(), proc, task);
+    startAttach(proc.getPid(), proc, task);
   }
 
-  public void finishAttach()
+  public synchronized void finishAttach()
   {
     // Wait till we are attached.
-    synchronized (monitor)
+    while (!attached)
       {
-	while (!attached)
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		addMessage("Attach interrupted.", Message.TYPE_ERROR);
-		return;
-	      }
-	  }
-	addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
+	try
+	{
+	  wait();
+	}	
+	catch (InterruptedException ie)
+	{
+	  addMessage("Attach interrupted.", Message.TYPE_ERROR);
+	  return;
+	}
       }
+    addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
     symtab = new SymTab(pid, proc, task, null);
   }
   
@@ -555,7 +552,17 @@ public class CLI
           return;
         }
       refreshSymtab();
-
+      boolean startedByRun;
+      synchronized (this)
+      {
+	startedByRun = runningProcs.contains(proc);
+      }
+      if (startedByRun)
+	{
+	  addMessage("Can't detach a process started by the run command.", 
+	             Message.TYPE_ERROR);
+	  return;
+	}
       if (runState != null) 
 	{
 	  // Delete all breakpoints.
@@ -1087,6 +1094,12 @@ public class CLI
       DetachHandler detachHandler = new DetachHandler();
       Command command = new Command ("detach");
       detachHandler.handle(command);
+      Iterator iterator = runningProcs.iterator();
+      while (iterator.hasNext())
+	{
+	  Proc p = (Proc) iterator.next();
+	  Signal.kill(p.getPid(),Sig.KILL);
+	}
       addMessage("Quitting...", Message.TYPE_NORMAL);
     }
   }
@@ -1389,9 +1402,9 @@ public class CLI
         }
       finally
         {
-          synchronized (monitor)
+          synchronized (CLI.this)
 	    {
-	      monitor.notifyAll();
+	      CLI.this.notifyAll();
 	    }
         }
     }
@@ -1421,7 +1434,7 @@ public class CLI
       RunState.PersistentBreakpoint bpt = null;
 
       outWriter.println("runState state = " + runState.getTaskState(task));
-      synchronized (monitor) 
+      synchronized (CLI.this)
 	{
 	  if (runState.getTaskState(task) != RunState.RUNNING)
 	    {
@@ -1431,7 +1444,7 @@ public class CLI
 	  else
 	    attached = false;
 	  bpt = runState.getTaskPersistentBreakpoint(task);
-	  monitor.notifyAll();
+	  CLI.this.notifyAll();
 	}
       if (bpt != null) 
 	{
@@ -1503,4 +1516,15 @@ public class CLI
   {
     return symtab;
   }
+  
+  /**
+   * Get the set of processes (Proc) started by the run command. Access to the
+   * CLI object should be synchronized when using the set.
+   * @return the set
+   */
+  public HashSet getRunningProcs()
+  {
+    return runningProcs;
+  }
+  
 }

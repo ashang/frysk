@@ -43,6 +43,12 @@ package inua.eio;
  */
 public class ULong 
 {
+  /**
+   * Maximum value of an unsigned long, which would be written
+   * 0xffffffffffffffffL if Java syntax allowed that.
+   */
+  public static final long MAX_VALUE = -1L;
+  
   public static final boolean EQ(long x1, long x2)
   {
     return x1 == x2;
@@ -56,9 +62,9 @@ public class ULong
   // Subtracting BIAS flips the sign bit. If the two values have the
   // same sign bit, then the sense of the comparison is preserved
   // without it. Otherwise, the sense of the signed comparison will
-  // be reversed, which is what we want if the values are in fact
-  // unsigned. Values with the sign bit set are <= 2^63 and are of
-  // course greater than those without the sign bit set.
+  // be reversed, which is what we want for unsigned values. Values with the
+  // sign bit set are >= 2^63 and are, of course, greater than those without
+  // the sign bit set.
   private static final long BIAS = (1L << 63);
   
   public static final boolean LT(long x1, long x2) 

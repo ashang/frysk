@@ -1,3 +1,8 @@
+2007-04-17  Tim Moore  <timoore@redhat.com>
+
+	* ProcId.java (intValue): New method.
+	* TaskId.java (intValue): New method.
+
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestBreakpoints.java (monitor): Delete.

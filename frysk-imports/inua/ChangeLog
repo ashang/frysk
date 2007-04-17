@@ -1,3 +1,7 @@
+2007-04-17  Tim Moore  <timoore@redhat.com>
+
+	* eio/ULong.java(MAX_VALUE): New constant.
+
 2007-03-06  Andrew Cagney  <cagney@redhat.com>
 
 	* elf/AT.shjava: Restore.  Partial revert 2007-03-06 removal of

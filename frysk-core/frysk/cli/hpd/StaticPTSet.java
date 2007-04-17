@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A class which holds a number of ProcTasks. It is immutable.
@@ -52,7 +53,7 @@ class StaticPTSet implements PTSet
 
 	public StaticPTSet(ProcTasks[] proctasks)
 	{
-		set = (ProcTasks[]) (Arrays.asList(proctasks)).toArray(new ProcTasks[0]); // clone to make sure it doesn't get modified 
+		set = (ProcTasks[])proctasks.clone(); // clone to make sure it doesn't get modified 
 	}
 
 	public Iterator getProcs()
@@ -119,5 +120,17 @@ class StaticPTSet implements PTSet
 			result += set[i];
 
 		return result;
+	}
+	
+	static public StaticPTSet union(StaticPTSet set1, StaticPTSet set2)
+	{
+	  ProcTasks[] ptset1 = set1.set;
+	  ProcTasks[] ptset2 = set2.set;
+	  List ptsetList1 = Arrays.asList(ptset1);
+	  ArrayList temp = new ArrayList(ptsetList1);
+	  for (int i = 0; i < ptset2.length; i++)
+	    if (!ptsetList1.contains(ptset2[i]))
+	      temp.add(ptset2[i]);
+	  return new StaticPTSet((ProcTasks[])temp.toArray(ptset1));
 	}
 }
