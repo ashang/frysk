@@ -1,5 +1,11 @@
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
+	* TestBreakpoints.java (setUp): Add the terminating observer.
+	(TerminatingObserver.addedTo): Simplify, call
+	eventLoop.requestStop.
+	(terminating, exitSignal, exitValue): Move to TerminatingObserver.
+	(terminatingObserver): Add.
+	
 	* TestBreakpoints.java (AttachedObserver.updateAttatched):
 	Simplify, call eventLoop.requestStop.
 	(AttatchedObserver.addedTo): Simplify, do nothing.

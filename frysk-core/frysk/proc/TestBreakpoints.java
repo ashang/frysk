@@ -59,11 +59,6 @@ public class TestBreakpoints
   private BufferedReader in;
   private DataOutputStream out;
 
-  // How the process exits (set by the TerminatingObserver).
-  private boolean terminating;
-  private boolean exitSignal;
-  private int exitValue;
-
   // Monitor to notify and wait on for state of event changes..
   private static Object monitor = new Object();
 
@@ -75,6 +70,7 @@ public class TestBreakpoints
   private long breakpoint2;
 
   private AttachedObserver attachedObserver;
+  private TerminatingObserver terminatingObserver;
 
   /**
    * Launch our test program and setup clean environment with a runner
@@ -103,7 +99,6 @@ public class TestBreakpoints
 	    public void procFound (ProcId procId)
 	    {
 		proc = Manager.host.getProc(procId);
-		terminating = false;
 		Manager.eventLoop.requestStop();
 	    }
 	    public void procNotFound (ProcId procId, Exception e)
@@ -131,6 +126,10 @@ public class TestBreakpoints
     attachedObserver = new AttachedObserver();
     task.requestAddAttachedObserver(attachedObserver);
     assertRunUntilStop("adding AttachedObserver");
+
+    terminatingObserver = new TerminatingObserver();
+    task.requestAddTerminatingObserver(terminatingObserver);
+    assertRunUntilStop("adding TerminatingObserver");
   }
 
   /**
@@ -150,9 +149,6 @@ public class TestBreakpoints
     // Start an EventLoop so there's no need to poll for events all
     // the time.
     Manager.eventLoop.start();
-
-    TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTerminatingObserver(to);
 
     String line;
     
@@ -249,7 +245,7 @@ public class TestBreakpoints
     // So how did it all go, did it exit properly?
     synchronized (monitor)
       {
-	while (! terminating)
+	while (! terminatingObserver.terminating)
 	  {
 	    try
 	      {
@@ -262,8 +258,8 @@ public class TestBreakpoints
 	  }
       }
 
-    assertEquals(0, exitValue);
-    assertFalse(exitSignal);
+    assertEquals("exitValue", 0, terminatingObserver.exitValue);
+    assertFalse("exitSignal", terminatingObserver.exitSignal);
   }
 
   public void testSteppingtestHitAndRun() throws IOException
@@ -279,10 +275,6 @@ public class TestBreakpoints
     Manager.eventLoop.start();
 
     String line;
-
-    // Make sure we are attached and look for termination.
-    TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTerminatingObserver(to);
 
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
@@ -458,7 +450,7 @@ public class TestBreakpoints
     // Wait for termination. How did it all go, did it exit properly?
     synchronized (monitor)
       {
-	while (! terminating)
+	while (! terminatingObserver.terminating)
 	  {
 	    try
 	      {
@@ -471,8 +463,8 @@ public class TestBreakpoints
 	  }
       }
 
-    assertEquals(0, exitValue);
-    assertFalse(exitSignal);
+    assertEquals("exitValue", 0, terminatingObserver.exitValue);
+    assertFalse("exitSignal", terminatingObserver.exitSignal);
 
     assertEquals(13, bp1);
     assertEquals(13, bp2);
@@ -493,10 +485,6 @@ public class TestBreakpoints
     Manager.eventLoop.start();
 
     String line;
-
-    // Make sure we are attached and look for termination.
-    TerminatingObserver to = new TerminatingObserver();
-    task.requestAddTerminatingObserver(to);
 
     // Test can run with or without stepping.
     InstructionObserver io1 = new InstructionObserver(task, breakpoint1);
@@ -613,7 +601,7 @@ public class TestBreakpoints
     // Wait for termination. How did it all go, did it exit properly?
     synchronized (monitor)
       {
-	while (! terminating)
+	while (! terminatingObserver.terminating)
 	  {
 	    try
 	      {
@@ -626,8 +614,8 @@ public class TestBreakpoints
 	  }
       }
 
-    assertEquals(0, exitValue);
-    assertFalse(exitSignal);
+    assertEquals("exitValue", 0, terminatingObserver.exitValue);
+    assertFalse("exitSignal", terminatingObserver.exitSignal);
 
     for (int i = 0; i < 1512; i++)
       {
@@ -667,6 +655,10 @@ public class TestBreakpoints
   private class TerminatingObserver
       implements TaskObserver.Terminating
   {
+    // How the process exits.
+    boolean terminating;
+    boolean exitSignal;
+    int exitValue;
     public Action updateTerminating (Task task, boolean signal, int value)
     {
       synchronized (monitor)
@@ -686,11 +678,7 @@ public class TestBreakpoints
     
     public void addedTo(Object observable)
     {
-      // Hurray! Lets notify everybody.
-      synchronized (monitor)
-	{
-	  monitor.notifyAll();
-	}
+      Manager.eventLoop.requestStop();
     }
     public void deletedFrom(Object observable)
     {
