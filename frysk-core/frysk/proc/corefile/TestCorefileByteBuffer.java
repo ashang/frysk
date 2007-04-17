@@ -85,13 +85,14 @@ extends TestLib
     coreBuffer.position(0);
     try 
     {
-      assertEquals("Peek a byte at 0x00170000",0x7f,coreBuffer.get());
+      coreBuffer.get();
+      fail(".get() read at position 0 should have raise an exception but didn't!");
+
     }
     catch (RuntimeException e)
     {
-      return;
+      assertTrue(true);
     }
-    fail(".get() read at position 0 should have failed but didn't!");
   }
   
   
@@ -116,14 +117,15 @@ extends TestLib
     try
     {
       coreBuffer.poke(0x00170000L,10);
+      fail("Poke a byte at 0x00170000 should have raised an exception, but did not");
     }
     catch (RuntimeException e)
     {
       // Expected behaviour on a poke is always fail. If it does not fail
       // then something is going wrong. In this case expecting and receiving a fail
       // is the correct behaviour.
-      return;
+      assertTrue(true);
     }
-    fail("Poke a byte at 0x00170000 should have failed with an exception, but did not");
+
   }
 }
