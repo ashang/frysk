@@ -1,3 +1,7 @@
+2007-04-17  Mark Wielaard  <mark@klomp.org>
+
+	* TestTaskObserverCode.java: New test.
+
 2007-04-17  Tim Moore  <timoore@redhat.com>
 
 	* ProcId.java (intValue): New method.
