@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -64,12 +64,6 @@ public class TestSyscallRunning
   BufferedReader in;
   DataOutputStream out;
 
-  // The thread that handles the event loop.
-  EventLoopRunner eventloop;
-
-  // Monitor to notify and wait on for state of event changes..
-  static Object monitor = new Object();
-
   /**
    * Launch our test program and setup clean environment with a runner
    * eventloop.
@@ -90,57 +84,24 @@ public class TestSyscallRunning
     out = new DataOutputStream(process.out);
 
     // Make sure the core knows about it.
-    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
-
-      public void procFound (ProcId procId)
-      {
-        proc = Manager.host.getProc(procId);
-        Manager.eventLoop.requestStop();
-      }
-
-      public void procNotFound (ProcId procId, Exception e)
-      {
-      }});
-    Manager.eventLoop.run();
-
-    // Start an EventLoop so we don't have to poll for events all the time.
-    eventloop = new EventLoopRunner();
-    eventloop.start();
-  }
-
-  /**
-   * Make sure the test program is really gone and the event loop is
-   * stopped.  Individual tests are responsible for nice termination
-   * if the want to.
-   */
-  public void tearDown()
-  {
-    // Make sure event loop is gone.
-    eventloop.requestStop();
-    synchronized (monitor)
-      {
-	while (!eventloop.isStopped())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// Ignored
-	      }
-	  }
-      }
-
-    // And kill off any remaining processes we spawned
-    super.tearDown();
+    Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc()
+	{
+	    public void procFound (ProcId procId)
+	    {
+		proc = Manager.host.getProc(procId);
+		Manager.eventLoop.requestStop();
+	    }
+	    public void procNotFound (ProcId procId, Exception e)
+	    {
+	    }
+	});
+    assertRunUntilStop("finding proc");
   }
 
   public void testSyscallRunning() throws IOException
   {
     // Get the port that will be listened on.
-    String line = in.readLine();
-    int port = Integer.decode(line).intValue();
+    int port = Integer.decode(in.readLine()).intValue();
 
     final Task task = proc.getMainTask();
 
@@ -148,40 +109,16 @@ public class TestSyscallRunning
     task.requestAddSyscallObserver(syso);
 
     // Make sure the observer is properly installed.
-    synchronized (monitor)
-      {
-	while (! syso.isAdded())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! syso.isAdded())
+	assertRunUntilStop ("syso added");
 
     // Tell the process to go some rounds!
     out.writeByte(1);
     out.flush();
 
     // Wait till our syscall observer triggers and blocks
-    synchronized (monitor)
-      {
-        while (! syso.getEntered())
-          {
-            try
-              {
-                monitor.wait();
-              }
-            catch (InterruptedException ie)
-              {
-                // ignored
-              }
-          }
-      }
+    while (! syso.getEntered())
+	assertRunUntilStop("syso entered");
 
     // Now unblock and then attach another observer.
     // Do all this on the eventloop so properly serialize calls.
@@ -198,20 +135,8 @@ public class TestSyscallRunning
       });
 
     // Wait till we are properly added...
-    synchronized (monitor)
-      {
-	while (! syso2.isAdded())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! syso2.isAdded())
+	assertRunUntilStop("syso2 added");
 
     // Sanity check
     assertTrue("syso entered", syso.getEntered());
@@ -227,20 +152,8 @@ public class TestSyscallRunning
     s.close();
 
     // And check that the observers trigger
-    synchronized (monitor)
-      {
-	while (! syso.getExited() || ! syso2.getExited())
-	  {
-	    try
-	      {
-		monitor.wait();
-	      }
-	    catch (InterruptedException ie)
-	      {
-		// ignored
-	      }
-	  }
-      }
+    while (! syso.getExited() || ! syso2.getExited())
+	assertRunUntilStop("syso and syso2 exited");
   }
 
   /**
@@ -267,12 +180,9 @@ public class TestSyscallRunning
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
       if (syscallEventInfo.getSyscall(task).equals(syscall))
 	{
-	  synchronized(monitor)
-	    {
-	      entered = true;
-	      monitor.notifyAll();
-	      return Action.BLOCK;
-	    }
+	    entered = true;
+	    Manager.eventLoop.requestStop();
+	    return Action.BLOCK;
 	}
       return Action.CONTINUE;
     }
@@ -281,11 +191,8 @@ public class TestSyscallRunning
     {
       if (entered)
 	{
-	  synchronized(monitor)
-            {
-	      exited = true;
-              monitor.notifyAll();
-            }
+	    exited = true;
+	    Manager.eventLoop.requestStop();
 	}
       return Action.CONTINUE;
     }
@@ -308,13 +215,9 @@ public class TestSyscallRunning
     
     public void addedTo(Object observable)
     {
-      // Hurray! Lets notify everybody.
-      synchronized (monitor)
-	{
-	  added = true;
-	  removed = false;
-	  monitor.notifyAll();
-	}
+	added = true;
+	removed = false;
+	Manager.eventLoop.requestStop();
     }
 
     public boolean isAdded()
@@ -324,12 +227,9 @@ public class TestSyscallRunning
     
     public void deletedFrom(Object observable)
     {
-      synchronized (monitor)
-	{
-	  removed = true;
-	  added = true;
-	  monitor.notifyAll();
-	}
+	removed = true;
+	added = true;
+	Manager.eventLoop.requestStop();
     }
 
     public boolean isRemoved()
@@ -340,43 +240,6 @@ public class TestSyscallRunning
     private SyscallEventInfo getSyscallEventInfo(Task task)
     {
 	return task.getSyscallEventInfo();
-    }
-  }
-
-  static class EventLoopRunner extends Thread
-  {
-    private boolean stopped;
-
-    public void run()
-    {
-      stopped = false;
-      try
-	{
-	  Manager.eventLoop.run();
-	}
-      finally
-	{
-	  synchronized (monitor)
-	    {
-	      stopped = true;
-	      monitor.notifyAll();
-	    }
-	}
-    }
-
-    public void requestStop()
-    {
-      Manager.eventLoop.requestStop();
-    }
-
-    public boolean isStopped()
-    {
-      return stopped;
-    }
-
-    public String toString()
-    {
-      return "EventLoop-" + super.toString();
     }
   }
 }

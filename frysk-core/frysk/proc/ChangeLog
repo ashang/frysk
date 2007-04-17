@@ -1,5 +1,14 @@
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSyscallRunning.java (setUp): Replace EventLoop.run with
+	assertRunUntilStop; do not create an EventLoopRunner.
+	(EventLoopRunner, monitor, eventLoop, tearDown): Delete.
+	(SyscallObserver.updateSyscallEnter, SyscallObserver.addedTo)
+	(SyscallObserver.updateSyscallExit, SyscallObserver.deletedFrom):
+	Simplify, call EventLoop.requestStop.
+	(testSyscallRunning): Replace synchronize blocks with calls to
+	assertRunUntilStop.
+	
 	* TestSyscallSignal.java (setUp): Use Replace EventLoop.run with
 	assertRunUntilStop; do not create EventLoopRunner.
 	(EventLoopRunner, eventLoop, monitor): Delete.
@@ -10,7 +19,7 @@
 	(SyscallObserver.updateSyscallEnter, SyscallObserver.addedTo)
 	(SyscallObserver.deletedFrom): Simplify, call
 	EventLoop.requestStop.
-	
+
 2007-04-17  Mark Wielaard  <mark@klomp.org>
 
 	* TestTaskObserverCode.java: New test.
