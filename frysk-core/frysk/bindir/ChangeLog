@@ -1,3 +1,8 @@
+2007-04-17  Stan Cox  <scox@redhat.com>
+
+	* TestFhd.java (testHpd): Split into: testHpdTraceStack,
+	testHpdScalars, testHpdClass, testHpdArray, and testHpdEnum.
+
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* fstep.java: Run the event-loop from the main task.

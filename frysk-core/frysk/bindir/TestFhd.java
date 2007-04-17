@@ -50,108 +50,181 @@ import java.io.File;
  */
 
 public class TestFhd
-    extends TestCase
+  extends TestCase
 {
-    Expect e;
-    Expect child;
-    public void tearDown ()
-    {
-	if (e != null)
-	    e.close ();
-	e = null;
-	if (child != null)
-	    child.close ();
-	child = null;
-    }
+  Expect e;
+  Expect child;
+  String prompt = "\\(fhpd\\) ";
+  public void tearDown ()
+  {
+    if (e != null)
+      e.close ();
+    e = null;
+    if (child != null)
+      child.close ();
+    child = null;
+  }
 
-    public void testHpd ()
-    {
-// 	if (brokenXXX (4001))
-// 	    return;
-	child = new Expect (new String[]
-	    {
-		new File (Config.getPkgLibDir (), "hpd-c").getPath ()
-	    });
-	String prompt = "\\(fhpd\\) ";
-	e = new Expect (new String[]
-	    {
-		new File (Config.getBinDir (), "fhpd").getPath ()
-	    });
-	e.expect (prompt);
-	// Add
-	e.send ("print 2+2\n");
-	e.expect ("\r\n4\r\n" + prompt);
-	// Attach
-	e.send ("attach " + child.getPid () + " -cli\n");
-	e.expect ("attach.*" + prompt);
-	// Where
-	e.send ("where\n");
-	e.expect ("where.*#0.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*2.*\r\n" + prompt);
-	// volatile int_22
-	e.send ("print int_22\n");
-	e.expect ("print.*22.*\r\n" + prompt);
-	// Up
-	e.send ("up\n");
-	e.expect ("up.*#1.*" + prompt);
-	// int_21
-	e.send ("print int_21\n");
-	e.expect ("print.*21.*(fhpd)");
-	// char_21
-	// e.send ("print ch\t");
-	// e.expect ("print.*char_21");
-	e.send ("print char_21\n");
-	e.expect ("print.*a.*" + prompt);
-	// Down
-	// e.send ("d\t");
-	// e.expect ("defset.*down.*detach.*delete.*" + prompt);
-	e.send ("down\n");
-	e.expect ("down.*#0.*" + prompt);
-	// long_21
-// 	e.send ("print long_21\n");
-// 	e.expect ("print.*10.*" + prompt);
-	// float_21
-	// e.send ("print float_21\n");
-	// e.expect ("print.*1\\.1.*" + prompt);
-	// double_21
-	// e.send ("print double_21\n");
-	// e.expect ("print.*1\\.2.*" + prompt);
-	// static_int
-	e.send ("print static_int\n");
-	e.expect ("print.*4.*" + prompt);
-	// static_class
-	e.send ("print static_class\n");
-	e.expect ("print.*12\\.34.*" + prompt);
-	// class
-// 	e.send ("print class_1\n");
-// 	e.expect ("print.*15.*" + prompt);
-	// arr_1
-	// e.send ("print arr_\t");
-	// e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
-	e.send ("print arr_1\n");
-	e.expect ("print.*30.=1.31.=2.*" + prompt);
-	// enumeration
-	e.send ("print ssportscar\n");
-	e.expect ("print.*porsche.*" + prompt);
-	e.send ("print porsche\n");
-	e.expect ("print.*porsche.*1.*" + prompt);
-	// what array
-	e.send ("what arr_2\n");
-	e.expect ("what.*int.*4,5.*hpd-c.c.*" + prompt);
-	// what class
-	e.send ("what static_class\n");
-	e.expect ("what.*class_int.*class_float.*hpd-c.c.*" + prompt);
+  public void testHpdTraceStack ()
+  {
+    child = new Expect (new String[] 
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Add
+    e.send ("print 2+2\n");
+    e.expect ("\r\n4\r\n" + prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // Where
+    e.send ("where\n");
+    e.expect ("where.*#0.*" + prompt);
+    // int_21
+    e.send ("print int_21\n");
+    e.expect ("print.*2.*\r\n" + prompt);
+    // Up
+    e.send ("up\n");
+    e.expect ("up.*#1.*" + prompt);
+    // int_21
+    e.send ("print int_21\n");
+    e.expect ("print.*21.*(fhpd)");
+    // Down
+    // e.send ("d\t");
+    // e.expect ("defset.*down.*detach.*delete.*" + prompt);
+    e.send ("down\n");
+    e.expect ("down.*#0.*" + prompt);
+    e.close();
+  }
 
-	// arr_2
-	e.send ("print arr_2\n");
-	e.expect ("print.*4,4.=9.4,5.=0.*" + prompt);
-	// arr_3
-	e.send ("print arr_3\n");
-	e.expect ("print.*3,3.=10\\.8.3,4.=1.9.*" + prompt);
-	e.send ("print arr_4\n");
-	// arr_4
-	e.expect ("print.*" + prompt);
-    }
+  public void testHpdScalars ()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // volatile int_22
+    e.send ("print int_22\n");
+    e.expect ("print.*22.*\r\n" + prompt);
+    // int_21
+    e.send ("print int_21\n");
+    e.expect ("print.*2.*\r\n" + prompt);
+    // volatile int_22
+    e.send ("print int_22\n");
+    e.expect ("print.*22.*\r\n" + prompt);
+    // char_21
+    // e.send ("print ch\t");
+    // e.expect ("print.*char_21");
+    e.send ("print char_21\n");
+    e.expect ("print.*a.*" + prompt);
+    // long_21
+    // 	e.send ("print long_21\n");
+    // 	e.expect ("print.*10.*" + prompt);
+    // float_21
+    // e.send ("print float_21\n");
+    // e.expect ("print.*1\\.1.*" + prompt);
+    // double_21
+    // e.send ("print double_21\n");
+    // e.expect ("print.*1\\.2.*" + prompt);
+    // static_int
+    e.send ("print static_int\n");
+    e.expect ("print.*4.*" + prompt);
+    e.close();
+  }
+    
+  public void testHpdClass ()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+
+    // static_class
+    e.send ("print static_class\n");
+    e.expect ("print.*12\\.34.*" + prompt);
+    // class
+    //	e.send ("print class_1\n");
+    //	e.expect ("print.*15.*" + prompt);
+    // what class
+    e.send ("what static_class\n");
+    e.expect ("what.*class_int.*class_float.*hpd-c.c.*" + prompt);
+    e.close();
+  }    
+
+  public void testHpdArray ()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // arr_1
+    // e.send ("print arr_\t");
+    // e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
+    e.send ("print arr_1\n");
+    e.expect ("print.*30.=1.31.=2.*" + prompt);
+    // what array
+    e.send ("what arr_2\n");
+    e.expect ("what.*int.*4,5.*hpd-c.c.*" + prompt);
+    // arr_2
+    e.send ("print arr_2\n");
+    e.expect ("print.*4,4.=9.4,5.=0.*" + prompt);
+    // arr_3
+    e.send ("print arr_3\n");
+    e.expect ("print.*3,3.=10\\.8.3,4.=1.9.*" + prompt);
+    e.send ("print arr_4\n");
+    // arr_4
+    e.expect ("print.*" + prompt);
+    e.close();
+  }    
+
+  public void testHpdEnum ()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // enumeration
+    e.send ("print ssportscar\n");
+    e.expect ("print.*porsche.*" + prompt);
+    e.send ("print porsche\n");
+    e.expect ("print.*porsche.*1.*" + prompt);
+    e.close();
+  }    
 }
