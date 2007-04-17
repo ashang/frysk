@@ -100,10 +100,38 @@ public abstract class EventLoop
      * EventLoop thread modifies any of the event queues, the event
      * thread will need to be woken up using a Sig.IO.
      */
-    private int tid = Tid.get(); // may change
+    private int tid = -1; // can change once
     final boolean isCurrentThread()
     {
 	return tid == Tid.get();
+    }
+    private void wakeupBlockedEventLoop()
+    {
+	// Some how got into a state where both the event-loop is
+	// running (isGoingToBlock) and the event-loop thread-id
+	// wasn't set.
+	if (tid <= 0)
+	    throw new RuntimeException ("EventLoop.tid botch");
+	frysk.sys.Signal.tkill (tid, Sig.IO);
+    }
+//     private Exception firstSet;
+    private void updateTid()
+    {
+	int newTid = Tid.get();
+	if (tid <= 0) {
+// 	    firstSet = new Exception();
+	    tid = newTid;
+	    return;
+	}
+	if (tid != newTid) {
+	    // Should be an exception
+	    System.out.println ("WARNING: EventLoop.tid changed");
+// 	    System.out.println ("First set to " + tid + " from ...");
+// 	    firstSet.printStackTrace();
+// 	    System.out.println ("Now set to " + newTid + " from ...");
+// 	    new Exception().printStackTrace();
+	    tid = newTid;
+	}
     }
     /**
      * The event loop will enter a blocking poll.  This state is
@@ -124,8 +152,7 @@ public abstract class EventLoop
     {
 	logger.log (Level.FINEST, "{0} wakeupIfBlocked\n", this); 
 	if (isGoingToBlock) {
-	    // Assert: tid > 0
-	    frysk.sys.Signal.tkill (tid, Sig.IO);
+	    wakeupBlockedEventLoop();
 	    isGoingToBlock = false;
 	}
     }
@@ -404,6 +431,7 @@ public abstract class EventLoop
     public final void runPending ()
     {
 	logger.log (Level.FINE, "{0} runPending\n", this); 
+	updateTid();
 	runEventLoop (true);
     }
     /**
@@ -423,6 +451,7 @@ public abstract class EventLoop
     public final boolean runPolling (long timeout)
     {
 	logger.log (Level.FINE, "{0} runPolling long\n", this); 
+	updateTid();
 	class Timeout
 	    extends TimerEvent
 	{
@@ -467,7 +496,7 @@ public abstract class EventLoop
 	// Finish initializing, and then ack that the thread is
 	// running.
 	synchronized (running) {
-	    tid = Tid.get();
+	    updateTid();
 	    running.notify();
 	}
 	runEventLoop (false);

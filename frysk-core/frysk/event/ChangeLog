@@ -1,3 +1,11 @@
+2007-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java (tid): Initialize as -1.
+	(updateTid): New.
+	(wakeupBlockedEventLoop): New.
+	(wakeupIfBlocked): Call wakeupBlockedEventLoop.
+	(runPending, runPolling, run): Call updateTid.
+	
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java (start): New; synchronize with event-loop thread
