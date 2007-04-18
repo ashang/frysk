@@ -39,6 +39,7 @@
 
 package frysk.testbed;
 
+import junit.framework.Assert;
 import frysk.junit.TestCase;
 import frysk.sys.PtraceServer;
 import frysk.sys.Sig;
@@ -63,7 +64,7 @@ public class AttachedSelf
 		   {
 		       protected void unhandled (String why)
 		       {
-			   TestCase.fail (why);
+			   Assert.fail (why);
 		       }
 		       public void stopped (int pid, int signal)
 		       {
@@ -74,7 +75,7 @@ public class AttachedSelf
 		   {
 		       public void signal (Sig sig)
 		       {
-			   TestCase.fail ("unexpected signal " + sig);
+			   Assert.fail ("unexpected signal " + sig);
 		       }
 		   },
 		   TestCase.getTimeoutMilliseconds());

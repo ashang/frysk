@@ -1,3 +1,8 @@
+2007-04-18  Chris Moller  <moller@mollerware.com>
+
+	* AttachedSelf.java: Replaced TestCase.fail() instances with
+	Assert.fail(). 
+
 2007-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/LocalMemory.cxx (getFuncBytes): Return 32 bytes.
