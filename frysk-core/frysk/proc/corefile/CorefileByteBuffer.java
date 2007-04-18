@@ -84,14 +84,22 @@ public class CorefileByteBuffer
   RandomAccessFile coreFileRaw = null;
   boolean fileOpen = false;
 
-  public CorefileByteBuffer(File file) throws ElfException
+  private CorefileByteBuffer(File file, long lowerExtreem, 
+			    long upperExtreem) throws ElfException
+
   {
-    // Don't know the size of the highWater mark
-    // Map -1 to 0xFFFFn (Long max size)
-    super(0,-1);
+    super(lowerExtreem, upperExtreem);
     this.coreFile = file;
     buildElfMaps();
     fileOpen = openFile();
+  }
+
+  public CorefileByteBuffer(File file) throws ElfException
+  {
+    // XXX: Don't know the size of the highWater mark
+    // Map -1 to 0xFFFFn (Long max size). Should build the
+    // maps in adance.
+    this(file,0,-1);
   }
 
   protected void poke(long arg0, int arg1) 
@@ -123,6 +131,24 @@ public class CorefileByteBuffer
       throw new RuntimeException("Cannot access corefile backing ByteBuffer");
   }
 
+  protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
+				  long upperExtreem)
+  {
+    CorefileByteBuffer up = (CorefileByteBuffer)parent;
+    CorefileByteBuffer sub;
+    try
+      {
+	sub =  new CorefileByteBuffer (up.coreFile,
+				       lowerExtreem, 
+				       upperExtreem);
+      }
+    catch (ElfException e)
+      {
+	return null;
+      }
+
+    return sub;
+  }
 
   protected void finalize()
   {
@@ -136,8 +162,6 @@ public class CorefileByteBuffer
       }
   }
   
-
- 
   
   private boolean openFile() 
   {
@@ -176,7 +200,6 @@ public class CorefileByteBuffer
 		}
 	    }  
 	  elf.close();
-
 	}
 	catch (ElfFileException e)
 	{
@@ -238,5 +261,4 @@ public class CorefileByteBuffer
     return offset;
   }
 
-   
 }

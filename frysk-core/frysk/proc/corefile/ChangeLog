@@ -1,3 +1,13 @@
+2007-04-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CorefileByteBuffer.java (subBuffer): New.
+	* TestCorefileByteBuffer.java (testCoreFileByteBufferMapOverrun):
+	New
+	(testCoreFileByteBufferMapUnderrun): New.
+	(testCoreFileByteBufferPeek) Add some different segment peeks().
+	(testCoreFileByteBufferSequentialGet): Removed, test replaced by..
+	(testCorefileByteBufferSlice): New. 
+
 2007-04-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestCorefileByteBuffer.java (testCoreFileByteBufferPoke):
