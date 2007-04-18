@@ -442,7 +442,7 @@ public class CLI
 		  {
 		    proc = Manager.host.getProc(procId);
 		    procSearchFinished = true;
-		    notifyAll();
+		    CLI.this.notifyAll();
 		  }
 	      }
 
@@ -452,16 +452,16 @@ public class CLI
 		  {
 		    proc = null;
 		    procSearchFinished = true;
-		    notifyAll();
+		    CLI.this.notifyAll();
 		  }
 	      }});
-	  synchronized (this)
+	  synchronized (CLI.this)
 	    {
 	      while (!procSearchFinished)
 		{
 		  try
 		    {
-		      wait();
+		      CLI.this.wait();
 		    }
 		  catch (InterruptedException ie)
 		    {
@@ -503,6 +503,8 @@ public class CLI
   {
     // At some point we will be able to use a RunState object
     // created elsewhere e.g., by the SourceWindowFactory.
+    outWriter.println("Attaching proc " + proc.toString() + " task "
+		      + task.toString());
     if (runState == null) 
       {
 	runState = new RunState();
@@ -553,7 +555,7 @@ public class CLI
         }
       refreshSymtab();
       boolean startedByRun;
-      synchronized (this)
+      synchronized (CLI.this)
       {
 	startedByRun = runningProcs.contains(proc);
       }
@@ -1091,9 +1093,6 @@ public class CLI
     public void handle(Command cmd) throws ParseException 
     {
       refreshSymtab();
-      DetachHandler detachHandler = new DetachHandler();
-      Command command = new Command ("detach");
-      detachHandler.handle(command);
       Iterator iterator = runningProcs.iterator();
       while (iterator.hasNext())
 	{
@@ -1101,6 +1100,9 @@ public class CLI
 	  Signal.kill(p.getPid(),Sig.KILL);
 	}
       addMessage("Quitting...", Message.TYPE_NORMAL);
+      DetachHandler detachHandler = new DetachHandler();
+      Command command = new Command ("detach");
+      detachHandler.handle(command);
     }
   }
   class HelpHandler implements CommandHandler
@@ -1453,7 +1455,8 @@ public class CLI
 	  for (i = 0; i < size; i++)
 	    {
 	      Actionpoint ap = apTable.getActionpoint(i);
-	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(bpt))
+	      if (ap.getRTBreakpoint().
+		  containsPersistantBreakpoint(task.getProc(), bpt))
 		{
 		  outWriter.print("breakpoint " + i + " hit: ");
 		  ap.output(outWriter);

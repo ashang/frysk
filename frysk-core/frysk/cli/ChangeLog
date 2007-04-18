@@ -1,3 +1,8 @@
+2007-04-18  Tim Moore  <timoore@redhat.com>
+
+	* hpd/CLI.java (AttachHandler.handle): Fix breakage from monitor
+	lock cleanup.
+
 2007-04-17  Tim Moore  <timoore@redhat.com>
 
 	* hpd/CLI.java (CLIMonitor, monitor, procSearchFinished): delete
