@@ -109,11 +109,7 @@ public class IsaFactory
   private Isa getIsa(int pid, Task task) 
   {
     Elf elfFile;
-
-    // Added a useless condition to fake out unused parm warning/error
-    // logger.log (Level.FINE, "{0} getIsa\n", this);
-    if ( (task == null) || (task != null))
-	logger.log (Level.FINE, "{0} getIsa\n", this);
+    logger.log (Level.FINE, "{0} getIsa\n", this);
     
     try {
 	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);

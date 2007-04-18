@@ -300,15 +300,7 @@ public abstract class ByteBuffer
   protected ByteBuffer subBuffer (ByteBuffer buffer, long lowerExtreem,
                                   long upperExtreem)
   {
-      // The following bit of idiocy is to keep ecj from choking on
-      // "unused variable" warnings that kill builds run with Werror.
-      //throw new RuntimeException("not implemented");
-      throw new RuntimeException((((buffer == null) ||
-				   (buffer != null) ||
-				   (lowerExtreem == upperExtreem) ||
-				   (lowerExtreem != upperExtreem))  ?
-				  "not implemented" :
-				  "not implemented"));
+    throw new RuntimeException("not implemented");
   }
 
   public ByteBuffer slice (long off, long len)

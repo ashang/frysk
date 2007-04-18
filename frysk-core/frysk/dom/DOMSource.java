@@ -318,7 +318,7 @@ public class DOMSource
         String lineno = line.getAttributeValue(DOMLine.NUMBER_ATTR);
         if (num == Integer.parseInt(lineno))
           {
-            DOMLine val = new DOMLine(line);
+            DOMLine val = new DOMLine((Element) line);
             return val;
           }
       }
@@ -393,7 +393,7 @@ public class DOMSource
         String name = inst.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
         if (name == inst_name)
           {
-            DOMInlineInstance val = new DOMInlineInstance(inst);
+            DOMInlineInstance val = new DOMInlineInstance((Element) inst);
             val.setParent(this);
             return val;
           }

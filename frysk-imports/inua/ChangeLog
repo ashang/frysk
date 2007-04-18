@@ -2,12 +2,6 @@
 
 	* eio/ULong.java: (castChar, castByte, castInt): New methods.
 
-2007-04-18  Chris Moller  <moller@mollerware.com>
-
-	* eio/ByteBuffer.java (subBuffer): Hack to fake-out warnings that
-	kill builds when run with Werror.  Can be removed whe the method
-	actually does something.
-
 2007-04-17  Tim Moore  <timoore@redhat.com>
 
 	* eio/ULong.java(MAX_VALUE): New constant.

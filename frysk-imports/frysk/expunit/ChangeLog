@@ -1,11 +1,3 @@
-2007-04-18  Chris Moller  <moller@mollerware.com>
-
-	* Match.java (groupi (int g), start (int g), end (int g)): Added
-	hacks to get around "g unused" warning that gets turned into a
-	build-killing error by Werror.  Pending permanent fix either in
-	gcj or by providing real content to the methods.  (Or until Java
-	evolves far enough to support /*NOTUSED*/...)
-
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Expect.java (defaultTimeoutSeconds, setDefaultTimeoutSeconds)

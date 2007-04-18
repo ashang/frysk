@@ -61,9 +61,7 @@ class Location
 
     Location(ByteBuffer location, int index) {
 	this.location = location;
-	// To fake out warnings killing builds under Werror
-	//this.index = 0;
-	this.index = index - index;
+	this.index = 0;
     }
 
     public ByteBuffer getByteBuffer() { return location;}
@@ -72,19 +70,19 @@ class Location
     long getLong() { return location.getLong(index); }
     int getInt() { return location.getInt(index); }
     short getShort() { return location.getShort(index); }
-    byte getByte() { return location.getByte(index); }
+    byte getByte() { return (byte)location.getByte(index); }
 
     double getDouble(int idx) { return location.getDouble(idx); }
     float getFloat(int idx) { return location.getFloat(idx); }
     long getLong(int idx) { return location.getLong(idx); }
     int getInt(int idx) { return location.getInt(idx); }
     short getShort(int idx) { return location.getShort(idx); }
-    byte getByte(int idx) { return location.getByte(idx); }
+    byte getByte(int idx) { return (byte)location.getByte(idx); }
   
     void putDouble(double value)  {location.putDouble(index, value);}
     void putFloat(float value)  {location.putFloat(index, value);}
     void putLong(long value)  {location.putLong(index, value);}
     void putInt(int value)  {location.putInt(index, value);}
     void putShort(short value)  {location.putShort(index, value);}
-    void putByte(byte value)  {location.putByte(index, value);}
+    void putByte(byte value)  {location.putByte(index, (byte)value);}
 }
