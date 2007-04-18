@@ -74,7 +74,9 @@ frysk::sys::PtraceServer$PtraceRequest::execute ()
   result = ::ptrace ((enum __ptrace_request) op, pid,
 		     (void*) addr, (long) data);
   if (errno != 0)
-    throwErrno (errno, "ptrace");
+    throwErrno (errno, "ptrace/server",
+		"pt 0x%x, pid %d, addr 0x%lx, data 0x%lx",
+		(int)op, (int)pid, (long)addr, (long)data);
 }
 
 void

@@ -1,5 +1,10 @@
 2007-04-18  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/Errno.cxx (throwErrno): Use vasprintf, not asprintf.
+	* cni/PtraceServer.cxx (execute): Include more information in
+	throw.
+	* cni/Ptrace.cxx (request): In throw, display "pt" in hex.
+
 	* Server.java (useServerXXX): New.
 	(request): Check useServerXXX.
 

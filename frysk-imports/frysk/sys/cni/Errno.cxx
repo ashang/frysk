@@ -133,7 +133,7 @@ throwErrno (int err, const char *prefix, const char *suffix, ...)
   va_list ap;
   va_start (ap, suffix);
   char *message = NULL;
-  asprintf(&message, suffix, ap);
+  vasprintf(&message, suffix, ap);
   va_end (ap);
   jstring jmessage = ajprintf("%s: %s (%s)", prefix, strerror (err), message);
   free(message);
