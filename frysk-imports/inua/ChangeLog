@@ -1,3 +1,7 @@
+2007-04-18  Tim Moore  <timoore@redhat.com>
+
+	* eio/ULong.java: (castChar, castByte, castInt): New methods.
+
 2007-04-18  Chris Moller  <moller@mollerware.com>
 
 	* eio/ByteBuffer.java (subBuffer): Hack to fake-out warnings that

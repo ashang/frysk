@@ -106,5 +106,7 @@ public class DwflModule
    * @return array of DwflLine objects.
    */
   public native DwflLine[] getLines(String filename, int lineo, int column);
-  
+
+  public native void getSymbolByName(String name,
+				     SymbolBuilder symbolBuilder);
 }

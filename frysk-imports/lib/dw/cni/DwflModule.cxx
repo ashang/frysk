@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 #include <cstdlib>
+#include <cstring>
 #include "libdwfl.h"
 #include <gcj/cni.h>
 
@@ -112,6 +113,33 @@ lib::dw::DwflModule::getSymbol(jlong address, lib::dw::SymbolBuilder* symbolBuil
 	const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr, 
 											   &closest_sym, NULL);
 		
-	symbolBuilder->symbol(JvNewStringUTF(methName), closest_sym.st_value, 
-						  closest_sym.st_size);
+	symbolBuilder->symbol(JvNewStringUTF(methName),
+			      closest_sym.st_value, 
+			      closest_sym.st_size,
+			      ELF64_ST_TYPE(closest_sym.st_info),
+			      ELF64_ST_BIND(closest_sym.st_info),
+			      closest_sym.st_other);
+}
+
+void
+lib::dw::DwflModule::getSymbolByName(jstring name,
+				     lib::dw::SymbolBuilder* symbolBuilder)
+{
+  int nameLength = JvGetStringUTFLength(name);
+  char rawName[nameLength + 1];
+  JvGetStringUTFRegion(name, 0, name->length(), rawName);
+  rawName[nameLength] = 0;
+  int numSymbols = dwfl_module_getsymtab(DWFL_MODULE_POINTER);
+  for (int i = 0; i < numSymbols; i++)
+    {
+      GElf_Sym sym;
+      const char *symName = dwfl_module_getsym(DWFL_MODULE_POINTER, i, &sym, 0);
+      if (!::strcmp(rawName, symName))
+	symbolBuilder->symbol(JvNewStringUTF(symName),
+			      sym.st_value,
+			      sym.st_size,
+			      ELF64_ST_TYPE(sym.st_info),
+			      ELF64_ST_BIND(sym.st_info),
+			      sym.st_other);
+    }
 }

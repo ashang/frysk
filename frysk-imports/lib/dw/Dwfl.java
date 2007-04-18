@@ -67,7 +67,8 @@ public class Dwfl
   }
 
   /**
-   * Get all the DwflModule objects associated with this Dwfl.
+   * Get all the DwflModule objects associated with this Dwfl. Use a
+   * cached array if possible.
    *
    * @return an array of DwflModule.
    */
@@ -79,24 +80,20 @@ public class Dwfl
       }
     return modules;
   }
-  
-  //	
-  // public Dwarf[] getModuleDwarfs(){
-  // long[] vals = dwfl_getdwarf();
-  // if(vals == null || vals.length == 0)
-  // return new Dwarf[0];
-  //		
-  // Dwarf[] dwarfs = new Dwarf[vals.length];
-  // for(int i = 0; i < vals.length; i++){
-  // if(vals[i] == 0)
-  // dwarfs[i] = null;
-  // else
-  // dwarfs[i] = new Dwarf(vals[i]);
-  // }
-  //		
-  // return dwarfs;
-  // }
 
+  /**
+   * Get anew all the DwflModule objects associated with this
+   * Dwfl. This requests a new array from libdwfl and stores it as the
+   * cached list for return by getModules.
+   *
+   * @return an array of DwflModule.
+   */
+  public DwflModule[] getModulesForce()
+  {
+    dwfl_getmodules();
+    return modules;
+  }
+  
   /**
    * Get the DwflModule associated with an address.
    *

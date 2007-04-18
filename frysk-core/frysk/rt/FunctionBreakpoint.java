@@ -44,15 +44,23 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import lib.dw.DwarfDie;
+import lib.dw.Dwfl;
+import lib.dw.DwflModule;
+import lib.dw.SymbolBuilder;
 import lib.dw.die.InlinedSubroutine;
+
+import frysk.proc.Proc;
 
 public class FunctionBreakpoint
   extends SourceBreakpoint
 {
   private String name;
   private boolean containsInlineInstances = false;
-  
-  public FunctionBreakpoint(String name, DwarfDie die)
+
+  /**
+   * Set a breakpoint based on a DwarfDie.
+   */
+  public FunctionBreakpoint(Proc proc, String name, DwarfDie die)
   {
     this.name = name;
     ArrayList entryAddrs = die.getEntryBreakpoints();
@@ -71,7 +79,35 @@ public class FunctionBreakpoint
         addrs.addAll(inlineDies);
         containsInlineInstances = true;
       }
-    setAddrs(addrs);
+    setAddrs(proc, addrs);
+  }
+
+  /**
+   * Set a breakpoint based on a name which will be looked up in the
+   * Elf symbol table.
+   */
+  public FunctionBreakpoint(Proc proc, final String name)
+  {
+    this.name = name;
+    Dwfl dwfl = new Dwfl(proc.getPid()); // XXX cache Dwfls somewhere?
+    DwflModule[] modules = dwfl.getModules();
+    final LinkedList addrs = new LinkedList();
+    SymbolBuilder builder = new SymbolBuilder() {
+	public void symbol(String name, long value, long size, int type,
+			   int bind, int visibility)
+	{
+	  addrs.add(new Long(value));
+	}
+      };
+    for (int i = 0; i < modules.length; i++)
+      {
+	DwflModule module = modules[i];
+	module.getSymbolByName(name, builder);
+      }
+    if (addrs.size() == 0)
+      throw new RuntimeException("Couldn't find symbol " + name);
+    else
+      setAddrs(proc, addrs);
   }
 
   public long getRawAddress(Object addr)
@@ -91,6 +127,7 @@ public class FunctionBreakpoint
 
   public boolean containsInlineInstances()
   {
+    // XXX What about in different processes?
     return containsInlineInstances;
   }
 }

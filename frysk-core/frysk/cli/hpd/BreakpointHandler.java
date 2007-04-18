@@ -89,20 +89,21 @@ class BreakpointHandler
 	  }
 	fileName = bptParams[1];
 	lineNumber = Integer.parseInt((String)bptParams[2]);
-	LineBreakpoint bpt = new LineBreakpoint(task, fileName, lineNumber, 0);
+	LineBreakpoint bpt = new LineBreakpoint(task.getProc(), fileName,
+						lineNumber, 0);
 	actionpoint = new LineBreakpointAdapter(bpt, cli.getRunState(), task);
       }
     else
       {
-	DwarfDie die;
+	DwarfDie die = null;
 	try
 	  {
 	    die = cli.symtab.getSymbolDie(breakpt);
 	  }
 	catch (NameNotFoundException e)
 	  {
-	    cli.getPrintWriter().println(e.getMessage());
-	    return;
+	    // cli.getPrintWriter().println(e.getMessage());
+	    // return;
 	  }
 	if (false)
 	  {
@@ -113,7 +114,23 @@ class BreakpointHandler
 		cli.getPrintWriter().println("Is declared inline.");
 	      }
 	  }
-	FunctionBreakpoint bpt = new FunctionBreakpoint(breakpt, die);
+	FunctionBreakpoint bpt;
+	if (die != null)
+	  {
+	    bpt = new FunctionBreakpoint(task.getProc(), breakpt, die);
+	  }
+	else
+	  {
+	    try
+	      {
+		bpt = new FunctionBreakpoint(task.getProc(), breakpt);
+	      }
+	    catch (RuntimeException e)
+	      {
+		 cli.getPrintWriter().println(e.getMessage());
+		 return;
+	      }
+	  }
 	actionpoint = new FunctionBreakpointAdapter(bpt, cli.getRunState(),
 						    task);
       }

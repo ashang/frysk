@@ -41,7 +41,6 @@ package lib.dw;
 
 public interface SymbolBuilder
 {
-
-	void symbol (String name, long value, long size);
-
+  void symbol (String name, long value, long size, int type, int bind,
+	       int visibility);
 }

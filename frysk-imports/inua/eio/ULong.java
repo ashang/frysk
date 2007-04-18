@@ -96,4 +96,19 @@ public class ULong
   {
     return (x1 - BIAS) >= (x2 - BIAS);
   }
+
+  public static final long castChar(char c)
+  {
+    return (long)c & 0xffffL;
+  }
+  
+  public static final long castByte(byte b)
+  {
+    return (long)b & 0xffL;
+  }
+
+  public static final long castInt(int i)
+  {
+    return (long)i & 0xffffffffL;
+  }
 }

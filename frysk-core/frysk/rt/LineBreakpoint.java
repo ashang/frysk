@@ -48,6 +48,7 @@ import java.util.logging.LogManager;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 
+import frysk.proc.Proc;
 import frysk.proc.Task;
 
 public class LineBreakpoint
@@ -62,19 +63,22 @@ public class LineBreakpoint
   {
   }
 
-  public LineBreakpoint(Task task, String fileName, int lineNumber, int column) 
+  public LineBreakpoint(Proc proc, String fileName, int lineNumber, int column) 
   {
-    super((new Dwfl(task.getTid())).getLineAddresses(fileName,
-						     lineNumber,
-						     column));
+    super();
+    if (proc != null)		// XXX Dwfl should already be available
+      setAddrs(proc, (new Dwfl(proc.getPid())).getLineAddresses(fileName,
+								lineNumber,
+								column));
     this.fileName = fileName;
     this.lineNumber = lineNumber;
     this.column = column;
     if (logger == null)
       logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST))
+    if (logger != null && logger.isLoggable(Level.FINEST) && getAddrs(proc)
+	!= null)
       {
-	Iterator iterator = getAddrs().iterator();
+	Iterator iterator = getAddrs(proc).iterator();
 	int i;
 	for (i = 0; iterator.hasNext(); i++)
 	  {
@@ -115,7 +119,8 @@ public class LineBreakpoint
 						 String filename,
 						 int lineNumber)
   {
-    LineBreakpoint bpt = new LineBreakpoint(task, filename, lineNumber, 0);
+    LineBreakpoint bpt = new LineBreakpoint(task.getProc(), filename,
+					    lineNumber, 0);
     bpt.addBreakpoint(runState, task);
     return bpt;
   }    

@@ -1,5 +1,8 @@
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
+	* hpd/BreakpointHandler.java (handle): New parameters to
+	LineBreakpoint. Support function breakpoint based on symbol name.
+
 	* hpd/CLI.java (AttachHandler.handle): Fix breakage from monitor
 	lock cleanup.
 

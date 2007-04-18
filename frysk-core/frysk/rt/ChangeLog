@@ -1,3 +1,17 @@
+2007-04-18  Tim Moore  <timoore@redhat.com>
+
+	* FunctionBreakpoint.java (FunctionBreakpoint): Take proc as
+	argument. New constructor with string argument.
+	* LineBreakpoint.java (LineBreakpoint, addLineBreakpoint): New
+	proc arg for constructor.
+	* SourceBreakpoint.java (procMap, ProcEntry): New member and class
+	for tracking processes with this breakpoint.
+	(SourceBreakpoint): remove addrs argument.
+	(getAddrs, setAddrs, containsPersistantBreakpoint): Add proc argument.
+	(addBreakpoint, deleteBreakpoint): Deal with processes.
+	* StackAcessors.java(getProcName): Add arguments to SymbolBuilder
+	symbol method.
+
 2007-04-13  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java (ThreadLifeObservable.updateClonedOffspring): Make sure to

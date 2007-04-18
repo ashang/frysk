@@ -40,9 +40,11 @@
 package frysk.rt;
 
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import frysk.proc.Task;
+import frysk.proc.Proc;
 
 /**
  * Class representing a breakpoint at at location in a program. It
@@ -57,34 +59,47 @@ import frysk.proc.Task;
  */
 public abstract class SourceBreakpoint
 {
-  private LinkedList addrs = null; // The "raw" addresses
-  private LinkedList breakpoints = null; // RunState breakpoints
+  private HashMap procMap;
 
+  private class ProcEntry
+  {
+    LinkedList addrs = null; // The "raw" addresses
+    LinkedList breakpoints = null; // RunState breakpoints
+  }
+  
   public SourceBreakpoint()
   {
-  }
-
-  public SourceBreakpoint(LinkedList addrs)
-  {
-    this.addrs = addrs;
+    procMap = new HashMap();
   }
 
   /**
-   * Get the list of raw address objects
+   * Get the list of raw address objects for a process
+   *
+   * @param The process
    * @return the list
    */
-  public LinkedList getAddrs()
+  public LinkedList getAddrs(Proc proc)
   {
-    return addrs;
+    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+    if (procEntry != null) 
+      return procEntry.addrs;
+    else
+      return null;
   }
 
   /**
    * Set the list of raw address objects.
    * @param addrs the address objects
    */
-  public void setAddrs(LinkedList addrs)
+  public void setAddrs(Proc proc, LinkedList addrs)
   {
-    this.addrs = addrs;
+    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+    if (procEntry == null)
+      {
+	procEntry = new ProcEntry();
+	procMap.put(proc, procEntry);
+      }
+    procEntry.addrs = addrs;
   }
 
   /**
@@ -103,15 +118,19 @@ public abstract class SourceBreakpoint
     */
   public void addBreakpoint(RunState runState, Task task)
   {
-    Iterator bpts = addrs.iterator();
-    breakpoints = new LinkedList();
+    Proc proc = task.getProc();
+    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+    if (procEntry == null)
+      return; 			// Exception?
+    Iterator bpts = procEntry.addrs.iterator();
+    procEntry.breakpoints = new LinkedList();
     while (bpts.hasNext())
       {
 	Object bpt = bpts.next();
 	long address = getRawAddress(bpt);
 	RunState.PersistentBreakpoint breakpoint
 	  = runState.new PersistentBreakpoint(address);
-	breakpoints.add(breakpoint);
+	procEntry.breakpoints.add(breakpoint);
 	runState.addPersistentBreakpoint(task, breakpoint);
       }
   }
@@ -123,7 +142,11 @@ public abstract class SourceBreakpoint
    */
   public void deleteBreakpoint(RunState runState, Task task)
   {
-    Iterator iterator = breakpoints.iterator();
+    Proc proc = task.getProc();
+    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+    if (procEntry == null)
+      return; 			// Exception?
+    Iterator iterator = procEntry.breakpoints.iterator();
 
     while (iterator.hasNext())
       {
@@ -131,7 +154,7 @@ public abstract class SourceBreakpoint
 	  = (RunState.PersistentBreakpoint)iterator.next();
         runState.deletePersistentBreakpoint(task, bpt);
       }
-    breakpoints.clear();
+    procEntry.breakpoints.clear();
   }
 
   /**
@@ -141,8 +164,12 @@ public abstract class SourceBreakpoint
    * @param bpt
    * @return
    */
-  public boolean containsPersistantBreakpoint(RunState.PersistentBreakpoint bpt)
+  public boolean containsPersistantBreakpoint(Proc proc,
+					      RunState.PersistentBreakpoint bpt)
   {
-    return breakpoints.contains(bpt);
+    ProcEntry procEntry = (ProcEntry)procMap.get(proc);
+    if (procEntry == null)
+      return false;
+    return procEntry.breakpoints.contains(bpt);
   }
 }

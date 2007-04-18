@@ -207,7 +207,8 @@ public class StackAccessors
         this.addr = addr;
       }
       
-      public void symbol (String name, long value, long size)
+      public void symbol (String name, long value, long size, int type,
+			  int bind, int visibility)
       {
 	  procName = new ProcName(addr-value, name);
       }
