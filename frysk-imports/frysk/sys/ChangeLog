@@ -1,3 +1,8 @@
+2007-04-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java (useServerXXX): New.
+	(request): Check useServerXXX.
+
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.hxx (throwErrno(int,const char*,const char*))

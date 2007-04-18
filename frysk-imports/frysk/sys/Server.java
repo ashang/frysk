@@ -47,6 +47,8 @@ package frysk.sys;
 public class Server
     extends Thread
 {
+    public static boolean useServerXXX = true;
+
     /**
      * Do not allow extension.
      */
@@ -84,7 +86,7 @@ public class Server
      */
     public static void request (Execute op)
     {
-	if (Thread.currentThread () == server)
+	if (!useServerXXX || Thread.currentThread () == server)
 	    op.execute ();
 	else
 	    server.execute (op);
