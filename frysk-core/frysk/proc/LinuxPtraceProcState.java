@@ -317,6 +317,8 @@ abstract class LinuxPtraceProcState
 	Detaching (Proc proc, Task mainTask)
 	{
 	    super ("Detaching");
+	    // fakeout for unused parm
+	    if (proc == null) {}
 	    attachedTasks = new HashSet ();
 	    attachedTasks.add (mainTask);
 	}
