@@ -115,7 +115,7 @@ public class Variable
     }
 
     public byte getByte(int idx) {
-      return (byte)location.getByte(idx);
+      return location.getByte(idx);
     }
 
     public char getChar(int idx) {
