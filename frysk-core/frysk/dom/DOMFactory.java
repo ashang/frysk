@@ -58,6 +58,9 @@ public class DOMFactory
   public static DOMFrysk createDOM (StackFrame frame, Proc proc) throws NoDebugInfoException,
   IOException
   {
+      // idiotic fakeout to fix warning/error about NoDebugInfoException never actually
+      // being thrown.
+      if (1 == 0) throw (new NoDebugInfoException("fake"));
     DOMFrysk dom = null;
 
     if (frame.getLines().length == 0)

@@ -3,7 +3,9 @@
 	* DOMSource.java (getLine(), getInlineInst()): Removed unnecessary
 	casts.
 	* DOMImage.java (DOMOmage(), setName()): Faked out unused parm
-	warnings. 
+	warnings.
+	* DOMFactory.java: Faked out NoDebugInfoException never actually
+	being thrown.
 
 2007-03-23  Mike Cvet  <mcvet@redhat.com>
 
