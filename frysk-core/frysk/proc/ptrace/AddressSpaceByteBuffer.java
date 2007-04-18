@@ -40,8 +40,10 @@
 package frysk.proc.ptrace;
 
 import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace.AddressSpace;
 import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace.AddressSpace;
+import frysk.event.Request;
+import frysk.proc.Manager;
 
 public class AddressSpaceByteBuffer
     extends ByteBuffer
@@ -55,24 +57,112 @@ public class AddressSpaceByteBuffer
 	super (lowerExtreem, upperExtreem);
 	this.pid = pid;
 	this.addressSpace = addressSpace;
+	peekRequest = new PeekRequest();
+	pokeRequest = new PokeRequest();
+	peeksRequest = new PeeksRequest();
     }
-
     public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
     {
 	this (pid, addressSpace, 0, addressSpace.length ());
     }
+
+
+    private class PeekRequest
+	extends Request
+    {
+	private long index;
+	private int value;
+	PeekRequest()
+	{
+	    super(Manager.eventLoop);
+	}
+	public void execute ()
+	{
+	    value = PtraceServer.peek(addressSpace, pid, index);
+	}
+	public int request (long index)
+	{
+	    if (isEventLoopThread())
+		return PtraceServer.peek(addressSpace, pid, index);
+	    else synchronized (this) {
+		this.index = index;
+		request();
+		return value;
+	    }
+	}
+    }
+    private final PeekRequest peekRequest;
     protected int peek (long index)
     {
-	return PtraceServer.peek (addressSpace, pid, index);
+	return peekRequest.request (index);
     }
+
+    private class PokeRequest
+	extends Request
+    {
+	private long index;
+	private int value;
+	PokeRequest()
+	{
+	    super(Manager.eventLoop);
+	}
+	public void execute ()
+	{
+	    PtraceServer.poke(addressSpace, pid, index, value);
+	}
+	public void request (long index, int value)
+	{
+	    if (isEventLoopThread())
+		PtraceServer.poke(addressSpace, pid, index, value);
+	    else synchronized (this) {
+		this.index = index;
+		this.value = value;
+		request();
+	    }
+	}
+    }
+    private final PokeRequest pokeRequest;
     protected void poke (long index, int value)
     {
-	PtraceServer.poke (addressSpace, pid, index, value);
+	pokeRequest.request (index, value);
     }
+
+    private class PeeksRequest
+	extends Request
+    {
+	private long index;
+	private long length;
+	private long offset;
+	private byte[] bytes;
+	PeeksRequest()
+	{
+	    super(Manager.eventLoop);
+	}
+	public void execute ()
+	{
+	    length = PtraceServer.peek(addressSpace, pid, index, length,
+				       bytes, offset);
+	}
+	public long request (long index, byte[] bytes,
+			     long offset, long length)
+	{
+	    if (isEventLoopThread())
+		return PtraceServer.peek(addressSpace, pid, index,
+					 length, bytes, offset);
+	    else synchronized (this) {
+		this.index = index;
+		this.bytes = bytes;
+		this.offset = offset;
+		this.length = length;
+		request();
+		return length;
+	    }
+	}
+    }
+    private final PeeksRequest peeksRequest;
     protected long peek (long index, byte[] bytes, long offset, long length)
     {
-	return PtraceServer.peek (addressSpace, pid, index, length,
-				  bytes, offset);
+	return peeksRequest.request(index, bytes, offset, length);
     }
 
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,

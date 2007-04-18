@@ -39,8 +39,10 @@
 
 package frysk.proc.ptrace;
 
-import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace.RegisterSet;
+import frysk.event.Request;
+import frysk.proc.Manager;
 import inua.eio.ByteBuffer;
 
 /*
@@ -62,29 +64,82 @@ public class RegisterSetByteBuffer
 	this.pid = pid;
 	this.registerSet = registerSet;
 	bytes = new byte[registerSet.length ()];
+	getRegs = new GetRegs();
+	setRegs = new SetRegs();
     }
-
     public RegisterSetByteBuffer(int pid, RegisterSet registerSet) 
     {
 	this (pid, registerSet, 0, registerSet.length());
     }
   
+    private class GetRegs
+	extends Request
+    {
+	GetRegs()
+	{
+	    super(Manager.eventLoop);
+	}
+	public void execute()
+	{
+	    registerSet.get(pid, bytes);
+	}
+	public void request ()
+	{
+	    if (isEventLoopThread())
+		PtraceServer.get(registerSet, pid, bytes);
+	    else synchronized (this) {
+		super.request();
+	    }
+	}
+    }
+    private final GetRegs getRegs;
+    private void getRegs()
+    {
+	getRegs.request();
+    }
+
+    private class SetRegs
+	extends Request
+    {
+	SetRegs()
+	{
+	    super(Manager.eventLoop);
+	}
+	public void execute()
+	{
+	    registerSet.set(pid, bytes);
+	}
+	public void request ()
+	{
+	    if (isEventLoopThread())
+		PtraceServer.set(registerSet, pid, bytes);
+	    else synchronized (this) {
+		super.request();
+	    }
+	}
+    }
+    private final SetRegs setRegs;
+    private void setRegs()
+    {
+	setRegs.request();
+    }
+
     protected int peek (long index) 
     {
-	PtraceServer.get (registerSet, pid, bytes);
+	getRegs();
 	return bytes[(int)index];
     }
   
     protected void poke (long index, int value)
     {
-	PtraceServer.get (registerSet, pid, bytes);
+	getRegs();
 	bytes[(int)index] = (byte)value;
-	PtraceServer.set (registerSet, pid, bytes);
+	setRegs();
     }
   
     protected long peek (long index, byte[] bytes, long off, long len) 
     {
-	PtraceServer.get (registerSet, pid, this.bytes);
+	getRegs();
 	for (int i = 0; i < len; i++) {
 	    bytes[(int)off + i] = this.bytes[(int)index + i];
 	}

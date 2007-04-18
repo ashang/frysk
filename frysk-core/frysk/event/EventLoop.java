@@ -103,6 +103,10 @@ public abstract class EventLoop
     private int tid = -1; // can change once
     final boolean isCurrentThread()
     {
+	if (tid == -1) {
+	    updateTid();
+	    return true;
+	}
 	return tid == Tid.get();
     }
     private void wakeupBlockedEventLoop()

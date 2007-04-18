@@ -1,5 +1,8 @@
 2007-04-18  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java (isCurrentThread): If TID is -1, set the thread
+	using updateTid.
+
 	* Request.java (isEventLoopThread): New.
 	(request): Make protected, assert that this isn't the event-loop
 	thread and the object is locked.

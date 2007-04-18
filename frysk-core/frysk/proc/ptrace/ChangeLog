@@ -1,3 +1,10 @@
+2007-04-18  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpaceByteBuffer.java (PeekRquest, PokeRequest)
+	(PeeksRequest): New classes.  Use to route peek/poke requests
+	through the event-loop thread.
+	* RegisterSetByteBuffer.java (GetRegs, SetRegs): Ditto.
+	
 2007-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestByteBuffer.java: New file.
