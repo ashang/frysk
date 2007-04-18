@@ -62,7 +62,12 @@ abstract class Match
      */
     protected String group (int g)
     {
-	return null;
+	// In build, Wall warns about g not being used and Werror
+	// turns the warning into a build-killing error.
+	// This hack gets around that until such time as ecj/gcj
+	// gets less pedantic or this method gets some actual contents.
+	// return null;
+	return ((g == 0) ? null : null); 
     }
     /**
      * Return the entire matched pattern (group 0).
@@ -76,7 +81,12 @@ abstract class Match
      */
     protected int start (int g)
     {
-	return -1;
+	// In build, Wall warns about g not being used and Werror
+	// turns the warning into a build-killing error.
+	// This hack gets around that until such time as ecj/gcj
+	// gets less pedantic or this method gets some actual contents.
+	// return -1;
+	return (g - g) - 1;
     }
     /**
      * Return the start of the entire matched pattern (group 0).
@@ -90,7 +100,12 @@ abstract class Match
      */
     protected int end (int g)
     {
-	return 0;
+	// In build, Wall warns about g not being used and Werror
+	// turns the warning into a build-killing error.
+	// This hack gets around that until such time as ecj/gcj
+	// gets less pedantic or this method gets some actual contents.
+	// return 0;
+	return g - g;	// temporary hack to make Werror happy
     }
     /**
      * Return the end of the entire matched pattern (group 0) plus 1.
