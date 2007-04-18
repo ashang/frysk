@@ -96,6 +96,8 @@ public class DOMImage
 	 */
 	public DOMImage (String name, String path, String ccpath, Element rootElement)
     {
+	// fakeout for unused parm
+	if (rootElement == null) {}
 		myElement = new Element(DOMImage.IMAGE_NODE);
 		myElement.setAttribute(NAME_ATTR, name);
 		myElement.setAttribute(PATH_ATTR, path);
@@ -195,7 +197,8 @@ public class DOMImage
 	 */
 	public void setName (String name) 
     {
-		
+	// fakeout for unused parm
+	if (name == null) {}	
 	}
 	/**
 	 * returns the name of the image
