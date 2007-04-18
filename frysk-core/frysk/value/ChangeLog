@@ -1,3 +1,8 @@
+2007-04-18  Chris Moller  <moller@mollerware.com>
+
+	* Location.java: Removed several unnecessary casts and faked out
+	an unread parameter warning.
+
 2007-04-15  Stan Cox  <scox@redhat.com>
 
 	* ArithmeticType.java: New file. Replaces:
