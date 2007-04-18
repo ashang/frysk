@@ -50,7 +50,7 @@ public abstract class Request
     /**
      * Create an event-loop RPC framework.
      */
-    public Request (EventLoop eventLoop)
+    protected Request (EventLoop eventLoop)
     {
 	this.eventLoop = eventLoop;
     }
@@ -87,22 +87,41 @@ public abstract class Request
 	}
     }
     private final Handler handler = new Handler ();
-    private Object serializeRequests = new Object();
+
+    /**
+     * Is this the event-loop thread?  If it is the caller should just
+     * execute the request directly.
+     */
+    protected final boolean isEventLoopThread()
+    {
+	return eventLoop.isCurrentThread();
+    }
 
     /**
      * Make a request to run execute() on the eventLoop thread.
+     *
+     * The sub-class will look something like:
+     *
+     *<pre>
+     *if (isEventLoopThread())
+     *  execute(with, args)
+     *else {
+     *  synchronized(this) {
+     *    super.request();
+     *  }
+     *}
+     *</pre>
      */
-    public final void request ()
+    protected void request ()
     {
-	if (eventLoop.isCurrentThread()) {
-	    // Already running on the event-loop thread, dispatch
-	    // immediatly.
-	    execute();
-	}
-	else {
-	    synchronized (serializeRequests) {
-		handler.request ();
-	    }
-	}
+	// Code must check isEventLoopThread before calling here.
+	if (eventLoop.isCurrentThread())
+	    throw new RuntimeException("must not be event-loop thread");
+	// Code must serialize the requests by locking this object
+	// before calling here.
+	if (!Thread.holdsLock(this))
+	    throw new RuntimeException("must hold object's lock");
+	// Pass the request on down.
+	handler.request ();
     }
 }

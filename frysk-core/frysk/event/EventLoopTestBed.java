@@ -477,6 +477,15 @@ abstract class EventLoopTestBed
 	{
 	    e.execute();
 	}
+	public void request()
+	{
+	    if (isEventLoopThread())
+		execute();
+	    else
+		synchronized(this) {
+		    super.request();
+		}
+	}
     }
 
     private abstract class RunnableEvent

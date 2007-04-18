@@ -1,3 +1,10 @@
+2007-04-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Request.java (isEventLoopThread): New.
+	(request): Make protected, assert that this isn't the event-loop
+	thread and the object is locked.
+	* EventLoopTestBed.java (EventRequest): Update.
+
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: If the "tid" changes throw a RuntimeException.
