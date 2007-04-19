@@ -123,6 +123,7 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -302,6 +303,8 @@ public class SourceWindow
   private SourceWindowListener listener;
 
   private SourceWindowFactory.AttachedObserver attachedObserver;
+  
+  private SourceWindowFactory.AttachedObserver addedAttachedObserver;
 
   private LockObserver lock;
   
@@ -683,7 +686,7 @@ public class SourceWindow
 	//desensitize();
 	// this.stop.setSensitive(false);
 	this.SW_add = true;
-  	SourceWindowFactory.startNewProc(exe, env_variables, options);
+  	this.addedAttachedObserver = SourceWindowFactory.startNewProc(exe, env_variables, options);
   }
   
   protected void appendProc (Task task)
@@ -701,7 +704,7 @@ public class SourceWindow
 	for (int i = 0; i < oldSize; i++)
 	  {
 		newFrames[i] = new StackFrame[this.frames[i].length];
-		System.arraycopy(this.frames[i], 0, newFrames[i], 0, oldSize);
+		System.arraycopy(this.frames, 0, newFrames, 0, oldSize);
 	  }
 	System.arraycopy(this.dom, 0, newDom, 0, oldSize);
 	System.arraycopy(this.symTab, 0, newSymTab, 0, oldSize);
@@ -715,7 +718,7 @@ public class SourceWindow
 	this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
 	this.swProc[oldSize] = proc;
 	this.stackView.addProc(this.frames[oldSize], oldSize);
-	
+	SourceWindowFactory.removeAttachedObserver(task, this.addedAttachedObserver);
 	resensitize();
   }
   
@@ -893,9 +896,9 @@ public class SourceWindow
 		      }
 		    public boolean lifeCycleQuery(LifeCycleEvent event)
 		      {
-		       // if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
-		       //     event.isOfType(LifeCycleEvent.Type.DESTROY))
-		       //       fc.destroy();
+		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+		            event.isOfType(LifeCycleEvent.Type.DESTROY))
+		              fc.destroy();
 		        return false;
 		      }
 		  });
@@ -927,7 +930,6 @@ public class SourceWindow
 		        addProc(filename, env_var, task_opt);
 		      }
 		    });
-		  fc.setDecorated(true);
 		  fc.setIcon(IconManager.windowIcon);
 		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
 		  fc.setCurrentFolder(System.getProperty("user.home"));

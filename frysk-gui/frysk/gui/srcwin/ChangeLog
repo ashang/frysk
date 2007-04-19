@@ -1,3 +1,10 @@
+2007-04-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindowFactory.java: Intermediate checkin for bz #4193
+	so Mike can merger his runtime changes in; changes to make
+	stack frames appear proper for added processes.
+	* SourceWindow.java: Ditto.
+
 2007-04-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindowFactory.java: Fix bz #4358(for real this time).

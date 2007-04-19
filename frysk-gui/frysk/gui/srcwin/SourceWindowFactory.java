@@ -77,6 +77,10 @@ public class SourceWindowFactory
   public static RunState runState = null;
   
   public static Task myTask;
+  
+  public static AttachedObserver newProcObserver = null;
+  
+//  private static TaskObserver.Attached attachedObserver = null;
 
   /**
    * Creates a new source window using the given task. The SourceWindows
@@ -169,7 +173,7 @@ public class SourceWindowFactory
     });
   }
   
-  public static void startNewProc (String file, String env_variables, String options)
+  public static AttachedObserver startNewProc (String file, String env_variables, String options)
   {
     File file_path = new File(file);
     String[] cmd = new String[1];
@@ -193,8 +197,12 @@ public class SourceWindowFactory
     // trim off any extraneous whitespace as the execvp level doesn't like it
     cmd[0] = cmd[0].trim();
     if (file_path.exists())
-      Manager.host.requestCreateAttachedProc(cmd, new AttachedObserver());
+      {
+	newProcObserver = new AttachedObserver();
+        Manager.host.requestCreateAttachedProc(cmd, newProcObserver);
+      }
     // else, do nothing.
+    return newProcObserver;
   }
   
   /**
@@ -304,5 +312,12 @@ public class SourceWindowFactory
       
     }
   }
+
+//  starting-process stuff
+  
+ public static void removeAttachedObserver (Task task, AttachedObserver attachedObserver)
+ {
+     task.requestDeleteAttachedObserver(attachedObserver);
+ }
   
 }
