@@ -1,3 +1,15 @@
+2007-04-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestByteBuffer.java (memoryByteBuffer, registerByteBuffer): Add.
+	(setUp): Set.  For registerByteBuffer, only when REGS is valid.
+	(verifySlice): New.
+	(testSliceAddressSpace, testSliceRegisterSet): Use verifySlice.
+	(verifyModify, testModifyRegisterSet, testModifyAddressSpace): New.
+	(AsyncModify, testAsyncRegisterSet, testAsyncAddressSpace): New.
+	* RegisterSetByteBuffer.java (GetRegs.execute, SetRegs.execute):
+	Use the PtraceServer.
+	(GetRegs.request, SetRegs.request): Call execute.
+
 2007-04-18  Andrew Cagney  <cagney@redhat.com>
 
 	* AddressSpaceByteBuffer.java (PeekRquest, PokeRequest)

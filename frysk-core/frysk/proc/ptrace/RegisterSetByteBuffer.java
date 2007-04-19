@@ -79,14 +79,14 @@ public class RegisterSetByteBuffer
 	{
 	    super(Manager.eventLoop);
 	}
-	public void execute()
+	public final void execute()
 	{
-	    registerSet.get(pid, bytes);
+	    PtraceServer.get(registerSet, pid, bytes);
 	}
 	public void request ()
 	{
 	    if (isEventLoopThread())
-		PtraceServer.get(registerSet, pid, bytes);
+		execute();
 	    else synchronized (this) {
 		super.request();
 	    }
@@ -107,12 +107,13 @@ public class RegisterSetByteBuffer
 	}
 	public void execute()
 	{
-	    registerSet.set(pid, bytes);
+	    PtraceServer.set(registerSet, pid, bytes);
 	}
 	public void request ()
 	{
 	    if (isEventLoopThread())
-		PtraceServer.set(registerSet, pid, bytes);
+		// Skip the event-loop
+		execute ();
 	    else synchronized (this) {
 		super.request();
 	    }
