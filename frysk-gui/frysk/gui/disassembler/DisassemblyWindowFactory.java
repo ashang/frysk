@@ -47,10 +47,9 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.Config;
-import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.RunState;
+import frysk.rt.SteppingEngine;
 
 /**
  * Factory for creating DisassemblyWindows - allows multiple DisassemblyWindows to be
@@ -78,54 +77,55 @@ public class DisassemblyWindowFactory
    * @param proc    The Proc to be examined by the new DisassemblyWindow.
    */
   public static void createDisassemblyWindow (Proc proc)
-		{
-				DisassemblyWindow dw = (DisassemblyWindow) map.get(proc);
+  {
+    DisassemblyWindow dw = (DisassemblyWindow) map.get(proc);
 
-				/* Check if there is already a DisassemblyWindow running on this task */
-				if (dw != null)
-						{
-								dw = (DisassemblyWindow) map.get(proc);
-								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
-								dw.showAll();
-								return;
-						}
+    /* Check if there is already a DisassemblyWindow running on this task */
+    if (dw != null)
+      {
+	dw = (DisassemblyWindow) map.get(proc);
+	SteppingEngine.addObserver(dw.getLockObserver());
+	dw.showAll();
+	return;
+      }
 
-				LibGlade glade;
-				try
-						{
-								glade = new LibGlade(Config.getGladeDir() + DIS_GLADE, null);
-						}
-				catch (Exception e)
-						{
-								throw new RuntimeException(e);
-						}
+    LibGlade glade;
+    try
+      {
+	glade = new LibGlade(Config.getGladeDir() + DIS_GLADE, null);
+      }
+    catch (Exception e)
+      {
+	throw new RuntimeException(e);
+      }
 
-				if (SourceWindowFactory.runState == null)
-						{
-								SourceWindowFactory.runState = new RunState();
-								SourceWindowFactory.runState.setProc(proc);
-								dw = new DisassemblyWindow(glade);
-								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
-						}
-				else
-						{
-								dw = new DisassemblyWindow(glade);
-								SourceWindowFactory.runState.addObserver(dw.getLockObserver());
-								dw.finishDisWin(proc);
-								dw.setObservable(SourceWindowFactory.runState);
-						}
+    if (SteppingEngine.getSteppingObserver() == null)
+      {
+	SteppingEngine.setProc(proc);
+	dw = new DisassemblyWindow(glade);
+	SteppingEngine.addObserver(dw.getLockObserver());
+      }
+    else
+      {
+	dw = new DisassemblyWindow(glade);
+	SteppingEngine.addObserver(dw.getLockObserver());
+	dw.finishDisWin(proc);
+	dw.setObservable(SteppingEngine.getSteppingObserver());
+      }
 
-				map.put(proc, dw);
-				dw.addListener(new DisWinListener());
-				dw.grabFocus();
-		}
+    map.put(proc, dw);
+    dw.addListener(new DisWinListener());
+    dw.grabFocus();
+  }
   
   /**
-   * Used by the SourceWindow to assign the static memWin object which it uses
-   * to ensure there is only one DisassemblyWindow running for its Proc.
-   * 
-   * @param proc    The Proc used to find the DisassemblyWindow representing it.
-   */
+         * Used by the SourceWindow to assign the static memWin object which it
+         * uses to ensure there is only one DisassemblyWindow running for its
+         * Proc.
+         * 
+         * @param proc The Proc used to find the DisassemblyWindow representing
+         *                it.
+         */
   public static void setDisWin(Proc proc)
   {
     disWin = (DisassemblyWindow) map.get(proc);
@@ -164,7 +164,7 @@ public class DisassemblyWindowFactory
           Task t = dw.getMyTask();
           Proc p = t.getProc();
           
-          if (SourceWindowFactory.runState.removeObserver(dw.getLockObserver(), p) == 1)
+          if (SteppingEngine.removeObserver(dw.getLockObserver(), p) == 1)
             {
               map.remove(p);
             }

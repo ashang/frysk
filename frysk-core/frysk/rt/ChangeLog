@@ -1,3 +1,36 @@
+2007-04-19  Mike Cvet  <mcvet@redhat.com>
+
+	* RunState.java: Removed, via #4395. Most of logic moved to
+	SteppingEngine.java.
+	* SteppingEngine.java: Added. Fixes #4395.
+	(SteppingBreakpoint): Added.
+	(ThreadLifeObserver): Moved over from RunState.java.
+	(SteppingObserver): Added.
+	* TaskStepEngine.java: Added.
+	* TestSteppingEngine.java: Added. Logic moved over from
+	TestRunState.java.
+	* TestStepping.java: Fixups for RunState -> SteppingEngine move.
+	* TestRunState.java: Removed.
+	* TestStackBacktrace.java: Fixups for the RunState -> SteppingEngine
+	move. 
+	* BreakpointObserver.java: Ditto.
+	* LineBreakpoint.java: Ditto.
+	* Breakpoint.java: Added. 
+	(PersistentBreakpoint): Added.
+	* SourceBreakpoint.java: Fixups for RunState -> SteppingEngine move,
+	and PersistantBreakpoint move to Breakpoint.java.
+	* states/InstructionStepState.java: Added.
+	* states/LineStepState.java: Added.
+	* states/NextInstructionStepState.java: Added.
+	* states/NextInstructionStepTestState.java: Added.
+	* states/RunningState.java: Added.
+	* states/State.java: Added.
+	* states/StepAdvanceState.java: Added.
+	* states/StepOutState.java: Added.
+	* states/StepOverState.java: Added.
+	* states/StepOverTestState.java: Added.
+	* states/StoppedState.java: Added.
+
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
 	* FunctionBreakpoint.java (FunctionBreakpoint): Take proc as

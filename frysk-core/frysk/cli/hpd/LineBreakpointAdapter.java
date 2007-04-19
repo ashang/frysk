@@ -40,33 +40,30 @@
 package frysk.cli.hpd;
 
 import java.io.PrintWriter;
-import frysk.rt.RunState;
 import frysk.rt.LineBreakpoint;
 import frysk.proc.Task;
 
 class LineBreakpointAdapter extends Actionpoint
 {
-  private RunState runState;
   private Task task;		// Actionpoint should hold a PTSet.
 
-  LineBreakpointAdapter(LineBreakpoint breakpoint, RunState runState, Task task)
+  LineBreakpointAdapter(LineBreakpoint breakpoint, Task task)
   {
     super();
     this.rtBreakpoint = breakpoint;
-    this.runState = runState;
     this.task = task;
   }
 
   public void enable()
   {
     super.enable();
-    rtBreakpoint.addBreakpoint(runState, task);
+    rtBreakpoint.addBreakpoint(task);
   }
 
   public void disable()
   {
     super.disable();
-    rtBreakpoint.deleteBreakpoint(runState, task);
+    rtBreakpoint.deleteBreakpoint(task);
   }
 
   public void delete()

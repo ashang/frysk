@@ -68,8 +68,8 @@ public class LineBreakpoint
     super();
     if (proc != null)		// XXX Dwfl should already be available
       setAddrs(proc, (new Dwfl(proc.getPid())).getLineAddresses(fileName,
-								lineNumber,
-								column));
+						     lineNumber,
+						     column));
     this.fileName = fileName;
     this.lineNumber = lineNumber;
     this.column = column;
@@ -115,13 +115,12 @@ public class LineBreakpoint
     return dwflLine.getAddress();
   }
 
-  public static LineBreakpoint addLineBreakpoint(RunState runState, Task task,
+  public static LineBreakpoint addLineBreakpoint(Task task,
 						 String filename,
 						 int lineNumber)
   {
-    LineBreakpoint bpt = new LineBreakpoint(task.getProc(), filename,
-					    lineNumber, 0);
-    bpt.addBreakpoint(runState, task);
+    LineBreakpoint bpt = new LineBreakpoint(task.getProc(), filename, lineNumber, 0);
+    bpt.addBreakpoint(task);
     return bpt;
   }    
 }

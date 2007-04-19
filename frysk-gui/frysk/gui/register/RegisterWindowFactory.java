@@ -46,10 +46,9 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
-import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.RunState;
+import frysk.rt.SteppingEngine;
 import frysk.Config;
 
 /**
@@ -78,54 +77,53 @@ public class RegisterWindowFactory
    * @param proc    The Proc to be examined by the new RegisterWindow.
    */
   public static void createRegisterWindow (Proc proc)
-		{
-				RegisterWindow rw = (RegisterWindow) map.get(proc);
+  {
+    RegisterWindow rw = (RegisterWindow) map.get(proc);
 
-				/* Check if there is already a RegisterWindow running on this task */
-				if (rw != null)
-						{
-								rw = (RegisterWindow) map.get(proc);
-								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
-								rw.showAll();
-								return;
-						}
+    /* Check if there is already a RegisterWindow running on this task */
+    if (rw != null)
+      {
+	rw = (RegisterWindow) map.get(proc);
+	SteppingEngine.addObserver(rw.getLockObserver());
+	rw.showAll();
+	return;
+      }
 
-				LibGlade glade;
-				try
-						{
-								glade = new LibGlade(Config.getGladeDir() + REG_GLADE, null);
-						}
-				catch (Exception e)
-						{
-								throw new RuntimeException(e);
-						}
+    LibGlade glade;
+    try
+      {
+	glade = new LibGlade(Config.getGladeDir() + REG_GLADE, null);
+      }
+    catch (Exception e)
+      {
+	throw new RuntimeException(e);
+      }
 
-				if (SourceWindowFactory.runState == null)
-						{
-								SourceWindowFactory.runState = new RunState();
-								SourceWindowFactory.runState.setProc(proc);
-								rw = new RegisterWindow(glade);
-								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
-						}
-				else
-						{
-								rw = new RegisterWindow(glade);
-								SourceWindowFactory.runState.addObserver(rw.getLockObserver());
-								rw.finishRegWin(proc);
-								rw.setObservable(SourceWindowFactory.runState);
-						}
+    if (SteppingEngine.getSteppingObserver() == null)
+      {
+	SteppingEngine.setProc(proc);
+	rw = new RegisterWindow(glade);
+	SteppingEngine.addObserver(rw.getLockObserver());
+      }
+    else
+      {
+	rw = new RegisterWindow(glade);
+	SteppingEngine.addObserver(rw.getLockObserver());
+	rw.finishRegWin(proc);
+	rw.setObservable(SteppingEngine.getSteppingObserver());
+      }
 
-				map.put(proc, rw);
-				rw.addListener(new RegWinListener());
-				rw.grabFocus();
-		}
+    map.put(proc, rw);
+    rw.addListener(new RegWinListener());
+    rw.grabFocus();
+  }
 
   /**
-   * Used by the SourceWindow to assign the static regWin object which it uses
-   * to ensure there is only one RegisterWindow running for its Task.
-   * 
-   * @param proc    The Proc used to find the RegisterWindow representing it.
-   */
+         * Used by the SourceWindow to assign the static regWin object which it
+         * uses to ensure there is only one RegisterWindow running for its Task.
+         * 
+         * @param proc The Proc used to find the RegisterWindow representing it.
+         */
   public static void setRegWin (Proc proc)
   {
     regWin = (RegisterWindow) map.get(proc);
@@ -164,7 +162,7 @@ public class RegisterWindowFactory
           Task t = rw.getMyTask();
           Proc p = t.getProc();
           
-          if (SourceWindowFactory.runState.removeObserver(rw.getLockObserver(), p) == 1)
+          if (SteppingEngine.removeObserver(rw.getLockObserver(), p) == 1)
             {
               map.remove(p);
             }

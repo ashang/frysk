@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,53 +37,64 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.cli.hpd;
+package frysk.rt.states;
 
-import java.io.PrintWriter;
-import frysk.rt.FunctionBreakpoint;
+import lib.dw.DwflLine;
 import frysk.proc.Task;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
+import frysk.rt.SteppingEngine;
 
-/**
- * Adapter between the HPD actionpoint and breakpoints based on named
- * functions.
- *
- */
-class FunctionBreakpointAdapter
-  extends Actionpoint
+public class StepOverTestState extends State
 {
-  private Task task;		// Actionpoint should hold a PTSet.
-
-  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, Task task)
+  public StepOverTestState (Task task)
   {
-    super();
-    this.rtBreakpoint = breakpoint;
     this.task = task;
   }
-
-  public void enable()
+  
+  public State handleUpdate ()
   {
-    super.enable();
-    rtBreakpoint.addBreakpoint(task);
+    DwflLine line = this.tse.getDwflLine();
+
+    int lineNum;
+
+    if (line == null) /* We're in no-debuginfo land */
+      lineNum = 0;
+    else
+      lineNum = line.getLineNum();
+    
+    int prev = this.tse.getLine();	
+
+    if (lineNum != prev)
+      {
+	this.tse.setLine(lineNum);
+	StackFrame newFrame = null;
+	newFrame = StackFactory.createStackFrame(task, 2);
+
+	/* The two frames are the same; treat this step-over as an instruction step. */
+	if (newFrame.getFrameIdentifier().equals(
+						 this.tse.getFrameIdentifier()))
+	  {
+	    return new StoppedState(this.task);
+	  }
+	else
+	  {
+	    /* There is a different innermost frame on the stack - run until
+	     * it exits - success! */
+	    StackFrame frame = newFrame.getOuter();
+	    SteppingEngine.setBreakpoint(this.task, frame.getAddress());
+	    return new StepOverState(this.task);
+	  }	
+      }
+    else
+      {
+	this.task.requestUnblock(SteppingEngine.getSteppingObserver());
+	return this;
+      }
   }
-
-  public void disable()
+  
+  public boolean isStopped ()
   {
-    super.disable();
-    rtBreakpoint.deleteBreakpoint(task);
-  }
-
-  public void delete()
-  {
-    disable();
-    super.delete();
-  }
-
-  public PrintWriter output(PrintWriter writer)
-  {
-    FunctionBreakpoint breakpoint = (FunctionBreakpoint)rtBreakpoint;
-    writer.print(breakpoint.getName());
-    if (breakpoint.containsInlineInstances())
-      writer.print("*");
-    return writer;
+    return false;
   }
 }

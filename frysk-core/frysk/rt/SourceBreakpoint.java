@@ -66,7 +66,7 @@ public abstract class SourceBreakpoint
     LinkedList addrs = null; // The "raw" addresses
     LinkedList breakpoints = null; // RunState breakpoints
   }
-  
+
   public SourceBreakpoint()
   {
     procMap = new HashMap();
@@ -98,7 +98,7 @@ public abstract class SourceBreakpoint
       {
 	procEntry = new ProcEntry();
 	procMap.put(proc, procEntry);
-      }
+  }
     procEntry.addrs = addrs;
   }
 
@@ -116,7 +116,7 @@ public abstract class SourceBreakpoint
     * @param task task to which breakpoints are added, although they are in
     * 	fact added to the entire process.
     */
-  public void addBreakpoint(RunState runState, Task task)
+  public void addBreakpoint(Task task)
   {
     Proc proc = task.getProc();
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
@@ -128,10 +128,10 @@ public abstract class SourceBreakpoint
       {
 	Object bpt = bpts.next();
 	long address = getRawAddress(bpt);
-	RunState.PersistentBreakpoint breakpoint
-	  = runState.new PersistentBreakpoint(address);
+	Breakpoint b = new Breakpoint(address);
+	Breakpoint breakpoint = b.new PersistentBreakpoint(address);
 	procEntry.breakpoints.add(breakpoint);
-	runState.addPersistentBreakpoint(task, breakpoint);
+	SteppingEngine.addBreakpoint(task, breakpoint);
       }
   }
 
@@ -140,7 +140,7 @@ public abstract class SourceBreakpoint
    * @param runState the RunState object
    * @param task task in the process
    */
-  public void deleteBreakpoint(RunState runState, Task task)
+  public void deleteBreakpoint(Task task)
   {
     Proc proc = task.getProc();
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
@@ -150,9 +150,9 @@ public abstract class SourceBreakpoint
 
     while (iterator.hasNext())
       {
-	RunState.PersistentBreakpoint bpt
-	  = (RunState.PersistentBreakpoint)iterator.next();
-        runState.deletePersistentBreakpoint(task, bpt);
+	Breakpoint.PersistentBreakpoint bpt
+	  = (Breakpoint.PersistentBreakpoint) iterator.next();
+        SteppingEngine.deleteBreakpoint(task, bpt);
       }
     procEntry.breakpoints.clear();
   }
@@ -164,8 +164,7 @@ public abstract class SourceBreakpoint
    * @param bpt
    * @return
    */
-  public boolean containsPersistantBreakpoint(Proc proc,
-					      RunState.PersistentBreakpoint bpt)
+  public boolean containsPersistantBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
   {
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
     if (procEntry == null)

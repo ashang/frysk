@@ -1021,7 +1021,7 @@ public class SourceView
       else if (target.isTextArea(win))
         {
           /* If the SW is stopped */
-          if (parent.getState() == 0)
+          if (!parent.isRunning())
             result = target.mousedOverText(event);
         }
 

@@ -1,3 +1,15 @@
+2007-04-19  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/CLI.java: General fixes for RunState -> SteppingEngine move.
+	(steppingObserver): Renamed from runStateObserver.
+	(ListHandler.handle): No-debuginfo exception fix.
+	(SteppingObserver): Renamed from RunStateObserver.
+	(SteppingObserver.update): Return if argument is null.
+	(getRunState): Removed.
+	* hpd/BreakpointHandler.java: SteppingEngine fixes.
+	* hpd/FunctionBreakpointAdapter.java: Ditto.
+	* hpd/LineBreakpointAdapter.java: Ditto.
+
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
 	* hpd/BreakpointHandler.java (handle): New parameters to

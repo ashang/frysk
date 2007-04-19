@@ -47,10 +47,9 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.Config;
-import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.RunState;
+import frysk.rt.SteppingEngine;
 
 /**
  * Factory for creating MemoryWindows - allows multiple MemoryWindows to be
@@ -77,54 +76,53 @@ public class MemoryWindowFactory
    * @param proc    The Proc to be examined by the new MemoryWindow.
    */
   public static void createMemoryWindow (Proc proc)
-		{
-				MemoryWindow mw = (MemoryWindow) map.get(proc);
+  {
+    MemoryWindow mw = (MemoryWindow) map.get(proc);
 
-				/* Check if there is already a MemoryWindow running on this task */
-				if (mw != null)
-						{
-								mw = (MemoryWindow) map.get(proc);
-								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
-								mw.showAll();
-								return;
-						}
+    /* Check if there is already a MemoryWindow running on this task */
+    if (mw != null)
+      {
+	mw = (MemoryWindow) map.get(proc);
+	SteppingEngine.addObserver(mw.getLockObserver());
+	mw.showAll();
+	return;
+      }
 
-				LibGlade glade;
-				try
-						{
-								glade = new LibGlade(Config.getGladeDir() + MEM_GLADE, null);
-						}
-				catch (Exception e)
-						{
-								throw new RuntimeException(e);
-						}
+    LibGlade glade;
+    try
+      {
+	glade = new LibGlade(Config.getGladeDir() + MEM_GLADE, null);
+      }
+    catch (Exception e)
+      {
+	throw new RuntimeException(e);
+      }
 
-				if (SourceWindowFactory.runState == null)
-						{
-								SourceWindowFactory.runState = new RunState();
-								SourceWindowFactory.runState.setProc(proc);
-								mw = new MemoryWindow(glade);
-								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
-						}
-				else
-						{
-								mw = new MemoryWindow(glade);
-								SourceWindowFactory.runState.addObserver(mw.getLockObserver());
-								mw.finishMemWin(proc);
-								mw.setObservable(SourceWindowFactory.runState);
-						}
+    if (SteppingEngine.getSteppingObserver() == null)
+      {
+	SteppingEngine.setProc(proc);
+	mw = new MemoryWindow(glade);
+	SteppingEngine.addObserver(mw.getLockObserver());
+      }
+    else
+      {
+	mw = new MemoryWindow(glade);
+	SteppingEngine.addObserver(mw.getLockObserver());
+	mw.finishMemWin(proc);
+	mw.setObservable(SteppingEngine.getSteppingObserver());
+      }
 
-				map.put(proc, mw);
-				mw.addListener(new MemWinListener());
-				mw.grabFocus();
-		}
+    map.put(proc, mw);
+    mw.addListener(new MemWinListener());
+    mw.grabFocus();
+  }
   
   /**
-   * Used by the SourceWindow to assign the static memWin object which it uses
-   * to ensure there is only one MemoryWindow running for its Task.
-   * 
-   * @param proc  The Proc used to find the MemoryWindow representing it.
-   */
+         * Used by the SourceWindow to assign the static memWin object which it
+         * uses to ensure there is only one MemoryWindow running for its Task.
+         * 
+         * @param proc The Proc used to find the MemoryWindow representing it.
+         */
   public static void setMemWin(Proc proc)
   {
     memWin = (MemoryWindow) map.get(proc);
@@ -163,7 +161,7 @@ public class MemoryWindowFactory
           Task t = mw.getMyTask();
           Proc p = t.getProc();
           
-          if (SourceWindowFactory.runState.removeObserver(mw.getLockObserver(), p) == 1)
+          if (SteppingEngine.removeObserver(mw.getLockObserver(), p) == 1)
             {
               map.remove(p);
             }

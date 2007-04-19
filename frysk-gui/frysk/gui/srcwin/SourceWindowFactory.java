@@ -60,7 +60,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.RunState;
+import frysk.rt.SteppingEngine;
 import frysk.rt.StackFrame;
 
 
@@ -73,8 +73,6 @@ import frysk.rt.StackFrame;
 public class SourceWindowFactory
 {
   protected static SourceWindow srcWin = null;
-  
-  public static RunState runState = null;
   
   public static Task myTask;
   
@@ -107,7 +105,7 @@ public class SourceWindowFactory
     srcWin = new SourceWindow(glade, Config.getGladeDir (), proc);
 
     srcWin.addListener(new SourceWinListener());
-    runState = srcWin.getRunState();
+//    runState = srcWin.getRunState();
     
     srcWin.grabFocus();
   }
@@ -127,7 +125,7 @@ public class SourceWindowFactory
     
     srcWin = new SourceWindow(glade, Config.getGladeDir (), procs);
     srcWin.addListener(new SourceWinListener());
-    runState = srcWin.getRunState();
+//    runState = srcWin.getRunState();
     
     srcWin.grabFocus();
   }
@@ -147,7 +145,7 @@ public class SourceWindowFactory
     
     SourceWindow srcWin = new SourceWindow(glade, Config.getGladeDir(), frame);
     srcWin.addListener(new SourceWinListener());
-    runState = srcWin.getRunState();
+//    runState = srcWin.getRunState();
     
     srcWin.grabFocus();
   }
@@ -248,7 +246,8 @@ public class SourceWindowFactory
         {
               Proc p = srcWin.getSwProc();
               
-              runState.removeObserver(srcWin.getLockObserver(), p);
+//              runState.removeObserver(srcWin.getLockObserver(), p);
+              SteppingEngine.removeObserver(srcWin.getLockObserver(), p);
 
              srcWin.hideAll();
         		srcWin = null;
@@ -277,7 +276,8 @@ public class SourceWindowFactory
 
       if (srcWin != null)
 	{
-	  runState.addProc(proc);
+//	  runState.addProc(proc);
+	  SteppingEngine.addProc(proc);
 	  return Action.BLOCK;
 	}
 
@@ -295,7 +295,7 @@ public class SourceWindowFactory
       srcWin = new SourceWindow(glade, Config.getGladeDir(), proc, this);
 
       srcWin.addListener(new SourceWinListener());
-      runState = srcWin.getRunState();
+//      runState = srcWin.getRunState();
 
       srcWin.grabFocus();
 

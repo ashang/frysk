@@ -68,7 +68,8 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-import frysk.rt.RunState;
+import frysk.rt.Breakpoint;
+import frysk.rt.SteppingEngine;
 import frysk.rt.StackFrame;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
@@ -86,10 +87,9 @@ public class CLI
   StackFrame frame = null;
   int stackLevel = 0;
   private CLIEventLoop eventLoop;
+  private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
   boolean attached;
-  RunState runState;
-  private RunStateObserver runStateObserver;
   private ActionpointTable apTable = new ActionpointTable();
   
   private HashSet runningProcs = new HashSet(); //Processes started with run command
@@ -505,15 +505,14 @@ public class CLI
     // created elsewhere e.g., by the SourceWindowFactory.
     outWriter.println("Attaching proc " + proc.toString() + " task "
 		      + task.toString());
-    if (runState == null) 
+    if (steppingObserver == null) 
       {
-	runState = new RunState();
-	runStateObserver = new RunStateObserver();
-	runState.addObserver(runStateObserver);
+		steppingObserver = new SteppingObserver();
+		SteppingEngine.addObserver(steppingObserver);
       }
     this.proc = proc;
     this.task = task;
-    runState.setProc(proc);
+    SteppingEngine.setProc(proc);
   }
   
   public void startAttach(Task task)
@@ -545,15 +544,16 @@ public class CLI
   
   class DetachHandler implements CommandHandler
   {
-    public void handle(Command cmd) throws ParseException
+    public void handle (Command cmd) throws ParseException
     {
       ArrayList params = cmd.getParameters();
       if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
+	{
+	  printUsage(cmd);
+	  return;
+	}
       refreshSymtab();
+
       boolean startedByRun;
       synchronized (CLI.this)
       {
@@ -565,16 +565,13 @@ public class CLI
 	             Message.TYPE_ERROR);
 	  return;
 	}
-      if (runState != null) 
-	{
-	  // Delete all breakpoints.
-	  runState.removeObserver(runStateObserver, proc);
-	  runState.continueExecution(proc.getTasks()); // redundant with line
-	  // above?
-	  runState = null;
-	  proc = null;
-	  task = null;
-	}
+      // Delete all breakpoints.
+      if (steppingObserver != null)
+		SteppingEngine.removeObserver(steppingObserver, proc);
+
+      proc = null;
+      task = null;
+
       attached = false;
       if (params.size() > 0)
 	{
@@ -645,7 +642,12 @@ public class CLI
  
       frame = symtab.getCurrentFrame();
         
-      Line line = frame.getLines() [0];
+      Line line = null;
+      if (frame.getLines().length > 0)
+		line = frame.getLines() [0];
+      else
+		outWriter.println("No source for current frame");
+	
       try 
 	{
 	  FileReader fr = new FileReader(line.getFile ());
@@ -1042,15 +1044,11 @@ public class CLI
           return;
         }
       refreshSymtab();
-      if (runState != null)
-	{
-	  runState.continueExecution(proc.getTasks());
-	}
+      
+      if (steppingObserver != null)
+	SteppingEngine.continueExecution(proc.getTasks());
       else
-	{
-	  addMessage("Not attached to any process", 
-		     Message.TYPE_ERROR);
-	}
+	addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
   }
 
@@ -1067,15 +1065,12 @@ public class CLI
           return;
         }
       refreshSymtab();
-      if (runState != null)
-	{
-	  runState.stop(null, proc.getTasks());
-	}
+      
+      if (steppingObserver != null)
+	SteppingEngine.stop(null, proc.getTasks());
       else
-	{
-	  addMessage("Not attached to any process", 
-		     Message.TYPE_ERROR);
-	}
+	addMessage("Not attached to any process", Message.TYPE_ERROR);
+   	   
     }
   }
 
@@ -1427,25 +1422,28 @@ public class CLI
       }
   }
   
-  private class RunStateObserver implements Observer 
+  private class SteppingObserver implements Observer 
   {
     public void update(Observable observable, Object arg)
     {
-      RunState runState = (RunState)observable;
+      if (arg == null)
+	return;
+      
       Task task = (Task)arg;
-      RunState.PersistentBreakpoint bpt = null;
+      Breakpoint.PersistentBreakpoint bpt = null;
 
-      outWriter.println("runState state = " + runState.getTaskState(task));
-      synchronized (CLI.this)
+      outWriter.println("SteppingEngine state = " + SteppingEngine.getTaskState(task));
+      synchronized (CLI.this) 
 	{
-	  if (runState.getTaskState(task) != RunState.RUNNING)
+	    if (!SteppingEngine.isTaskRunning(task))
 	    {
 	      attached = true;
 	      symtabNeedsRefresh = true;
 	    }
 	  else
 	    attached = false;
-	  bpt = runState.getTaskPersistentBreakpoint(task);
+	    
+	  bpt = (Breakpoint.PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
 	  CLI.this.notifyAll();
 	}
       if (bpt != null) 
@@ -1455,8 +1453,7 @@ public class CLI
 	  for (i = 0; i < size; i++)
 	    {
 	      Actionpoint ap = apTable.getActionpoint(i);
-	      if (ap.getRTBreakpoint().
-		  containsPersistantBreakpoint(task.getProc(), bpt))
+	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(task.getProc(), bpt))
 		{
 		  outWriter.print("breakpoint " + i + " hit: ");
 		  ap.output(outWriter);
@@ -1470,14 +1467,6 @@ public class CLI
 	    }
 	}
     }
-  }
-
-  /**
-   * Return the RunState object for this CLI.
-   */
-  public RunState getRunState()
-  {
-    return runState;
   }
 
   /**

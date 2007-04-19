@@ -1,3 +1,10 @@
+2007-04-19  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceView.java (SourceViewListener.mouseMotionEvent): Call 
+	SourceWindow.isRunning().
+	* SourceWindowFactory.java: General SteppingEngine fixups.
+	* SourceWindow.java: Ditto.
+
 2007-04-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindowFactory.java: Intermediate checkin for bz #4193

@@ -235,7 +235,6 @@ public class TestStackBacktrace
   }
   
   private boolean initial;
-  private RunState runState;
   private LockObserver lock;
   private HashMap lineMap;
   private int testState;
@@ -264,8 +263,7 @@ public class TestStackBacktrace
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
-  runState = new RunState();
-  runState.addObserver(lock);
+  SteppingEngine.addObserver(lock);
   
   testState = PUSH;
   
@@ -281,9 +279,10 @@ public class TestStackBacktrace
   myProc = myTask.getProc();
   assertNotNull(myProc);
   
-  runState.setProc(myProc);
+  SteppingEngine.setProc(myProc);
 
   assertRunUntilStop("Attempting to add observer");
+  SteppingEngine.clear();
   }
   
   /**
@@ -303,8 +302,7 @@ public class TestStackBacktrace
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
-  runState = new RunState();
-  runState.addObserver(lock);
+  SteppingEngine.addObserver(lock);
   
   testState = POP;
   
@@ -320,9 +318,10 @@ public class TestStackBacktrace
   myProc = myTask.getProc();
   assertNotNull(myProc);
   
-  runState.setProc(myProc);
+  SteppingEngine.setProc(myProc);
 
   assertRunUntilStop("Attempting to add observer");
+  SteppingEngine.clear();
   }
   
   /**
@@ -336,13 +335,13 @@ public class TestStackBacktrace
     if (frame.getLines().length == 0)
       {
         this.lineMap.put(myTask, new Integer(0));
-        this.runState.setUpLineStep(myTask.getProc().getTasks());
+        SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
         return;
       }
       
     Line line = frame.getLines()[0];
     this.lineMap.put(myTask, new Integer(line.getLine()));
-    this.runState.setUpLineStep(myTask.getProc().getTasks());
+    SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
   }
   
   /**
@@ -515,7 +514,7 @@ public class TestStackBacktrace
             else if (this.testState == POP)
               this.testState = POP_GO;
             
-            this.runState.setUpLineStep(myTask.getProc().getTasks());
+            SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
           }
     else
       {
@@ -532,10 +531,10 @@ public class TestStackBacktrace
                 if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     this.testState = PUSH_STEPPING;
-                    this.runState.stepInstruction(myTask.getProc().getTasks());
+                    SteppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-               this.runState.setUpLineStep(myTask.getProc().getTasks());
+               SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
               }
             else if (this.testState == POP_GO)
               {
@@ -543,14 +542,14 @@ public class TestStackBacktrace
                 if (line.getLine() == 63)
                   {
                     this.testState = POP_STEPPING;
-                    this.runState.stepInstruction(myTask.getProc().getTasks());
+                    SteppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
               }
             else
               {
-                this.runState.setUpLineStep(myTask.getProc().getTasks());
+                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
                 return;
               }
           }
@@ -580,7 +579,7 @@ public class TestStackBacktrace
                 assertEquals ("demangled name", "main",
 			      frame.getSymbol().getDemangledName());
                 
-                runState.stepInstruction(myTask.getProc().getTasks());
+                SteppingEngine.stepInstruction(myTask.getProc().getTasks());
                 return;
               }
           }
@@ -605,7 +604,7 @@ public class TestStackBacktrace
                 assertEquals ("demangled name", "main",
 			      frame.getSymbol().getDemangledName());
                 
-                runState.stepInstruction(myTask.getProc().getTasks());
+                SteppingEngine.stepInstruction(myTask.getProc().getTasks());
                 return;
               }
           }

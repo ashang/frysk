@@ -128,9 +128,9 @@ import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Line;
-import frysk.rt.RunState;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
+import frysk.rt.SteppingEngine;
 import frysk.value.Variable;
 import frysk.vtecli.ConsoleWindow;
 
@@ -290,7 +290,7 @@ public class SourceWindow
 
   private StackFrame[][] frames;
 
-  private RunState runState;
+//  private RunState runState;
   
   private SymTab symTab[];
 
@@ -336,12 +336,11 @@ public class SourceWindow
     this.swProc[this.current] = proc;
     this.frames = new StackFrame[1][];
     this.symTab = new SymTab[1];
-    this.runState = new RunState();
     this.lock = new LockObserver();
-    this.runState.addObserver(lock);
-    this.runState.setProc(proc);
+    SteppingEngine.addObserver(lock);
+    SteppingEngine.setProc(proc);
     this.threadObserver = new ThreadLifeObserver();
-    this.runState.setThreadObserver(this.threadObserver);
+    SteppingEngine.setThreadObserver(this.threadObserver);
   }
   
   public SourceWindow (LibGlade glade, String gladePath, Proc[] procs)
@@ -356,13 +355,12 @@ public class SourceWindow
     this.swProc = procs;
     this.frames = new StackFrame[this.numProcs][];
     this.symTab = new SymTab[this.numProcs];
-    this.runState = new RunState();
     this.lock = new LockObserver();
     this.dom = new DOMFrysk[this.numProcs];
-    this.runState.addObserver(lock);
-    this.runState.setProcs(procs);
+    SteppingEngine.addObserver(lock);
+    SteppingEngine.setProcs(procs);
     this.threadObserver = new ThreadLifeObserver();
-    this.runState.setThreadObserver(this.threadObserver);
+    SteppingEngine.setThreadObserver(this.threadObserver);
   }
   
   public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
@@ -375,8 +373,7 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.swProc = new Proc[1];
     this.swProc[this.current] = trace.getTask().getProc();
-    this.runState = new RunState();
-    this.runState.setRunning(this.swProc[this.current].getTasks());
+    SteppingEngine.setRunning(this.swProc[this.current].getTasks());
     this.frames = new StackFrame[1][];
     this.symTab = new SymTab[1];
     this.dom = new DOMFrysk[1];
@@ -435,7 +432,7 @@ public class SourceWindow
   private void finishSourceWin ()
   { 
     /* Only because this wouldn't be the case during a Monitor stack trace */
-    if (this.runState.getTaskState(this.swProc[this.current].getMainTask()) == RunState.STOPPED)
+    if (!SteppingEngine.isTaskRunning(this.swProc[this.current].getMainTask()))
       {
         for (int j = 0; j < numProcs; j++)
           this.frames[j] = generateProcStackTrace(this.swProc[j], j);
@@ -485,7 +482,7 @@ public class SourceWindow
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
-    if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
+    if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(this.frames[this.current]);
 
     this.showAll();
@@ -540,9 +537,9 @@ public class SourceWindow
             SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
 
             for (int j = 0; j < frames[this.current].length; j++)
-			  {
-				b.highlightLine(frames[this.current][0], true);
-			  }
+	      {
+		b.highlightLine(frames[this.current][0], true);
+	      }
           }
         else
           {
@@ -564,7 +561,7 @@ public class SourceWindow
         else
           {
             /* Only the case during a monitor stack trace */
-            if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
+            if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
               {
                 SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
                 b.disassembleFrame(this.currentFrame);
@@ -669,8 +666,8 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-//    this.runState.runCompleted();
-//    this.runState.stepCompleted();
+//    SteppingEngine.runCompleted();
+//    SteppingEngine.stepCompleted();
     
     if (this.currentFrame.getLines().length== 0)
       {
@@ -733,7 +730,7 @@ public class SourceWindow
 	Proc[] newSwProc = new Proc[numProcs];
 	
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	this.runState.continueExecution(this.swProc[this.current].getTasks());
+	SteppingEngine.continueExecution(this.swProc[this.current].getTasks());
 	
 	int j = 0;
 	for (int i = 0; i < oldSize; i++)
@@ -783,14 +780,9 @@ public class SourceWindow
     return this.stackView;
   }
 
-  public RunState getRunState ()
+  public boolean isRunning ()
   {
-    return this.runState;
-  }
-  
-  public int getState ()
-  {
-	return this.runState.getTaskState(this.currentTask);
+    return SteppingEngine.isTaskRunning(this.currentTask);
   }
 
   public LockObserver getLockObserver ()
@@ -1967,7 +1959,8 @@ public class SourceWindow
       removeTags();
       this.view.load(selected, this.viewPicker.getActive());
       
-      if (runState.getTaskState(selected.getTask()) == RunState.STOPPED)
+//      if (SteppingEngine.getTaskState(selected.getTask()) == SteppingEngine.STOPPED)
+      if (!SteppingEngine.isTaskRunning(selected.getTask()))
     	{
 		  if (this.stop.isSensitive())
 		      resensitize();
@@ -1990,11 +1983,11 @@ public class SourceWindow
         	
             this.view.load(selected, mode);
             
-            boolean running = this.runState.isProcRunning(this.swProc[current].getTasks());
+            boolean running = SteppingEngine.isProcRunning(this.swProc[current].getTasks());
             
         	if (current != this.current
         		&& !running)
-//				&& this.runState.getState() != RunState.RUNNING)
+//				&& SteppingEngine.getState() != SteppingEngine.RUNNING)
 			  {
 				this.symTab[current] = new SymTab(
 												  this.swProc[current].getPid(),
@@ -2113,11 +2106,11 @@ public class SourceWindow
 
     if (this.threadDialog == null)
       {
-	    this.runState.stop(null, this.swProc[this.current].getTasks());
+	    SteppingEngine.stop(null, this.swProc[this.current].getTasks());
       }
     else
       {
-        this.runState.stop(this.threadDialog.getBlockTasks(), this.threadDialog.getStopTasks());
+        SteppingEngine.stop(this.threadDialog.getBlockTasks(), this.threadDialog.getStopTasks());
       }
   }
 
@@ -2153,7 +2146,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.runState.setUpLineStep(this.currentTask))
+    if (SteppingEngine.setUpLineStep(this.currentTask))
       removeTags();
   }
   
@@ -2167,7 +2160,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.runState.setUpLineStep(tasks))
+    if (SteppingEngine.setUpLineStep(tasks))
       removeTags();
   }
 
@@ -2182,7 +2175,7 @@ public class SourceWindow
     desensitize();
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.runState.setUpStepOver(l, this.currentFrame);
+    SteppingEngine.setUpStepOver(l, this.currentFrame);
     removeTags();
   }
   
@@ -2193,7 +2186,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpStepOver(tasks, this.currentFrame);
+    SteppingEngine.setUpStepOver(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -2207,7 +2200,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.continueExecution(this.swProc[this.current].getTasks());
+    SteppingEngine.continueExecution(this.swProc[this.current].getTasks());
 
     removeTags();
   }
@@ -2226,7 +2219,7 @@ public class SourceWindow
 
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.runState.setUpStepOut(l, this.currentFrame);
+    SteppingEngine.setUpStepOut(l, this.currentFrame);
     removeTags();
   }
   
@@ -2239,7 +2232,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpStepOut(tasks, this.currentFrame);
+    SteppingEngine.setUpStepOut(tasks, this.currentFrame);
     removeTags();
   }
   
@@ -2250,7 +2243,7 @@ public class SourceWindow
     
     desensitize();
     
-    this.runState.setUpStepAdvance(this.currentTask, this.currentFrame);
+    SteppingEngine.setUpStepAdvance(this.currentTask, this.currentFrame);
     removeTags();
   }
 
@@ -2272,7 +2265,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.runState.stepInstruction(this.currentTask))
+    if (SteppingEngine.stepInstruction(this.currentTask))
       removeTags();
   }
   
@@ -2291,7 +2284,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.runState.stepInstruction(tasks))
+    if (SteppingEngine.stepInstruction(tasks))
       removeTags();
   }
 
@@ -2305,7 +2298,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpStepNextInstruction(this.currentTask, this.currentFrame);
+    SteppingEngine.setUpStepNextInstruction(this.currentTask, this.currentFrame);
     removeTags();
   }
   
@@ -2319,7 +2312,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.runState.setUpStepNextInstruction(tasks, this.currentFrame);
+    SteppingEngine.setUpStepNextInstruction(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -2487,7 +2480,7 @@ public class SourceWindow
       }
     else
       {
-        this.runState.addObserver(regWin.getLockObserver());
+        SteppingEngine.addObserver(regWin.getLockObserver());
         regWin.setClosed(false);
         regWin.showAll();
       }
@@ -2519,7 +2512,7 @@ public class SourceWindow
       }
     else
       {
-        this.runState.addObserver(memWin.getLockObserver());
+        SteppingEngine.addObserver(memWin.getLockObserver());
         memWin.setClosed(false);
         memWin.showAll();
       }
@@ -2546,7 +2539,7 @@ public class SourceWindow
       }
     else
       {
-        this.runState.addObserver(disWin.getLockObserver());
+        SteppingEngine.addObserver(disWin.getLockObserver());
         disWin.setClosed(false);
         disWin.showAll();
       }
@@ -2573,7 +2566,7 @@ public class SourceWindow
 
   private synchronized void executeTasks (LinkedList tasks)
   {
-    this.runState.executeTasks(tasks);
+    SteppingEngine.executeTasks(tasks);
   }
 
   private StackFrame[] generateProcStackTrace (Proc proc, int current)
@@ -2643,7 +2636,7 @@ public class SourceWindow
 
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 	
-	if (!this.runState.isProcRunning(this.swProc[this.current].getTasks()))
+	if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
 	  this.symTab[this.current].setFrames(frames);
 
 	return frames;
@@ -2808,7 +2801,7 @@ public class SourceWindow
 	  SourceWindow.this.desensitize();
 	  SourceWindow.this.stop.setSensitive(false);
 //	  System.err.println("runstate clear");
-	  SourceWindow.this.runState.clear();
+	  SteppingEngine.clear();
 	  
 	  return;
 	}
@@ -2872,7 +2865,7 @@ public class SourceWindow
 											       SourceWindow.this.swProc[SourceWindow.this.current],
 											       SourceWindow.this.current);
 		  populateStackBrowser(SourceWindow.this.frames);
-		  SourceWindow.this.runState.notifyStopped();
+		  SteppingEngine.notifyStopped();
 		  procReblocked();
 		}
 	      });

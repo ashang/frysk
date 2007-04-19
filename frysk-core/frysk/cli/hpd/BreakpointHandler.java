@@ -91,7 +91,7 @@ class BreakpointHandler
 	lineNumber = Integer.parseInt((String)bptParams[2]);
 	LineBreakpoint bpt = new LineBreakpoint(task.getProc(), fileName,
 						lineNumber, 0);
-	actionpoint = new LineBreakpointAdapter(bpt, cli.getRunState(), task);
+	actionpoint = new LineBreakpointAdapter(bpt, task);
       }
     else
       {
@@ -114,6 +114,7 @@ class BreakpointHandler
 		cli.getPrintWriter().println("Is declared inline.");
 	      }
 	  }
+
 	FunctionBreakpoint bpt;
 	if (die != null)
 	  {
@@ -131,8 +132,7 @@ class BreakpointHandler
 		 return;
 	      }
 	  }
-	actionpoint = new FunctionBreakpointAdapter(bpt, cli.getRunState(),
-						    task);
+	actionpoint = new FunctionBreakpointAdapter(bpt, task);
       }
 
 

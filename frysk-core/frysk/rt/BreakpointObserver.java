@@ -43,6 +43,6 @@ import frysk.proc.Task;
 
 interface BreakpointObserver
 {
-  void updateHit(RunState runState, RunState.PersistentBreakpoint breakpoint,
+  void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
 		 Task task, long address);
 }

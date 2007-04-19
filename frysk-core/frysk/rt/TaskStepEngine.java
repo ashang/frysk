@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,53 +37,90 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.cli.hpd;
+package frysk.rt;
 
-import java.io.PrintWriter;
-import frysk.rt.FunctionBreakpoint;
 import frysk.proc.Task;
+import frysk.rt.states.*;
+import lib.dw.Dwfl;
+import lib.dw.DwflLine;
 
-/**
- * Adapter between the HPD actionpoint and breakpoints based on named
- * functions.
- *
- */
-class FunctionBreakpointAdapter
-  extends Actionpoint
+public class TaskStepEngine
 {
-  private Task task;		// Actionpoint should hold a PTSet.
-
-  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, Task task)
+  private Task task;
+  private Dwfl dwfl;
+  private State state;
+  private FrameIdentifier fi;
+  private int line = 0;
+  
+  public TaskStepEngine (Task task)
   {
-    super();
-    this.rtBreakpoint = breakpoint;
     this.task = task;
+    this.state = new StoppedState(task);
   }
-
-  public void enable()
+  
+  public boolean isStopped ()
   {
-    super.enable();
-    rtBreakpoint.addBreakpoint(task);
+    return this.state.isStopped();
   }
-
-  public void disable()
+  
+  public boolean handleUpdate ()
   {
-    super.disable();
-    rtBreakpoint.deleteBreakpoint(task);
+    State s = this.state.handleUpdate();
+    if (s.isStopped())
+      {
+	this.state = s;
+	return true;
+      }
+    
+    return false;
   }
-
-  public void delete()
+  
+  /**
+   * Returns the Dwfl for this Task, and inserts it into the Dwfl map.
+   * 
+   * @return dline The DwflLine for this Engine's Task
+   */
+  public DwflLine getDwflLine ()
   {
-    disable();
-    super.delete();
+    if (this.dwfl == null)
+      this.dwfl = new Dwfl(task.getTid());
+    
+    DwflLine dline = this.dwfl.getSourceLine(this.task.getIsa().pc(task));
+    return dline;
   }
-
-  public PrintWriter output(PrintWriter writer)
+  
+  public int getLine ()
   {
-    FunctionBreakpoint breakpoint = (FunctionBreakpoint)rtBreakpoint;
-    writer.print(breakpoint.getName());
-    if (breakpoint.containsInlineInstances())
-      writer.print("*");
-    return writer;
+    return this.line;
+  }
+  
+  public void setLine (int line)
+  {
+    this.line = line;
+  }
+  
+  public Task getTask ()
+  {
+    return this.task;
+  }
+  
+  public void setState (State newState)
+  {
+    this.state = newState;
+  }
+  
+  public State getState ()
+  {
+    return this.state;
+  }
+  
+  public void setFrameIdentifier (FrameIdentifier fi)
+  {
+    this.fi = fi;
+  }
+  
+  public FrameIdentifier getFrameIdentifier ()
+  {
+    return this.fi;
   }
 }
