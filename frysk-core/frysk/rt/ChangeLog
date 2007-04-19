@@ -2,6 +2,7 @@
 
 	* RunState.java: Removed, via #4395. Most of logic moved to
 	SteppingEngine.java.
+	(SteppingObserver.updateExecuted): Made synchronized.
 	* SteppingEngine.java: Added. Fixes #4395.
 	(SteppingBreakpoint): Added.
 	(ThreadLifeObserver): Moved over from RunState.java.

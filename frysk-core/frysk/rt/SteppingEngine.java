@@ -972,7 +972,7 @@ public class SteppingEngine
      * @param task The Task which was just blocked
      * @return Action.BLOCK Continue blocking this incoming Task
      */
-    public Action updateExecuted (Task task)
+    public synchronized Action updateExecuted (Task task)
     {
       if (((TaskStepEngine) taskStateMap.get(task)).handleUpdate())
 	{
