@@ -1,3 +1,7 @@
+2007-04-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRefresh.java: Add 2.6.20-1.2312.fc5 to problem list.
+
 2007-04-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSyscallRunning.java (setUp): Replace EventLoop.run with
