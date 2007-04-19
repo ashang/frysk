@@ -296,54 +296,38 @@ public abstract class EventLoop
     }
     /**
      * Execute the event on the event-loop thread; return when
-     * completed.  If these requests are ongoing then consider setting
-     * up a dedicated Request object.
+     * completed.  If these requests are ongoing then consider
+     * creating a dedicated Request object.
      */
     public void execute (Event e)
     {
-	if (isCurrentThread()) {
-	    // On event-loop thread, dispatch immediatly.
-	    e.execute();
-	}
-	else {
-	    synchronized (serializeExecuteRequests) {
-		request.request (e);
-	    }
-	}
+	request.request(e);
     }
-    private Object serializeExecuteRequests = new Object();
-    private class Request
-	implements Event
+    private class ExecuteRequest
+	extends Request
     {
-	private Event op;
-	private RuntimeException runtimeException;
-	public synchronized void execute ()
+	ExecuteRequest ()
 	{
-	    try {
+	    super (EventLoop.this);
+	}
+	private Event op;
+	public void execute ()
+	{
+	    op.execute();
+	}
+	void request (Event op)
+	{
+	    if (isEventLoopThread()) {
+		// On event-loop thread, dispatch immediatly.
 		op.execute();
 	    }
-	    catch (RuntimeException r) {
-		runtimeException = r;
+	    else synchronized (this) {
+		this.op = op;
+		request ();
 	    }
-	    notify();
-	}
-	private synchronized void request (Event e)
-	{
-	    runtimeException = null;
-	    op = e;
-	    add(this);
-	    try {
-		wait();
-	    }
-	    catch (InterruptedException r) {
-		throw new RuntimeException (r);
-	    }
-	    op = null;
-	    if (runtimeException != null)
-		throw runtimeException;
 	}
     }
-    private final Request request = new Request();
+    private final ExecuteRequest request = new ExecuteRequest();
 
 
     /**

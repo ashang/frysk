@@ -1,3 +1,9 @@
+2007-04-19  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java (ExecuteRequest): Replace Request class.
+	(execute): Call request.request.
+	(serializeExecuteRequests): Delete.
+
 2007-04-18  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java (isCurrentThread): If TID is -1, set the thread
