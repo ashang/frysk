@@ -52,11 +52,13 @@ import lib.dw.BaseTypes;
 public class ClassType
     extends Type
 {
-  ArrayList members;
+  ArrayList members;	// Type of member
 
-  ArrayList names;
+  ArrayList names;	// String
   
-  ArrayList offsets;
+  ArrayList offsets;	// Long offset into class
+  
+  ArrayList masks;	// Integer mask for bitfields
 
   /**
    * Iterate through the class members.
@@ -98,7 +100,21 @@ public class ClassType
 	case BaseTypes.baseTypeShort:
 	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", v.getShort(off));
 	case BaseTypes.baseTypeInteger:
-	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", v.getInt(off));
+	  int val = v.getInt(off);
+	  int mask = ((Integer)masks.get(idx)).intValue();
+	  if (mask != 0)
+	    {
+	      int shift = 0;
+	      int tmpMask = mask;
+	      // TODO substitute numberOfTrailingZeros() for 1.5
+	      while ((tmpMask & 0x1) == 0)
+		{
+		  shift += 1;
+		  tmpMask = tmpMask >>> 1;
+		}
+	      val = (val & mask) >>> shift;
+	    }
+	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
 	case BaseTypes.baseTypeLong:
 	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", v.getLong(off));
 	case BaseTypes.baseTypeFloat:
@@ -129,6 +145,7 @@ public class ClassType
         strBuf.append(e.nextName() + "=");
         strBuf.append(e.next() + ",");
       }
+    strBuf.deleteCharAt(strBuf.length() - 1);		// Remove last ','
     return strBuf.toString();
   }
   
@@ -156,13 +173,15 @@ public class ClassType
     members = new ArrayList();
     names = new ArrayList();
     offsets = new ArrayList();
+    masks = new ArrayList();
   }
 
-  public void addMember (Type member, String name, long offset)
+  public void addMember (Type member, String name, long offset, int mask)
   {
     members.add(member);
     names.add(name);
     offsets.add(new Long(offset));
+    masks.add(new Integer(mask));
   }
 
   public static Variable newClassVariable (Type type, String text,

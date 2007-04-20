@@ -1,3 +1,7 @@
+2007-04-20  Stan Cox  <scox@redhat.com>
+
+	* ClassType.java (Iterator.next): Support bit fields.
+
 2007-04-15  Stan Cox  <scox@redhat.com>
 
 	* ArithmeticType.java: New file. Replaces:

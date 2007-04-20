@@ -1,3 +1,7 @@
+2007-04-20  Stan Cox  <scox@redhat.com>
+
+	* DwAtEncodings.shenum (CC): Add DW_AT_{bit_size,bit_offset,byte_size}.
+
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
 	* Dwfl.java: (getModulesForce): New method.

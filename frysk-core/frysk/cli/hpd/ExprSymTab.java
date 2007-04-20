@@ -84,9 +84,13 @@ class ExprSymTab
   private ByteBuffer buffer;
 
   private ArithmeticType byteType;
+//  private ArithmeticType byteUnsignedType;
   private ArithmeticType shortType;
+//  private ArithmeticType shortUnsignedType;
   private ArithmeticType intType;
+//  private ArithmeticType intUnsignedType;
   private ArithmeticType longType;
+//  private ArithmeticType longUnsignedType;
   private ArithmeticType floatType;
   private ArithmeticType doubleType;
   
@@ -130,9 +134,13 @@ class ExprSymTab
       }
 
     byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
+//    byteUnsignedType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeUnsignedByte, "unsigned byte");
     shortType = new ArithmeticType(2, byteorder, BaseTypes.baseTypeShort, "short");
+//    shortUnsignedType = new ArithmeticType(2, byteorder, BaseTypes.baseTypeUnsignedShort, "unsigned short");
     intType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeInteger, "int");
+//    intUnsignedType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeUnsignedInteger, "unsigned int");
     longType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeLong, "long");
+//    longUnsignedType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeUnsignedLong, "unsigned long");
     floatType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeFloat, "float");
     doubleType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeDouble, "double");
   }
@@ -530,30 +538,31 @@ class ExprSymTab
           return;
         for (int i = 0; i < variableAccessor.length; i++)
           {
-            if (type.getBaseType() == BaseTypes.baseTypeLong)
-              {
-                variableAccessor[i].putLong(varDie, 0, v);
-              }
-            else if (type.getBaseType() == BaseTypes.baseTypeInteger)
-              {
+            switch (type.getBaseType())
+            {
+              case BaseTypes.baseTypeLong:
+              case BaseTypes.baseTypeUnsignedLong:
+        	variableAccessor[i].putLong(varDie, 0, v);
+        	break;
+              case BaseTypes.baseTypeInteger:
+              case BaseTypes.baseTypeUnsignedInteger:
                 variableAccessor[i].putInt(varDie, 0, v);
-              }
-            else if (type.getBaseType() == BaseTypes.baseTypeShort)
-              {
+                break;
+              case BaseTypes.baseTypeShort:
+              case BaseTypes.baseTypeUnsignedShort:
                 variableAccessor[i].putShort(varDie, 0, v);
-              }
-            else if (type.getBaseType() == BaseTypes.baseTypeByte)
-              {
+                break;
+              case BaseTypes.baseTypeByte:
+              case BaseTypes.baseTypeUnsignedByte:
                 variableAccessor[i].putByte(varDie, 0, v);
-              }
-            else if (type.getBaseType() == BaseTypes.baseTypeFloat)
-              {
+                break;
+              case BaseTypes.baseTypeFloat:
                 variableAccessor[i].putFloat(varDie, 0, v);
-              }
-            else if (type.getBaseType() == BaseTypes.baseTypeDouble)
-              {
+                break;
+              case BaseTypes.baseTypeDouble:
                 variableAccessor[i].putDouble(varDie, 0, v);
-              }
+                break;
+            }
           }
       }
     catch (Errno ignore)
@@ -586,6 +595,7 @@ class ExprSymTab
             switch (baseType)
               {
               case BaseTypes.baseTypeLong:
+              case BaseTypes.baseTypeUnsignedLong:
               {
                 long longVal = variableAccessor[i].getLong(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
@@ -593,6 +603,7 @@ class ExprSymTab
                 return ArithmeticType.newLongVariable(longType, s, longVal);
               }
               case BaseTypes.baseTypeInteger:
+              case BaseTypes.baseTypeUnsignedInteger:
               {
                 int intVal = variableAccessor[i].getInt(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
@@ -600,6 +611,7 @@ class ExprSymTab
                 return ArithmeticType.newIntegerVariable(intType, s, intVal);
               }
               case BaseTypes.baseTypeShort:
+              case BaseTypes.baseTypeUnsignedShort:
               {
                 short shortVal = variableAccessor[i].getShort(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
@@ -607,6 +619,7 @@ class ExprSymTab
                 return ArithmeticType.newShortVariable(shortType, s, shortVal);
               }
               case BaseTypes.baseTypeByte:
+              case BaseTypes.baseTypeUnsignedByte:
               {
                 byte byteVal = variableAccessor[i].getByte(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
@@ -652,15 +665,19 @@ class ExprSymTab
                 switch (type.getType().getBaseType())
                   {
                   case BaseTypes.baseTypeByte:
+                  case BaseTypes.baseTypeUnsignedByte:
                     arrayType = new ArrayType(byteType, dims);
                     break;
                   case BaseTypes.baseTypeShort:
+                  case BaseTypes.baseTypeUnsignedShort:
                     arrayType = new ArrayType(shortType, dims);
                     break;
                   case BaseTypes.baseTypeInteger:
+                  case BaseTypes.baseTypeUnsignedInteger:
                     arrayType = new ArrayType(intType, dims);
                     break;
                   case BaseTypes.baseTypeLong:
+                  case BaseTypes.baseTypeUnsignedLong:
                     arrayType = new ArrayType(longType, dims);
                     break;
                   case BaseTypes.baseTypeFloat:
@@ -698,22 +715,37 @@ class ExprSymTab
                     switch (subrange.getType().getBaseType())
                       {
                       case BaseTypes.baseTypeByte:
-                        classType.addMember(byteType, subrange.getName(), offset);
+                      case BaseTypes.baseTypeUnsignedByte:
+                        classType.addMember(byteType, subrange.getName(), offset, 0);
                         break;
                       case BaseTypes.baseTypeShort:
-                        classType.addMember(shortType, subrange.getName(), offset);
+                      case BaseTypes.baseTypeUnsignedShort:
+                        classType.addMember(shortType, subrange.getName(), offset, 0);
                         break;
                       case BaseTypes.baseTypeInteger:
-                        classType.addMember(intType, subrange.getName(), offset);
+                      case BaseTypes.baseTypeUnsignedInteger:
+                        // System V ABI Supplements discuss bit field layout 
+                        int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+                        int bitOffset = 0;
+                        int byteSize = 0;
+                        int mask = 0;
+                        if (bitSize != 0)
+                          {
+                            byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+                            bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+                            mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
+                          }
+                        classType.addMember(intType, subrange.getName(), offset, mask);
                         break;
                       case BaseTypes.baseTypeLong:
-                        classType.addMember(longType, subrange.getName(), offset);
+                      case BaseTypes.baseTypeUnsignedLong:
+                        classType.addMember(longType, subrange.getName(), offset, 0);
                         break;
                       case BaseTypes.baseTypeFloat:
-                        classType.addMember(floatType, subrange.getName(), offset);
+                        classType.addMember(floatType, subrange.getName(), offset, 0);
                         break;
                       case BaseTypes.baseTypeDouble:
-                        classType.addMember(doubleType, subrange.getName(), offset);
+                        classType.addMember(doubleType, subrange.getName(), offset, 0);
                         break;
                       default:
                         return null;
@@ -721,6 +753,7 @@ class ExprSymTab
                     subrange = subrange.getSibling();
                   }
 
+                typeSize += 4 - (typeSize % 4);		// round up to mod 4
                 byte buf[] = new byte[(int)typeSize];
                 for (int j = 0; j < typeSize; j++)
                   buffer.get(addr + j, buf, j, 1);
@@ -812,21 +845,25 @@ class ExprSymTab
            switch (type.getType().getBaseType())
              {
              case BaseTypes.baseTypeByte:
+             case BaseTypes.baseTypeUnsignedByte:
                byte byteVal = variableAccessor[i].getByte(varDie, offset);
                if (variableAccessor[i].isSuccessful() == false)
                  continue;
                return ArithmeticType.newByteVariable(byteType, s, byteVal);
              case BaseTypes.baseTypeShort:
+             case BaseTypes.baseTypeUnsignedShort:
                short shortVal = variableAccessor[i].getShort(varDie, offset);
                if (variableAccessor[i].isSuccessful() == false)
                  continue;
                return ArithmeticType.newShortVariable(shortType, s, shortVal);
              case BaseTypes.baseTypeInteger:
+             case BaseTypes.baseTypeUnsignedInteger:
                int intVal = variableAccessor[i].getInt(varDie, offset);
                if (variableAccessor[i].isSuccessful() == false)
                  continue;
                return ArithmeticType.newIntegerVariable(intType, s, intVal);
              case BaseTypes.baseTypeLong:
+             case BaseTypes.baseTypeUnsignedLong:
                long longVal = variableAccessor[i].getLong(varDie, offset);
                if (variableAccessor[i].isSuccessful() == false)
                  continue;
@@ -890,6 +927,7 @@ class ExprSymTab
                 switch (subrange.getType().getBaseType())
                 {
                 case BaseTypes.baseTypeLong:
+                case BaseTypes.baseTypeUnsignedLong:
                 {
                   long longVal = variableAccessor[i].getLong(varDie, offset);
                   if (variableAccessor[i].isSuccessful() == false)
@@ -897,13 +935,28 @@ class ExprSymTab
                   return ArithmeticType.newLongVariable(longType, s, longVal);
                 }
                 case BaseTypes.baseTypeInteger:
+                case BaseTypes.baseTypeUnsignedInteger:
                 {
+                  // System V ABI Supplements discuss bit field layout 
+                  int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+                  int bitOffset = 0;
+                  int byteSize = 0;
+                  int mask = 0;
+                  if (bitSize != 0)
+                    {
+                      byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+                      bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+                      mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
+                    }
                   int intVal = variableAccessor[i].getInt(varDie, offset);
+                  if (bitSize != 0)
+                    intVal = (intVal & mask) >>> (byteSize * 8 - bitOffset - bitSize); 
                   if (variableAccessor[i].isSuccessful() == false)
                     continue;
                   return ArithmeticType.newIntegerVariable(intType, s, intVal);
                 }
                 case BaseTypes.baseTypeShort:
+                case BaseTypes.baseTypeUnsignedShort:
                 {
                   short shortVal = variableAccessor[i].getShort(varDie, offset);
                   if (variableAccessor[i].isSuccessful() == false)
@@ -911,6 +964,7 @@ class ExprSymTab
                   return ArithmeticType.newShortVariable(shortType, s, shortVal);
                 }
                 case BaseTypes.baseTypeByte:
+                case BaseTypes.baseTypeUnsignedByte:
                 {
                   byte byteVal = variableAccessor[i].getByte(varDie, offset);
                   if (variableAccessor[i].isSuccessful() == false)
@@ -964,12 +1018,16 @@ class ExprSymTab
     switch (type.getType().getBaseType())
       {
       case BaseTypes.baseTypeByte:
+      case BaseTypes.baseTypeUnsignedByte:
 	return ArithmeticType.newByteVariable(byteType, s, buffer.getByte(addrIndirect));
       case BaseTypes.baseTypeShort:
+      case BaseTypes.baseTypeUnsignedShort:
 	return ArithmeticType.newShortVariable(shortType, s, buffer.getShort(addrIndirect));
       case BaseTypes.baseTypeInteger:
+      case BaseTypes.baseTypeUnsignedInteger:
 	return ArithmeticType.newIntegerVariable(intType, s, buffer.getInt(addrIndirect));
       case BaseTypes.baseTypeLong:
+      case BaseTypes.baseTypeUnsignedLong:
 	return ArithmeticType.newLongVariable(longType, s, buffer.getLong(addrIndirect));
       case BaseTypes.baseTypeFloat:
 	return ArithmeticType.newFloatVariable(floatType, s, buffer.getFloat(addrIndirect));
