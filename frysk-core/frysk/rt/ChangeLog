@@ -1,3 +1,8 @@
+2007-04-20  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java: Added JavaDoc and extensive commenting. Minor 
+	code improvements.
+
 2007-04-19  Mike Cvet  <mcvet@redhat.com>
 
 	* RunState.java: Removed, via #4395. Most of logic moved to
