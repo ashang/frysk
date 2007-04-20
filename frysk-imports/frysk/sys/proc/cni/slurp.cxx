@@ -108,7 +108,7 @@ uslurp(int pid, const char* name)
   ::close(fd);
 
   // Null terminate the buffer.
-  buf[current_offset] = '\0';
+  buf[current_offset++] = '\0';
 
   jbyteArray jbuf = JvNewByteArray (current_offset);
   ::memcpy (elements (jbuf), buf, current_offset);
