@@ -2,6 +2,8 @@
 
 	* SteppingEngine.java: Added JavaDoc and extensive commenting. Minor 
 	code improvements.
+	* states/State.java: Ditto.
+	* TaskStepEngine.java: Ditto.
 
 2007-04-19  Mike Cvet  <mcvet@redhat.com>
 

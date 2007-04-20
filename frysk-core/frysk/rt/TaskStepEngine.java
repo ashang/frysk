@@ -44,27 +44,67 @@ import frysk.rt.states.*;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 
+/**
+ * Maintains stepping-relevant information for a given task, including its
+ * Dwfl object, its FrameIdentifier, line number and State. Used by
+ * the SteppingEngine to manipulate the State of a given Task. 
+ * 
+ *  Also performs state-transition work when called by SteppingEngine, by
+ *  calling State.handleUpdate().
+ */
 public class TaskStepEngine
 {
+  /* The Task for this TaskStepEngine */
   private Task task;
+  
+  /* The Dwfl object for task */
   private Dwfl dwfl;
+  
+  /* The current State of task */
   private State state;
+  
+  /* The FrameIdentifier for task */
   private FrameIdentifier fi;
+  
+  /* task's current source line number */
   private int line = 0;
   
+  /**
+   * Builds a new TaskStepEngine, setting only the Task field and defaulting
+   * to the StoppedState.
+   * 
+   * @param task The Task for this TaskStepEngine to manage
+   */
   public TaskStepEngine (Task task)
   {
     this.task = task;
     this.state = new StoppedState(task);
   }
   
+  /**
+   * Returns true if the current State of this TaskStepEngine's Task field
+   * is a StoppedState.
+   * 
+   * @return true The Task is stopped
+   * @return false The Task is not stopped
+   */
   public boolean isStopped ()
   {
     return this.state.isStopped();
   }
   
+  /**
+   * Handles calls from the SteppingObserver in the SteppingEngine class. 
+   * Called when the TaskObserver.Instruction stepping callback is reached,
+   * which prompts this TaskStepEngine's State class to perform the next
+   * step in this particular State's state transition. 
+   *  
+   * @return true If the returned State is stopped
+   * @return false If the return State is no stopped
+   */
   public boolean handleUpdate ()
   {
+    /* Perform the next tentative state transition */
     State s = this.state.handleUpdate();
     if (s.isStopped())
       {
@@ -76,7 +116,8 @@ public class TaskStepEngine
   }
   
   /**
-   * Returns the Dwfl for this Task, and inserts it into the Dwfl map.
+   * Creates the Dwfl object if it hasn't been created yet, and returns its 
+   * current DwflLine object.
    * 
    * @return dline The DwflLine for this Engine's Task
    */
@@ -89,36 +130,71 @@ public class TaskStepEngine
     return dline;
   }
   
+  /**
+   * Returns the current source line for this Task.
+   * 
+   * @return line The current source line for this Task
+   */
   public int getLine ()
   {
     return this.line;
   }
   
+  /**
+   * Sets the current source line for this Task
+   * 
+   * @param line The current source line for this Task
+   */
   public void setLine (int line)
   {
     this.line = line;
   }
   
+  /**
+   * Returns this TaskStepEngine's Task.
+   * 
+   * @return task The Task for this TaskStepEngine
+   */
   public Task getTask ()
   {
     return this.task;
   }
   
+  /**
+   * Returns the current State of this TaskStepEngine's Task.
+   * 
+   * @param newState The current State of this TaskStepEngine's Task
+   */
   public void setState (State newState)
   {
     this.state = newState;
   }
   
+  /**
+   * Sets the current State of this TaskStepEngine's Task.
+   * 
+   * @return state The current State of this TaskStepEngine's Task.
+   */
   public State getState ()
   {
     return this.state;
   }
   
+  /**
+   * Sets the FrameIdentifier for this TaskStepEngine.
+   * 
+   * @param fi The new FrameIdentifier
+   */
   public void setFrameIdentifier (FrameIdentifier fi)
   {
     this.fi = fi;
   }
   
+  /**
+   * Returns this TaskStepEngine's FrameIdentifier field.
+   * 
+   * @return fi This TaskStepEngine's FrameIdentifier
+   */
   public FrameIdentifier getFrameIdentifier ()
   {
     return this.fi;

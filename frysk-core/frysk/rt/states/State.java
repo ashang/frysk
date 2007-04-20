@@ -42,11 +42,30 @@ package frysk.rt.states;
 import frysk.proc.Task;
 import frysk.rt.TaskStepEngine;
 
+/**
+ * State interface for the stepping state machine. 
+ */
 public abstract class State
 {
+  /* The Task that this State belongs to */
   Task task = null;
+  
+  /* The TaskStepEngine parent of this State */
   TaskStepEngine tse = null;
   
+  /**
+   * Handles updates from the SteppingEngine.SteppingObserver. Performs
+   * state transitions if necessary.
+   * 
+   * @return state 	The State of task after the SteppingObserver update
+   */
   public abstract State handleUpdate ();
+  
+  /**
+   * Returns whether or not this State represents a stopped Task.
+   * 
+   * @return true If the Task is stopped
+   * @return false If the Task is not stopped
+   */
   public abstract boolean isStopped ();
 }
