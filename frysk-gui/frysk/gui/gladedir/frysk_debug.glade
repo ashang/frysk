@@ -5,7 +5,7 @@
 <requires lib="gnome"/>
 
 <widget class="GtkWindow" id="sourceWindow">
-  <property name="title" translatable="yes">Frysk Source Window for: </property>
+  <property name="title" translatable="yes">Frysk Debug Window</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>

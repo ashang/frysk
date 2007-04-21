@@ -184,7 +184,7 @@ public class SourceWindow
   public static final String SOURCE_WINDOW = "sourceWindow";
 
   // Glade file to use
-  public static final String GLADE_FILE = "frysk_source.glade";
+  public static final String GLADE_FILE = "frysk_debug.glade";
 
   // Modified FileChooser widget used for executable activation
   public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
@@ -476,9 +476,6 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    this.setTitle(this.getTitle() + this.swProc[this.current].getCommand() + " - process "
-                  + this.swProc[this.current].getPid());
-
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
@@ -567,6 +564,7 @@ public class SourceWindow
                 b.disassembleFrame(this.currentFrame);
               }
           }
+        updateSourceLabel(curr);
         stackView.showAll();
         this.view.showAll();
         return;
@@ -1907,8 +1905,58 @@ public class SourceWindow
       }
   }
 
+  /**
+   * This method updates the label at the top of the debug window frame whenever a stack frame
+   * is selected.
+   * @param sf is the StackFrame that has been selected for viewing in the source frame.
+   */
+  private void updateSourceLabel (StackFrame sf)
+  {
+    if (sf == null) 
+      {
+	((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+	                                                            + "Unknown File"
+	                                                            + "</b>");
+	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+	return;
+      }
+    
+    DOMSource source = null;
+    Line[] lines = sf.getLines();
+    
+    if (lines.length > 0)
+      {
+        source = lines[0].getDOMSource();
+        if (source == null)
+          try
+            {
+              DOMFactory.createDOM(sf, sf.getTask().getProc());
+              source = lines[0].getDOMSource();
+            }
+          catch (Exception e)
+            {
+              e.printStackTrace();
+            }
+      }
+    if (lines.length == 0)
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + "Unknown File"
+                                                            + "</b>");
+    else if (source == null && lines.length > 0)
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + sf.getLines()[0].getFile().getPath()
+                                                            + "</b>");
+    else
+      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+                                                            + source.getFileName()
+                                                            + "</b>");
+    ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+  }
+  
+  
   private void updateShownStackFrame (StackFrame selected, int current)
   {
+    
     int mode = this.viewPicker.getActive();
     
     DOMSource source = null;
@@ -1929,20 +1977,7 @@ public class SourceWindow
             }
       }
     
-    if (lines.length == 0)
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + "Unknown File"
-                                                            + "</b>");
-    else if (source == null && lines.length > 0)
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + selected.getLines()[0].getFile().getPath()
-                                                            + "</b>");
-    else
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + source.getFileName()
-                                                            + "</b>");
-    ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-    
+   updateSourceLabel(selected);
     
     if (lines.length == 0)
     {
@@ -1975,79 +2010,75 @@ public class SourceWindow
     }
     else if (source != null && lines[0].getDOMFunction() != null)
       {
-        if (this.currentFrame.getLines().length == 0
-            || ! source.getFileName().equals(this.currentFrame.getLines()[0].getFile().getName()) 
-            || mode != 0
-            || current != this.current)
-          {
-        	
-            this.view.load(selected, mode);
-            
-            boolean running = SteppingEngine.isProcRunning(this.swProc[current].getTasks());
-            
-        	if (current != this.current
-        		&& !running)
-//				&& SteppingEngine.getState() != SteppingEngine.RUNNING)
-			  {
-				this.symTab[current] = new SymTab(
-												  this.swProc[current].getPid(),
-												  this.swProc[current],
-												  this.swProc[current].getMainTask(),
-												  this.frames[current][0]);
-				this.symTab[current].setFrames(this.frames[current]);
-				
-			    setTitle("Frysk Source Window for: " 
-			             + this.swProc[current].getCommand() + " - process "
-			             + this.swProc[current].getPid());
-			    
-			    if (this.stop.isSensitive())
-			      resensitize();
-			  }
-        	else if (current != this.current && running)
-        	  {
-			    setTitle("Frysk Source Window for: " 
-			             + this.swProc[current].getCommand() + " - process "
-			             + this.swProc[current].getPid());
-			    
-			    if (!this.stop.isSensitive())
-			      desensitize();
-        	  }
-        	
-            this.current = current;
-            this.currentTask = selected.getTask();
-            
-            removeTags();
+	if (this.currentFrame.getLines().length == 0
+	    || ! source.getFileName().equals(
+					     this.currentFrame.getLines()[0].getFile().getName())
+	    || mode != 0 || current != this.current)
+	  {
 
-            createTags();
+	    this.view.load(selected, mode);
 
-            if (this.currentFrame.getLines().length == 0)
-              {
-                if (mode == 2)
-                  {
-                    this.currentFrame = selected;
-                    switchToSourceAsmMode();
-                    ((MixedView) this.view).getSourceWidget().scrollToFunction(
-                                                                               lines[0].getDOMFunction().getFunctionCall());
-                  }
-                else if (mode == 0)
-                  this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
-              }
-            else
-              {
-                if (mode == 0)
-                  this.view.scrollToLine(lines[0].getLine());
-                else if (mode == 2)
-                  ((MixedView) this.view).getSourceWidget().scrollToLine(
-                                                                         lines[0].getLine());
-              }
-          }
-        else
-          {
-            if (mode == 0)
-              this.view.scrollToLine(lines[0].getLine());
-            else if (mode == 2)
-              ((MixedView) this.view).getSourceWidget().scrollToLine(lines[0].getLine());
-          }
+	    boolean running = SteppingEngine.isProcRunning(this.swProc[current].getTasks());
+
+	    if (current != this.current && ! running)
+	    // && SteppingEngine.getState() != SteppingEngine.RUNNING)
+	      {
+		this.symTab[current] = new SymTab(
+						  this.swProc[current].getPid(),
+						  this.swProc[current],
+						  this.swProc[current].getMainTask(),
+						  this.frames[current][0]);
+		this.symTab[current].setFrames(this.frames[current]);
+
+		updateSourceLabel(this.currentFrame);
+
+		if (this.stop.isSensitive())
+		  resensitize();
+	      }
+	    else if (current != this.current && running)
+	      {
+		updateSourceLabel(this.currentFrame);
+
+		if (! this.stop.isSensitive())
+		  desensitize();
+	      }
+
+	    this.current = current;
+	    this.currentTask = selected.getTask();
+
+	    removeTags();
+
+	    createTags();
+
+	    if (this.currentFrame.getLines().length == 0)
+	      {
+		if (mode == 2)
+		  {
+		    this.currentFrame = selected;
+		    switchToSourceAsmMode();
+		    ((MixedView) this.view).getSourceWidget().scrollToFunction(
+									       lines[0].getDOMFunction().getFunctionCall());
+		  }
+		else if (mode == 0)
+		  this.view.scrollToFunction(lines[0].getDOMFunction().getFunctionCall());
+	      }
+	    else
+	      {
+		if (mode == 0)
+		  this.view.scrollToLine(lines[0].getLine());
+		else if (mode == 2)
+		  ((MixedView) this.view).getSourceWidget().scrollToLine(
+									 lines[0].getLine());
+	      }
+	  }
+	else
+	  {
+	    if (mode == 0)
+	      this.view.scrollToLine(lines[0].getLine());
+	    else if (mode == 2)
+	      ((MixedView) this.view).getSourceWidget().scrollToLine(
+								     lines[0].getLine());
+	  }
       }
     
     this.current = current;
@@ -2792,7 +2823,10 @@ public class SourceWindow
       if (arg == null)
 	{
 //	  System.err.println("clearing stack view");
-	  setTitle("Frysk Source Window: All processes have exited.");
+	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setText("<b>"
+	                                                                     + "All processes have exited."
+	                                                                     + "</b>");
+	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 	  SourceWindow.this.stackView.clear();
 	  SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
 //	  System.err.println("clearing buffer");
@@ -2861,9 +2895,10 @@ public class SourceWindow
 	      {
 		public void run ()
 		{
-		  SourceWindow.this.frames[SourceWindow.this.current] = generateProcStackTrace(
-											       SourceWindow.this.swProc[SourceWindow.this.current],
-											       SourceWindow.this.current);
+		  SourceWindow.this.frames[SourceWindow.this.current] = 
+		    generateProcStackTrace(
+			                   SourceWindow.this.swProc[SourceWindow.this.current],
+					   SourceWindow.this.current);
 		  populateStackBrowser(SourceWindow.this.frames);
 		  SteppingEngine.notifyStopped();
 		  procReblocked();

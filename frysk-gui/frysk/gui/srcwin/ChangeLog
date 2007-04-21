@@ -1,3 +1,10 @@
+2007-04-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Change gladepath to frysk_debug.glade;
+	update the source widget frame title instead of the window
+	title when changing frames/processes; added new method 
+	updateSourceLabel to accomplish this.
+
 2007-04-19  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceView.java (SourceViewListener.mouseMotionEvent): Call 
