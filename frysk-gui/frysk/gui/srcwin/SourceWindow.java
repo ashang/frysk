@@ -2807,44 +2807,29 @@ public class SourceWindow
 
   }
   
-//  private HashSet deadThreads;
-  
   private class ThreadLifeObserver
   implements Observer
   {
-//    public ThreadLifeObserver ()
-//    {
-//      SourceWindow.this.deadThreads = new HashSet();
-//    }
     
     public void update (Observable o, Object arg)
     {      
-//      System.err.println("lifeobserver.update " + arg);
       if (arg == null)
 	{
-//	  System.err.println("clearing stack view");
 	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setText("<b>"
 	                                                                     + "All processes have exited."
 	                                                                     + "</b>");
 	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 	  SourceWindow.this.stackView.clear();
 	  SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
-//	  System.err.println("clearing buffer");
 	  b.clear();
-//	  System.err.println("desensitize");
 	  SourceWindow.this.desensitize();
 	  SourceWindow.this.stop.setSensitive(false);
-//	  System.err.println("runstate clear");
-	  SteppingEngine.clear();
 	  
 	  return;
 	}
       
       Task t = (Task) arg;
-//      SourceWindow.this.deadThreads.add(t);
-      
       LinkedList tasks = SourceWindow.this.swProc[SourceWindow.this.current].getTasks();
-//      System.err.println("SourceWindow: Task has been killed: " + t);
       
       if (tasks.contains(t) && tasks.size() == 1)
 	{
@@ -2878,7 +2863,7 @@ public class SourceWindow
     public void update (Observable o, Object arg)
     {
       /* We don't need to worry about this case here */
-      //      System.err.println("LockObserver.update " + arg);
+//            System.err.println("LockObserver.update " + (Task) arg);
       if (arg == null)
 	return;
 

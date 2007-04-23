@@ -5,6 +5,8 @@
 	Task row each time. Iterate through each Task row to remove unneded
 	rows after a stack change.
 
+	* SourceWindow.java (ThreadLifeObserver): Cleaned up.
+
 2007-04-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Change gladepath to frysk_debug.glade;

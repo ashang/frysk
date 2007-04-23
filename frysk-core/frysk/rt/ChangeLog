@@ -31,6 +31,14 @@
 	new Tasks with the steppingObserver. Update contextMap with new Task
 	and put new Task in threadsList. Fixes #4399.
 
+	* SteppingEngine.java (cleanTask): Don't remove the parent Proc from 
+	contextMap.
+	(requestAdd): Make sure Task isn't Destroyed before adding observation.
+	(ThreadLifeObservable.updateTerminating): Removes the dying Task from
+	the appropriate data structures. Updates Observers of either one of
+	many active Tasks exiting, or last Task being observed exiting.
+
+
 2007-04-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java: Added JavaDoc and extensive commenting. Minor 

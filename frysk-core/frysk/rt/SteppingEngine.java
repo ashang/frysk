@@ -602,8 +602,10 @@ public class SteppingEngine
             tse = (TaskStepEngine) taskStateMap.get(t);
             if (tse != null)
               tse.setState(new RunningState(t));
+            
             t.requestDeleteInstructionObserver(steppingObserver);
             SteppingBreakpoint bpt = (SteppingBreakpoint) breakpointMap.get(t);
+            
             if (bpt != null)
               {
                 breakpointMap.remove(t);
@@ -818,7 +820,6 @@ public class SteppingEngine
   public static void cleanTask (Task task)
   {
     taskStateMap.remove(task);
-    contextMap.remove(task.getProc());
     runningTasks.remove(task);
   }
   
@@ -1025,7 +1026,7 @@ public class SteppingEngine
     public synchronized Action updateExecuted (Task task)
     {
       
-//      System.err.println("SE.SO.updateEx: " + task);
+//      System.err.println("SE.SO.updateEx: " + task + threadsList.size());
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 
        * process context. If there are no Tasks left, then notify the this 
@@ -1038,11 +1039,11 @@ public class SteppingEngine
 	  if (--i <= 0)
 	    {
 	      if (threadsList.size() > 0)
-			{
-			  contextMap.put(proc, new Integer(threadsList.size() + i));
-			  requestAdd();
-			  return Action.BLOCK;
-			}
+		{
+		  contextMap.put(proc, new Integer(threadsList.size() + i));
+		  requestAdd();
+		  return Action.BLOCK;
+		}
 	      
 	      this.setChanged();
 	      this.notifyObservers(task);
@@ -1138,7 +1139,8 @@ public class SteppingEngine
 	while (i.hasNext())
 	  {
 	    t = (Task) i.next();
-	    t.requestAddInstructionObserver(steppingObserver);
+	    if (!t.isDestroyed())
+	      t.requestAddInstructionObserver(steppingObserver);
 	  }
       }
     });
@@ -1176,88 +1178,23 @@ public class SteppingEngine
     
     public Action updateTerminating (Task task, boolean signal, int value)
     {
-//      System.err.println("threadlife: Terminating: " + task + " " + value);
-//      int pid = task.getProc().getPid();
-
+//      System.err.println("threadlife.updateTerminating " + task + " " + value);
       runningTasks.remove(task);
       
       Integer context = (Integer) contextMap.get(task.getProc());
       contextMap.put (task.getProc(), new Integer(context.intValue() - 1));
       
       taskStateMap.remove(task);
+      threadsList.remove(task);
+      cleanTask(task);
+      this.setChanged();
+	  
+      if (taskStateMap.size() == 0)
+	this.notifyObservers(null);
+      else
+	this.notifyObservers(task);
       
-//      int i;
-//      for (i = 0; i < tasks.length; i++)
-//	{
-//	  if (((Task) (tasks[i].getFirst())).getProc().getPid() == pid)
-//	    {
-////	      System.err.println("Removing task " + task);
-//	      tasks[i].remove(task);
-//	      
-//	      if (tasks[i].size() > 0)
-//		{
-////		  System.err.println("Decrementing numrunningtasks");
-//		      this.setChanged();
-//		      this.notifyObservers(task);
-//		}
-//	      else
-//		{
-//		  tasks[i] = null;
-//		  if (tasks.length > 1)
-//		    {
-////		      System.err.println("stateProcs.length > 1");
-//		      current = 0;
-//		      this.setChanged();
-//		      this.notifyObservers(task);
-////		      int j = 0;
-////		      while (j < tasks.length)
-////			{
-////			  if (j != i)
-////			    {
-////			      current = j;
-////			      // Task t =
-////                                // stateProcs[j].getMainTask();
-////			      Task t = (Task) (tasks[j].getFirst());
-////			      current = j;
-////			      System.err.println("setting task to " + t);
-////			      contextMap.remove(task.getProc());
-////			      this.setChanged();
-////			      this.notifyObservers(task);
-//////			      setChanged();
-//////			      notifyObservers(t);
-////			      break;
-////			    }
-////			  ++j;
-////			}
-//		    }
-//		  else
-//		    {
-//		      this.setChanged();
-//		      this.notifyObservers(null);
-//		      System.err.println("Processes exited " + this.countObservers());
-//		      return Action.CONTINUE;
-//		    }
-//		}
-//	      break;
-//	    }
-//	}
-//      
-//	  LinkedList[] newTasks = new LinkedList[tasks.length - 1];
-//	  int j = 0;
-//	  for (int k = 0; k < tasks.length; k++)
-//	    {
-//	      if (k != i)
-//		{
-//		  newTasks[j] = tasks[k];
-//		  ++j;
-//		}
-//	    }
-//	  
-//	  tasks = newTasks;
-//	                                         
-
-//      return Action.CONTINUE;
-      return Action.BLOCK;
+      return Action.CONTINUE;
     }
 
     public void addedTo (Object observable)

@@ -1,3 +1,7 @@
+2007-04-23  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFactory.java (clearDOMSourceMap): Check for null Tasks.
+
 2007-03-23  Mike Cvet  <mcvet@redhat.com>
 
 	* DOMSource.java (content): Added. String cache of the source code

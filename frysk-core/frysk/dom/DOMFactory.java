@@ -158,7 +158,7 @@ public class DOMFactory
   public static void clearDOMSourceMap (Proc proc)
   {
     DOMFrysk dom = (DOMFrysk) hashmap.get(proc);
-    if (dom != null)
+    if (dom != null && proc.getMainTask() != null)
       {
         DOMImage image = dom.getImage(proc.getMainTask().getName());
         image.clearSourceMap();
