@@ -149,11 +149,11 @@ public class CurrentStackView
 		
 		if (taskIter == null || ! treeModel.isIterValid(taskIter))
 		  {
-		    path.up();
-		    taskIter = treeModel.appendRow(treeModel.getIter(path));
-		    path = ((TreeRowReference) this.stackArray[current]).getPath();
+		    taskIter = treeModel.appendRow(treeModel.getIter(((TreeRowReference) this.stackArray[current]).getPath()));
 		  }
 		
+		treeModel.setValue(taskIter, (DataColumnString) stackColumns[0],
+				   "thread ID: " + task.getTid());
 		treeModel.setValue(taskIter, (DataColumnObject) stackColumns[1], null);
 		path.down();
 		iter = taskIter.getFirstChild();
@@ -206,13 +206,13 @@ public class CurrentStackView
 		  }
 		
 		taskIter = taskIter.getNextIter();
-	  }
-
-	while (iter != null && treeModel.isIterValid(iter))
-	  {
-		TreeIter del = iter;
-		iter = iter.getNextIter();
-		treeModel.removeRow(del);
+		
+		while (iter != null && treeModel.isIterValid(iter))
+		  {
+			TreeIter del = iter;
+			iter = iter.getNextIter();
+			treeModel.removeRow(del);
+		  }
 	  }
   }
 

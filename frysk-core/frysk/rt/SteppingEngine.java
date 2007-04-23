@@ -79,21 +79,12 @@ public class SteppingEngine
   /* Maps a Proc to an Integer, where the Integer represents the number of
    * Tasks associated with the current context of the process - the number
    * of stepping or running threads of that process. */
-  private static HashMap contextMap;
+  private static Map contextMap;
 
   /* Maps Tasks to TaskStepEngines, which contain information about the 
    * Task State, line number, and other useful things. */
   private static Map taskStateMap;
 
-  /* List of tasks mostly used for initialization */
-  private static  LinkedList[] tasks;
-  
-  private static Proc stateProc;
-  
-  private static int taskStepCount = 0;
-  
-  private static int current = 0;
-  
   /* Observer used to block Tasks, as well as providing the mechanism to 
    * step them, by an instruction each time. */
   private static SteppingObserver steppingObserver;
@@ -102,12 +93,15 @@ public class SteppingEngine
    * class, and also makes sure that exiting Tasks are taken care of and cleaned
    * up after. */
   private static ThreadLifeObservable threadLifeObservable;
+  
+  /* List of Tasks which require attachment from the SteppingObserver */
+  private static LinkedList threadsList;
 
   static
   {
     runningTasks = new HashSet();
     breakpointMap = new HashMap();
-    contextMap = new HashMap();
+    contextMap = Collections.synchronizedMap(new HashMap());
     taskStateMap = Collections.synchronizedMap(new HashMap());
     steppingObserver = new SteppingObserver();
   }
@@ -121,15 +115,12 @@ public class SteppingEngine
    */
   public static void setProc (Proc proc)
   {
-    stateProc = proc;
-    tasks = new LinkedList[1];
-    tasks[0] = proc.getTasks();
-    current = 0;
     Task t = null;
+    LinkedList tasksList = proc.getTasks();
     
     threadLifeObservable = new ThreadLifeObservable();
     
-    Iterator iter = tasks[0].iterator();
+    Iterator iter = tasksList.iterator();
     while(iter.hasNext())
       {
 	t = (Task) iter.next();
@@ -138,9 +129,8 @@ public class SteppingEngine
     	taskStateMap.put(t, new TaskStepEngine(t));
       }
     
-    contextMap.put(t.getProc(), new Integer(tasks[0].size()));
-    
-    requestAdd(tasks[0]);
+    contextMap.put(t.getProc(), new Integer(tasksList.size()));    
+    requestAdd();
   }
   
   /**
@@ -152,18 +142,17 @@ public class SteppingEngine
    */
   public static void setProcs (Proc[] procs)
   {
-    stateProc = procs[0];
-    tasks = new LinkedList[procs.length];
-    current = procs.length - 1;
     Task t = null;
+    LinkedList tasksList;
 
     threadLifeObservable = new ThreadLifeObservable();
 
     for (int i = procs.length - 1; i >= 0; i--)
       {
-	tasks[i] = procs[i].getTasks();
+	tasksList = procs[i].getTasks();
+	threadsList.addAll(tasksList);
 
-	Iterator iter = tasks[i].iterator();
+	Iterator iter = tasksList.iterator();
 	while (iter.hasNext())
 	  {
 	    t = (Task) iter.next();
@@ -172,10 +161,10 @@ public class SteppingEngine
 	    taskStateMap.put(t, new TaskStepEngine(t));
 	  }
 
-	contextMap.put(t.getProc(), new Integer(tasks[i].size()));
-
-	requestAdd(tasks[i]);
+	contextMap.put(t.getProc(), new Integer(tasksList.size()));
       }
+    
+	requestAdd();
   }
   
   /**
@@ -186,16 +175,12 @@ public class SteppingEngine
    */
   public static boolean addProc (Proc proc)
   {
-    LinkedList[] list = new LinkedList[tasks.length + 1];
-    System.arraycopy(tasks, 0, list, 0, tasks.length);
     Task t = null;
+    
+    LinkedList tasksList = proc.getTasks();
+    threadsList.addAll(tasksList);
 
-    current = list.length - 1;
-    list[current] = proc.getTasks();
-
-    tasks = list;
-
-    Iterator iter = tasks[current].iterator();
+    Iterator iter = tasksList.iterator();
     while (iter.hasNext())
       {
 	t = (Task) iter.next();
@@ -204,16 +189,15 @@ public class SteppingEngine
 	taskStateMap.put(t, new TaskStepEngine(t));
       }
     
-    contextMap.put(t.getProc(), new Integer(list[current].size()));
-
-    requestAdd(tasks[current]);
+    contextMap.put(t.getProc(), new Integer(tasksList.size()));
+    requestAdd();
     return true;
   }
   
   
   /***********************************************************************
-         * STEP HANDLING METHODS
-         **********************************************************************/
+   * STEP HANDLING METHODS
+   **********************************************************************/
   
   /**
    * Perform an instruction step on the given Task.
@@ -230,10 +214,10 @@ public class SteppingEngine
     if (! tse.isStopped())
       return false;
 
-    tse.setState(new InstructionStepState(tse, task));
-
-    ++taskStepCount;
     steppingObserver.notifyNotBlocked();
+    tse.setState(new InstructionStepState(tse, task));
+    contextMap.put (task.getProc(), new Integer(1));
+    
     task.requestUnblock(steppingObserver);
     return true;
   }
@@ -252,7 +236,6 @@ public class SteppingEngine
     if (isProcRunning(tasks))
       return false;
 
-    taskStepCount = tasks.size();
     steppingObserver.notifyNotBlocked();
     
     Task t = (Task) tasks.getFirst();
@@ -261,10 +244,10 @@ public class SteppingEngine
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
-	t = (Task) iter.next();
-	TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
-	tse.setState(new InstructionStepState(tse, t));
-	t.requestUnblock(steppingObserver);
+		t = (Task) iter.next();
+		TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
+		tse.setState(new InstructionStepState(tse, t));
+		t.requestUnblock(steppingObserver);
       }
 
     return true;
@@ -284,7 +267,6 @@ public class SteppingEngine
     if (isTaskRunning(task))
       return false;
 
-    ++taskStepCount;
     contextMap.put(task.getProc(), new Integer(1));
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
 
@@ -394,7 +376,6 @@ public class SteppingEngine
     tse.setState(new NextInstructionStepTestState(task));
     frameIdentifier = lastFrame.getFrameIdentifier();
 
-    ++taskStepCount;
     steppingObserver.notifyNotBlocked();
     task.requestUnblock(steppingObserver);
   }
@@ -449,7 +430,6 @@ public class SteppingEngine
   public static void setUpStepOver (Task task, StackFrame lastFrame)
   {
     frameIdentifier = lastFrame.getFrameIdentifier();
-    ++taskStepCount;
     
     steppingObserver.notifyNotBlocked();
 //    stateMap.put(task, new StepOverTestState(task));
@@ -513,7 +493,6 @@ public class SteppingEngine
   public static void setUpStepOut (Task task, StackFrame lastFrame)
   {
     long address = lastFrame.getOuter().getAddress();
-    ++taskStepCount;
     steppingObserver.notifyNotBlocked();
     
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
@@ -610,8 +589,6 @@ public class SteppingEngine
   public static void continueExecution (LinkedList list)
   {
     TaskStepEngine tse = null;
-    current = 0;
-    tasks[0] = list;
     contextMap.put(((Task) list.getFirst()).getProc(), new Integer(list.size()));
     
     steppingObserver.notifyNotBlocked();
@@ -648,8 +625,19 @@ public class SteppingEngine
   {
     if (keepRunning == null || keepRunning.size() == 0)
       {
-	current = 0;
-	tasks[0] = stopTasks;
+	if (threadsList.size() > 0)
+	  {
+	    Iterator iter = stopTasks.iterator();
+	    while (iter.hasNext())
+	      {
+			Task t = (Task) iter.next();
+			if (!threadsList.contains(t))
+			  threadsList.addLast(t);
+	      }
+	  }
+	else
+	  threadsList.addAll(stopTasks);
+	
 	TaskStepEngine tse;
 	Iterator i = stopTasks.iterator();
 	while (i.hasNext())
@@ -658,51 +646,27 @@ public class SteppingEngine
 	    tse = (TaskStepEngine) taskStateMap.get(t);
 	    tse.setState(new StoppedState(t));
 	  }
-	requestAdd(stopTasks);
+	requestAdd();
       }
     else
       {
-	synchronized (tasks)
+	synchronized (threadsList)
 	  {
 	    Iterator i = runningTasks.iterator();
-	    LinkedList blockTasks = new LinkedList();
 	    while (i.hasNext())
 	      {
 		Task t = (Task) i.next();
 		if (! keepRunning.contains(t))
 		  {
-		    blockTasks.add(t);
+		    threadsList.add(t);
 		    i.remove();
 		  }
 	      }
-	    blockTask(blockTasks);
+	    requestAdd();
 	  }
       }
     runningTasks.clear();
   }
-  
-  /**
-   * Re-block only a certain set of Tasks.
-   * 
-   * @param tasks The Tasks to be reblocked
-   */
-  public static void blockTask (LinkedList list)
-  {
-    tasks[++current] = list;
-    Manager.eventLoop.add(new Event()
-    {
-      public void execute ()
-      {
-        Iterator i = tasks[current].iterator();
-        while (i.hasNext())
-          {
-            Task t = (Task) i.next();
-            t.requestAddInstructionObserver(steppingObserver);
-          }
-      }
-    });
-  }
-
   
   /**
    * Method to handle am incoming list of tasks to be run, with four cases.
@@ -730,15 +694,14 @@ public class SteppingEngine
     /* No incoming Tasks, but some Tasks are running. Block them. */
     else if (tasks.size() == 0 && runningTasks.size() != 0)
       {
-        LinkedList l = new LinkedList();
         Iterator i = runningTasks.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            l.add(t);
+            threadsList.addLast(t);
             i.remove();
           }
-        blockTask(l);
+        requestAdd();
         return;
       }
 
@@ -789,15 +752,14 @@ public class SteppingEngine
         /* Now catch the threads which have a block request */
         if (runningTasks.size() != 0)
           {
-            LinkedList l = new LinkedList();
             i = runningTasks.iterator();
             while (i.hasNext())
               {
                 Task t = (Task) i.next();
                 --numRunning;
-                l.add(t);
+                threadsList.addLast(t);
               }
-            blockTask(l);
+            requestAdd();
           }
 
         contextMap.put(((Task) tasks.getFirst()).getProc(), new Integer(numRunning));
@@ -821,10 +783,10 @@ public class SteppingEngine
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
-	Task t = (Task) iter.next();
-	tse = (TaskStepEngine) taskStateMap.get(t);
-	if (! tse.isStopped())
-	  return true;
+		Task t = (Task) iter.next();
+		tse = (TaskStepEngine) taskStateMap.get(t);
+		if (tse != null && ! tse.isStopped())
+		  return true;
       }
 
     return false;
@@ -839,7 +801,12 @@ public class SteppingEngine
    */
   public static boolean isTaskRunning (Task task)
   {
-    return !((TaskStepEngine) taskStateMap.get(task)).isStopped();
+    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    
+    if (tse == null)
+      return false;
+    
+    return !tse.isStopped();
   }
   
   /**
@@ -864,7 +831,6 @@ public class SteppingEngine
     breakpointMap.clear();
     contextMap.clear();
     runningTasks.clear();
-    tasks = null;
     threadLifeObservable.deleteObservers();
     threadLifeObservable = new ThreadLifeObservable();
     breakpoint = null;
@@ -1058,10 +1024,12 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-      /* Check to see if acting upon this event produces a state change. If
-       * so, decrement the number of Tasks active in the Task's process context.
-       * If there are no Tasks left, then notify the this Object's observers
-       * that all work has been completed. */
+      
+//      System.err.println("SE.SO.updateEx: " + task);
+      /* Check to see if acting upon this event produces a stopped state
+       * change. If so, decrement the number of Tasks active in the Task's 
+       * process context. If there are no Tasks left, then notify the this 
+       * Object's observers that all work has been completed. */
       if (((TaskStepEngine) taskStateMap.get(task)).handleUpdate())
 	{
 	  Proc proc = task.getProc();
@@ -1069,11 +1037,18 @@ public class SteppingEngine
 	  
 	  if (--i <= 0)
 	    {
+	      if (threadsList.size() > 0)
+			{
+			  contextMap.put(proc, new Integer(threadsList.size() + i));
+			  requestAdd();
+			  return Action.BLOCK;
+			}
+	      
 	      this.setChanged();
 	      this.notifyObservers(task);
 	    }
-	  else
-	    contextMap.put(proc, new Integer(i));
+	  
+	  contextMap.put(proc, new Integer(i));
 	}
       
       return Action.BLOCK;
@@ -1095,7 +1070,6 @@ public class SteppingEngine
     {
       w.printStackTrace();
       ((Task) o).getProc().requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      //System.exit(1);
     }
     
     /**
@@ -1128,68 +1102,61 @@ public class SteppingEngine
   }
   
   
-  public static void requestAdd (LinkedList t)
-  { 
+  public static void requestAdd ()
+  {
     /*
-     * The rest of the construction must be done synchronous to the EventLoop,
-     * schedule it. */
+         * The rest of the construction must be done synchronous to the
+         * EventLoop, schedule it.
+         */
     Manager.eventLoop.add(new Event()
     {
       public synchronized void execute ()
       {
+	LinkedList list = new LinkedList();
+	Task t;
+	
+	while (threadsList.size() > 0)
+	  {
+	    t = (Task) threadsList.removeFirst();
+	    
+	    if (t == null)
+	      continue;
+	    
+	    list.add(t);
+	    Proc proc = t.getProc();
 
-        if (tasks[current] == null)
-          {
-            System.out.println("Couldn't get the tasks");
-            System.exit(1);
-          }
-        
-        stateProc = (Proc) ((Task) (tasks[current].getFirst())).getProc();
-
-        /* XXX: deprecated hack. */
-        // proc.sendRefresh();
-        if (stateProc.getMainTask() == null)
-          {
-            // logger.log(Level.FINE, "Could not get main thread of "
-            // + "this process\n {0}", proc);
-            steppingObserver.addFailed(
-                      stateProc,
-                      new RuntimeException(
-                                           "Process lost: could not "
-                                               + "get the main thread of this process.\n"
-                                               + stateProc));
-            return;
-          }
-
-        if (!(stateProc.getUID() == Manager.host.getSelf().getUID()
-            || stateProc.getGID() == Manager.host.getSelf().getGID()))
-          {
-          	System.err.println("Process " + stateProc + " is not owned by user/group.");
-          	//System.exit(1);
-          	return;
-          }
-
-        Iterator i = stateProc.getTasks().iterator();
-        while (i.hasNext())
-          {
-        	Task t = (Task) i.next();
-        	t.requestAddInstructionObserver(steppingObserver);
-          }
-        
-        if (current > 0)
-          --current;
+	    if (! (proc.getUID() == Manager.host.getSelf().getUID()
+		|| proc.getGID() == Manager.host.getSelf().getGID()))
+	      {
+		System.err.println("Process " + proc
+				   + " is not owned by user/group.");
+		continue;
+	      }
+	  }
+	
+	Iterator i = list.iterator();
+	while (i.hasNext())
+	  {
+	    t = (Task) i.next();
+	    t.requestAddInstructionObserver(steppingObserver);
+	  }
       }
     });
   }
   
-  /*****************************************************************************
-   * TASKOBSERVER.CLONED/TERMINATED OBSERVER CLASS
-   ****************************************************************************/
+  /***********************************************************************
+         * TASKOBSERVER.CLONED/TERMINATED OBSERVER CLASS
+         **********************************************************************/
   
   protected static class ThreadLifeObservable 
   extends Observable
   implements TaskObserver.Cloned, TaskObserver.Terminating
   {
+    
+    public ThreadLifeObservable ()
+    {
+      threadsList = new LinkedList ();
+    }
 	
     public Action updateClonedParent (Task parent, Task offspring)
     {
@@ -1198,8 +1165,10 @@ public class SteppingEngine
 
     public Action updateClonedOffspring (Task parent, Task offspring)
     {
+      Integer i = (Integer) contextMap.get(parent.getProc());
+      contextMap.put(parent.getProc(), new Integer(i.intValue() + 1));
       taskStateMap.put(offspring, new TaskStepEngine(offspring));
-      offspring.requestAddInstructionObserver(steppingObserver);
+      threadsList.addLast(offspring);
       offspring.requestAddClonedObserver(this);
       offspring.requestAddTerminatingObserver(this);
       return Action.CONTINUE;
@@ -1207,8 +1176,8 @@ public class SteppingEngine
     
     public Action updateTerminating (Task task, boolean signal, int value)
     {
-      System.err.println("threadlife: Terminating: " + task + " " + value);
-      int pid = task.getProc().getPid();
+//      System.err.println("threadlife: Terminating: " + task + " " + value);
+//      int pid = task.getProc().getPid();
 
       runningTasks.remove(task);
       
@@ -1217,75 +1186,75 @@ public class SteppingEngine
       
       taskStateMap.remove(task);
       
-      int i;
-      for (i = 0; i < tasks.length; i++)
-	{
-	  if (((Task) (tasks[i].getFirst())).getProc().getPid() == pid)
-	    {
-//	      System.err.println("Removing task " + task);
-	      tasks[i].remove(task);
-	      
-	      if (tasks[i].size() > 0)
-		{
-//		  System.err.println("Decrementing numrunningtasks");
-		      this.setChanged();
-		      this.notifyObservers(task);
-		}
-	      else
-		{
-		  tasks[i] = null;
-		  if (tasks.length > 1)
-		    {
-//		      System.err.println("stateProcs.length > 1");
-		      current = 0;
-		      this.setChanged();
-		      this.notifyObservers(task);
-//		      int j = 0;
-//		      while (j < tasks.length)
-//			{
-//			  if (j != i)
-//			    {
-//			      current = j;
-//			      // Task t =
-//                                // stateProcs[j].getMainTask();
-//			      Task t = (Task) (tasks[j].getFirst());
-//			      current = j;
-//			      System.err.println("setting task to " + t);
-//			      contextMap.remove(task.getProc());
-//			      this.setChanged();
-//			      this.notifyObservers(task);
-////			      setChanged();
-////			      notifyObservers(t);
-//			      break;
-//			    }
-//			  ++j;
-//			}
-		    }
-		  else
-		    {
-		      this.setChanged();
-		      this.notifyObservers(null);
-		      System.err.println("Processes exited " + this.countObservers());
-		      return Action.CONTINUE;
-		    }
-		}
-	      break;
-	    }
-	}
-      
-	  LinkedList[] newTasks = new LinkedList[tasks.length - 1];
-	  int j = 0;
-	  for (int k = 0; k < tasks.length; k++)
-	    {
-	      if (k != i)
-		{
-		  newTasks[j] = tasks[k];
-		  ++j;
-		}
-	    }
-	  
-	  tasks = newTasks;
-	                                         
+//      int i;
+//      for (i = 0; i < tasks.length; i++)
+//	{
+//	  if (((Task) (tasks[i].getFirst())).getProc().getPid() == pid)
+//	    {
+////	      System.err.println("Removing task " + task);
+//	      tasks[i].remove(task);
+//	      
+//	      if (tasks[i].size() > 0)
+//		{
+////		  System.err.println("Decrementing numrunningtasks");
+//		      this.setChanged();
+//		      this.notifyObservers(task);
+//		}
+//	      else
+//		{
+//		  tasks[i] = null;
+//		  if (tasks.length > 1)
+//		    {
+////		      System.err.println("stateProcs.length > 1");
+//		      current = 0;
+//		      this.setChanged();
+//		      this.notifyObservers(task);
+////		      int j = 0;
+////		      while (j < tasks.length)
+////			{
+////			  if (j != i)
+////			    {
+////			      current = j;
+////			      // Task t =
+////                                // stateProcs[j].getMainTask();
+////			      Task t = (Task) (tasks[j].getFirst());
+////			      current = j;
+////			      System.err.println("setting task to " + t);
+////			      contextMap.remove(task.getProc());
+////			      this.setChanged();
+////			      this.notifyObservers(task);
+//////			      setChanged();
+//////			      notifyObservers(t);
+////			      break;
+////			    }
+////			  ++j;
+////			}
+//		    }
+//		  else
+//		    {
+//		      this.setChanged();
+//		      this.notifyObservers(null);
+//		      System.err.println("Processes exited " + this.countObservers());
+//		      return Action.CONTINUE;
+//		    }
+//		}
+//	      break;
+//	    }
+//	}
+//      
+//	  LinkedList[] newTasks = new LinkedList[tasks.length - 1];
+//	  int j = 0;
+//	  for (int k = 0; k < tasks.length; k++)
+//	    {
+//	      if (k != i)
+//		{
+//		  newTasks[j] = tasks[k];
+//		  ++j;
+//		}
+//	    }
+//	  
+//	  tasks = newTasks;
+//	                                         
 
 //      return Action.CONTINUE;
       return Action.BLOCK;
@@ -1293,7 +1262,6 @@ public class SteppingEngine
 
     public void addedTo (Object observable)
     {
-//      System.err.println("threadlife addedTo: " + (Task) observable);
     }
 
     public void addFailed (Object observable, Throwable w)

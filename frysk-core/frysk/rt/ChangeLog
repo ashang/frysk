@@ -1,3 +1,36 @@
+2007-04-23  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (contextMap): Changed to synchronized HashMap.
+	(tasks, stateProc, taskStepCount, current): Removed.
+	(threadsList): Added. List of Tasks to be blocked.
+	(setProc): Heavily cleaned up, fixed to use threadsList.
+	(setProcs): Ditto.
+	(addProc): Dito.
+	(stepInstruction): Ditto. Uses contextMap to keep track of number of
+	stepping threads.
+	(setUpLineStep): Removed reference to taskStepCount.
+	(setUpStepNextInstruction): Ditto.
+	(setUpStepOver): Ditto.
+	(setUpStepOut): Ditto.
+	(continueExecution): Removed reference to old Tasks array.
+	(stop): Ditto. Ensure that Tasks don't get added to threadsList
+	more than once. Synchronized on threadsList.
+	(blockTask): Removed.
+	(executeTasks): Made use of threadsList.
+	(isProcRunning): Assume if Task no longer exists in SteppingEngine
+	data structures, it has exited and thus not running. Fixes #4401.
+	(isTaskRunning): Ditto.
+	(updateExecuted): Check number of remaining Tasks to be blocked before
+	notifying any Observers. Update the number of remaining Tasks in the
+	contextMap. If there are Tasks to be blocked, block them and return.
+	Fixes #4399.
+	(requestAdd): Rewritten. Faster, empties Tasks out of threadsList and
+	blocks each as individual Tasks rather than threads of a process.
+	(ThreadLifeObservable): Initialize threadsList.
+	(ThreadLifeObservable.updateClonedOffspring): Don't explicitly block
+	new Tasks with the steppingObserver. Update contextMap with new Task
+	and put new Task in threadsList. Fixes #4399.
+
 2007-04-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java: Added JavaDoc and extensive commenting. Minor 

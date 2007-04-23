@@ -1,3 +1,10 @@
+2007-04-23  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (refreshProc): Append rows for threads beneath
+	the correct row for the process. Explicitly set Task information for
+	Task row each time. Iterate through each Task row to remove unneded
+	rows after a stack change.
+
 2007-04-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Change gladepath to frysk_debug.glade;
