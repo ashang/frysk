@@ -641,7 +641,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(
 				SourceWinPreferenceGroup.EXEC_MARKS, true));
 		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(
-				SourceWinPreferenceGroup.LINE_NUMS, true));
+				SourceWinPreferenceGroup.LINE_NUMS, false));
 		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(
 				SourceWinPreferenceGroup.TOOLBAR, true));
 
