@@ -119,6 +119,7 @@ public class SteppingEngine
     LinkedList tasksList = proc.getTasks();
     
     threadLifeObservable = new ThreadLifeObservable();
+    threadsList.addAll(tasksList);
     
     Iterator iter = tasksList.iterator();
     while(iter.hasNext())
