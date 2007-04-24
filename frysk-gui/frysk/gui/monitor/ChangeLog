@@ -2,6 +2,7 @@
 
 	* observers/TaskForkedObserver.java: Added handling for following
 	children and adding them to the current sesison.
+	Removed debug statement.
 	* eventviewer/Event.java: Added handling for exceptions thrown during
 	stack trace retrieval.
 	* actions/CaptureStackFrameAction.java: Rnamed this..

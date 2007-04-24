@@ -323,7 +323,6 @@ public class CreateFryskSessionDruid
     
     SessionManager.theManager.setCurrentSession(session);
     this.setDruidMode(DruidMode.EDIT_OBSERVER_MODE);
-    // SessionManager.theManager.backupCurrentSession();
 
     notebook.setCurrentPage(OBSERVERS_PAGE);
     this.setUpCurrentPage();
@@ -483,7 +482,6 @@ public class CreateFryskSessionDruid
 				 TreePath[] selectedProcs, boolean filtered,
 				 boolean state)
   {
-
     // Create a TreeRowReference. TreeRowReferences track model changes and
     // so allow multiple selection.
     final TreeRowReference[] paths = new TreeRowReference[selectedProcs.length];
@@ -492,51 +490,40 @@ public class CreateFryskSessionDruid
     if (selectedProcs.length > 0)
       {
 	// Build the TreeRowReference. De filter from the model if needed.
-	for (int i = 0; i < selectedProcs.length; i++)
-	  {
-	    if (selectedProcs[i] == null)
-	      {
-		continue;
-	      }
+	for (int i = 0; i < selectedProcs.length; i++){
+//	  if (selectedProcs[i] == null){
+//	    continue;
+//	  }
 
-	    if (filtered)
-	      unfilteredProcessIter = dataModel.getModel().getIter(
-								   deFilterPath(
-										tree,
-										selectedProcs[i]));
-	    else
-	      unfilteredProcessIter = dataModel.getModel().getIter(
-								   selectedProcs[i]);
-
-	    paths[i] = new TreeRowReference(dataModel.getModel(),
-					    unfilteredProcessIter.getPath());
-
-	    if (state)
-	      {
-		processSelected++;
-		addProcessParent(dataModel.getModel().getIter(
-							      paths[i].getPath()));
-	      }
-	    else
-	      processSelected--;
+	  if (filtered){
+	    unfilteredProcessIter = dataModel.getModel().getIter(deFilterPath(tree,selectedProcs[i]));
+	  }else{
+	    unfilteredProcessIter = dataModel.getModel().getIter(selectedProcs[i]);
 	  }
+	  
+	  paths[i] = new TreeRowReference(dataModel.getModel(), unfilteredProcessIter.getPath());
 
-	for (int i = selectedProcs.length - 1; i >= 0; i--)
-	  {
-	    setTreeSelected(dataModel.getModel().getIter(paths[i].getPath()),
-			    state);
-	    if (this.initialSessionName.equals(SessionManager.theManager.getCurrentSession().getName()))
-	      {
-		this.nameEntry.setText(((GuiProc) dataModel.getObject(paths[i].getPath())).getExecutableName());
-	      }
+	  if (state){
+	    processSelected++;
+	    addProcessParent(dataModel.getModel().getIter(paths[i].getPath()));
+	  }else{
+	    processSelected--;
 	  }
+	}
+
+	for (int i = selectedProcs.length - 1; i >= 0; i--){
+	  setTreeSelected(dataModel.getModel().getIter(paths[i].getPath()),state);
+	  if (this.initialSessionName.equals(SessionManager.theManager.getCurrentSession().getName())){
+	    this.nameEntry.setText(((GuiProc) dataModel.getObject(paths[i].getPath())).getExecutableName());
+	  }
+	}
       }
     setProcessNext(processSelected);
   }
 
   /**
-         * @param processCount
-         */
+   * @param processCount
+   */
   private void setProcessNext (int processCount)
   {
     if(notebook.getCurrentPage() == INTRODUCTION_PAGE){

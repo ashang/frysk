@@ -297,14 +297,14 @@ public class Session
     while (iterator.hasNext())
       {
 	DebugProcess debugProcess = (DebugProcess) iterator.next();
-	if(debugProcess.getExecutablePath().equals(guiProc.getFullExecutablePath())){
+	if(debugProcess.getExecutablePath().equals(guiProc.getNiceExecutablePath())){
 	  debugProcess.addProc(guiProc);
 	  return;
 	}
       }
     
     //no DebugProcess was found create a new one
-    DebugProcess debugProcess = new DebugProcess(guiProc.getExecutableName(), guiProc.getExecutableName(), guiProc.getFullExecutablePath());
+    DebugProcess debugProcess = new DebugProcess(guiProc.getExecutableName(), guiProc.getExecutableName(), guiProc.getNiceExecutablePath());
     this.addDebugProcess(debugProcess);
   }
   
@@ -317,7 +317,7 @@ public class Session
     while (iterator.hasNext())
       {
 	DebugProcess debugProcess = (DebugProcess) iterator.next();
-	if(debugProcess.getExecutablePath().equals(proc.getFullExecutablePath())){
+	if(debugProcess.getExecutablePath().equals(proc.getNiceExecutablePath())){
 	  debugProcess.removeProc(proc);
 	  return;
 	}

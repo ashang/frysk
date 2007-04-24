@@ -196,7 +196,6 @@ public class TaskForkedObserver
 
   private void bottomHalfOffspring(Task parent, Task offspring)
   {
-    System.out.println("TaskForkedObserver.bottomHalfOffspring()");
     WindowManager.logger.log(Level.FINE, "{0} bottomHalf\n", this);
     this.setInfo(this.getName() + ": " + "PID: " + parent.getProc().getPid()
                  + " TID: " + parent.getTid() + " Event: forked new child PID: "

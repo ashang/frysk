@@ -1,5 +1,15 @@
 2007-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* sessions/Session.java: used getNiceExecutablePath in place
+	of getFullExecutablePath.
+
+2007-04-24  swagiaal  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (changeGroupState): Removed check
+	null pointers in selectedProcs array.
+
+2007-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* sessions/Session.java: Added SessionType class.
 	Added handling for setting/getting the session type.
 	Added handling for starting a session of a particular type.
