@@ -1,3 +1,13 @@
+2007-04-24  Stan Cox  <scox@redhat.com>
+
+	* TestValue.java (testNumber,testIntOps,testFloatOps,testEnum): New.
+	(testArrayOfNumber,testArrayOfArrayOfNumber,testStructure): New.
+	* Type.java (bitWiseComplement): New.
+	* ArrayType.java (bitWiseComplement): Likewise.
+	* EnumType.java (bitWiseComplement): Likewise.
+	* ClassType.java (bitWiseComplement): Likewise.
+	* ArithmeticType.java (shiftLeft, shiftRight): Allow mixed type operands.
+
 2007-04-20  Stan Cox  <scox@redhat.com>
 
 	* ClassType.java (Iterator.next): Support bit fields.

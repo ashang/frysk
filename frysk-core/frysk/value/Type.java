@@ -163,7 +163,10 @@ public abstract class Type
       throws InvalidOperatorException;
 
   public abstract Variable bitWiseOr (Variable var1, Variable var2)
-      throws InvalidOperatorException;
+  throws InvalidOperatorException;
+
+  public abstract Variable bitWiseComplement (Variable var1)
+  throws InvalidOperatorException;
 
   public abstract Variable logicalAnd (Variable var1, Variable var2)
       throws InvalidOperatorException;

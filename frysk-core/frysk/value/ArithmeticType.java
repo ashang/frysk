@@ -146,10 +146,14 @@ public class ArithmeticType
 
   public Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException 
   {
-    Type type = var1.getType();
+    Type type;
+    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+      type = var2.getType();
+    else
+      type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() << var2.longValue());
+      return type.newVariable(type, var1.intValue() << var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
       return type.newVariable(type, var1.longValue() << var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))
@@ -161,10 +165,14 @@ public class ArithmeticType
 
   public Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException 
   {
-    Type type = var1.getType();
+    Type type;
+    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+      type = var2.getType();
+    else
+      type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() >> var2.longValue());
+      return type.newVariable(type, var1.intValue() >> var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
       return type.newVariable(type, var1.longValue() >> var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))
@@ -291,7 +299,7 @@ public class ArithmeticType
       type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() & var2.longValue());
+      return type.newVariable(type, var1.intValue() & var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
       return type.newVariable(type, var1.longValue() & var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))

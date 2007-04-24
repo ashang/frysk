@@ -39,71 +39,278 @@
 
 package frysk.value;
 
+import java.util.ArrayList;
+
 import lib.dw.BaseTypes;
+import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 import frysk.junit.TestCase;
 
 public class TestValue
     extends TestCase
 {
-    public void testAdd ()
-	throws InvalidOperatorException
-    {
-	Type intType = new ArithmeticType (4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int");
-	Type shortType = new ArithmeticType (2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short");
-	Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "", 4);
-	Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "", (short)9);
-	Variable v3 = v1.getType().add(v1, v2);
-	assertEquals ("4 + 9", 4 + 9, v3.getInt());
-    }
+  Type longBEType = new ArithmeticType (8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeLong, "long");
+  Type longBEUnsignedType = new ArithmeticType (8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedLong, "unsigned long");
+  Type intBEType = new ArithmeticType (4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeInteger, "int");
+  Type intBEUnsignedType = new ArithmeticType (4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedInteger, "unsigned int");
+  Type shortBEType = new ArithmeticType (2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeShort, "short");
+  Type shortBEUnsignedType = new ArithmeticType (2, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedShort, "unsigned short");
+  Type byteBEType = new ArithmeticType (1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeByte, "byte");
+  Type byteBEUnsignedType = new ArithmeticType (1, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeUnsignedByte, "unsigned byte");
+  Type floatBEType = new ArithmeticType (4, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeFloat, "float");
+  Type doubleBEType = new ArithmeticType (8, ByteOrder.BIG_ENDIAN, BaseTypes.baseTypeDouble, "double");
+  
+  Type longType = new ArithmeticType (8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeLong, "long");
+  Type longUnsignedType = new ArithmeticType (8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedLong, "unsigned long");
+  Type intType = new ArithmeticType (4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeInteger, "int");
+  Type intUnsignedType = new ArithmeticType (4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedInteger, "unsigned int");
+  Type shortType = new ArithmeticType (2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeShort, "short");
+  Type shortUnsignedType = new ArithmeticType (2, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedShort, "unsigned short");
+  Type byteType = new ArithmeticType (1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeByte, "byte");
+  Type byteUnsignedType = new ArithmeticType (1, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeUnsignedByte, "unsigned byte");
+  Type floatType = new ArithmeticType (4, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeFloat, "float");
+  Type doubleType = new ArithmeticType (8, ByteOrder.LITTLE_ENDIAN, BaseTypes.baseTypeDouble, "double");
+  
+  public void testNumber ()
+  {
+    Variable v1 = ArithmeticType.newByteVariable((ArithmeticType)byteType, "v1", (byte)1);
+    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "v2", (short)2);
+    Variable v3 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "v3", 3);
+    Variable v4 = ArithmeticType.newLongVariable((ArithmeticType)longType, "v4", 4);
+    Variable v5 = ArithmeticType.newByteVariable((ArithmeticType)byteBEType, "v1", (byte)1);
+    Variable v6 = ArithmeticType.newShortVariable((ArithmeticType)shortBEType, "v2", (short)2);
+    Variable v7 = ArithmeticType.newIntegerVariable((ArithmeticType)intBEType, "v3", 3);
+    Variable v8 = ArithmeticType.newLongVariable((ArithmeticType)longBEType, "v4", 4);
+    Variable v9 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, "", (float)1.0);
+    Variable v10 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, "", 2.0);
+    assertEquals ("1", 1, v1.getByte());
+    assertEquals ("2", 2, v2.getShort());
+    assertEquals ("3", 3, v3.getInt());
+    assertEquals ("4", 4, v4.getLong());
+    assertEquals ("1", 1, v5.getByte());
+    assertEquals ("2", 2, v6.getShort());
+    assertEquals ("3", 3, v7.getInt());
+    assertEquals ("4", 4, v8.getLong());
+    assertEquals ("1.0", 1.0, 1.0, v9.getFloat());
+    assertEquals ("2.0", 2.0, 2.0, v10.getDouble());
+  }
 
-//     /**
-//      * Stan I think the way numbers are handled here needs to be
-//      * simplified.  For instance, instead of IntegerType, ShortType,
-//      * ... ; just have NumberType that can be extended to handle all
-//      * the diffeent variants.
-//      */
-//     public void testNumber ()
-//     {
-// 	// Create a Number, check toString returns the original
-// 	// number.  Do this for all the different number variations -
-// 	// big and little endian, 1-8 bytes. ...  The number should
-// 	// take it's name.
-//     }
+  private boolean isTrue (int i)
+  {
+    if (i != 0)
+      return true;
+    else
+      return false;
+  }
 
-//     public void testFloatingPoint ()
-//     {
-// 	// Create a FloatingPointType, check toString to return the
-// 	// original value, well hopefully.
-//     }
+  private boolean isTrue (double d)
+  {
+    if (d != 0)
+      return true;
+    else
+      return false;
+  }
+  
+  public void testIntOps ()
+    throws InvalidOperatorException
+  {
+    Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "", 4);
+    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "", (short)9);
+    Variable v3 = v1.getType().add(v1, v2);
+    assertEquals ("4 + 9", 4 + 9, v3.getInt());
+    v3 = v1.getType().subtract(v2, v1);
+    assertEquals ("9 - 4", 9 - 4, v3.getInt());
+    v3 = v1.getType().multiply(v2, v1);
+    assertEquals ("9 * 4", 9 * 4, v3.getInt());
+    v3 = v1.getType().mod(v2, v1);
+    assertEquals ("9 % 4", 9 % 4, v3.getInt());
+    v3 = v1.getType().shiftLeft(v2, v1);
+    assertEquals ("9 << 4", 9 << 4, v3.getInt());
+    v3 = v1.getType().shiftRight(v2, v1);
+    assertEquals ("9 >> 4", 9 >> 4, v3.getInt());
+    v3 = v1.getType().lessThan(v2, v1);
+    assertEquals ("9 < 4", 9 < 4, isTrue(v3.getInt()));
+    v3 = v1.getType().greaterThan(v2, v1);
+    assertEquals ("9 > 4", 9 > 4, isTrue(v3.getInt()));
+    v3 = v1.getType().lessThanOrEqualTo(v2, v1);
+    assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.getInt()));
+    v3 = v1.getType().greaterThanOrEqualTo(v2, v1);
+    assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.getInt()));
+    v3 = v1.getType().equal(v2, v1);
+    assertEquals ("9 == 4", 9 == 4, isTrue(v3.getInt()));
+    v3 = v1.getType().notEqual(v2, v1);
+    assertEquals ("9 != 4", 9 != 4, isTrue(v3.getInt()));
+    v3 = v1.getType().bitWiseAnd(v2, v1);
+    assertEquals ("9 && 4", 9 & 4, v3.getInt());
+    v3 = v1.getType().bitWiseOr(v2, v1);
+    assertEquals ("9 || 4", 9 | 4, v3.getInt());
+    v3 = v1.getType().bitWiseXor(v2, v1);
+    assertEquals ("9 ^ 4", 9 ^ 4, v3.getInt());
+    v3 = v1.getType().bitWiseComplement(v1);
+    assertEquals ("~4", ~4, v3.getInt());
+    v3 = v1.getType().logicalAnd(v2, v1);
+    assertEquals ("9 & 4", 1, v3.getInt());
+    v3 = v1.getType().logicalOr(v2, v1);
+    assertEquals ("9 | 4", 1, v3.getInt());
+    v3 = v1.getType().assign(v3, v1);
+    assertEquals ("v3 = 4", 4, v3.getInt());
+    v3 = v1.getType().plusEqual(v3, v1);
+    assertEquals ("v3 += 4", 8, v3.getInt());
+    v3 = v1.getType().minusEqual(v3, v1);
+    assertEquals ("v3 -= 4", 4, v3.getInt());
+    v3 = v1.getType().timesEqual(v3, v1);
+    assertEquals ("v3 *= 4", 16, v3.getInt());
+    v3 = v1.getType().divideEqual(v3, v1);
+    assertEquals ("v3 /= 4", 4, v3.getInt());
+    v3 = v1.getType().modEqual(v3, v1);
+    assertEquals ("v3 %= 4", 0, v3.getInt());
+    v3 = v1.getType().shiftLeftEqual(v3, v1);
+    assertEquals ("v3 <<= 4", 0, v3.getInt());
+    v3 = v1.getType().shiftRightEqual(v3, v1);
+    assertEquals ("v3 >>= 4", 0, v3.getInt());
+    v3 = v1.getType().bitWiseOrEqual(v3, v1);
+    assertEquals ("v3 ||= 4", 4, v3.getInt());
+    v3 = v1.getType().bitWiseXorEqual(v3, v1);
+    assertEquals ("v3 ^= 4", 0, v3.getInt());
+    v3 = v1.getType().bitWiseAndEqual(v3, v1);
+    assertEquals ("v3 &&= 4", 0, v3.getInt());
+  }
 
-//     /**
-//      * For the ArrayType, need to be able to fetch elements and
-//      * iterate over it.
-//      */
-//     public void testArrayOfNumber ()
-//     {
-// 	// Create's an array of Number, and then uses toString to
-// 	// check its contents.
+  public void testFloatOps ()
+    throws InvalidOperatorException
+  {
+    Variable v1 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, "", (float)4.0);
+    Variable v2 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, "", 9.0);
+    Variable v3 = v1.getType().add(v1, v2);
+    assertEquals ("4 + 9", 4 + 9, v3.getDouble(), 0);
+    v3 = v1.getType().subtract(v2, v1);
+    assertEquals ("9 - 4", 9 - 4, v3.getDouble(), 0);
+    v3 = v1.getType().multiply(v2, v1);
+    assertEquals ("9 * 4", 9 * 4, v3.getDouble(), 0);
+    v3 = v1.getType().mod(v2, v1);
+    assertEquals ("9 % 4", 9 % 4, v3.getDouble(), 0);
+    v3 = v1.getType().lessThan(v2, v1);
+    assertEquals ("9 < 4", 9 < 4, isTrue(v3.getDouble()));
+    v3 = v1.getType().greaterThan(v2, v1);
+    assertEquals ("9 > 4", 9 > 4, isTrue(v3.getDouble()));
+    v3 = v1.getType().lessThanOrEqualTo(v2, v1);
+    assertEquals ("9 <= 4", 9 <= 4, isTrue(v3.getDouble()));
+    v3 = v1.getType().greaterThanOrEqualTo(v2, v1);
+    assertEquals ("9 >= 4", 9 >= 4, isTrue(v3.getDouble()));
+    v3 = v1.getType().equal(v2, v1);
+    assertEquals ("9 == 4", 9 == 4, isTrue(v3.getDouble()));
+    v3 = v1.getType().notEqual(v2, v1);
+    assertEquals ("9 != 4", v2 != v1, isTrue(v3.getDouble()));
+    v3 = v1.getType().assign(v3, v1);
+    assertEquals ("v3 = 4", 4, v3.getDouble(), 0);
+    v3 = v1.getType().plusEqual(v3, v1);
+    assertEquals ("v3 += 4", 8, v3.getDouble(), 0);
+    v3 = v1.getType().minusEqual(v3, v1);
+    assertEquals ("v3 -= 4", 4, v3.getDouble(), 0);
+    v3 = v1.getType().timesEqual(v3, v1);
+    assertEquals ("v3 *= 4", 16, v3.getDouble(), 0);
+    v3 = v1.getType().divideEqual(v3, v1);
+    assertEquals ("v3 /= 4", 4, v3.getDouble(), 0);
+    v3 = v1.getType().modEqual(v3, v1);
+    assertEquals ("v3 %= 4", 0, v3.getDouble(), 0);
+  }
 
-// 	// Also separate tests for 0 dimentioned arrays et.al.
-//     }
+  /**
+   * enum {}
+   */
+  public void testEnum ()
+  {
+    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+    EnumType enumType = new EnumType(byteOrder);
+    enumType.addMember(byteType, "red", 1);
+    enumType.addMember(byteType, "orange", 2);
+    enumType.addMember(byteType, "yellow", 3);
+    enumType.addMember(byteType, "green", 4);
+    enumType.addMember(byteType, "blue", 5);
+    enumType.addMember(byteType, "violet", 6);
+        Variable e1 = EnumType.newEnumVariable(enumType, "e1");
+    String s = e1.toString();
+    assertEquals ("enum", "{red=1,orange=2,yellow=3,green=4,blue=5,violet=6}", s);
+  }
+  
+  /**
+   * int[] array 
+   */
+  public void testArrayOfNumber ()
+  {
+    // Also separate tests for 0 dimensioned arrays et.al.
+    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+    ArrayList dims = new ArrayList();
+    dims.add(new Integer(3));
+    ArrayType arrayType = new ArrayType(intType, dims);
+    int [] intbuf = {0x1020304, 0x5060708, 0x090a0b0c, 0x0d0e0f10};
+    byte [] buf = new byte [intbuf.length * 4];
+    for (int i = 0; i < intbuf.length; i++)
+      {
+	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
+	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
+	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
+	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
+      }
+    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
+    abb.order(byteOrder);
+    Variable c1 = new Variable(arrayType, "a1", abb);
+    String s = c1.toString();
+    assertEquals ("array1dim", "[0]=16909060[1]=84281096[2]=151653132[3]=219025168", s);
+  }
 
-//     /**
-//      * For an array, needs to be recursive.
-//      */
-//     public void testArrayOfArrayOfNumber ()
-//     {
-// 	// Create a two dimentional array and check toString still
-// 	// works.
-//     }
+  /**
+   * int[][]
+   */
+  public void testArrayOfArrayOfNumber ()
+  {
+    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+    ArrayList dims = new ArrayList();
+    dims.add(new Integer(1));
+    dims.add(new Integer(3));
+    ArrayType arrayType = new ArrayType(intType, dims);
+    int [] intbuf = {0x0, 0x1, 0x2, 0x3, 0x0, 0x10, 0x20, 0x30};
+    byte [] buf = new byte [intbuf.length * 4];
+    for (int i = 0; i < intbuf.length; i++)
+      {
+	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
+	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
+	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
+	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
+      }
+    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
+    abb.order(byteOrder);
+    Variable c1 = new Variable(arrayType, "a2", abb);
+    String s = c1.toString();
+    assertEquals ("array2dim", "[0,0]=0[0,1]=1[0,2]=2[0,3]=3[1,0]=0[1,1]=16[1,2]=32[1,3]=48", s);
+  }
 
-//     /**
-//      * For a structure, similar to an array.
-//      */
-//     public void testStructureOfNumber ()
-//     {
-// 	// Create a structure containing a single number, check
-// 	// toString works for that.
-//     }
+  /**
+   * struct {int; int; short; int:8; int:8;}
+   */
+  public void testStructure ()
+  {
+    // Also separate tests for 0 dimensioned arrays et.al.
+    ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+    ClassType classType = new ClassType(byteOrder);
+    classType.addMember(intType, "alpha", 0, 0);
+    classType.addMember(intType, "beta", 4, 0);
+    classType.addMember(shortType, "gamma", 8, 0);
+    classType.addMember(intType, "iota", 8, 0x0000ff00);
+    classType.addMember(intType, "epsilon", 8, 0x000000ff);
+    int [] intbuf = {0x1020304, 0x5060708, 0x9101112};
+    byte [] buf = new byte [intbuf.length * 4];
+    for (int i = 0; i < intbuf.length; i++)
+      {
+	buf[i*4] = (byte)((intbuf[i] & 0xff000000) >>> 24);
+	buf[i*4+1] = (byte)((intbuf[i] & 0x00ff0000) >>> 16);
+	buf[i*4+2] = (byte)((intbuf[i] & 0x0000ff00) >>> 8);
+	buf[i*4+3] = (byte)(intbuf[i] & 0x000000ff);
+      }
+    ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
+    abb.order(byteOrder);
+    Variable c1 = new Variable(classType, "c1", abb);
+    String s = c1.toString();
+    assertEquals ("class", "alpha=16909060,beta=84281096,gamma=2320,iota=17,epsilon=18", s);
+  }
 }

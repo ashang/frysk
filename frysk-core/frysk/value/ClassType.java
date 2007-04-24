@@ -354,6 +354,12 @@ public class ClassType
     throw (new InvalidOperatorException());
   }
 
+  public Variable bitWiseComplement (Variable var1)
+      throws InvalidOperatorException
+  {
+    throw (new InvalidOperatorException());
+  }
+
   public Variable logicalAnd (Variable var1, Variable var2)
       throws InvalidOperatorException
   {
