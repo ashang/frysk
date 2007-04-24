@@ -1,3 +1,11 @@
+2007-04-24  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (cleanTask): Clean from threads list and
+	breakpoint map. 
+	(clear): Clear threads list.
+	(ThreadLifeObservable.updateTerminating): No longer explicitly cleans
+	any Tasks from data structures; uses cleanTask() instead.
+
 2007-04-23  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (contextMap): Changed to synchronized HashMap.

@@ -821,7 +821,9 @@ public class SteppingEngine
   public static void cleanTask (Task task)
   {
     taskStateMap.remove(task);
+    threadsList.remove(task);
     runningTasks.remove(task);
+    breakpointMap.remove(task);
   }
   
   /**
@@ -835,6 +837,7 @@ public class SteppingEngine
     runningTasks.clear();
     threadLifeObservable.deleteObservers();
     threadLifeObservable = new ThreadLifeObservable();
+    threadsList.clear();
     breakpoint = null;
     steppingObserver.deleteObservers();
     steppingObserver = new SteppingObserver();
@@ -1180,16 +1183,12 @@ public class SteppingEngine
     public Action updateTerminating (Task task, boolean signal, int value)
     {
 //      System.err.println("threadlife.updateTerminating " + task + " " + value);
-      runningTasks.remove(task);
-      
       Integer context = (Integer) contextMap.get(task.getProc());
       contextMap.put (task.getProc(), new Integer(context.intValue() - 1));
       
-      taskStateMap.remove(task);
-      threadsList.remove(task);
       cleanTask(task);
-      this.setChanged();
-	  
+      
+      this.setChanged();  
       if (taskStateMap.size() == 0)
 	this.notifyObservers(null);
       else
