@@ -1,5 +1,10 @@
 2007-04-24  Rick Moseley  <rmoseley@redhat.com>
 
+	* SourceWindow.java: Claen up some fo the code for the
+	change below.
+
+2007-04-24  Rick Moseley  <rmoseley@redhat.com>
+
 	* SourceWindow.java: Add info to the sourceLabel widget to
 	identify specifically what is showing in the source frame.
 

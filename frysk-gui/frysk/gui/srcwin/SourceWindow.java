@@ -1929,6 +1929,23 @@ public class SourceWindow
         this.view.showAll();
       }
   }
+  
+  /**
+   * This method actually sets the sourceLabel widget with the info provided.
+   * 
+   * @param task_name is a string containing the command used to start the task.
+   * @param proc_id is an integer containing the PID of the task being displayed.
+   * 
+   */
+  private void setSourceLabel(String header, String task, int pid)
+  {
+    ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+	                                                      + header
+	                                                      + task + " -- PID: "
+	                                                      + pid
+	                                                      + "</b>");
+	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+  }
 
   /**
    * This method updates the label at the top of the debug window frame whenever a stack frame
@@ -1941,14 +1958,10 @@ public class SourceWindow
       {
 	String task_name = this.swProc[0].getExe();
 	int proc_id = this.swProc[0].getPid();
-	((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-	                                                      + "Unknown File for: "
-	                                                      + task_name + " -- PID: "
-	                                                      + proc_id
-	                                                      + "</b>");
-	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+	setSourceLabel("Unknown File for: ", task_name, proc_id);
 	return;
       }
+     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     String task_name = sf.getTask().getProc().getExe();
     int proc_id = sf.getTask().getProc().getPid();
     
@@ -1970,23 +1983,11 @@ public class SourceWindow
             }
       }
     if (lines.length == 0)
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + "Unknown File for: " 
-                                                            + task_name + " -- PID: " + proc_id
-                                                            + "</b>");
+      setSourceLabel("Unknown File for:", task_name, proc_id);
     else if (source == null && lines.length > 0)
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + sf.getLines()[0].getFile().getPath()
-                                                            + " for: " + task_name + " -- PID: "
-                                                            + proc_id
-                                                            + "</b>");
+      setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ", task_name, proc_id);
     else
-      ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + source.getFileName()
-                                                            + " for: " + task_name
-                                                            + " -- PID: " + proc_id
-                                                            + "</b>");
-    ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+      setSourceLabel(source.getFileName() + " for: ", task_name, proc_id);
   }
   
   
