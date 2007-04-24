@@ -53,6 +53,7 @@ import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
+import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
@@ -76,8 +77,7 @@ import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
-import frysk.gui.srcwin.SourceWindowFactory;
-import frysk.proc.Proc;
+import frysk.gui.sessions.Session.SessionType;
 
 public class CreateFryskSessionDruid
     extends Dialog
@@ -102,9 +102,7 @@ public class CreateFryskSessionDruid
 
   private Notebook notebook;
 
-  private Button debugButton;
-
-  private Button nextButton;
+    private Button nextButton;
 
   private Button backButton;
 
@@ -118,6 +116,10 @@ public class CreateFryskSessionDruid
 
   private Button closeButton;
 
+  private RadioButton debugSessionRadioButton;
+  
+  private RadioButton monitorSessionRadioButton;
+  
   private int processSelected = 0;
 
   private String oldSessionName;
@@ -182,10 +184,8 @@ public class CreateFryskSessionDruid
     nextButton.showAll();
     
     finishButton.showAll();
-    finishButton.setSensitive(false);
-
+    
     backButton.showAll();
-    debugButton.showAll();
     saveButton.hideAll();
     cancelButton.showAll();
     okButton.hideAll();
@@ -228,9 +228,9 @@ public class CreateFryskSessionDruid
 
     notebook.setShowTabs(true);
     notebook.setCurrentPage(1);
+    setUpCurrentPage();
     notebook.getPage(0).hideAll();
     
-    debugButton.hideAll();
     backButton.hideAll();
     nextButton.hideAll();
     finishButton.hideAll();
@@ -258,6 +258,7 @@ public class CreateFryskSessionDruid
       }
 
     this.notebook.setCurrentPage(1);
+    setUpCurrentPage();
     notebook.setShowTabs(false);
 
     this.setDruidMode(DruidMode.LOAD_SESSION_MODE);
@@ -266,7 +267,6 @@ public class CreateFryskSessionDruid
     this.showAll();
 
     nextButton.showAll();
-    debugButton.showAll();
     finishButton.showAll();
 
     okButton.hideAll();
@@ -274,21 +274,11 @@ public class CreateFryskSessionDruid
     cancelButton.showAll();
     closeButton.hideAll();
     
-    // nextButton.setSensitive(true);
-    // nextButton.showAll();
-    // saveButton.hideAll();
-    // saveButton.setSensitive(false);
-    // warningLabel.setMarkup("Select a <b>Name</b> for the session, and
-        // some <b>Processes</b> to monitor");
-    // warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
-
     processSelected = SessionManager.theManager.getCurrentSession().getProcesses().size();
 
     LinkedList oldSessionProcesses = new LinkedList(
 						    SessionManager.theManager.getCurrentSession().getProcesses());
     LinkedList allProcs = new LinkedList();
-//    HashSet observers = new HashSet();
-//    LinkedList observersList = new LinkedList();
 
     Iterator i = oldSessionProcesses.iterator();
     String prev = "";
@@ -302,17 +292,6 @@ public class CreateFryskSessionDruid
 	DebugProcess dp = (DebugProcess) i.next();
 	if (prev.equals(dp.getName()))
 	  continue;
-
-//	Iterator j = SessionManager.theManager.getCurrentSession().getObservers().iterator();
-//	while (j.hasNext())
-//	  {
-//	    ObserverRoot or = (ObserverRoot) j.next();
-//	    if (! observers.contains(or.getBaseName()))
-//	      {
-//		observers.add(or.getBaseName());
-//		observersList.add(or);
-//	      }
-//	  }
 
 	prev = dp.getName();
 	this.dataModel.collectProcsByExecutablePath(dp.getExecutablePath(), allProcs);
@@ -347,11 +326,11 @@ public class CreateFryskSessionDruid
     // SessionManager.theManager.backupCurrentSession();
 
     notebook.setCurrentPage(OBSERVERS_PAGE);
+    this.setUpCurrentPage();
     notebook.setShowTabs(false);
 
     this.showAll();
 
-    this.debugButton.hideAll();
     this.backButton.hideAll();
     this.nextButton.hideAll();
     this.finishButton.hideAll();
@@ -489,17 +468,17 @@ public class CreateFryskSessionDruid
   }
 
   /**
-         * Changes the transition on a group of processes from one tree to the
-         * other As the druid removes items from one tree and adds them to
-         * another, it must transport and translate those selected TreePaths.
-         * Ugly and really needs to be re-written
-         * 
-         * @param tree - TreeView in question
-         * @param selectedProcs - a TreePath[] of the selected processes
-         * @param filtered - Is this a filtered tree?
-         * @param state - What selected state do you want to render the selected
-         *                TreePath[]s
-         */
+   * Changes the transition on a group of processes from one tree to the
+   * other As the druid removes items from one tree and adds them to
+   * another, it must transport and translate those selected TreePaths.
+   * Ugly and really needs to be re-written
+   * 
+   * @param tree - TreeView in question
+   * @param selectedProcs - a TreePath[] of the selected processes
+   * @param filtered - Is this a filtered tree?
+   * @param state - What selected state do you want to render the selected
+   *                TreePath[]s
+   */
   private void changeGroupState (ProcWiseTreeView tree,
 				 TreePath[] selectedProcs, boolean filtered,
 				 boolean state)
@@ -631,10 +610,6 @@ public class CreateFryskSessionDruid
 	    changeGroupState(procWiseTreeView,
 			     procWiseTreeView.getSelection().getSelectedRows(),
 			     true, true);
-	    // if (! SessionManager.theManager.getCurrentSession().getProcesses().isEmpty())
-	    // {
-	    // observerSelectionTreeView.setSensitive(true);
-	    // }
 	  }
 
       }
@@ -661,14 +636,6 @@ public class CreateFryskSessionDruid
 		SessionManager.theManager.getCurrentSession().removeDebugProcess(
 										 currentDebugProcess);
 	      }
-	    // if (SessionManager.theManager.getCurrentSession().getProcesses().isEmpty())
-	    // {
-	    // observerSelectionTreeView.setSensitive(false);
-	    // }
-	    // else
-	    // {
-	    // observerSelectionTreeView.setSensitive(true);
-	    // }
 	  }
       }
     });
@@ -727,14 +694,7 @@ public class CreateFryskSessionDruid
 	    changeGroupState(procWiseTreeView,
 			     procWiseTreeView.getSelection().getSelectedRows(),
 			     true, true);
-	    // changeGroupState(addedProcsTreeView,
-                // addedProcsTreeView.getSelection().getSelectedRows(), true,
-                // true);
 	  }
-	// if (! currentSession.getProcesses().isEmpty())
-	// {
-	// observerSelectionTreeView.setSensitive(true);
-	// }
       }
     });
 
@@ -760,15 +720,6 @@ public class CreateFryskSessionDruid
 		    SessionManager.theManager.getCurrentSession().removeGuiProc(gp);
 		  }
 	      }
-
-	    // if (currentSession.getProcesses().isEmpty())
-	    // {
-	    // observerSelectionTreeView.setSensitive(false);
-	    // }
-	    // else
-	    // {
-	    // observerSelectionTreeView.setSensitive(true);
-	    // }
 	  }
       }
     });
@@ -779,47 +730,31 @@ public class CreateFryskSessionDruid
   {
     notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
 
-    this.debugButton = (Button) glade.getWidget("sessionDruid_debugButton");
-    this.debugButton.addListener(new ButtonListener()
+    debugSessionRadioButton = (RadioButton) glade.getWidget("debugSessionRadioButton");
+    debugSessionRadioButton.addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent event)
       {
-	if (event.isOfType(ButtonEvent.Type.CLICK))
-	  {
-	    LinkedList list = addedProcsTreeView.getListedObjects();
-	    if (list != null && list.size() > 0)
-	      {
-		Iterator i = list.iterator();
-
-		Proc[] procs = new Proc[list.size()];
-		int j = 0;
-		while (i.hasNext())
-		  {
-		    procs[j++] = ((GuiProc) i.next()).getProc();
-		  }
-		SourceWindowFactory.createSourceWindow(procs);
-		hide();
-	      }
-	    else
-	      {
-		if (procWiseTreeView.getSelectedObjects() != null)
-		  {
-		    int j = 0;
-		    LinkedList llist = procWiseTreeView.getSelectedObjects();
-		    Proc[] procs = new Proc[llist.size()];
-		    Iterator i = llist.iterator();
-		    while (i.hasNext())
-		      {
-			procs[j++] = ((GuiProc) i.next()).getProc();
-		      }
-		    SourceWindowFactory.createSourceWindow(procs);
-		    hide();
-		  }
-	      }
-	  }
+	if(event.isOfType(ButtonEvent.Type.CLICK) && debugSessionRadioButton.getState()){
+	  System.out.println("CreateFryskSessionDruid.getDruidStructureControls() debug");
+	  SessionManager.theManager.getCurrentSession().setSessionType(SessionType.DebugSession);
+	}
       }
     });
-
+    
+    monitorSessionRadioButton = (RadioButton) glade.getWidget("monitorSessionRadioButton");
+    monitorSessionRadioButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+	if(event.isOfType(ButtonEvent.Type.CLICK) && monitorSessionRadioButton.getState()){
+	  System.out.println("CreateFryskSessionDruid.getDruidStructureControls() monitor");
+	  SessionManager.theManager.getCurrentSession().setSessionType(SessionType.MonitorSession);
+	}
+      }
+    });
+    monitorSessionRadioButton.activate();
+    
     nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
     nextButton.addListener(new ButtonListener()
     {
@@ -860,16 +795,10 @@ public class CreateFryskSessionDruid
 	    
 	    procMap.clear();
 
-	    LinkedList ll = new LinkedList();
-	    ll.add(WindowManager.theManager.mainWindow);
-	    IconManager.trayIcon.setPopupWindows(ll);
-	    // SessionManager.theManager.setCurrentSession(currentSession);
-	    // WindowManager.theManager.mainWindow.buildTerminal();
-	    WindowManager.theManager.mainWindow.hideTerminal();
-	    WindowManager.theManager.mainWindow.showAll();
+	    SessionManager.theManager.save();
+	    SessionManager.theManager.getCurrentSession().startSession();
 	    WindowManager.theManager.sessionManagerDialog.hideAll();
 	    hide();
-	    SessionManager.theManager.save();
 	  }
       }
     });
@@ -959,7 +888,6 @@ public class CreateFryskSessionDruid
 
   private void nextPage ()
   {
-
     // Process previous page data
     final int page = notebook.getCurrentPage();
 
@@ -973,14 +901,48 @@ public class CreateFryskSessionDruid
     setUpCurrentPage();
   }
 
+  private void validateCurrentPage(){
+    final int page = notebook.getCurrentPage();
+    switch (page){
+      
+    case SELECT_PROCS_PAGE:
+	this.validateSessionName();
+	break;
+	
+    default:
+	currentPageValid();
+	break;
+    }
+  }
+  
+  private void validateSessionName ()
+  {
+    String proposedName = nameEntry.getName();
+    Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
+    if (theSessionUsingProposedName != null && theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
+      setWarning(WarningType.NAME_ALREADY_USED);
+      currentPageInvalid();
+    }else{
+      currentPageValid();
+    }
+  }
+
+  private void currentPageValid(){
+    this.nextButton.setSensitive(true);
+    this.finishButton.setSensitive(true);
+  }
+  
+  private void currentPageInvalid(){
+    this.nextButton.setSensitive(false);
+    this.finishButton.setSensitive(false);
+  }
+
   private void setUpCurrentPage ()
   {
+    validateCurrentPage();
     final int page = notebook.getCurrentPage();
-
-    this.debugButton.hideAll();
-
+    
     if (page == INTRODUCTION_PAGE){
-      debugButton.hideAll();
       backButton.hideAll();
       finishButton.hideAll();
       okButton.hideAll();
@@ -990,7 +952,6 @@ public class CreateFryskSessionDruid
     }
     
     if (page == SELECT_PROCS_PAGE){
-      this.debugButton.showAll();
       backButton.showAll();
       nextButton.showAll();
       finishButton.showAll();

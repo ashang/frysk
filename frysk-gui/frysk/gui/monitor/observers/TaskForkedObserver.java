@@ -47,15 +47,18 @@
 
 package frysk.gui.monitor.observers;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.eventviewer.EventManager;
 import frysk.gui.monitor.filters.TaskFilterPoint;
+import frysk.gui.sessions.SessionManager;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -76,9 +79,15 @@ public class TaskForkedObserver
 
   public TaskActionPoint offspringTaskActionPoint;
 
+  // When updateOffspring is called this observer adds itself to the child
+  // it will not execute the bottomHalfOffspring untill that addition has
+  // be confirmed by the core. Untill then a reference to the offspring is
+  // kept here:
+  private HashMap pendingOffspringHashMap;
+  
   protected TaskForkedObserver ()
   {
-    super("Fork Observer", "Fires when a proc forks");
+    super("Fork Observer", "Catches a fork event, and adds the newly forked child to the session");
 
     this.parentTaskFilterPoint = new TaskFilterPoint("forking thread",
                                                       "Thread that performed the fork");
@@ -96,6 +105,7 @@ public class TaskForkedObserver
     this.addActionPoint(this.parentTaskActionPoint);
     this.addActionPoint(this.offspringTaskActionPoint);
 
+    this.pendingOffspringHashMap = new HashMap();
   }
 
   protected TaskForkedObserver (TaskForkedObserver other)
@@ -118,6 +128,7 @@ public class TaskForkedObserver
     this.addActionPoint(this.parentTaskActionPoint);
     this.addActionPoint(this.offspringTaskActionPoint);
 
+    this.pendingOffspringHashMap = new HashMap(other.pendingOffspringHashMap);
   }
 
   public Action updateForkedParent (Task task, Task child)
@@ -129,29 +140,32 @@ public class TaskForkedObserver
       public void run ()
       {
         // This does the unblock.
-        bottomHalfOffspring(myTask, myChild);
+        bottomHalfParent(myTask, myChild); 
       }
     });
 
     return Action.BLOCK;
   }
 
-  public Action updateForkedOffspring (Task task, Task child)
+  public Action updateForkedOffspring (final Task task, final Task offspring)
   {
     WindowManager.logger.log(Level.FINE,
                              "{0} updateForkedOffspring child: {1} \n",
-                             new Object[] { this, child });
-    final Task myTask = task;
-    final Task myChild = child;
-    org.gnu.glib.CustomEvents.addEvent(new Runnable()
+                             new Object[] { this, offspring });
+    
+    offspring.requestAddForkedObserver(this);
+    
+    pendingOffspringHashMap.put(offspring,new Runnable()
     {
+      final Task myTask = task;
+      final Task myOffspring = offspring;
       public void run ()
       {
         // This does the unblock.
-        bottomHalfParent(myTask, myChild);
+        bottomHalfOffspring(myTask, myOffspring); 
       }
     });
-
+    
     return Action.BLOCK;
   }
 
@@ -173,8 +187,6 @@ public class TaskForkedObserver
                                  this);
       }
 
-    // child.requestAddForkedObserver(new TaskForkedObserver());
-
     Action action = this.whatActionShouldBeReturned();
     if (action == Action.CONTINUE)
       {
@@ -184,6 +196,7 @@ public class TaskForkedObserver
 
   private void bottomHalfOffspring(Task parent, Task offspring)
   {
+    System.out.println("TaskForkedObserver.bottomHalfOffspring()");
     WindowManager.logger.log(Level.FINE, "{0} bottomHalf\n", this);
     this.setInfo(this.getName() + ": " + "PID: " + parent.getProc().getPid()
                  + " TID: " + parent.getTid() + " Event: forked new child PID: "
@@ -203,7 +216,7 @@ public class TaskForkedObserver
     Action action = this.whatActionShouldBeReturned();
     if (action == Action.CONTINUE)
       {
-        offspring.requestUnblock(this);
+	offspring.requestUnblock(this);
       }
   }
 
@@ -244,16 +257,16 @@ public class TaskForkedObserver
     return true;
   }
 
-  private void runActionsOffspring (Task task, Task child)
+  private void runActionsOffspring (Task task, Task offspring)
   {
     WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
-    Event event = new Event("forked by " + task.getTid(), "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(child), this);
+    Event event = new Event("forked by " + task.getTid(), "new child has been forked", GuiTask.GuiTaskFactory.getGuiTask(offspring), this);
     super.runActions();
     
     // add events to event manager
     EventManager.theManager.addEvent(event);
-    
-    this.offspringTaskActionPoint.runActions(child, this, event);
+    SessionManager.theManager.getCurrentSession().addGuiProc(GuiProc.GuiProcFactory.getGuiProc(offspring.getProc()));
+    this.offspringTaskActionPoint.runActions(offspring, this, event);
   }
 
   public void unapply (Task task)
@@ -261,4 +274,12 @@ public class TaskForkedObserver
     task.requestDeleteForkedObserver(this);
   }
 
+  public void addedTo (Object observable){
+    super.addedTo(observable);
+    if(this.pendingOffspringHashMap.containsKey(observable)){
+      org.gnu.glib.CustomEvents.addEvent((Runnable) this.pendingOffspringHashMap.get(observable));
+      this.pendingOffspringHashMap.remove(observable);
+    }
+  }
+  
 }

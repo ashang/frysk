@@ -93,7 +93,7 @@ public class TaskActionPoint
     this.applicableActions.add(new ShowRegWin());
     this.applicableActions.add(new ShowMemWin());
     this.applicableActions.add(new RunExternal());
-    this.applicableActions.add(new CaptureStackFrameAction());
+    this.applicableActions.add(new CaptureStackTraceAction());
   }
 
   /**

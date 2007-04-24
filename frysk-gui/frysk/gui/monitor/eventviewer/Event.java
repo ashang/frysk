@@ -216,8 +216,14 @@ public class Event extends GuiObject
   public void setStackFrame (StackFrame frame)
   {
     stackFrame = frame;
-    String summary = this.getName() + ": " + this.getToolTip() + "\n" +
-    StackFactory.printStackTrace(frame);
+    String summary = this.getName() + ": " + this.getToolTip() + "\n";
+    
+    if(frame != null){
+      summary += StackFactory.printStackTrace(frame);
+    }else{
+      summary += "*Error capturing stack frame*";
+    }
+    
     this.setSummay(summary);
   }
 

@@ -52,7 +52,7 @@ import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
 import frysk.gui.monitor.WindowManager;
-import frysk.gui.monitor.actions.CaptureStackFrameAction;
+import frysk.gui.monitor.actions.CaptureStackTraceAction;
 
 /**
  * Only once instance.
@@ -126,30 +126,30 @@ public class ObserverManager {
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		((TaskExecObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
+		((TaskExecObserver)observer).taskActionPoint.addAction(new CaptureStackTraceAction());
 		
         //============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-        ((TaskForkedObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
-        ((TaskForkedObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
+		((TaskForkedObserver)observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
+        	((TaskForkedObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
 
         //============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-        ((TaskTerminatingObserver)observer).taskActionPoint.addAction(new CaptureStackFrameAction());
+        ((TaskTerminatingObserver)observer).taskActionPoint.addAction(new CaptureStackTraceAction());
         
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
 		this.tryAddTaskObserverPrototype(observer, true);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-        ((TaskCloneObserver)observer).parentTaskActionPoint.addAction(new CaptureStackFrameAction());
-        ((TaskCloneObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackFrameAction());
+        ((TaskCloneObserver)observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
+        ((TaskCloneObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
 
 		//============================================
 		observer = new TaskSyscallObserver();

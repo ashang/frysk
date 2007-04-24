@@ -1,3 +1,14 @@
+2007-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskForkedObserver.java: Added handling for following
+	children and adding them to the current sesison.
+	* eventviewer/Event.java: Added handling for exceptions thrown during
+	stack trace retrieval.
+	* actions/CaptureStackFrameAction.java: Rnamed this..
+	* actions/CaptureStackTraceAction.java: ..to this.
+	* actions/TaskActionPoint.java: Refactored to match the above change
+	* observers/ObserverManager.java: Ditto.
+
 2007-04-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* eventviewer/TimeLine.java: Fixed bug todo with Terminated threads

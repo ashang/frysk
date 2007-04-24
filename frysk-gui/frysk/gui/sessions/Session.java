@@ -42,6 +42,7 @@ package frysk.gui.sessions;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -51,11 +52,15 @@ import java.util.logging.Logger;
 import org.jdom.Element;
 
 import frysk.gui.Gui;
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.srcwin.SourceWindowFactory;
+import frysk.proc.Proc;
 
 /**
  * A Session object is used to hold and save user preferences with respect to a
@@ -71,6 +76,36 @@ public class Session
   private boolean procsAdded = false;
   
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+
+  public SessionType sessionType;
+  
+  public static class SessionType{
+    public static final SessionType DebugSession = new SessionType("Debugging Session");
+    public static final SessionType MonitorSession = new SessionType("Monitoring Session");
+    
+    private String name;
+    
+    private SessionType(String name){
+      this.name = name;
+    }
+    
+    public String getName(){
+      return this.name;
+    }
+
+    public static SessionType getSessionTypeByName (String name)
+    {
+      if(name.equals(DebugSession.getName())){
+	return DebugSession;
+      }
+      
+      if(name.equals(MonitorSession.getName())){
+	return MonitorSession;
+      }
+      
+      throw new IllegalArgumentException("the given name ["+name+"] is not a valid SessionType name");
+    }
+  }
   
   /**
    * Creates a new empty session object, with an empty list processes. Debug
@@ -84,6 +119,8 @@ public class Session
     this.initListObservers();
     
     this.setProcsAdded(false);
+    
+    this.sessionType = SessionType.MonitorSession;
   }
 
   /**
@@ -101,6 +138,8 @@ public class Session
     this.initListObservers();
     
     this.setProcsAdded(other.areProcsAdded());
+    
+    this.sessionType = other.sessionType;
   }
 
   /**
@@ -118,6 +157,8 @@ public class Session
     this.initListObservers();
     
     this.setProcsAdded(false);
+    
+    this.sessionType = SessionType.MonitorSession;
   }
 
   public void addDefaultObservers(){
@@ -344,30 +385,51 @@ public class Session
         }
       }
   }
+
+  public void startSession(){
+    if(this.sessionType == SessionType.MonitorSession){
+      LinkedList ll = new LinkedList();
+      ll.add(WindowManager.theManager.mainWindow);
+      IconManager.trayIcon.setPopupWindows(ll);
+      WindowManager.theManager.mainWindow.hideTerminal();
+      WindowManager.theManager.mainWindow.showAll();
+      WindowManager.theManager.sessionManagerDialog.hideAll();    
+    }else{
+      Iterator debugProcs = this.getProcesses().iterator();
+      while (debugProcs.hasNext()){
+	DebugProcess debugProcess = (DebugProcess) debugProcs.next();
+	LinkedList list = debugProcess.getProcs();
+	  
+	if (list != null && list.size() > 0){
+	  Iterator i = list.iterator();
+
+	  Proc[] procs = new Proc[list.size()];
+	  int j = 0;
+	  while (i.hasNext()){
+	    procs[j++] = ((GuiProc) i.next()).getProc();
+	  }
+	  SourceWindowFactory.createSourceWindow(procs);
+	}
+//	    else
+//	      {
+//		if (procWiseTreeView.getSelectedObjects() != null)
+//		  {
+//		    int j = 0;
+//		    LinkedList llist = procWiseTreeView.getSelectedObjects();
+//		    Proc[] procs = new Proc[llist.size()];
+//		    Iterator i = llist.iterator();
+//		    while (i.hasNext())
+//		      {
+//			procs[j++] = ((GuiProc) i.next()).getProc();
+//		      }
+//		    SourceWindowFactory.createSourceWindow(procs);
+//		    hide();
+//		  }
+//	      }
+      }
+    }
+  }
   
-  public void load (final Element node)
-  {
-    super.load(node);
-
-    final Element procsXML = node.getChild("procs");
-    procs.load(procsXML);
-    
-    final Element observersXML = node.getChild("observers");
-    this.loadObservers(observersXML);
-  }
-
-  public void save (final Element node)
-  {
-    super.save(node);
-    final Element procsXML = new Element("procs");
-    procs.save(procsXML);
-    node.addContent(procsXML);
-    
-    final Element observersXML = new Element("observers");
-    this.saveObservers(observersXML);
-    node.addContent(observersXML);
-  }
-
   public ObservableLinkedList getObservers ()
   {
     return this.observers;
@@ -383,4 +445,39 @@ public class Session
     return procsAdded;
   }
 
+  public SessionType getSessoinType(){
+    return this.sessionType;
+  }
+  
+  public void setSessionType(SessionType sessionType){
+    this.sessionType = sessionType; 
+  }
+ 
+  public void load (final Element node)
+  {
+    super.load(node);
+
+    final Element procsXML = node.getChild("procs");
+    procs.load(procsXML);
+    
+    final Element observersXML = node.getChild("observers");
+    this.loadObservers(observersXML);
+    
+    sessionType = SessionType.getSessionTypeByName(node.getAttributeValue("SessionType"));
+  }
+
+  public void save (final Element node)
+  {
+    super.save(node);
+    final Element procsXML = new Element("procs");
+    procs.save(procsXML);
+    node.addContent(procsXML);
+    
+    final Element observersXML = new Element("observers");
+    this.saveObservers(observersXML);
+    node.addContent(observersXML);
+    
+    node.setAttribute("SessionType", this.sessionType.getName());
+  }
+ 
 }
