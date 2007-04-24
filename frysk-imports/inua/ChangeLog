@@ -1,3 +1,9 @@
+2007-04-24  Nurdin Premji  <npremji@redhat.com>
+	
+	* eio/ByteBuffer.java(get):  Added logging.
+	(peek): Ditto.
+	(peekFully): Ditto.
+
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
 	* eio/ULong.java: (castChar, castByte, castInt): New methods.

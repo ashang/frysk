@@ -70,8 +70,12 @@ public abstract class ByteBuffer
 
   protected long peek (long caret, byte[] bytes, long off, long len)
   {
+    logger.log(Level.FINE, "entering peek, caret: 0x{0}, off: 0x{1}, len: 0x{2}",
+               new Object[]{Long.toHexString(caret), Long.toHexString(off), 
+                            Long.toHexString(len)});
     for (long i = 0; i < len; i++)
       {
+	logger.log(Level.FINEST, "on byte: 0x{0}", Long.toHexString(i));
         bytes[(int) (off + i)] = (byte) peek(caret + i);
       }
     return len;
@@ -88,6 +92,9 @@ public abstract class ByteBuffer
 
   protected final void peekFully (long caret, byte[] bytes, long off, long len)
   {
+    logger.log(Level.FINE, "entering peekFully, caret: 0x{0}, off: 0x{1}, len: 0x{2}\n",
+               new Object[]{Long.toHexString(caret), Long.toHexString(off), 
+                            Long.toHexString(len)});
     while (len > 0)
       {
         long xfer = peek(caret, bytes, off, len);
@@ -95,6 +102,7 @@ public abstract class ByteBuffer
         len -= xfer;
         caret += xfer;
       }
+    logger.log(Level.FINE, "exiting peekFully\n");
   }
 
   protected final void pokeFully (long caret, byte[] bytes, long off, long len)
@@ -329,9 +337,13 @@ public abstract class ByteBuffer
   public ByteBuffer get (long index, byte[] dst, int off, int len)
       throws BufferUnderflowException
   {
+    logger.log(Level.FINE, "entering index: 0x{0}, off: 0x{1}, len: {2}\n",
+               new Object[] {Long.toHexString(index), Long.toHexString(off),
+                             new Integer(len)});
     if (ULong.GT(index + len, remaining()))
       throw new BufferUnderflowException();
     peekFully(lowWater + index,dst,off,len);
+    logger.log(Level.FINE, "exiting\n");
     return this;
   }
 
