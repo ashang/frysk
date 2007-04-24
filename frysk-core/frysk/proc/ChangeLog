@@ -1,3 +1,13 @@
+2007-04-23  Mark Wielaard  <mark@klomp.org>
+
+	* TestTaskObserverCode (child, task, proc): Make private fields.
+	(testCode): Call getFunctionAddress for bp1_func. Delete and
+	retry breakpoint setting.
+	(dummySig): New static final field.
+	(requestDummyRun, requestDummyRun): New methods.
+	(getFunctionEntryAddress): New method.
+	(CodeObserver.deletedFrom): Request event loop shutdown.
+
 2007-04-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRefresh.java: Add 2.6.20-1.2312.fc5 to problem list.

@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.sys.*;
+
 import lib.dw.*;
 import lib.elf.*;
 
@@ -46,30 +48,23 @@ import java.util.*;
 
 public class TestTaskObserverCode extends TestLib
 {
+  private Child child;
+  private Task task;
+  private Proc proc;
+
   public void testCode() throws Exception
   {
     // Create a child.
-    Child child = new AckDaemonProcess();
-    Task task = child.findTaskUsingRefresh (true);
-    Proc proc = task.getProc();
+    child = new AckDaemonProcess();
+    task = child.findTaskUsingRefresh (true);
+    proc = task.getProc();
 
     // Make sure we are attached.
     AttachedObserver attachedObserver = new AttachedObserver();
     task.requestAddAttachedObserver(attachedObserver);
     assertRunUntilStop("adding AttachedObserver");
 
-    // Get address of "handler" function (which will handle all
-    // signals of the funit-child so it is easy to trigger a hit).
-    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
-    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
-    DwarfDie die = DwarfDie.getDecl(dwarf, "handler");
-    ArrayList entryAddrs = die.getEntryBreakpoints();
-
-    // We really expect just one entry point.
-    assertEquals(entryAddrs.size(), 1);
-
-    // Add a Code observer on the address.
-    long address = ((Long) entryAddrs.get(0)).longValue();
+    long address = getFunctionEntryAddress("bp1_func");
     CodeObserver code = new CodeObserver(task, address);
     task.requestUnblock(attachedObserver);
     task.requestAddCodeObserver(code, address);
@@ -77,11 +72,74 @@ public class TestTaskObserverCode extends TestLib
 
     assertFalse(code.hit);
 
-    // Send the child an (arbitrary) signal
-    child.signal(execSig);
+    // Request a run and watch the breakpoint get hit.
+    requestDummyRun();
     assertRunUntilStop("signal and wait for hit");
 
     assertTrue(code.hit);
+
+    // Try that again.
+    task.requestDeleteCodeObserver(code, address);
+    assertRunUntilStop("remove code observer");
+
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("readd breakpoint observer");
+
+    code.hit = false;
+
+    requestDummyRun();
+    assertRunUntilStop("signal and wait for next hit");
+
+    assertTrue(code.hit);
+
+    // And cleanup
+    task.requestDeleteCodeObserver(code, address);
+    assertRunUntilStop("cleanup");
+  }
+
+  // Tells the child to run the dummy () function
+  // which calls bp1_func () and bp2_func ().
+  static final Sig dummySig = Sig.PROF;
+
+  /**
+   * Request that that the child runs its dummy function which will
+   * call the pb1 and pb1 functions. Done by sending it the
+   * dummySig. To observe this event one needs to put a code observer
+   * on the dummy (), bp1_func () and/or bp2_func () functions.
+   */
+  void requestDummyRun() throws Errno
+  {
+    child.signal(dummySig);
+  }
+  
+  /**
+   * Request that that given thread of the child runs its dummy
+   * function which will call the pb1 and pb1 functions. Done by
+   * sending it the dummySig. To observe this event one needs to put a
+   * code observer on the dummy (), pb1_func () and/or pb2_func () functions.
+   */
+  void requestDummyRun(int tid) throws Errno
+  {
+    child.signal(tid, dummySig);
+  }
+
+  /**
+   * Returns the address of the requested function through
+   * query the Proc Elf and DwarfDie. Asserts that the function
+   * has only 1 entry point.
+   */
+  long getFunctionEntryAddress(String func) throws ElfException
+  {
+    Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+    Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+    DwarfDie die = DwarfDie.getDecl(dwarf, func);
+    ArrayList entryAddrs = die.getEntryBreakpoints();
+
+    // We really expect just one entry point.
+    assertEquals(entryAddrs.size(), 1);
+
+    // Add a Code observer on the address.
+    return ((Long) entryAddrs.get(0)).longValue();
   }
 
   static class CodeObserver
@@ -122,7 +180,7 @@ public class TestTaskObserverCode extends TestLib
 
     public void deletedFrom(Object o)
     {
-      // Ignored
+      Manager.eventLoop.requestStop();
     }
 
     public void addFailed (Object o, Throwable w)
