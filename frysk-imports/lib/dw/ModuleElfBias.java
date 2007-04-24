@@ -46,4 +46,9 @@ public class ModuleElfBias
   public Elf elf;
 
   public long bias;
+  
+  public String toString()
+  {
+    return elf.toString() + "Bias: " + bias;
+  }
 }
