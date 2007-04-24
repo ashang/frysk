@@ -548,8 +548,20 @@ public class SourceWindow
         ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
         sw.add(stackView);
         this.watchView.setView((SourceView) this.view);
-        stackView.expandAll();
+        updateSourceLabel(this.currentFrame);
+        //stackView.expandAll();
         this.stackView.selectRow(this.currentFrame);
+        TreePath path = null;
+        try
+	  {
+	    path = this.stackView.getSelection().getSelectedRows()[0];
+	    this.stackView.expandRow(path, true);
+	    this.stackView.scrollToCell(path);
+	  }
+	catch (ArrayIndexOutOfBoundsException ae)
+	  {
+	    //stackView.expandAll();
+	  }
         
         if (this.currentFrame.getLines().length != 0)
           {
@@ -582,7 +594,7 @@ public class SourceWindow
     String currentMethodName = this.currentFrame.getSymbol().getDemangledName();
     
     this.stackView.refreshProc(frames[this.current], this.current);
-    this.stackView.expandAll();
+    //this.stackView.expandAll();
     StackFrame newFrame = null;
     
     /*
@@ -627,7 +639,20 @@ public class SourceWindow
       }
 
     this.stackView.selectRow(newFrame);
+    TreePath path = null;
+    try
+      {
+	path = this.stackView.getSelection().getSelectedRows()[0];
+	this.stackView.expandRow(path, true);
+	this.stackView.scrollToCell(path);
+      }
+    catch (ArrayIndexOutOfBoundsException ae)
+      {
+	// not sure what to do here yet, although expandAll() isn't it
+	//stackView.expandAll();
+      }
     updateShownStackFrame(newFrame, this.current);
+    updateSourceLabel(this.currentFrame);
     
     /* Update the variable watch as well */
     this.watchView.refreshList();
@@ -1914,12 +1939,18 @@ public class SourceWindow
   {
     if (sf == null) 
       {
+	String task_name = this.swProc[0].getExe();
+	int proc_id = this.swProc[0].getPid();
 	((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-	                                                            + "Unknown File"
-	                                                            + "</b>");
+	                                                      + "Unknown File for: "
+	                                                      + task_name + " -- PID: "
+	                                                      + proc_id
+	                                                      + "</b>");
 	((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 	return;
       }
+    String task_name = sf.getTask().getProc().getExe();
+    int proc_id = sf.getTask().getProc().getPid();
     
     DOMSource source = null;
     Line[] lines = sf.getLines();
@@ -1940,15 +1971,20 @@ public class SourceWindow
       }
     if (lines.length == 0)
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                            + "Unknown File"
+                                                            + "Unknown File for: " 
+                                                            + task_name + " -- PID: " + proc_id
                                                             + "</b>");
     else if (source == null && lines.length > 0)
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + sf.getLines()[0].getFile().getPath()
+                                                            + " for: " + task_name + " -- PID: "
+                                                            + proc_id
                                                             + "</b>");
     else
       ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
                                                             + source.getFileName()
+                                                            + " for: " + task_name
+                                                            + " -- PID: " + proc_id
                                                             + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
   }
@@ -1961,7 +1997,9 @@ public class SourceWindow
     
     DOMSource source = null;
     Line[] lines = selected.getLines();
-    
+
+   updateSourceLabel(selected);
+
     if (lines.length > 0)
       {
         source = lines[0].getDOMSource();
@@ -1977,7 +2015,7 @@ public class SourceWindow
             }
       }
     
-   updateSourceLabel(selected);
+   //updateSourceLabel(selected);
     
     if (lines.length == 0)
     {
@@ -2815,6 +2853,7 @@ public class SourceWindow
     {      
       if (arg == null)
 	{
+	  System.out.println("SourceWindow: 'void update'");
 	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setText("<b>"
 	                                                                     + "All processes have exited."
 	                                                                     + "</b>");
