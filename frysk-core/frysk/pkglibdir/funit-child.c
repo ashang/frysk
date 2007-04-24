@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -73,7 +73,9 @@ Where:\n\
 And valid options are:\n\
   --wait=busy-loop\n\
                Use a busy-loop loop, instead of sigsuspend when\n\
-               waiting for a signal.\n\
+               waiting for a signal. Repeatedly calls the function\n\
+               dummy() which calls bp1_func() and bp2_func()\n\
+               (can be used to set breakpoints on)\n\
   --wait=suspend\n\
                Use the blocking sigsuspend call when waiting for\n\
                a signal. (default)\n\
@@ -95,7 +97,9 @@ Operation:\n\
     SIGPIPE:   (internal) Parent exited event (child notifies with SIGUSR1).\n\
     SIGCHLD:   (internal) Child exited event.\n\
     SIGBUS:    Exit thread.\n\
-  For any operation, the parent also acks by sending a SIGUSR2\n\
+  For any of the above operations, the parent also acks by sending a SIGUSR2\n\
+  Sending the task a SIGPROF will just call the function dummy() which will\n\
+  call bp1_func() and bp2_func() without sending any ack.\n\
 ");
 }
 
@@ -180,6 +184,33 @@ struct tiddle *new_tiddle ()
 
 
 
+// Dummy functions called during busy wait or in response to a SIGPROF.
+// Just increase a variable.  Useful for setting breakpoints on.
+
+static int bp1 = 0;
+static int bp2 = 0;
+
+void
+bp1_func (int x)
+{
+  bp1 += x;
+}
+
+void
+bp2_func ( int y)
+{
+  bp2 += y;
+}
+
+void
+dummy ()
+{
+  bp1_func (1);
+  bp2_func (1);
+}
+
+
+
 // Interrupt handler, attached to all relevant signals on all threads.
 // Save the interrupting signal in the TID's tiddle block.
 
@@ -240,7 +271,8 @@ server (void *np)
     // Block waiting on a signal.
     if (use_busy_wait) {
       sigprocmask (SIG_UNBLOCK, &sigmask, NULL);
-      while (tiddle->sig == 0);
+      while (tiddle->sig == 0)
+	dummy ();
       sigprocmask (SIG_BLOCK, &sigmask, NULL);
     }
     else {
@@ -422,6 +454,13 @@ server (void *np)
 	pfatal ("execve");
       }
       break;
+    case SIGPROF:
+      {
+	trace ("calling dummy function");
+        dummy ();
+	trace ("dummy called bp1=%d; bp2=%d", bp1, bp2);
+      }
+      break;
     case SIGBUS:
       {
 	trace ("exit this thread");
@@ -486,7 +525,7 @@ main (int argc, char *argv[], char *envp[])
   // is interested in; mask all those signals.
 
   sigemptyset (&sigmask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR, SIGFPE, SIGBUS };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR, SIGFPE, SIGBUS, SIGPROF };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&sigmask, signals[i]);

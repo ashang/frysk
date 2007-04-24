@@ -1,3 +1,10 @@
+2007-03-24  Mark Wielaard  <mark@klomp.org>
+
+	* funit-child.c (usage): Document SIGPROF handling.
+	(bp1_func, bp2_func, dummy): New functions.
+	(server): Call dummy () on busy wait. Handle SIGPROF.
+	(main): Add SIGPROF to signals.
+
 2007-03-21  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-rt-siglongjmp.c: Added.
