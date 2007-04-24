@@ -52,11 +52,13 @@ public class Elf
 
   private long pointer;
   protected int fd;		// ecj thinks this isn't used...
+  private boolean hasNativeObject = false;
 
   public Elf (long ptr)
   {
     this.pointer = ptr;
     this.fd = -1;
+    hasNativeObject = false;
   }
 
   /**
@@ -70,6 +72,7 @@ public class Elf
   {
 
     elf_begin(file, command.getValue());
+    hasNativeObject = true;
   }
 
 
@@ -120,6 +123,7 @@ public class Elf
 	    throw e;
 	  }
       }
+    hasNativeObject = true;
   }
 
   /**
@@ -127,7 +131,8 @@ public class Elf
    */
   public void close() 
   {
-    elf_end();
+    if (hasNativeObject)
+      elf_end();
     pointer = 0;
   }
   
@@ -453,7 +458,8 @@ public class Elf
 
   protected void finalize () throws Throwable
   {
-    elf_end();
+    if (hasNativeObject)
+      elf_end();
   }
 
   protected native void elf_begin (String file, int __cmd) throws ElfException,

@@ -84,6 +84,8 @@ public class ElfData {
 	public byte getByte(long offset){
 		return elf_data_get_byte(offset);
 	}
+	
+	public native byte[] getBytes();
 
 	/**
 	 * Sets the Elf Data Type 

@@ -75,6 +75,23 @@ lib::elf::ElfData::elf_data_get_byte (jlong offset)
   return (jbyte) data[offset];
 }
 
+jbyteArray
+lib::elf::ElfData::getBytes()
+{
+	uint8_t* data = (uint8_t*) ((::Elf_Data*) this->pointer)->d_buf;	
+	size_t size = ((Elf_Data*) this->pointer)->d_size;
+	jbyteArray ret = JvNewByteArray((jsize) size);
+	jbyte *bytes = elements(ret);
+	for (size_t i = 0; i < size; i++)
+	{
+		*bytes = (jbyte) *data;
+		bytes++;
+		data++;
+	}
+	
+	return ret;
+}
+
 extern jbyteArray internal_buffer;
 
 void
