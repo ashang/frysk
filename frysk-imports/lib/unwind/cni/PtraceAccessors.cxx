@@ -114,8 +114,13 @@ lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 	(unw_word_t) ip, proc_info,
 					(int) needUnwindInfo, (void *) ptArgs);
 
-	lib::unwind::ProcInfo *procInfo = new 
-	ProcInfo((jint) ret,(gnu::gcj::RawDataManaged *) proc_info);
+	lib::unwind::ProcInfo *procInfo;
+	
+	if (ret < 0)
+		procInfo = new ProcInfo((jint) ret);
+			
+	else 	
+		procInfo = new ProcInfo((gnu::gcj::RawDataManaged *) proc_info);
 	
   	jLogFinest(this, logger, "findProcInfo procInfo: {1}", procInfo);
   	return procInfo;
@@ -124,11 +129,11 @@ lib::unwind::PtraceAccessors::findProcInfo (jlong ip, jboolean needUnwindInfo)
 jint 
 lib::unwind::PtraceAccessors::getDynInfoListAddr (jbyteArray dilap)
 {
-	logFine(this, logger, "getDynInfoListAddr");
+	logFine(this, logger, "getDynInfoListAddr entering");
 	int ret = _UPT_get_dyn_info_list_addr((unw_addr_space_t) addressSpace, getWord(dilap), 
 								(void *) ptArgs);
 
-	logFinest(this, logger, "getDynInfoListAddr value of dilap: 0x%lx", (long) *elements(dilap)); 		
+	logFinest(this, logger, "getDynInfoListAddr returning, ret: %d, value of dilap: 0x%lx", ret,  (long) *elements(dilap)); 		
 	return (jint) ret;
 }
 

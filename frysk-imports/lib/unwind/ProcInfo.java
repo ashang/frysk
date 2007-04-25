@@ -59,15 +59,23 @@ public class ProcInfo
   native int getUnwindInfoSize();
   native RawData getUnwindInfo();
   
-  ProcInfo(int error, RawDataManaged procInfo)
+  ProcInfo(RawDataManaged procInfo)
   {
-    this.error = error;
+    this.error = 0;
     this.procInfo = procInfo; 
+  }
+  
+  public ProcInfo (int error)
+  {
+     this.error = error;
   }
   
   public String toString()
   {
-    return "ProcInfo Error " + error + " startIP: 0x" + Long.toHexString(getStartIP()) 
+    if (error != 0)
+	  return "ProcInfo Error: " + error;
+
+    return "ProcInfo startIP: 0x" + Long.toHexString(getStartIP()) 
     + " endIP: 0x" + Long.toHexString(getEndIP()) + " lsda: " + getLSDA() + " handler: " +
     getHandler() + " gp: " + getGP() + " flags: " + getFlags()
     + " format: " + getFormat() + " unwindInfoSize: " + getUnwindInfoSize() 

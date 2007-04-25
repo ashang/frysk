@@ -46,6 +46,11 @@ public class AddressSpace
   RawData addressSpace = null;
   Unwind unwinder;
   
+  public Unwind getUnwinder()
+  {
+    return unwinder;
+  }
+  
   public AddressSpace(Unwind unwinder, ByteOrder byteOrder)
   {
 

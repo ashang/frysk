@@ -40,6 +40,7 @@
 package frysk.rt;
 
 import lib.unwind.Cursor;
+import lib.unwind.ProcInfo;
 
 public class Frame
 {  
@@ -74,4 +75,8 @@ public class Frame
     return cursor.getProcName(maxNameSize).name;
   }
   
+  public ProcInfo getProcInfo()
+  {
+	  return cursor.getProcInfo();
+  }
 }

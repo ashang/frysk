@@ -37,65 +37,64 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.unwind;
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <stdio.h>
 
-import gnu.gcj.RawDataManaged;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+#include <gcj/cni.h>
 
-public class Cursor
+#include "lib/unwind/ElfImage.h"
+
+#ifndef MAP_32BIT
+#define MAP_32BIT 0
+#endif
+
+lib::unwind::ElfImage*
+lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi,
+				   jlong mapoff)
 {
-  Logger logger = Logger.getLogger("frysk");
-  RawDataManaged cursor = null; 
-  Unwind unwinder;
-
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
-  {
-    this(addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
-         addressSpace.unwinder); 
-  }
-  
-  private Cursor(RawDataManaged cursor, Unwind unwinder)
-  {
-    logger.log(Level.FINE, "{0} Create Cursor\n", this);
-    this.cursor = cursor;
-    this.unwinder = unwinder;
-  }
-  
-  public boolean isSignalFrame()
-  {
-    return (unwinder.isSignalFrame(cursor) == 1);
-  }
-  
-  public int step()
-  {
-    return unwinder.step(cursor);
-  }
-  
-  public ProcName getProcName(int maxNameSize)
-  {
-    return unwinder.getProcName(cursor, maxNameSize);
-  }
-  
-  public ProcInfo getProcInfo ()
+	struct stat stat;  
+	void *image;		/* pointer to mmap'd image */
+	size_t size;		/* (file-) size of the image */
+	int nameSize = JvGetStringUTFLength(elfImageName);
+	char name[nameSize+1];
+	//JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
+	JvGetStringUTFRegion(elfImageName, 0, nameSize, name);
+	name[nameSize] = '\0';
+	
+	int fd = open (name, O_RDONLY);
+	if (fd < 0)
+		return new lib::unwind::ElfImage((jint) fd);
+		
+	int ret = fstat (fd, &stat);
+	if (ret < 0)
 	{
-		return unwinder.getProcInfo(cursor);
-	}
-  
-  public Cursor unwind()
-  {
-    logger.log(Level.FINE, "{0}, unwind\n", this);
-    Cursor newCursor = new Cursor(unwinder.copyCursor(cursor), unwinder);
-    int step = newCursor.step();
-    
-    logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
-               new Object[] {this, new Integer(step)});
-    
-    if (step > 0)
-      return newCursor;
-       
-    return null;
-  }
- 
-  
+		close (fd);
+		return new lib::unwind::ElfImage((jint) ret);
+	}	
+
+	size = stat.st_size;
+	image = mmap (NULL, size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
+	
+
+	close (fd);
+	if (image == MAP_FAILED)
+		return new lib::unwind::ElfImage((jint) -1);	
+			
+	lib::unwind::ElfImage* elfImage = new lib::unwind::ElfImage();
+	elfImage->elfImage = (jlong) image;
+	elfImage->size = size;
+	elfImage->segbase = segbase;
+	elfImage->mapoff = mapoff;
+	
+	return elfImage;
+}
+
+void
+lib::unwind::ElfImage::finalize()
+{
+	munmap((void *) elfImage, (size_t) size);
 }

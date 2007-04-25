@@ -1,3 +1,14 @@
+2007-04-25  Nurdin Premji <npremji@redhat.com>
+
+	* Frame.java (getProcInfo): Added.
+	* StackAccessors.java: Added logging.
+	(findProcInfo): Implemented without PtraceAccessors.
+	(putUnwindInfo): Ditto.
+	(getElfImage): Added.
+	(getModuleFromAddress): Added.
+	(accessMem): Simplified, added logging code.
+	* TestFrame.java (test32): Removed, should use TestRunner -arch 32 instead.	
+
 2007-04-24  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (cleanTask): Clean from threads list and

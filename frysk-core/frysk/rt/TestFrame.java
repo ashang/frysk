@@ -42,12 +42,8 @@ package frysk.rt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.sys.Sig;
-import frysk.sys.Pid;
-
 import frysk.proc.Action;
 import frysk.proc.Manager;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
@@ -68,31 +64,7 @@ public class TestFrame
     backtrace (task);
     
   }
-  
-  public void test32()
-  {
-    String exec32 = getExec32Path("funit-child");
-
-//    String exec32 = "/notnfs/npremji/build-work2/frysk-core/frysk/pkglibdir/" +
-//            "arch32/funit-child";
-    if (exec32 == null)
-      {
-        System.out.print("<<SKIP>>");
-        return;
-      }
-    String[] command = new String[] { exec32, "5", String.valueOf(Pid.get()),
-                                     };
     
-    Child ackProc = new AckDaemonProcess(Sig.USR1, command);
-
-    Proc proc = ackProc.assertFindProcAndTasks();      
-    
-    Task task = proc.getMainTask();
-    
-    backtrace(task);
-
-  }
-  
   public void backtrace(Task task)
   {
     task.requestAddInstructionObserver(new TaskObserver.Instruction(){

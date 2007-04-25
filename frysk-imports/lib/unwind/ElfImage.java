@@ -37,65 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package lib.unwind;
 
-import gnu.gcj.RawDataManaged;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-public class Cursor
+public class ElfImage
 {
-  Logger logger = Logger.getLogger("frysk");
-  RawDataManaged cursor = null; 
-  Unwind unwinder;
 
-  public Cursor(AddressSpace addressSpace, Accessors accessors)
+  long elfImage;
+
+  public long size;
+
+  public long segbase;
+
+  public long mapoff;
+
+  public int ret;
+
+  public ElfImage ()
   {
-    this(addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
-         addressSpace.unwinder); 
+
   }
-  
-  private Cursor(RawDataManaged cursor, Unwind unwinder)
+
+  public ElfImage (int ret)
   {
-    logger.log(Level.FINE, "{0} Create Cursor\n", this);
-    this.cursor = cursor;
-    this.unwinder = unwinder;
+    this.ret = ret;
   }
-  
-  public boolean isSignalFrame()
+
+  public String toString ()
   {
-    return (unwinder.isSignalFrame(cursor) == 1);
+    if (ret != 0)
+      return "Bad Elf Image, ret: " + ret;
+
+    return "Elf Image: 0x" + Long.toHexString(elfImage) + " size: " + size
+	   + " segbase: 0x" + Long.toHexString(segbase) + " mapoff: 0x"
+	   + Long.toHexString(mapoff);
   }
-  
-  public int step()
-  {
-    return unwinder.step(cursor);
-  }
-  
-  public ProcName getProcName(int maxNameSize)
-  {
-    return unwinder.getProcName(cursor, maxNameSize);
-  }
-  
-  public ProcInfo getProcInfo ()
-	{
-		return unwinder.getProcInfo(cursor);
-	}
-  
-  public Cursor unwind()
-  {
-    logger.log(Level.FINE, "{0}, unwind\n", this);
-    Cursor newCursor = new Cursor(unwinder.copyCursor(cursor), unwinder);
-    int step = newCursor.step();
-    
-    logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
-               new Object[] {this, new Integer(step)});
-    
-    if (step > 0)
-      return newCursor;
-       
-    return null;
-  }
- 
-  
+
+  public static native ElfImage mapElfImage (String elfImageName, long segbase,
+					     long hi, long mapoff);
+
+  // @Override
+  native protected void finalize () throws Throwable;
+
 }

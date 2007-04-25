@@ -78,4 +78,15 @@ public class UnwindX86
   //@Override
   native RawData createAddressSpace (ByteOrder byteOrder);
 
+  native ProcInfo getProcInfo (RawDataManaged cursor);
+
+  native public ProcInfo createProcInfoFromElfImage (AddressSpace addressSpace, 
+                                                     long ip, 
+                                                     boolean needUnwindInfo, 
+                                                     ElfImage elfImage, 
+                                                     Accessors accessors);
+  
+  native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
+                                                  long segbase, long hi, 
+                                                  long mapoff, Accessors accessors);
 }

@@ -41,6 +41,7 @@
 package frysk.rt;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -48,13 +49,16 @@ import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.sys.Execute;
 import frysk.sys.Server;
+import frysk.sys.proc.MapsBuilder;
 
+import lib.dw.SymbolBuilder;
 import lib.dw.Dwfl;
 import lib.dw.DwflModule;
-import lib.dw.SymbolBuilder;
+
 import lib.unwind.Accessors;
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
+import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
 import lib.unwind.PtraceAccessors;
@@ -67,8 +71,12 @@ public class StackAccessors
   PtraceAccessors ptraceAccessors;
 
   Task myTask;
-  
+
   AddressSpace addressSpace;
+
+  // procInfo is a wrapper for a RawDataManaged object, keep a reference
+  // to it for as long as needed.
+  ProcInfo procInfo;
 
   Logger logger = Logger.getLogger("frysk");
 
@@ -82,27 +90,26 @@ public class StackAccessors
   // @Override
   public int accessMem (long addr, byte[] valp, boolean write)
   {
-    logger.log(Level.FINE, "Libunwind: reading memory at 0x{0}\n",
-               Long.toHexString(addr));
+    logger.log(Level.FINE, "entering accessMem reading memory at 0x{0}\n",
+	       Long.toHexString(addr));
 
     int wordSize = myTask.getIsa().getWordSize();
     switch (wordSize)
       {
       case 4:
-        logger.log(Level.FINEST, "In wordSize case: 4\n");
-        myTask.getMemory().get(addr, valp, 0, valp.length);
-        break;
       case 8:
-        logger.log(Level.FINEST, "In wordsize case: 8\n");
-        myTask.getMemory().get(addr, valp, 0, valp.length);
-        break;
+	logger.log(Level.FINEST, "In wordsize case: {0} valp.length: {1}\n",
+		   new Object[] { new Integer(wordSize),
+				 new Integer(valp.length) });
+	myTask.getMemory().get(addr, valp, 0, valp.length);
+	break;
       default:
-        logger.log(Level.FINEST, "In wordSize case: default\n");
-        throw new RuntimeException("Not implemented for this word length yet");
+	logger.log(Level.FINEST, "In wordSize case: default\n");
+	throw new RuntimeException("Not implemented for this word length yet");
       }
 
-    logger.log(Level.FINE, "accessMem: read value: 0x{0}\n",
-               Long.toHexString(new BigInteger(valp).longValue()));
+    logger.log(Level.FINE, "exiting accessMem: read value: 0x{0}\n",
+	       Long.toHexString(new BigInteger(valp).longValue()));
 
     return 0;
   }
@@ -142,34 +149,29 @@ public class StackAccessors
   // @Override
   public ProcInfo findProcInfo (long ip, boolean needUnwindInfo)
   {
-    // Need to tell ptrace thread to perform the findProcInfo operation.
-    class ExecuteFindProc
-        implements Execute
-    {
-      ProcInfo procInfo;
-      long ip;
-      boolean needUnwindInfo;
-      
-      ExecuteFindProc (long ip, boolean needUnwindInfo)
-      {
-        this.ip = ip;
-        this.needUnwindInfo = needUnwindInfo;
-      }
-      
-      public void execute ()
-      {
-        procInfo = ptraceAccessors.findProcInfo(ip, needUnwindInfo);
-      }
-    }
-    ExecuteFindProc executer = new ExecuteFindProc(ip, needUnwindInfo);
-    Server.request(executer);
-    return executer.procInfo;
+    logger.log(
+	       Level.FINE,
+	       "Entering findProcInfo {0}, ip: {1}\n",
+	       new Object[] { addressSpace.getUnwinder(), Long.toHexString(ip) });
+
+    ElfImage elfImage = getElfImage(ip);
+    logger.log(Level.FINEST, "Obtained elfImage: {0}\n", elfImage);
+    procInfo = addressSpace.getUnwinder().createProcInfoFromElfImage(
+								     addressSpace,
+								     ip,
+								     needUnwindInfo,
+								     elfImage,
+								     this);
+
+    logger.log(Level.FINE, "post procInfo {0}\n", procInfo);
+    return procInfo;
   }
 
   // @Override
   public int getDynInfoListAddr (byte[] dilap)
   {
-    // Need to tell ptrace thread to perform the findProcInfo operation.
+    // Need to tell ptrace thread to perform the getDynInfoListAddr
+    // operation.
     class ExecuterGetDyn
         implements Execute
     {
@@ -189,12 +191,33 @@ public class StackAccessors
     }
     ExecuterGetDyn executer = new ExecuterGetDyn(dilap);
     Server.request(executer);
+    logger.log(Level.FINE, "ret: {0}\n", new Integer(executer.ret));
+    if (executer.ret < 0)
+      Arrays.fill(dilap, (byte) 0);
     return executer.ret;
+  }
+
+  private DwflModule getModuleFromAddress (long addr)
+  {
+    logger.log(Level.FINE, "Looking for addr: {0}\n", Long.toHexString(addr));
+    Dwfl dwfl = null;
+    dwfl = new Dwfl(myTask.getProc().getPid());
+
+    if (dwfl == null)
+      {
+	logger.log(Level.FINE, "Dwfl was null");
+	return null;
+      }
+
+    return dwfl.getModule(addr);
+
   }
 
   // @Override
   public ProcName getProcName (long addr, int maxNameSize)
   {
+    logger.log(Level.FINE, "entering getProcName addr: {0}, maxNameSize: {1}\n",
+               new Object[] {Long.toHexString(addr), new Integer(maxNameSize)});
     // Need to tell ptrace thread to perform the findProcInfo operation.
     class ExecuteGetProcName 
         implements Execute, SymbolBuilder
@@ -215,26 +238,18 @@ public class StackAccessors
       
       public void execute ()
       {
-        logger.log(Level.FINE, "Looking for addr: {0}", Long.toHexString(addr));
-        Dwfl dwfl = null;
-        dwfl = new Dwfl(myTask.getProc().getPid());
-        
-        DwflModule dwflModule = null;
-        
-        if (dwfl != null)
-        dwflModule = dwfl.getModule(addr);
-        else
-          logger.log(Level.FINE, "dwfl was null");
-                
-        if (dwflModule != null)
-          {
-        dwflModule.getSymbol(addr, this);
-                
-	logger.log(Level.FINE, "ProcName is: {0}\n", procName);
-          }
-        
-        if (procName == null)
-           procName = new ProcName(-lib.unwind.Error.UNW_EUNSPEC_);
+
+	DwflModule dwflModule = getModuleFromAddress(addr);
+
+	if (dwflModule != null)
+	  {
+	    dwflModule.getSymbol(addr, this);
+
+	    logger.log(Level.FINE, "ProcName is: {0}\n", procName);
+	  }
+
+	if (procName == null)
+	  procName = new ProcName(- lib.unwind.Error.UNW_EUNSPEC_);
       }
     }
     ExecuteGetProcName executer = new ExecuteGetProcName(addr);
@@ -245,16 +260,8 @@ public class StackAccessors
   // @Override
   public void putUnwindInfo (final ProcInfo procInfo)
   {
-    // Need to tell ptrace thread to perform the findProcInfo operation.
-    class ExecutePutUnwind
-        implements Execute
-    {
-      public void execute ()
-      {
-        ptraceAccessors.putUnwindInfo(procInfo);
-      }
-    }
-    Server.request(new ExecutePutUnwind());
+    // No longer need to hold procInfo.
+    this.procInfo = null;
   }
 
   // @Override
@@ -274,6 +281,82 @@ public class StackAccessors
     ExecuteResume executer = new ExecuteResume();
     Server.request(executer);
     return executer.ret;
+  }
+
+  private ElfImage getElfImage (long addr)
+  {
+    class ProcMapsReader
+	extends MapsBuilder
+    {
+      long addr;
+
+      long addressLow;
+      long addressHigh;
+
+      long offset;
+
+      String elfImageName;
+
+      byte[] mapsLocal;
+
+      ProcMapsReader (long addr)
+      {
+	super();
+	this.addr = addr;
+      }
+
+      // @Override
+      public void buildBuffer (byte[] maps)
+      {
+	// Safe a refernce to the raw maps.
+	mapsLocal = maps;
+	maps[maps.length - 1] = 0;
+      }
+
+      // @Override
+      public void buildMap (long addressLow, long addressHigh,
+			    boolean permRead, boolean permWrite,
+			    boolean permExecute, boolean shared, long offset,
+			    int devMajor, int devMinor, int inode,
+			    int pathnameOffset, int pathnameLength)
+      {
+	if (addressLow <= addr && addr < addressHigh)
+	  {
+	    this.addressLow = addressLow;
+	    this.addressHigh = addressHigh;
+	    this.offset = offset;
+	    byte[] filename = new byte[pathnameLength];
+
+	    System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
+			     pathnameLength);
+	    elfImageName = new String(filename);
+
+	  }
+      }
+
+    }
+
+    ProcMapsReader mapReader = new ProcMapsReader(addr);
+    mapReader.construct(myTask.getProc().getPid());
+
+    logger.log(Level.FINEST, "Elf image name: {0}, addressLow: {1}, "
+			     + "offset: {2}\n",
+	       new Object[] { mapReader.elfImageName,
+			     Long.toHexString(mapReader.addressLow),
+			     Long.toHexString(mapReader.offset) });
+    
+    ElfImage elfImage;
+    if (mapReader.elfImageName.equals("") || mapReader.elfImageName.equals("[vdso]"))
+      elfImage = addressSpace.getUnwinder().createElfImageFromVDSO(addressSpace, 
+                                                                   mapReader.addressLow, 
+                                                                   mapReader.addressHigh,
+                                                                   mapReader.offset, this);
+    else
+      elfImage = ElfImage.mapElfImage(mapReader.elfImageName,
+					     mapReader.addressLow,
+					     mapReader.addressHigh,
+					     mapReader.offset);
+    return elfImage;
   }
 
 }

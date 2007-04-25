@@ -40,29 +40,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include <libdwfl.h>
 
 #include <libunwind.h>
-#include <libunwind-ptrace.h>
+#include <dwarf.h>
 
 #include <gcj/cni.h>
 
 #include <gnu/gcj/RawDataManaged.h>
 
-#include "java/lang/String.h"
-#include "java/lang/Object.h"
+#include <java/lang/String.h>
+#include <java/lang/Object.h>
+#include <java/util/logging/Logger.h>
+#include <java/util/logging/Level.h>
 
-#include "java/util/logging/Logger.h"
-#include "java/util/logging/Level.h"
 #include "inua/eio/ByteBuffer.h"
+#include "lib/dw/Dwfl.h"
 
 #include "lib/unwind/Unwind.h"
 #include "lib/unwind/Accessors.h"
+#include "lib/unwind/AddressSpace.h"
 #include "lib/unwind/Cursor.h"
 #include "lib/unwind/ByteOrder.h"
 #include "lib/unwind/CachingPolicy.h"
 #include "lib/unwind/ProcInfo.h"
 #include "lib/unwind/ProcName.h"
 #include "lib/unwind/ProcInfo.h"
+#include "lib/unwind/ElfImage.h"
 
 #include "frysk/sys/cni/Errno.hxx"
 

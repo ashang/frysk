@@ -64,10 +64,12 @@ public abstract class Unwind
   
   abstract ProcName getProcName(RawDataManaged cursor, int maxNameSize);
   
+  abstract ProcInfo getProcInfo (RawDataManaged cursor);
+  
   abstract int getRegister(RawDataManaged cursor, int regNum,
                            RawDataManaged word);
   
-  abstract RawDataManaged copyCursor(RawDataManaged cursor);
+  abstract RawDataManaged copyCursor(RawDataManaged cursor);  
  /*
   int unw_getcontext(unw_context_t *);
   int unw_init_local(unw_cursor_t *, unw_context_t *);
@@ -97,5 +99,15 @@ public abstract class Unwind
   void _U_dyn_cancel(unw_dyn_info_t *);
  */
  abstract int getContext(RawDataManaged context);
+ 
+ public abstract ProcInfo createProcInfoFromElfImage(AddressSpace addressSpace,
+                                                     long ip, 
+                                                     boolean needUnwindInfo,
+                                                     ElfImage elfImage,
+                                                     Accessors accessors);
+ 
+ public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
+                                                 long segbase, long hi, 
+                                                 long mapoff, Accessors accessors);
  
 }

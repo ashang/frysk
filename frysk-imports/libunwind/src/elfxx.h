@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
    Copyright (C) 2003, 2005 Hewlett-Packard Co
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright Red Hat 2007
 
 This file is part of libunwind.
 
@@ -42,6 +43,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 # define elf_w(x)	_Uelf64_##x
 #endif
 
+#ifndef MAP_32BIT
+# define MAP_32BIT 0
+#endif
+
 static inline int
 elf_map_image (struct elf_image *ei, const char *path)
 {
@@ -59,7 +64,7 @@ elf_map_image (struct elf_image *ei, const char *path)
     }
 
   ei->size = stat.st_size;
-  ei->image = mmap (NULL, ei->size, PROT_READ, MAP_PRIVATE, fd, 0);
+  ei->image = mmap (NULL, ei->size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
   close (fd);
   if (ei->image == MAP_FAILED)
     return -1;

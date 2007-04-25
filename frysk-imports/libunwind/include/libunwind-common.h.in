@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
    Copyright (C) 2001-2004 Hewlett-Packard Co
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright Red Hat 2007
 
 This file is part of libunwind.
 
@@ -225,6 +226,7 @@ unw_save_loc_t;
 #define unw_regname		UNW_ARCH_OBJ(regname)
 #define unw_flush_cache		UNW_ARCH_OBJ(flush_cache)
 #define unw_strerror		UNW_ARCH_OBJ(strerror)
+#define unw_get_unwind_table	UNW_ARCH_OBJ(get_unwind_table)
 
 extern unw_addr_space_t unw_create_addr_space (unw_accessors_t *, int);
 extern void unw_destroy_addr_space (unw_addr_space_t);
@@ -248,5 +250,10 @@ extern int unw_get_save_loc (unw_cursor_t *, int, unw_save_loc_t *);
 extern int unw_is_signal_frame (unw_cursor_t *);
 extern int unw_get_proc_name (unw_cursor_t *, char *, size_t, unw_word_t *);
 extern const char *unw_strerror (int);
+extern int unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, 
+				unw_proc_info_t *pi, int need_unwind_info,
+				void *image, size_t size, 
+				unsigned long segbase, unsigned long mapoff,
+				void *arg);
 
 extern unw_addr_space_t unw_local_addr_space;

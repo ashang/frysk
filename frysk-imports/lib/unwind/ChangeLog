@@ -1,3 +1,25 @@
+2007-04-25  Nurdin Premji  <npremji@redhat.com>
+
+	* AddressSpace.java (getUnwinder): Added.
+	* Cursor.java (getProcInfo): Added.
+	(unwind): Cleaned up logging info.
+	* ElfImage.java: Added.
+	* ProcInfo.java (ProcInfo): Separated constructor into two constructors,
+	one for error, one for success.
+	(toString): Don't print extra data if there was an error.
+	* Unwind.java (getProcInfo): Added.
+	(createElfImageFromVDSO): Added.
+	(createProcInfoFromElfImage): Added.
+	* UnwindNative.java: Ditto.
+	* UnwindX86.java: Ditto.
+	* cni/ElfImage.cxx: Added.
+	* cni/PtraceAccessors.cxx: Updated to reflect ProcInfo constructor changes.
+	* cni/UnwindH.hxx: (getProcInfo): Implemented.
+	(createElfImageFromVDSO): Ditto.
+	(createProcInfoFromElfImage): Ditto.
+	* cni/UnwindNative.cxx: Update headers.
+	* cni/UnwindX86.cxx: Ditto.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* PtraceAccessors.java (attachXXX, detachXX): Delete.

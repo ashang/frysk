@@ -52,7 +52,7 @@ libunwind_la_SOURCES_generic =						\
 	mi/Gput_dynamic_unwind_info.c mi/Gdestroy_addr_space.c		\
 	mi/Gget_reg.c mi/Gset_reg.c					\
 	mi/Gget_fpreg.c mi/Gset_fpreg.c					\
-	mi/Gset_caching_policy.c
+	mi/Gset_caching_policy.c mi/Gget_unwind_table.c
 
 # List of arch-independent files needed by local-only library (libunwind):
 libunwind_la_SOURCES_local =						\

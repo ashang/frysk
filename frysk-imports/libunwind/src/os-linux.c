@@ -1,6 +1,7 @@
 /* libunwind - a platform-independent unwind library
    Copyright (C) 2003-2005 Hewlett-Packard Co
 	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
+   Copyright Red Hat 2007
 
 This file is part of libunwind.
 
@@ -33,6 +34,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
 #ifndef MAX_VDSO_SIZE
 # define MAX_VDSO_SIZE ((size_t) sysconf (_SC_PAGESIZE))
+#endif
+
+#ifndef MAP_32BIT
+# define MAP_32BIT 0
 #endif
 
 PROTECTED int
@@ -91,7 +96,7 @@ tdep_get_elf_image (unw_addr_space_t as, struct elf_image *ei,
     }
 
   ei->image = mmap (0, ei->size, PROT_READ | PROT_WRITE,
-		    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_32BIT, -1, 0);
   if (ei->image == MAP_FAILED)
     return found;
 

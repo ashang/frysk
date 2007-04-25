@@ -37,6 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#ifndef MAX_VDSO_SIZE
+# define MAX_VDSO_SIZE ((size_t) sysconf (_SC_PAGESIZE))
+#endif
+
+#ifndef MAP_32BIT
+# define MAP_32BIT 0
+#endif
 namespace TARGET
 {
 /*
@@ -66,7 +73,7 @@ put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
 		      void *arg)
 {
 	
-	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo(0, 
+	lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo(
 	(gnu::gcj::RawDataManaged *) proc_info);
 	
 	((lib::unwind::Accessors *)arg)->putUnwindInfo (procInfo);
@@ -174,7 +181,7 @@ get_proc_name(::unw_addr_space_t as,
 {
 	lib::unwind::ProcName *procName
 	  = ((lib::unwind::Accessors *)arg)->getProcName ((jlong) addr, 
-	  												  (jint) buf_len);	
+							  (jint) buf_len);	
 
 	if (procName->error < 0 && procName->error != -UNW_ENOMEM)
 		return procName->error;
@@ -303,4 +310,141 @@ lib::unwind::TARGET::copyCursor(gnu::gcj::RawDataManaged* cursor)
 	memcpy (nativeCursor, cursor, sizeof (::unw_cursor_t));
 	
 	return (gnu::gcj::RawDataManaged *) nativeCursor;
+}
+
+lib::unwind::ProcInfo*
+lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
+{
+	logFine (this, logger, "getProcInfo cursor: %p", cursor);
+	unw_proc_info_t *procInfo 
+		= (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
+	
+	int ret = unw_get_proc_info((::unw_cursor_t *) cursor, procInfo);
+	
+	logFine( this, logger, "getProcInfo finished get_proc_info");
+	lib::unwind::ProcInfo * myInfo; 
+	if (ret < 0)
+		myInfo = new lib::unwind::ProcInfo((jint) ret);
+	else
+		myInfo = new lib::unwind::ProcInfo((gnu::gcj::RawDataManaged*) procInfo);
+	jLogFine (this, logger, "getProcInfo returned: {1}", myInfo);
+	return myInfo;
+}
+
+lib::unwind::ProcInfo*
+lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addressSpace,
+						jlong ip, 
+						jboolean needUnwindInfo, 
+						lib::unwind::ElfImage* elfImage,
+						lib::unwind::Accessors* accessors)
+{
+	unw_proc_info_t *procInfo
+		= (::unw_proc_info_t *) JvAllocBytes(sizeof (::unw_proc_info_t));
+	
+	logFine(this, logger, "Pre unw_get_unwind_table");
+	int ret	= unw_get_unwind_table((unw_addr_space_t) addressSpace->addressSpace, 
+				       (unw_word_t) ip, procInfo, 
+				       (int) needUnwindInfo, (void *) elfImage->elfImage, 
+				       elfImage->size, elfImage->segbase, 
+				       elfImage->mapoff, (void *) accessors);
+	
+	logFine(this, logger, "Post unw_get_unwind_table");			       
+	lib::unwind::ProcInfo *myInfo;
+	if(ret < 0)
+		myInfo = new lib::unwind::ProcInfo((jint) ret);
+	else
+		myInfo = new lib::unwind::ProcInfo((gnu::gcj::RawDataManaged*) procInfo);
+		
+	return myInfo;				       
+}
+
+lib::unwind::ElfImage*
+lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSpace,
+					    jlong lowAddress, jlong highAddress, 
+					    jlong offset,
+					    lib::unwind::Accessors* accessors)
+{
+	logFine(this, logger, 
+		"entering segbase: 0x%lx, highAddress: 0x%lx, mapoff: 0x%lx",
+		(unsigned long) lowAddress, (unsigned long) highAddress, 
+		(unsigned long) offset);
+	void *image;
+	size_t size;
+	unw_word_t magic;
+	unw_accessors_t *a;
+	unsigned long segbase = (unsigned long) lowAddress;
+	unsigned long hi = (unsigned long) highAddress;
+	unsigned long mapoff = (unsigned long) offset;
+	
+  	size = hi - segbase;
+  	if (size > MAX_VDSO_SIZE)
+    		return new lib::unwind::ElfImage((jint) -1);  	
+
+	logFine(this, logger, "checked size, 0x%lx", (unsigned long) size);
+	unw_addr_space_t as = (unw_addr_space_t) addressSpace->addressSpace;
+	a = unw_get_accessors (as);
+  	if (! a->access_mem)
+    		return new lib::unwind::ElfImage((jint) -1);
+
+	logFine(this, logger, "checked access_mem");
+  	/* Try to decide whether it's an ELF image before bringing it all
+     	   in.  */
+  	if (size <= EI_CLASS || size <= sizeof (magic))
+    		return new lib::unwind::ElfImage((jint) -1);
+
+  	if (sizeof (magic) >= SELFMAG)
+    	{
+      		 int ret = (*a->access_mem) (as, (unw_word_t) segbase, &magic, 
+      		 			     0, (void *) accessors);
+      		if (ret < 0)
+			return new lib::unwind::ElfImage((jint) ret);
+
+      		if (memcmp (&magic, ELFMAG, SELFMAG) != 0)
+			return new lib::unwind::ElfImage((jint) -1);
+    	}
+    	
+    	logFine(this, logger, "checked magic size");
+
+  	image = mmap (0, size, PROT_READ | PROT_WRITE,
+		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_32BIT, -1, 0);
+  	if (image == MAP_FAILED)
+    		return new lib::unwind::ElfImage((jint) -1);
+
+	logFine(this, logger, "mapped elfImage");
+  	if (sizeof (magic) >= SELFMAG)
+    	{
+      		*(unw_word_t *)image = magic;
+      		hi = sizeof (magic);
+    	}
+  	else
+    		hi = 0;
+
+	logFine(this, logger, "checked magic");
+  	for (; hi < size; hi += sizeof (unw_word_t))
+    	{
+      	  logFinest(this, logger, "Reading memory segbase: 0x%lx, image: %p, hi: 0x%lx, at: 0x%lx to location: %p", 
+      	  	    segbase , image , hi, segbase+hi, (char *) image + hi);
+      	  int ret = (*a->access_mem) (as, segbase + hi,(unw_word_t *) ((char *) image + hi),
+				0, (void *) accessors);		
+	  
+      	  if (ret < 0)
+		{
+	  	munmap (image, size);
+	  		return new lib::unwind::ElfImage((jint) ret);
+		}
+    	}
+    	
+    	logFine(this, logger, "read memory into elf image");
+
+  	if (segbase == mapoff)
+    		mapoff = 0;
+
+  	lib::unwind::ElfImage* elfImage = new lib::unwind::ElfImage();
+	elfImage->elfImage = (jlong) image;
+	elfImage->size = size;
+	elfImage->segbase = segbase;
+	elfImage->mapoff = mapoff;
+	
+	jLogFine(this, logger, "elfImage returned: {1}", elfImage);
+	return elfImage;
 }
