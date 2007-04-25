@@ -813,6 +813,42 @@ public class SteppingEngine
   }
   
   /**
+   * Detaches all observers and breakpoints from all Tasks of the given Proc.
+   * 
+   * @param proc The Proc to be detached
+   */
+  public static void detachProc (Proc proc)
+  {
+    LinkedList list = proc.getTasks();
+    Task t;
+    
+    Iterator i = list.iterator();
+    while (i.hasNext())
+      {
+		t = (Task) i.next();
+	
+        SteppingBreakpoint bpt = (SteppingBreakpoint) breakpointMap.get(t);
+        
+        if (bpt != null)
+          {
+            breakpointMap.remove(t);
+            t.requestUnblock(bpt);
+          }
+        
+	t.requestDeleteTerminatingObserver(threadLifeObservable);
+	t.requestDeleteClonedObserver(threadLifeObservable);
+	t.requestDeleteInstructionObserver(steppingObserver);
+	
+	cleanTask(t);
+      }
+  }
+  
+  public static void killProc (Proc proc)
+  {
+    
+  }
+  
+  /**
    * Clears information out of SteppingEngine data structures which are mapped
    * to the given Task.
    * 
@@ -1065,7 +1101,6 @@ public class SteppingEngine
     
     public void deletedFrom (Object o)
     {
-
     }
     
     /**

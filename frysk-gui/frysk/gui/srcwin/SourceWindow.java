@@ -101,6 +101,8 @@ import org.gnu.gtk.event.FileChooserEvent;
 import org.gnu.gtk.event.FileChooserListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gtk.event.MenuItemEvent;
+import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
@@ -301,6 +303,8 @@ public class SourceWindow
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
+  
+  private StackMouseListener mouseListener;
 
   private SourceWindowFactory.AttachedObserver attachedObserver;
   
@@ -439,6 +443,7 @@ public class SourceWindow
       }
     
     this.listener = new SourceWindowListener(this);
+    this.mouseListener = new StackMouseListener();
     this.watchView = new VariableWatchView();
     this.tips = new ToolTips();
 
@@ -735,8 +740,8 @@ public class SourceWindow
 	this.symTab = newSymTab;
 	this.swProc = newSwProc;
 
-	this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
 	this.swProc[oldSize] = proc;
+	this.frames[oldSize] = generateProcStackTrace(task.getProc(), oldSize);
 	this.stackView.addProc(this.frames[oldSize], oldSize);
 	SourceWindowFactory.removeAttachedObserver(task, this.addedAttachedObserver);
 	resensitize();
@@ -753,7 +758,7 @@ public class SourceWindow
 	Proc[] newSwProc = new Proc[numProcs];
 	
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	SteppingEngine.continueExecution(this.swProc[this.current].getTasks());
+	SteppingEngine.detachProc(this.swProc[this.current]);
 	
 	int j = 0;
 	for (int i = 0; i < oldSize; i++)
@@ -776,7 +781,10 @@ public class SourceWindow
 	this.stackView.removeProc(this.current);
 	
 	this.current = 0;
-	this.currentTask = this.swProc[this.current].getMainTask();
+	if (this.swProc.length > 0)
+	  this.currentTask = this.swProc[this.current].getMainTask();
+	else
+	  this.currentTask = null;
   }
 
   /***************************************************************************
@@ -1716,6 +1724,7 @@ public class SourceWindow
 
     // Stack browser
     this.stackView.addListener(listener);
+    this.stackView.addListener(mouseListener);
 
     // Preferences
     ((BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TOOLBAR)).addListener(new BooleanPreferenceListener()
@@ -2125,6 +2134,60 @@ public class SourceWindow
     this.view.showAll();
   }
 
+  private void menuEvent (MouseEvent event)
+  {
+    Menu m = new Menu();
+    MenuItem detachItem = new MenuItem("Detach process from Frysk", false);
+    m.append(detachItem);
+    detachItem.setSensitive(true);
+    detachItem.addListener(new MenuItemListener()
+    {
+      public void menuItemEvent (MenuItemEvent arg0)
+      {
+        detachProc();
+      }
+    });
+    
+//    MenuItem killItem = new MenuItem("Kill process", false);
+//    m.append(killItem);
+//    killItem.setSensitive(true);
+//    killItem.addListener(new MenuItemListener()
+//    {
+//      public void menuItemEvent (MenuItemEvent arg0)
+//      {
+//        killProc();
+//      }
+//    });
+    
+    m.showAll();
+    m.popup();
+  }
+  
+  private void detachProc ()
+  {
+    this.removeProc();
+    
+    if (this.swProc.length == 0)
+      {
+	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setText("<b>"
+	                                                                     + "All processes have exited."
+	                                                                     + "</b>");
+	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+	  SourceWindow.this.stackView.clear();
+	  SourceBuffer b = (SourceBuffer) ((SourceView) view).getBuffer();
+	  b.clear();
+	  SourceWindow.this.desensitize();
+	  SourceWindow.this.stop.setSensitive(false);
+      }
+    else
+	lock.update(null, new Object());
+  }
+  
+//  private void killProc ()
+//  {
+//    
+//  }
+  
   private void removeTags ()
   {
     SourceBuffer sb = null;
@@ -2641,80 +2704,81 @@ public class SourceWindow
 
   private StackFrame[] generateProcStackTrace (Proc proc, int current)
   {
-	int size = proc.getTasks().size();
-	int main = proc.getPid();
-	Task[] tasks = new Task[size];
-	StackFrame[] frames = new StackFrame[size];
+    int size = proc.getTasks().size();
+    int main = proc.getPid();
+    Task[] tasks = new Task[size];
+    StackFrame[] frames = new StackFrame[size];
 
-	Iterator iter = proc.getTasks().iterator();
-	int k = 0;
-	while (iter.hasNext())
+    Iterator iter = proc.getTasks().iterator();
+    int k = 0;
+    while (iter.hasNext())
+      {
+	tasks[k] = (Task) iter.next();
+	++k;
+      }
+
+    frames = new StackFrame[size];
+
+    for (int j = 0; j < size; j++)
+      {
+	/** Create the stack frame * */
+
+	StackFrame curr = null;
+	try
 	  {
-		tasks[k] = (Task) iter.next();
-		++k;
+	    frames[j] = StackFactory.createStackFrame(tasks[j]);
+	    curr = frames[j];
+	  }
+	catch (Exception e)
+	  {
+	    System.out.println("Error generating stack trace");
+	    e.printStackTrace();
 	  }
 
-	frames = new StackFrame[size];
+	/** Stack frame created */
 
-	for (int j = 0; j < size; j++)
+	if (tasks[j].getTid() == main)
 	  {
-		/** Create the stack frame * */
+	    this.symTab[current] = new SymTab(proc.getPid(), proc, tasks[j],
+					      frames[j]);
+	  }
 
-		StackFrame curr = null;
+	while (curr != null && this.dom[this.current] == null)
+	  {
+	    if (this.dom[this.current] == null)
+	      {
 		try
 		  {
-			frames[j] = StackFactory.createStackFrame(tasks[j]);
-			curr = frames[j];
+		    this.dom[this.current] = DOMFactory.createDOM(
+								  curr,
+								  this.swProc[this.current]);
 		  }
-		catch (Exception e)
+
+		catch (NoDebugInfoException e)
 		  {
-			System.out.println("Error generating stack trace");
-			e.printStackTrace();
 		  }
-
-		/** Stack frame created */
-
-		if (tasks[j].getTid() == main)
+		catch (IOException e)
 		  {
-			this.symTab[current] = new SymTab(proc.getPid(), proc, tasks[j], 
-			                                  frames[j]);
 		  }
+	      }
+	    else
+	      break;
 
-		while (curr != null && this.dom[this.current] == null)
-		  {
-			if (this.dom[this.current] == null)
-			  {
-				try
-				  {
-					this.dom[this.current] = DOMFactory.createDOM(curr, 
-					                                 this.swProc[this.current]);
-				  }
-
-				catch (NoDebugInfoException e)
-				  {
-				  }
-				catch (IOException e)
-				  {
-				  }
-			  }
-			else
-			  break;
-			
-			curr = curr.getOuter();
-		  }
+	    curr = curr.getOuter();
 	  }
+      }
 
-	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	
-	if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
-	  this.symTab[this.current].setFrames(frames);
+    DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 
-	return frames;
+    if (! SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
+      this.symTab[this.current].setFrames(frames);
+
+    return frames;
   }
 
   private class SourceWindowListener
       implements ButtonListener, EntryListener, ComboBoxListener,
-      StackViewListener
+     StackViewListener
   {
 
     private SourceWindow target;
@@ -2819,7 +2883,8 @@ public class SourceWindow
       if (newFrame == null)
         return;
       
-      if (newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
+      if (SourceWindow.this.currentTask == null
+	  || newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
         SourceWindow.this.currentTask = newFrame.getTask();
 
       if (SourceWindow.this.currentFrame != null
@@ -2843,7 +2908,22 @@ public class SourceWindow
 
       target.updateShownStackFrame(newFrame, current);
     }
+  }
+  
+  private class StackMouseListener implements MouseListener
+  {
+    public boolean mouseEvent (MouseEvent event)
+    {
+      if (! event.isOfType(MouseEvent.Type.BUTTON_PRESS))
+        return false;
+      
+      if (event.getButtonPressed() == MouseEvent.BUTTON3)
+        {
+          menuEvent(event);
+        }
 
+      return false;
+    }
   }
   
   private class ThreadLifeObserver
@@ -2854,7 +2934,6 @@ public class SourceWindow
     {      
       if (arg == null)
 	{
-	  System.out.println("SourceWindow: 'void update'");
 	  ((Label) SourceWindow.this.glade.getWidget("sourceLabel")).setText("<b>"
 	                                                                     + "All processes have exited."
 	                                                                     + "</b>");
@@ -2903,7 +2982,7 @@ public class SourceWindow
     public void update (Observable o, Object arg)
     {
       /* We don't need to worry about this case here */
-//            System.err.println("LockObserver.update " + (Task) arg);
+//            System.err.println("LockObserver.update " + (Task) arg + " " + SW_active + " " + SW_add);
       if (arg == null)
 	return;
 

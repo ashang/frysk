@@ -1,3 +1,14 @@
+2007-04-25  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (StackMouseListener): Added. Listens for certain
+	mouse clicks on the stack view.
+	(StackViewListener.currentStackChanged): Added logic to assign
+	currentTask field if it was unset previously.
+	(menuEvent): Added. Callback for MouseEvents. Fixes #4421.
+	(appendProc): Set new Proc array before StackFrame array.
+	(detachProc): Detaches Procs from Frysk, cleans up the window if
+	no more processes are being observed.
+
 2007-04-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Claen up some fo the code for the
