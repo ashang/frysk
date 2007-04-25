@@ -14,6 +14,11 @@
 	a boolean, determining whether or not the Proc is killed after detach.
 	Added another menu option for allowing Proc to be killed. Fixes #4421.
 	(detachProc): Now takes a boolean parameter.
+	
+	* SourceWindow.java: Substantially commented, slightly reorganized
+	and cleaned up.
+	* SourceWindowFactory.java (lifeCycleQuery): Don't try and remove
+	observers from null SourceWindow processes.
 
 2007-04-24  Rick Moseley  <rmoseley@redhat.com>
 

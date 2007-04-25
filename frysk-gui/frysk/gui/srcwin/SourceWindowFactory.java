@@ -237,7 +237,6 @@ public class SourceWindowFactory
 
     public boolean lifeCycleQuery (LifeCycleEvent arg0)
     {
-
       /*
        * If the window is closing we want to remove it and it's task from the
        * map, so that we know to create a new instance next time
@@ -246,14 +245,14 @@ public class SourceWindowFactory
         {
               Proc p = srcWin.getSwProc();
               
-//              runState.removeObserver(srcWin.getLockObserver(), p);
-              SteppingEngine.removeObserver(srcWin.getLockObserver(), p);
+              if (p != null)
+        	SteppingEngine.removeObserver(srcWin.getLockObserver(), p);
 
              srcWin.hideAll();
-        		srcWin = null;
+             srcWin = null;
               
               if (WindowManager.theManager.sessionManagerDialog != null)
-                WindowManager.theManager.sessionManagerDialog.show();
+                WindowManager.theManager.sessionManagerDialog.showAll();
               else
                 Gui.quitFrysk();
             }
@@ -276,7 +275,6 @@ public class SourceWindowFactory
 
       if (srcWin != null)
 	{
-//	  runState.addProc(proc);
 	  SteppingEngine.addProc(proc);
 	  return Action.BLOCK;
 	}
@@ -293,10 +291,7 @@ public class SourceWindowFactory
 	}
 
       srcWin = new SourceWindow(glade, Config.getGladeDir(), proc, this);
-
       srcWin.addListener(new SourceWinListener());
-//      runState = srcWin.getRunState();
-
       srcWin.grabFocus();
 
       return Action.BLOCK;

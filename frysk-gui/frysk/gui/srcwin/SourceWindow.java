@@ -42,7 +42,6 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-//import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -292,8 +291,6 @@ public class SourceWindow
 
   private StackFrame[][] frames;
 
-//  private RunState runState;
-  
   private SymTab symTab[];
 
   // Due to java-gnome bug #319415
@@ -325,8 +322,7 @@ public class SourceWindow
    * 
    * @param glade The LibGlade object that contains the window for this instance
    * @param gladePath The path that the .glade file for the LibGlade was on
-   * @param dom The DOM that describes the executable being debugged
-   * @param stack The stack frame that represents the current state of execution
+   * @param proc	The Proc to have this SourceWindow observe
    */
   public SourceWindow (LibGlade glade, String gladePath, Proc proc)
   {
@@ -347,6 +343,15 @@ public class SourceWindow
     SteppingEngine.setThreadObserver(this.threadObserver);
   }
   
+  /**
+   * Creates a new source window with the given properties. This constructor
+   * should not be called explicitly, SourceWindow objects should be created
+   * through the {@link SourceWindowFactory} class.
+   * 
+   * @param glade The LibGlade object that contains the window for this instance
+   * @param gladePath The path that the .glade file for the LibGlade was on
+   * @param procs The array of Procs to have this new SourceWindow observes
+   */
   public SourceWindow (LibGlade glade, String gladePath, Proc[] procs)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
@@ -367,6 +372,17 @@ public class SourceWindow
     SteppingEngine.setThreadObserver(this.threadObserver);
   }
   
+  /**
+   * Creates a new source window with the given properties. This constructor
+   * builds a SourceWindow based off of a stack trace, and thus has no usable
+   * or running process.
+   * This constructor should not be called explicitly, SourceWindow objects 
+   * should be created through the {@link SourceWindowFactory} class.
+   * 
+   * @param glade The LibGlade object that contains the window for this instance
+   * @param gladePath The path that the .glade file for the LibGlade was on
+   * @param trace The stack frame that represents the current state of execution
+   */
   public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
@@ -403,6 +419,16 @@ public class SourceWindow
     this.stop.setSensitive(false);
   }
 
+  /**
+   * Creates a new source window with the given properties. This constructor
+   * should not be called explicitly, SourceWindow objects should be created
+   * through the {@link SourceWindowFactory} class.
+   * 
+   * @param glade The LibGlade object that contains the window for this instance
+   * @param gladePath The path that the .glade file for the LibGlade was on
+   * @param proc	The Proc to have this SourceWindow observe
+   * @param ao	The AttachedObserver currently blocking the given Proc
+   */
   public SourceWindow (LibGlade glade, String gladePath, Proc proc,
                        SourceWindowFactory.AttachedObserver ao)
   {
@@ -455,6 +481,7 @@ public class SourceWindow
     this.viewPicker = (ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX);
     this.viewPicker.setActive(0);
 
+    /* Populate the stack view */
     this.populateStackBrowser(this.frames);
 
     /* This would be the case during a CLI attach to a single executable */
@@ -484,24 +511,12 @@ public class SourceWindow
     this.cont.setSensitive(true);
     this.stop.setSensitive(false);
     
+    /* Set up SymTab variable information */
     if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(this.frames[this.current]);
 
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
-  }
-
-  /**
-   * Toggles whether the toolbar is visible
-   * 
-   * @param value Whether or not to show the toolbar
-   */
-  public void setShowToolbar (boolean value)
-  {
-    if (value)
-      this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
-    else
-      this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
   }
 
   /**
@@ -511,53 +526,53 @@ public class SourceWindow
    */
   public void populateStackBrowser (StackFrame[][] frames)
   {
-  	this.frames = frames;
-  	
+    this.frames = frames;
+
     /* Initialization */
     if (this.view == null)
       {
-        this.stackView = new CurrentStackView(frames);
-        StackFrame temp = null;
+	this.stackView = new CurrentStackView(frames);
+	StackFrame temp = null;
 
-        temp = CurrentStackView.getCurrentFrame();
-        
-        if (temp == null)
-          temp = frames[0][0];
+	temp = CurrentStackView.getCurrentFrame();
 
-        StackFrame curr = temp;
-        this.currentFrame = temp;
+	if (temp == null)
+	  temp = frames[0][0];
+
+	StackFrame curr = temp;
+	this.currentFrame = temp;
 
 	while (curr != null && curr.getLines().length == 0)
-	    curr = curr.getOuter();
-    
-        if (curr != null)
-          {
-            this.currentFrame = curr;
-            this.currentTask = curr.getTask();
-            this.view = new SourceView(curr, this);
-            
-            SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+	  curr = curr.getOuter();
 
-            for (int j = 0; j < frames[this.current].length; j++)
+	if (curr != null)
+	  {
+	    this.currentFrame = curr;
+	    this.currentTask = curr.getTask();
+	    this.view = new SourceView(curr, this);
+
+	    SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+
+	    for (int j = 0; j < frames[this.current].length; j++)
 	      {
-		b.highlightLine(frames[this.current][0], true);
+			b.highlightLine(frames[this.current][0], true);
 	      }
-          }
-        else
-          {
-            this.view = new SourceView(temp, this);
-            this.currentTask = temp.getTask();
-          }
+	  }
+	else
+	  {
+	    this.view = new SourceView(temp, this);
+	    this.currentTask = temp.getTask();
+	  }
 
-        ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
-        ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
-        sw.add(stackView);
-        this.watchView.setView((SourceView) this.view);
-        updateSourceLabel(this.currentFrame);
-        //stackView.expandAll();
-        this.stackView.selectRow(this.currentFrame);
-        TreePath path = null;
-        try
+	((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
+	ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
+	sw.add(stackView);
+	this.watchView.setView((SourceView) this.view);
+	updateSourceLabel(this.currentFrame);
+	stackView.expandAll();
+	this.stackView.selectRow(this.currentFrame);
+	TreePath path = null;
+	try
 	  {
 	    path = this.stackView.getSelection().getSelectedRows()[0];
 	    this.stackView.expandRow(path, true);
@@ -565,26 +580,26 @@ public class SourceWindow
 	  }
 	catch (ArrayIndexOutOfBoundsException ae)
 	  {
-	    //stackView.expandAll();
+	    // stackView.expandAll();
 	  }
-        
-        if (this.currentFrame.getLines().length != 0)
-          {
-            this.view.scrollToLine(this.currentFrame.getLines()[0].getLine());
-          }
-        else
-          {
-            /* Only the case during a monitor stack trace */
-            if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
-              {
-                SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
-                b.disassembleFrame(this.currentFrame);
-              }
-          }
-        updateSourceLabel(curr);
-        stackView.showAll();
-        this.view.showAll();
-        return;
+
+	if (this.currentFrame.getLines().length != 0)
+	  {
+	    this.view.scrollToLine(this.currentFrame.getLines()[0].getLine());
+	  }
+	else
+	  {
+	    /* Only the case during a monitor stack trace */
+	    if (! SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
+	      {
+		SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+		b.disassembleFrame(this.currentFrame);
+	      }
+	  }
+	updateSourceLabel(curr);
+	stackView.showAll();
+	this.view.showAll();
+	return;
       }
 
     SourceBuffer sb = null;
@@ -597,77 +612,80 @@ public class SourceWindow
     StackFrame taskMatch = null;
 
     String currentMethodName = this.currentFrame.getSymbol().getDemangledName();
-    
+
+    /* Refresh the information displayed in the stack view with the info
+     * from the new stack trace */
     this.stackView.refreshProc(frames[this.current], this.current);
-    //this.stackView.expandAll();
+    this.stackView.expandAll();
     StackFrame newFrame = null;
-    
+
     /*
-     * Try to find the new StackFrame representing the same frame from before
-     * the reset
-     */
+         * Try to find the new StackFrame representing the same frame from
+         * before the reset
+         */
     for (int j = 0; j < frames[this.current].length; j++)
       {
-        curr = frames[this.current][j];
-        if (curr.getTask().getTid() == this.currentTask.getTid())
-          {
-            this.currentTask = curr.getTask();
-            taskMatch = curr;
-          }
+		curr = frames[this.current][j];
+		if (curr.getTask().getTid() == this.currentTask.getTid())
+		  {
+		    this.currentTask = curr.getTask();
+		    taskMatch = curr;
+		  }
 
-        sb.highlightLine(curr, true);
-        
-        if (newFrame == null)
-          {
-            while (curr != null)
-              {
-                if (currentMethodName.equals(curr.getSymbol().getDemangledName()))
-                  {
-                    newFrame = curr;
-                    break;
-                  }
-                curr = curr.getOuter();
-              }
-          }
+	sb.highlightLine(curr, true);
+
+	if (newFrame == null)
+	  {
+	    while (curr != null)
+	      {
+			if (currentMethodName.equals(curr.getSymbol().getDemangledName()))
+			  {
+			    newFrame = curr;
+			    break;
+			  }
+			curr = curr.getOuter();
+	      }
+	  }
       }
-    
+
     if (newFrame == null)
       {
-        if (taskMatch != null)
-          {
-            newFrame = taskMatch;
-          }
-        else
-          {
-            newFrame = this.stackView.getFirstFrameSelection();
-          }
+		if (taskMatch != null)
+		  {
+		    newFrame = taskMatch;
+		  }
+		else
+		  {
+		    newFrame = this.stackView.getFirstFrameSelection();
+		  }
       }
 
     this.stackView.selectRow(newFrame);
     TreePath path = null;
     try
       {
-	path = this.stackView.getSelection().getSelectedRows()[0];
-	this.stackView.expandRow(path, true);
-	this.stackView.scrollToCell(path);
+		path = this.stackView.getSelection().getSelectedRows()[0];
+		this.stackView.expandRow(path, true);
+		this.stackView.scrollToCell(path);
       }
     catch (ArrayIndexOutOfBoundsException ae)
       {
 	// not sure what to do here yet, although expandAll() isn't it
-	//stackView.expandAll();
+	// stackView.expandAll();
       }
+    
     updateShownStackFrame(newFrame, this.current);
     updateSourceLabel(this.currentFrame);
-    
+
     /* Update the variable watch as well */
     this.watchView.refreshList();
   }
 
   /**
-   * Adds the selected variable to the variable trace window
-   * 
-   * @param var The variable to trace
-   */
+         * Adds the selected variable to the variable trace window
+         * 
+         * @param var The variable to trace
+         */
   public void addVariableTrace (Variable var)
   {
     this.watchView.addTrace(var);
@@ -684,19 +702,16 @@ public class SourceWindow
   }
 
   /**
-   * Called from SourceWindowFactory when all Tasks have notified that they are
-   * blocked and new stack traces have been generated. This is called after the
-   * StackView has been re-populated, allowing the SourceWindow to be sensitive
-   * again.
-   */
+         * Called from SourceWindowFactory when all Tasks have notified that
+         * they are blocked and new stack traces have been generated. This is
+         * called after the StackView has been re-populated, allowing the
+         * SourceWindow to be sensitive again.
+         */
   protected void procReblocked ()
   {
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-//    SteppingEngine.runCompleted();
-//    SteppingEngine.stepCompleted();
-    
     if (this.currentFrame.getLines().length== 0)
       {
         ((SourceBuffer)((SourceView) this.view).getBuffer())
@@ -706,14 +721,29 @@ public class SourceWindow
     resensitize();
   }
   
+  /*******************************************************************
+   * Adding/Removing Processes
+   ******************************************************************/
+  
+  /**
+   * Called when a new executable has been selected to run and add to 
+   * the window.
+   * 
+   * @param exe	The executable path
+   * @param env_variables	The environment arguments to pass to the executable
+   * @param options 
+   */
   protected void addProc (String exe, String env_variables, String options)
   {
-	//desensitize();
-	// this.stop.setSensitive(false);
 	this.SW_add = true;
   	this.addedAttachedObserver = SourceWindowFactory.startNewProc(exe, env_variables, options);
   }
   
+  /**
+   * Appends a new Proc object to this window's data structures and interface
+   * 
+   * @param task The Task whose Proc is to be appended to this window
+   */
   protected void appendProc (Task task)
   {
 	this.SW_add = false;
@@ -747,6 +777,13 @@ public class SourceWindow
 	resensitize();
   }
   
+  /**
+   * Removes the currently selected process from SourceWindow data 
+   * structures and the interface.
+   * 
+   * @param kill Whether or not the process should be killed after a detach
+   * is performed.
+   */
   protected void removeProc (boolean kill)
   {
 	int oldSize = this.numProcs;
@@ -787,15 +824,23 @@ public class SourceWindow
 	  this.currentTask = null;
   }
 
-  /***************************************************************************
-     * Getters and Setters
-     **************************************************************************/
+  /*******************************************************************
+   * Getters and Setters
+   ******************************************************************/
 
   public Proc getSwProc ()
   {
-    return this.swProc[this.current];
+    if (this.swProc.length > 0)
+      return this.swProc[this.current];
+    else
+      return null;
   }
 
+  private Isa getProcIsa ()
+  {
+    return swProc[this.current].getMainTask().getIsa();
+  }
+  
   public DOMFrysk getDOM ()
   {
     return this.dom[this.current];
@@ -821,12 +866,12 @@ public class SourceWindow
     return this.lock;
   }
 
-  /*****************************************************************************
+  /*******************************************************************
    * PRIVATE METHODS
-   ****************************************************************************/
+   ******************************************************************/
 
   /**
-   * 
+   * Resets the search box to its original state.
    */
   private void resetSearchBox ()
   {
@@ -1387,9 +1432,10 @@ public class SourceWindow
     {
       // No core here yet
     }
-  /*
-   * Populates the menus from the actions created earlier.
-   */
+
+/**
+ * Creates the toolbar menus with initialized Actions.
+ */
   private void createMenus ()
   {
     // File menu
@@ -1561,6 +1607,10 @@ public class SourceWindow
     toolbar.setToolTips(true);
   }
 
+  /**
+   * Desensitizes all Action-related widgets on the window, except for the 
+   * 'stop' Action.
+   */
   private void desensitize ()
   {
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
@@ -1599,6 +1649,10 @@ public class SourceWindow
     this.viewPicker.setSensitive(false);
   }
 
+  /**
+   * Resensitizes all Action-related widgets on the window, except for the 
+   * 'stop' Action.
+   */
   private void resensitize ()
   {
     // Set status of toolbar buttons
@@ -1638,6 +1692,19 @@ public class SourceWindow
     this.viewPicker.setSensitive(true);
   }
 
+  /**
+   * Toggles whether the toolbar is visible
+   * 
+   * @param value Whether or not to show the toolbar
+   */
+  public void setShowToolbar (boolean value)
+  {
+    if (value)
+      this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
+    else
+      this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
+  }
+  
   /**
    * Adds icons, text, and tooltips to the widgets in the search bar
    */
@@ -1717,8 +1784,6 @@ public class SourceWindow
     });
 
     // Mode box
-//    ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
-//    this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
     this.viewPicker.addListener(listener);
     this.viewPicker.setSensitive(true);
 
@@ -1837,7 +1902,15 @@ public class SourceWindow
                                                                 StateType.NORMAL,
                                                                 Color.RED);
   }
+  
+  
+  /*******************************************************************
+   * Display Mode Switching
+   ******************************************************************/
 
+  /**
+   * Switches the SourceWindow to dislaying source-only information
+   */
   private void switchToSourceMode ()
   {
     /*
@@ -1870,6 +1943,9 @@ public class SourceWindow
     createTags();
   }
 
+  /**
+   * Switches the SourceWindow to displaying assembly-only information.
+   */
   private void switchToAsmMode ()
   {
     removeTags();
@@ -1897,6 +1973,10 @@ public class SourceWindow
       }
   }
 
+  /**
+   * Switches the SourceWindow to displaying combined assembly and 
+   * source information.
+   */
   private void switchToMixedMode ()
   {
     /*
@@ -1921,6 +2001,10 @@ public class SourceWindow
       }
   }
 
+  /**
+   * Has the SourceWindow split into two panes, one displaying source
+   * code, the other displaying assembly information.
+   */
   private void switchToSourceAsmMode ()
   {
     if (this.currentFrame.getLines().length ==0)
@@ -1939,6 +2023,10 @@ public class SourceWindow
       }
   }
   
+  /*******************************************************************
+   * Source Label
+   ******************************************************************/
+
   /**
    * This method actually sets the sourceLabel widget with the info provided.
    * 
@@ -1991,6 +2079,7 @@ public class SourceWindow
               e.printStackTrace();
             }
       }
+    
     if (lines.length == 0)
       setSourceLabel("Unknown File for:", task_name, proc_id);
     else if (source == null && lines.length > 0)
@@ -1999,63 +2088,81 @@ public class SourceWindow
       setSourceLabel(source.getFileName() + " for: ", task_name, proc_id);
   }
   
-  
+  /*******************************************************************
+   * Stack View Event Handling
+   ******************************************************************/
+
+  /**
+   * Main logic for determining what to display after a new StackFrame is
+   * selected from the stack view.
+   * 
+   * Depending on what is selected, will either load source from a new file,
+   * scroll to a new line in the current file, display assembly information, 
+   * simply do nothing, or other actions dependant on available frame
+   * information.
+   * 
+   * Also updates SymTab information, information displayed in the 
+   * source label, and current highlighting.
+   * 
+   * @param selected	The selected StackFrame
+   * @param current	The index of the currently selected Proc
+   */
   private void updateShownStackFrame (StackFrame selected, int current)
   {
-    
     int mode = this.viewPicker.getActive();
-    
+
     DOMSource source = null;
     Line[] lines = selected.getLines();
 
-   updateSourceLabel(selected);
+    updateSourceLabel(selected);
 
     if (lines.length > 0)
       {
-        source = lines[0].getDOMSource();
-        if (source == null)
-          try
-            {
-              DOMFactory.createDOM(selected, selected.getTask().getProc());
-              source = lines[0].getDOMSource();
-            }
-          catch (Exception e)
-            {
-              e.printStackTrace();
-            }
+	source = lines[0].getDOMSource();
+	if (source == null)
+	  try
+	    {
+	      DOMFactory.createDOM(selected, selected.getTask().getProc());
+	      source = lines[0].getDOMSource();
+	    }
+	  catch (Exception e)
+	    {
+	      e.printStackTrace();
+	    }
       }
-    
-   //updateSourceLabel(selected);
-    
+
+    // updateSourceLabel(selected);
+
     if (lines.length == 0)
-    {
-      SourceBuffer b = null;
-      
-      if (mode == 2)
-        switchToAsmMode();
-      
-      if (this.view instanceof SourceView)
-        b = (SourceBuffer) ((SourceView) this.view).getBuffer();
-      else
-        b = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
-      
-      removeTags();
-      this.view.load(selected, this.viewPicker.getActive());
-      
-//      if (SteppingEngine.getTaskState(selected.getTask()) == SteppingEngine.STOPPED)
-      if (!SteppingEngine.isTaskRunning(selected.getTask()))
-    	{
-		  if (this.stop.isSensitive())
-		      resensitize();
-    	  b.disassembleFrame(selected);
-    	}
-      else
-    	{
-		    if (!this.stop.isSensitive())
-		      desensitize();
-    	  b.deleteText(b.getStartIter(), b.getEndIter());
-    	}
-    }
+      {
+	SourceBuffer b = null;
+
+	if (mode == 2)
+	  switchToAsmMode();
+
+	if (this.view instanceof SourceView)
+	  b = (SourceBuffer) ((SourceView) this.view).getBuffer();
+	else
+	  b = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
+
+	removeTags();
+	this.view.load(selected, this.viewPicker.getActive());
+
+	// if (SteppingEngine.getTaskState(selected.getTask()) ==
+        // SteppingEngine.STOPPED)
+	if (! SteppingEngine.isTaskRunning(selected.getTask()))
+	  {
+	    if (this.stop.isSensitive())
+	      resensitize();
+	    b.disassembleFrame(selected);
+	  }
+	else
+	  {
+	    if (! this.stop.isSensitive())
+	      desensitize();
+	    b.deleteText(b.getStartIter(), b.getEndIter());
+	  }
+      }
     else if (source != null && lines[0].getDOMFunction() != null)
       {
 	if (this.currentFrame.getLines().length == 0
@@ -2128,12 +2235,18 @@ public class SourceWindow
 								     lines[0].getLine());
 	  }
       }
-    
+
     this.current = current;
     this.currentFrame = selected;
     this.view.showAll();
   }
 
+  /**
+   * Handles right-clicks on the stack view, signifying the user wishes to
+   * perform some sort of Proc-removal operation.
+   * 
+   * @param event The generated MouseEvent
+   */
   private void menuEvent (MouseEvent event)
   {
     Menu m = new Menu();
@@ -2183,6 +2296,10 @@ public class SourceWindow
 	lock.update(null, new Object());
   }
   
+  /*******************************************************************
+   * Line Highlighting
+   ******************************************************************/
+  
   private void removeTags ()
   {
     SourceBuffer sb = null;
@@ -2212,6 +2329,10 @@ public class SourceWindow
         sb.highlightLine(frames[this.current][i], true);
       }
   }
+  
+  /*******************************************************************
+   * Action Handling Methods
+   ******************************************************************/
 
   /**
    * Tells the debugger to run the program
@@ -2598,6 +2719,9 @@ public class SourceWindow
     this.view.scrollToFunction(name);
   }
 
+  /**
+   * Creates and toggles the display of the RegisterWindow.
+   */
   private void toggleRegisterWindow ()
   {
     RegisterWindow regWin = RegisterWindowFactory.regWin;
@@ -2614,11 +2738,9 @@ public class SourceWindow
       }
   }
 
-  private Isa getProcIsa ()
-  {
-    return swProc[this.current].getMainTask().getIsa();
-  }
-
+  /**
+   * Creates and toggles the display of the MemoryWindow.
+   */
   private void toggleMemoryWindow ()
   {
     Isa isa = getProcIsa();
@@ -2645,7 +2767,9 @@ public class SourceWindow
         memWin.showAll();
       }
   }
-
+  /**
+   * Creates and toggles the display of the DisassemblyWindow.
+   */
   private void toggleDisassemblyWindow ()
   {
     Isa isa = getProcIsa();
@@ -2673,6 +2797,9 @@ public class SourceWindow
       }
   }
 
+  /**
+   * Creates and toggles the display of the ConsoleWindow.
+   */
   private void toggleConsoleWindow ()
   {
     if (this.conWin == null)
@@ -2681,6 +2808,9 @@ public class SourceWindow
       this.conWin.showAll();
   }
   
+  /**
+   * Creates and toggles the display of the thread dialog.
+   */
   private void handleDialog (int type)
   {
     if (this.stepDialog == null)
@@ -2697,6 +2827,14 @@ public class SourceWindow
     SteppingEngine.executeTasks(tasks);
   }
 
+  /**
+   * Generates a new stack trace for each of the Tasks belonging to the 
+   * given Proc. Updates their DOM and SymTab information.
+   * 
+   * @param proc The Proc to be updated
+   * @param current The new Proc array index
+   * @return frames The new StackFrame[] stack trace
+   */
   private StackFrame[] generateProcStackTrace (Proc proc, int current)
   {
     int size = proc.getTasks().size();
@@ -2706,6 +2844,8 @@ public class SourceWindow
 
     Iterator iter = proc.getTasks().iterator();
     int k = 0;
+    
+    /* Copy the list of Tasks into an array */
     while (iter.hasNext())
       {
 	tasks[k] = (Task) iter.next();
@@ -2717,7 +2857,6 @@ public class SourceWindow
     for (int j = 0; j < size; j++)
       {
 	/** Create the stack frame * */
-
 	StackFrame curr = null;
 	try
 	  {
@@ -2730,14 +2869,14 @@ public class SourceWindow
 	    e.printStackTrace();
 	  }
 
-	/** Stack frame created */
-
+	/* Update SymTab information for the main Task. */ 
 	if (tasks[j].getTid() == main)
 	  {
 	    this.symTab[current] = new SymTab(proc.getPid(), proc, tasks[j],
 					      frames[j]);
 	  }
 
+	/* Create a DOM for the Proc */
 	while (curr != null && this.dom[this.current] == null)
 	  {
 	    if (this.dom[this.current] == null)
@@ -2763,6 +2902,7 @@ public class SourceWindow
 	  }
       }
 
+    /* Clear out any irrelevant DOM information from the last stack trace */
     DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 
     if (! SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
@@ -2770,6 +2910,10 @@ public class SourceWindow
 
     return frames;
   }
+  
+  /*******************************************************************
+   * SourceWindow Listener And Observer Implementations
+   ******************************************************************/
 
   private class SourceWindowListener
       implements ButtonListener, EntryListener, ComboBoxListener,
@@ -2905,6 +3049,10 @@ public class SourceWindow
     }
   }
   
+  /**
+   * Listens for mouse right-clicks on the stack view, and eventually
+   * generates a menu for the user.
+   */
   private class StackMouseListener implements MouseListener
   {
     public boolean mouseEvent (MouseEvent event)
@@ -2921,10 +3069,12 @@ public class SourceWindow
     }
   }
   
+  /**
+   * Watches for Task creation and exit events.
+   */
   private class ThreadLifeObserver
   implements Observer
   {
-    
     public void update (Observable o, Object arg)
     {      
       if (arg == null)
