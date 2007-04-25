@@ -4,6 +4,16 @@
 	breakpoints from all Tasks of a Proc, removes information from
 	SteppingEngine data structures, and releases the task. Fixes #4421.
 
+	* SteppingEngine.java (detachProc): Now takes a boolean parameter. If
+	true, then ensures the Proc will be sent a kill signal after all
+	detaching has finished.
+	(ThreadLifeObservable.exitingTasks): Added. List of tasks to check
+	against when removing a process.
+	(setExitingTasks): Added.
+	(deletedFrom): If the incoming Task is contained in the list of exiting
+	tasks, decrement the context value for its Proc, and kill the Proc if
+	no more Tasks exist to detach from. Fixes #4421.
+
 2007-04-25  Nurdin Premji <npremji@redhat.com>
 
 	* Frame.java (getProcInfo): Added.

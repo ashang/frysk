@@ -60,6 +60,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.states.*;
+import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 /**
  * State machine for thread and process stepping. Provides static methods for
@@ -816,11 +818,19 @@ public class SteppingEngine
    * Detaches all observers and breakpoints from all Tasks of the given Proc.
    * 
    * @param proc The Proc to be detached
+   * @param kill Whether the Proc should be killed after detaching
    */
-  public static void detachProc (Proc proc)
+  public static void detachProc (Proc proc, boolean kill)
   {
     LinkedList list = proc.getTasks();
     Task t;
+    
+    if (kill)
+      {
+	Integer context = new Integer(list.size());
+	contextMap.put(proc, context);
+	threadLifeObservable.setExitingTasks(list);
+      }
     
     Iterator i = list.iterator();
     while (i.hasNext())
@@ -838,14 +848,8 @@ public class SteppingEngine
 	t.requestDeleteTerminatingObserver(threadLifeObservable);
 	t.requestDeleteClonedObserver(threadLifeObservable);
 	t.requestDeleteInstructionObserver(steppingObserver);
-	
 	cleanTask(t);
       }
-  }
-  
-  public static void killProc (Proc proc)
-  {
-    
   }
   
   /**
@@ -1194,9 +1198,12 @@ public class SteppingEngine
   implements TaskObserver.Cloned, TaskObserver.Terminating
   {
     
+    private LinkedList exitingTasks;
+    
     public ThreadLifeObservable ()
     {
-      threadsList = new LinkedList ();
+      threadsList = new LinkedList();
+      exitingTasks = new LinkedList();
     }
 	
     public Action updateClonedParent (Task parent, Task offspring)
@@ -1243,6 +1250,25 @@ public class SteppingEngine
 
     public void deletedFrom (Object observable)
     {
+      	Task task = (Task) observable;
+      	if (this.exitingTasks.remove(task))
+      	  {
+      	    int i = ((Integer) contextMap.get(task.getProc())).intValue();
+      	    if (--i > 0)
+      	      {
+      		contextMap.put(task.getProc(), new Integer(i));
+      	      }
+      	    else
+      	      {
+      		contextMap.remove(task.getProc());
+      		Signal.kill(task.getProc().getPid(), Sig.KILL);
+      	      }
+      	  }
+    }
+    
+    public void setExitingTasks(LinkedList tasks)
+    {
+      this.exitingTasks.addAll(tasks);
     }
   }
   
