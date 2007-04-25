@@ -140,7 +140,7 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
           *val = *(unw_word_t *) addr;
           Debug (16, "mem[%x] -> %x\n", addr, *val);
     	}
-    	Debug(99, "leaving local_access_mem");
+    	Debug(99, "leaving local_access_mem\n");
   	return 0;
   }
   
@@ -149,8 +149,7 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
   unw_addr_space_t temp_local_addr_space 
   	= unw_create_addr_space(&temp_local_accessors, 0);
   	
-  Debug(99, "is local address space null? %d", temp_local_addr_space == NULL);
-  /* (Optionally) read eh_frame_ptr: */
+   /* (Optionally) read eh_frame_ptr: */
   if ((ret = dwarf_read_encoded_pointer (temp_local_addr_space, &temp_local_accessors,
 					 &addr, hdr->eh_frame_ptr_enc, pi,
 					 &eh_frame_start, NULL)) < 0)

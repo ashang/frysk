@@ -179,10 +179,15 @@ get_proc_name(::unw_addr_space_t as,
 		  ::unw_word_t addr, char *bufp,
 		  size_t buf_len, ::unw_word_t *offp, void *arg)
 {
+	//fprintf(stderr, "buf_len: %d\n", buf_len);
 	lib::unwind::ProcName *procName
 	  = ((lib::unwind::Accessors *)arg)->getProcName ((jlong) addr, 
 							  (jint) buf_len);	
 
+	//In case get_proc_name is used only to find addr;
+	if (bufp == NULL || buf_len == 0)
+	     return 0;
+	     
 	if (procName->error < 0 && procName->error != -UNW_ENOMEM)
 		return procName->error;
 

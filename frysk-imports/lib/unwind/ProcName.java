@@ -45,6 +45,11 @@ public class ProcName
   public final long address;
   public final String name;
   
+  public int getError()
+  {
+    return error;
+  }
+  
   private ProcName(int error, long address, String name)
   {
     this.error = error;

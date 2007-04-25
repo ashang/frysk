@@ -127,6 +127,7 @@ public class StackFactory
     return createStackFrame(task, 0);
   }
   
+  static boolean newUnwind = false;
   public static final StringBuffer generateTaskStackTrace (Task task)
   {
     if (task != null)
@@ -134,16 +135,24 @@ public class StackFactory
       StringBuffer buffer = new StringBuffer();
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
       int count = 0;
-      for (StackFrame frame = StackFactory.createStackFrame(task);
-           frame != null; frame = frame.getOuter()) {
-          // FIXME: do valgrind-like '=== PID ===' ?
-          StringBuffer output = new StringBuffer("#" + count + " "
-                             + frame.toPrint(false)
-                             + "\n");
-          
-          buffer.append(output);
-          count++;
-      }
+      if (newUnwind)	
+	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
+	    {
+	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(256) + "\n");
+	      buffer.append(output);
+	      count++;
+	    }
+      else
+	  for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
+	    {
+	      // FIXME: do valgrind-like '=== PID ===' ?
+	      StringBuffer output = new StringBuffer("#" + count + " "
+						     + frame.toPrint(false)
+						     + "\n");
+
+	      buffer.append(output);
+	      count++;
+	    }
       return buffer;
       }
 

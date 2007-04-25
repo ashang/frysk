@@ -1,3 +1,11 @@
+2007-04-25  Nurdin Premji  <npremji@redhat.com>
+
+	* Frame.java (getAddress): Added.
+	(toPrint): Added.
+	* StackAccessors.java (getProcName): Added logging message.
+	* StackFactory.java (generateTaskStackTrace): Added boolean switch between
+	old and new bindings.
+
 2007-04-25  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (detachProc): Removes all observers and

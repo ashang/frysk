@@ -254,6 +254,7 @@ public class StackAccessors
     }
     ExecuteGetProcName executer = new ExecuteGetProcName(addr);
     Server.request(executer);
+    logger.log(Level.FINE, "exiting getProcName, returning: {0}\n", executer.procName);
     return executer.procName;
   }
 

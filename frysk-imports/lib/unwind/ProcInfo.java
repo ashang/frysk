@@ -48,7 +48,12 @@ public class ProcInfo
   
   int error;
   
-  native long getStartIP();
+  public int getError()
+  {
+    return error;
+  }
+  
+  public native long getStartIP();
   native long getEndIP();
   native long getLSDA();
   native long getHandler();

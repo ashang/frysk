@@ -1,5 +1,11 @@
 2007-04-25  Nurdin Premji  <npremji@redhat.com>
 
+	* ProcInfo.java (getError): Added.
+	(getStartIP): Made public.
+	* ProcName.java (getError): Added.
+	* cni/UnwindH.hxx (get_proc_name): Added code to detect empty string buffer.
+	Fixes unw_get_proc_info crashing bug.
+
 	* AddressSpace.java (getUnwinder): Added.
 	* Cursor.java (getProcInfo): Added.
 	(unwind): Cleaned up logging info.

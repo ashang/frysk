@@ -41,6 +41,7 @@ package frysk.rt;
 
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
+import lib.unwind.ProcName;
 
 public class Frame
 {  
@@ -78,5 +79,27 @@ public class Frame
   public ProcInfo getProcInfo()
   {
 	  return cursor.getProcInfo();
+  }
+  
+  public long getAddress()
+  {
+    ProcInfo myInfo = getProcInfo();
+    ProcName myName = cursor.getProcName(0);
+    
+    if (myInfo.getError() != 0 || myName.getError() != 0)
+      	return 0;
+    
+    return myInfo.getStartIP() + myName.address;
+  }
+  
+  public String toPrint(int maxNameSize)
+  {
+    ProcInfo myInfo = getProcInfo();
+    ProcName myName = cursor.getProcName(maxNameSize);
+    
+    if (myInfo.getError() != 0 || myName.getError() != 0)
+      return "";
+    return "0x" + Long.toHexString(myInfo.getStartIP() + myName.address) 
+    + " in " + myName.name;
   }
 }

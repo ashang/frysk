@@ -1,5 +1,7 @@
 2007-04-25  Nurdin Premji  <npremji@redhat.com>
 
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Cleaned up logging.
+
 	* include/libunwind-common.h.in (unw_get_unwind_table): Added.
 	* src/elfxx.h (elf_map_image): map image using MAP_32BIT to avoid address
 	truncation issues in cross-platform unwinding.
