@@ -747,7 +747,7 @@ public class SourceWindow
 	resensitize();
   }
   
-  protected void removeProc ()
+  protected void removeProc (boolean kill)
   {
 	int oldSize = this.numProcs;
 	--this.numProcs;
@@ -758,7 +758,7 @@ public class SourceWindow
 	Proc[] newSwProc = new Proc[numProcs];
 	
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	SteppingEngine.detachProc(this.swProc[this.current]);
+	SteppingEngine.detachProc(this.swProc[this.current], kill);
 	
 	int j = 0;
 	for (int i = 0; i < oldSize; i++)
@@ -2137,35 +2137,35 @@ public class SourceWindow
   private void menuEvent (MouseEvent event)
   {
     Menu m = new Menu();
-    MenuItem detachItem = new MenuItem("Detach process from Frysk", false);
+    MenuItem detachItem = new MenuItem("Detach process " + this.swProc[this.current].getPid() + " from Frysk", false);
     m.append(detachItem);
     detachItem.setSensitive(true);
     detachItem.addListener(new MenuItemListener()
     {
       public void menuItemEvent (MenuItemEvent arg0)
       {
-        detachProc();
+        detachProc(false);
       }
     });
     
-//    MenuItem killItem = new MenuItem("Kill process", false);
-//    m.append(killItem);
-//    killItem.setSensitive(true);
-//    killItem.addListener(new MenuItemListener()
-//    {
-//      public void menuItemEvent (MenuItemEvent arg0)
-//      {
-//        killProc();
-//      }
-//    });
+    MenuItem killItem = new MenuItem("Kill process " + this.swProc[this.current].getPid(), false);
+    m.append(killItem);
+    killItem.setSensitive(true);
+    killItem.addListener(new MenuItemListener()
+    {
+      public void menuItemEvent (MenuItemEvent arg0)
+      {
+        detachProc(true);
+      }
+    });
     
     m.showAll();
     m.popup();
   }
   
-  private void detachProc ()
+  private void detachProc (boolean kill)
   {
-    this.removeProc();
+    this.removeProc(kill);
     
     if (this.swProc.length == 0)
       {
@@ -2182,11 +2182,6 @@ public class SourceWindow
     else
 	lock.update(null, new Object());
   }
-  
-//  private void killProc ()
-//  {
-//    
-//  }
   
   private void removeTags ()
   {
@@ -2952,7 +2947,7 @@ public class SourceWindow
       
       if (tasks.contains(t) && tasks.size() == 1)
 	{
-	  removeProc();
+	  removeProc(false);
 	  SW_add = false;
 	  lock.update(null, new Object());
 	}

@@ -9,6 +9,12 @@
 	(detachProc): Detaches Procs from Frysk, cleans up the window if
 	no more processes are being observed.
 
+	* SourceWindow.java (removeProc): Now takes a boolean parameter.
+	(menuEvent): Append PIDs to the shown menu. Calls detachProc() with
+	a boolean, determining whether or not the Proc is killed after detach.
+	Added another menu option for allowing Proc to be killed. Fixes #4421.
+	(detachProc): Now takes a boolean parameter.
+
 2007-04-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Claen up some fo the code for the
