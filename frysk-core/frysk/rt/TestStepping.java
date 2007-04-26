@@ -97,6 +97,8 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionCall ()
   {
+    if (brokenXXX(4431))
+      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -130,6 +132,8 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementPass ()
   {
+    if (brokenXXX(4431))
+      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -164,6 +168,8 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementFail ()
   {
+    if (brokenXXX(4431))
+      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -198,6 +204,8 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionReturn ()
   {
+    if (brokenXXX(4431))
+      return;
     if (brokenPpcXXX (3277))
       return;
     

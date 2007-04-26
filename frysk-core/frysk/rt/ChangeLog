@@ -1,3 +1,17 @@
+2007-04-26  Mike Cvet  <mcvet@redhat.com>
+	
+	* TestStackBacktrace.java: Fixed up to use SteppingEngine. Removed
+	old and unnecessary code. Properly implemented new RT objects.
+	Addressed #3815, #3743, #3744.
+	(firstTestBacktraceAssertions): Added.
+	(TaskCreatedObserver): Removed.
+	(testBacktrace): Marked broken for #4431.
+	(testThreadedBacktrace): Ditto.
+	* TestStepping.java (testLineStepFunctionCall): Marked broken for #4431.
+	(testLineStepIfStatementPass): Ditto.
+	(testLineStepIfStatementFail): Ditto.
+	(testLineStepFunctionReturn): Ditto.
+
 2007-04-25  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java (getAddress): Added.
