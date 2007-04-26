@@ -1,3 +1,10 @@
+Version 0.127:
+
+libdw: new function dwarf_getsrcdirs
+
+libdwfl: new functions dwfl_module_addrsym, dwfl_report_begin_add,
+	 dwfl_module_address_section
+
 Version 0.126:
 
 new program: ar

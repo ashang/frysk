@@ -1,5 +1,5 @@
-/* Find debugging and symbol information for a module in libdwfl.
-   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
+/* Find include directories in source file information.
+   Copyright (C) 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -47,11 +47,23 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#include "libdwflP.h"
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-const char *
-dwfl_module_addrname (Dwfl_Module *mod, GElf_Addr addr)
+#include "libdwP.h"
+
+
+int
+dwarf_getsrcdirs (files, result, ndirs)
+     Dwarf_Files *files;
+     const char *const **result;
+     size_t *ndirs;
 {
-  GElf_Sym sym;
-  return INTUSE(dwfl_module_addrsym) (mod, addr, &sym, NULL);
+  if (files == NULL)
+    return -1;
+
+  *result = (void *) &files->info[files->nfiles];
+  *ndirs = files->ndirs;
+  return 0;
 }

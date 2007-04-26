@@ -1026,9 +1026,9 @@ goto find_rule; \
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 1 "../../../redhat/stock-elfutils/src/ldlex.l"
 #define INITIAL 0
-#line 2 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 2 "../../../redhat/stock-elfutils/src/ldlex.l"
 /* Copyright (C) 2001, 2002, 2003, 2004, 2005 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
@@ -1264,7 +1264,7 @@ YY_DECL
 	register char *yy_cp = NULL, *yy_bp = NULL;
 	register int yy_act;
 
-#line 96 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 96 "../../../redhat/stock-elfutils/src/ldlex.l"
 
 				if (unlikely (ld_scan_version_script))
 				  {
@@ -1369,7 +1369,7 @@ case 1:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 103 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 103 "../../../redhat/stock-elfutils/src/ldlex.l"
 { BEGIN (handle_ifdef ()); }
 	YY_BREAK
 case 2:
@@ -1377,7 +1377,7 @@ case 2:
 yy_c_buf_p = yy_cp = yy_bp + 5;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 104 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 104 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (true);
 				  push_state (skip_to_endif);
 				  BEGIN (IGNORE); }
@@ -1387,7 +1387,7 @@ case 3:
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 107 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 107 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (false);
 				  push_state (skip_to_endif);
 				  BEGIN (IGNORE); }
@@ -1397,7 +1397,7 @@ case 4:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 110 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 110 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (true) ; }
 	YY_BREAK
 case 5:
@@ -1405,7 +1405,7 @@ case 5:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 112 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 112 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (false);
 				  push_state (skip_to_endif); }
 	YY_BREAK
@@ -1414,7 +1414,7 @@ case 6:
 yy_c_buf_p = yy_cp = yy_bp + 5;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 114 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 114 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (true);
 				  assert (prepdepth > 0);
 				  if (prepstate[prepdepth - 1] == skip_if)
@@ -1430,7 +1430,7 @@ case 7:
 yy_c_buf_p = yy_cp = yy_bp + 8;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 123 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 123 "../../../redhat/stock-elfutils/src/ldlex.l"
 { assert (prepdepth > 0);
 				  if (prepstate[prepdepth - 1] == skip_if)
 				    {
@@ -1445,113 +1445,113 @@ case 8:
 yy_c_buf_p = yy_cp = yy_bp + 6;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 131 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 131 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_to_eol (true);
 				  BEGIN (pop_state ()); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 133 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 133 "../../../redhat/stock-elfutils/src/ldlex.l"
 { /* nothing */ }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 136 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 136 "../../../redhat/stock-elfutils/src/ldlex.l"
 { eat_comment (); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 138 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 138 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kALIGN; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 139 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 139 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kAS_NEEDED; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 140 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 140 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kENTRY; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 141 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 141 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kEXCLUDE_FILE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 142 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 142 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kGLOBAL; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 143 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 143 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kGROUP; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 144 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 144 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kINPUT; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 145 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 145 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kINTERP; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 146 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 146 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kKEEP; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 147 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 147 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kLOCAL; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 148 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 148 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kOUTPUT_FORMAT; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 149 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 149 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kPAGESIZE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 150 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 150 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kPROVIDE; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 151 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 151 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kSEARCH_DIR; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 152 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 152 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kSEGMENT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 153 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 153 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kSIZEOF_HEADERS; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 154 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 154 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kSORT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 155 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 155 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return kVERSION; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 157 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 157 "../../../redhat/stock-elfutils/src/ldlex.l"
 { int cnt = 1 ;
 				  ldlval.num = 0;
 				  while (cnt < yyleng - 1)
@@ -1560,82 +1560,82 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 163 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 163 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '{'; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 164 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 164 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '}'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 165 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 165 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '('; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 166 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 166 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return ')'; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 167 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 167 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return ':'; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 168 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 168 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return ';'; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 169 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 169 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '='; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 170 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 170 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.op = exp_plus; return kADD_OP; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 171 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 171 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.op = exp_minus; return kADD_OP; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 172 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 172 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '*'; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 173 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 173 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.op = exp_div; return kMUL_OP; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 174 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 174 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.op = exp_mod; return kMUL_OP; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 175 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 175 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '&'; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 176 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 176 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return '|'; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 178 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 178 "../../../redhat/stock-elfutils/src/ldlex.l"
 { return ','; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 180 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 180 "../../../redhat/stock-elfutils/src/ldlex.l"
 { char *endp;
 				  ldlval.num = strtoumax (yytext, &endp, 0);
 				  if (*endp != '\0')
@@ -1652,31 +1652,31 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 194 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 194 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.str = obstack_strndup (&ld_state.smem,
 								yytext, yyleng);
 				  return kID; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 198 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 198 "../../../redhat/stock-elfutils/src/ldlex.l"
 { ldlval.str = obstack_strndup (&ld_state.smem,
 								yytext, yyleng);
 				  return kFILENAME; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 202 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 202 "../../../redhat/stock-elfutils/src/ldlex.l"
 { /* IGNORE */ }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 204 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 204 "../../../redhat/stock-elfutils/src/ldlex.l"
 { invalid_char (*yytext); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 206 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 206 "../../../redhat/stock-elfutils/src/ldlex.l"
 ECHO;
 	YY_BREAK
 #line 1683 "ldlex.c"
@@ -2562,7 +2562,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 206 "/home/drepper/devel/elfutils/src/ldlex.l"
+#line 206 "../../../redhat/stock-elfutils/src/ldlex.l"
 
 
 static void

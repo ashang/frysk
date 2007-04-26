@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-05 14:32-0800\n"
+"POT-Creation-Date: 2007-04-19 09:48-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -357,7 +357,7 @@ msgstr ""
 #: src/nm.c:728 src/nm.c:973 src/readelf.c:676 src/readelf.c:815
 #: src/readelf.c:956 src/readelf.c:1138 src/readelf.c:1346 src/readelf.c:1500
 #: src/readelf.c:1667 src/readelf.c:1921 src/readelf.c:1987 src/readelf.c:2065
-#: src/readelf.c:2560 src/readelf.c:2596 src/readelf.c:4947 src/size.c:418
+#: src/readelf.c:2560 src/readelf.c:2596 src/readelf.c:4859 src/size.c:418
 #: src/size.c:492 src/strip.c:480
 #, c-format
 msgid "cannot get section header string table index"
@@ -1172,8 +1172,8 @@ msgstr ""
 msgid "cannot get .debug_ranges content: %s"
 msgstr ""
 
-#: src/readelf.c:3713 src/readelf.c:4190 src/readelf.c:4615 src/readelf.c:4705
-#: src/readelf.c:4877
+#: src/readelf.c:3713 src/readelf.c:4102 src/readelf.c:4527 src/readelf.c:4617
+#: src/readelf.c:4789
 #, c-format
 msgid ""
 "\n"
@@ -1226,34 +1226,34 @@ msgstr ""
 msgid "cannot get tag of DIE at offset %<PRIu64> in section '%s': %s"
 msgstr ""
 
-#: src/readelf.c:4161
+#: src/readelf.c:4073
 #, c-format
 msgid "cannot get next DIE: %s\n"
 msgstr ""
 
-#: src/readelf.c:4168
+#: src/readelf.c:4080
 #, c-format
 msgid "cannot get next DIE: %s"
 msgstr ""
 
-#: src/readelf.c:4202
+#: src/readelf.c:4114
 #, c-format
 msgid "cannot get line data section data: %s"
 msgstr ""
 
-#: src/readelf.c:4215
+#: src/readelf.c:4127
 #, c-format
 msgid ""
 "\n"
 "Table at offset %Zu:\n"
 msgstr ""
 
-#: src/readelf.c:4224
+#: src/readelf.c:4136
 #, c-format
 msgid "invalid data in section [%zu] '%s'"
 msgstr ""
 
-#: src/readelf.c:4267
+#: src/readelf.c:4179
 #, c-format
 msgid ""
 "\n"
@@ -1269,139 +1269,139 @@ msgid ""
 "Opcodes:\n"
 msgstr ""
 
-#: src/readelf.c:4293
+#: src/readelf.c:4205
 #, c-format
 msgid "  [%*<PRIuFAST8>]  %hhu argument\n"
 msgid_plural "  [%*<PRIuFAST8>]  %hhu arguments\n"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:4301
+#: src/readelf.c:4213
 msgid ""
 "\n"
 "Directory table:"
 msgstr ""
 
-#: src/readelf.c:4317
+#: src/readelf.c:4229
 msgid ""
 "\n"
 "File name table:\n"
 " Entry Dir   Time      Size      Name"
 msgstr ""
 
-#: src/readelf.c:4346
+#: src/readelf.c:4258
 msgid ""
 "\n"
 "Line number statements:"
 msgstr ""
 
-#: src/readelf.c:4406
+#: src/readelf.c:4318
 #, c-format
 msgid " special opcode %u: address+%u = %#<PRIx64>, line%+d = %zu\n"
 msgstr ""
 
-#: src/readelf.c:4426
+#: src/readelf.c:4338
 #, c-format
 msgid " extended opcode %u: "
 msgstr ""
 
-#: src/readelf.c:4431
+#: src/readelf.c:4343
 msgid "end of sequence"
 msgstr ""
 
-#: src/readelf.c:4444
+#: src/readelf.c:4356
 #, c-format
 msgid "set address to %#<PRIx64>\n"
 msgstr ""
 
-#: src/readelf.c:4464
+#: src/readelf.c:4376
 #, c-format
 msgid "define new file: dir=%u, mtime=%<PRIu64>, length=%<PRIu64>, name=%s\n"
 msgstr ""
 
-#: src/readelf.c:4473
+#: src/readelf.c:4385
 msgid "unknown opcode"
 msgstr ""
 
-#: src/readelf.c:4485
+#: src/readelf.c:4397
 msgid " copy"
 msgstr ""
 
-#: src/readelf.c:4493
+#: src/readelf.c:4405
 #, c-format
 msgid " advance address by %u to %#<PRIx64>\n"
 msgstr ""
 
-#: src/readelf.c:4503
+#: src/readelf.c:4415
 #, c-format
 msgid " advance line by constant %d to %<PRId64>\n"
 msgstr ""
 
-#: src/readelf.c:4511
+#: src/readelf.c:4423
 #, c-format
 msgid " set file to %<PRIu64>\n"
 msgstr ""
 
-#: src/readelf.c:4521
+#: src/readelf.c:4433
 #, c-format
 msgid " set column to %<PRIu64>\n"
 msgstr ""
 
-#: src/readelf.c:4528
+#: src/readelf.c:4440
 #, c-format
 msgid " set '%s' to %<PRIuFAST8>\n"
 msgstr ""
 
-#: src/readelf.c:4534
+#: src/readelf.c:4446
 msgid " set basic block flag"
 msgstr ""
 
-#: src/readelf.c:4542
+#: src/readelf.c:4454
 #, c-format
 msgid " advance address by constant %u to %#<PRIx64>\n"
 msgstr ""
 
-#: src/readelf.c:4555
+#: src/readelf.c:4467
 #, c-format
 msgid " advance address by fixed value %u to %#<PRIx64>\n"
 msgstr ""
 
-#: src/readelf.c:4562
+#: src/readelf.c:4474
 msgid " set prologue end flag"
 msgstr ""
 
-#: src/readelf.c:4567
+#: src/readelf.c:4479
 msgid " set epilogue begin flag"
 msgstr ""
 
-#: src/readelf.c:4576
+#: src/readelf.c:4488
 #, c-format
 msgid " unknown opcode with %<PRIu8> parameter:"
 msgid_plural " unknown opcode with %<PRIu8> parameters:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/readelf.c:4610
+#: src/readelf.c:4522
 #, c-format
 msgid "cannot get .debug_loc content: %s"
 msgstr ""
 
-#: src/readelf.c:4715
+#: src/readelf.c:4627
 #, c-format
 msgid "cannot get macro information section data: %s"
 msgstr ""
 
-#: src/readelf.c:4794
+#: src/readelf.c:4706
 #, c-format
 msgid "%*s*** non-terminated string at end of section"
 msgstr ""
 
-#: src/readelf.c:4862
+#: src/readelf.c:4774
 #, c-format
 msgid " [%5d] DIE offset: %6<PRId64>, CU DIE offset: %6<PRId64>, name: %s\n"
 msgstr ""
 
-#: src/readelf.c:4901
+#: src/readelf.c:4813
 #, c-format
 msgid ""
 "\n"
@@ -1409,33 +1409,33 @@ msgid ""
 " %*s  String\n"
 msgstr ""
 
-#: src/readelf.c:4914
+#: src/readelf.c:4826
 #, c-format
 msgid " *** error while reading strings: %s\n"
 msgstr ""
 
-#: src/readelf.c:4939
+#: src/readelf.c:4851
 #, c-format
 msgid "cannot get debug context descriptor: %s"
 msgstr ""
 
-#: src/readelf.c:5017
+#: src/readelf.c:4929
 #, c-format
 msgid ""
 "\n"
 "Note segment of %<PRId64> bytes at offset %#0<PRIx64>:\n"
 msgstr ""
 
-#: src/readelf.c:5024
+#: src/readelf.c:4936
 #, c-format
 msgid "cannot get content of note section: %s"
 msgstr ""
 
-#: src/readelf.c:5027
+#: src/readelf.c:4939
 msgid "  Owner          Data size  Type\n"
 msgstr ""
 
-#: src/readelf.c:5067
+#: src/readelf.c:4979
 #, c-format
 msgid "  %-13.*s  %9<PRId32>  %s\n"
 msgstr ""

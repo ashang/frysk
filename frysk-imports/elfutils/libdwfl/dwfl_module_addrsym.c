@@ -51,7 +51,7 @@
 
 const char *
 dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
-					  GElf_Sym *closest_sym, GElf_Word *shndxp)
+		     GElf_Sym *closest_sym, GElf_Word *shndxp)
 {
   int syments = INTUSE(dwfl_module_getsymtab) (mod);
   if (syments < 0)
@@ -108,18 +108,18 @@ dwfl_module_addrsym (Dwfl_Module *mod, GElf_Addr addr,
       const char *name = INTUSE(dwfl_module_getsym) (mod, i, &sym, &shndx);
       if (name != NULL && sym.st_value <= addr)
 	{
-		inline void closest (void)
-		{
+	  inline void closest (void)
+	    {
 	      *closest_sym = sym;
 	      closest_shndx = shndx;
 	      closest_name = name;
-		}
+	    }
 
 	  if (addr < sym.st_value + sym.st_size)
-		{
+	    {
 	      closest ();
 	      break;
-		}
+	    }
 
 	  /* Handwritten assembly symbols sometimes have no st_size.
 	     If no symbol with proper size includes the address, we'll
