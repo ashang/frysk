@@ -1136,6 +1136,15 @@ abstract class LinuxPtraceTaskState
 		task.proc.performTaskDetachCompleted (task);
 		return destroyed;
 	    }
+	    TaskState handleDisappearedEvent (Task task, Throwable w)
+	    {
+		// Woops, it disappeared before we were really detached,
+	        // pretend the detached happened anyway.
+		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
+		task.proc.remove (task);
+		task.proc.performTaskDetachCompleted (task);
+		return destroyed;
+	    }
 	    TaskState handleForkedEvent (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "{0} handleForkedEvent\n", task);
