@@ -2261,16 +2261,16 @@ public class SourceWindow
       }
     });
     
-    MenuItem killItem = new MenuItem("Kill process " + this.swProc[this.current].getPid(), false);
-    m.append(killItem);
-    killItem.setSensitive(true);
-    killItem.addListener(new MenuItemListener()
-    {
-      public void menuItemEvent (MenuItemEvent arg0)
-      {
-        detachProc(true);
-      }
-    });
+//    MenuItem killItem = new MenuItem("Kill process " + this.swProc[this.current].getPid(), false);
+//    m.append(killItem);
+//    killItem.setSensitive(true);
+//    killItem.addListener(new MenuItemListener()
+//    {
+//      public void menuItemEvent (MenuItemEvent arg0)
+//      {
+//        detachProc(true);
+//      }
+//    });
     
     m.showAll();
     m.popup();
