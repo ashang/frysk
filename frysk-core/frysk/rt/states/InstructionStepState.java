@@ -44,13 +44,20 @@ import frysk.rt.TaskStepEngine;
 
 public class InstructionStepState extends State
 {
-  public InstructionStepState (TaskStepEngine tse, Task task)
+  public InstructionStepState (Task task)
   {
-    this.tse = tse;
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * When the instruction observer from SteppingEngine returns, a single
+   * step has been performed. All that is left to do is to reset the State for 
+   * this Task back to a StoppedState.
+   * 
+   * @param tse	The TaskStepEngine for this State.
+   * @return new StoppedState
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     return new StoppedState(this.task);
   }

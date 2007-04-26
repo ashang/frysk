@@ -44,6 +44,7 @@ import frysk.proc.Task;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 
 public class StepOverTestState extends State
 {
@@ -52,9 +53,21 @@ public class StepOverTestState extends State
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * Begins the process of stepping-over a line for a Task. Continues to step
+   * instructions until the line changes. If, when that happens, the Task is still
+   * in the same frame as before, simply stops the stepping and treats the
+   * operation as a line step. Otherwise, sets a breakpoint and runs the
+   * Task until it returns.
+   * 
+   * @param tse 	The parent TaskStepEngine
+   * @return new StoppedState 	If there was no frame change
+   * @return new StepOverState 	If the frame changed with the line
+   * @return this 	If the line has not changed yet
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
-    DwflLine line = this.tse.getDwflLine();
+    DwflLine line = tse.getDwflLine();
 
     int lineNum;
 
@@ -63,17 +76,16 @@ public class StepOverTestState extends State
     else
       lineNum = line.getLineNum();
     
-    int prev = this.tse.getLine();	
+    int prev = tse.getLine();	
 
     if (lineNum != prev)
       {
-	this.tse.setLine(lineNum);
-	StackFrame newFrame = null;
-	newFrame = StackFactory.createStackFrame(task, 2);
+	tse.setLine(lineNum);
+	StackFrame newFrame = StackFactory.createStackFrame(task, 2);
 
 	/* The two frames are the same; treat this step-over as an instruction step. */
 	if (newFrame.getFrameIdentifier().equals(
-						 this.tse.getFrameIdentifier()))
+						 tse.getFrameIdentifier()))
 	  {
 	    return new StoppedState(this.task);
 	  }

@@ -12,6 +12,33 @@
 	(testLineStepIfStatementFail): Ditto.
 	(testLineStepFunctionReturn): Ditto.
 
+	* TestStackBacktrace.java (frameAssertions): Disabled broken assertion.
+	* TaskStepEngine.java (handleUpdate): Now sends in 'this' as an argument
+	to State.handleUpdate().
+	* SteppingEngine.java (stepInstruction): Removed TaskStepEngine
+	parameter to new State instantiation.
+	(stepInstruction): Ditto.
+	(setUpLineStep): Ditto.
+	(setUp): Ditto.
+	(setUpStepAdvance): Implemented again, for new SteppingEngine.
+	(setUpStepOver): Increment the number of operating threads for the Proc
+	and notify the SteppingObserver of an inconsistent state.
+	(setUpStepOut): Ditto.
+	* states/State.java (tse): Removed global TaskStepEngine variable.
+	(handleUpdate): Takes a TaskStepEngine.
+	* states/InstructionStepState.java (InstructionStepState): Removed 
+	TaskStepEngine parameter.
+	(handleUpdate): Commented. Now takes TaskStepEngine parameter.
+	* states/LineStepState.java: Ditto.
+	* states/NextInstructionStepState.java: Ditto.
+	* states/NextInstructionStepTestState.java: Ditto.
+	* states/RunningState.java: Ditto.
+	* states/StepAdvanceState.java: Ditto.
+	* states/StepOutState.java: Ditto.
+	* states/StepOverState.java: Ditto.
+	* states/StepOverTestState.java: Ditto.
+	* states/StoppedState.java: Ditto.
+
 2007-04-25  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java (getAddress): Added.

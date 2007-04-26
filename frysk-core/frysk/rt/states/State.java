@@ -50,16 +50,13 @@ public abstract class State
   /* The Task that this State belongs to */
   Task task = null;
   
-  /* The TaskStepEngine parent of this State */
-  TaskStepEngine tse = null;
-  
   /**
    * Handles updates from the SteppingEngine.SteppingObserver. Performs
    * state transitions if necessary.
    * 
    * @return state 	The State of task after the SteppingObserver update
    */
-  public abstract State handleUpdate ();
+  public abstract State handleUpdate (TaskStepEngine tse);
   
   /**
    * Returns whether or not this State represents a stopped Task.

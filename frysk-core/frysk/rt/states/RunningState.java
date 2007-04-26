@@ -40,6 +40,7 @@
 package frysk.rt.states;
 
 import frysk.proc.Task;
+import frysk.rt.TaskStepEngine;
 
 public class RunningState extends State
 {
@@ -48,7 +49,14 @@ public class RunningState extends State
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * The only state change available from a RunningState is to a 
+   * StoppedState.
+   * 
+   * @param tse	The parent TaskStepEngine
+   * @return new StoppedState
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     return new StoppedState(this.task);
   }

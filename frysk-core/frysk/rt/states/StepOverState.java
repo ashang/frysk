@@ -41,6 +41,7 @@ package frysk.rt.states;
 
 import frysk.proc.Task;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 
 public class StepOverState extends State
 {
@@ -49,7 +50,14 @@ public class StepOverState extends State
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * When the step-over operation returns from the breakpoint, this deletes
+   * the breakpoint and returns a new StoppedState.
+   * 
+   * @param tse	The parent TaskStepEngine
+   * @return new StoppedState	The new StoppedState for this Task
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     SteppingEngine.removeBreakpoint(this.task);
     return new StoppedState(this.task);

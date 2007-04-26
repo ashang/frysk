@@ -43,6 +43,7 @@ import frysk.proc.Task;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 
 public class NextInstructionStepTestState extends State
 {
@@ -51,13 +52,23 @@ public class NextInstructionStepTestState extends State
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * Checks to see if the new current frame's FrameIdentifier is equivalent
+   * to the old frame's FrameIdentifier. If so, there has been no movement
+   * into a new frame and the operation is treated as an instruction step.
+   * Otherwise, the breakpoint is set and the instruction step-out begins.
+   * 
+   * @param tse	the Parent TaskStepEngine
+   * @return new StoppedState	No frame change has happened
+   * @return new NextInstructionStepState	The current frame has changed
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     StackFrame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
-    if (newFrame.getFrameIdentifier().equals(this.tse.getFrameIdentifier()))
+    if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier()))
       {
         return new StoppedState(this.task);
       }

@@ -105,7 +105,7 @@ public class TaskStepEngine
   public boolean handleUpdate ()
   {
     /* Perform the next tentative state transition */
-    State s = this.state.handleUpdate();
+    State s = this.state.handleUpdate(this);
     if (s.isStopped())
       {
 	this.state = s;

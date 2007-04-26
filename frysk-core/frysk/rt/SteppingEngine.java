@@ -218,7 +218,7 @@ public class SteppingEngine
       return false;
 
     steppingObserver.notifyNotBlocked();
-    tse.setState(new InstructionStepState(tse, task));
+    tse.setState(new InstructionStepState(task));
     contextMap.put (task.getProc(), new Integer(1));
     
     task.requestUnblock(steppingObserver);
@@ -234,23 +234,25 @@ public class SteppingEngine
    */
   public static boolean stepInstruction (LinkedList tasks)
   {
-    /* Check to make sure these threads are not already involved with another 
-     * operation before asking them to step an instruction. */
+    /*
+         * Check to make sure these threads are not already involved with
+         * another operation before asking them to step an instruction.
+         */
     if (isProcRunning(tasks))
       return false;
 
     steppingObserver.notifyNotBlocked();
-    
+
     Task t = (Task) tasks.getFirst();
-    contextMap.put (t.getProc(), new Integer(tasks.size()));
-    
+    contextMap.put(t.getProc(), new Integer(tasks.size()));
+
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
-		t = (Task) iter.next();
-		TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
-		tse.setState(new InstructionStepState(tse, t));
-		t.requestUnblock(steppingObserver);
+	t = (Task) iter.next();
+	TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
+	tse.setState(new InstructionStepState(t));
+	t.requestUnblock(steppingObserver);
       }
 
     return true;
@@ -269,6 +271,8 @@ public class SteppingEngine
      * operation before asking them to step an instruction. */
     if (isTaskRunning(task))
       return false;
+    
+    steppingObserver.notifyNotBlocked();
 
     contextMap.put(task.getProc(), new Integer(1));
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
@@ -281,7 +285,7 @@ public class SteppingEngine
 
 	if (line == null)
 	  {
-	    tse.setState(new InstructionStepState(tse, task));
+	    tse.setState(new InstructionStepState(task));
 	    task.requestUnblock(steppingObserver);
 	    return true;
 	  }
@@ -291,7 +295,7 @@ public class SteppingEngine
 	  }
       }
 
-    tse.setState(new LineStepState(tse, task));
+    tse.setState(new LineStepState(task));
     task.requestUnblock(steppingObserver);
     return true;
   }
@@ -348,14 +352,14 @@ public class SteppingEngine
              * 'line stepping' since there are no 'lines' to step. */
             if (line == null)
               {
-                tse.setState(new InstructionStepState(tse, t));
+                tse.setState(new InstructionStepState(t));
                 continue;
               }
             else
               tse.setLine(line.getLineNum());
           }
         
-        tse.setState(new LineStepState(tse, t));
+        tse.setState(new LineStepState(t));
       }
     
     contextMap.put(t.getProc(), new Integer(tasks.size()));
@@ -370,16 +374,32 @@ public class SteppingEngine
   
   public static void setUpStepAdvance (Task task, StackFrame frame)
   {
+    /* There's nowhere to advance to - this is already the innermost frame */
+    if (frame.getInner() == null)
+      {
+        setUpLineStep(task);
+        return;
+      }
     
+    taskStateMap.put(task, new StepAdvanceState(task));
+    
+    int i = ((Integer) contextMap.get(task.getProc())).intValue();
+    contextMap.put(task.getProc(), new Integer(++i));
+    
+  /* Set a breakpoint on the current address of the given frame, which is
+   * the return address of its inner frame(s). */
+  breakpoint = new SteppingBreakpoint(frame.getOuter().getAddress());
+  task.requestAddCodeObserver(breakpoint, frame.getOuter().getAddress());
   }
   
   public static void setUpStepNextInstruction (Task task, StackFrame lastFrame)
   {
+    steppingObserver.notifyNotBlocked();
+    
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
     tse.setState(new NextInstructionStepTestState(task));
+    
     frameIdentifier = lastFrame.getFrameIdentifier();
-
-    steppingObserver.notifyNotBlocked();
     task.requestUnblock(steppingObserver);
   }
   
@@ -423,23 +443,23 @@ public class SteppingEngine
 //  FrameIdentifier outerFrameIdentifier;
   
   /**
-   * Sets up for step-over.
+   * Sets up the given Task for a step-over operation.
    * 
-   * XXX: Not finished yet. Needs to work with multiple threads.
-   * 
-   * @param tasks   The list of Tasks to be stepped-over
-   * @param lastFrame
+   * @param task   The Task to be stepped-over
+   * @param lastFrame	The current innermost StackFrame of the given Task
    */
   public static void setUpStepOver (Task task, StackFrame lastFrame)
   {
     frameIdentifier = lastFrame.getFrameIdentifier();
-    
     steppingObserver.notifyNotBlocked();
-//    stateMap.put(task, new StepOverTestState(task));
+    
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
     tse.setState(new StepOverTestState(task));
+    
+    int i = ((Integer) contextMap.get(task.getProc())).intValue();
+    contextMap.put(task.getProc(), new Integer(++i));
+    
     task.requestUnblock(steppingObserver);
-    //XXX: Fixme
   }
   
   public static void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
@@ -500,6 +520,10 @@ public class SteppingEngine
     
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
     tse.setState(new StepOutState(task));
+    
+    int i = ((Integer) contextMap.get(task.getProc())).intValue();
+    contextMap.put(task.getProc(), new Integer(++i));
+    
     breakpoint = new SteppingBreakpoint(address);
     task.requestAddCodeObserver(breakpoint, address);
   }
@@ -788,10 +812,10 @@ public class SteppingEngine
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
-		Task t = (Task) iter.next();
-		tse = (TaskStepEngine) taskStateMap.get(t);
-		if (tse != null && ! tse.isStopped())
-		  return true;
+	Task t = (Task) iter.next();
+	tse = (TaskStepEngine) taskStateMap.get(t);
+	if (tse != null && ! tse.isStopped())
+	  return true;
       }
 
     return false;
@@ -1069,7 +1093,6 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-      
 //      System.err.println("SE.SO.updateEx: " + task + threadsList.size());
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 

@@ -46,30 +46,39 @@ import frysk.rt.TaskStepEngine;
 
 public class LineStepState extends State
 {
-  public LineStepState (TaskStepEngine tse, Task task)
+  public LineStepState (Task task)
   {
-    this.tse = tse;
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * Continues to unblock this task instruction-by-instruction until it has
+   * performed a line step.
+   * 
+   * @param tse	The parent TaskStepEngine
+   * @return new StoppedState	If the line step is complete
+   * @return this	If the line has not changed yet
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     int lineNum;
-    DwflLine line = this.tse.getDwflLine();
+    DwflLine line = tse.getDwflLine();
     
     if (line == null) /* We're in no-debuginfo land */
       {
-	this.tse.setLine(0);
+	tse.setLine(0);
+	/* Returned a StoppedState because line-stepping has no meaning
+	 * when there is no debug information to relate the 'lines' to. */
         return new StoppedState(this.task);
       }
     else
       lineNum = line.getLineNum();
     
-    int prev = this.tse.getLine();
+    int prev = tse.getLine();
     
     if (lineNum != prev)
       {
-	this.tse.setLine(lineNum);
+	tse.setLine(lineNum);
         return new StoppedState(this.task);
       }
     else

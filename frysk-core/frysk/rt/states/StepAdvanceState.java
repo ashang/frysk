@@ -41,6 +41,7 @@ package frysk.rt.states;
 
 import frysk.proc.Task;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 
 public class StepAdvanceState extends State
 {
@@ -49,7 +50,13 @@ public class StepAdvanceState extends State
     this.task = task;
   }
   
-  public State handleUpdate ()
+  /**
+   * Removes the step-advance breakpoint and returns a StoppedState.
+   * 
+   * @param tse	The Parent TaskStepEngine
+   * @return new StoppedState
+   */
+  public State handleUpdate (TaskStepEngine tse)
   {
     SteppingEngine.removeBreakpoint(this.task);
     return new StoppedState(this.task);
