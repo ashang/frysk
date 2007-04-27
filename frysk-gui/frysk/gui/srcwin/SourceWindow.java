@@ -3026,21 +3026,24 @@ public class SourceWindow
 	  || newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
         SourceWindow.this.currentTask = newFrame.getTask();
 
-      if (SourceWindow.this.currentFrame != null
-          && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
-        {
-          DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
-          if (disWin != null && disWin.getClosed() == false)
-            disWin.resetTask(newFrame.getTask());
+      if (! SteppingEngine.isTaskRunning(newFrame.getTask()))
+	{
+	  if (SourceWindow.this.currentFrame != null
+	      && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
+	    {
+	      DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
+	      if (disWin != null && disWin.getClosed() == false)
+		disWin.resetTask(newFrame.getTask());
 
-          MemoryWindow memWin = MemoryWindowFactory.memWin;
-          if (memWin != null && memWin.getClosed() == false)
-            memWin.resetTask(newFrame.getTask());
+	      MemoryWindow memWin = MemoryWindowFactory.memWin;
+	      if (memWin != null && memWin.getClosed() == false)
+		memWin.resetTask(newFrame.getTask());
 
-          RegisterWindow regWin = RegisterWindowFactory.regWin;
-          if (regWin != null && regWin.getClosed() == false)
-            regWin.resetTask(newFrame.getTask());
-        }
+	      RegisterWindow regWin = RegisterWindowFactory.regWin;
+	      if (regWin != null && regWin.getClosed() == false)
+		regWin.resetTask(newFrame.getTask());
+	    }
+	}
 
       stackDown.setSensitive(true);
       stackUp.setSensitive(true);

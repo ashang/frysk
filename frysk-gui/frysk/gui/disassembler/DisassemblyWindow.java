@@ -283,8 +283,6 @@ public class DisassemblyWindow
 
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          DisassemblyWindow.this.refreshList();
       }
 
     });
@@ -317,6 +315,9 @@ public class DisassemblyWindow
     {
       public void spinEvent (SpinEvent arg0)
       {
+        if (refreshLock)
+          return;
+        
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
           handleFromSpin(fromSpin.getValue());
       }
@@ -326,6 +327,9 @@ public class DisassemblyWindow
     {
       public void spinEvent (SpinEvent arg0)
       {
+        if (refreshLock)
+          return;
+        
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
           handleToSpin(toSpin.getValue());
       }
@@ -337,11 +341,13 @@ public class DisassemblyWindow
       {
         if (arg0.getType() == EntryEvent.Type.CHANGED)
           {
+            if (refreshLock)
+              return;
+          
             String str = arg0.getText();
             try
             {
               double d = (double) Long.parseLong(str, 16);
-              //fromSpin.setValue(d);
               handleFromSpin(d);
             }
             catch (NumberFormatException nfe)
@@ -358,27 +364,29 @@ public class DisassemblyWindow
       {
         if (arg0.getType() == EntryEvent.Type.CHANGED)
           {
-            {
+            if (refreshLock)
+              return;
+            
               String str = arg0.getText();
               try
               {
                 double d = (double) Long.parseLong(str, 16);
-                //toSpin.setValue(d);
                 handleToSpin(d);
               }
               catch (NumberFormatException nfe)
               {
                 toBox.setText(Long.toHexString((long) lastKnownTo));
               }
-            }
           }
       }
     });
-
   }
+  
+  private boolean refreshLock = false;
   
   public void resetTask (Task task)
   {
+    this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
     this.diss = new Disassembler(myTask.getMemory());
@@ -388,13 +396,13 @@ public class DisassemblyWindow
     this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
-    this.model.clear();
     this.fromSpin.setValue((double) pc_inc);
     this.lastKnownFrom = pc_inc;
     // this.toSpin.setValue((double) end);
     this.pcEntryDec.setText("" + pc_inc);
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
     
+    this.model.clear();
     this.model.appendRow();
     this.lastPath = this.model.getFirstIter().getPath();
     for (long i = 1; i < this.numInstructions; i++)
@@ -404,6 +412,7 @@ public class DisassemblyWindow
       }
     
     refreshList();
+    this.refreshLock = false;
   }
 
   /*****************************************************************************
@@ -433,7 +442,6 @@ public class DisassemblyWindow
         this.model.appendRow();
         this.lastPath.next();
       }
-      //rowAppend(i, null);
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle(colNames[LOC]);
@@ -466,8 +474,9 @@ public class DisassemblyWindow
     this.refreshList();
   }
 
-  private void resetPCAndList ()
+  protected void resetPCAndList ()
   {
+    this.refreshLock = true;
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
     this.pcEntryDec.setText("" + pc_inc);
@@ -478,8 +487,7 @@ public class DisassemblyWindow
    
     this.model.clear();
     
-    this.model.appendRow();
-    this.lastPath = this.model.getFirstIter().getPath();
+    this.lastPath = this.model.appendRow().getPath();
     for (long i = 1; i < this.numInstructions; i++)
       {
         this.model.appendRow();
@@ -487,12 +495,13 @@ public class DisassemblyWindow
       }
     
     refreshList();
+    this.refreshLock = false;
   }
   
   /**
    * Grabs information out of the Disassembler and updates the display
    */
-  private void refreshList ()
+  private synchronized void refreshList ()
   {
     // If there's no task, no point in refreshing
     if (this.myTask == null)
@@ -504,7 +513,7 @@ public class DisassemblyWindow
       {
         instructionsList = diss.disassembleInstructions(
                                                         (long) this.lastKnownFrom,
-                                                        numInstructions);
+                                                        this.numInstructions);
       }
     catch (OpcodesException oe)
       {
@@ -515,19 +524,17 @@ public class DisassemblyWindow
     Instruction ins = (Instruction) li.next();
 
     // update values in the columns if one of them has been edited
-    ListStore model = (ListStore) this.disassemblerView.getModel();
-    TreeIter iter = model.getFirstIter();
-
-    while (iter != null)
+    TreeIter iter = this.model.getFirstIter();
+    
+    while (iter != null && this.model.isIterValid(iter))
       {
         if (ins != null)
           {
-            model.setValue(iter, (DataColumnString) cols[1],
+            this.model.setValue(iter, (DataColumnString) cols[1],
                            "<pc+" + (ins.address - this.pc) + ">: ");
-            model.setValue(iter, (DataColumnString) cols[LOC],
+            this.model.setValue(iter, (DataColumnString) cols[LOC],
                            "0x" + Long.toHexString(ins.address));
-            model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
-            model.setValue(iter, (DataColumnObject) cols[3], ins);
+            this.model.setValue(iter, (DataColumnString) cols[2], ins.instruction);
             
             this.pcOffset += ins.address;
             
@@ -542,12 +549,13 @@ public class DisassemblyWindow
               }
           }
         else
-          model.setValue(iter, (DataColumnString) cols[1], "");
+          this.model.setValue(iter, (DataColumnString) cols[1], "");
 
-        model.setValue(iter, (DataColumnObject) cols[OBJ], ins);
+        this.model.setValue(iter, (DataColumnObject) cols[OBJ], ins);
         
         iter = iter.getNextIter();
       }
+    
 
     for (int i = 0; i < DisassemblyWindow.colNames.length - 1; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
@@ -869,7 +877,6 @@ public class DisassemblyWindow
                 {
                   toggle = true;
                   resetPCAndList();
-                  //refreshList();
                   resensitize();
                 }
               });

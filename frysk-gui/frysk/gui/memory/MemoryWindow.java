@@ -378,8 +378,6 @@ public class MemoryWindow
 
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          MemoryWindow.this.refreshList();
       }
 
     });
@@ -426,6 +424,9 @@ public class MemoryWindow
     {
       public void spinEvent (SpinEvent arg0)
       {
+        if (refreshLock)
+          return;
+        
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
           handleFromSpin(fromSpin.getValue());
       }
@@ -435,6 +436,9 @@ public class MemoryWindow
     {
       public void spinEvent (SpinEvent arg0)
       {
+        if (refreshLock)
+          return;
+        
         if (arg0.getType() == SpinEvent.Type.VALUE_CHANGED)
           handleToSpin(toSpin.getValue());
       }
@@ -446,6 +450,9 @@ public class MemoryWindow
       {
         if (arg0.getType() == EntryEvent.Type.CHANGED)
           {
+            if (refreshLock)
+              return;
+            
             String str = arg0.getText();
             try
             {
@@ -467,7 +474,9 @@ public class MemoryWindow
       {
         if (arg0.getType() == EntryEvent.Type.CHANGED)
           {
-            {
+            if (refreshLock)
+              return;
+            
               String str = arg0.getText();
               try
               {
@@ -479,15 +488,17 @@ public class MemoryWindow
               {
                 toBox.setText(Long.toHexString((long) lastKnownTo));
               }
-            }
           }
       }
     });
     
   }
   
+  private boolean refreshLock = false;
+  
   public void resetTask (Task task)
   {
+    this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
     
@@ -504,7 +515,7 @@ public class MemoryWindow
     this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
     recalculate();
-
+    this.refreshLock = false;
   }
 
   /*****************************************************************************
@@ -533,6 +544,7 @@ public class MemoryWindow
   
   private void resetPCAndList ()
   {
+    this.refreshLock = true;
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
     this.pcEntryDec.setText("" + pc_inc);
@@ -547,18 +559,18 @@ public class MemoryWindow
     this.toSpin.setValue(this.lastKnownTo);
     
     this.model.clear();
-    
     for (long i = (long) lastKnownFrom; i < this.lastKnownTo + 1; i++)
       rowAppend(i, null);
     
     refreshList();
+    this.refreshLock = false;
   }
 
   /**
    * Refresh and update the display of addresses and values from what is 
    * re-calculated and turned into BigIntegers.
    */
-  private void refreshList ()
+  private synchronized void refreshList ()
   {
     // If there's no task, no point in refreshing
     if (this.myTask == null)
@@ -582,17 +594,16 @@ public class MemoryWindow
     Instruction ins = (Instruction) li.next();
 
     // update values in the columns if one of them has been edited
-    ListStore model = (ListStore) this.memoryView.getModel();
-    TreeIter iter = model.getFirstIter();
+    TreeIter iter = this.model.getFirstIter();
 
     while (iter != null)
       {
         BigInteger bi = new BigInteger(
-                                       (String) model.getValue(
+                                       (String) this.model.getValue(
                                                                iter,
                                                                (DataColumnObject) cols[OBJ]),
                                        10);
-        String addr = new String((String) model.getValue(
+        String addr = new String((String) this.model.getValue(
                                         iter, (DataColumnString) cols[LOC])).substring(2);
 
         byte[] b = bi.toByteArray();
@@ -623,10 +634,10 @@ public class MemoryWindow
           bin = padBytes(bin, false, diff);
 
         /* Little endian first */
-        model.setValue(iter, (DataColumnString) cols[1], bin);
-        model.setValue(iter, (DataColumnString) cols[3], oct);
-        model.setValue(iter, (DataColumnString) cols[5], dec);
-        model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+        this.model.setValue(iter, (DataColumnString) cols[1], bin);
+        this.model.setValue(iter, (DataColumnString) cols[3], oct);
+        this.model.setValue(iter, (DataColumnString) cols[5], dec);
+        this.model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
 
         /* Big endian second */
         String bin2 = switchEndianness(bin, true);
@@ -641,21 +652,21 @@ public class MemoryWindow
         else
           dec = bii.toString(10);
 
-        model.setValue(iter, (DataColumnString) cols[2], bin2);
-        model.setValue(iter, (DataColumnString) cols[4], oct);
-        model.setValue(iter, (DataColumnString) cols[6], dec);
-        model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
+        this.model.setValue(iter, (DataColumnString) cols[2], bin2);
+        this.model.setValue(iter, (DataColumnString) cols[4], oct);
+        this.model.setValue(iter, (DataColumnString) cols[6], dec);
+        this.model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
 
         if (ins != null && Long.toHexString(ins.address).equals(addr))
           {
-            model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
+            this.model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
             if (li.hasNext())
               ins = (Instruction) li.next();
             else
               ins = null;
           }
         else
-          model.setValue(iter, (DataColumnString) cols[9], "");
+          this.model.setValue(iter, (DataColumnString) cols[9], "");
 
         iter = iter.getNextIter();
       }
@@ -1017,7 +1028,6 @@ public class MemoryWindow
                 public void run ()
                 {
                   toggle = true;
-                  //refreshList();
                   resetPCAndList();
                   resensitize();
                 }

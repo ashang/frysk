@@ -1,3 +1,27 @@
+2007-04-27  Mike Cvet  <mcvet@redhat.com>
+	
+	* disassembler/DisassemblyWindow.java (refreshLock): Added. Prevents
+	event threads firing refresh requests simultaneously. Fixes #4433.
+	(formatDialog.lifeCycleEvent): Removed refresh call.
+	(fromSpin.spinEvent): Check refreshLock before refreshing.
+	(toSpin.spinEvent): Ditto.
+	(fromBox.entryEvent): Ditto.
+	(toBox.entryEvent): Ditto.
+	(resetTask): Set and unset refreshLock.
+	(resetPCAndList): Ditto.
+	(refreshList): Synchronized. Now uses global ListStore rather than
+	grabbing the Store off of the View each time. Removed a redundant
+	setValue() call.
+	* memory/MemoryWindow.java (refreshLock): Added. Same as above.
+	(formatDialog.lifeCycleEvent): Ditto.
+	(fromSpin.spinEvent): Ditto.
+	(toSpin.spinEvent): Ditto.
+	(fromBox.entryEvent): Ditto.
+	(toBox.entryEvent): Ditto.
+	(resetTask): Ditto.
+	(resetPCAndList): Ditto.
+	(refreshList): Synchronized, uses global ListStore.
+
 2007-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/Session.java: used getNiceExecutablePath in place
