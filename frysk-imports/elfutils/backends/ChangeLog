@@ -3,6 +3,11 @@
 	* Makefile.am: Work around a bug in GNU make -jN by mentioning *.map.
 	* Makefile.am: Mention the *.o files.
 
+2007-04-01  Roland McGrath  <roland@redhat.com>
+
+	* x86_64_regs.c (x86_64_register_info): Add more registers from newer
+	ABI spec.
+
 2007-01-11  Roland McGrath  <roland@redhat.com>
 
 	* ia64_symbol.c (ia64_machine_section_flag_check): New function.

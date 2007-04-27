@@ -1,5 +1,5 @@
-/* Recover relocatibility for addresses computed from debug information.
-   Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
+/* Find include directories in source file information.
+   Copyright (C) 2007 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -47,72 +47,23 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#include "libdwflP.h"
-#include <unistd.h>
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* Since dwfl_report_elf lays out the sections already, this will only be
-   called when the section headers of the debuginfo file are being
-   consulted instead, or for a section located at zero.  With binutils
-   strip-to-debug, the symbol table is in the debuginfo file and relocation
-   looks there.  */
+#include "libdwP.h"
+
+
 int
-dwfl_offline_section_address (Dwfl_Module *mod,
-			      void **userdata __attribute__ ((unused)),
-			      const char *modname __attribute__ ((unused)),
-			      Dwarf_Addr base __attribute__ ((unused)),
-			      const char *secname __attribute__ ((unused)),
-			      Elf32_Word shndx,
-			      const GElf_Shdr *shdr __attribute__ ((unused)),
-			      Dwarf_Addr *addr)
+dwarf_getsrcdirs (files, result, ndirs)
+     Dwarf_Files *files;
+     const char *const **result;
+     size_t *ndirs;
 {
-  GElf_Shdr shdr_mem;
-  GElf_Shdr *main_shdr = gelf_getshdr (elf_getscn (mod->main.elf, shndx),
-				       &shdr_mem);
-  if (unlikely (main_shdr == NULL))
+  if (files == NULL)
     return -1;
 
-  assert (shdr->sh_addr == 0);
-  assert (shdr->sh_flags & SHF_ALLOC);
-  assert (main_shdr->sh_flags == shdr->sh_flags);
-
-  if (main_shdr->sh_addr != 0)
-    assert (mod->symfile != &mod->main);
-
-  *addr = main_shdr->sh_addr;
+  *result = (void *) &files->info[files->nfiles];
+  *ndirs = files->ndirs;
   return 0;
 }
-INTDEF (dwfl_offline_section_address)
-
-Dwfl_Module *
-dwfl_report_offline (Dwfl *dwfl, const char *name,
-		     const char *file_name, int fd)
-{
-  if (dwfl == NULL)
-    return NULL;
-
-  Dwfl_Module *mod = INTUSE(dwfl_report_elf) (dwfl, name, file_name, fd,
-					      dwfl->offline_next_address);
-  if (mod != NULL)
-    {
-      /* If this is an ET_EXEC file with fixed addresses, the address range
-	 it consumed may or may not intersect with the arbitrary range we
-	 will use for relocatable modules.  Make sure we always use a free
-	 range for the offline allocations.  If this module did use
-	 offline_next_address, it may have rounded it up for the module's
-	 alignment requirements.  */
-      if ((dwfl->offline_next_address >= mod->low_addr
-	   || mod->low_addr - dwfl->offline_next_address < OFFLINE_REDZONE)
-	  && dwfl->offline_next_address < mod->high_addr + OFFLINE_REDZONE)
-	dwfl->offline_next_address = mod->high_addr + OFFLINE_REDZONE;
-
-      /* Don't keep the file descriptor around.  */
-      if (mod->main.fd != -1 && elf_cntl (mod->main.elf, ELF_C_FDREAD) == 0)
-	{
-	  close (mod->main.fd);
-	  mod->main.fd = -1;
-	}
-    }
-
-  return mod;
-}
-INTDEF (dwfl_report_offline)

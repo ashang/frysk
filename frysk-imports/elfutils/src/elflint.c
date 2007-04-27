@@ -1884,9 +1884,9 @@ section [%2d] '%s': hash table section is too small (is %ld, expected %ld)\n"),
       if (buf + cnt >= end)
 	break;
       else if (buf[cnt] >= maxidx)
-	ERROR (gettext ("\
+      ERROR (gettext ("\
 section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
-	       idx, section_name (ebl, idx), cnt - 2);
+	     idx, section_name (ebl, idx), cnt - 2);
     }
 
   for (; cnt < 2 + nbucket + nchain; ++cnt)
@@ -1894,9 +1894,9 @@ section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
       if (buf + cnt >= end)
 	break;
       else if (buf[cnt] >= maxidx)
-	ERROR (gettext ("\
+      ERROR (gettext ("\
 section [%2d] '%s': hash chain reference %zu out of bounds\n"),
-	       idx, section_name (ebl, idx), cnt - 2 - nbucket);
+	     idx, section_name (ebl, idx), cnt - 2 - nbucket);
     }
 }
 
@@ -1935,9 +1935,9 @@ section [%2d] '%s': hash table section is too small (is %ld, expected %ld)\n"),
       if (buf + cnt >= end)
 	break;
       else if (buf[cnt] >= maxidx)
-	ERROR (gettext ("\
+      ERROR (gettext ("\
 section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
-	       idx, section_name (ebl, idx), cnt - 2);
+	     idx, section_name (ebl, idx), cnt - 2);
     }
 
   for (; cnt < 2 + nbucket + nchain; ++cnt)
@@ -1945,7 +1945,7 @@ section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
       if (buf + cnt >= end)
 	break;
       else if (buf[cnt] >= maxidx)
-	ERROR (gettext ("\
+      ERROR (gettext ("\
 section [%2d] '%s': hash chain reference %" PRIu64 " out of bounds\n"),
 	       idx, section_name (ebl, idx), (uint64_t) cnt - 2 - nbucket);
     }

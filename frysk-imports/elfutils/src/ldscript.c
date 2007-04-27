@@ -126,7 +126,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 1 "../../../redhat/stock-elfutils/src/ldscript.y"
 
 /* Parser for linker scripts.
    Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
@@ -216,7 +216,7 @@ extern int yylex (void);
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 71 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 71 "../../../redhat/stock-elfutils/src/ldscript.y"
 typedef union YYSTYPE {
   uintmax_t num;
   enum expression_tag op;
@@ -1370,12 +1370,12 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 145 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 145 "../../../redhat/stock-elfutils/src/ldscript.y"
     { add_versions ((yyvsp[0].version)); }
     break;
 
   case 6:
-#line 153 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 153 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      if (likely (ld_state.entry == NULL))
 			ld_state.entry = (yyvsp[-2].str);
@@ -1383,14 +1383,14 @@ yyreduce:
     break;
 
   case 7:
-#line 158 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 158 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      ld_new_searchdir ((yyvsp[-2].str));
 		    }
     break;
 
   case 8:
-#line 162 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 162 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      if (likely (ld_state.pagesize == 0))
 			ld_state.pagesize = (yyvsp[-2].num);
@@ -1398,7 +1398,7 @@ yyreduce:
     break;
 
   case 9:
-#line 167 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 167 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      if (likely (ld_state.interp == NULL)
 			  && ld_state.file_type != dso_file_type)
@@ -1407,14 +1407,14 @@ yyreduce:
     break;
 
   case 10:
-#line 173 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 173 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      new_segment ((yyvsp[-3].num), (yyvsp[-1].output_rule));
 		    }
     break;
 
   case 11:
-#line 177 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 177 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      fputs_unlocked (gettext ("mode for segment invalid\n"),
 				      stderr);
@@ -1423,7 +1423,7 @@ yyreduce:
     break;
 
   case 12:
-#line 183 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 183 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      /* First little optimization.  If there is only one
 			 file in the group don't do anything.  */
@@ -1437,27 +1437,27 @@ yyreduce:
     break;
 
   case 13:
-#line 194 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 194 "../../../redhat/stock-elfutils/src/ldscript.y"
     { add_inputfiles ((yyvsp[-1].filename_list)); }
     break;
 
   case 14:
-#line 196 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 196 "../../../redhat/stock-elfutils/src/ldscript.y"
     { add_inputfiles (mark_as_needed ((yyvsp[-1].filename_list))); }
     break;
 
   case 15:
-#line 198 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 198 "../../../redhat/stock-elfutils/src/ldscript.y"
     { add_versions ((yyvsp[-1].version)); }
     break;
 
   case 16:
-#line 200 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 200 "../../../redhat/stock-elfutils/src/ldscript.y"
     { /* XXX TODO */ }
     break;
 
   case 17:
-#line 204 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 204 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].output_rule)->next = (yyvsp[-1].output_rule)->next;
 		      (yyval.output_rule) = (yyvsp[-1].output_rule)->next = (yyvsp[0].output_rule);
@@ -1465,12 +1465,12 @@ yyreduce:
     break;
 
   case 18:
-#line 209 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 209 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.output_rule) = (yyvsp[0].output_rule); }
     break;
 
   case 19:
-#line 213 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 213 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.output_rule) = new_output_rule (output_assignment);
 		      (yyval.output_rule)->val.assignment = (yyvsp[-1].assignment);
@@ -1478,7 +1478,7 @@ yyreduce:
     break;
 
   case 20:
-#line 218 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 218 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.output_rule) = new_output_rule (output_section);
 		      (yyval.output_rule)->val.section.name = (yyvsp[-3].str);
@@ -1493,7 +1493,7 @@ yyreduce:
     break;
 
   case 21:
-#line 230 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 230 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      /* This is a short cut for "ID { *(ID) }".  */
 		      (yyval.output_rule) = new_output_rule (output_section);
@@ -1518,17 +1518,17 @@ yyreduce:
     break;
 
   case 22:
-#line 254 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 254 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.assignment) = new_assignment ((yyvsp[-2].str), (yyvsp[0].expr), false); }
     break;
 
   case 23:
-#line 256 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 256 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.assignment) = new_assignment ((yyvsp[-3].str), (yyvsp[-1].expr), true); }
     break;
 
   case 24:
-#line 260 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 260 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].input_rule)->next = (yyvsp[-1].input_rule)->next;
 		      (yyval.input_rule) = (yyvsp[-1].input_rule)->next = (yyvsp[0].input_rule);
@@ -1536,12 +1536,12 @@ yyreduce:
     break;
 
   case 25:
-#line 265 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 265 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.input_rule) = (yyvsp[0].input_rule); }
     break;
 
   case 26:
-#line 269 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 269 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.input_rule) = new_input_rule (input_section);
 		      (yyval.input_rule)->val.section = (yyvsp[0].filemask_section_name);
@@ -1549,7 +1549,7 @@ yyreduce:
     break;
 
   case 27:
-#line 274 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 274 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[-1].filemask_section_name)->keep_flag = true;
 
@@ -1559,7 +1559,7 @@ yyreduce:
     break;
 
   case 28:
-#line 281 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 281 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.input_rule) = new_input_rule (input_assignment);
 		      (yyval.input_rule)->val.assignment = (yyvsp[-1].assignment);
@@ -1567,7 +1567,7 @@ yyreduce:
     break;
 
   case 29:
-#line 288 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 288 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.filemask_section_name) = (struct filemask_section_name *)
 			obstack_alloc (&ld_state.smem, sizeof (*(yyval.filemask_section_name)));
@@ -1579,27 +1579,27 @@ yyreduce:
     break;
 
   case 30:
-#line 299 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 299 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.sectionname) = new_input_section_name ((yyvsp[0].str), false); }
     break;
 
   case 31:
-#line 301 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 301 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.sectionname) = new_input_section_name ((yyvsp[-1].str), true); }
     break;
 
   case 32:
-#line 305 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 305 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[-1].str); }
     break;
 
   case 33:
-#line 307 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 307 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = NULL; }
     break;
 
   case 34:
-#line 311 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 311 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_align);
 		      (yyval.expr)->val.child = (yyvsp[-1].expr);
@@ -1607,12 +1607,12 @@ yyreduce:
     break;
 
   case 35:
-#line 316 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 316 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.expr) = (yyvsp[-1].expr); }
     break;
 
   case 36:
-#line 318 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 318 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_mult);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1621,7 +1621,7 @@ yyreduce:
     break;
 
   case 37:
-#line 324 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 324 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr ((yyvsp[-1].op));
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1630,7 +1630,7 @@ yyreduce:
     break;
 
   case 38:
-#line 330 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 330 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr ((yyvsp[-1].op));
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1639,7 +1639,7 @@ yyreduce:
     break;
 
   case 39:
-#line 336 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 336 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_and);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1648,7 +1648,7 @@ yyreduce:
     break;
 
   case 40:
-#line 342 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 342 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_or);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1657,7 +1657,7 @@ yyreduce:
     break;
 
   case 41:
-#line 348 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 348 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_num);
 		      (yyval.expr)->val.num = (yyvsp[0].num);
@@ -1665,7 +1665,7 @@ yyreduce:
     break;
 
   case 42:
-#line 353 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 353 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_id);
 		      (yyval.expr)->val.str = (yyvsp[0].str);
@@ -1673,17 +1673,17 @@ yyreduce:
     break;
 
   case 43:
-#line 358 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 358 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.expr) = new_expr (exp_sizeof_headers); }
     break;
 
   case 44:
-#line 360 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 360 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.expr) = new_expr (exp_pagesize); }
     break;
 
   case 45:
-#line 364 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 364 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].filename_list)->next = (yyvsp[-2].filename_list)->next;
 		      (yyval.filename_list) = (yyvsp[-2].filename_list)->next = (yyvsp[0].filename_list);
@@ -1691,12 +1691,12 @@ yyreduce:
     break;
 
   case 46:
-#line 369 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 369 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.filename_list) = (yyvsp[0].filename_list); }
     break;
 
   case 49:
-#line 377 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 377 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      /* First little optimization.  If there is only one
 			 file in the group don't do anything.  */
@@ -1710,17 +1710,17 @@ yyreduce:
     break;
 
   case 50:
-#line 388 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 388 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.filename_list) = mark_as_needed ((yyvsp[-1].filename_list)); }
     break;
 
   case 51:
-#line 390 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 390 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.filename_list) = new_filename_listelem ((yyvsp[0].str)); }
     break;
 
   case 52:
-#line 395 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 395 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].version)->next = (yyvsp[-1].version)->next;
 		      (yyval.version) = (yyvsp[-1].version)->next = (yyvsp[0].version);
@@ -1728,12 +1728,12 @@ yyreduce:
     break;
 
   case 53:
-#line 400 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 400 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.version) = (yyvsp[0].version); }
     break;
 
   case 54:
-#line 404 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 404 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[-2].version)->versionname = "";
 		      (yyvsp[-2].version)->parentname = NULL;
@@ -1742,7 +1742,7 @@ yyreduce:
     break;
 
   case 55:
-#line 410 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 410 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[-2].version)->versionname = (yyvsp[-4].str);
 		      (yyvsp[-2].version)->parentname = NULL;
@@ -1751,7 +1751,7 @@ yyreduce:
     break;
 
   case 56:
-#line 416 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 416 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      (yyvsp[-3].version)->versionname = (yyvsp[-5].str);
 		      (yyvsp[-3].version)->parentname = (yyvsp[-1].str);
@@ -1760,27 +1760,27 @@ yyreduce:
     break;
 
   case 57:
-#line 425 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 425 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.version) = merge_versions ((yyvsp[-1].version), (yyvsp[0].version)); }
     break;
 
   case 58:
-#line 427 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 427 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.version) = (yyvsp[0].version); }
     break;
 
   case 59:
-#line 431 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 431 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.version) = new_version (NULL, (yyvsp[0].id_list)); }
     break;
 
   case 60:
-#line 433 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 433 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.version) = new_version ((yyvsp[0].id_list), NULL); }
     break;
 
   case 61:
-#line 438 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 438 "../../../redhat/stock-elfutils/src/ldscript.y"
     {
 		      struct id_list *newp = new_id_listelem ((yyvsp[-1].str));
 		      newp->next = (yyvsp[-2].id_list)->next;
@@ -1789,27 +1789,27 @@ yyreduce:
     break;
 
   case 62:
-#line 444 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 444 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.id_list) = new_id_listelem ((yyvsp[-1].str)); }
     break;
 
   case 63:
-#line 448 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 448 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[0].str); }
     break;
 
   case 64:
-#line 450 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 450 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[0].str); }
     break;
 
   case 65:
-#line 454 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 454 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[0].str); }
     break;
 
   case 66:
-#line 456 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 456 "../../../redhat/stock-elfutils/src/ldscript.y"
     { (yyval.str) = NULL; }
     break;
 
@@ -2086,7 +2086,7 @@ yyreturn:
 }
 
 
-#line 459 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 459 "../../../redhat/stock-elfutils/src/ldscript.y"
 
 
 static void
