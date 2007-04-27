@@ -60,7 +60,7 @@ public class UnwindX86
 
   //@Override
   native int getRegister (RawDataManaged cursor, int regNum, 
-                          RawDataManaged word);
+                          byte[] word);
 
   //@Override
   native RawDataManaged initRemote (RawData addressSpace, Accessors accessors);
@@ -89,4 +89,6 @@ public class UnwindX86
   native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                   long segbase, long hi, 
                                                   long mapoff, Accessors accessors);
+  
+  native public int getSP(RawDataManaged cursor, byte[] word);
 }

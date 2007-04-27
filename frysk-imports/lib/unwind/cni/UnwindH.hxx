@@ -293,10 +293,17 @@ lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameS
 
 jint
 lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
-jint regNum, gnu::gcj::RawDataManaged* word)
+jint regNum, jbyteArray word)
 {
 	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
-	(::unw_regnum_t) regNum, (::unw_word_t *) word);
+	(::unw_regnum_t) regNum, (::unw_word_t *) elements(word));
+}
+
+jint
+lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor, jbyteArray word)
+{
+	return (jint) unw_get_reg((::unw_cursor_t *) cursor,
+	UNW_REG_SP, (::unw_word_t *) elements(word));
 }
 
 

@@ -63,7 +63,7 @@ public class UnwindNative
   native ProcName getProcName(RawDataManaged cursor, int maxNameSize);
   
    native int getRegister(RawDataManaged cursor, int regNum,
-                           RawDataManaged word);
+                           byte[] word);
  
   
   native int getContext (RawDataManaged context);
@@ -81,4 +81,8 @@ public class UnwindNative
   native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                 long segbase, long hi, 
                                                 long mapoff, Accessors accessors);
+
+  
+  //@Override
+  native public int getSP (RawDataManaged cursor, byte[] word);
 }

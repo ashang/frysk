@@ -67,7 +67,9 @@ public abstract class Unwind
   abstract ProcInfo getProcInfo (RawDataManaged cursor);
   
   abstract int getRegister(RawDataManaged cursor, int regNum,
-                           RawDataManaged word);
+                           byte[] word);
+  
+  public abstract int getSP(RawDataManaged cursor, byte[] word);
   
   abstract RawDataManaged copyCursor(RawDataManaged cursor);  
  /*
