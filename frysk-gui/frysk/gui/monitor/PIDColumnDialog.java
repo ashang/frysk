@@ -83,14 +83,14 @@ public class PIDColumnDialog
 
   private Preferences prefs;
 
-  private SessionProcTreeView sptv;
+//  private SessionProcTreeView sptv;
 
-  public PIDColumnDialog (LibGlade glade, SessionProcTreeView sptv)
+  public PIDColumnDialog (LibGlade glade/*, SessionProcTreeView sptv*/)
   {
     super(glade.getWidget("pidColumnDialog").getHandle());
 
     this.glade = glade;
-    this.sptv = sptv;
+//    this.sptv = sptv;
 
     this.setIcon(IconManager.windowIcon);
 
@@ -190,34 +190,34 @@ public class PIDColumnDialog
 
   public void save (Preferences prefs)
   {
-    ListStore model = (ListStore) this.colList.getModel();
+//    ListStore model = (ListStore) this.colList.getModel();
 
-    TreeIter iter = model.getFirstIter();
-    String[] temp = sptv.getProcColNames();
+//    TreeIter iter = model.getFirstIter();
+//    String[] temp = sptv.getProcColNames();
 
-    for (int i = 0; i < temp.length; i++)
-      {
-        boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
-        prefs.putBoolean(temp[i], val);
-        iter = iter.getNextIter();
-      }
+//    for (int i = 0; i < temp.length; i++)
+//      {
+//        boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
+//        prefs.putBoolean(temp[i], val);
+//        iter = iter.getNextIter();
+//      }
   }
 
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
-    ListStore model = (ListStore) this.colList.getModel();
-    TreeIter iter = model.getFirstIter();
-    String[] temp = sptv.getProcColNames();
-
-    for (int i = 0; i < temp.length; i++)
-      {
-        /* If this is our first time loading, don't set the columns to false */
-        if (prefs.get(temp[i], "") == "")
-          break;
-        boolean val = prefs.getBoolean(temp[i], i == 0);
-        model.setValue(iter, (DataColumnBoolean) cols[0], val);
-        iter = iter.getNextIter();
-      }
+//    ListStore model = (ListStore) this.colList.getModel();
+//    TreeIter iter = model.getFirstIter();
+//    String[] temp = sptv.getProcColNames();
+//
+//    for (int i = 0; i < temp.length; i++)
+//      {
+//        /* If this is our first time loading, don't set the columns to false */
+//        if (prefs.get(temp[i], "") == "")
+//          break;
+//        boolean val = prefs.getBoolean(temp[i], i == 0);
+//        model.setValue(iter, (DataColumnBoolean) cols[0], val);
+//        iter = iter.getNextIter();
+//      }
   }
 }

@@ -41,7 +41,9 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
+import frysk.gui.monitor.GuiProc.GuiProcFactory;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.eventviewer.EventManager;
@@ -121,7 +123,8 @@ public class TaskExecObserver
 
   private void runActions (Task task)
   {
-    Event event = new Event("exec", "thread called exec", GuiTask.GuiTaskFactory.getGuiTask(task), this);
+    GuiProc guiProc = GuiProcFactory.getGuiProc(task.getProc());
+    Event event = new Event("exec("+guiProc.getExecutableName()+")", "thread called exec("+guiProc.getNiceExecutablePath()+")", GuiTask.GuiTaskFactory.getGuiTask(task), this);
     super.runActions();
     this.taskActionPoint.runActions(task, this, event);
     EventManager.theManager.addEvent(event);

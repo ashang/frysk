@@ -132,7 +132,7 @@ public class EventViewer2 extends Table {
       this.procBoxes.add(procBox);
       
       AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
-      this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 3 , 3);
+      this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 0 , 0);
       
       this.bigTableNumberOfRows++;
       this.bigTable.resize(2,this.bigTableNumberOfRows);
@@ -237,7 +237,7 @@ public class EventViewer2 extends Table {
 	procBox = (ProcBox) iterator.next();
         
         AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
-        this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 3 , 3);
+        this.bigTable.attach(procBox, 0, 1, bigTableNumberOfRows-1, bigTableNumberOfRows, EXPAND_AND_FILL,EXPAND_AND_FILL, 0 , 0);
         
         this.bigTableNumberOfRows++;
         this.bigTable.resize(2,this.bigTableNumberOfRows);

@@ -45,13 +45,14 @@ import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
 import org.gnu.glade.LibGlade;
-import org.gnu.glib.CustomEvents;
 import org.gnu.gnomevte.Terminal;
+import org.gnu.gtk.HBox;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.Window;
 
 import frysk.gui.Gui;
+import frysk.gui.monitor.eventviewer.EventViewer2;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -63,7 +64,6 @@ import frysk.sys.Signal;
 public class MainWindow extends Window implements Saveable{
 	
 	//private ProcViewPage procViewPage;
-	private SessionProcTreeView sessionProcTreeView;
   	private Notebook statusNotebook;
 
 	//terminal things
@@ -78,21 +78,15 @@ public class MainWindow extends Window implements Saveable{
 		this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
 		this.terminalWidget = (ScrolledWindow) glade.getWidget("terminalScrolledWindow");
 
-		try {
-	//		this.procViewPage = new ProcViewPage(glade);
-			this.sessionProcTreeView = new SessionProcTreeView(glade);
-			
-			//procViewPage.getClass();
-			this.sessionProcTreeView.getClass();
-		} catch (IOException e){
-			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e); //$NON-NLS-1$
-		}
+		HBox statusWidget = (HBox) glade.getWidget("statusWidget");
+		EventViewer2 eventViewer = new EventViewer2();
+		statusWidget.add(eventViewer);
 		
-		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle()); //$NON-NLS-1$
-		//XXX:
-		noteBook.getClass();
-		noteBook.removePage(1);
-		//this.showAll();
+//		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle()); //$NON-NLS-1$
+//		//XXX:
+//		noteBook.getClass();
+//		noteBook.removePage(1);
+		this.showAll();
 	}
 
 	public void save(Preferences prefs) {
@@ -101,9 +95,6 @@ public class MainWindow extends Window implements Saveable{
 		
 		prefs.putInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
 		prefs.putInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
-		
-//		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
-		sessionProcTreeView.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 
 	public void load(Preferences prefs) {
@@ -117,9 +108,6 @@ public class MainWindow extends Window implements Saveable{
 		
 		if ((width > 0) && (height > 0))
 			this.resize(width, height);
-		
-//		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
-		sessionProcTreeView.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 	
   	public void hideTerminal()
@@ -136,20 +124,20 @@ public class MainWindow extends Window implements Saveable{
 		
 //		//System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
 		Manager.host.requestCreateAttachedProc(name, name, name, new String[] {"/bin/sh"},
-												new TaskObserver.Attached()
-												{
-													public Action updateAttached(Task task)
+		                                       new TaskObserver.Attached()
+		{
+		  public Action updateAttached(Task task)
 													{
 														
 														shellTask = task;
 														final GuiProc shellProc = new GuiProc(task.getProc());
 														shellProc.setName("Frysk Terminal Process");
-                                                        CustomEvents.addEvent(new Runnable() {
-                                                          GuiProc realShellProc = shellProc; 
-                                                          public void run() {
-                                                            sessionProcTreeView.procDataModel.addProc(realShellProc);
-                                                          }
-                                                        });
+//Should terminal proc be added to the session ?            CustomEvents.addEvent(new Runnable() {
+//                                                          GuiProc realShellProc = shellProc; 
+//                                                          public void run() {
+//                                                            sessionProcTreeView.procDataModel.addProc(realShellProc);
+//                                                          }
+//                                                        });
 														return Action.CONTINUE;
 													}
 													public void addedTo(Object observable)

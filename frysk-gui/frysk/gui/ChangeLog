@@ -1,3 +1,7 @@
+2007-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* gladedir/procpop.glade: Removed left hand side process view.
+
 2007-04-27  Mike Cvet  <mcvet@redhat.com>
 	
 	* disassembler/DisassemblyWindow.java (refreshLock): Added. Prevents

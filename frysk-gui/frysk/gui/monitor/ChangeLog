@@ -1,3 +1,28 @@
+2007-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SessionProcTreeView.java: Removed.
+	* SessionProcDataModel.java: Removed.
+	* observers/TaskExecObserver.java: Added a call to update the name and
+	path of the guiproc when an exec call has been made.
+	Name and path of the executable are now added to the event.
+	* eventviewer/TimeLine.java: Set the border to 0 and removed padding
+	between DrawingArea and Label.
+	Added setName function to change the lable of the timeline.
+	created a sizeGourp for drawingAreas.
+	Added a horosontal line underneath the events.
+	Added a count do reduce redraws to only every second event.
+	* eventviewer/ProcBox.java: Changed it to inherent from Frame
+	instead of VBox.
+	Added an expose listener for redrawing.
+	Removed commented out code.
+	* eventviewer/EventViewer2.java: Removed spaces between
+	TimeLines.
+	* PIDColumnDialog.java: Removed references to ProcTreeview,
+	and dataModel.
+	* MainWindow.java: removed handling for procTreeview.
+	* GuiProc.java: Created an Observable for path changing.
+	Added calls to check if the path has changed.
+
 2007-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskForkedObserver.java: Added handling for following

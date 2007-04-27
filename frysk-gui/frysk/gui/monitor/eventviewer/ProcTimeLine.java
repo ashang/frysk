@@ -40,7 +40,10 @@
 package frysk.gui.monitor.eventviewer;
 
 import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
 
+import org.freedesktop.cairo.Point;
 import org.gnu.gdk.GdkCairo;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
@@ -63,6 +66,12 @@ public class ProcTimeLine extends TimeLine
     super(guiProc.getExecutableName()+"  ", manager);
     this.guiProc = guiProc;
     addToProcTimeLineSizeGroup(this);
+    guiProc.executablePathChanged.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object object){
+	ProcTimeLine.this.setName(((GuiProc)object).getExecutableName());
+      }
+    });
   }
 
   protected TimeLineDrawingArea getTimeLineDrawingArea(){
@@ -93,6 +102,16 @@ public class ProcTimeLine extends TimeLine
         return false;
       
       GdkCairo cairo = new GdkCairo(this.getWindow());
+      
+      int x = 0;
+      int y = 0;
+      int w = this.getWindow().getWidth();
+      int h = exposeEvent.getArea().getHeight();
+      
+      cairo.setSourceColor(SELECTED_COLOR);
+      cairo.rectangle(new Point(x,y+h), new Point(w,y+h-2));
+      cairo.fill();
+      
       // draw events
       Iterator iterator = EventManager.theManager.getEventsList().iterator();
       while (iterator.hasNext())

@@ -80,11 +80,13 @@ public abstract class TimeLine
   static int eventSpacing = 30;
   
   private static SizeGroup labelsSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
+  private static SizeGroup drawingAreaSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
   
   private static final int MINIMUM_HEIGHT = 15;
   private static int MINIMUM_WIDTH = 0 ;
   
   String labelString;
+  String name;
   
   private Viewport viewport;
   private boolean isSelected;
@@ -95,7 +97,7 @@ public abstract class TimeLine
   int startIndex = 0;
   int endIndex;
   
-  private static Color SELECTED_COLOR = new Color(55535, 55535, 55535);
+  protected static Color SELECTED_COLOR = new Color(55535, 55535, 55535);
   private static Color UNSELECTED_COLOR = Color.WHITE;
   
   public TimeLine(String name, TimeLineSelectionManager timeLineSelectionManager){
@@ -104,9 +106,10 @@ public abstract class TimeLine
     this.selected = new GuiObservable();
     this.unSelected = new GuiObservable();
     
-    this.setBorderWidth(1);
+    this.setBorderWidth(0);
     
-    this.labelString = name;
+    this.name = name;
+    this.labelString = "";
     
     label = new Label(name);
     label.setAlignment(0.4,0.5);
@@ -120,7 +123,7 @@ public abstract class TimeLine
     this.addListener((MouseListener)this);
     Viewport labeViewport = new Viewport(null,null);
     labeViewport.add(labelEventBox);
-    
+//    labeViewport.setShadowType(ShadowType.NONE);
     addToLabelsSizeGroup(label);
     
     final TimeLineDrawingArea drawingArea = getTimeLineDrawingArea();
@@ -128,11 +131,12 @@ public abstract class TimeLine
     viewport = new Viewport(null,null);
     viewport.add(drawingArea);
     viewport.setMinimumSize(0, drawingArea.getMinimumHeight());
+//    viewport.setShadowType(ShadowType.NONE);
     
     VBox vBox = new VBox(false,0);
     
-    this.packStart(labeViewport, false, false, 1);
-    this.packStart(viewport,true,true,1);
+    this.packStart(labeViewport, false, false, 0);
+    this.packStart(viewport,true,true,0);
     this.packEnd(vBox, false, false, 0);
     
     timeLineSelectionManager.addTimeLine(this);
@@ -156,18 +160,20 @@ public abstract class TimeLine
     return new TimeLineDrawingArea();
   }
   
-  public void setLabel(String string){
-    this.labelString = string;
-    this.label.setMarkup(string);
+  public void setName(String name){
+    this.name = name;
+    this.label.setMarkup(name + " "+ this.labelString);
   }
   
   protected class TimeLineDrawingArea extends CustomDrawingArea implements ExposeListener, MouseListener{
     
     public TimeLineDrawingArea ()
     {
+      TimeLine.addToDrawingAreaSizeGroup(this);
+      
       CustomAtkObject atkObject = new CustomAtkObject(this);
       
-      atkObject.setName(labelString+"TimeLine");
+      atkObject.setName(name+" TimeLine");
       atkObject.setDescription("TimeLine");
       
       this.setAcessible(atkObject);
@@ -217,8 +223,6 @@ public abstract class TimeLine
 //      if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(this.getWindow()))
 //        return false;
     
-      this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
-      
       GdkCairo cairo = new GdkCairo(this.getWindow());
       
       int x = 0;
@@ -235,7 +239,12 @@ public abstract class TimeLine
       
       cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
       cairo.fill();
-            
+      
+      
+      cairo.setSourceColor(SELECTED_COLOR);
+      cairo.rectangle(new Point(x,y+h), new Point(w,y+h-1));
+      cairo.fill();
+      
       // draw events
       Iterator iterator = EventManager.theManager.getEventsList().iterator();
       
@@ -256,7 +265,7 @@ public abstract class TimeLine
       
       if(eventX >= w){
         MINIMUM_WIDTH = w + MINIMUM_HEIGHT;
-        this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
+        //this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
       }
      
       if(isDead){
@@ -265,6 +274,8 @@ public abstract class TimeLine
         cairo.rectangle(new Point(x,y), new Point(w, this.getWindow().getHeight()));
         cairo.fill();
       }
+      
+      this.setMinimumSize(MINIMUM_WIDTH , MINIMUM_HEIGHT);
       
       return false;
     }
@@ -286,12 +297,7 @@ public abstract class TimeLine
    */
   public abstract boolean ownsEvent(Event event);
   
-  public String getLabel ()
-  {
-    return this.labelString;
-  }
-  
-  public void select(){
+ public void select(){
     this.isSelected = true;
     this.label.getParent().setBackgroundColor(StateType.NORMAL, SELECTED_COLOR);
     this.selected.notifyObservers();
@@ -314,18 +320,27 @@ public abstract class TimeLine
     
     int grayFactor = 3;
     this.label.setForegroundColor(StateType.NORMAL, new Color(65535/grayFactor, 65535/grayFactor, 65535/grayFactor));
-    this.labelString = this.label.getText() + "\n<i>terminated</i>";
-    this.label.setMarkup(labelString);
+    this.labelString = this.labelString + "\n<i>terminated</i>";
+    this.label.setMarkup(name + " " + labelString);
   }
   
   public static void addToLabelsSizeGroup(Widget widget){
     labelsSizeGroup.addWidget(widget);
   }
   
+  public static void addToDrawingAreaSizeGroup(Widget widget){
+    drawingAreaSizeGroup.addWidget(widget);
+  }
+  
   private Observer redrawObserver = new Observer(){
+    private int count;
+    
     public void update (Observable observable, Object arg)
     {
-      draw();
+      if(count++ == 2){
+	draw();
+	count=0;
+      }
     }
   };
   
@@ -334,4 +349,5 @@ public abstract class TimeLine
     EventManager.theManager.getEventsList().itemAdded.deleteObserver(redrawObserver);
     super.finalize();
   }
+  
 }

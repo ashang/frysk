@@ -72,69 +72,86 @@ public class GuiProc extends GuiCoreObjectWrapper{
 	private String executablePath;
 	private String niceExecutablePath;
 	
+	public GuiObservable executablePathChanged;
+	
     public GuiProc(Proc proc){
-		if(proc == null){
-			throw new IllegalArgumentException("proc cannot be null");
-		}
-		this.proc = proc;
-		
-		this.executableName = "";
+      
+      if(proc == null){
+	throw new IllegalArgumentException("proc cannot be null");
+      }
+      this.proc = proc;
+	
+      this.executablePathChanged = new GuiObservable();
+      
+      this.executableName = "";
 
-		this.setExecutablePath();
-        this.setNiceExecutablePath();
-        
+      this.setExecutablePath();
+      this.setNiceExecutablePath();
     }
 
     public Proc getProc() {
-		return proc;
-	}
+      return proc;
+    }
 	
     private void setNiceExecutablePath(){
 		
-		this.niceExecutablePath = this.getFullExecutablePath();
+      this.niceExecutablePath = this.getFullExecutablePath();
 
-		if(niceExecutablePath.indexOf('\0') != -1){
-			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf("\0"));
-		}
+      if(niceExecutablePath.indexOf('\0') != -1){
+	niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf("\0"));
+      }
 
-		if(niceExecutablePath.endsWith(" (deleted)")){
-			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(" (deleted)"));
-		}
+      if(niceExecutablePath.endsWith(" (deleted)")){
+	niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(" (deleted)"));
+      }
 		
-		if(niceExecutablePath.indexOf(".#prelink#") != -1){
-			niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(".#prelink#"));
-		}
+      if(niceExecutablePath.indexOf(".#prelink#") != -1){
+	niceExecutablePath = niceExecutablePath.substring(0,niceExecutablePath.indexOf(".#prelink#"));
+      }
 		
-		if(this.executablePath == PATH_NOT_FOUND){
-			this.executableName = proc.getCommand();
-		}else{
-			File file = new File(niceExecutablePath);		
-			this.executableName = file.getName();
-		}
-	}
+      if(this.executablePath == PATH_NOT_FOUND){
+	this.executableName = proc.getCommand();
+      }else{
+	File file = new File(niceExecutablePath);		
+	this.executableName = file.getName();
+      }
+    }
 
-	public String getNiceExecutablePath(){
-	  this.setNiceExecutablePath();
-		return this.niceExecutablePath;
-	}
+    /**
+     * The executable path of a proc might be mangled with things like '(deleted)'
+     * or "#prelink#" if the executable has been deleted or the link changed. This
+     * function cleans this out and returns the clean path.
+     * @return
+     */
+    public String getNiceExecutablePath(){
+      this.setNiceExecutablePath();
+      return this.niceExecutablePath;
+    }
 	
-	private void setExecutablePath(){
-		try{
-			this.executablePath = proc.getExe();
+    private void setExecutablePath(){
+      String newPath = "";
+      
+      try{
+	newPath = proc.getExe();
 			
-		}catch (Exception e) {
-			try {
-				if (proc.getCmdLine().length > 0)
-					this.executablePath = proc.getCmdLine()[0];
-				else
-					this.executablePath = PATH_NOT_FOUND;
+      }catch (Exception e) {
+	try {
+	  if (proc.getCmdLine().length > 0)
+	    newPath = proc.getCmdLine()[0];
+	  else
+	    newPath = PATH_NOT_FOUND;
 					
-			} catch (Exception e2) {
-				this.executablePath = PATH_NOT_FOUND;
-                return;
-			}
-		}
+	} catch (Exception e2) {
+	  newPath = PATH_NOT_FOUND;
+	  return;
 	}
+      }
+      
+      if(!newPath.equals(this.executablePath)){
+	this.executablePath = newPath;
+	this.executablePathChanged.notifyObservers(this);
+      }
+    }
 	
 	/**
 	 * Returns wether this user owns this process
@@ -171,8 +188,8 @@ public class GuiProc extends GuiCoreObjectWrapper{
 	}
 	
 	public String getFullExecutablePath(){
-        this.setExecutablePath();
-		return this.executablePath;
+	  this.setExecutablePath();
+	  return this.executablePath;
 	}
 	
 	/**
@@ -180,7 +197,8 @@ public class GuiProc extends GuiCoreObjectWrapper{
 	 * fails, then getCmmd[0] is used.
 	 */
 	public String getExecutableName(){
-		return this.executableName;
+	  this.setNiceExecutablePath();
+	  return this.executableName;
 	}
 	
 	

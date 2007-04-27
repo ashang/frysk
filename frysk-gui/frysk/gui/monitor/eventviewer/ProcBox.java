@@ -44,7 +44,10 @@ import java.util.LinkedList;
 
 import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Adjustment;
+import org.gnu.gtk.Frame;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.event.ExposeEvent;
+import org.gnu.gtk.event.ExposeListener;
 
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.GuiTask;
@@ -52,7 +55,7 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.ProcObserver.ProcTasks;
 
-public class ProcBox extends VBox
+public class ProcBox extends Frame
 {
   GuiProc guiProc;
  
@@ -63,10 +66,16 @@ public class ProcBox extends VBox
   
   LinkedList timeLines;
   
+  VBox bigVBox;
+  
   ProcBox (GuiProc guiProc, Adjustment adjustment, TimeLineSelectionManager manager)
   {
-    super(false,0);
-  
+    super();
+    this.removeLabel();
+    this.setBorderWidth(0);
+    
+    this.bigVBox = new VBox(false,0);
+    
     this.timeLines = new LinkedList();
     
     this.manager = manager;
@@ -75,6 +84,20 @@ public class ProcBox extends VBox
     this.mainGuiTaskAdded = false;
 
     this.setProc(guiProc);
+    
+    this.add(bigVBox);
+    
+    this.addListener(new ExposeListener()
+    {
+      public boolean exposeEvent (ExposeEvent exposeEvent)
+      {
+	if(exposeEvent.isOfType(ExposeEvent.Type.NO_EXPOSE) || !exposeEvent.getWindow().equals(ProcBox.this.getWindow()))
+	  return false;
+	draw();
+        return false;
+      }
+    });
+    
   }
 
   private void setProc(GuiProc guiProc){
@@ -84,7 +107,7 @@ public class ProcBox extends VBox
     this.timeLines.add(procTimeLine);
     
     procTimeLine.setHAdjustment(hAdjustment);
-    this.packStart(procTimeLine, true, true, 0);
+    bigVBox.packStart(procTimeLine, true, true, 0);
     
     new ProcTasksObserver(guiProc.getProc(), new ProcTasks(){
 
@@ -138,8 +161,8 @@ public class ProcBox extends VBox
           TaskTimeLine child = (TaskTimeLine)object;
           if(child.getGuiTask() == guiTask){
             child.timeLineDead();
-            this.remove(child);
-            this.packEnd(child, true, true, 0);
+            this.bigVBox.remove(child);
+            this.bigVBox.packEnd(child, true, true, 0);
             break;
           }
         }
@@ -161,7 +184,7 @@ public class ProcBox extends VBox
     
     taskTimeLine.setHAdjustment(hAdjustment);
     
-    this.packStart(taskTimeLine,true,true,0);
+    this.bigVBox.packStart(taskTimeLine,true,true,0);
     
     // if this was the main task that was just added
     if(guiTask.getTask().getTid() == guiTask.getTask().getProc().getPid()){
@@ -177,15 +200,6 @@ public class ProcBox extends VBox
     
     this.showAll();
   }
-
-//  private void removeAllTimeLines(){
-//    Iterator iter = this.timeLines.iterator();
-//    while (iter.hasNext())
-//      {
-//        this.remove((Widget) iter.next());
-//      }
-//    this.timeLines.clear();
-//  }
   
   public GuiProc getGuiProc ()
   {
