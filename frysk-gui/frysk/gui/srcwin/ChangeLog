@@ -1,3 +1,12 @@
+2007-04-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (hide): Added, used as a hook for cleanUp.
+	(hideAll): Ditto.
+	(cleanUp): Added, all housekeeping tasks that should be done before
+	the window closes should be added here.
+	(saveDebugInfo): Added, will save the debugging information such as variable
+	traces, breakpoints, etc. to disk when the source window closes.
+
 2007-04-27  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (currentStackChanged): Check the State of the new

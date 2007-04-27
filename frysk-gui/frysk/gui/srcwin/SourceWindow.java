@@ -40,6 +40,7 @@
 
 package frysk.gui.srcwin;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -47,6 +48,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import lib.dw.NoDebugInfoException;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -104,6 +107,8 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
+import org.jdom.Document;
+import org.jdom.Element;
 
 import frysk.Config;
 import frysk.cli.hpd.SymTab;
@@ -124,7 +129,6 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -134,8 +138,6 @@ import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
 import frysk.value.Variable;
 import frysk.vtecli.ConsoleWindow;
-
-import lib.dw.NoDebugInfoException;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -438,7 +440,7 @@ public class SourceWindow
     this.addListener(new LifeCycleListener()
     {
       public void lifeCycleEvent (LifeCycleEvent event)
-      {
+      {	
       }
 
       public boolean lifeCycleQuery (LifeCycleEvent event)
@@ -865,11 +867,54 @@ public class SourceWindow
   {
     return this.lock;
   }
-
+  
+  public void hide()
+  {
+    cleanUp();
+    super.hide();
+  }
+  
+  public void hideAll()
+  {
+    cleanUp();
+    super.hideAll();
+  }
+  
   /*******************************************************************
    * PRIVATE METHODS
    ******************************************************************/
 
+  /**
+   * Perform any housekeeping that needs to be done before the source
+   * window closes.
+   */
+  protected void cleanUp()
+  {
+    saveDebugInfo();
+  }
+  
+  /**
+   * Saves all of the debugging information for this debug session (Watched
+   * variables, etc.) to disk when the window is closed.
+   */
+  private void saveDebugInfo()
+  {
+    // debuginfo is saved in ~/.frysk/debugdata/path/to/executable
+    String procPath = this.currentTask.getProc().getExe();
+    String settingsPath = Config.FRYSK_DIR + "Debugdata/";
+    
+    // Create the settings file and directory structure if it doesn't already exist
+    File path = new File(settingsPath+procPath);
+    if(!path.exists())
+      {
+	path.mkdirs();
+      }
+    
+    Element root = new Element("debuginfo");
+    Document doc = new Document(root);
+    doc.toString();
+  }
+  
   /**
    * Resets the search box to its original state.
    */
