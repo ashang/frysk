@@ -51,7 +51,29 @@ public class Variable
     private final Type type;
     private final Location location;
     private final String text;
+    private String filePath;
+    private int lineNo;
     
+    public String getFilePath ()
+    {
+      return filePath;
+    }
+
+    public void setFilePathXXX (String filePath)
+    {
+      this.filePath = filePath;
+    }
+
+    public int getLineNo ()
+    {
+      return lineNo;
+    }
+
+    public void setLineNoXXX (int lineNo)
+    {
+      this.lineNo = lineNo;
+    }
+
     public Variable(Type type)	{
       this(type, "temp");
     }

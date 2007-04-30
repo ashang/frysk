@@ -42,6 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -109,6 +110,8 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import frysk.Config;
 import frysk.cli.hpd.SymTab;
@@ -899,20 +902,50 @@ public class SourceWindow
    */
   private void saveDebugInfo()
   {
+    String path = createDebugInfoPath(false);
+    
+    Element root = new Element("debuginfo");
+    Document doc = new Document(root);
+    
+    // Collect the settings into the Document
+    if(watchView.shouldSaveObject())
+      watchView.save(root);
+    
+    // Output the settings
+    XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+    try
+      {
+	output.output(doc, new FileWriter(path));
+      }
+    catch (IOException e)
+      {
+	e.printStackTrace();
+      }
+  }
+  
+  /**
+   * Creates the path to save the debuginfo in, creating the directory
+   * hierarchy if it does not already exist
+   * @param checkFile Whether to check for the existance of the file as well
+   * 		as the directory hierarchy
+   * @return The full path of the file to save debuginfo in.
+   */
+  private String createDebugInfoPath(boolean checkFile)
+  {
     // debuginfo is saved in ~/.frysk/debugdata/path/to/executable
     String procPath = this.currentTask.getProc().getExe();
     String settingsPath = Config.FRYSK_DIR + "Debugdata/";
     
     // Create the settings file and directory structure if it doesn't already exist
+    String procName = procPath.substring(procPath.lastIndexOf("/")+1);
+    procPath = procPath.substring(0, procPath.lastIndexOf("/")+1);
     File path = new File(settingsPath+procPath);
     if(!path.exists())
       {
 	path.mkdirs();
       }
     
-    Element root = new Element("debuginfo");
-    Document doc = new Document(root);
-    doc.toString();
+    return settingsPath+procPath+procName;
   }
   
   /**

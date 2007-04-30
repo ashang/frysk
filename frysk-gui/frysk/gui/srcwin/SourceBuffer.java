@@ -646,6 +646,9 @@ public class SourceBuffer
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));
+        var.setFilePathXXX(source.getFilePath() + "/" + fileName);
+        var.setLineNoXXX(line.getLineNum());
+        
       }
     catch (ParseException e)
       {
@@ -998,7 +1001,7 @@ public class SourceBuffer
   {
     return scope;
   }
-
+  
   /**
    * Returns the number of lines of assembly code for each line of source code.
    * This is used mostly internally to aid in drawing line numbers.

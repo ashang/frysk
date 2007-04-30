@@ -63,12 +63,14 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
+import org.jdom.Element;
 
+import frysk.gui.monitor.SaveableXXX;
 import frysk.value.Variable;
 
 public class VariableWatchView
     extends TreeView
-    implements TreeSelectionListener
+    implements TreeSelectionListener, SaveableXXX
 {
 
   public interface WatchViewListener
@@ -90,6 +92,9 @@ public class VariableWatchView
   
   private int treeSize = 0;
 
+  // By default, save all watched variables
+  private boolean shouldSave = true;
+  
   public VariableWatchView ()
   {
     super();
@@ -104,7 +109,7 @@ public class VariableWatchView
 
     traceColumns = new DataColumn[] { new DataColumnString(),
                                      new DataColumnString(),
-                                     new DataColumnObject() };
+                                     new DataColumnObject()};
 
     this.model = new ListStore(traceColumns);
 
@@ -321,6 +326,49 @@ public class VariableWatchView
 
       return false;
     }
+  }
+
+  public void doSaveObject ()
+  {
+    shouldSave = true;
+  }
+
+  public void dontSaveObject ()
+  {
+    shouldSave = false;
+  }
+
+  public void load (Element node)
+  {
+  }
+
+  public void save (Element node)
+  {
+    Element varnode = new Element("variable_watches");
+    node.addContent(varnode);
+    
+    Iterator varIter = variables.iterator();
+    while(varIter.hasNext())
+      {
+	Variable var = (Variable) varIter.next();
+	saveVariable(var, varnode);
+      }
+  }
+
+  public boolean shouldSaveObject ()
+  {
+    return shouldSave;
+  }
+  
+  private void saveVariable(Variable var, Element node)
+  {
+    Element varNode = new Element("variable");
+    varNode.setAttribute("type", var.getType().toString());
+    varNode.setAttribute("name", var.getText());
+    varNode.setAttribute("filePath", var.getFilePath());
+    varNode.setAttribute("line", ""+var.getLineNo());
+    
+    node.addContent(varNode);
   }
 
 }

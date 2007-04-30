@@ -1,3 +1,15 @@
+2007-04-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Variable.java (filePath): Added, this is a temporary measure until I
+	am sure this is the correct way to keep track of the file/line no that
+	a variable is found at.
+	(lineNo): Added, same as above.
+	(getFilePath): Added.
+	(getLineNo): Added.
+	(setFilePathXXX): Added, this is VERY temporary as we should not be
+	allowing people to change this.
+	(setLineNoXXX): Ditto.
+
 2007-04-24  Stan Cox  <scox@redhat.com>
 
 	* TestValue.java (testNumber,testIntOps,testFloatOps,testEnum): New.
