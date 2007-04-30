@@ -1,3 +1,7 @@
+2007-04-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Server.java: Disable the [ptrace] Server.
+
 2007-04-18  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.cxx (throwErrno): Use vasprintf, not asprintf.

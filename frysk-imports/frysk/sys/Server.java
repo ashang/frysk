@@ -47,7 +47,7 @@ package frysk.sys;
 public class Server
     extends Thread
 {
-    public static boolean useServerXXX = true;
+    public static boolean useServerXXX = false;
 
     /**
      * Do not allow extension.
