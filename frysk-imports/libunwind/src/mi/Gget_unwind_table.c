@@ -73,7 +73,7 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
     
     	Debug(99, "Traversed headers\n");
 	if (!ptxt || !peh_hdr)
-    		return -1;
+    		return -UNW_ENOINFO;
     		    
     	if (pdyn)
     {

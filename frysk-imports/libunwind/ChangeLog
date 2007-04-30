@@ -1,3 +1,8 @@
+2007-04-30  Nurdin Premji  <npremji@redhat.com>
+
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Changed to return
+	UNW_ENOINFO instead of -1. Allows stepping to continue.
+
 2007-04-25  Nurdin Premji  <npremji@redhat.com>
 
 	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Cleaned up logging.
