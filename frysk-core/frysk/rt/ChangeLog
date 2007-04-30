@@ -8,7 +8,7 @@
 	(getFrameIdentifier): Added.
 	(getTask): Added.	
 	(getRegister): Return long.
-	(getRegister): ABI compatible with StackFrame.
+	(getRegister): API compatible with StackFrame.
 	(setRegister): Ditto.
 
 2007-04-30  Mike Cvet  <mcvet@redhat.com>
