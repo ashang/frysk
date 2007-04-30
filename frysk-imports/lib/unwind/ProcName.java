@@ -42,12 +42,12 @@ package lib.unwind;
 public class ProcName
 {
   int error = 0;
-  final long address;
+  final long offset;
   final String name;
   
-  public long getAddress()
+  public long getOffset()
   {
-    return address;
+    return offset;
   }
   
   public String getName()
@@ -60,10 +60,10 @@ public class ProcName
     return error;
   }
   
-  private ProcName(int error, long address, String name)
+  private ProcName(int error, long offset, String name)
   {
     this.error = error;
-    this.address = address;
+    this.offset = offset;
     this.name = name;
   }
   
@@ -82,7 +82,7 @@ public class ProcName
     if (error != 0)
     return "ProcName error: " + error;
     
-    return "ProcName name: " + name + " offset: " + Long.toHexString(address);
+    return "ProcName name: " + name + " offset: " + Long.toHexString(offset);
   }
   
 }

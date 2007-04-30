@@ -1,5 +1,10 @@
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
+	* Cursor.java (getProcName): Added.
+	(getRegister): Added.
+	* ProcName.java: Renamed address field to offset field, more descriptive.
+	* cni/UnwindH.hxx (get_proc_name): Update offset in the null buffer case.
+
 	* cni/ElfImage.cxx: Astyle --style=gnu.
 	* cni/ProcInfo.cxx: Ditto.
 	* cni/PtraceAccessors.cxx: Ditto.

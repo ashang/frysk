@@ -1,5 +1,10 @@
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
+	* Frame.java: Copied over StackFrame methods.
+	(getRegister): Returns a byte[] rather than a long.
+	* StackFactory.java: Updated Frame.java constructor and toPrint() method 
+	signatures changed.
+
 	* Frame.java (getProcName): Updated, ProcName fields less visible.
 	(getAddress): Ditto.
 	(toPrint): Ditto.

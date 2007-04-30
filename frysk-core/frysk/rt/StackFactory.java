@@ -65,7 +65,7 @@ public class StackFactory
     
     Cursor innermost = new Cursor(addressSpace, accessors);
     
-    Frame innerFrame = new Frame(innermost);
+    Frame innerFrame = new Frame(innermost, task);
         
     return innerFrame;
   }
@@ -127,7 +127,11 @@ public class StackFactory
     return createStackFrame(task, 0);
   }
   
-  static boolean newUnwind = false;
+  private static boolean newUnwind = false;
+  public static void setNewUnwind(boolean bool)
+  {
+    newUnwind = bool;
+  }
   public static final StringBuffer generateTaskStackTrace (Task task)
   {
     if (task != null)
@@ -138,7 +142,7 @@ public class StackFactory
       if (newUnwind)	
 	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
 	    {
-	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(256) + "\n");
+	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
 	      buffer.append(output);
 	      count++;
 	    }

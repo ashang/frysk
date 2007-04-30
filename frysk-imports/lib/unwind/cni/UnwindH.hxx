@@ -185,9 +185,12 @@ namespace TARGET
         (jint) buf_len);
 
     //In case get_proc_name is used only to find addr;
-    if (bufp == NULL || buf_len == 0)
-      return 0;
-
+    if (bufp == NULL || buf_len == 0) 
+      {
+        *offp = (unw_word_t) procName->offset;
+        return 0;
+      }
+      
     if (procName->error < 0 && procName->error != -UNW_ENOMEM)
       return procName->error;
 
@@ -201,7 +204,7 @@ namespace TARGET
 
     bufp[upper_limit] = '\0';
 
-    *offp = (unw_word_t) procName->address;
+    *offp = (unw_word_t) procName->offset;
 
     if (upper_limit < buf_len)
       return 0;

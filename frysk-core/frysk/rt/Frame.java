@@ -39,6 +39,12 @@
 
 package frysk.rt;
 
+import java.io.File;
+
+import frysk.proc.Task;
+
+import lib.dw.Dwfl;
+import lib.dw.DwflLine;
 import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
@@ -46,13 +52,19 @@ import lib.unwind.ProcName;
 public class Frame
 {  
   protected Cursor cursor;
+  private Task task;
+  
+  private Symbol symbol;
+  private Line[] lines;
+  
   
   Frame inner = null;
   Frame outer = null;
    
-  Frame (Cursor cursor)
+  Frame (Cursor cursor, Task task)
   {
     this.cursor = cursor;
+    this.task = task;
   }
   
   public Frame getOuter()
@@ -60,7 +72,7 @@ public class Frame
     Cursor newCursor = this.cursor.unwind();
     if (newCursor != null) 
       {
-      outer = new Frame(newCursor);
+      outer = new Frame(newCursor, task);
       outer.inner = this;
       }
     return outer;
@@ -68,7 +80,7 @@ public class Frame
   
   public String getProcName()
   {
-    return getProcName(100);
+    return cursor.getProcName().getName();
   }
   
   public String getProcName(int maxNameSize)
@@ -83,23 +95,144 @@ public class Frame
   
   public long getAddress()
   {
-    ProcInfo myInfo = getProcInfo();
+    ProcInfo myInfo = cursor.getProcInfo();
     ProcName myName = cursor.getProcName(0);
     
     if (myInfo.getError() != 0 || myName.getError() != 0)
       	return 0;
     
-    return myInfo.getStartIP() + myName.getAddress();
+    System.err.println("StartIP: " + Long.toHexString(myInfo.getStartIP()));
+    System.err.println("Offset: " + Long.toHexString(myName.getOffset()));
+    return myInfo.getStartIP() + myName.getOffset();
   }
   
-  public String toPrint(int maxNameSize)
+  public long getAdjustedAddress()
   {
-    ProcInfo myInfo = getProcInfo();
-    ProcName myName = cursor.getProcName(maxNameSize);
-    
-    if (myInfo.getError() != 0 || myName.getError() != 0)
-      return "";
-    return "0x" + Long.toHexString(myInfo.getStartIP() + myName.getAddress()) 
-    + " in " + myName.getName();
+    if (this.inner != null && !this.cursor.isSignalFrame())
+      return getAddress() - 1;
+    else
+      return getAddress();
   }
+  
+  public byte[] getRegister(int regNum)
+  {
+    byte[] word = new byte[task.getIsa().getWordSize()];
+    cursor.getRegister(regNum, word);
+    return word;
+  }
+  
+  public boolean isSignalFrame()
+  {
+    return cursor.isSignalFrame();
+  }
+  
+  /**
+   * Return a simple string representation of this stack frame.
+   * The returned string is suitable for display to the user.
+   */
+  public String toPrint (boolean name)
+  {
+     // XXX: There is always an inner cursor.
+      if (this.cursor == null)
+	  return "Empty stack trace";
+    
+     // Pad the address based on the task's word size.
+      StringBuffer builder = new StringBuffer ("0x");
+      String addr = Long.toHexString (getAddress());
+      int padding = 2 * task.getIsa().getWordSize() - addr.length();
+      for (int i = 0; i < padding; ++i)
+	  builder.append('0');
+      builder.append(addr);
+
+       // Print the symbol, if known append ().
+      Symbol symbol = getSymbol ();
+      builder.append(" in ");
+      builder.append (symbol.getDemangledName ());
+      if (symbol != Symbol.UNKNOWN)
+	  builder.append (" ()");
+
+       // If there's line number information append that.
+      Line[] lines = getLines ();
+      for (int i = 0; i < lines.length; i++) {
+	  Line line = lines[i];
+	  builder.append (" from: ");
+	  if (name) {
+	      builder.append (line.getFile ().getName ());
+	      builder.append (": line #");
+	      builder.append (line.getLine ());
+	  }
+	  else {
+	      builder.append(line.getFile ().getPath ());
+	      builder.append ("#");
+	      builder.append (line.getLine ());
+	  }
+      }
+      System.err.println("Printed line info");
+      return builder.toString();
+  }
+  
+  /**
+   * Return this frame's symbol; UNKNOWN if there is no symbol.
+   */
+public Symbol getSymbol ()
+{
+  if (this.symbol == null)
+    {
+      String mangledName = cursor.getProcName().getName();
+      if (mangledName == null)
+        this.symbol = Symbol.UNKNOWN;
+      else
+        {
+          long address = getAddress() - cursor.getProcName().getOffset();
+          this.symbol = new Symbol(address, mangledName);
+        }
+    }
+  return this.symbol;
+}
+
+/**
+ * Return this frame's list of lines as an array; returns an empty array if
+ * there is no line number information available. The lack of line-number
+ * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
+ * XXX: When there are multiple lines, it isn't clear if there is a well
+ * defined ordering of the information; for instance: outer-to-inner or
+ * inner-to-outer.
+ */
+public Line[] getLines ()
+{
+if (this.lines == null)
+  {
+    if (this.cursor != null)
+      {
+        Dwfl dwfl = new Dwfl(this.task.getTid());
+        // The innermost frame and frames which were
+        // interrupted during execution use their PC to get
+        // the line in source. All other frames have their PC
+        // set to the line after the inner frame call and must
+        // be decremented by one.
+        DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
+        if (dwflLine != null)
+          {
+            File f = new File (dwflLine.getSourceFile());
+            if (!f.isAbsolute())
+              {
+                /* The file refers to a path relative to the compilation
+                 * directory; so prepend the path to that directory in
+                 * front of it. */
+                File parent = new File(dwflLine.getCompilationDir());
+                f = new File (parent, dwflLine.getSourceFile());
+              }
+            
+            this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
+                                                  dwflLine.getColumn(),
+                                                  this.task.getProc()) };
+          }
+        
+      }
+    // If the fetch failed, mark it as unknown.
+    if (this.lines == null)
+      this.lines = new Line[0];
+  }
+return this.lines;
+}
 }
