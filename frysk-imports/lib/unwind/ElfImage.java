@@ -45,17 +45,20 @@ public class ElfImage
 
   long elfImage;
 
-  public long size;
+  long size;
 
-  public long segbase;
+  long segbase;
 
-  public long mapoff;
+  long mapoff;
 
-  public int ret;
-
-  public ElfImage ()
+  int ret = 0;
+  
+  public ElfImage (long elfImage, long size, long segbase, long mapoff)
   {
-
+    this.elfImage = elfImage;
+    this.size = size;
+    this.segbase = segbase;
+    this.mapoff = mapoff;
   }
 
   public ElfImage (int ret)

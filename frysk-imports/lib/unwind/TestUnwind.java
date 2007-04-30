@@ -159,7 +159,7 @@ public class TestUnwind
 			assertNotNull("Cursor null", cursor.cursor);
 			logger.log(Level.FINE,
 				   "testPtraceAccessors returned: {0}\n", 
-				   cursor.getProcName(1000).name);
+				   cursor.getProcName(1000).getName());
 			temp = cursor.step();
 		    }
 		    assertEquals("Cursor step return value", 0, temp);
@@ -187,7 +187,7 @@ public class TestUnwind
 		    while (temp > 0) {
 			assertNotNull("Cursor should not be null",
 				      cursor.cursor);
-			logger.log(Level.FINE, "testPtraceAccessorsSmallMaxName returned: {0}\n", cursor.getProcName(10).name);
+			logger.log(Level.FINE, "testPtraceAccessorsSmallMaxName returned: {0}\n", cursor.getProcName(10).getName());
 			temp = cursor.step();
 		    }
 		    assertEquals("Cursor step return value should be 0", 0, temp);

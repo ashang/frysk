@@ -46,11 +46,11 @@ public class PtraceAccessors
     extends Accessors
 {
   Logger logger = Logger.getLogger("frysk");
-  public final RawData ptArgs;
+  final RawData ptArgs;
   
   private native RawData createPtArg (int pid);
   
-  public final RawData addressSpace;
+  final RawData addressSpace;
   
   private native RawData createAddressSpace(ByteOrder byteOrder);
 

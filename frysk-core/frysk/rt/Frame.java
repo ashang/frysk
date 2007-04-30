@@ -73,7 +73,7 @@ public class Frame
   
   public String getProcName(int maxNameSize)
   {
-    return cursor.getProcName(maxNameSize).name;
+    return cursor.getProcName(maxNameSize).getName();
   }
   
   public ProcInfo getProcInfo()
@@ -89,7 +89,7 @@ public class Frame
     if (myInfo.getError() != 0 || myName.getError() != 0)
       	return 0;
     
-    return myInfo.getStartIP() + myName.address;
+    return myInfo.getStartIP() + myName.getAddress();
   }
   
   public String toPrint(int maxNameSize)
@@ -99,7 +99,7 @@ public class Frame
     
     if (myInfo.getError() != 0 || myName.getError() != 0)
       return "";
-    return "0x" + Long.toHexString(myInfo.getStartIP() + myName.address) 
-    + " in " + myName.name;
+    return "0x" + Long.toHexString(myInfo.getStartIP() + myName.getAddress()) 
+    + " in " + myName.getName();
   }
 }

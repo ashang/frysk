@@ -1,3 +1,9 @@
+2007-04-30  Nurdin Premji  <npremji@redhat.com>
+
+	* Frame.java (getProcName): Updated, ProcName fields less visible.
+	(getAddress): Ditto.
+	(toPrint): Ditto.
+
 2007-04-26  Mike Cvet  <mcvet@redhat.com>
 	
 	* TestStackBacktrace.java: Fixed up to use SteppingEngine. Removed

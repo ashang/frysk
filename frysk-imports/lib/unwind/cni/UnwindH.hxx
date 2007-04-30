@@ -451,11 +451,9 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
   	if (segbase == mapoff)
     		mapoff = 0;
 
-  	lib::unwind::ElfImage* elfImage = new lib::unwind::ElfImage();
-	elfImage->elfImage = (jlong) image;
-	elfImage->size = size;
-	elfImage->segbase = segbase;
-	elfImage->mapoff = mapoff;
+  	lib::unwind::ElfImage* elfImage 
+  	  = new lib::unwind::ElfImage((jlong) image, (jlong) size, 
+  	                              (jlong) segbase, (jlong) mapoff);
 	
 	jLogFine(this, logger, "elfImage returned: {1}", elfImage);
 	return elfImage;

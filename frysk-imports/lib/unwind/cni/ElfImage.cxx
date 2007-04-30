@@ -84,11 +84,9 @@ lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi
 	if (image == MAP_FAILED)
 		return new lib::unwind::ElfImage((jint) -1);	
 			
-	lib::unwind::ElfImage* elfImage = new lib::unwind::ElfImage();
-	elfImage->elfImage = (jlong) image;
-	elfImage->size = size;
-	elfImage->segbase = segbase;
-	elfImage->mapoff = mapoff;
+	lib::unwind::ElfImage* elfImage 
+	  = new lib::unwind::ElfImage((jlong) image, (jlong) size, 
+	                              (jlong) segbase, (jlong) mapoff);
 	
 	return elfImage;
 }
