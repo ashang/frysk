@@ -1,3 +1,10 @@
+2007-04-30  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk3754/linux.ptrace.h: Added.
+	* frysk3754/TestReadProcDir.cxx: Added.
+	* frysk3754/TestReadProcDir.java: Added.
+	* Makefile.am (XFAIL_TESTS): Added frysk3754/readprocdir.
+
 2007-04-08  Roland McGrath  <roland@redhat.com>
 	    Jan Kratochvil  <jan.kratochvil@redhat.com>
 
