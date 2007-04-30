@@ -62,9 +62,10 @@ public class UnwindNative
   
   native ProcName getProcName(RawDataManaged cursor, int maxNameSize);
   
-   native int getRegister(RawDataManaged cursor, int regNum,
+  native int getRegister(RawDataManaged cursor, int regNum,
                            byte[] word);
  
+  native int setRegister(RawDataManaged cursor, int regNum, long word);
   
   native int getContext (RawDataManaged context);
   

@@ -1,5 +1,13 @@
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
+	* Cursor.java (getRegister): Return int.
+	(getSP): Added.
+	(setRegister): Added.
+	* Unwind.java (setRegister): Added.
+	* UnwindNative.java: Ditto.
+	* UnwindX86.java: Ditto.
+	* cni/UnwindH.hxx: Ditto.
+
 	* Cursor.java (getProcName): Added.
 	(getRegister): Added.
 	* ProcName.java: Renamed address field to offset field, more descriptive.

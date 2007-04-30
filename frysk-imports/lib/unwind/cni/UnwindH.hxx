@@ -305,6 +305,14 @@ lib::unwind::TARGET::getRegister(gnu::gcj::RawDataManaged* cursor,
 }
 
 jint
+lib::unwind::TARGET::setRegister(gnu::gcj::RawDataManaged* cursor,
+                                 jint regNum, jlong word)
+{
+  return (jint) unw_set_reg((::unw_cursor_t *) cursor,
+                            (::unw_regnum_t) regNum, (::unw_word_t ) word);
+}
+
+jint
 lib::unwind::TARGET::getSP(gnu::gcj::RawDataManaged* cursor, jbyteArray word)
 {
   return (jint) unw_get_reg((::unw_cursor_t *) cursor,

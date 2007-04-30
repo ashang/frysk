@@ -57,6 +57,8 @@ public class Frame
   private Symbol symbol;
   private Line[] lines;
   
+  private FrameIdentifier frameIdentifier;
+  private Subprogram subprogram;
   
   Frame inner = null;
   Frame outer = null;
@@ -114,11 +116,62 @@ public class Frame
       return getAddress();
   }
   
-  public byte[] getRegister(int regNum)
+  public long getRegister(int regNum)
   {
     byte[] word = new byte[task.getIsa().getWordSize()];
-    cursor.getRegister(regNum, word);
-    return word;
+    if (cursor.getRegister(regNum, word) < 0)
+      return 0;
+    return byteArrayToLong(word);
+  }
+  
+  public long getRegister (long regNum)
+  {
+    return getRegister((int) regNum);
+  }
+  
+  public Task getTask()
+  {
+    return task;
+  }
+  public long byteArrayToLong(byte[] word)
+
+  {
+    long val = 0;
+    for (int i = 0; i < word.length; i++)
+      val = val << 8 | (word[i] & 0xff);
+    return val;
+  }
+  
+  public long getCFA()
+  {
+    byte[] word = new byte[task.getIsa().getWordSize()];
+    if (cursor.getSP(word) < 0)
+      return 0;
+    return byteArrayToLong(word);
+  }
+  
+  /**
+   * Return this frame's FrameIdentifier.
+   */
+  public FrameIdentifier getFrameIdentifier ()
+  {
+    if (this.frameIdentifier != null)
+      {
+        ProcInfo myInfo = getProcInfo();
+        this.frameIdentifier = new FrameIdentifier(myInfo.getStartIP(),
+                                          getCFA());
+      }
+    return this.frameIdentifier;
+  }
+  
+  public int setRegister(int regNum, long word)
+  {
+    return cursor.setRegister(regNum, word);
+  }
+  
+  public long setRegister (long regNum, long word)
+  {
+    return (long) setRegister ((int) regNum, word);
   }
   
   public boolean isSignalFrame()
@@ -234,5 +287,15 @@ if (this.lines == null)
       this.lines = new Line[0];
   }
 return this.lines;
+}
+
+public Subprogram getSubprogram ()
+{
+  return subprogram;
+}
+
+public void setSubprogram (Subprogram subprogram)
+{
+  this.subprogram = subprogram;
 }
 }

@@ -63,6 +63,9 @@ public class UnwindX86
                           byte[] word);
 
   //@Override
+  native int setRegister(RawDataManaged cursor, int regNum, long word);
+  
+  //@Override
   native RawDataManaged initRemote (RawData addressSpace, Accessors accessors);
 
   //@Override
