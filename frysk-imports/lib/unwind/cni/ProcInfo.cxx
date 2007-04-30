@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -48,53 +48,53 @@
 jlong
 lib::unwind::ProcInfo::getStartIP()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->start_ip;
+  return (jlong) ((unw_proc_info_t *) procInfo)->start_ip;
 }
 
 jlong
 lib::unwind::ProcInfo::getEndIP()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->end_ip;
+  return (jlong) ((unw_proc_info_t *) procInfo)->end_ip;
 }
 
 jlong
 lib::unwind::ProcInfo::getLSDA()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->lsda;
+  return (jlong) ((unw_proc_info_t *) procInfo)->lsda;
 }
 
 jlong
 lib::unwind::ProcInfo::getHandler()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->handler;
+  return (jlong) ((unw_proc_info_t *) procInfo)->handler;
 }
 
 jlong
 lib::unwind::ProcInfo::getGP()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->gp;
+  return (jlong) ((unw_proc_info_t *) procInfo)->gp;
 }
 
 jlong
 lib::unwind::ProcInfo::getFlags()
 {
-	return (jlong) ((unw_proc_info_t *) procInfo)->flags;
+  return (jlong) ((unw_proc_info_t *) procInfo)->flags;
 }
 
 jint
 lib::unwind::ProcInfo::getFormat()
 {
-	return (jint) ((unw_proc_info_t *) procInfo)->format;
+  return (jint) ((unw_proc_info_t *) procInfo)->format;
 }
 
 jint
 lib::unwind::ProcInfo::getUnwindInfoSize()
 {
-	return (jint) ((unw_proc_info_t *) procInfo)->unwind_info_size;
+  return (jint) ((unw_proc_info_t *) procInfo)->unwind_info_size;
 }
 
 gnu::gcj::RawData*
 lib::unwind::ProcInfo::getUnwindInfo()
 {
-	return (gnu::gcj::RawData *) ((unw_proc_info_t *) procInfo)->unwind_info;
+  return (gnu::gcj::RawData *) ((unw_proc_info_t *) procInfo)->unwind_info;
 }

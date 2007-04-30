@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -54,45 +54,45 @@
 
 lib::unwind::ElfImage*
 lib::unwind::ElfImage::mapElfImage(jstring elfImageName, jlong segbase, jlong hi,
-				   jlong mapoff)
+                                   jlong mapoff)
 {
-	struct stat stat;  
-	void *image;		/* pointer to mmap'd image */
-	size_t size;		/* (file-) size of the image */
-	int nameSize = JvGetStringUTFLength(elfImageName);
-	char name[nameSize+1];
-	//JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
-	JvGetStringUTFRegion(elfImageName, 0, nameSize, name);
-	name[nameSize] = '\0';
-	
-	int fd = open (name, O_RDONLY);
-	if (fd < 0)
-		return new lib::unwind::ElfImage((jint) fd);
-		
-	int ret = fstat (fd, &stat);
-	if (ret < 0)
-	{
-		close (fd);
-		return new lib::unwind::ElfImage((jint) ret);
-	}	
+  struct stat stat;
+  void *image;		/* pointer to mmap'd image */
+  size_t size;		/* (file-) size of the image */
+  int nameSize = JvGetStringUTFLength(elfImageName);
+  char name[nameSize+1];
+  //JvGetStringUTFRegion(jstring STR, jsize START, jsize LEN, char* BUF);
+  JvGetStringUTFRegion(elfImageName, 0, nameSize, name);
+  name[nameSize] = '\0';
 
-	size = stat.st_size;
-	image = mmap (NULL, size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
-	
+  int fd = open (name, O_RDONLY);
+  if (fd < 0)
+    return new lib::unwind::ElfImage((jint) fd);
 
-	close (fd);
-	if (image == MAP_FAILED)
-		return new lib::unwind::ElfImage((jint) -1);	
-			
-	lib::unwind::ElfImage* elfImage 
-	  = new lib::unwind::ElfImage((jlong) image, (jlong) size, 
-	                              (jlong) segbase, (jlong) mapoff);
-	
-	return elfImage;
+  int ret = fstat (fd, &stat);
+  if (ret < 0)
+    {
+      close (fd);
+      return new lib::unwind::ElfImage((jint) ret);
+    }
+
+  size = stat.st_size;
+  image = mmap (NULL, size, PROT_READ, MAP_PRIVATE | MAP_32BIT, fd, 0);
+
+
+  close (fd);
+  if (image == MAP_FAILED)
+    return new lib::unwind::ElfImage((jint) -1);
+
+  lib::unwind::ElfImage* elfImage
+  = new lib::unwind::ElfImage((jlong) image, (jlong) size,
+                              (jlong) segbase, (jlong) mapoff);
+
+  return elfImage;
 }
 
 void
 lib::unwind::ElfImage::finalize()
 {
-	munmap((void *) elfImage, (size_t) size);
+  munmap((void *) elfImage, (size_t) size);
 }

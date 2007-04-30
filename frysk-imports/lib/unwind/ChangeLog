@@ -1,11 +1,18 @@
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
+	* cni/ElfImage.cxx: Astyle --style=gnu.
+	* cni/ProcInfo.cxx: Ditto.
+	* cni/PtraceAccessors.cxx: Ditto.
+	* cni/UnwindH.hxx: Ditto.
+	* cni/UnwindNative.cxx: Ditto.
+	* cni/UnwindX86.cxx: Ditto.
+
 	* ElfImage.java: Reduce visibility of internal fields. Added constructor.
 	* ProcName.java: Reduced visibility of internal fields.
 	* PtraceAccessors.java: Ditto.
 	* TestUnwind.java: Updated.
-	* ElfImage.cxx: Updated.
-	* UnwindH.hxx: Updated.
+	* cni/ElfImage.cxx: Updated.
+	* cni/UnwindH.hxx: Updated.
 
 2007-04-26  Nurdin Premji  <npremji@redhat.com>
 
