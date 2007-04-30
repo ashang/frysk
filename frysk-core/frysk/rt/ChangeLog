@@ -1,3 +1,19 @@
+2007-04-30  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java (testLineStepFunctionCall): Use Sig.USR1
+	instead of Sig.POLL. Fixes #4431.
+	(testLineStepIfStatementPass): Ditto.
+	(testLineStepIfStatementFail): Ditto.
+	(testLineStepFunctionReturn): Ditto.
+	(testStepSigLongJmp): Ditto.
+	(testStepGoto): Ditto.
+	(testStepSigRaise): Ditto.
+	* TestSteppingEngine.java (testInstructionStepping): Ditto.
+	(testLineStepping): Ditto.
+	(testStepOver): Ditto.
+	(testInstructionNext): Ditto.
+	(testStepOut): Ditto.
+
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java: Copied over StackFrame methods.

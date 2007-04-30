@@ -97,8 +97,6 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionCall ()
   {
-    if (brokenXXX(4431))
-      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -112,11 +110,11 @@ public class TestStepping extends TestLib
     test = LINE_STEP_FUNCTION_CALL;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-steptester"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -132,8 +130,6 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementPass ()
   {
-    if (brokenXXX(4431))
-      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -147,11 +143,11 @@ public class TestStepping extends TestLib
     test = LINE_STEP_IF_PASS;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-steptester"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -168,8 +164,6 @@ public class TestStepping extends TestLib
   
   public void testLineStepIfStatementFail ()
   {
-    if (brokenXXX(4431))
-      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -183,11 +177,11 @@ public class TestStepping extends TestLib
     test = LINE_STEP_IF_FAIL;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-steptester"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -204,8 +198,6 @@ public class TestStepping extends TestLib
   
   public void testLineStepFunctionReturn ()
   {
-    if (brokenXXX(4431))
-      return;
     if (brokenPpcXXX (3277))
       return;
     
@@ -219,11 +211,11 @@ public class TestStepping extends TestLib
     test = LINE_STEP_FUNCTION_RETURN;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-steptester"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -348,11 +340,11 @@ public class TestStepping extends TestLib
     test = SIGLONGJMP;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-siglongjmp"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -369,9 +361,6 @@ public class TestStepping extends TestLib
   
   public void testStepGoto ()
   {
-    if (brokenXXX(4394))
-      return;
-    
     if (brokenPpcXXX (3277))
       return;
     
@@ -385,11 +374,11 @@ public class TestStepping extends TestLib
     test = GOTO;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-goto"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);
@@ -422,11 +411,11 @@ public class TestStepping extends TestLib
     test = SIG_RAISE_ENTER;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-sigraise"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     myTask = process.findTaskUsingRefresh(true);

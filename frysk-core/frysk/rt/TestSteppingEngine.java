@@ -99,11 +99,11 @@ public class TestSteppingEngine extends TestLib
     testState = INSTRUCTION_STEP;
     
     AckDaemonProcess process = new AckDaemonProcess
-	(Sig.POLL,
+	(Sig.USR1,
 	 new String[] {
 	    getExecPath ("funit-rt-stepper"),
 	    "" + Pid.get (),
-	    "" + Sig.POLL_
+	    "" + Sig.USR1_
 	});
     
     Manager.host.requestRefreshXXX(true);
@@ -132,11 +132,11 @@ public class TestSteppingEngine extends TestLib
     testState = STEP_IN;
     
     AckDaemonProcess process = new AckDaemonProcess
-	(Sig.POLL,
+	(Sig.USR1,
 	 new String[] {
 	    getExecPath ("funit-rt-stepper"),
 	    "" + Pid.get (),
-	    "" + Sig.POLL_
+	    "" + Sig.USR1_
 	});
     
     Manager.host.requestRefreshXXX(true);
@@ -168,11 +168,11 @@ public class TestSteppingEngine extends TestLib
     testState = STEP_OVER;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-stepper"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     Manager.host.requestRefreshXXX(true);
@@ -204,11 +204,11 @@ public class TestSteppingEngine extends TestLib
     testState = INSTRUCTION_STEP_NEXT;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-stepper"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     Manager.host.requestRefreshXXX(true);
@@ -241,11 +241,11 @@ public class TestSteppingEngine extends TestLib
     testState = STEP_OUT;
     
     AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-stepper"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
     
     Manager.host.requestRefreshXXX(true);
