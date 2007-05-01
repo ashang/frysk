@@ -7,6 +7,15 @@
 	(LockObserver.update): Updated to work with testContinue.
 	
 	* TestSteppingEngine.java (setUpContinue): Added additional assertions.
+	
+	* SteppingEngine.java (SteppingBreakpoint.addedTo): Set task State to 
+	running before steppingObserver deletion.
+	(setBreakpoint): Record new Breakpoint in breakpointMap.
+	(removeBreakpoint): Remove from breakpointMap.
+	* TestSteppingEngine.java (testBreakpointing):Added. Tests 
+	SteppingEngine breakpoint adding mechanism.
+	(setUpTest): Cleaned up. Added code for testBreakpointing.
+	(breakpointAssertions): Added.
 
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 

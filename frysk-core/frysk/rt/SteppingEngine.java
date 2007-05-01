@@ -859,7 +859,7 @@ public class SteppingEngine
     Iterator i = list.iterator();
     while (i.hasNext())
       {
-		t = (Task) i.next();
+	t = (Task) i.next();
 	
         SteppingBreakpoint bpt = (SteppingBreakpoint) breakpointMap.get(t);
         
@@ -952,6 +952,7 @@ public class SteppingEngine
   public static void setBreakpoint (Task task, long address)
   {
     breakpoint = new SteppingBreakpoint (address);
+    breakpointMap.put(task, breakpoint);
     task.requestAddCodeObserver(breakpoint, address);
   }
   
@@ -962,6 +963,7 @@ public class SteppingEngine
    */
   public static void removeBreakpoint (Task task)
   {
+    breakpointMap.remove(task);
     task.requestDeleteCodeObserver(breakpoint, addy);
   }
   
@@ -1366,14 +1368,18 @@ public class SteppingEngine
 
     public void addedTo (Object observable)
     {
+//    System.err.println("BreakPoint.addedTo");
       synchronized (monitor)
         {
           added = true;
           removed = false;
           monitor.notifyAll();
         }
-//      System.err.println("BreakPoint.addedTo");
-      ((Task) observable).requestDeleteInstructionObserver(steppingObserver);
+      
+      Task t = (Task) observable;
+      TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
+      tse.setState(new RunningState(t));
+      t.requestDeleteInstructionObserver(steppingObserver);
     }
 
     public boolean isAdded ()

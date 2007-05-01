@@ -40,7 +40,6 @@
 package frysk.rt;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
@@ -83,6 +82,7 @@ public class TestSteppingEngine extends TestLib
   protected static final int STEP_OUT_STEPPING = 10;
   
   protected static final int CONTINUE = 11;
+  protected static final int BREAKPOINTING = 12;
   
   private boolean insStepFlag = true;
   
@@ -297,30 +297,65 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.clear();
   }
 
+  private long breakpointAddress;
+  
+  public void testBreakpointing ()
+  {
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    SteppingEngine.addObserver(lock);
+    testState = BREAKPOINTING;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.USR1,
+	 new String[] {
+	    getExecPath ("funit-rt-stepper"),
+	    "" + Pid.get (),
+	    "" + Sig.USR1_
+	});
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    Proc[] procs = new Proc[1];
+    procs[0] = myProc;
+    SteppingEngine.setProcs(procs);
+
+    assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.cleanTask(myTask);
+    SteppingEngine.clear();
+  }
   
   public void setUpTest ()
   {
-    Iterator i = myProc.getTasks().iterator();
-    
-    while (i.hasNext())
+    myTask = myProc.getMainTask();
+
+    StackFrame frame = StackFactory.createStackFrame(myTask, 2);
+    if (frame.getLines().length == 0)
       {
-        Task t = (Task) i.next();
-        StackFrame frame = StackFactory.createStackFrame(t, 1);
-
-        if (frame.getLines().length == 0)
-          {
-            this.lineMap.put(t, new Integer(0));
-            continue;
-          }
-
-        this.lineMap.put(t, new Integer(frame.getLines()[0].getLine()));
+	this.lineMap.put(myTask, new Integer(0));
       }
-    
+    else
+      this.lineMap.put(myTask, new Integer(frame.getLines()[0].getLine()));
+
     count = 0;
-    
+
     if (testState == INSTRUCTION_STEP)
       {
-        SteppingEngine.stepInstruction(myProc.getMainTask());
+	SteppingEngine.stepInstruction(myProc.getMainTask());
+      }
+    else if (testState == BREAKPOINTING)
+      {
+	breakpointAddress = frame.getOuter().getAddress();
+	SteppingEngine.setBreakpoint(myTask, breakpointAddress);
+	lock.update(new Observable(), new Object());
+	return;
       }
     else
       SteppingEngine.setUpLineStep(myProc.getMainTask());
@@ -719,8 +754,8 @@ public class TestSteppingEngine extends TestLib
 	
 	SteppingEngine.setTaskState(myTask, s);
 	
-	assertEquals("Stopped State", true, s.isStopped());
-	assertEquals("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
+	assertEquals ("Stopped State", true, s.isStopped());
+	assertEquals ("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
 	
 	Manager.eventLoop.requestStop();
       }
@@ -747,6 +782,18 @@ public class TestSteppingEngine extends TestLib
     assertEquals ("isProcRunning", true, SteppingEngine.isProcRunning(l));
     
     SteppingEngine.stop(null, l);
+  }
+  
+  private void breakpointAssertions ()
+  {
+    Breakpoint b = SteppingEngine.getTaskBreakpoint(myTask);
+    assertNotNull(b);
+    
+    assertEquals ("isAdded", true, b.isAdded());
+    assertEquals ("isRemoved", false, b.isRemoved());
+    assertEquals ("breakpoint address", breakpointAddress, b.getAddress());
+    
+    Manager.eventLoop.requestStop();
   }
   
   class LockObserver implements Observer
@@ -802,6 +849,8 @@ public class TestSteppingEngine extends TestLib
             stepAssertions(myProc.getMainTask());
           else if (testState > STEP_IN && testState <= STEP_OUT_STEPPING)
             stepOverAssertions(myProc.getMainTask());
+          else if (testState == BREAKPOINTING)
+            breakpointAssertions();
         }
       });
     }
