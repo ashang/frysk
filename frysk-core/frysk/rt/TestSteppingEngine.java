@@ -287,10 +287,13 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] procs = new Proc[1];
+    procs[0] = myProc;
+    SteppingEngine.setProcs(procs);
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
 
@@ -707,7 +710,20 @@ public class TestSteppingEngine extends TestLib
 	SteppingEngine.continueExecution(l);
       }
     else
-      Manager.eventLoop.requestStop();
+      {
+	SteppingEngine.setRunning(l);
+	State r = SteppingEngine.getTaskState(myTask);
+	
+	assertEquals ("Is task now running", false, r.isStopped());
+	assertEquals ("Is proc now running", true, SteppingEngine.isProcRunning(l));
+	
+	SteppingEngine.setTaskState(myTask, s);
+	
+	assertEquals("Stopped State", true, s.isStopped());
+	assertEquals("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
+	
+	Manager.eventLoop.requestStop();
+      }
 
     return;
   }

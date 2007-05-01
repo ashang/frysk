@@ -5,6 +5,8 @@
 	(setUpContinue): Added.
 	(continueAssertions): Added.
 	(LockObserver.update): Updated to work with testContinue.
+	
+	* TestSteppingEngine.java (setUpContinue): Added additional assertions.
 
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
