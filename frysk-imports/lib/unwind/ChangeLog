@@ -1,3 +1,8 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/UnwindH.hxx (get_proc_name): Handle null procName->name case.
+	(getProcName): Ditto.
+
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
 	* Cursor.java (getRegister): Return int.
