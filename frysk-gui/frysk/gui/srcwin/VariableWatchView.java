@@ -73,6 +73,8 @@ public class VariableWatchView
     implements TreeSelectionListener, SaveableXXX
 {
 
+  public static final String VAR_WATCHES = "variable_watches";
+
   public interface WatchViewListener
   {
     void variableSelected (Variable var);
@@ -340,11 +342,19 @@ public class VariableWatchView
 
   public void load (Element node)
   {
+    // This call is a no-op.
+    /*
+     * Since 'loading' the watched variables means going back
+     * through the SourceWindow,SourceView, and SourceBuffer
+     * to read the variable from the symtable, calling this
+     * method would just result in more work. Might as well
+     * do everything from the SourceWindow
+     */
   }
 
   public void save (Element node)
   {
-    Element varnode = new Element("variable_watches");
+    Element varnode = new Element(VAR_WATCHES);
     node.addContent(varnode);
     
     Iterator varIter = variables.iterator();

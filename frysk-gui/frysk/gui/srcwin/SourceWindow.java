@@ -110,6 +110,8 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -520,6 +522,8 @@ public class SourceWindow
     if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(this.frames[this.current]);
 
+    loadDebugInfo();
+    
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
   }
@@ -923,6 +927,56 @@ public class SourceWindow
       }
   }
   
+  private void loadDebugInfo()
+  {
+    String path = createDebugInfoPath(true);
+    // If there's no save data, there's nothing to load.
+    if(path.equals(""))
+      return;
+    
+    SAXBuilder reader = new SAXBuilder();
+    Document doc = null;
+    try
+      {
+	doc = reader.build(new File(path));
+      }
+    catch (JDOMException e)
+      {
+	e.printStackTrace();
+	return;
+      }
+    catch (IOException e)
+      {
+	e.printStackTrace();
+	return;
+      }
+    Element root = (Element) doc.getContent().get(0);
+    
+    // load the watched variables
+    /*
+     * We load the variables here rather than call watchView.load(),
+     * since that call will just result in more calls to the
+     * source window/view/buffer to re-read the variables.
+     */
+    Element variables = root.getChild(VariableWatchView.VAR_WATCHES);
+    Iterator iter = variables.getChildren().iterator();
+    while(iter.hasNext())
+      {
+	Element varNode = (Element) iter.next();
+	String name = varNode.getAttributeValue("name");
+	String type = varNode.getAttributeValue("type");
+	String filePath = varNode.getAttributeValue("filePath");
+	int lineNo = Integer.parseInt(varNode.getAttributeValue("line"));
+	
+	Variable var = ((SourceView) this.view).findVariable(name, filePath, lineNo, type);
+	if(var != null)
+	  {
+	    
+	  }
+      }
+    
+  }
+  
   /**
    * Creates the path to save the debuginfo in, creating the directory
    * hierarchy if it does not already exist
@@ -941,8 +995,15 @@ public class SourceWindow
     procPath = procPath.substring(0, procPath.lastIndexOf("/")+1);
     File path = new File(settingsPath+procPath);
     if(!path.exists())
-      {
 	path.mkdirs();
+    
+    if(checkFile)
+      {
+	File fullPath = new File(settingsPath+procPath+procName);
+	// If we haven't previously saved data to this file, then return
+	// the empty string.
+	if(!fullPath.exists())
+	  return "";
       }
     
     return settingsPath+procPath+procName;

@@ -1,3 +1,13 @@
+2007-05-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceView.java (findVariable): Added, stub at the moment.
+	* SourceWindow.java (finishSourceWin): Now calls loadDebugInfo().
+	(loadDebugInfo): Added.
+	(createDebugInfoPath): Now also checks for the existence of the file.
+	* VariableWatchView.java (VAR_WATCHES): Extracted out constant.
+	* WatchList.java: New file.
+	* VariableWatchListener.java: New file.
+
 2007-04-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (getVariable): Now saves file and line number info

@@ -579,6 +579,23 @@ public class SourceView
     return this.buf.refreshVars(vars);
   }
 
+  /**
+   * Tries to find a variable with the given name and type in the given file
+   * at the given line number. Returns the variable if successful, returns false
+   * otherwise
+   * 
+   * @param name The name of the variable to look for
+   * @param filePath The name of the file to look for the variable in
+   * @param lineNo The line number the variable is on
+   * @param typeName The name of the type of the variable
+   * @return The variable at location, or null if no variable exists
+   */
+  public Variable findVariable(String name, String filePath, int lineNo, String typeName)
+  {
+    
+    return null;
+  }
+  
   /*---------------------------*
    * PRIVATE METHODS           *
    *---------------------------*/
