@@ -1,3 +1,8 @@
+2007-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh: Pass -Werror to autoconf.  Do not pass -f to
+	elfutil's autoconf.  Perform top-level autogen last.
+
 2007-04-16  Stepan Kasal  <skasal@redhat.com>
 
 	* Makefile.am (DIST_SUBDIRS): Leave out libunwind-i386.

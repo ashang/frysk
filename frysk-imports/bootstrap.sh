@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -52,8 +52,41 @@ FILE_LIST="frysk \
 
 ./common/Makefile.gen.sh --cni $FILE_LIST
 
+(
+    cd elfutils
+    echo "Running aclocal ... for elfutils"
+    aclocal -I m4
+    echo "Running autoconf ... for elfutils"
+    autoconf -Werror
+    echo "Running autoheader ... for elfutils"
+    autoheader -Werror
+    echo "Running automake ... for elfutils"
+    automake -Werror --add-missing 
+)
+
+(
+    cd antlr
+    echo "Running autoconf ... for antlr"
+    autoconf -Werror -f
+)
+
 # Create a libunwind-i386 directory
-test -d libunwind-i386 || mkdir libunwind-i386
+mkdir -p libunwind-i386
+(
+    cd libunwind
+    mkdir -p config
+    echo "Running aclocal ... for libunwind"
+    aclocal
+    echo "Running libtoolize ... for libunwind"
+    libtoolize --copy --force
+    echo "Running autoheader ... for libunwind"
+    autoheader -Werror
+    echo "Running automake ... for libunwind"
+    automake -Werror --add-missing
+    echo "Running autoconf ... for libunwind"
+    autoconf -Werror -f
+)
+
 
 # Generate everything (always run with --add-missing).
 
@@ -61,37 +94,7 @@ echo "Running aclocal ... for frysk-imports"
 aclocal -I common/m4
 
 echo "Running autoconf ... for frysk-imports"
-autoconf -f
+autoconf -Werror -f
 
 echo "Running automake ... for frysk-imports"
 automake -Werror --add-missing
-
-# Now run a separate aclocal/autoconf/automake for elfutils
-cd elfutils
-echo "Running aclocal ... for elfutils"
-aclocal -I m4
-echo "Running autoconf ... for elfutils"
-autoconf -f
-echo "Running autoheader ... for elfutils"
-autoheader
-echo "Running automake ... for elfutils"
-automake --add-missing 
-cd ../antlr
-echo "Running autoconf ... for antlr"
-autoconf -f
-cd ..
-
-# Now run a separate aclocal/autoconf/automake for libunwind
-cd libunwind
-mkdir -p config
-echo "Running aclocal ... for libunwind"
-aclocal
-echo "Running libtoolize ... for libunwind"
-libtoolize
-echo "Running autoheader ... for libunwind"
-autoheader
-echo "Running automake ... for libunwind"
-automake --add-missing
-echo "Running autoconf ... for libunwind"
-autoconf -f
-cd ..

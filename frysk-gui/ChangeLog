@@ -1,3 +1,7 @@
+2007-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh: Pass -Werror to all autoconf.
+
 2007-04-05  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Update `libunwind-ptrace.a' path to the
