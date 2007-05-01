@@ -84,6 +84,9 @@ public class TestSteppingEngine extends TestLib
   protected static final int CONTINUE = 11;
   protected static final int BREAKPOINTING = 12;
   
+  protected static final int INSTRUCTION_STEP_LIST = 13;
+  protected static final int STEP_IN_LIST = 14;
+  
   private boolean insStepFlag = true;
   
   private LockObserver lock;
@@ -122,6 +125,42 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.clear();
   }
   
+  public void testInstructionSteppingList ()
+  {
+      if (brokenPpcXXX (3277))
+	  return;
+
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    SteppingEngine.addObserver(lock);
+    testState = INSTRUCTION_STEP_LIST;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.USR1,
+	 new String[] {
+	    getExecPath ("funit-rt-stepper"),
+	    "" + Pid.get (),
+	    "" + Sig.USR1_
+	});
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    Proc[] procs = new Proc[1];
+    procs[0] = myProc;
+    SteppingEngine.setProcs(procs);
+
+    assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.cleanTask(myTask);
+    SteppingEngine.clear();
+  }
+  
   public void testLineStepping ()
   {
       if (brokenPpcXXX (3277))
@@ -152,6 +191,42 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.clear();
+  }
+  
+  public void testLineSteppingList ()
+  {
+      if (brokenPpcXXX (3277))
+	  return;
+
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    SteppingEngine.addObserver(lock);
+    testState = STEP_IN_LIST;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.USR1,
+	 new String[] {
+	    getExecPath ("funit-rt-stepper"),
+	    "" + Pid.get (),
+	    "" + Sig.USR1_
+	});
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    Proc[] procs = new Proc[1];
+    procs[0] = myProc;
+    SteppingEngine.setProcs(procs);
+
+    assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
   
@@ -356,6 +431,20 @@ public class TestSteppingEngine extends TestLib
 	SteppingEngine.setBreakpoint(myTask, breakpointAddress);
 	lock.update(new Observable(), new Object());
 	return;
+      }
+    else if (testState == STEP_IN_LIST)
+      {
+	LinkedList l = new LinkedList();
+	l.add(myTask);
+	SteppingEngine.setUpLineStep(l);
+	testState = STEP_IN;
+      }
+    else if (testState == INSTRUCTION_STEP_LIST)
+      {
+	LinkedList l = new LinkedList();
+	l.add(myTask);
+	SteppingEngine.stepInstruction(l);
+	testState = INSTRUCTION_STEP;
       }
     else
       SteppingEngine.setUpLineStep(myProc.getMainTask());

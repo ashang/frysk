@@ -16,6 +16,12 @@
 	SteppingEngine breakpoint adding mechanism.
 	(setUpTest): Cleaned up. Added code for testBreakpointing.
 	(breakpointAssertions): Added.
+	
+	* TestSteppingEngine.java (testInstructionSteppingList): Added. Tests 
+	instruction stepping through SteppingEngine with a List of Tasks.
+	(testLineSteppingList): Added. Tests line stepping through SteppingEngine
+	with a list of Tasks.
+	(setUpTest): Added code for above two tests.
 
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
