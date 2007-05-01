@@ -40,7 +40,7 @@
 package frysk.testbed;
 
 import frysk.junit.TestCase;
-import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.SignalBuilder;
 import frysk.sys.UnhandledWaitBuilder;
@@ -57,7 +57,7 @@ public class AttachedSelf
 {
     public AttachedSelf ()
     {
-	PtraceServer.attach (this);
+	Ptrace.attach (this);
 	Wait.wait (this,
 		   new UnhandledWaitBuilder ()
 		   {

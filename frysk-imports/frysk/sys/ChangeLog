@@ -1,5 +1,8 @@
 2007-05-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Ptrace.java (attach(ProcessIdentifer)): New.
+	(detach(ProcessIdentifier,int)): New.
+
 	* TestPtraceServer.java: Replace this ...
 	* TestPtrace.java: ... with this.  New file.
 

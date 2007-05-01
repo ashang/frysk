@@ -1,3 +1,9 @@
+2007-05-01  Andrew Cagney  <cagney@redhat.com>
+
+	* AttachedSelf.java: Replace frysk.sys.PtraceServer with
+	frysk.sys.Ptrace.
+	* TearDownProcess.java: Ditto.
+
 2007-04-14  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/LocalMemory.cxx (getFuncBytes): Return 32 bytes.

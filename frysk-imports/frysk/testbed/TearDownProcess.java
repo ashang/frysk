@@ -50,7 +50,7 @@ import frysk.sys.Wait;
 import frysk.sys.proc.ProcBuilder;
 import frysk.sys.ProcessIdentifier;
 import java.util.Iterator;
-import frysk.sys.PtraceServer;
+import frysk.sys.Ptrace;
 import frysk.sys.WaitBuilder;
 
 /**
@@ -164,7 +164,7 @@ public class TearDownProcess
     {
 	// Do the detach
 	try {
-	    PtraceServer.detach(pid, 0);
+	    Ptrace.detach(pid, 0);
 	    log("detach", pid);
 	}
 	catch (Errno.Esrch e) {

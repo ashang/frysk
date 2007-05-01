@@ -50,9 +50,23 @@ public class Ptrace
      */
     public static native void attach (int pid);
     /**
+     * Attach to the process specified by PID.
+     */
+    public static void attach (ProcessIdentifier pid)
+    {
+	attach(pid.hashCode());
+    }
+    /**
      * Detach from the process specified by PID.
      */
     public static native void detach(int pid, int sig);
+    /**
+     * Detach from the process specified by PID.
+     */
+    public static void detach (ProcessIdentifier pid, int sig)
+    {
+	detach(pid.hashCode(), sig);
+    }
     /**
      * Detach from the process specified by PID.
      */
