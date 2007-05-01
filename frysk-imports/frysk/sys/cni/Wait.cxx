@@ -56,7 +56,7 @@
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/PtraceServer.h"
+#include "frysk/sys/Ptrace.h"
 #include "frysk/sys/Wait.h"
 #include "frysk/sys/Sig.h"
 #include "frysk/sys/cni/SignalSet.hxx"
@@ -153,7 +153,7 @@ processStatus (int pid, int status,
     case PTRACE_EVENT_CLONE:
       try {
 	// The event message contains the thread-ID of the new clone.
-	jint clone = (jint) frysk::sys::PtraceServer::getEventMsg (pid);
+	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
 	builder->cloneEvent (pid, clone);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
@@ -166,7 +166,7 @@ processStatus (int pid, int status,
       try {
 	// The event message contains the process-ID of the new
 	// process.
-	jlong fork = frysk::sys::PtraceServer::getEventMsg (pid);
+	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
 	builder->forkEvent (pid, fork);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
@@ -179,7 +179,7 @@ processStatus (int pid, int status,
       try {
 	// The event message contains the pending wait(2) status; need
 	// to decode that.
-	int exitStatus = frysk::sys::PtraceServer::getEventMsg (pid);
+	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
 	if (WIFEXITED (exitStatus)) {
 	  builder->exitEvent (pid, false, WEXITSTATUS (exitStatus),
 			       false);
