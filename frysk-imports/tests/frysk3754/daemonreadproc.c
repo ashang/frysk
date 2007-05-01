@@ -41,7 +41,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/ptrace.h>
-#include <linux/ptrace.h>
+#include "linux.ptrace.h"
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
