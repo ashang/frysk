@@ -46,13 +46,10 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.testbed.LocalMemory;
 
 /**
- * Check the plumming of PtraceServer.
- * 
- * Since PtraceServer is implemented using Ptrace this also checks the
- * plumming of that underlying object.
+ * Check the plumming of Ptrace.
  */
 
-public class TestPtraceServer
+public class TestPtrace
     extends TestCase
 {
     /**
@@ -65,8 +62,8 @@ public class TestPtraceServer
  
     public void testChildContinue ()
     {
-	final int pid = PtraceServer.child(null, null, null,
-					   new String[] { "/bin/true" });
+	final int pid = Fork.ptrace(null, null, null,
+				    new String[] { "/bin/true" });
 	assertTrue ("pid", pid > 0);
 	TearDownProcess.add (pid);
 	
@@ -85,7 +82,7 @@ public class TestPtraceServer
 		}
 	    });
 
-	PtraceServer.singleStep(pid, 0);
+	Ptrace.singleStep(pid, 0);
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -100,7 +97,7 @@ public class TestPtraceServer
 		}
 	    });
 
-	PtraceServer.cont (pid, Sig.TERM_);
+	Ptrace.cont (pid, Sig.TERM_);
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -133,7 +130,7 @@ public class TestPtraceServer
 	TearDownProcess.add (pid);
 	assertTrue ("pid", pid > 0);
 
-	PtraceServer.attach(pid);
+	Ptrace.attach(pid);
 	Wait.waitAll (pid, new UnhandledWaitBuilder ()
 	    {
 		private final int id = pid;
@@ -148,7 +145,7 @@ public class TestPtraceServer
 		}
 	    });
 
-	PtraceServer.detach (pid, 0);
+	Ptrace.detach (pid, 0);
 	Errno errno = null;
 	try {
 	    Wait.waitAll (pid, new UnhandledWaitBuilder ()
@@ -172,7 +169,7 @@ public class TestPtraceServer
 	for (int i = 0; i < bytes.length; i++) {
 	    assertEquals (what + " " + i + " at " + addr + " in " + space,
 			  bytes[i] & 0xff, // signed - ulgh
-			  PtraceServer.peek (space, pid, addr + i));
+			  space.peek(pid, addr + i));
 	}
     }
 
@@ -212,7 +209,7 @@ public class TestPtraceServer
     {
 	int pid = new AttachedSelf ().hashCode();
 	for (byte i = 4; i < 12; i++) {
-	    PtraceServer.poke (space, pid, addr + i, i);
+	    space.poke(pid, addr + i, i);
 	    bytes[i] = i;
 	    verifyBytes (what, pid, space, bytes, addr);
 	}
@@ -252,9 +249,8 @@ public class TestPtraceServer
 	    for (int length = 0; length < 9; length++) {
 		for (int offset = 0; offset < 9; offset++) {
 		    // Copy the bytes in
-		    PtraceServer.peek (space, pid, startAddr + addr,
-				       length,
-				       pidBytes, offset);
+		    space.peek(pid, startAddr + addr,
+			       length, pidBytes, offset);
 		    // Mimic the copy using local data.
 		    for (int i = 0; i < length; i++)
 			myBytes[offset + i] = startBytes[addr + i];
@@ -301,9 +297,8 @@ public class TestPtraceServer
 	int pid = new AttachedSelf().hashCode();
 	boolean caught = false;
 	try {
-	    PtraceServer.peek (AddressSpace.DATA, pid,
-			       LocalMemory.getFuncAddr (), length,
-			       bytes, offset);
+	    AddressSpace.DATA.peek (pid, LocalMemory.getFuncAddr (), length,
+				    bytes, offset);
 	}
 	catch (ArrayIndexOutOfBoundsException e) {
 	    caught = true;
