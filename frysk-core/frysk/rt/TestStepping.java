@@ -432,7 +432,7 @@ public class TestStepping extends TestLib
   
   public void setUpTest ()
   {
-    StackFrame frame = StackFactory.createStackFrame(myTask, 1);
+    Frame frame = StackFactory.createFrame(myTask);
 
     if (frame.getLines().length == 0)
       this.lineMap.put(myTask, new Integer(0));
@@ -476,7 +476,7 @@ public class TestStepping extends TestLib
     if (this.testState == INITIAL)
       {
         int lineNum;
-        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+        Frame sFrame = StackFactory.createFrame(myTask);
 
         if (sFrame.getLines().length == 0)
             lineNum = 0;
@@ -534,7 +534,7 @@ public class TestStepping extends TestLib
       }
     else if (testState == STEPPING)
       {
-        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+        Frame sFrame = StackFactory.createFrame(myTask);
 
         if (sFrame.getLines().length == 0)
           {
@@ -648,7 +648,7 @@ public class TestStepping extends TestLib
       }
     else if (testState == FINAL_STEP)
       {
-        StackFrame frame = StackFactory.createStackFrame(myTask, 1);
+        Frame frame = StackFactory.createFrame(myTask);
         if (frame.getLines().length == 0)
           {
             SteppingEngine.setUpLineStep(myTask);

@@ -1,3 +1,13 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* actions/PrintTaskBacktrace.java (execute): Switch from StackFrame to Frame.
+	* actions/CaptureStackTraceAction.java (execute): Ditto.
+	* eventviewer/Event.java (setFrame): Ditto.
+	(getFrame): Ditto.
+	(drawFrameIcon): Ditto.
+	(draw): Ditto.
+	* eventviewer/TimeLine.java (TimeLineDrawingArea.mouseEvent): Ditto.
+
 2007-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SessionProcTreeView.java: Removed.

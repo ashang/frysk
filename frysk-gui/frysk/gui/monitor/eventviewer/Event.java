@@ -48,7 +48,7 @@ import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
+import frysk.rt.Frame;
 
 public class Event extends GuiObject
 {
@@ -64,7 +64,7 @@ public class Event extends GuiObject
   
   private int x,y;
 
-  private StackFrame stackFrame;
+  private Frame Frame;
   public static int w,h;
   
   static{
@@ -111,8 +111,8 @@ public class Event extends GuiObject
       cairo.setSourceColor(Color.BLUE);
     }
     
-    if(this.stackFrame != null){
-      this.drawStackFrameIcon(cairo);
+    if(this.Frame != null){
+      this.drawFrameIcon(cairo);
     }
     
     cairo.rectangle(new Point(this.getX(),this.getY()), new Point(this.getX()+ getWidth(), this.getY()+ getHeight()));
@@ -122,7 +122,7 @@ public class Event extends GuiObject
     cairo.restore();
   }
 
-  private void drawStackFrameIcon (GdkCairo cairo)
+  private void drawFrameIcon (GdkCairo cairo)
   {
     int x = this.getX()+5;
     int y = this.getY();
@@ -205,17 +205,17 @@ public class Event extends GuiObject
   }
 
   /**
-   * If a StackFrame was captured this method returns it
+   * If a Frame was captured this method returns it
    * otherwise returns null.
    * @return
    */
-  public StackFrame getStackFrame(){
-    return stackFrame;
+  public Frame getFrame(){
+    return Frame;
   }
   
-  public void setStackFrame (StackFrame frame)
+  public void setFrame (Frame frame)
   {
-    stackFrame = frame;
+    Frame = frame;
     String summary = this.getName() + ": " + this.getToolTip() + "\n";
     
     if(frame != null){

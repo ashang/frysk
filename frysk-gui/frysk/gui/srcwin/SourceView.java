@@ -86,7 +86,7 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.rt.StackFrame;
+import frysk.rt.Frame;
 import frysk.value.Variable;
 
 /**
@@ -150,12 +150,12 @@ public class SourceView
    * @param scope The source file that this widget will be displaying
    * @param parent The SourceWindow that this SourceViewWidget is contained in
    */
-  public SourceView (StackFrame scope, SourceWindow parent)
+  public SourceView (Frame scope, SourceWindow parent)
   {
     this(new SourceBuffer(scope), parent);
   }
 
-  public SourceView (StackFrame scope, SourceWindow parent, int mode)
+  public SourceView (Frame scope, SourceWindow parent, int mode)
   {
     this(new SourceBuffer(scope, mode), parent);
   }
@@ -279,11 +279,11 @@ public class SourceView
   }
 
   /**
-   * Loads the contents of the provided StackFrame into this view
+   * Loads the contents of the provided Frame into this view
    * 
    * @param data The new stack frame to load.
    */
-  public void load (StackFrame data, int mode)
+  public void load (Frame data, int mode)
   {
     this.buf.setScope(data, mode);
     this.expanded = false;
@@ -366,7 +366,7 @@ public class SourceView
     return this.buf.getFunctions();
   }
 
-  public StackFrame getScope ()
+  public Frame getScope ()
   {
     return this.buf.getScope();
   }
@@ -927,7 +927,7 @@ public class SourceView
     TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                  (int) event.getY());
 
-    StackFrame frame = this.buf.getScope();
+    Frame frame = this.buf.getScope();
     
     if (frame == null || frame.getLines().length == 0)
       return false;

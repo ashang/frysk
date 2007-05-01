@@ -1,5 +1,26 @@
-
 2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* states/NextInstructionStepTestState.java (handleUpdate): Switch from 
+	StackFrame to Frame.
+	* states/StepOverTestState.java (handleUpdate): Ditto.
+	* TestStackBacktrace.java (handleTask): Ditto.
+	(firstTestBacktraceAssertions): Ditto.
+	(setUpTest): Ditto.
+	(pushPopAssertions): Ditto.
+	* TestFrame.java (backtrace): Ditto.
+	* TestStepping.java (setUpTest): Ditto.
+	(assertions): Ditto.
+	* TestSymbol.java (frameTest): Ditto.
+	* TestSteppingEngine.java (stepOverAssertions): Ditto.
+	(setUpTest): Ditto.
+	(stepAssertions): Ditto.
+	(stepOut): Ditto.
+	(setUpStepAdvance): Ditto.
+	(stepOver): Ditto.
+	(setUpStepNextInstruction): Ditto.
+	(setUpStepOut): Ditto.
+	(stepNextInstruction): Ditto. 
+	(setUpStepOver): Ditto.
 
 	* Frame.java (getInner): Added.
 	(getAddress): Removed debug lines.

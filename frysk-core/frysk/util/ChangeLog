@@ -1,3 +1,11 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* Util.java (printStackTrace): 	Switch from StackFrame to Frame.
+	* TestFCatch.java (mainThread): Ditto.
+	(FCatchTester.generateStackTrace): Ditto.
+	* FCatch.java (generateStackTrace): Ditto. 	
+	* Ftrace.java (generateStacKTrace): Ditto.
+
 2007-04-16  Andrew Cagney  <cagney@redhat.com>
 
 	* FCatch.java (trace): Run the event-loop from the main task.

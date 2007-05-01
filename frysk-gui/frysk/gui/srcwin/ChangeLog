@@ -1,3 +1,42 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* MixedView.java (load): Switch from StackFrame to Frame.
+	(MixedView): Ditto.
+	(getScope): Ditto.
+	* InlineBuffer.java (InlineBuffer): Ditto.
+	* SourceWindow.java (appendProc): Ditto.
+	(SourceWindow): Ditto.
+	(generateProcStackTrace): Ditto.
+	(removeProc): Ditto.
+	(updateShownFrame): Ditto.
+	(updateSourceLabel): Ditto.
+	(populateStackBrowser): Ditto.
+	(SourceWindowListener.currentStackChanged): Ditto.
+	* CurrentStackView.java (addProc): Ditto.
+	(appendRows): Ditto.
+	(getFirstFrameSelection): Ditto.
+	(getCurrentFrame): Ditto.
+	(CurrentStackView): Ditto.
+	(StackViewListener): Ditto.
+	(selectRow): Ditto.
+	(notifyObservers): Ditto.
+	(buildTree): Ditto.
+	(selectionChangedEvent): Ditto.
+	(refreshProc): Ditto.
+	* SourceWindowFactory.java (createSourceWindow): Ditto.
+	* SourceBuffer.java (loadUnmarkedText): Ditto.
+	(loadFile): Ditto.
+	(SourceBuffer): Ditto.
+	(setScope): Ditto.
+	(disassembleFrame): Ditto.
+	(highlightLine): Ditto.
+	(getScope): Ditto.
+	* InlineSourceView.java (InlineSourceView): Ditto.
+	(mousedOverText): Ditto.
+	(load): Ditto.
+	(SourceView): Ditto.
+	(getScope): Ditto.
+
 2007-05-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceView.java (findVariable): Added, stub at the moment.

@@ -46,7 +46,7 @@ import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
+import frysk.rt.Frame;
 
 public class CaptureStackTraceAction
     extends TaskAction
@@ -64,14 +64,14 @@ public class CaptureStackTraceAction
 
   public void execute (Task task , TaskObserverRoot observer, Event event)
   {
-    StackFrame frame = null;
+    Frame frame = null;
     try{
-      frame = StackFactory.createStackFrame(task);
+      frame = StackFactory.createFrame(task);
     }catch(Exception e){
-      event.setStackFrame(null);
+      event.setFrame(null);
       return;
     }
-    event.setStackFrame(frame);
+    event.setFrame(frame);
   }
 
   public GuiObject getCopy ()

@@ -1,3 +1,33 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* hpd/SymTab.java (setSubprogram): Switch from StackFrame to Frame.
+	(SymTab): Ditto.
+	(getCurrentFrame): Ditto.
+	(setFrames): Ditto.
+	(getInnerMostFrame): Ditto.
+	(setCurrentFrame): 	Ditto.
+	* hpd/CLI.java (WhereHandler.handle): Ditto.
+	(UpDownHandler.handle): Ditto.
+	* hpd/ExprSymTab.java (AccessDW_FORM_data.getLong): Ditto.
+	(AccessDW_FORM_data.getDouble): Ditto.
+	(getCurrentFrame): Ditto.
+	(refreshCurrentFrame): Ditto.
+	(AccessDW_FORM_data.putFloat): Ditto.
+	(AccessDW_FORM_data.putDouble): Ditto.
+	(AccessDW_FORM_data.getRegister): Ditto.
+	(AccessDW_FORM_data.getInt): Ditto.
+	(setCurrentFrame): Ditto.
+	(AccessDW_FORM_data.putInt): Ditto.
+	(AccessDW_FORM_data.getByte): Ditto.
+	(AccessDW_FORM_data.getFloat): Ditto.
+	(AccessDW_FORM_data.putShort): Ditto.
+	(AccessDW_FORM_block.getBufferAddr): Ditto.
+	(AccessDW_FORM_data.putLong): Ditto.
+	(AccessDW_FORM_data.getShort): Ditto.
+	(ExprSymTab): Ditto.
+	(AccessDW_FORM_data.putByte): Ditto.
+	(getInnerMostFrame): Ditto.
+
 2007-04-20  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): Support bit fields.
