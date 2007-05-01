@@ -1,3 +1,11 @@
+2007-05-01  Mike Cvet  <mcvet@redhat.com>
+
+	* TestSteppingEngine.java (testContinue): Added. Tests SteppingEngine 
+	state stopping and starting mechanisms.
+	(setUpContinue): Added.
+	(continueAssertions): Added.
+	(LockObserver.update): Updated to work with testContinue.
+
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java (getSubprogram): Added.

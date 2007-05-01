@@ -49,6 +49,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TestLib;
+import frysk.rt.states.State;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.event.Event;
@@ -74,12 +75,14 @@ public class TestSteppingEngine extends TestLib
   protected static final int INSTRUCTION_STEP_NEXT = 4;
   
   protected static final int STEP_OVER_GO = 5;
-  protected static final int INSTRUCTION_STEP_NEXT_GO  =6;
-  protected static final int STEP_OUT_GO =7;
+  protected static final int INSTRUCTION_STEP_NEXT_GO = 6;
+  protected static final int STEP_OUT_GO = 7;
   
   protected static final int STEP_OVER_STEPPING = 8;
   protected static final int INSTRUCTION_STEP_NEXT_STEPPING = 9;
   protected static final int STEP_OUT_STEPPING = 10;
+  
+  protected static final int CONTINUE = 11;
   
   private boolean insStepFlag = true;
   
@@ -258,6 +261,36 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.clear();
+  }
+  
+  public void testContinue ()
+  {
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    SteppingEngine.addObserver(lock);
+    testState = CONTINUE;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+	(Sig.USR1,
+	 new String[] {
+	    getExecPath ("funit-rt-stepper"),
+	    "" + Pid.get (),
+	    "" + Sig.USR1_
+	});
+    
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.runPending();
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    SteppingEngine.setProc(myProc);
+
+    assertRunUntilStop("Attempting to add observer");
+    SteppingEngine.removeObserver(lock, myProc);
     SteppingEngine.clear();
   }
 
@@ -654,6 +687,52 @@ public class TestSteppingEngine extends TestLib
       }
   }
   
+  private boolean continueFlag = false;
+  
+  private void setUpContinue (Task task)
+  {
+    myTask = task;
+    State s = SteppingEngine.getTaskState(task);
+    assertNotNull(s);
+    assertEquals("Stopped State", true, s.isStopped());
+    assertEquals("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
+
+    LinkedList l = new LinkedList();
+    l.add(task);
+    assertEquals("isProcRunning", false, SteppingEngine.isProcRunning(l));
+
+    if (continueFlag == false)
+      {
+	continueFlag = true;
+	SteppingEngine.continueExecution(l);
+      }
+    else
+      Manager.eventLoop.requestStop();
+
+    return;
+  }
+  
+  private void continueAssertions ()
+  {
+    State s = SteppingEngine.getTaskState(myTask);
+
+    assertNotNull(s);
+    
+    while (s.isStopped())
+      {
+	s = SteppingEngine.getTaskState(myTask);
+      }
+    
+    assertEquals ("Running State", false, s.isStopped());
+    assertEquals ("isTaskRunning", true, SteppingEngine.isTaskRunning(myTask));
+    
+    LinkedList l = new LinkedList();
+    l.add(myTask);
+    assertEquals ("isProcRunning", true, SteppingEngine.isProcRunning(l));
+    
+    SteppingEngine.stop(null, l);
+  }
+  
   class LockObserver implements Observer
   {
     
@@ -666,13 +745,35 @@ public class TestSteppingEngine extends TestLib
      */
     public synchronized void update (Observable o, Object arg)
     {
+//      System.err.println("LockObserver.update " + o + " " + arg + " " + continueFlag);
       if (arg == null)
-        return;
+	{
+	  if (testState == CONTINUE && continueFlag == true)
+	    {
+	      Manager.eventLoop.add(new Event()
+	      {
+	        public void execute ()
+	        {
+	          continueAssertions();
+	        }
+	      });
+	      return;
+	    }
+	  else
+	    return;
+	}
       
       Manager.eventLoop.add(new Event()
       {
         public void execute ()
         {
+          if (testState == CONTINUE)
+            {
+              initial = false;
+              setUpContinue(myProc.getMainTask());
+              return;
+            }
+          
           if (initial == true)
             {
              //System.out.println("First run - Lock.update");
@@ -683,7 +784,7 @@ public class TestSteppingEngine extends TestLib
          //System.out.println("Lock.update");
           if (testState <= STEP_IN)
             stepAssertions(myProc.getMainTask());
-          else
+          else if (testState > STEP_IN && testState <= STEP_OUT_STEPPING)
             stepOverAssertions(myProc.getMainTask());
         }
       });
