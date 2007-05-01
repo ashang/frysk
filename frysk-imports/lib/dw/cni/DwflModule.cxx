@@ -111,9 +111,15 @@ lib::dw::DwflModule::getSymbol(jlong address, lib::dw::SymbolBuilder* symbolBuil
 	GElf_Sym closest_sym;
 	
 	const char* methName = dwfl_module_addrsym(DWFL_MODULE_POINTER, addr, 
-											   &closest_sym, NULL);
-		
-	symbolBuilder->symbol(JvNewStringUTF(methName),
+                                                   &closest_sym, NULL);
+	
+	jstring jMethodName;
+	if (methName == NULL)	
+		jMethodName = NULL;
+	else
+		jMethodName = JvNewStringUTF(methName);	
+	
+	symbolBuilder->symbol(jMethodName,
 			      closest_sym.st_value, 
 			      closest_sym.st_size,
 			      ELF64_ST_TYPE(closest_sym.st_info),

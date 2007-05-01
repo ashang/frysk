@@ -1,3 +1,7 @@
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/DwflModule.cxx (getSymbol): Handle null methodName case.
+
 2007-04-24  Nurdin Premji <npremji@redhat.com>
 
 	* ModuleElfBias.java(toString): Added.
