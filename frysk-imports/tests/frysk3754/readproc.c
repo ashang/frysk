@@ -50,18 +50,23 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-#include <gcj/cni.h>
-#include "frysk3754/TestReadProcDir.h"
-
 pid_t waitpid(pid_t pid, int *status, int options);
 
 int errno;
 
 volatile pid_t pid;
 
-jint
-frysk3754::TestReadProcDir::startProc ()
+int
+main ()
 {
+  int status;
+  int ret;
+  int tochild[2];
+  int toparent[2];
+
+  pipe (tochild);
+  pipe (toparent);
+
   pid = fork ();
   if (pid < 0) 
     {
@@ -72,40 +77,72 @@ frysk3754::TestReadProcDir::startProc ()
   else if (pid == 0)
     {  	
       errno = 0;
-      ::ptrace ((enum __ptrace_request) PTRACE_TRACEME, \
-		pid, NULL, 0);
-			     
-      if (errno != 0) 
-	::perror("ptrace");
-			     
-      ::execv ("/bin/true", NULL);
-      ::perror ("execvp");
+      char b;
+      write (toparent[1], &b, 1);
+      read (tochild[0], &b, 1);
+
+      raise (SIGSEGV);
 
       exit (EXIT_SUCCESS);
     }
   else 
     {
       /* Wait for attach */
-      waitpid (pid, NULL, __WALL);
+
+      char a;
+      read (toparent[0], &a, 1);
+
+      ptrace (PTRACE_ATTACH, pid, NULL, 0);
+
+      ret = waitpid (-1, &status, __WALL);
+      if (ret < 0)
+	exit (1);
+     fprintf (stderr, "First wait: 0x%x %d\n", status, ret);
 
       /* Request exit tracing */
-      ::ptrace ((enum __ptrace_request) PTRACE_SETOPTIONS, \
-		pid, NULL, PTRACE_O_TRACEEXIT);
+     if (ptrace (PTRACE_SETOPTIONS, pid, NULL,
+		 (void *) (PTRACE_O_TRACEEXIT |PTRACE_O_TRACECLONE| PTRACE_O_TRACEFORK|PTRACE_O_TRACEEXEC )) < 0)
+       {
+	 perror ("ptrace");
+	 exit (1);
+       }
 
       /* Continue the process after its exec */
-      ::ptrace ((enum __ptrace_request) PTRACE_CONT, \
-		pid, NULL, 0);
+      ptrace (PTRACE_CONT, pid, NULL, NULL);
+
+     write (tochild[1], &a, 1);
 
       /* Catch exit event */
-      waitpid (pid, NULL, __WALL);
+      ret = waitpid (-1, &status, __WALL);
+      if (ret < 0)
+	exit(1);
+      fprintf (stderr, "received signal: 0x%x %d\n", status, ret);
+
+      ptrace (PTRACE_CONT, pid, (void *) NULL, (void *) SIGUSR1);
+
+      ret = waitpid (-1, &status, __WALL);
+      if (ret < 0)
+	exit(1);
+      fprintf (stderr, "signal delivered: 0x%x %d\n", status, ret);
+
+
+      fprintf (stderr, "WIFSTOPED: %d\n", WIFSTOPPED(status));
+      if (!WIFSTOPPED(status))
+	exit (1);
+
+      fprintf (stderr, "WSTOPEVENT: %d\n", (status & 0xff0000) >> 16);
+      if (((status & 0xff0000) >> 16) != PTRACE_EVENT_EXIT)
+	exit (1);
 
       char buf[200];
       char *ptr = &buf[0];
       sprintf (ptr, "/proc/%d/cwd", pid);
 
       errno = 0;
-      jint fd = (int) ::open (ptr, O_RDONLY, S_IRUSR | S_IRGRP | S_IROTH);
-      ::perror ("open");
+      int fd = (int) open (ptr, O_RDONLY, S_IRUSR | S_IRGRP | S_IROTH);
+      perror ("open");
+
+      sleep (12);
 
       return fd;
     }

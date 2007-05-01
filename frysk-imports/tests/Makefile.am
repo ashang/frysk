@@ -473,23 +473,6 @@ systests_PASS_PROGRAM += frysk3491/x-state
 frysk3595_detach_multi_thread_LDFLAGS = -lpthread
 systests_PASS_PROGRAM += frysk3595/detach-multi-thread
 
-# Test to try and read from /proc/$pid/stat after an exit notification
-XFAIL_TESTS += frysk3754/readproctest
-frysk3754_FILES = \
-	frysk3754/TestReadProcDir.cxx \
-	frysk3754/TestReadProcDir.java \
-	frysk3754/linux.ptrace.h
-EXTRA_DIST += $(frysk3754_FILES)
-CLEANFILES += frysk3754/TestReadProcDir.h
-frysk3754/readproctest: $(frysk3754_FILES)
-	mkdir -p frysk3754
-	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk3754/TestReadProcDir.java
-	$(GCJH) $(GCJHFLAGS) -I. -o frysk3754/TestReadProcDir.h frysk3754/TestReadProcDir
-	$(CXX) -g -I. -c -o frysk3754/readproctest.o $(srcdir)/frysk3754/TestReadProcDir.cxx
-	$(GCJ) -g -I. --main=frysk3754.TestReadProcDir -o frysk3754/readproctest \
-		$(srcdir)/frysk3754/TestReadProcDir.java \
-		frysk3754/readproctest.o
-
 # ptrace singlestep through a sigtrap handler should NOT reset it.
 # On some kernels the handler is sometimes mysteriously cleared.
 systests_PASS_PROGRAM += frysk3997/ptrace_step_sig
@@ -511,3 +494,5 @@ frysk4282_StackAccessors_GCJFLAGS = -I $(srcdir)
 frysk4282_StackAccessors_SOURCES = frysk4282/MyProcName.java frysk4282/StackAccessors.java
 frysk4282_StackAccessors_LDFLAGS = --main=frysk4282.StackAccessors 
 XFAIL_TESTS += frysk4282/StackAccessors
+
+systests_PASS_PROGRAM += frysk3754/readproc

@@ -1,3 +1,10 @@
+2007-05-01  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk3754/readproc.c: Added. Replaces any Java/CNI code for this test.
+	* frysk3754/TestReadProcDir.java: Removed.
+	* frysk3754/TestReadProcDir.cxx: Removed.
+	* Makefile.am (systests_PASS_PROGRAM): Added frysk3754/readproc.
+
 2007-04-30  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk3754/linux.ptrace.h: Added.
