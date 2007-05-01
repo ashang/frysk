@@ -1,3 +1,14 @@
+
+2007-05-01  Nurdin Premji  <npremji@redhat.com>
+
+	* Frame.java (getInner): Added.
+	(getAddress): Removed debug lines.
+	(toPrint): Ditto.
+	* StackFactory.java: Removed newUnwindFlag.
+	(createFrame): Renamed from createStackTrace.
+	(generateTaskStackTrace): Use new Frame class.
+	(printStackTrace): New, takes a Frame.
+
 2007-05-01  Mike Cvet  <mcvet@redhat.com>
 
 	* TestSteppingEngine.java (testContinue): Added. Tests SteppingEngine 
