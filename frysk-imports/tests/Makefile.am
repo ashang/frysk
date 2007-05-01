@@ -496,3 +496,5 @@ frysk4282_StackAccessors_LDFLAGS = --main=frysk4282.StackAccessors
 XFAIL_TESTS += frysk4282/StackAccessors
 
 systests_PASS_PROGRAM += frysk3754/readproc
+
+systests_PASS_PROGRAM += frysk3754/daemonreadproc

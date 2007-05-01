@@ -4,6 +4,13 @@
 	* frysk3754/TestReadProcDir.java: Removed.
 	* frysk3754/TestReadProcDir.cxx: Removed.
 	* Makefile.am (systests_PASS_PROGRAM): Added frysk3754/readproc.
+	
+	* frysk3754/readproc.c: Minor changes.
+	* frysk3754/daemonreadproc.c: Similar to readproc, except daemonized
+	process.
+	* Makefile.am (systests_PASS_PROGRAM): Added 
+	frysk3754/daemonreadproc.
+	* frysk3754/linux.ptrace.h: Removed.
 
 2007-04-30  Mike Cvet  <mcvet@redhat.com>
 

@@ -46,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -56,6 +57,20 @@ int errno;
 
 volatile pid_t pid;
 
+void
+exit_0_handler (int sig)
+{
+  printf ("exit 0: %d\n", sig);
+  _exit (0);
+}
+
+void
+exit_1_handler (int sig)
+{
+  printf ("exit 1: %d\n", sig);
+  _exit (1);
+}
+
 int
 main ()
 {
@@ -63,34 +78,94 @@ main ()
   int ret;
   int tochild[2];
   int toparent[2];
+  int p;
 
   pipe (tochild);
   pipe (toparent);
 
-  pid = fork ();
-  if (pid < 0) 
+  sigset_t mask;
+  sigset_t umask;
+  sigemptyset (&mask);
+  sigaddset (&mask, SIGUSR1);
+  sigaddset (&mask, SIGALRM);
+  sigaddset (&mask, SIGCHLD); // totally ignore
+  if (sigprocmask (SIG_BLOCK, &mask, &umask) < 0) {
+    perror ("sigprocmask");
+    _exit (1);
+  }
+
+  // Set up a SIGUSR1 handler, that, when the signal is received, just
+  // exits.
+  signal (SIGUSR1, exit_0_handler);
+
+
+  p = fork ();
+  if (p < 0) 
     {
       if (errno != 0)
 		perror ("frysk.imports.tests.frysk3754 main ()");
       exit (EXIT_FAILURE);
     } 
-  else if (pid == 0)
+  else if (p == 0)
     {  	
+      fprintf(stderr, "child\n");
+      int toinnerchild[2];
+      int toinnerparent[2];
+      
+      pipe (toinnerchild);
+      pipe (toinnerparent);
+
       errno = 0;
       char b;
-      write (toparent[1], &b, 1);
-      read (tochild[0], &b, 1);
 
-      raise (SIGSEGV);
+      char ret_pid[5] = { '\0' };
+      char *ptr = &ret_pid[0];
 
-      exit (EXIT_SUCCESS);
+      int p2 = fork ();
+      if (p2 < 0)
+	{
+	  if (errno != 0)
+	    perror ("frysk.imports.tests.frysk3754 main ()");
+	  exit (EXIT_FAILURE);
+	}
+      else if (p2 == 0)
+	{
+	  fprintf(stderr, "innerchild\n");
+	  errno = 0;
+	  char a;
+	  write (toinnerparent[1], &a, 1);
+	  read (toinnerchild[0], &a, 1);
+
+	  sleep (1);
+
+	  raise (SIGSEGV);
+
+	  exit (EXIT_SUCCESS);
+	}
+      else
+	{
+	  sprintf(ptr, "%d", p2);
+
+	  read (toinnerparent[0], &b, 1); 
+	  fprintf(stderr, "read from innerchild\n");
+	  write (toparent[1], &ret_pid, 5);
+	  read (tochild[0], &b, 1);
+	  write (toinnerchild[1], &b, 1);
+	  fprintf(stderr, "inner parent exiting\n");
+	  _exit(0);
+	}
     }
   else 
     {
-      /* Wait for attach */
 
+      fprintf (stderr, "vforked %d\n", p);
+      char innerpid[5];
       char a;
-      read (toparent[0], &a, 1);
+      read (toparent[0], innerpid, 5);
+      fprintf(stderr, "read from child\n");
+      char *iptr = &innerpid[0];
+      fprintf(stderr, "received PID %s\n", iptr);
+      pid = atoi (iptr);
 
       ptrace (PTRACE_ATTACH, pid, NULL, 0);
 
