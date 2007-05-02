@@ -1,3 +1,11 @@
+2007-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* AddressSpaceByteBuffer.java: Eliminate use of
+	frysk.sys.PtraceServer by using frysk.sys.Ptrace.AddressSpace
+	.peek and .poke methods.
+	* RegisterSetByteBuffer.java: Ditto using
+	frysk.sys.Ptrace.RegisterSet.
+
 2007-04-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestByteBuffer.java (memoryByteBuffer, registerByteBuffer): Add.

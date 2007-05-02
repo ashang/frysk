@@ -40,7 +40,6 @@
 package frysk.proc.ptrace;
 
 import inua.eio.ByteBuffer;
-import frysk.sys.PtraceServer;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.event.Request;
 import frysk.proc.Manager;
@@ -78,12 +77,12 @@ public class AddressSpaceByteBuffer
 	}
 	public void execute ()
 	{
-	    value = PtraceServer.peek(addressSpace, pid, index);
+	    value = addressSpace.peek(pid, index);
 	}
 	public int request (long index)
 	{
 	    if (isEventLoopThread())
-		return PtraceServer.peek(addressSpace, pid, index);
+		return addressSpace.peek(pid, index);
 	    else synchronized (this) {
 		this.index = index;
 		request();
@@ -108,12 +107,12 @@ public class AddressSpaceByteBuffer
 	}
 	public void execute ()
 	{
-	    PtraceServer.poke(addressSpace, pid, index, value);
+	    addressSpace.poke(pid, index, value);
 	}
 	public void request (long index, int value)
 	{
 	    if (isEventLoopThread())
-		PtraceServer.poke(addressSpace, pid, index, value);
+		addressSpace.poke(pid, index, value);
 	    else synchronized (this) {
 		this.index = index;
 		this.value = value;
@@ -140,15 +139,13 @@ public class AddressSpaceByteBuffer
 	}
 	public void execute ()
 	{
-	    length = PtraceServer.peek(addressSpace, pid, index, length,
-				       bytes, offset);
+	    length = addressSpace.peek(pid, index, length, bytes, offset);
 	}
 	public long request (long index, byte[] bytes,
 			     long offset, long length)
 	{
 	    if (isEventLoopThread())
-		return PtraceServer.peek(addressSpace, pid, index,
-					 length, bytes, offset);
+		return addressSpace.peek(pid, index, length, bytes, offset);
 	    else synchronized (this) {
 		this.index = index;
 		this.bytes = bytes;

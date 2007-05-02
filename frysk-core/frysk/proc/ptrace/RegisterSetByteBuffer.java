@@ -39,7 +39,6 @@
 
 package frysk.proc.ptrace;
 
-import frysk.sys.PtraceServer;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.event.Request;
 import frysk.proc.Manager;
@@ -81,7 +80,7 @@ public class RegisterSetByteBuffer
 	}
 	public final void execute()
 	{
-	    PtraceServer.get(registerSet, pid, bytes);
+	    registerSet.get(pid, bytes);
 	}
 	public void request ()
 	{
@@ -107,7 +106,7 @@ public class RegisterSetByteBuffer
 	}
 	public void execute()
 	{
-	    PtraceServer.set(registerSet, pid, bytes);
+	    registerSet.set(pid, bytes);
 	}
 	public void request ()
 	{

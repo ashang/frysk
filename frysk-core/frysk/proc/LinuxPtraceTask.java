@@ -41,7 +41,6 @@
 package frysk.proc;
 
 import frysk.sys.Errno;
-import frysk.sys.PtraceServer;
 import frysk.sys.Ptrace;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.ptrace.AddressSpaceByteBuffer;
@@ -127,7 +126,7 @@ public class LinuxPtraceTask
     sig_send = sig;
     try
       {
-        PtraceServer.cont(getTid(), sig);
+        Ptrace.cont(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -142,7 +141,7 @@ public class LinuxPtraceTask
     sig_send = sig;
     try
       {
-        PtraceServer.sysCall(getTid(), sig);
+        Ptrace.sysCall(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -158,7 +157,7 @@ public class LinuxPtraceTask
     syscall_sigret = getIsa().isAtSyscallSigReturn(this);
     try
       {
-        PtraceServer.singleStep(getTid(), sig);
+        Ptrace.singleStep(getTid(), sig);
       }
     catch (Errno.Esrch e)
       {
@@ -184,7 +183,7 @@ public class LinuxPtraceTask
         ptraceOptions |= Ptrace.optionTraceExit();
         // ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
         ptraceOptions |= Ptrace.optionTraceExec();
-        PtraceServer.setOptions(getTid(), ptraceOptions);
+        Ptrace.setOptions(getTid(), ptraceOptions);
       }
     catch (Errno.Esrch e)
       {
@@ -197,7 +196,7 @@ public class LinuxPtraceTask
     logger.log(Level.FINE, "{0} sendAttach\n", this);
     try
       {
-        PtraceServer.attach(getTid());
+        Ptrace.attach(getTid());
 
         /*
          * XXX: Linux kernel has a 'feature' that if a process is already
@@ -228,7 +227,7 @@ public class LinuxPtraceTask
   protected void sendDetach (int sig)
   {
     logger.log(Level.FINE, "{0} sendDetach\n", this);
-    PtraceServer.detach(getTid(), sig);
+    Ptrace.detach(getTid(), sig);
   }
 
   protected Isa sendrecIsa ()
