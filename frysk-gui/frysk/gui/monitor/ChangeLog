@@ -1,5 +1,7 @@
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* ConsoleWidget.java: Remove second parameter.
+
 	* Revert 2007-05-01 Nurdin Premji <npremji@redhat.com> change.
 
 2007-05-01  Nurdin Premji  <npremji@redhat.com>
