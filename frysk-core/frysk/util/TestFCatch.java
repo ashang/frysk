@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import frysk.rt.StackFactory;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.proc.Action;
@@ -61,6 +61,7 @@ public class TestFCatch
 {
 
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                      + "#[\\d]+ 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                       + ".*/funit-child.c#[\\d]+\n"
                       + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
@@ -311,10 +312,10 @@ public class TestFCatch
     {
       logger.log(Level.FINE, "{0} generateStackTrace", task);
       --numTasks;
-      Frame frame = null;
+      StackFrame frame = null;
       try
         {
-          frame = StackFactory.createFrame(task);
+          frame = StackFactory.createStackFrame(task);
         }
       catch (Exception e)
         {

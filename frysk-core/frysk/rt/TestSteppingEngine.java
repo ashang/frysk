@@ -411,7 +411,7 @@ public class TestSteppingEngine extends TestLib
   {
     myTask = myProc.getMainTask();
 
-    Frame frame = StackFactory.createFrame(myTask);
+    StackFrame frame = StackFactory.createStackFrame(myTask, 2);
     if (frame.getLines().length == 0)
       {
 	this.lineMap.put(myTask, new Integer(0));
@@ -455,7 +455,7 @@ public class TestSteppingEngine extends TestLib
    //System.out.println("Test.stepAssertions");
     myTask = task;
     int lineNum;
-    Frame frame = StackFactory.createFrame(task);
+    StackFrame frame = StackFactory.createStackFrame(task, 1);
     
     if (frame.getLines().length == 0)
       {
@@ -484,61 +484,61 @@ public class TestSteppingEngine extends TestLib
         switch (prev)
           {
           case 78:
-            assertTrue("Case 78 got: " + lineNum, lineNum == 78 || lineNum == 79);
+            assertTrue(lineNum == 78 || lineNum == 79);
             break;
           case 79:
-            assertTrue("Case 79 got: " + lineNum, lineNum == 79 || lineNum == 80);
+            assertTrue(lineNum == 79 || lineNum == 80);
             break;
           case 80:
-            assertTrue("Case 80 got: " + lineNum, lineNum == 80 || lineNum == 81);
+            assertTrue(lineNum == 80 || lineNum == 81);
             break;
           case 81:
-            assertTrue("Case 81 got: " + lineNum, lineNum == 81 || lineNum == 82);
+            assertTrue(lineNum == 81 || lineNum == 82);
             break;
           case 82:
-            assertTrue("Case 82 got: " + lineNum, lineNum == 82 || lineNum == 83);
+            assertTrue(lineNum == 82 || lineNum == 83);
             break;
           case 83:
-            assertTrue("Case 83 got: " + lineNum, lineNum == 83 || lineNum == 85);
+            assertTrue(lineNum == 83 || lineNum == 85);
             break;
           case 85:
-            assertTrue("Case 85 got: " + lineNum, lineNum == 85 || lineNum == 87);
+            assertTrue(lineNum == 85 || lineNum == 87);
             break;
           case 87:
-            assertTrue("Case 87 got: " + lineNum, lineNum == 87 || lineNum == 88);
+            assertTrue(lineNum == 87 || lineNum == 88);
             break;
           case 88:
-            assertTrue("Case 88 got: " + lineNum, lineNum == 88 || lineNum == 89);
+            assertTrue(lineNum == 88 || lineNum == 89);
             break;
           case 89:
-            assertTrue("Case 89 got: " + lineNum, lineNum == 89 || lineNum == 90);
+            assertTrue(lineNum == 89 || lineNum == 90);
             break;
           case 90:
-            assertTrue("Case 90 got: " + lineNum, lineNum == 90 || lineNum == 91);
+            assertTrue(lineNum == 90 || lineNum == 91);
             break;
           case 60:
-            assertTrue("Case 60 got: " + lineNum, lineNum == 60 || lineNum == 61);
+            assertTrue(lineNum == 60 || lineNum == 61);
             break;
           case 61:
-            assertTrue("Case 61 got: " + lineNum, lineNum == 61 || lineNum == 62);
+            assertTrue(lineNum == 61 || lineNum == 62);
             break;
           case 62:
-            assertTrue("Case 62 got: " + lineNum, lineNum == 62 || lineNum == 63);
+            assertTrue(lineNum == 62 || lineNum == 63);
             break;
           case 63:
-            assertTrue("Case 63 got: " + lineNum, lineNum == 63 || lineNum == 64);
+            assertTrue(lineNum == 63 || lineNum == 64);
             break;
           case 64:
-            assertTrue("Case 64 got: " + lineNum, lineNum == 64 || lineNum == 65);
+            assertTrue(lineNum == 64 || lineNum == 65);
             break;
           case 65:
-            assertTrue("Case 65 got: " + lineNum, lineNum == 65 || lineNum == 67);
+            assertTrue(lineNum == 65 || lineNum == 67);
             break;
           case 67:
-            assertTrue("Case 67 got: " + lineNum, lineNum == 67 || lineNum == 95);
+            assertTrue(lineNum == 67 || lineNum == 95);
             break;
           case 95:
-            assertTrue("Case 95 got: " + lineNum, lineNum == 95 || lineNum == 79 || lineNum == 60 || lineNum == 61);
+            assertTrue(lineNum == 95 || lineNum == 79 || lineNum == 60 || lineNum == 61);
             break;
           default:
             break;
@@ -652,7 +652,7 @@ public class TestSteppingEngine extends TestLib
       {
 
         int lineNum;
-        Frame sFrame = StackFactory.createFrame(myTask);
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
         
         if (sFrame.getLines().length == 0)
           {
@@ -689,7 +689,7 @@ public class TestSteppingEngine extends TestLib
           }
     else
       {
-        Frame sFrame = StackFactory.createFrame(myTask);
+        StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
         
         if (sFrame.getLines().length == 0)
           SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -713,7 +713,7 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OVER_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOver(l, StackFactory.createFrame(myTask));
+                    SteppingEngine.setUpStepOver(l, StackFactory.createStackFrame(myTask, 3));
                     return;
                   }
                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -731,7 +731,7 @@ public class TestSteppingEngine extends TestLib
                     else
                       {
                         this.testState = INSTRUCTION_STEP_NEXT_STEPPING;
-                        SteppingEngine.setUpStepNextInstruction(myTask, StackFactory.createFrame(myTask));
+                        SteppingEngine.setUpStepNextInstruction(myTask, StackFactory.createStackFrame(myTask, 3));
                       }
                     return;
                   }
@@ -744,7 +744,7 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OUT_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOut(l, StackFactory.createFrame(myTask));
+                    SteppingEngine.setUpStepOut(l, StackFactory.createStackFrame(myTask, 3));
                   }
                 else
                   SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -759,7 +759,7 @@ public class TestSteppingEngine extends TestLib
         /* Otherwise, the testcase is in the section of code critical to the test */
         else if (this.testState == STEP_OVER_STEPPING)
           {
-                Frame frame = StackFactory.createFrame(myTask);
+                StackFrame frame = StackFactory.createStackFrame(myTask, 2);
 
                 /* Make sure we're not missing any frames */
                   
@@ -777,7 +777,7 @@ public class TestSteppingEngine extends TestLib
           }
         else if (this.testState == INSTRUCTION_STEP_NEXT_STEPPING)
           {
-            Frame frame = StackFactory.createFrame(myTask);
+            StackFrame frame = StackFactory.createStackFrame(myTask, 2);
 
             /* Make sure we're not missing any frames */
               
@@ -795,7 +795,7 @@ public class TestSteppingEngine extends TestLib
           }
         else if (this.testState == STEP_OUT_STEPPING)
           {
-            Frame frame = StackFactory.createFrame(myTask);
+            StackFrame frame = StackFactory.createStackFrame(myTask, 2);
 
             /* Make sure we're not missing any frames */
               

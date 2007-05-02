@@ -57,7 +57,7 @@ import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 import frysk.value.Variable;
 import frysk.proc.Task;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 
 /**
  * The InlineBuffer performs much of the same functionality as the SourceBuffer,
@@ -76,7 +76,7 @@ public class InlineBuffer
 
   private TextChildAnchor ellipsisAnchor;
 
-  Frame currentFrame;
+  StackFrame currentFrame;
 
   private SymTab stab;
   
@@ -86,7 +86,7 @@ public class InlineBuffer
    * @param scope The file that the declaration is in
    * @param instance The inlined instance to display
    */
-  public InlineBuffer (DOMInlineInstance instance, Frame frame)
+  public InlineBuffer (DOMInlineInstance instance, StackFrame frame)
   {
     super();
     this.instance = instance;

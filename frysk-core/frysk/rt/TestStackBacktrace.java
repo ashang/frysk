@@ -142,7 +142,7 @@ public class TestStackBacktrace
   
   private void firstTestBacktraceAssertions ()
   {
-    Frame frame = StackFactory.createFrame(myTask);
+    StackFrame frame = StackFactory.createStackFrame(myTask);
 //    System.err.println(StackFactory.printStackTrace(frame));
     Line line;
     Symbol symbol;
@@ -331,7 +331,7 @@ public class TestStackBacktrace
   public void setUpTest ()
   {
 
-    Frame frame = StackFactory.createFrame(myTask);
+    StackFrame frame = StackFactory.createStackFrame(myTask, 1);
     
     if (frame.getLines().length == 0)
       {
@@ -494,7 +494,7 @@ public class TestStackBacktrace
   
   public void pushPopAssertions ()
   {
-    Frame sFrame = StackFactory.createFrame(myTask);
+    StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
     Line line = null; 
     
     if (this.testState == PUSH || this.testState == POP)
@@ -566,7 +566,7 @@ public class TestStackBacktrace
               }
             else
               {
-                Frame frame = StackFactory.createFrame(myTask);
+                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
                 if (frame.getLines()[0].getLine() > 95)
@@ -594,7 +594,7 @@ public class TestStackBacktrace
               }
             else
               {
-                Frame frame = StackFactory.createFrame(myTask);
+                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
                 assertEquals ("demangled name", "jump",
@@ -620,20 +620,20 @@ public class TestStackBacktrace
 
   /**
    * Each task belonging to the process executes this in a synchronized manner.
-   * The innermost Frame is generated for the task, which is properly
-   * blocked by the time it gets here. This Task's TID and its Frame's 
+   * The innermost StackFrame is generated for the task, which is properly
+   * blocked by the time it gets here. This Task's TID and its StackFrame's 
    * information is stored into the global matrix for assertions later. 
    * 
    * @param task    The Task to save a stack trace from. 
    */
   public synchronized void handleTask (Task task)
   {
-    Frame frame = null;
+    StackFrame frame = null;
     myTask = task;
     
     if (task != null)
       {
-        frame = StackFactory.createFrame(task);
+        frame = StackFactory.createStackFrame(task);
 //        System.err.println(StackFactory.printStackTrace(frame));
         
         assertNotNull(frame);

@@ -49,7 +49,7 @@ import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.StackFactory;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 import inua.util.PrintWriter;
 
 import java.util.HashSet;
@@ -148,7 +148,7 @@ public class Ftrace
     
     synchronized void generateStacKTrace (Task task, String syscallStackTraceName)
     {
-      Frame frame = StackFactory.createFrame(task);
+      StackFrame frame = StackFactory.createStackFrame(task);
       writer.println("Task: " + task.getTid() 
       + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
       

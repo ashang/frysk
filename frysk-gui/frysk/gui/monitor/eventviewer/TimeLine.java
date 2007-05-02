@@ -211,8 +211,8 @@ public abstract class TimeLine
       
       if(mouseEvent.getClickType() == MouseEvent.DOUBLE_CLICK && mouseEvent.isOfType(MouseEvent.Type.BUTTON_PRESS)){
         Event event = this.xy2Event(mouseEvent.getX(), mouseEvent.getY());
-        if(event != null && event.getFrame()!=null && ownsEvent(event)){
-           SourceWindowFactory.createSourceWindow(event.getFrame());
+        if(event != null && event.getStackFrame()!=null && ownsEvent(event)){
+           SourceWindowFactory.createSourceWindow(event.getStackFrame());
           return true;
         }
       }

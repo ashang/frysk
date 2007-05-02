@@ -42,7 +42,7 @@ package frysk.rt.states;
 import lib.dw.DwflLine;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 
@@ -81,7 +81,7 @@ public class StepOverTestState extends State
     if (lineNum != prev)
       {
 	tse.setLine(lineNum);
-	Frame newFrame = StackFactory.createFrame(task);
+	StackFrame newFrame = StackFactory.createStackFrame(task, 2);
 
 	/* The two frames are the same; treat this step-over as an instruction step. */
 	if (newFrame.getFrameIdentifier().equals(
@@ -93,7 +93,7 @@ public class StepOverTestState extends State
 	  {
 	    /* There is a different innermost frame on the stack - run until
 	     * it exits - success! */
-	    Frame frame = newFrame.getOuter();
+	    StackFrame frame = newFrame.getOuter();
 	    SteppingEngine.setBreakpoint(this.task, frame.getAddress());
 	    return new StepOverState(this.task);
 	  }	

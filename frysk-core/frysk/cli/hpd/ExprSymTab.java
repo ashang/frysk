@@ -66,7 +66,7 @@ import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.rt.LexicalBlock;
 import frysk.rt.StackFactory;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 import frysk.rt.Subprogram;
 import frysk.sys.Errno;
 
@@ -77,7 +77,7 @@ class ExprSymTab
 
   private int pid;
 
-  private Frame currentFrame;
+  private StackFrame currentFrame;
   
   private Subprogram subprogram;
 
@@ -112,7 +112,7 @@ class ExprSymTab
    * @param pid_p Pid
    * @param frame StackFrame
    */
-  ExprSymTab (Task task, int pid, Frame frame)
+  ExprSymTab (Task task, int pid, StackFrame frame)
   {
     this.task = task;
     this.pid = pid;
@@ -121,7 +121,7 @@ class ExprSymTab
 
     if (frame == null)
       {
-        currentFrame = StackFactory.createFrame(task);
+        currentFrame = StackFactory.createStackFrame(task);
       }
 
     else
@@ -151,7 +151,7 @@ class ExprSymTab
     
   void refreshCurrentFrame()
   {
-    currentFrame = StackFactory.createFrame(task);
+    currentFrame = StackFactory.createStackFrame(task);
   }
 
   interface VariableAccessor
@@ -262,9 +262,9 @@ class ExprSymTab
           Isa isa = currentFrame.getTask().getIsa();
 
           if (isa instanceof frysk.proc.IsaIA32)
-            regval = currentFrame.getRegister(x86regnumbers[reg]);
+            regval = currentFrame.getReg(x86regnumbers[reg]);
           else if (isa instanceof frysk.proc.IsaX8664)
-            regval = currentFrame.getRegister(reg);
+            regval = currentFrame.getReg(reg);
         }
 
       addr += ((DwarfDie.DwarfOp)ops.get(0)).operand1;
@@ -374,7 +374,7 @@ class ExprSymTab
       return 0;
     }
 
-    private long getRegister (DwarfDie varDieP)
+    private long getReg (DwarfDie varDieP)
     {
       long pc;
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
@@ -404,76 +404,76 @@ class ExprSymTab
 
     public long getLong (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       return val;
     }
 
     public void putLong (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, v.getLong());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, v.getLong());
     }
 
     public int getInt (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       return (int) val;
     }
 
     public void putInt (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, v.getInt());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, v.getInt());
     }
 
     public short getShort (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       return (short) val;
     }
 
     public void putShort (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, v.getShort());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, v.getShort());
     }
 
     public byte getByte (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       return (byte) val;
     }
 
     public void putByte (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, v.getByte());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, v.getByte());
     }
 
     public float getFloat (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
 
     public void putFloat (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, (long) v.getFloat());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, (long) v.getFloat());
     }
 
     public double getDouble (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getRegister(getRegister(varDieP));
+      long val = currentFrame.getReg(getReg(varDieP));
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
 
     public void putDouble (DwarfDie varDieP, long offset, Variable v)
     {
-      long reg = getRegister(varDieP);
-      currentFrame.setRegister(reg, (long) v.getDouble());
+      long reg = getReg(varDieP);
+      currentFrame.setReg(reg, (long) v.getDouble());
     }
   }
 
@@ -1014,7 +1014,7 @@ class ExprSymTab
    * 
    * @return StackFrame
    */
-  Frame getCurrentFrame ()
+  StackFrame getCurrentFrame ()
   {
     return currentFrame;
   }
@@ -1024,7 +1024,7 @@ class ExprSymTab
    * 
    * @param sf_p
    */
-  void setCurrentFrame (Frame sf_p)
+  void setCurrentFrame (StackFrame sf_p)
   {
     currentFrame = sf_p;
   }
@@ -1034,9 +1034,9 @@ class ExprSymTab
    * 
    * @return StackFrame
    */
-  Frame getInnerMostFrame ()
+  StackFrame getInnerMostFrame ()
   {
-    Frame curr = currentFrame;
+    StackFrame curr = currentFrame;
 
     while (curr.getInner() != null)
       curr = curr.getInner();

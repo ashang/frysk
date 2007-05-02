@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.gnu.gtk.Widget;
 
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 
 
 public interface View{
@@ -59,9 +59,9 @@ public interface View{
 	
 	List getFunctions();
 	
-	void load(Frame data, int mode);
+	void load(StackFrame data, int mode);
 	
-	Frame getScope();
+	StackFrame getScope();
 	
 	void setSubscopeAtCurrentLine(InlineSourceView child);
 	

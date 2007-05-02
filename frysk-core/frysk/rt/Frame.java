@@ -80,11 +80,6 @@ public class Frame
     return outer;
   }
   
-  public Frame getInner()
-  {
-    return inner;
-  }
-  
   public String getProcName()
   {
     return cursor.getProcName().getName();
@@ -108,7 +103,9 @@ public class Frame
     if (myInfo.getError() != 0 || myName.getError() != 0)
       	return 0;
     
-   return myInfo.getStartIP() + myName.getOffset();
+    System.err.println("StartIP: " + Long.toHexString(myInfo.getStartIP()));
+    System.err.println("Offset: " + Long.toHexString(myName.getOffset()));
+    return myInfo.getStartIP() + myName.getOffset();
   }
   
   public long getAdjustedAddress()
@@ -223,6 +220,7 @@ public class Frame
 	      builder.append (line.getLine ());
 	  }
       }
+      System.err.println("Printed line info");
       return builder.toString();
   }
   

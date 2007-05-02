@@ -61,7 +61,7 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.SteppingEngine;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 
 
 /**
@@ -130,7 +130,7 @@ public class SourceWindowFactory
     srcWin.grabFocus();
   }
   
-  public static void createSourceWindow (Frame frame)
+  public static void createSourceWindow (StackFrame frame)
   {
     LibGlade glade;
     try

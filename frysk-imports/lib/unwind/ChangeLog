@@ -1,5 +1,7 @@
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
+	* Revert 2007-04-30 Nurdin Premji <npremji@redhat.com> change.
+
 	* TestUnwind.java: Delete use of frysk.sys.Server.
 
 2007-05-01  Nurdin Premji  <npremji@redhat.com>

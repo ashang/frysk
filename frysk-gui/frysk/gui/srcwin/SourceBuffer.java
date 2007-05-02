@@ -82,7 +82,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
 import frysk.rt.Line;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 import frysk.value.Variable;
 
 /**
@@ -163,7 +163,7 @@ public class SourceBuffer
   // Since conceptually each sourcebuffer will only be viewing one file, we
   // don't
   // need any information higher than this
-  protected Frame scope;
+  protected StackFrame scope;
 
   protected TextChildAnchor anchor;
 
@@ -187,7 +187,7 @@ public class SourceBuffer
    * 
    * @param scope
    */
-  public SourceBuffer (Frame scope)
+  public SourceBuffer (StackFrame scope)
   {
     this();
     if (scope == null)
@@ -199,7 +199,7 @@ public class SourceBuffer
     this.setScope(scope, SOURCE_MODE);
   }
 
-  public SourceBuffer (Frame scope, int mode)
+  public SourceBuffer (StackFrame scope, int mode)
   {
     this();
     if (scope == null)
@@ -300,10 +300,10 @@ public class SourceBuffer
    * incoming boolean parameter, will either add or remove highlights for
    * all frames in the stack.
    * 
-   * @param frame The Frame representing the new stack trace
+   * @param frame The StackFrame representing the new stack trace
    * @param newFrame Whether this is a highlight or a de-highlight
    */
-  protected void highlightLine (Frame frame, boolean newFrame)
+  protected void highlightLine (StackFrame frame, boolean newFrame)
   {
 //    // Quick check.
 //    if (this.scope.getLines().length == 0)
@@ -351,7 +351,7 @@ public class SourceBuffer
           }
       }
 
-    Frame curr = frame.getOuter();
+    StackFrame curr = frame.getOuter();
 
     /* Only highlight lines in the same file as the current scope of this
      * SourceBuffer. */
@@ -840,7 +840,7 @@ public class SourceBuffer
     return new DOMInlineInstance((Element) iter.next());
   }
   
-  public void setScope (Frame scope)
+  public void setScope (StackFrame scope)
   {
     this.setScope(scope, SOURCE_MODE);
   }
@@ -850,7 +850,7 @@ public class SourceBuffer
    * 
    * @param scope The stack frame to be displayed
    */
-  protected void setScope (Frame scope, int mode)
+  protected void setScope (StackFrame scope, int mode)
   {
     Iterator i = this.functions.iterator();
     while (i.hasNext())
@@ -911,7 +911,7 @@ public class SourceBuffer
     this.setScope(this.getScope(), mode);
   }
 
-  public void disassembleFrame (Frame frame)
+  public void disassembleFrame (StackFrame frame)
   {
     Task task = frame.getTask();
     LinkedList instructionsList = null;
@@ -997,7 +997,7 @@ public class SourceBuffer
   /**
    * @return The stack frame currently being displayed
    */
-  public Frame getScope ()
+  public StackFrame getScope ()
   {
     return scope;
   }
@@ -1141,7 +1141,7 @@ public class SourceBuffer
 //            return;
 //          }
         
-        Frame curr = this.scope;
+        StackFrame curr = this.scope;
         while (curr != null)
           {
             if (curr.getLines().length > 0 && curr.getLines()[0].getDOMSource() != null)
@@ -1199,12 +1199,12 @@ public class SourceBuffer
   
   /**
    * The source we're looking at isn't handled by the parser, so just load it in.
-   * @param frame   The Frame representing the current frame on
+   * @param frame   The StackFrame representing the current frame on
    * the stack.
    * @return    text    The source to be loaded into the SourceWindow
    * @throws FileNotFoundException
    */
-  private String loadUnmarkedText (Frame frame) throws FileNotFoundException
+  private String loadUnmarkedText (StackFrame frame) throws FileNotFoundException
   {
     BufferedReader br = null;
     if (frame.getLines().length == 0)

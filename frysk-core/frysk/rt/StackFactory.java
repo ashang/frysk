@@ -52,7 +52,7 @@ import frysk.proc.Task;
 public class StackFactory
 {
   
-  public static Frame createFrame(Task task)
+  public static Frame createStackTrace(Task task)
   {
     Unwind unwinder;
     if (task.getIsa().getWordSize() == 4)
@@ -66,9 +66,9 @@ public class StackFactory
     Cursor innermost = new Cursor(addressSpace, accessors);
     
     Frame innerFrame = new Frame(innermost, task);
+        
     return innerFrame;
   }
-  
   /**
    * Find and return the stack backtrace for the provided task
    * 
@@ -127,6 +127,11 @@ public class StackFactory
     return createStackFrame(task, 0);
   }
   
+  private static boolean newUnwind = false;
+  public static void setNewUnwind(boolean bool)
+  {
+    newUnwind = bool;
+  }
   public static final StringBuffer generateTaskStackTrace (Task task)
   {
     if (task != null)
@@ -134,32 +139,28 @@ public class StackFactory
       StringBuffer buffer = new StringBuffer();
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
       int count = 0;
-      for (Frame frame = StackFactory.createFrame(task); frame != null; frame = frame.getOuter())
+      if (newUnwind)	
+	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
 	    {
-  	      // FIXME: do valgrind-like '=== PID ===' ?	      
 	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
 	      buffer.append(output);
 	      count++;
-	    }      
+	    }
+      else
+	  for (StackFrame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
+	    {
+	      // FIXME: do valgrind-like '=== PID ===' ?
+	      StringBuffer output = new StringBuffer("#" + count + " "
+						     + frame.toPrint(false)
+						     + "\n");
+
+	      buffer.append(output);
+	      count++;
+	    }
       return buffer;
       }
 
     return null;
-  }
-  
-  public static String printStackTrace(Frame topFrame)
-  {
-    StringBuffer buffer = new StringBuffer();
-    int count = 0;
-    for (Frame frame = topFrame;
-    frame != null; frame = frame.getOuter()) 
-      {
-      buffer.append("#" + count + " "+ frame.toPrint(false) + "\n");
-          
-      count++;
-     }
-    
-    return buffer.toString();
   }
   
   public static String printStackTrace(StackFrame topFrame){

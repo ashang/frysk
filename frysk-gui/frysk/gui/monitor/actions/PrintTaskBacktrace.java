@@ -47,7 +47,7 @@ import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
-import frysk.rt.Frame;
+import frysk.rt.StackFrame;
 
 /**
  * 
@@ -81,7 +81,7 @@ public class PrintTaskBacktrace extends TaskAction {
 				+ " from PID "
 				+ task.getProc().getPid());
 		
-		for (Frame frame = StackFactory.createFrame(task);
+		for (StackFrame frame = StackFactory.createStackFrame(task);
 		     frame != null; frame = frame.getOuter()) {
 				
 		    EventLogger.theLogger.getEventLogger().log(Level.INFO,

@@ -194,11 +194,6 @@ namespace TARGET
     if (procName->error < 0 && procName->error != -UNW_ENOMEM)
       return procName->error;
 
-    *offp = (unw_word_t) procName->offset;
-
-    if (procName->name == NULL)
-    	return 0;
-
     //The maximum number of characters that can be copied are buf_len -1.
     //with bufp[buf_len - 1] = '\0'.
     //Otherwise copy name.length characters, and bufp[name.length] = '\0'
@@ -208,6 +203,8 @@ namespace TARGET
     JvGetStringUTFRegion(procName->name, 0, upper_limit, bufp);
 
     bufp[upper_limit] = '\0';
+
+    *offp = (unw_word_t) procName->offset;
 
     if (upper_limit < buf_len)
       return 0;
@@ -288,7 +285,6 @@ lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameS
   logFine (this, logger, "getProcName cursor: %p, maxNameSize: %d", cursor, (int) maxNameSize);
 
   char bufp[maxNameSize];
-  bufp[0] = '\0';
   unw_word_t offset;
   int err = unw_get_proc_name((unw_cursor_t *) cursor, bufp, maxNameSize, &offset);
 
@@ -297,14 +293,7 @@ lib::unwind::TARGET::getProcName(gnu::gcj::RawDataManaged* cursor, jint maxNameS
   if (err < 0)
     return new lib::unwind::ProcName((jint) err);
 
-  jstring jName;
-  
-  if (bufp[0] == '\0')
-  	jName = NULL;
-  else
-  	jName = JvNewStringUTF(bufp);
-  
-  return new lib::unwind::ProcName((jlong) offset, jName);
+  return new lib::unwind::ProcName((jlong) offset, JvNewStringUTF(bufp));
 }
 
 jint
