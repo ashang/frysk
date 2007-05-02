@@ -1,3 +1,12 @@
+2007-05-02  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (getArrayType): New.
+	(getClassType): New.
+	(navigateType): New.
+	(get): Use above new methods.
+	* hpd/CLI.java (PrintHandler.handle): Remove try/catch block.
+	(CLI): Remove command parameter.
+
 2007-05-01  Nurdin Premji  <npremji@redhat.com>
 
 	* hpd/SymTab.java (setSubprogram): Switch from StackFrame to Frame.

@@ -1,3 +1,18 @@
+2007-05-02  Stan Cox  <scox@redhat.com>
+
+	* ClassType.java (ClassIterator.next): Call getVariable.
+	(getVariable): Moved from above.
+	(get): New for member access.
+	(toString): Use gdb-like output formatting.  Output bit field length.
+	* ArrayType.java (getType): New.
+	(Iterator.next): Handle ClassType.
+	(toString): Use gdb-like output formatting.
+	(ArrayType): Add size parameter.
+	* Type.java (longValue): Removed.
+	(newVariable): Moved to...
+	* ArithmeticType.java: here.
+	* TestValue.java (testArrayOfNumber): Allow for current formatting.
+
 2007-04-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Variable.java (filePath): Added, this is a temporary measure until I

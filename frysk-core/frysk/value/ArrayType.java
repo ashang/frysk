@@ -54,6 +54,11 @@ public class ArrayType
 
     private final ArrayList dimensions;
 
+    public Type getType ()
+    {
+      return type;
+    }
+
     /**
      * Iterate through the array members.
      */
@@ -98,37 +103,47 @@ public class ArrayType
 	 */
 	public int nextIdx ()
 	{
-	    dim -= 1;
-	    if (dim > 0)
+	  dim -= 1;
+	  if (dim > 0)
+	    {
+	      if (element >= terms[dim])
 		{
-		    if (element >= terms[dim])
-			{
-			    int newDim = element / (terms[dim]);
-			    element = element % (terms[dim]);
-			    return newDim;
-			}
-		    return 0;
+		  int newDim = element / (terms[dim]);
+		  element = element % (terms[dim]);
+		  return newDim;
 		}
-	    return element;
+	      return 0;
+	    }
+	  return element;
 	}
 
 	public Object next ()
 	{
 	  int off = idx * type.getSize();
-	  if (type.typeId == BaseTypes.baseTypeByte)
-	    return ArithmeticType.newByteVariable((ArithmeticType)type, "", v.getByte((off)));
-	  else if (type.typeId == BaseTypes.baseTypeShort)
-	    return ArithmeticType.newShortVariable((ArithmeticType)type, "", v.getShort(off));
-	  else if (type.typeId == BaseTypes.baseTypeInteger)
-	    return ArithmeticType.newIntegerVariable((ArithmeticType)type, "", v.getInt(off));
-	  else if (type.typeId == BaseTypes.baseTypeLong)
-	    return ArithmeticType.newLongVariable((ArithmeticType)type, "", v.getLong(off));
-	  else if (type.typeId == BaseTypes.baseTypeFloat)
-	    return ArithmeticType.newFloatVariable((ArithmeticType)type, "", v.getFloat(off));
-	  else if (type.typeId == BaseTypes.baseTypeDouble)
-	    return ArithmeticType.newDoubleVariable((ArithmeticType)type, "", v.getDouble(off));
-	  else
-	    return null;
+	  switch (type.typeId)
+	  {
+	    case (BaseTypes.baseTypeByte):
+	      return ArithmeticType.newByteVariable((ArithmeticType)type, "", v.getByte((off)));
+	    case (BaseTypes.baseTypeShort):
+	      return ArithmeticType.newShortVariable((ArithmeticType)type, "", v.getShort(off));
+	    case (BaseTypes.baseTypeInteger):
+	      return ArithmeticType.newIntegerVariable((ArithmeticType)type, "", v.getInt(off));
+	    case (BaseTypes.baseTypeLong):
+	      return ArithmeticType.newLongVariable((ArithmeticType)type, "", v.getLong(off));
+	    case (BaseTypes.baseTypeFloat):
+	      return ArithmeticType.newFloatVariable((ArithmeticType)type, "", v.getFloat(off));
+	    case (BaseTypes.baseTypeDouble):
+	      return ArithmeticType.newDoubleVariable((ArithmeticType)type, "", v.getDouble(off));
+	  }
+	  if (type instanceof ClassType)
+	    {
+	      byte [] buf = new byte[type.size];
+	      v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
+	      ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	      abb.order(type.getEndian());
+	      return new Variable((ClassType)type, v.getText(), (ArrayByteBuffer)abb);
+	    }
+	  return null;
 	}
 
 	public void remove ()
@@ -143,38 +158,56 @@ public class ArrayType
 
     public String toString (Variable v)
     {
-	StringBuffer strBuf = new StringBuffer();
-	Iterator e = getIterator(v);
-	boolean isString = false;
-	if (type.typeId == BaseTypes.baseTypeByte)
+      StringBuffer strBuf = new StringBuffer();
+      Iterator e = getIterator(v);
+      boolean isString = false;
+      if (type.typeId == BaseTypes.baseTypeByte)
+	{
+	  isString = true;
+	  strBuf.append("\"");
+	}
+      else
+	for (int i = 1; i <= e.dimCount; i++)
+	  strBuf.append("{");
+      boolean firstTime = true;
+      while (e.hasNext())
+	{
+	  if (!isString)
 	    {
-		isString = true;
-		strBuf.append("\"");
+	      int dimCount = e.dimCount;
+	      boolean putBraces = false;
+	      for (int j = dimCount; j >= 1; j--)
+		{
+		  int nextIdx = e.nextIdx();
+		  if (j != dimCount && nextIdx == 0)
+		    {
+		      putBraces = true;
+		      if (firstTime)
+			{
+			  firstTime = false;
+			  putBraces = false;
+			}
+		    }
+		}
+	      if (putBraces)
+		strBuf.append("},{");
+	      else if (e.idx != 0)
+		strBuf.append(",");
+	      strBuf.append(e.next());
 	    }
-	while (e.hasNext())
+	  else	
 	    {
-		if (!isString)
-		    {
-		        strBuf.append("[");
-			int dimCount = e.dimCount;
-			for (int j = dimCount; j >= 1; j--)
-			    {
-				strBuf.append(e.nextIdx());
-				if (j != 1)
-				    strBuf.append(",");
-			    }
-			strBuf.append("]=" + e.next());
-		    }
-		else	
-		    {
-		      char ch = (char)((Variable)e.next()).getByte();
-		      if (ch != 0)
-			strBuf.append(ch);
-		    }
+	      char ch = (char)((Variable)e.next()).getByte();
+	      if (ch != 0)
+		strBuf.append(ch);
 	    }
-	if (isString)
-	    strBuf.append("\"");
-	return strBuf.toString();
+	}
+      if (isString)
+	strBuf.append("\"");
+      else
+	for (int i = 1; i <= e.dimCount; i++)
+	  strBuf.append("}");
+      return strBuf.toString();
     }
 
     public String getName ()
@@ -186,21 +219,21 @@ public class ArrayType
         {
           if (i > 0)
             strBuf.append(",");
-          strBuf.append(((Integer)this.dimensions.get(i)).toString());
+          strBuf.append(((Integer)this.dimensions.get(i)).intValue() + 1);
         }
       strBuf.append("]");
       return strBuf.toString();
     }
-     
+
     /**
      * Create an ArrayType
      * 
      * @param typep - Type of each array element
      * @param dimensionsp - ArrayList of dimension upper bounds.
      */
-    public ArrayType (Type typep, ArrayList dimensionsp)
+    public ArrayType (Type typep, int size, ArrayList dimensionsp)
     {
-	super(0, typep.endian, 0, "array");
+	super(size, typep.endian, 0, "array");
 	type = typep;
 	dimensions = dimensionsp;
     }

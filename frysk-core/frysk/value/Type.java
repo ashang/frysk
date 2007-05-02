@@ -41,7 +41,6 @@
 package frysk.value;
 
 import inua.eio.ByteOrder;
-import lib.dw.BaseTypes;
 
 /**
  * Holds the type of a Variable and also defines possible operations. Classes
@@ -52,10 +51,10 @@ import lib.dw.BaseTypes;
 
 public abstract class Type
 {
-  protected final int size;
+  protected int size;
 
   protected final ByteOrder endian;
-
+  
   protected final int typeId;
 
   protected final String name;
@@ -99,23 +98,6 @@ public abstract class Type
   }
 
   public abstract String toString (Variable v);
-
-  public long longValue (Variable v) throws InvalidOperatorException
-  {
-    switch (v.getType().getTypeId())
-      {
-      case BaseTypes.baseTypeByte:
-	return v.getByte();
-      case BaseTypes.baseTypeShort:
-	return v.getShort();
-      case BaseTypes.baseTypeInteger:
-	return v.getInt();
-      case BaseTypes.baseTypeLong:
-	return v.getLong();
-      }
-    throw new InvalidOperatorException("binary operation not defined for type "
-	                               + name + "," + v.getType().getName());
-  }
 
   public abstract Variable add (Variable var1, Variable var2)
       throws InvalidOperatorException;
@@ -209,51 +191,4 @@ public abstract class Type
 
   public abstract boolean getLogicalValue (Variable var) throws InvalidOperatorException;
   
-  public Variable newVariable(Type type, int val)
-    {
-      switch (type.getTypeId())
-      {
-	case BaseTypes.baseTypeByte:
-	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", (byte)val);
-	case BaseTypes.baseTypeShort:
-       	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", (short)val);
-	case BaseTypes.baseTypeInteger:
-	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
-	case BaseTypes.baseTypeLong:
-	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", (long)val);
-	case BaseTypes.baseTypeFloat:
-	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", (float)val);
-	case BaseTypes.baseTypeDouble:
-	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", (double)val);
-      }
-      return null;
-    }
-
-  public Variable newVariable (Type type, long val)
-  {
-    if (type.getTypeId() < BaseTypes.baseTypeLong)
-      return this.newVariable(type, (int) val);
-    switch (type.getTypeId())
-      {
-      case BaseTypes.baseTypeLong:
-	return ArithmeticType.newLongVariable((ArithmeticType) type, "long", val);
-      case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
-      case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", (double) val);
-      }
-    return null;
-  }
-
-  public Variable newVariable (Type type, double val)
-  {
-    switch (type.getTypeId())
-      {
-      case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
-      case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", val);
-      }
-    return null;
-  }
 }

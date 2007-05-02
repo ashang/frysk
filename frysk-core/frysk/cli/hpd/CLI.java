@@ -61,7 +61,6 @@ import java.lang.RuntimeException;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -970,38 +969,30 @@ public class CLI
 	  return;
 	}
 
-      try
-        {
-          switch (outputFormat)
-	    {
-	    case HEX: 
-	      outWriter.print("0x");
-	      break;
-	    case OCTAL: 
-	      outWriter.print("0");
-	      break;
-	    }
-          int resultType = result.getType().getTypeId();
-          if (resultType == BaseTypes.baseTypeFloat
-              || resultType == BaseTypes.baseTypeDouble)
-            outWriter.println(result.toString());
-          else if (resultType == BaseTypes.baseTypeShort
-		   || resultType == BaseTypes.baseTypeInteger
-		   || resultType == BaseTypes.baseTypeLong)
-            outWriter.println(Long.toString(result.getType()
-						  .longValue(result),
-						  outputFormat));
-          else if (resultType == BaseTypes.baseTypeByte)
-            outWriter.println(Integer.toString((int)result.getType()
-						  .longValue(result),
-						  outputFormat) + 
-                                 " '" + result.toString() + "'");
-          else
-            outWriter.println(result.toString());
-        }
-      catch (InvalidOperatorException ioe)
-        {
-        }
+      switch (outputFormat)
+      {
+      case HEX: 
+	outWriter.print("0x");
+	break;
+      case OCTAL: 
+	outWriter.print("0");
+	break;
+      }
+      int resultType = result.getType().getTypeId();
+      if (resultType == BaseTypes.baseTypeFloat
+	  || resultType == BaseTypes.baseTypeDouble)
+	outWriter.println(result.toString());
+      else if (resultType == BaseTypes.baseTypeShort
+	  || resultType == BaseTypes.baseTypeInteger
+	  || resultType == BaseTypes.baseTypeLong)
+	outWriter.println(Long.toString(result.longValue(),
+	                                outputFormat));
+      else if (resultType == BaseTypes.baseTypeByte)
+	outWriter.println(Integer.toString((int)result.longValue(),
+	                                   outputFormat) + 
+	                                   " '" + result.toString() + "'");
+      else
+	outWriter.println(result.toString());
     }
   }
 
@@ -1173,7 +1164,7 @@ public class CLI
    * @param prompt String initially to be used as the prompt
    * @param out Stream for output. This really should be a PrintWriter
    */
-  public CLI(String prompt, String command, PrintStream out)
+  public CLI(String prompt, PrintStream out)
   {
     this.prompt = prompt;
     outWriter = new PrintWriter(out, true);
@@ -1228,8 +1219,6 @@ public class CLI
     //initialize alias table
     aliases = new Hashtable();
     aliases.toString(); // avoid unused variable warnings
-    if (command.length() > 0)
-      execCommand(command);
   }
 
   public String getPrompt()

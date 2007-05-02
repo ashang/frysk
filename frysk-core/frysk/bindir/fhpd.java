@@ -105,12 +105,11 @@ public class fhpd
         }
       }
     });
-    String command = "";
-    if (pid > 0)
-      command = "attach " + pid;
-    cli = new CLI("(fhpd) ", command, System.out);
-    ConsoleReader reader = null; // the jline reader
     String line = "";
+    if (pid > 0)
+      line = "attach " + pid;
+    cli = new CLI("(fhpd) ", System.out);
+    ConsoleReader reader = null; // the jline reader
 
     try {
       reader = new ConsoleReader();
@@ -123,10 +122,12 @@ public class fhpd
     Completor fhpdCompletor = new FhpdCompletor(cli);
     reader.addCompletor(fhpdCompletor);
     try {
-      while (line != null && !line.equals("quit")) {
-        line = reader.readLine(cli.getPrompt());
-        cli.execCommand(line);
-      }
+      cli.execCommand(line);
+      while (! (line.equals("quit") || line.equals("q"))) 
+	{
+	  line = reader.readLine(cli.getPrompt());
+	  cli.execCommand(line);
+	}
 
     }
     catch (IOException ioe) {

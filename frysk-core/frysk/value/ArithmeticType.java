@@ -57,90 +57,90 @@ public class ArithmeticType
   public Variable add (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() + var2.intValue());
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() + var2.longValue());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, var1.doubleValue() + var2.doubleValue());
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, var1.intValue() + var2.intValue());
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, var1.longValue() + var2.longValue());
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, var1.doubleValue() + var2.doubleValue());
     return null;
   }
 
   public Variable subtract (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() - var2.intValue());
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() - var2.longValue());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, var1.doubleValue() - var2.doubleValue());
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, var1.intValue() - var2.intValue());
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, var1.longValue() - var2.longValue());
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, var1.doubleValue() - var2.doubleValue());
     return null;
   }
 
   public Variable multiply (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() * var2.intValue());
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() * var2.longValue());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, var1.doubleValue() * var2.doubleValue());
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, var1.intValue() * var2.intValue());
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, var1.longValue() * var2.longValue());
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, var1.doubleValue() * var2.doubleValue());
     return null;
   }
 
   public Variable divide (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() / var2.intValue());
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() / var2.longValue());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, var1.doubleValue() / var2.doubleValue());
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, var1.intValue() / var2.intValue());
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, var1.longValue() / var2.longValue());
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, var1.doubleValue() / var2.doubleValue());
     return null;
   }
 
   public Variable mod (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() % var2.intValue());
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() % var2.longValue());
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, var1.doubleValue() % var2.doubleValue());
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, var1.intValue() % var2.intValue());
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, var1.longValue() % var2.longValue());
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, var1.doubleValue() % var2.doubleValue());
     return null;
   }
 
@@ -153,9 +153,9 @@ public class ArithmeticType
       type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() << var2.intValue());
+      return newVariable(type, var1.intValue() << var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() << var2.longValue());
+      return newVariable(type, var1.longValue() << var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))
       throw new InvalidOperatorException(
                                          "binary operator << not defined for type "
@@ -172,9 +172,9 @@ public class ArithmeticType
       type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() >> var2.intValue());
+      return newVariable(type, var1.intValue() >> var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() >> var2.longValue());
+      return newVariable(type, var1.longValue() >> var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))
       throw new InvalidOperatorException(
                                          "binary operator >> not defined for type "
@@ -185,123 +185,123 @@ public class ArithmeticType
   public Variable lessThan (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() < var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() < var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() < var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() < var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() < var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
   public Variable greaterThan (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() > var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() > var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() > var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() > var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() > var2.doubleValue()) ? 1 : 0);
     return null;
   }
 
   public Variable lessThanOrEqualTo (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() <= var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() <= var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() <= var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() <= var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() <= var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
   public Variable greaterThanOrEqualTo (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() >= var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() >= var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() >= var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() >= var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() >= var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
   public Variable equal (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() == var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() == var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() == var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() == var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() == var2.doubleValue()) ? 1 : 0);
     return null;
   }
 
   public Variable notEqual (Variable var1, Variable var2)
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() != var2.intValue()) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() != var2.longValue()) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId())
-	|| BaseTypes.isFloat(var2.getType().getTypeId()))
-      return type.newVariable(type, (var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() != var2.intValue()) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() != var2.longValue()) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId)
+	|| BaseTypes.isFloat(var2.getType().typeId))
+      return newVariable(type, (var1.doubleValue() != var2.doubleValue()) ? 1 : 0);
     return null;
   }
   
   public Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
     if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, var1.intValue() & var2.intValue());
+      return newVariable(type, var1.intValue() & var2.intValue());
     else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, var1.longValue() & var2.longValue());
+      return newVariable(type, var1.longValue() & var2.longValue());
     else if (BaseTypes.isFloat(var1.getType().getTypeId()))
       throw new InvalidOperatorException(
                                          "binary operator & not defined for type "
@@ -312,16 +312,16 @@ public class ArithmeticType
   public Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() | var2.intValue()));
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() | var2.longValue()));
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() | var2.intValue()));
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() | var2.longValue()));
+    else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator | not defined for type "
 					 + var1.getType().getName());
@@ -331,16 +331,16 @@ public class ArithmeticType
   public Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() ^ var2.intValue()));
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() ^ var2.longValue()));
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() ^ var2.intValue()));
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() ^ var2.longValue()));
+    else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator ^ not defined for type "
 					 + var1.getType().getName());
@@ -351,11 +351,11 @@ public class ArithmeticType
   {
     Type type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (~var1.intValue()));
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (~var1.longValue()));
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (~var1.intValue()));
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (~var1.longValue()));
+    else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "unary operator ~ not defined for type "
 					 + var1.getType().getName());
@@ -365,18 +365,18 @@ public class ArithmeticType
   public Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
 
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() == 0 ? false : true)
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() == 0 ? false : true)
                               && (var2.intValue() == 0 ? false : true) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() == 0 ? false : true)
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() == 0 ? false : true)
                               && (var2.longValue() == 0 ? false : true) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator && not defined for type "
 					 + var1.getType().getName());
@@ -386,18 +386,18 @@ public class ArithmeticType
   public Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException 
   {
     Type type;
-    if (var1.getType().getTypeId() < var2.getType().getTypeId())
+    if (var1.getType().typeId < var2.getType().typeId)
       type = var2.getType();
     else
       type = var1.getType();
     
-    if (BaseTypes.isInteger(type.getTypeId()))
-      return type.newVariable(type, (var1.intValue() == 0 ? false : true)
+    if (BaseTypes.isInteger(type.typeId))
+      return newVariable(type, (var1.intValue() == 0 ? false : true)
                               || (var2.intValue() == 0 ? false : true) ? 1 : 0);
-    else if (BaseTypes.isLong(type.getTypeId()))
-      return type.newVariable(type, (var1.longValue() == 0 ? false : true)
+    else if (BaseTypes.isLong(type.typeId))
+      return newVariable(type, (var1.longValue() == 0 ? false : true)
                               || (var2.longValue() == 0 ? false : true) ? 1 : 0);
-    else if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    else if (BaseTypes.isFloat(var1.getType().typeId))
       throw new InvalidOperatorException(
                                          "binary operator || not defined for type "
 					 + var1.getType().getName());
@@ -461,7 +461,7 @@ public class ArithmeticType
 
   public Variable doAssignment(Variable v1, Variable v2)
   {
-    switch (v1.getType().getTypeId())
+    switch (v1.getType().typeId)
     {
     case BaseTypes.baseTypeByte:
       v1.putByte((byte)v2.intValue());
@@ -487,12 +487,60 @@ public class ArithmeticType
   public boolean getLogicalValue (Variable var1)
   throws InvalidOperatorException
   {
-    if (BaseTypes.isFloat(var1.getType().getTypeId()))
+    if (BaseTypes.isFloat(var1.getType().typeId))
       throw (new InvalidOperatorException());
 
     return ((var1.longValue() == 0) ? false : true);
   }
 
+  public Variable newVariable(Type type, int val)
+    {
+      switch (type.typeId)
+      {
+	case BaseTypes.baseTypeByte:
+	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", (byte)val);
+	case BaseTypes.baseTypeShort:
+       	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", (short)val);
+	case BaseTypes.baseTypeInteger:
+	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
+	case BaseTypes.baseTypeLong:
+	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", (long)val);
+	case BaseTypes.baseTypeFloat:
+	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", (float)val);
+	case BaseTypes.baseTypeDouble:
+	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", (double)val);
+      }
+      return null;
+    }
+
+  public Variable newVariable (Type type, long val)
+  {
+    if (type.typeId < BaseTypes.baseTypeLong)
+      return this.newVariable(type, (int) val);
+    switch (type.typeId)
+      {
+      case BaseTypes.baseTypeLong:
+	return ArithmeticType.newLongVariable((ArithmeticType) type, "long", val);
+      case BaseTypes.baseTypeFloat:
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+      case BaseTypes.baseTypeDouble:
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", (double) val);
+      }
+    return null;
+  }
+
+  public Variable newVariable (Type type, double val)
+  {
+    switch (type.typeId)
+      {
+      case BaseTypes.baseTypeFloat:
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+      case BaseTypes.baseTypeDouble:
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", val);
+      }
+    return null;
+  }
+  
     public static Variable newByteVariable (ArithmeticType type, String text,
                                             byte val)
    {

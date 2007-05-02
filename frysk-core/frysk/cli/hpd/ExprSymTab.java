@@ -517,6 +517,132 @@ class ExprSymTab
     return varDie;
   }
 
+  private ArrayType getArrayType (DwarfDie type, DwarfDie subrange)
+    {
+      int elementCount = 1;
+      ArrayList dims = new ArrayList();
+      while (subrange != null)
+	{
+	  int arrDim = subrange.getAttrConstant(DwAtEncodings.DW_AT_upper_bound_);
+	  dims.add(new Integer(arrDim));
+	  subrange = subrange.getSibling();
+	  elementCount *= arrDim + 1;
+	}
+
+      ArrayType arrayType = null;
+      int typeSize = BaseTypes.getTypeSize(type.getType().getBaseType());
+      switch (type.getType().getBaseType())
+      {
+      case BaseTypes.baseTypeByte:
+      case BaseTypes.baseTypeUnsignedByte:
+	arrayType = new ArrayType(byteType, elementCount * typeSize, dims);
+	break;
+      case BaseTypes.baseTypeShort:
+      case BaseTypes.baseTypeUnsignedShort:
+	arrayType = new ArrayType(shortType, elementCount * typeSize, dims);
+	break;
+      case BaseTypes.baseTypeInteger:
+      case BaseTypes.baseTypeUnsignedInteger:
+	arrayType = new ArrayType(intType, elementCount * typeSize, dims);
+	break;
+      case BaseTypes.baseTypeLong:
+      case BaseTypes.baseTypeUnsignedLong:
+	arrayType = new ArrayType(longType, elementCount * typeSize, dims);
+	break;
+      case BaseTypes.baseTypeFloat:
+	arrayType = new ArrayType(floatType, elementCount * typeSize, dims);
+	break;
+      case BaseTypes.baseTypeDouble:
+	arrayType = new ArrayType(doubleType, elementCount * typeSize, dims);
+	break;
+      }
+
+      type = navigateType(type.getType());
+      if (type.getTag() == DwTagEncodings.DW_TAG_structure_type_)
+	{
+	  ClassType classType = getClassType(type.getChild());
+	  typeSize = classType.getSize();
+	  arrayType = new ArrayType(classType, elementCount * typeSize, dims);
+	}
+      return arrayType;
+    }
+  
+  
+  private ClassType getClassType (DwarfDie subrange)
+  {
+    int typeSize = 0;
+    ClassType classType = new ClassType(task.getIsa().getByteOrder());
+    while (subrange != null)
+      {
+	long offset = subrange.getDataMemberLocation();
+	typeSize = (int)offset + BaseTypes.getTypeSize(subrange.getType().getBaseType());
+	switch (subrange.getType().getBaseType())
+	{
+	case BaseTypes.baseTypeByte:
+	case BaseTypes.baseTypeUnsignedByte:
+	  classType.addMember(byteType, subrange.getName(), offset, 0);
+	  break;
+	case BaseTypes.baseTypeShort:
+	case BaseTypes.baseTypeUnsignedShort:
+	  classType.addMember(shortType, subrange.getName(), offset, 0);
+	  break;
+	case BaseTypes.baseTypeInteger:
+	case BaseTypes.baseTypeUnsignedInteger:
+	  // System V ABI Supplements discuss bit field layout 
+	  int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+	  int bitOffset = 0;
+	  int byteSize = 0;
+	  int mask = 0;
+	  if (bitSize != -1)
+	    {
+	      byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+	      bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+	      mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
+	    }
+	  classType.addMember(intType, subrange.getName(), offset, mask);
+	  break;
+	case BaseTypes.baseTypeLong:
+	case BaseTypes.baseTypeUnsignedLong:
+	  classType.addMember(longType, subrange.getName(), offset, 0);
+	  break;
+	case BaseTypes.baseTypeFloat:
+	  classType.addMember(floatType, subrange.getName(), offset, 0);
+	  break;
+	case BaseTypes.baseTypeDouble:
+	  classType.addMember(doubleType, subrange.getName(), offset, 0);
+	  break;
+	}
+	
+	DwarfDie classMember = navigateType(subrange.getType());
+	if (classMember.getTag() == DwTagEncodings.DW_TAG_structure_type_)
+	  {
+	    ClassType memberClassType = getClassType(classMember.getChild());
+	    typeSize += memberClassType.getSize();
+	    typeSize += 4 - (typeSize % 4);		// round up to mod 4
+	    classType.addMember(memberClassType, subrange.getName(), offset, 0);
+	  }
+	
+	if (classMember.getTag() == DwTagEncodings.DW_TAG_array_type_)
+	{
+	  ArrayType memberArrayType = getArrayType(classMember, classMember.getChild());
+	  typeSize += memberArrayType.getSize();
+	  classType.addMember(memberArrayType, subrange.getName(), offset, 0);
+	}
+	subrange = subrange.getSibling();
+      }
+
+    typeSize += 4 - (typeSize % 4);		// round up to mod 4
+    classType.setSize(typeSize);
+    return classType;
+  }
+  
+  private DwarfDie navigateType (DwarfDie type)
+  {
+    while (type.getTag() == DwTagEncodings.DW_TAG_typedef_)
+      type = type.getType();
+    return type;
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -649,52 +775,15 @@ class ExprSymTab
                 long addr = variableAccessor[0].getAddr(s);
                 if (addr == 0)
                   continue;
-                ArrayList dims = new ArrayList();
                 subrange = type.getChild();
-                int bufSize = 1;
-                while (subrange != null)
-                  {
-                    int arrDim = subrange.getAttrConstant(DwAtEncodings.DW_AT_upper_bound_);
-                    dims.add(new Integer(arrDim));
-                    subrange = subrange.getSibling();
-                    bufSize *= arrDim + 1;
-                  }
-
-                ArrayType arrayType = null;
-                int typeSize = BaseTypes.getTypeSize(type.getType().getBaseType());
-                switch (type.getType().getBaseType())
-                  {
-                  case BaseTypes.baseTypeByte:
-                  case BaseTypes.baseTypeUnsignedByte:
-                    arrayType = new ArrayType(byteType, dims);
-                    break;
-                  case BaseTypes.baseTypeShort:
-                  case BaseTypes.baseTypeUnsignedShort:
-                    arrayType = new ArrayType(shortType, dims);
-                    break;
-                  case BaseTypes.baseTypeInteger:
-                  case BaseTypes.baseTypeUnsignedInteger:
-                    arrayType = new ArrayType(intType, dims);
-                    break;
-                  case BaseTypes.baseTypeLong:
-                  case BaseTypes.baseTypeUnsignedLong:
-                    arrayType = new ArrayType(longType, dims);
-                    break;
-                  case BaseTypes.baseTypeFloat:
-                    arrayType = new ArrayType(floatType, dims);
-                    break;
-                  case BaseTypes.baseTypeDouble:
-                    arrayType = new ArrayType(doubleType, dims);
-                    break;
-                  default:
-                    return null;
-                  }
-
-                byte buf[] = new byte[bufSize * typeSize];
-                for (int j = 0; j < bufSize; j++)
-                  buffer.get(addr + j * typeSize, buf, j * typeSize, typeSize);
-                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
-
+                ArrayType arrayType = getArrayType(type, subrange);
+                
+                if (arrayType == null)
+                  return null;
+                int typeSize = arrayType.getSize();
+                byte [] buf = new byte[typeSize];
+                buffer.get(addr, buf, 0, typeSize);
+                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, typeSize);
                 abb.order(byteorder);
                 return new Variable(arrayType, s, abb);
               }
@@ -705,60 +794,12 @@ class ExprSymTab
                 if (addr == 0)
                   continue;
                 subrange = type.getChild();
-                int bufSize = 1;
-                ClassType classType = new ClassType(byteorder);
-                long typeSize = 0;
-                while (subrange != null)
-                  {
-                    long offset = subrange.getDataMemberLocation();
-                    typeSize = offset + BaseTypes.getTypeSize(subrange.getType().getBaseType());
-                    switch (subrange.getType().getBaseType())
-                      {
-                      case BaseTypes.baseTypeByte:
-                      case BaseTypes.baseTypeUnsignedByte:
-                        classType.addMember(byteType, subrange.getName(), offset, 0);
-                        break;
-                      case BaseTypes.baseTypeShort:
-                      case BaseTypes.baseTypeUnsignedShort:
-                        classType.addMember(shortType, subrange.getName(), offset, 0);
-                        break;
-                      case BaseTypes.baseTypeInteger:
-                      case BaseTypes.baseTypeUnsignedInteger:
-                        // System V ABI Supplements discuss bit field layout 
-                        int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
-                        int bitOffset = 0;
-                        int byteSize = 0;
-                        int mask = 0;
-                        if (bitSize != 0)
-                          {
-                            byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
-                            bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
-                            mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
-                          }
-                        classType.addMember(intType, subrange.getName(), offset, mask);
-                        break;
-                      case BaseTypes.baseTypeLong:
-                      case BaseTypes.baseTypeUnsignedLong:
-                        classType.addMember(longType, subrange.getName(), offset, 0);
-                        break;
-                      case BaseTypes.baseTypeFloat:
-                        classType.addMember(floatType, subrange.getName(), offset, 0);
-                        break;
-                      case BaseTypes.baseTypeDouble:
-                        classType.addMember(doubleType, subrange.getName(), offset, 0);
-                        break;
-                      default:
-                        return null;
-                      }
-                    subrange = subrange.getSibling();
-                  }
-
-                typeSize += 4 - (typeSize % 4);		// round up to mod 4
-                byte buf[] = new byte[(int)typeSize];
-                for (int j = 0; j < typeSize; j++)
+                ClassType classType = getClassType(subrange);
+                
+                byte [] buf = new byte[classType.getSize()];
+                for (int j = 0; j < classType.getSize(); j++)
                   buffer.get(addr + j, buf, j, 1);
-                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, bufSize);
-
+                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
                 abb.order(byteorder);
                 return new Variable(classType, s, abb);
               }
@@ -888,113 +929,16 @@ class ExprSymTab
        }
      return null;
   }
-  
+    
   public Variable get (ArrayList components)
   {
-    VariableAccessor[] variableAccessor = { new AccessDW_FORM_block(),
-                                            new AccessDW_FORM_data() };
-
     String s = (String)components.get(0);
     DwarfDie varDie = getDie(s);
-    
     if (varDie == null)
       return (null);
 
-    DwarfDie type = varDie.getType();
-    Iterator ci = components.iterator();
-    String component;
-    if (ci.hasNext())
-      component = (String)ci.next();           
-
-    try
-    {
-      DwarfDie subrange;
-      long addr = variableAccessor[0].getAddr(s);
-      if (addr == 0)
-        return null;
-      if (ci.hasNext())
-        component = (String)ci.next();
-      else
-        return null;
-      
-      subrange = type.getChild();
-      while (subrange != null)
-        {
-          for (int i = 0; i < variableAccessor.length; i++)
-            {
-              long offset = subrange.getDataMemberLocation();
-              if (subrange.getName().equals(component))
-                switch (subrange.getType().getBaseType())
-                {
-                case BaseTypes.baseTypeLong:
-                case BaseTypes.baseTypeUnsignedLong:
-                {
-                  long longVal = variableAccessor[i].getLong(varDie, offset);
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newLongVariable(longType, s, longVal);
-                }
-                case BaseTypes.baseTypeInteger:
-                case BaseTypes.baseTypeUnsignedInteger:
-                {
-                  // System V ABI Supplements discuss bit field layout 
-                  int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
-                  int bitOffset = 0;
-                  int byteSize = 0;
-                  int mask = 0;
-                  if (bitSize != 0)
-                    {
-                      byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
-                      bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
-                      mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
-                    }
-                  int intVal = variableAccessor[i].getInt(varDie, offset);
-                  if (bitSize != 0)
-                    intVal = (intVal & mask) >>> (byteSize * 8 - bitOffset - bitSize); 
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newIntegerVariable(intType, s, intVal);
-                }
-                case BaseTypes.baseTypeShort:
-                case BaseTypes.baseTypeUnsignedShort:
-                {
-                  short shortVal = variableAccessor[i].getShort(varDie, offset);
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newShortVariable(shortType, s, shortVal);
-                }
-                case BaseTypes.baseTypeByte:
-                case BaseTypes.baseTypeUnsignedByte:
-                {
-                  byte byteVal = variableAccessor[i].getByte(varDie, offset);
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newByteVariable(byteType, s, byteVal);
-                }
-                case BaseTypes.baseTypeFloat:
-                {
-                  float floatVal = variableAccessor[i].getFloat(varDie, offset);
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newFloatVariable(floatType, s, floatVal);
-                }
-                case BaseTypes.baseTypeDouble:
-                {
-                  double doubleVal = variableAccessor[i].getDouble(varDie, offset);
-                  if (variableAccessor[i].isSuccessful() == false)
-                    continue;
-                  return ArithmeticType.newDoubleVariable(doubleType, s, doubleVal);
-                }                 
-                default:
-                }
-            }
-          subrange = subrange.getSibling();
-        }
-    }
-    catch (Errno ignore)
-    {
-    }
-    return null;
+    Variable v = get(s);
+    return ((ClassType)v.getType()).get(v, components);
   }
   
   public Variable getAddress (String s)

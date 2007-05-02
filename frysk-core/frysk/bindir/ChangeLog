@@ -1,3 +1,8 @@
+2007-05-02  Stan Cox  <scox@redhat.com>
+
+	* fhpd.java (main): Attach pid after CLI constructor completes.
+	* TestFhd.java (testHpdArray): Allow for new array formatting.
+
 2007-04-17  Stan Cox  <scox@redhat.com>
 
 	* TestFhd.java (testHpd): Split into: testHpdTraceStack,

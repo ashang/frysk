@@ -190,16 +190,16 @@ public class TestFhd
     // e.send ("print arr_\t");
     // e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
     e.send ("print arr_1\n");
-    e.expect ("print.*30.=1.31.=2.*" + prompt);
+    e.expect ("print.*1,2,3,4,5.*0,1,2.*" + prompt);
     // what array
     e.send ("what arr_2\n");
-    e.expect ("what.*int.*4,5.*hpd-c.c.*" + prompt);
+    e.expect ("what.*int.*5,6.*hpd-c.c.*" + prompt);
     // arr_2
     e.send ("print arr_2\n");
-    e.expect ("print.*4,4.=9.4,5.=0.*" + prompt);
+    e.expect ("print.*1,2,3,4,5,6.*5,6,7,8,9,0.*" + prompt);
     // arr_3
     e.send ("print arr_3\n");
-    e.expect ("print.*3,3.=10\\.8.3,4.=1.9.*" + prompt);
+    e.expect ("print.*1.0,2.1,3.2,4.3,5.4.*7.5,8.6,9.7,10.8,1.9.*" + prompt);
     e.send ("print arr_4\n");
     // arr_4
     e.expect ("print.*" + prompt);

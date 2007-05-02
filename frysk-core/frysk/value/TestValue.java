@@ -242,7 +242,7 @@ public class TestValue
     ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
     ArrayList dims = new ArrayList();
     dims.add(new Integer(3));
-    ArrayType arrayType = new ArrayType(intType, dims);
+    ArrayType arrayType = new ArrayType(intType, 16, dims);
     int [] intbuf = {0x1020304, 0x5060708, 0x090a0b0c, 0x0d0e0f10};
     byte [] buf = new byte [intbuf.length * 4];
     for (int i = 0; i < intbuf.length; i++)
@@ -256,7 +256,7 @@ public class TestValue
     abb.order(byteOrder);
     Variable c1 = new Variable(arrayType, "a1", abb);
     String s = c1.toString();
-    assertEquals ("array1dim", "[0]=16909060[1]=84281096[2]=151653132[3]=219025168", s);
+    assertEquals ("array1dim", "{16909060,84281096,151653132,219025168}", s);
   }
 
   /**
@@ -268,7 +268,7 @@ public class TestValue
     ArrayList dims = new ArrayList();
     dims.add(new Integer(1));
     dims.add(new Integer(3));
-    ArrayType arrayType = new ArrayType(intType, dims);
+    ArrayType arrayType = new ArrayType(intType, 32, dims);
     int [] intbuf = {0x0, 0x1, 0x2, 0x3, 0x0, 0x10, 0x20, 0x30};
     byte [] buf = new byte [intbuf.length * 4];
     for (int i = 0; i < intbuf.length; i++)
@@ -282,7 +282,7 @@ public class TestValue
     abb.order(byteOrder);
     Variable c1 = new Variable(arrayType, "a2", abb);
     String s = c1.toString();
-    assertEquals ("array2dim", "[0,0]=0[0,1]=1[0,2]=2[0,3]=3[1,0]=0[1,1]=16[1,2]=32[1,3]=48", s);
+    assertEquals ("array2dim", "{{0,1,2,3},{0,16,32,48}}", s);
   }
 
   /**
@@ -311,6 +311,6 @@ public class TestValue
     abb.order(byteOrder);
     Variable c1 = new Variable(classType, "c1", abb);
     String s = c1.toString();
-    assertEquals ("class", "alpha=16909060,beta=84281096,gamma=2320,iota=17,epsilon=18", s);
+    assertEquals ("class", "{alpha=16909060,beta=84281096,gamma=2320,iota=17,epsilon=18}", s);
   }
 }

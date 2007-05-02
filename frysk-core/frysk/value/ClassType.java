@@ -43,6 +43,7 @@ import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import lib.dw.BaseTypes;
 
@@ -52,7 +53,7 @@ import lib.dw.BaseTypes;
 public class ClassType
     extends Type
 {
-  ArrayList members;	// Type of member
+  ArrayList types;	// Type of member
 
   ArrayList names;	// String
   
@@ -61,16 +62,16 @@ public class ClassType
   ArrayList masks;	// Integer mask for bitfields
 
   /**
-   * Iterate through the class members.
+   * Iterate through the class types.
    */
-  class Iterator
+  class ClassIterator
       implements java.util.Iterator
   {
     private int idx;
 
     Variable v;
 
-    Iterator (Variable v)
+    ClassIterator (Variable v)
     {
       idx = - 1;
       this.v = v;
@@ -79,7 +80,7 @@ public class ClassType
     public boolean hasNext ()
     {
       idx += 1;
-      if (idx < members.size())
+      if (idx < types.size())
         return true;
       return false;
     }
@@ -91,39 +92,7 @@ public class ClassType
 
     public Object next ()
     {
-      Type type = ((Type) (members.get(idx)));
-      int off = ((Long)offsets.get(idx)).intValue();
-      switch (type.typeId)
-      {
-	case BaseTypes.baseTypeByte:
-	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", v.getByte(off));
-	case BaseTypes.baseTypeShort:
-	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", v.getShort(off));
-	case BaseTypes.baseTypeInteger:
-	  int val = v.getInt(off);
-	  int mask = ((Integer)masks.get(idx)).intValue();
-	  if (mask != 0)
-	    {
-	      int shift = 0;
-	      int tmpMask = mask;
-	      // TODO substitute numberOfTrailingZeros() for 1.5
-	      while ((tmpMask & 0x1) == 0)
-		{
-		  shift += 1;
-		  tmpMask = tmpMask >>> 1;
-		}
-	      val = (val & mask) >>> shift;
-	    }
-	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
-	case BaseTypes.baseTypeLong:
-	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", v.getLong(off));
-	case BaseTypes.baseTypeFloat:
-	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", v.getFloat(off));
-	case BaseTypes.baseTypeDouble:
-	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", v.getDouble(off));
-	default:
-	  return null;
-      }
+      return getVariable(v, idx);
     }
 
     public void remove ()
@@ -131,21 +100,90 @@ public class ClassType
     }
   }
 
-  public Iterator getIterator (Variable v)
+  Variable getVariable (Variable v, int idx)
   {
-    return new Iterator(v);
+    Type type = ((Type) (types.get(idx)));
+    int off = ((Long)offsets.get(idx)).intValue();
+
+    switch (((Type)types.get(idx)).typeId)
+    {
+    case BaseTypes.baseTypeByte:
+      return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", v.getByte(off));
+    case BaseTypes.baseTypeShort:
+      return ArithmeticType.newShortVariable((ArithmeticType)type, "short", v.getShort(off));
+    case BaseTypes.baseTypeInteger:
+      int val = v.getInt(off);
+      int mask = ((Integer)masks.get(idx)).intValue();
+      if (mask != 0)
+	{
+	  int shift = 0;
+	  int tmpMask = mask;
+	  // ??? substitute numberOfTrailingZeros() for 1.5
+	  while ((tmpMask & 0x1) == 0)
+	    {
+	      shift += 1;
+	      tmpMask = tmpMask >>> 1;
+	    }
+	  val = (val & mask) >>> shift;
+	}
+      return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
+    case BaseTypes.baseTypeLong:
+      return ArithmeticType.newLongVariable((ArithmeticType)type, "long", v.getLong(off));
+    case BaseTypes.baseTypeFloat:
+      return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", v.getFloat(off));
+    case BaseTypes.baseTypeDouble:
+      return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", v.getDouble(off));
+    }
+    if (type instanceof ClassType)
+      {
+	byte [] buf = new byte[type.size];
+	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
+	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	abb.order(type.getEndian());
+	return new Variable((ClassType)type, type.name, (ArrayByteBuffer)abb);
+      }
+    else if (type instanceof ArrayType)
+      {
+	byte [] buf = new byte[type.size];
+	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
+	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	abb.order(type.getEndian());
+	return new Variable((ArrayType)type, type.name, (ArrayByteBuffer)abb);
+      }
+    return null;
+  }
+  
+  public ClassIterator iterator (Variable v)
+  {
+    return new ClassIterator(v);
   }
 
+  public Variable get (Variable v, ArrayList components)
+  {
+    Iterator ci = components.iterator();
+    while (ci.hasNext())
+      {
+	String component = (String)ci.next();
+	for (int i = 0; i < names.size(); i++)
+	  {
+	      if (((String)names.get(i)).equals(component))
+	        return getVariable (v, i);
+	  }
+      }
+    return null;
+  }
+  
   public String toString (Variable v)
   {
     StringBuffer strBuf = new StringBuffer();
-    Iterator e = getIterator(v);
+    ClassIterator e = iterator(v);
+    strBuf.append("{");
     while (e.hasNext())
       {
         strBuf.append(e.nextName() + "=");
         strBuf.append(e.next() + ",");
       }
-    strBuf.deleteCharAt(strBuf.length() - 1);		// Remove last ','
+    strBuf.replace(strBuf.length() - 1, strBuf.length(), "}");
     return strBuf.toString();
   }
   
@@ -153,10 +191,22 @@ public class ClassType
   {
     StringBuffer strBuf = new StringBuffer();
     strBuf.append("{");
-    for (int i = 0; i < this.members.size(); i++)
+    for (int i = 0; i < this.types.size(); i++)
       {
-	strBuf.append(((Type)this.members.get(i)).getName() + " ");
-	strBuf.append((String)this.names.get(i) + ";");
+	strBuf.append(((Type)this.types.get(i)).getName() + " ");
+	strBuf.append((String)this.names.get(i));
+	int mask = ((Integer)this.masks.get(i)).intValue();
+	int bitCount = 0;
+	// ??? substitute numberOfBits() for 1.5
+	while (mask != 0)
+	  {
+	    if ((mask & 0x1) == 1)
+	      bitCount += 1;
+	    mask = mask >>> 1;
+	  }
+	if (bitCount > 0)
+	  strBuf.append(":" + bitCount);
+	strBuf.append(";");
       }
     strBuf.append("}");
     return strBuf.toString();
@@ -170,7 +220,7 @@ public class ClassType
   public ClassType (ByteOrder endian)
   {
     super(0, endian, 0, "class");
-    members = new ArrayList();
+    types = new ArrayList();
     names = new ArrayList();
     offsets = new ArrayList();
     masks = new ArrayList();
@@ -178,12 +228,17 @@ public class ClassType
 
   public void addMember (Type member, String name, long offset, int mask)
   {
-    members.add(member);
+    types.add(member);
     names.add(name);
     offsets.add(new Long(offset));
     masks.add(new Integer(mask));
   }
 
+  public void setSize (int size)
+  {
+    this.size = size;
+  }
+  
   public static Variable newClassVariable (Type type, String text,
                                            ArrayByteBuffer ab)
   {
