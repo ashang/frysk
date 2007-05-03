@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,12 +48,12 @@ import frysk.sys.Sig;
 public abstract class SignalEvent
     implements Event
 {
-    private Sig sig;
+    private final Sig sig;
     /**
      * Return the corresponding signal; the sig can be used as a
      * search key.
      */
-    final Sig getSig ()
+    public Sig getSig ()
     {
 	return sig;
     }

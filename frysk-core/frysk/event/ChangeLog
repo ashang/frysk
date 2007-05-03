@@ -1,3 +1,9 @@
+2007-05-03  Andrew Cagney  <cagney@redhat.com>
+
+	* WaitEventLoop.java: Make package-private.
+	* PollEventLoop.java: Make package-private.
+	* SignalEvent.java (getSig): Make public.
+
 2007-04-19  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java (ExecuteRequest): Replace Request class.

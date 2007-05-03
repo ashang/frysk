@@ -50,7 +50,7 @@ import java.util.logging.Level;
  * Implements an event loop.
  */
 
-public class PollEventLoop
+class PollEventLoop
     extends EventLoop
 {
     protected void signalEmpty()

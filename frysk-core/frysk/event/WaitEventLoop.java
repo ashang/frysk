@@ -49,7 +49,7 @@ import java.util.logging.Level;
  * Implements an event loop using waitpid.
  */
 
-public class WaitEventLoop
+class WaitEventLoop
     extends EventLoop
 {
     protected void signalEmpty()

@@ -40,8 +40,6 @@
 package frysk.proc;
 
 import frysk.event.EventLoop;
-import frysk.event.PollEventLoop;
-import frysk.event.WaitEventLoop;
 
 /**
  * Manager of all operations within the proc model.
@@ -52,22 +50,13 @@ import frysk.event.WaitEventLoop;
 
 public class Manager
 {
-    static boolean usePoll = false;
-    static private EventLoop newEventLoop ()
-    {
-	if (usePoll)
-	    return new PollEventLoop ();
-	else
-	    return new WaitEventLoop ();
-    }
-
     // The host (for moment only the local native host).
 
     // XXX: Should have the LinuxHost, along with any other host
     // types, register themselves and then have HOST set itself to the
     // most appropriate.
 
-    public static EventLoop eventLoop = newEventLoop ();
+    public static EventLoop eventLoop = EventLoop.factory ();
     public static Host host = new LinuxPtraceHost (eventLoop);
 
     /**
@@ -76,7 +65,7 @@ public class Manager
      */
     static Host resetXXX ()
     {
-	eventLoop = newEventLoop ();
+	eventLoop = EventLoop.factory ();
 	host = new LinuxPtraceHost (eventLoop);
 	return host;
     }

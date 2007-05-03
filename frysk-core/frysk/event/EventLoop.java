@@ -504,4 +504,13 @@ public abstract class EventLoop
 	}
     }
     private Object running = new Object();
+
+
+    /**
+     * Return the current prefered flavour of the event-loop.
+     */
+    public static EventLoop factory()
+    {
+	return new WaitEventLoop();
+    }
 }
