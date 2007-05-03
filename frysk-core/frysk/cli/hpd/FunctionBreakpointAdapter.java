@@ -53,11 +53,13 @@ class FunctionBreakpointAdapter
 {
   private Task task;		// Actionpoint should hold a PTSet.
 
-  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, Task task)
+  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, Task task, CLI cli)
   {
-    super();
+    super(cli);
     this.rtBreakpoint = breakpoint;
+    breakpoint.setObserverDelegate(this);
     this.task = task;
+    this.cli = cli;
   }
 
   public void enable()

@@ -1,3 +1,8 @@
+2007-05-03  Tim Moore  <timoore@redhat.com>
+
+	* TestFhd.java (testHpdBreakpoint): New test.
+	* fhpd.java (main): Start event loop.
+
 2007-05-02  Stan Cox  <scox@redhat.com>
 
 	* fhpd.java (main): Attach pid after CLI constructor completes.

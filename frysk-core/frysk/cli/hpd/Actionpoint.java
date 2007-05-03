@@ -41,13 +41,21 @@ package frysk.cli.hpd;
 
 import java.io.PrintWriter;
 
+import frysk.proc.Task;
+import frysk.rt.Breakpoint;
+import frysk.rt.BreakpointObserver;
 import frysk.rt.SourceBreakpoint;
+
+
 /**
  * Hpd actionpoints. Actionpoints include things like breakpoints and
  * watchpoints.
  */
 public abstract class Actionpoint
+  implements BreakpointObserver
 {
+  protected CLI cli;
+  
   // Possible actionpoint states
   public static class State
   {
@@ -99,17 +107,18 @@ public abstract class Actionpoint
    * Create an action point with a given state.
    * @param state the action point's initial state.
    */
-  public Actionpoint(State state)
+  public Actionpoint(State state, CLI cli)
   {
     this.state = state;
+    this.cli = cli;
   }
 
   /**
    * Create an action point in the DISABLED state.
    */
-  public Actionpoint()
+  public Actionpoint(CLI cli)
   {
-    this(DISABLED);
+    this(DISABLED, cli);
   }
 
   /**
@@ -162,5 +171,42 @@ public abstract class Actionpoint
   {
     this.rtBreakpoint = rtBreakpoint;
   }
-  
+
+  public void addedTo (Object observable)
+  {
+  }
+
+  public void addFailed (Object observable, Throwable w)
+  {
+  }
+
+  public void deletedFrom (Object observable)
+  {
+  }
+
+  public void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
+			Task task,
+			long address)
+  {
+    int size = cli.apTable.size();
+    PrintWriter outWriter = cli.getPrintWriter();
+    int i;
+    for (i = 0; i < size; i++)
+      {
+	Actionpoint ap = cli.apTable.getActionpoint(i);
+	if (ap == this)
+	  {
+	    outWriter.print("breakpoint " + i + " hit: ");
+	    output(outWriter);
+	    outWriter.println("");
+	    break;
+	  }
+      }
+    if (i >= size)
+      {
+	outWriter.print("breakpoint hit: ");
+	output(outWriter);
+	outWriter.println("");
+      }
+  }
 }

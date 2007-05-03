@@ -39,9 +39,11 @@
 
 package frysk.rt;
 
+import frysk.proc.Observer;
 import frysk.proc.Task;
 
-interface BreakpointObserver
+public interface BreakpointObserver
+  extends Observer
 {
   void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
 		 Task task, long address);

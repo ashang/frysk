@@ -91,7 +91,7 @@ class BreakpointHandler
 	lineNumber = Integer.parseInt((String)bptParams[2]);
 	LineBreakpoint bpt = new LineBreakpoint(task.getProc(), fileName,
 						lineNumber, 0);
-	actionpoint = new LineBreakpointAdapter(bpt, task);
+	actionpoint = new LineBreakpointAdapter(bpt, task, cli);
       }
     else
       {
@@ -132,7 +132,7 @@ class BreakpointHandler
 		 return;
 	      }
 	  }
-	actionpoint = new FunctionBreakpointAdapter(bpt, task);
+	actionpoint = new FunctionBreakpointAdapter(bpt, task, cli);
       }
 
 

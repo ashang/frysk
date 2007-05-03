@@ -57,9 +57,10 @@ import frysk.proc.Proc;
 /**
  * 
  */
-public abstract class SourceBreakpoint
+public abstract class SourceBreakpoint implements BreakpointObserver
 {
   private HashMap procMap;
+  private BreakpointObserver observerDelegate;
 
   private class ProcEntry
   {
@@ -67,11 +68,17 @@ public abstract class SourceBreakpoint
     LinkedList breakpoints = null; // RunState breakpoints
   }
 
-  public SourceBreakpoint()
+  public SourceBreakpoint(BreakpointObserver observerDelegate)
   {
     procMap = new HashMap();
+    this.observerDelegate = observerDelegate;
   }
 
+  public SourceBreakpoint()
+  {
+    this(null);
+  }
+  
   /**
    * Get the list of raw address objects for a process
    *
@@ -128,8 +135,9 @@ public abstract class SourceBreakpoint
       {
 	Object bpt = bpts.next();
 	long address = getRawAddress(bpt);
-	Breakpoint b = new Breakpoint(address);
-	Breakpoint breakpoint = b.new PersistentBreakpoint(address);
+	Breakpoint.PersistentBreakpoint breakpoint
+	  = new Breakpoint.PersistentBreakpoint(address);
+	breakpoint.addObserver(this);
 	procEntry.breakpoints.add(breakpoint);
 	SteppingEngine.addBreakpoint(task, breakpoint);
       }
@@ -164,11 +172,42 @@ public abstract class SourceBreakpoint
    * @param bpt
    * @return
    */
-  public boolean containsPersistantBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
+  public boolean
+  containsPersistantBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
   {
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
     if (procEntry == null)
       return false;
     return procEntry.breakpoints.contains(bpt);
+  }
+
+  public void updateHit(Breakpoint.PersistentBreakpoint breakpoint,
+			Task task,
+			long address)
+  {
+    if (observerDelegate != null)
+      observerDelegate.updateHit(breakpoint, task, address);
+  }
+
+  public BreakpointObserver getObserverDelegate()
+  {
+    return observerDelegate;
+  }
+
+  public void setObserverDelegate(BreakpointObserver observerDelegate)
+  {
+    this.observerDelegate = observerDelegate;
+  }
+
+  public void addedTo (Object observable)
+  {
+  }
+
+  public void addFailed (Object observable, Throwable w)
+  {
+  }
+
+  public void deletedFrom (Object observable)
+  {
   }
 }

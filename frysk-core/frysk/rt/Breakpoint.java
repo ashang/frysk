@@ -39,10 +39,12 @@
 
 package frysk.rt;
 
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.proc.Action;
+import frysk.proc.Observable;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -147,66 +149,85 @@ public class Breakpoint implements TaskObserver.Code
     return address;
   }
   
-  public class PersistentBreakpoint extends Breakpoint
+  static public class PersistentBreakpoint extends Breakpoint
   {
     
-    private Object monitor = new Object();
+    private Observable observable;
     
     /*
      * A breakpoint added by a high-level action e.g., set by the
      * user. It is not meant to be transient.
      */
-      BreakpointObserver observer = null;
-      
-      public PersistentBreakpoint(long address) 
-      {
-        super(address);
-      }
-
-      public BreakpointObserver getObserver()
-      {
-        return observer;
-      }
-
-      public void setObserver(BreakpointObserver observer)
-      {
-        this.observer = observer;
-      }
-      
-      public Action updateHit(Task task, long address)
-      {
-        logger.entering("RunState.PersistentBreakpoint", "updateHit");
-        Action action = super.updateHit(task, address);
-////        state = STOPPED;
-//        RunState.this.stateMap.put(task, new Integer(STOPPED));
-//        if (runningTasks.contains(task))
-//  	{
-//  	  runningTasks.remove(task);
-////  	  numRunningTasks--;
-//  	  Integer i = (Integer) RunState.this.contextMap.get(task.getProc());
-//  	  RunState.this.contextMap.put(task.getProc(), new Integer(i.intValue() - 1));
-//  	}
-//        else
-//  	logger.logp(Level.WARNING, "RunState.PersistentBreakpoint", "updateHit",
-//  		    "task {0} not in runningTasks", task);
-//        breakpointMap.put(task, this);
-//        setChanged();
-//        notifyObservers(task);	// RunState observers
-//        if (observer != null)
-//  	observer.updateHit(RunState.this, this, task, address);
-        return action;
-      }
-
-      public void addedTo (Object observable)
-      {
-        synchronized (monitor)
-          {
-            added = true;
-            removed = false;
-            monitor.notifyAll();
-          }
-      }
+    public PersistentBreakpoint(long address) 
+    {
+      super(address);
+      observable = new Observable(this);
     }
+
+    // These operations synchronize on the breakpoint, not the
+    // observable object, so that other users of PersistentBreakpoint
+    // can synchronize too without having to make the observable public.
+    public synchronized void addObserver(BreakpointObserver observer)
+    {
+      observable.add(observer);
+    }
+
+    public synchronized void deleteObserver(BreakpointObserver observer)
+    {
+      observable.delete(observer);
+    }
+
+    public Iterator observersIterator()
+    {
+      return observable.iterator();
+    }
+
+    public synchronized int numberOfObservers()
+    {
+      return observable.numberOfObservers();
+    }
+
+    public synchronized void removeAllObservers()
+    {
+      observable.removeAllObservers();
+    }
+      
+    public Action updateHit(Task task, long address)
+    {
+      //logger.entering("RunState.PersistentBreakpoint",
+      //"updateHit");
+      logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
+      Action action = super.updateHit(task, address);
+      synchronized (SteppingEngine.class)
+	{
+	  SteppingEngine.runningTasks.remove(task);
+	}
+      synchronized (this)
+	{
+	  Iterator iterator = observable.iterator();
+	  while (iterator.hasNext())
+	    {
+	      BreakpointObserver observer
+		= (BreakpointObserver)iterator.next();
+	      observer.updateHit(this, task, address);
+	    }
+	}
+      return action;
+    }
+
+    public void addedTo (Object observable)
+    {
+      synchronized (monitor)
+	{
+	  added = true;
+	  removed = false;
+	  monitor.notifyAll();
+	}
+      // Don't remove the current insturction observer.
+    }
+  }
+
+
 
     public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
     {

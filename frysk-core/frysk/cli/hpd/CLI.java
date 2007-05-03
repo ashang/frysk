@@ -85,11 +85,10 @@ public class CLI
   boolean symtabNeedsRefresh = false;
   StackFrame frame = null;
   int stackLevel = 0;
-  private CLIEventLoop eventLoop;
   private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
   boolean attached;
-  private ActionpointTable apTable = new ActionpointTable();
+  ActionpointTable apTable = new ActionpointTable();
   
   private HashSet runningProcs = new HashSet(); //Processes started with run command
   
@@ -430,7 +429,7 @@ public class CLI
 	  else if (((String)params.get(idx)).matches("[0-9]+"))
 	    pid = Integer.parseInt((String)params.get(idx)); 
 	}
-      startEventLoop();
+
       if (cli)
 	{
 	  procSearchFinished = false;
@@ -506,9 +505,10 @@ public class CLI
 		      + task.toString());
     if (steppingObserver == null) 
       {
-		steppingObserver = new SteppingObserver();
-		SteppingEngine.addObserver(steppingObserver);
+	steppingObserver = new SteppingObserver();
+	SteppingEngine.addObserver(steppingObserver);
       }
+    this.pid = pid;
     this.proc = proc;
     this.task = task;
     SteppingEngine.setProc(proc);
@@ -517,8 +517,6 @@ public class CLI
   public void startAttach(Task task)
   {
     Proc proc = task.getProc();
-
-    // FIXME getId should provide the ID as a number.
     startAttach(proc.getPid(), proc, task);
   }
 
@@ -576,8 +574,6 @@ public class CLI
 	{
 	  printUsage(cmd);
 	}
-
-      eventLoop.requestStop();
     }
   }
     
@@ -1378,39 +1374,6 @@ public class CLI
     return result;
   }
     
-  private class CLIEventLoop extends Thread
-  {
-    public void run()
-    {
-      try
-        {
-          Manager.eventLoop.run();
-        }
-      finally
-        {
-          synchronized (CLI.this)
-	    {
-	      CLI.this.notifyAll();
-	    }
-        }
-    }
-
-    public void requestStop()
-    {
-      Manager.eventLoop.requestStop();
-      eventLoop = null;
-    }
-  }
-
-  public void startEventLoop()
-  {
-    if (eventLoop == null)
-      {
-	eventLoop = new CLIEventLoop();
-	eventLoop.start();
-      }
-  }
-  
   private class SteppingObserver implements Observer 
   {
     public void update(Observable observable, Object arg)
@@ -1421,7 +1384,6 @@ public class CLI
       Task task = (Task)arg;
       Breakpoint.PersistentBreakpoint bpt = null;
 
-      outWriter.println("SteppingEngine state = " + SteppingEngine.getTaskState(task));
       synchronized (CLI.this) 
 	{
 	    if (!SteppingEngine.isTaskRunning(task))

@@ -43,14 +43,16 @@ import java.io.PrintWriter;
 import frysk.rt.LineBreakpoint;
 import frysk.proc.Task;
 
-class LineBreakpointAdapter extends Actionpoint
+class LineBreakpointAdapter
+  extends Actionpoint
 {
   private Task task;		// Actionpoint should hold a PTSet.
 
-  LineBreakpointAdapter(LineBreakpoint breakpoint, Task task)
+  LineBreakpointAdapter(LineBreakpoint breakpoint, Task task, CLI cli)
   {
-    super();
+    super(cli);
     this.rtBreakpoint = breakpoint;
+    breakpoint.setObserverDelegate(this);
     this.task = task;
   }
 

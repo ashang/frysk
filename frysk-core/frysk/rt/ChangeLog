@@ -1,3 +1,26 @@
+2007-05-03  Tim Moore  <timoore@redhat.com>
+
+	* Breakpoint.java (PersistentBreakpoint): Make class static. Use
+	proc.Observable object.
+	(PersistentBreakpoint addObserver, deleteObserver, observersIterator,
+	numberOfObservers, removeAllObservers): Delegating methods to
+	observable.
+	(PersistentBreakpoint.updateHit): Remove task from SteppingEngine
+	running tasks; hit all observers.
+	* BreakpointObserver.java (BreakpointObserver):Implement
+	proc.Observer interface.
+	* SourceBreakpoint.java (SourceBreakpoint): Implement
+	BreakpointObserver.
+	(SourceBreakpoint constructor) Take a delegate argument.
+	(addBreakpoint): Use Breakpoint.PersistentBreakpoint.
+	(containsPersistantBreakpoint): Ditto.
+	(updateHit): Update delegate.
+	(getObserverDelegate, setObserverDelegate, addedTo, addFailed,
+	deletedFrom): New methods.
+	* SteppingEngine.java (runningTasks): Expose to package.
+	(continueExecution): Remove any persistent breakpoints from task
+	blockers.
+
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Revert 2007-05-01 Nurdin Premji <npremji@redhat.com> change.

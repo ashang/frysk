@@ -72,8 +72,9 @@ public class SteppingEngine
 {
   protected static Logger logger = Logger.getLogger ("frysk");
 
-  /* Set of Tasks currently running, or unblocked. */
-  private static HashSet runningTasks;
+  /* Set of Tasks currently running, or unblocked.
+     Package access so Breakpoint.PersistentBreakpoint can get at it. */
+  static HashSet runningTasks;
 
   /* Tasks that have hit a breakpoint */
   private static HashMap breakpointMap;
@@ -629,15 +630,12 @@ public class SteppingEngine
             tse = (TaskStepEngine) taskStateMap.get(t);
             if (tse != null)
               tse.setState(new RunningState(t));
-            
-            t.requestDeleteInstructionObserver(steppingObserver);
-            SteppingBreakpoint bpt = (SteppingBreakpoint) breakpointMap.get(t);
-            
-            if (bpt != null)
-              {
-                breakpointMap.remove(t);
-                t.requestUnblock(bpt);
-              }
+	    TaskObserver[] blockers = t.getBlockers();
+	    for (int j = 0; j < blockers.length; j++) {
+	      if (blockers[j] instanceof Breakpoint) // One of ours?
+		t.requestUnblock(blockers[j]);
+	    }
+	    t.requestDeleteInstructionObserver(steppingObserver);
           }
       }
   }

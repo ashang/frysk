@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,78 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.proc;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-
-/**
- * Observable element of the proc model.
- */
-
-public class Observable
+public class ProcLogger
 {
-    final protected Object observable;
-    /**
-     * Create an observable bound to Object.
-     */
-    public Observable (Object observable)
-    {
-	this.observable = observable;
-    }
-    /**
-     * Set of Observer's for this Observable.
-     */
-    private Set observers = new HashSet ();
-    /**
-     * Add Observer to this Observable.
-     */
-    public void add (Observer observer)
-    {
-	observers.add (observer);
-	observer.addedTo (observable); // Success
-    }
-    /**
-     * Delete Observer from this Observable.
-     */
-    public void delete (Observer observer)
-    {
-	observers.remove (observer);
-	observer.deletedFrom (observable); // Success.
-    }
-    /**
-     * Fail to add the observer.
-     */
-    public void fail (Observer observer, Throwable w)
-    {
-	observer.addFailed (observable, w);
-    }
-    /**
-     * Return an iterator for all this Observable's Observers.
-     */
-    public Iterator iterator ()
-    {
-	return observers.iterator ();
-    }
-    /**
-     * Return the current number of observers
-     */
-    public int numberOfObservers(){
-      return this.observers.size();
-    }
-    
-    /**
-     * Clear the set of observers.
-     */
-    public void removeAllObservers()
-    {
-      Iterator iter = observers.iterator();
-      while (iter.hasNext())
-        {
-          Observer observer = (Observer) iter.next();
-          observer.deletedFrom(observers);
-        }
-      this.observers.clear();
-    }
+  // Should be frysk.proc
+  public static final String LOGGER_ID = "frysk";
 }

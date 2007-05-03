@@ -91,7 +91,7 @@ public final class SignalWaiter
     {
 	this.eventLoop = eventLoop;
 	this.sigs = sigs;
-	this.reason = why + "(signals " + new SignalSet(sigs) + ")";
+	this.reason = why + "(signals " + new SignalSet(this.sigs) + ")";
 	outstanding = new SignalSet (sigs);
 	// Install signal handlers for all signals
 	for (int i = 0; i < sigs.length; i++) {

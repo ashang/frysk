@@ -226,5 +226,27 @@ public class TestFhd
     e.send ("print porsche\n");
     e.expect ("print.*porsche.*1.*" + prompt);
     e.close();
-  }    
+  }
+
+  public void testHpdBreakpoint()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "hpd-c").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // Break
+    e.send("break @hpd-c.c@180\n");
+    e.expect("breakpoint.*" + prompt);
+    e.send("go\n");
+    e.expect(prompt);
+    
+  }
 }

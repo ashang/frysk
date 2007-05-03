@@ -1,3 +1,21 @@
+2007-05-03  Tim Moore  <timoore@redhat.com>
+
+	* hpd/Actionpoint.java (Actionpoint): Implement BreakpointObserver.
+	(Actionpoint constructor): Take cli as argument.
+	(addedTo, addFailed, deletedFrom, updateHit): BreakpointObserver
+	implementation.
+	* hpd/BreakpointHandler.java (handle): New arguments for adapter
+	constructors.
+	* hpd/CLI.java (CLI): Expose apTable to package.
+	(AttachHandler.handle): Don't start and stop event loop.
+	(startAttach): Store away pid.
+	(CLIEventLoop): Delete.
+	* hpd/FunctionBreakpointAdapter.java (FunctionBreakpointAdapter
+	constructor): Take cli as argument, set observer delegate.
+	* hpd/LineBreakpointAdapter.java: ditto.
+	* hpd/RunHandler.java (updateAttached): request unblock and Return
+	BLOCK.
+
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Revert 2007-05-01 Nurdin Premji <npremji@redhat.com> change.

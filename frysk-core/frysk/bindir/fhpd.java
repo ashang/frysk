@@ -45,6 +45,7 @@ import frysk.cli.hpd.CLI;
 import jline.Completor;
 import jline.ConsoleReader;
 
+import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
@@ -105,6 +106,7 @@ public class fhpd
         }
       }
     });
+    Manager.eventLoop.start();
     String line = "";
     if (pid > 0)
       line = "attach " + pid;

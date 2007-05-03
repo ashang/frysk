@@ -59,7 +59,7 @@ import frysk.event.Event;
 
 public abstract class Proc
 {
-  protected static final Logger logger = Logger.getLogger("frysk.proc");
+  protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
   final ProcId id;
 

@@ -108,7 +108,8 @@ class RunHandler
       }
     });
     cli.startAttach(task);
-    return Action.CONTINUE;
+    task.requestUnblock(this);
+    return Action.BLOCK;
   }
 
   public void addedTo(Object observable)
@@ -143,7 +144,6 @@ class RunHandler
       }
     Manager.host.requestCreateAttachedProc(toStringArray(params.toArray()),
 					   this);
-    cli.startEventLoop();
     cli.finishAttach();
   }
 
