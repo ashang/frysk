@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -83,7 +83,6 @@ public final class SignalSet
 	add (sig);
     }
 
-
     /**
      * As a string.
      */
@@ -117,6 +116,20 @@ public final class SignalSet
      * Add sigNum to the SignalSet; return this.
      */
     public native SignalSet add (Sig sig);
+    /**
+     * Add the array of signals to the SignalSet; return this.
+     */
+    public SignalSet add (Sig[] sigs)
+    {
+	for (int i = 0; i < sigs.length; i++) {
+	    add(sigs[i]);
+	}
+	return this;
+    }
+    /**
+     * The number of elements in the set.
+     */
+    public native int size();
     /**
      * Remove Sig from the SignalSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with

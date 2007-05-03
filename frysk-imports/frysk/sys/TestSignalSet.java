@@ -81,6 +81,10 @@ public class TestSignalSet
 	set.remove (Sig.USR1);
 	assertTrue ("Sig.HUP is member", set.contains (Sig.HUP));
 	assertFalse ("Sig.USR1 is member", set.contains (Sig.USR1));
+
+	set.add (new Sig[] {Sig.USR1, Sig.USR2});
+	assertTrue ("Sig.USR1 is member", set.contains(Sig.USR1));
+	assertTrue ("Sig.USR2 is member", set.contains(Sig.USR2));
     }
 
     /**
@@ -113,6 +117,7 @@ public class TestSignalSet
 	SignalSet set = new SignalSet (sigs);
 	// Check right length
 	assertEquals ("number of sigs", sigs.length, set.toArray().length);
+	assertEquals ("size", sigs.length, set.size());
 	// Check all found
 	for (int sigI = 0; sigI < sigs.length; sigI++) {
 	    boolean found = false;

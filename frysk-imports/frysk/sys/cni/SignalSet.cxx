@@ -168,8 +168,8 @@ frysk::sys::SignalSet::getProcMask ()
   return this;
 }
 
-JArray<frysk::sys::Sig*>*
-frysk::sys::SignalSet::toArray()
+jint
+frysk::sys::SignalSet::size()
 {
   sigset_t *set = (sigset_t*) rawSet;
   int numSigs = 0;
@@ -178,9 +178,16 @@ frysk::sys::SignalSet::toArray()
     if (sigismember (set, i))
       numSigs++;
   }
+  return numSigs;
+}
+
+JArray<frysk::sys::Sig*>*
+frysk::sys::SignalSet::toArray()
+{
+  sigset_t *set = (sigset_t*) rawSet;
   // Create an array for those signals
   JArray<frysk::sys::Sig*>* sigs = (JArray<frysk::sys::Sig*>*)
-    JvNewObjectArray (numSigs, &frysk::sys::Sig::class$, NULL);
+    JvNewObjectArray (size(), &frysk::sys::Sig::class$, NULL);
   // Fill in the array.
   for (int setI = 1, sigI = 0; setI < NSIG; setI++) {
     if (sigismember (set, setI)) {
