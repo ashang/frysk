@@ -42,7 +42,6 @@ package frysk.gui.srcwin;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
@@ -63,14 +62,13 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
-import org.jdom.Element;
 
-import frysk.gui.monitor.SaveableXXX;
+import frysk.gui.sessions.WatchListListener;
 import frysk.value.Variable;
 
 public class VariableWatchView
     extends TreeView
-    implements TreeSelectionListener, SaveableXXX
+    implements TreeSelectionListener, WatchListListener
 {
 
   public static final String VAR_WATCHES = "variable_watches";
@@ -84,18 +82,13 @@ public class VariableWatchView
 
   private LinkedList observers;
   
-  private List variables;
-  
   private SourceView view;
   
-  private VariableWatchListener listener;
+  private VariableWatchViewListener listener;
   
   private ListStore model;
   
   private int treeSize = 0;
-
-  // By default, save all watched variables
-  private boolean shouldSave = true;
   
   public VariableWatchView ()
   {
@@ -107,7 +100,6 @@ public class VariableWatchView
                                         "A list of all the variables that are being watched");
 
     this.observers = new LinkedList();
-    this.variables = new LinkedList();
 
     traceColumns = new DataColumn[] { new DataColumnString(),
                                      new DataColumnString(),
@@ -136,7 +128,7 @@ public class VariableWatchView
     this.getSelection().setMode(SelectionMode.SINGLE);
 
     this.getSelection().addListener(this);
-    listener = new VariableWatchListener();
+    listener = new VariableWatchViewListener();
     this.addListener(listener);
   }
   
@@ -144,90 +136,6 @@ public class VariableWatchView
   {
     this.view = sv;
   }
-
-  /**
-   * Addes a Variable row to this TreeView.
-   * 
-   * @param var
-   */
-  public void addTrace (Variable var)
-  {
-    TreeIter iter = this.model.appendRow();
-    this.treeSize++;
-    
-    this.model.setValue(iter, (DataColumnString) this.traceColumns[0], var.getText());
-    this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
-                       "" + var.toString());
-    this.variables.add(var);
-    this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
-    this.showAll();
-  }
-  
-  /**
-   * Removes the incoming Variable from this TreeView.
-   * 
-   * @param var The Variable to be removed.
-   */
-  public void removeTrace (Variable var)
-  {
-    
-    TreeIter iter = this.model.getFirstIter();
-
-    while (iter != null)
-      {
-        if (model.isIterValid(iter))
-          {
-            Variable v = (Variable) model.getValue(iter,
-                         (DataColumnObject) traceColumns[2]);
-
-            if (v.getText().equals(var.getText()))
-              {
-                this.variables.remove(v);
-                this.model.removeRow(iter);
-                this.treeSize--;
-                break;
-              }
-          }
-        if (this.treeSize != 0)
-          iter = iter.getNextIter();
-        else
-          break;
-      }
-  }
-  
-  /**
-   * Refresh the variables contained by this window. If there are variables
-   * listed, clears the window and passes all contained variables through 
-   * the local SourceBuffer to be run through the parser again to have 
-   * their values refreshed. Then re-builds the window.
-   */
-  public void refreshList ()
-  {
-    TreeIter iter = this.model.getFirstIter();
-    if (iter == null)
-      return;
-    
-    this.model.clear();
-    
-    this.variables = this.view.refreshVars(this.variables);
-    
-    Iterator i = this.variables.iterator();
-    while (i.hasNext())
-      {
-        Variable var = (Variable) i.next();
-        iter = this.model.appendRow();
-        this.treeSize++;
-
-        this.model.setValue(iter, (DataColumnString) this.traceColumns[0],
-                            var.getText());
-        this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
-                            "" + var.toString());
-        this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
-      }
-    
-    this.showAll();
-  }
-  
 
   /**
    * Adds a listener to this list of observers.
@@ -308,11 +216,44 @@ public class VariableWatchView
                              (DataColumnObject) traceColumns[2]);
     this.view.removeVar(selected);
   }
+
+  /*
+   * When the list of watched variables we're displaying is changed, re-populate the model
+   * (non-Javadoc)
+   * @see frysk.gui.srcwin.VariableWatchListener#variableWatchChanged(java.util.Iterator)
+   */
+  public void variableWatchChanged (Iterator vars)
+  {
+    model.clear();
+    
+    while(vars.hasNext())
+      {
+	Variable var = (Variable) vars.next();
+	addTrace(var);
+      }
+  }
+  
+  /**
+   * Addes a Variable row to this TreeView.
+   * 
+   * @param var
+   */
+  private void addTrace (Variable var)
+  {
+    TreeIter iter = this.model.appendRow();
+    this.treeSize++;
+    
+    this.model.setValue(iter, (DataColumnString) this.traceColumns[0], var.getText());
+    this.model.setValue(iter, (DataColumnString) this.traceColumns[1],
+                       "" + var.toString());
+    this.model.setValue(iter, (DataColumnObject) this.traceColumns[2], var);
+    this.showAll();
+  }
   
   /**
    * Checks for right-clicks.
    */
-  private class VariableWatchListener
+  private class VariableWatchViewListener
       implements MouseListener
   {
 
@@ -328,57 +269,6 @@ public class VariableWatchView
 
       return false;
     }
-  }
-
-  public void doSaveObject ()
-  {
-    shouldSave = true;
-  }
-
-  public void dontSaveObject ()
-  {
-    shouldSave = false;
-  }
-
-  public void load (Element node)
-  {
-    // This call is a no-op.
-    /*
-     * Since 'loading' the watched variables means going back
-     * through the SourceWindow,SourceView, and SourceBuffer
-     * to read the variable from the symtable, calling this
-     * method would just result in more work. Might as well
-     * do everything from the SourceWindow
-     */
-  }
-
-  public void save (Element node)
-  {
-    Element varnode = new Element(VAR_WATCHES);
-    node.addContent(varnode);
-    
-    Iterator varIter = variables.iterator();
-    while(varIter.hasNext())
-      {
-	Variable var = (Variable) varIter.next();
-	saveVariable(var, varnode);
-      }
-  }
-
-  public boolean shouldSaveObject ()
-  {
-    return shouldSave;
-  }
-  
-  private void saveVariable(Variable var, Element node)
-  {
-    Element varNode = new Element("variable");
-    varNode.setAttribute("type", var.getType().toString());
-    varNode.setAttribute("name", var.getText());
-    varNode.setAttribute("filePath", var.getFilePath());
-    varNode.setAttribute("line", ""+var.getLineNo());
-    
-    node.addContent(varNode);
   }
 
 }

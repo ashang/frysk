@@ -1,3 +1,24 @@
+2007-05-03  Adam Jocksch <ajocksch@redhat.com>
+
+	* SourceWindow.java (finishSourceWin): Attaches the VariableWatchView as
+	a listener to the WatchList.
+	(addVariableTrace): Now uses the WatchList contained in the session.
+	(removeVariableTrace): Ditto.
+	(hide): Removed.
+	(hideAll): Removed.
+	(cleanup): Removed.
+	(saveDebugInfo): Removed.
+	(loadDebugInfo): Removed.
+	(createDebugInfoPath): Removed.
+	(getCurrentDebugProcess): Added.
+	* VariableWatchView.java: No longer implements SaveableXXX, implements
+	WatchViewListener.
+	(addTrace): Removed.
+	(removeTrace): Removed.
+	(refreshList): Removed, this will have to be handled by the source window.
+	(variableWatchChanged): Added.
+	(VariableWatchListener): Renamed to VariableWatchViewListener.
+	
 2007-05-03  Stan Cox  <scox@redhat.com>
 
 	* InlineSourceView.java: Remove InvalidOperatorException.

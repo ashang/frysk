@@ -78,6 +78,8 @@ public class DebugProcess
 
   String alternativeDisplayName = "";
 
+  WatchList watchedVars;
+  
   private String realName;
 
 //  private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
@@ -96,6 +98,8 @@ public class DebugProcess
     observers = new ObservableLinkedList();
     tagsets = new ObservableLinkedList();
 
+    watchedVars = new WatchList();
+    
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
     initListObservers();
@@ -122,6 +126,8 @@ public class DebugProcess
     observers = new ObservableLinkedList(other.observers, true);
     tagsets = new ObservableLinkedList(other.tagsets, true);
 
+    watchedVars = new WatchList(other.watchedVars);
+    
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
     initListObservers();
@@ -149,6 +155,8 @@ public class DebugProcess
     observers = new ObservableLinkedList();
     tagsets = new ObservableLinkedList();
 
+    watchedVars = new WatchList();
+    
     allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 
     initListObservers();
@@ -316,6 +324,16 @@ public class DebugProcess
   {
     return tagsets;
   }
+  
+  /**
+   * Returns the list of variables currently being watched from this process
+   * 
+   * @return WatchList containing the variables from this process
+   */
+  public WatchList getWatchList ()
+  {
+    return watchedVars;
+  }
 
   /**
    * Adds an obsever to the list of observers to be added to the debug process
@@ -414,6 +432,12 @@ public class DebugProcess
     //save tagsets
     Element tagSetsXML = new Element("tagsets");
 
+    // Save variable watches
+    Element watchXML = new Element("watches");
+    if(watchedVars.shouldSaveObject())
+      watchedVars.save(watchXML);
+    node.addContent(watchXML);
+    
     Iterator i = tagsets.iterator();
     while (i.hasNext())
       {

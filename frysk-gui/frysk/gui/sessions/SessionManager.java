@@ -68,7 +68,7 @@ public class SessionManager
   public final GuiObservable currentSessionChanged;
   
   private final UniqueHashMap nameHash = new UniqueHashMap();
-
+  
   private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 
   public SessionManager ()

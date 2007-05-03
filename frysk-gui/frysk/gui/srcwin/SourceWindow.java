@@ -40,9 +40,7 @@
 
 package frysk.gui.srcwin;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -108,12 +106,6 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 
 import frysk.Config;
 import frysk.cli.hpd.SymTab;
@@ -132,6 +124,8 @@ import frysk.gui.prefs.PreferenceWindow;
 import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
+import frysk.gui.sessions.DebugProcess;
+import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Isa;
@@ -480,6 +474,9 @@ public class SourceWindow
     this.watchView = new VariableWatchView();
     this.tips = new ToolTips();
 
+    /* Attach the variableWatchView to the WatchList for this process */
+    getCurrentDebugProcess().getWatchList().addListener(watchView);
+    
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 
     AccelGroup ag = new AccelGroup();
@@ -521,8 +518,6 @@ public class SourceWindow
     /* Set up SymTab variable information */
     if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(this.frames[this.current]);
-
-    loadDebugInfo();
     
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -687,7 +682,7 @@ public class SourceWindow
     updateSourceLabel(this.currentFrame);
 
     /* Update the variable watch as well */
-    this.watchView.refreshList();
+//    this.watchView.refreshList();
   }
 
   /**
@@ -697,14 +692,15 @@ public class SourceWindow
          */
   public void addVariableTrace (Variable var)
   {
-    this.watchView.addTrace(var);
+    getCurrentDebugProcess().getWatchList().addVariable(var);
   }
 
   public void removeVariableTrace (Variable var)
   {
-    this.watchView.removeTrace(var);
+    getCurrentDebugProcess().getWatchList().removeVariable(var);
+    return;
   }
-
+  
   public void updateThreads ()
   {
     executeTasks(this.threadDialog.getBlockTasks());
@@ -875,138 +871,27 @@ public class SourceWindow
     return this.lock;
   }
   
-  public void hide()
-  {
-    cleanUp();
-    super.hide();
-  }
-  
-  public void hideAll()
-  {
-    cleanUp();
-    super.hideAll();
-  }
-  
   /*******************************************************************
    * PRIVATE METHODS
    ******************************************************************/
-
-  /**
-   * Perform any housekeeping that needs to be done before the source
-   * window closes.
-   */
-  protected void cleanUp()
-  {
-    saveDebugInfo();
-  }
   
   /**
-   * Saves all of the debugging information for this debug session (Watched
-   * variables, etc.) to disk when the window is closed.
+   * Returns the DebugProcess from the SessionManager corresponding to
+   * the current Proc
    */
-  private void saveDebugInfo()
+  private DebugProcess getCurrentDebugProcess ()
   {
-    String path = createDebugInfoPath(false);
-    
-    Element root = new Element("debuginfo");
-    Document doc = new Document(root);
-    
-    // Collect the settings into the Document
-    if(watchView.shouldSaveObject())
-      watchView.save(root);
-    
-    // Output the settings
-    XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
-    try
-      {
-	output.output(doc, new FileWriter(path));
-      }
-    catch (IOException e)
-      {
-	e.printStackTrace();
-      }
-  }
-  
-  private void loadDebugInfo()
-  {
-    String path = createDebugInfoPath(true);
-    // If there's no save data, there's nothing to load.
-    if(path.equals(""))
-      return;
-    
-    SAXBuilder reader = new SAXBuilder();
-    Document doc = null;
-    try
-      {
-	doc = reader.build(new File(path));
-      }
-    catch (JDOMException e)
-      {
-	e.printStackTrace();
-	return;
-      }
-    catch (IOException e)
-      {
-	e.printStackTrace();
-	return;
-      }
-    Element root = (Element) doc.getContent().get(0);
-    
-    // load the watched variables
-    /*
-     * We load the variables here rather than call watchView.load(),
-     * since that call will just result in more calls to the
-     * source window/view/buffer to re-read the variables.
-     */
-    Element variables = root.getChild(VariableWatchView.VAR_WATCHES);
-    Iterator iter = variables.getChildren().iterator();
+    Iterator iter = SessionManager.theManager.getCurrentSession().getProcesses().iterator();
     while(iter.hasNext())
       {
-	Element varNode = (Element) iter.next();
-	String name = varNode.getAttributeValue("name");
-	String type = varNode.getAttributeValue("type");
-	String filePath = varNode.getAttributeValue("filePath");
-	int lineNo = Integer.parseInt(varNode.getAttributeValue("line"));
-	
-	Variable var = ((SourceView) this.view).findVariable(name, filePath, lineNo, type);
-	if(var != null)
-	  {
-	    
-	  }
+	DebugProcess dProc = (DebugProcess) iter.next();
+	if(dProc.getExecutablePath().equals(swProc[current].getExe()))
+	  return dProc;
       }
     
-  }
-  
-  /**
-   * Creates the path to save the debuginfo in, creating the directory
-   * hierarchy if it does not already exist
-   * @param checkFile Whether to check for the existance of the file as well
-   * 		as the directory hierarchy
-   * @return The full path of the file to save debuginfo in.
-   */
-  private String createDebugInfoPath(boolean checkFile)
-  {
-    // debuginfo is saved in ~/.frysk/debugdata/path/to/executable
-    String procPath = this.currentTask.getProc().getExe();
-    String settingsPath = Config.FRYSK_DIR + "Debugdata/";
-    
-    // Create the settings file and directory structure if it doesn't already exist
-    String procName = procPath.substring(procPath.lastIndexOf("/")+1);
-    procPath = procPath.substring(0, procPath.lastIndexOf("/")+1);
-    File path = new File(settingsPath+procPath);
-    if(!path.exists())
-	path.mkdirs();
-    
-    if(checkFile)
-      {
-	File fullPath = new File(settingsPath+procPath+procName);
-	// If we haven't previously saved data to this file, then return
-	// the empty string.
-	if(!fullPath.exists())
-	  return "";
-      }
-    
-    return settingsPath+procPath+procName;
+    /* should not get here */
+    // TODO: throw an exception if we do
+    return null;
   }
   
   /**
