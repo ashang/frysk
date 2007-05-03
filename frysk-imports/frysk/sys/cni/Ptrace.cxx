@@ -230,10 +230,31 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   if (offset + length > bytes->length)
     throw new java::lang::ArrayIndexOutOfBoundsException ();
-  // Clueless implementation for now :-)
-  for (jlong i = 0; i < length; i++)
-    elements(bytes)[offset + i]
-      = frysk::sys::Ptrace$AddressSpace::peek (pid, addr + i);
+  // Somewhat more clueful implementation
+  // fprintf (stderr, "starting from %#08x to offset %d, length %d\n",
+  //          (unsigned int)addr, (int)offset, (int)length);
+  for (jlong i = 0; i < length;) {
+    union word w;
+    long waddr;
+    long woff;
+    long wlen;
+    
+    waddr = addr & -sizeof(long);
+    woff = (addr - waddr);
+    wlen = sizeof(long) - woff;
+
+    w.l = request (ptPeek, pid, (void*)waddr, 0);
+    // fprintf (stderr, "waddr %#08x contains %#08x\n",
+    //          (unsigned int)waddr, (unsigned int)w.l);
+    
+    for (jlong j = 0; (j < wlen) && (i < length); j++, i++) {
+      elements(bytes)[offset + i] = w.b[woff + j];
+      // fprintf (stderr, "%d --> %#02x\n",
+      //          (int)(offset + i),
+      //          (unsigned int)(elements(bytes)[offset + i]));
+    }
+    addr += wlen;
+  }
   return length;
 }
 
