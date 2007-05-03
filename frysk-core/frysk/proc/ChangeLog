@@ -1,5 +1,11 @@
 2007-05-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AckHandler): Delete.  Replace with
+	frysk.testbed.SignalWaiter.
+	* TestIsa.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskObserverDetach.java: Ditto.
+
 	* Manager.java: Use frysk.event.EventLoop.factory.
 
 2007-05-02  Andrew Cagney  <cagney@redhat.com>

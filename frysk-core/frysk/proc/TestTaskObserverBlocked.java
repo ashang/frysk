@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 package frysk.proc;
 
 import java.util.logging.Level;
+import frysk.testbed.SignalWaiter;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress. In
@@ -244,9 +245,10 @@ public class TestTaskObserverBlocked
 
       // Remove this from the blockers list as an attached
       // observer.
-      AckHandler ack = new AckHandler(childAck, "childAck");
+      SignalWaiter ack = new SignalWaiter(Manager.eventLoop, childAck,
+					  "childAck");
       offspring.requestUnblock(this);
-      ack.await();
+      ack.assertRunUntilSignaled();
     }
 
     /**
@@ -256,9 +258,10 @@ public class TestTaskObserverBlocked
     public void assertUnblockParent ()
     {
       logger.log(Level.FINE, "{0} assertUnblockParent\n", this);
-      AckHandler ack = new AckHandler(parentAck, "parentAck");
+      SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+					  "parentAck");
       parent.requestUnblock(this);
-      ack.await();
+      ack.assertRunUntilSignaled();
     }
 
     abstract void requestSpawn (AckProcess proc);

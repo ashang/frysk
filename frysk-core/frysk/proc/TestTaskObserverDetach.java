@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ import java.lang.Thread;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
+import frysk.testbed.SignalWaiter;
 
 /**
  * Check that random events, arriving mid-way through a detach, are
@@ -144,7 +145,9 @@ public class TestTaskObserverDetach
 	    
 	    // Set up an ack handler to catch the process
 	    // acknowledging that it has completed the relevant task.
-	    AckHandler ackHandler = new AckHandler (eventAcks (), "eventAcks");
+	    SignalWaiter ackHandler = new SignalWaiter (Manager.eventLoop,
+							eventAcks (),
+							"eventAcks - detach");
 
 	    // Remove all observers, this will cause the process to
 	    // start transitioning to the detached state.
@@ -163,7 +166,7 @@ public class TestTaskObserverDetach
 		});
 
 	    logger.log (Level.FINE, "{0} waiting for detach\n", this);
-	    ackHandler.await ("attempting detach");
+	    ackHandler.assertRunUntilSignaled ();
 	}
     }
     /**

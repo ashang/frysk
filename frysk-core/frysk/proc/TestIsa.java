@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 import lib.elf.ElfEMachine;
+import frysk.testbed.SignalWaiter;
 
 public class TestIsa
     extends TestLib
@@ -293,9 +294,10 @@ public class TestIsa
 
     logger.log(Level.FINE, "Before sending exec\n");    
     
-    AckHandler ack = new AckHandler(Sig.USR2, "assertExec");
+    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, Sig.USR2,
+					"assertExec");
     ackProc.signal(Sig.USR1);
-    ack.await();
+    ack.assertRunUntilSignaled();
    
     assertNotNull("32 bit isa", task.getIsa());
     assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
@@ -343,18 +345,19 @@ public class TestIsa
 
     logger.log(Level.FINE, "Before sending 1st exec\n");    
     
-    AckHandler ack = new AckHandler(Sig.USR2, "assertExec");
+    SignalWaiter ack = new SignalWaiter(Manager.eventLoop, Sig.USR2,
+					"assertExec");
     ackProc.signal(Sig.USR1);
-    ack.await();
+    ack.assertRunUntilSignaled();
 
     assertNotNull("32 bit isa", task.getIsa());
     assertNotSame("32 bit and 64 bit isa", task.getIsa(), isa64);
     
     logger.log(Level.FINE, "Before sending 2nd exec\n");   
     
-    ack = new AckHandler(Sig.USR2, "assertExec");
+    ack = new SignalWaiter(Manager.eventLoop, Sig.USR2, "assertExec");
     ackProc.signal(Sig.USR1);
-    ack.await();
+    ack.assertRunUntilSignaled();
     
     assertNotNull("64 bit isa", task.getIsa());
     assertSame("64 bit isa is a singleton", task.getIsa(), isa64);

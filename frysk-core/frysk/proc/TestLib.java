@@ -54,7 +54,7 @@ import frysk.sys.Signal;
 import frysk.sys.Wait;
 import frysk.sys.UnhandledWaitBuilder;
 import frysk.sys.proc.Stat;
-
+import frysk.testbed.SignalWaiter;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -232,81 +232,6 @@ public class TestLib
     return isDescendantOf(Pid.get(), proc);
   }
 
-  /**
-   * Sets up a set of signal handlers that stop the event loop when the child
-   * sends this process the required set of ack signals (indicating that it has
-   * completed a requested operation).
-   */
-  protected class AckHandler
-  {
-    private int acksRemaining;
-
-    private String reason;
-
-    private class AckSignal
-        extends SignalEvent
-    {
-      AckSignal (Sig sig)
-      {
-        super(sig);
-      }
-
-      public void execute ()
-      {
-        logger.log(Level.FINE, "{0} execute ({1})\n", new Object[] { this,
-                                                                    reason });
-        Manager.eventLoop.requestStop();
-        Manager.eventLoop.remove(this);
-        acksRemaining--;
-      }
-    }
-
-    AckHandler (Sig[] sigs, String why)
-    {
-      StringBuffer reason = new StringBuffer(why);
-      reason.append(" (");
-      acksRemaining = sigs.length;
-      for (int i = 0; i < sigs.length; i++)
-        {
-          Sig sig = sigs[i];
-          if (i > 0)
-            reason.append(",");
-          reason.append(sig);
-          Manager.eventLoop.add(new AckSignal(sig));
-        }
-      reason.append(")");
-      this.reason = reason.toString();
-    }
-
-    AckHandler (Sig sig, String why)
-    {
-      this(new Sig[] { sig }, why);
-    }
-
-    public String toString ()
-    {
-      return super.toString() + "," + reason;
-    }
-
-    private void assertAwait (String why)
-    {
-      while (acksRemaining > 0)
-        {
-          assertRunUntilStop(why);
-        }
-    }
-
-    void await ()
-    {
-      assertAwait(reason);
-    }
-
-    void await (String why)
-    {
-      assertAwait(why + " (" + reason + ")");
-    }
-  }
-
   // NOTE: Use a different signal to thread add/del. Within this
   // process the signal is masked and Linux appears to propogate the
   // mask all the way down to the exec'ed child.
@@ -388,13 +313,14 @@ public class TestLib
      */
     protected Child (Sig sig, String[] argv)
     {
-      AckHandler ack = new AckHandler(sig, "startChild");
-      this.argv = argv;
-      this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
-                                                                : "/dev/null"),
-                            null, argv);
-      TearDownProcess.add(pid);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, sig,
+					    "startChild");
+	this.argv = argv;
+	this.pid = startChild(null, (logger.isLoggable(Level.FINE) ? null
+				     : "/dev/null"),
+			      null, argv);
+	TearDownProcess.add(pid);
+	ack.assertRunUntilSignaled();
     }
 
     /**
@@ -555,9 +481,9 @@ public class TestLib
      */
     private void spawn (int tid, Sig sig, String why)
     {
-      AckHandler ack = new AckHandler(spawnAck, why);
-      signal(tid, sig);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, spawnAck, why);
+	signal(tid, sig);
+	ack.assertRunUntilSignaled();
     }
 
     /** Add a Task. */
@@ -575,10 +501,10 @@ public class TestLib
     /** Delete a Task. */
     public void assertSendDelCloneWaitForAcks ()
     {
-      AckHandler ack = new AckHandler(parentAck,
-                                      "assertSendDelCloneWaitForAcks");
-      signal(delCloneSig);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+					    "assertSendDelCloneWaitForAcks");
+	signal(delCloneSig);
+	ack.assertRunUntilSignaled();
     }
 
     /** Add a child Proc. */
@@ -596,18 +522,19 @@ public class TestLib
     /** Delete a child Proc. */
     public void assertSendDelForkWaitForAcks ()
     {
-      AckHandler ack = new AckHandler(parentAck, "assertSendDelForkWaitForAcks");
-      signal(delForkSig);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+					    "assertSendDelForkWaitForAcks");
+	signal(delForkSig);
+	ack.assertRunUntilSignaled();
     }
 
     /** Terminate a fork Proc (creates zombie). */
     public void assertSendZombieForkWaitForAcks ()
     {
-      AckHandler ack = new AckHandler(parentAck,
-                                      "assertSendZombieForkWaitForAcks");
-      signal(zombieForkSig);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, parentAck,
+					    "assertSendZombieForkWaitForAcks");
+	signal(zombieForkSig);
+	ack.assertRunUntilSignaled();
     }
 
     /**
@@ -616,10 +543,10 @@ public class TestLib
      */
     void assertSendFryParentWaitForAcks ()
     {
-      AckHandler ack = new AckHandler(childAck,
-                                      "assertSendFryParentWaitForAcks");
-      signal(Sig.KILL);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, childAck,
+					    "assertSendFryParentWaitForAcks");
+	signal(Sig.KILL);
+	ack.assertRunUntilSignaled();
     }
 
     /**
@@ -627,10 +554,10 @@ public class TestLib
      */
     void assertSendExecWaitForAcks (int tid)
     {
-      AckHandler ack = new AckHandler(execAck, "assertSendExecWaitForAcks:"
-                                               + tid);
-      Signal.tkill(tid, execSig);
-      ack.await();
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop, execAck,
+					    "assertSendExecWaitForAcks:" + tid);
+	Signal.tkill(tid, execSig);
+	ack.assertRunUntilSignaled();
     }
 
     /**
@@ -646,12 +573,13 @@ public class TestLib
      */
     void assertSendExecCloneWaitForAcks ()
     {
-      // First the main thread acks with .parentAck, and then
-      // the execed process acks with .childAck.
-      AckHandler ack = new AckHandler(new Sig[] { parentAck, childAck },
-                                      "assertSendExecCloneWaitForAcks");
-      signal(execCloneSig);
-      ack.await();
+	// First the main thread acks with .parentAck, and then the
+	// execed process acks with .childAck.
+	SignalWaiter ack = new SignalWaiter(Manager.eventLoop,
+					    new Sig[] { parentAck, childAck },
+					    "assertSendExecCloneWaitForAcks");
+	signal(execCloneSig);
+	ack.assertRunUntilSignaled();
     }
 
     /**
