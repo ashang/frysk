@@ -73,7 +73,7 @@ public class EventLogger {
 
 	private FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(Config.FRYSK_DIR + "eventlogs" + "/"); //$NON-NLS-1$ //$NON-NLS-2$
+		File log_dir = new File(Config.getFryskDir() + "/" + "eventlogs" + "/"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();

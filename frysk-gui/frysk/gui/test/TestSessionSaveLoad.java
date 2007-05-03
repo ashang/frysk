@@ -41,8 +41,6 @@ package frysk.gui.test;
 
 import java.util.Iterator;
 
-import frysk.junit.TestCase;
-
 import org.gnu.gtk.Gtk;
 
 import frysk.gui.monitor.observers.ObserverManager;
@@ -51,7 +49,7 @@ import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 
-public class TestSessionSaveLoad extends TestCase {
+public class TestSessionSaveLoad extends GuiTestCase {
 
     SessionManager sessionManager;
     Session mySavedSession;
@@ -60,24 +58,27 @@ public class TestSessionSaveLoad extends TestCase {
     protected void setUp() throws Exception {
       super.setUp();
       Gtk.init(new String[]{});
-
-      sessionManager = new SessionManager();
+      
+      SESSIONS_TEST_DIR.mkdir();
+      cleanDir(SESSIONS_TEST_DIR);
+      
+      sessionManager = new SessionManager(SESSIONS_TEST_DIR);
       mySavedSession = new Session("1", "2");
       sessionManager.addSession(mySavedSession);
         
     }
     
     protected void tearDown() throws Exception{
-      super.tearDown();
       sessionManager.removeSession(mySavedSession);
+      cleanDir(SESSIONS_TEST_DIR);
+      SESSIONS_TEST_DIR.delete();
+      super.tearDown();
     }
     
 	public void testSaveLoad(){
 		
-        debugProcess = new DebugProcess("3", "33", "333");
-        
-        System.out.println("TestSessionSaveLoad.testSaveLoad() size: " + ObserverManager.theManager.getTaskObservers().size());
-        
+	  debugProcess = new DebugProcess("3", "33", "333");
+	  
 		Iterator iterator = ObserverManager.theManager.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
@@ -87,7 +88,7 @@ public class TestSessionSaveLoad extends TestCase {
 		sessionManager.save();
 		
 		
-		SessionManager loadedSessionManager = new SessionManager();
+		SessionManager loadedSessionManager = new SessionManager(SESSIONS_TEST_DIR);
 		Session myLoadedSession = loadedSessionManager.getSessionByName(mySavedSession.getName());
 		
 		assertNotNull("loaded session", myLoadedSession);

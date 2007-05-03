@@ -53,13 +53,12 @@ import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskForkedObserver;
 import frysk.gui.monitor.observers.TaskObserverRoot;
-import frysk.junit.TestCase;
 
-public class TestPrototypeCopying extends TestCase{
+public class TestPrototypeCopying extends GuiTestCase{
 
 	public void testPrototypeCopying(){
 		Gtk.init(new String[]{});
-		ObserverManager observerManager = new ObserverManager();
+		ObserverManager observerManager = new ObserverManager(OBSERVERS_TEST_DIR);
 
 		Iterator iter = observerManager.getTaskObservers().iterator();
 		while (iter.hasNext()) {

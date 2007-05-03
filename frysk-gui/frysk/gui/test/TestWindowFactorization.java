@@ -39,23 +39,22 @@
 
 package frysk.gui.test;
 
-import frysk.Config;
-import frysk.junit.TestCase;
+import org.gnu.glade.LibGlade;
+import org.gnu.gtk.Gtk;
 
-import frysk.proc.Task;
+import frysk.Config;
 import frysk.gui.common.IconManager;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
-import frysk.proc.Manager;
 import frysk.proc.DummyProc;
 import frysk.proc.DummyTask;
-import org.gnu.glade.LibGlade;
-import org.gnu.gtk.Gtk;
+import frysk.proc.Manager;
+import frysk.proc.Task;
 
 //import org.gnu.glib.CustomEvents;
 
 public class TestWindowFactorization
-    extends TestCase
+    extends GuiTestCase
 {
   private Task theTask = null;
 
@@ -67,13 +66,19 @@ public class TestWindowFactorization
 
   private RegisterWindow rw = null;
 
-  public void setUp ()
+  public void setUp () throws Exception
   {
+    super.setUp();
     Gtk.init(new String[] {});
     IconManager.loadIcons();
     IconManager.useSmallIcons();
   }
 
+  protected void tearDown () throws Exception
+  {
+    super.tearDown();
+  }
+  
   public void testWindowFactorization ()
       throws org.gnu.glade.GladeXMLException,
 	     java.io.FileNotFoundException,

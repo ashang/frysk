@@ -75,27 +75,32 @@ public class ObjectFactory {
 	 * Dynamically instantiates the object save to the given node,
 	 * @param node the node form where to retrieved object information.
 	 * @return the instantiated object. NULL if the object cannot be
-     * loaded.
+	 * loaded.
 	 */
 	public Object getObject(Element node){
-		Object loadedObject = null;
-		String type = node.getAttribute("type").getValue();
-//		System.out.println("\n===========================================");
-//		System.out.println("ObjectFactory.getObject() " + type);
+	  Object loadedObject = null;
+	  String type = node.getAttribute("type").getValue();
+//	  System.out.println("\n===========================================");
+//	  System.out.println("ObjectFactory.getObject() type: " + type);
 		
-		Class cls;
-		try {
-			cls = Class.forName(type);
-			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
-			loadedObject =  constr.newInstance(new Object[] {});
-		} catch (Exception e) {
-		  loadedObject = null;
-        }
+	  Class cls;
+	  try {
+	    cls = Class.forName(type);
+//	    System.out.println("ObjectFactory.getObject() cls: " + cls);
+	    java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
+//	    System.out.println("ObjectFactory.getObject() constr: " + constr);
+	    loadedObject =  constr.newInstance(new Object[] {});
+//	    System.out.println("ObjectFactory.getObject() loadedObject: " + loadedObject);
+	  } catch (Exception e) {
+//	    System.err.println("Object ["+node.getAttribute("type").getValue() + "] Does not have a no argument constructor");
+	    e.printStackTrace();
+	    loadedObject = null;
+	  }
 
-//		System.out.println("ObjectFactory.getObject() " + loadedObject.getClass());
-//		System.out.println("===========================================\n");
+//	  System.out.println("ObjectFactory.getObject() " + loadedObject.getClass());
+//	  System.out.println("===========================================\n");
 
-		return loadedObject;
+	  return loadedObject;
 	}
 	
 	/**
@@ -105,7 +110,9 @@ public class ObjectFactory {
 	 */
 	public Object loadObject(Element node){
 		Object loadedObject = this.getObject(node);
-		((SaveableXXX)loadedObject).load(node);
+		if(loadedObject != null){
+		  ((SaveableXXX)loadedObject).load(node);
+		}
 		return loadedObject;
 	}
 	
@@ -140,25 +147,23 @@ public class ObjectFactory {
 		}
 	}
 	
-	public Element importNode(String path){
-
-		path = path.replace(' ', '_');
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        org.w3c.dom.Document doc = null; 
-        try {
-           DocumentBuilder builder = factory.newDocumentBuilder();
-           doc = (org.w3c.dom.Document) builder.parse(new File(path));
- 
-        } catch (Exception e) {
-        	errorLog.log(Level.WARNING, "Could not parse node ",e); //$NON-NLS-1$
-        	return null;
-        } 
+	public Element importNode(File file){
+	  
+	  DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	  org.w3c.dom.Document doc = null; 
+	  try {
+	    DocumentBuilder builder = factory.newDocumentBuilder();
+	    doc = (org.w3c.dom.Document) builder.parse(file);
+	    
+	  } catch (Exception e) {
+	    errorLog.log(Level.WARNING, "Could not parse node ",e); //$NON-NLS-1$
+	    return null;
+	  } 
         
-        DOMBuilder doo = new DOMBuilder();
-		Document document =	doo.build(doc);
+	  DOMBuilder doo = new DOMBuilder();
+	  Document document =	doo.build(doc);
         		
-		return document.getRootElement();
+	  return document.getRootElement();
 	}
 	
 	public boolean deleteNode(String path){
@@ -172,11 +177,4 @@ public class ObjectFactory {
 		return file.delete();
 	}
 	
-	
-	public void makeDir(String path){
-		File store = new File(path);
-		if (store.exists() == false){
-			store.mkdirs();
-		}
-	}
 }

@@ -60,24 +60,27 @@ public class TagsetManager {
 	// singleton
 	public static TagsetManager manager;
 	
-	private final String TAGSETS_DIR = Config.FRYSK_DIR + "Tagsets" + "/";
+	private static final File TAGSETS_DIR = new File(Config.getFryskDir().getPath() + "/" + "Tagsets" + "/");
 	static{
 		// initialize our singleton
-		manager = new TagsetManager();
+		manager = new TagsetManager(TAGSETS_DIR);
 	}
 	
 	private ObservableLinkedList tagsets;
 	private UniqueHashMap nameHash;
+
+	private File tagsetsDir;
 	
 	/**
 	 * Create a new TagsetManager
 	 *
 	 */
-	public TagsetManager(){
+	public TagsetManager(File tagsetsDir){
+	  this.tagsetsDir = tagsetsDir;
 		tagsets = new ObservableLinkedList();
 		nameHash = new UniqueHashMap();
 		
-		ObjectFactory.theFactory.makeDir(TAGSETS_DIR);
+		tagsetsDir.mkdir();
 		this.load();
 	}
 	
@@ -92,7 +95,7 @@ public class TagsetManager {
 			if(tagSet.shouldSaveObject()){
 				Element node = new Element("Tagset");
 				ObjectFactory.theFactory.saveObject(tagSet, node);
-				ObjectFactory.theFactory.exportNode( TAGSETS_DIR + tagSet.getName(), node);
+				ObjectFactory.theFactory.exportNode( tagsetsDir.getPath() +"/"+ tagSet.getName(), node);
 			}
 		}
 	}
@@ -103,15 +106,15 @@ public class TagsetManager {
 	 **/
 	public void load(){
 		Element node = new Element("Tagset");
-		File tagSetsDir = new File(this.TAGSETS_DIR);
+		File tagSetsDir = tagsetsDir;
 		
-		String[] array = tagSetsDir.list();
+		File[] array = tagSetsDir.listFiles();
 		Tagset loadedTagset = null;
 		for (int i = 0; i < array.length; i++) {
-			if(array[i].startsWith(".")){
+			if(array[i].getName().startsWith(".")){
 				continue;
 			}
-			node = ObjectFactory.theFactory.importNode(TAGSETS_DIR+array[i]);
+			node = ObjectFactory.theFactory.importNode(array[i]);
 			loadedTagset = (Tagset)ObjectFactory.theFactory.loadObject(node);
 			this.addTagset(loadedTagset);
 		}
@@ -136,7 +139,7 @@ public class TagsetManager {
 	 * @param tagSet The tagset to remove.
 	 */
 	public void removeTagset(Tagset tagSet){
-		ObjectFactory.theFactory.deleteNode( TAGSETS_DIR + tagSet.getName());
+		ObjectFactory.theFactory.deleteNode( tagsetsDir.getPath() + "/"+ tagSet.getName());
 		this.tagsets.remove(tagSet);
 		this.nameHash.remove(tagSet);
 	}

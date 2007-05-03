@@ -1,3 +1,20 @@
+2007-05-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/GuiTestCase.java: New file.
+	* test/TestWindowFactorization.java: Now extends GuiTestCase and
+	calls super.setUp().
+	* test/TestPrototypeCopying.java: Now extends GuiTestCase.
+	Changed it to pass OBSERVERS_TEST_DIR when constructing 
+	ObserverManager.
+	* test/TestSessionSaveLoad.java: Ditto.
+	* test/TestTagsetSaveLoad.java: Ditto.
+	* test/TestFilterManager.java: Removed duplicate addtion of 
+	taskProcParentNameFilter.
+	* sessions/SessionManager.java: Changed constructor to take a file
+	argument represnting save directory.
+	Replaced use of String paths with Files.
+	* Gui.java: Changed code to use File instead of String paths.
+
 2007-05-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* sessions/DebugProcess.java (watchedVars): Added.

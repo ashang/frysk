@@ -1,3 +1,11 @@
+2007-05-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* EventLogger.java: Replaced use of FRYSK_DIR with 
+	getFryskDir();
+	* Config.java (getFryskDir): New fucntion.
+	(getFryskTestDir): New function.
+	removed global String variable FRYSK_DIR.
+
 2007-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.java (getHelpDir): Change return type to File.

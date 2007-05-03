@@ -70,7 +70,7 @@ public interface SaveableXXX {
 	 * than the object itself, and then use the name to later recreate
 	 * that object via a managers. Like observers for instance. Perhaps
 	 * objects such as these should be smart enough to use a manager to
-	 * save/load themselfs, that way an api client doesnt have to worry
+	 * save/load themselves, that way an api client doesnt have to worry
 	 * ... one day :).
 	 * @param node
 	 */

@@ -200,11 +200,31 @@ public class Config
      */
     public static final native String getVersion ();
 
-    // User's config directory.  XXX: Should be a File.  XXX: Should
-    // not use user.home property.  XXX: Should be a method.
-    public static final String FRYSK_DIR
-	= System.getProperty("user.home") + "/" + ".frysk" + "/";
-
+    public static File getFryskDir(){
+      File file = new File(getHomeDir()+"/"+".frysk/");
+      if(file.exists()){
+	file.mkdir();
+      }
+      return file;
+    }
+    
+    public static File getFryskTestDir(){
+      File file = null;
+      try{
+	file = File.createTempFile(".frysk", null);
+      }catch (Exception e){
+	e.printStackTrace();
+      }
+      file.mkdir();
+      file.deleteOnExit();
+      return file;
+    }
+    
+    public static File getHomeDir(){
+      //XXX: Should not use user.home property.
+      return new File(System.getProperty("user.home"));
+    }
+    
     /**
      * The relative source root directory against which the build was
      * created; this is an install time option since, with debug-info

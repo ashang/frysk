@@ -90,8 +90,8 @@ public class TestFilterManager extends TestCase{
       FilterManager.theManager.removeGenericFilterPrototype(intFilter);
       FilterManager.theManager.removeTaskFilterPrototype(taskFilter);
       FilterManager.theManager.removeTaskFilterPrototype(taskProcParentNameFilter);
-      FilterManager.theManager.removeTaskFilterPrototype(taskProcParentNameFilter);
       FilterManager.theManager.removeTaskFilterPrototype(taskProcCommandLineFilter);
+      FilterManager.theManager.removeTaskFilterPrototype(taskProcPathFilter);
       FilterManager.theManager.removeProcFilterPrototype(procFilter);
       FilterManager.theManager.removeProcFilterPrototype(procParentNameFilter);
       FilterManager.theManager.removeProcFilterPrototype(procCommandLineFilter);

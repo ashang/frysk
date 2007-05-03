@@ -161,7 +161,7 @@ public class Gui implements LifeCycleListener, Saveable {
     System.setProperty("gnome.appName", "Frysk");
 
     // Check Frysk data location is created
-    createFryskDataLocation(Config.FRYSK_DIR);
+    createFryskDataLocation(Config.getFryskDir());
 
     // Make sure that a Frysk invocation is not already running
     if (isFryskRunning())
@@ -171,7 +171,7 @@ public class Gui implements LifeCycleListener, Saveable {
       }
 
     // Create a Frysk lock file
-    createFryskLockFile(Config.FRYSK_DIR + "lock" + Pid.get());
+    createFryskLockFile(Config.getFryskDir() + "/lock" + Pid.get());
 
     Gtk.init(args);
 
@@ -218,7 +218,7 @@ public class Gui implements LifeCycleListener, Saveable {
     WindowManager.theManager.mainWindow.hideAll();
 
     // Find and load preferences.
-    prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
+    prefs = importPreferences(Config.getFryskDir() + "/" + SETTINGSFILE);
     PreferenceManager.setPreferenceModel(prefs);
     initializePreferences();
 
@@ -257,7 +257,7 @@ public class Gui implements LifeCycleListener, Saveable {
     try
       {
         // Export the node to a file
-        prefs.exportSubtree(new FileOutputStream(Config.FRYSK_DIR
+        prefs.exportSubtree(new FileOutputStream(Config.getFryskDir() + "/" 
                                                  + SETTINGSFILE));
       }
     catch (Exception e)
@@ -289,10 +289,9 @@ public class Gui implements LifeCycleListener, Saveable {
 	 * @param config - location for dir
 	 * 
 	 */
-	private static void createFryskDataLocation(String config) {
-		File dir = new File(config);
-		if (!dir.exists())
-			dir.mkdir();
+	private static void createFryskDataLocation(File dir) {
+	  if (!dir.exists())
+	    dir.mkdir();
 	}
 	
 	/**
@@ -305,20 +304,19 @@ public class Gui implements LifeCycleListener, Saveable {
 	private static boolean isFryskRunning() {
 		// Make sure that a Frysk invocation is not already running
 		int currentlyRunningPID;
-		File dir = new File(Config.FRYSK_DIR);
+		File dir = Config.getFryskDir();
 
 		if (dir.exists()) {
-			String[] contents = dir.list();
+			File[] contents = dir.listFiles();
 			for (int i = 0; i < contents.length; i++) {
-				if (contents[i].startsWith("lock")) {
-					currentlyRunningPID = Integer.parseInt(contents[i]
+				if (contents[i].getName().startsWith("lock")) {
+					currentlyRunningPID = Integer.parseInt(contents[i].getName()
 							.substring(4));
 					try {
 						Signal.kill(currentlyRunningPID, Sig.USR1);
 					} catch (Exception e) {
 						/* The lock file shouldn't be there */
-						File f = new File(Config.FRYSK_DIR + contents[i]);
-						f.delete();
+						contents[i].delete();
 						break;
 					}
 					return true;
@@ -470,7 +468,7 @@ public class Gui implements LifeCycleListener, Saveable {
 	 */
 	private static FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(Config.FRYSK_DIR + "logs" + "/");
+		File log_dir = new File(Config.getFryskDir().getPath() + "/logs" + "/");
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();
@@ -515,7 +513,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		logger.addHandler(guiHandler);
 
 		// Set the location of the level sets
-		System.setProperty("java.util.logging.config.file", Config.FRYSK_DIR
+		System.setProperty("java.util.logging.config.file", Config.getFryskDir().getPath()+"/"
 				+ "logging.properties");
 		LogManager logManager = LogManager.getLogManager();
 		logManager.addLogger(logger);

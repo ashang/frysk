@@ -58,8 +58,9 @@ import frysk.gui.monitor.UniqueHashMap;
  */
 public class SessionManager
 {
-
-  public static SessionManager theManager = new SessionManager();
+  
+  private static final File SESSIONS_DIR = new File(Config.getFryskDir() + "/Sessions" + "/");
+  public static SessionManager theManager = new SessionManager(SESSIONS_DIR);
 
   ObservableLinkedList sessions = new ObservableLinkedList();
 //  private Stack backupSessionStack;
@@ -68,14 +69,14 @@ public class SessionManager
   public final GuiObservable currentSessionChanged;
   
   private final UniqueHashMap nameHash = new UniqueHashMap();
-  
-  private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 
-  public SessionManager ()
+  private File sessionsDir;
+
+  public SessionManager (File sessionsDir)
   {
+    this.sessionsDir = sessionsDir;
     this.currentSessionChanged = new GuiObservable();
-//    this.backupSessionStack = new Stack();
-    ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
+    sessionsDir.mkdir();
     load();
   }
 
@@ -144,7 +145,7 @@ public class SessionManager
    */
   public void removeSession (final Session session)
   {
-    ObjectFactory.theFactory.deleteNode(SESSIONS_DIR + session.getName());
+    ObjectFactory.theFactory.deleteNode(sessionsDir.getPath() + "/" + session.getName());
     nameHash.remove(session);
     sessions.remove(session);
   }
@@ -180,7 +181,7 @@ public class SessionManager
           {
             final Element node = new Element("Session");
             ObjectFactory.theFactory.saveObject(session, node);
-            ObjectFactory.theFactory.exportNode(SESSIONS_DIR
+            ObjectFactory.theFactory.exportNode(sessionsDir.getPath() + "/"
                                                 + session.getName(), node);
           }
       }
@@ -190,18 +191,17 @@ public class SessionManager
   {
     clear();
     Element node = new Element("Session");
-    final File sessionsDir = new File(SESSIONS_DIR);
-    final String[] array = sessionsDir.list();
+    final File[] array = sessionsDir.listFiles();
     Session loadedSession = null;
     for (int i = 0; i < array.length; i++)
       {
-        if (array[i].startsWith("."))
+        if (array[i].getName().startsWith("."))
           {
             continue;
           }
         try
           {
-            node = ObjectFactory.theFactory.importNode(SESSIONS_DIR + array[i]);
+            node = ObjectFactory.theFactory.importNode(array[i]);
             loadedSession = (Session) ObjectFactory.theFactory.loadObject(node);
           }
         catch (final Exception e)

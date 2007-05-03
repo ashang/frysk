@@ -39,80 +39,59 @@
 
 package frysk.gui.test;
 
-import java.util.Iterator;
+import java.io.File;
 
-import org.gnu.gtk.Gtk;
+import frysk.Config;
+import frysk.junit.TestCase;
 
-import frysk.gui.srcwin.tags.Tag;
-import frysk.gui.srcwin.tags.Tagset;
-import frysk.gui.srcwin.tags.TagsetManager;
-
-public class TestTagsetSaveLoad extends GuiTestCase {
+public class GuiTestCase extends TestCase{
+  public static final File TEST_DIR = Config.getFryskTestDir();
+  public static final File OBSERVERS_TEST_DIR = new File(TEST_DIR.getPath() + "/Observers");
+  public static final File SESSIONS_TEST_DIR = new File(TEST_DIR.getPath() + "/Sessions");
+  public static final File TAGSETS_TEST_DIR = new File(TEST_DIR.getPath() + "/Tagsets");
   
   protected void setUp () throws Exception
   {
     super.setUp();
+    
+    TEST_DIR.mkdir();
+    cleanDir(TEST_DIR);
+    
+    OBSERVERS_TEST_DIR.mkdir();
+    cleanDir(OBSERVERS_TEST_DIR);
+    
+    SESSIONS_TEST_DIR.mkdir();
+    cleanDir(SESSIONS_TEST_DIR);
+    
     TAGSETS_TEST_DIR.mkdir();
     cleanDir(TAGSETS_TEST_DIR);
   }
-  
+	
   protected void tearDown () throws Exception
   {
+    super.tearDown();
+    
+    cleanDir(TEST_DIR);
+    TEST_DIR.delete();
+    
+    cleanDir(OBSERVERS_TEST_DIR);
+    OBSERVERS_TEST_DIR.delete();
+    
+    cleanDir(SESSIONS_TEST_DIR);
+    SESSIONS_TEST_DIR.delete();
+    
     cleanDir(TAGSETS_TEST_DIR);
     TAGSETS_TEST_DIR.delete();
-    super.tearDown();
+    
+  }
+	
+  public void cleanDir(File dir){
+    File[] files = dir.listFiles();
+    if(files!=null){
+      for (int i = 0; i < files.length; i++){
+	files[i].delete();
+      }
+    }
   }
   
-	public void testSaveLoad(){
-		Gtk.init(new String[]{});
-		
-		// Create a TagSet Manager, TagSet, and two Tags
-		TagsetManager tagSetManager = new TagsetManager(TAGSETS_TEST_DIR);
-		Tagset myTagset = new Tagset("FooTest", "Test Tagset", "/usr/bin/tagTest", "1.0");
-		Tag myTag1 = new Tag("tagTest.cpp", "", 100,"cout << test;");
-		Tag myTag2 = new Tag("tagTest.cpp", "",1202, "cout << fake test two");
-		
-		// Add the Tags to the Tag Set
-		myTagset.addTag(myTag1);
-		myTagset.addTag(myTag2);
-		int tagCount = 2;
-		
-		// Add the Tag Set to the TagSet Manager
-		tagSetManager.addTagset(myTagset);
-	
-		// Save the TagSet Manager
-		tagSetManager.save();
-		
-		// Crate a new TagSet Manager	
-		TagsetManager loadedTagSetManager = new TagsetManager(TAGSETS_TEST_DIR);
-
-				
-		// Get the tag set we just created and saved
-		Tagset myLoadedTagset = loadedTagSetManager.getTagsetByName("FooTest");
-		
-		// Start test too see if loaded is identical to original.
-		assertNotNull("loaded Tagset session", myLoadedTagset);
-		assertEquals("Tagset name", myLoadedTagset.getName(),myTagset.getName());
-		assertEquals("Tagset desc", myLoadedTagset.getDesc(), myTagset.getDesc());
-		assertEquals("Tagset command",myLoadedTagset.getCommand(), myTagset.getCommand());
-		assertEquals("Tagset version",myLoadedTagset.getVersion(), myTagset.getVersion());
-		
-		Iterator j = myTagset.getTags();
-		Iterator i = myLoadedTagset.getTags();
-		
-		int count = 0;
-		while (j.hasNext() && i.hasNext())
-		{
-			count++;
-			
-			Tag myTag = (Tag) j.next();
-			Tag loadedTag = (Tag) i.next();
-			
-			assertEquals("Tag set " + count + " match",myTag.equals(loadedTag),true);
-		}
-		
-		assertEquals("Tag count",count,tagCount);
-			
-		tagSetManager.removeTagset(myTagset);
-	}
 }

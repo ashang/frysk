@@ -1,3 +1,14 @@
+2007-05-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TestObserverSaveLoad.java: Now inherets from GuiTestCase.
+	uses temporary test directories instead of default ones.
+	* observers/ObserverManager.java: Replaced use of String paths with 
+	File objects.
+	Constructor now takes a file argument indicating the save direcotry.
+	* SaveableXXX.java: Spelling fix.
+	* EventLogger.java: Replaced use of String paths with File objects.
+	* ObjectFactory.java: Ditto.
+
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* ConsoleWidget.java: Remove second parameter.

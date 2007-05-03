@@ -65,7 +65,9 @@ import frysk.gui.monitor.actions.CaptureStackTraceAction;
  * */
 public class ObserverManager {
 
-	public static ObserverManager theManager = new ObserverManager();
+  private static final File OBSERVERS_DIR = new File(Config.getFryskDir().getPath() + "/Observers" + "/");
+	
+  public static ObserverManager theManager = new ObserverManager(OBSERVERS_DIR);
 	
 	static{
 		theManager.init();
@@ -78,7 +80,6 @@ public class ObserverManager {
 	 */
 	private UniqueHashMap nameHash;
 	
-	private final String OBSERVERS_DIR = Config.FRYSK_DIR + "Observers" + "/";
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	/**
 	 * a list containing a prototype of every available
@@ -92,71 +93,75 @@ public class ObserverManager {
     
     public ProgramObserver programObserver;
     
-	public ObserverManager(){
-		this.baseObservers = new ObservableLinkedList();
-		this.taskObservers = new ObservableLinkedList();
-		this.defaultObservers = new ObservableLinkedList();
+    private File observersDir;
+    
+    public ObserverManager(File observersDir){
+      
+      this.baseObservers = new ObservableLinkedList();
+      this.taskObservers = new ObservableLinkedList();
+      this.defaultObservers = new ObservableLinkedList();
+      this.observersDir = observersDir;
+      
+      this.programObserver = new ProgramObserver();
         
-        this.programObserver = new ProgramObserver();
-        
-		this.nameHash = new UniqueHashMap();
-		
-		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
-	}
+      this.nameHash = new UniqueHashMap();
+      
+      observersDir.mkdir();
+    }
 	
-	public void init(){
-		this.initTaskObservers();
-		this.loadObservers();
-	}
+    public void init(){
+      this.initTaskObservers();
+      this.loadObservers();
+    }
 	
-	/**
-	 * Instantiates each one of the static task observers
-	 * and adds it to the list.
-	 * */
-	private void initTaskObservers() {
-		
-		//============================================
-		ObserverRoot observer = new TaskSignaledObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, false);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		
-		//============================================
-		observer = new TaskExecObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, true);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		((TaskExecObserver)observer).taskActionPoint.addAction(new CaptureStackTraceAction());
-		
-        //============================================
-		observer = new TaskForkedObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, true);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-		((TaskForkedObserver)observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
-        	((TaskForkedObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
+    /**
+     * Instantiates each one of the static task observers
+     * and adds it to the list.
+     * */
+    private void initTaskObservers (){
 
-        //============================================
-		observer = new TaskTerminatingObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, true);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-        ((TaskTerminatingObserver)observer).taskActionPoint.addAction(new CaptureStackTraceAction());
-        
-		//============================================
-		observer = new TaskCloneObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, true);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-        ((TaskCloneObserver)observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
-        ((TaskCloneObserver)observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
+    // ============================================
+    ObserverRoot observer = new TaskSignaledObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, false);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 
-		//============================================
-		observer = new TaskSyscallObserver();
-		observer.dontSaveObject();
-		this.tryAddTaskObserverPrototype(observer, false);
-		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
-	}
+    // ============================================
+    observer = new TaskExecObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, true);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+    ((TaskExecObserver) observer).taskActionPoint.addAction(new CaptureStackTraceAction());
+
+    // ============================================
+    observer = new TaskForkedObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, true);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+    ((TaskForkedObserver) observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
+    ((TaskForkedObserver) observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
+
+    // ============================================
+    observer = new TaskTerminatingObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, true);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+    ((TaskTerminatingObserver) observer).taskActionPoint.addAction(new CaptureStackTraceAction());
+
+    // ============================================
+    observer = new TaskCloneObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, true);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+    ((TaskCloneObserver) observer).parentTaskActionPoint.addAction(new CaptureStackTraceAction());
+    ((TaskCloneObserver) observer).offspringTaskActionPoint.addAction(new CaptureStackTraceAction());
+
+    // ============================================
+    observer = new TaskSyscallObserver();
+    observer.dontSaveObject();
+    this.tryAddTaskObserverPrototype(observer, false);
+    this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
+  }
 
 	/**
 	 * Returns a copy of the prototype given.
@@ -246,7 +251,7 @@ public class ObserverManager {
 	 * */
 	public void removeTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.remove(observer);
-		if(!ObjectFactory.theFactory.deleteNode( OBSERVERS_DIR + observer.getName())){
+		if(!ObjectFactory.theFactory.deleteNode( observersDir + "/" +observer.getName())){
 			//throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete " + observer.getName());
 		}
 		this.nameHash.remove(observer);
@@ -256,54 +261,51 @@ public class ObserverManager {
       return new ObserverRoot();
     }
     
-	private void loadObservers(){
-		WindowManager.logger.log(Level.FINE, "{0} loadObservers\n", this);
-		Element node = new Element("Observer");
-		File observerDir = new File(this.OBSERVERS_DIR);
-		
-		String[] array = observerDir.list();
-		ObserverRoot loadedObserver = null;
-		for (int i = 0; i < array.length; i++) {
-			if(array[i].startsWith(".")){
-				continue;
-			}
+    private void loadObservers(){
+      WindowManager.logger.log(Level.FINE, "{0} loadObservers\n", this);
+      Element node = new Element("Observer");
+      	
+      File[] files = observersDir.listFiles();
+      ObserverRoot loadedObserver = null;
+      for (int i = 0; i < files.length; i++) {
+	if(files[i].getName().startsWith(".")){
+	  continue;
+	}
 			
-			try{
-				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
-				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
-				ObserverRoot existingObserver = this.getObserverByName(loadedObserver.getName());
-				if(existingObserver != null){
-					// if there is an observer with the same name already
-					// assume the one being loaded is more up to date.
-					this.removeTaskObserverPrototype(existingObserver);
-				}
-				WindowManager.logger.log(Level.FINER, "{0} loadObservers loaded {1}\n", new Object[]{this, loadedObserver.getName()});
-			}catch (Exception e) {
-				errorLog.log(Level.WARNING, "Observer  could not be loaded ",e);
-				continue;
-			}
-
-			this.addTaskObserverPrototype(loadedObserver);
-		}
-		//System.out.println(this + ": ObserverManager.loadObservers() DONE");
+	try{
+	  node = ObjectFactory.theFactory.importNode(files[i]);
+	  loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
+	  ObserverRoot existingObserver = this.getObserverByName(loadedObserver.getName());
+	  if(existingObserver != null){
+	    // if there is an observer with the same name already
+	    // assume the one being loaded is more up to date.
+	    this.removeTaskObserverPrototype(existingObserver);
+	  }
+	  WindowManager.logger.log(Level.FINER, "{0} loadObservers loaded {1}\n", new Object[]{this, loadedObserver.getName()});
+	}catch (Exception e) {
+	  errorLog.log(Level.WARNING, "Observer  could not be loaded ",e);
+	  continue;
 	}
 	
-	public void save(){
-		Iterator iterator = this.getTaskObservers().iterator();
-		while (iterator.hasNext()) {
-			ObserverRoot observer = (ObserverRoot) iterator.next();
-			if(observer.shouldSaveObject()){
-				Element node = new Element("Observer");
-				ObjectFactory.theFactory.saveObject(observer, node);
-				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
-				WindowManager.logger.log(Level.FINER, "{0} save saved {1}\n", new Object[]{this, observer.getName()});
-			}else{
-				WindowManager.logger.log(Level.FINER, "{0} save did not save {1}\n", new Object[]{this, observer.getName()});
-			}
-		}
-		
+	this.addTaskObserverPrototype(loadedObserver);
+      }
+    }
+	
+    public void save(){
+      Iterator iterator = this.getTaskObservers().iterator();
+      while (iterator.hasNext()) {
+	ObserverRoot observer = (ObserverRoot) iterator.next();
+	if(observer.shouldSaveObject()){
+	  Element node = new Element("Observer");
+	  ObjectFactory.theFactory.saveObject(observer, node);
+	  ObjectFactory.theFactory.exportNode( observersDir + "/" +observer.getName(), node);
+	  WindowManager.logger.log(Level.FINER, "{0} save saved {1}\n", new Object[]{this, observer.getName()});
+	}else{
+	  WindowManager.logger.log(Level.FINER, "{0} save did not save {1}\n", new Object[]{this, observer.getName()});
 	}
-
+      }
+    }
+    
   public ObservableLinkedList getDefaultObservers ()
   {
     return this.defaultObservers;

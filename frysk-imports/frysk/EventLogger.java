@@ -99,7 +99,7 @@ public class EventLogger
 	// Read $HOME/.frysk/logging.properties, if present.
 	try {
 	    FileInputStream properties
-		= new FileInputStream (Config.FRYSK_DIR
+		= new FileInputStream (Config.getFryskDir() + "/"
 				       + "logging.properties");
 	    manager.readConfiguration (properties);
 	}
@@ -116,7 +116,7 @@ public class EventLogger
 	}
 
 	try {
-	    File log_dir = new File (Config.FRYSK_DIR + log_subdir + "/");
+	    File log_dir = new File (Config.getFryskDir() + "/" + log_subdir + "/");
 
 	    if (!log_dir.exists())
 		log_dir.mkdirs();

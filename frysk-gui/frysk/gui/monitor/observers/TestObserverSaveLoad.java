@@ -52,11 +52,26 @@ import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.filters.ProcNameFilter;
 import frysk.gui.monitor.filters.TaskFilterPoint;
-import frysk.junit.TestCase;
+import frysk.gui.test.GuiTestCase;
 
-public class TestObserverSaveLoad extends TestCase{
+public class TestObserverSaveLoad extends GuiTestCase{
 
-	public void testSaveLoad(){
+  protected void setUp () throws Exception
+  {
+    super.setUp();
+    OBSERVERS_TEST_DIR.mkdir();
+    cleanDir(OBSERVERS_TEST_DIR);
+  }
+  
+  protected void tearDown () throws Exception
+  {
+    cleanDir(OBSERVERS_TEST_DIR);
+    OBSERVERS_TEST_DIR.delete();
+    super.tearDown();
+  }
+  
+  
+  	public void testSaveLoad(){
 		Gtk.init(new String[]{});
 		
 		Element node = new Element("testNode");
@@ -179,9 +194,8 @@ public class TestObserverSaveLoad extends TestCase{
 	}
 	
 	public void testExport(){
-		ObserverManager observerManager = new ObserverManager();
+		ObserverManager observerManager = new ObserverManager(OBSERVERS_TEST_DIR);
 		observerManager.init();
-		
 		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
 		
 		String testObserverName = "MyCustomObserverXXX_this_should_have_been_deleted_after_test";
@@ -192,7 +206,7 @@ public class TestObserverSaveLoad extends TestCase{
 		observerManager.addTaskObserverPrototype(taskForkedObserver);
 		observerManager.save();
 		
-		ObserverManager anotherObserverManager = new ObserverManager();
+		ObserverManager anotherObserverManager = new ObserverManager(OBSERVERS_TEST_DIR);
 		anotherObserverManager.init();
 		assertEquals("Number of Observers", observerManager.getTaskObservers().size(), anotherObserverManager.getTaskObservers().size());
 		
