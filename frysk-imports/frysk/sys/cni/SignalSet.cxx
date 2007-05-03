@@ -39,6 +39,7 @@
 
 #include <signal.h>
 #include <errno.h>
+#include <stdio.h>
 
 #include <gcj/cni.h>
 #include <gnu/gcj/RawDataManaged.h>
@@ -165,4 +166,27 @@ frysk::sys::SignalSet::getProcMask ()
   if (::sigprocmask (SIG_SETMASK, NULL, set) < 0)
     throwErrno (errno, "sigprocmask.SIG_SETMASK");
   return this;
+}
+
+JArray<frysk::sys::Sig*>*
+frysk::sys::SignalSet::toArray()
+{
+  sigset_t *set = (sigset_t*) rawSet;
+  int numSigs = 0;
+  // Count the number of signals
+  for (int i = 1; i < NSIG; i++) {
+    if (sigismember (set, i))
+      numSigs++;
+  }
+  // Create an array for those signals
+  JArray<frysk::sys::Sig*>* sigs = (JArray<frysk::sys::Sig*>*)
+    JvNewObjectArray (numSigs, &frysk::sys::Sig::class$, NULL);
+  // Fill in the array.
+  for (int setI = 1, sigI = 0; setI < NSIG; setI++) {
+    if (sigismember (set, setI)) {
+      // printf ("%d setI %d\n", sigI, setI);
+      elements(sigs)[sigI++] = frysk::sys::Sig::valueOf(setI);
+    }
+  }
+  return sigs;
 }

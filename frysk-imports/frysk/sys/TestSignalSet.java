@@ -61,7 +61,6 @@ public class TestSignalSet
 	assertFalse ("set contains Sig.HUP", set.contains (Sig.HUP));
     }
 
-
     /**
      * Check that adding, and removing a signal works.
      */
@@ -87,7 +86,7 @@ public class TestSignalSet
     /**
      * Check creating a SignalSet from an array.
      */
-    public void testList ()
+    public void testNewFromArray ()
     {
 	SignalSet set = new SignalSet (new Sig[] { Sig.HUP, Sig.USR1 });
 	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
@@ -95,6 +94,60 @@ public class TestSignalSet
 	assertFalse ("set contains Sig.USR2", set.contains (Sig.USR2));
     }
 
+    /**
+     * Check creating a SignalSet from a single signal.
+     */
+    public void testNewFromSig ()
+    {
+	SignalSet set = new SignalSet (Sig.HUP);
+	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
+	assertFalse ("set contains Sig.USR1", set.contains (Sig.USR1));
+    }
+
+    /**
+     * Check toArray does just that.
+     */
+    public void testToArray()
+    {
+	Sig[] sigs = new Sig[] { Sig.HUP, Sig.USR1 };
+	SignalSet set = new SignalSet (sigs);
+	// Check right length
+	assertEquals ("number of sigs", sigs.length, set.toArray().length);
+	// Check all found
+	for (int sigI = 0; sigI < sigs.length; sigI++) {
+	    boolean found = false;
+	    for (int setI = 0; setI < sigs.length; setI++) {
+		if (sigs[sigI].equals (set.toArray()[setI]))
+		    found = true;
+	    }
+	    assertTrue ("signal " + sigs[sigI] + " found", found);
+	}
+    }
+
+    /**
+     * Check a signal set.
+     */
+    public void testEmptyToString()
+    {
+	assertEquals ("empty set", "{}", new SignalSet().toString());
+    }
+    public void testSingleToString()
+    {
+	assertEquals ("SIGHUP set", "{SIGHUP}",
+		      new SignalSet (Sig.HUP).toString());
+    }
+    public void testMultiToString()
+    {
+	// assumes a specific ordering
+	if (Sig.HUP.compareTo(Sig.USR1) < 0)
+	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGUSR1,SIGHUP}",
+			 new SignalSet(new Sig[] {Sig.HUP, Sig.USR1})
+			 .toString());
+	else
+	    assertEquals("SIGHUP+SIGUSR1 set", "{SIGHUP,SIGUSR1}",
+			 new SignalSet(new Sig[] {Sig.HUP, Sig.USR1})
+			 .toString());
+    }
 
     public void testProcMask ()
     {

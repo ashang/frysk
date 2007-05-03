@@ -1,3 +1,14 @@
+2007-05-03  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/SignalSet.cxx (toArray): Implement.
+	* SignalSet.java (toString): Add.
+	(toArray): Define.
+	(SignalSet(Sig)): Add.
+	* TestSignalSet.java (testNewFromArray): Rename testList.
+	(testNewFromSig): New.
+	(testToArray): New.
+	(testEmptyToString, testSingleToString, testMultiToString): New.
+
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/PtraceServer.cxx: Delete.

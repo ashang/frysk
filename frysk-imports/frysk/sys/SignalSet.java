@@ -75,6 +75,37 @@ public final class SignalSet
 	}
     }
     /**
+     * Create a SigSet containing the single signal.
+     */
+    public SignalSet (Sig sig)
+    {
+	this ();
+	add (sig);
+    }
+
+
+    /**
+     * As a string.
+     */
+    public String toString()
+    {
+	Sig[] sigs = toArray ();
+	StringBuffer s = new StringBuffer("{");
+	for (int i = 0; i < sigs.length; i++) {
+	    if (i > 0)
+		s.append(",");
+	    s.append(sigs[i].toPrint());
+	}
+	s.append("}");
+	return s.toString();
+    }
+
+    /**
+     * As an array.
+     */
+    public native Sig[] toArray ();
+
+    /**
      * Empty the signal set; return this.
      */
     public native SignalSet empty ();
