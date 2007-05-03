@@ -42,7 +42,6 @@ package frysk.testbed;
 import frysk.junit.TestCase;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-//import frysk.event.Event;
 import frysk.event.EventLoop;
 import frysk.sys.Pid;
 

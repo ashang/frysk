@@ -42,7 +42,6 @@ package frysk.proc;
 
 import frysk.testbed.TearDownFile;
 import frysk.testbed.TearDownProcess;
-// import frysk.event.SignalEvent;
 import frysk.junit.TestCase;
 import frysk.Config;
 import frysk.sys.Errno;

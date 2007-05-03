@@ -1,5 +1,8 @@
 2007-05-03  Tim Moore  <timoore@redhat.com>
 
+	* TestLib.java: remove import of frysk.event.SignalEvent to avoid
+	an ecj warning.
+
 	* ProcLogger.java: New file.
 	* Host.java: Use ProcLogger logging destination.
 	* IsaFactory.java: Ditto.
