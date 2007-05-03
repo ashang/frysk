@@ -58,7 +58,6 @@ import frysk.dom.DOMInlineInstance;
 import frysk.gui.prefs.IntPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.value.InvalidOperatorException;
 import frysk.value.Variable;
 import frysk.rt.StackFrame;
 
@@ -241,17 +240,9 @@ public class InlineSourceView extends SourceView{
             if (var != null)
               {
                 MenuItem valueItem;
-                try
-                  {
-                    valueItem = new MenuItem("Value: " + var.longValue(), true);
-                    valueItem.setSensitive(false);
-                    m.append(valueItem);
-                  }
-                catch (InvalidOperatorException e)
-                  {
-                    // TODO: What to do if this fails?
-                  }
-                
+		valueItem = new MenuItem("Value: " + var.longValue(), true);
+		valueItem.setSensitive(false);
+		m.append(valueItem);
                 
                 traceItem.addListener(new MenuItemListener()
                 {
