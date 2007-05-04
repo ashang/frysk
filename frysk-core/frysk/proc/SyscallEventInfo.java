@@ -48,7 +48,17 @@ public abstract class SyscallEventInfo
   public final static int EXIT = 1;
   public final static int UNKNOWN = -1;
   
+  /**
+   * Returns the syscall number of the system call the the
+   * given task just made.
+   * This function assumes that the given task is currently
+   * in the system call. This function should not be called
+   * otherwise.
+   * @param task the task which made the system call
+   * @return the number of the system call that was made
+   */
   public abstract int number (Task task);
+  
   /** 
    * getSyscall does everything on the assumption that there is a 
    * system, and programmer want to know the information about this
@@ -58,22 +68,5 @@ public abstract class SyscallEventInfo
    * @return the Syscall object
    */
   public abstract Syscall getSyscall (Task task);
-
-  /** 
-   * @param task the task that system call occurred
-   * @param n the number of this argument
-   * @return value of this argument
-   */
-  public long arg (Task task, int n)
-  {
-    return getSyscall(task).getArguments(task, n);
-  }
-  /** 
-   * @param task the task that system call occurred
-   * @return return value of this system call
-   */
-  public long returnCode (Task task)
-  {
-    return getSyscall(task).getReturnCode(task);
-  }
+  
 }

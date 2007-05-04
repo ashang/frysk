@@ -44,7 +44,6 @@ import inua.util.PrintWriter;
 import java.util.Set;
 
 import frysk.proc.Syscall;
-import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
 
 /**
@@ -75,18 +74,26 @@ public class StracePrinter implements SyscallHandler
 	/**
 	 * Called on system call enter and exit.
 	 */
-	public void handle(Task task, SyscallEventInfo syscallEventInfo, int when)
-	{
-		Syscall syscall = syscallEventInfo.getSyscall(task);
-
-		if (tracedCalls == null || tracedCalls.contains(syscall.getName()))
-		{
-			writer.print(task.getProc().getPid() + "." + task.getTid() + " ");
-			if (when == SyscallEventInfo.ENTER)
-				syscall.printCall(writer, task, syscallEventInfo);
-			else
-				syscall.printReturn(writer, task, syscallEventInfo);
-			writer.flush();
-		}
+	public void handleEnter(Task task, Syscall syscall)
+	{	  
+	  if (tracedCalls == null || tracedCalls.contains(syscall.getName()))
+	    {
+	      writer.print(task.getProc().getPid() + "." + task.getTid() + " ");
+	      syscall.printCall(writer, task);
+	      writer.flush();
+	    }
+	}
+	
+	public void handleExit(Task task,Syscall syscall){
+	  if (tracedCalls == null || tracedCalls.contains(syscall.getName()))
+	    {
+	      writer.print(" " + task.getProc().getPid() + "." + task.getTid());
+	      syscall.printReturn(writer, task);
+	      writer.flush();
+	    }
 	}
 }
+
+
+
+

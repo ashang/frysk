@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.util;
 
 import frysk.proc.Action;
@@ -45,247 +46,318 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
-import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.proc.TaskObserver.Forked;
 import frysk.rt.Frame;
 import frysk.rt.StackFactory;
 import inua.util.PrintWriter;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Ftrace
 {
-	// Where to send output.
-	PrintWriter writer;
-	// True if we're tracing children as well.
-	boolean traceChildren;
-    
-    HashSet syscallStackTraceSet = null;
-	
-	// Set of ProcId objects we trace; if traceChildren is set, we also
-	// look for their children.
-	HashSet tracedParents = new HashSet();
+  // Where to send output.
+  PrintWriter writer;
 
-	// The number of processes we're tracing.
-	int numProcesses;
+  // True if we're tracing children as well.
+  boolean traceChildren;
 
-	// Enter and exit handlers.
-	SyscallHandler enterHandler;
-	SyscallHandler exitHandler;
+  HashSet syscallStackTraceSet = null;
 
-	public void setTraceChildren()
-	{
-		traceChildren = true;
-	}
+  // Set of ProcId objects we trace; if traceChildren is set, we also
+  // look for their children.
+  HashSet tracedParents = new HashSet();
 
-	public void addTracePid(int id)
-	{
-		tracedParents.add(new ProcId(id));
-	}
-    
-    public void setSyscallStackTracing (HashSet syscallSet)
+  HashMap syscallCache = new HashMap();
+
+  // The number of processes we're tracing.
+  int numProcesses;
+
+  // Enter and exit handlers.
+  SyscallHandler enterHandler;
+
+  SyscallHandler exitHandler;
+
+  public void setTraceChildren ()
+  {
+    traceChildren = true;
+  }
+
+  public void addTracePid (int id)
+  {
+    tracedParents.add(new ProcId(id));
+  }
+
+  public void setSyscallStackTracing (HashSet syscallSet)
+  {
+    syscallStackTraceSet = syscallSet;
+  }
+
+  public void setWriter (PrintWriter writer)
+  {
+    this.writer = writer;
+  }
+
+  public void setEnterHandler (SyscallHandler handler)
+  {
+    this.enterHandler = handler;
+  }
+
+  public void setExitHandler (SyscallHandler handler)
+  {
+    this.exitHandler = handler;
+  }
+
+  private void init ()
+  {
+    if (writer == null)
+      writer = new PrintWriter(System.out);
+
+    // this observer should only be used to pick up a proc if we
+    // are tracing a process given a pid
+    // otherwise use forkobserver.
+    Manager.host.observableProcAddedXXX.addObserver(new Observer()
     {
-      syscallStackTraceSet = syscallSet;
+      public void update (Observable observable, Object arg)
+      {
+	Proc proc = (Proc) arg;
+	ProcId id = proc.getId();
+	if (tracedParents.contains(id)){
+	    // In case we're tracing a new child, add it.
+//	    tracedParents.add(proc.getId()); XXX: why is this needed ?
+	    // Weird API... unfortunately we can't fetch the
+	    // Proc's main task here, as it will be null. Instead
+	    // we have to request it and handle it in a callback.
+	  addProc(proc);
+	}
+      }
+    });
+  }
+
+  private void addProc(Proc proc){
+    new ProcTasksObserver(proc, tasksObserver);
+  }
+  
+  public void trace (String[] command)
+  {
+    init();
+    Manager.host.requestCreateAttachedProc(command, new AttachedObserver());
+    // Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.run();
+  }
+
+  public void trace ()
+  {
+    init();
+    Manager.host.requestRefreshXXX(true);
+    Manager.eventLoop.run();
+  }
+
+  synchronized void generateStacKTrace (Task task, String syscallStackTraceName)
+  {
+    Frame frame = StackFactory.createStackFrame(task);
+    writer.println("Task: " + task.getTid() 
+                   + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
+    
+    int count = 0;
+    while (frame != null)
+      {
+	writer.println("#" + count + " " + frame.toPrint(false));
+	frame = frame.getOuter();
+	++count;
+      }
+
+    writer.flush();
+  }
+
+  synchronized void handleTask (Task task)
+  {
+    task.requestAddSyscallObserver(syscallObserver);
+    task.requestAddForkedObserver(forkedObserver);
+    Proc proc = task.getProc();
+    // XXX: use forkObserver instead
+//    if (traceChildren)
+//      tracedParents.add(proc.getId());
+    Manager.host.observableProcRemovedXXX.addObserver(new ProcRemovedObserver(
+									      proc));
+    writer.println("Ftrace.main() Proc.getPid() " + proc.getPid());
+    writer.println("Ftrace.main() Proc.getExe() " + proc.getExe());
+    writer.flush();
+    ++numProcesses;
+  }
+
+  ProcObserver.ProcTasks tasksObserver = new ProcObserver.ProcTasks()
+  {
+    public void existingTask (Task task)
+    {
+      handleTask(task);
     }
 
-	public void setWriter(PrintWriter writer)
-	{
-		this.writer = writer;
-	}
-
-	public void setEnterHandler(SyscallHandler handler)
-	{
-		this.enterHandler = handler;
-	}
-
-	public void setExitHandler(SyscallHandler handler)
-	{
-		this.exitHandler = handler;
-	}
-
-	private void init()
-	{
-		if (writer == null)
-			writer = new PrintWriter(System.out);
-
-		Manager.host.observableProcAddedXXX.addObserver(new Observer() {
-			public void update(Observable observable, Object arg)
-			{
-				Proc proc = (Proc) arg;
-				ProcId id = proc.getId();
-				if (tracedParents.contains(id)
-					|| (traceChildren
-						&& tracedParents.contains(proc.getParent().getId())))
-				{
-					// In case we're tracing a new child, add it.
-					tracedParents.add(proc.getId());
-					// Weird API... unfortunately we can't fetch the
-					// Proc's main task here, as it will be null.  Instead
-					// we have to request it and handle it in a callback.
-					new ProcTasksObserver(proc, new WaitForTask());
-				}
-			}
-		});
-	}
-
-	public void trace(String[] command)
-	{
-		init();
-		Manager.host.requestCreateAttachedProc(command, new AttachedObserver());
-		// Manager.host.requestRefreshXXX(true);
-		Manager.eventLoop.run();
-	}
-
-	public void trace()
-	{
-		init();
-		Manager.host.requestRefreshXXX(true);
-		Manager.eventLoop.run();
-	}
-    
-    synchronized void generateStacKTrace (Task task, String syscallStackTraceName)
+    public void taskAdded (Task task)
     {
-      Frame frame = StackFactory.createStackFrame(task);
-      writer.println("Task: " + task.getTid() 
-      + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
-      
-      int count = 0;
-      while (frame != null)
-        {
-          writer.println("#" + count + " " + frame.toPrint(false));
-          frame = frame.getOuter();
-          ++count;
-        }
-      
-      writer.flush();
+      handleTask(task);
     }
-	
-	synchronized void handleTask (Task task)
-	{
-		task.requestAddSyscallObserver(new SyscallObserver());
-		Proc proc = task.getProc();
-		if (traceChildren)
-			tracedParents.add(proc.getId());
-		Manager.host.observableProcRemovedXXX.addObserver (new ProcRemovedObserver(proc));
-		writer.println("Ftrace.main() Proc.getPid() " + proc.getPid());
-		writer.println("Ftrace.main() Proc.getExe() " + proc.getExe());
-		writer.flush();
-		++numProcesses;
-	}
 
-	class WaitForTask implements ProcObserver.ProcTasks
-	{
-		public void addedTo(Object arg0) {
-		}
-		public void addFailed(Object arg0, Throwable arg1) {
-		}
-		public void deletedFrom(Object arg0) {
-		}
-		public void existingTask(Task arg) {
-			taskAdded(arg);
-		}
-		public void taskAdded(Task task) {
-			handleTask(task);
-		}
-		public void taskRemoved(Task arg0) {
-		}
-	}
-
-	/**
-	 * An observer to stop the eventloop when the traced process
-	 * exits.
-	 */
-	private class ProcRemovedObserver implements Observer{
-		int pid;
-		
-		ProcRemovedObserver(Proc proc){
-			this.pid = proc.getPid();
-		}
-		
-		public void update (Observable o, Object object)
-		{
-			Proc proc = (Proc) object;
-			if (proc.getPid() == this.pid)
-			{
-				synchronized (Ftrace.this)
-				{
-					--numProcesses;
-					if (numProcesses == 0)
-						Manager.eventLoop.requestStop ();
-				}
-			}
-		}
-	}
-	
-	/**
-	 * An observer that sets up things once frysk has set up
-	 * the requested proc and attached to it.
-	 */
-	private class AttachedObserver implements TaskObserver.Attached{
-		public Action updateAttached (Task task)
-		{
-			handleTask(task);
-			task.requestUnblock(this);
-			return Action.BLOCK;
-		}
-		
-		public void addedTo (Object observable){}
-		
-		public void addFailed (Object observable, Throwable w){
-			throw new RuntimeException("Failed to attach to created proc", w);
-		}
-		
-		public void deletedFrom (Object observable){}
-	}
-	
-	/**
-	 * The syscallObserver added to the traced proc.
-	 */
-	private class SyscallObserver implements TaskObserver.Syscall
+    public void taskRemoved (Task arg0)
     {
-		
-		public Action updateSyscallEnter (Task task)
-		{
-			SyscallEventInfo syscallEventInfo;
-			syscallEventInfo = task.getSyscallEventInfo ();
-            
-            /* if this system call is in the stack tracing HashSet, get a 
-             * stack trace before continuing on. */
-            if (syscallStackTraceSet != null 
-    && syscallStackTraceSet.contains(syscallEventInfo.getSyscall(task).getName()))
-              generateStacKTrace(task, syscallEventInfo.getSyscall(task).getName());
-            
-			if (enterHandler != null)
-			    enterHandler.handle(task, syscallEventInfo, SyscallEventInfo.ENTER);
-			return Action.CONTINUE;
-		}
-		
-		public Action updateSyscallExit (Task task)
-		{
-			SyscallEventInfo syscallEventInfo;
-			syscallEventInfo = task.getSyscallEventInfo ();
-			if (exitHandler != null)
-			    exitHandler.handle(task, syscallEventInfo, SyscallEventInfo.EXIT);
-			return Action.CONTINUE;
-		}
-		
-		public void addedTo (Object observable)
-		{
-			
-		}
-		
-		public void addFailed (Object observable, Throwable w)  {
-			throw new RuntimeException("Failed to add a Systemcall observer to the process",w);
-		}
-		
-		public void deletedFrom (Object observable)
-		{
-			throw new RuntimeException("This has not yet been implemented");
-		}
-		
+    }
+
+    public void addedTo (Object arg0)
+    {
+    }
+
+    public void addFailed (Object arg0, Throwable arg1)
+    {
+    }
+
+    public void deletedFrom (Object arg0)
+    {
+    }
+  };
+
+  /**
+   * An observer to stop the eventloop when the traced process exits.
+   */
+  private class ProcRemovedObserver
+      implements Observer
+  {
+    int pid;
+
+    ProcRemovedObserver (Proc proc)
+    {
+      this.pid = proc.getPid();
+    }
+
+    public void update (Observable o, Object object)
+    {
+      Proc proc = (Proc) object;
+      if (proc.getPid() == this.pid)
+	{
+	  synchronized (Ftrace.this)
+	    {
+	      --numProcesses;
+	      if (numProcesses == 0)
+		Manager.eventLoop.requestStop();
+	    }
 	}
-	
+    }
+  }
+
+  /**
+   * An observer that sets up things once frysk has set up the requested
+   * proc and attached to it.
+   */
+  private class AttachedObserver
+      implements TaskObserver.Attached
+  {
+    public Action updateAttached (Task task)
+    {
+      addProc(task.getProc());
+      task.requestUnblock(this);
+      return Action.BLOCK;
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+    }
+  }
+
+  /**
+         * The syscallObserver added to the traced proc.
+         */
+  TaskObserver.Syscall syscallObserver = new TaskObserver.Syscall()
+  {
+
+    public Action updateSyscallEnter (Task task)
+    {
+      frysk.proc.Syscall syscall = task.getSyscallEventInfo().getSyscall(task);
+      syscallCache.put(task, syscall);
+
+      /*
+         * if this system call is in the stack tracing HashSet, get a stack
+         * trace before continuing on.
+         */
+      if (syscallStackTraceSet != null
+	  && syscallStackTraceSet.contains(syscall.getName()))
+	generateStacKTrace(task, syscall.getName());
+
+      if (enterHandler != null)
+	enterHandler.handleEnter(task, syscall);
+      return Action.CONTINUE;
+    }
+
+    public Action updateSyscallExit (Task task)
+    {
+
+      frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
+
+      if (exitHandler != null)
+	exitHandler.handleExit(task, syscall);
+
+      return Action.CONTINUE;
+    }
+
+    public void addedTo (Object observable)
+    {
+
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException(
+				 "Failed to add a Systemcall observer to the process",
+				 w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      throw new RuntimeException("This has not yet been implemented");
+    }
+
+  };
+
+  TaskObserver.Forked forkedObserver = new Forked(){
+
+    public Action updateForkedOffspring (Task parent, Task offspring)
+    {
+      if(traceChildren){
+        addProc(offspring.getProc());
+        offspring.requestUnblock(this);
+        return Action.BLOCK;
+      }
+      
+      return Action.CONTINUE;
+    }
+
+    public Action updateForkedParent (Task parent, Task offspring)
+    {
+      return Action.CONTINUE;
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public void deletedFrom (Object observable)
+    {
+    }
+  };
+  
 }

@@ -1,3 +1,15 @@
+2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StracePrinter.java: Removed SyscallEventInfo argument.
+	Removed when argument.
+	Split the handle function into handleEnter and handleExit.
+	* SyscallHandler.java: Ditto.
+	* Ftrace.java: Added forkObserver for properly following forked
+	children.
+	Stoped use of Refresh for finding forked children.
+	Added procObserver to newly added Procs.
+	Added tasksObserver to procs executed by ftrace; fix for bz 2916.
+
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
 	* Util.java (printStackTrace): Abstract StackFrame to Frame.	

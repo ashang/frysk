@@ -119,7 +119,7 @@ public class LinuxX8664Syscall
   }
   static Syscall[] syscallList = {
     new X8664Syscall ("read",  0, 3, "i:ibn "),
-    new X8664Syscall ("write", 1, 3, "i:ibn "),
+    new X8664Syscall ("write", 1, 3, "i:isn "),
     new X8664Syscall ("open",  2, 3, "i:siv "),
     new X8664Syscall ("close", 3, 1, "i:i "),
     new X8664Syscall ("stat", 4, 2, "i:sp "),

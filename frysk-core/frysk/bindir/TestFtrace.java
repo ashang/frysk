@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,12 +37,78 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.util;
-import frysk.proc.Syscall;
-import frysk.proc.Task;
 
-public interface SyscallHandler
+package frysk.bindir;
+
+import java.io.File;
+
+import frysk.Config;
+import frysk.expunit.Expect;
+import frysk.proc.Task;
+import frysk.proc.TestLib;
+
+public class TestFtrace
+    extends TestLib
 {
-	void handleEnter(Task task, Syscall syscall);
-	void handleExit(Task task, Syscall syscall);
+  Expect expect;
+
+  public void tearDown ()
+  {
+    if (expect != null)
+      expect.close();
+    expect = null;
+  }
+
+  public void testFtraceTraces ()
+  {
+    // Create an unattached child process.
+    AckProcess child = new DetachedAckProcess();
+    Task task = child.findTaskUsingRefresh(true);
+
+    expect = new Expect(
+			new String[] {
+				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
+				      ""+task.getProc().getPid() });
+    expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+  }
+
+  public void testFtraceFollowsClones()
+  {
+    // Create an unattached child process.
+    AckProcess child = new DetachedAckProcess();
+    
+    Task task = child.findTaskUsingRefresh(true);
+    
+    expect = new Expect(
+			new String[] {
+				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
+				      ""+task.getProc().getPid() });
+    expect.expect(""+task.getProc().getPid()+"."+ task.getTid());
+    
+    child.assertSendAddCloneWaitForAcks();
+    Task task1 = child.findTaskUsingRefresh(false);
+    
+    expect.expect(""+task1.getProc().getPid()+"."+ task1.getTid());
+  }
+
+  public void testFtraceFollowsForks()
+  {
+    // Create an unattached child process.
+    AckProcess child = new DetachedAckProcess();
+    
+    Task task = child.findTaskUsingRefresh(true);
+    
+    expect = new Expect(
+			new String[] {
+				      new File(Config.getBinDir(), "ftrace").getAbsolutePath(),
+				      "-c",
+				      ""+task.getProc().getPid() });
+    expect.expect(""+task.getProc().getPid()+"."+ task.getTid() + " <SYSCALL> rt_sigsuspend ()");
+    
+    child.assertSendAddForkWaitForAcks();
+    
+    expect.expect("rt_sigsuspend");
+    expect.expect("rt_sigsuspend");    
+  }
+  
 }

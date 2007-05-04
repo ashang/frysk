@@ -127,7 +127,7 @@ public class LinuxIa32Syscall
     new Ia32Syscall ("exit", 1, 1),
     new Ia32Syscall ("fork", 2, 0, "i: "),
     new Ia32Syscall ("read", 3, 3, "i:ibn "),
-    new Ia32Syscall ("write", 4, 3, "i:ibn "),
+    new Ia32Syscall ("write", 4, 3, "i:isn "),
     new Ia32Syscall ("open", 5, 3, "i:siv "),
     new Ia32Syscall ("close", 6, 1, "i:i "),
     new Ia32Syscall ("waitpid", 7, 3, "i:ipi "),

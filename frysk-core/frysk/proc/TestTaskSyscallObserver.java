@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -399,6 +400,8 @@ public class TestTaskSyscallObserver
 
     String openName = "a.file";
 
+    HashMap syscallCache = new HashMap();
+    
     SyscallOpenObserver (Task task)
     {
       super(task);
@@ -409,9 +412,11 @@ public class TestTaskSyscallObserver
       super.updateSyscallEnter(task);
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
       frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+      syscallCache.put(task, syscall);
+      
       if ((opensys.equals(syscall)))
         {
-          long addr = syscallEventInfo.arg(task, 1);
+          long addr = syscall.getArguments(task, 1);
           StringBuffer x = new StringBuffer();
           task.getMemory().get(addr, x);
           String name = x.toString();
@@ -428,14 +433,17 @@ public class TestTaskSyscallObserver
     {
       super.updateSyscallExit(task);
       SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+      
       // XXX - workaround for broken syscall detection on exit
       if (syscallEventInfo.number(task) == - 1)
         return Action.CONTINUE;
-      frysk.proc.Syscall syscall = syscallEventInfo.getSyscall(task);
+      
+      frysk.proc.Syscall syscall = (frysk.proc.Syscall) syscallCache.remove(task);
+      
       if (opensys.equals(syscall) && openingTestFile)
         {
           openingTestFile = false;
-          int rc = (int) syscallEventInfo.returnCode(task);
+          int rc = (int) syscall.getReturnCode(task);
           if (rc == - 2) // ENOENT
             expectedRcFound = true;
         }
@@ -543,7 +551,7 @@ public class TestTaskSyscallObserver
         // verify that read attempted
         if (readsys.equals(syscall))
           {
-            long numberOfBytes = syscallEventInfo.arg(task, 3);
+            long numberOfBytes = syscall.getArguments(task, 3);
             logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
             if (numberOfBytes != 1)
               throw new RuntimeException("bytes to read not 1");

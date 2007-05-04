@@ -88,7 +88,7 @@ public class SysCallUtilyInfo {
 			case 'a':
 			case 'b':
 			case 'p':
-				arg = syscallEventInfo.arg(task, i);
+				syscall.getArguments(task, i);
 				if (arg == 0) {
 					enterCall.append("NULL");
 				} else {
@@ -97,7 +97,7 @@ public class SysCallUtilyInfo {
 				break;
 			case 's':
 			case 'S':
-				addr = syscallEventInfo.arg(task, i);
+				addr = syscall.getArguments(task, i);
 				if (addr == 0) {
 					enterCall.append("0x0");
 				} else {
@@ -113,7 +113,7 @@ public class SysCallUtilyInfo {
 				break;
 			case 'i':
 			default:
-				arg = (int) syscallEventInfo.arg(task, i);
+				arg = (int) syscall.getArguments(task, i);
 				enterCall.append(arg);
 				break;
 			}
@@ -151,7 +151,7 @@ public class SysCallUtilyInfo {
 		case 'a':
 		case 'b':
 		case 'p':
-			arg = syscallEventInfo.returnCode(task);
+			arg = syscall.getReturnCode(task);
 			if (arg == 0) {
 				returnCall.append("NULL");
 			} else {
@@ -160,7 +160,7 @@ public class SysCallUtilyInfo {
 			break;
 		case 's':
 		case 'S':
-			addr = syscallEventInfo.returnCode(task);
+			addr = syscall.getReturnCode(task);
 			if (addr == 0) {
 				returnCall.append("0x0");
 			} else {
@@ -176,16 +176,16 @@ public class SysCallUtilyInfo {
 			returnCall.append("");
 			break;
 		case 'i':
-			arg = (int) syscallEventInfo.returnCode(task);
+			arg = (int) syscall.getReturnCode(task);
 			if (arg < 0) {
 				returnCall.append("-1");
 				returnCall.append(" ERRNO=" + -arg);
 			} else {
-				returnCall.append(syscallEventInfo.returnCode(task));
+				returnCall.append(syscall.getReturnCode(task));
 			}
 			break;
 		default:
-			returnCall.append(syscallEventInfo.returnCode(task));
+			returnCall.append(syscall.getReturnCode(task));
 			break;
 		}
 		return returnCall.toString();

@@ -38,8 +38,9 @@
 // exception.
 package frysk.proc;
 
-import java.util.HashMap;
 import inua.util.PrintWriter;
+
+import java.util.HashMap;
 
 /**
  * A class that holds static information about a system call.  It is
@@ -134,8 +135,7 @@ public abstract class Syscall
      * @return writer
      */
     public PrintWriter printCall (PrintWriter writer,
-			   frysk.proc.Task task,
-			   SyscallEventInfo syscall)
+			   frysk.proc.Task task)
     {
 	long addr = 0;
 	long arg = 0;
@@ -146,7 +146,7 @@ public abstract class Syscall
 	    case 'a':
 	    case 'b':
 	    case 'p':
-		arg = syscall.arg (task, i);
+		arg = getArguments (task, i);
 		if (arg == 0)
 		    writer.print ("NULL");
 		else
@@ -154,12 +154,12 @@ public abstract class Syscall
 		break;
 	    case 's':
 	    case 'S':
-		addr = syscall.arg (task, i);
+		addr = getArguments (task, i);
 		printStringArg (writer, task, addr);
 		break;
 	    case 'i':
 	    default:
-		arg = (int)syscall.arg (task, i);
+		arg = (int)getArguments (task, i);
 		writer.print (arg);
 		break;
 	    }
@@ -190,8 +190,7 @@ public abstract class Syscall
      * @return writer
      */
     public PrintWriter printReturn (PrintWriter writer,
-			     frysk.proc.Task task,
-			     SyscallEventInfo syscallEventInfo)
+			     frysk.proc.Task task)
     {
 	long addr = 0;
 	long arg = 0;
@@ -202,7 +201,7 @@ public abstract class Syscall
 	case 'a':
 	case 'b':
 	case 'p':
-	    arg = syscallEventInfo.returnCode (task);
+	    arg = getReturnCode(task);
 	    if (arg == 0)
 		writer.println ("NULL");
 	    else
@@ -210,21 +209,21 @@ public abstract class Syscall
 	    break;
 	case 's':
 	case 'S':
-	    addr = syscallEventInfo.returnCode (task);
+	    addr = getReturnCode(task);
 	    printStringArg (writer, task, addr);
 	    writer.println ("");
 	    break;
 	case 'i':
-	    arg = (int)syscallEventInfo.returnCode (task);
+	    arg = (int)getReturnCode(task);
 	    if (arg < 0) {
 		writer.print ("-1");
 		writer.println (" ERRNO=" + (-arg));
 	    }
 	    else
-		writer.println (syscallEventInfo.returnCode (task));
+		writer.println (getReturnCode(task));
 	    break;
 	default:
-	    writer.println (syscallEventInfo.returnCode (task));
+	    writer.println (getReturnCode(task));
 	    break;
 	}
 	return writer;

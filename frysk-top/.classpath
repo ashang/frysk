@@ -12,19 +12,9 @@
 	<classpathentry kind="lib" path="/usr/share/java/gtk2.8.jar" sourcepath="/home/swagiaal/src"/>
 	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/vte0.12.jar"/>
-	<classpathentry kind="lib" path="build/frysk-core/frysk-core.jar"/>
-	<classpathentry kind="lib" path="build/frysk-gtk/frysk-gtk.jar"/>
-	<classpathentry kind="lib" path="build/frysk-gtk/ftk.jar"/>
-	<classpathentry kind="lib" path="build/frysk-gui/frysk-gui.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/antlr.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/cdtparser.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/frysk-imports.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/getopt.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/jdom.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/jline.jar"/>
-	<classpathentry kind="lib" path="build/frysk-imports/junit.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/libgcj-4.1.1.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
+	<classpathentry kind="lib" path="/usr/local/share/java/frysk-core.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

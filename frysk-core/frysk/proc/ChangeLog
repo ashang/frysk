@@ -1,3 +1,19 @@
+2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTaskSyscallObserver.java: Added a syscall cache.
+	Replaced SyscallEventInfo.arg() with Syscall.getArguments().
+	Replaced SyscallEventInfo.returnCode() with Syscall.getReturnCode().
+	* SyscallEventInfo.java (arg): Removed.
+	(returnCode): Removed.
+	* Syscall.java: Changed all calls to SyscallEventInfo.args() to 
+	this.getArgument().
+	Changed all calls to SyscallEventInfo.returnCode() to
+	this.getReturnCode().
+	* LinuxIa32Syscall.java: Changed second argument of write system call
+	to a string.
+	* LinuxX8664Syscall.java: Ditto.
+	* LinuxPowerPCSyscall.java: Ditto.
+
 2007-05-03  Tim Moore  <timoore@redhat.com>
 
 	* TestLib.java: remove import of frysk.event.SignalEvent to avoid

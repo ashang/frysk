@@ -133,7 +133,7 @@ public class LinuxPowerPCSyscall
     new PowerPCSyscall ("exit", 1, 1),
     new PowerPCSyscall ("fork", 2, 0, "i: "),
     new PowerPCSyscall ("read", 3, 3, "i:ibn "),
-    new PowerPCSyscall ("write", 4, 3, "i:ibn "),
+    new PowerPCSyscall ("write", 4, 3, "i:isn "),
     new PowerPCSyscall ("open", 5, 3, "i:siv "),
     new PowerPCSyscall ("close", 6, 1, "i:i "),
     new PowerPCSyscall ("waitpid", 7, 3, "i:ipi "),
