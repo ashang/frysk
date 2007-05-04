@@ -40,8 +40,8 @@
 package frysk.rt.states;
 
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 
@@ -64,7 +64,7 @@ public class NextInstructionStepTestState extends State
    */
   public State handleUpdate (TaskStepEngine tse)
   {
-    StackFrame newFrame = null;
+    Frame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
@@ -76,7 +76,7 @@ public class NextInstructionStepTestState extends State
       {
         /* There is a different innermost frame on the stack - run until
          * it exits - success! */
-        StackFrame frame = newFrame.getOuter();
+        Frame frame = newFrame.getOuter();
 	SteppingEngine.setBreakpoint(this.task, frame.getAddress());
         return new NextInstructionStepState(this.task);
       }

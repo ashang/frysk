@@ -45,8 +45,8 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 
 public class CaptureStackTraceAction
     extends TaskAction
@@ -64,7 +64,7 @@ public class CaptureStackTraceAction
 
   public void execute (Task task , TaskObserverRoot observer, Event event)
   {
-    StackFrame frame = null;
+    Frame frame = null;
     try{
       frame = StackFactory.createStackFrame(task);
     }catch(Exception e){

@@ -131,9 +131,9 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.Line;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import frysk.rt.SteppingEngine;
 import frysk.value.Variable;
 import frysk.vtecli.ConsoleWindow;
@@ -286,11 +286,11 @@ public class SourceWindow
 
   protected boolean SW_active = false;
 
-  private StackFrame currentFrame;
+  private Frame currentFrame;
 
   private Task currentTask;
 
-  private StackFrame[][] frames;
+  private Frame[][] frames;
 
   private SymTab symTab[];
 
@@ -335,7 +335,7 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.swProc = new Proc[this.numProcs];
     this.swProc[this.current] = proc;
-    this.frames = new StackFrame[1][];
+    this.frames = new Frame[1][];
     this.symTab = new SymTab[1];
     this.lock = new LockObserver();
     SteppingEngine.addObserver(lock);
@@ -363,7 +363,7 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.numProcs = procs.length;
     this.swProc = procs;
-    this.frames = new StackFrame[this.numProcs][];
+    this.frames = new Frame[this.numProcs][];
     this.symTab = new SymTab[this.numProcs];
     this.lock = new LockObserver();
     this.dom = new DOMFrysk[this.numProcs];
@@ -384,7 +384,7 @@ public class SourceWindow
    * @param gladePath The path that the .glade file for the LibGlade was on
    * @param trace The stack frame that represents the current state of execution
    */
-  public SourceWindow (LibGlade glade, String gladePath, StackFrame trace)
+  public SourceWindow (LibGlade glade, String gladePath, Frame trace)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -395,7 +395,7 @@ public class SourceWindow
     this.swProc = new Proc[1];
     this.swProc[this.current] = trace.getTask().getProc();
     SteppingEngine.setRunning(this.swProc[this.current].getTasks());
-    this.frames = new StackFrame[1][];
+    this.frames = new Frame[1][];
     this.symTab = new SymTab[1];
     this.dom = new DOMFrysk[1];
     
@@ -410,7 +410,7 @@ public class SourceWindow
       {
       }
     
-    StackFrame[] newTrace = new StackFrame[1];
+    Frame[] newTrace = new Frame[1];
     newTrace[0] = trace;
     this.frames[0] = newTrace;
     
@@ -528,7 +528,7 @@ public class SourceWindow
    * 
    * @param frames An array of StackFrames
    */
-  public void populateStackBrowser (StackFrame[][] frames)
+  public void populateStackBrowser (Frame[][] frames)
   {
     this.frames = frames;
 
@@ -536,14 +536,14 @@ public class SourceWindow
     if (this.view == null)
       {
 	this.stackView = new CurrentStackView(frames);
-	StackFrame temp = null;
+	Frame temp = null;
 
 	temp = CurrentStackView.getCurrentFrame();
 
 	if (temp == null)
 	  temp = frames[0][0];
 
-	StackFrame curr = temp;
+	Frame curr = temp;
 	this.currentFrame = temp;
 
 	while (curr != null && curr.getLines().length == 0)
@@ -612,8 +612,8 @@ public class SourceWindow
     else
       sb = (SourceBuffer) ((MixedView) this.view).getSourceWidget().getBuffer();
 
-    StackFrame curr = null;
-    StackFrame taskMatch = null;
+    Frame curr = null;
+    Frame taskMatch = null;
 
     String currentMethodName = this.currentFrame.getSymbol().getDemangledName();
 
@@ -621,7 +621,7 @@ public class SourceWindow
      * from the new stack trace */
     this.stackView.refreshProc(frames[this.current], this.current);
     this.stackView.expandAll();
-    StackFrame newFrame = null;
+    Frame newFrame = null;
 
     /*
          * Try to find the new StackFrame representing the same frame from
@@ -756,14 +756,14 @@ public class SourceWindow
 	int oldSize = this.numProcs;
 	++this.numProcs;
 
-	StackFrame[][] newFrames = new StackFrame[numProcs][];
+	Frame[][] newFrames = new Frame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
 	SymTab[] newSymTab = new SymTab[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
 
 	for (int i = 0; i < oldSize; i++)
 	  {
-		newFrames[i] = new StackFrame[this.frames[i].length];
+		newFrames[i] = new Frame[this.frames[i].length];
 		System.arraycopy(this.frames, 0, newFrames, 0, oldSize);
 	  }
 	System.arraycopy(this.dom, 0, newDom, 0, oldSize);
@@ -794,7 +794,7 @@ public class SourceWindow
 	int oldSize = this.numProcs;
 	--this.numProcs;
 
-	StackFrame[][] newFrames = new StackFrame[numProcs][];
+	Frame[][] newFrames = new Frame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
 	SymTab[] newSymTab = new SymTab[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
@@ -807,7 +807,7 @@ public class SourceWindow
 	  {
 		if (i != this.current)
 		  {
-			newFrames[j] = new StackFrame[this.frames[i].length];
+			newFrames[j] = new Frame[this.frames[i].length];
 			System.arraycopy(this.frames[i], 0, newFrames[j], 0, this.frames[i].length);
 			newDom[j] = this.dom[i];
 			newSymTab[j] = this.symTab[i];
@@ -2073,7 +2073,7 @@ public class SourceWindow
    * is selected.
    * @param sf is the StackFrame that has been selected for viewing in the source frame.
    */
-  private void updateSourceLabel (StackFrame sf)
+  private void updateSourceLabel (Frame sf)
   {
     if (sf == null) 
       {
@@ -2131,7 +2131,7 @@ public class SourceWindow
    * @param selected	The selected StackFrame
    * @param current	The index of the currently selected Proc
    */
-  private void updateShownStackFrame (StackFrame selected, int current)
+  private void updateShownStackFrame (Frame selected, int current)
   {
     int mode = this.viewPicker.getActive();
 
@@ -2859,12 +2859,12 @@ public class SourceWindow
    * @param current The new Proc array index
    * @return frames The new StackFrame[] stack trace
    */
-  private StackFrame[] generateProcStackTrace (Proc proc, int current)
+  private Frame[] generateProcStackTrace (Proc proc, int current)
   {
     int size = proc.getTasks().size();
     int main = proc.getPid();
     Task[] tasks = new Task[size];
-    StackFrame[] frames = new StackFrame[size];
+    Frame[] frames = new Frame[size];
 
     Iterator iter = proc.getTasks().iterator();
     int k = 0;
@@ -2876,12 +2876,12 @@ public class SourceWindow
 	++k;
       }
 
-    frames = new StackFrame[size];
+    frames = new Frame[size];
 
     for (int j = 0; j < size; j++)
       {
 	/** Create the stack frame * */
-	StackFrame curr = null;
+	Frame curr = null;
 	try
 	  {
 	    frames[j] = StackFactory.createStackFrame(tasks[j]);
@@ -3041,7 +3041,7 @@ public class SourceWindow
 
     }
 
-    public void currentStackChanged (StackFrame newFrame, int current)
+    public void currentStackChanged (Frame newFrame, int current)
     {
       if (newFrame == null)
         return;

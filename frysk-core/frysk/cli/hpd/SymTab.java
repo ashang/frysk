@@ -60,8 +60,8 @@ import antlr.CommonAST;
 import frysk.value.Variable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.LexicalBlock;
-import frysk.rt.StackFrame;
 import frysk.rt.Subprogram;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
@@ -87,7 +87,7 @@ public class SymTab
    * @param proc
    * @param task
    */
-  public SymTab (int tid, Proc proc, Task task, StackFrame f)
+  public SymTab (int tid, Proc proc, Task task, Frame f)
     {
       this.pid = tid;
       this.proc = proc;
@@ -408,10 +408,10 @@ public class SymTab
      * @param level
      * @return StackFrame
      */
-     public StackFrame setCurrentFrame(int level)
+     public Frame setCurrentFrame(int level)
      {
        boolean down;
-       StackFrame tmpFrame = exprSymTab[0].getCurrentFrame();
+       Frame tmpFrame = exprSymTab[0].getCurrentFrame();
        if (level < 0)
          {
            down = true;
@@ -442,7 +442,7 @@ public class SymTab
        * 
        * @return
        */
-     public StackFrame getCurrentFrame ()
+     public Frame getCurrentFrame ()
      {
        return exprSymTab[0].getCurrentFrame();
      }
@@ -451,12 +451,12 @@ public class SymTab
        * 
        * @return StackFrame
        */
-     public StackFrame getInnerMostFrame ()
+     public Frame getInnerMostFrame ()
      {
        return exprSymTab[0].getInnerMostFrame();
      }
      
-     private Subprogram setSubprogram(StackFrame sf)
+     private Subprogram setSubprogram(Frame sf)
      {
        DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
        if (varDie == null)
@@ -548,7 +548,7 @@ public class SymTab
        return subPr;
      }
      
-     public void setFrames (StackFrame newFrames[])
+     public void setFrames (Frame newFrames[])
      {
        exprSymTab = new ExprSymTab[newFrames.length];
        subprogram = new Subprogram[newFrames.length];

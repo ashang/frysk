@@ -43,8 +43,8 @@ package frysk.util;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.proc.Action;
@@ -312,7 +312,7 @@ public class TestFCatch
     {
       logger.log(Level.FINE, "{0} generateStackTrace", task);
       --numTasks;
-      StackFrame frame = null;
+      Frame frame = null;
       try
         {
           frame = StackFactory.createStackFrame(task);

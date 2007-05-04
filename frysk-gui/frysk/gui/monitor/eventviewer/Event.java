@@ -47,8 +47,8 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 
 public class Event extends GuiObject
 {
@@ -64,7 +64,7 @@ public class Event extends GuiObject
   
   private int x,y;
 
-  private StackFrame stackFrame;
+  private Frame stackFrame;
   public static int w,h;
   
   static{
@@ -209,11 +209,11 @@ public class Event extends GuiObject
    * otherwise returns null.
    * @return
    */
-  public StackFrame getStackFrame(){
+  public Frame getStackFrame(){
     return stackFrame;
   }
   
-  public void setStackFrame (StackFrame frame)
+  public void setStackFrame (Frame frame)
   {
     stackFrame = frame;
     String summary = this.getName() + ": " + this.getToolTip() + "\n";

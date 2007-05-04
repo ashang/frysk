@@ -76,14 +76,14 @@ public abstract class Frame
    * 
    * @return This StackFrame's inner frame.
    */
-  public abstract StackFrame getInner ();
+  public abstract Frame getInner ();
 
   /**
    * Returns this StackFrame's outer frame.
    * 
    * @return This StackFrame's outer frame.
    */
-  public abstract StackFrame getOuter ();
+  public abstract Frame getOuter ();
   
   /**
    * Return a simple string representation of this stack frame.

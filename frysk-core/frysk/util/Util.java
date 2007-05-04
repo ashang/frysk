@@ -46,8 +46,8 @@ import java.util.LinkedList;
 import frysk.Config;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -62,7 +62,7 @@ public class Util
   public static void printStackTrace (PrintStream writer, Task task)
   {
     writer.println("Stack trace for task " + task);
-    for (StackFrame frame = StackFactory.createStackFrame(task);
+    for (Frame frame = StackFactory.createStackFrame(task);
 	 frame != null; frame = frame.getOuter()) {
 	// FIXME: do valgrind-like '=== PID ===' ?
 	writer.print("  ");

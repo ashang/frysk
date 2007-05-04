@@ -68,8 +68,8 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.Breakpoint;
+import frysk.rt.Frame;
 import frysk.rt.SteppingEngine;
-import frysk.rt.StackFrame;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 
@@ -83,7 +83,7 @@ public class CLI
   int tid = 0;
   SymTab symtab = null;
   boolean symtabNeedsRefresh = false;
-  StackFrame frame = null;
+  Frame frame = null;
   int stackLevel = 0;
   private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
@@ -779,8 +779,8 @@ public class CLI
         }
       refreshSymtab();
       int level = 1;
-      StackFrame tmpFrame = null;
-      StackFrame currentFrame = symtab.getCurrentFrame();
+      Frame tmpFrame = null;
+      Frame currentFrame = symtab.getCurrentFrame();
 
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
@@ -817,7 +817,7 @@ public class CLI
         }
       refreshSymtab();
       int level = 0;
-      StackFrame tmpFrame = null;
+      Frame tmpFrame = null;
         
       if (proc == null)
 	{

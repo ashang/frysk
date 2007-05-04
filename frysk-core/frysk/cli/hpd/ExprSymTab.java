@@ -64,9 +64,9 @@ import frysk.value.EnumType;
 import frysk.value.Variable;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.rt.Frame;
 import frysk.rt.LexicalBlock;
 import frysk.rt.StackFactory;
-import frysk.rt.StackFrame;
 import frysk.rt.Subprogram;
 import frysk.sys.Errno;
 
@@ -77,7 +77,7 @@ class ExprSymTab
 
   private int pid;
 
-  private StackFrame currentFrame;
+  private Frame currentFrame;
   
   private Subprogram subprogram;
 
@@ -112,7 +112,7 @@ class ExprSymTab
    * @param pid_p Pid
    * @param frame StackFrame
    */
-  ExprSymTab (Task task, int pid, StackFrame frame)
+  ExprSymTab (Task task, int pid, Frame frame)
   {
     this.task = task;
     this.pid = pid;
@@ -1014,7 +1014,7 @@ class ExprSymTab
    * 
    * @return StackFrame
    */
-  StackFrame getCurrentFrame ()
+  Frame getCurrentFrame ()
   {
     return currentFrame;
   }
@@ -1024,7 +1024,7 @@ class ExprSymTab
    * 
    * @param sf_p
    */
-  void setCurrentFrame (StackFrame sf_p)
+  void setCurrentFrame (Frame sf_p)
   {
     currentFrame = sf_p;
   }
@@ -1034,9 +1034,9 @@ class ExprSymTab
    * 
    * @return StackFrame
    */
-  StackFrame getInnerMostFrame ()
+  Frame getInnerMostFrame ()
   {
-    StackFrame curr = currentFrame;
+    Frame curr = currentFrame;
 
     while (curr.getInner() != null)
       curr = curr.getInner();

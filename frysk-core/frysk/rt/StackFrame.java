@@ -48,10 +48,10 @@ import java.io.File;
 public class StackFrame extends Frame
 {
 
-  private StackFrame inner;
+  private Frame inner;
 
   // Accessed by StackFactory.
-  StackFrame outer;
+  Frame outer;
   
   private FrameCursor cursor;
   
@@ -86,7 +86,7 @@ public class StackFrame extends Frame
    * @param task  The Task this StackFrame belongs to.
    * @param inner   This StackFrame's inner StackFrame.
    */
-  public StackFrame (FrameCursor current, Task task, StackFrame inner)
+  public StackFrame (FrameCursor current, Task task, Frame inner)
   {
     this.task = task;
     this.cursor = current;
@@ -126,7 +126,7 @@ public class StackFrame extends Frame
    * 
    * @return This StackFrame's inner frame.
    */
-  public StackFrame getInner ()
+  public Frame getInner ()
   {
     return inner;
   }
@@ -136,7 +136,7 @@ public class StackFrame extends Frame
    * 
    * @return This StackFrame's outer frame.
    */
-  public StackFrame getOuter ()
+  public Frame getOuter ()
   {
     return outer;
   }

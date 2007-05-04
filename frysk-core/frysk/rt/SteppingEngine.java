@@ -373,7 +373,7 @@ public class SteppingEngine
       }
   }
   
-  public static void setUpStepAdvance (Task task, StackFrame frame)
+  public static void setUpStepAdvance (Task task, Frame frame)
   {
     /* There's nowhere to advance to - this is already the innermost frame */
     if (frame.getInner() == null)
@@ -393,7 +393,7 @@ public class SteppingEngine
   task.requestAddCodeObserver(breakpoint, frame.getOuter().getAddress());
   }
   
-  public static void setUpStepNextInstruction (Task task, StackFrame lastFrame)
+  public static void setUpStepNextInstruction (Task task, Frame lastFrame)
   {
     steppingObserver.notifyNotBlocked();
     
@@ -404,7 +404,7 @@ public class SteppingEngine
     task.requestUnblock(steppingObserver);
   }
   
-  public static void setUpStepNextInstruction (LinkedList tasks, StackFrame lastFrame)
+  public static void setUpStepNextInstruction (LinkedList tasks, Frame lastFrame)
   {
 //    Iterator i = tasks.iterator();
 //   steppingObserver.notifyNotBlocked();
@@ -417,7 +417,7 @@ public class SteppingEngine
   
   public static void stepNextInstruction (Task task)
   {
-    StackFrame newFrame = null;
+    Frame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
@@ -431,7 +431,7 @@ public class SteppingEngine
         
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
-        StackFrame frame = newFrame.getOuter();
+        Frame frame = newFrame.getOuter();
         TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
         tse.setState(new NextInstructionStepTestState(task));
         breakpoint = new SteppingBreakpoint(frame.getAddress());
@@ -449,7 +449,7 @@ public class SteppingEngine
    * @param task   The Task to be stepped-over
    * @param lastFrame	The current innermost StackFrame of the given Task
    */
-  public static void setUpStepOver (Task task, StackFrame lastFrame)
+  public static void setUpStepOver (Task task, Frame lastFrame)
   {
     frameIdentifier = lastFrame.getFrameIdentifier();
     steppingObserver.notifyNotBlocked();
@@ -463,7 +463,7 @@ public class SteppingEngine
     task.requestUnblock(steppingObserver);
   }
   
-  public static void setUpStepOver (LinkedList tasks, StackFrame lastFrame)
+  public static void setUpStepOver (LinkedList tasks, Frame lastFrame)
   {
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
 ////    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
@@ -482,7 +482,7 @@ public class SteppingEngine
    */
   public static void stepOver (Task task)
   {
-    StackFrame newFrame = null;
+    Frame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as a line step. */
@@ -496,7 +496,7 @@ public class SteppingEngine
         
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
-        StackFrame frame = newFrame.getOuter();
+        Frame frame = newFrame.getOuter();
         TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
         tse.setState(new StepOverState(task));
         breakpoint = new SteppingBreakpoint(frame.getAddress());
@@ -514,7 +514,7 @@ public class SteppingEngine
    * @param lastFrame
    */
   
-  public static void setUpStepOut (Task task, StackFrame lastFrame)
+  public static void setUpStepOut (Task task, Frame lastFrame)
   {
     long address = lastFrame.getOuter().getAddress();
     steppingObserver.notifyNotBlocked();
@@ -529,7 +529,7 @@ public class SteppingEngine
     task.requestAddCodeObserver(breakpoint, address);
   }
   
-  public static void setUpStepOut (LinkedList tasks, StackFrame lastFrame)
+  public static void setUpStepOut (LinkedList tasks, Frame lastFrame)
   {
 //    taskStepCount =  tasks.size();
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
@@ -551,7 +551,7 @@ public class SteppingEngine
    */
   public static void stepOut (Task task)
   {
-    StackFrame newFrame = null;
+    Frame newFrame = null;
     newFrame = StackFactory.createStackFrame(task, 3);
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
     tse.setState(new StepOutState(task));

@@ -1,3 +1,10 @@
+2007-05-04  Nurdin Premji  <npremji@redhat.com>
+
+	* actions/PrintTaskBacktrace.java (execute): Abstract StackFrame to Frame.
+	* actions/CaptureStackTraceAction.java (execute): Ditto.
+	* eventviewer/Event.java (setStackFrame): Ditto.
+	(getStackFrame): Ditto.
+
 2007-05-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TestObserverSaveLoad.java: Now inherets from GuiTestCase.

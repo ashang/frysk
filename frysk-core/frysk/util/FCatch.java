@@ -53,7 +53,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.StackFrame;
+import frysk.rt.Frame;
 import frysk.rt.StackFactory;
 
 public class FCatch
@@ -86,7 +86,7 @@ public class FCatch
 
   protected static final Logger logger = Logger.getLogger("frysk");
 
-  StackFrame[] frames;
+  Frame[] frames;
 
   /**
    * Sets up the attached process.
@@ -179,7 +179,7 @@ public class FCatch
   {
     logger.log(Level.FINE, "{0} generateStackTrace", task);
     --this.numTasks;
-    StackFrame frame = null;
+    Frame frame = null;
     try
       {
         frame = StackFactory.createStackFrame(task);

@@ -142,7 +142,7 @@ public class TestStackBacktrace
   
   private void firstTestBacktraceAssertions ()
   {
-    StackFrame frame = StackFactory.createStackFrame(myTask);
+    Frame frame = StackFactory.createStackFrame(myTask);
 //    System.err.println(StackFactory.printStackTrace(frame));
     Line line;
     Symbol symbol;
@@ -331,7 +331,7 @@ public class TestStackBacktrace
   public void setUpTest ()
   {
 
-    StackFrame frame = StackFactory.createStackFrame(myTask, 1);
+    Frame frame = StackFactory.createStackFrame(myTask, 1);
     
     if (frame.getLines().length == 0)
       {
@@ -494,7 +494,7 @@ public class TestStackBacktrace
   
   public void pushPopAssertions ()
   {
-    StackFrame sFrame = StackFactory.createStackFrame(myTask, 1);
+    Frame sFrame = StackFactory.createStackFrame(myTask, 1);
     Line line = null; 
     
     if (this.testState == PUSH || this.testState == POP)
@@ -566,7 +566,7 @@ public class TestStackBacktrace
               }
             else
               {
-                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
+                Frame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
                 if (frame.getLines()[0].getLine() > 95)
@@ -594,7 +594,7 @@ public class TestStackBacktrace
               }
             else
               {
-                StackFrame frame = StackFactory.createStackFrame(myTask, 3);
+                Frame frame = StackFactory.createStackFrame(myTask, 3);
 
                 /* Make sure we're not missing any frames */
                 assertEquals ("demangled name", "jump",
@@ -628,7 +628,7 @@ public class TestStackBacktrace
    */
   public synchronized void handleTask (Task task)
   {
-    StackFrame frame = null;
+    Frame frame = null;
     myTask = task;
     
     if (task != null)
