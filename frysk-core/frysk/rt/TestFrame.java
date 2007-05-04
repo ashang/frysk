@@ -89,7 +89,7 @@ public class TestFrame
     
     assertRunUntilStop("Attach to process");
     
-    Frame frame = StackFactory.createStackTrace(task);
+    RemoteFrame frame = StackFactory.createStackTrace(task);
  
     while (frame != null)
       {

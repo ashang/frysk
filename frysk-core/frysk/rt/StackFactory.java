@@ -52,7 +52,7 @@ import frysk.proc.Task;
 public class StackFactory
 {
   
-  public static Frame createStackTrace(Task task)
+  public static RemoteFrame createStackTrace(Task task)
   {
     Unwind unwinder;
     if (task.getIsa().getWordSize() == 4)
@@ -65,7 +65,7 @@ public class StackFactory
     
     Cursor innermost = new Cursor(addressSpace, accessors);
     
-    Frame innerFrame = new Frame(innermost, task);
+    RemoteFrame innerFrame = new RemoteFrame(innermost, task);
         
     return innerFrame;
   }
@@ -140,7 +140,7 @@ public class StackFactory
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
       int count = 0;
       if (newUnwind)	
-	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
+	  for (RemoteFrame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
 	    {
 	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
 	      buffer.append(output);

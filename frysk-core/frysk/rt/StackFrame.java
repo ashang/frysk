@@ -45,7 +45,7 @@ import lib.dw.DwflLine;
 import lib.unwind.FrameCursor;
 import java.io.File;
 
-public class StackFrame
+public class StackFrame extends Frame
 {
 
   private StackFrame inner;
@@ -62,8 +62,6 @@ public class StackFrame
   private Symbol symbol;
   
   private Line[] lines;
-  
-  private Subprogram subprogram;
 
   /**
    * Create a new StackFrame without knowing the inner frame ahead of time.
@@ -121,16 +119,6 @@ public class StackFrame
       return this.cursor.getAddress() - 1;
     else
       return this.cursor.getAddress();
-  }
-
-  /**
-   * Returns the Task this StackFrame belongs to.
-   * 
-   * @return The Task this StackFrame belongs to.
-   */
-  public Task getTask ()
-  {
-    return task;
   }
 
   /**
@@ -299,13 +287,4 @@ public class StackFrame
     return this.lines;
   }
 
-    public Subprogram getSubprogram ()
-    {
-      return subprogram;
-    }
-
-    public void setSubprogram (Subprogram subprogram)
-    {
-      this.subprogram = subprogram;
-    }
 }
