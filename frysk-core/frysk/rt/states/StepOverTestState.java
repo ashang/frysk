@@ -81,7 +81,7 @@ public class StepOverTestState extends State
     if (lineNum != prev)
       {
 	tse.setLine(lineNum);
-	Frame newFrame = StackFactory.createStackFrame(task, 2);
+	Frame newFrame = StackFactory.createFrame(task, 2);
 
 	/* The two frames are the same; treat this step-over as an instruction step. */
 	if (newFrame.getFrameIdentifier().equals(

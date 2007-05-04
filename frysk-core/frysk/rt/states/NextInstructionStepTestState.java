@@ -65,7 +65,7 @@ public class NextInstructionStepTestState extends State
   public State handleUpdate (TaskStepEngine tse)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createStackFrame(task, 2);
+    newFrame = StackFactory.createFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
     if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier()))

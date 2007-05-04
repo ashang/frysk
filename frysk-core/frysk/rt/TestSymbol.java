@@ -85,7 +85,7 @@ public class TestSymbol
 
 	// Extract the stack from the signalled program and validate
 	// the inner-most frame's symbol matches the expected.
-	Frame frame = StackFactory.createStackFrame(runToCrash.task);
+	Frame frame = StackFactory.createFrame(runToCrash.task);
 
 	// XXX: Need to call frame.getSymbol () and then validate
 	// that.

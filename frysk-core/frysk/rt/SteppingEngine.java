@@ -418,7 +418,7 @@ public class SteppingEngine
   public static void stepNextInstruction (Task task)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createStackFrame(task, 2);
+    newFrame = StackFactory.createFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
     if (newFrame.getFrameIdentifier().equals(frameIdentifier))
@@ -483,7 +483,7 @@ public class SteppingEngine
   public static void stepOver (Task task)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createStackFrame(task, 2);
+    newFrame = StackFactory.createFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as a line step. */
     if (newFrame.getFrameIdentifier().equals(frameIdentifier))
@@ -552,7 +552,7 @@ public class SteppingEngine
   public static void stepOut (Task task)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createStackFrame(task, 3);
+    newFrame = StackFactory.createFrame(task, 3);
     TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
     tse.setState(new StepOutState(task));
 

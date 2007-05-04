@@ -7,6 +7,10 @@
 
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
+	* actions/CaptureStackTraceAction.java (execute): Updated for 
+	frysk.rt.StackFactory.createFrame name change.
+	* actions/PrintTaskBacktrace.java (execute): Ditto.
+
 	* actions/PrintTaskBacktrace.java (execute): Abstract StackFrame to Frame.
 	* actions/CaptureStackTraceAction.java (execute): Ditto.
 	* eventviewer/Event.java (setStackFrame): Ditto.

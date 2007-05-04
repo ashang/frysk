@@ -81,7 +81,7 @@ public class PrintTaskBacktrace extends TaskAction {
 				+ " from PID "
 				+ task.getProc().getPid());
 		
-		for (Frame frame = StackFactory.createStackFrame(task);
+		for (Frame frame = StackFactory.createFrame(task);
 		     frame != null; frame = frame.getOuter()) {
 				
 		    EventLogger.theLogger.getEventLogger().log(Level.INFO,

@@ -75,7 +75,7 @@ public class StackFactory
    * @param task The task to get stack information for
    * @return The stack frames as a linked list
    */
-  public static Frame createStackFrame (Task task, int num)
+  public static Frame createFrame (Task task, int num)
   {
     StackCallbacks callbacks = new StackCallbacks(task);
     FrameCursor innermost = null;
@@ -122,9 +122,9 @@ public class StackFactory
     return toReturn;
   }
   
-  public static Frame createStackFrame (Task task)
+  public static Frame createFrame (Task task)
   {
-    return createStackFrame(task, 0);
+    return createFrame(task, 0);
   }
   
   private static boolean newUnwind = false;
@@ -147,7 +147,7 @@ public class StackFactory
 	      count++;
 	    }
       else
-	  for (Frame frame = StackFactory.createStackFrame(task); frame != null; frame = frame.getOuter())
+	  for (Frame frame = StackFactory.createFrame(task); frame != null; frame = frame.getOuter())
 	    {
 	      // FIXME: do valgrind-like '=== PID ===' ?
 	      StringBuffer output = new StringBuffer("#" + count + " "

@@ -141,6 +141,13 @@ public class StackFrame extends Frame
     return outer;
   }
   
+  
+  public String getProcName()
+  {
+    Symbol symbol = getSymbol();
+    return symbol.getDemangledName();
+  }
+  
   /**
    * Return a simple string representation of this stack frame.
    * The returned string is suitable for display to the user.

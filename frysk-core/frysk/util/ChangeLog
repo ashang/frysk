@@ -1,3 +1,11 @@
+2007-05-04  Nurdin Premji  <npremji@redhat.com>
+
+	* TestFCatch.java (FCatchTester.generateStackTrace): Updated for 
+	frysk.rt.StackFactory.createFrame name change.
+	* Util.java (printStackTrace): Ditto.
+	* FCatch.java (generateStackTrace): Ditto.
+	* Ftrace.java (generateStacKTrace): Ditto.
+	
 2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StracePrinter.java: Removed SyscallEventInfo argument.

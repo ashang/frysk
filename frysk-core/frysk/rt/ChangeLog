@@ -1,5 +1,24 @@
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
+	* StackFactory.java (createFrame): Renamed from createStackFrame.
+	(generateTaskStackTrace): Updated for createFrame name change.
+	* states/NextInstructionStepTestState.java (handleUpdate): Ditto.
+	* states/StepOverTestState.java (handleUpdate): Ditto.
+	* TestStackBacktrace.java (handleTask): Ditto.
+	(firstTestBacktraceAssertions): Ditto.
+	(setUpTest): Ditto.
+	(pushPopAssertions): Ditto.
+	* TestStepping.java (setUpTest): Ditto.
+	(assertions): Ditto.
+	* TestSymbol.java (frameTest): Ditto.
+	* StackFrame.java (getProcName): Ditto.
+	* TestSteppingEngine.java (stepOverAssertions): Ditto.
+	(setUpTest): Ditto.
+	(stepAssertions): Ditto.
+	(stepOut): Ditto.
+	(stepOver): Ditto.
+	(stepNextInstruction): Ditto.
+
 	* states/NextInstructionStepTestState.java (handleUpdate): Abstract StackFrame to Frame.
 	* states/StepOverTestState.java (handleUpdate): Ditto.
 	* TestStackBacktrace.java (handleTask): Ditto.

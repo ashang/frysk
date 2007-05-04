@@ -315,7 +315,7 @@ public class TestFCatch
       Frame frame = null;
       try
         {
-          frame = StackFactory.createStackFrame(task);
+          frame = StackFactory.createFrame(task);
         }
       catch (Exception e)
         {

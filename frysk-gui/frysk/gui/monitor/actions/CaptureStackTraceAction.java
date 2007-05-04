@@ -66,7 +66,7 @@ public class CaptureStackTraceAction
   {
     Frame frame = null;
     try{
-      frame = StackFactory.createStackFrame(task);
+      frame = StackFactory.createFrame(task);
     }catch(Exception e){
       event.setStackFrame(null);
       return;

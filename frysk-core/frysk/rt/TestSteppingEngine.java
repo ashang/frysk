@@ -411,7 +411,7 @@ public class TestSteppingEngine extends TestLib
   {
     myTask = myProc.getMainTask();
 
-    Frame frame = StackFactory.createStackFrame(myTask, 2);
+    Frame frame = StackFactory.createFrame(myTask, 2);
     if (frame.getLines().length == 0)
       {
 	this.lineMap.put(myTask, new Integer(0));
@@ -455,7 +455,7 @@ public class TestSteppingEngine extends TestLib
    //System.out.println("Test.stepAssertions");
     myTask = task;
     int lineNum;
-    Frame frame = StackFactory.createStackFrame(task, 1);
+    Frame frame = StackFactory.createFrame(task, 1);
     
     if (frame.getLines().length == 0)
       {
@@ -652,7 +652,7 @@ public class TestSteppingEngine extends TestLib
       {
 
         int lineNum;
-        Frame sFrame = StackFactory.createStackFrame(myTask, 1);
+        Frame sFrame = StackFactory.createFrame(myTask, 1);
         
         if (sFrame.getLines().length == 0)
           {
@@ -689,7 +689,7 @@ public class TestSteppingEngine extends TestLib
           }
     else
       {
-        Frame sFrame = StackFactory.createStackFrame(myTask, 1);
+        Frame sFrame = StackFactory.createFrame(myTask, 1);
         
         if (sFrame.getLines().length == 0)
           SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -713,7 +713,7 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OVER_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOver(l, StackFactory.createStackFrame(myTask, 3));
+                    SteppingEngine.setUpStepOver(l, StackFactory.createFrame(myTask, 3));
                     return;
                   }
                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -731,7 +731,7 @@ public class TestSteppingEngine extends TestLib
                     else
                       {
                         this.testState = INSTRUCTION_STEP_NEXT_STEPPING;
-                        SteppingEngine.setUpStepNextInstruction(myTask, StackFactory.createStackFrame(myTask, 3));
+                        SteppingEngine.setUpStepNextInstruction(myTask, StackFactory.createFrame(myTask, 3));
                       }
                     return;
                   }
@@ -744,7 +744,7 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OUT_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOut(l, StackFactory.createStackFrame(myTask, 3));
+                    SteppingEngine.setUpStepOut(l, StackFactory.createFrame(myTask, 3));
                   }
                 else
                   SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
@@ -759,7 +759,7 @@ public class TestSteppingEngine extends TestLib
         /* Otherwise, the testcase is in the section of code critical to the test */
         else if (this.testState == STEP_OVER_STEPPING)
           {
-                Frame frame = StackFactory.createStackFrame(myTask, 2);
+                Frame frame = StackFactory.createFrame(myTask, 2);
 
                 /* Make sure we're not missing any frames */
                   
@@ -777,7 +777,7 @@ public class TestSteppingEngine extends TestLib
           }
         else if (this.testState == INSTRUCTION_STEP_NEXT_STEPPING)
           {
-            Frame frame = StackFactory.createStackFrame(myTask, 2);
+            Frame frame = StackFactory.createFrame(myTask, 2);
 
             /* Make sure we're not missing any frames */
               
@@ -795,7 +795,7 @@ public class TestSteppingEngine extends TestLib
           }
         else if (this.testState == STEP_OUT_STEPPING)
           {
-            Frame frame = StackFactory.createStackFrame(myTask, 2);
+            Frame frame = StackFactory.createFrame(myTask, 2);
 
             /* Make sure we're not missing any frames */
               

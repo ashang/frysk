@@ -62,7 +62,7 @@ public class Util
   public static void printStackTrace (PrintStream writer, Task task)
   {
     writer.println("Stack trace for task " + task);
-    for (Frame frame = StackFactory.createStackFrame(task);
+    for (Frame frame = StackFactory.createFrame(task);
 	 frame != null; frame = frame.getOuter()) {
 	// FIXME: do valgrind-like '=== PID ===' ?
 	writer.print("  ");

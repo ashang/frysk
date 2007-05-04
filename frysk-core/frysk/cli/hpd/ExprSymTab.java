@@ -121,7 +121,7 @@ class ExprSymTab
 
     if (frame == null)
       {
-        currentFrame = StackFactory.createStackFrame(task);
+        currentFrame = StackFactory.createFrame(task);
       }
 
     else
@@ -151,7 +151,7 @@ class ExprSymTab
     
   void refreshCurrentFrame()
   {
-    currentFrame = StackFactory.createStackFrame(task);
+    currentFrame = StackFactory.createFrame(task);
   }
 
   interface VariableAccessor

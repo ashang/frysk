@@ -159,7 +159,7 @@ public class Ftrace
 
   synchronized void generateStacKTrace (Task task, String syscallStackTraceName)
   {
-    Frame frame = StackFactory.createStackFrame(task);
+    Frame frame = StackFactory.createFrame(task);
     writer.println("Task: " + task.getTid() 
                    + " dumping stack trace for syscall \"" + syscallStackTraceName + "\":" );
     

@@ -2884,7 +2884,7 @@ public class SourceWindow
 	Frame curr = null;
 	try
 	  {
-	    frames[j] = StackFactory.createStackFrame(tasks[j]);
+	    frames[j] = StackFactory.createFrame(tasks[j]);
 	    curr = frames[j];
 	  }
 	catch (Exception e)
