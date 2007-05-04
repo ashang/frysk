@@ -56,8 +56,6 @@ public class RemoteFrame extends Frame
   private Symbol symbol;
   private Line[] lines;
   
-  private Task task;
-  
   private FrameIdentifier frameIdentifier;
   
   RemoteFrame inner = null;
@@ -108,9 +106,7 @@ public class RemoteFrame extends Frame
     if (myInfo.getError() != 0 || myName.getError() != 0)
       	return 0;
     
-    System.err.println("StartIP: " + Long.toHexString(myInfo.getStartIP()));
-    System.err.println("Offset: " + Long.toHexString(myName.getOffset()));
-    return myInfo.getStartIP() + myName.getOffset();
+   return myInfo.getStartIP() + myName.getOffset();
   }
   
   public long getAdjustedAddress()
@@ -221,8 +217,7 @@ public class RemoteFrame extends Frame
 	      builder.append (line.getLine ());
 	  }
       }
-      System.err.println("Printed line info");
-      return builder.toString();
+     return builder.toString();
   }
   
   /**
