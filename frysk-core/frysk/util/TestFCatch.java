@@ -61,7 +61,6 @@ public class TestFCatch
 {
 
   String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                      + "#[\\d]+ 0x[\\da-f]+ in (__)?sigsuspend \\(\\)\n"
                       + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
                       + ".*/funit-child.c#[\\d]+\n"
                       + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
