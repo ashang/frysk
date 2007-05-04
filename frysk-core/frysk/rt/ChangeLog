@@ -1,5 +1,12 @@
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
+	* TestFrame.java (backtrace): Use StackFactory.createFrame().
+	* StackFactory.java: Change newUnwind boolean to remoteUnwind.
+	(setRemoteUnwind): Renamed, was (setNewUnwind).
+	(createFrame): Use RemoteFrame depending on value of remoteUnwind.
+	(generateTaskStackTrace): Simplify.
+	(createStackTrace): Removed, code is now in createFrame.
+
 	* RemoteFrame.java: Extend frame.
 	(getInner): Return abstract Frame.
 	(getOuter): Ditto.

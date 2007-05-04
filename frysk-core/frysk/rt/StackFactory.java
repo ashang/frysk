@@ -50,25 +50,13 @@ import lib.unwind.UnwindX86;
 import frysk.proc.Task;
 
 public class StackFactory
-{
-  
-  public static Frame createStackTrace(Task task)
+{ 
+  private static boolean remoteUnwind = false;
+  public static void setRemoteUnwind(boolean bool)
   {
-    Unwind unwinder;
-    if (task.getIsa().getWordSize() == 4)
-      unwinder = new UnwindX86();
-    else 
-       unwinder = new UnwindNative();
-    AddressSpace addressSpace = new AddressSpace(unwinder, lib.unwind.ByteOrder.DEFAULT);
-    StackAccessors accessors = new StackAccessors(addressSpace, task, 
-                                                  lib.unwind.ByteOrder.DEFAULT);
-    
-    Cursor innermost = new Cursor(addressSpace, accessors);
-    
-    RemoteFrame innerFrame = new RemoteFrame(innermost, task);
-        
-    return innerFrame;
+    remoteUnwind = bool;
   }
+  
   /**
    * Find and return the stack backtrace for the provided task
    * 
@@ -77,6 +65,24 @@ public class StackFactory
    */
   public static Frame createFrame (Task task, int num)
   {
+    if (remoteUnwind)
+      {
+	Unwind unwinder;
+	if (task.getIsa().getWordSize() == 4)
+	  unwinder = new UnwindX86();
+	else 
+	  unwinder = new UnwindNative();
+	AddressSpace addressSpace = new AddressSpace(unwinder, lib.unwind.ByteOrder.DEFAULT);
+	StackAccessors accessors = new StackAccessors(addressSpace, task, 
+	                                              lib.unwind.ByteOrder.DEFAULT);
+	    
+	Cursor innermost = new Cursor(addressSpace, accessors);
+	    
+	RemoteFrame innerFrame = new RemoteFrame(innermost, task);
+	        
+	return innerFrame;
+      }
+    
     StackCallbacks callbacks = new StackCallbacks(task);
     FrameCursor innermost = null;
     try
@@ -127,11 +133,7 @@ public class StackFactory
     return createFrame(task, 0);
   }
   
-  private static boolean newUnwind = false;
-  public static void setNewUnwind(boolean bool)
-  {
-    newUnwind = bool;
-  }
+
   public static final StringBuffer generateTaskStackTrace (Task task)
   {
     if (task != null)
@@ -139,24 +141,17 @@ public class StackFactory
       StringBuffer buffer = new StringBuffer();
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
       int count = 0;
-      if (newUnwind)	
-	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
-	    {
-	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
-	      buffer.append(output);
-	      count++;
-	    }
-      else
-	  for (Frame frame = StackFactory.createFrame(task); frame != null; frame = frame.getOuter())
-	    {
-	      // FIXME: do valgrind-like '=== PID ===' ?
-	      StringBuffer output = new StringBuffer("#" + count + " "
-						     + frame.toPrint(false)
+      
+      for (Frame frame = StackFactory.createFrame(task); frame != null; frame = frame.getOuter())
+        {
+	 // FIXME: do valgrind-like '=== PID ===' ?
+	 StringBuffer output = new StringBuffer("#" + count + " "
+					     + frame.toPrint(false)
 						     + "\n");
 
-	      buffer.append(output);
-	      count++;
-	    }
+	 buffer.append(output);
+	 count++;
+	}
       return buffer;
       }
 
