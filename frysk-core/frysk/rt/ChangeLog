@@ -1,5 +1,7 @@
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
+	* StackFrame.java: Remove local, private task, use protected Frame task.
+
 	* TestFrame.java (backtrace): Use StackFactory.createFrame().
 	* StackFactory.java: Change newUnwind boolean to remoteUnwind.
 	(setRemoteUnwind): Renamed, was (setNewUnwind).

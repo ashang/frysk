@@ -54,9 +54,7 @@ public class StackFrame extends Frame
   Frame outer;
   
   private FrameCursor cursor;
-  
-  private Task task;
-  
+ 
   private FrameIdentifier frameIdentifier;
   
   private Symbol symbol;
