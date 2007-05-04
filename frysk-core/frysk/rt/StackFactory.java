@@ -52,7 +52,7 @@ import frysk.proc.Task;
 public class StackFactory
 {
   
-  public static RemoteFrame createStackTrace(Task task)
+  public static Frame createStackTrace(Task task)
   {
     Unwind unwinder;
     if (task.getIsa().getWordSize() == 4)
@@ -140,7 +140,7 @@ public class StackFactory
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
       int count = 0;
       if (newUnwind)	
-	  for (RemoteFrame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
+	  for (Frame frame = StackFactory.createStackTrace(task); frame != null; frame = frame.getOuter())
 	    {
 	      StringBuffer output = new StringBuffer("#" + count + " " + frame.toPrint(false) + "\n");
 	      buffer.append(output);

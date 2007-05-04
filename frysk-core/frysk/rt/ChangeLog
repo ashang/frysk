@@ -1,5 +1,11 @@
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
+	* RemoteFrame.java: Extend frame.
+	(getInner): Return abstract Frame.
+	(getOuter): Ditto.
+	* StackFactory.java: Update RemoteFrame abstract Frame changes.
+	* TestFrame.java: Ditto.
+
 	* StackFactory.java (createFrame): Renamed from createStackFrame.
 	(generateTaskStackTrace): Updated for createFrame name change.
 	* states/NextInstructionStepTestState.java (handleUpdate): Ditto.

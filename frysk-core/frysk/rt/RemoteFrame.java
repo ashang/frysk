@@ -49,7 +49,7 @@ import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
 
-public class RemoteFrame
+public class RemoteFrame extends Frame
 {  
   protected Cursor cursor;
   
@@ -69,7 +69,7 @@ public class RemoteFrame
     this.task = task;
   }
   
-  public RemoteFrame getOuter()
+  public Frame getOuter()
   {
     Cursor newCursor = this.cursor.unwind();
     if (newCursor != null) 
@@ -80,7 +80,7 @@ public class RemoteFrame
     return outer;
   }
   
-  public RemoteFrame getInner()
+  public Frame getInner()
   {
     return inner;
   }
