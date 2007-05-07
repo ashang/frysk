@@ -1,3 +1,9 @@
+2007-05-07  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStackBacktrace.java: Changed SIGPOLLs to SIGUSR1s.
+	(testBacktrace): Removed brokenXXX(4311), marked broken #4468.
+	(testThreadedBacktrace): Ditto.
+
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
 	* RemoteFrame.java: Remove local, private task. Remove debug statements.

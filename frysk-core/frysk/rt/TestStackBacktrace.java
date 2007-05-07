@@ -79,7 +79,7 @@ public class TestStackBacktrace
 
   public void testBacktrace ()
   {
-    if (brokenXXX(4431))
+    if (brokenXXX (4468))
       return;
     
     // Backtraces only work on x86 and x86_64 for now.
@@ -88,18 +88,15 @@ public class TestStackBacktrace
     
     test = 1;
 
-//    TaskCreatedObserver obs = new TaskCreatedObserver();
     lock = new LockObserver();
     SteppingEngine.addObserver(lock);
     
     AckDaemonProcess process = new AckDaemonProcess
-	(Sig.POLL, new String[] {
+	(Sig.USR1, new String[] {
 	    getExecPath ("funit-rt-looper"),
 	    "" + Pid.get (),
-	    "" + Sig.POLL_
+	    "" + Sig.USR1_
 	});
-    
-    //try { Thread.sleep(500); } catch (Exception e) {}
     
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
@@ -205,9 +202,6 @@ public class TestStackBacktrace
   
   public synchronized void testThreadedBacktrace ()
   {
-    if (brokenXXX(4431))
-      return;
-    
       // Backtraces only work on x86 and x86_64 for now.
       if (brokenPpcXXX (3277))
 	  return;
@@ -216,13 +210,11 @@ public class TestStackBacktrace
       lock = new LockObserver();
 
     AckDaemonProcess process = new AckDaemonProcess
-	(Sig.POLL, new String[] {
+	(Sig.USR1, new String[] {
 	    getExecPath ("funit-rt-threader"),
 	    "" + Pid.get (),
-	    "" + Sig.POLL_
+	    "" + Sig.USR1_
 	});
-    
-    //try { Thread.sleep(500); } catch (Exception e) {}
     
     myTask = process.findTaskUsingRefresh(true);
     
@@ -269,11 +261,11 @@ public class TestStackBacktrace
   testState = PUSH;
   
   AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-stepper"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
   
   myTask = process.findTaskUsingRefresh(true);
@@ -308,11 +300,11 @@ public class TestStackBacktrace
   testState = POP;
   
   AckDaemonProcess process = new AckDaemonProcess
-    (Sig.POLL,
+    (Sig.USR1,
      new String[] {
         getExecPath ("funit-rt-stepper"),
         "" + Pid.get (),
-        "" + Sig.POLL_
+        "" + Sig.USR1_
     });
   
   myTask = process.findTaskUsingRefresh(true);
