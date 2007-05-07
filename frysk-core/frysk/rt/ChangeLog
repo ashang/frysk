@@ -1,3 +1,10 @@
+2007-05-07  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java: Removed ptraceAccessors references.
+	(getDynInfoListAddr): Return no info, don't use ptraceAccessors.
+	(resume): Don't use ptraceAccessors.
+	(getProcName): Use Manager.eventLoop instead of Server.
+
 2007-05-07  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStackBacktrace.java: Changed SIGPOLLs to SIGUSR1s.

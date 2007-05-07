@@ -45,10 +45,10 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import frysk.event.Event;
 import frysk.proc.Isa;
+import frysk.proc.Manager;
 import frysk.proc.Task;
-import frysk.sys.Execute;
-import frysk.sys.Server;
 import frysk.sys.proc.MapsBuilder;
 
 import lib.dw.SymbolBuilder;
@@ -61,15 +61,11 @@ import lib.unwind.Cursor;
 import lib.unwind.ElfImage;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
-import lib.unwind.PtraceAccessors;
 import lib.unwind.ByteOrder;
 
 public class StackAccessors
     extends Accessors
 {
-
-  PtraceAccessors ptraceAccessors;
-
   Task myTask;
 
   AddressSpace addressSpace;
@@ -83,7 +79,6 @@ public class StackAccessors
   StackAccessors (AddressSpace addressSpace, Task task, ByteOrder byteOrder)
   {
     this.addressSpace = addressSpace;
-    ptraceAccessors = new PtraceAccessors(task.getProc().getPid(), byteOrder);
     myTask = task;
   }
 
@@ -170,31 +165,9 @@ public class StackAccessors
   // @Override
   public int getDynInfoListAddr (byte[] dilap)
   {
-    // Need to tell ptrace thread to perform the getDynInfoListAddr
-    // operation.
-    class ExecuterGetDyn
-        implements Execute
-    {
-      int ret;
-
-      byte[] dilap;
-
-      public void execute ()
-      {
-        ret = ptraceAccessors.getDynInfoListAddr(dilap);
-      }
-
-      public ExecuterGetDyn (byte[] dilap)
-      {
-        this.dilap = dilap;
-      }
-    }
-    ExecuterGetDyn executer = new ExecuterGetDyn(dilap);
-    Server.request(executer);
-    logger.log(Level.FINE, "ret: {0}\n", new Integer(executer.ret));
-    if (executer.ret < 0)
-      Arrays.fill(dilap, (byte) 0);
-    return executer.ret;
+    //XXX: Todo.
+    Arrays.fill(dilap, (byte) 0);
+    return - lib.unwind.Error.UNW_ENOINFO_;
   }
 
   private DwflModule getModuleFromAddress (long addr)
@@ -218,9 +191,10 @@ public class StackAccessors
   {
     logger.log(Level.FINE, "entering getProcName addr: {0}, maxNameSize: {1}\n",
                new Object[] {Long.toHexString(addr), new Integer(maxNameSize)});
-    // Need to tell ptrace thread to perform the findProcInfo operation.
+    
+    // Need to tell ptrace thread to perform the getProcName operation.
     class ExecuteGetProcName 
-        implements Execute, SymbolBuilder
+        implements Event, SymbolBuilder
     {
       ProcName procName;
       long addr;
@@ -253,7 +227,7 @@ public class StackAccessors
       }
     }
     ExecuteGetProcName executer = new ExecuteGetProcName(addr);
-    Server.request(executer);
+    Manager.eventLoop.execute(executer);
     logger.log(Level.FINE, "exiting getProcName, returning: {0}\n", executer.procName);
     return executer.procName;
   }
@@ -268,20 +242,8 @@ public class StackAccessors
   // @Override
   public int resume (final Cursor cursor)
   {
-    // Need to tell ptrace thread to perform the findProcInfo operation.
-    class ExecuteResume
-        implements Execute
-    {
-      int ret;
-
-      public void execute ()
-      {
-        ret = ptraceAccessors.resume(cursor);
-      }
-    }
-    ExecuteResume executer = new ExecuteResume();
-    Server.request(executer);
-    return executer.ret;
+    //XXX: Todo.
+    return - lib.unwind.Error.UNW_EUNSPEC_;   
   }
 
   private ElfImage getElfImage (long addr)
