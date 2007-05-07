@@ -56,13 +56,13 @@ public class TestByteBuffer
 	TearDownProcess.tearDown();
     }
     private int pid;
-    private ByteBuffer memoryByteBuffer;
+    private ByteBuffer addressSpaceByteBuffer;
     private ByteBuffer registerByteBuffer;
 
     public void setUp ()
     {
 	pid = new AttachedSelf().hashCode();
-	memoryByteBuffer
+	addressSpaceByteBuffer
 	    = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
 	if (RegisterSet.REGS != null) {
 	    registerByteBuffer
@@ -80,7 +80,7 @@ public class TestByteBuffer
     }
     public void testSliceAddressSpace()
     {
-	verifySlice(memoryByteBuffer, LocalMemory.getFuncAddr(),
+	verifySlice(addressSpaceByteBuffer, LocalMemory.getFuncAddr(),
 		    LocalMemory.getFuncBytes().length);
     }
     public void testSliceRegisterSet()
@@ -109,7 +109,7 @@ public class TestByteBuffer
     }
     public void testModifyAddressSpace()
     {
-	verifyModify(memoryByteBuffer, LocalMemory.getFuncAddr());
+	verifyModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr());
     }
 
     private class AsyncModify
@@ -160,6 +160,6 @@ public class TestByteBuffer
     }
     public void testAsyncAddressSpace ()
     {
-	new AsyncModify(memoryByteBuffer, LocalMemory.getFuncAddr());
+	new AsyncModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr());
     }
 }
