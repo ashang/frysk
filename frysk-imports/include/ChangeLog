@@ -1,3 +1,8 @@
+2007-05-07  Mike Cvet  <mcvet@redhat.com>
+
+	* ptrace_wait.h: Added. Contains functions for verbose waitpid
+	information and ptrace functionality. Moved from tests/frysk3525/exit47.c
+
 2007-02-06  Nurdin Premji  <npremji@redhat.com>
 
 	* frysk-asm.h (ENTER_MAIN): Changed to just use REG1 and REG2 for argc and argv.

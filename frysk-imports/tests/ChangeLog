@@ -1,3 +1,10 @@
+2007-05-07  Mike Cvet  <mcvet@redhat.com>
+	
+	* frysk3525/exit47.c (ptracer): Moved to include/ptrace_wait.h.
+	(waitstatus): Ditto.
+	(wait_for_signals): Ditto.
+	(send_signal): Ditto.
+
 2007-05-01  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk3754/readproc.c: Added. Replaces any Java/CNI code for this test.
