@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.text.ParseException;
 
+import frysk.event.Event;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -67,7 +68,7 @@ class RunHandler
     this("run", cli);
   }
 
-  public Action updateAttached(Task task)
+  public Action updateAttached(final Task task)
   {
     final Proc proc = task.getProc();    
     synchronized (cli)
@@ -108,7 +109,12 @@ class RunHandler
       }
     });
     cli.startAttach(task);
-    task.requestUnblock(this);
+    Manager.eventLoop.add(new Event() {
+	public void execute()
+	{
+	  task.requestUnblock(RunHandler.this);
+	}
+      });
     return Action.BLOCK;
   }
 

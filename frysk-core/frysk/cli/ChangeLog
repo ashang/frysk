@@ -1,3 +1,8 @@
+2007-05-07  Tim Moore  <timoore@redhat.com>
+
+	* hpd/RunHandler.java (updateAttached): Put the request to unblock
+	this observer in an event for the Event manager.
+
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
 	* hpd/ExprSymTab.java (refreshCurrentFrame): Updated for 

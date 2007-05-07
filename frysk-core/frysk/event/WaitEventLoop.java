@@ -72,7 +72,12 @@ class WaitEventLoop
 	{
 	    public void signal (Sig sig)
 	    {
-		logger.log (Level.FINEST, "{0} PollBuilder.signal Sig\n", this); 
+	      if (logger.isLoggable(Level.FINEST))
+		{
+		  Object[] logArgs = { this, sig.toPrint() };
+		  logger.log (Level.FINEST, "{0} PollBuilder.signal {1}\n",
+			      logArgs); 
+		}
 		processSignal (sig);
 	    }
 	};
