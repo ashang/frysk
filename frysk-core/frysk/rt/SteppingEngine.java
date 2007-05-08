@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 
 import lib.dw.DwflLine;
 
-import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -1171,45 +1170,34 @@ public class SteppingEngine
   
   public static void requestAdd ()
   {
-    /*
-         * The rest of the construction must be done synchronous to the
-         * EventLoop, schedule it.
-         */
-    Manager.eventLoop.add(new Event()
-    {
-      public synchronized void execute ()
-      {
-	LinkedList list = new LinkedList();
-	Task t;
-	
-	while (threadsList.size() > 0)
-	  {
-	    t = (Task) threadsList.removeFirst();
-	    
-	    if (t == null)
-	      continue;
-	    
-	    list.add(t);
-	    Proc proc = t.getProc();
+    LinkedList list = new LinkedList();
+    Task t;
 
-	    if (! (proc.getUID() == Manager.host.getSelf().getUID()
-		|| proc.getGID() == Manager.host.getSelf().getGID()))
-	      {
-		System.err.println("Process " + proc
-				   + " is not owned by user/group.");
-		continue;
-	      }
-	  }
-	
-	Iterator i = list.iterator();
-	while (i.hasNext())
+    while (threadsList.size() > 0)
+      {
+	t = (Task) threadsList.removeFirst();
+
+	if (t == null)
+	  continue;
+
+	list.add(t);
+	Proc proc = t.getProc();
+
+	if (! (proc.getUID() == Manager.host.getSelf().getUID() || proc.getGID() == Manager.host.getSelf().getGID()))
 	  {
-	    t = (Task) i.next();
-	    if (!t.isDestroyed())
-	      t.requestAddInstructionObserver(steppingObserver);
+	    System.err.println("Process " + proc
+			       + " is not owned by user/group.");
+	    continue;
 	  }
       }
-    });
+
+    Iterator i = list.iterator();
+    while (i.hasNext())
+      {
+	t = (Task) i.next();
+	if (! t.isDestroyed())
+	  t.requestAddInstructionObserver(steppingObserver);
+      }
   }
   
   /***********************************************************************
