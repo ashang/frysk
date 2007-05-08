@@ -1,3 +1,7 @@
+2007-05-08  Nurdin Premji  <npremji@redhat.com>
+
+	* RemoteFrame.java (getOuter): Check if outer frame is not null just return it.
+
 2007-05-08  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (requestAdd): Removed method from eventLoop.

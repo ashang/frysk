@@ -69,11 +69,14 @@ public class RemoteFrame extends Frame
   
   public Frame getOuter()
   {
-    Cursor newCursor = this.cursor.unwind();
-    if (newCursor != null) 
+    if (outer == null)
       {
-      outer = new RemoteFrame(newCursor, task);
-      outer.inner = this;
+	Cursor newCursor = this.cursor.unwind();
+	if (newCursor != null) 
+	  {
+	    outer = new RemoteFrame(newCursor, task);
+	    outer.inner = this;
+	  }
       }
     return outer;
   }
