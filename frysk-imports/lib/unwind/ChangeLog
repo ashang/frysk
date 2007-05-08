@@ -1,3 +1,10 @@
+2007-05-08  Nurdin Premji  <npremji@redhat.com>
+
+	* Cursor.java: Added local reference to addressSpace and accessors. Avoids
+	aggressive garbage collection.
+	* cni/UnwindH.hxx (get_proc_name): Clean up code, set offset value before 
+	checking buffer = null.
+
 2007-05-03  Nurdin Premji <npremji@redhat.com>
 
 	* cni/UnwindH.hxx (get_proc_name): Apply null procName->name patch.

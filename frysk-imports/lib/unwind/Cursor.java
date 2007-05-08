@@ -48,16 +48,20 @@ public class Cursor
   Logger logger = Logger.getLogger("frysk");
   RawDataManaged cursor = null; 
   Unwind unwinder;
+  AddressSpace addressSpace;
+  Accessors accessors;
 
   public Cursor(AddressSpace addressSpace, Accessors accessors)
   {
-    this(addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
+    this(addressSpace, accessors, addressSpace.unwinder.initRemote(addressSpace.addressSpace, accessors),
          addressSpace.unwinder); 
   }
   
-  private Cursor(RawDataManaged cursor, Unwind unwinder)
+  private Cursor(AddressSpace addressSpace, Accessors accessors, RawDataManaged cursor, Unwind unwinder)
   {
     logger.log(Level.FINE, "{0} Create Cursor\n", this);
+    this.addressSpace = addressSpace;
+    this.accessors = accessors;
     this.cursor = cursor;
     this.unwinder = unwinder;
   }
@@ -113,7 +117,7 @@ public class Cursor
   public Cursor unwind()
   {
     logger.log(Level.FINE, "{0}, unwind\n", this);
-    Cursor newCursor = new Cursor(unwinder.copyCursor(cursor), unwinder);
+    Cursor newCursor = new Cursor(addressSpace, accessors, unwinder.copyCursor(cursor), unwinder);
     int step = newCursor.step();
     
     logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
