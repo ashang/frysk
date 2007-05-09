@@ -1,3 +1,11 @@
+2007-05-08  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* cni/PseudoTerminal.cxx (reopen): Changed the logic to detach to try
+	the open first, and if it succeeds, continue with the detach.  If the
+	open failed, skip the detach operation, and continue (because that
+	means the controlling terminal was already detached).  There is no need
+	to log an error (using perror) on the first open.
+
 2007-05-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Server.java: Delete.

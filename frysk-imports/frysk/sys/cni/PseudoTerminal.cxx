@@ -92,20 +92,17 @@ frysk::sys::PseudoTerminal$RedirectStdio::reopen ()
 {
   // Detach from the existing controlling terminal.
   int fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
-  if (fd < 0) {
-    ::perror ("open (old controlling terminal)");
-  }
   if (fd >= 0) {
     if (::ioctl (fd, TIOCNOTTY, NULL) < 0)
       ::perror ("ioctl (/dev/tty, TIOCNOTTY)");
     ::close (fd);
-  }
 
-  // Verify that the detach worked, this open should fail.
-  fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
-  if (fd >= 0) {
-    ::perror ("open (re-open old controlling terminal)");
-    ::exit (1);
+    // Verify that the detach worked, this open should fail.
+    fd = ::open ("/dev/tty", O_RDWR|O_NOCTTY);
+    if (fd >= 0) {
+      ::perror ("open (re-open old controlling terminal)");
+      ::exit (1);
+    }
   }
   
   // Make this process the session leader.
