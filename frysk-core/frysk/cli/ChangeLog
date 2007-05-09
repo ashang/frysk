@@ -1,3 +1,7 @@
+2007-05-09  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (get): Remove DwarfDie from newXVariable signature.
+
 2007-05-08  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): newXVariable signature.

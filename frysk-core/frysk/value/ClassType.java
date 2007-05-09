@@ -243,7 +243,7 @@ public class ClassType
                                            ArrayByteBuffer ab)
   {
     Location loc = new Location(ab);
-    Variable returnVar = new Variable(type, text, null, loc);
+    Variable returnVar = new Variable(type, text, loc);
     return returnVar;
   }
 

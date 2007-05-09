@@ -725,7 +725,7 @@ class ExprSymTab
                 long longVal = variableAccessor[i].getLong(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newLongVariable(longType, varDie, longVal);
+                return ArithmeticType.newLongVariable(longType, s, longVal);
               }
               case BaseTypes.baseTypeInteger:
               case BaseTypes.baseTypeUnsignedInteger:
@@ -733,7 +733,7 @@ class ExprSymTab
                 int intVal = variableAccessor[i].getInt(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newIntegerVariable(intType, varDie, intVal);
+                return ArithmeticType.newIntegerVariable(intType, s, intVal);
               }
               case BaseTypes.baseTypeShort:
               case BaseTypes.baseTypeUnsignedShort:
@@ -741,7 +741,7 @@ class ExprSymTab
                 short shortVal = variableAccessor[i].getShort(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newShortVariable(shortType, varDie, shortVal);
+                return ArithmeticType.newShortVariable(shortType, s, shortVal);
               }
               case BaseTypes.baseTypeByte:
               case BaseTypes.baseTypeUnsignedByte:
@@ -749,21 +749,21 @@ class ExprSymTab
                 byte byteVal = variableAccessor[i].getByte(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newByteVariable(byteType, varDie, byteVal);
+                return ArithmeticType.newByteVariable(byteType, s, byteVal);
               }
               case BaseTypes.baseTypeFloat:
               {
                 float floatVal = variableAccessor[i].getFloat(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newFloatVariable(floatType, varDie, floatVal);
+                return ArithmeticType.newFloatVariable(floatType, s, floatVal);
               }
               case BaseTypes.baseTypeDouble:
               {
                 double doubleVal = variableAccessor[i].getDouble(varDie, 0);
                 if (variableAccessor[i].isSuccessful() == false)
                   continue;
-                return ArithmeticType.newDoubleVariable(doubleType, varDie, doubleVal);
+                return ArithmeticType.newDoubleVariable(doubleType, s, doubleVal);
               }
             }
             // if there is no type then use this die's tag
@@ -805,7 +805,7 @@ class ExprSymTab
             else if (tag == DwTagEncodings.DW_TAG_pointer_type_)
               {
         	long addr = variableAccessor[i].getAddr(s);
-        	return ArithmeticType.newLongVariable(longType, varDie, addr);
+        	return ArithmeticType.newLongVariable(longType, addr);
               }
             else if (tag == DwTagEncodings.DW_TAG_enumeration_type_)
               {
@@ -879,20 +879,20 @@ class ExprSymTab
       {
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
-	return ArithmeticType.newByteVariable(byteType, varDie, buffer.getByte(addrIndirect));
+	return ArithmeticType.newByteVariable(byteType, buffer.getByte(addrIndirect));
       case BaseTypes.baseTypeShort:
       case BaseTypes.baseTypeUnsignedShort:
-	return ArithmeticType.newShortVariable(shortType, varDie, buffer.getShort(addrIndirect));
+	return ArithmeticType.newShortVariable(shortType, buffer.getShort(addrIndirect));
       case BaseTypes.baseTypeInteger:
       case BaseTypes.baseTypeUnsignedInteger:
-	return ArithmeticType.newIntegerVariable(intType, varDie, buffer.getInt(addrIndirect));
+	return ArithmeticType.newIntegerVariable(intType, buffer.getInt(addrIndirect));
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
-	return ArithmeticType.newLongVariable(longType, varDie, buffer.getLong(addrIndirect));
+	return ArithmeticType.newLongVariable(longType, buffer.getLong(addrIndirect));
       case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable(floatType, varDie, buffer.getFloat(addrIndirect));
+	return ArithmeticType.newFloatVariable(floatType, buffer.getFloat(addrIndirect));
       case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable(doubleType, varDie, buffer.getDouble(addrIndirect));
+	return ArithmeticType.newDoubleVariable(doubleType, buffer.getDouble(addrIndirect));
       default:
         return null;
       }
@@ -909,17 +909,17 @@ class ExprSymTab
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongVariable(longType, varDie, 0);
+      return ArithmeticType.newLongVariable(longType, varDie.getName(), 0);
     case BaseTypes.baseTypeInteger:
-      return ArithmeticType.newIntegerVariable(intType, varDie, 0);
+      return ArithmeticType.newIntegerVariable(intType, varDie.getName(), 0);
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortVariable(shortType, varDie, (short)0);
+      return ArithmeticType.newShortVariable(shortType, varDie.getName(), (short)0);
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteVariable(byteType, varDie, (byte)0);
+      return ArithmeticType.newByteVariable(byteType, varDie.getName(), (byte)0);
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatVariable(floatType, varDie, 0);
+      return ArithmeticType.newFloatVariable(floatType, varDie.getName(), 0);
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleVariable(doubleType, varDie, 0); 
+      return ArithmeticType.newDoubleVariable(doubleType, varDie.getName(), 0);
     }
     return null;
   }

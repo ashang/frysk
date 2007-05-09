@@ -40,7 +40,6 @@
 package frysk.value;
 
 import lib.dw.BaseTypes;
-import lib.dw.DwarfDie;
 import inua.eio.ArrayByteBuffer;
 
 /**
@@ -52,7 +51,7 @@ public class Variable
     private final Type type;
     private final Location location;
     private final String text;
-    // A variable may not necessarially have a file/line/colum.  For
+    // A variable may not necessarily have a file/line/column.  For
     // instance a "register" can be represented as a variable.  For
     // instance, is this the line that the variable was declared, or
     // the line at which the variable is being examined, or the most
@@ -100,32 +99,20 @@ public class Variable
 
     public Variable(Type type, String text)
     {
-      this(type, text, null, (new Location(type.getSize())));
+      this(type, text, (new Location(type.getSize())));
     }
       
  
-    public Variable(Type type, DwarfDie die)	
-    {
-      this(type, (die != null) ? die.getName() : "", die, (new Location(type.getSize())));
-    }
-
     public Variable(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
     {
-      this(type, text, null, (new Location(arrayByteBuffer)));
+      this(type, text, (new Location(arrayByteBuffer)));
     }    
     
-    public Variable(Type type, String text, DwarfDie die, Location location)
+    public Variable(Type type, String text, Location location)
     {
        this.type = type;
        this.location = location;
        this.text = text;
-       if (die != null)
-	 {
-	   this.filePathXXX = die.getDeclFile();
-	   this.lineNoXXX = (int)die.getDeclLine();
-	   this.columnXXX = die.getDeclColumn();
-	 }
-       
     }
 
 

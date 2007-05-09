@@ -40,7 +40,6 @@
 package frysk.value;
 
 import lib.dw.BaseTypes;
-import lib.dw.DwarfDie;
 import inua.eio.ByteOrder;
 
 /**
@@ -544,78 +543,78 @@ public class ArithmeticType
   
   public static Variable newByteVariable (ArithmeticType type, byte val)
   {
-    return newByteVariable (type, null, val);
-  }    
+    return newByteVariable (type, "temp", val);
+  }
 
-  public static Variable newByteVariable (ArithmeticType type, DwarfDie die,
+  public static Variable newByteVariable (ArithmeticType type, String text, 
                                           byte val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putByte(val);
     return returnVar;
   }
 
   public static Variable newShortVariable (ArithmeticType type, short val)
   {
-    return newShortVariable (type, null, val);
+    return newShortVariable (type, "temp", val);
   }
-  
-  public static Variable newShortVariable (ArithmeticType type, DwarfDie die,
+
+  public static Variable newShortVariable (ArithmeticType type, String text, 
                                            short val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putShort(val);
     return returnVar;
   }
 
   public static Variable newIntegerVariable (ArithmeticType type, int val)
   {
-    return newIntegerVariable (type, null, val);
-  }    
+    return newIntegerVariable (type, "temp", val);
+  }
 
-  public static Variable newIntegerVariable (ArithmeticType type, DwarfDie die,
+  public static Variable newIntegerVariable (ArithmeticType type, String text, 
                                              int val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putInt(val);
     return returnVar;
   }
 
   public static Variable newLongVariable (ArithmeticType type, long val)
   {
-    return newLongVariable (type, null, val);
-  }    
+    return newLongVariable (type, "temp", val);
+  }
 
-  public static Variable newLongVariable (ArithmeticType type, DwarfDie die,
+  public static Variable newLongVariable (ArithmeticType type, String text, 
                                           long val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putLong(val);
     return returnVar;
   }
 
   public static Variable newFloatVariable (ArithmeticType type, float val)
   {
-    return newFloatVariable (type, null, val);
-  }    
+    return newFloatVariable (type, "temp", val);
+  }
 
-  public static Variable newFloatVariable (ArithmeticType type, DwarfDie die,
+  public static Variable newFloatVariable (ArithmeticType type, String text, 
                                            float val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putFloat(val);
     return returnVar;
   }
 
   public static Variable newDoubleVariable (ArithmeticType type, double val)
   {
-    return newDoubleVariable (type, null, val);
-  }    
+    return newDoubleVariable (type, "temp", val);
+  }
 
-  public static Variable newDoubleVariable (ArithmeticType type, DwarfDie die,
+  public static Variable newDoubleVariable (ArithmeticType type, String text, 
                                             double val)
   {
-    Variable returnVar = new Variable(type, die);
+    Variable returnVar = new Variable(type, text);
     returnVar.getLocation().putDouble(val);
     return returnVar;
   }
