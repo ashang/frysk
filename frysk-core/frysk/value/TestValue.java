@@ -73,16 +73,16 @@ public class TestValue
   
   public void testNumber ()
   {
-    Variable v1 = ArithmeticType.newByteVariable((ArithmeticType)byteType, "v1", (byte)1);
-    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "v2", (short)2);
-    Variable v3 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "v3", 3);
-    Variable v4 = ArithmeticType.newLongVariable((ArithmeticType)longType, "v4", 4);
-    Variable v5 = ArithmeticType.newByteVariable((ArithmeticType)byteBEType, "v1", (byte)1);
-    Variable v6 = ArithmeticType.newShortVariable((ArithmeticType)shortBEType, "v2", (short)2);
-    Variable v7 = ArithmeticType.newIntegerVariable((ArithmeticType)intBEType, "v3", 3);
-    Variable v8 = ArithmeticType.newLongVariable((ArithmeticType)longBEType, "v4", 4);
-    Variable v9 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, "", (float)1.0);
-    Variable v10 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, "", 2.0);
+    Variable v1 = ArithmeticType.newByteVariable((ArithmeticType)byteType, (byte)1);
+    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, (short)2);
+    Variable v3 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, 3);
+    Variable v4 = ArithmeticType.newLongVariable((ArithmeticType)longType, 4);
+    Variable v5 = ArithmeticType.newByteVariable((ArithmeticType)byteBEType, (byte)1);
+    Variable v6 = ArithmeticType.newShortVariable((ArithmeticType)shortBEType, (short)2);
+    Variable v7 = ArithmeticType.newIntegerVariable((ArithmeticType)intBEType, 3);
+    Variable v8 = ArithmeticType.newLongVariable((ArithmeticType)longBEType, 4);
+    Variable v9 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, (float)1.0);
+    Variable v10 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, 2.0);
     assertEquals ("1", 1, v1.getByte());
     assertEquals ("2", 2, v2.getShort());
     assertEquals ("3", 3, v3.getInt());
@@ -114,8 +114,8 @@ public class TestValue
   public void testIntOps ()
     throws InvalidOperatorException
   {
-    Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, "", 4);
-    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, "", (short)9);
+    Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, 4);
+    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, (short)9);
     Variable v3 = v1.getType().add(v1, v2);
     assertEquals ("4 + 9", 4 + 9, v3.getInt());
     v3 = v1.getType().subtract(v2, v1);
@@ -179,8 +179,8 @@ public class TestValue
   public void testFloatOps ()
     throws InvalidOperatorException
   {
-    Variable v1 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, "", (float)4.0);
-    Variable v2 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, "", 9.0);
+    Variable v1 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, (float)4.0);
+    Variable v2 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, 9.0);
     Variable v3 = v1.getType().add(v1, v2);
     assertEquals ("4 + 9", 4 + 9, v3.getDouble(), 0);
     v3 = v1.getType().subtract(v2, v1);

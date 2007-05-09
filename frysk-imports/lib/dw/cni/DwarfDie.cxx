@@ -110,6 +110,17 @@ lib::dw::DwarfDie::get_decl_line(jlong var_die)
   return lineno;
 }
 
+jint
+lib::dw::DwarfDie::get_decl_column(jlong var_die)
+{
+  Dwarf_Die *die = (Dwarf_Die*) var_die;
+  int column;
+  int code = dwarf_decl_column (die, &column);
+  if (code != 0)
+    column = 0;
+  return column;
+}
+
 jlongArray
 lib::dw::DwarfDie::get_scopes(jlong addr)
 {

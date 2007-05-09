@@ -40,6 +40,7 @@
 package frysk.value;
 
 import lib.dw.BaseTypes;
+import lib.dw.DwarfDie;
 import inua.eio.ArrayByteBuffer;
 
 /**
@@ -53,6 +54,7 @@ public class Variable
     private final String text;
     private String filePath;
     private int lineNo;
+    private int column;
     
     public String getFilePath ()
     {
@@ -74,23 +76,43 @@ public class Variable
       this.lineNo = lineNo;
     }
 
+    public int getColumn ()
+    {
+      return column;
+    }
+
     public Variable(Type type)	{
       this(type, "temp");
     }
 
-    public Variable(Type type, String text)	{
-      this(type, text, (new Location(type.getSize())));
+    public Variable(Type type, String text)
+    {
+      this(type, text, null, (new Location(type.getSize())));
+    }
+      
+ 
+    public Variable(Type type, DwarfDie die)	
+    {
+      this(type, (die != null) ? die.getName() : "", die, (new Location(type.getSize())));
     }
 
-    public Variable(Type type, String text, ArrayByteBuffer arrayByteBuffer) {
-      this(type, text, (new Location(arrayByteBuffer)));
+    public Variable(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
+    {
+      this(type, text, null, (new Location(arrayByteBuffer)));
     }    
     
-    public Variable(Type type, String text, Location location)
+    public Variable(Type type, String text, DwarfDie die, Location location)
     {
        this.type = type;
-       this.text = text;
        this.location = location;
+       this.text = text;
+       if (die != null)
+	 {
+	   this.filePath = die.getDeclFile();
+	   this.lineNo = (int)die.getDeclLine();
+	   this.column = die.getDeclColumn();
+	 }
+       
     }
 
 

@@ -40,6 +40,7 @@
 package frysk.value;
 
 import lib.dw.BaseTypes;
+import lib.dw.DwarfDie;
 import inua.eio.ByteOrder;
 
 /**
@@ -498,17 +499,17 @@ public class ArithmeticType
       switch (type.typeId)
       {
 	case BaseTypes.baseTypeByte:
-	  return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", (byte)val);
+	  return ArithmeticType.newByteVariable((ArithmeticType)type, (byte)val);
 	case BaseTypes.baseTypeShort:
-       	  return ArithmeticType.newShortVariable((ArithmeticType)type, "short", (short)val);
+       	  return ArithmeticType.newShortVariable((ArithmeticType)type, (short)val);
 	case BaseTypes.baseTypeInteger:
-	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
+	  return ArithmeticType.newIntegerVariable((ArithmeticType)type, val);
 	case BaseTypes.baseTypeLong:
-	  return ArithmeticType.newLongVariable((ArithmeticType)type, "long", (long)val);
+	  return ArithmeticType.newLongVariable((ArithmeticType)type, (long)val);
 	case BaseTypes.baseTypeFloat:
-	  return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", (float)val);
+	  return ArithmeticType.newFloatVariable((ArithmeticType)type, (float)val);
 	case BaseTypes.baseTypeDouble:
-	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", (double)val);
+	  return ArithmeticType.newDoubleVariable((ArithmeticType)type, (double)val);
       }
       return null;
     }
@@ -520,11 +521,11 @@ public class ArithmeticType
     switch (type.typeId)
       {
       case BaseTypes.baseTypeLong:
-	return ArithmeticType.newLongVariable((ArithmeticType) type, "long", val);
+	return ArithmeticType.newLongVariable((ArithmeticType) type, val);
       case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, (float) val);
       case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", (double) val);
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, (double) val);
       }
     return null;
   }
@@ -534,81 +535,111 @@ public class ArithmeticType
     switch (type.typeId)
       {
       case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable((ArithmeticType) type, "float", (float) val);
+	return ArithmeticType.newFloatVariable((ArithmeticType) type, (float) val);
       case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable((ArithmeticType) type, "double", val);
+	return ArithmeticType.newDoubleVariable((ArithmeticType) type, val);
       }
     return null;
   }
   
-    public static Variable newByteVariable (ArithmeticType type, String text,
-                                            byte val)
-   {
-     Variable returnVar = new Variable(type, text);
-     returnVar.getLocation().putByte(val);
-     return returnVar;
-   }
-    
-    public static Variable newShortVariable (ArithmeticType type, String text,
-                                             short val)
-    {
-      Variable returnVar = new Variable(type, text);
-      returnVar.getLocation().putShort(val);
-      return returnVar;
-    }
-    
-    public static Variable newIntegerVariable (ArithmeticType type, String text,
-                                               int val)
-    {
-      Variable returnVar = new Variable(type, text);
-      returnVar.getLocation().putInt(val);
-      return returnVar;
-    }
-    
-    public static Variable newLongVariable (ArithmeticType type, String text,
-                                            long val)
-    {
-      Variable returnVar = new Variable(type, text);
-      returnVar.getLocation().putLong(val);
-      return returnVar;
-    }
+  public static Variable newByteVariable (ArithmeticType type, byte val)
+  {
+    return newByteVariable (type, null, val);
+  }    
 
-    public static Variable newFloatVariable (ArithmeticType type, String text,
-                                             float val)
-    {
-      Variable returnVar = new Variable(type, text);
-      returnVar.getLocation().putFloat(val);
-      return returnVar;
-    }
-    
-    public static Variable newDoubleVariable (ArithmeticType type, String text,
-                                              double val)
-    {
-      Variable returnVar = new Variable(type, text);
-      returnVar.getLocation().putDouble(val);
-      return returnVar;
-    }
+  public static Variable newByteVariable (ArithmeticType type, DwarfDie die,
+                                          byte val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putByte(val);
+    return returnVar;
+  }
 
-    public String toString (Variable v)
+  public static Variable newShortVariable (ArithmeticType type, short val)
+  {
+    return newShortVariable (type, null, val);
+  }
+  
+  public static Variable newShortVariable (ArithmeticType type, DwarfDie die,
+                                           short val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putShort(val);
+    return returnVar;
+  }
+
+  public static Variable newIntegerVariable (ArithmeticType type, int val)
+  {
+    return newIntegerVariable (type, null, val);
+  }    
+
+  public static Variable newIntegerVariable (ArithmeticType type, DwarfDie die,
+                                             int val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putInt(val);
+    return returnVar;
+  }
+
+  public static Variable newLongVariable (ArithmeticType type, long val)
+  {
+    return newLongVariable (type, null, val);
+  }    
+
+  public static Variable newLongVariable (ArithmeticType type, DwarfDie die,
+                                          long val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putLong(val);
+    return returnVar;
+  }
+
+  public static Variable newFloatVariable (ArithmeticType type, float val)
+  {
+    return newFloatVariable (type, null, val);
+  }    
+
+  public static Variable newFloatVariable (ArithmeticType type, DwarfDie die,
+                                           float val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putFloat(val);
+    return returnVar;
+  }
+
+  public static Variable newDoubleVariable (ArithmeticType type, double val)
+  {
+    return newDoubleVariable (type, null, val);
+  }    
+
+  public static Variable newDoubleVariable (ArithmeticType type, DwarfDie die,
+                                            double val)
+  {
+    Variable returnVar = new Variable(type, die);
+    returnVar.getLocation().putDouble(val);
+    return returnVar;
+  }
+
+  public String toString (Variable v)
+  {
+    switch (typeId)
     {
-      switch (typeId)
-      {
-	case BaseTypes.baseTypeByte:
-	  return String.valueOf(v.getByte());
-	case BaseTypes.baseTypeShort:
-       	  return String.valueOf(v.getShort());
-	case BaseTypes.baseTypeInteger:
-	  return String.valueOf(v.getInt());
-	case BaseTypes.baseTypeLong:
-	  return String.valueOf(v.getLong());
-	case BaseTypes.baseTypeFloat:
-	  return String.valueOf(v.getFloat());
-	case BaseTypes.baseTypeDouble:
-	  return String.valueOf(v.getDouble());
-	default:
-	  return "";
-      }
+    case BaseTypes.baseTypeByte:
+      return String.valueOf(v.getByte());
+    case BaseTypes.baseTypeShort:
+      return String.valueOf(v.getShort());
+    case BaseTypes.baseTypeInteger:
+      return String.valueOf(v.getInt());
+    case BaseTypes.baseTypeLong:
+      return String.valueOf(v.getLong());
+    case BaseTypes.baseTypeFloat:
+      return String.valueOf(v.getFloat());
+    case BaseTypes.baseTypeDouble:
+      return String.valueOf(v.getDouble());
+    default:
+      return "";
     }
+  }
 }
 
 

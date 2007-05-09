@@ -781,12 +781,12 @@ NameNotFoundException
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
         { returnVar = v1.getType().subtract(v1, v2);  }
     |   #(MINUS v1=expr ) 
-        { returnVar = ArithmeticType.newIntegerVariable(intType, "", 0);
+        { returnVar = ArithmeticType.newIntegerVariable(intType, 0);
           returnVar = returnVar.getType().subtract(returnVar, v1); }
     |   ( #(STAR expr expr) )=> #(STAR  v1=expr v2=expr)  
 	{ returnVar = v1.getType().multiply(v1, v2); }
     |   #(MEMORY s1=identifier )
-	{ returnVar = ArithmeticType.newLongVariable(longType, "", (long)0);
+	{ returnVar = ArithmeticType.newLongVariable(longType, (long)0);
           returnVar = (Variable)cppSymTabRef.getMemory(s1); }
     |   #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2); }
     |   #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
@@ -822,7 +822,7 @@ NameNotFoundException
     |   ( #(AMPERSAND expr expr) )=>#(AMPERSAND  v1=expr v2=expr)  
 	{ returnVar = v1.getType().bitWiseAnd(v1, v2);  }
     |   #(ADDRESS_OF s1=identifier )
-	{ returnVar = ArithmeticType.newLongVariable(longType, "", (long)0);
+	{ returnVar = ArithmeticType.newLongVariable(longType, (long)0);
           returnVar = (Variable)cppSymTabRef.getAddress(s1); }
     |   #(BITWISEXOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseXor(v1, v2);  }
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
@@ -837,7 +837,7 @@ NameNotFoundException
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
             returnVar = ArithmeticType.newIntegerVariable (
-                intType, "", Integer.parseInt(o.getText().substring(1, l), 8));
+                intType, Integer.parseInt(o.getText().substring(1, l), 8));
         }
     |   i:DECIMALINT  {
     	    char c = i.getText().charAt(i.getText().length() - 1);
@@ -845,7 +845,7 @@ NameNotFoundException
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
             returnVar = ArithmeticType.newIntegerVariable (
-                intType, "", Integer.parseInt(i.getText().substring(0, l)));
+                intType, Integer.parseInt(i.getText().substring(0, l)));
         }
     |   h:HEXADECIMALINT  {
     	    char c = h.getText().charAt(h.getText().length() - 1);
@@ -853,7 +853,7 @@ NameNotFoundException
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
             returnVar = ArithmeticType.newIntegerVariable (
-                intType, "", Integer.parseInt(h.getText().substring(2, l), 16));
+                intType, Integer.parseInt(h.getText().substring(2, l), 16));
         }
     |   f:FLOAT  {
     	    char c = f.getText().charAt(f.getText().length() - 1);
@@ -861,7 +861,7 @@ NameNotFoundException
     	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
     	       l -= 1;
             returnVar = ArithmeticType.newFloatVariable (
-                floatType, "", Float.parseFloat(f.getText().substring(0, l)));
+                floatType, Float.parseFloat(f.getText().substring(0, l)));
         }
     |   d:DOUBLE  {
     	    char c = d.getText().charAt(d.getText().length() - 1);
@@ -869,7 +869,7 @@ NameNotFoundException
     	    if (c == 'f' || c == 'F' || c == 'l' || c == 'L')
     	       l -= 1;
             returnVar = ArithmeticType.newDoubleVariable (
-                doubleType, "", Double.parseDouble(d.getText().substring(0, l)));
+                doubleType, Double.parseDouble(d.getText().substring(0, l)));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             v1.getType().assign(v1, v2);
@@ -928,23 +928,23 @@ NameNotFoundException
         }
     |   #(CAST pt:primitiveType v2=expr) { 
 	    if(pt.getText().compareTo("long") == 0) {
-	      returnVar = ArithmeticType.newLongVariable(longType, "", (long)0);
+	      returnVar = ArithmeticType.newLongVariable(longType, (long)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("int") == 0) {
-	      returnVar = ArithmeticType.newIntegerVariable(intType, "", (int)0);
+	      returnVar = ArithmeticType.newIntegerVariable(intType, (int)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("short") == 0) {
-	      returnVar = ArithmeticType.newShortVariable(shortType, "", (short)0);
+	      returnVar = ArithmeticType.newShortVariable(shortType, (short)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("double") == 0) {
-	      returnVar = ArithmeticType.newDoubleVariable(doubleType, "", (double)0);
+	      returnVar = ArithmeticType.newDoubleVariable(doubleType, (double)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else if(pt.getText().compareTo("float") == 0) {
-	      returnVar = ArithmeticType.newFloatVariable(floatType, "", (float)0);
+	      returnVar = ArithmeticType.newFloatVariable(floatType, (float)0);
               returnVar.getType().assign(returnVar, v2);
 	      }
 	    else returnVar = v2;
@@ -960,14 +960,14 @@ NameNotFoundException
     |   ident:IDENT  {
             if((returnVar = ((Variable)cppSymTabRef.get(ident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
-                returnVar = ArithmeticType.newIntegerVariable(intType, ident.getText(), 0);
+                returnVar = ArithmeticType.newIntegerVariable(intType, 0);
                 cppSymTabRef.put(ident.getText(), returnVar);
             }
         }
     |   tident:TAB_IDENT  {
             if((returnVar = ((Variable)cppSymTabRef.get(tident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {
-                returnVar = ArithmeticType.newIntegerVariable(intType, tident.getText(), 0);
+                returnVar = ArithmeticType.newIntegerVariable(intType, 0);
                 cppSymTabRef.put(tident.getText(), returnVar);
             }
         }

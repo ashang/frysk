@@ -1,3 +1,9 @@
+2007-05-08  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (get): newXVariable signature.
+	Changed to use ArrayType.get.
+	* hpd/CLI.java (ListHandler): Implement -length.
+
 2007-05-07  Tim Moore  <timoore@redhat.com>
 
 	* hpd/RunHandler.java (updateAttached): Put the request to unblock

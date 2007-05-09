@@ -41,6 +41,8 @@
 package frysk.value;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import lib.dw.BaseTypes;
 import inua.eio.ArrayByteBuffer;
 
@@ -62,29 +64,29 @@ public class ArrayType
     /**
      * Iterate through the array members.
      */
-    class Iterator
+    class ArrayIterator
 	implements java.util.Iterator
     {
 	int dimCount = dimensions.size();
 
-	int terms[] = new int[dimCount + 1];
+	int stride[] = new int[dimCount + 1];
 
 	private int idx, dim, element;
 
 	Variable v;
 
-	Iterator (Variable v)
+	ArrayIterator (Variable v)
 	{
 	    idx = - 1;
-	    terms[0] = 1;
+	    stride[0] = 1;
 	    this.v = v;
 
 	    for (int i = 1; i < dimCount; i++)
 		{
 		    int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
-		    terms[i] = d * terms[i - 1];
+		    stride[i] = d * stride[i - 1];
 		}
-	    terms[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * terms[dimCount - 1]; 
+	    stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
 	}
 
 	public boolean hasNext ()
@@ -93,7 +95,7 @@ public class ArrayType
 	    element = idx;
 	    dim = dimCount;
 
-	    if (idx < terms[dimCount])
+	    if (idx < stride[dimCount])
 		return true;
 	    return false;
 	}
@@ -106,10 +108,10 @@ public class ArrayType
 	  dim -= 1;
 	  if (dim > 0)
 	    {
-	      if (element >= terms[dim])
+	      if (element >= stride[dim])
 		{
-		  int newDim = element / (terms[dim]);
-		  element = element % (terms[dim]);
+		  int newDim = element / (stride[dim]);
+		  element = element % (stride[dim]);
 		  return newDim;
 		}
 	      return 0;
@@ -119,31 +121,7 @@ public class ArrayType
 
 	public Object next ()
 	{
-	  int off = idx * type.getSize();
-	  switch (type.typeId)
-	  {
-	    case (BaseTypes.baseTypeByte):
-	      return ArithmeticType.newByteVariable((ArithmeticType)type, "", v.getByte((off)));
-	    case (BaseTypes.baseTypeShort):
-	      return ArithmeticType.newShortVariable((ArithmeticType)type, "", v.getShort(off));
-	    case (BaseTypes.baseTypeInteger):
-	      return ArithmeticType.newIntegerVariable((ArithmeticType)type, "", v.getInt(off));
-	    case (BaseTypes.baseTypeLong):
-	      return ArithmeticType.newLongVariable((ArithmeticType)type, "", v.getLong(off));
-	    case (BaseTypes.baseTypeFloat):
-	      return ArithmeticType.newFloatVariable((ArithmeticType)type, "", v.getFloat(off));
-	    case (BaseTypes.baseTypeDouble):
-	      return ArithmeticType.newDoubleVariable((ArithmeticType)type, "", v.getDouble(off));
-	  }
-	  if (type instanceof ClassType)
-	    {
-	      byte [] buf = new byte[type.size];
-	      v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
-	      ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
-	      abb.order(type.getEndian());
-	      return new Variable((ClassType)type, v.getText(), (ArrayByteBuffer)abb);
-	    }
-	  return null;
+	  return getVariable (v, idx);
 	}
 
 	public void remove ()
@@ -151,15 +129,69 @@ public class ArrayType
 	}
     }
 
-    public Iterator getIterator (Variable v)
+    private Variable getVariable (Variable v, int idx)
     {
-	return new Iterator(v);
+      int off = idx * type.getSize();
+      switch (type.typeId)
+      {
+      case (BaseTypes.baseTypeByte):
+	return ArithmeticType.newByteVariable((ArithmeticType)type, v.getByte((off)));
+      case (BaseTypes.baseTypeShort):
+	return ArithmeticType.newShortVariable((ArithmeticType)type, v.getShort(off));
+      case (BaseTypes.baseTypeInteger):
+	return ArithmeticType.newIntegerVariable((ArithmeticType)type, v.getInt(off));
+      case (BaseTypes.baseTypeLong):
+	return ArithmeticType.newLongVariable((ArithmeticType)type, v.getLong(off));
+      case (BaseTypes.baseTypeFloat):
+	return ArithmeticType.newFloatVariable((ArithmeticType)type, v.getFloat(off));
+      case (BaseTypes.baseTypeDouble):
+	return ArithmeticType.newDoubleVariable((ArithmeticType)type, v.getDouble(off));
+      }
+      if (type instanceof ClassType)
+	{
+	  byte [] buf = new byte[type.size];
+	  v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
+	  ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	  abb.order(type.getEndian());
+	  return new Variable((ClassType)type, v.getText(), (ArrayByteBuffer)abb);
+	}
+      return null;
+    }
+    
+    public ArrayIterator iterator (Variable v)
+    {
+	return new ArrayIterator(v);
     }
 
+    public Variable get (Variable v, ArrayList components)
+    {
+      int dimCount = dimensions.size();
+      int stride[] = new int[dimCount + 1];
+      
+      stride[0] = 1;
+      for (int i = 1; i < dimCount; i++)
+	{
+	  int d = ((Integer) (dimensions.get(dimCount - i))).intValue() + 1;
+	  stride[i] = d * stride[i - 1];
+	}
+      stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
+      
+    Iterator ci = components.iterator();
+    int offset = 0;
+    for (int d = dimCount - 1;
+         ci.hasNext();
+         d -= 1)
+      {
+	String component = (String)ci.next();
+	offset += stride[d] * (Integer.parseInt(component));
+      }
+    return getVariable (v, offset);
+    }
+    
     public String toString (Variable v)
     {
       StringBuffer strBuf = new StringBuffer();
-      Iterator e = getIterator(v);
+      ArrayIterator e = iterator(v);
       boolean isString = false;
       if (type.typeId == BaseTypes.baseTypeByte)
 	{
@@ -242,7 +274,7 @@ public class ArrayType
 					     ArrayByteBuffer ab)
     {
 	Location loc = new Location(ab);
-	Variable returnVar = new Variable(type, text, loc);
+	Variable returnVar = new Variable(type, text, null, loc);
 	return returnVar;
     }
 

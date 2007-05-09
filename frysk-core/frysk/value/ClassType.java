@@ -100,7 +100,7 @@ public class ClassType
     }
   }
 
-  Variable getVariable (Variable v, int idx)
+  private Variable getVariable (Variable v, int idx)
   {
     Type type = ((Type) (types.get(idx)));
     int off = ((Long)offsets.get(idx)).intValue();
@@ -108,9 +108,9 @@ public class ClassType
     switch (((Type)types.get(idx)).typeId)
     {
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteVariable((ArithmeticType)type, "byte", v.getByte(off));
+      return ArithmeticType.newByteVariable((ArithmeticType)type, v.getByte(off));
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortVariable((ArithmeticType)type, "short", v.getShort(off));
+      return ArithmeticType.newShortVariable((ArithmeticType)type, v.getShort(off));
     case BaseTypes.baseTypeInteger:
       int val = v.getInt(off);
       int mask = ((Integer)masks.get(idx)).intValue();
@@ -126,13 +126,13 @@ public class ClassType
 	    }
 	  val = (val & mask) >>> shift;
 	}
-      return ArithmeticType.newIntegerVariable((ArithmeticType)type, "int", val);
+      return ArithmeticType.newIntegerVariable((ArithmeticType)type, val);
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongVariable((ArithmeticType)type, "long", v.getLong(off));
+      return ArithmeticType.newLongVariable((ArithmeticType)type, v.getLong(off));
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatVariable((ArithmeticType)type, "float", v.getFloat(off));
+      return ArithmeticType.newFloatVariable((ArithmeticType)type, v.getFloat(off));
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleVariable((ArithmeticType)type, "double", v.getDouble(off));
+      return ArithmeticType.newDoubleVariable((ArithmeticType)type, v.getDouble(off));
     }
     if (type instanceof ClassType)
       {
@@ -243,7 +243,7 @@ public class ClassType
                                            ArrayByteBuffer ab)
   {
     Location loc = new Location(ab);
-    Variable returnVar = new Variable(type, text, loc);
+    Variable returnVar = new Variable(type, text, null, loc);
     return returnVar;
   }
 

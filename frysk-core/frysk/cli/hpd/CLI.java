@@ -39,7 +39,7 @@
 
 package frysk.cli.hpd;
 
-import frysk.rt.Line;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -74,6 +74,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 
 import lib.dw.BaseTypes;
+import lib.dw.DwarfDie;
 
 public class CLI 
 {
@@ -83,7 +84,6 @@ public class CLI
   int tid = 0;
   SymTab symtab = null;
   boolean symtabNeedsRefresh = false;
-  Frame frame = null;
   int stackLevel = 0;
   private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
@@ -613,9 +613,13 @@ public class CLI
     
   class ListHandler implements CommandHandler
   {
+    File file = null;
+    int line;
+    int exec_line = 0;
     public void handle(Command cmd) throws ParseException
     {
       ArrayList params = cmd.getParameters();
+      int windowSize = 20;
       if (params.size() == 1 && params.get(0).equals("-help"))
         {
           printUsage(cmd);
@@ -627,42 +631,76 @@ public class CLI
 	  addMessage("No symbol table is available.", Message.TYPE_NORMAL);
 	  return;
 	}
-
-      if (params.size() != 0)
+      if (params.size() == 1)			// list N
 	{
-	  addMessage("No options are currently implemented.", 
-		     Message.TYPE_NORMAL);
-	  return;
+	  try 
+	  {
+	    line = Integer.parseInt((String)params.get(0));
+	  }
+	  catch (NumberFormatException ignore)
+	  {
+	    if (((String)params.get(0)).compareTo("$EXEC") == 0)
+		line = symtab.getCurrentFrame().getLines()[0].getLine() - 10;
+	    else 
+	      {
+		DwarfDie funcDie = null;
+		try
+		{
+		  funcDie = symtab.getSymbolDie((String)params.get(0));
+		}
+		catch (NameNotFoundException none) {}
+		line = (int)funcDie.getDeclLine();
+	      }
+	  }
+	}
+      else if (params.size() == 2)		// list -length {-}N
+	{
+	  if (((String)params.get(0)).equals("-length"))
+	    {
+	      try 
+	      {
+		windowSize = Integer.parseInt((String)params.get(1));
+		if (windowSize < 0)
+		  {
+		    line += windowSize;
+		  }
+	      }
+	      catch (NumberFormatException ignore)
+	      {}
+	    }
 	}
  
-      frame = symtab.getCurrentFrame();
-        
-      Line line = null;
-      if (frame.getLines().length > 0)
-		line = frame.getLines() [0];
-      else
-		outWriter.println("No source for current frame");
-	
+      if (file== null)
+	{
+	  Frame frame = symtab.getCurrentFrame();
+	  if (frame.getLines().length > 0)
+	    {
+	      file = (frame.getLines()[0]).getFile();
+	      line = (frame.getLines()[0]).getLine() - 10;
+	      exec_line = line;
+	    }
+	  else
+	    outWriter.println("No source for current frame");
+	}
+      
+      if (line < 0)
+	line = 1;
       try 
 	{
-	  FileReader fr = new FileReader(line.getFile ());
+	  FileReader fr = new FileReader(file);
 	  LineNumberReader lr = new LineNumberReader(fr);
 	  String str;
 	  boolean display = false;
-	  int startLine = (line.getLine() > 10 
-			   ? line.getLine() - 10
-			   : 1); 
-	  int endLine = startLine + 20;
+	  int endLine = line + StrictMath.abs(windowSize);
 	  String flag = "";
-
 	  while ((str = lr.readLine()) != null) 
 	    {
-	      if (lr.getLineNumber() == startLine)
+	      if (lr.getLineNumber() == line)
 		display = true;
-	      else if (lr.getLineNumber() == line.getLine())
+	      else if (lr.getLineNumber() == exec_line)
 		flag = "*";
 	      else if (lr.getLineNumber() == endLine)
-		display = false;
+		break;
                 
 	      if (display)
 		{
@@ -670,11 +708,13 @@ public class CLI
 		  flag = "";
 		}
 	    }
+	  if (str != null && windowSize > 0)
+	    line += windowSize;
 	  lr.close();
 	}
       catch (IOException e) 
         {
-          addMessage("file " + line.getFile() + " not found.",
+          addMessage("file " + file + " not found.",
 		     Message.TYPE_ERROR);
         }
     }

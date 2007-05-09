@@ -1,3 +1,12 @@
+2007-05-08  Stan Cox  <scox@redhat.com>
+
+	* ClassType.java (getVariable): newXVariable signature.
+	* ArrayType.java (ArrayIterator.next): Call getVariable.
+	(getVariable): New.
+	(get): New.
+	* ArithmeticType.java (newVariable): newXVariable signature.
+	* Variable.java (Variable): new signature.
+
 2007-05-02  Stan Cox  <scox@redhat.com>
 
 	* ClassType.java (ClassIterator.next): Call getVariable.

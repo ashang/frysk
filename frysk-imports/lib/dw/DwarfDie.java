@@ -90,6 +90,11 @@ abstract public class DwarfDie
     return get_decl_line(this.getPointer());
   }
 
+  public int getDeclColumn ()
+  {
+    return get_decl_column(this.getPointer());
+  }
+  
   public void setScopes (DwarfDie[] scopes)
   {
     this.scopes = scopes;
@@ -394,6 +399,8 @@ abstract public class DwarfDie
   private native String get_decl_file (long var_die);
   
   private native long get_decl_line (long var_die);
+  
+  private native int get_decl_column (long var_die);
   
   private native long[] get_scopes (long addr);
 
