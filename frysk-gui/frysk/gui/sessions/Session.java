@@ -386,48 +386,57 @@ public class Session
       }
   }
 
-  public void startSession(){
-    if(this.sessionType == SessionType.MonitorSession){
-      LinkedList ll = new LinkedList();
-      ll.add(WindowManager.theManager.mainWindow);
-      IconManager.trayIcon.setPopupWindows(ll);
-      WindowManager.theManager.mainWindow.hideTerminal();
-      WindowManager.theManager.mainWindow.showAll();
-      WindowManager.theManager.sessionManagerDialog.hideAll();    
-    }else{
-      Iterator debugProcs = this.getProcesses().iterator();
-      while (debugProcs.hasNext()){
-	DebugProcess debugProcess = (DebugProcess) debugProcs.next();
-	LinkedList list = debugProcess.getProcs();
-	  
-	if (list != null && list.size() > 0){
-	  Iterator i = list.iterator();
-
-	  Proc[] procs = new Proc[list.size()];
-	  int j = 0;
-	  while (i.hasNext()){
-	    procs[j++] = ((GuiProc) i.next()).getProc();
-	  }
-	  SourceWindowFactory.createSourceWindow(procs);
-	}
-//	    else
-//	      {
-//		if (procWiseTreeView.getSelectedObjects() != null)
-//		  {
-//		    int j = 0;
-//		    LinkedList llist = procWiseTreeView.getSelectedObjects();
-//		    Proc[] procs = new Proc[llist.size()];
-//		    Iterator i = llist.iterator();
-//		    while (i.hasNext())
-//		      {
-//			procs[j++] = ((GuiProc) i.next()).getProc();
-//		      }
-//		    SourceWindowFactory.createSourceWindow(procs);
-//		    hide();
-//		  }
-//	      }
+  public void startSession ()
+  {
+    if (this.sessionType == SessionType.MonitorSession)
+      {
+	LinkedList ll = new LinkedList();
+	ll.add(WindowManager.theManager.mainWindow);
+	IconManager.trayIcon.setPopupWindows(ll);
+	WindowManager.theManager.mainWindow.hideTerminal();
+	WindowManager.theManager.mainWindow.showAll();
+	WindowManager.theManager.sessionManagerDialog.hideAll();
       }
-    }
+    else
+      {
+	LinkedList list = new LinkedList();
+
+	Iterator debugProcs = this.getProcesses().iterator();
+	while (debugProcs.hasNext())
+	  {
+	    DebugProcess debugProcess = (DebugProcess) debugProcs.next();
+	    list.addAll(debugProcess.getProcs());
+	  }
+
+	if (list.size() > 0)
+	  {
+	    Iterator i = list.iterator();
+	    Proc[] procs = new Proc[list.size()];
+	    int j = 0;
+
+	    while (i.hasNext())
+	      {
+		procs[j++] = ((GuiProc) i.next()).getProc();
+	      }
+	    SourceWindowFactory.createSourceWindow(procs);
+	  }
+	// else
+	// {
+	// if (procWiseTreeView.getSelectedObjects() != null)
+	// {
+	// int j = 0;
+	// LinkedList llist = procWiseTreeView.getSelectedObjects();
+	// Proc[] procs = new Proc[llist.size()];
+	// Iterator i = llist.iterator();
+	// while (i.hasNext())
+	// {
+	// procs[j++] = ((GuiProc) i.next()).getProc();
+	// }
+	// SourceWindowFactory.createSourceWindow(procs);
+	// hide();
+	// }
+	// }
+      }
   }
   
   public ObservableLinkedList getObservers ()

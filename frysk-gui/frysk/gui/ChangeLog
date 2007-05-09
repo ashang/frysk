@@ -1,3 +1,9 @@
+2007-05-09  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/Session.java (startSession): Compile Procs lists from all 
+	DebugProcesses for a debugging session into a single LinkedList and 
+	build the SourceWindow from that instead. Fixes #4478.
+
 2007-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* sessions/WatchList.java: Update.  Now using Variable
