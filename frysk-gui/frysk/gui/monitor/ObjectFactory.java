@@ -82,18 +82,18 @@ public class ObjectFactory {
 	  String type = node.getAttribute("type").getValue();
 //	  System.out.println("\n===========================================");
 //	  System.out.println("ObjectFactory.getObject() type: " + type);
-		
+
 	  Class cls;
 	  try {
 	    cls = Class.forName(type);
 //	    System.out.println("ObjectFactory.getObject() cls: " + cls);
-	    java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
+	    java.lang.reflect.Constructor constr = cls.getDeclaredConstructor(new Class[]{});
 //	    System.out.println("ObjectFactory.getObject() constr: " + constr);
 	    loadedObject =  constr.newInstance(new Object[] {});
 //	    System.out.println("ObjectFactory.getObject() loadedObject: " + loadedObject);
 	  } catch (Exception e) {
 //	    System.err.println("Object ["+node.getAttribute("type").getValue() + "] Does not have a no argument constructor");
-	    e.printStackTrace();
+//	    e.printStackTrace();
 	    loadedObject = null;
 	  }
 
@@ -123,58 +123,45 @@ public class ObjectFactory {
 		}
 	}
 	
-	public void exportNode(String path, Element node){
-		
-		path = path.replace(' ', '_');
-		
-//		System.out.println("\n==============saved node==========");
-//		Thread.dumpStack();
-//		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-//		try {
-//			outputter.output(node, System.out);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		System.out.println("===================================\n");
-		
-		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+  public void exportNode (File file, Element node)
+  {
+    XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
 
-		try {
-			output.output(node,new FileWriter(path));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    try
+      {
+	output.output(node, new FileWriter(file));
+      }
+    catch (IOException e)
+      {
+	e.printStackTrace();
+      }
+  }
 	
-	public Element importNode(File file){
-	  
-	  DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	  org.w3c.dom.Document doc = null; 
-	  try {
-	    DocumentBuilder builder = factory.newDocumentBuilder();
-	    doc = (org.w3c.dom.Document) builder.parse(file);
-	    
-	  } catch (Exception e) {
-	    errorLog.log(Level.WARNING, "Could not parse node ",e); //$NON-NLS-1$
-	    return null;
-	  } 
-        
-	  DOMBuilder doo = new DOMBuilder();
-	  Document document =	doo.build(doc);
-        		
-	  return document.getRootElement();
-	}
-	
-	public boolean deleteNode(String path){
-		path = path.replace(' ', '_');
+  public Element importNode (File file)
+  {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    org.w3c.dom.Document doc = null;
+    try
+      {
+	DocumentBuilder builder = factory.newDocumentBuilder();
+	doc = (org.w3c.dom.Document) builder.parse(file);
 
-		File file = new File(path);
+      }
+    catch (Exception e)
+      {
+	errorLog.log(Level.WARNING, "Could not parse node ", e); //$NON-NLS-1$
+	return null;
+      }
 
-		//System.out.println("ObjectFactory.deleteNode() " + path);
-		//System.out.println("ObjectFactory.deleteNode() " + file.exists());
-		
-		return file.delete();
-	}
+    DOMBuilder doo = new DOMBuilder();
+    Document document = doo.build(doc);
+
+    return document.getRootElement();
+  }
+
+  public boolean deleteNode (File file)
+  {
+    return file.delete();
+  }
 	
 }

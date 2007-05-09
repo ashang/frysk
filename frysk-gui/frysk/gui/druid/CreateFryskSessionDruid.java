@@ -181,6 +181,8 @@ public class CreateFryskSessionDruid
 
     this.showAll();
 
+    monitorSessionRadioButton.activate();
+    
     nextButton.showAll();
     
     finishButton.showAll();
@@ -227,7 +229,7 @@ public class CreateFryskSessionDruid
     this.showAll();
 
     notebook.setShowTabs(true);
-    notebook.setCurrentPage(1);
+    notebook.setCurrentPage(SELECT_PROCS_PAGE);
     setUpCurrentPage();
     notebook.getPage(0).hideAll();
     
@@ -514,56 +516,19 @@ public class CreateFryskSessionDruid
 	for (int i = selectedProcs.length - 1; i >= 0; i--){
 	  setTreeSelected(dataModel.getModel().getIter(paths[i].getPath()),state);
 	  if (this.initialSessionName.equals(SessionManager.theManager.getCurrentSession().getName())){
-	    this.nameEntry.setText(((GuiProc) dataModel.getObject(paths[i].getPath())).getExecutableName());
+	    String name = ((GuiProc) dataModel.getObject(paths[i].getPath())).getExecutableName();
+	    
+	    if(SessionManager.theManager.getCurrentSession().getSessoinType() == Session.SessionType.DebugSession){
+	      name += " Debug Session";
+	    }else{
+	      name += " Monitor Session";
+	    }
+	    this.nameEntry.setText(name);
 	  }
 	}
       }
-    setProcessNext(processSelected);
   }
 
-  /**
-   * @param processCount
-   */
-  private void setProcessNext (int processCount)
-  {
-    if(notebook.getCurrentPage() == INTRODUCTION_PAGE){
-      return;
-    }
-    
-    if (this.getDruidMode() != DruidMode.LOAD_SESSION_MODE
-	&& this.getDruidMode() != DruidMode.EDIT_SESSION_MODE)
-      {
-	if (processCount > 0
-	    && nameEntry.getText().length() > 0
-	    && SessionManager.theManager.getSessionByName(nameEntry.getText()) == null)
-	  {
-	    nextButton.setSensitive(true);
-	    finishButton.setSensitive(true);
-	    saveButton.setSensitive(true);
-	  }
-	else
-	  {
-	    nextButton.setSensitive(false);
-	    finishButton.setSensitive(false);
-	    saveButton.setSensitive(false);
-	  }
-      }
-    else
-      {
-	if (processCount > 0 && nameEntry.getText().length() > 0)
-	  {
-	    nextButton.setSensitive(true);
-	    finishButton.setSensitive(true);
-	    saveButton.setSensitive(true);
-	  }
-	else
-	  {
-	    nextButton.setSensitive(false);
-	    finishButton.setSensitive(false);
-	    saveButton.setSensitive(false);
-	  }
-      }
-  }
 
   private void unFilterData ()
   {
@@ -634,25 +599,16 @@ public class CreateFryskSessionDruid
 
       public void entryEvent (EntryEvent event)
       {
+	if(!validateSessionName()){
+	  return;
+	}
 	
-//	if(arg0.isOfType(EntryEvent.Type.DELETE_TEXT)){
-//	  return;
-//	}
 	
 	String proposedName = nameEntry.getText();
 	
 	if(proposedName == null){
 	  return;
 	}
-	
-	Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
-	if (theSessionUsingProposedName != null && 
-	    theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
-	      setWarning(WarningType.NAME_ALREADY_USED);
-	      return;
-	}
-	
-	setWarning(WarningType.NORMAL);
 	
 	if(proposedName.length() != 0){
 	  SessionManager.theManager.getCurrentSession().setName(proposedName);
@@ -661,7 +617,6 @@ public class CreateFryskSessionDruid
 					      + ": "
 					      + SessionManager.theManager.getCurrentSession().getName());
 
-	setProcessNext(processSelected);
       }
     });
 
@@ -723,7 +678,6 @@ public class CreateFryskSessionDruid
       public void buttonEvent (ButtonEvent event)
       {
 	if(event.isOfType(ButtonEvent.Type.CLICK) && debugSessionRadioButton.getState()){
-	  System.out.println("CreateFryskSessionDruid.getDruidStructureControls() debug");
 	  SessionManager.theManager.getCurrentSession().setSessionType(SessionType.DebugSession);
 	}
       }
@@ -735,7 +689,6 @@ public class CreateFryskSessionDruid
       public void buttonEvent (ButtonEvent event)
       {
 	if(event.isOfType(ButtonEvent.Type.CLICK) && monitorSessionRadioButton.getState()){
-	  System.out.println("CreateFryskSessionDruid.getDruidStructureControls() monitor");
 	  SessionManager.theManager.getCurrentSession().setSessionType(SessionType.MonitorSession);
 	}
       }
@@ -866,11 +819,11 @@ public class CreateFryskSessionDruid
 
   public void setupNameEntry ()
   {
-    if (! SessionManager.theManager.getCurrentSession().getName().equals(
-									 "NoName"))
+    if (! SessionManager.theManager.getCurrentSession().getName().equals("NoName"))
       {
 	nameEntry.setText(SessionManager.theManager.getCurrentSession().getName());
       }
+    
   }
 
   private void nextPage ()
@@ -888,29 +841,31 @@ public class CreateFryskSessionDruid
     setUpCurrentPage();
   }
 
-  private void validateCurrentPage(){
+  private boolean validateCurrentPage(){
     final int page = notebook.getCurrentPage();
     switch (page){
       
     case SELECT_PROCS_PAGE:
-	this.validateSessionName();
-	break;
+	return this.validateSessionName();
 	
     default:
-	currentPageValid();
-	break;
+      currentPageValid();
     }
+    
+    return true;
   }
   
-  private void validateSessionName ()
+  private boolean validateSessionName ()
   {
     String proposedName = nameEntry.getName();
     Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
     if (theSessionUsingProposedName != null && theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
       setWarning(WarningType.NAME_ALREADY_USED);
       currentPageInvalid();
+      return false;
     }else{
       currentPageValid();
+      return true;
     }
   }
 
@@ -942,11 +897,19 @@ public class CreateFryskSessionDruid
       backButton.showAll();
       nextButton.showAll();
       finishButton.showAll();
-      setProcessNext(processSelected);
+
+      if(druidMode == DruidMode.NEW_SESSION_MODE){
+	nameEntry.setText(setInitialName());
+      }
+      
+      if(SessionManager.theManager.getCurrentSession().getSessoinType() == Session.SessionType.DebugSession){
+	nextButton.setSensitive(false);
+      }else{
+	nextButton.setSensitive(true);
+      }
     }
 
     if (page == OBSERVERS_PAGE){
-      setProcessNext(processSelected);
     }
 
     if (page == notebook.getNumPages() - 1){
@@ -958,11 +921,17 @@ public class CreateFryskSessionDruid
 
   private String setInitialName ()
   {
-    final String Name = "New Frysk Session";
+    
+    if(SessionManager.theManager.getCurrentSession().getSessoinType() == Session.SessionType.DebugSession){
+      initialSessionName = "New Debug Session";
+    }else{
+      initialSessionName = "New Monitor Session";
+    }
+    
     String filler = "00";
-    if (SessionManager.theManager.getSessionByName(Name) == null)
+    if (SessionManager.theManager.getSessionByName(initialSessionName) == null)
       {
-	return Name;
+	return initialSessionName;
       }
     else
       {
@@ -976,9 +945,9 @@ public class CreateFryskSessionDruid
 	      {
 		filler = "" + i;
 	      }
-	    if (SessionManager.theManager.getSessionByName(Name + " " + filler) == null)
+	    if (SessionManager.theManager.getSessionByName(initialSessionName + " " + filler) == null)
 	      {
-		return Name + " " + filler;
+		return initialSessionName + " " + filler;
 	      }
 	  }
       }

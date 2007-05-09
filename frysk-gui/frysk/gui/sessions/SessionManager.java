@@ -145,7 +145,7 @@ public class SessionManager
    */
   public void removeSession (final Session session)
   {
-    ObjectFactory.theFactory.deleteNode(sessionsDir.getPath() + "/" + session.getName());
+    ObjectFactory.theFactory.deleteNode(new File(sessionsDir, session.getName()));
     nameHash.remove(session);
     sessions.remove(session);
   }
@@ -181,8 +181,8 @@ public class SessionManager
           {
             final Element node = new Element("Session");
             ObjectFactory.theFactory.saveObject(session, node);
-            ObjectFactory.theFactory.exportNode(sessionsDir.getPath() + "/"
-                                                + session.getName(), node);
+            ObjectFactory.theFactory.exportNode(new File(sessionsDir,
+                                                session.getName()), node);
           }
       }
   }

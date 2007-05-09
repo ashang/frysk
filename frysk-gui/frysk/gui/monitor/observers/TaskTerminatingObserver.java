@@ -71,7 +71,7 @@ public class TaskTerminatingObserver
 
   public TaskActionPoint taskActionPoint;
 
-  protected TaskTerminatingObserver ()
+  public TaskTerminatingObserver ()
   {
     super("Terminating Observer", "Fires when this process is exiting");
 

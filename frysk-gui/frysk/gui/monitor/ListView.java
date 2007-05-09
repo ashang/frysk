@@ -246,6 +246,7 @@ public class ListView
    */
   public void setSelectedObject (GuiObject object)
   {
+    System.out.println("ListView.setSelectedObject() " + object);
     TreeIter iter = (TreeIter) this.map.get(object);
     if (iter == null)
       {
@@ -302,10 +303,21 @@ public class ListView
 
   public void remove (GuiObject object)
   {
+    LinkedList selected = this.getSelectedObjects();
+    
     TreeIter treeIter = (TreeIter) this.map.get(object);
-    if (listStore.isIterValid(treeIter))
-      listStore.removeRow(treeIter);
+    System.out.println("ListView.remove() treeIter " + treeIter);
+    
+    listStore.removeRow(treeIter);
     this.map.remove(object);
+    
+    if(selected.contains(object) && listStore.isIterValid(treeIter)){
+      // if the object was selected select the one that could have taken its
+      // place
+      this.getSelection().select(treeIter);
+      this.grabFocus();
+    }
+    
     try
     {
       object.propertiesChanged.deleteObserver(this.debugProcessObserver);

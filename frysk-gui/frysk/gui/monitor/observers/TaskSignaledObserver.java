@@ -62,7 +62,7 @@ public class TaskSignaledObserver extends TaskObserverRoot implements
 	 * 
 	 * Provides functionality for the Signaled Frysk Core observer in the UI.
 	 */
-    protected TaskSignaledObserver() {
+    public TaskSignaledObserver() {
 		super("Signaled Observer",
 				"Fires every time this tasks has a pending signal l");
 

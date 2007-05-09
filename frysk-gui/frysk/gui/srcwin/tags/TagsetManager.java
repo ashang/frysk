@@ -95,7 +95,7 @@ public class TagsetManager {
 			if(tagSet.shouldSaveObject()){
 				Element node = new Element("Tagset");
 				ObjectFactory.theFactory.saveObject(tagSet, node);
-				ObjectFactory.theFactory.exportNode( tagsetsDir.getPath() +"/"+ tagSet.getName(), node);
+				ObjectFactory.theFactory.exportNode(new File(tagsetsDir.getPath(), tagSet.getName()), node);
 			}
 		}
 	}
@@ -139,7 +139,7 @@ public class TagsetManager {
 	 * @param tagSet The tagset to remove.
 	 */
 	public void removeTagset(Tagset tagSet){
-		ObjectFactory.theFactory.deleteNode( tagsetsDir.getPath() + "/"+ tagSet.getName());
+		ObjectFactory.theFactory.deleteNode(new File(tagsetsDir.getPath(),tagSet.getName()));
 		this.tagsets.remove(tagSet);
 		this.nameHash.remove(tagSet);
 	}

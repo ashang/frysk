@@ -69,7 +69,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	public GenericActionPoint enteringGenericActionPoint;
 	public GenericActionPoint exitingGenericActionPoint;
 
-	protected TaskSyscallObserver(	) {
+	public TaskSyscallObserver(	) {
 		super("Syscall Observer", "Fires when a system call is made.");
 		
 		this.enteringTaskFilterPoint = new TaskFilterPoint("task entering syscall","the Task when it is entering the syscall");

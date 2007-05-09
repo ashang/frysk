@@ -114,6 +114,7 @@ public class TestObserverSaveLoad extends GuiTestCase{
 		
 		ObserverRoot observerRoot = (ObserverRoot) ObjectFactory.theFactory.loadObject(node);
 	
+		assertNotNull(observerRoot);
 		assertEquals("Class type", taskForkedObserver.getClass() , observerRoot.getClass());
 		assertEquals("Name", taskForkedObserver.getName(), observerRoot.getName());
 		assertEquals("ToolTip", taskForkedObserver.getToolTip(), observerRoot.getToolTip());

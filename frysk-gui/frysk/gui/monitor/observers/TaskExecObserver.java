@@ -65,7 +65,7 @@ public class TaskExecObserver
 
   public TaskActionPoint taskActionPoint;
 
-  protected TaskExecObserver ()
+  public TaskExecObserver ()
   {
     super("Exec Observer", "Fires every time this task executes an exec call");
 

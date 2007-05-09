@@ -60,7 +60,7 @@ public class ProgramObserver extends TaskObserverRoot implements TaskObserver.Fo
    */
   ObservableLinkedList procs;
   
-  protected ProgramObserver(){
+  public ProgramObserver(){
     super("Program Observer", "Observers for launching of new processes");
     this.procs = new ObservableLinkedList();
   }

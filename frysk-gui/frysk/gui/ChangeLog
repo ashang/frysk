@@ -1,3 +1,10 @@
+2007-05-09  swagiaal  <swagiaal@redhat.com>
+
+	* test/GuiTestCase.java: Replaced calls to File(path+name) with
+	File(file,name) calls.
+	* druid/CreateFryskSessionDruid.java: Removed setProcessNext.
+	Added support of adding session type to session name suggested.
+
 2007-05-09  Mike Cvet  <mcvet@redhat.com>
 
 	* sessions/Session.java (startSession): Compile Procs lists from all 

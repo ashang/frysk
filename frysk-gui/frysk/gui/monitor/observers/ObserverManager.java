@@ -65,7 +65,7 @@ import frysk.gui.monitor.actions.CaptureStackTraceAction;
  * */
 public class ObserverManager {
 
-  private static final File OBSERVERS_DIR = new File(Config.getFryskDir().getPath() + "/Observers" + "/");
+  private static final File OBSERVERS_DIR = new File(Config.getFryskDir(), "/Observers/");
 	
   public static ObserverManager theManager = new ObserverManager(OBSERVERS_DIR);
 	
@@ -97,16 +97,19 @@ public class ObserverManager {
     
     public ObserverManager(File observersDir){
       
+      observersDir.mkdirs();
+      
+      this.observersDir = observersDir;
+      
       this.baseObservers = new ObservableLinkedList();
       this.taskObservers = new ObservableLinkedList();
       this.defaultObservers = new ObservableLinkedList();
-      this.observersDir = observersDir;
       
       this.programObserver = new ProgramObserver();
         
       this.nameHash = new UniqueHashMap();
       
-      observersDir.mkdir();
+      this.observersDir.mkdirs();
     }
 	
     public void init(){
@@ -251,7 +254,7 @@ public class ObserverManager {
 	 * */
 	public void removeTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.remove(observer);
-		if(!ObjectFactory.theFactory.deleteNode( observersDir + "/" +observer.getName())){
+		if(!ObjectFactory.theFactory.deleteNode(new File( observersDir, observer.getName()))){
 			//throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete " + observer.getName());
 		}
 		this.nameHash.remove(observer);
@@ -266,6 +269,10 @@ public class ObserverManager {
       Element node = new Element("Observer");
       	
       File[] files = observersDir.listFiles();
+      if(files == null){
+	return;
+      }
+      
       ObserverRoot loadedObserver = null;
       for (int i = 0; i < files.length; i++) {
 	if(files[i].getName().startsWith(".")){
@@ -298,7 +305,7 @@ public class ObserverManager {
 	if(observer.shouldSaveObject()){
 	  Element node = new Element("Observer");
 	  ObjectFactory.theFactory.saveObject(observer, node);
-	  ObjectFactory.theFactory.exportNode( observersDir + "/" +observer.getName(), node);
+	  ObjectFactory.theFactory.exportNode(new File( observersDir,observer.getName()), node);
 	  WindowManager.logger.log(Level.FINER, "{0} save saved {1}\n", new Object[]{this, observer.getName()});
 	}else{
 	  WindowManager.logger.log(Level.FINER, "{0} save did not save {1}\n", new Object[]{this, observer.getName()});

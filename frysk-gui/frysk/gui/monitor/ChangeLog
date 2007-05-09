@@ -1,3 +1,23 @@
+2007-05-09  swagiaal  <swagiaal@redhat.com>
+
+	* observers/TaskTerminatingObserver.java: Made the no argument constructor
+	public.
+	* observers/TaskSyscallObserver.java: Ditto.
+	* observers/TaskSignaledObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskCloneObserver.java: Ditto.
+	* observers/ProgramObserver.java: Ditto.
+	* observers/ObserverRoot.java: Remved old unused code.
+	Formated file.
+	* observers/ObserverManager.java: Replaced calls to File(path+name) with
+	File(file,name) calls.
+	* ObjectFactory.java (getObject): uses getDeclaredConstructor instead of
+	getConstructor.
+	Now uses Files instead of String paths.
+	* ListView.java: When an element is removed the element
+	taking its place is now selected.
+
 2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/SysCallUtilyInfo.java: Replaced use of 

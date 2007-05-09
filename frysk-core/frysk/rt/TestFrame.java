@@ -90,14 +90,29 @@ public class TestFrame
     assertRunUntilStop("Attach to process");
     
     Frame frame = StackFactory.createFrame(task);
- 
+    System.out.println("TestFrame.backtrace()");
+    
     while (frame != null)
       {
+	
+	Line[] lines = frame.getLines();
+	System.out.println("TestFrame.backtrace() lines.length " + lines.length);
+	for (int i = 0; i < lines.length; i++)
+	      {
+		Line line = lines[i];
+		System.out.println("> " + line.getDOMSource().
+		                   getLine(line.
+		                           getLine())
+		                           .getText());
+	      }
+	    
      // System.err.println(frame.cursor.getProcName(100).name);
       logger.log(Level.FINE, "testAttached, frame name: {0}\n", 
                  frame.getProcName());
       frame = frame.getOuter();
+      
     } 
+    
   }
   
 }

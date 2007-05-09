@@ -211,11 +211,14 @@ public class Config
     public static File getFryskTestDir(){
       File file = null;
       try{
-	file = File.createTempFile(".frysk", null);
+//	file = File.createTempFile(".frysk", "/");
+	file = new File("/tmp/.frysk_temp_test_dir/");
+	
       }catch (Exception e){
 	e.printStackTrace();
       }
-      file.mkdir();
+      
+      file.mkdirs();
       file.deleteOnExit();
       return file;
     }

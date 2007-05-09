@@ -46,24 +46,24 @@ import frysk.junit.TestCase;
 
 public class GuiTestCase extends TestCase{
   public static final File TEST_DIR = Config.getFryskTestDir();
-  public static final File OBSERVERS_TEST_DIR = new File(TEST_DIR.getPath() + "/Observers");
-  public static final File SESSIONS_TEST_DIR = new File(TEST_DIR.getPath() + "/Sessions");
-  public static final File TAGSETS_TEST_DIR = new File(TEST_DIR.getPath() + "/Tagsets");
+  public static final File OBSERVERS_TEST_DIR = new File(TEST_DIR.getPath() + "/Observers/");
+  public static final File SESSIONS_TEST_DIR = new File(TEST_DIR.getPath() + "/Sessions/");
+  public static final File TAGSETS_TEST_DIR = new File(TEST_DIR.getPath() + "/Tagsets/");
   
   protected void setUp () throws Exception
   {
     super.setUp();
     
-    TEST_DIR.mkdir();
+    TEST_DIR.mkdirs();
     cleanDir(TEST_DIR);
     
-    OBSERVERS_TEST_DIR.mkdir();
+    OBSERVERS_TEST_DIR.mkdirs();
     cleanDir(OBSERVERS_TEST_DIR);
     
-    SESSIONS_TEST_DIR.mkdir();
+    SESSIONS_TEST_DIR.mkdirs();
     cleanDir(SESSIONS_TEST_DIR);
     
-    TAGSETS_TEST_DIR.mkdir();
+    TAGSETS_TEST_DIR.mkdirs();
     cleanDir(TAGSETS_TEST_DIR);
   }
 	

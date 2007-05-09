@@ -85,7 +85,7 @@ public class TaskForkedObserver
   // kept here:
   private HashMap pendingOffspringHashMap;
   
-  protected TaskForkedObserver ()
+  public TaskForkedObserver ()
   {
     super("Fork Observer", "Catches a fork event, and adds the newly forked child to the session");
 

@@ -256,7 +256,7 @@ public class SessionManagerDialog extends org.gnu.gtk.Dialog implements
 					final Session selected = (Session) previousSessions
 							.getSelectedObject();
 					if (selected != null) {
-						SessionManager.theManager.removeSession(selected);
+					  SessionManager.theManager.removeSession(selected);
 					}
 				}
 			}
