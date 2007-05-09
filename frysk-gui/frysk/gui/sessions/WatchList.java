@@ -187,10 +187,35 @@ public class WatchList implements SaveableXXX
       {
 	Variable var = (Variable) iter.next();
 	Element varNode = new Element("variable");
+
+	// A variable may not necessarially have a file/line/colum.
+	// For instance a "register" can be represented as a variable.
+	// For instance, is this the line that the variable was
+	// declared, or the line at which the variable is being
+	// examined, or the most recent line at which the program
+	// stopped and the variable was live.
+	//
+	// A better separation of abstraction is needed.  That way,
+	// when it comes to saving, storing, or manipulating what is
+	// being watched, these lower-level variables are not
+	// involved.  For instance, the text of what was requested, or
+	// the expression of what was requested, could be saved.
+	// Either of which can then be possibly mapped onto a
+	// Variable.
+	//
+	// Further, underlying all this there appears to be a more
+	// fundamental problem.  What happens as a variable moves into
+	// or out of scope?  Variable isn't intended to indicate that.
+	// What happens as a variable's location changes?  Variable
+	// isn't intended to indicate that.  Likely there needs to be
+	// a frysk-core Watch object that worries about all that
+	// stuff; kind of a peer to the Breakpoint object that worries
+	// about code being loaded and un-loaded.
+
 	varNode.setAttribute("type", var.getType().toString());
 	varNode.setAttribute("name", var.getText());
-	varNode.setAttribute("filePath", var.getFilePath());
-	varNode.setAttribute("line", ""+var.getLineNo());
+	varNode.setAttribute("filePath", var.getFilePathXXX());
+	varNode.setAttribute("line", ""+var.getLineNoXXX());
 	
 	node.addContent(varNode);
       }

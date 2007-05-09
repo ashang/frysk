@@ -1,3 +1,9 @@
+2007-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Variable.java (filePathXXX): Rename filePath.
+	(lineNoXXX): Rename lineNo.
+	(columnXXX): Rename column.
+
 2007-05-08  Stan Cox  <scox@redhat.com>
 
 	* ClassType.java (getVariable): newXVariable signature.

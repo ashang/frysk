@@ -52,33 +52,46 @@ public class Variable
     private final Type type;
     private final Location location;
     private final String text;
-    private String filePath;
-    private int lineNo;
-    private int column;
+    // A variable may not necessarially have a file/line/colum.  For
+    // instance a "register" can be represented as a variable.  For
+    // instance, is this the line that the variable was declared, or
+    // the line at which the variable is being examined, or the most
+    // recent line at which the program stopped and the variable was
+    // live.
+    //
+    // A better separation of abstraction is needed.  That way, when
+    // it comes to saving, storing, or manipulating what is being
+    // watched, these lower-level variables are not involved.  For
+    // instance, the text of what was requested, or the expression of
+    // what was requested, could be saved.  Either of which can then
+    // be possibly mapped onto a Variable.
+    private String filePathXXX;
+    private int lineNoXXX;
+    private int columnXXX;
     
-    public String getFilePath ()
+    public String getFilePathXXX ()
     {
-      return filePath;
+      return filePathXXX;
     }
 
     public void setFilePathXXX (String filePath)
     {
-      this.filePath = filePath;
+      this.filePathXXX = filePath;
     }
 
-    public int getLineNo ()
+    public int getLineNoXXX ()
     {
-      return lineNo;
+      return lineNoXXX;
     }
 
     public void setLineNoXXX (int lineNo)
     {
-      this.lineNo = lineNo;
+      this.lineNoXXX = lineNo;
     }
 
-    public int getColumn ()
+    public int getColumnXXX ()
     {
-      return column;
+      return columnXXX;
     }
 
     public Variable(Type type)	{
@@ -108,9 +121,9 @@ public class Variable
        this.text = text;
        if (die != null)
 	 {
-	   this.filePath = die.getDeclFile();
-	   this.lineNo = (int)die.getDeclLine();
-	   this.column = die.getDeclColumn();
+	   this.filePathXXX = die.getDeclFile();
+	   this.lineNoXXX = (int)die.getDeclLine();
+	   this.columnXXX = die.getDeclColumn();
 	 }
        
     }
