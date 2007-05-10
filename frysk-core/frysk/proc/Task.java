@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 import java.util.Observer;
 import java.util.Observable;
 
-abstract public class Task
+public abstract class Task
 {
   protected static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
 
@@ -109,7 +109,7 @@ abstract public class Task
   /**
    * Fetch this Task's Instruction Set Architecture.
    */
-  abstract protected Isa sendrecIsa ();
+  protected abstract Isa sendrecIsa ();
 
   public final SyscallEventInfo getSyscallEventInfo ()
   {

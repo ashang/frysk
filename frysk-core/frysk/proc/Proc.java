@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -214,7 +214,7 @@ public abstract class Proc
     logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
   }
 
-  abstract void sendRefresh ();
+  protected abstract void sendRefresh ();
 
   /**
    * The current state of this Proc, during a state transition newState is null.
@@ -839,7 +839,7 @@ public abstract class Proc
   /**
    * Extract the auxv from the inferior.
    */
-  abstract Auxv[] sendrecAuxv ();
+  protected abstract Auxv[] sendrecAuxv ();
 
   /**
    * Get the Isa object associated with the process. Only use this
@@ -850,7 +850,7 @@ public abstract class Proc
     return sendrecIsa();
   }
   
-  abstract Isa sendrecIsa();
+  protected abstract Isa sendrecIsa();
   
   /**
    * The process has transitioned to the attached state. XXX: Should be made

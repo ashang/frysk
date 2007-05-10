@@ -86,7 +86,7 @@ public class LinuxCoreFileHost
     return LinuxCoreFileHostState.initial (this);
   }
   
-  void sendRefresh(boolean refreshAll) 
+  protected void sendRefresh(boolean refreshAll) 
   {
 
     // Iterate (build) the /proc tree, passing each found PID to
@@ -104,7 +104,7 @@ public class LinuxCoreFileHost
 
   }
 
-  void sendRefresh (final ProcId procId, final FindProc finder)
+  protected void sendRefresh (final ProcId procId, final FindProc finder)
   {
 
     // Core files nevers never change 
@@ -138,9 +138,9 @@ public class LinuxCoreFileHost
   } 
 
 
-  void sendCreateAttachedProc(String stdin, String stdout,
-			      String stderr, String[] args,
-			      TaskObserver.Attached attached)
+  protected void sendCreateAttachedProc(String stdin, String stdout,
+					String stderr, String[] args,
+					TaskObserver.Attached attached)
   {
   }
 

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ public class LinuxPtraceProc
     {
 	super (task, forkId);
     }
-    void sendRefresh ()
+    protected void sendRefresh ()
     {
 	// Compare this against the existing taskPool.  ADDED
 	// accumulates any tasks added to the taskPool.  REMOVED,
@@ -143,7 +143,7 @@ public class LinuxPtraceProc
 	}
     }
 
-    Auxv[] sendrecAuxv ()
+    protected Auxv[] sendrecAuxv ()
     {
 	class BuildAuxv
 	    extends AuxvBuilder

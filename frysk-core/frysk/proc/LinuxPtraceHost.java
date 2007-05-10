@@ -165,7 +165,7 @@ public class LinuxPtraceHost
     }
   }
 
-  void sendRefresh (boolean refreshAll)
+  protected void sendRefresh (boolean refreshAll)
   {
     // Iterate (build) the /proc tree, passing each found PID to
     // procChanges where it can update the /proc tree.
@@ -201,7 +201,7 @@ public class LinuxPtraceHost
       }
   }
   
-  void sendRefresh (final ProcId procId, final FindProc finder)
+  protected void sendRefresh (final ProcId procId, final FindProc finder)
   {
 
     // Iterate (build) the /proc tree starting with the given procId.
@@ -250,8 +250,9 @@ public class LinuxPtraceHost
    * Create an attached process that is a child of this process (and
    * this task).
    */
-  void sendCreateAttachedProc (String in, String out, String err,
-                               String[] args, TaskObserver.Attached attached)
+  protected void sendCreateAttachedProc (String in, String out, String err,
+					 String[] args,
+					 TaskObserver.Attached attached)
   {
     logger.log(Level.FINE, "{0} sendCreateAttachedProc\n", this);
     int pid = Fork.ptrace(in, out, err, args);

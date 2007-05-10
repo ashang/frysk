@@ -1,3 +1,9 @@
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/TestSetCreation.java: Replace references to
+	frysk.proc.DummyProc and frysk.proc.DummyTask with
+	frysk.proc.dummy.Proc and frysk.proc.dummy.Task.
+
 2007-05-09  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): Remove DwarfDie from newXVariable signature.

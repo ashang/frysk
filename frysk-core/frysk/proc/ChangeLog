@@ -1,3 +1,19 @@
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (sendrecIsa): Put scope at start of declaration.
+	* Proc.java (sendRefresh, sendrecAuxv, sendrecIsa): Make protected.
+	* ProcState.java: Make public.
+	* HostState.java: Make public.
+	* Host.java (Host): Make protected.
+	(sendRefresh, sendCreateAttachedProc): Make protected.
+	* DummyProc.java: Replaced by frysk.proc.dummy.Proc.
+	* DummyHost.java: Replaced by frysk.proc.dummy.Host.
+	* DummyTask.java: Replaced by frysk.proc.dummy.Task.
+	* LinuxPtraceHost.java: Update scopes.
+	* LinuxPtraceProc.java: Update scopes.
+	* LinuxCoreFileHost.java: Update scopes.
+	* LinuxCoreFileProc.java: Update scopes.
+
 2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskSyscallObserver.java: Added a syscall cache.

@@ -116,7 +116,7 @@ public class LinuxCoreFileProc extends Proc
     return memory;
   }
 
-  void sendRefresh() 
+  protected void sendRefresh() 
   {
     // Find tasks. Refresh is a misnomer here as 
     // Corefiles will never spawn new tasks beyond the
@@ -133,7 +133,7 @@ public class LinuxCoreFileProc extends Proc
       }
   }
 
-  Auxv[] sendrecAuxv ()
+    protected Auxv[] sendrecAuxv ()
     {
       final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
 
@@ -161,7 +161,7 @@ public class LinuxCoreFileProc extends Proc
     }
 
 
-  Isa sendrecIsa() 
+  protected Isa sendrecIsa() 
   {
     logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 

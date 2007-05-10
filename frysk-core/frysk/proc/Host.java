@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ public abstract class Host
     /**
      * The host corresponds to a specific system.
      */
-    Host ()
+    protected Host ()
     {
         newState = getInitialState();
 	logger.log (Level.FINE, "{0} Host\n", this);
@@ -126,9 +126,9 @@ public abstract class Host
     }
 
     // Refresh the list of processes.
-    abstract void sendRefresh (boolean refreshAll);
+    protected abstract void sendRefresh (boolean refreshAll);
     
-    abstract void sendRefresh (ProcId procId, FindProc finder);
+    protected abstract void sendRefresh (ProcId procId, FindProc finder);
     
     /**
      * Tell the host to create a running child process.
@@ -142,9 +142,11 @@ public abstract class Host
      *
      * XXX: Is this the best thing?
      */
-    abstract void sendCreateAttachedProc (String stdin, String stdout,
-					  String stderr, String[] args,
-					  TaskObserver.Attached attached);
+    protected abstract void sendCreateAttachedProc (String stdin,
+						    String stdout,
+						    String stderr,
+						    String[] args,
+						    TaskObserver.Attached attached);
 
     /**
      * The current state of this host.

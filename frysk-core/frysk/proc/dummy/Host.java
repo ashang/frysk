@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,56 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.dummy;
 
-public class DummyTask extends Task {
+import frysk.proc.TaskObserver;
+import frysk.proc.ProcId;
+import frysk.proc.HostState;
+import frysk.proc.Proc;
 
-    public DummyTask (Proc parent)
+public class Host
+    extends frysk.proc.Host
+{
+    protected void sendRefresh(boolean refreshAll)
     {
-      super (parent, (TaskObserver.Attached) null, null);
     }
-	
-	public String getStateString(){
-		return "Attached";
-	}
-	
-	protected Isa sendrecIsa() {
-		return null;
-	}
-
-	protected void sendContinue(int sig) {
-	}
-
-	protected void sendStepInstruction(int sig) {
-	}
-
-	protected void sendStop() {
-	}
-
-	protected void sendSetOptions() {
-	}
-
-	protected void sendAttach() {
-	}
-
-	protected void sendDetach(int sig) {
-	}
-
-	protected void sendSyscallContinue(int sig) {
-	}
-
-	protected void startTracingSyscalls() {
-	}
-
-	protected void stopTracingSyscalls() {
-	}
-
-  protected void fillMemory ()
-  {
-  }
-
-  protected void fillRegisterBank ()
-  {
-  }
-
+    protected void sendCreateAttachedProc(String stdin, String stdout,
+					  String stderr, String[] args,
+					  TaskObserver.Attached attached)
+    {
+    }
+    protected Proc sendrecSelf()
+    {
+	return null;
+    }
+    protected void sendRefresh (ProcId procId, FindProc finder)
+    {
+    }
+    /**
+     * The Constructor in Host.java needs a starting state.  As Host
+     * is abstract and cannot return a state specific to its subclass,
+     * return here in the subclass
+     */
+    protected HostState getInitialState ()
+    {
+	return null;
+    }
 }

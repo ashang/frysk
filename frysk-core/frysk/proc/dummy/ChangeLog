@@ -1,0 +1,13 @@
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: New file.
+	* Task.java: Moved and updated from frysk.proc.DummyTask.java.
+	* Host.java: Moved and updated from frysk.proc.DummyHost.java.
+	* Proc.java: Moved and updated from frysk.proc.DummyProc.java.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

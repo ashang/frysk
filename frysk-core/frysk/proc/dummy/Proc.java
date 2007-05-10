@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,51 +37,57 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.dummy;
 
-public class DummyProc extends Proc {
+import frysk.proc.Auxv;
+import frysk.proc.ProcState;
+import frysk.proc.ProcId;
+import frysk.proc.Isa;
 
-	public DummyProc(){
-		super(new DummyHost(), null, new ProcId(42));
-	}
-	
-	public String getCommand(){
-		return "Foo";
-	}
-	
-	protected String sendrecCommand() {
-		return null;
-	}
-
-	protected String sendrecExe() {
-		return null;
-	}
-
-	protected int sendrecUID() {
-		return 0;
-	}
-
-        protected int sendrecGID() {
-		return 0;
-        }
-
-	protected String[] sendrecCmdLine() {
-		return null;
-	}
-
-	void sendRefresh() {
-	}
-  
-        protected ProcState getInitialState (boolean procStarting) {
-	        return null;
-	}
-
-	Auxv[] sendrecAuxv() {
-		return null;
-	}
-
-  Isa sendrecIsa() 
-  {
-    return null;
-  }
+public class Proc
+    extends frysk.proc.Proc
+{
+    public Proc()
+    {
+	super(new Host(), null, new ProcId(42));
+    }
+    public String getCommand()
+    {
+	return "Foo";
+    }
+    protected String sendrecCommand()
+    {
+	return null;
+    }
+    protected String sendrecExe()
+    {
+	return null;
+    }
+    protected int sendrecUID()
+    {
+	return 0;
+    }
+    protected int sendrecGID()
+    {
+	return 0;
+    }
+    protected String[] sendrecCmdLine()
+    {
+	return null;
+    }
+    protected void sendRefresh()
+    {
+    }
+    protected ProcState getInitialState (boolean procStarting)
+    {
+	return null;
+    }
+    protected Auxv[] sendrecAuxv()
+    {
+	return null;
+    }
+    protected Isa sendrecIsa() 
+    {
+	return null;
+    }
 }
