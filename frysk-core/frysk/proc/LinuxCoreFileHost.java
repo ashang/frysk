@@ -76,16 +76,6 @@ public class LinuxCoreFileHost
       }
   }
 
-  /**
-   * The Constructor in Host.java needs a starting state.
-   * As Host is abstract and cannot return a state specific
-   * to its subclass, return here in the subclass
-   */
-  protected HostState getInitialState ()
-  {
-    return LinuxCoreFileHostState.initial (this);
-  }
-  
   protected void sendRefresh(boolean refreshAll) 
   {
 

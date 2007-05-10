@@ -64,12 +64,10 @@ public abstract class Host
      */
     protected Host ()
     {
-        newState = getInitialState();
+        newState = HostState.initial (this);
 	logger.log (Level.FINE, "{0} Host\n", this);
     }
   
-    protected abstract HostState getInitialState();
-
     // Maintain a collection of all known Tasks.
 
     // There's no new task observer here.  It's the responsibility of

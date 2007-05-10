@@ -41,7 +41,6 @@ package frysk.proc.dummy;
 
 import frysk.proc.TaskObserver;
 import frysk.proc.ProcId;
-import frysk.proc.HostState;
 import frysk.proc.Proc;
 
 public class Host
@@ -61,14 +60,5 @@ public class Host
     }
     protected void sendRefresh (ProcId procId, FindProc finder)
     {
-    }
-    /**
-     * The Constructor in Host.java needs a starting state.  As Host
-     * is abstract and cannot return a state specific to its subclass,
-     * return here in the subclass
-     */
-    protected HostState getInitialState ()
-    {
-	return null;
     }
 }

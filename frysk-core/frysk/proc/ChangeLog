@@ -1,5 +1,12 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (getInitialState): Delete.
+	* HostState.java: Implement single state directly.
+	* LinuxCoreFileHostState.java: Delete.
+	* LinuxPtraceHostState.java: Delete.
+	* LinuxCoreFileHost.java: Update.
+	* LinuxPtraceHost.java: Update.
+
 	* Task.java (sendrecIsa): Put scope at start of declaration.
 	* Proc.java (sendRefresh, sendrecAuxv, sendrecIsa): Make protected.
 	* ProcState.java: Make public.

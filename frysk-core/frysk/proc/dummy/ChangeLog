@@ -1,5 +1,7 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (getInitialState): Delete.
+
 	* package.html: New file.
 	* Task.java: Moved and updated from frysk.proc.DummyTask.java.
 	* Host.java: Moved and updated from frysk.proc.DummyHost.java.
