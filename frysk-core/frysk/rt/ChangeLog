@@ -1,8 +1,13 @@
+2007-05-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Display.java: New File.
+
 2007-05-10  Nurdin Premji  <npremji@redhat.com>
 
 	* RemoteFrame.java (getOuter): Stop looking for outer frames when stepping is
 	finished.
 
+>>>>>>> 1.233
 2007-05-08  Nurdin Premji  <npremji@redhat.com>
 
 	* RemoteFrame.java (getOuter): Check if outer frame is not null just return it.

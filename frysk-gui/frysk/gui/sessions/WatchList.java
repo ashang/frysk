@@ -62,6 +62,7 @@ public class WatchList implements SaveableXXX
   private boolean shouldSave = true; // Save by default
   private List listeners;
   private List vars;
+  private List descriptions; // Holds the descriptions of the Variable Watches loaded from disk
   
   /**
    * Creates a new empty list of watched variables
@@ -71,6 +72,7 @@ public class WatchList implements SaveableXXX
   {
     vars = new LinkedList();
     listeners = new LinkedList();
+    descriptions = new LinkedList();
   }
   
   /**
@@ -82,6 +84,7 @@ public class WatchList implements SaveableXXX
   {
     vars = new LinkedList(other.vars);
     listeners = new LinkedList();
+    descriptions = new LinkedList();
   }
   
   /**
@@ -137,6 +140,17 @@ public class WatchList implements SaveableXXX
   }
   
   /**
+   * Retrieves an iterator to the descriptions that contain the data to recreate
+   * the variable watches.
+   * 
+   * @return An iterator that iterates through the watch descriptions
+   */
+  public Iterator getDescriptionIterator()
+  {
+    return descriptions.iterator();
+  }
+  
+  /**
    * Refreshes the variables in the list
    *
    */
@@ -155,6 +169,27 @@ public class WatchList implements SaveableXXX
   {
     listeners.add(obj);
   }
+  
+  /**
+   * Get the number of variables currently being watched
+   * @return The number of variables currently being watched
+   */
+  public int getWatchSize()
+  {
+    return vars.size();
+  }
+  
+  
+  /**
+   * Get the number of descriptions that are contained in this
+   * watch list.
+   * @return The number of variable descriptions being stored.
+   */
+  public int getDescriptionSize()
+  {
+    return descriptions.size();
+  }
+  
   
   /**
    * Removes a listener from the objects to be notified
@@ -178,10 +213,29 @@ public class WatchList implements SaveableXXX
 
   public void load (Element node)
   {
+    /*
+     * Load the descriptions into a WatchDescription, and store it until needed.
+     */
+    Iterator iter = node.getChildren("variable").iterator();
+    while(iter.hasNext())
+      {
+	Element elem = (Element) iter.next();
+	WatchDescription desc = 
+	  	new WatchDescription(elem.getAttributeValue("type"),
+	  	                     elem.getAttributeValue("text"),
+	  	                     "file",//elem.getAttributeValue("filePath"),
+	  	                     0,//Integer.parseInt(elem.getAttributeValue("line")),
+	  	                     0//Integer.parseInt(elem.getAttributeValue("col"))
+	  	);
+	descriptions.add(desc);
+      }
   }
 
   public void save (Element node)
   {
+    if(!shouldSave)
+      return;
+    
     Iterator iter = vars.iterator();
     while(iter.hasNext())
       {
@@ -213,9 +267,10 @@ public class WatchList implements SaveableXXX
 	// about code being loaded and un-loaded.
 
 	varNode.setAttribute("type", var.getType().toString());
-	varNode.setAttribute("name", var.getText());
-	varNode.setAttribute("filePath", var.getFilePathXXX());
-	varNode.setAttribute("line", ""+var.getLineNoXXX());
+	varNode.setAttribute("text", var.getText());
+	//varNode.setAttribute("filePath", var.getFilePath());
+	//varNode.setAttribute("line", ""+var.getLineNo());
+	//varNode.setAttribute("col", var.get)
 	
 	node.addContent(varNode);
       }

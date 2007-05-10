@@ -1,3 +1,13 @@
+2007-05-10  Adam Jocksch <ajocksch@redhat.com>
+
+	* sessions/WatchDescription.java: New File.
+	* sessions/WatchList.java (getDescriptionIterator): Added.
+	(getWatchSize): Ditto.
+	(getDescriptionSize): Ditto.
+	(load): When saved watches are read in, they are now instantiated
+	as WatchDescriptions.
+	(save): Now checks shouldSave.
+
 2007-05-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* console/ConsoleWindow.java: Renamed from vtecli.
