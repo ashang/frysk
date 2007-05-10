@@ -1,3 +1,8 @@
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFrame.java (backtrace): Revert Sami Wagiaalla's accidental
+	commit.
+
 2007-05-10  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (breakpoint): Changed from SteppingBreakpoint
