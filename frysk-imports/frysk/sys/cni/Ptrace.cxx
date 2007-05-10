@@ -235,24 +235,20 @@ frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
   //          (unsigned int)addr, (int)offset, (int)length);
   for (jlong i = 0; i < length;) {
     union word w;
-    long waddr;
-    long woff;
-    long wlen;
-    
-    waddr = addr & -sizeof(long);
-    woff = (addr - waddr);
-    wlen = sizeof(long) - woff;
+    long waddr = addr & -sizeof(long);
+    long woff = (addr - waddr);
+    long wlen = sizeof(long) - woff;
+    long ilen = length - i;
+    wlen = (wlen < ilen) ? wlen : ilen;
 
     w.l = request (ptPeek, pid, (void*)waddr, 0);
-    // fprintf (stderr, "waddr %#08x contains %#08x\n",
-    //          (unsigned int)waddr, (unsigned int)w.l);
-    
-    for (jlong j = 0; (j < wlen) && (i < length); j++, i++) {
-      elements(bytes)[offset + i] = w.b[woff + j];
-      // fprintf (stderr, "%d --> %#02x\n",
-      //          (int)(offset + i),
-      //          (unsigned int)(elements(bytes)[offset + i]));
-    }
+    //fprintf (stderr, "waddr %#08x contains %#08x\n",
+    //         (unsigned int)waddr, (unsigned int)w.l);
+
+    memcpy (offset + i +  elements(bytes), &w.b[woff], wlen);
+    //fprintf (stderr, "i = %d, length = %d, wlen = %d\n",
+    //       (int)i, (int)length, (int)wlen);
+    i += wlen;
     addr += wlen;
   }
   return length;
