@@ -41,6 +41,8 @@ package frysk;
 
 import java.io.File;
 
+import frysk.testbed.TearDownFile;
+
 /**
  * All the run-time (install time) configuration information.
  */
@@ -211,9 +213,7 @@ public class Config
     public static File getFryskTestDir(){
       File file = null;
       try{
-//	file = File.createTempFile(".frysk", "/");
-	file = new File("/tmp/.frysk_temp_test_dir/");
-	
+	file = TearDownFile.create();
       }catch (Exception e){
 	e.printStackTrace();
       }

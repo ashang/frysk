@@ -1,3 +1,7 @@
+2007-05-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Config.java: (getFryskTestDir): Now uses TearDownFile.create().
+
 2007-05-09  swagiaal  <swagiaal@redhat.com>
 
 	* Config.java (getFryskTestDir): Now uses 
