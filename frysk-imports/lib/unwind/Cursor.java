@@ -50,6 +50,7 @@ public class Cursor
   Unwind unwinder;
   AddressSpace addressSpace;
   Accessors accessors;
+  int step;
 
   public Cursor(AddressSpace addressSpace, Accessors accessors)
   {
@@ -64,6 +65,7 @@ public class Cursor
     this.accessors = accessors;
     this.cursor = cursor;
     this.unwinder = unwinder;
+    this.step = 1;
   }
   
   public boolean isSignalFrame()
@@ -118,7 +120,7 @@ public class Cursor
   {
     logger.log(Level.FINE, "{0}, unwind\n", this);
     Cursor newCursor = new Cursor(addressSpace, accessors, unwinder.copyCursor(cursor), unwinder);
-    int step = newCursor.step();
+    this.step = newCursor.step();
     
     logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
                new Object[] {this, new Integer(step)});
@@ -129,5 +131,8 @@ public class Cursor
     return null;
   }
  
-  
+  public boolean hasMoreFrames()
+  {
+    return step > 0;
+  }
 }

@@ -69,7 +69,7 @@ public class RemoteFrame extends Frame
   
   public Frame getOuter()
   {
-    if (outer == null)
+   if (outer == null && cursor.hasMoreFrames())
       {
 	Cursor newCursor = this.cursor.unwind();
 	if (newCursor != null) 
