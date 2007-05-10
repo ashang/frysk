@@ -142,7 +142,7 @@ public class CurrentStackView
     for (int j = frames.length - 1; j >= 0; j--)
       {
 	Frame frame = frames[j];
-
+	task = frames[j].getTask();
 	boolean hasInlinedCode = false;
 	String row = "";
 	int level = 0;

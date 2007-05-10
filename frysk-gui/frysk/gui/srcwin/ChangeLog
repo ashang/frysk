@@ -1,3 +1,8 @@
+2007-05-10  Mike Cvet  <mcvet@redhat.com>
+
+	* CurrentStackView.java (refreshProc): Make sure to update the Task
+	used by each stack trace.
+
 2007-05-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Added terminal window code; added prep
