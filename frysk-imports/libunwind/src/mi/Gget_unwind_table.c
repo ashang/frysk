@@ -163,10 +163,10 @@ unw_get_unwind_table(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 					 &fde_count, NULL)) < 0)
     return -1;
 
-  Debug(99, "read fde_count\n");
+  Debug(99, "read fde_count: 0x%lx\n", (long) fde_count);
   if (hdr->table_enc != (DW_EH_PE_datarel | DW_EH_PE_sdata4))
     {
-      abort ();
+      return -1;
     }
     
     load_base = segbase - ptxt->p_vaddr;

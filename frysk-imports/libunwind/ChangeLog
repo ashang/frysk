@@ -1,3 +1,9 @@
+2007-05-10  Nurdin Premji  <npremji@redhat.com>
+
+	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Don't abort, just
+	return an error.
+	Cleaned up logging.
+
 2007-04-30  Nurdin Premji  <npremji@redhat.com>
 
 	* src/mi/Gget_unwind_table.c (unw_get_unwind_table): Changed to return
