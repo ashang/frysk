@@ -5,6 +5,14 @@
 	* CurrentStackView.java (refreshProc): Make sure to update the Task
 	used by each stack trace.
 
+	* SourceBuffer.java (setLineBroken): Added.
+	(isLineExecutable): Temporarily disabled line executability check.
+	(drawMargin): Updated margin draw offset to 25.
+	(breakLine): Added.
+	(clickedOnMargin): Enabled right-click breakpoints menu. Checks for
+	added breakpoints on the given line, sets or removes breakpoints
+	as necessary. Addresses #4473.
+
 2007-05-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Added terminal window code; added prep

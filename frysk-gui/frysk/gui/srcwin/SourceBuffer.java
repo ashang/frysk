@@ -255,6 +255,21 @@ public class SourceBuffer
 
     return line.hasBreakPoint();
   }
+  
+  public void setLineBroken (boolean breakpoint, int lineNo)
+  {
+    if (mode != SOURCE_MODE)
+      return;
+
+    if (this.scope == null || this.scope.getLines().length == 0)
+      return;
+    
+    DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(lineNo + 1);
+    if (line == null)
+      return;
+    
+    line.setBreakPoint(breakpoint);
+  }
 
   /**
    * Toggles the breakpoint on line lineNum, returning the previous state of the
@@ -272,8 +287,8 @@ public class SourceBuffer
     if (mode != SOURCE_MODE)
       return false;
 
-    if (! this.isLineExecutable(lineNum))
-      return false;
+//    if (! this.isLineExecutable(lineNum))
+//      return false;
 
     DOMLine line = this.scope.getLines()[0].getDOMSource().getLine(lineNum + 1);
     if (line == null)

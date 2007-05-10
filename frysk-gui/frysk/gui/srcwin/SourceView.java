@@ -42,6 +42,8 @@ package frysk.gui.srcwin;
 
 import java.util.HashMap;
 import java.util.List;
+//import java.io.PrintStream;
+//import java.io.OutputStream;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -51,7 +53,10 @@ import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
 import org.gnu.gtk.Container;
-import org.gnu.gtk.Label;
+//import org.gnu.gtk.GtkStockItem;
+//import org.gnu.gtk.IconSize;
+//import org.gnu.gdk.Image;
+//import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
@@ -61,7 +66,7 @@ import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
-import org.gnu.gtk.WindowType;
+//import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 import org.gnu.gtk.event.MenuItemEvent;
@@ -74,6 +79,8 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
+//import frysk.cli.hpd.*;
+//import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -86,8 +93,14 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.rt.LineBreakpoint;
 import frysk.rt.Frame;
+import frysk.rt.SteppingEngine;
+//import frysk.rt.Line;
 import frysk.value.Variable;
+
+//import lib.dw.Dwfl;
+//import lib.dw.DwflLine;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -526,13 +539,12 @@ public class SourceView
 
         // draw breakpoints
         //XXX
-        if (false && this.buf.isLineBroken(i))
+        if (this.buf.isLineBroken(i))
           {
             int iconHeight = lineHeight - 8;
-
             this.myContext.setRGBForeground(new Color(65535, 0, 0));
             drawingArea.drawRectangle(this.myContext, true,
-                                      this.marginWriteOffset + 5,
+                                      this.marginWriteOffset + 25,
                                       actualFirstStart + drawingHeight + 4,
                                       iconHeight, iconHeight);
             this.myContext.setRGBForeground(lineColor);
@@ -747,60 +759,82 @@ public class SourceView
   {
     return win.equals(this.getWindow(TextWindowType.LEFT));
   }
+  
+  private int breakLine;
 
   private boolean clickedOnMargin (MouseEvent event)
   {
+//    System.err.println("clickedOnMargin");
     TextIter iter = this.getIterFromWindowCoords(0, (int) event.getY());
 
-    int theLine = iter.getLineNumber();
+    breakLine = iter.getLineNumber();
     boolean overNested = false;
 
     // We want to ignore mouse clicks in the margin next to
     // expanded inline code
-    if (theLine == this.buf.getCurrentLine() + 1 && expanded)
+    if (breakLine == this.buf.getCurrentLine() + 1 && expanded)
       return false;
 
-    if (theLine > this.buf.getCurrentLine() && expanded)
-      {
-        theLine--;
-        overNested = true;
-      }
+//    if (breakLine > this.buf.getCurrentLine() && expanded)
+//      {
+//        breakLine--;
+////        overNested = true;
+//      }
 
-    final int lineNum = theLine;
-
+    final int lineNum = breakLine;
+    
+//    System.err.println("menu info " + expanded);
     // only popup a window if the line is executable
     if (event.getButtonPressed() == MouseEvent.BUTTON3
-        && this.buf.isLineExecutable(lineNum) && (! expanded || overNested))
+	&& this.buf.getScope().getLines()[0].getDOMSource().findFunction(breakLine) != null && (! expanded || overNested))
       {
         Menu m = new Menu();
-        MenuItem mi = new MenuItem("Breakpoint information...", false);
-        mi.addListener(new MenuItemListener()
-        {
-          public void menuItemEvent (MenuItemEvent arg0)
-          {
-            org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
-                                                              WindowType.TOPLEVEL);
-            popup.add(new Label("Line: " + (lineNum + 1)));
-            popup.showAll();
-          }
-        });
-        m.append(mi);
-        MenuItem mi2 = new MenuItem("Customize breakpoint actions...", false);
-        m.append(mi2);
-        if (! this.buf.isLineBroken(lineNum))
-          { // no breakpoint, no
-            // info to show
-            mi.setSensitive(false);
-            mi2.setSensitive(false);
-          }
-        m.append(new MenuItem()); // Separator
-        mi = new MenuItem("Toggle Breakpoint", false);
+//        MenuItem mi = new MenuItem("Breakpoint information...", false);
+//        mi.addListener(new MenuItemListener()
+//        {
+//          public void menuItemEvent (MenuItemEvent arg0)
+//          {
+//            org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
+//                                                              WindowType.TOPLEVEL);
+//            popup.add(new Label("Line: " + (lineNum + 1)));
+//            popup.showAll();
+//          }
+//        });
+//        m.append(mi);
+//        MenuItem mi2 = new MenuItem("Customize breakpoint actions...", false);
+//        m.append(mi2);
+//        if (! this.buf.isLineBroken(lineNum))
+//          { // no breakpoint, no
+//            // info to show
+//            mi.setSensitive(false);
+//            mi2.setSensitive(false);
+//          }
+//        m.append(new MenuItem()); // Separator
+        MenuItem mi = new MenuItem("Toggle Breakpoint", false);
         m.append(mi);
         mi.addListener(new MenuItemListener()
         {
           public void menuItemEvent (MenuItemEvent event)
           {
-            SourceView.this.buf.toggleBreakpoint(lineNum);
+            if (SourceView.this.buf.toggleBreakpoint(lineNum) == true)
+              {
+        	SourceView.this.buf.setLineBroken(true, breakLine);
+        	Frame frame = SourceView.this.buf.getScope();
+        	if (frame.getLines().length == 0)
+        	  return;
+        	
+        	DOMSource ds = frame.getLines()[0].getDOMSource();
+        	LineBreakpoint lb = new LineBreakpoint(frame.getTask().getProc(), 
+        	    ds.getFilePath() + "/" +ds.getFileName(), breakLine, 0);
+        	lb.addBreakpoint(frame.getTask());
+              }
+            else
+              {
+        	SourceView.this.buf.setLineBroken(false, breakLine);
+        	SteppingEngine.removeBreakpoint(SourceView.this.buf.getScope().getTask());
+              }
+            
+            SourceView.this.drawMargin();
           }
         });
         m.popup();

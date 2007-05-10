@@ -438,7 +438,7 @@ public class SteppingEngine
       }
   }
 
-  static SteppingBreakpoint breakpoint;
+  static Breakpoint breakpoint;
   static FrameIdentifier frameIdentifier;
 //  FrameIdentifier outerFrameIdentifier;
   
@@ -961,7 +961,7 @@ public class SteppingEngine
   public static void removeBreakpoint (Task task)
   {
     breakpointMap.remove(task);
-    task.requestDeleteCodeObserver(breakpoint, addy);
+    task.requestDeleteCodeObserver(breakpoint, breakpoint.getAddress());
   }
   
   /**
@@ -983,6 +983,7 @@ public class SteppingEngine
    */
   public static void addBreakpoint (Task task, Breakpoint bp)
   {
+    breakpoint = bp;
     task.requestAddCodeObserver(bp, bp.getAddress());
   }
   
