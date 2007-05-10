@@ -1,5 +1,8 @@
 2007-05-10  Nurdin Premji  <npremji@redhat.com>
 
+	* Cursor.java (hasMoreFrames): Removed.
+	(unwind): Check if there are more frames before unwinding.
+
 	* Cursor.java (hasMoreFrames): Added.
 
 2007-05-08  Nurdin Premji  <npremji@redhat.com>

@@ -119,8 +119,15 @@ public class Cursor
   public Cursor unwind()
   {
     logger.log(Level.FINE, "{0}, unwind\n", this);
-    Cursor newCursor = new Cursor(addressSpace, accessors, unwinder.copyCursor(cursor), unwinder);
-    this.step = newCursor.step();
+
+    //XXX: Don't unwind if no more frames.
+    if (step == 0)
+      return null;
+    
+    Cursor newCursor = new Cursor(addressSpace, accessors, 
+                                  unwinder.copyCursor(cursor), unwinder);
+  
+    step = newCursor.step();
     
     logger.log(Level.FINEST, "{0}, unwind, step returned: {1}\n", 
                new Object[] {this, new Integer(step)});
@@ -129,10 +136,5 @@ public class Cursor
       return newCursor;
        
     return null;
-  }
- 
-  public boolean hasMoreFrames()
-  {
-    return step > 0;
-  }
+  }  
 }
