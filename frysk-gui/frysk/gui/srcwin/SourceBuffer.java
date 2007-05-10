@@ -172,6 +172,7 @@ public class SourceBuffer
   private boolean firstLoad = true;
   
   private String fileName = "";
+  private int tid = 0;
 
   /**
    * Creates a new SourceBuffer
@@ -877,7 +878,8 @@ public class SourceBuffer
         switch (mode)
           {
           case SOURCE_MODE:
-            if (this.fileName.equals("") || ! this.fileName.equals(file) || this.mode != SOURCE_MODE)
+            if (this.fileName.equals("") || ! this.fileName.equals(file) 
+        	|| scope.getTask().getTid() != this.tid || this.mode != SOURCE_MODE)
               {
                 this.firstLoad = true;
                 loadFile();
