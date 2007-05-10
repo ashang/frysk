@@ -1,5 +1,7 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskId.java: Make public.
+
 	* Host.java (getInitialState): Delete.
 	* HostState.java: Implement single state directly.
 	* LinuxCoreFileHostState.java: Delete.
