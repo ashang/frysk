@@ -1,4 +1,11 @@
-2007-05-09  swagiaal  <swagiaal@redhat.com>
+2007-05-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Added terminal window code; added prep
+	work for console window.
+	* SourceWindowFactory.java: Added the passing of STDIN,
+	STDOUT and STDERR for task activation.
+
+2007-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* tags/TagsetManager.java: Uses files instead of String paths.
 

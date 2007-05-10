@@ -136,7 +136,8 @@ import frysk.rt.Line;
 import frysk.rt.StackFactory;
 import frysk.rt.SteppingEngine;
 import frysk.value.Variable;
-import frysk.vtecli.ConsoleWindow;
+import frysk.gui.console.ConsoleWindow;
+import frysk.gui.terminal.TermWindow;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -283,6 +284,8 @@ public class SourceWindow
   private VariableWatchView watchView;
 
   private ConsoleWindow conWin;
+  
+  private TermWindow termWin;
 
   protected boolean SW_active = false;
 
@@ -738,10 +741,12 @@ public class SourceWindow
    * @param env_variables	The environment arguments to pass to the executable
    * @param options 
    */
-  protected void addProc (String exe, String env_variables, String options)
+  protected void addProc (String exe, String env_variables, String options, 
+                          String stdin, String stdout, String stderr)
   {
 	this.SW_add = true;
-  	this.addedAttachedObserver = SourceWindowFactory.startNewProc(exe, env_variables, options);
+  	this.addedAttachedObserver = SourceWindowFactory.startNewProc(exe, env_variables, options,
+  	                                                              stdin, stdout, stderr);
   }
   
   /**
@@ -888,9 +893,8 @@ public class SourceWindow
 	if(dProc.getExecutablePath().equals(swProc[current].getExe()))
 	  return dProc;
       }
-    
     /* should not get here */
-    // TODO: throw an exception if we do
+    //TODO: throw an exception if we do
     return null;
   }
   
@@ -1019,7 +1023,8 @@ public class SourceWindow
 			String task_opt = task_options.getText();
 			String filename = fc.getFilename();
 			fc.destroy();
-		        addProc(filename, env_var, task_opt);
+			String[] stds = createTermWindow(filename);
+		        addProc(filename, env_var, task_opt, stds[0], stds[1], stds[2]);
 		      }
 		    });
 		  fc.setIcon(IconManager.windowIcon);
@@ -1034,7 +1039,8 @@ public class SourceWindow
 		      String task_opt = task_options.getText();
 		      String filename = fc.getFilename();
 		      fc.destroy();
-		      addProc(filename, env_var, task_opt);
+		      String[] stds = createTermWindow(filename);
+		      addProc(filename, env_var, task_opt, stds[0], stds[1], stds[2]);
 		    }
 		}
 	    catch (Exception e) 
@@ -1501,8 +1507,8 @@ public class SourceWindow
     menu = new MenuItem("View", false);
     tmp = new Menu();
 
-    // mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
-    // tmp.append(mi);
+    //mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
+    //tmp.append(mi);
 
     mi = (MenuItem) this.toggleRegisterWindow.createMenuItem();
     tmp.append(mi);
@@ -2830,6 +2836,21 @@ public class SourceWindow
       this.conWin = new ConsoleWindow();
     else
       this.conWin.showAll();
+  }
+  
+  /**
+   * Creates the TermWindow that a process will have 
+   * STDIN/STDOUT/STDERR assigned to
+   */
+  private String[] createTermWindow(String filepath)
+  {
+    this.termWin = new TermWindow();
+    this.termWin.setWindowTitle(filepath);
+    this.termWin.showAll();
+    // Get the /dev/pts/?? pseudoterminal to point the new process to 
+    String std = this.termWin.getPts();
+    String stds[] = {std, std, std};
+    return stds;
   }
   
   /**

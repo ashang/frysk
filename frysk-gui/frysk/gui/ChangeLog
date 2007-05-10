@@ -1,4 +1,9 @@
-2007-05-09  swagiaal  <swagiaal@redhat.com>
+2007-05-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* console/ConsoleWindow.java: Renamed from vtecli.
+	* terminal/TermWindow.java: New.
+
+2007-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/GuiTestCase.java: Replaced calls to File(path+name) with
 	File(file,name) calls.

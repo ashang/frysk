@@ -171,7 +171,8 @@ public class SourceWindowFactory
     });
   }
   
-  public static AttachedObserver startNewProc (String file, String env_variables, String options)
+  public static AttachedObserver startNewProc (String file, String env_variables, String options,
+                                               String stdin, String stdout, String stderr)
   {
     File file_path = new File(file);
     String[] cmd = new String[1];
@@ -197,7 +198,7 @@ public class SourceWindowFactory
     if (file_path.exists())
       {
 	newProcObserver = new AttachedObserver();
-        Manager.host.requestCreateAttachedProc(cmd, newProcObserver);
+        Manager.host.requestCreateAttachedProc(stdin, stdout, stderr, cmd, newProcObserver);
       }
     // else, do nothing.
     return newProcObserver;
