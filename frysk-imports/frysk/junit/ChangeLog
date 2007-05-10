@@ -1,3 +1,10 @@
+2007-05-10  Nurdin Premji  <npremji@redhat.com>
+
+	* Runner.java (createCommandLineParser): Added "unbreak" command line option 
+	to run broken tests.
+	* TestCase.java (brokenXXX): Changed trueXXX boolean to brokenXXX. 
+	Only print statement if brokenXXX is true.
+
 2007-04-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCase.java (getTimeoutSeconds): Make public.

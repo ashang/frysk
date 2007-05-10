@@ -386,6 +386,14 @@ public class Runner
 
     EventLogger.addConsoleOptions(parser);
     
+    parser.add(new Option("unbreak", 'u', "Run broken tests")
+    {
+      public void parsed (String arg) throws OptionException
+      {
+	TestCase.brokenXXX = false;
+      }
+    });
+    
     parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.", "<LEVEL>")
     {
       public void parsed (String arg0) throws OptionException
@@ -551,7 +559,8 @@ public class Runner
 			  + " [ --all ]"
 			  + " [-o spec...]"
 			  + " [-i spec...]" 
-              + " [--timeout <timeout>]"
+			  + " [--timeout <timeout>]"
+			  + " [--unbreak ]"
 			  + " [ class ... ]");
 	return parser;
     }
