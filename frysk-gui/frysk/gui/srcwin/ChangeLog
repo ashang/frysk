@@ -2,7 +2,8 @@
 
 	* SourceWindow.java: Added activateTerminal; added changes to
 	accomodate the changing of the glade file to remove the
-	environment variable field and add term_activate field.
+	environment variable field and add term_activate field;
+	add a "Processes" pulldown; move "Run executable" there.
 
 2007-05-10  Mike Cvet  <mcvet@redhat.com>
 

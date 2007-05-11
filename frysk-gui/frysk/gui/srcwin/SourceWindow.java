@@ -975,11 +975,11 @@ public class SourceWindow
 
     // Run executable action
     this.open_executable = new Action("start executable",
-                                      "Run executable",
+                                      "Run executable...",
                                       "Run an executable file",
                                       GtkStockItem.OPEN.getString());
     this.open_executable.setAccelGroup(ag);
-    this.open_executable.setAccelPath("<sourceWin>/File/Run executable");
+    this.open_executable.setAccelPath("<sourceWin>/Processes/Run executable...");
     this.open_executable.addListener(new ActionListener()
       {
 	public void actionEvent (ActionEvent action)
@@ -1483,8 +1483,6 @@ public class SourceWindow
     MenuItem mi = (MenuItem) this.open_core.createMenuItem();
     Menu tmp = new Menu();
     tmp.append(mi);
-    mi = (MenuItem) this.open_executable.createMenuItem();
-    tmp.append(mi);
     mi = new MenuItem(); // Separator
     tmp.append(mi);
     mi = (MenuItem) this.close.createMenuItem();
@@ -1572,6 +1570,14 @@ public class SourceWindow
     mi = (MenuItem) this.stackDown.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.stackTop.createMenuItem();
+    tmp.append(mi);
+    
+    menu.setSubmenu(tmp);
+    ((MenuBar) this.glade.getWidget("menubar")).append(menu);
+    
+    menu = new MenuItem("Processes", false);
+    tmp = new Menu();
+    mi = (MenuItem) this.open_executable.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);
@@ -2120,7 +2126,7 @@ public class SourceWindow
       }
     
     if (lines.length == 0)
-      setSourceLabel("Unknown File for:", task_name, proc_id);
+      setSourceLabel("Unknown File for: ", task_name, proc_id);
     else if (source == null && lines.length > 0)
       setSourceLabel(sf.getLines()[0].getFile().getPath() + " for: ", task_name, proc_id);
     else
