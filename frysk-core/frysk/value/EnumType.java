@@ -96,7 +96,7 @@ public class EnumType
     return new Iterator();
   }
 
-  public String toString (Variable v)
+  public String toString (Value v)
   {
     return toString();
   }
@@ -143,193 +143,193 @@ public class EnumType
     values.add(new Long(value));
   }
 
-  public static Variable newEnumVariable (Type type, String text)
+  public static Value newEnumValue (Type type, String text)
 {
-    Variable returnVar = new Variable(type, text);
+    Value returnVar = new Value(type, text);
     return returnVar;
   }
 
-  public Variable add (Variable var1, Variable var2)
+  public Value add (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable subtract (Variable var1, Variable var2)
+  public Value subtract (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable assign (Variable var1, Variable var2)
+  public Value assign (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable timesEqual (Variable var1, Variable var2)
+  public Value timesEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable divideEqual (Variable var1, Variable var2)
+  public Value divideEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable minusEqual (Variable var1, Variable var2)
+  public Value minusEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable plusEqual (Variable var1, Variable var2)
+  public Value plusEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable modEqual (Variable var1, Variable var2)
+  public Value modEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftLeftEqual (Variable var1, Variable var2)
+  public Value shiftLeftEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftRightEqual (Variable var1, Variable var2)
+  public Value shiftRightEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseAndEqual (Variable var1, Variable var2)
+  public Value bitWiseAndEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseOrEqual (Variable var1, Variable var2)
+  public Value bitWiseOrEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseXorEqual (Variable var1, Variable var2)
+  public Value bitWiseXorEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable multiply (Variable var1, Variable var2)
+  public Value multiply (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable divide (Variable var1, Variable var2)
+  public Value divide (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable mod (Variable var1, Variable var2)
+  public Value mod (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftLeft (Variable var1, Variable var2)
+  public Value shiftLeft (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftRight (Variable var1, Variable var2)
+  public Value shiftRight (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable lessThan (Variable var1, Variable var2)
+  public Value lessThan (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable greaterThan (Variable var1, Variable var2)
+  public Value greaterThan (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable greaterThanOrEqualTo (Variable var1, Variable var2)
+  public Value greaterThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable lessThanOrEqualTo (Variable var1, Variable var2)
+  public Value lessThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable equal (Variable var1, Variable var2)
+  public Value equal (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable notEqual (Variable var1, Variable var2)
+  public Value notEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseAnd (Variable var1, Variable var2)
+  public Value bitWiseAnd (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseOr (Variable var1, Variable var2)
+  public Value bitWiseOr (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseXor (Variable var1, Variable var2)
+  public Value bitWiseXor (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseComplement (Variable var1)
+  public Value bitWiseComplement (Value var1)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable logicalAnd (Variable var1, Variable var2)
+  public Value logicalAnd (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable logicalOr (Variable var1, Variable var2)
+  public Value logicalOr (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public boolean getLogicalValue (Variable var1)
+  public boolean getLogicalValue (Value var1)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());

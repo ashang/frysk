@@ -55,7 +55,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.proc.Task;
 import frysk.rt.Frame;
 
@@ -195,7 +195,7 @@ public class InlineBuffer
    * We need to do a little fancier Voodoo than the superclass to actually
    * calculate variable values, since we're only displaying the inline function
    */
-  public Variable getVariable (TextIter iter)
+  public Value getVariable (TextIter iter)
   {
     if (this.scope == null || this.scope.getLines().length == 0)
       return null;
@@ -213,7 +213,7 @@ public class InlineBuffer
       return null;
 
     stab.toString();
-    Variable var;
+    Value var;
     try
       {
         var = SymTab.print(line.getText().substring(

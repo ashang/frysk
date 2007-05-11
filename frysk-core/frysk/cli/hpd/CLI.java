@@ -61,7 +61,7 @@ import java.lang.RuntimeException;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -987,7 +987,7 @@ public class CLI
 	  sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
 	}        
 
-      Variable result = null;
+      Value result = null;
       try 
         {
           result = SymTab.print(sInput);

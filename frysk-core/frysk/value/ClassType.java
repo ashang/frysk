@@ -69,9 +69,9 @@ public class ClassType
   {
     private int idx;
 
-    Variable v;
+    Value v;
 
-    ClassIterator (Variable v)
+    ClassIterator (Value v)
     {
       idx = - 1;
       this.v = v;
@@ -92,7 +92,7 @@ public class ClassType
 
     public Object next ()
     {
-      return getVariable(v, idx);
+      return getValue(v, idx);
     }
 
     public void remove ()
@@ -100,7 +100,7 @@ public class ClassType
     }
   }
 
-  private Variable getVariable (Variable v, int idx)
+  private Value getValue (Value v, int idx)
   {
     Type type = ((Type) (types.get(idx)));
     int off = ((Long)offsets.get(idx)).intValue();
@@ -108,9 +108,9 @@ public class ClassType
     switch (((Type)types.get(idx)).typeId)
     {
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteVariable((ArithmeticType)type, v.getByte(off));
+      return ArithmeticType.newByteValue((ArithmeticType)type, v.getByte(off));
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortVariable((ArithmeticType)type, v.getShort(off));
+      return ArithmeticType.newShortValue((ArithmeticType)type, v.getShort(off));
     case BaseTypes.baseTypeInteger:
       int val = v.getInt(off);
       int mask = ((Integer)masks.get(idx)).intValue();
@@ -126,13 +126,13 @@ public class ClassType
 	    }
 	  val = (val & mask) >>> shift;
 	}
-      return ArithmeticType.newIntegerVariable((ArithmeticType)type, val);
+      return ArithmeticType.newIntegerValue((ArithmeticType)type, val);
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongVariable((ArithmeticType)type, v.getLong(off));
+      return ArithmeticType.newLongValue((ArithmeticType)type, v.getLong(off));
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatVariable((ArithmeticType)type, v.getFloat(off));
+      return ArithmeticType.newFloatValue((ArithmeticType)type, v.getFloat(off));
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleVariable((ArithmeticType)type, v.getDouble(off));
+      return ArithmeticType.newDoubleValue((ArithmeticType)type, v.getDouble(off));
     }
     if (type instanceof ClassType)
       {
@@ -140,7 +140,7 @@ public class ClassType
 	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
 	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
 	abb.order(type.getEndian());
-	return new Variable((ClassType)type, type.name, (ArrayByteBuffer)abb);
+	return new Value((ClassType)type, type.name, (ArrayByteBuffer)abb);
       }
     else if (type instanceof ArrayType)
       {
@@ -148,17 +148,17 @@ public class ClassType
 	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
 	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
 	abb.order(type.getEndian());
-	return new Variable((ArrayType)type, type.name, (ArrayByteBuffer)abb);
+	return new Value((ArrayType)type, type.name, (ArrayByteBuffer)abb);
       }
     return null;
   }
   
-  public ClassIterator iterator (Variable v)
+  public ClassIterator iterator (Value v)
   {
     return new ClassIterator(v);
   }
 
-  public Variable get (Variable v, ArrayList components)
+  public Value get (Value v, ArrayList components)
   {
     Iterator ci = components.iterator();
     while (ci.hasNext())
@@ -167,13 +167,13 @@ public class ClassType
 	for (int i = 0; i < names.size(); i++)
 	  {
 	      if (((String)names.get(i)).equals(component))
-	        return getVariable (v, i);
+	        return getValue (v, i);
 	  }
       }
     return null;
   }
   
-  public String toString (Variable v)
+  public String toString (Value v)
   {
     StringBuffer strBuf = new StringBuffer();
     ClassIterator e = iterator(v);
@@ -239,195 +239,195 @@ public class ClassType
     this.size = size;
   }
   
-  public static Variable newClassVariable (Type type, String text,
+  public static Value newClassValue (Type type, String text,
                                            ArrayByteBuffer ab)
   {
     Location loc = new Location(ab);
-    Variable returnVar = new Variable(type, text, loc);
+    Value returnVar = new Value(type, text, loc);
     return returnVar;
   }
 
-  public Variable add (Variable var1, Variable var2)
+  public Value add (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable subtract (Variable var1, Variable var2)
+  public Value subtract (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable assign (Variable var1, Variable var2)
+  public Value assign (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable timesEqual (Variable var1, Variable var2)
+  public Value timesEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable divideEqual (Variable var1, Variable var2)
+  public Value divideEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable minusEqual (Variable var1, Variable var2)
+  public Value minusEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable plusEqual (Variable var1, Variable var2)
+  public Value plusEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable modEqual (Variable var1, Variable var2)
+  public Value modEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftLeftEqual (Variable var1, Variable var2)
+  public Value shiftLeftEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftRightEqual (Variable var1, Variable var2)
+  public Value shiftRightEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseAndEqual (Variable var1, Variable var2)
+  public Value bitWiseAndEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseOrEqual (Variable var1, Variable var2)
+  public Value bitWiseOrEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseXorEqual (Variable var1, Variable var2)
+  public Value bitWiseXorEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable multiply (Variable var1, Variable var2)
+  public Value multiply (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable divide (Variable var1, Variable var2)
+  public Value divide (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable mod (Variable var1, Variable var2)
+  public Value mod (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftLeft (Variable var1, Variable var2)
+  public Value shiftLeft (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable shiftRight (Variable var1, Variable var2)
+  public Value shiftRight (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable lessThan (Variable var1, Variable var2)
+  public Value lessThan (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable greaterThan (Variable var1, Variable var2)
+  public Value greaterThan (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable greaterThanOrEqualTo (Variable var1, Variable var2)
+  public Value greaterThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable lessThanOrEqualTo (Variable var1, Variable var2)
+  public Value lessThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable equal (Variable var1, Variable var2)
+  public Value equal (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable notEqual (Variable var1, Variable var2)
+  public Value notEqual (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseAnd (Variable var1, Variable var2)
+  public Value bitWiseAnd (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseOr (Variable var1, Variable var2)
+  public Value bitWiseOr (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseXor (Variable var1, Variable var2)
+  public Value bitWiseXor (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable bitWiseComplement (Variable var1)
+  public Value bitWiseComplement (Value var1)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable logicalAnd (Variable var1, Variable var2)
+  public Value logicalAnd (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public Variable logicalOr (Variable var1, Variable var2)
+  public Value logicalOr (Value var1, Value var2)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
-  public boolean getLogicalValue (Variable var1)
+  public boolean getLogicalValue (Value var1)
       throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());

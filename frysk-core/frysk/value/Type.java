@@ -97,98 +97,98 @@ public abstract class Type
     return name;
   }
 
-  public abstract String toString (Variable v);
+  public abstract String toString (Value v);
 
-  public abstract Variable add (Variable var1, Variable var2)
+  public abstract Value add (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable subtract (Variable var1, Variable var2)
+  public abstract Value subtract (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable multiply (Variable var1, Variable var2)
+  public abstract Value multiply (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable divide (Variable var1, Variable var2)
+  public abstract Value divide (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable mod (Variable var1, Variable var2)
+  public abstract Value mod (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable shiftLeft (Variable var1, Variable var2)
+  public abstract Value shiftLeft (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable shiftRight (Variable var1, Variable var2)
+  public abstract Value shiftRight (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable lessThan (Variable var1, Variable var2)
+  public abstract Value lessThan (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable greaterThan (Variable var1, Variable var2)
+  public abstract Value greaterThan (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable lessThanOrEqualTo (Variable var1, Variable var2)
+  public abstract Value lessThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable greaterThanOrEqualTo (Variable var1, Variable var2)
+  public abstract Value greaterThanOrEqualTo (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable equal (Variable var1, Variable var2)
+  public abstract Value equal (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable notEqual (Variable var1, Variable var2)
+  public abstract Value notEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseAnd (Variable var1, Variable var2)
+  public abstract Value bitWiseAnd (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseXor (Variable var1, Variable var2)
+  public abstract Value bitWiseXor (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseOr (Variable var1, Variable var2)
+  public abstract Value bitWiseOr (Value var1, Value var2)
   throws InvalidOperatorException;
 
-  public abstract Variable bitWiseComplement (Variable var1)
+  public abstract Value bitWiseComplement (Value var1)
   throws InvalidOperatorException;
 
-  public abstract Variable logicalAnd (Variable var1, Variable var2)
+  public abstract Value logicalAnd (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable logicalOr (Variable var1, Variable var2)
+  public abstract Value logicalOr (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable assign (Variable var1, Variable var2)
+  public abstract Value assign (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable timesEqual (Variable var1, Variable var2)
+  public abstract Value timesEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable divideEqual (Variable var1, Variable var2)
+  public abstract Value divideEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable modEqual (Variable var1, Variable var2)
+  public abstract Value modEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable plusEqual (Variable var1, Variable var2)
+  public abstract Value plusEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable minusEqual (Variable var1, Variable var2)
+  public abstract Value minusEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable shiftLeftEqual (Variable var1, Variable var2)
+  public abstract Value shiftLeftEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable shiftRightEqual (Variable var1, Variable var2)
+  public abstract Value shiftRightEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseOrEqual (Variable var1, Variable var2)
+  public abstract Value bitWiseOrEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseXorEqual (Variable var1, Variable var2)
+  public abstract Value bitWiseXorEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract Variable bitWiseAndEqual (Variable var1, Variable var2)
+  public abstract Value bitWiseAndEqual (Value var1, Value var2)
       throws InvalidOperatorException;
 
-  public abstract boolean getLogicalValue (Variable var) throws InvalidOperatorException;
+  public abstract boolean getLogicalValue (Value var) throws InvalidOperatorException;
   
 }

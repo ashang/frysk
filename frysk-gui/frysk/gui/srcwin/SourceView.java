@@ -95,9 +95,9 @@ import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.Frame;
+import frysk.value.Value;
 import frysk.rt.SteppingEngine;
 //import frysk.rt.Line;
-import frysk.value.Variable;
 
 //import lib.dw.Dwfl;
 //import lib.dw.DwflLine;
@@ -146,7 +146,7 @@ public class SourceView
 
   private SourceViewListener listener;
 
-  private Variable hoveredVar;
+  private Value hoveredVar;
   
   private HashMap varMap = new HashMap();
 
@@ -576,7 +576,7 @@ public class SourceView
     drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
   }
   
-  public void removeVar (Variable var)
+  public void removeVar (Value var)
   {
     if (varMap.containsKey(var.getText()))
       varMap.remove(var.getText());
@@ -602,7 +602,7 @@ public class SourceView
    * @param typeName The name of the type of the variable
    * @return The variable at location, or null if no variable exists
    */
-  public Variable findVariable(String name, String filePath, int lineNo, String typeName)
+  public Value findVariable(String name, String filePath, int lineNo, String typeName)
   {
     
     return null;
@@ -861,7 +861,7 @@ public class SourceView
       {
         TextIter iter = this.getIterFromWindowCoords((int) event.getX(),
                                                      (int) event.getY());
-        final Variable var = this.buf.getVariable(iter);
+        final Value var = this.buf.getVariable(iter);
 
         Menu m = new Menu();
 
@@ -995,7 +995,7 @@ public class SourceView
 
     // Check to see if we've moused over a variable
     // Variable var = this.buf.getVariable(iter);
-    Variable var = this.buf.getVariable(tag, line);
+    Value var = this.buf.getVariable(tag, line);
 
 // TextIter end = this.getIterFromWindowCoords((int) event.getX(),
 //                                                (int) event.getY());

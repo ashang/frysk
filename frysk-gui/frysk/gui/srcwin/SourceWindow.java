@@ -135,7 +135,7 @@ import frysk.rt.Frame;
 import frysk.rt.Line;
 import frysk.rt.StackFactory;
 import frysk.rt.SteppingEngine;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.gui.console.ConsoleWindow;
 import frysk.gui.terminal.TermWindow;
 
@@ -693,12 +693,12 @@ public class SourceWindow
          * 
          * @param var The variable to trace
          */
-  public void addVariableTrace (Variable var)
+  public void addVariableTrace (Value var)
   {
     getCurrentDebugProcess().getWatchList().addVariable(var);
   }
 
-  public void removeVariableTrace (Variable var)
+  public void removeVariableTrace (Value var)
   {
     getCurrentDebugProcess().getWatchList().removeVariable(var);
     return;

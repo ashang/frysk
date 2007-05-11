@@ -57,7 +57,7 @@ import lib.dw.DwAtEncodings;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import antlr.CommonAST;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Frame;
@@ -81,7 +81,7 @@ public class SymTab
   static Subprogram[] subprogram;
 
   /**
-   * Create a symbol table object.
+   * Create a symbol table object.  There should be one SymTab per process.
    * 
    * @param pid
    * @param proc
@@ -246,7 +246,7 @@ public class SymTab
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_structure_type_
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_enumeration_type_)
             {
-              Variable v = SymTab.print(sInput);
+              Value v = SymTab.print(sInput);
 	      if (v != null)
 		result.append(v.getType().getName());
             }
@@ -273,40 +273,40 @@ public class SymTab
        * @return Variable
        * @throws ParseException
        */
-    static public Variable print (String sInput) throws ParseException,
+    static public Value print (String sInput) throws ParseException,
       NameNotFoundException
   {
-    Variable result = null;
+    Value result = null;
     sInput += (char) 3;
 
     final class TmpSymTab
         implements CppSymTab
     {
-      public void put (String s, Variable v) throws NameNotFoundException
+      public void put (String s, Value v) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
 
-      public Variable get (String s) throws NameNotFoundException
+      public Value get (String s) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
 
-      public Variable get (String s, ArrayList v) throws NameNotFoundException
+      public Value get (String s, ArrayList v) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
 
-      public Variable get (ArrayList v) throws NameNotFoundException
+      public Value get (ArrayList v) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
       
-      public Variable getAddress (String s) throws NameNotFoundException
+      public Value getAddress (String s) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }
-      public Variable getMemory (String s) throws NameNotFoundException
+      public Value getMemory (String s) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");        
       }
@@ -474,7 +474,7 @@ public class SymTab
          }
        parm = varDie.getChild();
        subPr.setParameters(nParms);
-       Variable parms[] = subPr.getParameters();
+       Value parms[] = subPr.getParameters();
        nParms = 0;
        while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
          {
@@ -491,7 +491,7 @@ public class SymTab
            parm = parm.getSibling();
          }
        block.setVariables(nParms);
-       Variable vars[] = block.getVariables();
+       Value vars[] = block.getVariables();
        block.setVariableDies(nParms);
        DwarfDie dies[] = block.getVariableDies();
        block.setTypeDies(nParms);
@@ -524,12 +524,12 @@ public class SymTab
        
        if (false)
          {
-           Variable p[] = subPr.getParameters ();
+           Value p[] = subPr.getParameters ();
            System.out.println("Parameters");
            for (int j = 0; j < p.length; j++)
              System.out.println(p[j].getText());
            LexicalBlock b = subPr.getBlock();
-           Variable v[] = b.getVariables();
+           Value v[] = b.getVariables();
            System.out.println("Variables");
            for (int j = 0; j < v.length; j++)
              if (v[j] != null)

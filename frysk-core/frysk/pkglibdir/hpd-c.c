@@ -166,6 +166,7 @@ func_2 (int x, int y)
   assign_int_arr ((int*)arr_2, sizeof (arr_2) / sizeof (int));
   assign_float_arr ((float*)arr_3, sizeof (arr_3) / sizeof (float));
   assign_char_arr (arr_4, sizeof (arr_4));
+  sportscar = porsche;
   
   int_p = &int_22;
   class_p = &class_1;

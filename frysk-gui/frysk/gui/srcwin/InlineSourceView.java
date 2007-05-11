@@ -58,7 +58,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.gui.prefs.IntPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.rt.Frame;
 
 /**
@@ -232,7 +232,7 @@ public class InlineSourceView extends SourceView{
 			
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
 			
-			final Variable var = this.buf.getVariable(iter);
+			final Value var = this.buf.getVariable(iter);
 			
             Menu m = new Menu();
             MenuItem traceItem = new MenuItem("Add Trace", false);

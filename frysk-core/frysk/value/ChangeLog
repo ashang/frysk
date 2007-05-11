@@ -1,3 +1,8 @@
+2007-05-10  Stan Cox  <scox@redhat.com>
+
+	* Value.java (Variable): Rename Value.
+	Change all callers.
+
 2007-05-09  Stan Cox  <scox@redhat.com>
 
 	* ArithmeticType.java (newVariable): Remove DwarfDie from newXVariable 

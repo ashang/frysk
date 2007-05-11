@@ -431,15 +431,15 @@ lib::dw::DwarfDie::get_data_member_location (jlong var_die)
   Dwarf_Op *fb_expr;
   int code;
   size_t fb_len;
-  jlong disp = -1;
   
   if (dwarf_attr_integrate (die, DW_AT_data_member_location, &loc_attr) >= 0)
     {
       code = dwarf_getlocation (&loc_attr, &fb_expr, &fb_len);
       if (fb_len > 0 && fb_expr[0].atom == DW_OP_plus_uconst)
-	disp = fb_expr[0].number;
+	return fb_expr[0].number;
     }
-  return disp;
+  lib::dw::DwException::throwDwException();
+  return 0;
 }
 
 /*

@@ -73,16 +73,16 @@ public class TestValue
   
   public void testNumber ()
   {
-    Variable v1 = ArithmeticType.newByteVariable((ArithmeticType)byteType, (byte)1);
-    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, (short)2);
-    Variable v3 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, 3);
-    Variable v4 = ArithmeticType.newLongVariable((ArithmeticType)longType, 4);
-    Variable v5 = ArithmeticType.newByteVariable((ArithmeticType)byteBEType, (byte)1);
-    Variable v6 = ArithmeticType.newShortVariable((ArithmeticType)shortBEType, (short)2);
-    Variable v7 = ArithmeticType.newIntegerVariable((ArithmeticType)intBEType, 3);
-    Variable v8 = ArithmeticType.newLongVariable((ArithmeticType)longBEType, 4);
-    Variable v9 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, (float)1.0);
-    Variable v10 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, 2.0);
+    Value v1 = ArithmeticType.newByteValue((ArithmeticType)byteType, (byte)1);
+    Value v2 = ArithmeticType.newShortValue((ArithmeticType)shortType, (short)2);
+    Value v3 = ArithmeticType.newIntegerValue((ArithmeticType)intType, 3);
+    Value v4 = ArithmeticType.newLongValue((ArithmeticType)longType, 4);
+    Value v5 = ArithmeticType.newByteValue((ArithmeticType)byteBEType, (byte)1);
+    Value v6 = ArithmeticType.newShortValue((ArithmeticType)shortBEType, (short)2);
+    Value v7 = ArithmeticType.newIntegerValue((ArithmeticType)intBEType, 3);
+    Value v8 = ArithmeticType.newLongValue((ArithmeticType)longBEType, 4);
+    Value v9 = ArithmeticType.newFloatValue((ArithmeticType)floatType, (float)1.0);
+    Value v10 = ArithmeticType.newDoubleValue((ArithmeticType)doubleType, 2.0);
     assertEquals ("1", 1, v1.getByte());
     assertEquals ("2", 2, v2.getShort());
     assertEquals ("3", 3, v3.getInt());
@@ -114,9 +114,9 @@ public class TestValue
   public void testIntOps ()
     throws InvalidOperatorException
   {
-    Variable v1 = ArithmeticType.newIntegerVariable((ArithmeticType)intType, 4);
-    Variable v2 = ArithmeticType.newShortVariable((ArithmeticType)shortType, (short)9);
-    Variable v3 = v1.getType().add(v1, v2);
+    Value v1 = ArithmeticType.newIntegerValue((ArithmeticType)intType, 4);
+    Value v2 = ArithmeticType.newShortValue((ArithmeticType)shortType, (short)9);
+    Value v3 = v1.getType().add(v1, v2);
     assertEquals ("4 + 9", 4 + 9, v3.getInt());
     v3 = v1.getType().subtract(v2, v1);
     assertEquals ("9 - 4", 9 - 4, v3.getInt());
@@ -179,9 +179,9 @@ public class TestValue
   public void testFloatOps ()
     throws InvalidOperatorException
   {
-    Variable v1 = ArithmeticType.newFloatVariable((ArithmeticType)floatType, (float)4.0);
-    Variable v2 = ArithmeticType.newDoubleVariable((ArithmeticType)doubleType, 9.0);
-    Variable v3 = v1.getType().add(v1, v2);
+    Value v1 = ArithmeticType.newFloatValue((ArithmeticType)floatType, (float)4.0);
+    Value v2 = ArithmeticType.newDoubleValue((ArithmeticType)doubleType, 9.0);
+    Value v3 = v1.getType().add(v1, v2);
     assertEquals ("4 + 9", 4 + 9, v3.getDouble(), 0);
     v3 = v1.getType().subtract(v2, v1);
     assertEquals ("9 - 4", 9 - 4, v3.getDouble(), 0);
@@ -228,7 +228,7 @@ public class TestValue
     enumType.addMember(byteType, "green", 4);
     enumType.addMember(byteType, "blue", 5);
     enumType.addMember(byteType, "violet", 6);
-        Variable e1 = EnumType.newEnumVariable(enumType, "e1");
+        Value e1 = EnumType.newEnumValue(enumType, "e1");
     String s = e1.toString();
     assertEquals ("enum", "{red=1,orange=2,yellow=3,green=4,blue=5,violet=6}", s);
   }
@@ -254,7 +254,7 @@ public class TestValue
       }
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
-    Variable c1 = new Variable(arrayType, "a1", abb);
+    Value c1 = new Value(arrayType, "a1", abb);
     String s = c1.toString();
     assertEquals ("array1dim", "{16909060,84281096,151653132,219025168}", s);
   }
@@ -280,7 +280,7 @@ public class TestValue
       }
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
-    Variable c1 = new Variable(arrayType, "a2", abb);
+    Value c1 = new Value(arrayType, "a2", abb);
     String s = c1.toString();
     assertEquals ("array2dim", "{{0,1,2,3},{0,16,32,48}}", s);
   }
@@ -309,7 +309,7 @@ public class TestValue
       }
     ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
     abb.order(byteOrder);
-    Variable c1 = new Variable(classType, "c1", abb);
+    Value c1 = new Value(classType, "c1", abb);
     String s = c1.toString();
     assertEquals ("class", "{alpha=16909060,beta=84281096,gamma=2320,iota=17,epsilon=18}", s);
   }

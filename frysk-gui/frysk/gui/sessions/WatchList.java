@@ -46,7 +46,7 @@ import java.util.List;
 import org.jdom.Element;
 
 import frysk.gui.monitor.SaveableXXX;
-import frysk.value.Variable;
+import frysk.value.Value;
 
 /**
  * The WatchList class represents a list of variables that are being
@@ -91,7 +91,7 @@ public class WatchList implements SaveableXXX
    * Adds a variable to the list of watched variables
    * @param var The new variable to watch
    */
-  public void addVariable(Variable var)
+  public void addVariable(Value var)
   {
     vars.add(var);
     notifyListeners();
@@ -102,12 +102,12 @@ public class WatchList implements SaveableXXX
    * @param var The variable to remove
    * @return True if the variable was removed, false otherwise
    */
-  public boolean removeVariable(Variable var)
+  public boolean removeVariable(Value var)
   { 
     Iterator iter = vars.iterator();
     while(iter.hasNext())
       {
-	Variable iVar = (Variable) iter.next();
+	Value iVar = (Value) iter.next();
 	//TODO: Do we need a better way of identifying whether two variables are the same?
 	if(iVar.getText().equals(var.getText()) && iVar.getType().getName().equals(var.getType().getName()))
 	  {
@@ -239,7 +239,7 @@ public class WatchList implements SaveableXXX
     Iterator iter = vars.iterator();
     while(iter.hasNext())
       {
-	Variable var = (Variable) iter.next();
+	Value var = (Value) iter.next();
 	Element varNode = new Element("variable");
 
 	// A variable may not necessarially have a file/line/colum.

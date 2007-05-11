@@ -83,7 +83,7 @@ import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 import frysk.proc.Task;
 import frysk.rt.Frame;
 import frysk.rt.Line;
-import frysk.value.Variable;
+import frysk.value.Value;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -634,7 +634,7 @@ public class SourceBuffer
    * @param iter The location to look for a variable
    * @return The variable at that location, or null
    */
-  public Variable getVariable (TextIter iter)
+  public Value getVariable (TextIter iter)
   {
     if (this.scope == null || this.scope.getLines().length == 0)
       return null;
@@ -655,7 +655,7 @@ public class SourceBuffer
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Variable var;
+    Value var;
     try
       {
         var = SymTab.print(line.getText().substring(
@@ -688,8 +688,8 @@ public class SourceBuffer
       {
         while (i.hasNext())
           {
-            Variable v = (Variable) i.next();
-            Variable vv = SymTab.print(v.getText());
+            Value v = (Value) i.next();
+            Value vv = SymTab.print(v.getText());
             
             /* Variable is out of scope, leave it as-is */
             if (vv == null || vv.toString().equals("") || vv.toString().equals("\0"))
@@ -722,13 +722,13 @@ public class SourceBuffer
    * @param line  The DOMLine containing Source information
    * @return The variable at that location, or null
    */
-  public Variable getVariable (DOMTag tag, DOMLine line)
+  public Value getVariable (DOMTag tag, DOMLine line)
   {
     // No var (or no tag), do nothing
     if (tag == null || ! tag.getType().equals(DOMTagTypes.LOCAL_VAR))
       return null;
 
-    Variable var;
+    Value var;
     try
       {
         var = SymTab.print(line.getText().substring(

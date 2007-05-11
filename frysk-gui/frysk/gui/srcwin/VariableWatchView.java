@@ -64,7 +64,7 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.sessions.WatchListListener;
-import frysk.value.Variable;
+import frysk.value.Value;
 
 public class VariableWatchView
     extends TreeView
@@ -75,7 +75,7 @@ public class VariableWatchView
 
   public interface WatchViewListener
   {
-    void variableSelected (Variable var);
+    void variableSelected (Value var);
   }
 
   private DataColumn[] traceColumns;
@@ -152,7 +152,7 @@ public class VariableWatchView
    * 
    * @param var The selected Variable.
    */
-  private void notifyListeners (Variable var)
+  private void notifyListeners (Value var)
   {
     Iterator iter = this.observers.iterator();
 
@@ -176,7 +176,7 @@ public class VariableWatchView
       return;
     }
     
-    this.notifyListeners((Variable) this.model.getValue(
+    this.notifyListeners((Value) this.model.getValue(
                     selected, (DataColumnObject) this.traceColumns[2]));
   }
   
@@ -212,7 +212,7 @@ public class VariableWatchView
   {
     TreePath[] paths = this.getSelection().getSelectedRows();
     
-    Variable selected = (Variable) model.getValue(model.getIter(paths[0]),
+    Value selected = (Value) model.getValue(model.getIter(paths[0]),
                              (DataColumnObject) traceColumns[2]);
     this.view.removeVar(selected);
   }
@@ -228,7 +228,7 @@ public class VariableWatchView
     
     while(vars.hasNext())
       {
-	Variable var = (Variable) vars.next();
+	Value var = (Value) vars.next();
 	addTrace(var);
       }
   }
@@ -238,7 +238,7 @@ public class VariableWatchView
    * 
    * @param var
    */
-  private void addTrace (Variable var)
+  private void addTrace (Value var)
   {
     TreeIter iter = this.model.appendRow();
     this.treeSize++;

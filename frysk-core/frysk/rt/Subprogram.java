@@ -43,14 +43,14 @@
 
 package frysk.rt;
 
-import frysk.value.Variable;
+import frysk.value.Value;
 
 public class Subprogram
 {
   // Language language;
     Subprogram outer;
     LexicalBlock block;
-    Variable[] parameters;
+    Value[] parameters;
 
     public LexicalBlock getBlock ()
     {
@@ -62,13 +62,13 @@ public class Subprogram
       this.block = block;
     }
 
-    public Variable[] getParameters ()
+    public Value[] getParameters ()
     {
       return parameters;
     }
 
     public void setParameters (int n)
     {
-      this.parameters = new Variable[n];
+      this.parameters = new Value[n];
     }
 }

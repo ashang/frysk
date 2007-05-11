@@ -49,6 +49,7 @@ import java.util.List;
 import java.lang.Integer;
 
 import lib.dw.BaseTypes;
+import lib.dw.DwException;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
@@ -60,7 +61,7 @@ import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
 import frysk.value.EnumType;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.rt.Frame;
@@ -165,27 +166,27 @@ class ExprSymTab
 
     long getLong (DwarfDie varDieP, long offset);
 
-    void putLong (DwarfDie varDieP, long offset, Variable v);
+    void putLong (DwarfDie varDieP, long offset, Value v);
 
     int getInt (DwarfDie varDieP, long offset);
 
-    void putInt (DwarfDie varDieP, long offset, Variable v);
+    void putInt (DwarfDie varDieP, long offset, Value v);
 
     short getShort (DwarfDie varDieP, long offset);
 
-    void putShort (DwarfDie varDieP, long offset, Variable v);
+    void putShort (DwarfDie varDieP, long offset, Value v);
 
     byte getByte (DwarfDie varDieP, long offset);
 
-    void putByte (DwarfDie varDieP, long offset, Variable v);
+    void putByte (DwarfDie varDieP, long offset, Value v);
 
     float getFloat (DwarfDie varDieP, long offset);
 
-    void putFloat (DwarfDie varDieP, long offset, Variable v);
+    void putFloat (DwarfDie varDieP, long offset, Value v);
 
     double getDouble (DwarfDie varDieP, long offset);
 
-    void putDouble (DwarfDie varDieP, long offset, Variable v);
+    void putDouble (DwarfDie varDieP, long offset, Value v);
   }
 
   /**
@@ -283,7 +284,7 @@ class ExprSymTab
       return buffer.getLong(addr + offset);
     }
 
-    public void putLong (DwarfDie varDieP, long offset, Variable v)
+    public void putLong (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putLong(addr + offset, v.getLong());
@@ -295,7 +296,7 @@ class ExprSymTab
       return buffer.getInt(addr + offset);
     }
 
-    public void putInt (DwarfDie varDieP, long offset, Variable v)
+    public void putInt (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putInt(addr + offset, v.getInt());
@@ -307,7 +308,7 @@ class ExprSymTab
       return buffer.getShort(addr + offset);
     }
 
-    public void putShort (DwarfDie varDieP, long offset, Variable v)
+    public void putShort (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putShort(addr + offset, v.getShort());
@@ -319,7 +320,7 @@ class ExprSymTab
       return buffer.getByte(addr + offset);
     }
 
-    public void putByte (DwarfDie varDieP, long offset, Variable v)
+    public void putByte (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putByte(addr + offset, v.getByte());
@@ -331,7 +332,7 @@ class ExprSymTab
       return buffer.getFloat(addr + offset);
     }
 
-    public void putFloat (DwarfDie varDieP, long offset, Variable v)
+    public void putFloat (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putFloat(addr + offset, v.getFloat());
@@ -343,7 +344,7 @@ class ExprSymTab
       return buffer.getDouble(addr + offset);
     }
 
-    public void putDouble (DwarfDie varDieP, long offset, Variable v)
+    public void putDouble (DwarfDie varDieP, long offset, Value v)
     {
       long addr = getBufferAddr(varDieP);
       buffer.putDouble(addr + offset, v.getDouble());
@@ -407,7 +408,7 @@ class ExprSymTab
       return val;
     }
 
-    public void putLong (DwarfDie varDieP, long offset, Variable v)
+    public void putLong (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getLong());
@@ -419,7 +420,7 @@ class ExprSymTab
       return (int) val;
     }
 
-    public void putInt (DwarfDie varDieP, long offset, Variable v)
+    public void putInt (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getInt());
@@ -431,7 +432,7 @@ class ExprSymTab
       return (short) val;
     }
 
-    public void putShort (DwarfDie varDieP, long offset, Variable v)
+    public void putShort (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getShort());
@@ -443,7 +444,7 @@ class ExprSymTab
       return (byte) val;
     }
 
-    public void putByte (DwarfDie varDieP, long offset, Variable v)
+    public void putByte (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getByte());
@@ -456,7 +457,7 @@ class ExprSymTab
       return fval;
     }
 
-    public void putFloat (DwarfDie varDieP, long offset, Variable v)
+    public void putFloat (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, (long) v.getFloat());
@@ -469,7 +470,7 @@ class ExprSymTab
       return dval;
     }
 
-    public void putDouble (DwarfDie varDieP, long offset, Variable v)
+    public void putDouble (DwarfDie varDieP, long offset, Value v)
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, (long) v.getDouble());
@@ -495,7 +496,7 @@ class ExprSymTab
     DwarfDie die = bias.die;
 
     LexicalBlock b = subprogram.getBlock();
-    Variable vars[] = b.getVariables();
+    Value vars[] = b.getVariables();
     DwarfDie varDies[] = b.getVariableDies();
     DwarfDie varDie;
     for (int j = 0; j < vars.length; j++)
@@ -573,7 +574,15 @@ class ExprSymTab
     ClassType classType = new ClassType(task.getIsa().getByteOrder());
     while (subrange != null)
       {
-	long offset = subrange.getDataMemberLocation();
+	long offset;
+	try
+	{
+	  offset = subrange.getDataMemberLocation();
+	}
+	catch (DwException de)
+	{
+	  offset = 0;				// union
+	}
 	typeSize = (int)offset + BaseTypes.getTypeSize(subrange.getType().getBaseType());
 	switch (subrange.getType().getBaseType())
 	{
@@ -645,9 +654,9 @@ class ExprSymTab
   /*
    * (non-Javadoc)
    * 
-   * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Variable)
+   * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
    */
-  public void put (String s, Variable v)
+  public void put (String s, Value v)
   {
     VariableAccessor[] variableAccessor = { new AccessDW_FORM_block()
     // new AccessDwOpData()
@@ -700,7 +709,7 @@ class ExprSymTab
    * 
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Variable get (String s)
+  public Value get (String s)
   {
     VariableAccessor[] variableAccessor = { new AccessDW_FORM_block(),
                                            new AccessDW_FORM_data() };
@@ -718,116 +727,120 @@ class ExprSymTab
             // if there is no type then setup a sentinel
             int baseType = type != null ? type.getBaseType() : 0;
             switch (baseType)
-              {
-              case BaseTypes.baseTypeLong:
-              case BaseTypes.baseTypeUnsignedLong:
-              {
-                long longVal = variableAccessor[i].getLong(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newLongVariable(longType, s, longVal);
-              }
-              case BaseTypes.baseTypeInteger:
-              case BaseTypes.baseTypeUnsignedInteger:
-              {
-                int intVal = variableAccessor[i].getInt(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newIntegerVariable(intType, s, intVal);
-              }
-              case BaseTypes.baseTypeShort:
-              case BaseTypes.baseTypeUnsignedShort:
-              {
-                short shortVal = variableAccessor[i].getShort(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newShortVariable(shortType, s, shortVal);
-              }
-              case BaseTypes.baseTypeByte:
-              case BaseTypes.baseTypeUnsignedByte:
-              {
-                byte byteVal = variableAccessor[i].getByte(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newByteVariable(byteType, s, byteVal);
-              }
-              case BaseTypes.baseTypeFloat:
-              {
-                float floatVal = variableAccessor[i].getFloat(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newFloatVariable(floatType, s, floatVal);
-              }
-              case BaseTypes.baseTypeDouble:
-              {
-                double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-                if (variableAccessor[i].isSuccessful() == false)
-                  continue;
-                return ArithmeticType.newDoubleVariable(doubleType, s, doubleVal);
-              }
+            {
+            case BaseTypes.baseTypeLong:
+            case BaseTypes.baseTypeUnsignedLong:
+            {
+              long longVal = variableAccessor[i].getLong(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newLongValue(longType, s, longVal);
+            }
+            case BaseTypes.baseTypeInteger:
+            case BaseTypes.baseTypeUnsignedInteger:
+            {
+              int intVal = variableAccessor[i].getInt(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newIntegerValue(intType, s, intVal);
+            }
+            case BaseTypes.baseTypeShort:
+            case BaseTypes.baseTypeUnsignedShort:
+            {
+              short shortVal = variableAccessor[i].getShort(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newShortValue(shortType, s, shortVal);
+            }
+            case BaseTypes.baseTypeByte:
+            case BaseTypes.baseTypeUnsignedByte:
+            {
+              byte byteVal = variableAccessor[i].getByte(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newByteValue(byteType, s, byteVal);
+            }
+            case BaseTypes.baseTypeFloat:
+            {
+              float floatVal = variableAccessor[i].getFloat(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newFloatValue(floatType, s, floatVal);
+            }
+            case BaseTypes.baseTypeDouble:
+            {
+              double doubleVal = variableAccessor[i].getDouble(varDie, 0);
+              if (variableAccessor[i].isSuccessful() == false)
+        	continue;
+              return ArithmeticType.newDoubleValue(doubleType, s, doubleVal);
+            }
             }
             // if there is no type then use this die's tag
             int tag = type != null ? type.getTag() : varDie.getTag();
-            if (tag == DwTagEncodings.DW_TAG_array_type_)
-              {
-                DwarfDie subrange;
-                long addr = variableAccessor[0].getAddr(s);
-                if (addr == 0)
-                  continue;
-                subrange = type.getChild();
-                ArrayType arrayType = getArrayType(type, subrange);
-                
-                if (arrayType == null)
-                  return null;
-                int typeSize = arrayType.getSize();
-                byte [] buf = new byte[typeSize];
-                buffer.get(addr, buf, 0, typeSize);
-                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, typeSize);
-                abb.order(byteorder);
-                return new Variable(arrayType, s, abb);
-              }
-            else if (tag == DwTagEncodings.DW_TAG_structure_type_)
-              {
-                DwarfDie subrange;
-                long addr = variableAccessor[0].getAddr(s);
-                if (addr == 0)
-                  continue;
-                subrange = type.getChild();
-                ClassType classType = getClassType(subrange);
-                
-                byte [] buf = new byte[classType.getSize()];
-                for (int j = 0; j < classType.getSize(); j++)
-                  buffer.get(addr + j, buf, j, 1);
-                ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
-                abb.order(byteorder);
-                return new Variable(classType, s, abb);
-              }
-            else if (tag == DwTagEncodings.DW_TAG_pointer_type_)
-              {
-        	long addr = variableAccessor[i].getAddr(s);
-        	return ArithmeticType.newLongVariable(longType, addr);
-              }
-            else if (tag == DwTagEncodings.DW_TAG_enumeration_type_)
-              {
-                DwarfDie subrange;
-                long addr = variableAccessor[0].getAddr(s);
-                if (addr == 0)
-                  continue;
-                subrange = type.getChild();
-                EnumType enumType = new EnumType(byteorder);
-                while (subrange != null)
-                  {
-                    enumType.addMember(byteType, subrange.getName(), 
-                                       subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
-                    subrange = subrange.getSibling();
-                  }
-                return EnumType.newEnumVariable(enumType, s);
-              }
+            switch (tag)
+            {
+            case DwTagEncodings.DW_TAG_array_type_:
+            {
+              DwarfDie subrange;
+              long addr = variableAccessor[0].getAddr(s);
+              if (addr == 0)
+        	continue;
+              subrange = type.getChild();
+              ArrayType arrayType = getArrayType(type, subrange);
+
+              if (arrayType == null)
+        	return null;
+              int typeSize = arrayType.getSize();
+              byte [] buf = new byte[typeSize];
+              buffer.get(addr, buf, 0, typeSize);
+              ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, typeSize);
+              abb.order(byteorder);
+              return new Value(arrayType, s, abb);
+            }
+            case DwTagEncodings.DW_TAG_union_type_:
+            case DwTagEncodings.DW_TAG_structure_type_:
+            {
+              DwarfDie subrange;
+              long addr = variableAccessor[0].getAddr(s);
+              if (addr == 0)
+        	continue;
+              subrange = type.getChild();
+              ClassType classType = getClassType(subrange);
+
+              byte [] buf = new byte[classType.getSize()];
+              for (int j = 0; j < classType.getSize(); j++)
+        	buffer.get(addr + j, buf, j, 1);
+              ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
+              abb.order(byteorder);
+              return new Value(classType, s, abb);
+            }
+            case DwTagEncodings.DW_TAG_pointer_type_:
+            {
+              long addr = variableAccessor[i].getAddr(s);
+              return ArithmeticType.newLongValue(longType, addr);
+            }
+            case DwTagEncodings.DW_TAG_enumeration_type_:
+            {
+              DwarfDie subrange;
+              long addr = variableAccessor[0].getAddr(s);
+              if (addr == 0)
+        	continue;
+              subrange = type.getChild();
+              EnumType enumType = new EnumType(byteorder);
+              while (subrange != null)
+        	{
+        	  enumType.addMember(byteType, subrange.getName(), 
+        	                     subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+        	  subrange = subrange.getSibling();
+        	}
+              return EnumType.newEnumValue(enumType, s);
+            }
             // special case members of an enumeration
-            else if (tag == DwTagEncodings.DW_TAG_enumerator_)
-              {
-        	return ArithmeticType.newLongVariable(longType, varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
-              }
+            case DwTagEncodings.DW_TAG_enumerator_:
+            {
+              return ArithmeticType.newLongValue(longType, varDie.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+            }
+            }
           }
         catch (Errno ignore)
           {
@@ -836,34 +849,34 @@ class ExprSymTab
     return null;
   }
 
-  public Variable get (String s, ArrayList components)
+  public Value get (String s, ArrayList components)
   {
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
 
-    Variable v = get(s);
+    Value v = get(s);
     return ((ArrayType)v.getType()).get(v, components);
   }
     
-  public Variable get (ArrayList components)
+  public Value get (ArrayList components)
   {
     String s = (String)components.get(0);
     DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
 
-    Variable v = get(s);
+    Value v = get(s);
     return ((ClassType)v.getType()).get(v, components);
   }
   
-  public Variable getAddress (String s)
+  public Value getAddress (String s)
   {
     AccessDW_FORM_block access = new AccessDW_FORM_block();
-    return ArithmeticType.newLongVariable(longType, access.getAddr(s)); 
+    return ArithmeticType.newLongValue(longType, access.getAddr(s)); 
   }
   
-  public Variable getMemory (String s)
+  public Value getMemory (String s)
   {
     DwarfDie varDie = getDie(s);
     
@@ -879,26 +892,26 @@ class ExprSymTab
       {
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
-	return ArithmeticType.newByteVariable(byteType, buffer.getByte(addrIndirect));
+	return ArithmeticType.newByteValue(byteType, buffer.getByte(addrIndirect));
       case BaseTypes.baseTypeShort:
       case BaseTypes.baseTypeUnsignedShort:
-	return ArithmeticType.newShortVariable(shortType, buffer.getShort(addrIndirect));
+	return ArithmeticType.newShortValue(shortType, buffer.getShort(addrIndirect));
       case BaseTypes.baseTypeInteger:
       case BaseTypes.baseTypeUnsignedInteger:
-	return ArithmeticType.newIntegerVariable(intType, buffer.getInt(addrIndirect));
+	return ArithmeticType.newIntegerValue(intType, buffer.getInt(addrIndirect));
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
-	return ArithmeticType.newLongVariable(longType, buffer.getLong(addrIndirect));
+	return ArithmeticType.newLongValue(longType, buffer.getLong(addrIndirect));
       case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatVariable(floatType, buffer.getFloat(addrIndirect));
+	return ArithmeticType.newFloatValue(floatType, buffer.getFloat(addrIndirect));
       case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleVariable(doubleType, buffer.getDouble(addrIndirect));
+	return ArithmeticType.newDoubleValue(doubleType, buffer.getDouble(addrIndirect));
       default:
         return null;
       }
   }
   
-  public Variable getVariable (DwarfDie varDie)
+  public Value getVariable (DwarfDie varDie)
   {
       if (varDie == null)
       return (null);
@@ -909,17 +922,17 @@ class ExprSymTab
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongVariable(longType, varDie.getName(), 0);
+      return ArithmeticType.newLongValue(longType, varDie.getName(), 0);
     case BaseTypes.baseTypeInteger:
-      return ArithmeticType.newIntegerVariable(intType, varDie.getName(), 0);
+      return ArithmeticType.newIntegerValue(intType, varDie.getName(), 0);
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortVariable(shortType, varDie.getName(), (short)0);
+      return ArithmeticType.newShortValue(shortType, varDie.getName(), (short)0);
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteVariable(byteType, varDie.getName(), (byte)0);
+      return ArithmeticType.newByteValue(byteType, varDie.getName(), (byte)0);
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatVariable(floatType, varDie.getName(), 0);
+      return ArithmeticType.newFloatValue(floatType, varDie.getName(), 0);
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleVariable(doubleType, varDie.getName(), 0);
+      return ArithmeticType.newDoubleValue(doubleType, varDie.getName(), 0);
     }
     return null;
   }

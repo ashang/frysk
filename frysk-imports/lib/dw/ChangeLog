@@ -1,3 +1,7 @@
+2007-05-10  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (get_data_member_location): Throw if not struct.
+
 2007-05-08  Stan Cox  <scox@redhat.com>
 
 	* DwarfDie.java (getDeclColumn): New.

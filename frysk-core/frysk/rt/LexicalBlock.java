@@ -44,25 +44,25 @@
 package frysk.rt;
 
 import lib.dw.DwarfDie;
-import frysk.value.Variable;
+import frysk.value.Value;
 import frysk.value.Type;
 
 public class LexicalBlock
 {
     LexicalBlock outer;
-    Variable[] variables;
+    Value[] variables;
     DwarfDie[] variableDies;
     Type[] types;
     DwarfDie[] typeDies;
 
-    public Variable[] getVariables ()
+    public Value[] getVariables ()
     {
       return variables;
     }
 
     public void setVariables (int n)
     {
-      this.variables = new Variable[n];
+      this.variables = new Value[n];
     }
 
     public DwarfDie[] getVariableDies ()

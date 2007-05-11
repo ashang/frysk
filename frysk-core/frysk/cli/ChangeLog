@@ -1,3 +1,8 @@
+2007-05-10  Stan Cox  <scox@redhat.com>
+
+	* hpd/ExprSymTab.java (get): Handle union.
+	(getClassType): Likewise.
+
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/TestSetCreation.java: Replace references to
