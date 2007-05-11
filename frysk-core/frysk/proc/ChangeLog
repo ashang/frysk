@@ -1,5 +1,15 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (memory): Make private.
+	(sendrecMemory): Replace fillMemory.
+	(getMemory): Use.
+	(registerBank): Make private.
+	(sendrecRegisterBanks): Replace fillRegisterBank.
+	(getRegisterBanks): Rename getRegisterBank, use.
+	* Register.java: Update.
+	* LinuxPtraceTask.java: Update.
+	* LinuxCoreFileTask.java: Update.
+
 	* TaskState.java: Make public.
 	* Observation.java: Make public, make members protected.
 

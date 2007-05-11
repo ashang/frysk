@@ -135,11 +135,6 @@ public abstract class Task
 
   final Proc proc;
 
-  // Contents of a task.
-  ByteBuffer memory;
-
-  ByteBuffer[] registerBank;
-
   /**
    * Create a new Task skeleton.
    */
@@ -855,11 +850,16 @@ public abstract class Task
     return blockers.size();
   }
 
+  private ByteBuffer memory;
+  protected abstract ByteBuffer sendrecMemory();
+  /**
+   * Return the Task's memory.
+   */
   public ByteBuffer getMemory ()
   {
     logger.log(Level.FINE, "{0} entering get memory {1}\n",new Object[] {this, memory});
     if (memory == null )
-      fillMemory();
+      memory = sendrecMemory();
     logger.log(Level.FINE, "{0} exiting get memory {1}\n", new Object[] {this, memory});
     return this.memory;
   }
@@ -988,15 +988,17 @@ public abstract class Task
   // as soon as a stop event is received during one of the running states.
   LinkedList pendingObservations = new LinkedList();
 
-  public ByteBuffer[] getRegisterBank ()
+  private ByteBuffer[] registerBanks;
+  protected abstract ByteBuffer[] sendrecRegisterBanks();
+  /**
+   * Return the machine's register banks as an array.
+   */
+  public ByteBuffer[] getRegisterBanks ()
   {
-    if (registerBank == null)
-      fillRegisterBank();
-    return registerBank;
+    if (registerBanks == null)
+      registerBanks = sendrecRegisterBanks();
+    return registerBanks;
   }
-  
-  protected abstract void fillMemory();
-  protected abstract void fillRegisterBank();
   
   /**
    * The process has transitioned to the detached.
@@ -1026,7 +1028,7 @@ public abstract class Task
  {
    isa = null;
    memory = null;
-   registerBank = null;
+   registerBanks = null;
  }
   
   /**

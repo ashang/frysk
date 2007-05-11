@@ -46,7 +46,7 @@ import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.ptrace.AddressSpaceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.logging.Level;
 
@@ -59,18 +59,19 @@ public class LinuxPtraceTask
 {
   private long ptraceOptions = 0;
 
-  public void fillMemory ()
+  protected ByteBuffer sendrecMemory ()
   {
       logger.log(Level.FINE, "Begin fillMemory\n", this);
       ByteOrder byteOrder = getIsa().getByteOrder();
-      memory = new AddressSpaceByteBuffer(id.id, AddressSpace.DATA);
+      ByteBuffer memory = new AddressSpaceByteBuffer(id.id, AddressSpace.DATA);
       memory.order(byteOrder);
       logger.log(Level.FINE, "End fillMemory\n", this); 
+      return memory;
   }
 
-  public void fillRegisterBank () 
+  protected ByteBuffer[] sendrecRegisterBanks () 
   {
-      registerBank = getIsa().getRegisterBankBuffers(id.id);
+      return getIsa().getRegisterBankBuffers(id.id);
   }
 
   /**

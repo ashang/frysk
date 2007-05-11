@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import lib.elf.ElfPrstatus;
-import java.util.logging.Level;
 import inua.eio.ByteBuffer;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteOrder;
@@ -51,20 +50,18 @@ public class LinuxCoreFileTask extends Task
   ElfPrstatus elfTask = null;
   LinuxCoreFileProc parent = null;
 
-  public void fillMemory ()
+  protected ByteBuffer sendrecMemory ()
   {
     // XXX: Get the Proc's memory (memory maps). Task and register
     // information is handled differently (through notes) in core
     // files. There's a potential here for task to have its own memory
-    // maps in some architectures, but not in the current ISAs. In an 
-    // attempt to save system resources, get a reference to the proc's 
+    // maps in some architectures, but not in the current ISAs. In an
+    // attempt to save system resources, get a reference to the proc's
     // maps for now.
-
-    memory = this.parent.getMemory();
-    logger.log(Level.FINE, "Begin fillMemory\n", this);
+    return parent.getMemory();
   }
 
-  public void fillRegisterBank () 
+  protected ByteBuffer[] sendrecRegisterBanks () 
   {
     ByteBuffer[] bankBuffers;
  
@@ -73,7 +70,7 @@ public class LinuxCoreFileTask extends Task
     ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
     gpRegisters.order(byteOrder);
     bankBuffers[0] = gpRegisters;
-    registerBank =  bankBuffers;
+    return bankBuffers;
   }
 
   /**

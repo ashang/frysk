@@ -1,5 +1,8 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (sendrecMemory): Replace fillMemory.
+	(sendrecRegisterBanks): Replace fillRegisterBank.
+
 	* Host.java (getInitialState): Delete.
 
 	* package.html: New file.

@@ -39,6 +39,7 @@
 
 package frysk.proc.dummy;
 
+import inua.eio.ByteBuffer;
 import frysk.proc.TaskObserver;
 import frysk.proc.Isa;
 
@@ -84,10 +85,12 @@ public class Task
     protected void stopTracingSyscalls()
     {
     }
-    protected void fillMemory ()
+    protected ByteBuffer sendrecMemory ()
     {
+	return null;
     }
-    protected void fillRegisterBank ()
+    protected ByteBuffer[] sendrecRegisterBanks ()
     {
+	return null;
     }
 }

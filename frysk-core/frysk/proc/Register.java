@@ -106,7 +106,7 @@ public class Register
    */
   public long get(frysk.proc.Task task)
   {
-    ByteBuffer b = task.getRegisterBank()[bank];
+    ByteBuffer b = task.getRegisterBanks()[bank];
     long val = 0;
     byte[] bytes = new byte[length];
     b.get(offset, bytes, 0, length);
@@ -125,7 +125,7 @@ public class Register
    */
   public BigInteger getBigInteger(frysk.proc.Task task)
   {
-    ByteBuffer b = task.getRegisterBank()[bank];
+    ByteBuffer b = task.getRegisterBanks()[bank];
     byte[] bytes = new byte[length];
     b.get(offset, bytes, 0, length);
     
@@ -142,7 +142,7 @@ public class Register
    */
   public byte[] getBytes(frysk.proc.Task task)
   {
-    ByteBuffer b = task.getRegisterBank()[bank];
+    ByteBuffer b = task.getRegisterBanks()[bank];
     byte[] bytes = new byte[length];
     b.get(offset, bytes, 0, length);
     return bytes;
@@ -156,7 +156,7 @@ public class Register
    */
   public void put(frysk.proc.Task task, long val)
   {
-    ByteBuffer b = task.getRegisterBank()[bank];
+    ByteBuffer b = task.getRegisterBanks()[bank];
 
     if (length == 4) 
       {
@@ -192,7 +192,7 @@ public class Register
    */
   public void putBigInteger(frysk.proc.Task task, BigInteger bigVal)
   {
-    ByteBuffer b = task.getRegisterBank()[bank];
+    ByteBuffer b = task.getRegisterBanks()[bank];
     byte[] bytes = bigVal.toByteArray();
     int valLen = bytes.length;
     byte signExtension = (bigVal.signum() < 0 ? (byte)-1 : 0);
