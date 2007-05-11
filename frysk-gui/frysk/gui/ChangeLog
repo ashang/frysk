@@ -1,3 +1,9 @@
+2007-05-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* gladedir/frysk_filechooser.glade: Removed environment
+	variable field; added button to select if terminal window
+	should be activated.
+
 2007-05-11  swagiaal  <swagiaal@redhat.com>
 
 	* test/TestSessionSaveLoad.java: Added test for saving/loading

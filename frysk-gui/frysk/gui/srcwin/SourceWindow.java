@@ -925,6 +925,8 @@ public class SourceWindow
         chooser = new FileChooserDialog("Frysk: Choose a core file to examine",
                                         (Window) SourceWindow.this.glade.getWidget(SOURCE_WINDOW),
                                         FileChooserAction.ACTION_OPEN);
+        // Set the selection insensitive until code is written to handle Core Files
+        chooser.setSensitive(false);
         chooser.addListener(new LifeCycleListener() {
           public void lifeCycleEvent(LifeCycleEvent event)
           {
@@ -934,7 +936,6 @@ public class SourceWindow
             return false;
           }
         });
-        
         chooser.addListener(new FileChooserListener()
         {
           public void currentFolderChanged (FileChooserEvent event)
@@ -1014,34 +1015,22 @@ public class SourceWindow
 		      }
 
 		    // This method is called when the "Enter" key is pressed to
-		    // select a file name
+		    // select a file name in the chooser
 		    public void fileActivated (FileChooserEvent event)
 		      {
-			Entry env_variables = (Entry) glade_fc.getWidget("env_variables");
-			Entry task_options = (Entry) glade_fc.getWidget("task_options");
-			String env_var = env_variables.getText();
-			String task_opt = task_options.getText();
-			String filename = fc.getFilename();
-			fc.destroy();
-			String[] stds = createTermWindow(filename);
-		        addProc(filename, env_var, task_opt, stds[0], stds[1], stds[2]);
+			activateTerminal();
 		      }
 		    });
 		  fc.setIcon(IconManager.windowIcon);
 		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
 		  fc.setCurrentFolder(System.getProperty("user.home"));
 		  int response = fc.open();
+		  // "OK" key has been clicked
 		  if (response == ResponseType.OK.getValue())
-		    {
-		      Entry env_variables = (Entry) glade_fc.getWidget("env_variables");
-		      Entry task_options = (Entry) glade_fc.getWidget("task_options");
-		      String env_var = env_variables.getText();
-		      String task_opt = task_options.getText();
-		      String filename = fc.getFilename();
-		      fc.destroy();
-		      String[] stds = createTermWindow(filename);
-		      addProc(filename, env_var, task_opt, stds[0], stds[1], stds[2]);
-		    }
+		    activateTerminal();
+		  // "Cancel" key has been clicked
+		  if (response == ResponseType.CANCEL.getValue())
+		    fc.destroy();
 		}
 	    catch (Exception e) 
 	      {
@@ -1450,6 +1439,26 @@ public class SourceWindow
         SourceWindow.this.handleDialog(4);
       }
     });
+  }
+  
+  /**
+   * activateTerminal is called when the user has selected "Activate I/O terminal" from the 
+   * FileChooserDialog when running an executable.  A Gnome terminal is activated and the
+   * selected process' STDIN/STDOUT/STDERR will be assigned to it.
+   *
+   */
+  public void activateTerminal()
+  {
+    CheckButton term_activate = (CheckButton) glade_fc.getWidget("term_activate");
+    Entry task_options = (Entry) glade_fc.getWidget("task_options");
+    boolean term_active = term_activate.getState();
+    String task_opt = task_options.getText();
+    String filename = fc.getFilename();
+    fc.destroy();
+    String[] stds = {"/dev/null", "/dev/null", "/dev/null" };
+    if (term_active)
+      stds = createTermWindow(filename);
+    addProc(filename, "", task_opt, stds[0], stds[1], stds[2]);
   }
 
   /**
