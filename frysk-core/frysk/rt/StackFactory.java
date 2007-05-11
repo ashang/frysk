@@ -51,7 +51,7 @@ import frysk.proc.Task;
 
 public class StackFactory
 { 
-  private static boolean remoteUnwind = false;
+  private static boolean remoteUnwind = true;
   public static void setRemoteUnwind(boolean bool)
   {
     remoteUnwind = bool;

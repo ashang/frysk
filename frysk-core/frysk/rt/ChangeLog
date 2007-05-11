@@ -1,3 +1,7 @@
+2007-05-11  Nurdin Premji  <npremji@redhat.com>
+
+	* StackFactory.java: Switch to using RemoteFrame
+
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestFrame.java (backtrace): Revert Sami Wagiaalla's accidental
