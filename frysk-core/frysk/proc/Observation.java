@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -45,15 +45,15 @@ import frysk.event.Event;
  * The binding between an Observer and its Observable.
  */
 
-abstract class Observation
+public abstract class Observation
     implements Event
 {
-    final Observable observable;
-    final Observer observer;
+    protected final Observable observable;
+    protected final Observer observer;
     /**
      * Create a new Observer binding.
      */
-    public Observation (Observable observable, Observer observer)
+    protected Observation (Observable observable, Observer observer)
     {
 	this.observable = observable;
 	this.observer = observer;

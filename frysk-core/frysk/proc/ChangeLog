@@ -1,5 +1,8 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Make public.
+	* Observation.java: Make public, make members protected.
+
 	* IsaFactory.java (getSingleton): Rename getFactory, make public.
 	* TestIsa.java: Update.
 	* LinuxPtraceTask.java: Update.
