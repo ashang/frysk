@@ -37,76 +37,59 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.corefile;
 
 import java.util.logging.Level;
+import frysk.proc.TaskState;
+import frysk.proc.Task;
 
 /**
- * A CoreFile Process State
- *
+ * The core file task state machine.
  */
 
-abstract class LinuxCoreFileProcState
-  extends ProcState
+abstract class LinuxTaskState
+  extends TaskState
 {
 
-  protected LinuxCoreFileProcState (String state)
+  /**
+   * Return the initial state of a detached task.
+   */
+  static TaskState detachedState ()
+  {
+    return detached;
+  }
+  
+  /**
+   * Return the initial state of the Main task.
+   */
+  static TaskState initial ()
+  {
+    return detached;
+  }
+
+  protected LinuxTaskState (String state)
   {
     super (state);
   }
   
   /**
-   * Return the Proc's initial state.
-   *
+   * The task isn't attached. Read in from a core file.
    */
-  static ProcState initial (Proc proc)    
-  {
-    logger.log (Level.FINEST, "{0} initial\n", proc); 
-    return detached;
-  }
-  
-  /**
-   * The process is running free (or at least was the last time its
-   * status was checked).
-   */
-  private static final ProcState detached = new ProcState ("detached")
-    {
-      protected ProcState handleRefresh (Proc proc)
-      {
-	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
-	proc.sendRefresh ();
-	return detached;
-      }
-      protected ProcState handleRemoval (Proc proc)
-      {
-	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
+  private static final TaskState detached = new TaskState ("detached")
+	{
+	  protected TaskState handleRemoval (Task task)
+	  {
 	
-	// XXX: Can't remove a core file Proc, it's there forever
-	// and there is only one proc. Maybe need to have a
-	// destroyed state for compatability?
-	
-	return detached;
-      }
-      protected ProcState handleAddObservation (Proc proc,
-				      Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	
-	// XXX: Fake out for now. What kind of observers would you
-	// put on a core file? Might need a brain dead
-	// attached state in this scenario for compataibility.
-	return detached;
-	// return Attaching.initialState (proc, observation);
-      }
-      
-      protected ProcState handleDeleteObservation (Proc proc,
-					 Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-	// Must be bogus; if there were observations then the
-	// Proc wouldn't be in this state.
-	observation.fail (new RuntimeException ("not attached"));
-	return detached;
-      }
+	    // XXX: Core file tasks are never removed.
+	    logger.log (Level.FINE, "{0} handleRemoval\n", task); 
+	    throw new RuntimeException("Cannot remove corefile tasks");
+	  }
+	  protected TaskState handleAttach (Task task)
+	  {
+	    logger.log (Level.FINE, "{0} handleAttach\n", task); 
+	    // XXX: Cannot attach to core file tasks (For now). In the
+	    // future this may change if the concept of attach is meaningful.
+	    throw new RuntimeException("Cannot attach to corefile tasks");
+	  }
     };
-}
+ }

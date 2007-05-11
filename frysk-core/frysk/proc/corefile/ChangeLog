@@ -1,3 +1,13 @@
+2007-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLinuxCore.java: Moved to here from frysk.proc.
+	* LinuxHost.java: Moved to here from frysk.proc.
+	* LinuxHostState.java: Moved to here from frysk.proc.
+	* LinuxProc.java: Moved to here from frysk.proc.
+	* LinuxProcState.java: Moved to here from frysk.proc.
+	* LinuxTask.java: Moved to here from frysk.proc.
+	* LinuxTaskState.java: Moved to here from frysk.proc.
+
 2007-04-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CorefileByteBuffer.java (subBuffer): New.

@@ -37,58 +37,99 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.corefile;
 
-import java.util.logging.Level;
+import lib.elf.ElfPrstatus;
+import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteOrder;
+import frysk.proc.Task;
+import frysk.proc.TaskId;
+import frysk.proc.Isa;
 
-
-/**
- * The core file task state machine.
- */
-
-abstract class LinuxCoreFileTaskState
-  extends TaskState
+public class LinuxTask
+    extends Task
 {
 
-  /**
-   * Return the initial state of a detached task.
-   */
-  static TaskState detachedState ()
+  ElfPrstatus elfTask = null;
+  LinuxProc parent = null;
+
+  protected ByteBuffer sendrecMemory ()
   {
-    return detached;
-  }
-  
-  /**
-   * Return the initial state of the Main task.
-   */
-  static TaskState initial ()
-  {
-    return detached;
+    // XXX: Get the Proc's memory (memory maps). Task and register
+    // information is handled differently (through notes) in core
+    // files. There's a potential here for task to have its own memory
+    // maps in some architectures, but not in the current ISAs. In an
+    // attempt to save system resources, get a reference to the proc's
+    // maps for now.
+    return parent.getMemory();
   }
 
-  protected LinuxCoreFileTaskState (String state)
+  protected ByteBuffer[] sendrecRegisterBanks () 
   {
-    super (state);
+    ByteBuffer[] bankBuffers;
+ 
+    bankBuffers = new ByteBuffer[4];
+    ByteOrder byteOrder = getIsa().getByteOrder();
+    ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
+    gpRegisters.order(byteOrder);
+    bankBuffers[0] = gpRegisters;
+    return bankBuffers;
   }
-  
+
   /**
-   * The task isn't attached. Read in from a core file.
+   * Create a new unattached Task.
    */
-  private static final TaskState detached = new TaskState ("detached")
-	{
-	  protected TaskState handleRemoval (Task task)
-	  {
-	
-	    // XXX: Core file tasks are never removed.
-	    logger.log (Level.FINE, "{0} handleRemoval\n", task); 
-	    throw new RuntimeException("Cannot remove corefile tasks");
-	  }
-	  protected TaskState handleAttach (Task task)
-	  {
-	    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-	    // XXX: Cannot attach to core file tasks (For now). In the
-	    // future this may change if the concept of attach is meaningful.
-	    throw new RuntimeException("Cannot attach to corefile tasks");
-	  }
-    };
- }
+  LinuxTask (LinuxProc proc, ElfPrstatus elfTask)
+  {
+    super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
+    this.elfTask = elfTask;
+    this.parent = proc;
+  }
+
+
+  protected Isa sendrecIsa() 
+  {
+    return getProc().getIsa();
+  }
+
+
+  protected void sendContinue(int sig) 
+  {
+  }
+
+  protected void sendStepInstruction(int sig) 
+  {
+  }
+
+
+  protected void sendStop() 
+  {
+  }
+
+ 
+  protected void sendSetOptions() 
+  {
+  }
+
+  protected void sendAttach() 
+  {
+  }
+
+  protected void sendDetach(int sig) 
+  {
+  }
+
+  protected void sendSyscallContinue(int sig) 
+  {
+  }
+
+  protected void startTracingSyscalls() 
+  {
+  }
+
+  protected void stopTracingSyscalls() 
+  {
+  }
+
+}

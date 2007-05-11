@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.corefile;
 
 import lib.elf.ElfData;
 import lib.elf.ElfException;
@@ -48,9 +48,16 @@ import lib.elf.ElfPrstatus;
 import frysk.sys.proc.AuxvBuilder;
 import java.util.logging.Level;
 import java.io.File;
-import frysk.proc.corefile.CorefileByteBuffer;
+import frysk.proc.Proc;
+import frysk.proc.ProcState;
+import frysk.proc.ProcId;
+import frysk.proc.Task;
+import frysk.proc.Auxv;
+import frysk.proc.Isa;
+import frysk.proc.IsaFactory;
 
-public class LinuxCoreFileProc extends Proc 
+public class LinuxProc
+    extends Proc
 {
   
   private ElfData elfData = null;
@@ -58,7 +65,7 @@ public class LinuxCoreFileProc extends Proc
   private CorefileByteBuffer memory = null;
   private File corefileBackEnd = null;
 
-  public LinuxCoreFileProc(ElfData data, LinuxCoreFileHost host, ProcId procId )
+  public LinuxProc(ElfData data, LinuxHost host, ProcId procId )
   {
     super(host, null, procId);
     this.elfData = data;
@@ -128,7 +135,7 @@ public class LinuxCoreFileProc extends Proc
     elfTasks = ElfPrstatus.decode(elfData);
     for (int i=0; i<elfTasks.length; i++)
       {
-    	Task newTask = new LinuxCoreFileTask(LinuxCoreFileProc.this, elfTasks[i]);
+    	Task newTask = new LinuxTask(LinuxProc.this, elfTasks[i]);
     	newTask.getClass();
       }
   }
@@ -173,6 +180,6 @@ public class LinuxCoreFileProc extends Proc
 
   protected ProcState getInitialState (boolean procStarting) 
   {
-    return LinuxCoreFileProcState.initial(this);
+    return LinuxProcState.initial(this);
   }
 }

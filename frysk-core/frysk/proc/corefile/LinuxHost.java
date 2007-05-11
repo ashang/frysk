@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your// version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.corefile;
 
 import frysk.event.Event;
 import frysk.event.EventLoop;
@@ -51,8 +51,12 @@ import lib.elf.ElfData;
 import lib.elf.ElfEHeader;
 import lib.elf.ElfPHeader;
 import lib.elf.ElfPrpsinfo;
+import frysk.proc.Host;
+import frysk.proc.Proc;
+import frysk.proc.ProcId;
+import frysk.proc.TaskObserver;
 
-public class LinuxCoreFileHost 
+public class LinuxHost 
   extends Host 
 {
 
@@ -60,7 +64,7 @@ public class LinuxCoreFileHost
   Elf corefileElf;
   EventLoop eventLoop;
 
-  public LinuxCoreFileHost(EventLoop eventLoop, File coreFile)
+  public LinuxHost(EventLoop eventLoop, File coreFile)
   {
     this.coreFile = coreFile;
     this.eventLoop = eventLoop;
@@ -87,7 +91,7 @@ public class LinuxCoreFileHost
         // Changes individual process.
         for (Iterator i = procPool.values().iterator(); i.hasNext();)
           {
-            LinuxCoreFileProc proc = (LinuxCoreFileProc) i.next();
+            LinuxProc proc = (LinuxProc) i.next();
             proc.sendRefresh();
           }
       }
@@ -113,7 +117,7 @@ public class LinuxCoreFileHost
       }
 
     
-    LinuxCoreFileProc proc = (LinuxCoreFileProc) getProc(procId);
+    LinuxProc proc = (LinuxProc) getProc(procId);
     proc.sendRefresh();
     
     eventLoop.add(new Event()
@@ -184,7 +188,7 @@ public class LinuxCoreFileHost
 	{
 	  // core file processes have no parents as thy are captured
 	  // in isolation, and reconstructed.
-	  proc = new LinuxCoreFileProc(proc_pid,LinuxCoreFileHost.this,procId);
+	  proc = new LinuxProc(proc_pid,LinuxHost.this,procId);
 	}
 
       addedProcs.add(proc);

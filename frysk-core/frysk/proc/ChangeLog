@@ -1,5 +1,12 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLinuxCore.java: Moved to frysk.proc.corefile.
+	* LinuxCoreFileHost.java: Moved to frysk.proc.corefile.
+	* LinuxCoreFileProc.java: Moved to frysk.proc.corefile.
+	* LinuxCoreFileProcState.java: Moved to frysk.proc.corefile.
+	* LinuxCoreFileTask.java: Moved to frysk.proc.corefile.
+	* LinuxCoreFileTaskState.java: Moved to frysk.proc.corefile.
+
 	* ProcState.java: Make all methods protected.
 	* TaskState.java: Make all methods protected.
 	* LinuxCoreFileProcState.java: Update.
