@@ -167,7 +167,7 @@ public class LinuxCoreFileProc extends Proc
 
     ElfEHeader header = elfData.getParent().getEHeader();
     
-    IsaFactory factory = IsaFactory.getFactory();
+    IsaFactory factory = IsaFactory.getSingleton();
     return factory.getIsaForCoreFile(header.machine);
   }
 

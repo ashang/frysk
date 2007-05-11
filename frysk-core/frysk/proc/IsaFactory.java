@@ -89,7 +89,7 @@ public class IsaFactory
       }
   }
   
-  static IsaFactory getFactory()
+  public static IsaFactory getSingleton()
   {
     if (factory == null)
       factory = new IsaFactory ();

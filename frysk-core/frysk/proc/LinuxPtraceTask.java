@@ -233,7 +233,7 @@ public class LinuxPtraceTask
   protected Isa sendrecIsa ()
   {
     logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-    IsaFactory factory = IsaFactory.getFactory();
+    IsaFactory factory = IsaFactory.getSingleton();
 
     return factory.getIsa(id.id);
   }

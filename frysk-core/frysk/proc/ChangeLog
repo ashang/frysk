@@ -1,5 +1,11 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* IsaFactory.java (getSingleton): Rename getFactory, make public.
+	* TestIsa.java: Update.
+	* LinuxPtraceTask.java: Update.
+	* LinuxPtraceProc.java: Update.
+	* LinuxCoreFileProc.java: Update.
+
 	* TaskId.java: Make public.
 
 	* Host.java (getInitialState): Delete.
