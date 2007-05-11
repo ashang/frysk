@@ -120,12 +120,12 @@ abstract class LinuxPtraceTaskState
      */
     private static final TaskState detached = new TaskState ("detached")
 	{
-	    TaskState handleRemoval (Task task)
+	    protected TaskState handleRemoval (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleRemoval\n", task); 
 		return destroyed;
 	    }
-	    TaskState handleAttach (Task task)
+	    protected TaskState handleAttach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleAttach\n", task); 
 		task.sendAttach ();
@@ -143,22 +143,22 @@ abstract class LinuxPtraceTaskState
 		task.proc.performTaskAttachCompleted (task);
 		return new Attached.WaitForContinueOrUnblock (signal);
 	    }
-	    TaskState handleStoppedEvent (Task task)
+	    protected TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
 		return transitionToAttached (task, 0);
 	    }
-	    TaskState handleSignaledEvent (Task task, int signal)
+	    protected TaskState handleSignaledEvent (Task task, int signal)
 	    {
 		logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
 		return transitionToAttached (task, signal);
 	    }
-	    TaskState handleTrappedEvent (Task task)
+	    protected TaskState handleTrappedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
 		return transitionToAttached (task, 0);
 	    }
-    	    TaskState handleDisappearedEvent (Task task, Throwable w)
+    	    protected TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
 		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
 		// Ouch, the task disappeared before the attach
@@ -168,7 +168,7 @@ abstract class LinuxPtraceTaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
-	    TaskState handleTerminatedEvent (Task task, boolean signal,
+	    protected TaskState handleTerminatedEvent (Task task, boolean signal,
 					     int value)
     	    {
 		logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
@@ -179,7 +179,7 @@ abstract class LinuxPtraceTaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
-	    TaskState handleDetach (Task task, boolean shouldRemoveObservers)
+	    protected TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	    {
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
 		return detaching;
@@ -191,7 +191,7 @@ abstract class LinuxPtraceTaskState
 	     * observer should be blocking yet (but we allow a stray
 	     * unblock).
 	     */
-	    TaskState handleUnblock (Task task,
+	    protected TaskState handleUnblock (Task task,
 				     TaskObserver observer)
 	    {
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -209,7 +209,7 @@ abstract class LinuxPtraceTaskState
 	     * All observer can be added (but won't trigger yet) in
 	     * attaching state.
 	     */
-	    TaskState handleAddObservation(Task task,
+	    protected TaskState handleAddObservation(Task task,
 					   TaskObservation observation)
 	    {
 	      logger.log (Level.FINE, "{0} handleAddObservation\n", task);
@@ -220,7 +220,7 @@ abstract class LinuxPtraceTaskState
 	    /**
 	     * Deleting an observer is always allowd in attaching state.
 	     */
-	    TaskState handleDeleteObservation(Task task,
+	    protected TaskState handleDeleteObservation(Task task,
 					      TaskObservation observation)
 	    {
 	      logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
@@ -245,7 +245,7 @@ abstract class LinuxPtraceTaskState
 	/**
 	 * In all Attached states, addObservation is allowed.
 	 */
-        TaskState handleAddObservation(Task task, TaskObservation observation)
+        protected TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
@@ -254,7 +254,7 @@ abstract class LinuxPtraceTaskState
 	/**
 	 * In all Attached states, deleteObservation is allowed.
 	 */
-        TaskState handleDeleteObservation(Task task,
+        protected TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
@@ -265,7 +265,7 @@ abstract class LinuxPtraceTaskState
         /**
 	 * While attaching the Task disappeared, go to destroyed.
 	 */
-        TaskState handleTerminatedEvent (Task task, boolean signal,
+        protected TaskState handleTerminatedEvent (Task task, boolean signal,
 					 int value)
 	{
 	  logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task);
@@ -313,14 +313,14 @@ abstract class LinuxPtraceTaskState
 		super ("WaitForContinueOrUnblock");
 		this.signal = signal;
 	    }
-	    TaskState handleUnblock (Task task,
+	    protected TaskState handleUnblock (Task task,
 				     TaskObserver observer)
 	    {
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		task.blockers.remove (observer);
 		return Attached.waitForContinueOrUnblock;
 	    }
-	    TaskState handleContinue (Task task)
+	    protected TaskState handleContinue (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleContinue\n", task); 
 		if (task.blockers.size () == 0)
@@ -352,7 +352,7 @@ abstract class LinuxPtraceTaskState
 		else
 		    return super.toString () + ",signal=" + signal;
 	    }
-	    TaskState handleUnblock (Task task,
+	    protected TaskState handleUnblock (Task task,
 				     TaskObserver observer)
 	    {
 		logger.log (Level.FINE, "{0} handleUnblock\n", task);
@@ -364,7 +364,7 @@ abstract class LinuxPtraceTaskState
 		    return transitionToRunningState(task, signal);
 		return this;
 	    }
-	    TaskState handleDetach (Task task, boolean shouldRemoveObservers)
+	    protected TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	    {
             
 		logger.log (Level.FINE, "{0} handleDetach\n", task);
@@ -409,7 +409,7 @@ abstract class LinuxPtraceTaskState
 	private static TaskState wantToDetach =
 	    new StartMainTask ("wantToDetach")
 	    {
-		TaskState handleAttach (Task task)
+		protected TaskState handleAttach (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
 		    task.proc.performTaskAttachCompleted (task);
@@ -423,12 +423,12 @@ abstract class LinuxPtraceTaskState
 		    task.proc.performTaskDetachCompleted (task);
 		    return detached;
 		}
-		TaskState handleTrappedEvent (Task task)
+		protected TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 		    return blockOrDetach (task);
 		}
-		TaskState handleStoppedEvent (Task task)
+		protected TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
 		    return blockOrDetach (task);
@@ -443,7 +443,7 @@ abstract class LinuxPtraceTaskState
 	private static TaskState detachBlocked =
 	    new StartMainTask ("detachBlocked")
 	    {
-		TaskState handleAttach (Task task)
+		protected TaskState handleAttach (Task task)
 		{
 		    // Proc got around to telling us to be attached,
 		    // since the task has already stopped, immediatly
@@ -454,7 +454,7 @@ abstract class LinuxPtraceTaskState
 		    task.proc.performTaskAttachCompleted (task);
 		    return StartMainTask.attachBlocked;
 		}
-		TaskState handleUnblock (Task task,
+		protected TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -479,7 +479,7 @@ abstract class LinuxPtraceTaskState
 	private static TaskState wantToAttach =
 	    new StartMainTask ("wantToAttach")
 	    {
-		TaskState handleAddObservation(Task task,
+		protected TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObservationr\n", task);
@@ -493,17 +493,17 @@ abstract class LinuxPtraceTaskState
 			return StartMainTask.attachBlocked;
 		    return Attached.waitForContinueOrUnblock;
 		}
-		TaskState handleTrappedEvent (Task task)
+		protected TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 		    return blockOrAttach (task);
 		}
-		TaskState handleStoppedEvent (Task task)
+		protected TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
 		    return blockOrAttach (task);
 		}
-		TaskState handleContinue (Task task)
+		protected TaskState handleContinue (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleContinue\n", task);
 		    return StartMainTask.wantToAttachContinue;
@@ -522,17 +522,17 @@ abstract class LinuxPtraceTaskState
 			return StartMainTask.attachContinueBlocked;
 		    return Attached.transitionToRunningState(task, signal);
 		}
-		TaskState handleTrappedEvent (Task task)
+		protected TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 		    return blockOrAttachContinue (task, 0);
 		}
-		TaskState handleStoppedEvent (Task task)
+		protected TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
 		    return blockOrAttachContinue (task, 0);
 		}
-		TaskState handleSignaledEvent (Task task, int signal)
+		protected TaskState handleSignaledEvent (Task task, int signal)
 		{
 		    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
 		    return blockOrAttachContinue (task, signal);
@@ -545,14 +545,14 @@ abstract class LinuxPtraceTaskState
 	private static TaskState attachBlocked =
 	    new StartMainTask ("attachBlocked")
 	    {
-		TaskState handleAddObservation(Task task,
+		protected TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
                 }
-		TaskState handleUnblock (Task task,
+		protected TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -561,7 +561,7 @@ abstract class LinuxPtraceTaskState
 			return Attached.waitForContinueOrUnblock;
 		    return StartMainTask.attachBlocked;
 		}
-		TaskState handleContinue (Task task)
+		protected TaskState handleContinue (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleContinue\n", task);
 		    return StartMainTask.attachContinueBlocked;
@@ -576,14 +576,14 @@ abstract class LinuxPtraceTaskState
 	private static TaskState attachContinueBlocked =
 	    new StartMainTask ("attachContinueBlocked")
 	    {
-		TaskState handleAddObservation(Task task,
+		protected TaskState handleAddObservation(Task task,
 					       TaskObservation observation)
 		{
 		    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 		    observation.add();
 		    return this;
 		}
-		TaskState handleUnblock (Task task,
+		protected TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task);
@@ -619,14 +619,14 @@ abstract class LinuxPtraceTaskState
 	    task.sendContinue (0);
 	    return running;
 	}
-	TaskState handleAddObservation(Task task, TaskObservation observation)
+	protected TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    // XXX most likely need to check needsSuspendedAction
 	    observation.add();
 	    return this;
 	}
-	TaskState handleDeleteObservation(Task task,
+	protected TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
@@ -638,7 +638,7 @@ abstract class LinuxPtraceTaskState
 	private static final TaskState waitForStop =
 	    new StartClonedTask ("waitForStop")
 	    {
-		TaskState handleUnblock (Task task,
+		protected TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -646,12 +646,12 @@ abstract class LinuxPtraceTaskState
 		    task.blockers.remove (observer);
 		    return StartClonedTask.waitForStop;
 		}
-		TaskState handleTrappedEvent (Task task)
+		protected TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 		    return attemptContinue (task);
 		}
-		TaskState handleStoppedEvent (Task task)
+		protected TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
 		    return attemptContinue (task);
@@ -661,7 +661,7 @@ abstract class LinuxPtraceTaskState
 	private static final TaskState blockedOffspring =
 	    new StartClonedTask ("blockedOffspring")
 	    {
-		TaskState handleUnblock (Task task,
+		protected TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -750,7 +750,7 @@ abstract class LinuxPtraceTaskState
 	    return blockedContinue;
 	}
 
-	TaskState handleSignaledEvent (Task task, int sig)
+	protected TaskState handleSignaledEvent (Task task, int sig)
 	{
 	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, new Integer(sig)}); 
 	    if (task.notifySignaled (sig) > 0) {
@@ -761,7 +761,7 @@ abstract class LinuxPtraceTaskState
 		return this;
 	    }
 	}
-	TaskState handleStoppedEvent (Task task)
+	protected TaskState handleStoppedEvent (Task task)
 	{
 	    Collection pendingObservations = task.pendingObservations;
 	    // XXX Real stop event! - Do we want observers here?
@@ -797,7 +797,7 @@ abstract class LinuxPtraceTaskState
 	    return newState;
 	}
 
-	TaskState handleTerminatingEvent (Task task, boolean signal,
+	protected TaskState handleTerminatingEvent (Task task, boolean signal,
 					  int value)
 	{
 	    logger.log(Level.FINE, "{0} handleTerminatingEvent\n", task); 
@@ -816,7 +816,7 @@ abstract class LinuxPtraceTaskState
         
 	    return this;
 	}
-	TaskState handleTerminatedEvent (Task task, boolean signal,
+	protected TaskState handleTerminatedEvent (Task task, boolean signal,
 					 int value)
 	{
 	    logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
@@ -824,7 +824,7 @@ abstract class LinuxPtraceTaskState
 	    handleAttachedTerminated (task, signal, value);
 	    return destroyed;
 	}
-	TaskState handleExecedEvent (Task task)
+	protected TaskState handleExecedEvent (Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
@@ -869,17 +869,17 @@ abstract class LinuxPtraceTaskState
 			}
 		}
 	}
-	TaskState handleDisappearedEvent (Task task, Throwable w)
+	protected TaskState handleDisappearedEvent (Task task, Throwable w)
 	{
 	    logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
 	    return disappeared;
 	}
-	TaskState handleContinue (Task task)
+	protected TaskState handleContinue (Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
 	    return this;
 	}
-	TaskState handleDetach (Task task, boolean shouldRemoveObservers)
+	protected TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	{
 	    logger.log (Level.FINE, "{0} handleDetach\n", task); 
 	    
@@ -891,7 +891,7 @@ abstract class LinuxPtraceTaskState
 	    task.sendStop ();
 	    return detaching;
 	}
-	TaskState handleClonedEvent (Task task, Task clone)
+	protected TaskState handleClonedEvent (Task task, Task clone)
 	{
 	    logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
 	    if (task.notifyClonedParent (clone) > 0)
@@ -899,7 +899,7 @@ abstract class LinuxPtraceTaskState
 	    sendContinue(task, 0);
 	    return this;
 	}
-	TaskState handleForkedEvent (Task task, Task fork)
+	protected TaskState handleForkedEvent (Task task, Task fork)
 	{
 	    logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
 	    if (task.notifyForkedParent (fork) > 0)
@@ -919,7 +919,7 @@ abstract class LinuxPtraceTaskState
 	 * observers are notified. Otherwise it is a real trap event and we
 	 * pass it on to the task itself.
 	 */
-	TaskState handleTrappedEvent (Task task)
+	protected TaskState handleTrappedEvent (Task task)
 	{
 	  logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
 	  
@@ -1014,7 +1014,7 @@ abstract class LinuxPtraceTaskState
 	    }
 	}
 
-	TaskState handleAddObservation(Task task, TaskObservation observation)
+	protected TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    if (! observation.needsSuspendedAction())
@@ -1028,7 +1028,7 @@ abstract class LinuxPtraceTaskState
 		}
 	    return this;
 	}
-	TaskState handleDeleteObservation(Task task,
+	protected TaskState handleDeleteObservation(Task task,
 					  TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
@@ -1043,7 +1043,7 @@ abstract class LinuxPtraceTaskState
 		}
 	    return this;
 	}
-	TaskState handleUnblock (Task task,
+	protected TaskState handleUnblock (Task task,
 				 TaskObserver observer)
 	{
 	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -1052,7 +1052,7 @@ abstract class LinuxPtraceTaskState
 	    return this;
 	}
 
-	TaskState handleSyscalledEvent(Task task)
+	protected TaskState handleSyscalledEvent(Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
 	    if (syscalltracing)
@@ -1096,12 +1096,12 @@ abstract class LinuxPtraceTaskState
 
     private static final TaskState detaching = new TaskState ("detaching")
 	{
-	    TaskState handleAttach (Task task)
+	    protected TaskState handleAttach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleAttach\n", task); 
 		return attaching;
 	    }
-	    TaskState handleStoppedEvent (Task task)
+	    protected TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
 		// This is what should happen, the task stops, the
@@ -1111,7 +1111,7 @@ abstract class LinuxPtraceTaskState
 		Task.taskStateDetached.notify(task);
 		return detached;
 	    }
-	    TaskState handleTerminatingEvent (Task task, boolean signal,
+	    protected TaskState handleTerminatingEvent (Task task, boolean signal,
 					      int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
@@ -1126,7 +1126,7 @@ abstract class LinuxPtraceTaskState
 		    task.sendContinue (0);
 		return detaching;
 	    }
-	    TaskState handleTerminatedEvent (Task task, boolean signal,
+	    protected TaskState handleTerminatedEvent (Task task, boolean signal,
 					     int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
@@ -1136,7 +1136,7 @@ abstract class LinuxPtraceTaskState
 		task.proc.performTaskDetachCompleted (task);
 		return destroyed;
 	    }
-	    TaskState handleDisappearedEvent (Task task, Throwable w)
+	    protected TaskState handleDisappearedEvent (Task task, Throwable w)
 	    {
 		// Woops, it disappeared before we were really detached,
 	        // pretend the detached happened anyway.
@@ -1145,7 +1145,7 @@ abstract class LinuxPtraceTaskState
 		task.proc.performTaskDetachCompleted (task);
 		return destroyed;
 	    }
-	    TaskState handleForkedEvent (Task task, Task fork)
+	    protected TaskState handleForkedEvent (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "{0} handleForkedEvent\n", task);
 		logger.log (Level.FINE, "... handleForkedEvent {0}\n", fork);
@@ -1156,7 +1156,7 @@ abstract class LinuxPtraceTaskState
 		task.sendContinue (0);
 		return detaching;
 	    }
-	    TaskState handleClonedEvent (Task task, Task clone)
+	    protected TaskState handleClonedEvent (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "{0} handleClonedEvent\n", task);
 		// Oops, the task cloned.  Skip that event allowing
@@ -1168,7 +1168,7 @@ abstract class LinuxPtraceTaskState
 		// exists?
 		return detaching;
 	    }
-	    TaskState handleExecedEvent (Task task)
+	    protected TaskState handleExecedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleExecedEvent\n", task);
 		// Oops, the [main] task did an exec.  Skip that event
@@ -1177,7 +1177,7 @@ abstract class LinuxPtraceTaskState
 		task.sendContinue (0);
 		return detaching;
 	    }
-	    TaskState handleSignaledEvent (Task task, int signal)
+	    protected TaskState handleSignaledEvent (Task task, int signal)
 	    {
 		logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
 		// Oops, the task got the wrong signal.  Just continue
@@ -1186,7 +1186,7 @@ abstract class LinuxPtraceTaskState
 		return detaching;
 	    }
 	    //XXX: why is this needed and why does it mean a syscallExit ?
-	    TaskState handleSyscalledEvent (Task task)
+	    protected TaskState handleSyscalledEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
 		task.notifySyscallExit ();
@@ -1217,13 +1217,13 @@ abstract class LinuxPtraceTaskState
 	{
 	    return "BlockedSignal,sig=" + sig;
 	}
-	TaskState handleAddObservation(Task task, TaskObservation observation)
+	protected TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleAddObservation\n", task);
 	    observation.add();
 	    return this;
 	}
-	TaskState handleUnblock (Task task, TaskObserver observer)
+	protected TaskState handleUnblock (Task task, TaskObserver observer)
 	{
 	  logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 	  task.blockers.remove (observer);
@@ -1240,14 +1240,14 @@ abstract class LinuxPtraceTaskState
 	  return newState;
 	}
 	
-	TaskState handleDeleteObservation(Task task, TaskObservation observation)
+	protected TaskState handleDeleteObservation(Task task, TaskObservation observation)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 
 	    observation.delete();
 	    return handleUnblock(task, observation.getTaskObserver());
 	}
       
-	TaskState handleDetach (Task task, boolean shouldRemoveObservers)
+	protected TaskState handleDetach (Task task, boolean shouldRemoveObservers)
 	{
         
 	    logger.log (Level.FINE, "{0} handleDetach\n", task);
@@ -1322,7 +1322,7 @@ abstract class LinuxPtraceTaskState
     
     private static final TaskState disappeared = new TaskState ("disappeared")
 	{
-	    TaskState handleTerminatedEvent (Task task, boolean signal,
+	    protected TaskState handleTerminatedEvent (Task task, boolean signal,
 					     int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
@@ -1330,14 +1330,14 @@ abstract class LinuxPtraceTaskState
 		handleAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
-	    TaskState handleTerminatingEvent (Task task, boolean signal,
+	    protected TaskState handleTerminatingEvent (Task task, boolean signal,
 					      int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
 		task.notifyTerminating (signal, value);
 		return disappeared;
 	    }
-    	    TaskState handleDisappearedEvent (Task task, Throwable w)
+    	    protected TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
 		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
 		return disappeared;
@@ -1351,7 +1351,7 @@ abstract class LinuxPtraceTaskState
     
     private static final TaskState destroyed = new TaskState ("destroyed") 
 	{
-	    TaskState handleAttach (Task task)
+	    protected TaskState handleAttach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleAttach\n", task); 
 		// Lie; the Proc wants to know that the operation has
@@ -1360,7 +1360,7 @@ abstract class LinuxPtraceTaskState
 		task.proc.performTaskAttachCompleted (task);
 		return destroyed;
 	    }
-	    TaskState handleAddObservation(Task task,
+	    protected TaskState handleAddObservation(Task task,
 					   TaskObservation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", task);
@@ -1372,7 +1372,7 @@ abstract class LinuxPtraceTaskState
 						 (TaskObserver) observer);
 		return destroyed;
 	    }
-	    TaskState handleDeleteObservation(Task task,
+	    protected TaskState handleDeleteObservation(Task task,
 					      TaskObservation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", task); 

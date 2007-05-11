@@ -71,13 +71,13 @@ abstract class LinuxCoreFileProcState
    */
   private static final ProcState detached = new ProcState ("detached")
     {
-      ProcState handleRefresh (Proc proc)
+      protected ProcState handleRefresh (Proc proc)
       {
 	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
 	proc.sendRefresh ();
 	return detached;
       }
-      ProcState handleRemoval (Proc proc)
+      protected ProcState handleRemoval (Proc proc)
       {
 	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
 	
@@ -87,7 +87,7 @@ abstract class LinuxCoreFileProcState
 	
 	return detached;
       }
-      ProcState handleAddObservation (Proc proc,
+      protected ProcState handleAddObservation (Proc proc,
 				      Observation observation)
       {
 	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
@@ -99,7 +99,7 @@ abstract class LinuxCoreFileProcState
 	// return Attaching.initialState (proc, observation);
       }
       
-      ProcState handleDeleteObservation (Proc proc,
+      protected ProcState handleDeleteObservation (Proc proc,
 					 Observation observation)
       {
 	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 

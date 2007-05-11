@@ -50,38 +50,38 @@ public abstract class ProcState
     {
 	super (state);
     }
-    ProcState handleRemoval (Proc proc)
+    protected ProcState handleRemoval (Proc proc)
     {
 	throw unhandled (proc, "handleRemoval");
     }
-    ProcState handleRefresh (Proc proc)
+    protected ProcState handleRefresh (Proc proc)
     {
 	throw unhandled (proc, "handleRefresh");
     }
-    ProcState handleTaskAttachCompleted (Proc proc, Task task)
+    protected ProcState handleTaskAttachCompleted (Proc proc, Task task)
     {
 	throw unhandled (proc, "handleTaskAttachCompleted");
     }
-    ProcState handleTaskDetachCompleted (Proc proc, Task task)
+    protected ProcState handleTaskDetachCompleted (Proc proc, Task task)
     {
 	throw unhandled (proc, "handleTaskDetachCompleted");
     }
-    ProcState handleTaskDetachCompleted (Proc proc, Task task,
+    protected ProcState handleTaskDetachCompleted (Proc proc, Task task,
 					 Task clone)
     {
 	throw unhandled (proc, "handleTaskDetachCompleted/clone");
     }
-    ProcState handleAddObservation (Proc proc,
+    protected ProcState handleAddObservation (Proc proc,
 				    Observation observation)
     {
 	throw unhandled (proc, "handleAddObservation");
     }
-    ProcState handleDeleteObservation (Proc proc,
+    protected ProcState handleDeleteObservation (Proc proc,
 				       Observation observation)
     {
 	throw unhandled (proc, "handleDeleteObservation");
     }
-    ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+    protected ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
     {
 	throw unhandled (proc, "handleDetach");
     }

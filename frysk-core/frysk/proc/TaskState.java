@@ -50,71 +50,71 @@ public abstract class TaskState
     {
 	super (state);
     }
-    TaskState handleSignaledEvent (Task task, int sig)
+    protected TaskState handleSignaledEvent (Task task, int sig)
     {
 	throw unhandled (task, "handleSignaledEvent");
     }
-    TaskState handleStoppedEvent (Task task)
+    protected TaskState handleStoppedEvent (Task task)
     {
 	throw unhandled (task, "handleStoppedEvent");
     }
-    TaskState handleTrappedEvent (Task task)
+    protected TaskState handleTrappedEvent (Task task)
     {
 	throw unhandled (task, "handleTrappedEvent");
     }
-    TaskState handleSyscalledEvent (Task task)
+    protected TaskState handleSyscalledEvent (Task task)
     {
 	throw unhandled (task, "handleSyscalledEvent");
     }
-    TaskState handleTerminatedEvent (Task task, boolean signal, int value)
+    protected TaskState handleTerminatedEvent (Task task, boolean signal, int value)
     {
 	throw unhandled (task, "handleTerminatedEvent");
     }
-    TaskState handleTerminatingEvent (Task task, boolean signal, int value)
+    protected TaskState handleTerminatingEvent (Task task, boolean signal, int value)
     {
 	throw unhandled (task, "handleTerminatingEvent");
     }
-    TaskState handleExecedEvent (Task task)
+    protected TaskState handleExecedEvent (Task task)
     {
 	throw unhandled (task, "handleExecedEvent");
     }
-    TaskState handleDisappearedEvent (Task task, Throwable w)
+    protected TaskState handleDisappearedEvent (Task task, Throwable w)
     {
 	throw unhandled (task, "handleDisappearedEvent");
     }
-    TaskState handleContinue (Task task)
+    protected TaskState handleContinue (Task task)
     {
 	throw unhandled (task, "handleContinue");
     }
-    TaskState handleRemoval (Task task)
+    protected TaskState handleRemoval (Task task)
     {
 	throw unhandled (task, "handleRemoval");
     }
-    TaskState handleAttach (Task task)
+    protected TaskState handleAttach (Task task)
     {
 	throw unhandled (task, "handleAttach");
     }
-    TaskState handleDetach (Task task, boolean shouldRemoveObservers)
+    protected TaskState handleDetach (Task task, boolean shouldRemoveObservers)
     {
 	throw unhandled (task, "handleDetach");
     }
-    TaskState handleClonedEvent (Task task, Task clone)
+    protected TaskState handleClonedEvent (Task task, Task clone)
     {
 	throw unhandled (task, "handleClonedEvent");
     }
-    TaskState handleForkedEvent (Task task, Task fork)
+    protected TaskState handleForkedEvent (Task task, Task fork)
     {
 	throw unhandled (task, "handleForkedEvent");
     }
-    TaskState handleUnblock (Task task, TaskObserver observer)
+    protected TaskState handleUnblock (Task task, TaskObserver observer)
     {
 	throw unhandled (task, "handleUnblock");
     }
-    TaskState handleAddObservation (Task task, TaskObservation observation)
+    protected TaskState handleAddObservation (Task task, TaskObservation observation)
     {
 	throw unhandled (task, "handleAddObservation");
     }
-    TaskState handleDeleteObservation (Task task, TaskObservation observation)
+    protected TaskState handleDeleteObservation (Task task, TaskObservation observation)
     {
 	throw unhandled (task, "handleDeleteObservation");
     }

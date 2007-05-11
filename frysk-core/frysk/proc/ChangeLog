@@ -1,5 +1,10 @@
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java: Make all methods protected.
+	* TaskState.java: Make all methods protected.
+	* LinuxCoreFileProcState.java: Update.
+	* LinuxCoreFileTaskState.java: Update.
+
 	* Task.java (memory): Make private.
 	(sendrecMemory): Replace fillMemory.
 	(getMemory): Use.
