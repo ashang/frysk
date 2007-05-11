@@ -39,7 +39,7 @@
 
 package frysk.rt;
 
-import frysk.value.Variable;
+import frysk.value.Value;
 
 /**
  * The Display class is an intermediary between a Variable object and anything that
@@ -53,9 +53,9 @@ import frysk.value.Variable;
 public class Display
 {
   
-  private Variable myVar;
+  private Value myVar;
   
-  public Display(Variable var)
+  public Display(Value var)
   {
     myVar = var;
   }
@@ -69,7 +69,7 @@ public class Display
   }
   
   // TODO: Rename this method if/when Variable is changed to Value.
-  public Variable getVariable()
+  public Value getValue()
   {
     return myVar;
   }

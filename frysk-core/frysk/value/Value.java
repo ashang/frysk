@@ -46,7 +46,7 @@ import inua.eio.ArrayByteBuffer;
  * Stores the type and location of a variable
  */
 
-public class Variable
+public class Value
 {
     private final Type type;
     private final Location location;
@@ -93,22 +93,22 @@ public class Variable
       return columnXXX;
     }
 
-    public Variable(Type type)	{
+    public Value(Type type)	{
       this(type, "temp");
     }
 
-    public Variable(Type type, String text)
+    public Value(Type type, String text)
     {
       this(type, text, (new Location(type.getSize())));
     }
       
  
-    public Variable(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
+    public Value(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
     {
       this(type, text, (new Location(arrayByteBuffer)));
     }    
     
-    public Variable(Type type, String text, Location location)
+    public Value(Type type, String text, Location location)
     {
        this.type = type;
        this.location = location;
