@@ -59,7 +59,7 @@ public class TestSessionSaveLoad extends GuiTestCase {
       super.setUp();
       Gtk.init(new String[]{});
       
-      SESSIONS_TEST_DIR.mkdir();
+      SESSIONS_TEST_DIR.mkdirs();
       cleanDir(SESSIONS_TEST_DIR);
       
       sessionManager = new SessionManager(SESSIONS_TEST_DIR);
@@ -78,7 +78,7 @@ public class TestSessionSaveLoad extends GuiTestCase {
 	public void testSaveLoad(){
 		
 	  debugProcess = new DebugProcess("3", "33", "333");
-	  
+	  	mySavedSession.setSessionType(Session.SessionType.DebugSession);
 		Iterator iterator = ObserverManager.theManager.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
@@ -92,6 +92,7 @@ public class TestSessionSaveLoad extends GuiTestCase {
 		Session myLoadedSession = loadedSessionManager.getSessionByName(mySavedSession.getName());
 		
 		assertNotNull("loaded session", myLoadedSession);
+		assertEquals("session type", myLoadedSession.getSessoinType(), mySavedSession.getSessoinType());
 		assertEquals("session name", myLoadedSession.getName(), mySavedSession.getName());
 		assertEquals("session tooltip", myLoadedSession.getToolTip(), mySavedSession.getToolTip());
 		assertEquals("number of DebugProcessies", mySavedSession.getProcesses().size(), myLoadedSession.getProcesses().size());
@@ -111,6 +112,13 @@ public class TestSessionSaveLoad extends GuiTestCase {
 			
 			assertEquals("name of observer", savedObserver.getName(), loadedObserver.getName());
 		}
+		
+		mySavedSession.setSessionType(Session.SessionType.MonitorSession);
+		sessionManager.save();
+		
+		loadedSessionManager = new SessionManager(SESSIONS_TEST_DIR);
+		myLoadedSession = loadedSessionManager.getSessionByName(mySavedSession.getName());
+		assertEquals("session type", myLoadedSession.getSessoinType(), mySavedSession.getSessoinType());
 		
 	}
 }

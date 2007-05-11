@@ -74,6 +74,9 @@ public class SessionManager
 
   public SessionManager (File sessionsDir)
   {
+    if(!sessionsDir.isDirectory()){
+      throw new IllegalArgumentException("The given file ["+sessionsDir.getPath()+"] is not a directory");
+    }
     this.sessionsDir = sessionsDir;
     this.currentSessionChanged = new GuiObservable();
     sessionsDir.mkdir();
@@ -213,9 +216,4 @@ public class SessionManager
 
   }
   
-  protected void finalize () throws Throwable
-  {
-    super.finalize();
-    save();
-  }
 }

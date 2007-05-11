@@ -1,3 +1,10 @@
+2007-05-11  swagiaal  <swagiaal@redhat.com>
+
+	* Config.java (getFryskTestDir): Added check to ensure that teset
+	dir was properly created.
+	Added a workaround for concrete files being created, and preventing
+	directory creation.
+
 2007-05-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Config.java: (getFryskTestDir): Now uses TearDownFile.create().

@@ -259,12 +259,14 @@ public class CreateFryskSessionDruid
 	throw new NullPointerException("trying to load a null session");
       }
 
-    this.notebook.setCurrentPage(1);
-    setUpCurrentPage();
     notebook.setShowTabs(false);
 
     this.setDruidMode(DruidMode.LOAD_SESSION_MODE);
     SessionManager.theManager.setCurrentSession(givenSession);
+    
+    this.notebook.setCurrentPage(1);
+    setUpCurrentPage();
+    this.backButton.setSensitive(false);
     
     this.showAll();
 
@@ -599,6 +601,10 @@ public class CreateFryskSessionDruid
 
       public void entryEvent (EntryEvent event)
       {
+//	if(event.getType() == EntryEvent.Type.DELETE_TEXT){
+//	  return;
+//	}
+//	
 	if(!validateSessionName()){
 	  return;
 	}
@@ -842,17 +848,23 @@ public class CreateFryskSessionDruid
   }
 
   private boolean validateCurrentPage(){
+    boolean result = true;
     final int page = notebook.getCurrentPage();
     switch (page){
       
     case SELECT_PROCS_PAGE:
-	return this.validateSessionName();
-	
+	result = this.validateSessionName();
+	break;
     default:
       currentPageValid();
     }
     
-    return true;
+    if(!result){
+      currentPageInvalid();
+    }else{
+      currentPageValid();
+    }
+    return result;
   }
   
   private boolean validateSessionName ()
@@ -861,16 +873,19 @@ public class CreateFryskSessionDruid
     Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
     if (theSessionUsingProposedName != null && theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
       setWarning(WarningType.NAME_ALREADY_USED);
-      currentPageInvalid();
       return false;
     }else{
-      currentPageValid();
       return true;
     }
   }
 
   private void currentPageValid(){
-    this.nextButton.setSensitive(true);
+    if(notebook.getCurrentPage() == SELECT_PROCS_PAGE &&
+	SessionManager.theManager.getCurrentSession().getSessoinType() == Session.SessionType.DebugSession){
+	nextButton.setSensitive(false);
+    }else{
+	nextButton.setSensitive(true);
+    }
     this.finishButton.setSensitive(true);
   }
   

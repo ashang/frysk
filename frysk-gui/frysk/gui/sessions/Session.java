@@ -105,6 +105,11 @@ public class Session
       
       throw new IllegalArgumentException("the given name ["+name+"] is not a valid SessionType name");
     }
+    
+    public String toString ()
+    {
+      return super.toString() + " " + this.name;
+    }
   }
   
   /**

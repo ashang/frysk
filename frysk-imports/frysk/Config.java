@@ -210,15 +210,18 @@ public class Config
       return file;
     }
     
-    public static File getFryskTestDir(){
+    public static File getFryskTestDir() throws Exception{
       File file = null;
-      try{
-	file = TearDownFile.create();
-      }catch (Exception e){
-	e.printStackTrace();
+      file = TearDownFile.create();
+      
+      String path = file.getAbsolutePath();
+      file.delete();
+      file = new File(path);
+      
+      if(!file.mkdirs()){
+	throw new Exception("Could not create test directory " + file.getAbsolutePath());
       }
       
-      file.mkdirs();
       file.deleteOnExit();
       return file;
     }

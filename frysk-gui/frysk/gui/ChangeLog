@@ -1,3 +1,13 @@
+2007-05-11  swagiaal  <swagiaal@redhat.com>
+
+	* test/TestSessionSaveLoad.java: Added test for saving/loading
+	SessionTypes.
+	* test/GuiTestCase.java (setUp): Moved initialization of files to here.
+	* sessions/SessionManager.java (SessionManager): Added isDirectory check.
+	* sessions/Session.java (SessionType.toString): New function.
+	* druid/CreateFryskSessionDruid.java (loadSessionMode): setCurrentSession
+	is now called before setUpCurrentPage. Fix for bz 4485.
+
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* test/TestWindowFactorization.java: Replace references to
