@@ -1,3 +1,10 @@
+2007-05-12  Chris Moller  <moller@mollerware.com>
+
+	* StatelessFile.java:
+	* TestStatelessFile.java:
+	* cni/StatelessFile.cxx:  New class to do pread/pwrite, plus tests
+	for same.
+
 2007-05-10  Chris Moller  <moller@mollerware.com>
 
 	* cni/Ptrace.cxx (peek (jint pid, jlong addr, jlong length,
