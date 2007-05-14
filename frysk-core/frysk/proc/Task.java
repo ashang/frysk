@@ -233,16 +233,6 @@ public abstract class Task
   }
   
   /**
-   * Return whether this task has been destroyed
-   *
-   * XXX: This has been made package local; and will next be deleted.
-   */
-  boolean isDestroyed()
-  {
-    return getState().equals(LinuxPtraceTaskState.getDestroyed());
-  }
-
-  /**
    * Return the current state while at the same time marking that the state is
    * in flux. If a second attempt to change state occurs before the current
    * state transition has completed, barf. XXX: Bit of a hack, but at least this

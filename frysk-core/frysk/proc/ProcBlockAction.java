@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -230,20 +230,11 @@ abstract public class ProcBlockAction
   private void checkFinish (Task task)
   {
 
-    if (null != task)
+    if (task != null)
       taskList.remove(task);
 
     logger.log(Level.FINEST, "{0} this taskList, {1} proc.taskList\n",
                new Object[] { taskList, proc.getTasks() });
-
-    // Check for destroyed tasks.
-    Iterator iter = taskList.iterator();
-    while (iter.hasNext())
-      {
-        Task t = (Task) iter.next();
-        if (t.isDestroyed())
-          iter.remove();
-      }
 
     if (taskList.isEmpty())
       {
