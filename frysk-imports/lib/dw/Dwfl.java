@@ -59,6 +59,12 @@ public class Dwfl
     factory = DwarfDieFactory.getFactory();
     dwfl_begin(pid);
   }
+  
+  public Dwfl()
+  {
+    factory = DwarfDieFactory.getFactory();
+    dwfl_begin();
+  }
 
   protected Dwfl (long pointer)
   {
@@ -192,6 +198,12 @@ public class Dwfl
   }
   
   protected native void dwfl_begin (int pid);
+  
+  protected native void dwfl_begin();
+  
+  protected native void dwfl_report_begin();
+  protected native void dwfl_report_end();
+  protected native void dwfl_report_module(String moduleName, long low, long high);
 
   protected native void dwfl_end ();
 

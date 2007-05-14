@@ -76,6 +76,50 @@ lib::dw::Dwfl::dwfl_begin(jint pid){
 }
 
 void
+lib::dw::Dwfl::dwfl_begin()
+{
+  /* Default `DEFAULT_DEBUGINFO_PATH' is the same but checks it CRCs.  */
+	static char *flags = "-:.debug:/usr/lib/debug";
+	
+	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
+	
+	cbs->find_elf = ::dwfl_linux_proc_find_elf;
+	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
+	cbs->debuginfo_path = &flags;
+	cbs->section_address = NULL;
+	
+	this->callbacks = (gnu::gcj::RawDataManaged*) cbs;
+	
+	::Dwfl* dwfl = ::dwfl_begin(cbs);
+	
+	this->pointer = (jlong) dwfl;
+}
+
+void
+lib::dw::Dwfl::dwfl_report_begin()
+{
+	::dwfl_report_begin(DWFL_POINTER);
+}
+
+void
+lib::dw::Dwfl::dwfl_report_end()
+{
+	::dwfl_report_end(DWFL_POINTER, NULL, NULL);
+}
+
+void
+lib::dw::Dwfl::dwfl_report_module(jstring moduleName, jlong low, jlong high)
+{
+	jsize len = JvGetStringUTFLength(moduleName);
+	char modName[len]; 
+	
+	JvGetStringUTFRegion(moduleName, 0, len, modName);
+	modName[len - 1] = '\0';
+	::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
+	                     (::Dwarf_Addr) high);  
+}
+
+void
 lib::dw::Dwfl::dwfl_end(){
 	::dwfl_end(DWFL_POINTER);
 }
