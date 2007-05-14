@@ -65,7 +65,7 @@ public class LinuxPtraceHost
   /**
    * Construct an instance of the LinuxPtraceHost that uses the specified eventLoop.
    */
-  LinuxPtraceHost (EventLoop eventLoop)
+  protected LinuxPtraceHost (EventLoop eventLoop)
   {
     this.eventLoop = eventLoop;
     eventLoop.add(new LinuxPtraceWaitBuilder(LinuxPtraceHost.this));

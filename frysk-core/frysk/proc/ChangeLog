@@ -1,5 +1,8 @@
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java (LinuxPtraceHost): Make protected.
+	* Manager.java: Use frysk.proc.ptrace.LinuxHost.
+
 	* Task.java (isDestroyed): Delete.
 	* ProcBlockAction.java (checkFinish): Do not call
 	Task.isDestroyed.

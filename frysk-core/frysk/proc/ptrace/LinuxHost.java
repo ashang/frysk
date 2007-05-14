@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,37 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.ptrace;
 
 import frysk.event.EventLoop;
-import frysk.proc.ptrace.LinuxHost;
+import frysk.proc.LinuxPtraceHost;
 
 /**
- * Manager of all operations within the proc model.
- *
- * Come here first; there's only one manager (well at least for the
- * moment).
+ * A Linux Host tracked using PTRACE.
  */
 
-public class Manager
+public class LinuxHost
+    extends LinuxPtraceHost
 {
-    // The host (for moment only the local native host).
-
-    // XXX: Should have the LinuxHost, along with any other host
-    // types, register themselves and then have HOST set itself to the
-    // most appropriate.
-
-    public static EventLoop eventLoop = EventLoop.factory ();
-    public static Host host = new LinuxHost (eventLoop);
-
-    /**
-     * XXX: For testing, resets the Manager back to it's default
-     * state.
-     */
-    static Host resetXXX ()
+    public LinuxHost (EventLoop eventLoop)
     {
-	eventLoop = EventLoop.factory ();
-	host = new LinuxHost (eventLoop);
-	return host;
+	super (eventLoop);
     }
 }
