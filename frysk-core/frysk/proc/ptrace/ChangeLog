@@ -1,5 +1,8 @@
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxTask.java: New file.
+	* LinuxTaskState.java: New file.	
+
 	* LinuxHost.java: New file.
 
 2007-05-07  Andrew Cagney  <cagney@redhat.com>

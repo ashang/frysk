@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.LinkedList;
 import frysk.sys.proc.ProcBuilder;
 import java.util.logging.Level;
+import frysk.proc.ptrace.LinuxTask;
 
 /**
  * A Linux Host.
@@ -252,10 +253,10 @@ public class LinuxPtraceHost
     if (myTask == null) {
 	// If not, find this process and add this task to it.
 	Proc myProc = getSelf();
-	myTask = new LinuxPtraceTask (myProc, myTaskId);
+	myTask = new LinuxTask (myProc, myTaskId);
     }
     Proc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
-    new LinuxPtraceTask (proc, attached);
+    new LinuxTask (proc, attached);
   }
 
   /**

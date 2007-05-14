@@ -50,41 +50,9 @@ import frysk.sys.Sig;
  * The task state machine.
  */
 
-abstract class LinuxPtraceTaskState
+public abstract class LinuxPtraceTaskState
     extends TaskState
 {
-    /**
-     * Return the initial state of a detached task.
-     */
-    static TaskState detachedState ()
-    {
-	return detached;
-    }
-    /**
-     * Return the initial state of the Main task.
-     */
-    static TaskState mainState ()
-    {
-	return StartMainTask.wantToDetach;
-    }
-    /**
-     * Return the initial state of a cloned task.
-     */
-    static TaskState clonedState (TaskState parentState)
-    {
-	if (parentState == detaching)
-	    // XXX: Is this needed?  Surely the infant can detect that
-	    // it should detach, and the parent handle that.
-	    return detaching;
-	else if (parentState == running
-		 || parentState == inSyscallRunning
-		 || parentState == syscallRunning
-		 || parentState == inSyscallRunningTraced)
-	    return StartClonedTask.waitForStop;
-    
-	throw new RuntimeException ("clone's parent in unexpected state "
-	                            + parentState);
-    }
     protected LinuxPtraceTaskState (String state)
     {
 	super (state);
@@ -118,7 +86,7 @@ abstract class LinuxPtraceTaskState
      * The task isn't attached (it was presumably detected using a
      * probe of the system process list).
      */
-    private static final TaskState detached = new TaskState ("detached")
+    protected static final TaskState detached = new TaskState ("detached")
 	{
 	    protected TaskState handleRemoval (Task task)
 	    {
@@ -394,7 +362,7 @@ abstract class LinuxPtraceTaskState
      * assumption to that the task should be attached and proceed on
      * that basis.
      */
-    static class StartMainTask
+    public static class StartMainTask
 	extends TaskState
     {
 	StartMainTask (String name)
@@ -406,7 +374,7 @@ abstract class LinuxPtraceTaskState
 	 * stopped, ForkedOffspring observers have been notified, and
 	 * all blocks have been removed, a detach should occure.
 	 */
-	private static TaskState wantToDetach =
+	public static final TaskState wantToDetach =
 	    new StartMainTask ("wantToDetach")
 	    {
 		protected TaskState handleAttach (Task task)
@@ -440,7 +408,7 @@ abstract class LinuxPtraceTaskState
 	 * ForkedOffspring blockers to be removed before finishing the
 	 * detach.
 	 */
-	private static TaskState detachBlocked =
+	public static final TaskState detachBlocked =
 	    new StartMainTask ("detachBlocked")
 	    {
 		protected TaskState handleAttach (Task task)
@@ -476,7 +444,7 @@ abstract class LinuxPtraceTaskState
 	 * occures any ForkedOffspring observers can be notififed and
 	 * the task progress to being attached.
 	 */
-	private static TaskState wantToAttach =
+	public static final TaskState wantToAttach =
 	    new StartMainTask ("wantToAttach")
 	    {
 		protected TaskState handleAddObservation(Task task,
@@ -513,7 +481,7 @@ abstract class LinuxPtraceTaskState
 	 * The task is all ready to run, but still waiting for it to
 	 * stop so that it can be properly attached.
 	 */
-	private static TaskState wantToAttachContinue =
+	public static final TaskState wantToAttachContinue =
 	    new StartMainTask ("wantToAttachContinue")
 	    {
 		TaskState blockOrAttachContinue (Task task, int signal)
@@ -542,7 +510,7 @@ abstract class LinuxPtraceTaskState
 	 * The task has stopped; just waiting for all the blockers to
 	 * be removed before finishing the attach.
 	 */
-	private static TaskState attachBlocked =
+	public static final TaskState attachBlocked =
 	    new StartMainTask ("attachBlocked")
 	    {
 		protected TaskState handleAddObservation(Task task,
@@ -573,7 +541,7 @@ abstract class LinuxPtraceTaskState
 	 * for that to clear before continuing on to the properly
 	 * attached state.
 	 */
-	private static TaskState attachContinueBlocked =
+	public static final TaskState attachContinueBlocked =
 	    new StartMainTask ("attachContinueBlocked")
 	    {
 		protected TaskState handleAddObservation(Task task,
@@ -599,7 +567,7 @@ abstract class LinuxPtraceTaskState
      * A cloned task just starting out, wait for it to stop, and for
      * it to be unblocked.  A cloned task is never continued.
      */
-    static class StartClonedTask
+    public static class StartClonedTask
 	extends TaskState
     {
 	StartClonedTask (String name)
@@ -635,7 +603,7 @@ abstract class LinuxPtraceTaskState
 	    return this;
 	}
 
-	private static final TaskState waitForStop =
+	public static final TaskState waitForStop =
 	    new StartClonedTask ("waitForStop")
 	    {
 		protected TaskState handleUnblock (Task task,
@@ -1077,24 +1045,24 @@ abstract class LinuxPtraceTaskState
     /**
      * Sharable instance of the running state.
      */
-    private static final Running running =
+    protected static final Running running =
 	new Running("running", false, false);
 
     /**
      * Sharable instance of the syscallRunning state.
      */
-    private static final Running syscallRunning =
+    protected static final Running syscallRunning =
 	new Running("syscallRunning", true, false);
     
     // Task is running inside a syscall.
-    private static final Running inSyscallRunning =
+    protected static final Running inSyscallRunning =
 	new Running("inSyscallRunning", true, false);
 
     // Task is running inside a syscall.
-    private static final Running inSyscallRunningTraced =
+    protected static final Running inSyscallRunningTraced =
 	new Running("inSyscallRunningTraced", true, true);
 
-    private static final TaskState detaching = new TaskState ("detaching")
+    protected static final TaskState detaching = new TaskState ("detaching")
 	{
 	    protected TaskState handleAttach (Task task)
 	    {

@@ -54,7 +54,7 @@ import java.util.logging.Level;
  * Linux implementation of Task.
  */
 
-public class LinuxPtraceTask
+public abstract class LinuxPtraceTask
   extends Task
 {
   private long ptraceOptions = 0;
@@ -77,28 +77,26 @@ public class LinuxPtraceTask
   /**
    * Create a new unattached Task.
    */
-  LinuxPtraceTask (Proc proc, TaskId id)
+  protected LinuxPtraceTask (Proc proc, TaskId id, TaskState state)
   {
-    super(proc, id, LinuxPtraceTaskState.detachedState());
-    //setupMapsXXX();
+    super(proc, id, state);
   }
 
   /**
    * Create a new attached clone of Task.
    */
-  LinuxPtraceTask (Task task, TaskId clone)
+  protected LinuxPtraceTask (Task task, TaskId clone, TaskState state)
   {
-    super(task, clone, LinuxPtraceTaskState.clonedState(task.getState()));
-    //setupMapsXXX();
+    super(task, clone, state);
   }
 
   /**
    * Create a new attached main Task of Proc.
    */
-  LinuxPtraceTask (Proc proc, TaskObserver.Attached attached)
+  protected LinuxPtraceTask (Proc proc, TaskObserver.Attached attached,
+			     TaskState state)
   {
-    super(proc, attached,LinuxPtraceTaskState.mainState());
-    //setupMapsXXX();
+    super(proc, attached, state);
   }
 
   /**

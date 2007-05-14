@@ -49,6 +49,7 @@ import frysk.sys.proc.ProcBuilder;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
 import frysk.sys.proc.Exe;
+import frysk.proc.ptrace.LinuxTask;
 
 /**
  * Linux implementation of Proc.
@@ -123,8 +124,8 @@ public class LinuxPtraceProc
 		}
 		else {
 		    // Add the process (it currently isn't attached).
-		    Task newTask = new LinuxPtraceTask (LinuxPtraceProc.this,
-							new TaskId (tid));
+		    Task newTask = new LinuxTask (LinuxPtraceProc.this,
+						  new TaskId (tid));
 		    added.put (newTask.id, newTask);
 		}
 	    }

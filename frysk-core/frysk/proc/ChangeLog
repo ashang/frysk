@@ -1,5 +1,14 @@
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTaskState.java: Make public.
+	(detachedState, mainState, clonedState): Delete moved to
+	frysk.proc.ptrace.LinuxTaskState.
+	* Task.java (getState): Make protected.
+	* LinuxPtraceTask.java: Make abstract, and constructors protected.
+	* LinuxPtraceHost.java: Update, use frysk.proc.ptrace.LinuxTask.
+	* LinuxPtraceProc.java: Ditto.
+	* LinuxPtraceWaitBuilder.java: Ditto.
+
 	* LinuxPtraceHost.java (LinuxPtraceHost): Make protected.
 	* Manager.java: Use frysk.proc.ptrace.LinuxHost.
 

@@ -224,7 +224,7 @@ public abstract class Task
   /**
    * Return the current state.
    */
-  TaskState getState ()
+  protected TaskState getState ()
   {
     if (newState != null)
       return newState;
