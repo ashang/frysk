@@ -2611,8 +2611,8 @@ public class SourceWindow
   }
 
   /**
-   * Tells the debugger to move to the previous stack frame
-   */
+         * Tells the debugger to move to the previous stack frame
+         */
   private void doStackUp ()
   {
     TreePath path = null;
@@ -2625,50 +2625,24 @@ public class SourceWindow
 	return;
       }
 
-    int selected;
-
-    if (path.getDepth() == 2)
+    if (path.getDepth() == 3)
       {
-	selected = path.getIndices()[0];
-
-	// Can't move above top stack
-	if (selected == 0)
+	if (!path.previous())
+	  {
+	    return;
+	  }
+	
+	TreeIter iter = this.stackView.getModel().getIter(path);
+	
+	if (iter == null)
 	  {
 	    this.stackUp.setSensitive(false);
 	    return;
 	  }
-
-	this.stackView.getSelection().select(
-					     this.stackView.getModel().getIter(
-									       ""
-										   + (selected - 1)));
-
-	if (this.stackView.getModel().getIter("" + (selected - 1)) == null)
-	  this.stackUp.setSensitive(false);
+	
+	this.stackView.getSelection().select(iter);
+	this.stackDown.setSensitive(true);	
       }
-    else
-      {
-
-	selected = path.getIndices()[2];
-
-	// Can't move above top stack
-	if (selected == 0)
-	  return;
-
-	this.stackView.getSelection().select(
-					     this.stackView.getModel().getIter(
-									       ""
-										   + path.getIndices()[0]
-										   + ":"
-										   + (selected - 1)));
-
-	if (this.stackView.getModel().getIter(
-					      "" + path.getIndices()[0] + ":"
-						  + (selected - 1)) == null)
-	  this.stackUp.setSensitive(false);
-      }
-
-    this.stackDown.setSensitive(true);
   }
 
   /**
@@ -2679,66 +2653,29 @@ public class SourceWindow
     TreePath path = null;
     try
       {
-        path = this.stackView.getSelection().getSelectedRows()[0];
+	path = this.stackView.getSelection().getSelectedRows()[0];
       }
     catch (ArrayIndexOutOfBoundsException ae)
       {
-        return;
+	return;
       }
 
-    int selected;
-
-    if (path.getDepth() == 2)
+    if (path.getDepth() == 3)
       {
-        selected = path.getIndices()[0];
-
-        try
-          {
-            this.stackView.getSelection().select(
-                                                 this.stackView.getModel().getIter(
-                                                                                   ""
-                                                                                       + (selected + 1)));
-
-            if (this.stackView.getModel().getIter("" + (selected + 1)) == null)
-              this.stackDown.setSensitive(false);
-          }
-        catch (NullPointerException npe)
-          {
-            this.stackDown.setSensitive(false);
-            return;
-          }
+	path.next();
+	TreeIter iter = this.stackView.getModel().getIter(path);
+	if (iter == null)
+	  {
+	    return;
+	  }
+	
+	this.stackView.getSelection().select(iter);
       }
-    else
-      {
-        selected = path.getIndices()[2];
-
-        try
-          {
-            this.stackView.getSelection().select(
-                                                 this.stackView.getModel().getIter(
-                                                                                   ""
-                                                                                       + path.getIndices()[0]
-                                                                                       + ":"
-                                                                                       + (selected + 1)));
-
-            if (this.stackView.getModel().getIter(
-                                                  "" + path.getIndices()[0]
-                                                      + ":" + (selected + 1)) == null)
-              this.stackDown.setSensitive(false);
-          }
-        catch (NullPointerException npe)
-          {
-            this.stackDown.setSensitive(false);
-            return;
-          }
-      }
-
-    this.stackUp.setSensitive(true);
   }
 
   /**
-   * Tells the debugger to move to the newest stack frame
-   */
+    * Tells the debugger to move to the newest stack frame
+    */
   private void doStackTop ()
   {
     TreePath path = null;
@@ -2751,12 +2688,13 @@ public class SourceWindow
         return;
       }
 
-    if (path.getDepth() != 1)
+    if (path.getDepth() == 3)
       path.up();
+    else
+      return;
 
     TreeIter iter = this.stackView.getModel().getIter(path);
     this.stackView.getSelection().select(iter.getFirstChild());
-    this.stackUp.setSensitive(false);
   }
 
   private void doJumpToFunction (String name)
@@ -2765,8 +2703,8 @@ public class SourceWindow
   }
 
   /**
-   * Creates and toggles the display of the RegisterWindow.
-   */
+         * Creates and toggles the display of the RegisterWindow.
+         */
   private void toggleRegisterWindow ()
   {
     RegisterWindow regWin = RegisterWindowFactory.regWin;

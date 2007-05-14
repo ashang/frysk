@@ -1,3 +1,9 @@
+2007-05-14  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (doStackUp): Rewritten. Fixes #4503.
+	(doStackDown): Ditto.
+	(doStackTop): Ditto.
+
 2007-05-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Added activateTerminal; added changes to
