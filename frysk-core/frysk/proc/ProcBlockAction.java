@@ -47,6 +47,14 @@ import java.util.logging.Logger;
 
 import frysk.event.Event;
 
+/**
+ * This class blocks all of the threads in a process and performs a given action
+ * defined by the method existingTask(Task task) on each task.
+ * Extensions of this class must implement existingTask(), and 
+ * allExistingTasksCompleted() which is called when existingTask() has been 
+ * called on all tasks.
+ * 
+ */
 abstract public class ProcBlockAction
     implements ProcObserver
 {
@@ -210,6 +218,11 @@ abstract public class ProcBlockAction
       }
   }
 
+  /**
+   * This method is called once existingTask() has been called on all tasks in 
+   * the given Proc.
+   *
+   */
   public abstract void allExistingTasksCompleted ();
 
   private boolean finished = false;
