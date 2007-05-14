@@ -56,17 +56,30 @@ public class RemoteFrame extends Frame
   private Symbol symbol;
   private Line[] lines;
   
+  /* Identifies this frame by its CFA and frame start address */
   private FrameIdentifier frameIdentifier;
   
   RemoteFrame inner = null;
   RemoteFrame outer = null;
    
+  /**
+   * Creates a new RemoteFrame object. Represents a frame on the stack of a 
+   * remote (non-local) process.
+   * 
+   * @param cursor The Cursor used to unwind this Frame 
+   * @param task The Task whose stack this Frame belongs to
+   */
   RemoteFrame (Cursor cursor, Task task)
   {
     this.cursor = cursor;
     this.task = task;
   }
   
+  /**
+   * Returns the Frame outer to this Frame on the stack. If that Frame object
+   * has not yet been created, it is created using this Frame's Cursor and
+   * unwinding outwards a single frame.
+   */
   public Frame getOuter()
   {
    if (outer == null)
@@ -81,26 +94,41 @@ public class RemoteFrame extends Frame
     return outer;
   }
   
+  /**
+   * Returns the Frame inner to this frame on the stack.
+   */
   public Frame getInner()
   {
     return inner;
   }
   
+  /**
+   * Returns the name of the procedure that this Frame is in.
+   */
   public String getProcName()
   {
     return cursor.getProcName().getName();
   }
   
+  /**
+   * Returns the name of the procedure that this Frame is in.
+   */
   public String getProcName(int maxNameSize)
   {
     return cursor.getProcName(maxNameSize).getName();
   }
   
-  public ProcInfo getProcInfo()
+  /**
+   * Returns the ProcInfo object for this Frame.
+   */
+  public ProcInfo getProcInfo ()
   {
-	  return cursor.getProcInfo();
+    return cursor.getProcInfo();
   }
   
+  /**
+   * Returns the current program counter of this Frame.
+   */
   public long getAddress()
   {
     ProcInfo myInfo = cursor.getProcInfo();
@@ -112,6 +140,12 @@ public class RemoteFrame extends Frame
    return myInfo.getStartIP() + myName.getOffset();
   }
   
+  /**
+   * Returns the adjusted address of this frame. If this Frame is an innermost
+   * frame, the current program counter is returned as-is. Otherwise, it is 
+   * decremented by one, to represent the frame address pointing to its inner
+   * frame, rather than the inner frame's return address.
+   */
   public long getAdjustedAddress()
   {
     if (this.inner != null && !this.cursor.isSignalFrame())
@@ -120,6 +154,9 @@ public class RemoteFrame extends Frame
       return getAddress();
   }
   
+  /**
+   * Returns the value stored at the given register number.
+   */
   public long getReg(int regNum)
   {
     byte[] word = new byte[task.getIsa().getWordSize()];
@@ -128,13 +165,21 @@ public class RemoteFrame extends Frame
     return byteArrayToLong(word);
   }
   
+  /**
+   * Returns the value stored at the given register number.
+   */
   public long getReg (long regNum)
   {
     return getReg((int) regNum);
   }
   
+  /**
+   * Returns the given byte array as a long.
+   * 
+   * @param word The byte array
+   * @return val The converted long
+   */
   public long byteArrayToLong(byte[] word)
-
   {
     long val = 0;
     for (int i = 0; i < word.length; i++)
@@ -142,6 +187,9 @@ public class RemoteFrame extends Frame
     return val;
   }
   
+  /**
+   * Returns the Canonical Frame Address of this Frame.
+   */
   public long getCFA()
   {
     byte[] word = new byte[task.getIsa().getWordSize()];
@@ -164,16 +212,27 @@ public class RemoteFrame extends Frame
     return this.frameIdentifier;
   }
   
+  /**
+   * Sets the value of the given register number with the word value.
+   */
   public int setReg(int regNum, long word)
   {
     return cursor.setRegister(regNum, word);
   }
   
+  /**
+   * Sets the value of the given register number with the word value.
+   */
   public long setReg (long regNum, long word)
   {
     return (long) setReg ((int) regNum, word);
   }
   
+  /**
+   * Returns whether or not this frame's execution was interrupted by
+   * a signal.
+   * @return true If this Frame is a signal frame.
+   */
   public boolean isSignalFrame()
   {
     return cursor.isSignalFrame();
@@ -242,50 +301,51 @@ public Symbol getSymbol ()
   return this.symbol;
 }
 
-/**
- * Return this frame's list of lines as an array; returns an empty array if
- * there is no line number information available. The lack of line-number
- * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
- * XXX: When there are multiple lines, it isn't clear if there is a well
- * defined ordering of the information; for instance: outer-to-inner or
- * inner-to-outer.
- */
-public Line[] getLines ()
-{
-if (this.lines == null)
+  /**
+   * Return this frame's list of lines as an array; returns an empty array if
+   * there is no line number information available. The lack of line-number
+   * information can be determined with the test: <<tt>>.getLines().length == 0</tt>.
+   * XXX: When there are multiple lines, it isn't clear if there is a well
+   * defined ordering of the information; for instance: outer-to-inner or
+   * inner-to-outer.
+   */
+  public Line[] getLines ()
   {
-    if (this.cursor != null)
-      {
-        Dwfl dwfl = new Dwfl(this.task.getTid());
-        // The innermost frame and frames which were
-        // interrupted during execution use their PC to get
-        // the line in source. All other frames have their PC
-        // set to the line after the inner frame call and must
-        // be decremented by one.
-        DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
-        if (dwflLine != null)
-          {
-            File f = new File (dwflLine.getSourceFile());
-            if (!f.isAbsolute())
-              {
-                /* The file refers to a path relative to the compilation
-                 * directory; so prepend the path to that directory in
-                 * front of it. */
-                File parent = new File(dwflLine.getCompilationDir());
-                f = new File (parent, dwflLine.getSourceFile());
-              }
-            
-            this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
-                                                  dwflLine.getColumn(),
-                                                  this.task.getProc()) };
-          }
-        
-      }
-    // If the fetch failed, mark it as unknown.
     if (this.lines == null)
-      this.lines = new Line[0];
+      {
+	if (this.cursor != null)
+	  {
+	    Dwfl dwfl = new Dwfl(this.task.getTid());
+	    // The innermost frame and frames which were
+	    // interrupted during execution use their PC to get
+	    // the line in source. All other frames have their PC
+	    // set to the line after the inner frame call and must
+	    // be decremented by one.
+	    DwflLine dwflLine = dwfl.getSourceLine(getAdjustedAddress());
+	    if (dwflLine != null)
+	      {
+		File f = new File(dwflLine.getSourceFile());
+		if (! f.isAbsolute())
+		  {
+		    /* The file refers to a path relative to the compilation
+		     * directory; so prepend the path to that directory in
+		     * front of it. */
+		    File parent = new File(dwflLine.getCompilationDir());
+		    f = new File(parent, dwflLine.getSourceFile());
+		  }
+
+		this.lines = new Line[] { new Line(f, dwflLine.getLineNum(),
+						   dwflLine.getColumn(),
+						   this.task.getProc()) };
+	      }
+
+	  }
+	// If the fetch failed, mark it as unknown.
+	if (this.lines == null)
+	  this.lines = new Line[0];
+      }
+
+    return this.lines;
   }
-return this.lines;
-}
 
 }

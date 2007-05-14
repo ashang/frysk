@@ -2,6 +2,8 @@
 
 	* RemoteFrame.java (getFrameIdentifier): Build new FrameIdentifier on
 	demand, only when current field is null.
+	
+	* RemoteFrame.java: Commented.
 
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
