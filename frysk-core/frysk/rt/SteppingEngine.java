@@ -1196,8 +1196,7 @@ public class SteppingEngine
     while (i.hasNext())
       {
 	t = (Task) i.next();
-	if (! t.isDestroyed())
-	  t.requestAddInstructionObserver(steppingObserver);
+	t.requestAddInstructionObserver(steppingObserver);
       }
   }
   

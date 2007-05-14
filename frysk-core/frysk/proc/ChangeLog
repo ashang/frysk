@@ -1,3 +1,7 @@
+2007-05-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (isDestroyed): Make package private.
+
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Moved to frysk.proc.corefile.

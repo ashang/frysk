@@ -234,8 +234,10 @@ public abstract class Task
   
   /**
    * Return whether this task has been destroyed
+   *
+   * XXX: This has been made package local; and will next be deleted.
    */
-  public boolean isDestroyed()
+  boolean isDestroyed()
   {
     return getState().equals(LinuxPtraceTaskState.getDestroyed());
   }

@@ -1,3 +1,7 @@
+2007-05-14  Andrew Cagney  <cagney@redhat.com>
+
+	* SteppingEngine.java: Remove use of frysk.proc.Task.isDesctroyed.
+
 2007-05-11  Nurdin Premji  <npremji@redhat.com>
 
 	* StackFactory.java: Switch to using RemoteFrame
