@@ -155,7 +155,7 @@ public class RemoteFrame extends Frame
    */
   public FrameIdentifier getFrameIdentifier ()
   {
-    if (this.frameIdentifier != null)
+    if (this.frameIdentifier == null)
       {
         ProcInfo myInfo = getProcInfo();
         this.frameIdentifier = new FrameIdentifier(myInfo.getStartIP(),

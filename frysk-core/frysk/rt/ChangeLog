@@ -1,3 +1,8 @@
+2007-05-14  Mike Cvet  <mcvet@redhat.com>
+
+	* RemoteFrame.java (getFrameIdentifier): Build new FrameIdentifier on
+	demand, only when current field is null.
+
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
 	* SteppingEngine.java: Remove use of frysk.proc.Task.isDesctroyed.
