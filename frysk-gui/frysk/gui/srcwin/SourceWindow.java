@@ -132,6 +132,7 @@ import frysk.proc.Isa;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Frame;
+import frysk.rt.FrameIdentifier;
 import frysk.rt.Line;
 import frysk.rt.StackFactory;
 import frysk.rt.SteppingEngine;
@@ -292,6 +293,8 @@ public class SourceWindow
   private Frame currentFrame;
 
   private Task currentTask;
+  
+  private FrameIdentifier fi;
 
   private Frame[][] frames;
 
@@ -562,7 +565,7 @@ public class SourceWindow
 
 	    for (int j = 0; j < frames[this.current].length; j++)
 	      {
-			b.highlightLine(frames[this.current][0], true);
+		b.highlightLine(frames[this.current][0], true);
 	      }
 	  }
 	else
@@ -604,6 +607,7 @@ public class SourceWindow
 	      }
 	  }
 	updateSourceLabel(curr);
+	this.fi = this.currentFrame.getFrameIdentifier();
 	stackView.showAll();
 	this.view.showAll();
 	return;
@@ -618,10 +622,10 @@ public class SourceWindow
     Frame curr = null;
     Frame taskMatch = null;
 
-    String currentMethodName = this.currentFrame.getSymbol().getDemangledName();
-
-    /* Refresh the information displayed in the stack view with the info
-     * from the new stack trace */
+    /*
+         * Refresh the information displayed in the stack view with the info
+         * from the new stack trace
+         */
     this.stackView.refreshProc(frames[this.current], this.current);
     this.stackView.expandAll();
     Frame newFrame = null;
@@ -632,12 +636,12 @@ public class SourceWindow
          */
     for (int j = 0; j < frames[this.current].length; j++)
       {
-		curr = frames[this.current][j];
-		if (curr.getTask().getTid() == this.currentTask.getTid())
-		  {
-		    this.currentTask = curr.getTask();
-		    taskMatch = curr;
-		  }
+	curr = frames[this.current][j];
+	if (curr.getTask().getTid() == this.currentTask.getTid())
+	  {
+	    this.currentTask = curr.getTask();
+	    taskMatch = curr;
+	  }
 
 	sb.highlightLine(curr, true);
 
@@ -645,47 +649,48 @@ public class SourceWindow
 	  {
 	    while (curr != null)
 	      {
-			if (currentMethodName.equals(curr.getSymbol().getDemangledName()))
-			  {
-			    newFrame = curr;
-			    break;
-			  }
-			curr = curr.getOuter();
+		if (fi.equals(curr.getFrameIdentifier()))
+		  {
+		    newFrame = curr;
+		    break;
+		  }
+		curr = curr.getOuter();
 	      }
 	  }
       }
 
     if (newFrame == null)
       {
-		if (taskMatch != null)
-		  {
-		    newFrame = taskMatch;
-		  }
-		else
-		  {
-		    newFrame = this.stackView.getFirstFrameSelection();
-		  }
+	if (taskMatch != null)
+	  {
+	    newFrame = taskMatch;
+	  }
+	else
+	  {
+	    newFrame = this.stackView.getFirstFrameSelection();
+	  }
       }
 
     this.stackView.selectRow(newFrame);
     TreePath path = null;
     try
       {
-		path = this.stackView.getSelection().getSelectedRows()[0];
-		this.stackView.expandRow(path, true);
-		this.stackView.scrollToCell(path);
+	path = this.stackView.getSelection().getSelectedRows()[0];
+	this.stackView.expandRow(path, true);
+	this.stackView.scrollToCell(path);
       }
     catch (ArrayIndexOutOfBoundsException ae)
       {
 	// not sure what to do here yet, although expandAll() isn't it
 	// stackView.expandAll();
       }
-    
+
+    this.fi = newFrame.getFrameIdentifier();
     updateShownStackFrame(newFrame, this.current);
-    updateSourceLabel(this.currentFrame);
+    updateSourceLabel(newFrame);
 
     /* Update the variable watch as well */
-//    this.watchView.refreshList();
+    // this.watchView.refreshList();
   }
 
   /**
@@ -3019,6 +3024,8 @@ public class SourceWindow
     {
       if (newFrame == null)
         return;
+      
+      SourceWindow.this.fi = newFrame.getFrameIdentifier();
       
       if (SourceWindow.this.currentTask == null
 	  || newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())

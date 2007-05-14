@@ -3,6 +3,12 @@
 	* SourceWindow.java (doStackUp): Rewritten. Fixes #4503.
 	(doStackDown): Ditto.
 	(doStackTop): Ditto.
+	
+	* SourceWindow.java (populateStackBrowser): Use FrameIdentifier to identify
+	new Frame representations.
+	(fi): Added.
+	(SourceWindowListener.currentStackChanged): Update SourceWindow 
+	FrameIdentifier object.
 
 2007-05-11  Rick Moseley  <rmoseley@redhat.com>
 
