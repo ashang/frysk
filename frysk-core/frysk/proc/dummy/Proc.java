@@ -43,6 +43,7 @@ import frysk.proc.Auxv;
 import frysk.proc.ProcState;
 import frysk.proc.ProcId;
 import frysk.proc.Isa;
+import frysk.proc.MemoryMap;
 
 public class Proc
     extends frysk.proc.Proc
@@ -51,6 +52,7 @@ public class Proc
     {
 	super(new Host(), null, new ProcId(42));
     }
+  
     public String getCommand()
     {
 	return "Foo";
@@ -82,6 +84,12 @@ public class Proc
     {
 	return null;
     }
+
+    public MemoryMap[] sendrecMaps ()
+    {
+        return null;
+    }
+
     protected Auxv[] sendrecAuxv()
     {
 	return null;
