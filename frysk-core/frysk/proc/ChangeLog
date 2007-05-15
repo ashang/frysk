@@ -1,5 +1,7 @@
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Id.java (id): Make protected.
+
 	* Host.java (get(TaskId)): Make public.
 
 	* TaskEvent.java: Make constructors protected.
