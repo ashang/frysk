@@ -1,5 +1,7 @@
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java: Make constructors protected.
+
 	* TaskState.java: Make all handle methods public.
 	* ProcState.java: Ditto.
 	* LinuxPtraceTaskState.java: Update.

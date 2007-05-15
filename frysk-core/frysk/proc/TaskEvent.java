@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,10 +49,10 @@ public abstract class TaskEvent
     private static Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
     protected Task task;
     protected TaskId taskId;
-    TaskEvent ()
+    protected TaskEvent ()
     {
     }
-    TaskEvent (Task task)
+    protected TaskEvent (Task task)
     {
 	this.task = task;
     }
@@ -72,7 +72,7 @@ public abstract class TaskEvent
      * for tasks can be received.  Handle those by allowing such
      * dropped events to fall to the floor.
      */
-    TaskEvent (TaskId taskId)
+    protected TaskEvent (TaskId taskId)
     {
 	logger.log (Level.FINE, "{0} TaskEvent\n", taskId); 
 	this.taskId = taskId;
