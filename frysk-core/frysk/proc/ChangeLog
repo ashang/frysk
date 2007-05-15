@@ -1,3 +1,10 @@
+2007-05-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Proc.java (getMaps): New method. Define.
+	* LinuxPtraceProc.java (sendrecMaps): New method. Implement.
+	* TestMapGet.java: New File.
+	* MemoryMap.java: New File.
+
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceWaitBuilder.java: Move to

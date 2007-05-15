@@ -166,6 +166,14 @@ public abstract class Proc
 
   private String[] argv;
 
+  public MemoryMap[] getMaps()
+  {
+    MemoryMap maps[] = sendrecMaps ();
+    return maps;
+  }
+
+  protected abstract MemoryMap[] sendrecMaps ();
+
   final BreakpointAddresses breakpoints;
 
   protected abstract ProcState getInitialState (boolean procStarting);
