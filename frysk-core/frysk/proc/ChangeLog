@@ -1,5 +1,9 @@
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Make all handle methods public.
+	* ProcState.java: Ditto.
+	* LinuxPtraceTaskState.java: Update.
+
 	* LinuxPtraceHost.java: Use frysk.proc.ptrace.LinuxProc.
 	* LinuxPtraceWaitBuilder.java: Ditto.
 	* LinuxPtraceProc.java: Make abstract.

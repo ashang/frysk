@@ -1,3 +1,8 @@
+2007-05-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxProcState.java: Make all handlers public matching
+	frysk.proc.ProcState.
+
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLinuxCore.java: Moved to here from frysk.proc.

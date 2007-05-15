@@ -77,14 +77,14 @@ abstract class LinuxTaskState
    */
   private static final TaskState detached = new TaskState ("detached")
 	{
-	  protected TaskState handleRemoval (Task task)
+	  public TaskState handleRemoval (Task task)
 	  {
 	
 	    // XXX: Core file tasks are never removed.
 	    logger.log (Level.FINE, "{0} handleRemoval\n", task); 
 	    throw new RuntimeException("Cannot remove corefile tasks");
 	  }
-	  protected TaskState handleAttach (Task task)
+	  public TaskState handleAttach (Task task)
 	  {
 	    logger.log (Level.FINE, "{0} handleAttach\n", task); 
 	    // XXX: Cannot attach to core file tasks (For now). In the
