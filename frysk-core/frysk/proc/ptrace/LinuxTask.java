@@ -44,6 +44,9 @@ import frysk.proc.LinuxPtraceTask;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
 import frysk.proc.Task;
+import java.util.logging.Level;
+import frysk.proc.Manager;
+import frysk.proc.TaskEvent;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -59,7 +62,6 @@ public class LinuxTask
     {
 	super(proc, id, LinuxTaskState.detachedState());
     }
-
     /**
      * Create a new attached clone of Task.
      */
@@ -69,7 +71,6 @@ public class LinuxTask
 	super(task, clone,
 	      LinuxTaskState.clonedState(((LinuxTask)task).getState ()));
     }
-
     /**
      * Create a new attached main Task of Proc.
      */
@@ -77,4 +78,99 @@ public class LinuxTask
     {
 	super(proc, attached, LinuxTaskState.mainState());
     }
+
+    /**
+     * (internal) This task cloned creating the new Task cloneArg.
+     */
+    void processClonedEvent (Task clone)
+    {
+	set(oldState().handleClonedEvent(this, clone));
+    }
+    /**
+     * (internal) This Task forked creating an entirely new child process
+     * containing one (the fork) task.
+     */
+    void processForkedEvent (Task fork)
+    {
+	set(oldState().handleForkedEvent(this, fork));
+    }
+    /**
+     * (internal) This task stopped.
+     */
+    void processStoppedEvent ()
+    {
+	set(oldState().handleStoppedEvent(this));
+    }
+    /**
+     * (internal) This task encountered a trap.
+     */
+    void processTrappedEvent ()
+    {
+	set(oldState().handleTrappedEvent(this));
+    }
+    /**
+     * (internal) This task received a signal.
+     */
+    void processSignaledEvent (int sig)
+    {
+	set(oldState().handleSignaledEvent(this, sig));
+    }
+    /**
+     * (internal) The task is in the process of terminating. If SIGNAL, VALUE is
+     * the signal, otherwize it is the exit status.
+     */
+    void processTerminatingEvent (boolean signal, int value)
+    {
+	set(oldState().handleTerminatingEvent(this, signal, value));
+    }
+    /**
+     * (internal) The task has disappeared (due to an exit or some other error
+     * operation).
+     */
+    void processDisappearedEvent (Throwable arg)
+    {
+	set(oldState().handleDisappearedEvent(this, arg));
+    }
+    /**
+     * (internal) The task is performing a system call.
+     */
+    void processSyscalledEvent ()
+    {
+	set(oldState().handleSyscalledEvent(this));
+    }
+    /**
+     * (internal) The task has terminated; if SIGNAL, VALUE is the signal,
+     * otherwize it is the exit status.
+     */
+    void processTerminatedEvent (boolean signal, int value)
+    {
+	set(oldState().handleTerminatedEvent(this, signal, value));
+    }
+    /**
+     * (internal) The task has execed, overlaying itself with another program.
+     */
+    void processExecedEvent ()
+    {
+	set(oldState().handleExecedEvent(this));
+    }
+
+    /**
+     * Must inject disappeared events back into the event loop so that
+     * they can be processed in sequence. Calling
+     * receiveDisappearedEvent directly would cause a recursive state
+     * transition.
+     */
+    protected void postDisappearedEvent (final Throwable arg)
+    {
+	logger.log(Level.FINE, "{0} postDisappearedEvent\n", this);
+	Manager.eventLoop.add(new TaskEvent()
+	    {
+		final Throwable w = arg;
+		public void execute ()
+		{
+		    processDisappearedEvent(w);
+		}
+	    });
+    }
+
 }

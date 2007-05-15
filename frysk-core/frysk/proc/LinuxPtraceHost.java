@@ -41,7 +41,6 @@
 package frysk.proc;
 
 import frysk.event.Event;
-import frysk.event.EventLoop;
 import frysk.sys.Fork;
 import frysk.sys.Pid;
 import frysk.sys.Tid;
@@ -62,15 +61,8 @@ import frysk.proc.ptrace.LinuxProc;
 public class LinuxPtraceHost
     extends Host
 {
-  final EventLoop eventLoop;
-
-  /**
-   * Construct an instance of the LinuxPtraceHost that uses the specified eventLoop.
-   */
-  protected LinuxPtraceHost (EventLoop eventLoop)
+  protected LinuxPtraceHost ()
   {
-    this.eventLoop = eventLoop;
-    eventLoop.add(new LinuxPtraceWaitBuilder(LinuxPtraceHost.this));
   }
 
   /**

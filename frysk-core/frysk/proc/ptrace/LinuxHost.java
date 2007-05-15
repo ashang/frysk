@@ -49,8 +49,12 @@ import frysk.proc.LinuxPtraceHost;
 public class LinuxHost
     extends LinuxPtraceHost
 {
+    /**
+     * Construct an instance of the LinuxPtraceHost that uses the
+     * specified eventLoop.
+     */
     public LinuxHost (EventLoop eventLoop)
     {
-	super (eventLoop);
+	eventLoop.add(new LinuxWaitBuilder(this));
     }
 }

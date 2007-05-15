@@ -100,23 +100,12 @@ public abstract class LinuxPtraceTask
   }
 
   /**
-   * Must inject disappeared events back into the event loop so that they can be
-   * processed in sequence. Calling receiveDisappearedEvent directly would cause
-   * a recursive state transition.
+   * Must inject disappeared events back into the event loop so that
+   * they can be processed in sequence. Calling
+   * receiveDisappearedEvent directly would cause a recursive state
+   * transition.
    */
-  private void postDisappearedEvent (final Throwable arg)
-  {
-    logger.log(Level.FINE, "{0} postDisappearedEvent\n", this);
-    Manager.eventLoop.add(new TaskEvent()
-    {
-      Throwable w = arg;
-
-      public void execute ()
-      {
-        processDisappearedEvent(w);
-      }
-    });
-  }
+  protected abstract void postDisappearedEvent (final Throwable arg);
 
   protected void sendContinue (int sig)
   {

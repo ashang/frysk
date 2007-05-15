@@ -1,5 +1,16 @@
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceWaitBuilder.java: Move to
+	frysk.proc.ptrace.LinuxWaitBuilder.
+	* LinuxPtraceHost.java: Update.  Remove eventLoop parameter.
+	* LinuxPtraceTask.java (postDisappearedEvent): Make abstract.
+	* Task.java (processExecedEvent, processTerminatedEvent)
+	(processSyscalledEvent, processDisappearedEvent)
+	(processTerminatingEvent, processSignaledEvent)
+	(processTrappedEvent, processStoppedEvent, processForkedEvent)
+	(processClonedEvent): Move to frysk.proc.ptrace.LinuxTask.
+	(set(TaskState)): New protected method.
+
 	* Id.java (id): Make protected.
 
 	* Host.java (get(TaskId)): Make public.

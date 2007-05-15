@@ -224,22 +224,29 @@ public abstract class Task
   /**
    * Return the current state.
    */
-  protected TaskState getState ()
+  protected final TaskState getState ()
   {
     if (newState != null)
       return newState;
     else
       return oldState;
   }
-  
   /**
-   * Return the current state while at the same time marking that the state is
-   * in flux. If a second attempt to change state occurs before the current
-   * state transition has completed, barf. XXX: Bit of a hack, but at least this
-   * prevents state transition code attempting a second recursive state
-   * transition.
+   * Set the new state.
    */
-  private TaskState oldState ()
+  protected final void set (TaskState newState)
+  {
+    this.newState = newState;
+  }
+
+  /**
+   * Return the current state while at the same time marking that the
+   * state is in flux. If a second attempt to change state occurs
+   * before the current state transition has completed, barf. XXX: Bit
+   * of a hack, but at least this prevents state transition code
+   * attempting a second recursive state transition.
+   */
+  protected TaskState oldState ()
   {
     if (newState == null)
       throw new RuntimeException(this + " double state transition");
@@ -323,92 +330,6 @@ public abstract class Task
       pendingObservations.clear();
   }
   
-  /**
-   * (internal) This task cloned creating the new Task cloneArg.
-   */
-  void processClonedEvent (Task clone)
-  {
-    newState = oldState().handleClonedEvent(this, clone);
-  }
-
-  /**
-   * (internal) This Task forked creating an entirely new child process
-   * containing one (the fork) task.
-   */
-  void processForkedEvent (Task fork)
-  {
-    newState = oldState().handleForkedEvent(this, fork);
-  }
-
-  /**
-   * (internal) This task stopped.
-   */
-  void processStoppedEvent ()
-  {
-    newState = oldState().handleStoppedEvent(this);
-  }
-
-  /**
-   * (internal) This task encountered a trap.
-   */
-  void processTrappedEvent ()
-  {
-    newState = oldState().handleTrappedEvent(this);
-  }
-
-  /**
-   * (internal) This task received a signal.
-   */
-  void processSignaledEvent (int sig)
-  {
-    newState = oldState().handleSignaledEvent(this, sig);
-  }
-
-  /**
-   * (internal) The task is in the process of terminating. If SIGNAL, VALUE is
-   * the signal, otherwize it is the exit status.
-   */
-  void processTerminatingEvent (boolean signal, int value)
-  {
-    newState = oldState().handleTerminatingEvent(this, signal, value);
-  }
-
-  /**
-   * (internal) The task has disappeared (due to an exit or some other error
-   * operation).
-   */
-  void processDisappearedEvent (Throwable arg)
-  {
-    newState = oldState().handleDisappearedEvent(this, arg);
-  }
-
-  /**
-   * (internal) The task is performing a system call.
-   */
-  void processSyscalledEvent ()
-  {
-    newState = oldState().handleSyscalledEvent(this);
-  }
-
-  // test test teawt
-
-  /**
-   * (internal) The task has terminated; if SIGNAL, VALUE is the signal,
-   * otherwize it is the exit status.
-   */
-  void processTerminatedEvent (boolean signal, int value)
-  {
-    newState = oldState().handleTerminatedEvent(this, signal, value);
-  }
-
-  /**
-   * (internal) The task has execed, overlaying itself with another program.
-   */
-  void processExecedEvent ()
-  {
-    newState = oldState().handleExecedEvent(this);
-  }
-
   public class TaskEventObservable
       extends java.util.Observable
   {

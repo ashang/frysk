@@ -1,5 +1,14 @@
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java: Add LinuxWaitBuilder to event-loop.
+	* LinuxWaitBuilder.java: Moved to here from
+	frysk.proc.LinuxPtraceWaitBuilder.
+	* LinuxTask.java (processExecedEvent, processTerminatedEvent)
+	(processSyscalledEvent, processDisappearedEvent)
+	(processTerminatingEvent, processSignaledEvent)
+	(processTrappedEvent, processStoppedEvent, processForkedEvent)
+	(processClonedEvent): Move to here in from frysk.proc.Task.
+
 	* LinuxProc.java: New file.
 
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
