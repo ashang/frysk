@@ -91,7 +91,7 @@ public abstract class Host
 	logger.log (Level.FINE, "{0} removeTasks Collection\n", this);
 	taskPool.values().removeAll (c);
     }
-    Task get (TaskId id)
+    public Task get (TaskId id)
     {
 	logger.log (Level.FINE, "{0} get TaskId\n", this);	
 	return (Task) taskPool.get (id);
