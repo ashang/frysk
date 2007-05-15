@@ -108,7 +108,7 @@ public class Session
     
     public String toString ()
     {
-      return super.toString() + " " + this.name;
+      return this.name;
     }
   }
   

@@ -1,3 +1,7 @@
+2007-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ListView.java: Removed debug print statements.
+
 2007-05-09  swagiaal  <swagiaal@redhat.com>
 
 	* observers/TaskTerminatingObserver.java: Made the no argument constructor

@@ -126,21 +126,30 @@ public class CreateFryskSessionDruid
 
   private HashMap procMap;
 
-  private String dialogName;
-
   private String initialSessionName;
 
   private DruidMode druidMode = null;
-
+  
   private static class DruidMode
   {
-    public static final DruidMode LOAD_SESSION_MODE = new DruidMode();
+    public static final DruidMode LOAD_SESSION_MODE = new DruidMode("Loading");
 
-    public static final DruidMode NEW_SESSION_MODE = new DruidMode();
+    public static final DruidMode NEW_SESSION_MODE = new DruidMode("Creating");
 
-    public static final DruidMode EDIT_SESSION_MODE = new DruidMode();
+    public static final DruidMode EDIT_SESSION_MODE = new DruidMode("Editing");
 
-    public static final DruidMode EDIT_OBSERVER_MODE = new DruidMode();
+    public static final DruidMode EDIT_OBSERVER_MODE = new DruidMode("Editing observer");
+
+    private String name;
+    
+    private DruidMode(String name){
+      this.name = name;
+    }
+    
+    public String toString ()
+    {
+      return this.name;
+    }
   }
 
   private static class WarningType
@@ -165,7 +174,6 @@ public class CreateFryskSessionDruid
     getProcessSelectionControls(glade);
     this.addListener(this);
 
-    this.dialogName = this.getName();
     this.initialSessionName = new String();
 
   }
@@ -619,9 +627,7 @@ public class CreateFryskSessionDruid
 	if(proposedName.length() != 0){
 	  SessionManager.theManager.getCurrentSession().setName(proposedName);
 	}
-	CreateFryskSessionDruid.this.setTitle(dialogName
-					      + ": "
-					      + SessionManager.theManager.getCurrentSession().getName());
+	CreateFryskSessionDruid.this.setTitle(": " + SessionManager.theManager.getCurrentSession().getName());
 
       }
     });
@@ -732,18 +738,17 @@ public class CreateFryskSessionDruid
       {
 	if (event.isOfType(ButtonEvent.Type.CLICK))
 	  {
-
 	    if (getDruidMode() == DruidMode.NEW_SESSION_MODE)
 	      {
 		SessionManager.theManager.addSession(SessionManager.theManager.getCurrentSession());
 		SessionManager.theManager.getCurrentSession().setProcsAdded(true);
 	      }
-	    
 	    procMap.clear();
 
 	    SessionManager.theManager.save();
 	    SessionManager.theManager.getCurrentSession().startSession();
 	    WindowManager.theManager.sessionManagerDialog.hideAll();
+	    
 	    hide();
 	  }
       }
@@ -993,9 +998,6 @@ public class CreateFryskSessionDruid
   private void setDruidMode (DruidMode druidMode)
   {
     this.druidMode = druidMode;
-//    if(druidMode == DruidMode.NEW_SESSION_MODE){
-//      this.setTitle("Create new Frysk Session");
-//    }
   }
 
   private DruidMode getDruidMode ()
@@ -1027,5 +1029,10 @@ public class CreateFryskSessionDruid
       return;
     }
     
+  }
+  
+  public void setTitle(String string){
+    string = SessionManager.theManager.getCurrentSession().getSessoinType() + ": " +string;
+    super.setTitle(string);
   }
 }

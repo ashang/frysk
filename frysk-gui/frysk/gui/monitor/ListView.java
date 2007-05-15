@@ -246,7 +246,6 @@ public class ListView
    */
   public void setSelectedObject (GuiObject object)
   {
-    System.out.println("ListView.setSelectedObject() " + object);
     TreeIter iter = (TreeIter) this.map.get(object);
     if (iter == null)
       {
@@ -306,8 +305,6 @@ public class ListView
     LinkedList selected = this.getSelectedObjects();
     
     TreeIter treeIter = (TreeIter) this.map.get(object);
-    System.out.println("ListView.remove() treeIter " + treeIter);
-    
     listStore.removeRow(treeIter);
     this.map.remove(object);
     

@@ -1,3 +1,10 @@
+2007-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/Session.java: Removed suer.toString from SessionType
+	.toString.
+	* druid/CreateFryskSessionDruid.java: Added names to DruidMode.
+	Changed title setting to include session type.
+
 2007-05-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* gladedir/frysk_filechooser.glade: Removed environment
