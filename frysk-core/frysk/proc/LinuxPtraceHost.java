@@ -53,6 +53,7 @@ import java.util.LinkedList;
 import frysk.sys.proc.ProcBuilder;
 import java.util.logging.Level;
 import frysk.proc.ptrace.LinuxTask;
+import frysk.proc.ptrace.LinuxProc;
 
 /**
  * A Linux Host.
@@ -125,7 +126,7 @@ public class LinuxPtraceHost
                 break;
             }
           // .. and then add this process.
-          proc = new LinuxPtraceProc(LinuxPtraceHost.this, parent, procId, stat);
+          proc = new LinuxProc(LinuxPtraceHost.this, parent, procId, stat);
           added.add(proc);
         }
       else if (removed.get(procId) != null)
@@ -133,7 +134,7 @@ public class LinuxPtraceHost
           // Process 1 never gets a [new] parent.
           if (pid > 1)
             {
-              Stat stat = ((LinuxPtraceProc) proc).getStat();
+              Stat stat = ((LinuxProc) proc).getStat();
               // An existing process that hasn't yet been
               // updated. Still need check that its parent
               // didn't change (assuming there is one).
@@ -175,7 +176,7 @@ public class LinuxPtraceHost
         // Changes individual process.
         for (Iterator i = procPool.values().iterator(); i.hasNext();)
           {
-            LinuxPtraceProc proc = (LinuxPtraceProc) i.next();
+            LinuxProc proc = (LinuxProc) i.next();
             proc.sendRefresh();
           }
       }
@@ -223,7 +224,7 @@ public class LinuxPtraceHost
       }
 
     
-    LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
+    LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
     proc.sendRefresh();
     
     Manager.eventLoop.add(new Event()
@@ -255,7 +256,7 @@ public class LinuxPtraceHost
 	Proc myProc = getSelf();
 	myTask = new LinuxTask (myProc, myTaskId);
     }
-    Proc proc = new LinuxPtraceProc (myTask, new ProcId(pid));
+    Proc proc = new LinuxProc (myTask, new ProcId(pid));
     new LinuxTask (proc, attached);
   }
 
@@ -295,7 +296,7 @@ public class LinuxPtraceHost
                   return;                
               }
             // .. and then add this process.
-            new LinuxPtraceProc(LinuxPtraceHost.this, null, procId, stat);
+            new LinuxProc(LinuxPtraceHost.this, null, procId, stat);
           }
       }
     };
@@ -318,7 +319,7 @@ public class LinuxPtraceHost
         return;
       }
     
-    LinuxPtraceProc proc = (LinuxPtraceProc) Manager.host.getProc(procId);
+    LinuxProc proc = (LinuxProc) Manager.host.getProc(procId);
     proc.sendRefresh();
     
     Manager.eventLoop.add(new Event()

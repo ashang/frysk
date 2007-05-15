@@ -1,3 +1,11 @@
+2007-05-15  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceHost.java: Use frysk.proc.ptrace.LinuxProc.
+	* LinuxPtraceWaitBuilder.java: Ditto.
+	* LinuxPtraceProc.java: Make abstract.
+	(getStat): Make public.
+	(LinuxPtraceProc): Make constructors protected.
+
 2007-05-14  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceTaskState.java: Make public.

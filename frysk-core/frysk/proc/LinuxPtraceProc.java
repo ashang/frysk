@@ -55,13 +55,13 @@ import frysk.proc.ptrace.LinuxTask;
  * Linux implementation of Proc.
  */
 
-public class LinuxPtraceProc
+public abstract class LinuxPtraceProc
     extends Proc
 {
     /**
      * If it hasn't already been read, read the stat structure.
      */
-    Stat getStat ()
+    public Stat getStat ()
     {
 	if (stat == null) {
 	    stat = new Stat ();
@@ -90,7 +90,7 @@ public class LinuxPtraceProc
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.
      */
-    LinuxPtraceProc (Host host, Proc parent, ProcId pid, Stat stat)
+    protected LinuxPtraceProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
 	super (host, parent, pid);
 	this.stat = stat;
@@ -99,7 +99,7 @@ public class LinuxPtraceProc
      * Create a new, definitely attached, definitely running fork of
      * Task.
      */
-    LinuxPtraceProc (Task task, ProcId forkId)
+    protected LinuxPtraceProc (Task task, ProcId forkId)
     {
 	super (task, forkId);
     }
