@@ -133,5 +133,4 @@ public abstract class Frame
       this.subprogram = subprogram;
     }
     
-  public abstract String getProcName();
 }

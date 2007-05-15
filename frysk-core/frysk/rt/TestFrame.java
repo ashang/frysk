@@ -95,7 +95,7 @@ public class TestFrame
       {
      // System.err.println(frame.cursor.getProcName(100).name);
       logger.log(Level.FINE, "testAttached, frame name: {0}\n", 
-                 frame.getProcName());
+                 frame.getSymbol().getName());
       frame = frame.getOuter();
     } 
   }

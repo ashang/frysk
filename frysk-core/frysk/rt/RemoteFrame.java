@@ -103,22 +103,6 @@ public class RemoteFrame extends Frame
   }
   
   /**
-   * Returns the name of the procedure that this Frame is in.
-   */
-  public String getProcName()
-  {
-    return cursor.getProcName().getName();
-  }
-  
-  /**
-   * Returns the name of the procedure that this Frame is in.
-   */
-  public String getProcName(int maxNameSize)
-  {
-    return cursor.getProcName(maxNameSize).getName();
-  }
-  
-  /**
    * Returns the ProcInfo object for this Frame.
    */
   public ProcInfo getProcInfo ()
