@@ -1,3 +1,7 @@
+2007-05-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxProc.java (sendrecMaps): New method. Implement.
+
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProcState.java: Make all handlers public matching

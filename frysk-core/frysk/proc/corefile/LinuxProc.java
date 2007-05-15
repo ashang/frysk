@@ -55,6 +55,7 @@ import frysk.proc.Task;
 import frysk.proc.Auxv;
 import frysk.proc.Isa;
 import frysk.proc.IsaFactory;
+import frysk.proc.MemoryMap;
 
 public class LinuxProc
     extends Proc
@@ -71,8 +72,8 @@ public class LinuxProc
     this.elfData = data;
     this.elfProc = ElfPrpsinfo.decode(elfData);
     this.corefileBackEnd = host.coreFile;
-  }
-	
+  }	
+
   public String getCommand()
   {
     return elfProc.getPrFname();
@@ -140,33 +141,40 @@ public class LinuxProc
       }
   }
 
-    protected Auxv[] sendrecAuxv ()
+  // Return null for now, until CorefileByteBuffer
+  // refactor is complete.
+  public MemoryMap[] sendrecMaps ()
+  {
+    return null;
+  }
+
+  protected Auxv[] sendrecAuxv ()
+  {
+    final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
+    
+    class BuildAuxv
+      extends AuxvBuilder
     {
-      final ElfPrAuxv prAuxv =  ElfPrAuxv.decode(elfData);
-
-      class BuildAuxv
-	extends AuxvBuilder
+      Auxv[] vec;
+      public void buildBuffer (byte[] auxv)
       {
-	Auxv[] vec;
-	public void buildBuffer (byte[] auxv)
-	{
-	    }
-	public void buildDimensions (int wordSize, boolean bigEndian,
-				     int length)
-	{
-	  vec = new Auxv[length];
-	}
-	public void buildAuxiliary (int index, int type, long val)
-	{
-	  vec[index] = new Auxv (type, val);
-	}
       }
-      
-      BuildAuxv auxv = new BuildAuxv ();
-      auxv.construct (prAuxv.getAuxvBuffer());
-      return auxv.vec;
+      public void buildDimensions (int wordSize, boolean bigEndian,
+				   int length)
+      {
+	vec = new Auxv[length];
+      }
+      public void buildAuxiliary (int index, int type, long val)
+      {
+	vec[index] = new Auxv (type, val);
+      }
     }
-
+    
+    BuildAuxv auxv = new BuildAuxv ();
+    auxv.construct (prAuxv.getAuxvBuffer());
+    return auxv.vec;
+  }
+  
 
   protected Isa sendrecIsa() 
   {
