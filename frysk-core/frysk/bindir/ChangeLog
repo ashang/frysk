@@ -1,3 +1,7 @@
+2007-05-16  Tom Tromey  <tromey@redhat.com>
+
+	* fhpd.java (main): Exit loop if line==null.	
+
 2007-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFtrace.java: New file.
