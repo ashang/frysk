@@ -45,6 +45,17 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.Host;
 import frysk.sys.proc.Stat;
+import frysk.proc.Auxv;
+import frysk.sys.proc.AuxvBuilder;
+import frysk.proc.MemoryMap;
+import java.util.ArrayList;
+import frysk.proc.Isa;
+import frysk.sys.proc.Exe;
+import frysk.sys.proc.CmdLineBuilder;
+import frysk.sys.proc.MapsBuilder;
+import frysk.sys.proc.Status;
+import frysk.proc.IsaFactory;
+import java.util.logging.Level;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -68,5 +79,135 @@ public class LinuxProc
     public LinuxProc (Task task, ProcId forkId)
     {
 	super (task, forkId);
+    }
+
+    /**
+     * Get the AUXV.
+     */
+    protected Auxv[] sendrecAuxv ()
+    {
+	class BuildAuxv
+	    extends AuxvBuilder
+	{
+	    Auxv[] vec;
+	    public void buildBuffer (byte[] auxv)
+	    {
+	    }
+	    public void buildDimensions (int wordSize, boolean bigEndian,
+					 int length)
+	    {
+		vec = new Auxv[length];
+	    }
+	    public void buildAuxiliary (int index, int type, long val)
+	    {
+		vec[index] = new Auxv (type, val);
+	    }
+	}
+	BuildAuxv auxv = new BuildAuxv ();
+	auxv.construct (getPid ());
+	return auxv.vec;
+    }
+    /**
+     * Get the address-maps.
+     */
+    protected MemoryMap[] sendrecMaps () 
+    {
+        class BuildMaps
+	    extends MapsBuilder
+	{
+	 
+	    ArrayList  maps = new ArrayList();
+            byte[] mapsLocal;
+
+     	    public void buildBuffer (byte[] maps)
+	    {
+	        mapsLocal = maps;
+	        maps[maps.length - 1] = 0;
+	    }
+	  
+	    public void buildMap (long addressLow, long addressHigh,
+				  boolean permRead, boolean permWrite,
+				  boolean permExecute, boolean shared, long offset,
+				  int devMajor, int devMinor, int inode,
+				  int pathnameOffset, int pathnameLength)
+	    {
+
+	        byte[] filename = new byte[pathnameLength];
+
+		System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
+				 pathnameLength);
+
+		MemoryMap map = new MemoryMap(addressLow, addressHigh,
+					      permRead, permWrite,
+					      permExecute, shared, offset,
+					      devMajor, devMinor, inode,
+					      pathnameOffset,
+					      pathnameLength, new
+					      String(filename));
+		maps.add(map);
+		
+	    }
+	}
+
+	BuildMaps constructedMaps = new BuildMaps ();
+	constructedMaps.construct(getPid ());
+	MemoryMap arrayMaps[] = new MemoryMap[constructedMaps.maps.size()];
+	constructedMaps.maps.toArray(arrayMaps);
+	return arrayMaps;
+    }
+    /**
+     * Get the Command line.
+     */
+    protected String[] sendrecCmdLine ()
+    {
+	class BuildCmdLine
+	    extends CmdLineBuilder
+	{
+	    String[] argv;
+	    public void buildBuffer (byte[] buf)
+	    {
+	    }
+	    public void buildArgv (String[] argv)
+	    {
+		this.argv = argv;
+	    }
+	}
+	BuildCmdLine cmdLine = new BuildCmdLine ();
+	cmdLine.construct (getPid ());
+	return cmdLine.argv;
+    }
+    /**
+     * Get the process group-ID.
+     */
+    protected int sendrecGID()
+    {
+	return Status.getGID (getPid ());
+    }
+    /**
+     * Get the process user-ID.
+     */
+    protected int sendrecUID ()
+    {
+	return Status.getUID (getPid ());
+    }
+    /**
+     * Get the Executable.
+     */
+    protected String sendrecExe ()
+    {
+	return Exe.get (getPid ());
+    }
+    /**
+     * Get the Process-wide ISA.
+     *
+     * XXX: IsaFactory should not be given a PID to extract the ISA
+     * from, instead IsaFactory should receive some sort of
+     * higher-level object, such as the ELF MACHINE.
+     */
+    protected Isa sendrecIsa ()
+    {
+	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+	IsaFactory factory = IsaFactory.getSingleton();
+	return factory.getIsa(getId().intValue());
     }
 }

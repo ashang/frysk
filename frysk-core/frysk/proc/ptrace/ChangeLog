@@ -1,5 +1,9 @@
 2007-05-16  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java (sendrecAuxv, sendrecMaps, sendrecCmdLine)
+	(sendrecGID, sendrecUID, sendrecExe, sendrecIsa): Move to here
+	from frysk.proc.LinuxPtraceProc.
+
 	* LinuxTask.java (sendrecRegisterBanks, sendrecMemory)
 	(sendrecIsa): Move to here from frysk.proc.LinuxPtraceTask.
 
