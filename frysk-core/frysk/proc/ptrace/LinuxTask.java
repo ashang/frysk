@@ -47,6 +47,11 @@ import frysk.proc.Task;
 import java.util.logging.Level;
 import frysk.proc.Manager;
 import frysk.proc.TaskEvent;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
+import frysk.proc.IsaFactory;
+import frysk.proc.Isa;
+import frysk.sys.Ptrace.AddressSpace;
 
 /**
  * A Linux Task tracked using PTRACE.
@@ -77,6 +82,42 @@ public class LinuxTask
     public LinuxTask (Proc proc, TaskObserver.Attached attached)
     {
 	super(proc, attached, LinuxTaskState.mainState());
+    }
+
+
+    /**
+     * Return the memory byte-buffer.
+     */
+    protected ByteBuffer sendrecMemory ()
+    {
+	logger.log(Level.FINE, "Begin fillMemory\n", this);
+	ByteOrder byteOrder = getIsa().getByteOrder();
+	ByteBuffer memory
+	    = new AddressSpaceByteBuffer(getTaskId().intValue(),
+					 AddressSpace.DATA);
+	memory.order(byteOrder);
+	logger.log(Level.FINE, "End fillMemory\n", this); 
+	return memory;
+    }
+    
+    /**
+     * Return the ISA's register-bank byte-buffers.
+     */
+    protected ByteBuffer[] sendrecRegisterBanks () 
+    {
+	return getIsa().getRegisterBankBuffers(getTaskId().intValue());
+    }
+    /**
+     * Return the Task's ISA.
+     *
+     * XXX: This code locally, and not the IsaFactory, and definitly
+     * not via a PID should be determining the ISA of the process.
+     */
+    protected Isa sendrecIsa ()
+    {
+	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
+	IsaFactory factory = IsaFactory.getSingleton();
+	return factory.getIsa(getTaskId().intValue());
     }
 
     /**

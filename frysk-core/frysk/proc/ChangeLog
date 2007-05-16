@@ -1,3 +1,8 @@
+2007-05-16  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTask.java (sendrecMemory, sendrecRegisterBanks)
+	(sendrecIsa): Move to frysk.proc.ptrace.LinuxTask.
+
 2007-05-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Proc.java (getMaps): New method. Define.

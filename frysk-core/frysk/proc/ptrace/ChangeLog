@@ -1,3 +1,8 @@
+2007-05-16  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxTask.java (sendrecRegisterBanks, sendrecMemory)
+	(sendrecIsa): Move to here from frysk.proc.LinuxPtraceTask.
+
 2007-05-15  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxHost.java: Add LinuxWaitBuilder to event-loop.

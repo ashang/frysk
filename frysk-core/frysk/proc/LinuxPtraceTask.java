@@ -42,12 +42,8 @@ package frysk.proc;
 
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
-import frysk.sys.Ptrace.AddressSpace;
-import frysk.proc.ptrace.AddressSpaceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import inua.eio.ByteBuffer;
-import inua.eio.ByteOrder;
 import java.util.logging.Level;
 
 /**
@@ -58,21 +54,6 @@ public abstract class LinuxPtraceTask
   extends Task
 {
   private long ptraceOptions = 0;
-
-  protected ByteBuffer sendrecMemory ()
-  {
-      logger.log(Level.FINE, "Begin fillMemory\n", this);
-      ByteOrder byteOrder = getIsa().getByteOrder();
-      ByteBuffer memory = new AddressSpaceByteBuffer(id.id, AddressSpace.DATA);
-      memory.order(byteOrder);
-      logger.log(Level.FINE, "End fillMemory\n", this); 
-      return memory;
-  }
-
-  protected ByteBuffer[] sendrecRegisterBanks () 
-  {
-      return getIsa().getRegisterBankBuffers(id.id);
-  }
 
   /**
    * Create a new unattached Task.
@@ -216,14 +197,6 @@ public abstract class LinuxPtraceTask
   {
     logger.log(Level.FINE, "{0} sendDetach\n", this);
     Ptrace.detach(getTid(), sig);
-  }
-
-  protected Isa sendrecIsa ()
-  {
-    logger.log(Level.FINE, "{0} sendrecIsa\n", this);
-    IsaFactory factory = IsaFactory.getSingleton();
-
-    return factory.getIsa(id.id);
   }
 
   protected void startTracingSyscalls ()
