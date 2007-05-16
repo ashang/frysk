@@ -1,3 +1,7 @@
+2007-05-16  Tim Moore  <timoore@redhat.com>
+
+	* test1.c: New program for CLI testing.
+
 2007-03-24  Mark Wielaard  <mark@klomp.org>
 
 	* funit-child.c (usage): Document SIGPROF handling.
