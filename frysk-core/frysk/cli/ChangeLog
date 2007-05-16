@@ -1,3 +1,19 @@
+2007-05-16  Tim Moore  <timoore@redhat.com>
+
+	* hpd/ActionsHandler.java: New file.
+	* hpd/DeleteHandler.java: New file.
+	* hpd/DisableHandler.java: New file.
+	* hpd/EnableHandler.java: New file.
+	* hpd/Actionpoint.java: delete.
+	* hpd/ActionpointTable.java: delete.
+	* hpd/FunctionBreakpointAdapter.java: delete.
+	* hpd/LineBreakpointAdapter.java: delete.
+	* hpd/BreakpointHandler.java (handle): Use RT BreakpointManager to
+	install breakpoints.
+	* hpd/RunHandler.java (update): New method for observing SteppingEngine.
+	(updateAttached): Use SteppingEngine attached notice to remove the
+	attached observer.
+
 2007-05-10  Stan Cox  <scox@redhat.com>
 
 	* hpd/ExprSymTab.java (get): Handle union.

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,53 +36,55 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
 package frysk.cli.hpd;
 
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-public class ActionpointTable
+import frysk.proc.Task;
+import frysk.rt.BreakpointManager;
+import frysk.rt.SourceBreakpoint;
+import frysk.rt.SteppingEngine;
+
+class DisableHandler
+  extends CLIHandler
 {
-  private ArrayList actionpoints = new ArrayList();
-
-  public int add(Actionpoint ap)
-  {
-    actionpoints.add(ap);
-    return actionpoints.size() - 1;
-  }
-
-  public Actionpoint getActionpoint(int index)
-    throws IndexOutOfBoundsException
-  {
-    return (Actionpoint)actionpoints.get(index);
-  }
-
-  public int size()
-  {
-    return actionpoints.size();
-  }
+  static final String descr = "disable a source breakpoint";
   
-  public PrintWriter output(PrintWriter writer)
+  DisableHandler(String name, CLI cli)
   {
-    int i;
-    Iterator iter;
-    for (i = 0, iter = actionpoints.iterator();
-	 iter.hasNext();
-	 i++)
-      {
-	Actionpoint ap = (Actionpoint)iter.next();
-	if (ap.getState() != Actionpoint.DELETED)
-	  {
-	    writer.print(i);
-	    writer.print(" ");
-	    ap.output(writer);
-	    writer.print(" ");
-	    writer.print(ap.getState().toString());
-	    writer.println();
-	  }
-      }
-    return writer;
+    super(name, cli, new CommandHelp(name, descr, "disable actionpointID",
+				     descr));
   }
+
+  DisableHandler(CLI cli)
+  {
+    this("disable", cli);
+  }
+
+  public void handle(Command cmd) throws ParseException 
+    {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          cli.printUsage(cmd);
+          return;
+        }
+      cli.refreshSymtab();
+      final PrintWriter outWriter = cli.getPrintWriter();
+      int breakpointNumber = Integer.parseInt((String)params.get(0));
+      BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+      Task task = cli.getTask();
+      SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
+      if (bpt != null)
+	{
+	  bpManager.disableBreakpoint(bpt, task);
+	  outWriter.println("breakpoint " + bpt.getId() + " disabled");
+	}
+      else
+	{
+	  outWriter.println("no such breakpoint");
+	}
+    }
 }

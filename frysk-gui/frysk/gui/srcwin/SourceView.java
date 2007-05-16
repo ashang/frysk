@@ -96,6 +96,7 @@ import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.Frame;
 import frysk.value.Value;
+import frysk.rt.BreakpointManager;
 import frysk.rt.SteppingEngine;
 //import frysk.rt.Line;
 
@@ -814,6 +815,7 @@ public class SourceView
         m.append(mi);
         mi.addListener(new MenuItemListener()
         {
+	  LineBreakpoint lb;
           public void menuItemEvent (MenuItemEvent event)
           {
             if (SourceView.this.buf.toggleBreakpoint(lineNum) == true)
@@ -824,14 +826,23 @@ public class SourceView
         	  return;
         	
         	DOMSource ds = frame.getLines()[0].getDOMSource();
-        	LineBreakpoint lb = new LineBreakpoint(frame.getTask().getProc(), 
-        	    ds.getFilePath() + "/" +ds.getFileName(), breakLine, 0);
-        	lb.addBreakpoint(frame.getTask());
+		BreakpointManager bpm = SteppingEngine.getBreakpointManager();
+		if (lb == null)
+		  lb = bpm.addLineBreakpoint(ds.getFilePath()
+					     + "/" +ds.getFileName(),
+					     breakLine, 0);
+		bpm.enableBreakpoint(lb, frame.getTask());
               }
             else
               {
         	SourceView.this.buf.setLineBroken(false, breakLine);
-        	SteppingEngine.removeBreakpoint(SourceView.this.buf.getScope().getTask());
+		Frame frame = SourceView.this.buf.getScope();
+        	if (frame.getLines().length == 0)
+        	  return;
+
+		if (lb != null)
+		  SteppingEngine.getBreakpointManager()
+		    .disableBreakpoint(lb, frame.getTask());
               }
             
             SourceView.this.drawMargin();

@@ -1,3 +1,8 @@
+2007-05-16  Tim Moore  <timoore@redhat.com>
+
+	* SourceView.java (clickedOnMargin): Changed to use new breakpoint 
+	interface.
+
 2007-05-14  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (doStackUp): Rewritten. Fixes #4503.

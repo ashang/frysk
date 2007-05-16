@@ -39,9 +39,11 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -57,10 +59,57 @@ import frysk.proc.Proc;
 /**
  * 
  */
-public abstract class SourceBreakpoint implements BreakpointObserver
+public abstract class SourceBreakpoint
+  implements Comparable, BreakpointObserver
 {
   private HashMap procMap;
-  private BreakpointObserver observerDelegate;
+
+    // Possible actionpoint states
+  public static class State
+  {
+    State(String name)
+    {
+      this.name = name;
+    }
+    
+    private String name;
+
+    public String toString()
+    {
+      return name;
+    }
+  }
+
+  /**
+   * Possible states of an action point.
+   */
+  
+  /**
+   * The action point is enabled and will be "fired" when hit.
+   */
+  public static final State ENABLED = new State("enabled");
+
+  /**
+   * The action point is disabled and should have no effect in the
+   * running process.
+   */
+  public static final State DISABLED = new State("disabled");
+
+  /**
+   * The action point is deleted and should not be reenabled.
+   */
+  public static final State DELETED = new State("deleted");
+
+  private State state;
+
+  /**
+   * Get the state of an action point.
+   * @return state constant object
+   */
+  public State getState()
+  {
+    return state;
+  }
 
   private class ProcEntry
   {
@@ -68,15 +117,16 @@ public abstract class SourceBreakpoint implements BreakpointObserver
     LinkedList breakpoints = null; // RunState breakpoints
   }
 
-  public SourceBreakpoint(BreakpointObserver observerDelegate)
+  public SourceBreakpoint(int id, State state)
   {
     procMap = new HashMap();
-    this.observerDelegate = observerDelegate;
+    this.state = state;
+    this.id = id;
   }
 
-  public SourceBreakpoint()
+  public SourceBreakpoint(int id)
   {
-    this(null);
+    this(id, DISABLED);
   }
   
   /**
@@ -105,7 +155,7 @@ public abstract class SourceBreakpoint implements BreakpointObserver
       {
 	procEntry = new ProcEntry();
 	procMap.put(proc, procEntry);
-  }
+      }
     procEntry.addrs = addrs;
   }
 
@@ -123,12 +173,13 @@ public abstract class SourceBreakpoint implements BreakpointObserver
     * @param task task to which breakpoints are added, although they are in
     * 	fact added to the entire process.
     */
-  public void addBreakpoint(Task task)
+  public void enableBreakpoint(Task task)
   {
     Proc proc = task.getProc();
+
+    LinkedList addressList = getRawAddressesForProc(proc);
+    setAddrs(proc, addressList);
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
-    if (procEntry == null)
-      return; 			// Exception?
     Iterator bpts = procEntry.addrs.iterator();
     procEntry.breakpoints = new LinkedList();
     while (bpts.hasNext())
@@ -141,6 +192,7 @@ public abstract class SourceBreakpoint implements BreakpointObserver
 	procEntry.breakpoints.add(breakpoint);
 	SteppingEngine.addBreakpoint(task, breakpoint);
       }
+    state = ENABLED;
   }
 
   /**
@@ -148,7 +200,7 @@ public abstract class SourceBreakpoint implements BreakpointObserver
    * @param runState the RunState object
    * @param task task in the process
    */
-  public void deleteBreakpoint(Task task)
+  public void disableBreakpoint(Task task)
   {
     Proc proc = task.getProc();
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
@@ -163,6 +215,7 @@ public abstract class SourceBreakpoint implements BreakpointObserver
         SteppingEngine.deleteBreakpoint(task, bpt);
       }
     procEntry.breakpoints.clear();
+    state = DISABLED;
   }
 
   /**
@@ -173,7 +226,7 @@ public abstract class SourceBreakpoint implements BreakpointObserver
    * @return
    */
   public boolean
-  containsPersistantBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
+  containsPersistentBreakpoint(Proc proc, Breakpoint.PersistentBreakpoint bpt)
   {
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
     if (procEntry == null)
@@ -185,18 +238,18 @@ public abstract class SourceBreakpoint implements BreakpointObserver
 			Task task,
 			long address)
   {
-    if (observerDelegate != null)
-      observerDelegate.updateHit(breakpoint, task, address);
-  }
-
-  public BreakpointObserver getObserverDelegate()
-  {
-    return observerDelegate;
-  }
-
-  public void setObserverDelegate(BreakpointObserver observerDelegate)
-  {
-    this.observerDelegate = observerDelegate;
+    ArrayList observersCopy;
+    synchronized (this)
+      {
+	observersCopy = (ArrayList)observers.clone();
+      }
+    Iterator iterator = observersCopy.iterator();
+    while (iterator.hasNext())
+      {
+	SourceBreakpointObserver observer
+	  = (SourceBreakpointObserver)iterator.next();
+	observer.updateHit(this, task, address);
+      }
   }
 
   public void addedTo (Object observable)
@@ -210,4 +263,49 @@ public abstract class SourceBreakpoint implements BreakpointObserver
   public void deletedFrom (Object observable)
   {
   }
+
+  private ArrayList observers = new ArrayList();
+    
+
+  public synchronized void addObserver(SourceBreakpointObserver observer)
+  {
+    observers.add(observer);
+  }
+
+  public synchronized void deleteObserver(SourceBreakpointObserver observer)
+  {
+    observers.remove(observer);
+  }
+
+  public synchronized int numberOfObservers()
+  {
+    return observers.size();
+  }
+
+  public synchronized void removeAllObservers()
+  {
+    observers.clear();
+  }
+
+  final int id;
+
+  public int getId()
+  {
+    return id;
+  }
+  // Comparable interface
+  public int compareTo(Object o)
+  {
+    SourceBreakpoint bpt = (SourceBreakpoint)o;
+    if (id == bpt.id)
+      return 0;
+    else if (id < bpt.id)
+      return -1;
+    else
+      return 1;
+  }
+  
+  public abstract LinkedList getRawAddressesForProc(Proc proc);
+
+  public abstract PrintWriter output(PrintWriter writer);
 }

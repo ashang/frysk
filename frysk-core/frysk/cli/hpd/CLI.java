@@ -67,7 +67,6 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
-import frysk.rt.Breakpoint;
 import frysk.rt.Frame;
 import frysk.rt.SteppingEngine;
 import frysk.sys.Signal;
@@ -88,7 +87,6 @@ public class CLI
   private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
   boolean attached;
-  ActionpointTable apTable = new ActionpointTable();
   
   private HashSet runningProcs = new HashSet(); //Processes started with run command
   
@@ -501,8 +499,6 @@ public class CLI
   {
     // At some point we will be able to use a RunState object
     // created elsewhere e.g., by the SourceWindowFactory.
-    outWriter.println("Attaching proc " + proc.toString() + " task "
-		      + task.toString());
     if (steppingObserver == null) 
       {
 	steppingObserver = new SteppingObserver();
@@ -1032,34 +1028,6 @@ public class CLI
     }
   }
 
-  class DeleteHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      int breakpointNumber = Integer.parseInt((String)params.get(0));
-      Actionpoint ap;
-
-      try
-	{
-	  ap = apTable.getActionpoint(breakpointNumber);
-	}
-      catch (IndexOutOfBoundsException e)
-	{
-	  addMessage(breakpointNumber + " is not a valid breakpoint",
-		     Message.TYPE_ERROR);
-	  return;
-	}
-      ap.disable();
-    }
-  }
-
   class GoHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -1101,15 +1069,6 @@ public class CLI
     }
   }
 
-  class ActionsHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      // cmd does need to be parsed
-      apTable.output(outWriter);
-    }
-  }
-  
   class QuitHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -1209,16 +1168,17 @@ public class CLI
     handlers = new Hashtable();
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
-    handlers.put("actions", new ActionsHandler());
+    addHandler(new ActionsHandler(this));
     handlers.put("alias", new AliasHandler());
     handlers.put("assign", new PrintHandler());
     handlers.put("attach", new AttachHandler());
-    //handlers.put("break", new BreakpointHandler());
     addHandler(new BreakpointHandler(this));
-    handlers.put("delete", new DeleteHandler());
     handlers.put("defset", new DefsetHandler());
+    addHandler(new DeleteHandler(this));
     handlers.put("detach", new DetachHandler());
+    addHandler(new DisableHandler(this));
     handlers.put("down", new UpDownHandler());
+    addHandler(new EnableHandler(this));
     handlers.put("focus", new FocusHandler());
     handlers.put("go", new GoHandler());
     handlers.put("halt", new HaltHandler());
@@ -1422,7 +1382,7 @@ public class CLI
 	return;
       
       Task task = (Task)arg;
-      Breakpoint.PersistentBreakpoint bpt = null;
+      //Breakpoint.PersistentBreakpoint bpt = null;
 
       synchronized (CLI.this) 
 	{
@@ -1434,29 +1394,29 @@ public class CLI
 	  else
 	    attached = false;
 	    
-	  bpt = (Breakpoint.PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
+	    //bpt = (Breakpoint.PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
 	  CLI.this.notifyAll();
 	}
-      if (bpt != null) 
-	{
-	  int size = apTable.size();
-	  int i;
-	  for (i = 0; i < size; i++)
-	    {
-	      Actionpoint ap = apTable.getActionpoint(i);
-	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(task.getProc(), bpt))
-		{
-		  outWriter.print("breakpoint " + i + " hit: ");
-		  ap.output(outWriter);
-		  outWriter.println("");
-		  break;
-		}
-	    }
-	  if (i >= size)
-	    {
-	      outWriter.println("unknown breakpoint hit: " + bpt.toString());
-	    }
-	}
+      //      if (bpt != null) 
+      //	{
+      //	  int size = apTable.size();
+      //	  int i;
+      //	  for (i = 0; i < size; i++)
+      //	    {
+      //	      Actionpoint ap = apTable.getActionpoint(i);
+      //	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(task.getProc(), bpt))
+      //	{
+      //	  outWriter.print("breakpoint " + i + " hit: ");
+      //	  ap.output(outWriter);
+      //	  outWriter.println("");
+      //	  break;
+      //	}
+      //    }
+      //  if (i >= size)
+      //    {
+      //      outWriter.println("unknown breakpoint hit: " + bpt.toString());
+      //    }
+      //}
     }
   }
 
@@ -1470,14 +1430,6 @@ public class CLI
 	       Message.TYPE_NORMAL);
   }
   
-  /**
-   * Return the action point table
-   */
-  public ActionpointTable getActionpointTable()
-  {
-    return apTable;
-  }
-
   /**
    * Return output writer.
    */

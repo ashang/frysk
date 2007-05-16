@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,51 +36,55 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
 package frysk.cli.hpd;
 
 import java.io.PrintWriter;
-import frysk.rt.LineBreakpoint;
+import java.text.ParseException;
+import java.util.ArrayList;
+
 import frysk.proc.Task;
+import frysk.rt.BreakpointManager;
+import frysk.rt.SourceBreakpoint;
+import frysk.rt.SteppingEngine;
 
-class LineBreakpointAdapter
-  extends Actionpoint
+class EnableHandler
+  extends CLIHandler
 {
-  private Task task;		// Actionpoint should hold a PTSet.
-
-  LineBreakpointAdapter(LineBreakpoint breakpoint, Task task, CLI cli)
+  static final String descr = "enable a source breakpoint";
+  
+  EnableHandler(String name, CLI cli)
   {
-    super(cli);
-    this.rtBreakpoint = breakpoint;
-    breakpoint.setObserverDelegate(this);
-    this.task = task;
+    super(name, cli, new CommandHelp(name, descr, "enable actionpointID",
+				     descr));
   }
 
-  public void enable()
+  EnableHandler(CLI cli)
   {
-    super.enable();
-    rtBreakpoint.addBreakpoint(task);
+    this("enable", cli);
   }
 
-  public void disable()
-  {
-    super.disable();
-    rtBreakpoint.deleteBreakpoint(task);
-  }
-
-  public void delete()
-  {
-    disable();
-    super.delete();
-  }
-
-  public PrintWriter output(PrintWriter writer)
-  {
-    LineBreakpoint breakpoint = (LineBreakpoint)rtBreakpoint;
-    writer.print("#");
-    writer.print(breakpoint.getFileName());
-    writer.print("#");
-    writer.print(breakpoint.getLineNumber());
-    return writer;
-  }
+  public void handle(Command cmd) throws ParseException 
+    {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          cli.printUsage(cmd);
+          return;
+        }
+      cli.refreshSymtab();
+      final PrintWriter outWriter = cli.getPrintWriter();
+      int breakpointNumber = Integer.parseInt((String)params.get(0));
+      BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+      Task task = cli.getTask();
+      SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
+      if (bpt != null)
+	{
+	  bpManager.enableBreakpoint(bpt, task);
+	  outWriter.println("breakpoint " + bpt.getId() + " enabled");
+	}
+      else
+	{
+	  outWriter.println("no such breakpoint");
+	}
+    }
 }

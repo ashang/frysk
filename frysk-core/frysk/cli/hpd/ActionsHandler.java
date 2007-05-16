@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,56 +36,51 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
 package frysk.cli.hpd;
 
 import java.io.PrintWriter;
-import frysk.rt.FunctionBreakpoint;
-import frysk.proc.Task;
+import java.text.ParseException;
+import java.util.Iterator;
 
-/**
- * Adapter between the HPD actionpoint and breakpoints based on named
- * functions.
- *
- */
-class FunctionBreakpointAdapter
-  extends Actionpoint
+import frysk.rt.BreakpointManager;
+import frysk.rt.SourceBreakpoint;
+import frysk.rt.SteppingEngine;
+
+class ActionsHandler
+  extends CLIHandler
 {
-  private Task task;		// Actionpoint should hold a PTSet.
+  static final String descr = "List action points";
 
-  FunctionBreakpointAdapter(FunctionBreakpoint breakpoint, Task task, CLI cli)
+  ActionsHandler(String name, CLI cli)
   {
-    super(cli);
-    this.rtBreakpoint = breakpoint;
-    breakpoint.setObserverDelegate(this);
-    this.task = task;
-    this.cli = cli;
+    super(name, cli, new CommandHelp(name, descr, "actionpoints",
+				     descr));
   }
 
-  public void enable()
+  ActionsHandler(CLI cli)
   {
-    super.enable();
-    rtBreakpoint.addBreakpoint(task);
+    this("actionpoints", cli);
   }
 
-  public void disable()
+  public void handle(Command cmd) throws ParseException 
   {
-    super.disable();
-    rtBreakpoint.deleteBreakpoint(task);
-  }
-
-  public void delete()
-  {
-    disable();
-    super.delete();
-  }
-
-  public PrintWriter output(PrintWriter writer)
-  {
-    FunctionBreakpoint breakpoint = (FunctionBreakpoint)rtBreakpoint;
-    writer.print(breakpoint.getName());
-    if (breakpoint.containsInlineInstances())
-      writer.print("*");
-    return writer;
+    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+    Iterator iterator = bpManager.getBreakpointTableIterator();
+    PrintWriter outWriter = cli.getPrintWriter();
+    while (iterator.hasNext())
+      {
+	SourceBreakpoint bpt = (SourceBreakpoint)iterator.next();
+	outWriter.print(bpt.getId() + " ");
+	if (bpt.getState() == SourceBreakpoint.ENABLED)
+	  {
+	    outWriter.print(" y ");
+	  }
+	else
+	  {
+	    outWriter.print(" n ");
+	  }
+	bpt.output(outWriter);
+	outWriter.println(" ");
+      }
   }
 }

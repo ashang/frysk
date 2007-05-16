@@ -36,91 +36,55 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-
-
-package frysk.rt;
+package frysk.cli.hpd;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
+import java.text.ParseException;
+import java.util.ArrayList;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
+import frysk.proc.Task;
+import frysk.rt.BreakpointManager;
+import frysk.rt.SourceBreakpoint;
+import frysk.rt.SteppingEngine;
 
-import frysk.proc.Proc;
-
-public class LineBreakpoint
-  extends SourceBreakpoint
+class DeleteHandler
+  extends CLIHandler
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint(int id, String fileName, int lineNumber, int column) 
+  static final String descr = "delete a source breakpoint";
+  
+  DeleteHandler(String name, CLI cli)
   {
-    super(id);
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
+    super(name, cli, new CommandHelp(name, descr, "delete actionpointID",
+				     descr));
   }
 
-  public String getFileName() 
+  DeleteHandler(CLI cli)
   {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
+    this("delete", cli);
   }
 
-  public long getRawAddress(Object addr)
-  {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
-  }
-
-  public LinkedList getRawAddressesForProc(Proc proc)
-  {
-    LinkedList result = (new Dwfl(proc.getPid())).getLineAddresses(fileName,
-								   lineNumber,
-								   column);
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST) && result != null)
-      {
-	Iterator iterator = result.iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
-      }
-    return result;
-  }
-
-  public PrintWriter output(PrintWriter writer)
-  {
-    writer.print("#");
-    writer.print(getFileName());
-    writer.print("#");
-    writer.print(getLineNumber());
-    return writer;
-  }
+  public void handle(Command cmd) throws ParseException 
+    {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          cli.printUsage(cmd);
+          return;
+        }
+      cli.refreshSymtab();
+      final PrintWriter outWriter = cli.getPrintWriter();
+      int breakpointNumber = Integer.parseInt((String)params.get(0));
+      BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+      Task task = cli.getTask();
+      SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
+      if (bpt != null)
+	{
+	  bpManager.disableBreakpoint(bpt, task);
+	  outWriter.println("breakpoint " + bpt.getId() + " deleted");
+	}
+      else
+	{
+	  outWriter.println("no such breakpoint");
+	}
+    }
 }

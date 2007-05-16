@@ -1,3 +1,29 @@
+2007-05-16  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointManager.java: New file.
+	* SourceBreakpointObserver.java: New file.
+	* SteppingEngine.java (getBreakpointManager): New method.
+	* SourceBreakpoint.java (State): Class stolen from cli.hpd.Actionpoint.
+	(getState): New method.
+	(addBreakpoint): Renamed to:
+	(enableBreakpoint): see above.
+	(deleteBreakpoint): Renamed to:
+	(disableBreakpoint): see above.
+	(containsPersistantBreakpoint): Rename to:
+	(containsPersistentBreakpoint): see above.
+	(getObserverDelegate, setObserverDelegate): remove.
+	(addObserver, deleteObserver, numberOfObservers, removeAllObservers):
+	New methods.
+	(getId, compareTo): new methods.
+	(getRawAddressesForProc, output): new abstract methods.
+	* LineBreakpoint.java (LineBreakpoint(Proc ...)): Remove.
+	(addLineBreakpoint): Remove.
+	(getRawAddressesForProc): New method.
+	(output): New method.
+	* FunctionBreakpoint.java (FunctionBreakpoint(Proc ...)): Remove.
+	(getRawAddressesForProc): New method.
+	(output): New method.
+
 2007-05-15  Nurdin Premji <npremji@redhat.com>
 
 	* TestFrame.java (backtrace): Use symbol.getName() instead of getProcName().

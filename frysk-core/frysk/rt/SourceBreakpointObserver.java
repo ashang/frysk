@@ -37,90 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.rt;
 
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
+import frysk.proc.Observer;
+import frysk.proc.Task;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
-import frysk.proc.Proc;
-
-public class LineBreakpoint
-  extends SourceBreakpoint
+public interface SourceBreakpointObserver
+  extends Observer
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint(int id, String fileName, int lineNumber, int column) 
-  {
-    super(id);
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
-  }
-
-  public String getFileName() 
-  {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
-  }
-
-  public long getRawAddress(Object addr)
-  {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
-  }
-
-  public LinkedList getRawAddressesForProc(Proc proc)
-  {
-    LinkedList result = (new Dwfl(proc.getPid())).getLineAddresses(fileName,
-								   lineNumber,
-								   column);
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST) && result != null)
-      {
-	Iterator iterator = result.iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
-      }
-    return result;
-  }
-
-  public PrintWriter output(PrintWriter writer)
-  {
-    writer.print("#");
-    writer.print(getFileName());
-    writer.print("#");
-    writer.print(getLineNumber());
-    return writer;
-  }
+  void updateHit(SourceBreakpoint breakpoint, Task task, long address);
 }

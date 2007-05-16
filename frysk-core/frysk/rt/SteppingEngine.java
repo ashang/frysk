@@ -1394,5 +1394,11 @@ public class SteppingEngine
     }
     
   }
-  
+
+  private static BreakpointManager breakpointManager = new BreakpointManager();
+
+  public static BreakpointManager getBreakpointManager()
+  {
+    return breakpointManager;
+  }
 }

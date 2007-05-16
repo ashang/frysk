@@ -38,16 +38,20 @@
 // exception.
 package frysk.cli.hpd;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.text.ParseException;
 import javax.naming.NameNotFoundException;
 
 import lib.dw.DwarfDie;
-import lib.dw.DwTagEncodings;
 
 import frysk.proc.Task;
-import frysk.rt.FunctionBreakpoint;
+import frysk.rt.BreakpointManager;
 import frysk.rt.LineBreakpoint;
+import frysk.rt.FunctionBreakpoint;
+import frysk.rt.SourceBreakpoint;
+import frysk.rt.SourceBreakpointObserver;
+import frysk.rt.SteppingEngine;
 
 class BreakpointHandler
   extends CLIHandler
@@ -64,6 +68,15 @@ class BreakpointHandler
     this("break", cli);
   }
 
+  static private class CLIBreakpointObserver
+      implements SourceBreakpointObserver
+  {
+    public void addedTo (Object observable) {}
+    public void addFailed (Object observable, Throwable w) {}
+    public void deletedFrom (Object observable) {}
+    public void updateHit(SourceBreakpoint bpt, Task task, long address) {}
+  }
+  
   public void handle(Command cmd) throws ParseException
   {
     cli.refreshSymtab();
@@ -76,8 +89,10 @@ class BreakpointHandler
     String breakpt = (String)params.get(0);
     String fileName;
     int lineNumber;
-    Actionpoint actionpoint;
+    SourceBreakpoint actionpoint;
+    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
     Task task = cli.getTask();
+    final PrintWriter outWriter = cli.getPrintWriter();
     if (breakpt.charAt(0) == '@')
       {
 	String[] bptParams = breakpt.split("@");
@@ -89,9 +104,19 @@ class BreakpointHandler
 	  }
 	fileName = bptParams[1];
 	lineNumber = Integer.parseInt((String)bptParams[2]);
-	LineBreakpoint bpt = new LineBreakpoint(task.getProc(), fileName,
-						lineNumber, 0);
-	actionpoint = new LineBreakpointAdapter(bpt, task, cli);
+	actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
+	actionpoint.addObserver(new CLIBreakpointObserver() {
+	    public void updateHit(SourceBreakpoint bpt, Task task,
+				  long address) {
+	      LineBreakpoint lbpt = (LineBreakpoint)bpt;
+	      outWriter.print("Breakpoint ");
+	      outWriter.print(lbpt.getId());
+	      outWriter.print(" @");
+	      outWriter.print(lbpt.getFileName());
+	      outWriter.print("@");
+	      outWriter.println(lbpt.getLineNumber());
+	    }
+	  });
       }
     else
       {
@@ -105,39 +130,21 @@ class BreakpointHandler
 	    // cli.getPrintWriter().println(e.getMessage());
 	    // return;
 	  }
-	if (false)
-	  {
-	    cli.getPrintWriter().println("function die tag: "
-					 + DwTagEncodings.toPrintString(die.getTag()));
-	    if (die.isInlineDeclaration())
-	      {
-		cli.getPrintWriter().println("Is declared inline.");
-	      }
-	  }
 
-	FunctionBreakpoint bpt;
-	if (die != null)
-	  {
-	    bpt = new FunctionBreakpoint(task.getProc(), breakpt, die);
-	  }
-	else
-	  {
-	    try
-	      {
-		bpt = new FunctionBreakpoint(task.getProc(), breakpt);
-	      }
-	    catch (RuntimeException e)
-	      {
-		 cli.getPrintWriter().println(e.getMessage());
-		 return;
-	      }
-	  }
-	actionpoint = new FunctionBreakpointAdapter(bpt, task, cli);
+	actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
+	actionpoint.addObserver(new CLIBreakpointObserver() {
+	    public void updateHit(SourceBreakpoint bpt, Task task,
+				  long address) {
+	      FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
+	      outWriter.print("Breakpoint ");
+	      outWriter.print(fbpt.getId());
+	      outWriter.print(" ");
+	      outWriter.println(fbpt.getName());
+	    }
+	  });
       }
 
-
-    int id = cli.getActionpointTable().add(actionpoint);
-    actionpoint.enable();
-    cli.getPrintWriter().println("breakpoint " + id);
+    bpManager.enableBreakpoint(actionpoint, task);
+    cli.getPrintWriter().println("breakpoint " + actionpoint.getId());
   }
 }

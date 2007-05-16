@@ -37,90 +37,72 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.rt;
 
-import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
+import java.util.Observable;
+import java.util.TreeMap;
+//import frysk.proc.Proc;
+import frysk.proc.Task;
+import lib.dw.DwarfDie;
 
-import lib.dw.Dwfl;
-import lib.dw.DwflLine;
-
-import frysk.proc.Proc;
-
-public class LineBreakpoint
-  extends SourceBreakpoint
+public class BreakpointManager
+  extends Observable
 {
-  private String fileName;
-  private int lineNumber;
-  private int column;
-  static private Logger logger;
-    
-  public LineBreakpoint(int id, String fileName, int lineNumber, int column) 
+  private int breakpointID = 0;
+  private TreeMap breakpointMap = new TreeMap();
+  
+  public BreakpointManager()
   {
-    super(id);
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
   }
 
-  public String getFileName() 
+  public synchronized LineBreakpoint addLineBreakpoint(String fileName,
+						       int lineNumber,
+						       int column)
   {
-    return fileName;
-  }
-    
-  public int getLineNumber() 
-  {
-    return lineNumber;
-  }
-    
-  public int getColumn() 
-  {
-    return column;
-  }
-    
-  public String toString() 
-  {
-    return "breakpoint file " + getFileName() + " line " + getLineNumber() 
-      + " column " + getColumn();
+    int bptId = breakpointID++;
+    LineBreakpoint sourceBreakpoint
+      = new LineBreakpoint(bptId, fileName, lineNumber, column);
+    breakpointMap.put(new Integer(bptId), sourceBreakpoint);
+    setChanged();
+    notifyObservers();
+    return sourceBreakpoint;
   }
 
-  public long getRawAddress(Object addr)
+  public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die)
   {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    int bptId = breakpointID++;
+    FunctionBreakpoint sourceBreakpoint
+      = new FunctionBreakpoint(bptId, name, die);
+    breakpointMap.put(new Integer(bptId), sourceBreakpoint);
+    setChanged();
+    notifyObservers();
+    return sourceBreakpoint;
   }
 
-  public LinkedList getRawAddressesForProc(Proc proc)
+  public void enableBreakpoint(SourceBreakpoint breakpoint, Task task)
   {
-    LinkedList result = (new Dwfl(proc.getPid())).getLineAddresses(fileName,
-								   lineNumber,
-								   column);
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST) && result != null)
-      {
-	Iterator iterator = result.iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
-      }
-    return result;
+    breakpoint.enableBreakpoint(task);
+    setChanged();
+    notifyObservers();
   }
 
-  public PrintWriter output(PrintWriter writer)
+  public void disableBreakpoint(SourceBreakpoint breakpoint, Task task)
   {
-    writer.print("#");
-    writer.print(getFileName());
-    writer.print("#");
-    writer.print(getLineNumber());
-    return writer;
+    breakpoint.disableBreakpoint(task);
+    setChanged();
+    notifyObservers();
+  }
+
+  public Iterator getBreakpointTableIterator()
+  {
+    return breakpointMap.values().iterator();
+  }
+
+  public SourceBreakpoint getBreakpoint(int bptId)
+  {
+    SourceBreakpoint bpt
+      = (SourceBreakpoint)breakpointMap.get(new Integer(bptId));
+    return bpt;
   }
 }

@@ -40,6 +40,7 @@
 
 package frysk.rt;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -56,58 +57,63 @@ public class FunctionBreakpoint
 {
   private String name;
   private boolean containsInlineInstances = false;
+  private DwarfDie die;
 
   /**
-   * Set a breakpoint based on a DwarfDie.
+   * Set a breakpoint based on a DwarfDie or just a name.
    */
-  public FunctionBreakpoint(Proc proc, String name, DwarfDie die)
+  public FunctionBreakpoint(int id, String name, DwarfDie die)
   {
+    super(id);
     this.name = name;
-    ArrayList entryAddrs = die.getEntryBreakpoints();
-    ArrayList inlineDies = null;
-    if (die.isInlineDeclaration())
-      {
-        inlineDies = die.getInlinedInstances();
-      }
-    LinkedList addrs;
-    if (entryAddrs == null)
-      addrs = new LinkedList();
-    else
-      addrs = new LinkedList(entryAddrs);
-    if (inlineDies != null)
-      {
-        addrs.addAll(inlineDies);
-        containsInlineInstances = true;
-      }
-    setAddrs(proc, addrs);
+    this.die = die;
   }
 
-  /**
-   * Set a breakpoint based on a name which will be looked up in the
-   * Elf symbol table.
-   */
-  public FunctionBreakpoint(Proc proc, final String name)
+  public LinkedList getRawAddressesForProc(Proc proc)
   {
-    this.name = name;
-    Dwfl dwfl = new Dwfl(proc.getPid()); // XXX cache Dwfls somewhere?
-    DwflModule[] modules = dwfl.getModules();
-    final LinkedList addrs = new LinkedList();
-    SymbolBuilder builder = new SymbolBuilder() {
-	public void symbol(String name, long value, long size, int type,
-			   int bind, int visibility)
-	{
-	  addrs.add(new Long(value));
-	}
-      };
-    for (int i = 0; i < modules.length; i++)
+    if (die != null)
       {
-	DwflModule module = modules[i];
-	module.getSymbolByName(name, builder);
+	ArrayList entryAddrs = die.getEntryBreakpoints();
+	ArrayList inlineDies = null;
+	if (die.isInlineDeclaration())
+	  {
+	    inlineDies = die.getInlinedInstances();
+	  }
+	LinkedList addrs;
+	if (entryAddrs == null)
+	  addrs = new LinkedList();
+	else
+	  addrs = new LinkedList(entryAddrs);
+	if (inlineDies != null)
+	  {
+	    addrs.addAll(inlineDies);
+	    containsInlineInstances = true;
+	  }
+	return addrs;
       }
-    if (addrs.size() == 0)
-      throw new RuntimeException("Couldn't find symbol " + name);
     else
-      setAddrs(proc, addrs);
+      {
+	Dwfl dwfl = new Dwfl(proc.getPid()); // XXX cache Dwfls somewhere?
+	DwflModule[] modules = dwfl.getModules();
+	final LinkedList addrs = new LinkedList();
+	SymbolBuilder builder = new SymbolBuilder() {
+	    public void symbol(String name, long value, long size, int type,
+			       int bind, int visibility)
+	    {
+	      addrs.add(new Long(value));
+	    }
+	  };
+	for (int i = 0; i < modules.length; i++)
+	  {
+	    DwflModule module = modules[i];
+	    module.getSymbolByName(name, builder);
+	  }
+	if (addrs.size() == 0)
+	  throw new RuntimeException("Couldn't find symbol " + name);
+	else
+	  return addrs;
+
+      }
   }
 
   public long getRawAddress(Object addr)
@@ -129,5 +135,13 @@ public class FunctionBreakpoint
   {
     // XXX What about in different processes?
     return containsInlineInstances;
+  }
+
+  public PrintWriter output(PrintWriter writer)
+  {
+    writer.print(getName());
+    if (containsInlineInstances())
+      writer.print("*");
+    return writer;
   }
 }

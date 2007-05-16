@@ -40,9 +40,10 @@ package frysk.cli.hpd;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Observer;
+import java.util.Observable;
 import java.text.ParseException;
 
-import frysk.event.Event;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -51,12 +52,15 @@ import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import frysk.rt.SteppingEngine;
+
 class RunHandler
   extends CLIHandler
-  implements TaskObserver.Attached
+  implements TaskObserver.Attached, Observer
 {
   static final String descr = "run program and immediately attach";
-
+  private HashSet launchedTasks = new HashSet();
+  
   RunHandler(String name, CLI cli)
   {
     super(name, cli, new CommandHelp(name, descr, "run executable arguments*",
@@ -68,9 +72,35 @@ class RunHandler
     this("run", cli);
   }
 
+  // Observer for Stepping engine; called when attach is finished.
+  public void update(Observable observable, Object arg)
+  {
+    Task task = (Task)arg;
+    boolean unblock = false;
+    if (task == null)
+      return;
+    synchronized (this)
+      {
+	if (launchedTasks.contains(task))
+	  {
+	    launchedTasks.remove(task);
+	    unblock = true;
+	  }
+      }
+    if (unblock)
+      {
+	SteppingEngine.removeObserver(this, task.getProc());
+	task.requestUnblock(this);
+      }
+  }
+  
   public Action updateAttached(final Task task)
   {
-    final Proc proc = task.getProc();    
+    final Proc proc = task.getProc();
+    synchronized (this)
+      {
+	launchedTasks.add(task);
+      }
     synchronized (cli)
       {
 	cli.getRunningProcs().add(proc);
@@ -108,13 +138,10 @@ class RunHandler
 	  }
       }
     });
+    SteppingEngine.addObserver(this);
     cli.startAttach(task);
-    Manager.eventLoop.add(new Event() {
-	public void execute()
-	{
-	  task.requestUnblock(RunHandler.this);
-	}
-      });
+    // Keep task blocked until the SteppingEngine notifies us that its
+    // instruction observers, etc. have been inserted.
     return Action.BLOCK;
   }
 
