@@ -1,3 +1,7 @@
+2007-05-17  scox  <scox@multics.rdu.redhat.com>
+
+	* ArrayType.java (get): Skip array name.
+
 2007-05-10  Stan Cox  <scox@redhat.com>
 
 	* Value.java (Variable): Rename Value.

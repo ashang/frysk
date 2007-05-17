@@ -848,16 +848,6 @@ class ExprSymTab
       }
     return null;
   }
-
-  public Value get (String s, ArrayList components)
-  {
-    DwarfDie varDie = getDie(s);
-    if (varDie == null)
-      return (null);
-
-    Value v = get(s);
-    return ((ArrayType)v.getType()).get(v, components);
-  }
     
   public Value get (ArrayList components)
   {
@@ -867,7 +857,12 @@ class ExprSymTab
       return (null);
 
     Value v = get(s);
-    return ((ClassType)v.getType()).get(v, components);
+    if (v.getType() instanceof ArrayType)
+      return ((ArrayType)v.getType()).get(v, components);
+    else if (v.getType() instanceof ClassType)
+      return ((ClassType)v.getType()).get(v, components);
+    else
+      return null;
   }
   
   public Value getAddress (String s)

@@ -178,6 +178,7 @@ public class ArrayType
       
     Iterator ci = components.iterator();
     int offset = 0;
+    ci.next();			// skip name of array
     for (int d = dimCount - 1;
          ci.hasNext();
          d -= 1)

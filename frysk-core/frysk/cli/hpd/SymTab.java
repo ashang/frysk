@@ -162,6 +162,8 @@ public class SymTab
             candidates.add(sNext);
         }
 
+      if (token.endsWith("."))		// Is a struct being completed?
+      	token = ".";
       return buffer.indexOf(token) + 1;
     }
 
@@ -288,11 +290,6 @@ public class SymTab
       }
 
       public Value get (String s) throws NameNotFoundException
-      {
-        throw new NameNotFoundException("No symbol table is available.");
-      }
-
-      public Value get (String s, ArrayList v) throws NameNotFoundException
       {
         throw new NameNotFoundException("No symbol table is available.");
       }

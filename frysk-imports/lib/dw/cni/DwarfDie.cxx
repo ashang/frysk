@@ -179,6 +179,22 @@ lib::dw::DwarfDie::get_scopevar (jlongArray die_scope, jlongArray scopes,
   return code;
 }
 
+static Dwarf_Die
+get_first_struct_member (Dwarf_Die &result)
+{
+  Dwarf_Attribute attr_mem;
+  do {
+    dwarf_formref_die (dwarf_attr_integrate (&result, DW_AT_type, &attr_mem),
+		       &result);
+    if (dwarf_tag (&result) == DW_TAG_structure_type)
+      {
+	dwarf_child (&result, &result);
+	break;
+      }
+  } while (1);
+  return result;
+}
+
 jlong
 lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
 				 jstring variable_arg)
@@ -187,11 +203,16 @@ lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
   Dwarf_Die *scopes[nscopes];
   jlong* scopesp = elements(scopes_arg);
   Dwarf_Die result;
+  int get_struct_members = 0;
   int variable_len = variable_arg->length ();
   char variable[variable_len + 1];
   JvGetStringUTFRegion (variable_arg, 0, variable_len, variable);
   variable[variable_len] = '\0';
-
+  if (variable[variable_len - 1] == '.')
+    {
+      variable[variable_len - 1] = '\0';
+      get_struct_members = 1;
+    }
   using namespace java::lang;
 
   for(int i = 0; i < nscopes; i++)
@@ -224,6 +245,18 @@ lib::dw::DwarfDie::get_scopevar_names (jlongArray scopes_arg,
               (dwarf_attr_integrate (&result, DW_AT_name, &attr_mem));
             if (diename != NULL && !strncmp (diename, variable, variable_len))
 	      {
+		if (get_struct_members)
+		  {
+		    result = get_first_struct_member (result);
+		    do
+		      {
+			diename = dwarf_formstring
+			  (dwarf_attr_integrate (&result, DW_AT_name, &attr_mem));
+			lib::dw::DwarfDie::addScopeVarName (JvNewStringUTF (diename));
+		      }
+		    while (dwarf_siblingof (&result, &result) == 0);
+		    return 0;
+		  }
 		addScopeVarName (JvNewStringUTF (diename));
 	      }
 	  }

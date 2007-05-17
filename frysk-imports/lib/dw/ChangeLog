@@ -1,3 +1,8 @@
+2007-05-17  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (get_first_struct_member): New.
+	(get_scopevar_names): Use it to get struct member names.
+
 2007-05-14  Nurdin Premji  <npremji@redhat.com>
 
 	* Dwfl.java (Dwfl): Added empty constructor, used when modules will be reported

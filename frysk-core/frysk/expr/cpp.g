@@ -120,13 +120,13 @@ options {
 imaginaryTokenDefinitions
     :
 	ADDRESS_OF
-        ARG_LIST
-        ARRAY_REF
-        CAST
-        CLASS_REF
-        COND_EXPR
-        EXPR_LIST
-        FUNC_CALL
+	ARG_LIST
+	CAST
+	REFERENCE
+	SUBSCRIPT
+	COND_EXPR
+	EXPR_LIST
+	FUNC_CALL
 	MEMORY
     ;
 
@@ -202,7 +202,7 @@ remainder_expression throws TabException
             assignment_expression
             {
                 if (assign_stmt_RHS_found > 0)
-                assign_stmt_RHS_found -= 1;
+                  assign_stmt_RHS_found -= 1;
                 else
                 {
                     System.out.println(LT(1).getLine() + 
@@ -333,31 +333,23 @@ pm_expression throws TabException
 {String sTabText;}
     :	post_expr1:primary_expression 
         {
-            if(bTabPressed)
+          if (bTabPressed)
             {
-                if (#post_expr1.getFirstChild() != null)
-                sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
-                else 
+	      // ??? Use antlr expressions instead of tree surgery.
+              if (#post_expr1.getFirstChild() != null)
+		if (#post_expr1.getFirstChild().getNextSibling() != null)
+                  sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
+		else
+		  sTabText = #post_expr1.getFirstChild().getText();
+              else 
                 sTabText = #post_expr1.getText();
 
-                throw new TabException(#post_expr1, sTabText);
+	      if (#post_expr1.getText().startsWith("Class Reference"))
+		sTabText += ".";
+
+              throw new TabException(#post_expr1, sTabText);
             }
         }
-
-        ( (DOTMBR^ | POINTERTOMBR^) 
-            post_expr2:primary_expression
-            {
-                if (bTabPressed)
-                {
-                    if (#post_expr1.getFirstChild() != null)
-                    sTabText = #post_expr1.getFirstChild().getNextSibling().getText();
-                    else 
-                    sTabText = #post_expr1.getText();
-
-                    throw new TabException(#post_expr1, sTabText);
-                }
-            }
-        )*
     ;
 
 /**
@@ -377,21 +369,23 @@ variable! throws TabException
 
             (   options {warnWhenFollowAmbig = false;}
 
-	      : LSQUARE expr1:expression RSQUARE
-                // a[b][c] => (Array Reference a (Expr list b c))
-		// ??? This tree splicing uses an internal antlr interface
-                {if (astPostExpr.getFirstChild() != null)
-                    astPostExpr.getFirstChild().getNextSibling().addChild(#expr1); 
+              :   LPAREN (expr2:expressionList)? RPAREN
+                { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
+	      | LSQUARE expr1:expression RSQUARE
+                // a[b][c] => (Array Reference a (Subscript b) (Subscript c))
+                {AST sub = null;
+		 if (astPostExpr.getFirstChild() != null)
+		    {
+		      #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+                      astPostExpr.addChild(#sub);
+		    }
                  else
                     {
-                       AST elements = null;
-                       elements = #(#[EXPR_LIST, "Expr list"], #expr1);
-                       #astPostExpr = #(#[ARRAY_REF,"Array Reference"], #astPostExpr, elements);
+		      #sub = #(#[SUBSCRIPT,"Subscript"], #expr1);
+                      #astPostExpr = #(#[REFERENCE,"Array Reference"], #astPostExpr, #sub);
                     }
                 }
 
-            |   LPAREN (expr2:expressionList)? RPAREN
-                { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
             |   DOT!
                 (   tb:TAB
                     {
@@ -401,16 +395,19 @@ variable! throws TabException
                 |   id_expr1:id_expression
                     { astDotExpr = #id_expr1;}
                 )
-                // a.b.c => (Class Reference (Expr list a b c))
-		// ??? This tree splicing uses an internal antlr interface
+                // a.b.c => (Class Reference a b c))
                 {if (astPostExpr.getFirstChild() != null)
-                    astPostExpr.getFirstChild().addChild(astDotExpr);
+		   {
+		     if (#astDotExpr.getText().endsWith("\t") == false)
+                       astPostExpr.addChild(#astDotExpr);
+		   }
                  else
-                    {
-                       AST elements = null;
-                       elements = #(#[EXPR_LIST, "Expr list"], #astPostExpr, #astDotExpr);
-                       #astPostExpr = #(#[CLASS_REF,"Class Reference"], elements);
-                    }
+		   {
+		     if (#astDotExpr.getText().endsWith("\t") == false)
+		       #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr, #astDotExpr);
+		     else
+                       #astPostExpr = #(#[REFERENCE,"Class Reference"], #astPostExpr);
+		   }
                 }
             |   POINTERTO id_expr2:id_expression
                 { astPostExpr = #(POINTERTO, #astPostExpr, #id_expr2); }
@@ -533,9 +530,6 @@ BITWISEXOREQUAL : "^="  ;
 
 protected
 ELLIPSIS  : "..." ;
-
-POINTERTOMBR    : "->*" ;
-DOTMBR          : ".*"  ;
 
 SCOPE           : "::"  ;
 
@@ -741,6 +735,7 @@ options {
 }
 
 {
+    ArrayList      refList;
     ArithmeticType arithmeticType;
     ArithmeticType longType;
     ArithmeticType intType;
@@ -774,20 +769,25 @@ primitiveType
 identifier returns [String idSpelling=null]
     :   ident:IDENT  {idSpelling=ident.getText();} ;
 
-// ??? This tree navigation uses an internal antlr interface
-exprlist returns [ArrayList el=new ArrayList()]
-    :   exprList:EXPR_LIST {
-          AST list = exprList.getFirstChild();
-          while (list != null) {
-              el.add(list.getText());
-              list = list.getNextSibling();
-          }
-        };
+references returns [ArrayList el = null;]
+	throws  InvalidOperatorException, 
+		OperationNotDefinedException,
+		NameNotFoundException
+    {   String s1 = null;refList = new ArrayList();}
+    :   (subscript_or_member)* {el=refList;};
 
+subscript_or_member returns [String id=null;] 
+	throws  InvalidOperatorException, 
+		OperationNotDefinedException,
+		NameNotFoundException
+    {   Value s; }
+    :   #(SUBSCRIPT s=expr) {refList.add(new Integer(s.intValue()).toString());}
+    |    id=identifier {refList.add(id);};
 
-expr returns [Value returnVar=null] throws InvalidOperatorException,
-OperationNotDefinedException,
-NameNotFoundException
+expr returns [Value returnVar=null] 
+	throws  InvalidOperatorException, 
+		OperationNotDefinedException,
+		NameNotFoundException
 { Value v1, v2, log_expr; String s1, s2; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
@@ -961,14 +961,11 @@ NameNotFoundException
 	      }
 	    else returnVar = v2;
         }
-    |   #(ARRAY_REF s1=identifier el=exprlist) { 
-          returnVar = (Value)cppSymTabRef.get(s1, el);
-	      }
-    |   #(CLASS_REF el=exprlist) {
-          returnVar = (Value)cppSymTabRef.get(el);
-          }
     |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
     |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
+    |   #(REFERENCE el=references) {
+          returnVar = (Value)cppSymTabRef.get(el);
+          }
     |   ident:IDENT  {
             if((returnVar = ((Value)cppSymTabRef.get(ident.getText()))) == null
 		&& cppSymTabRef.putUndefined()) {

@@ -1,3 +1,10 @@
+2007-05-17  scox  <scox@multics.rdu.redhat.com>
+
+	* hpd/SymTab.java (complete): Handle struct members.
+	(get): Remove get(String s, ArrayList components).
+	* hpd/ExprSymTab.java (get): Remove get(String, ArrayList).
+	(ArrayList components): Handle both structs and arrays.
+
 2007-05-16  Tim Moore  <timoore@redhat.com>
 
 	* hpd/ActionsHandler.java: New file.

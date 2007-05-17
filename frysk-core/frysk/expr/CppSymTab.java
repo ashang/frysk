@@ -49,7 +49,6 @@ public interface CppSymTab
 {
   void put(String s, Value v) throws NameNotFoundException;
   Value get(String s) throws NameNotFoundException;
-  Value get(String s, ArrayList v) throws NameNotFoundException;
   Value get(ArrayList v) throws NameNotFoundException;
   Value getAddress(String s) throws NameNotFoundException;
   Value getMemory(String s) throws NameNotFoundException;

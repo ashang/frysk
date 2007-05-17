@@ -1,3 +1,10 @@
+2007-05-17  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (pm_expression): Handle class member tab completion.
+	(variable): Chain as REFERENCE instead of separate ARRAY_REF/CLASS_REF.
+	(CppTreeParser): Remove exprlist. Add references, subscript_or_member.
+	* CppSymTab.java: Remove get(String s, ArrayList components).
+
 2007-05-08  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppTreeParser): newXVariable signature.
