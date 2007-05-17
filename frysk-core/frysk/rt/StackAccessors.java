@@ -48,8 +48,8 @@ import java.util.logging.Level;
 import frysk.event.Event;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
+import frysk.proc.MemoryMap;
 import frysk.proc.Task;
-import frysk.sys.proc.MapsBuilder;
 
 import lib.dw.SymbolBuilder;
 import lib.dw.Dwfl;
@@ -248,77 +248,20 @@ public class StackAccessors
 
   private ElfImage getElfImage (long addr)
   {
-    class ProcMapsReader
-	extends MapsBuilder
-    {
-      long addr;
-
-      long addressLow;
-      long addressHigh;
-
-      long offset;
-
-      String elfImageName;
-
-      byte[] mapsLocal;
-
-      ProcMapsReader (long addr)
-      {
-	super();
-	this.addr = addr;
-      }
-
-      // @Override
-      public void buildBuffer (byte[] maps)
-      {
-	// Safe a refernce to the raw maps.
-	mapsLocal = maps;
-	maps[maps.length - 1] = 0;
-      }
-
-      // @Override
-      public void buildMap (long addressLow, long addressHigh,
-			    boolean permRead, boolean permWrite,
-			    boolean permExecute, boolean shared, long offset,
-			    int devMajor, int devMinor, int inode,
-			    int pathnameOffset, int pathnameLength)
-      {
-	if (addressLow <= addr && addr < addressHigh)
-	  {
-	    this.addressLow = addressLow;
-	    this.addressHigh = addressHigh;
-	    this.offset = offset;
-	    byte[] filename = new byte[pathnameLength];
-
-	    System.arraycopy(mapsLocal, pathnameOffset, filename, 0,
-			     pathnameLength);
-	    elfImageName = new String(filename);
-
-	  }
-      }
-
-    }
-
-    ProcMapsReader mapReader = new ProcMapsReader(addr);
-    mapReader.construct(myTask.getProc().getPid());
-
-    logger.log(Level.FINEST, "Elf image name: {0}, addressLow: {1}, "
-			     + "offset: {2}\n",
-	       new Object[] { mapReader.elfImageName,
-			     Long.toHexString(mapReader.addressLow),
-			     Long.toHexString(mapReader.offset) });
+    ElfImage elfImage = null;
+    MemoryMap map = myTask.getProc().getMap(addr);
+    if (map == null)
+      return null;
     
-    ElfImage elfImage;
-    if (mapReader.elfImageName.equals("") || mapReader.elfImageName.equals("[vdso]"))
+    if (myTask.getProc().isVDSO(map))
       elfImage = addressSpace.getUnwinder().createElfImageFromVDSO(addressSpace, 
-                                                                   mapReader.addressLow, 
-                                                                   mapReader.addressHigh,
-                                                                   mapReader.offset, this);
-    else
-      elfImage = ElfImage.mapElfImage(mapReader.elfImageName,
-					     mapReader.addressLow,
-					     mapReader.addressHigh,
-					     mapReader.offset);
+	                                                           map.addressLow, 
+	                                                           map.addressHigh,
+	                                                           map.offset, this);
+    else 
+      elfImage = ElfImage.mapElfImage(map.name, map.addressLow, 
+                                      map.addressHigh, map.offset);
+       
     return elfImage;
   }
 
