@@ -49,7 +49,11 @@ package frysk.proc;
 class Id
     implements Comparable
 {
-    protected int id;
+    /**
+     * XXX: Should not be public, but some code likes to poke it so
+     * that it has a re-usable ID.
+     */
+    public int id;
     protected Id ()
     {
 	id = -1;

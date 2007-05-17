@@ -40,11 +40,10 @@
 package frysk.proc;
 
 import java.util.logging.Level;
-
 import java.util.Collection;
 import java.util.Iterator;
-
 import frysk.sys.Sig;
+import frysk.proc.ptrace.LinuxProc;
 
 /**
  * The task state machine.
@@ -797,7 +796,7 @@ public abstract class LinuxPtraceTaskState
 	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
 	    task.proc.retain (task);
-	    ((LinuxPtraceProc)task.proc).getStat ().refresh();
+	    ((LinuxProc)task.proc).getStat ().refresh();
 
 	    // All breakpoints have been erased.  We need to explicitly
 	    // tell those attached to the current Task.

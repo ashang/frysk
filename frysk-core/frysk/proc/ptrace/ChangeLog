@@ -1,8 +1,11 @@
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
-	* LinuxTask.java (sendContinue, sendSyscallContinue,
-	sendStepInstruction, sendStop, sendSetOptions, sendAttach,
-	sendDetach, startTracingSyscalls, stopTracingSyscalls): Move to
+	* LinuxProc.java (sendrecCommand, getStat, getInitialState)
+	(sendRefresh): Move to here from frysk.proc.LinuxPtraceProc.
+
+	* LinuxTask.java (sendContinue, sendSyscallContinue)
+	(sendStepInstruction, sendStop, sendSetOptions, sendAttach)
+	(sendDetach, startTracingSyscalls, stopTracingSyscalls): Move to
 	here from frysk.proc.LinuxPtraceTask.
 
 2007-05-16  Andrew Cagney  <cagney@redhat.com>

@@ -49,7 +49,7 @@ package frysk.proc;
 public class TaskId
     extends Id
 {
-    TaskId ()
+    public TaskId ()
     {
 	super ();
     }

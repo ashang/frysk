@@ -1,3 +1,15 @@
+2007-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceProc.java: Delete, remaining content moved to
+	frysk.proc.ptrace.LinuxProc.
+	* Proc.java (taskPool, remove): Make protected.
+	* LinuxPtraceTaskState.java: Replace LinuxPtraceProc with
+	LinuxProc.
+	* Task.java (performRemoval): Make public.
+	* LinuxPtraceProcState.java: Make public.
+	* TaskId.java (TaskId): Make public.
+	* Id.java (id): Make public.
+
 2007-05-17  Nurdin Premji  <npremji@redhat.com>
 	
 	* Proc.java (getMap): Added.
@@ -5,9 +17,10 @@
 
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceTask.java: Delete, remaining content moved to
+	frysk.proc.ptrace.LinuxTask.
 	* Task.java (steppingBreakpoint, sig_send, syscall_sigret)
 	(step_send): Make public.
-	* LinuxPtraceTask.java: Delete.
 
 2007-05-16  Andrew Cagney  <cagney@redhat.com>
 

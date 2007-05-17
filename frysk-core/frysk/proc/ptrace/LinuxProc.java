@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 
 package frysk.proc.ptrace;
 
-import frysk.proc.LinuxPtraceProc;
 import frysk.proc.ProcId;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -56,13 +55,20 @@ import frysk.sys.proc.MapsBuilder;
 import frysk.sys.proc.Status;
 import frysk.proc.IsaFactory;
 import java.util.logging.Level;
+import frysk.proc.ProcState;
+import frysk.sys.proc.ProcBuilder;
+import java.util.Map;
+import java.util.HashMap;
+import frysk.proc.TaskId;
+import java.util.Iterator;
+import frysk.proc.LinuxPtraceProcState;
 
 /**
  * A Linux Proc tracked using PTRACE.
  */
 
 public class LinuxProc
-    extends LinuxPtraceProc
+    extends Proc
 {
     /**
      * Create a new detached process.  RUNNING makes no sense here.
@@ -70,7 +76,8 @@ public class LinuxProc
      */
     public LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
-	super (host, parent, pid, stat);
+	super (host, parent, pid);
+	this.stat = stat;
     }
     /**
      * Create a new, definitely attached, definitely running fork of
@@ -209,5 +216,77 @@ public class LinuxProc
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 	IsaFactory factory = IsaFactory.getSingleton();
 	return factory.getIsa(getId().intValue());
+    }
+
+    /**
+     * If it hasn't already been read, read the stat structure.
+     */
+    public Stat getStat ()
+    {
+	if (stat == null) {
+	    stat = new Stat ();
+	    stat.refresh (getPid());
+	}
+	return stat;
+    }
+    private Stat stat;
+
+    public String sendrecCommand ()
+    {
+	return getStat ().comm;
+    }
+
+    /**
+     * Some constructors in Proc.java need a starting state.  As Proc
+     * is abstract and cannot return a state specific to its subclass,
+     * return here in the subclass
+     */
+    protected ProcState getInitialState (boolean procStarting)
+    {
+	return LinuxPtraceProcState.initial(this, procStarting);
+    }
+
+    /**
+     * Refresh the Proc.
+     */
+    public void sendRefresh ()
+    {
+	// Compare this against the existing taskPool.  ADDED
+	// accumulates any tasks added to the taskPool.  REMOVED,
+	// starting with all known tasks has any existing tasks
+	// removed, so that by the end it contains a set of removed
+	// tasks.
+	class TidBuilder
+	    extends ProcBuilder
+	{
+	    Map added = new HashMap ();
+	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
+	    TaskId searchId = new TaskId ();
+	    public void buildId (int tid)
+	    {
+		searchId.id = tid;
+		if (removed.containsKey (searchId)) {
+		    removed.remove (searchId);
+		}
+		else {
+		    // Add the process (it currently isn't attached).
+		    Task newTask = new LinuxTask (LinuxProc.this,
+						  new TaskId (tid));
+		    added.put (newTask.getTaskId(), newTask);
+		}
+	    }
+	}
+	TidBuilder tasks = new TidBuilder ();
+	tasks.construct (getPid());
+	// Tell each task that no longer exists that it has been
+	// removed.
+	for (Iterator i = tasks.removed.values().iterator(); i.hasNext();) {
+	    Task task = (Task) i.next ();
+	    // XXX: Should there be a TaskEvent.schedule(), instead of
+	    // Manager .eventLoop .appendEvent for injecting the event
+	    // into the event loop?
+	    task.performRemoval ();
+	    remove (task);
+	}
     }
 }

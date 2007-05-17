@@ -282,8 +282,10 @@ public abstract class Task
   /**
    * (Internal) Tell the task to remove itself (it is no longer listed in the
    * system process table and, presumably, has exited).
+   *
+   * XXX: Should not be public.
    */
-  void performRemoval ()
+  public void performRemoval ()
   {
     newState = oldState().handleRemoval(Task.this);
   }

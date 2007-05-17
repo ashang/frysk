@@ -810,7 +810,7 @@ public abstract class Proc
   /**
    * Pool of tasks belonging to this Proc.
    */
-  Map taskPool = new HashMap();
+  protected Map taskPool = new HashMap();
 
   /**
    * Add the Task to this Proc.
@@ -824,7 +824,7 @@ public abstract class Proc
   /**
    * Remove Task from this Proc.
    */
-  void remove (Task task)
+  protected void remove (Task task)
   {
     logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
     host.observableTaskRemovedXXX.notify(task);

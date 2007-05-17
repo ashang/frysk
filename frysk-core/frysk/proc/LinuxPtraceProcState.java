@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ import java.util.logging.Level;
  *
  */
 
-abstract class LinuxPtraceProcState
+public abstract class LinuxPtraceProcState
     extends ProcState
 {
     /**
@@ -60,7 +60,7 @@ abstract class LinuxPtraceProcState
      * is always created via fork.  The latter, until an observer is
      * added is assumed to be about to detach.
      */
-    static ProcState initial (Proc proc, boolean starting)
+    public static ProcState initial (Proc proc, boolean starting)
     {
 	logger.log (Level.FINEST, "{0} initial\n", proc); 
 	if (starting)
