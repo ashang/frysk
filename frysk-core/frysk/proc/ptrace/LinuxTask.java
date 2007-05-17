@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@
 package frysk.proc.ptrace;
 
 import frysk.proc.TaskObserver;
-import frysk.proc.LinuxPtraceTask;
 import frysk.proc.Proc;
 import frysk.proc.TaskId;
 import frysk.proc.Task;
@@ -52,13 +51,17 @@ import inua.eio.ByteOrder;
 import frysk.proc.IsaFactory;
 import frysk.proc.Isa;
 import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.Errno;
+import frysk.sys.Ptrace;
+import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 /**
  * A Linux Task tracked using PTRACE.
  */
 
 public class LinuxTask
-    extends LinuxPtraceTask
+    extends Task
 {
     /**
      * Create a new unattached Task.
@@ -93,8 +96,7 @@ public class LinuxTask
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
 	ByteBuffer memory
-	    = new AddressSpaceByteBuffer(getTaskId().intValue(),
-					 AddressSpace.DATA);
+	    = new AddressSpaceByteBuffer(getTid(), AddressSpace.DATA);
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;
@@ -105,7 +107,7 @@ public class LinuxTask
      */
     protected ByteBuffer[] sendrecRegisterBanks () 
     {
-	return getIsa().getRegisterBankBuffers(getTaskId().intValue());
+	return getIsa().getRegisterBankBuffers(getTid());
     }
     /**
      * Return the Task's ISA.
@@ -117,7 +119,7 @@ public class LinuxTask
     {
 	logger.log(Level.FINE, "{0} sendrecIsa\n", this);
 	IsaFactory factory = IsaFactory.getSingleton();
-	return factory.getIsa(getTaskId().intValue());
+	return factory.getIsa(getTid());
     }
 
     /**
@@ -214,4 +216,128 @@ public class LinuxTask
 	    });
     }
 
+    protected void sendContinue (int sig)
+    {
+	logger.log(Level.FINE, "{0} sendContinue\n", this);
+	step_send = false;
+	sig_send = sig;
+	try
+	    {
+		Ptrace.cont(getTid(), sig);
+	    }
+	catch (Errno.Esrch e)
+	    {
+		postDisappearedEvent(e);
+	    }
+    }
+    protected void sendSyscallContinue (int sig)
+    {
+	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
+	step_send = false;
+	sig_send = sig;
+	try
+	    {
+		Ptrace.sysCall(getTid(), sig);
+	    }
+	catch (Errno.Esrch e)
+	    {
+		postDisappearedEvent(e);
+	    }
+    }
+
+    protected void sendStepInstruction (int sig)
+    {
+	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
+	step_send = true;
+	sig_send = sig;
+	syscall_sigret = getIsa().isAtSyscallSigReturn(this);
+	try
+	    {
+		Ptrace.singleStep(getTid(), sig);
+	    }
+	catch (Errno.Esrch e)
+	    {
+		postDisappearedEvent(e);
+	    }
+    }
+
+    protected void sendStop ()
+    {
+	logger.log(Level.FINE, "{0} sendStop\n", this);
+	Signal.tkill(getTid(), Sig.STOP);
+    }
+
+    private int ptraceOptions;
+    protected void sendSetOptions ()
+    {
+	logger.log(Level.FINE, "{0} sendSetOptions\n", this);
+	try
+	    {
+		// XXX: Should be selecting the trace flags based on the
+		// contents of .observers.
+		ptraceOptions |= Ptrace.optionTraceClone();
+		ptraceOptions |= Ptrace.optionTraceFork();
+		ptraceOptions |= Ptrace.optionTraceExit();
+		// ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
+		ptraceOptions |= Ptrace.optionTraceExec();
+		Ptrace.setOptions(getTid(), ptraceOptions);
+	    }
+	catch (Errno.Esrch e)
+	    {
+		postDisappearedEvent(e);
+	    }
+    }
+
+    protected void sendAttach ()
+    {
+	logger.log(Level.FINE, "{0} sendAttach\n", this);
+	try
+	    {
+		Ptrace.attach(getTid());
+
+		/*
+		 * XXX: Linux kernel has a 'feature' that if a process is already
+		 * stopped and ptrace requests that it be stopped (again) in order to
+		 * attach to it, the signal (SIGCHLD) notifying frysk of the attach's
+		 * pending waitpid event isn't generated.
+		 */
+
+		/*
+		 * XXX: This line sends another signal to frysk notifying about the
+		 * attach's pending waitpid regardless of whether the task is running or
+		 * stopped. This avoids hangs on attaching to a stopped process. Bug
+		 * 3316.
+		 */
+		frysk.sys.Signal.tkill(frysk.sys.Tid.get(), Sig.CHLD);
+	    }
+	catch (Errno.Eperm e)
+	    {
+		logger.log(Level.FINE, "{" + e.toString()
+			   + "} Cannot attach to process\n");
+	    }
+	catch (Errno.Esrch e)
+	    {
+		postDisappearedEvent(e);
+	    }
+    }
+
+    protected void sendDetach (int sig)
+    {
+	logger.log(Level.FINE, "{0} sendDetach\n", this);
+	Ptrace.detach(getTid(), sig);
+    }
+
+    protected void startTracingSyscalls ()
+    {
+	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
+	ptraceOptions |= Ptrace.optionTraceSysgood();
+	this.sendSetOptions();
+    }
+
+    protected void stopTracingSyscalls ()
+    {
+	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
+	ptraceOptions &= ~ (Ptrace.optionTraceSysgood());
+	this.sendSetOptions();
+    }
 }

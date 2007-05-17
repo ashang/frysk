@@ -810,21 +810,37 @@ public abstract class Task
     proc.requestDeleteCodeObserver(this, codeObservers, o, a);
   }
   
-  // Whether we are currently stepping over a breakpoint.
-  // Used in the running task state when a trap event occurs after
-  // a step has been issued. Null when no step is being performed.
-  Breakpoint steppingBreakpoint;
+  /**
+   * Whether we are currently stepping over a breakpoint.  Used in
+   * the running task state when a trap event occurs after a step
+   * has been issued. Null when no step is being performed.
+   *
+   * XXX: This variable belongs in the Linux/PTRACE state machine.
+   */
+  public Breakpoint steppingBreakpoint;
 
-  // Whether the last request to the process was a step request.
-  boolean step_send;
+  /**
+   * Whether the last request to the process was a step request.
+   *
+   * XXX: This should be a state in Linux/PTRACE state machine.
+   */
+  public boolean step_send;
 
-  // The signal, or zero, send last to the task.
-  int sig_send;
+  /**
+   * The signal, or zero, send last to the task.
+   *
+   * XXX: This should be a state in Linux/PTRACE state machine.
+   */
+  public int sig_send;
 
-  // When the last request to the process was a step request, whether
-  // it was a request to step a sigreturn syscall.
-  // Set by sendStepInstruction().
-  boolean syscall_sigret;
+  /**
+   * When the last request to the process was a step request, whether
+   * it was a request to step a sigreturn syscall.
+   * Set by sendStepInstruction().
+   *
+   * XXX: This should be a state in Linux/PTRACE state machine.
+   */
+  public boolean syscall_sigret;
 
   /**
    * Notify all Code observers of the breakpoint. Return the number of
