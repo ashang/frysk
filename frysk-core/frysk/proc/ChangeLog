@@ -1,3 +1,8 @@
+2007-05-17  Nurdin Premji  <npremji@redhat.com>
+	
+	* Proc.java (getMap): Added.
+	(isVDSO): Added.
+
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (steppingBreakpoint, sig_send, syscall_sigret)

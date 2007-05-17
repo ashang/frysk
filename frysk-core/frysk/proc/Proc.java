@@ -92,6 +92,19 @@ public abstract class Proc
   {
     return id.hashCode();
   }
+  
+  public boolean isVDSO (MemoryMap map)
+  {
+    if (map == null)
+      return false;
+    Auxv[] auxv = getAuxv();
+    for (int i = 0; i < auxv.length; i++)
+      {
+	if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR)
+	  return auxv[i].val == map.addressLow;
+      }
+    return false;
+  }
 
   /**
    * Return the basename of the program that this process is running.
@@ -171,7 +184,17 @@ public abstract class Proc
     MemoryMap maps[] = sendrecMaps ();
     return maps;
   }
-
+  
+  public MemoryMap getMap(long address)
+    {
+      MemoryMap maps[] = getMaps();
+      for (int i = 0; i < maps.length; i++)
+        if (maps[i].addressLow <= address && maps[i].addressHigh > address)
+  	return maps[i];
+      
+      return null;
+    }
+  
   protected abstract MemoryMap[] sendrecMaps ();
 
   final BreakpointAddresses breakpoints;
