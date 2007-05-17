@@ -1,5 +1,9 @@
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java (ProcChanges, sendRefresh)
+	(sendCreateAttachedProc, sendrecSelf, sendGetProc): Move to here
+	from frysk.proc.LinuxPtraceHost.
+
 	* LinuxProc.java (sendrecCommand, getStat, getInitialState)
 	(sendRefresh): Move to here from frysk.proc.LinuxPtraceProc.
 

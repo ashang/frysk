@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 
 public abstract class Host
 {
-    static final Logger logger = Logger.getLogger(ProcLogger.LOGGER_ID);
+    static protected final Logger logger = Logger.getLogger("frysk");//.proc
     /**
      * The host corresponds to a specific system.
      */
@@ -107,7 +107,10 @@ public abstract class Host
 	observableProcAddedXXX.notify (proc);
 	procPool.put (proc.id, proc);
     }
-    void remove (Proc proc)
+    /**
+     * XXX: Should not be public.
+     */
+    public void remove (Proc proc)
     {
 	logger.log (Level.FINEST, "{0} remove Proc\n", this);
 	procPool.remove (proc.id);

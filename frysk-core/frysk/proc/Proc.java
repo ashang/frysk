@@ -73,7 +73,10 @@ public abstract class Proc
    */
   final Task creator;
 
-  Proc parent;
+  /**
+   * XXX: This should not be public.
+   */
+  public Proc parent;
 
   public Proc getParent ()
   {
@@ -329,8 +332,10 @@ public abstract class Proc
   /**
    * (Internal) Tell the process that is no longer listed in the system table
    * remove itself.
+   *
+   * XXX: This should not be public.
    */
-  void performRemoval ()
+  public void performRemoval ()
   {
     logger.log(Level.FINEST, "{0} performRemoval -- no longer in /proc\n", this);
     Manager.eventLoop.add(new ProcEvent()
@@ -769,8 +774,10 @@ public abstract class Proc
 
   /**
    * Add Proc as a new child
+   *
+   * XXX: This should not be public.
    */
-  void add (Proc child)
+  public void add (Proc child)
   {
     logger.log(Level.FINEST, "{0} add(Proc) -- a child process\n", this);
     childPool.add(child);
@@ -778,8 +785,10 @@ public abstract class Proc
 
   /**
    * Remove Proc from this processes children.
+   *
+   * XXX: This should not be public.
    */
-  void remove (Proc child)
+  public void remove (Proc child)
   {
     logger.log(Level.FINEST, "{0} remove(Proc) -- a child process\n", this);
     childPool.remove(child);

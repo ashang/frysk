@@ -1,5 +1,11 @@
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceHost.java: Delete, remaining contents moved to
+	frysk.proc.ptrace.LinuxHost.
+	* Host.java (logger): Make protected.
+	* Proc.java (performRemoval, remove(Proc), parent, add): Make
+	public.
+
 	* LinuxPtraceProc.java: Delete, remaining content moved to
 	frysk.proc.ptrace.LinuxProc.
 	* Proc.java (taskPool, remove): Make protected.
