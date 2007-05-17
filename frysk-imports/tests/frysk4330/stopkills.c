@@ -67,9 +67,20 @@ child_f (void)
 static pid_t child_pid;
 
 static void
-handler (int signo)
+cleanup (void)
 {
   kill (child_pid, SIGKILL);
+}
+
+static void
+handler (int signo)
+{
+  cleanup ();
+}
+
+static void
+timeout (int signo)
+{
   //  abort ();
   fprintf (stderr, "timeout\n");
   exit (1);
@@ -112,7 +123,10 @@ int main (void)
     }
   /* Parent.  */
 
-  handler_orig = signal (SIGALRM, handler);
+  atexit (cleanup);
+  handler_orig = signal (SIGABRT, handler);
+  assert (handler_orig == SIG_DFL);
+  handler_orig = signal (SIGALRM, timeout);
   assert (handler_orig == SIG_DFL);
   alarm (5);
 
@@ -136,7 +150,6 @@ int main (void)
   // Process should be left running (not stopped) here.
 
   //  puts ("OK");
-  kill (child_pid, SIGKILL);
   //return 0;
   exit (0);
 }

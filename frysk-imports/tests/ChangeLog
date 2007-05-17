@@ -1,3 +1,10 @@
+2007-05-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* frysk4330/stopkills.c (cleanup, timeout): New functions.
+	(handler): Call only cleanup () now.
+	(main): Install also the atexit () and SIGABRT child killers.
+	Removed the final kill ().
+
 2007-05-07  Mike Cvet  <mcvet@redhat.com>
 	
 	* frysk3525/exit47.c (ptracer): Moved to include/ptrace_wait.h.
