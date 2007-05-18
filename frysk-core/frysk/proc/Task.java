@@ -313,7 +313,7 @@ public abstract class Task
   /**
    * (Internal) Requesting that the task go (or resume execution).
    */
-  void performContinue ()
+  public void performContinue ()
   {
     newState = oldState().handleContinue(Task.this);
   }
@@ -330,11 +330,13 @@ public abstract class Task
   }
 
   /**
-   * (Internal) Tell the task to attach itself (if it isn't already). Notify the
-   * containing process once the operation has been completed. The task is left
-   * in the stopped state.
+   * (Internal) Tell the task to attach itself (if it isn't
+   * already). Notify the containing process once the operation has
+   * been completed. The task is left in the stopped state.
+   *
+   * XXX: Should not be public.
    */
-  void performAttach ()
+  public void performAttach ()
   {
     newState = oldState().handleAttach(Task.this);
   }
@@ -345,7 +347,7 @@ public abstract class Task
    * allowed to run free.
    * @param shouldRemoveObservers whether to remove the observers as well.
    */
-  void performDetach (boolean shouldRemoveObservers)
+  public void performDetach (boolean shouldRemoveObservers)
   {
     newState = oldState().handleDetach(Task.this, shouldRemoveObservers);
   }
