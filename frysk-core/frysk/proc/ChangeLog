@@ -1,5 +1,7 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (sendRefresh): Make public.
+
 	* Task.java (notifyTerminated, notifyAttached)
 	(notifyForkedOffspring, notifyClonedOffspring, notifySignaled)
 	(notifyClonedParent, notifyCodeBreakpoint, notifySyscallEnter)

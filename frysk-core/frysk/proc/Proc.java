@@ -250,7 +250,8 @@ public abstract class Proc
     logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
   }
 
-  protected abstract void sendRefresh ();
+  /** XXX: Should not be public.  */
+  public abstract void sendRefresh ();
 
   /**
    * The current state of this Proc, during a state transition newState is null.

@@ -77,7 +77,7 @@ public class Proc
     {
 	return null;
     }
-    protected void sendRefresh()
+    public void sendRefresh()
     {
     }
     protected ProcState getInitialState (boolean procStarting)

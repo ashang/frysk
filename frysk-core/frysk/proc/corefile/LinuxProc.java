@@ -124,7 +124,7 @@ public class LinuxProc
     return memory;
   }
 
-  protected void sendRefresh() 
+  public void sendRefresh() 
   {
     // Find tasks. Refresh is a misnomer here as 
     // Corefiles will never spawn new tasks beyond the

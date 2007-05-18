@@ -1,5 +1,7 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java (sendRefresh): Make public.
+
 	* LinuxTask.java (sendContinue, sendStepInstruction, sendStop)
 	(sendSetOptions, sendAttach, sendDetach, sendSyscallContinue)
 	(startTracingSyscalls, stopTracingSyscalls): Delete.
