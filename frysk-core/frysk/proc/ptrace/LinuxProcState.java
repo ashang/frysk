@@ -37,19 +37,25 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
+package frysk.proc.ptrace;
 
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
+import frysk.proc.ProcState;
+import frysk.proc.Proc;
+import frysk.proc.Observation;
+import frysk.proc.Task;
+import frysk.proc.TaskId;
+import frysk.proc.Manager;
 
 /**
  * A UNIX Process State
  *
  */
 
-public abstract class LinuxPtraceProcState
+public abstract class LinuxProcState
     extends ProcState
 {
     /**
@@ -69,7 +75,7 @@ public abstract class LinuxPtraceProcState
 	    return detached;
     }
 
-    protected LinuxPtraceProcState (String state)
+    protected LinuxProcState (String state)
     {
 	super (state);
     }

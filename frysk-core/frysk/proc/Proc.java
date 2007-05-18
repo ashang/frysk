@@ -811,7 +811,8 @@ public abstract class Proc
   public class ObservableXXX
       extends Observable
   {
-    void notify (Object o)
+    /** XXX: Should not be public.  */
+    public void notify (Object o)
     {
       logger.log(Level.FINE, "{0} notify -- all observers\n", o);
       setChanged();
@@ -821,8 +822,10 @@ public abstract class Proc
 
   /**
    * Pool of tasks belonging to this Proc.
+   *
+   * XXX: Should not be public.
    */
-  protected Map taskPool = new HashMap();
+  public Map taskPool = new HashMap();
 
   /**
    * Add the Task to this Proc.

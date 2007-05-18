@@ -1,5 +1,9 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProcState.java: Move to here from
+	frysk.proc.LinuxPtraceProcState.
+	* LinuxProc.java: Update.
+
 	* LinuxTask.java (sendContinue, sendStepInstruction, sendStop)
 	(sendSetOptions, sendAttach, sendDetach, sendSyscallContinue)
 	(startTracingSyscalls, stopTracingSyscalls): Delete.

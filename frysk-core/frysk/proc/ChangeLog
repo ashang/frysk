@@ -1,5 +1,9 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxPtraceProcState.java: Delete, moved to
+	frysk.proc.ptrace.LinuxProcState.
+	* Proc.java (ObservableXXX.notify, taskPool): Make public.
+
 	* Task.java (performAttach, performContinue, performDetach): Make
 	public.
 

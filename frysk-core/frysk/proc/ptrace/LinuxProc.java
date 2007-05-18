@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.HashMap;
 import frysk.proc.TaskId;
 import java.util.Iterator;
-import frysk.proc.LinuxPtraceProcState;
 
 /**
  * A Linux Proc tracked using PTRACE.
@@ -243,7 +242,7 @@ public class LinuxProc
      */
     protected ProcState getInitialState (boolean procStarting)
     {
-	return LinuxPtraceProcState.initial(this, procStarting);
+	return LinuxProcState.initial(this, procStarting);
     }
 
     /**
