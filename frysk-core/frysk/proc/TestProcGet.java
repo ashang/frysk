@@ -71,7 +71,7 @@ public class TestProcGet
 
     new StopEventLoopWhenProcRemoved(child.mainTask.getProc().getPid());
     // Grab the AUXV from the process sitting at its entry point.
-    Auxv[] auxv = child.mainTask.proc.getAuxv();
+    Auxv[] auxv = child.mainTask.getProc().getAuxv();
     assertNotNull("captured AUXV", auxv);
     child.resume();
     assertRunUntilStop("run \"auxv\" to completion");

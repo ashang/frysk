@@ -75,9 +75,9 @@ public abstract class LinuxPtraceTaskState
 	logger.log (Level.FINE, "{0} handleAttachedTerminated\n", task); 
 	task.notifyTerminated (signal, value);
 	// A process with no tasks is dead ...?
-	if (task.proc.taskPool.size () == 0) {
-	    task.proc.parent.remove (task.proc);
-	    task.proc.host.remove (task.proc);
+	if (task.getProc().taskPool.size () == 0) {
+	    task.getProc().parent.remove (task.getProc());
+	    task.getProc().getHost().remove (task.getProc());
 	}
     }
 
@@ -107,7 +107,7 @@ public abstract class LinuxPtraceTaskState
 	{
 	    private TaskState transitionToAttached (Task task, int signal)
 	    {
-		task.proc.performTaskAttachCompleted (task);
+		task.getProc().performTaskAttachCompleted (task);
 		return new Attached.WaitForContinueOrUnblock (signal);
 	    }
 	    public TaskState handleStoppedEvent (Task task)
@@ -131,8 +131,8 @@ public abstract class LinuxPtraceTaskState
 		// Ouch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
 		// operation regardless).
-		task.proc.performTaskAttachCompleted (task);
-		task.proc.remove (task);
+		task.getProc().performTaskAttachCompleted (task);
+		task.getProc().remove (task);
 		return destroyed;
     	    }
 	    public TaskState handleTerminatedEvent (Task task, boolean signal,
@@ -142,8 +142,8 @@ public abstract class LinuxPtraceTaskState
 		// Ouch, the task terminated before the attach
 		// reached it, just abandon this one (but ack the
 		// operation regardless).
-		task.proc.performTaskAttachCompleted (task);
-		task.proc.remove (task);
+		task.getProc().performTaskAttachCompleted (task);
+		task.getProc().remove (task);
 		return destroyed;
     	    }
 	    public TaskState handleDetach (Task task, boolean shouldRemoveObservers)
@@ -236,7 +236,7 @@ public abstract class LinuxPtraceTaskState
 					 int value)
 	{
 	  logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task);
-	  task.proc.remove (task);
+	  task.getProc().remove (task);
 	  handleAttachedTerminated (task, signal, value);
 	  return destroyed;
 	}
@@ -341,7 +341,7 @@ public abstract class LinuxPtraceTaskState
 		// XXX: Otherwise check that observers are empty?
             
 		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
+		task.getProc().performTaskDetachCompleted (task);
 		return detached;
 	    }
 	}
@@ -379,7 +379,7 @@ public abstract class LinuxPtraceTaskState
 		public TaskState handleAttach (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		    task.proc.performTaskAttachCompleted (task);
+		    task.getProc().performTaskAttachCompleted (task);
 		    return StartMainTask.wantToAttach;
 		}
 		private TaskState blockOrDetach (Task task)
@@ -387,7 +387,7 @@ public abstract class LinuxPtraceTaskState
 		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.detachBlocked;
 		    task.sendDetach (0);
-		    task.proc.performTaskDetachCompleted (task);
+		    task.getProc().performTaskDetachCompleted (task);
 		    return detached;
 		}
 		public TaskState handleTrappedEvent (Task task)
@@ -418,7 +418,7 @@ public abstract class LinuxPtraceTaskState
 		    // (waiting for ForkedOffspring observers to
 		    // unblock before finishing the attach).
 		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		    task.proc.performTaskAttachCompleted (task);
+		    task.getProc().performTaskAttachCompleted (task);
 		    return StartMainTask.attachBlocked;
 		}
 		public TaskState handleUnblock (Task task,
@@ -431,7 +431,7 @@ public abstract class LinuxPtraceTaskState
 		    if (task.blockers.size () == 0) {
 			// Ya! All the blockers have been removed.
 			task.sendDetach (0);
-			task.proc.performTaskDetachCompleted (task);
+			task.getProc().performTaskDetachCompleted (task);
 			return detached;
 		    }
 		    return StartMainTask.detachBlocked;
@@ -787,7 +787,7 @@ public abstract class LinuxPtraceTaskState
 					 int value)
 	{
 	    logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-	    task.proc.remove (task);
+	    task.getProc().remove (task);
 	    handleAttachedTerminated (task, signal, value);
 	    return destroyed;
 	}
@@ -795,12 +795,12 @@ public abstract class LinuxPtraceTaskState
 	{
 	    logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
 	    // Remove all tasks, retaining just this one.
-	    task.proc.retain (task);
-	    ((LinuxProc)task.proc).getStat ().refresh();
+	    task.getProc().retain (task);
+	    ((LinuxProc)task.getProc()).getStat ().refresh();
 
 	    // All breakpoints have been erased.  We need to explicitly
 	    // tell those attached to the current Task.
-	    task.proc.breakpoints.removeAllCodeObservers();
+	    task.getProc().breakpoints.removeAllCodeObservers();
 	    Iterator it = task.codeObservers.iterator();
 	    while (it.hasNext())
 		((TaskObserver.Code) it.next()).deletedFrom(task);
@@ -1074,7 +1074,7 @@ public abstract class LinuxPtraceTaskState
 		// This is what should happen, the task stops, the
 		// task is detached.
 		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
+		task.getProc().performTaskDetachCompleted (task);
 		Task.taskStateDetached.notify(task);
 		return detached;
 	    }
@@ -1097,10 +1097,10 @@ public abstract class LinuxPtraceTaskState
 					     int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-		task.proc.remove (task);
+		task.getProc().remove (task);
 		// Lie, really just need to tell the proc that the
 		// task is no longer lurking.
-		task.proc.performTaskDetachCompleted (task);
+		task.getProc().performTaskDetachCompleted (task);
 		return destroyed;
 	    }
 	    public TaskState handleDisappearedEvent (Task task, Throwable w)
@@ -1108,8 +1108,8 @@ public abstract class LinuxPtraceTaskState
 		// Woops, it disappeared before we were really detached,
 	        // pretend the detached happened anyway.
 		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
-		task.proc.remove (task);
-		task.proc.performTaskDetachCompleted (task);
+		task.getProc().remove (task);
+		task.getProc().performTaskDetachCompleted (task);
 		return destroyed;
 	    }
 	    public TaskState handleForkedEvent (Task task, Task fork)
@@ -1224,7 +1224,7 @@ public abstract class LinuxPtraceTaskState
 	    // XXX: Otherwise check that observers are empty?
         
 	    task.sendDetach (0);
-	    task.proc.performTaskDetachCompleted (task);
+	    task.getProc().performTaskDetachCompleted (task);
 	    return detached;
 	}
     }
@@ -1293,7 +1293,7 @@ public abstract class LinuxPtraceTaskState
 					     int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
-		task.proc.remove (task);
+		task.getProc().remove (task);
 		handleAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
@@ -1324,7 +1324,7 @@ public abstract class LinuxPtraceTaskState
 		// Lie; the Proc wants to know that the operation has
 		// been processed rather than the request was
 		// successful.
-		task.proc.performTaskAttachCompleted (task);
+		task.getProc().performTaskAttachCompleted (task);
 		return destroyed;
 	    }
 	    public TaskState handleAddObservation(Task task,
@@ -1334,7 +1334,7 @@ public abstract class LinuxPtraceTaskState
 		Observable observable = observation.getTaskObservable();
 		Observer observer = observation.getTaskObserver();
 		observer.addFailed (task, new RuntimeException ("destroyed"));
-		task.proc.requestDeleteObserver (task,
+		task.getProc().requestDeleteObserver (task,
 						 (TaskObservable) observable,
 						 (TaskObserver) observer);
 		return destroyed;

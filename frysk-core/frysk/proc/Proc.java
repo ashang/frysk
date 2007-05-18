@@ -84,12 +84,14 @@ public abstract class Proc
     return this.parent;
   }
 
-  final Host host;
-
+  /**
+   * Return the Proc's Host.
+   */
   public Host getHost ()
   {
     return host;
   }
+  private final Host host;
 
   public int getPid ()
   {
@@ -243,7 +245,7 @@ public abstract class Proc
    */
   protected Proc (Task task, ProcId forkId)
   {
-    this(forkId, task.proc, task.proc.host, task);
+    this(forkId, task.getProc(), task.getProc().getHost(), task);
     newState = getInitialState(true);
     logger.log(Level.FINE, "{0} new - create attached running proc\n", this);
   }

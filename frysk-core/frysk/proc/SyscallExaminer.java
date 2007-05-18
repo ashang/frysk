@@ -123,7 +123,7 @@ public class SyscallExaminer
     public void update (Observable o, Object obj)
     {
       Task task = (Task) obj;
-      if (!isChildOfMine (task.proc))
+      if (!isChildOfMine (task.getProc()))
 	return;
       logger.log(Level.FINEST, "Registering pid {0} for kill", 
 		 new Integer(task.getTid()));

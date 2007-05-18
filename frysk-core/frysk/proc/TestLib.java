@@ -979,7 +979,7 @@ public class TestLib
         {
           Task task = (Task) obj;
           if (TaskCounter.this.descendantsOnly
-              && ! isDescendantOfMine(task.proc))
+              && ! isDescendantOfMine(task.getProc()))
             return;
           added.add(task);
         }
@@ -990,7 +990,7 @@ public class TestLib
         {
           Task task = (Task) obj;
           if (TaskCounter.this.descendantsOnly
-              && ! isDescendantOfMine(task.proc))
+              && ! isDescendantOfMine(task.getProc()))
             return;
           removed.add(task);
         }

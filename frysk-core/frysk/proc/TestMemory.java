@@ -183,7 +183,7 @@ public class TestMemory
 		    public void update (Observable o, Object obj)
 		    {
 			Task task = (Task) obj;
-			if (!isChildOfMine (task.proc))
+			if (!isChildOfMine (task.getProc()))
 			    return;
 			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
 			task.requestAddSignaledObserver (taskEventObserver);

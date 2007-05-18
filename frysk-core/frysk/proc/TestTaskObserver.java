@@ -121,9 +121,9 @@ public class TestTaskObserver
 	// the process reports back that the attach occurred.
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestAddAttachedObserver (attachedObserver);
-	tasks[0].proc.observableAttached.addObserver (new Observer ()
+	tasks[0].getProc().observableAttached.addObserver (new Observer ()
 	    {
-		Proc proc = tasks[0].proc;
+		Proc proc = tasks[0].getProc();
 		public void update (Observable obj, Object arg)
 		{
 		    proc.observableAttached.deleteObserver (this);
@@ -159,9 +159,9 @@ public class TestTaskObserver
 	// detached.
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestDeleteAttachedObserver (attachedObserver);
-	tasks[0].proc.observableDetached.addObserver (new Observer ()
+	tasks[0].getProc().observableDetached.addObserver (new Observer ()
 	    {
-		Proc proc = tasks[0].proc;
+		Proc proc = tasks[0].getProc();
 		public void update (Observable obj, Object arg)
 		{
 		    proc.observableAttached.deleteObserver (this);
@@ -175,13 +175,13 @@ public class TestTaskObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	assertTaskGone (tasks[0].proc.getPid (), Sig.KILL);
+	assertTaskGone (tasks[0].getProc().getPid (), Sig.KILL);
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
 	if (shouldStillHaveTasks)
 	    assertTrue ("process still has tasks",
-			tasks[0].proc.getTasks ().size () > 0);
+			tasks[0].getProc().getTasks ().size () > 0);
     }
 
     /** 
@@ -273,8 +273,8 @@ public class TestTaskObserver
 	// Blow away the task; make certain that the Proc's task list
 	// is refreshed so that the task is no longer present.
 	assertTaskGone (task.getTid (), Sig.KILL);
-	task.proc.sendRefresh ();
-	assertEquals ("task count", 0, task.proc.getTasks ().size ());
+	task.getProc().sendRefresh ();
+	assertEquals ("task count", 0, task.getProc().getTasks ().size ());
 
 	// Try to add the observer to the now defunct task.  Should
 	// successfully fail.

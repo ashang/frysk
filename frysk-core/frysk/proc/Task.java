@@ -132,8 +132,7 @@ public abstract class Task
   {
     return proc;
   }
-
-  final Proc proc;
+  private final Proc proc;
 
   /**
    * Create a new Task skeleton.
@@ -144,7 +143,7 @@ public abstract class Task
     this.id = id;
     this.creator = creator;
     proc.add(this);
-    proc.host.add(this);
+    proc.getHost().add(this);
     newState = state;
   }
 

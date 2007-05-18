@@ -1,5 +1,18 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (host): Make private.
+	* Task.java (proc): Make private.
+	* ProcEvent.java: Update.
+	* LinuxPtraceTaskState.java: Update.
+	* SyscallExaminer.java: Update.
+	* TestLib.java: Update.
+	* TestMemory.java: Update.
+	* TestProcGet.java: Update.
+	* TestRegisters.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestTaskObserverDetach.java: Update.
+	* TestTaskObserver.java: Update.
+
 	* Task.java (sendContinue, sendSyscallContinue)
 	(sendStepInstruction, sendStop, sendSetOptions, sendAttach)
 	(sendDetach, startTracingSyscalls, stopTracingSyscalls): Make

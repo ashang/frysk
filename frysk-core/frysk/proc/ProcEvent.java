@@ -80,7 +80,8 @@ abstract class ProcEvent
 	Task task = Manager.host.get (taskId);
 	if (task == null)
 	    return null;
-	return proc = task.proc;
+	proc = task.getProc();
+	return proc;
     }
     public String toString ()
     {

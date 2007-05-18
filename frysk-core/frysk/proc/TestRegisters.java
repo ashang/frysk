@@ -189,7 +189,7 @@ public class TestRegisters
             {
               Task task = (Task) obj;
               
-              if (task.proc.getPid() != pid)
+              if (task.getProc().getPid() != pid)
                   return;
               
               Isa isa;
@@ -355,7 +355,7 @@ public class TestRegisters
       public void update (Observable o, Object obj)
       {
         Task task = (Task) obj;
-        if (task.proc.getPid() != pid)
+        if (task.getProc().getPid() != pid)
           return;
         Isa isa;
         isa = task.getIsa();
@@ -516,7 +516,7 @@ public class TestRegisters
         public void update (Observable o, Object obj)
         {
           Task task = (Task) obj;
-          if (task.proc.getPid() != pid)
+          if (task.getProc().getPid() != pid)
             return;
           
           Isa isa;
@@ -550,7 +550,7 @@ public class TestRegisters
 	    getExecPath ("funit-registers")
         });
     
-    TestI386ModifyXXX t = new TestI386ModifyXXX (ackProc.mainTask.proc.getPid());
+    TestI386ModifyXXX t = new TestI386ModifyXXX (ackProc.mainTask.getProc().getPid());
     
     ackProc.resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
@@ -572,7 +572,7 @@ public class TestRegisters
 	    getExecPath ("funit-registers")
 	});
     
-    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.mainTask.proc.getPid());
+    TestX8664ModifyXXX t = new TestX8664ModifyXXX (ackProc.mainTask.getProc().getPid());
     
     ackProc.resume ();
     assertRunUntilStop ("run \"x86modify\" to exit");
@@ -595,7 +595,7 @@ public class TestRegisters
 	    getExecPath ("funit-registers")
 	});
     
-    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.mainTask.proc.getPid());
+    TestPPC64ModifyXXX t = new TestPPC64ModifyXXX (ackProc.mainTask.getProc().getPid());
     
     ackProc.resume ();
     assertRunUntilStop ("run \"ppc64modify\" to exit");
