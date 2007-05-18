@@ -198,19 +198,59 @@ public abstract class Task
   // continue, syscall and step methods should sig_send and set/reset
   // step_send to indicate that last reques tot the Task was a single
   // step.
-  protected abstract void sendContinue (int sig);
 
-  protected abstract void sendSyscallContinue (int sig);
+  /** XXX: Should not be public.  */
+  public void sendContinue (int sig)
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendSyscallContinue (int sig)
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendStepInstruction (int sig)
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendStop ()
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendSetOptions ()
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendAttach ()
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /** XXX: Should not be public.  */
+  public void sendDetach (int sig)
+  {
+      throw new RuntimeException("unimplemented");
+  }
+  /**
+   * Turns on systemcall entry and exit tracing
+   * XXX: Should not be public.
+   */
+  public void startTracingSyscalls ()
+  {
+      throw new RuntimeException("unimplemented");
+  }
 
-  protected abstract void sendStepInstruction (int sig);
-
-  protected abstract void sendStop ();
-
-  protected abstract void sendSetOptions ();
-
-  protected abstract void sendAttach ();
-
-  protected abstract void sendDetach (int sig);
+  /**
+   * Turns off systemcall entry and exit tracing 
+   * XXX: Should not be public.
+   */
+  public void stopTracingSyscalls ()
+  {
+      throw new RuntimeException("unimplemented");
+  }
 
   protected LinkedList queuedEvents = new LinkedList();
 
@@ -778,16 +818,6 @@ public abstract class Task
     logger.log(Level.FINE, "{0} exiting get memory {1}\n", new Object[] {this, memory});
     return this.memory;
   }
-
-  /**
-   * Turns on systemcall entry and exit tracing
-   */
-  protected abstract void startTracingSyscalls ();
-
-  /**
-   * Turns off systemcall entry and exit tracing 
-   */
-  protected abstract void stopTracingSyscalls ();
 
   /**
    * Set of Code observers.

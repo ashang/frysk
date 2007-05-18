@@ -1,3 +1,10 @@
+2007-05-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (sendContinue, sendSyscallContinue)
+	(sendStepInstruction, sendStop, sendSetOptions, sendAttach)
+	(sendDetach, startTracingSyscalls, stopTracingSyscalls): Make
+	public and concrete.
+
 2007-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceHost.java: Delete, remaining contents moved to

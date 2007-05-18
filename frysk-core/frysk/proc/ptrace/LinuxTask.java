@@ -216,7 +216,7 @@ public class LinuxTask
 	    });
     }
 
-    protected void sendContinue (int sig)
+    public void sendContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendContinue\n", this);
 	step_send = false;
@@ -230,7 +230,7 @@ public class LinuxTask
 		postDisappearedEvent(e);
 	    }
     }
-    protected void sendSyscallContinue (int sig)
+    public void sendSyscallContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
 	step_send = false;
@@ -245,7 +245,7 @@ public class LinuxTask
 	    }
     }
 
-    protected void sendStepInstruction (int sig)
+    public void sendStepInstruction (int sig)
     {
 	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
 	step_send = true;
@@ -261,14 +261,14 @@ public class LinuxTask
 	    }
     }
 
-    protected void sendStop ()
+    public void sendStop ()
     {
 	logger.log(Level.FINE, "{0} sendStop\n", this);
 	Signal.tkill(getTid(), Sig.STOP);
     }
 
     private int ptraceOptions;
-    protected void sendSetOptions ()
+    public void sendSetOptions ()
     {
 	logger.log(Level.FINE, "{0} sendSetOptions\n", this);
 	try
@@ -288,7 +288,7 @@ public class LinuxTask
 	    }
     }
 
-    protected void sendAttach ()
+    public void sendAttach ()
     {
 	logger.log(Level.FINE, "{0} sendAttach\n", this);
 	try
@@ -321,20 +321,20 @@ public class LinuxTask
 	    }
     }
 
-    protected void sendDetach (int sig)
+    public void sendDetach (int sig)
     {
 	logger.log(Level.FINE, "{0} sendDetach\n", this);
 	Ptrace.detach(getTid(), sig);
     }
 
-    protected void startTracingSyscalls ()
+    public void startTracingSyscalls ()
     {
 	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
 	ptraceOptions |= Ptrace.optionTraceSysgood();
 	this.sendSetOptions();
     }
 
-    protected void stopTracingSyscalls ()
+    public void stopTracingSyscalls ()
     {
 	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
 	ptraceOptions &= ~ (Ptrace.optionTraceSysgood());

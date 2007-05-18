@@ -58,33 +58,6 @@ public class Task
     {
 	return null;
     }
-    protected void sendContinue(int sig)
-    {
-    }
-    protected void sendStepInstruction(int sig)
-    {
-    }
-    protected void sendStop()
-    {
-    }
-    protected void sendSetOptions()
-    {
-    }
-    protected void sendAttach()
-    {
-    }
-    protected void sendDetach(int sig)
-    {
-    }
-    protected void sendSyscallContinue(int sig)
-    {
-    }
-    protected void startTracingSyscalls()
-    {
-    }
-    protected void stopTracingSyscalls()
-    {
-    }
     protected ByteBuffer sendrecMemory ()
     {
 	return null;

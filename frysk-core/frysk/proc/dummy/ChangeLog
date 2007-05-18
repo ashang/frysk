@@ -1,3 +1,9 @@
+2007-05-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (sendContinue, sendStepInstruction, sendStop)
+	(sendSetOptions, sendAttach, sendDetach, sendSyscallContinue)
+	(startTracingSyscalls, stopTracingSyscalls): Delete.
+
 2007-05-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Proc.java (sendrecMaps): New method. Implement.
