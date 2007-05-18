@@ -1,5 +1,11 @@
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (notifyTerminated, notifyAttached)
+	(notifyForkedOffspring, notifyClonedOffspring, notifySignaled)
+	(notifyClonedParent, notifyCodeBreakpoint, notifySyscallEnter)
+	(notifySyscallExit, notifyTerminating, notifyForkedParent)
+	(notifyExeced, notifyInstruction): Make public.
+
 	* Proc.java (host): Make private.
 	* Task.java (proc): Make private.
 	* ProcEvent.java: Update.

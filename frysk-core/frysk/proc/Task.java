@@ -447,8 +447,10 @@ public abstract class Task
   /**
    * Notify all cloned observers that this task cloned. Return the number of
    * blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyClonedParent (Task offspring)
+  public int notifyClonedParent (Task offspring)
   {
     for (Iterator i = clonedObservers.iterator(); i.hasNext();)
       {
@@ -464,8 +466,10 @@ public abstract class Task
   /**
    * Notify all cloned observers that this task cloned. Return the number of
    * blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyClonedOffspring ()
+  public int notifyClonedOffspring ()
   {
     logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
     for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();)
@@ -503,10 +507,12 @@ public abstract class Task
   }
 
   /**
-   * Notify all Attached observers that this task attached. Return the number of
-   * blocking observers.
+   * Notify all Attached observers that this task attached. Return the
+   * number of blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyAttached ()
+  public int notifyAttached ()
   {
     logger.log(Level.FINE, "{0} notifyAttached\n", this);
     //Fill isa on attach.
@@ -546,8 +552,10 @@ public abstract class Task
   /**
    * Notify all Forked observers that this task forked. Return the number of
    * blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyForkedParent (Task offspring)
+  public int notifyForkedParent (Task offspring)
   {
     for (Iterator i = forkedObservers.iterator(); i.hasNext();)
       {
@@ -563,8 +571,10 @@ public abstract class Task
   /**
    * Notify all Forked observers that this task's new offspring, created using
    * fork, is sitting at the first instruction.
+   *
+   * XXX: Should not be public.
    */
-  int notifyForkedOffspring ()
+  public int notifyForkedOffspring ()
   {
     for (Iterator i = creator.forkedObservers.iterator(); i.hasNext();)
       {
@@ -603,8 +613,10 @@ public abstract class Task
   /**
    * Notify all Terminated observers, of this Task's demise. Return the number
    * of blocking observers. (Does this make any sense?)
+   *
+   * XXX: Should not be public.
    */
-  int notifyTerminated (boolean signal, int value)
+  public int notifyTerminated (boolean signal, int value)
   {
     logger.log(Level.FINE, "{0} notifyTerminated\n", this);
     for (Iterator i = terminatedObservers.iterator(); i.hasNext();)
@@ -647,8 +659,10 @@ public abstract class Task
   /**
    * Notify all Terminating observers, of this Task's demise. Return the number
    * of blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyTerminating (boolean signal, int value)
+  public int notifyTerminating (boolean signal, int value)
   {
     for (Iterator i = terminatingObservers.iterator(); i.hasNext();)
       {
@@ -685,8 +699,10 @@ public abstract class Task
   /**
    * Notify all Execed observers, of this Task's demise. Return the number of
    * blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyExeced ()
+  public int notifyExeced ()
   {
     //Flush the isa in case it has changed between exec's.
     clearIsa();
@@ -726,8 +742,10 @@ public abstract class Task
   /**
    * Notify all Syscall observers of this Task's entry into a system call.
    * Return the number of blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifySyscallEnter ()
+  public int notifySyscallEnter ()
   {
       logger.log(Level.FINE,
 		 "{0} notifySyscallEnter {1}\n",
@@ -745,10 +763,12 @@ public abstract class Task
   }
 
   /**
-   * Notify all Syscall observers of this Task's exit from a system call. Return
-   * the number of blocking observers.
+   * Notify all Syscall observers of this Task's exit from a system
+   * call. Return the number of blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifySyscallExit ()
+  public int notifySyscallExit ()
   {
       logger.log(Level.FINE,
 		 "{0} notifySyscallExit {1}\n",
@@ -791,8 +811,10 @@ public abstract class Task
   /**
    * Notify all Signaled observers of the signal. Return the number of blocking
    * observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifySignaled (int sig)
+  public int notifySignaled (int sig)
   {
     logger.log(Level.FINE, "{0} notifySignaled(int)\n", this);
     for (Iterator i = signaledObservers.iterator(); i.hasNext();)
@@ -877,8 +899,10 @@ public abstract class Task
    * Notify all Code observers of the breakpoint. Return the number of
    * blocking observers or -1 if no Code observer were installed on this
    * address.
+   *
+   * XXX: Should not be public.
    */
-  int notifyCodeBreakpoint (long address)
+  public int notifyCodeBreakpoint (long address)
   {
     logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
 	       new Object[] { this, Long.valueOf(address) });
@@ -927,8 +951,10 @@ public abstract class Task
   /**
    * Notify all Instruction observers. Returns the total number of
    * blocking observers.
+   *
+   * XXX: Should not be public.
    */
-  int notifyInstruction()
+  public int notifyInstruction()
   {
     logger.log(Level.FINE, "{0} notifyInstruction()\n", this);
     
