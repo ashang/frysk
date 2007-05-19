@@ -1,3 +1,14 @@
+2007-05-19  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxTaskState.java (handleAttachedTerminated, detached)
+	(attaching, Attached, StartMainTask, StartClonedTask, Running)
+	(running, syscallRunning, inSyscallRunning)
+	(inSyscallRunningTraced, detaching, BlockedSignal,
+	(blockedContinue, SyscallBlockedInSyscall)
+	(syscallBlockedInSyscallContinue, blockedInExecSyscall)
+	(disappeared, getDestroyed, destroyed): Move to here from
+	frysk.proc.LinuxPtraceTaskState.
+
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProcState.java: Move to here from

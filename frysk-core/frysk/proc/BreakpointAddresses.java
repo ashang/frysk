@@ -156,8 +156,10 @@ public class BreakpointAddresses
   /**
    * Called from TaskState when the Task gets an execed event which
    * clears the whole address space.
+   *
+   * XXX: Should not be public.
    */
-  void removeAllCodeObservers()
+  public void removeAllCodeObservers()
   {
     map.clear();
   }

@@ -355,8 +355,10 @@ public abstract class Task
   /**
    *  (Internal) Request that all observers from this task be removed.
    *  Warning, should also be removed from the proc's observations.
-  */
-  void removeObservers()
+   *
+   * XXX: Should not be public.
+   */
+  public void removeObservers()
   {
 	  logger.log(Level.FINE, "{0} abandon", this);	 
 		
@@ -394,8 +396,10 @@ public abstract class Task
 
   /**
    * Set of interfaces currently blocking this task.
+   *
+   * XXX: Should not be public.
    */
-  Set blockers = new HashSet();
+  public Set blockers = new HashSet();
 
   /**
    * Return the current set of blockers as an array. Useful when debugging.
@@ -720,8 +724,10 @@ public abstract class Task
 
   /**
    * Set of Syscall observers. Checked in TaskState.
+   *
+   * XXX: Should not be public.
    */
-  TaskObservable syscallObservers = new TaskObservable(this);
+  public TaskObservable syscallObservers = new TaskObservable(this);
 
   /**
    * Add TaskObserver.Syscall to the TaskObserver pool.
@@ -844,8 +850,10 @@ public abstract class Task
 
   /**
    * Set of Code observers.
+   *
+   * XXX: Should not be public.
    */
-  TaskObservable codeObservers = new TaskObservable(this);
+  public TaskObservable codeObservers = new TaskObservable(this);
   
   /**
    * Add TaskObserver.Code to the TaskObserver pool.
@@ -925,8 +933,10 @@ public abstract class Task
 
   /**
    * Set of Instruction observers.
+   *
+   * XXX: Should not be public.
    */
-  TaskObservable instructionObservers = new TaskObservable(this);
+  public TaskObservable instructionObservers = new TaskObservable(this);
   
   /**
    * Request the addition of a Instruction observer that will be
@@ -971,10 +981,14 @@ public abstract class Task
     return blockers.size();
   }
 
-  // List containing the TaskObservations that are pending addition
-  // or deletion (in order that they were requested). Will be dealt with
-  // as soon as a stop event is received during one of the running states.
-  LinkedList pendingObservations = new LinkedList();
+  /**
+   * List containing the TaskObservations that are pending addition
+   * or deletion (in order that they were requested). Will be dealt with
+   * as soon as a stop event is received during one of the running states.
+   *
+   * XXX: Should not be public.
+   */
+  public LinkedList pendingObservations = new LinkedList();
 
   private ByteBuffer[] registerBanks;
   protected abstract ByteBuffer[] sendrecRegisterBanks();
@@ -1025,7 +1039,7 @@ public abstract class Task
   public static class TaskStateObservable
     extends Observable
   {
-    void notify (Object o)
+    public void notify (Object o)
     {
         logger.log (Level.FINE, "{0} notify -- all observers\n", o); 
         setChanged ();

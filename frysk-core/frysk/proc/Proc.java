@@ -202,7 +202,10 @@ public abstract class Proc
   
   protected abstract MemoryMap[] sendrecMaps ();
 
-  final BreakpointAddresses breakpoints;
+  /**
+   * XXX: Should not be public.
+   */
+  public final BreakpointAddresses breakpoints;
 
   protected abstract ProcState getInitialState (boolean procStarting);
 
@@ -353,8 +356,10 @@ public abstract class Proc
   /**
    * (Internal) Tell the process that the corresponding task has completed its
    * attach.
+   *
+   * XXX: Should not be public.
    */
-  void performTaskAttachCompleted (final Task theTask)
+  public void performTaskAttachCompleted (final Task theTask)
   {
     logger.log(Level.FINE, "{0} performTaskAttachCompleted\n", this);
     Manager.eventLoop.add(new ProcEvent()
@@ -371,8 +376,10 @@ public abstract class Proc
   /**
    * (Internal) Tell the process that the corresponding task has completed its
    * detach.
+   *
+   * XXX: Should not be public.
    */
-  void performTaskDetachCompleted (final Task theTask)
+  public void performTaskDetachCompleted (final Task theTask)
   {
     logger.log(Level.FINE, "{0} performTaskDetachCompleted\n", this);
     Manager.eventLoop.add(new ProcEvent()
@@ -542,8 +549,10 @@ public abstract class Proc
    * (Internal) Tell the process to delete the specified Observation, detaching
    * from the process if necessary. Removes a syscallObserver exiting the task
    * from syscall tracing mode of necessary.
+   *
+   * XXX: Should not be public.
    */
-  void requestDeleteObserver (Task task, TaskObservable observable,
+  public void requestDeleteObserver (Task task, TaskObservable observable,
                               TaskObserver observer)
   {
     Manager.eventLoop.add(new TaskObservation(task, observable, observer, false)
@@ -838,8 +847,10 @@ public abstract class Proc
 
   /**
    * Remove Task from this Proc.
+   *
+   * XXX: Should not be public.
    */
-  protected void remove (Task task)
+  public void remove (Task task)
   {
     logger.log(Level.FINEST, "{0} remove(Task) -- within this Proc\n", this);
     host.observableTaskRemovedXXX.notify(task);
@@ -849,8 +860,10 @@ public abstract class Proc
 
   /**
    * Remove all but Task from this Proc.
+   *
+   * XXX: Should not be public.
    */
-  void retain (Task task)
+  public void retain (Task task)
   {
     logger.log(Level.FINE, "{0} retain(Task) -- remove all but task\n", this);
     HashMap new_tasks = new HashMap();

@@ -82,7 +82,7 @@ public class Breakpoint
    * host type. If a Breakpoint for this address and proc is already
    * installed that Breakpoint will be returned.
    */
-  static Breakpoint create(long address, Proc proc)
+  public static Breakpoint create(long address, Proc proc)
   {
     Breakpoint breakpoint = new Breakpoint(address, proc);
 

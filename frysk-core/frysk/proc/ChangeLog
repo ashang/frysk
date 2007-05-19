@@ -1,3 +1,18 @@
+2007-05-19  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxPtraceTaskState.java: Delete, moved to
+	frysk.proc.ptrace.LinuxTaskState.
+	* TaskObservable.java: Make public.
+	* Breakpoint.java (create): Make public.
+	* Proc.java (performTaskAttachCompleted, remove)
+	(performTaskDetachCompleted, requestDeleteObserver, retain)
+	(breakpoints): Make public.
+	* Task.java (blockers, instructionObservers, syscallObservers)
+	(removeObservers, pendingObservations, codeObservers)
+	(TaskStateObservable.notify): Make public.
+	* BreakpointAddresses.java (removeAllCodeObservers): Make public.
+	* TaskObservation.java: Make public.
+
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxPtraceProcState.java: Delete, moved to
