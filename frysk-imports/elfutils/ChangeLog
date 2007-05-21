@@ -1,3 +1,8 @@
+2007-05-21  Stepan Kasal  <skasal@redhat.com>
+
+	* configure.ac: Add -Wno-portability to AM_INIT_AUTOMAKE, to
+	fix bug 4530.
+
 2007-03-28  Nurdin Premji  <npremji@redhat.com>
 
 	* libdw/ChangeLog
