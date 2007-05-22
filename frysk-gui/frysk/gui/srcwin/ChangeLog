@@ -1,3 +1,8 @@
+2007-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindowFactory.java: Delete call to
+	frysk.proc.Host.requestRefreshXXX.
+
 2007-05-16  Tim Moore  <timoore@redhat.com>
 
 	* SourceView.java (clickedOnMargin): Changed to use new breakpoint 

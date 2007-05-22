@@ -153,7 +153,6 @@ public class SourceWindowFactory
   public static void attachToPID (int pid)
   {
     ProcId procID = new ProcId(pid);
-    Manager.host.requestRefreshXXX(true);
 
     Manager.host.requestFindProc(procID, new Host.FindProc()
     {

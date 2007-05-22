@@ -383,15 +383,19 @@ public class Gui implements LifeCycleListener, Saveable {
 		});
 		backendStarter.start();
 		
-		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
-			public void execute() {
-				CustomEvents.addEvent(new Runnable() {
-					public void run() {
-						Manager.host.requestRefreshXXX(true);
-					}
+		TimerEvent refreshTimer = new TimerEvent(0, 3000)
+		    {
+			public void execute()
+			{
+			    CustomEvents.addEvent(new Runnable()
+				{
+				    public void run()
+				    {
+					Manager.host.requestRefreshXXX();
+				    }
 				});
 			}
-		};
+		    };
 		Manager.eventLoop.add(refreshTimer);
 
 	}

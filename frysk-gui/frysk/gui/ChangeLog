@@ -1,3 +1,8 @@
+2007-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Gui.java: Call frysk.proc.Host.requestRefreshXXX() instead of
+	.requestRefreshXXX(true).
+
 2007-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/Session.java: Removed suer.toString from SessionType
