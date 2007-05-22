@@ -109,7 +109,7 @@ public class TestRefresh
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
 	for (int i = 0; i < 2; i++) {
-	    host.requestRefreshXXX (false);
+	    host.requestRefreshXXX();
 	    Manager.eventLoop.runPending ();
 	    tracker.verifyAdd ("iteration " + i, 0);
 	}
@@ -124,7 +124,7 @@ public class TestRefresh
     public void testHostRefresh ()
     {
 	// Get an initial PS reading.
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	
 	// Check that it isn't empty.
@@ -140,7 +140,7 @@ public class TestRefresh
 
 	// Do a refresh, check that the process was added and
 	// corresponding observable events occurred.
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("first add", 0);
 
@@ -150,7 +150,7 @@ public class TestRefresh
 	// Check that a further refresh removes the process, generates
 	// a removed event, and puts the proc into the removed
 	// state.
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	tracker.verifyRemove ("first removed");
     }
@@ -181,7 +181,7 @@ public class TestRefresh
 	// At this stage, since the process's tasks are only located
 	// on an explicit refresh, the process should have no tasks,
 	// and no task events should have been seen.
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("refresh without tasks", 0);
 
@@ -249,7 +249,7 @@ public class TestRefresh
     public void testRefreshAll ()
     {
 	// Get an initial PS reading.
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	
 	// Create a suspended sub-process with two threads (in
@@ -272,7 +272,7 @@ public class TestRefresh
     {
 	// Create a sub process, refresh things so that it is known.
 	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("find child", 0);
 	
@@ -317,7 +317,7 @@ public class TestRefresh
 	// do a refresh and check that the child's parent changed to
 	// process one.
 	zombie.assertSendFryParentWaitForAcks ();
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	assertNotSame ("child's parent and zombie maker",
 		       zombieChild.getParent (), zombieParent);
@@ -382,7 +382,7 @@ public class TestRefresh
 
 	// Blow away the daemon, force an update.
 	daemon.assertSendFryParentWaitForAcks ();
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 	assertTrue ("daemonCheck.deleted", daemonCheck.deleted);
     }
@@ -452,7 +452,7 @@ public class TestRefresh
 	
 	child.assertSendExecWaitForAcks ();
 
-	host.requestRefreshXXX (false);
+	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
 
 	assertEquals ("proc's getCmdLine[0]",

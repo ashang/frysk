@@ -198,6 +198,16 @@ public abstract class Host
     }    
     
     /**
+     * Request that the Host scan the system's process tables
+     * refreshing the internal structure to match.  Optionally refresh
+     * each processes task list.
+     */
+    public void requestRefreshXXX ()
+    {
+	requestRefreshXXX(false);
+    }
+
+    /**
      * Find a specifc process from its Id.
      */
     public void requestFindProc(final ProcId procId, final FindProc finder)

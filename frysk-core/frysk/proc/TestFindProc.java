@@ -172,7 +172,7 @@ public class TestFindProc
     ProcCounter o = new ProcCounter();
     Manager.host.observableProcAddedXXX.addObserver(o);
     // Try polling /proc.
-    Manager.host.requestRefreshXXX(false);
+    Manager.host.requestRefreshXXX();
     Manager.eventLoop.runPending();
     proc = Manager.host.getProc(new ProcId(ackProc.getPid()));
 
