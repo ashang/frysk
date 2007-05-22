@@ -1,3 +1,17 @@
+2007-05-22  Chris Moller  <moller@mollerware.com>
+
+	* MemorySpaceByteBuffer.java: Provides a new class that is a plug-in
+	replacement for AddressSpaceByteBuffer except that it attempts to
+	pread() /proc/<pid>/mem (via the StatelessFile class) when doing
+	multi-word peeks.  If that attempt fails, it falls back on
+	multiple peeks.  All other operations, including single-word
+	peeks, are identical to those in AddressSpaceByteBuffer.
+	* TestByteBuffer.java: Adds tests for MemorySpaceByteBuffer.  Also
+	changes the strategy for the verifySlice(...) method to use
+	multi-word peeks.  This has the effect of using the pread() stuff
+	for MemorySpaceByteBuffer and pushing the peek-loop downstream for
+	AddressSpaceByteBuffer. 
+
 2007-05-19  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTaskState.java (handleAttachedTerminated, detached)

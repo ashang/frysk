@@ -57,6 +57,7 @@ public class TestByteBuffer
     }
     private int pid;
     private ByteBuffer addressSpaceByteBuffer;
+    private ByteBuffer memorySpaceByteBuffer;
     private ByteBuffer registerByteBuffer;
 
     public void setUp ()
@@ -64,6 +65,8 @@ public class TestByteBuffer
 	pid = new AttachedSelf().hashCode();
 	addressSpaceByteBuffer
 	    = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
+	memorySpaceByteBuffer
+	    = new MemorySpaceByteBuffer (pid, AddressSpace.TEXT);
 	if (RegisterSet.REGS != null) {
 	    registerByteBuffer
 		= new RegisterSetByteBuffer (pid, RegisterSet.REGS);
@@ -73,14 +76,21 @@ public class TestByteBuffer
     public void verifySlice(ByteBuffer buffer, long addr, long length)
     {
 	ByteBuffer slice = buffer.slice (addr, length);
+	byte bytes[] = new byte[ (int)length];
+	buffer.get (addr, bytes, 0, (int)length);
 	for (int i = 0; i < length; i++) {
-	    assertEquals ("byte at " + i, buffer.get (addr + i),
+	    assertEquals ("byte at " + i, bytes[i],
 			  slice.get (i));
 	}
     }
     public void testSliceAddressSpace()
     {
 	verifySlice(addressSpaceByteBuffer, LocalMemory.getFuncAddr(),
+		    LocalMemory.getFuncBytes().length);
+    }
+    public void testSliceMemorySpace()
+    {
+	verifySlice(memorySpaceByteBuffer, LocalMemory.getFuncAddr(),
 		    LocalMemory.getFuncBytes().length);
     }
     public void testSliceRegisterSet()
@@ -110,6 +120,10 @@ public class TestByteBuffer
     public void testModifyAddressSpace()
     {
 	verifyModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr());
+    }
+    public void testModifyMemorySpace()
+    {
+	verifyModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr());
     }
 
     private class AsyncModify
@@ -161,5 +175,9 @@ public class TestByteBuffer
     public void testAsyncAddressSpace ()
     {
 	new AsyncModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr());
+    }
+    public void testAsyncMemorySpace ()
+    {
+	new AsyncModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr());
     }
 }
