@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -97,15 +97,17 @@ public class FCatch
    */
   public void trace (String[] command, boolean attach)
   {
-//    System.err.println("tracing " + command[0] + " " + attach);
     logger.log(Level.FINE, "{0} trace", this);
-    Manager.host.requestRefreshXXX(true);
     
     if (attach == true)
       init();
     else
       {
         File exe = new File(command[0]);
+	// XXX: There is a race between this .exists call, a remove of
+	// the executable, and the subsequent attempt to exec it.  The
+	// only robust way to make this work is to detect the failure
+	// in the Attach observer - when it fails.
         if (exe.exists())
           Manager.host.requestCreateAttachedProc(command, new CatchObserver());
         else

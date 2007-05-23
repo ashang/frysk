@@ -146,14 +146,15 @@ public class Ftrace
   {
     init();
     Manager.host.requestCreateAttachedProc(command, new AttachedObserver());
-    // Manager.host.requestRefreshXXX(true);
     Manager.eventLoop.run();
   }
 
   public void trace ()
   {
     init();
-    Manager.host.requestRefreshXXX(true);
+    // XXX: Should not be calling requestRefresh, instead call
+    // requestFindProc on every pid; which is much lighter in weight.
+    Manager.host.requestRefreshXXX();
     Manager.eventLoop.run();
   }
 

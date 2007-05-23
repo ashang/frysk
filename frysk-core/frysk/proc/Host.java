@@ -185,7 +185,7 @@ public abstract class Host
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefreshXXX (final boolean refreshAll)
+    void requestRefreshXXX (final boolean refreshAll)
     {
 	logger.log (Level.FINEST, "{0} requestRefreshXXX boolean\n", this); 
 	Manager.eventLoop.add (new HostEvent ("RequestRefresh")

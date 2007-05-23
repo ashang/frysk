@@ -1,3 +1,8 @@
+2007-05-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSteppingEngine.java: Delete all sequences of
+	Host.requestRefreshXXX + EventLoop.runPending.
+
 2007-05-17  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java (getElfImage): Use frysk.proc.Proc.getMap() to find elf image.

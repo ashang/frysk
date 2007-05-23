@@ -1,3 +1,11 @@
+2007-05-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Ftrace.java: Replace call to Host.requestRefreshXXX(true) with
+	Host.requestRefreshXXX().
+	* TestFCatch.java: Delete call to Host.requestRefreshXXX(true).
+	* FCatch.java: Delete call to Host.requestRefreshXXX.  Note race
+	with exe.exists.
+
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFcatch.java: Made regex more general so RemoteFrame also passes.

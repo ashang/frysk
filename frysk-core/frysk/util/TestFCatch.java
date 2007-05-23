@@ -118,8 +118,6 @@ public class TestFCatch
     public void trace (String[] command, boolean attach)
     {
       logger.log(Level.FINE, "{0} trace", this);
-      Manager.host.requestRefreshXXX(true);
-
       if (attach == true)
         init();
       else
