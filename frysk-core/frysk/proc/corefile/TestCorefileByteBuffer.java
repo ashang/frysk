@@ -125,7 +125,7 @@ extends TestLib
 
     try 
       {
-	coreBuffer.peek(0xbff05000L);
+	coreBuffer.peek(0xbff06001L);
 	fail("peek() in an over boundary should thrown an exception");
       }
     catch (RuntimeException e)

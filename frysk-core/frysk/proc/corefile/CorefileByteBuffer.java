@@ -39,10 +39,9 @@
 
 package frysk.proc.corefile;
 
+import frysk.sys.StatelessFile;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -81,7 +80,7 @@ public class CorefileByteBuffer
   
   ArrayList offsetList = new ArrayList();
   File coreFile = null;
-  RandomAccessFile coreFileRaw = null;
+  StatelessFile coreFileRaw = null;
   boolean fileOpen = false;
 
   private CorefileByteBuffer(File file, long lowerExtreem, 
@@ -90,8 +89,8 @@ public class CorefileByteBuffer
   {
     super(lowerExtreem, upperExtreem);
     this.coreFile = file;
+    openFile();
     buildElfMaps();
-    fileOpen = openFile();
   }
 
   public CorefileByteBuffer(File file) throws ElfException
@@ -110,25 +109,10 @@ public class CorefileByteBuffer
   protected int peek(long address) 
   {
 
-    int peekValue = 0;
-    if (isFileOpen())
-      {
-	long offset = convetAddressToOffset(address);
-
-	try
-	{
-	  this.coreFileRaw.seek(offset);
-	  peekValue = this.coreFileRaw.readByte();
-	}
-	catch (IOException e)
-	{
-	  throw new RuntimeException("Cannot seek to offset " + address);
-	}
-
-	return peekValue;
-      }
-    else
-      throw new RuntimeException("Cannot access corefile backing ByteBuffer");
+    byte[] buffer = new byte[1];
+    long offset = convetAddressToOffset(address);
+    this.coreFileRaw.pread(offset, buffer,0,1);
+    return buffer[0];
   }
 
   protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
@@ -150,31 +134,13 @@ public class CorefileByteBuffer
     return sub;
   }
 
-  protected void finalize()
-  {
-    try
-      {
-	this.coreFileRaw.close();
-      }
-    catch (IOException e)
-      {
-	e.printStackTrace();
-      }
-  }
-  
-  
   private boolean openFile() 
   {
-    try
-    {
-      this.coreFileRaw = new RandomAccessFile(this.coreFile,"r");
-    }
-    catch (FileNotFoundException e)
-    {
-      throw new RuntimeException(e);
-    }
-    
-    return true;
+      this.coreFileRaw = new StatelessFile(this.coreFile);
+      if (this.coreFileRaw != null)
+	return true;
+
+      return false;
   }
   
   private void buildElfMaps() throws ElfException  
@@ -220,16 +186,12 @@ public class CorefileByteBuffer
 
   private boolean isFileSane()
   {
-    if (this.coreFile.exists() && this.coreFile.canRead())
+    if (this.coreFileRaw != null)
       return true;
 
     return false;
   }
   
-  private boolean isFileOpen()
-  {
-    return fileOpen;
-  }
 
   private long convetAddressToOffset (long address)
   {

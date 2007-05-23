@@ -1,3 +1,20 @@
+2007-05-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxCore.java: Got lost in refactor.
+	Rescued and refactored.
+
+2007-05-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CorefileByteBuffer.java (finalize): Remove.
+	(isFileOpen): Remove.
+	(peek): Rewrite to use StatelessFile.
+	(isFileSane): Test for object creation.
+	(openFile): Rewrite. Use StatlessFile.
+	(CorefileByteBuffer): Switch order of file open
+	and elf address offset table creation.
+	* TestCorefileByteBuffer (testCoreFileByteBufferMapOverrun): Move
+	overrun location.
+
 2007-05-18  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProc.java (sendRefresh): Make public.
