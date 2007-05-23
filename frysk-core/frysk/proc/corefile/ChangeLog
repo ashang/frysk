@@ -1,5 +1,11 @@
 2007-05-23  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LinuxHost.java (sendRefresh):  Ignore refreshAll for now.
+	Always refresh all. Will rework when refresh refactor
+	is complete.
+	* TestLinuxCore.java: Replace requestRefreshXXX(true) 
+	with requestRefreshXXX();
+
 	* TestLinuxCore.java: Got lost in refactor.
 	Rescued and refactored.
 

@@ -67,7 +67,7 @@ public class TestLinuxCore
   {
     
     assertNotNull("Core File Host Is Null?",coreHost);
-    coreHost.requestRefreshXXX(true);
+    coreHost.requestRefreshXXX();
     Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
@@ -85,7 +85,7 @@ public class TestLinuxCore
     assertNotNull("Core file Host is Null?",coreHost);
     
     
-    coreHost.requestRefreshXXX(true);
+    coreHost.requestRefreshXXX();
     Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
@@ -108,7 +108,7 @@ public class TestLinuxCore
     
     assertNotNull("Core file Host is Null?",coreHost);
     
-    coreHost.requestRefreshXXX(true);
+    coreHost.requestRefreshXXX();
     Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));
@@ -150,7 +150,7 @@ public class TestLinuxCore
   {
 	assertNotNull("Core file Host is Null?",coreHost);
     
-	coreHost.requestRefreshXXX(true);  
+	coreHost.requestRefreshXXX();  
 	Manager.eventLoop.runPending();
 	   
 	Proc proc = coreHost.getProc(new ProcId(31497));
@@ -175,7 +175,7 @@ public class TestLinuxCore
     assertNotNull("Core file Host is Null?",coreHost);
 
 
-    coreHost.requestRefreshXXX(true);
+    coreHost.requestRefreshXXX();
     Manager.eventLoop.runPending();
     
     Proc proc = coreHost.getProc(new ProcId(31497));

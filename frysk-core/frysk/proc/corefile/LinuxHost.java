@@ -86,16 +86,12 @@ public class LinuxHost
     // Iterate (build) the /proc tree, passing each found PID to
     // procChanges where it can update the /proc tree.
     new DeconstructCoreFile(this.corefileElf);
-    if (refreshAll)
+    // Changes individual process.
+    for (Iterator i = procPool.values().iterator(); i.hasNext();)
       {
-        // Changes individual process.
-        for (Iterator i = procPool.values().iterator(); i.hasNext();)
-          {
-            LinuxProc proc = (LinuxProc) i.next();
-            proc.sendRefresh();
-          }
+	LinuxProc proc = (LinuxProc) i.next();
+	proc.sendRefresh();
       }
-
   }
 
   protected void sendRefresh (final ProcId procId, final FindProc finder)
