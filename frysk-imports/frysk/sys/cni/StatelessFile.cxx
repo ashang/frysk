@@ -68,15 +68,22 @@ frysk::sys::StatelessFile::pread(jlong fileOffset,
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   
   int fd = ::open ((const char *)elements (unixPath), O_RDONLY);
-  if (-1 == fd) throwErrno (errno, "open", "filename %s",
-			    (const char *)elements (unixPath));
+
+  // the fanicy throwErrno() has been at least temporarily removed because 
+  // jasprintf choked on it with "java.lang.RuntimeException: JvNewStringUTF
+  // failed in vajprintf".  maybe some java hacker can figure out why.
+
+  // if (-1 == fd) throwErrno (errno, "open", "filename %s",
+  //			    (const char *)elements (unixPath));
+  if (-1 == fd) throwErrno (errno, "open", "/proc/<pid>/mem");
+
   ssize_t rc = ::pread (fd, start + elements(bytes), length, fileOffset);
   if (-1 == rc) {
     ::close (fd);
     throwErrno (errno, "pread", "fd %d, count %d, offset %d",
-		fd,
-		(int)length,
-		(int)fileOffset);
+    		fd,
+    		(int)length,
+    		(int)fileOffset);
   }
   
   ::close (fd);
@@ -99,8 +106,15 @@ frysk::sys::StatelessFile::pwrite(jlong fileOffset,
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   
   int fd = ::open ((const char *)elements (unixPath), O_WRONLY);
-  if (-1 == fd) throwErrno (errno, "open", "filename %s",
-			    (const char *)elements (unixPath));
+
+  // the fanicy throwErrno() has been at least temporarily removed because 
+  // jasprintf choked on it with "java.lang.RuntimeException: JvNewStringUTF
+  // failed in vajprintf".  maybe some java hacker can figure out why.
+
+  // if (-1 == fd) throwErrno (errno, "open", "filename %s",
+  //			    (const char *)elements (unixPath));
+  if (-1 == fd) throwErrno (errno, "open", "/proc/<pid>/mem");
+
   ssize_t rc = ::pwrite (fd, start + elements(bytes), length, fileOffset);
   if (-1 == rc) {
     ::close (fd);

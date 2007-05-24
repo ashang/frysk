@@ -1,3 +1,11 @@
+2007-05-24  Chris Moller  <moller@mollerware.com>
+
+	* cni/StatelessFile.cxx pread(), pwrite(): throwErrno()s modified
+	because they can fail with "java.lang.RuntimeException:
+	JvNewStringUTF failed in vajprintf," probably due to reference to
+	"(const char *)elements (unixPath),"  but I'll a real Jave troop
+	figure that out.
+
 2007-05-12  Chris Moller  <moller@mollerware.com>
 
 	* StatelessFile.java:
