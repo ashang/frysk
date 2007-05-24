@@ -52,12 +52,10 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-jlong
-frysk::sys::StatelessFile::pread(jlong fileOffset,
-				 jbyteArray bytes,
-				 jlong start,
-				 jlong length)
+static void
+verifyBounds (jlong fileOffset, jbyteArray bytes, jlong start, jlong length)
 {
+  // XXX: 64-bit?
   if (fileOffset < 0)
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   if (start < 0)
@@ -66,26 +64,30 @@ frysk::sys::StatelessFile::pread(jlong fileOffset,
     throw new java::lang::ArrayIndexOutOfBoundsException ();
   if (start + length > bytes->length)
     throw new java::lang::ArrayIndexOutOfBoundsException ();
+}
+
+jlong
+frysk::sys::StatelessFile::pread(jlong fileOffset,
+				 jbyteArray bytes,
+				 jlong start,
+				 jlong length)
+{
+  verifyBounds(fileOffset, bytes, start, length);
   
   int fd = ::open ((const char *)elements (unixPath), O_RDONLY);
+  if (fd < 0)
+    throwErrno (errno, "open", "filename %s",
+		(const char *)elements (unixPath));
 
-  // the fanicy throwErrno() has been at least temporarily removed because 
-  // jasprintf choked on it with "java.lang.RuntimeException: JvNewStringUTF
-  // failed in vajprintf".  maybe some java hacker can figure out why.
-
-  // if (-1 == fd) throwErrno (errno, "open", "filename %s",
-  //			    (const char *)elements (unixPath));
-  if (-1 == fd) throwErrno (errno, "open", "/proc/<pid>/mem");
-
+  // XXX: 64-bit?
   ssize_t rc = ::pread (fd, start + elements(bytes), length, fileOffset);
-  if (-1 == rc) {
+  if (rc < 0) {
+    int savedErrno = errno;
     ::close (fd);
-    throwErrno (errno, "pread", "fd %d, count %d, offset %d",
-    		fd,
-    		(int)length,
-    		(int)fileOffset);
+    throwErrno (savedErrno, "pread", "fd %d, count %ld, offset %ld",
+    		fd, (long)length, (long)fileOffset);
   }
-  
+
   ::close (fd);
   return rc;
 }
@@ -96,32 +98,20 @@ frysk::sys::StatelessFile::pwrite(jlong fileOffset,
 				 jlong start,
 				 jlong length)
 {
-  if (fileOffset < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (start < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (length < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (start + length > bytes->length)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  verifyBounds (fileOffset, bytes, start, length);
   
   int fd = ::open ((const char *)elements (unixPath), O_WRONLY);
+  if (fd < 0)
+    throwErrno (errno, "open", "filename %s",
+		(const char *)elements (unixPath));
 
-  // the fanicy throwErrno() has been at least temporarily removed because 
-  // jasprintf choked on it with "java.lang.RuntimeException: JvNewStringUTF
-  // failed in vajprintf".  maybe some java hacker can figure out why.
-
-  // if (-1 == fd) throwErrno (errno, "open", "filename %s",
-  //			    (const char *)elements (unixPath));
-  if (-1 == fd) throwErrno (errno, "open", "/proc/<pid>/mem");
-
+  // XXX: 64-bit?
   ssize_t rc = ::pwrite (fd, start + elements(bytes), length, fileOffset);
-  if (-1 == rc) {
+  if (rc < 0) {
+    int savedErrno = errno;
     ::close (fd);
-    throwErrno (errno, "pwrite", "fd %d, count %d, offset %d",
-		fd,
-		(int)length,
-		(int)fileOffset);
+    throwErrno (savedErrno, "pwrite", "fd %d, count %ld, offset %ld",
+		fd, (long)length, (long)fileOffset);
   }
   
   ::close (fd);

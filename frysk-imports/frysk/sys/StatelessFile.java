@@ -38,28 +38,29 @@
 // exception.
 
 package frysk.sys;
+
 import java.io.File;
-import java.io.IOException;
 
 public class StatelessFile
 {
-    private byte[] unixPath = null;
+    protected final byte[] unixPath;
 
+    /**
+     * Creates a StatelessFile bound to the existing FILE.
+     */
     public StatelessFile(File file)
     {
-	try {
-	    unixPath = (file.getCanonicalPath()).getBytes();
-	}
-	catch (IOException ioe) {
-	    System.out.println ("StatelessFile()" + ioe);
-	}
+	byte[] path = file.getAbsolutePath().getBytes();
+	// NUL terminate it - an array start with NUL
+	unixPath = new byte[path.length + 1];
+	System.arraycopy (path, 0, unixPath, 0, path.length);
     }
-
-    // utterly useless fcn so the idiot compiler won't complain that unixPath
-    // isn't read locally.
-    public byte[] getUnixPath()
+    /**
+     * Creates a StatelessFile bound to the existing FILE.
+     */
+    public StatelessFile(String file)
     {
-	return unixPath;
+	this(new File(file));
     }
 
     public native long pread(long fileOffset, byte[] bytes, long start,
@@ -68,5 +69,3 @@ public class StatelessFile
     public native long pwrite(long fileOffset, byte[] bytes, long start,
 			      long length);
 }
-
-

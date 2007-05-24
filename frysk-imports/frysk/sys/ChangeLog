@@ -1,3 +1,17 @@
+2007-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStatelessFile.java (testNoSuchFile)
+	(testNullTermination): New.
+	* StatelessFile.java (StatelessFile(File)): Append a NUL byte to
+	name.
+	(StatelessFile(String)): New.
+	(unixPath): Make protected final.
+	(getUnixPath): Delete.
+	* cni/StatelessFile.cxx (verifyBounds): New.
+	(pread, pwrite): Re-enable calls to the format form of throwErrno.
+	Use "fd < 0", not "-1 == fd".  save errno across close() system
+	call.  Use verifyBounds.
+
 2007-05-24  Chris Moller  <moller@mollerware.com>
 
 	* cni/StatelessFile.cxx pread(), pwrite(): throwErrno()s modified

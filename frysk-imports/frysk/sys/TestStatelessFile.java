@@ -43,11 +43,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.ArrayIndexOutOfBoundsException;
-import java.lang.StringBuffer;
-
 import frysk.junit.TestCase;
-import frysk.sys.StatelessFile;
 import frysk.testbed.TearDownFile;
 
 public class TestStatelessFile
@@ -55,10 +51,29 @@ public class TestStatelessFile
 {
     private final String st =
 	new String ("Some sample datammmmmmmmmmmmmmmmmmmmmmmm");
-    private File fakefile = new File (".", "*****");
+    private String noSuchFile = "/no/such/file";
+    private File fakefile = new File (noSuchFile);
     private long stlen = -1;
     private final byte[] stb = st.getBytes();
     
+    public void testNoSuchFile ()
+    {
+	assertFalse ("noSuchFile exists", fakefile.exists());
+    }
+
+    public void testNullTermination ()
+    {
+	StatelessFile file = new StatelessFile (noSuchFile);
+	assertEquals ("length fits NUL", noSuchFile.length() + 1,
+		      file.unixPath.length);
+	for (int i = 0; i < noSuchFile.length(); i++) {
+	    assertEquals ("unixPath[" + i + "]", (byte) noSuchFile.charAt(i),
+			  file.unixPath[i]);
+	}
+	assertEquals ("trailing NUL", 0,
+		      file.unixPath[file.unixPath.length-1]);
+    }
+
     public void testPreadValidity()
     {
 	StatelessFile sf = new StatelessFile(fakefile);
