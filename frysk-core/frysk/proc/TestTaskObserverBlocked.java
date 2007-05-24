@@ -432,7 +432,7 @@ public class TestTaskObserverBlocked
     logger.log(Level.FINE, "{0} offspring\n", forkUnblock.offspring);
 
     // Finally force a refresh.
-    host.requestRefreshXXX(true);
+    host.requestRefreshXXX();
     Manager.eventLoop.runPending();
   }
 

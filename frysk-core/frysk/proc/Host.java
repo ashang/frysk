@@ -179,23 +179,6 @@ public abstract class Host
 	newState = null;
 	return oldState;
     }
-
-    /**
-     * Request that the Host scan the system's process tables
-     * refreshing the internal structure to match.  Optionally refresh
-     * each processes task list.
-     */
-    void requestRefreshXXX (final boolean refreshAll)
-    {
-	logger.log (Level.FINEST, "{0} requestRefreshXXX boolean\n", this); 
-	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
-	    {
-		public void execute ()
-		{
-		    newState= oldState ().handleRefresh (Host.this, refreshAll);
-		}
-	    });
-    }    
     
     /**
      * Request that the Host scan the system's process tables
@@ -204,7 +187,14 @@ public abstract class Host
      */
     public void requestRefreshXXX ()
     {
-	requestRefreshXXX(false);
+	logger.log (Level.FINEST, "{0} requestRefreshXXX\n", this); 
+	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
+	    {
+		public void execute ()
+		{
+		    newState = oldState().handleRefresh(Host.this, false);
+		}
+	    });
     }
 
     /**

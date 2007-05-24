@@ -70,13 +70,11 @@ public class TestRefresh
 				      host.observableProcRemovedXXX);
 	}
 	Proc proc;
-	void verifyAdd (String reason, int tasks)
+	void verifyAdd (String reason)
 	{
 	    proc = host.getProc (new ProcId (child.getPid ()));
 	    assertNotNull (reason + ", child in process pool;",
 			   proc);
-	    assertEquals (reason + ", child's task count",
-			  tasks, proc.taskPool.size ());
 	    assertEquals (reason + ", child discovered once",
 			  1, added.count);
 	    assertEquals (reason + ", child removed nunce",
@@ -111,7 +109,7 @@ public class TestRefresh
 	for (int i = 0; i < 2; i++) {
 	    host.requestRefreshXXX();
 	    Manager.eventLoop.runPending ();
-	    tracker.verifyAdd ("iteration " + i, 0);
+	    tracker.verifyAdd ("iteration " + i);
 	}
     }
 
@@ -142,7 +140,7 @@ public class TestRefresh
 	// corresponding observable events occurred.
 	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
-	tracker.verifyAdd ("first add", 0);
+	tracker.verifyAdd ("first add");
 
 	// Delete the process.
 	child.reap ();
@@ -183,7 +181,7 @@ public class TestRefresh
 	// and no task events should have been seen.
 	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
-	tracker.verifyAdd ("refresh without tasks", 0);
+	tracker.verifyAdd ("refresh without tasks");
 
 	// Ask the proc to refresh its task list, check that 2(clone)
 	// + 1(main) tasks are found, and that all are in the
@@ -243,29 +241,6 @@ public class TestRefresh
     }
 
     /**
-     * Check that, when requested, both the process and task tables
-     * are refreshed.
-     */
-    public void testRefreshAll ()
-    {
-	// Get an initial PS reading.
-	host.requestRefreshXXX();
-	Manager.eventLoop.runPending ();
-	
-	// Create a suspended sub-process with two threads (in
-	// addition to main).
-	Child child = new AckDaemonProcess (2);
-
-	// Track what this gets up to.
-	ChildTracker tracker = new ChildTracker (child);
-
-	// Do a refresh, check that the process was added.
-	host.requestRefreshXXX (true);
-	Manager.eventLoop.runPending ();
-	tracker.verifyAdd ("all refreshed", 3);
-    }
-
-    /**
      * Check that a parent child relationship is correct.
      */
     public void testParentChild ()
@@ -274,7 +249,7 @@ public class TestRefresh
 	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
 	host.requestRefreshXXX();
 	Manager.eventLoop.runPending ();
-	tracker.verifyAdd ("find child", 0);
+	tracker.verifyAdd ("find child");
 	
 	// Find this process.
 	Proc me = host.getProc (new ProcId (Pid.get ()));
@@ -301,10 +276,10 @@ public class TestRefresh
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
 	Proc zombieParent = zombie.assertFindProcAndTasks();
-    
-    //XXX: Hack to get zombieParent's children.
-    Manager.host.requestRefreshXXX(true);
-    Manager.eventLoop.runPending();
+	
+	//XXX: Hack to get zombieParent's children.
+	Manager.host.requestRefreshXXX();
+	Manager.eventLoop.runPending();
     
 	assertEquals ("zombie maker has one child",
 		      1, zombieParent.getChildren ().size ());
@@ -394,16 +369,6 @@ public class TestRefresh
      */
     public void testRefreshZombie ()
     {
-	if (brokenIfKernelXXX (3488, new String[]
-	    {
-		"2.6.18-1.2257.fc5",
-		"2.6.18-1.2849.fc6",
-		"2.6.18-1.2239.fc5",
-		"2.6.19-1.2288.fc5",
-		"2.6.20-1.2307.fc5",
-		"2.6.20-1.2312.fc5"
-	    }))
-	    return;
 	// Create the zombie maker, and then get it to create one
 	// child.
 	AckProcess zombie = new AckDaemonProcess ();
@@ -414,27 +379,23 @@ public class TestRefresh
 	// processes.
 	Proc zombieParent = zombie.assertFindProcAndTasks();
     
-    //XXX: Hack to get zombieParent's children.
-    Manager.host.requestRefreshXXX(true);
-    Manager.eventLoop.runPending();
+	//XXX: Hack to get zombieParent's children.
+	Manager.host.requestRefreshXXX();
+	Manager.eventLoop.runPending();
     
 	assertEquals ("zombie maker child count", 1,
 		      zombieParent.getChildren ().size ());
 	Proc zombieChild = (Proc) zombieParent.getChildren ().getFirst ();
-	assertEquals ("zombie child task count", 1,
-		      zombieChild.taskPool.size ());
 	assertEquals ("zombie child process count",
 		      0, zombieChild.getChildren ().size ());
 
 	// Turn the zombie-child into a true zombie, check things are
 	// updated.
 	zombie.assertSendZombieForkWaitForAcks ();
-	host.requestRefreshXXX (true);
+	host.requestRefreshXXX ();
 	Manager.eventLoop.runPending ();
  	assertEquals ("zombie maker child count",
  		      1, zombieParent.getChildren ().size ());
-	assertEquals ("Zombie child task count",
-		      0, zombieChild.taskPool.size ());
 	assertEquals ("Zombie child process count",
 		      0, zombieChild.getChildren ().size ());
 	assertSame ("zombie and zombie's child's parent",
@@ -471,7 +432,7 @@ public class TestRefresh
 	AckProcess child = new AckDaemonProcess (1);
 	Proc proc = child.assertFindProcAndTasks();
 
-	Manager.host.requestRefreshXXX (true);
+	Manager.host.requestRefreshXXX ();
 	Task taskBefore = child.findTaskUsingRefresh (false);
 	assertSame ("task before unattached multiple clone exec", proc,
 		    taskBefore.getProc()); // parent/child relationship
@@ -480,7 +441,7 @@ public class TestRefresh
 
  	child.assertSendExecCloneWaitForAcks ();
 
-	Manager.host.requestRefreshXXX (true);
+	Manager.host.requestRefreshXXX ();
  	Manager.eventLoop.runPending ();
 	
 	assertEquals ("proc's getCmdLine[0]",

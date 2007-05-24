@@ -155,7 +155,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 	// Create a refresh time with a low refresh.
 	TimerEvent refreshTimer = new TimerEvent(0, 500){
 		public void execute() {
-		    Manager.host.requestRefreshXXX (true);
+		    Manager.host.requestRefreshXXX ();
 		}
 	    };
 

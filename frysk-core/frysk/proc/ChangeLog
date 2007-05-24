@@ -1,3 +1,13 @@
+2007-05-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (requestRefreshXXX(boolean)): Delete.
+	* StressAttachDetachRapidlyForkingMainTask.java: Update.
+	* TestTaskObserverBlocked.java
+	(testRefreshAfterUnblockedForkExits): Update.
+	* TestRefresh.java (testRefreshAll): Delete.
+	(testRefreshDaemon, testRefreshZombie)
+	(testUnattachedMultipleExec): Update.  Do not check tasks.
+	
 2007-05-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (requestRefreshXXX(boolean)): Make package-private.
