@@ -1,3 +1,8 @@
+2007-05-25  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Ptrace.cxx (AddressSpace.peek): Added messages to thrown 
+	ArrayIndexOutOfBoundsExceptions.
+
 2007-05-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStatelessFile.java (testNoSuchFile)

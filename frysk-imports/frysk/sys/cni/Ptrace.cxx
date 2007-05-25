@@ -224,12 +224,13 @@ jlong
 frysk::sys::Ptrace$AddressSpace::peek (jint pid, jlong addr, jlong length,
 				       jbyteArray bytes, jlong offset)
 {
-  if (offset < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (length < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (offset + length > bytes->length)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
+   if (offset < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("Offset < 0"));
+   if (length < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("length < 0"));
+  if (offset +  length >  bytes->length)
+    throw new java::lang::ArrayIndexOutOfBoundsException (JvNewStringUTF("offset + length > bytes->length"));
+   
   // Somewhat more clueful implementation
   // fprintf (stderr, "starting from %#08x to offset %d, length %d\n",
   //          (unsigned int)addr, (int)offset, (int)length);
