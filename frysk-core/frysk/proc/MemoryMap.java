@@ -84,4 +84,9 @@ public class MemoryMap
     this.name = name;
   }
 
+  public String toString()
+  {
+    return name + " 0x" + Long.toHexString(addressLow) + "-0x" + 
+    Long.toHexString(addressHigh);
+  }
 }
