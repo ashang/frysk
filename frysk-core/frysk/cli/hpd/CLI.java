@@ -62,6 +62,7 @@ import java.lang.RuntimeException;
 import javax.naming.NameNotFoundException;
 
 import frysk.value.Value;
+import frysk.debuginfo.DebugInfo;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -81,7 +82,7 @@ public class CLI
   Task task;
   int pid = 0;
   int tid = 0;
-  SymTab symtab = null;
+  DebugInfo debugInfo = null;
   boolean symtabNeedsRefresh = false;
   int stackLevel = 0;
   private SteppingObserver steppingObserver;
@@ -117,9 +118,9 @@ public class CLI
 	  }
       }
     // Otherwise assume a symbol is being completed
-    else if (symtab != null)
+    else if (debugInfo != null)
       {
-	cursor = symtab.complete(buffer.substring(first_ws),
+	cursor = debugInfo.complete(buffer.substring(first_ws),
 				 cursor - first_ws, candidates);
 	return cursor + first_ws;
       }
@@ -128,9 +129,9 @@ public class CLI
   // Superclass refreshes symbol table if necessary.
   public void refreshSymtab()
   {
-    if (symtabNeedsRefresh && symtab != null)
+    if (symtabNeedsRefresh && debugInfo != null)
       {
-	symtab.refresh();
+	debugInfo.refresh();
 	symtabNeedsRefresh = false;
       }
   }
@@ -532,7 +533,7 @@ public class CLI
 	}
       }
     addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
-    symtab = new SymTab(pid, proc, task, null);
+    debugInfo = new DebugInfo(pid, proc, task, null);
   }
   
   class DetachHandler implements CommandHandler
@@ -636,13 +637,13 @@ public class CLI
 	  catch (NumberFormatException ignore)
 	  {
 	    if (((String)params.get(0)).compareTo("$EXEC") == 0)
-		line = symtab.getCurrentFrame().getLines()[0].getLine() - 10;
+		line = debugInfo.getCurrentFrame().getLines()[0].getLine() - 10;
 	    else 
 	      {
 		DwarfDie funcDie = null;
 		try
 		{
-		  funcDie = symtab.getSymbolDie((String)params.get(0));
+		  funcDie = debugInfo.getSymbolDie((String)params.get(0));
 		}
 		catch (NameNotFoundException none) {}
 		line = (int)funcDie.getDeclLine();
@@ -668,7 +669,7 @@ public class CLI
  
       if (file== null)
 	{
-	  Frame frame = symtab.getCurrentFrame();
+	  Frame frame = debugInfo.getCurrentFrame();
 	  if (frame.getLines().length > 0)
 	    {
 	      file = (frame.getLines()[0]).getFile();
@@ -816,20 +817,20 @@ public class CLI
       refreshSymtab();
       int level = 1;
       Frame tmpFrame = null;
-      Frame currentFrame = symtab.getCurrentFrame();
+      Frame currentFrame = debugInfo.getCurrentFrame();
 
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
 
       if (cmd.getAction().compareTo("up") == 0)
 	{
-	  tmpFrame = symtab.setCurrentFrame(level);
+	  tmpFrame = debugInfo.setCurrentFrame(level);
 	  if (tmpFrame != currentFrame)
 	    stackLevel += level;
 	}
       else if (cmd.getAction().compareTo("down") == 0)
 	{
-	  tmpFrame = symtab.setCurrentFrame(-level);
+	  tmpFrame = debugInfo.setCurrentFrame(-level);
 	  if (tmpFrame != currentFrame)
 	    stackLevel -= level;
 	}
@@ -870,7 +871,7 @@ public class CLI
 	stopLevel = l + level;
       else
 	stopLevel = 0;
-      tmpFrame = symtab.getCurrentFrame();
+      tmpFrame = debugInfo.getCurrentFrame();
       while (tmpFrame != null)
 	{
 	  outWriter.print("#" + l + " ");
@@ -912,7 +913,7 @@ public class CLI
       String sInput = ((String)params.get(0));
       try 
         {
-          outWriter.println(symtab.what(sInput));
+          outWriter.println(debugInfo.what(sInput));
         }
       catch (NameNotFoundException nnfe)
         {
@@ -986,7 +987,7 @@ public class CLI
       Value result = null;
       try 
         {
-          result = SymTab.print(sInput);
+          result = DebugInfo.print(sInput);
         }
       catch (NameNotFoundException nnfe)
         {
@@ -1447,9 +1448,9 @@ public class CLI
     return task;
   }
 
-  public SymTab getSymTab()
+  public DebugInfo getDebugInfo()
   {
-    return symtab;
+    return debugInfo;
   }
   
   /**

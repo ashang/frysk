@@ -1,3 +1,11 @@
+2007-05-25  scox  <scox@multics.rdu.redhat.com>
+
+	* ArrayType.java (getValue): Use slicing.
+	(get): Chain struct/array references.
+	* ClassType.java (getValue): Use slicing.
+	(get): Chain struct/array references.
+	* Value.java (Value): New (Type, String, ByteBuffer).
+
 2007-05-17  scox  <scox@multics.rdu.redhat.com>
 
 	* ArrayType.java (get): Skip array name.

@@ -49,7 +49,7 @@ import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
-import frysk.cli.hpd.SymTab;
+import frysk.debuginfo.DebugInfo;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
@@ -78,7 +78,7 @@ public class InlineBuffer
 
   Frame currentFrame;
 
-  private SymTab stab;
+  private DebugInfo stab;
   
   /**
    * Creates a new InlineBuffer to reflect the provided instance
@@ -94,7 +94,7 @@ public class InlineBuffer
     this.currentFrame = frame;
     this.setScope(frame);
     Task myTask = this.scope.getTask();
-    this.stab = new SymTab(myTask.getTid(), myTask.getProc(), myTask, scope);
+    this.stab = new DebugInfo(myTask.getTid(), myTask.getProc(), myTask, scope);
   }
 
   /**
@@ -216,7 +216,7 @@ public class InlineBuffer
     Value var;
     try
       {
-        var = SymTab.print(line.getText().substring(
+        var = DebugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));

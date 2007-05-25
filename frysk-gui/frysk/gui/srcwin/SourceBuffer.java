@@ -67,7 +67,7 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 import org.jdom.Element;
 
-import frysk.cli.hpd.SymTab;
+import frysk.debuginfo.DebugInfo;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
@@ -658,7 +658,7 @@ public class SourceBuffer
     Value var;
     try
       {
-        var = SymTab.print(line.getText().substring(
+        var = DebugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));
@@ -689,7 +689,7 @@ public class SourceBuffer
         while (i.hasNext())
           {
             Value v = (Value) i.next();
-            Value vv = SymTab.print(v.getText());
+            Value vv = DebugInfo.print(v.getText());
             
             /* Variable is out of scope, leave it as-is */
             if (vv == null || vv.toString().equals("") || vv.toString().equals("\0"))
@@ -731,7 +731,7 @@ public class SourceBuffer
     Value var;
     try
       {
-        var = SymTab.print(line.getText().substring(
+        var = DebugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));

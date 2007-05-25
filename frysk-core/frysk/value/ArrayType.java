@@ -41,10 +41,9 @@
 package frysk.value;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import lib.dw.BaseTypes;
-import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
 
 /**
  * Type for an array.
@@ -149,11 +148,9 @@ public class ArrayType
       }
       if (type instanceof ClassType)
 	{
-	  byte [] buf = new byte[type.size];
-	  v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
-	  ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	  ByteBuffer abb = v.getLocation().getByteBuffer().slice(off, type.size);
 	  abb.order(type.getEndian());
-	  return new Value((ClassType)type, v.getText(), (ArrayByteBuffer)abb);
+	  return new Value((ClassType)type, v.getText(), abb);
 	}
       return null;
     }
@@ -163,7 +160,7 @@ public class ArrayType
 	return new ArrayIterator(v);
     }
 
-    public Value get (Value v, ArrayList components)
+    public Value get (Value v, int componentsIdx, ArrayList components)
     {
       int dimCount = dimensions.size();
       int stride[] = new int[dimCount + 1];
@@ -176,17 +173,34 @@ public class ArrayType
 	}
       stride[dimCount] = (((Integer) (dimensions.get(0))).intValue() + 1) * stride[dimCount - 1]; 
       
-    Iterator ci = components.iterator();
-    int offset = 0;
-    ci.next();			// skip name of array
-    for (int d = dimCount - 1;
-         ci.hasNext();
-         d -= 1)
-      {
-	String component = (String)ci.next();
-	offset += stride[d] * (Integer.parseInt(component));
-      }
-    return getValue (v, offset);
+      int offset = 0;
+
+      int d = dimCount;
+      if (componentsIdx >= components.size())	// want the entire array?
+	return v;
+
+      subscript_loop:
+      while (componentsIdx < components.size())
+	{
+	  String component = (String)components.get(componentsIdx);
+	  d -= 1;
+	  if (d < 0)
+	    break subscript_loop;
+	  try
+	  {
+	    offset += stride[d] * (Integer.parseInt(component));
+	  }
+	  catch (NumberFormatException e) 
+	  {
+	    break subscript_loop;
+	  }
+	  componentsIdx += 1;
+	}
+      v = getValue (v, offset);
+      if (v.getType() instanceof ClassType)
+	return ((ClassType)v.getType()).get(v, componentsIdx, components);
+      else
+	return v;
     }
     
     public String toString (Value v)
@@ -269,14 +283,6 @@ public class ArrayType
 	super(size, typep.endian, 0, "array");
 	type = typep;
 	dimensions = dimensionsp;
-    }
-
-    public static Value newArrayValue (Type type, String text,
-					     ArrayByteBuffer ab)
-    {
-	Location loc = new Location(ab);
-	Value returnVar = new Value(type, text, loc);
-	return returnVar;
     }
 
     public Value add (Value var1, Value var2)

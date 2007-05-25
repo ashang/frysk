@@ -114,6 +114,8 @@ public class UnixTerminal
 			// JDK 1.3+ only method. Bummer.
 			consumeException (ame);
 		}
+		this.width = this.getTerminalWidth();
+		this.height = this.getTerminalHeight();
 	}
 
 

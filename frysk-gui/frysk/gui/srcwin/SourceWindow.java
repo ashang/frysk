@@ -108,7 +108,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
 import frysk.Config;
-import frysk.cli.hpd.SymTab;
+import frysk.debuginfo.DebugInfo;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMSource;
@@ -298,7 +298,7 @@ public class SourceWindow
 
   private Frame[][] frames;
 
-  private SymTab symTab[];
+  private DebugInfo symTab[];
 
   // Due to java-gnome bug #319415
   private ToolTips tips;
@@ -342,7 +342,7 @@ public class SourceWindow
     this.swProc = new Proc[this.numProcs];
     this.swProc[this.current] = proc;
     this.frames = new Frame[1][];
-    this.symTab = new SymTab[1];
+    this.symTab = new DebugInfo[1];
     this.lock = new LockObserver();
     SteppingEngine.addObserver(lock);
     SteppingEngine.setProc(proc);
@@ -370,7 +370,7 @@ public class SourceWindow
     this.numProcs = procs.length;
     this.swProc = procs;
     this.frames = new Frame[this.numProcs][];
-    this.symTab = new SymTab[this.numProcs];
+    this.symTab = new DebugInfo[this.numProcs];
     this.lock = new LockObserver();
     this.dom = new DOMFrysk[this.numProcs];
     SteppingEngine.addObserver(lock);
@@ -402,7 +402,7 @@ public class SourceWindow
     this.swProc[this.current] = trace.getTask().getProc();
     SteppingEngine.setRunning(this.swProc[this.current].getTasks());
     this.frames = new Frame[1][];
-    this.symTab = new SymTab[1];
+    this.symTab = new DebugInfo[1];
     this.dom = new DOMFrysk[1];
     
     try
@@ -768,7 +768,7 @@ public class SourceWindow
 
 	Frame[][] newFrames = new Frame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
-	SymTab[] newSymTab = new SymTab[numProcs];
+	DebugInfo[] newSymTab = new DebugInfo[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
 
 	for (int i = 0; i < oldSize; i++)
@@ -806,7 +806,7 @@ public class SourceWindow
 
 	Frame[][] newFrames = new Frame[numProcs][];
 	DOMFrysk[] newDom = new DOMFrysk[numProcs];
-	SymTab[] newSymTab = new SymTab[numProcs];
+	DebugInfo[] newSymTab = new DebugInfo[numProcs];
 	Proc[] newSwProc = new Proc[numProcs];
 	
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
@@ -2228,7 +2228,7 @@ public class SourceWindow
 	    if (current != this.current && ! running)
 	    // && SteppingEngine.getState() != SteppingEngine.RUNNING)
 	      {
-		this.symTab[current] = new SymTab(
+		this.symTab[current] = new DebugInfo(
 						  this.swProc[current].getPid(),
 						  this.swProc[current],
 						  this.swProc[current].getMainTask(),
@@ -2875,7 +2875,7 @@ public class SourceWindow
 	/* Update SymTab information for the main Task. */ 
 	if (tasks[j].getTid() == main)
 	  {
-	    this.symTab[current] = new SymTab(proc.getPid(), proc, tasks[j],
+	    this.symTab[current] = new DebugInfo(proc.getPid(), proc, tasks[j],
 					      frames[j]);
 	  }
 

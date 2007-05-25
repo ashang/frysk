@@ -41,6 +41,7 @@ package frysk.value;
 
 import lib.dw.BaseTypes;
 import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
 
 /**
  * Stores the type and location of a variable
@@ -103,6 +104,11 @@ public class Value
     }
       
  
+    public Value(Type type, String text, ByteBuffer byteBuffer) 
+    {
+      this(type, text, (new Location(byteBuffer)));
+    }    
+
     public Value(Type type, String text, ArrayByteBuffer arrayByteBuffer) 
     {
       this(type, text, (new Location(arrayByteBuffer)));

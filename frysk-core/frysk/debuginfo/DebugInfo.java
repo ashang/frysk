@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.cli.hpd;
+package frysk.debuginfo;
 
 import java.io.StringReader;
 import java.text.ParseException;
@@ -69,14 +69,14 @@ import frysk.expr.CppSymTab;
 import frysk.expr.CppTreeParser;
 
 
-public class SymTab
+public class DebugInfo
 {
   Proc proc;
   int pid;
   Elf elf;
   Dwarf dwarf;
   
-  static ExprSymTab[] exprSymTab;
+  static DebugInfoEvaluator[] debugInfoEvaluator;
   
   static Subprogram[] subprogram;
 
@@ -87,7 +87,7 @@ public class SymTab
    * @param proc
    * @param task
    */
-  public SymTab (int tid, Proc proc, Task task, Frame f)
+  public DebugInfo (int tid, Proc proc, Task task, Frame f)
     {
       this.pid = tid;
       this.proc = proc;
@@ -98,9 +98,9 @@ public class SymTab
       }
       catch (lib.elf.ElfException ignore)
       {}
-      exprSymTab = new ExprSymTab[1];
+      debugInfoEvaluator = new DebugInfoEvaluator[1];
       subprogram = new Subprogram[1];
-      exprSymTab[0] = new ExprSymTab (task, pid, f);
+      debugInfoEvaluator[0] = new DebugInfoEvaluator (task, pid, f);
     }
 
    /**
@@ -108,11 +108,11 @@ public class SymTab
      */
    public void refresh()
    {
-     for (int i = 0; i < exprSymTab.length; i++)
+     for (int i = 0; i < debugInfoEvaluator.length; i++)
        {
-         exprSymTab[i].refreshCurrentFrame();
-         subprogram[i] = setSubprogram(exprSymTab[i].getCurrentFrame());
-         exprSymTab[i].setSubprogram(subprogram[i]);
+         debugInfoEvaluator[i].refreshCurrentFrame();
+         subprogram[i] = setSubprogram(debugInfoEvaluator[i].getCurrentFrame());
+         debugInfoEvaluator[i].setSubprogram(subprogram[i]);
        }
    }
   
@@ -156,13 +156,17 @@ public class SymTab
 
       DwarfDie[] allDies = die.getScopes(pc - bias.bias);
       List candidates_p = die.getScopeVarNames(allDies, token);
+      boolean haveStruct = false;
+      if (token.endsWith("."))
+	haveStruct = true;
+	
       for (Iterator i = candidates_p.iterator(); i.hasNext();)
         {
-            String sNext = (String) i.next();
+            String sNext = (haveStruct ? "." : "") + (String) i.next();
             candidates.add(sNext);
         }
 
-      if (token.endsWith("."))		// Is a struct being completed?
+      if (haveStruct)
       	token = ".";
       return buffer.indexOf(token) + 1;
     }
@@ -248,7 +252,7 @@ public class SymTab
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_structure_type_
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_enumeration_type_)
             {
-              Value v = SymTab.print(sInput);
+              Value v = DebugInfo.print(sInput);
 	      if (v != null)
 		result.append(v.getType().getName());
             }
@@ -332,7 +336,7 @@ public class SymTab
 
     CommonAST t = (CommonAST) parser.getAST();
     CppTreeParser treeParser;
-    if (exprSymTab == null)
+    if (debugInfoEvaluator == null)
       {
         TmpSymTab tmpSymTab = new TmpSymTab();
         treeParser = new CppTreeParser(4, 2, tmpSymTab);
@@ -368,9 +372,9 @@ public class SymTab
          * than this loop will run only once anyways.
          */
         int j = 0;
-        while (result == null && j < exprSymTab.length)
+        while (result == null && j < debugInfoEvaluator.length)
           {
-            treeParser = new CppTreeParser(4, 2, exprSymTab[j]);
+            treeParser = new CppTreeParser(4, 2, debugInfoEvaluator[j]);
 
             try
               {
@@ -408,7 +412,7 @@ public class SymTab
      public Frame setCurrentFrame(int level)
      {
        boolean down;
-       Frame tmpFrame = exprSymTab[0].getCurrentFrame();
+       Frame tmpFrame = debugInfoEvaluator[0].getCurrentFrame();
        if (level < 0)
          {
            down = true;
@@ -427,11 +431,11 @@ public class SymTab
          }
        if (tmpFrame != null)
          {
-           exprSymTab[0].setCurrentFrame(tmpFrame);
+           debugInfoEvaluator[0].setCurrentFrame(tmpFrame);
            subprogram[0] = setSubprogram(tmpFrame);
-           exprSymTab[0].setSubprogram(subprogram[0]);
+           debugInfoEvaluator[0].setSubprogram(subprogram[0]);
          }
-       return exprSymTab[0].getCurrentFrame();
+       return debugInfoEvaluator[0].getCurrentFrame();
      }
      
      /**
@@ -441,7 +445,7 @@ public class SymTab
        */
      public Frame getCurrentFrame ()
      {
-       return exprSymTab[0].getCurrentFrame();
+       return debugInfoEvaluator[0].getCurrentFrame();
      }
      /**
        * Get the most recent stack frame.
@@ -450,7 +454,7 @@ public class SymTab
        */
      public Frame getInnerMostFrame ()
      {
-       return exprSymTab[0].getInnerMostFrame();
+       return debugInfoEvaluator[0].getInnerMostFrame();
      }
      
      private Subprogram setSubprogram(Frame sf)
@@ -476,7 +480,7 @@ public class SymTab
        while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
          {
            if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
-             parms[nParms] = exprSymTab[0].getVariable(parm);
+             parms[nParms] = debugInfoEvaluator[0].getVariable(parm);
            parm = parm.getSibling();
            nParms += 1;
          }
@@ -497,7 +501,7 @@ public class SymTab
        nParms = 0;
        while (parm != null)
          {
-           vars[nParms] = exprSymTab[0].getVariable(parm);
+           vars[nParms] = debugInfoEvaluator[0].getVariable(parm);
            if (vars[nParms] == null)
              {
                int tag = parm.getTag();
@@ -547,15 +551,15 @@ public class SymTab
      
      public void setFrames (Frame newFrames[])
      {
-       exprSymTab = new ExprSymTab[newFrames.length];
+       debugInfoEvaluator = new DebugInfoEvaluator[newFrames.length];
        subprogram = new Subprogram[newFrames.length];
        for (int i = 0; i < newFrames.length; i++)
          {
-           exprSymTab[i] = new ExprSymTab (newFrames[i].getTask(), 
+           debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i].getTask(), 
                                            newFrames[i].getTask().getTid(), 
                                            newFrames[i]);
            subprogram[i] = setSubprogram(newFrames[i]);
-	   exprSymTab[i].setSubprogram(subprogram[i]);
+	   debugInfoEvaluator[i].setSubprogram(subprogram[i]);
          }
      }
 }

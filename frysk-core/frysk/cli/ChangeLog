@@ -1,4 +1,9 @@
-2007-05-17  scox  <scox@multics.rdu.redhat.com>
+2007-05-25  Stan Cox  <scox@redhat.com>
+
+	* hpd/SymTab.java: Move to frysk.debuginfo.DebugInfo
+	* hpd/ExprSymTab.java: Move to frysk.debuginfo.DebugInfoEvaluator
+	
+2007-05-17  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java (complete): Handle struct members.
 	(get): Remove get(String s, ArrayList components).

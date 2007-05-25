@@ -1,0 +1,4 @@
+2007-05-25  Stan Cox  <scox@redhat.com>
+
+	* DebugInfo.java: Moved from frysk.cli.hpd.SymTab  All callers changed.
+	* DebugInfo.java: Moved from frysk.cli.hpd.ExprSymTab

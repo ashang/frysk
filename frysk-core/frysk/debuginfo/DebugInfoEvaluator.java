@@ -38,9 +38,8 @@
 // exception.
 
 
-package frysk.cli.hpd;
+package frysk.debuginfo;
 
-import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
@@ -64,13 +63,15 @@ import frysk.value.EnumType;
 import frysk.value.Value;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
 import frysk.rt.Frame;
 import frysk.rt.LexicalBlock;
 import frysk.rt.StackFactory;
 import frysk.rt.Subprogram;
 import frysk.sys.Errno;
+import frysk.sys.Ptrace.AddressSpace;
 
-class ExprSymTab
+class DebugInfoEvaluator
     implements CppSymTab
 {
   private Task task;
@@ -105,19 +106,20 @@ class ExprSymTab
   }
 
   /**
-   * Create an ExprSymTab object which is the interface between SymTab and
-   * CppTreeParser, the expression parser.
+   * Create an DebugInfoEvaluator object which is the interface between 
+   * DebugInfo and CppTreeParser, the expression parser.
    * 
    * @param task_p Task
    * @param pid_p Pid
    * @param frame StackFrame
    */
-  ExprSymTab (Task task, int pid, Frame frame)
+  DebugInfoEvaluator (Task task, int pid, Frame frame)
   {
     this.task = task;
     this.pid = pid;
-    buffer = task.getMemory ();
+    buffer = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
     ByteOrder byteorder = task.getIsa().getByteOrder();
+    buffer.order(byteorder);
 
     if (frame == null)
       {
@@ -791,9 +793,7 @@ class ExprSymTab
               if (arrayType == null)
         	return null;
               int typeSize = arrayType.getSize();
-              byte [] buf = new byte[typeSize];
-              buffer.get(addr, buf, 0, typeSize);
-              ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, typeSize);
+              ByteBuffer  abb = buffer.slice (addr, typeSize);
               abb.order(byteorder);
               return new Value(arrayType, s, abb);
             }
@@ -807,10 +807,7 @@ class ExprSymTab
               subrange = type.getChild();
               ClassType classType = getClassType(subrange);
 
-              byte [] buf = new byte[classType.getSize()];
-              for (int j = 0; j < classType.getSize(); j++)
-        	buffer.get(addr + j, buf, j, 1);
-              ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, buf.length);
+              ByteBuffer  abb = buffer.slice (addr, classType.getSize());
               abb.order(byteorder);
               return new Value(classType, s, abb);
             }
@@ -858,9 +855,9 @@ class ExprSymTab
 
     Value v = get(s);
     if (v.getType() instanceof ArrayType)
-      return ((ArrayType)v.getType()).get(v, components);
+      return ((ArrayType)v.getType()).get(v, 1, components);
     else if (v.getType() instanceof ClassType)
-      return ((ClassType)v.getType()).get(v, components);
+      return ((ClassType)v.getType()).get(v, 0, components);
     else
       return null;
   }

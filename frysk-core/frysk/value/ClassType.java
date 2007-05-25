@@ -39,11 +39,10 @@
 
 package frysk.value;
 
-import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import lib.dw.BaseTypes;
 
@@ -136,19 +135,15 @@ public class ClassType
     }
     if (type instanceof ClassType)
       {
-	byte [] buf = new byte[type.size];
-	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
-	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
 	abb.order(type.getEndian());
-	return new Value((ClassType)type, type.name, (ArrayByteBuffer)abb);
+	return new Value((ClassType)type, type.name, abb);
       }
     else if (type instanceof ArrayType)
       {
-	byte [] buf = new byte[type.size];
-	v.getLocation().getByteBuffer().get(off, buf, 0, type.size);
-	ArrayByteBuffer abb = new ArrayByteBuffer(buf, 0, type.size);
+	ByteBuffer abb = v.getLocation().getByteBuffer().slice(off,type.size);
 	abb.order(type.getEndian());
-	return new Value((ArrayType)type, type.name, (ArrayByteBuffer)abb);
+	return new Value((ArrayType)type, type.name, abb);
       }
     return null;
   }
@@ -158,19 +153,25 @@ public class ClassType
     return new ClassIterator(v);
   }
 
-  public Value get (Value v, ArrayList components)
+  public Value get (Value v, int componentsIdx, ArrayList components)
   {
-    Iterator ci = components.iterator();
-    while (ci.hasNext())
+    while (componentsIdx < components.size())
       {
-	String component = (String)ci.next();
+	String component = (String)components.get(componentsIdx);
 	for (int i = 0; i < names.size(); i++)
 	  {
-	      if (((String)names.get(i)).equals(component))
-	        return getValue (v, i);
+	     if (((String)names.get(i)).equals(component)) 
+	       {
+		 v = getValue (v, i);
+		 if (v.getType() instanceof ClassType)
+		   return ((ClassType)v.getType()).get(v, componentsIdx, components);
+		 else if (v.getType() instanceof ArrayType)
+		   v = ((ArrayType)v.getType()).get(v, ++componentsIdx, components);
+	     }
 	  }
+	componentsIdx += 1;
       }
-    return null;
+    return v;
   }
   
   public String toString (Value v)
@@ -239,14 +240,6 @@ public class ClassType
     this.size = size;
   }
   
-  public static Value newClassValue (Type type, String text,
-                                           ArrayByteBuffer ab)
-  {
-    Location loc = new Location(ab);
-    Value returnVar = new Value(type, text, loc);
-    return returnVar;
-  }
-
   public Value add (Value var1, Value var2)
       throws InvalidOperatorException
   {

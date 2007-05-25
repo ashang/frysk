@@ -1,3 +1,7 @@
+2007-05-25  Stan Cox  <scox@redhat.com>
+
+	* src/jline/UnixTerminal.java: Cache width and height.
+
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (jline.jar): Pass JAVACFLAGS to JAVAC.

@@ -123,7 +123,7 @@ class BreakpointHandler
 	DwarfDie die = null;
 	try
 	  {
-	    die = cli.symtab.getSymbolDie(breakpt);
+	    die = cli.debugInfo.getSymbolDie(breakpt);
 	  }
 	catch (NameNotFoundException e)
 	  {
