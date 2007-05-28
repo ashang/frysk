@@ -1,5 +1,8 @@
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
+	* eio/TestByteBuffer.java (testGetRelativeAndAbsoluteLimits): Added.
+	Tests changes to get(long index, ...).
+	
 	* eio/ByteBuffer.java (safeGet): Added.
 	(get (long index ,...)): Changed to use limit() rather than remaining.
 
