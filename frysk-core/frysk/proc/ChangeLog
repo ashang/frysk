@@ -1,3 +1,7 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* Proc.java (isVDSO): Removed.
+
 2007-05-25  Nurdin  <npremji@redhat.com>
 
 	* MemoryMap.java (toString): Added.

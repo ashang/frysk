@@ -97,19 +97,6 @@ public abstract class Proc
   {
     return id.hashCode();
   }
-  
-  public boolean isVDSO (MemoryMap map)
-  {
-    if (map == null)
-      return false;
-    Auxv[] auxv = getAuxv();
-    for (int i = 0; i < auxv.length; i++)
-      {
-	if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR)
-	  return auxv[i].val == map.addressLow;
-      }
-    return false;
-  }
 
   /**
    * Return the basename of the program that this process is running.
