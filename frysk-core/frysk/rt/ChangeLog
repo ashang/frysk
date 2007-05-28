@@ -1,3 +1,8 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java (getElfImage): Use DwflFactory to check vdso.
+	(getModuleFromAddress): Use DwflFactory to get the Dwfl.
+
 2007-05-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSteppingEngine.java: Delete all sequences of

@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import frysk.debuginfo.DwflFactory;
 import frysk.event.Event;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
@@ -172,10 +173,9 @@ public class StackAccessors
 
   private DwflModule getModuleFromAddress (long addr)
   {
-    logger.log(Level.FINE, "Looking for addr: {0}\n", Long.toHexString(addr));
+    logger.log(Level.FINE, "Looking for addr: 0x{0}\n", Long.toHexString(addr));
     Dwfl dwfl = null;
-    dwfl = new Dwfl(myTask.getProc().getPid());
-
+    dwfl = DwflFactory.createDwfl(myTask.getProc());
     if (dwfl == null)
       {
 	logger.log(Level.FINE, "Dwfl was null");
@@ -253,7 +253,7 @@ public class StackAccessors
     if (map == null)
       return null;
     
-    if (myTask.getProc().isVDSO(map))
+    if (DwflFactory.isVDSO(myTask.getProc(), map))
       elfImage = addressSpace.getUnwinder().createElfImageFromVDSO(addressSpace, 
 	                                                           map.addressLow, 
 	                                                           map.addressHigh,
