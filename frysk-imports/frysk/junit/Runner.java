@@ -595,10 +595,15 @@ public class Runner
      * while trying to avoid the compiler's optimizer realizing that
      * the rest of the function is dead.
      */
-    static boolean unresolved (int bug)
+    static boolean unresolved (int bug, boolean unresolved)
     {
-	if (skipUnresolvedTests)
-	    Results.addUnresolved(bug);
-	return skipUnresolvedTests;
+	if (skipUnresolvedTests) {
+	    if (unresolved)
+		Results.addUnresolved(bug);
+	}
+	else {
+	    Results.addResolved(bug);
+	}
+	return skipUnresolvedTests && unresolved;
     }
 }

@@ -98,4 +98,13 @@ class Result
 		  "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
 	}
     }
+    static final class Resolved
+	extends Problem
+    {
+	Resolved(int bug)
+	{
+	    super("RESOLVED",
+		  "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
+	}
+    }
 }

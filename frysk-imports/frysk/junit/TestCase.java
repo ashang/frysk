@@ -82,7 +82,7 @@ public class TestCase
      */
     protected static boolean brokenXXX (int bug)
     {
-	return Runner.unresolved(bug);
+	return Runner.unresolved(bug, true);
     }
 
   /**
@@ -91,10 +91,7 @@ public class TestCase
    */
   protected static boolean brokenPpcXXX (int bug)
   {
-      if (Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1) {
-	return brokenXXX (bug);
-    }
-    return false;
+      return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("powerpc") != - 1);
   }
 
   /**
@@ -103,10 +100,7 @@ public class TestCase
    */
   protected static boolean brokenX8664XXX (int bug)
   {
-      if (Config.getTargetCpuXXX ().indexOf ("_64") != - 1) {
-	  return brokenXXX (bug);
-      }
-      return false;
+      return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("_64") != - 1);
   }
 
     /**
@@ -125,20 +119,18 @@ public class TestCase
       for (int i = 0; i < kernels.length; i++) {
 	  String kernel = kernels[i];
 	  if (uname.getRelease ().startsWith (kernel))
-	      return brokenXXX (bug);
+	      return Runner.unresolved (bug, true);
       }
-      return false;
+      return Runner.unresolved(bug, false);
   }
 
-  protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher)
+    protected static boolean brokenIfKernelXXX(int bug, KernelMatch matcher)
     {
 	if (uname == null)
 	    uname = Uname.get ();
 	if (version == null)
 	    version = new KernelVersion(uname.getRelease());
-	if (matcher.matches(version))
-	    return brokenXXX(bug);
-	return false;
+	return Runner.unresolved(bug, matcher.matches(version));
     }
     
     /**

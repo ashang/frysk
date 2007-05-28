@@ -1,5 +1,15 @@
 2007-05-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Result.java (Resolved): Add class.
+	* Runner.java (unresolved): Add "unresolved" parameter.
+	* TestCase.java: Update.
+	* Results.java (addResolved): New.
+	(printResolution): New.
+	(printHeader): Use printResolution to print "resolved" and
+	"unresolved".
+	(addProblem): When the existing result is not PASS, move it from
+	"resolved" to "unresolved".
+	
 	* TestCase.java (brokenXXX): Delete.
 	(brokenXXX(int)): Use Runner.brokenXXX(int).
 	* Runner.java (skipUnresolvedTests, unresolved(int)): New.

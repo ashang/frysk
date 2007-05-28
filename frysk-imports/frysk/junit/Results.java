@@ -62,6 +62,7 @@ class Results
 
     private static Result result;
     private static final Set unresolved = new HashSet();
+    private static final Set resolved = new HashSet();
 
     public void startTest (Test test)
     {
@@ -76,6 +77,12 @@ class Results
     {
 	logger.log (Level.FINE, "{0} --- {1} ---- {2}: {3}\n",
 		    new Object[] { test, name, what, t });
+	// If a problem was previously recorded, move it to the
+	// unresolved set.
+	if (result != Result.PASS) {
+	    resolved.remove(result);
+	    unresolved.add(result);
+	}
 	result = new Result.Problem(what, t.toString());
     }
     public void addError (Test test, java.lang.Throwable t)
@@ -91,25 +98,38 @@ class Results
 	result = new Result.Unresolved(bug);
 	unresolved.add (result);
     }
+    static void addResolved (int bug)
+    {
+	result = new Result.Resolved(bug);
+	resolved.add(result);
+    }
     public void endTest (Test test)
     {
 	logger.log (Level.FINE, "{0} ---- endTest ----\n", test);
 	result.println();
     }
 
-    protected void printHeader(long runTime)
+    private void printResolution (String what, Set set)
     {
-	super.printHeader (runTime);
-	if (unresolved.size() > 0) {
-	    System.out.println ("There was "
-				+ unresolved.size()
-				+ " unresolved:");
-	    for (Iterator i = unresolved.iterator(); i.hasNext(); ) {
+	if (set.size() > 0) {
+	    System.out.println ("There were "
+				+ set.size()
+				+ " "
+				+ what
+				+ ":");
+	    for (Iterator i = set.iterator(); i.hasNext(); ) {
 		Result.Unresolved r = (Result.Unresolved)i.next();
 		System.out.print ("  ");
 		System.out.println (r.getReason());
 	    }
 	}
+    }
+
+    protected void printHeader(long runTime)
+    {
+	super.printHeader (runTime);
+	printResolution("unresolved", unresolved);
+	printResolution("resolved", resolved);
     }
 
     protected void printFooter(TestResult result)
