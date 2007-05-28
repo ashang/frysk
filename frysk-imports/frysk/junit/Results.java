@@ -80,10 +80,17 @@ class Results
 	// If a problem was previously recorded, move it to the
 	// unresolved set.
 	if (result != Result.PASS) {
-	    resolved.remove(result);
+	    // At end will remove all unresolved from resolved.
 	    unresolved.add(result);
+	    Result.Problem problem = (Result.Problem)result;
+	    result = new Result.Problem ("UNRESOLVED " + what,
+					 new String[] {
+					     problem.getReason(),
+					     t.toString()
+					 });
 	}
-	result = new Result.Problem(what, t.toString());
+	else
+	    result = new Result.Problem(what, t.toString());
     }
     public void addError (Test test, java.lang.Throwable t)
     {
@@ -95,12 +102,12 @@ class Results
     }
     static void addUnresolved (int bug)
     {
-	result = new Result.Unresolved(bug);
+	result = Result.unresolved(bug);
 	unresolved.add (result);
     }
     static void addResolved (int bug)
     {
-	result = new Result.Resolved(bug);
+	result = Result.resolved(bug);
 	resolved.add(result);
     }
     public void endTest (Test test)
@@ -118,7 +125,7 @@ class Results
 				+ what
 				+ ":");
 	    for (Iterator i = set.iterator(); i.hasNext(); ) {
-		Result.Unresolved r = (Result.Unresolved)i.next();
+		Result.Problem r = (Result.Problem)i.next();
 		System.out.print ("  ");
 		System.out.println (r.getReason());
 	    }
@@ -128,6 +135,9 @@ class Results
     protected void printHeader(long runTime)
     {
 	super.printHeader (runTime);
+	// Any tests that ended up in unresolved, can't have been
+	// resolved.
+	resolved.removeAll(unresolved);
 	printResolution("unresolved", unresolved);
 	printResolution("resolved", resolved);
     }

@@ -62,49 +62,48 @@ class Result
     static class Problem
 	extends Result
     {
-	private final String reason;
+	private final String[] reasons;
 	protected Problem(String what, String reason)
 	{
 	    super(what);
-	    this.reason = reason;
+	    this.reasons = new String[] { reason };
+	}
+	protected Problem(String what, String[] reasons)
+	{
+	    super(what);
+	    this.reasons = reasons;
 	}
 	void println()
 	{
 	    super.println();
-	    System.out.print ("  ");
-	    System.out.println(reason);
+	    for (int i = 0; i < reasons.length; i++) {
+		System.out.print ("  ");
+		System.out.println(reasons[i]);
+	    }
 	}
 	String getReason()
 	{
-	    return reason;
+	    return reasons[0];
 	}
 	public boolean equals (Object o)
 	{
 	    if (o instanceof Problem)
-		return ((Problem)o).reason.equals (reason);
+		return ((Problem)o).getReason().equals (getReason());
 	    return false;
 	}
 	public int hashCode()
 	{
-	    return reason.hashCode();
+	    return getReason().hashCode();
 	}
     }
-    static final class Unresolved
-	extends Problem
+    static Problem unresolved(int bug)
     {
-	Unresolved(int bug)
-	{
-	    super("UNRESOLVED",
-		  "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
-	}
+	return new Problem ("UNRESOLVED",
+			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
     }
-    static final class Resolved
-	extends Problem
+    static Problem resolved(int bug)
     {
-	Resolved(int bug)
-	{
-	    super("RESOLVED",
-		  "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
-	}
+	return new Problem ("RESOLVED",
+			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
     }
 }

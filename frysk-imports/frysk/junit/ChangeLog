@@ -1,5 +1,12 @@
 2007-05-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Result.java (Unresolved, Resolved): Delete.
+	(resolved, unresolved): New.
+	* Results.java: Update.
+	(addProblem): Change "RESOLVED" to "UNRESOLVED".
+	(printResolution): Cast to Result.Problem.
+	(printHeader): Remove all unresolved from resolved.
+	
 	* Result.java (Resolved): Add class.
 	* Runner.java (unresolved): Add "unresolved" parameter.
 	* TestCase.java: Update.
