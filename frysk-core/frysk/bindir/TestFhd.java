@@ -246,7 +246,35 @@ public class TestFhd
     e.send("break @hpd-c.c@180\n");
     e.expect("breakpoint.*" + prompt);
     e.send("go\n");
-    e.expect(prompt);
-    
+    e.expect(prompt + "Breakpoint.*@hpd-c.c@180");
+    e.send("quit\n");
+    e.expect("Quitting...");
+    e.close();
+  }
+
+  public void testHpdBreakpointInline()
+  {
+    child = new Expect (new String[]
+	{
+	  new File (Config.getPkgLibDir (), "test1").getPath ()
+	});
+    e = new Expect (new String[]
+	{
+	  new File (Config.getBinDir (), "fhpd").getPath ()
+	});
+    e.expect (prompt);
+    // Attach
+    e.send ("attach " + child.getPid () + " -cli\n");
+    e.expect ("attach.*" + prompt);
+    // Break
+    e.send("break add\n");
+    e.expect("break.*" + prompt);
+    e.send("go\n");
+    e.expect("go.*" + prompt + ".*Breakpoint.*add");
+    e.send("where\n");
+    e.expect("where.*#0.* main \\(\\) .*" + prompt);
+    e.send("quit\n");
+    e.expect("Quitting...");
+    e.close();
   }
 }

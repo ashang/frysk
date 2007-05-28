@@ -1,3 +1,9 @@
+2007-05-25  Tim Moore  <timoore@redhat.com>
+
+	* DwarfDie.java (manageDie, setManageDie): Delete die if 
+	necessary.
+	* cni/DwarfDie.cxx (finalize): Delete die if necessary.
+
 2007-05-17  Stan Cox  <scox@redhat.com>
 
 	* cni/DwarfDie.cxx (get_first_struct_member): New.

@@ -1269,6 +1269,15 @@ class LinuxTaskState
 	    task.getProc().performTaskDetachCompleted (task);
 	    return detached;
 	}
+
+        public TaskState handleTerminatedEvent (Task task, boolean signal,
+						int value)
+	{
+	    logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
+	    task.getProc().remove (task);
+	    handleAttachedTerminated (task, signal, value);
+	    return destroyed;
+	}
     }
     
     /**

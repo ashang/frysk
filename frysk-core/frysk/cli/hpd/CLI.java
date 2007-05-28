@@ -554,11 +554,7 @@ public class CLI
 	startedByRun = runningProcs.contains(proc);
       }
       if (startedByRun)
-	{
-	  addMessage("Can't detach a process started by the run command.", 
-	             Message.TYPE_ERROR);
-	  return;
-	}
+	return;
       // Delete all breakpoints.
       if (steppingObserver != null)
 		SteppingEngine.removeObserver(steppingObserver, proc);

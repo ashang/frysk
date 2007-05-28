@@ -1,3 +1,8 @@
+2007-05-25  Tim Moore  <timoore@redhat.com>
+
+	* hpd/CLI.java (DetachHandler.handle): Skip processes started by
+	the run command without reporting an error.
+
 2007-05-25  Stan Cox  <scox@redhat.com>
 
 	* hpd/SymTab.java: Move to frysk.debuginfo.DebugInfo

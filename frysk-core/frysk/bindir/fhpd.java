@@ -37,7 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import java.util.List;
 
 import frysk.cli.hpd.CLI;
@@ -47,6 +50,7 @@ import jline.ConsoleReader;
 
 import frysk.proc.Manager;
 import frysk.util.CommandlineParser;
+import frysk.util.PtyTerminal;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
@@ -114,7 +118,10 @@ public class fhpd
     ConsoleReader reader = null; // the jline reader
 
     try {
-      reader = new ConsoleReader();
+      reader = new ConsoleReader(new FileInputStream(java.io.FileDescriptor.in),
+				 new PrintWriter(System.out),
+				 null,
+				 new PtyTerminal(frysk.sys.FileDescriptor.in));
     }
     catch (IOException ioe) {
       System.out.println("ERROR: Could not create a command line");

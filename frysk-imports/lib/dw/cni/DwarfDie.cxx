@@ -608,9 +608,13 @@ struct CallbackArgs
 extern "C" int inlineInstanceCallback(Dwarf_Die *instance, void *arg)
 {
   CallbackArgs *cbArg = static_cast<CallbackArgs *>(arg);
-  if (cbArg->arrayList)
+  if (!cbArg->arrayList)
     cbArg->arrayList = new java::util::ArrayList();
-  cbArg->arrayList->add(cbArg->factory->makeDie((jlong)instance, 0));
+  Dwarf_Die *die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
+  memcpy(die, instance, sizeof(*die));
+  lib::dw::DwarfDie *dwarfDie = cbArg->factory->makeDie((jlong)die, 0);
+  dwarfDie->setManageDie(true);
+  cbArg->arrayList->add(dwarfDie);
   return DWARF_CB_OK;
 }
 
@@ -626,4 +630,11 @@ lib::dw::DwarfDie::getInlinedInstances()
     }
   else
     return cbArgs.arrayList;
+}
+
+void
+lib::dw::DwarfDie::finalize()
+{
+  if (manageDie)
+    JvFree(DWARF_DIE_POINTER);
 }

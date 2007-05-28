@@ -53,6 +53,8 @@ abstract public class DwarfDie
   private int scopeIndex;
 
   private Dwfl parent;
+
+  protected boolean manageDie = false;
   
   protected DwarfDie (long pointer, Dwfl parent)
   {
@@ -98,6 +100,11 @@ abstract public class DwarfDie
   public void setScopes (DwarfDie[] scopes)
   {
     this.scopes = scopes;
+  }
+
+  public void setManageDie(boolean value)
+  {
+    manageDie = value;
   }
   
   /**
@@ -434,4 +441,6 @@ abstract public class DwarfDie
   private static native long get_decl (long dw, String sym);
 
   private static native long get_decl_cu (long dw, String sym);
+
+  protected native void finalize();
 }
