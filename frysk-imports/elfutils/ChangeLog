@@ -1,3 +1,7 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* libdwfl/libdwfl.h: Publicize elf_from_remote_memory.
+
 2007-05-21  Stepan Kasal  <skasal@redhat.com>
 
 	* configure.ac: Add -Wno-portability to AM_INIT_AUTOMAKE, to

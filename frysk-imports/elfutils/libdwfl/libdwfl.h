@@ -455,6 +455,15 @@ extern int dwfl_module_register_names (Dwfl_Module *mod,
 							const char *regname,
 							int bits, int type),
 				       void *arg);
+				       
+extern Elf *elf_from_remote_memory (GElf_Addr ehdr_vma,
+				    GElf_Addr *loadbasep,
+				    ssize_t (*read_memory) (void *arg,
+							    void *data,
+							    GElf_Addr address,
+							    size_t minread,
+							    size_t maxread),
+				    void *arg);				       
 
 
 #ifdef __cplusplus
