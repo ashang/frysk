@@ -414,5 +414,12 @@ public class TestDOM extends TestCase {
 				testDOMInlineInstance.getEnd(), end_index);
 
 	}
+	
+	public static void testDOMFormFeed()
+	{
+	  if (brokenXXX(4535))
+	    return;
+	  new DOMLine(0, (char) 0xc + "", 0, false, false, 0);
+	}
 
 }

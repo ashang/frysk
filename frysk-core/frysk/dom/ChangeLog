@@ -1,3 +1,7 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* TestDOM.java (testDOMFormFeed): Added.
+
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
 	* DOMFactory.java (createDOM): Abstract StackFrame to Frame.
