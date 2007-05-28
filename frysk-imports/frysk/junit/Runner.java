@@ -41,7 +41,6 @@ package frysk.junit;
 
 import frysk.EventLogger;
 import frysk.Config;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.regex.PatternSyntaxException;
 import java.util.Collection;
@@ -50,11 +49,9 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.Enumeration;
-import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import junit.textui.ResultPrinter;
 import junit.textui.TestRunner;
 import frysk.expunit.Expect;
 
@@ -72,7 +69,7 @@ import java.util.LinkedList;
 public class Runner
     extends TestRunner
 {
-    static Logger logger = Logger.getLogger("frysk");
+    static final Logger logger = Logger.getLogger("frysk");
     
     // Repeat once by default.
     private int repeatValue = 1;
@@ -89,59 +86,6 @@ public class Runner
     
     public final static String ARCH64 = "64";
     public final static String ARCH32 = "32";
-    
-    /**
-     * Overide JUnit's print methods with a version that displays each
-     * test as it is run.  Makes tracking down problems when the run
-     * does a crash 'n' burn.
-     */
-    public static class Results
-	extends ResultPrinter
-    {
-	// Does this have a race condition?
-	boolean pass = false;
-	public void startTest (Test test)
-	{
-	    logger.log (Level.FINE, "{0} ---- startTest ----\n", test);
-	    System.out.print ("Running ");
-	    System.out.print (test);
-	    System.out.print (" ...");
-	    System.out.flush ();
-	    pass = true;
-	}
-	public void endTest (Test test)
-	{
-	    logger.log (Level.FINE, "{0} ---- endTest ----\n", test);
-	    if (pass)
-		System.out.println ("PASS");
-	    else
-		System.out.println ();
-	}
-	private void printProblem (Test test, String name, String what,
-				   Throwable t)
-        {
-	    logger.log (Level.FINE, "{0} --- {1} ---- {2}: {3}\n",
-			new Object[] { test, name, what, t });
-	    System.out.println (what);
-	    System.out.print ("  ");
-	    System.out.print (t);
-	    pass = false;
-        }
-
-	public void addError (Test test, java.lang.Throwable t)
-	{
-	    printProblem (test, "addError", "ERROR", t);
-	}
-	public void addFailure (Test test, AssertionFailedError t)
-	{
-	    printProblem (test, "addFailure", "FAIL", t);
-	}
-	// Constructor.
-	Results (PrintStream stream)
-	{
-	    super (stream);
-	}
-    }
     
     public static void usage(String message, int exitVal)
     {
@@ -388,10 +332,10 @@ public class Runner
     
     parser.add(new Option("unbreak", 'u', "Run broken tests")
     {
-      public void parsed (String arg) throws OptionException
-      {
-	TestCase.brokenXXX = false;
-      }
+	public void parsed (String arg) throws OptionException
+	{
+	    skipUnresolvedTests = false;
+	}
     });
     
     parser.add(new Option('c', "Shortcut for --console frysk=LEVEL.", "<LEVEL>")
@@ -640,4 +584,21 @@ public class Runner
 	return result;
     }
 
+    /**
+     * Should the known-to-be-broken tests run?
+     */
+    private static boolean skipUnresolvedTests = true;
+
+    /**
+     * A method that returns true, and reports "UNRESOLVED".  Used by
+     * test cases that want to be skipped (vis: if (broken()) return)
+     * while trying to avoid the compiler's optimizer realizing that
+     * the rest of the function is dead.
+     */
+    static boolean unresolved (int bug)
+    {
+	if (skipUnresolvedTests)
+	    Results.addUnresolved(bug);
+	return skipUnresolvedTests;
+    }
 }

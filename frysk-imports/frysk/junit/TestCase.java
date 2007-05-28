@@ -75,11 +75,6 @@ public class TestCase
     }
 
     /**
-     * A variable that has the value true.  Used by code trying to
-     * stop the optimizer realise that there's dead code around.
-     */
-    static boolean brokenXXX = true;    
-    /**
      * A method that returns true, and prints skip.  Used by test
      * cases that want to be skipped (vis: if (broken()) return) while
      * trying to avoid the compiler's optimizer realizing that the
@@ -87,10 +82,7 @@ public class TestCase
      */
     protected static boolean brokenXXX (int bug)
     {
-       if (brokenXXX)
-	 System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
-
-       return brokenXXX;
+	return Runner.unresolved(bug);
     }
 
   /**
