@@ -1,3 +1,16 @@
+2007-05-28  Nurdin Premji  <npremji@redhat.com>
+
+	* Dwfl.java (dwfl_report_begin): Made public.
+	(dwfl_report_end): Ditto.
+	(dwfl_report_module): Ditto.
+	* DwflModule.java (setUserData): Added.
+	(toString): Added.
+	* cni/Dwfl.cxx (read_proc_memory): Added.
+	(dwfl_frysk_proc_find_elf): Added.
+	(dwfl_begin ()): Use dwfl_frysk_proc_find_elf.
+	(dwfl_report_module): Fix truncated last character bug.
+	* cni/DwflModule.cxx: (setUserData): Added.
+
 2007-05-25  Tim Moore  <timoore@redhat.com>
 
 	* DwarfDie.java (manageDie, setManageDie): Delete die if 

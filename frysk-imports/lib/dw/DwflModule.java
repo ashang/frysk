@@ -53,6 +53,10 @@ public class DwflModule
 
   protected String name;
   
+  public String toString()
+  {
+    return name + " pointer: 0x" + Long.toHexString(pointer);
+  }
   public DwflModule(long val, Dwfl parent) 
   {
     this(val, parent, null);
@@ -109,4 +113,6 @@ public class DwflModule
 
   public native void getSymbolByName(String name,
 				     SymbolBuilder symbolBuilder);
+  
+  public native void setUserData(Object data);
 }

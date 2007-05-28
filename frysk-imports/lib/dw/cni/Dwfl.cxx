@@ -39,6 +39,9 @@
 #include <libdwfl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 #include <gcj/cni.h>
 
 #include <gnu/gcj/RawDataManaged.h>
@@ -49,7 +52,58 @@
 #include "lib/dw/DwarfDieFactory.h"
 #include "lib/dw/DwflModule.h"
 
+#include "inua/eio/ByteBuffer.h"
+
 #define DWFL_POINTER (::Dwfl *) this->pointer
+
+static ssize_t
+read_proc_memory (void *arg, void *data, GElf_Addr address,
+		  size_t minread, size_t maxread)
+{
+  inua::eio::ByteBuffer* memory = (inua::eio::ByteBuffer *) arg;
+  
+  jbyteArray bytes = JvNewByteArray(maxread);
+  ssize_t nread = memory->safeGet((off64_t) address, bytes, 0, maxread);
+  memcpy(data, elements(bytes), nread);
+  if (nread > 0 && (size_t) nread < minread)
+    nread = 0;
+  return nread;
+}
+
+int
+dwfl_frysk_proc_find_elf (Dwfl_Module *mod,
+			  void **userdata,
+			  const char *module_name, Dwarf_Addr base,
+			  char **file_name, Elf **elfp)
+{	
+  if (module_name[0] == '/')
+    {
+      int fd = open64 (module_name, O_RDONLY);
+      if (fd >= 0)
+	{
+	  *file_name = strdup (module_name);
+	  if (*file_name == NULL)
+	    {
+	      close (fd);
+	      return ENOMEM;
+	    }
+	}
+      return fd;
+    }
+   else
+    {
+      /* Special case for in-memory ELF image.  */
+      inua::eio::ByteBuffer * memory = (inua::eio::ByteBuffer *) *userdata;           
+      
+      *elfp = elf_from_remote_memory (base, NULL, &read_proc_memory, memory);
+     
+      return -1;
+    }
+
+ //abort ();
+  return -1;
+}
+
 
 void
 lib::dw::Dwfl::dwfl_begin(jint pid){
@@ -83,7 +137,7 @@ lib::dw::Dwfl::dwfl_begin()
 	
 	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
 	
-	cbs->find_elf = ::dwfl_linux_proc_find_elf;
+	cbs->find_elf = ::dwfl_frysk_proc_find_elf;
 	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
 	cbs->debuginfo_path = &flags;
 	cbs->section_address = NULL;
@@ -111,10 +165,11 @@ void
 lib::dw::Dwfl::dwfl_report_module(jstring moduleName, jlong low, jlong high)
 {
 	jsize len = JvGetStringUTFLength(moduleName);
-	char modName[len]; 
+	char modName[len+1]; 
 	
 	JvGetStringUTFRegion(moduleName, 0, len, modName);
-	modName[len - 1] = '\0';
+	modName[len] = '\0';
+	
 	::dwfl_report_module(DWFL_POINTER, modName, (::Dwarf_Addr) low, 
 	                     (::Dwarf_Addr) high);  
 }

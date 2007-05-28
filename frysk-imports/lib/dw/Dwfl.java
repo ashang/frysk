@@ -201,9 +201,9 @@ public class Dwfl
   
   protected native void dwfl_begin();
   
-  protected native void dwfl_report_begin();
-  protected native void dwfl_report_end();
-  protected native void dwfl_report_module(String moduleName, long low, long high);
+  public native void dwfl_report_begin();
+  public native void dwfl_report_end();
+  public native void dwfl_report_module(String moduleName, long low, long high);
 
   protected native void dwfl_end ();
 
