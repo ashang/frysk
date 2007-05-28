@@ -340,11 +340,20 @@ public abstract class ByteBuffer
     logger.log(Level.FINE, "entering index: 0x{0}, off: 0x{1}, len: {2}\n",
                new Object[] {Long.toHexString(index), Long.toHexString(off),
                              new Integer(len)});
-    if (ULong.GT(index + len, remaining()))
+    if (ULong.GT(index + len, limit()))
       throw new BufferUnderflowException();
     peekFully(lowWater + index,dst,off,len);
     logger.log(Level.FINE, "exiting\n");
     return this;
+  }
+  
+  public int safeGet (long index, byte[] dst, int off, int len)
+  {
+    int maxLen = len;
+    if (ULong.GT(index + len, limit()))
+      maxLen = (int) (limit() - index);
+    get(index, dst, off, maxLen);
+    return maxLen;
   }
 
   public ByteBuffer get (byte[] dst, int off, int len)
