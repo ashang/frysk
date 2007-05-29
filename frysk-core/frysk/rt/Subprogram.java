@@ -63,19 +63,19 @@ public class Subprogram
     public Subprogram (DwarfDie die, DebugInfo debugInfo)
     {
       this.name = die.getName();
-      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
+//      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
       
       LinkedList parameters = new LinkedList();
       die = die.getChild();
       while(die != null){
-	System.out.print(" -> " + DwTagEncodings.toName(die.getTag()));
+//	System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
 	if(die.getTag() == DwTagEncodings.DW_TAG_formal_parameter_){
 	  Value value = debugInfo.getVariable(die);
 	  parameters.add(value);
 	}
 	die = die.getSibling();
       }
-      System.out.println("\nSubprogram.Subprogram()");
+//      System.out.println("\nSubprogram.Subprogram()");
       //XXX: this is temporary, this.parameters should
       //     be converted to a LinkedList
       this.parameters = new Value[parameters.size()];
@@ -118,15 +118,17 @@ public class Subprogram
     
     public String toString ()
     {
-      String string;
-      string = "*" + this.getName() + "(";
-      for (int i = 0; i < this.parameters.length; i++) {
-	string += parameters[i].getType() + " " + parameters[i].getText();
-	if(i < (this.parameters.length-1)){
-	  string += ",";
-	}
-      }
-      string += ")";
-      return string;
+//      String string;
+//      string = this.getName() + "(";
+//      for (int i = 0; i < this.parameters.length; i++) {
+//	string += parameters[i].getType() + " " + parameters[i].getText();
+//	if(i < (this.parameters.length-1)){
+//	  string += ",";
+//	}
+//      }
+//      string += ")";
+//      return string;
+      
+      return this.getName();
     }
 }

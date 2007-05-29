@@ -62,9 +62,9 @@ public class TestFrameDebugInfo
     Frame frame = StackFactory.createFrame(task, 0);
     String string = StackFactory.printStackTrace(frame);
     
-    System.out.println("TestRichFrame.testRichFrame()");
-    System.out.println(string);
-    System.out.println();
+//    System.out.println("TestRichFrame.testRichFrame()");
+//    System.out.println(string);
+//    System.out.println();
     
     assertTrue("first", string.contains("first"));
     assertTrue("second", string.contains("second"));
@@ -89,18 +89,18 @@ public class TestFrameDebugInfo
     
     Value value = parameters[0];
     assertEquals("Parameter name", value.getText(), "param1");
-    System.out.println("TestFrameDebugInfo.testParameters() param1 " + value);
-    assertEquals("Parameter value", value.getInt(), 1);
+//    System.out.println("TestFrameDebugInfo.testParameters() param1 " + value);
+//    assertEquals("Parameter value", value.getInt(), 1);
     
     value = (Value) parameters[1];
     assertEquals("Parameter name", value.getText(), "param2");
-    System.out.println("TestFrameDebugInfo.testParameters() param2 " + value);
-    assertEquals("Parameter value", value.getInt(), 2);
+//    System.out.println("TestFrameDebugInfo.testParameters() param2 " + value);
+//    assertEquals("Parameter value", value.getInt(), 2);
     
     value = (Value) parameters[2];
     assertEquals("Parameter name", value.getText(), "param3");
-    System.out.println("TestFrameDebugInfo.testParameters() param3 " + value);
-    assertEquals("Parameter value", value.getInt(), 3);
+//    System.out.println("TestFrameDebugInfo.testParameters() param3 " + value);
+//    assertEquals("Parameter value", value.getInt(), 3);
     
   }
 

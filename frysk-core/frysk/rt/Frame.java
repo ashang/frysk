@@ -111,7 +111,7 @@ public abstract class Frame
     builder.append(addr);
 
     if (getSubprogram() != null) {
-      builder.append(" " + getSubprogram().toString());
+      builder.append(" in " + getSubprogram().toString() + " ()");
     }
     else {
       // Print the symbol, if known append ().
@@ -186,7 +186,6 @@ public abstract class Frame
 	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
 	
 	for (int i = 0; i < scopes.length; i++) {
-	  System.out.println("Frame.getSubprogram() scopes["+i+"].getTag() " + DwTagEncodings.toName(scopes[i].getTag()));
 	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_) {
 	    subprogram = new Subprogram(scopes[i], debugInfo);
 	    break;

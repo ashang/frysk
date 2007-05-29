@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-inline void fourth(int param1, int param2, int param3){
+void fourth(int param1, int param2, int param3){
   int var1 = 1;
   exit(var1);
 }

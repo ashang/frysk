@@ -77,6 +77,6 @@ public class TestFstack
 		child.getPid () + ""
 	    });
 	// Just look for main.
-	e.expect (" in main ");
+	e.expect ("main");
     }
 }

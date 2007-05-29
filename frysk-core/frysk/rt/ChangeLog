@@ -1,13 +1,16 @@
 2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java: New test.
+	Disabled parts of test not yet implemented.
 	* Subprogram.java: Added initialization for parameter values using
 	dwarf info.
 	addd toString method.
+	Diabled printing of parameters.
 	* StackFrame.java: Removed duplicate toPrint method.
 	* RemoteFrame.java (toPrint): Moved toPrint from here...
 	* Frame.java (toPrint):...to here.
 	Added Dwarf info handling to getSubprogram.
+	Changed print method to match format expected by TestFcatch
 
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 

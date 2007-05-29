@@ -1,3 +1,8 @@
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+
+	* TestFstack.java: Changed check for " in main " to check for
+	"main".
+
 2007-05-28  Tim Moore  <timoore@redhat.com>
 
 	* fhpd.java: (main): Use frysk.util.PtyTerminal instead of default
