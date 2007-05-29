@@ -1,4 +1,9 @@
 2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+	
+	* DebugInfo.java: Replaced use of the return of Subprogram.getParams()
+	as a Value[] to use it as LinkedList.
+	
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfo.java: Added getVariable().
 

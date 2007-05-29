@@ -43,7 +43,6 @@
 
 package frysk.rt;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import lib.dw.DwTagEncodings;
@@ -56,7 +55,7 @@ public class Subprogram
   // Language language;
     Subprogram outer;
     LexicalBlock block;
-    Value[] parameters;
+    LinkedList parameters;
     
     private String name;
 
@@ -65,7 +64,7 @@ public class Subprogram
       this.name = die.getName();
 //      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
       
-      LinkedList parameters = new LinkedList();
+      parameters = new LinkedList();
       die = die.getChild();
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
@@ -75,21 +74,12 @@ public class Subprogram
 	}
 	die = die.getSibling();
       }
-//      System.out.println("\nSubprogram.Subprogram()");
-      //XXX: this is temporary, this.parameters should
-      //     be converted to a LinkedList
-      this.parameters = new Value[parameters.size()];
-      Iterator iterator = parameters.iterator();
-      int i = 0;
-      while(iterator.hasNext()){
-	Value value = (Value) iterator.next();
-	this.parameters[i++] = value;
-      }
+
     }
 
     public Subprogram ()
     {
-      
+      parameters = new LinkedList();
     }
 
     public String getName(){
@@ -106,23 +96,20 @@ public class Subprogram
       this.block = block;
     }
 
-    public Value[] getParameters ()
+    public LinkedList getParameters ()
     {
       return parameters;
     }
 
-    public void setParameters (int n)
-    {
-      this.parameters = new Value[n];
-    }
-    
     public String toString ()
     {
 //      String string;
 //      string = this.getName() + "(";
-//      for (int i = 0; i < this.parameters.length; i++) {
-//	string += parameters[i].getType() + " " + parameters[i].getText();
-//	if(i < (this.parameters.length-1)){
+//      Iterator iterator = this.parameters.iterator();
+//      while(iterator.hasNext()) {
+//        Value parameter = (Value) iterator.next();
+//        string += parameter.getType() + " " + parameter.getText();
+//	if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
 //	  string += ",";
 //	}
 //      }

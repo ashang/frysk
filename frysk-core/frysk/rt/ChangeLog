@@ -1,3 +1,10 @@
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+
+	* Subprogram.java: Changed type of parameters from Value[] to
+	LinkedList.
+	* TestFrameDebugInfo.java: Changed use of Subprogram.getParamers as
+	a Value[] to used it as LinkedList.
+
 2007-05-29  Adam Jocksch  <ajockshc@redhat.com>
 
 	* DisplayValue.java: Renamed from Display.java.

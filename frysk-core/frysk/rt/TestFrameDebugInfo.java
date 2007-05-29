@@ -40,6 +40,8 @@
 
 package frysk.rt;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import frysk.proc.Action;
@@ -84,20 +86,21 @@ public class TestFrameDebugInfo
     Subprogram subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "third");
     
-    Value[] parameters = subprogram.getParameters();
-    assertEquals("Number of parameters", parameters.length, 3);
+    LinkedList parameters = subprogram.getParameters();
+    assertEquals("Number of parameters", parameters.size(), 3);
     
-    Value value = parameters[0];
+    Iterator iterator = parameters.iterator();
+    Value value = (Value) iterator.next();
     assertEquals("Parameter name", value.getText(), "param1");
 //    System.out.println("TestFrameDebugInfo.testParameters() param1 " + value);
 //    assertEquals("Parameter value", value.getInt(), 1);
     
-    value = (Value) parameters[1];
+    value = (Value) (Value) iterator.next();
     assertEquals("Parameter name", value.getText(), "param2");
 //    System.out.println("TestFrameDebugInfo.testParameters() param2 " + value);
 //    assertEquals("Parameter value", value.getInt(), 2);
     
-    value = (Value) parameters[2];
+    value = (Value) (Value) iterator.next();
     assertEquals("Parameter name", value.getText(), "param3");
 //    System.out.println("TestFrameDebugInfo.testParameters() param3 " + value);
 //    assertEquals("Parameter value", value.getInt(), 3);

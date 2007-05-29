@@ -42,6 +42,7 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
@@ -474,13 +475,13 @@ public class DebugInfo
            parm = parm.getSibling();
          }
        parm = varDie.getChild();
-       subPr.setParameters(nParms);
-       Value parms[] = subPr.getParameters();
+       
+       LinkedList parms = subPr.getParameters();
        nParms = 0;
        while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
          {
            if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
-             parms[nParms] = debugInfoEvaluator[0].getVariable(parm);
+             parms.add(debugInfoEvaluator[0].getVariable(parm));
            parm = parm.getSibling();
            nParms += 1;
          }
@@ -525,10 +526,13 @@ public class DebugInfo
        
        if (false)
          {
-           Value p[] = subPr.getParameters ();
+           LinkedList p = subPr.getParameters ();
            System.out.println("Parameters");
-           for (int j = 0; j < p.length; j++)
-             System.out.println(p[j].getText());
+           Iterator iterator = p.iterator();
+           while(iterator.hasNext()){
+             Value parameter = (Value) iterator.next();
+             System.out.println(parameter.getText());
+           }
            LexicalBlock b = subPr.getBlock();
            Value v[] = b.getVariables();
            System.out.println("Variables");
