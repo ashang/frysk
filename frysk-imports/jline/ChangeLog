@@ -1,4 +1,4 @@
-2007-05-29  scox  <scox@multics.rdu.redhat.com>
+2007-05-29  Stan Cox  <scox@redhat.com>
 
 	* src/jline/ConsoleReader.java (getTermwidth): Use terminal instead of 
 	Terminal.setupTerminal()
