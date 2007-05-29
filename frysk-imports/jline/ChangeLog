@@ -1,3 +1,9 @@
+2007-05-29  scox  <scox@multics.rdu.redhat.com>
+
+	* src/jline/ConsoleReader.java (getTermwidth): Use terminal instead of 
+	Terminal.setupTerminal()
+	(getTermheight): Likewise.
+
 2007-05-25  Stan Cox  <scox@redhat.com>
 
 	* src/jline/UnixTerminal.java: Cache width and height.
