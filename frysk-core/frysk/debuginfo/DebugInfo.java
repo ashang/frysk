@@ -562,4 +562,11 @@ public class DebugInfo
 	   debugInfoEvaluator[i].setSubprogram(subprogram[i]);
          }
      }
+     
+     
+     public Value getVariable (DwarfDie die)
+     {
+       return debugInfoEvaluator[0].getVariable(die);
+     } 
+
 }

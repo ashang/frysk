@@ -51,7 +51,6 @@ import lib.unwind.ProcName;
 
 public class RemoteFrame extends Frame
 {  
-  protected Cursor cursor;
   
   private Symbol symbol;
   private Line[] lines;
@@ -221,51 +220,7 @@ public class RemoteFrame extends Frame
   {
     return cursor.isSignalFrame();
   }
-  
-  /**
-   * Return a simple string representation of this stack frame.
-   * The returned string is suitable for display to the user.
-   */
-  public String toPrint (boolean name)
-  {
-     // XXX: There is always an inner cursor.
-      if (this.cursor == null)
-	  return "Empty stack trace";
-    
-     // Pad the address based on the task's word size.
-      StringBuffer builder = new StringBuffer ("0x");
-      String addr = Long.toHexString (getAddress());
-      int padding = 2 * task.getIsa().getWordSize() - addr.length();
-      for (int i = 0; i < padding; ++i)
-	  builder.append('0');
-      builder.append(addr);
 
-       // Print the symbol, if known append ().
-      Symbol symbol = getSymbol ();
-      builder.append(" in ");
-      builder.append (symbol.getDemangledName ());
-      if (symbol != Symbol.UNKNOWN)
-	  builder.append (" ()");
-
-       // If there's line number information append that.
-      Line[] lines = getLines ();
-      for (int i = 0; i < lines.length; i++) {
-	  Line line = lines[i];
-	  builder.append (" from: ");
-	  if (name) {
-	      builder.append (line.getFile ().getName ());
-	      builder.append (": line #");
-	      builder.append (line.getLine ());
-	  }
-	  else {
-	      builder.append(line.getFile ().getPath ());
-	      builder.append ("#");
-	      builder.append (line.getLine ());
-	  }
-      }
-     return builder.toString();
-  }
-  
   /**
    * Return this frame's symbol; UNKNOWN if there is no symbol.
    */

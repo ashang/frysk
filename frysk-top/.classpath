@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/libgcj-4.1.1.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
 	<classpathentry kind="lib" path="/usr/local/share/java/frysk-core.jar"/>
+	<classpathentry kind="lib" path="/usr/local/share/java/frysk-imports.jar" sourcepath="/to/scratch/swagiaal/frysks/frysk"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

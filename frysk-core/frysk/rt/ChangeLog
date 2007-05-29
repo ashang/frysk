@@ -1,3 +1,14 @@
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java: New test.
+	* Subprogram.java: Added initialization for parameter values using
+	dwarf info.
+	addd toString method.
+	* StackFrame.java: Removed duplicate toPrint method.
+	* RemoteFrame.java (toPrint): Moved toPrint from here...
+	* Frame.java (toPrint):...to here.
+	Added Dwarf info handling to getSubprogram.
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java (getElfImage): Use DwflFactory to check vdso.

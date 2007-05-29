@@ -1,3 +1,7 @@
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+
+	* TestLib.java: Added getMainTask() to AttachedDaemonProcess.
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* Proc.java (isVDSO): Removed.

@@ -39,11 +39,18 @@
 
 package frysk.rt;
 
+import lib.dw.DwTagEncodings;
+import lib.dw.DwarfDie;
+import lib.dw.Dwfl;
+import lib.dw.DwflDieBias;
+import lib.unwind.Cursor;
+import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
 
 public abstract class Frame
 {
   protected Task task;
+  protected Cursor cursor;
   
   private Subprogram subprogram;
   
@@ -89,8 +96,50 @@ public abstract class Frame
    * Return a simple string representation of this stack frame.
    * The returned string is suitable for display to the user.
    */
-  public abstract String toPrint (boolean isSourceWindow);
-  
+  public String toPrint (boolean name)
+  {
+    // XXX: There is always an inner cursor.
+    if (this.cursor == null)
+      return "Empty stack trace";
+
+    // Pad the address based on the task's word size.
+    StringBuffer builder = new StringBuffer("0x");
+    String addr = Long.toHexString(getAddress());
+    int padding = 2 * task.getIsa().getWordSize() - addr.length();
+    for (int i = 0; i < padding; ++i)
+      builder.append('0');
+    builder.append(addr);
+
+    if (getSubprogram() != null) {
+      builder.append(" " + getSubprogram().toString());
+    }
+    else {
+      // Print the symbol, if known append ().
+      Symbol symbol = getSymbol();
+      builder.append(" in ");
+      builder.append(symbol.getDemangledName());
+      if (symbol != Symbol.UNKNOWN)
+	builder.append(" ()");
+    }
+
+    // If there's line number information append that.
+    Line[] lines = getLines();
+    for (int i = 0; i < lines.length; i++) {
+      Line line = lines[i];
+      builder.append(" from: ");
+      if (name) {
+	builder.append(line.getFile().getName());
+	builder.append(": line #");
+	builder.append(line.getLine());
+      }
+      else {
+	builder.append(line.getFile().getPath());
+	builder.append("#");
+	builder.append(line.getLine());
+      }
+    }
+    return builder.toString();
+  }
   public abstract long getReg(long reg);
   
   /**
@@ -123,10 +172,33 @@ public abstract class Frame
      */
   public abstract Line[] getLines ();
 
-    public final Subprogram getSubprogram ()
-    {
-      return subprogram;
+  public final Subprogram getSubprogram ()
+  {
+    if (subprogram == null) {
+      DebugInfo debugInfo = new DebugInfo(this.getTask().getTid(),
+  			       this.getTask().getProc(), this.getTask(), this);
+      
+      Dwfl dwfl = new Dwfl(this.getTask().getProc().getPid());
+      DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
+
+      if (bias != null) {
+
+	DwarfDie[] scopes = bias.die.getScopes(getAdjustedAddress());
+	
+	for (int i = 0; i < scopes.length; i++) {
+	  System.out.println("Frame.getSubprogram() scopes["+i+"].getTag() " + DwTagEncodings.toName(scopes[i].getTag()));
+	  if (scopes[i].getTag() == DwTagEncodings.DW_TAG_subprogram_) {
+	    subprogram = new Subprogram(scopes[i], debugInfo);
+	    break;
+	  }
+
+	}
+      }
+      this.setSubprogram(subprogram);
     }
+
+    return subprogram;
+  }
 
     public final void setSubprogram (Subprogram subprogram)
     {

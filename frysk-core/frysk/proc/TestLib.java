@@ -840,6 +840,11 @@ public class TestLib
     {
       mainTask.requestUnblock(execBlockingObserver);
     }
+
+    public Task getMainTask ()
+    {
+      return this.mainTask;
+    }
   }
 
   /**

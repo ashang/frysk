@@ -1,3 +1,7 @@
+2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfo.java: Added getVariable().
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflFactory.java: Added.
