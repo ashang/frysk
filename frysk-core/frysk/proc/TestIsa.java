@@ -261,10 +261,8 @@ public class TestIsa
   {
       String exec32 = getExec32Path ("funit-exec");
       String exec64 = getExec64Path ("funit-exec");
-      if (exec32 == null || exec64 == null) {
-	  System.out.print ("<<SKIP>>");
+      if (unsupported ("32-on-64", exec32 == null || exec64 == null))
 	  return;
-      }
       String[] command = new String[] {
 	  exec64,
 	  String.valueOf(Pid.get()),
@@ -307,10 +305,8 @@ public class TestIsa
   {
       String exec32 = getExec32Path ("funit-exec");
       String exec64 = getExec64Path ("funit-exec");
-      if (exec32 == null && exec64 == null) {
-	  System.out.print ("<<SKIP>>");
+      if (unsupported ("32-on-64", exec32 == null && exec64 == null))
 	  return;
-      }
       String[] command = new String[] {
 	  exec64,
 	  String.valueOf(Pid.get()),

@@ -75,6 +75,14 @@ public class TestCase
     }
 
     /**
+     * A method that returns true, and reports UNSUPPORTED.
+     */
+    protected static boolean unsupported(String reason, boolean notSupported)
+    {
+	return Runner.unsupported(reason, notSupported);
+    }
+
+    /**
      * A method that returns true, and prints skip.  Used by test
      * cases that want to be skipped (vis: if (broken()) return) while
      * trying to avoid the compiler's optimizer realizing that the

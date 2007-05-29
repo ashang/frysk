@@ -40,10 +40,45 @@
 package frysk.junit;
 
 /**
- * Possible results from running a test; see POSIX and dejagnu.
+ * Possible results from running a test; see POSIX and dejagnu for
+ * definition of states.
  */
 class Result
 {
+    /** POSIX: PASS.  */
+    static final Result PASS = new Result("PASS");
+    /** POSIX: PASS (RESOLVED).  */
+    static final Problem pass(int bug)
+    {
+	return new Problem ("PASS (RESOLVED)",
+			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
+    }
+    /** POSIX: FAIL.  */
+    static final Problem fail (String what, Throwable t)
+    {
+	return new Problem (what, t.toString());
+    }
+    /** POSIX: FAIL (RESOLVED).  */
+    static final Problem fail (String what, Problem unresolved, Throwable t)
+    {
+	return new Problem (what + " (" + unresolved + ")",
+			    new String[] {
+				unresolved.getReason(),
+				t.toString()
+			    });
+    }
+    /** POSIX: UNRESOLVED.  */
+    static Problem unresolved(int bug)
+    {
+	return new Problem ("UNRESOLVED",
+			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
+    }
+    /** POSIX: UNSUPPORTED.  */
+    static final Problem unsupported (String why)
+    {
+	return new Problem ("UNSUPPORTED", why);
+    }
+
     private final String what;
     protected Result (String what)
     {
@@ -57,18 +92,17 @@ class Result
     {
 	System.out.println (what);
     }
-    static final Result PASS = new Result("PASS");
 
     static class Problem
 	extends Result
     {
 	private final String[] reasons;
-	protected Problem(String what, String reason)
+	private Problem(String what, String reason)
 	{
 	    super(what);
 	    this.reasons = new String[] { reason };
 	}
-	protected Problem(String what, String[] reasons)
+	private Problem(String what, String[] reasons)
 	{
 	    super(what);
 	    this.reasons = reasons;
@@ -95,15 +129,5 @@ class Result
 	{
 	    return getReason().hashCode();
 	}
-    }
-    static Problem unresolved(int bug)
-    {
-	return new Problem ("UNRESOLVED",
-			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
-    }
-    static Problem resolved(int bug)
-    {
-	return new Problem ("RESOLVED",
-			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
     }
 }

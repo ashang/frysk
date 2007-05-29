@@ -63,6 +63,7 @@ class Results
     private static Result result;
     private static final Set unresolved = new HashSet();
     private static final Set resolved = new HashSet();
+    private static final Set unsupported = new HashSet();
 
     public void startTest (Test test)
     {
@@ -80,17 +81,14 @@ class Results
 	// If a problem was previously recorded, move it to the
 	// unresolved set.
 	if (result != Result.PASS) {
-	    // At end will remove all unresolved from resolved.
-	    unresolved.add(result);
+	    // Convert to fail and add to unresolved.  At end will
+	    // remove all unresolved from resolved.
 	    Result.Problem problem = (Result.Problem)result;
-	    result = new Result.Problem ("UNRESOLVED " + what,
-					 new String[] {
-					     problem.getReason(),
-					     t.toString()
-					 });
+	    unresolved.add(problem);
+	    result = Result.fail(what, problem, t);
 	}
 	else
-	    result = new Result.Problem(what, t.toString());
+	    result = Result.fail(what, t);
     }
     public void addError (Test test, java.lang.Throwable t)
     {
@@ -107,8 +105,13 @@ class Results
     }
     static void addResolved (int bug)
     {
-	result = Result.resolved(bug);
+	result = Result.pass(bug);
 	resolved.add(result);
+    }
+    static void addUnsupported (String reason)
+    {
+	result = Result.unsupported (reason);
+	unsupported.add(result);
     }
     public void endTest (Test test)
     {
@@ -140,6 +143,7 @@ class Results
 	resolved.removeAll(unresolved);
 	printResolution("unresolved", unresolved);
 	printResolution("resolved", resolved);
+	printResolution("unsupported", unsupported);
     }
 
     protected void printFooter(TestResult result)

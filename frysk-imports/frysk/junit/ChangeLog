@@ -1,3 +1,13 @@
+2007-05-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestCase.java (unsupported): New.
+	* Runner.java (unsupported): New.
+	* Result.java (fail, unsupported): New methods.
+	(resolved): Delete.
+	* Results.java: Use.
+	(addUnsupported(String), unsupported): New.
+	(printHeader): Print unsupported.
+	
 2007-05-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Result.java (Unresolved, Resolved): Delete.

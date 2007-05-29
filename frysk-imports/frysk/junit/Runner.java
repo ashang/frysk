@@ -606,4 +606,14 @@ public class Runner
 	}
 	return skipUnresolvedTests && unresolved;
     }
+
+    /**
+     * An unsupported feature; can't test.
+     */
+    static boolean unsupported(String reason, boolean unsupported)
+    {
+	if (unsupported)
+	    Results.addUnsupported(reason);
+	return skipUnresolvedTests && unsupported;
+    }
 }
