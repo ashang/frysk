@@ -95,10 +95,10 @@ public class TestFhd
     e.send ("print int_21\n");
     e.expect ("print.*21.*(fhpd)");
     // Down
-    // e.send ("d\t");
-    // e.expect ("defset.*down.*detach.*delete.*" + prompt);
-    e.send ("down\n");
-    e.expect ("down.*#0.*" + prompt);
+    e.send ("d\t");
+    e.expect (".*defset.*down.*detach.*delete.*" + prompt + ".*");
+    e.send ("own\n");
+    e.expect ("own.*#0.*" + prompt);
     e.close();
   }
 
@@ -126,8 +126,8 @@ public class TestFhd
     e.send ("print int_22\n");
     e.expect ("print.*22.*\r\n" + prompt);
     // char_21
-    // e.send ("print ch\t");
-    // e.expect ("print.*char_21");
+    e.send ("print ch\t");
+    e.expect ("print.*char_21");
     e.send ("print char_21\n");
     e.expect ("print.*a.*" + prompt);
     // long_21
@@ -163,6 +163,10 @@ public class TestFhd
     // static_class
     e.send ("print static_class\n");
     e.expect ("print.*12\\.34.*" + prompt);
+    e.send ("print static_class.\t\t");
+    e.expect (".*class_int_1.*class_float_1.*" + prompt + ".*");
+    e.send ("int_1\n");
+    e.expect (".*51.*" + prompt);
     // class
     //	e.send ("print class_1\n");
     //	e.expect ("print.*15.*" + prompt);
@@ -187,10 +191,10 @@ public class TestFhd
     e.send ("attach " + child.getPid () + " -cli\n");
     e.expect ("attach.*" + prompt);
     // arr_1
-    // e.send ("print arr_\t");
-    // e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
-    e.send ("print arr_1\n");
-    e.expect ("print.*1,2,3,4,5.*0,1,2.*" + prompt);
+    e.send ("print arr_\t");
+    e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
+    e.send ("1\n");
+    e.expect (".*1,2,3,4,5.*0,1,2.*" + prompt);
     // what array
     e.send ("what arr_2\n");
     e.expect ("what.*int.*5,6.*hpd-c.c.*" + prompt);
