@@ -50,28 +50,22 @@ class Result
     /** POSIX: PASS (RESOLVED).  */
     static final Problem pass(int bug)
     {
-	return new Problem ("PASS (RESOLVED)",
-			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
+	return new Problem(new String[] { "PASS", "UNRESOLVED" }, bug);
     }
     /** POSIX: FAIL.  */
     static final Problem fail (String what, Throwable t)
     {
-	return new Problem (what, t.toString());
+	return new Problem(what, t);
     }
     /** POSIX: FAIL (RESOLVED).  */
     static final Problem fail (String what, Problem unresolved, Throwable t)
     {
-	return new Problem (what + " (" + unresolved + ")",
-			    new String[] {
-				unresolved.getReason(),
-				t.toString()
-			    });
+	return new Problem (what, unresolved, t);
     }
     /** POSIX: UNRESOLVED.  */
     static Problem unresolved(int bug)
     {
-	return new Problem ("UNRESOLVED",
-			    "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug);
+	return new Problem (new String[] { "UNRESOLVED" }, bug);
     }
     /** POSIX: UNSUPPORTED.  */
     static final Problem unsupported (String why)
@@ -79,20 +73,43 @@ class Result
 	return new Problem ("UNSUPPORTED", why);
     }
 
-    private final String what;
+    private final String what[];
     protected Result (String what)
+    {
+	this(new String[] { what });
+    }
+    protected Result (String[] what)
     {
 	this.what = what;
     }
+    protected Result (String what, Result unresolved)
+    {
+	this.what = new String[] {
+	    what,
+	    unresolved.what[unresolved.what.length - 1]
+	};
+    }
     public String toString()
     {
-	return what;
+	StringBuffer buf = new StringBuffer(what[0]);
+	for (int i = 1; i < what.length; i++)
+	    buf.append(" (").append(what[i]);
+	for (int i = 1; i < what.length; i++)
+	    buf.append(")");
+	return buf.toString();
+    }
+    String getWhat()
+    {
+	return what[what.length];
     }
     void println()
     {
-	System.out.println (what);
+	System.out.println (toString());
     }
 
+    /**
+     * A problem result.
+     */
     static class Problem
 	extends Result
     {
@@ -100,12 +117,21 @@ class Result
 	private Problem(String what, String reason)
 	{
 	    super(what);
-	    this.reasons = new String[] { reason };
+	    reasons = new String[] { reason };
 	}
-	private Problem(String what, String[] reasons)
+	private Problem(String[] whats, int bug)
 	{
-	    super(what);
-	    this.reasons = reasons;
+	    super(whats);
+	    reasons = new String[] { "http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug };
+	}
+	private Problem(String what, Problem unresolved, Throwable t)
+	{
+	    super(what, unresolved);
+	    this.reasons = new String[] { unresolved.getReason(), t.toString() };
+	}
+	private Problem (String what, Throwable t)
+	{
+	    this(what, t.toString());
 	}
 	void println()
 	{

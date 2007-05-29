@@ -1,5 +1,16 @@
 2007-05-29  Andrew Cagney  <cagney@redhat.com>
 
+	Print "FAIL (UNRESOLVED)" instead of "FAIL (PASS (UNRESOLVED))"
+	* Result.java (what): Change to an array.
+	(toString): Update.
+	(Result(String[])): Replace Result(String).
+	(Result(String,Result)): New.
+	(Problem(String[],int)): New.
+	(Problem(String,Problem,Throwable): New.
+	(Problem(String,Throwable): New.
+	(Problem(String,String[]): Delete.
+	(fail): Use.
+
 	* TestCase.java (unsupported): New.
 	* Runner.java (unsupported): New.
 	* Result.java (fail, unsupported): New methods.
