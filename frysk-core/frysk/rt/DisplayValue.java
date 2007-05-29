@@ -42,7 +42,7 @@ package frysk.rt;
 import frysk.value.Value;
 
 /**
- * The Display class is an intermediary between a Variable object and anything that
+ * The DisplayValue class is an intermediary between a Variable object and anything that
  * wishes to keep track of Variables. A Display is responsible for keeping track
  * of when a Variable is in or out of scope, and reloading the variable if it is
  * available upon a process becoming blocked. It is also responsible for keeping
@@ -50,12 +50,12 @@ import frysk.value.Value;
  * register
  *
  */
-public class Display
+public class DisplayValue
 {
   
   private Value myVar;
   
-  public Display(Value var)
+  public DisplayValue(Value var)
   {
     myVar = var;
   }
@@ -68,7 +68,6 @@ public class Display
     return true;
   }
   
-  // TODO: Rename this method if/when Variable is changed to Value.
   public Value getValue()
   {
     return myVar;

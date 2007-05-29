@@ -1,3 +1,7 @@
+2007-05-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* funit-rt-varchange.c: New program for testing DisplayValue.
+
 2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
 
 	* funit-stacks.c: Remvoed inlining from fouth() (part

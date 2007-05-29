@@ -284,7 +284,7 @@ public class DebugInfo
   {
     Value result = null;
     sInput += (char) 3;
-
+    
     final class TmpSymTab
         implements CppSymTab
     {
@@ -317,7 +317,7 @@ public class DebugInfo
         return false;
       }
     }
-
+    
     CppLexer lexer = new CppLexer(new StringReader(sInput));
     CppParser parser = new CppParser(lexer);
     try
@@ -333,7 +333,7 @@ public class DebugInfo
     catch (frysk.expr.TabException t)
       {
       }
-
+    
     CommonAST t = (CommonAST) parser.getAST();
     CppTreeParser treeParser;
     if (debugInfoEvaluator == null)
@@ -394,7 +394,7 @@ public class DebugInfo
             catch (frysk.value.OperationNotDefinedException o)
               {
               }
-
+            
             ++j;
           }
         

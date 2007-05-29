@@ -182,7 +182,7 @@ public class SteppingEngine
     
     LinkedList tasksList = proc.getTasks();
     threadsList.addAll(tasksList);
-
+    
     Iterator iter = tasksList.iterator();
     while (iter.hasNext())
       {
@@ -1145,7 +1145,7 @@ public class SteppingEngine
      */
     public void notifyNotBlocked ()
     {
-      //System.out.println("notifyNotBlocked");
+      //System.err.println("notifyNotBlocked");
       this.setChanged();
       this.notifyObservers(null);
     }
@@ -1156,7 +1156,7 @@ public class SteppingEngine
      */
     public void notifyStopped ()
     {
-      //System.out.println("notifyStopped");
+      //System.err.println("notifyStopped");
       this.setChanged();
       this.notifyObservers(null);
     }

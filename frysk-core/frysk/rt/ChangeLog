@@ -1,3 +1,9 @@
+2007-05-29  Adam Jocksch  <ajockshc@redhat.com>
+
+	* DisplayValue.java: Renamed from Display.java.
+	* TestDisplayValue: New test, tests not yet working are flagged as 
+	brokenXXX.
+
 2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java: New test.
