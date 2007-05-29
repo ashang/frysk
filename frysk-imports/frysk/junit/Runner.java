@@ -614,6 +614,8 @@ public class Runner
     {
 	if (unsupported)
 	    Results.addUnsupported(reason);
-	return skipUnresolvedTests && unsupported;
+	// XXX: For moment do not enable unsupported tests when -u was
+	// specified as it seems to cause cascading problems.
+	return unsupported;
     }
 }

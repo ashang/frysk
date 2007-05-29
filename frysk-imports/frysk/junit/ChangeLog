@@ -1,5 +1,8 @@
 2007-05-29  Andrew Cagney  <cagney@redhat.com>
 
+	* Runner.java (unsupported): Do not enable unsupported tests when
+	-u is specified.
+
 	Print "FAIL (UNRESOLVED)" instead of "FAIL (PASS (UNRESOLVED))"
 	* Result.java (what): Change to an array.
 	(toString): Update.
