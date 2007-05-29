@@ -1,3 +1,11 @@
+2007-05-29  Nurdin Premji  <npremji@redhat.com>
+
+	* tests/TestDwfl.java (testDwfl): Added.	
+	(testDwflReporting): Ditto.
+	(testDwflModule): Ditto.
+	(testDwflModule2): Ditto.
+	(testDwflModules): Ditto.
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* Dwfl.java (dwfl_report_begin): Made public.

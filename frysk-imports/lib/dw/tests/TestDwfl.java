@@ -55,6 +55,69 @@ import frysk.testbed.LocalMemory;
 public class TestDwfl
     extends TestCase
 {
+  public void testDwfl()
+  {
+    Dwfl dwfl = new Dwfl();
+    assertNotNull("dwfl", dwfl);
+  }
+  
+  public void testDwflReporting()
+  {
+    Dwfl dwfl = new Dwfl();
+    assertNotNull("dwfl", dwfl);
+    
+    dwfl.dwfl_report_begin();
+    dwfl.dwfl_report_module("module", 0, 1);
+    dwfl.dwfl_report_end();
+  }
+  
+  public void testDwflModule()
+  {
+    Dwfl dwfl = new Dwfl();
+    assertNotNull("dwfl", dwfl);
+    
+    String moduleName = "module";
+    
+    dwfl.dwfl_report_begin();    
+    dwfl.dwfl_report_module(moduleName, 0, 1);
+    dwfl.dwfl_report_end();
+    
+    DwflModule module = dwfl.getModule(0);
+    assertNotNull("dwflModule", module);
+    assertTrue("found dwfl module", 
+               module.getName().equals(moduleName));
+  }
+  
+  public void testDwflGetModule2()
+  {
+    Dwfl dwfl = new Dwfl();
+    assertNotNull("dwfl", dwfl);
+    
+    dwfl.dwfl_report_begin();
+    dwfl.dwfl_report_module("module1", 0, 1);
+    dwfl.dwfl_report_module("module2", 1, 3);
+    dwfl.dwfl_report_end();
+    
+    DwflModule module = dwfl.getModule(2);
+    assertNotNull("dwflModule", module);
+    assertTrue("found dwfl module", 
+               module.getName().equals("module2"));
+  }
+  
+  public void testDwflGetModules()
+  {
+    Dwfl dwfl = new Dwfl();
+    assertNotNull("dwfl", dwfl);
+    
+    dwfl.dwfl_report_begin();
+    dwfl.dwfl_report_module("module1", 0, 1);
+    dwfl.dwfl_report_module("module2", 1, 3);
+    dwfl.dwfl_report_end();
+    
+    DwflModule[] modules = dwfl.getModules();
+    assertEquals("Two modules", 2, modules.length);
+  }
+  
   public void testGetLine ()
   {
     Dwfl dwfl = new Dwfl(Pid.get());
