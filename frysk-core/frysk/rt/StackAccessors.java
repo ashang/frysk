@@ -45,7 +45,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import frysk.debuginfo.DwflFactory;
+import frysk.dwfl.DwflFactory;
 import frysk.event.Event;
 import frysk.proc.Isa;
 import frysk.proc.Manager;

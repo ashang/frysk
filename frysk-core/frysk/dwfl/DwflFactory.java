@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.debuginfo;
+package frysk.dwfl;
 
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import frysk.proc.Auxv;
 import frysk.proc.MemoryMap;
 import frysk.proc.Proc;
+import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflModule;
 
@@ -171,12 +172,20 @@ public class DwflFactory
 
     dwfl.dwfl_report_end();
     DwflModule module = dwfl.getModule(VDSOAddressLow(proc));
+    
+    logger.log(Level.FINE, "Main task {0}", proc.getMainTask());
+    logger.log(Level.FINE, "Memory {0}", proc.getMainTask().getMemory());
     logger.log(Level.FINE, "Dwfl module: {0}\n", module);
     if (module != null)
       module.setUserData(proc.getMainTask().getMemory());
 
-    dwflMap.put(proc.getId(), dwfl);
+    dwflMap.put(proc.getId(), dwfl);   
     return dwfl;
+  }
+  
+  public static Dwfl createDwfl(Task task)
+  {
+    return createDwfl(task.getProc());
   }
 
 }

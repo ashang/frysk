@@ -1,3 +1,7 @@
+2007-05-30  Nurdin Premji  <npremji@redhat.com>
+
+	* DwflFactory.java: Moved to frysk.dwfl package.
+
 2007-05-29  sami wagiaalla  <swagiaal@redhat.com>
 	
 	* DebugInfo.java: Replaced use of the return of Subprogram.getParams()
