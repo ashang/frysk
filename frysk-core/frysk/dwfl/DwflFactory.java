@@ -187,5 +187,16 @@ public class DwflFactory
   {
     return createDwfl(task.getProc());
   }
+  
+  public static void clearDwfl(Proc proc)
+  {
+    if (dwflMap.containsKey(proc.getId()))
+      dwflMap.remove(proc.getId());
+  }
+  
+  public static void clearDwfl(Task task)
+  {
+    clearDwfl(task.getProc());
+  }
 
 }
