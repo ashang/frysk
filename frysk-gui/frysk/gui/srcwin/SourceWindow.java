@@ -126,6 +126,7 @@ import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.SessionManager;
+import frysk.gui.sessions.WatchList;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Isa;
@@ -690,7 +691,14 @@ public class SourceWindow
     updateSourceLabel(newFrame);
 
     /* Update the variable watch as well */
-    // this.watchView.refreshList();
+    WatchList wList = getCurrentDebugProcess().getWatchList();
+    Iterator values = wList.getVariableIterator();
+    LinkedList l = new LinkedList();
+    while(values.hasNext())
+      l.add(values.next());
+    this.symTab[current].refresh();
+    if(view instanceof SourceView)
+      wList.refreshVars(((SourceView) this.view).refreshVars((List) l));
   }
 
   /**

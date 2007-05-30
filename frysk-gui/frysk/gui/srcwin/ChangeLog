@@ -1,3 +1,8 @@
+2007-05-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (PopulateStackBrowser): Re-enabled variable watch
+	refreshing.
+
 2007-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindowFactory.java: Delete call to
