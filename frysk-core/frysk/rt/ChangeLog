@@ -1,5 +1,7 @@
 2007-05-31  Nurdin Premji  <npremji@redhat.com>
 
+	* LineBreakpoint.java (getRawAddressesForProc): Use DwflFactory.
+	
 	* FunctionBreakpoint.java (getRawAddressesForProc): Use DwflFactory.
 	* StackFrame.java (getLines): Ditto.
 	* Frame.java (getSubprogram): Ditto.

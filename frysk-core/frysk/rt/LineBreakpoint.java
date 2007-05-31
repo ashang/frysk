@@ -47,9 +47,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
 
-import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 
+import frysk.dwfl.DwflFactory;
 import frysk.proc.Proc;
 
 public class LineBreakpoint
@@ -97,7 +97,7 @@ public class LineBreakpoint
 
   public LinkedList getRawAddressesForProc(Proc proc)
   {
-    LinkedList result = (new Dwfl(proc.getPid())).getLineAddresses(fileName,
+    LinkedList result = DwflFactory.createDwfl(proc).getLineAddresses(fileName,
 								   lineNumber,
 								   column);
     if (logger == null)
