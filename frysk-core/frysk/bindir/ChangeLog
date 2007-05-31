@@ -1,3 +1,13 @@
+2007-05-31  Andrew Cagney  <cagney@redhat.com>
+
+	* ftrace.java: Add package frysk.bindir.
+	* fstep.java: Ditto.
+	* fstack.java: Ditto.
+	* fparser.java: Ditto.
+	* fhpd.java: Ditto.
+	* fcore.java: Ditto.
+	* fcatch.java: Ditto.
+
 2007-05-29  Stan Cox  <scox@redhat.com>
 
 	* TestFhd.java (testHpdTraceStack): Test tabbed command completion.

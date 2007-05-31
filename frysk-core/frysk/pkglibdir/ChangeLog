@@ -1,3 +1,7 @@
+2007-05-31  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Add package frysk.pkglibdir.
+
 2007-05-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* funit-rt-varchange.c: New program for testing DisplayValue.

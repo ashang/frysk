@@ -1,3 +1,8 @@
+2007-05-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (echo_LDFLAGS): Simplify by always passing the
+	class to --main.
+
 2007-04-13  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* Makefile.rules (fryski): Put the building of fryski under

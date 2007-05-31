@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.bindir;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
