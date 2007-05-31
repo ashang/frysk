@@ -1,3 +1,10 @@
+2007-05-31  Nurdin Premji  <npremji@redhat.com>
+
+	* DebugInfo.java (what): Use DwflFactory to get the Dwfl.
+	(complete): Ditto.
+	* DebugInfoEvaluator.java (getDie): Ditto.
+	(DebugInfoEvaluator): Ditto.
+	
 2007-05-30  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflFactory.java: Moved to frysk.dwfl package.

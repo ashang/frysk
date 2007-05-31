@@ -64,6 +64,7 @@ import frysk.proc.Task;
 import frysk.rt.Frame;
 import frysk.rt.LexicalBlock;
 import frysk.rt.Subprogram;
+import frysk.dwfl.DwflFactory;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
 import frysk.expr.CppSymTab;
@@ -132,7 +133,7 @@ public class DebugInfo
       
       pc = getCurrentFrame().getAdjustedAddress();
 
-      dwfl = new Dwfl(pid);
+      dwfl = DwflFactory.createDwfl(proc);
       DwflDieBias bias = dwfl.getDie(pc);
       DwarfDie die = bias.die;
       String token = "";
@@ -204,7 +205,7 @@ public class DebugInfo
       
       pc = getCurrentFrame().getAdjustedAddress();
 
-      dwfl = new Dwfl(pid);
+      dwfl = DwflFactory.createDwfl(proc);
       DwflDieBias bias = dwfl.getDie(pc);
       if (bias == null)
         throw new NameNotFoundException("No symbol table is available.");

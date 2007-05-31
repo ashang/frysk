@@ -55,6 +55,7 @@ import lib.dw.DwflDieBias;
 import lib.dw.DwOpEncodings;
 import lib.dw.DwAtEncodings;
 import lib.dw.DwTagEncodings;
+import frysk.dwfl.DwflFactory;
 import frysk.expr.CppSymTab;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
@@ -75,8 +76,6 @@ class DebugInfoEvaluator
     implements CppSymTab
 {
   private Task task;
-
-  private int pid;
 
   private Frame currentFrame;
   
@@ -116,7 +115,6 @@ class DebugInfoEvaluator
   DebugInfoEvaluator (Task task, int pid, Frame frame)
   {
     this.task = task;
-    this.pid = pid;
     buffer = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
     ByteOrder byteorder = task.getIsa().getByteOrder();
     buffer.order(byteorder);
@@ -491,7 +489,7 @@ class DebugInfoEvaluator
     DwarfDie[] allDies;
     long pc = this.currentFrame.getAdjustedAddress();
 
-    dwfl = new Dwfl(pid);
+    dwfl = DwflFactory.createDwfl(task);
     DwflDieBias bias = dwfl.getDie(pc);
     if (bias == null)
       return null;
