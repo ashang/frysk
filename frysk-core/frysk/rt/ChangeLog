@@ -1,3 +1,12 @@
+2007-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayValue.java (DisplayValue): Now takes a task object.
+	(isInScope): Now correctly returns whether the varliable is in scope.
+	(update): Added.
+	* TestDisplayValue.java (testVariableValueChanged): Enabled, testcase
+	now passes.
+	(testVariableValueNotChanged): Ditto.
+
 2007-05-30  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java: Reflect movement of DwflFactory.

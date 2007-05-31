@@ -37,11 +37,24 @@
 // version and license this file solely under the GPL without
 // exception.
 
+int x;
+int y;
+
+void bar(int z)
+{
+	return;
+}
+
 int main()
 {
-  int thevar = 0;
-  thevar = 1;
-  thevar = 2;
+  x = 0;
+  bar(x);
+  x = 1;
+  bar(x);
+  y = 2;
+  bar(x);
+  x = 2;
+  bar(x);
 
   return 0;
 }

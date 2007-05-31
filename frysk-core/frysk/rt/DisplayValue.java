@@ -39,6 +39,12 @@
 
 package frysk.rt;
 
+import java.text.ParseException;
+
+import javax.naming.NameNotFoundException;
+
+import frysk.debuginfo.DebugInfo;
+import frysk.proc.Task;
 import frysk.value.Value;
 
 /**
@@ -54,10 +60,18 @@ public class DisplayValue
 {
   
   private Value myVar;
+  private Task myTask;
   
-  public DisplayValue(Value var)
+  /**
+   * Creates a new DisplayValue object encompassing a variable from the
+   * provided Task
+   * @param var The Value to encapsulate
+   * @param task The task to fetch updates from
+   */
+  public DisplayValue(Value var, Task task)
   {
-    myVar = var;
+    myVar = var;     
+    myTask = task;
   }
   
   /**
@@ -65,9 +79,38 @@ public class DisplayValue
    */
   public boolean isInScope ()
   {
-    return true;
+    return myVar != null;
   }
   
+  /**
+   * Updates the display to refect the new variable value
+   * TODO: should this be automatic?
+   */
+  public void update()
+  {
+    DebugInfo info = new DebugInfo(myTask.getTid(), 
+                                   myTask.getProc(), 
+                                   myTask, 
+                                   StackFactory.createFrame(myTask));
+    info.refresh();
+    try
+      {
+        myVar = DebugInfo.print(myVar.getText());
+      }
+    catch (NameNotFoundException e)
+      {
+        e.printStackTrace();
+      }
+    catch (ParseException e)
+      {
+        e.printStackTrace();
+      }
+  }
+  
+  /**
+   * 
+   * @return The Value object encapsulated by this Display.
+   */
   public Value getValue()
   {
     return myVar;

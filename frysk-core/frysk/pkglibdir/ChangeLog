@@ -1,3 +1,8 @@
+2007-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* funit-rt-varchange.c: Added phoney function calls to stop the
+	compiler from optimizing out lines of code.
+
 2007-05-31  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Add package frysk.pkglibdir.
