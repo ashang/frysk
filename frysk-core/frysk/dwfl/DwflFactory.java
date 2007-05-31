@@ -51,12 +51,26 @@ import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflModule;
 
+/**
+ * Factory for creating Dwfl objects for Procs and Tasks.
+ */
 public class DwflFactory
 {
   static Logger logger = Logger.getLogger("frysk");
 
+  /**
+   * Used to cache Dwfl objects per proc.
+   */
   private static WeakHashMap dwflMap = new WeakHashMap();
 
+  /**
+   * Check whether a given {@link frysk.proc.MemoryMap} from a
+   * {@link frysk.proc.Proc} refers to the vdso section.
+   * 
+   * @param proc the {@link frysk.proc.Proc} the map refers to.
+   * @param map the Map to check.
+   * @return true if map is not null and refers to the vdso section.
+   */
   public static boolean isVDSO (Proc proc, MemoryMap map)
   {
     if (map == null)
@@ -64,24 +78,44 @@ public class DwflFactory
     return VDSOAddressLow(proc) == map.addressLow;
   }
 
+  /**
+   * Find the low address of the vdso map section of a given
+   * {@link frysk.proc.Proc}.
+   * 
+   * @param proc the given {@link frysk.proc.Proc}.
+   * @return the low address of the vdso map section of proc.
+   */
   private static long VDSOAddressLow (Proc proc)
   {
     Auxv[] auxv = proc.getAuxv();
     for (int i = 0; i < auxv.length; i++)
       {
-	if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR)
-	  return auxv[i].val;
+        if (auxv[i].type == inua.elf.AT.SYSINFO_EHDR)
+          return auxv[i].val;
       }
     logger.log(Level.FINE, "Couldn't get vdso address\n");
     return 0;
   }
 
+  /**
+   * Check if a given {@link frysk.proc.MemoryMap} does not refer to an elf
+   * image.
+   * 
+   * @param map the given {@link frysk.proc.MemoryMap}.
+   * @return true if the map section does not refer to an elf image.
+   */
   private static boolean isEmptyMap (MemoryMap map)
   {
     return map.name.equals("")
-	   || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
+           || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
   }
 
+  /**
+   * Create a Dwfl for a {@link frysk.proc.Proc}
+   * 
+   * @param proc the given {@link frysk.proc.Proc}.
+   * @return a Dwfl created with proc's maps.
+   */
   public static Dwfl createDwfl (Proc proc)
   {
     if (dwflMap.containsKey(proc.getId()))
@@ -107,94 +141,112 @@ public class DwflFactory
     // If map represents the vdso section, report vdso.
     if (isVDSO(proc, maps[count]))
       {
-	logger.log(Level.FINE, "Found the vdso!\n");
-	dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
-				maps[count].addressHigh);
+        logger.log(Level.FINE, "Found the vdso!\n");
+        dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
+                                maps[count].addressHigh);
       }
     // If map represents an elf mapping store its data..
     else
       {
-	name = maps[count].name;
-	low = maps[count].addressLow;
-	high = maps[count].addressHigh;
-	inode = maps[count].inode;
-	devMinor = maps[count].devMinor;
-	devMajor = maps[count].devMajor;
+        name = maps[count].name;
+        low = maps[count].addressLow;
+        high = maps[count].addressHigh;
+        inode = maps[count].inode;
+        devMinor = maps[count].devMinor;
+        devMajor = maps[count].devMajor;
       }
 
     // Induction Step:
     while (++count < maps.length)
       {
 
-	// if vdso report old (if old), flush old, then report vdso.
-	if (isVDSO(proc, maps[count]))
-	  {
-	    if (name != null)
-	      dwfl.dwfl_report_module(name, low, high);
+        // if vdso report old (if old), flush old, then report vdso.
+        if (isVDSO(proc, maps[count]))
+          {
+            if (name != null)
+              dwfl.dwfl_report_module(name, low, high);
 
-	    name = null;
-	    dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
-				    maps[count].addressHigh);
-	  }
-	// if empty, report old (if old), flush old.
-	if (isEmptyMap(maps[count]))
-	  {
-	    if (name != null)
-	      dwfl.dwfl_report_module(name, low, high);
+            name = null;
+            dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
+                                    maps[count].addressHigh);
+          }
+        // if empty, report old (if old), flush old.
+        if (isEmptyMap(maps[count]))
+          {
+            if (name != null)
+              dwfl.dwfl_report_module(name, low, high);
 
-	    name = null;
-	  }
-	// if old elf, increase highAddress.
-	if (maps[count].name.equals(name) && maps[count].inode == inode
-	    && maps[count].devMinor == devMinor
-	    && maps[count].devMajor == devMajor)
-	  high = maps[count].addressHigh;
+            name = null;
+          }
+        // if old elf, increase highAddress.
+        if (maps[count].name.equals(name) && maps[count].inode == inode
+            && maps[count].devMinor == devMinor
+            && maps[count].devMajor == devMajor)
+          high = maps[count].addressHigh;
 
-	// if new elf, report old, store new
-	else
-	  {
-	    if (name != null)
-	      dwfl.dwfl_report_module(name, low, high);
+        // if new elf, report old, store new
+        else
+          {
+            if (name != null)
+              dwfl.dwfl_report_module(name, low, high);
 
-	    name = maps[count].name;
-	    low = maps[count].addressLow;
-	    high = maps[count].addressHigh;
-	    inode = maps[count].inode;
-	    devMinor = maps[count].devMinor;
-	    devMajor = maps[count].devMajor;
-	  }
+            name = maps[count].name;
+            low = maps[count].addressLow;
+            high = maps[count].addressHigh;
+            inode = maps[count].inode;
+            devMinor = maps[count].devMinor;
+            devMajor = maps[count].devMajor;
+          }
       }
 
     // if last is elf, report elf.
     if (! isEmptyMap(maps[maps.length - 1])
-	&& ! isVDSO(proc, maps[maps.length - 1]))
+        && ! isVDSO(proc, maps[maps.length - 1]))
       dwfl.dwfl_report_module(name, low, high);
 
     dwfl.dwfl_report_end();
     DwflModule module = dwfl.getModule(VDSOAddressLow(proc));
-    
+
     logger.log(Level.FINE, "Main task {0}", proc.getMainTask());
     logger.log(Level.FINE, "Memory {0}", proc.getMainTask().getMemory());
     logger.log(Level.FINE, "Dwfl module: {0}\n", module);
     if (module != null)
       module.setUserData(proc.getMainTask().getMemory());
 
-    dwflMap.put(proc.getId(), dwfl);   
+    dwflMap.put(proc.getId(), dwfl);
     return dwfl;
   }
-  
-  public static Dwfl createDwfl(Task task)
+
+  /**
+   * Create a Dwfl for a {@link frysk.proc.Task}.
+   * 
+   * @param task the given {@link frysk.proc.Task}.
+   * @return a Dwfl created using the tasks maps.
+   */
+  public static Dwfl createDwfl (Task task)
   {
     return createDwfl(task.getProc());
   }
-  
-  public static void clearDwfl(Proc proc)
+
+  /**
+   * Clear a Dwfl created for a {@link frysk.proc.Proc}. (Example: after an
+   * exec.)
+   * 
+   * @param proc the given {@link frysk.proc.Proc}.
+   */
+  public static void clearDwfl (Proc proc)
   {
     if (dwflMap.containsKey(proc.getId()))
       dwflMap.remove(proc.getId());
   }
-  
-  public static void clearDwfl(Task task)
+
+  /**
+   * Clear a Dwfl created for a {@link frysk.proc.Task}. (Example: after an
+   * exec.)
+   * 
+   * @param task the given {@link frysk.proc.Task}.
+   */
+  public static void clearDwfl (Task task)
   {
     clearDwfl(task.getProc());
   }
