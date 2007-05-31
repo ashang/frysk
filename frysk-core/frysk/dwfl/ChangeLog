@@ -1,5 +1,7 @@
 2007-05-31  Nurdin Premji  <npremji@redhat.com>
 
+	* DwflFactory.java (createDwfl): Make induction cases more exclusive.
+
 	* DwflFactory.java: Added javadoc.
 	* package.html: Added.
 

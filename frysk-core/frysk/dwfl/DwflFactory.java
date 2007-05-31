@@ -169,17 +169,19 @@ public class DwflFactory
             name = null;
             dwfl.dwfl_report_module(maps[count].name, maps[count].addressLow,
                                     maps[count].addressHigh);
+            continue;
           }
         // if empty, report old (if old), flush old.
-        if (isEmptyMap(maps[count]))
+        else if (isEmptyMap(maps[count]))
           {
             if (name != null)
               dwfl.dwfl_report_module(name, low, high);
 
             name = null;
+            continue;
           }
         // if old elf, increase highAddress.
-        if (maps[count].name.equals(name) && maps[count].inode == inode
+        else if (maps[count].name.equals(name) && maps[count].inode == inode
             && maps[count].devMinor == devMinor
             && maps[count].devMajor == devMajor)
           high = maps[count].addressHigh;
