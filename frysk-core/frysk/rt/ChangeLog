@@ -1,3 +1,11 @@
+2007-05-31  Nurdin Premji  <npremji@redhat.com>
+
+	* FunctionBreakpoint.java (getRawAddressesForProc): Use DwflFactory.
+	* StackFrame.java (getLines): Ditto.
+	* Frame.java (getSubprogram): Ditto.
+	* RemoteFrame.java (getLines): Ditto.
+	* TaskStepEngine.java (getDwflLine): Ditto.	
+
 2007-05-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayValue.java (DisplayValue): Now takes a task object.

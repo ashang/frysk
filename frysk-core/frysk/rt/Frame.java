@@ -45,6 +45,7 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.unwind.Cursor;
 import frysk.debuginfo.DebugInfo;
+import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
 
 public abstract class Frame
@@ -178,7 +179,7 @@ public abstract class Frame
       DebugInfo debugInfo = new DebugInfo(this.getTask().getTid(),
   			       this.getTask().getProc(), this.getTask(), this);
       
-      Dwfl dwfl = new Dwfl(this.getTask().getProc().getPid());
+      Dwfl dwfl = DwflFactory.createDwfl(this.getTask());
       DwflDieBias bias = dwfl.getDie(getAdjustedAddress());
 
       if (bias != null) {

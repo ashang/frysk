@@ -39,6 +39,7 @@
 
 package frysk.rt;
 
+import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
@@ -208,7 +209,7 @@ public class StackFrame extends Frame
       {
         if (this.cursor != null)
           {
-            Dwfl dwfl = new Dwfl(this.task.getTid());
+            Dwfl dwfl = DwflFactory.createDwfl(task);
             // The innermost frame and frames which were
             // interrupted during execution use their PC to get
             // the line in source. All other frames have their PC

@@ -39,6 +39,7 @@
 
 package frysk.rt;
 
+import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
 import frysk.rt.states.*;
 import lib.dw.Dwfl;
@@ -124,7 +125,7 @@ public class TaskStepEngine
   public DwflLine getDwflLine ()
   {
     if (this.dwfl == null)
-      this.dwfl = new Dwfl(task.getTid());
+      this.dwfl = DwflFactory.createDwfl(task);
     
     DwflLine dline = this.dwfl.getSourceLine(this.task.getIsa().pc(task));
     return dline;
