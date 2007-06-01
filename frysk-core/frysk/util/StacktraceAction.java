@@ -40,6 +40,7 @@
 
 package frysk.util;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -51,6 +52,7 @@ import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
 import frysk.sys.Sig;
@@ -79,6 +81,20 @@ public abstract class StacktraceAction
     super(theProc);
     event = theEvent;
 
+    Manager.eventLoop.add(new InterruptEvent(proc));
+  }
+  
+  public StacktraceAction (ProcId procId, Event theEvent)
+  {
+    super(procId);
+    event = theEvent;
+    Manager.eventLoop.add(new InterruptEvent(proc));
+  }
+  
+  public StacktraceAction (File coreFile, Event theEvent)
+  {
+    super (coreFile);
+    event = theEvent;
     Manager.eventLoop.add(new InterruptEvent(proc));
   }
 

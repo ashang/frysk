@@ -1,5 +1,8 @@
 2007-06-01  Nurdin Premji  <npremji@redhat.com>
 
+	* StacktraceAction.java (StacktraceAction): Added constructors for ProcId
+	and corefile Files.
+	
 	* Util.java (PidCoreParser): Added.	
 	(parsePidsAndCores): Added.	
 	* TestFStack.java (testCore): Added.
