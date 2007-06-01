@@ -39,15 +39,11 @@
 
 package frysk.rt;
 
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.naming.NameNotFoundException;
-
 import frysk.Config;
-import frysk.debuginfo.DebugInfo;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -71,16 +67,27 @@ public class TestDisplayValue
     super.tearDown ();
   }
   
+  /*
+   * Observer that asks the event loop to stop when a breakpoint is hit
+   */
+  private class BreakpointBlocker implements SourceBreakpointObserver
+  {
+    public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
+    {
+      Manager.eventLoop.requestStop();
+    }
+    public void addFailed (Object observable, Throwable w){}
+    public void addedTo (Object observable){}
+    public void deletedFrom (Object observable){}
+  }
+  
   public void testVarValueChanged()
   { 
     // Start the daemon process
     AttachedDaemonProcess process = 
       new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
     
-    // Attach to the process
-    myTask = process.getMainTask();//findTaskUsingRefresh(true);
-    
-    // Get the process
+    myTask = process.getMainTask();
     myProc = myTask.getProc();
     assertNotNull("Daemon's Task", myTask);
     assertNotNull("Daemon's proc", myProc);
@@ -88,17 +95,12 @@ public class TestDisplayValue
     // Set up the stepping engine, breakpoint manager, and symbol table
     SteppingEngine.setProc(myProc);
     BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    
     SteppingEngine.addObserver(new Observer()
     {
-    
       public void update (Observable observable, Object arg)
       {
-	// When our task is added to the stepping engine,
-	// resume our testcase
 	Manager.eventLoop.requestStop();
       }
-    
     });
     assertRunUntilStop("Adding to Stepping Engine");
     
@@ -106,31 +108,14 @@ public class TestDisplayValue
      * Add the first breakpoint:
      * int main()
      *	{
-     *    x = 0; <-- First breakpoint
+     *    x = 0; 
      *    bar(x);
-     *    x = 1; 
-     *    bar(x);
-     *    y = 2; 
-     *    bar(x);
-     *    x = 2;
-     *    bar(x);
+     *    x = 1; <-- First breakpoint
      */
     LineBreakpoint brk1 = 
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 52, 0);
-    brk1.addObserver(new SourceBreakpointObserver()
-    {
-      public void deletedFrom (Object observable) {}
-      public void addedTo (Object observable) {
-      }
-      public void addFailed (Object observable, Throwable w) {}
-    
-      public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
-      {
-	// Stop when we hit the breakpoint
-	Manager.eventLoop.requestStop();
-      }
-    });
+                                 49, 0);
+    brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
     
@@ -142,22 +127,8 @@ public class TestDisplayValue
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
-    DebugInfo info = new DebugInfo(myTask.getTid(), myProc, myTask, StackFactory.createFrame(myTask));
-    info.refresh();
-    Value val = null;
-    try{
-      val = DebugInfo.print("x");
-    }
-    catch (ParseException e)
-    {
-      e.printStackTrace();
-    }
-    catch (NameNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-    assertNotNull("Variable not in scope", val);
-    DisplayValue disp = new DisplayValue(val, myTask);
+    DisplayValue disp = new DisplayValue("x", myTask, 
+                                         StackFactory.createFrame(myTask).getFrameIdentifier());
     
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
@@ -171,26 +142,14 @@ public class TestDisplayValue
      *	{
      *    x = 0;
      *    bar(x);
-     *    x = 1; <-- Second breakpoint
+     *    x = 1;
      *    bar(x);
-     *    y = 2; 
-     *    bar(x);
-     *    x = 2;
-     *    bar(x);
+     *    y = 2; <-- Second breakpoint
      */
     LineBreakpoint brk2 =
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  54, 0);
-    brk2.addObserver(new SourceBreakpointObserver()
-    {
-      public void deletedFrom (Object observable) {}
-      public void addedTo (Object observable) {}
-      public void addFailed (Object observable, Throwable w) {}
-      public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
-      {
-	Manager.eventLoop.requestStop();
-      }
-    });
+                                  51, 0);
+    brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask);
     
     // Run until we hit the second breakpoint
@@ -213,10 +172,7 @@ public class TestDisplayValue
     AttachedDaemonProcess process = 
       new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
     
-    // Attach to the process
-    myTask = process.getMainTask();//findTaskUsingRefresh(true);
-    
-    // Get the process
+    myTask = process.getMainTask();
     myProc = myTask.getProc();
     assertNotNull("Daemon's Task", myTask);
     assertNotNull("Daemon's proc", myProc);
@@ -224,17 +180,12 @@ public class TestDisplayValue
     // Set up the stepping engine, breakpoint manager, and symbol table
     SteppingEngine.setProc(myProc);
     BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    
     SteppingEngine.addObserver(new Observer()
     {
-    
       public void update (Observable observable, Object arg)
       {
-        // When our task is added to the stepping engine,
-        // resume our testcase
         Manager.eventLoop.requestStop();
       }
-    
     });
     assertRunUntilStop("Adding to Stepping Engine");
     
@@ -253,18 +204,8 @@ public class TestDisplayValue
      */
     LineBreakpoint brk1 = 
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  54, 0);
-    brk1.addObserver(new SourceBreakpointObserver()
-    {
-      public void deletedFrom (Object observable) {}
-      public void addedTo (Object observable) {}
-      public void addFailed (Object observable, Throwable w) {}
-      public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
-      {
-        // Stop when we hit the breakpoint
-        Manager.eventLoop.requestStop();
-      }
-    });
+                                  51, 0);
+    brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
   
     
@@ -276,22 +217,8 @@ public class TestDisplayValue
     assertRunUntilStop("First breakpoint");
     
     // Retrieve the Value we're testing, and encapsulate it in a Display
-    DebugInfo info = new DebugInfo(myTask.getTid(), myProc, myTask, StackFactory.createFrame(myTask));
-    info.refresh();
-    Value val = null;
-    try{
-      val = DebugInfo.print("x");
-    }
-    catch (ParseException e)
-    {
-      e.printStackTrace();
-    }
-    catch (NameNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-    assertNotNull("Variable not in scope", val);
-    DisplayValue disp = new DisplayValue(val, myTask);
+    DisplayValue disp = new DisplayValue("x", myTask,
+                                         StackFactory.createFrame(myTask).getFrameIdentifier());
     
     // Check the value of the variable 'thevar', make sure it's equal to one
     Value firstVal = disp.getValue();
@@ -300,12 +227,6 @@ public class TestDisplayValue
     
     /* 
      * Add the second breakpoint:
-     * int main()
-     *  {
-     *    x = 0;
-     *    bar(x);
-     *    x = 1; 
-     *    bar(x);
      *    y = 2;
      *    bar(x);
      *    x = 2; <-- Second breakpoint
@@ -313,19 +234,8 @@ public class TestDisplayValue
      */
     LineBreakpoint brk2 =
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  56, 0);
-    brk2.addObserver(new SourceBreakpointObserver()
-    {
-    
-      public void deletedFrom (Object observable) {}
-      public void addedTo (Object observable) {}
-      public void addFailed (Object observable, Throwable w) {}
-      public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
-      {
-        Manager.eventLoop.requestStop();
-      }
-    
-    });
+                                  53, 0);
+    brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask);
     
     // Run until we hit the second breakpoint
@@ -338,5 +248,95 @@ public class TestDisplayValue
     Value secondVal = disp.getValue();
     assertEquals("Value is in scope", true, disp.isInScope());
     assertEquals("Value of variable at second breakpoint", secondVal.getInt(), 1);
+  }
+  
+  public void testVarOutOfScope()
+  {
+//    if(brokenXXX(4575))
+//      return;
+    // Start the daemon process
+    AttachedDaemonProcess process = 
+      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
+    
+    myTask = process.getMainTask();
+    myProc = myTask.getProc();
+    assertNotNull("Daemon's Task", myTask);
+    assertNotNull("Daemon's proc", myProc);
+   
+    // Set up the stepping engine, breakpoint manager, and symbol table
+    SteppingEngine.setProc(myProc);
+    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+    SteppingEngine.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object arg)
+      {
+        Manager.eventLoop.requestStop();
+      }
+    });
+    assertRunUntilStop("Adding to Stepping Engine");
+    
+    /* 
+     * Add the first breakpoint:
+     * voir bar(int z)
+     * {
+     *   int x = 5;
+     *   x = foo(x); <-- First breakpoint
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                 63, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+  
+    
+    // Let the process continue until we hit the breakpoint
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    // Retrieve the Value we're testing, and encapsulate it in a Display
+    DisplayValue disp = new DisplayValue("x", myTask,
+                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+    // Check the value of the variable 'x', make sure it's equal to one
+    Value firstVal = disp.getValue();
+    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable value at first breakpoint", 5, firstVal.getInt());
+    
+    /* 
+     * Add the second breakpoint:
+     * int main()
+     *  {
+     *    x = 0;
+     *    bar(x);
+     *    x = 1; <-- Second breakpoint
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                  49, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    disp.update();
+    assertEquals("Variable in scope", false, disp.isInScope());
+  }
+  
+  public void testVarMasked()
+  {
+    if(brokenXXX(4576))
+      return;
+  }
+  
+  public void testVarNotInCurrentScope()
+  {
+    if(brokenXXX(4577))
+      return;
   }
 }

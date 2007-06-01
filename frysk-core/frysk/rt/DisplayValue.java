@@ -59,19 +59,25 @@ import frysk.value.Value;
 public class DisplayValue
 {
   
-  private Value myVar;
+  private String varLabel;
   private Task myTask;
+  private FrameIdentifier frameIdentifier;
+  private Value myVar;
   
   /**
    * Creates a new DisplayValue object encompassing a variable from the
    * provided Task
-   * @param var The Value to encapsulate
+   * @param name The name of the value to encapsulate
    * @param task The task to fetch updates from
+   * @param fIdent The FrameIdentifier corresponding to the frame that
+   *    the variable should be looked for in. 
    */
-  public DisplayValue(Value var, Task task)
+  public DisplayValue(String name, Task task, FrameIdentifier fIdent)
   {
-    myVar = var;     
+    varLabel = name;
     myTask = task;
+    frameIdentifier = fIdent;
+    update();
   }
   
   /**
@@ -88,22 +94,42 @@ public class DisplayValue
    */
   public void update()
   {
+    Frame current = StackFactory.createFrame(myTask);
+    // Work backwards through the frames
+    // trying to find the one the value came from
+    while(current != null)
+      {
+        if(current.getFrameIdentifier().equals(frameIdentifier))
+          break;
+        current = current.getOuter();
+      }
+    
+    // If we couldn't find a matching frame, our variable is no longer available
+    if(current == null)
+      {
+        myVar = null;
+        return;
+      }
+    
+    // We found the correct frame, now refresh the variable
     DebugInfo info = new DebugInfo(myTask.getTid(), 
                                    myTask.getProc(), 
                                    myTask, 
-                                   StackFactory.createFrame(myTask));
+                                   current);
     info.refresh();
     try
       {
-        myVar = DebugInfo.print(myVar.getText());
+        myVar = DebugInfo.print(varLabel);
       }
     catch (NameNotFoundException e)
       {
         e.printStackTrace();
+        myVar = null;
       }
     catch (ParseException e)
       {
         e.printStackTrace();
+        myVar = null;
       }
   }
   

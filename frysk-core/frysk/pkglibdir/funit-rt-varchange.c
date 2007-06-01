@@ -36,14 +36,11 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+#include <math.h>
+static volatile int x;
+static volatile int y;
 
-int x;
-int y;
-
-void bar(int z)
-{
-	return;
-}
+void bar(int);
 
 int main()
 {
@@ -52,9 +49,16 @@ int main()
   x = 1;
   bar(x);
   y = 2;
-  bar(x);
+  bar(y);
   x = 2;
   bar(x);
 
   return 0;
+}
+
+void bar(int z)
+{
+	static volatile int x;
+	x = 5;
+	return;
 }

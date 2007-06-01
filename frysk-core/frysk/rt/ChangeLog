@@ -1,3 +1,11 @@
+2007-06-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayValue.java (DisplayValue): Now takes the name of the variable
+	as a string, the task from which it should be fetched, and the
+	FrameIdentifier indicating the scope it is in.
+	* TestDisplayValue.java (testVarOutOfScope): Enabled, confirms bz#4575
+	as fixed.
+
 2007-05-31  Nurdin Premji  <npremji@redhat.com>
 
 	* LineBreakpoint.java (getRawAddressesForProc): Use DwflFactory.

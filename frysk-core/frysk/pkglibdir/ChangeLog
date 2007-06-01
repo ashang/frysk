@@ -1,3 +1,8 @@
+2007-06-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* funit-rt-varchange.c: Made the variables static volatile and
+	added a variable to function bar.
+
 2007-05-31  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Move to frysk-gui/frysk/pkglibdir/.
