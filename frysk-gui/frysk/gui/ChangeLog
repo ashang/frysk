@@ -1,7 +1,3 @@
-2007-06-01  Rick Moseley  <rmoseley@redhat.com>
-
-	* terminal/TermWindow.java: Remove unneeded param.
-
 2007-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Call frysk.proc.Host.requestRefreshXXX() instead of
@@ -20,7 +16,7 @@
 	variable field; added button to select if terminal window
 	should be activated.
 
-2007-05-11  swagiaal  <swagiaal@redhat.com>
+2007-05-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestSessionSaveLoad.java: Added test for saving/loading
 	SessionTypes.
@@ -49,7 +45,6 @@
 2007-05-09  Rick Moseley  <rmoseley@redhat.com>
 
 	* console/ConsoleWindow.java: Renamed from vtecli.
-	* terminal/TermWindow.java: New.
 
 2007-05-09  Sami Wagiaalla  <swagiaal@redhat.com>
 

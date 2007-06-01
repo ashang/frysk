@@ -54,6 +54,8 @@ public class TermWindow
   private Terminal term;
   
   private String name;
+  
+  private PseudoTerminal pty;
 
   public TermWindow ()
   {
@@ -76,10 +78,10 @@ public class TermWindow
       }
     });
 
-    PseudoTerminal pty = new PseudoTerminal ();
+    pty = new PseudoTerminal ();
 
     int master = pty.getFd();
-    System.out.println("TermWindow: master = " + master);
+
     this.name = pty.getFile ().getPath ();
 
     this.term = new Terminal();

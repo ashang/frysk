@@ -1,0 +1,9 @@
+2007-06-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* TermWindow.java: Remove unneeded param:
+	make pty a global variable so /dev/ptmx will be kept
+	from being GC;ed.
+	
+2007-05-09  Rick Moseley  <rmoseley@redhat.com>
+
+	* TermWindow.java: New.
