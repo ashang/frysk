@@ -1,3 +1,11 @@
+2007-06-01  Nurdin Premji  <npremji@redhat.com>
+
+	* fstack.java: Refactored for core support.
+	(main): Use frysk.util.PidCoreParser, moved stacking code to private methods.
+	(stackPid): Added.
+	(stackProc): Added.
+	(stackCore): Added.	
+
 2007-05-31  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Add package frysk.bindir.

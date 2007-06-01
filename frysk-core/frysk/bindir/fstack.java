@@ -39,6 +39,7 @@
 
 package frysk.bindir;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -51,9 +52,11 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
+import frysk.proc.corefile.LinuxHost;
 
 import frysk.util.StacktraceAction;
 import frysk.util.Util;
+import frysk.util.Util.PidCoreParser;
 
 import gnu.classpath.tools.getopt.Parser;
 
@@ -61,7 +64,7 @@ public final class fstack
 {
   private static StacktraceAction stacker;
 
-  private static Util.PidParser parser;
+  private static PidCoreParser parser;
 
   protected static final Logger logger = Logger.getLogger("frysk"); 
 
@@ -70,74 +73,105 @@ public final class fstack
     EventLogger.addConsoleOptions(parser);
   }
 
+  private static void stackPid(ProcId procId)
+  {
+    Manager.host.requestFindProc(procId, new Host.FindProc()
+    {
+      public void procFound (ProcId procId)
+      {
+        final Proc proc = Manager.host.getProc(procId);
+        stackProc(proc);
+      }
+
+      public void procNotFound (ProcId procId, Exception e)
+      {
+        System.err.println("Couldn't find the process: "
+                           + procId.toString());
+        Manager.eventLoop.requestStop();
+      }
+    });
+
+    Manager.eventLoop.run();
+  }
+  
+  private static void stackCore(File coreFile)
+  {
+    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
+    
+    core.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+   Iterator iterator =  core.getProcIterator();
+   
+   while (iterator.hasNext())
+     {
+       Proc proc = (Proc) iterator.next();
+       stackProc(proc);
+     }
+  }
+  
+  private static void stackProc (final Proc proc)
+  {
+    stacker = new StacktraceAction(proc, new Event()
+    {
+      public void execute ()
+      {
+        proc.requestAbandonAndRunEvent(new Event()
+        {
+
+          public void execute ()
+          {
+            Manager.eventLoop.requestStop();
+            System.out.print(stacker.toPrint());
+          }
+        });
+      }
+    })
+    {
+      public void addFailed (Object observable, Throwable w)
+      {
+        w.printStackTrace();
+        proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
+
+        try
+          {
+            // Wait for eventLoop to finish.
+            Manager.eventLoop.join();
+          }
+        catch (InterruptedException e)
+          {
+            e.printStackTrace();
+          }
+        System.exit(1);
+
+      }
+    };
+  }
+  
   public static void main (String[] args)
   {
 
-    parser = new Util.PidParser("fstack");
+    parser = new Util.PidCoreParser("fstack");
     addOptions(parser);
-    parser.setHeader("Usage: fstack <PID>");
+    parser.setHeader("Usage: fstack <PID> | <CORE> ...");
 
-    Collection pidList = Util.parsePids(parser, args);
+    Util.parsePidsAndCores(parser, args);
+    Collection pidList = parser.getPidList();
+    Collection coreList = parser.getCoreList();    
 
     Iterator iter = pidList.iterator();
 
     while (iter.hasNext())
       {
         ProcId procId = (ProcId) iter.next();
-
-        Manager.host.requestFindProc(procId, new Host.FindProc()
-        {
-          public void procFound (ProcId procId)
-          {
-            final Proc proc = Manager.host.getProc(procId);
-
-            stacker = new StacktraceAction(proc, new Event()
-            {
-              public void execute ()
-              {
-                proc.requestAbandonAndRunEvent(new Event()
-                {
-
-                  public void execute ()
-                  {
-                    Manager.eventLoop.requestStop();
-                    System.out.print(stacker.toPrint());
-                  }
-                });
-              }
-            })
-            {
-              public void addFailed (Object observable, Throwable w)
-              {
-                w.printStackTrace();
-                proc.requestAbandonAndRunEvent(new RequestStopEvent(
-                                                                    Manager.eventLoop));
-
-                try
-                  {
-                    // Wait for eventLoop to finish.
-                    Manager.eventLoop.join();
-                  }
-                catch (InterruptedException e)
-                  {
-                    e.printStackTrace();
-                  }
-                System.exit(1);
-
-              }
-            };
-
-          }
-
-          public void procNotFound (ProcId procId, Exception e)
-          {
-            System.err.println("Couldn't find the process: "
-                               + procId.toString());
-            Manager.eventLoop.requestStop();
-          }
-        });
-
-        Manager.eventLoop.run();
+        stackPid(procId);
+      }
+    
+    iter = coreList.iterator();
+    
+    while (iter.hasNext())
+      {
+        File coreFile = (File) iter.next();        
+        stackCore(coreFile);
       }
 
   }

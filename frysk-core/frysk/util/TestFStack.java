@@ -40,11 +40,16 @@
 
 package frysk.util;
 
+import java.io.File;
+import java.util.Iterator;
 import java.util.logging.Level;
 
+import frysk.Config;
 import frysk.event.RequestStopEvent;
+import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.corefile.LinuxHost;
 
 public class TestFStack
     extends TestLib
@@ -113,6 +118,41 @@ public class TestFStack
     logger.log(Level.FINE, result);
     assertTrue(result + "should match: " + regex + " threads",
                result.matches(regex));
+
+  }
+  
+  public void testCore ()
+  {
+    if (brokenXXX(4581))
+      return;
+    
+    Host coreHost = new LinuxHost(Manager.eventLoop,
+                                  new File(Config.getPkgDataDir(), "test-core"));
+
+    assertNotNull("Core file Host is Null?", coreHost);
+
+    coreHost.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+
+    Iterator iter = coreHost.getProcIterator();
+    while (iter.hasNext())
+      {
+        Proc proc = (Proc) iter.next();
+        StacktraceAction stacker;
+
+        stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop))
+        {
+
+          public void addFailed (Object observable, Throwable w)
+          {
+            fail("Proc add failed: " + w.getMessage());
+          }
+        };
+
+        assertRunUntilStop("perform backtrace");
+        
+        assertNotNull("has backtrace?", stacker.toPrint());
+      }
 
   }
 }

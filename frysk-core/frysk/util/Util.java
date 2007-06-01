@@ -39,6 +39,7 @@
 
 package frysk.util;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -87,6 +88,34 @@ public class Util
     }
 
   }
+  
+  public static class PidCoreParser extends Parser
+  {
+    LinkedList pidList = new LinkedList();
+    LinkedList coreList = new LinkedList();
+    
+    public Collection getCoreList()
+    {
+      return coreList;
+    }
+    
+    public PidCoreParser (String programName)
+    {
+      super(programName, Config.getVersion (), true);
+    }
+    
+    protected void validate () throws OptionException
+    {
+      if (pidList.isEmpty() && coreList.isEmpty())
+        throw new OptionException("No pid(s) or core files provided.");
+    }
+
+    public Collection getPidList ()
+    {
+      return pidList;
+    }
+    
+  }
 
   public static Collection parsePids (final PidParser parser, String[] args)
   {
@@ -110,4 +139,31 @@ public class Util
     return parser.pidList;
   }
 
+  public static void parsePidsAndCores (final PidCoreParser parser,
+                                              String[] args)
+  {
+    parser.parse(args, new FileArgumentCallback()
+    {
+      public void notifyFile (String arg) throws OptionException
+      {
+        if (arg.matches(".*core.*"))
+          {
+            parser.coreList.add(new File(arg));
+            return;
+          }
+        try
+          {
+            int pid = Integer.parseInt(arg);
+            parser.pidList.add(new ProcId(pid));
+          }
+        catch (NumberFormatException nfe)
+          {
+            throw new OptionException(
+                                      "Argument " + arg + " does not appear to " 
+                                      + "be a valid pid or core file.");
+
+          }
+      }
+    });
+  }
 }

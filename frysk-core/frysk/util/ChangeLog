@@ -1,3 +1,9 @@
+2007-06-01  Nurdin Premji  <npremji@redhat.com>
+
+	* Util.java (PidCoreParser): Added.	
+	(parsePidsAndCores): Added.	
+	* TestFStack.java (testCore): Added.
+
 2007-05-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Ftrace.java: Replace call to Host.requestRefreshXXX(true) with
