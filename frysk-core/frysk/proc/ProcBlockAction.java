@@ -40,12 +40,14 @@
 
 package frysk.proc;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
+import frysk.proc.corefile.LinuxHost;
 
 /**
  * This class blocks all of the threads in a process and performs a given action
@@ -126,7 +128,7 @@ abstract public class ProcBlockAction
 
   protected static final Logger logger = Logger.getLogger("frysk");
 
-  protected final Proc proc;
+  protected Proc proc;
 
   private LinkedList tasks = new LinkedList();
 
@@ -146,6 +148,59 @@ abstract public class ProcBlockAction
 
     taskList = proc.getTasks();
     requestAdd();
+  }
+  
+  public ProcBlockAction (ProcId procId)
+  {
+    logger.log(Level.FINE, "{0} new\n", this);
+    
+    Manager.host.requestFindProc(procId, new Host.FindProc() {
+
+      public void procFound (ProcId procId)
+      {
+        proc = Manager.host.getProc(procId);
+        taskList = proc.getTasks();
+        requestAdd();
+      }
+
+      public void procNotFound (ProcId procId, Exception e)
+      {
+        throw new RuntimeException("Proc not found " + procId.intValue());
+      }
+      
+    });
+    
+  }
+  
+  public ProcBlockAction (File coreFile)
+  {
+    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
+
+    core.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+    Iterator iterator = core.getProcIterator();
+
+    if (iterator.hasNext())
+      proc = (Proc) iterator.next();
+    else
+      {
+        proc = null;
+        throw new RuntimeException("No proc in this corefile");
+      }
+    if (iterator.hasNext())
+      throw new RuntimeException("Too many procs on this corefile");
+
+    taskList = proc.getTasks();
+    
+    iterator = taskList.iterator();
+    
+    while (iterator.hasNext())
+      {
+        Task task = (Task) iterator.next();
+        existingTask(task);
+      }
+    
+    allExistingTasksCompleted();
   }
 
   private void requestAdd ()
