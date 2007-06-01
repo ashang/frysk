@@ -41,6 +41,7 @@
 package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -116,6 +117,7 @@ import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.disassembler.DisassemblyWindowFactory;
+//import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.prefs.BooleanPreference;
@@ -193,6 +195,9 @@ public class SourceWindow
 
   // Modified FileChooser widget used for executable activation
   public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
+  
+  // Glade file that contains the process list to attach frysk to
+  public static final String PROC_LIST_GLADE = "frysk_create_session_druid.glade";
 
   /*
    * END GLADE CONSTANTS
@@ -214,6 +219,8 @@ public class SourceWindow
   private Action open_core;
 
   private Action open_executable;
+  
+//  private Action attach_proc;
 
   private Action copy;
 
@@ -288,6 +295,9 @@ public class SourceWindow
   private ConsoleWindow conWin;
   
   private TermWindow termWin;
+  
+  // HashMap to keep up with Terminal Windows
+  private HashMap termHash;
 
   protected boolean SW_active = false;
 
@@ -349,6 +359,7 @@ public class SourceWindow
     SteppingEngine.setProc(proc);
     this.threadObserver = new ThreadLifeObserver();
     SteppingEngine.setThreadObserver(this.threadObserver);
+    this.termHash = new HashMap();
   }
   
   /**
@@ -378,6 +389,7 @@ public class SourceWindow
     SteppingEngine.setProcs(procs);
     this.threadObserver = new ThreadLifeObserver();
     SteppingEngine.setThreadObserver(this.threadObserver);
+    this.termHash = new HashMap();
   }
   
   /**
@@ -691,14 +703,21 @@ public class SourceWindow
     updateSourceLabel(newFrame);
 
     /* Update the variable watch as well */
-    WatchList wList = getCurrentDebugProcess().getWatchList();
-    Iterator values = wList.getVariableIterator();
-    LinkedList l = new LinkedList();
-    while(values.hasNext())
-      l.add(values.next());
-    this.symTab[current].refresh();
-    if(view instanceof SourceView)
-      wList.refreshVars(((SourceView) this.view).refreshVars((List) l));
+    DebugProcess dbProc = getCurrentDebugProcess();
+    if (dbProc != null)
+      {
+        WatchList wList = dbProc.getWatchList();
+        if (wList != null)
+          {
+            Iterator values = wList.getVariableIterator();
+            LinkedList l = new LinkedList();
+            while (values.hasNext())
+              l.add(values.next());
+            this.symTab[current].refresh();
+            if (view instanceof SourceView)
+              wList.refreshVars(((SourceView) this.view).refreshVars((List) l));
+          }
+      }
   }
 
   /**
@@ -750,9 +769,13 @@ public class SourceWindow
    * Called when a new executable has been selected to run and add to 
    * the window.
    * 
-   * @param exe	The executable path
-   * @param env_variables	The environment arguments to pass to the executable
-   * @param options 
+   * @param exe	- the executable's path to start
+   * @param env_variables - reserved for future use, will be used to pass 
+   *                        the environment arguments to the executable
+   * @param options - options to pass to the task on the command line
+   * @param stdin - device to point the executed task's stdin to
+   * @param stdout - device to point the executed task's stdout to
+   * @param stserr - device to point the executed task's stderr to 
    */
   protected void addProc (String exe, String env_variables, String options, 
                           String stdin, String stdout, String stderr)
@@ -926,10 +949,10 @@ public class SourceWindow
   private void createActions (AccelGroup ag)
   {
     // Examine core file action
-    this.open_core = new Action("open", "Examine core file", "Examine core file",
+    this.open_core = new Action("open", "Examine core file...", "Examine core file",
                                        GtkStockItem.OPEN.getString());
     this.open_core.setAccelGroup(ag);
-    this.open_core.setAccelPath("<sourceWin>/File/Examine core file");
+    this.open_core.setAccelPath("<sourceWin>/File/Examine core file...");
     this.open_core.addListener(new org.gnu.gtk.event.ActionListener()
     {
       public void actionEvent (ActionEvent action)
@@ -982,75 +1005,9 @@ public class SourceWindow
         chooser.destroy();
       }
     });
-    AccelMap.changeEntry("<sourceWin>/File/Examine core file", KeyValue.o,
+    AccelMap.changeEntry("<sourceWin>/File/Examine core file...", KeyValue.o,
                          ModifierType.CONTROL_MASK, true);
     this.open_core.connectAccelerator();
-
-    // Run executable action
-    this.open_executable = new Action("start executable",
-                                      "Run executable...",
-                                      "Run an executable file",
-                                      GtkStockItem.OPEN.getString());
-    this.open_executable.setAccelGroup(ag);
-    this.open_executable.setAccelPath("<sourceWin>/Processes/Run executable...");
-    this.open_executable.addListener(new ActionListener()
-      {
-	public void actionEvent (ActionEvent action)
-	  {
-	    try {
-		  glade_fc = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
-		  fc = (FileChooserDialog) glade_fc.getWidget("frysk_filechooserdialog");
-		  fc.addListener(new LifeCycleListener() {
-		    public void lifeCycleEvent(LifeCycleEvent event)
-		      {
-		      }
-		    public boolean lifeCycleQuery(LifeCycleEvent event)
-		      {
-		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
-		            event.isOfType(LifeCycleEvent.Type.DESTROY))
-		              fc.destroy();
-		        return false;
-		      }
-		  });
-		  
-		  fc.addListener(new FileChooserListener()
-		  {
-		    public void currentFolderChanged (FileChooserEvent event)
-		      {
-		      }
-
-		    public void selectionChanged (FileChooserEvent event)
-		      {
-		      }
-
-		    public void updatePreview (FileChooserEvent event)
-		      {
-		      }
-
-		    // This method is called when the "Enter" key is pressed to
-		    // select a file name in the chooser
-		    public void fileActivated (FileChooserEvent event)
-		      {
-			activateTerminal();
-		      }
-		    });
-		  fc.setIcon(IconManager.windowIcon);
-		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
-		  fc.setCurrentFolder(System.getProperty("user.home"));
-		  int response = fc.open();
-		  // "OK" key has been clicked
-		  if (response == ResponseType.OK.getValue())
-		    activateTerminal();
-		  // "Cancel" key has been clicked
-		  if (response == ResponseType.CANCEL.getValue())
-		    fc.destroy();
-		}
-	    catch (Exception e) 
-	      {
-		throw new RuntimeException (e);
-	      }
-	  }
-      });
     
     // Close action
     this.close = new Action("close",
@@ -1351,6 +1308,105 @@ public class SourceWindow
     AccelMap.changeEntry("<sourceWin>/Stack/Up", KeyValue.Up,
                          ModifierType.MOD1_MASK, true);
     this.stackUp.connectAccelerator();
+    
+    // Run executable action
+    this.open_executable = new Action("start executable",
+                                      "Run a process...",
+                                      "Run a process from a file",
+                                      GtkStockItem.OPEN.getString());
+    this.open_executable.setAccelGroup(ag);
+    this.open_executable.setAccelPath("<sourceWin>/Processes/Run a process...");
+    this.open_executable.addListener(new ActionListener()
+      {
+	public void actionEvent (ActionEvent action)
+	  {
+	    try {
+		  glade_fc = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
+		  fc = (FileChooserDialog) glade_fc.getWidget("frysk_filechooserdialog");
+		  fc.addListener(new LifeCycleListener() {
+		    public void lifeCycleEvent(LifeCycleEvent event)
+		      {
+		      }
+		    public boolean lifeCycleQuery(LifeCycleEvent event)
+		      {
+		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+		            event.isOfType(LifeCycleEvent.Type.DESTROY))
+		              fc.destroy();
+		        return false;
+		      }
+		  });
+		  
+		  fc.addListener(new FileChooserListener()
+		  {
+		    public void currentFolderChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void selectionChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void updatePreview (FileChooserEvent event)
+		      {
+		      }
+
+		    // This method is called when the "Enter" key is pressed to
+		    // select a file name in the chooser
+		    public void fileActivated (FileChooserEvent event)
+		      {
+			activateTerminal();
+		      }
+		    });
+		  fc.setIcon(IconManager.windowIcon);
+		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
+		  fc.setCurrentFolder(System.getProperty("user.home"));
+		  int response = fc.open();
+		  // "OK" key has been clicked
+		  if (response == ResponseType.OK.getValue())
+		    activateTerminal();
+		  // "Cancel" key has been clicked
+		  if (response == ResponseType.CANCEL.getValue())
+		    fc.destroy();
+		}
+	    catch (Exception e) 
+	      {
+		throw new RuntimeException (e);
+	      }
+	  }
+      });
+    
+    // Attach to a running process
+    /* this.attach_proc = new Action("attach to process",
+                                      "Attach to running process...",
+                                      "Attach to process in cpu queue",
+                                      GtkStockItem.FIND.getString());
+    this.attach_proc.setAccelGroup(ag);
+    this.attach_proc.setAccelPath("<sourceWin>/Processes/Attach to running process...");
+    this.attach_proc.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+	try
+	{
+	  System.out.println("SourceWindow: Before new LibGlade..." + Config.getGladeDir () + SourceWindow.PROC_LIST_GLADE);
+          LibGlade glade_attach = new LibGlade (Config.getGladeDir () + SourceWindow.PROC_LIST_GLADE, null);
+          System.out.println("SourceWindow: After new LibGlade");
+          CreateFryskSessionDruid procLister = new CreateFryskSessionDruid(glade_attach);
+          System.out.println("SourceWindow: After procLister = new ....");
+          procLister.presentProcLister(4);
+          System.out.println("SourceWindow: after procLister.present...");
+	}
+	catch (Exception e)
+	{
+	  throw new RuntimeException (e);
+	}
+      }
+    });
+    this.attach_proc.setAccelGroup(ag);
+    this.attach_proc.setAccelPath("<sourceWin>/Processes/Attach to running process...");
+    AccelMap.changeEntry("<sourceWin>/Processes/Attach to running process...", KeyValue.a,
+                         ModifierType.CONTROL_MASK, true);
+    this.attach_proc.connectAccelerator(); */
 
     toggleRegisterWindow = new ToggleAction("toggleRegWindow",
                                             "Register Window",
@@ -1493,12 +1549,12 @@ public class SourceWindow
     // File menu
     MenuItem menu = new MenuItem("File", true);
 
-    MenuItem mi = (MenuItem) this.open_core.createMenuItem();
+    //MenuItem mi = (MenuItem) this.open_core.createMenuItem();
     Menu tmp = new Menu();
-    tmp.append(mi);
-    mi = new MenuItem(); // Separator
-    tmp.append(mi);
-    mi = (MenuItem) this.close.createMenuItem();
+    //tmp.append(mi);
+    //mi = new MenuItem(); // Separator
+    //tmp.append(mi);
+    MenuItem mi = (MenuItem) this.close.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);
@@ -1527,8 +1583,8 @@ public class SourceWindow
     menu = new MenuItem("View", false);
     tmp = new Menu();
 
-    //mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
-    //tmp.append(mi);
+    mi = (MenuItem) this.toggleConsoleWindow.createMenuItem();
+    tmp.append(mi);
 
     mi = (MenuItem) this.toggleRegisterWindow.createMenuItem();
     tmp.append(mi);
@@ -1564,7 +1620,7 @@ public class SourceWindow
     tmp.append(mi);
     mi = (MenuItem) this.terminate.createMenuItem();
     tmp.append(mi);
-    mi = new MenuItem(); // Seperator
+    mi = new MenuItem(); // Separator
     tmp.append(mi);
     mi = (MenuItem) this.stepAsm.createMenuItem();
     tmp.append(mi);
@@ -1592,6 +1648,8 @@ public class SourceWindow
     tmp = new Menu();
     mi = (MenuItem) this.open_executable.createMenuItem();
     tmp.append(mi);
+    //mi = (MenuItem) this.attach_proc.createMenuItem();
+    //tmp.append(mi);
 
     menu.setSubmenu(tmp);
     ((MenuBar) this.glade.getWidget("menubar")).append(menu);
@@ -2811,6 +2869,7 @@ public class SourceWindow
   private String[] createTermWindow(String filepath)
   {
     this.termWin = new TermWindow();
+    termHash.put(filepath, this.termWin);
     this.termWin.setWindowTitle(filepath);
     this.termWin.showAll();
     // Get the /dev/pts/?? pseudoterminal to point the new process to 

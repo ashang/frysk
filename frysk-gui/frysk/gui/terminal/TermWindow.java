@@ -76,27 +76,22 @@ public class TermWindow
       }
     });
 
-    //String[] cmdargs = new String[1];
-    //cmdargs[0] = "-1";
-
     PseudoTerminal pty = new PseudoTerminal ();
 
     int master = pty.getFd();
+    System.out.println("TermWindow: master = " + master);
     this.name = pty.getFile ().getPath ();
 
-    //System.out.println("master = " + master + " name = " + name);
+    this.term = new Terminal();
+    this.term.setPty(master);
 
-    term = new Terminal();
-    term.setPty(master);
-
-    term.setDefaultColors();
-    term.setBackgroudColor(Color.WHITE);
-    term.setForegroundColor(Color.BLACK);
-    term.setSize(80, 25);
+    this.term.setDefaultColors();
+    this.term.setBackgroudColor(Color.WHITE);
+    this.term.setForegroundColor(Color.BLACK);
+    this.term.setSize(80, 25);
 
     this.add(term);
     this.showAll();
-
   }
   
   /**

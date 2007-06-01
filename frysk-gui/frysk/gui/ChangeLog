@@ -1,3 +1,7 @@
+2007-06-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* terminal/TermWindow.java: Remove unneeded param.
+
 2007-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Call frysk.proc.Host.requestRefreshXXX() instead of

@@ -1,3 +1,8 @@
+2007-06-01  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Reorganize a bit; make terminal window persistent
+	to keep it from being GC'ed; fixed bz #4850.
+
 2007-05-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (PopulateStackBrowser): Re-enabled variable watch
