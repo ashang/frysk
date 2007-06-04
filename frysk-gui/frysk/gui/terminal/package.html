@@ -1,0 +1,20 @@
+<html>
+<body>
+
+This package supplies a wrapper for the Gnome Terminal object used by the 
+Frysk Debug Window when it activates processes that require a terminal to
+interact with.
+
+<h2>Overview</h2>
+
+The TermWindow object is instantiated whenever a user activates a process from
+the Frysk Debug Window and has selected the option to have a terminal window
+associated with that process.  The terminal window is where the activated
+process' STDIN/STDOUT/STDERR are assigned to so if the process requires input or
+needs to output information, it has its own window in which to do so.
+
+The TermWindow object is destroyed if the process if killed or the debug session
+is terminated.
+
+</body>
+</html>
