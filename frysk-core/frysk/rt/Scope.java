@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,14 +37,66 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Lexical Block
- */
-
 package frysk.rt;
 
+import lib.dw.DwarfDie;
+import frysk.value.Type;
+import frysk.value.Value;
 
-public class LexicalBlock extends Scope
+/**
+ * A class to represent a Scope.
+ * Here are the scopes described by Dwarf debug info:
+ * compile_unit
+ * module
+ * lexical_block
+ * with_stmt (pascal Modula2)
+ * catch_block
+ * try_block
+ * entry_point
+ * inlined_subroutine
+ * subprogram
+ * namespace
+ * imported_unit
+ * 
+ * The most important property of a scope is that it can own variables
+ * and this object will give you acess to them.
+ */
+public class Scope
 {
-     
+  LexicalBlock outer;
+  Value[] variables;
+  DwarfDie[] variableDies;
+  Type[] types;
+  DwarfDie[] typeDies;
+
+  public Value[] getVariables ()
+  {
+    return variables;
+  }
+
+  public void setVariables (int n)
+  {
+    this.variables = new Value[n];
+  }
+
+  public DwarfDie[] getVariableDies ()
+  {
+    return variableDies;
+  }
+
+  public void setVariableDies (int n)
+  {
+    this.variableDies = new DwarfDie[n];
+  }
+
+  public DwarfDie[] getTypeDies ()
+  {
+    return typeDies;
+  }
+
+  public void setTypeDies (int n)
+  {
+    this.typeDies = new DwarfDie[n];
+  }
+
 }

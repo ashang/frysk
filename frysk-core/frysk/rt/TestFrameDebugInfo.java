@@ -138,7 +138,7 @@ public class TestFrameDebugInfo
       }
     });
     ackProc.resume();
-    assertRunUntilStop("Attach to process");
+    assertRunUntilStop("Add TerminatingObserver");
 
     return task;
   }

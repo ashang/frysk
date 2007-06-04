@@ -1,3 +1,10 @@
+2007-06-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (getStoppedTask): Fixed the name of the 
+	assertRunUntilStop.
+	* LexicalBlock.java: Moved all variable handling from here...
+	* Scope.java: ...to here.
+
 2007-06-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayValue.java (DisplayValue): Now takes the name of the variable
