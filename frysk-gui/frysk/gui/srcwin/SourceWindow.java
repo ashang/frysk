@@ -120,6 +120,7 @@ import frysk.gui.disassembler.DisassemblyWindowFactory;
 //import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.prefs.BooleanPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.prefs.PreferenceWindow;
@@ -864,6 +865,7 @@ public class SourceWindow
 	this.stackView.removeProc(this.current);
 	
 	this.current = 0;
+        
 	if (this.swProc.length > 0)
 	  this.currentTask = this.swProc[this.current].getMainTask();
 	else
@@ -1021,7 +1023,9 @@ public class SourceWindow
       public void actionEvent (ActionEvent action)
       {
         // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+        SteppingEngine.removeObserver(SourceWindow.this.lock, SourceWindow.this.swProc[current]);
         SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
+        WindowManager.theManager.sessionManagerDialog.showAll();
       }
     });
     AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x,

@@ -1,3 +1,8 @@
+2007-06-04  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (.actionEvent): Open SessionManager upon 
+	window close.
+
 2007-06-01  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Reorganize a bit; make terminal window persistent
