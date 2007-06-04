@@ -60,13 +60,11 @@ public class TestFCatch
     extends TestLib
 {
 
-  String mainThread = "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
-                      + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
-                      + ".*/funit-child.c#[\\d]+\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
-                      + ".*/funit-child.c#[\\d]+\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
-                      + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
+  String mainThread = "(?s)" // (?s) makes . match all characters including new lines
+                      + ".*server.*funit-child"
+                      + ".*main.*funit-child.c"
+                      + ".*__libc_start_main"
+                      + ".*_start.*";
 
   public void testSingleThreadedCatch ()
   {

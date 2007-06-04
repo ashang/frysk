@@ -1,3 +1,7 @@
+2007-06-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Subprogram.java: Enabled parameter printing.
+
 2007-06-04  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestDisplayValue.java (testVarMasked): Code added, still labelled as

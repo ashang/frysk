@@ -43,6 +43,7 @@
 
 package frysk.rt;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import lib.dw.DwTagEncodings;
@@ -103,19 +104,19 @@ public class Subprogram
 
     public String toString ()
     {
-//      String string;
-//      string = this.getName() + "(";
-//      Iterator iterator = this.parameters.iterator();
-//      while(iterator.hasNext()) {
-//        Value parameter = (Value) iterator.next();
-//        string += parameter.getType() + " " + parameter.getText();
-//	if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
-//	  string += ",";
-//	}
-//      }
-//      string += ")";
-//      return string;
+      String string;
+      string = this.getName() + "(";
+      Iterator iterator = this.parameters.iterator();
+      while(iterator.hasNext()) {
+        Value parameter = (Value) iterator.next();
+        string += parameter.getType() + " " + parameter.getText();
+	if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
+	  string += ",";
+	}
+      }
+      string += ")";
+      return string;
       
-      return this.getName();
+//      return this.getName();
     }
 }
