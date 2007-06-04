@@ -56,6 +56,7 @@ public class TestDisplayValue
   
   private Task myTask;
   private Proc myProc;
+  private AttachedDaemonProcess process;
   
   public void setUp ()
   {
@@ -67,42 +68,9 @@ public class TestDisplayValue
     super.tearDown ();
   }
   
-  /*
-   * Observer that asks the event loop to stop when a breakpoint is hit
-   */
-  private class BreakpointBlocker implements SourceBreakpointObserver
-  {
-    public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
-    {
-      Manager.eventLoop.requestStop();
-    }
-    public void addFailed (Object observable, Throwable w){}
-    public void addedTo (Object observable){}
-    public void deletedFrom (Object observable){}
-  }
-  
   public void testVarValueChanged()
   { 
-    // Start the daemon process
-    AttachedDaemonProcess process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
-    
-    myTask = process.getMainTask();
-    myProc = myTask.getProc();
-    assertNotNull("Daemon's Task", myTask);
-    assertNotNull("Daemon's proc", myProc);
-   
-    // Set up the stepping engine, breakpoint manager, and symbol table
-    SteppingEngine.setProc(myProc);
-    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    SteppingEngine.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object arg)
-      {
-	Manager.eventLoop.requestStop();
-      }
-    });
-    assertRunUntilStop("Adding to Stepping Engine");
+    BreakpointManager bpManager = createDaemon();
     
     /* 
      * Add the first breakpoint:
@@ -168,26 +136,7 @@ public class TestDisplayValue
   
   public void testVarValueNotChanged()
   {
-    // Start the daemon process
-    AttachedDaemonProcess process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
-    
-    myTask = process.getMainTask();
-    myProc = myTask.getProc();
-    assertNotNull("Daemon's Task", myTask);
-    assertNotNull("Daemon's proc", myProc);
-   
-    // Set up the stepping engine, breakpoint manager, and symbol table
-    SteppingEngine.setProc(myProc);
-    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    SteppingEngine.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object arg)
-      {
-        Manager.eventLoop.requestStop();
-      }
-    });
-    assertRunUntilStop("Adding to Stepping Engine");
+    BreakpointManager bpManager = createDaemon();
     
     /* 
      * Add the first breakpoint:
@@ -252,28 +201,7 @@ public class TestDisplayValue
   
   public void testVarOutOfScope()
   {
-//    if(brokenXXX(4575))
-//      return;
-    // Start the daemon process
-    AttachedDaemonProcess process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
-    
-    myTask = process.getMainTask();
-    myProc = myTask.getProc();
-    assertNotNull("Daemon's Task", myTask);
-    assertNotNull("Daemon's proc", myProc);
-   
-    // Set up the stepping engine, breakpoint manager, and symbol table
-    SteppingEngine.setProc(myProc);
-    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    SteppingEngine.addObserver(new Observer()
-    {
-      public void update (Observable observable, Object arg)
-      {
-        Manager.eventLoop.requestStop();
-      }
-    });
-    assertRunUntilStop("Adding to Stepping Engine");
+    BreakpointManager bpManager = createDaemon();
     
     /* 
      * Add the first breakpoint:
@@ -332,11 +260,142 @@ public class TestDisplayValue
   {
     if(brokenXXX(4576))
       return;
+    
+    BreakpointManager bpManager = createDaemon();
+    
+    /* 
+     * Add the first breakpoint:
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                 48, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+  
+    
+    // Let the process continue until we hit the breakpoint
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    // Retrieve the Value we're testing, and encapsulate it in a Display
+    DisplayValue disp = new DisplayValue("x", myTask,
+                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+    // Check the value of the variable 'x', make sure it's equal to one
+    Value firstVal = disp.getValue();
+    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable value at first breakpoint", 0, firstVal.getInt());
+    
+    /* 
+     * Add the second breakpoint:
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                  63, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    disp.update();
+    Value secondVal = disp.getValue();
+    assertEquals("Variable in scope", true, disp.isInScope());
+    assertEquals("Variable value", 0, secondVal.getInt());
   }
   
   public void testVarNotInCurrentScope()
   {
-    if(brokenXXX(4577))
-      return;
+    
+    BreakpointManager bpManager = createDaemon();
+    
+    /* 
+     * Add the first breakpoint:
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                 52, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+  
+    
+    // Let the process continue until we hit the breakpoint
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    // Retrieve the Value we're testing, and encapsulate it in a Display
+    DisplayValue disp = new DisplayValue("y", myTask,
+                                         StackFactory.createFrame(myTask).getFrameIdentifier());
+    // Check the value of the variable 'x', make sure it's equal to one
+    Value firstVal = disp.getValue();
+    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable value at first breakpoint", 2, firstVal.getInt());
+    
+    /* 
+     * Add the second breakpoint:
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                  63, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    disp.update();
+    Value secondVal = disp.getValue();
+    assertEquals("Variable in scope", true, disp.isInScope());
+    assertEquals("Variable value", 2, secondVal.getInt());
+  }
+  
+  private BreakpointManager createDaemon()
+  {
+    //  Start the daemon process
+    process = 
+      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
+    
+    myTask = process.getMainTask();
+    myProc = myTask.getProc();
+    assertNotNull("Daemon's Task", myTask);
+    assertNotNull("Daemon's proc", myProc);
+   
+    // Set up the stepping engine, breakpoint manager, and symbol table
+    SteppingEngine.setProc(myProc);
+    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+    SteppingEngine.addObserver(new Observer()
+    {
+      public void update (Observable observable, Object arg)
+      {
+        Manager.eventLoop.requestStop();
+      }
+    });
+    assertRunUntilStop("Adding to Stepping Engine");
+    return bpManager;
+  }
+  
+  /*
+   * Observer that asks the event loop to stop when a breakpoint is hit
+   */
+  private class BreakpointBlocker implements SourceBreakpointObserver
+  {
+    public void updateHit (SourceBreakpoint breakpoint, Task task, long address)
+    {
+      Manager.eventLoop.requestStop();
+    }
+    public void addFailed (Object observable, Throwable w){}
+    public void addedTo (Object observable){}
+    public void deletedFrom (Object observable){}
   }
 }

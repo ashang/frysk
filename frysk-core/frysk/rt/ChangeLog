@@ -1,3 +1,10 @@
+2007-06-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestDisplayValue.java (testVarMasked): Code added, still labelled as
+	brokenXXX.
+	(testVarNotInCurrentScope): Implemented, confirms bz#4577 as fixed.
+	(createDaemon): Refactored out of the testcases for simplicity.
+
 2007-06-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (getStoppedTask): Fixed the name of the 
