@@ -332,7 +332,9 @@ abstract public class DwarfDie
   {
     String typeStr;
     DwarfDie type = getType();
-    if (type.getBaseType() == BaseTypes.baseTypeLong)
+    if (type == null)
+      typeStr = "void";
+    else if (type.getBaseType() == BaseTypes.baseTypeLong)
       typeStr = "long";
     else if (type.getBaseType() == BaseTypes.baseTypeInteger)
       typeStr = "int";

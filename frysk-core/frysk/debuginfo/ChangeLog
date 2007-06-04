@@ -1,3 +1,11 @@
+2007-06-04  Stan Cox  <scox@redhat.com>
+
+	* frysk/debuginfo/DebugInfoEvaluator.java (getMemory): Add array_type
+	and structure_type.
+	(getPointerTarget): New.
+	(getValue): Add pointer_type.
+	* frysk/debuginfo/DebugInfo.java (what): Convert parameter to Value.
+
 2007-05-31  Nurdin Premji  <npremji@redhat.com>
 
 	* DebugInfo.java (what): Use DwflFactory to get the Dwfl.

@@ -61,6 +61,8 @@ import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
 import frysk.value.EnumType;
+import frysk.value.PointerType;
+import frysk.value.Type;
 import frysk.value.Value;
 import frysk.proc.Isa;
 import frysk.proc.Task;
@@ -867,7 +869,8 @@ class DebugInfoEvaluator
   }
   
   public Value getMemory (String s)
-  {
+  {	
+    ByteOrder byteorder = task.getIsa().getByteOrder();
     DwarfDie varDie = getDie(s);
     
     if (varDie == null)
@@ -896,14 +899,77 @@ class DebugInfoEvaluator
 	return ArithmeticType.newFloatValue(floatType, buffer.getFloat(addrIndirect));
       case BaseTypes.baseTypeDouble:
 	return ArithmeticType.newDoubleValue(doubleType, buffer.getDouble(addrIndirect));
-      default:
-        return null;
       }
+    int tag = type != null ? type.getTag() : varDie.getTag();
+    switch (tag)
+    {
+    case DwTagEncodings.DW_TAG_array_type_:
+    {
+      DwarfDie subrange;
+      subrange = type.getChild();
+      ArrayType arrayType = getArrayType(type, subrange);
+
+      if (arrayType == null)
+	return null;
+      int typeSize = arrayType.getSize();
+      ByteBuffer  abb = buffer.slice (addrIndirect, typeSize);
+      abb.order(byteorder);
+      return new Value(arrayType, s, abb);
+    }
+    case DwTagEncodings.DW_TAG_union_type_:
+    case DwTagEncodings.DW_TAG_structure_type_:
+    {
+      DwarfDie subrange;
+      subrange = type.getChild();
+      ClassType classType = getClassType(subrange);
+
+      if (classType == null)
+	return null;
+      ByteBuffer  abb = buffer.slice (addrIndirect, classType.getSize());
+      abb.order(byteorder);
+      return new Value(classType, s, abb);
+    }
+    }
+    return null;
   }
   
-  public Value getVariable (DwarfDie varDie)
+  private Type getPointerTarget (DwarfDie type)
   {
-      if (varDie == null)
+    ByteOrder byteorder = task.getIsa().getByteOrder();
+    switch (type.getBaseType())
+    {
+    case BaseTypes.baseTypeByte:
+    case BaseTypes.baseTypeUnsignedByte:
+      return byteType;
+    case BaseTypes.baseTypeShort:
+    case BaseTypes.baseTypeUnsignedShort:
+      return shortType;
+    case BaseTypes.baseTypeInteger:
+    case BaseTypes.baseTypeUnsignedInteger:
+      return intType;
+    case BaseTypes.baseTypeLong:
+    case BaseTypes.baseTypeUnsignedLong:
+      return longType;
+    case BaseTypes.baseTypeFloat:
+      return floatType;
+    case BaseTypes.baseTypeDouble:
+      return doubleType;
+    }
+    switch (type.getTag())
+    {
+    case DwTagEncodings.DW_TAG_pointer_type_:
+    {
+      return new PointerType(byteorder, getPointerTarget(type.getType()), "void*");
+    }
+    }
+    return null;
+}
+  
+  public Value getValue (DwarfDie varDie)
+  {
+    ByteOrder byteorder = task.getIsa().getByteOrder();
+    
+    if (varDie == null)
       return (null);
 
     DwarfDie type = varDie.getType();
@@ -924,6 +990,18 @@ class DebugInfoEvaluator
     case BaseTypes.baseTypeDouble:
       return ArithmeticType.newDoubleValue(doubleType, varDie.getName(), 0);
     }
+    switch (type.getTag())
+    {
+    case DwTagEncodings.DW_TAG_pointer_type_:
+    {
+      type = type.getType();
+      if (type == null)
+	return new Value (new PointerType(byteorder, null, "void*"), varDie.getName());
+      return new Value (new PointerType(byteorder, getPointerTarget (type), "*"), varDie.getName());
+      
+    }
+    }
+  
     return null;
   }
 

@@ -1,4 +1,8 @@
-2007-05-25  scox  <scox@multics.rdu.redhat.com>
+2007-05-25  Stan Cox  <scox@redhat.com>
+
+	* PointerType.java: New.
+
+2007-05-25  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (getValue): Use slicing.
 	(get): Chain struct/array references.
@@ -6,7 +10,7 @@
 	(get): Chain struct/array references.
 	* Value.java (Value): New (Type, String, ByteBuffer).
 
-2007-05-17  scox  <scox@multics.rdu.redhat.com>
+2007-05-17  Stan Cox  <scox@redhat.com>
 
 	* ArrayType.java (get): Skip array name.
 

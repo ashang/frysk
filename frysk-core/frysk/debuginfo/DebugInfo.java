@@ -235,7 +235,7 @@ public class DebugInfo
                     }
                   else
                     result.append(",");
-                  result.append(parm.getType().getName());
+                  result.append(getVariable(parm).getType().getName());
                 }
               parm = parm.getSibling();
             }
@@ -482,7 +482,7 @@ public class DebugInfo
        while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
          {
            if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
-             parms.add(debugInfoEvaluator[0].getVariable(parm));
+             parms.add(debugInfoEvaluator[0].getValue(parm));
            parm = parm.getSibling();
            nParms += 1;
          }
@@ -503,7 +503,7 @@ public class DebugInfo
        nParms = 0;
        while (parm != null)
          {
-           vars[nParms] = debugInfoEvaluator[0].getVariable(parm);
+           vars[nParms] = debugInfoEvaluator[0].getValue(parm);
            if (vars[nParms] == null)
              {
                int tag = parm.getTag();
@@ -571,7 +571,7 @@ public class DebugInfo
      
      public Value getVariable (DwarfDie die)
      {
-       return debugInfoEvaluator[0].getVariable(die);
+       return debugInfoEvaluator[0].getValue(die);
      } 
 
 }
