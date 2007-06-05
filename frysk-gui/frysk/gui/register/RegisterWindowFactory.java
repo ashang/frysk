@@ -162,10 +162,8 @@ public class RegisterWindowFactory
           Task t = rw.getMyTask();
           Proc p = t.getProc();
           
-          if (SteppingEngine.removeObserver(rw.getLockObserver(), p) == 1)
-            {
-              map.remove(p);
-            }
+          SteppingEngine.removeObserver(rw.getLockObserver(), p, true);
+          map.remove(p);
 
           rw.hideAll();
           return true;

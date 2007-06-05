@@ -161,10 +161,8 @@ public class MemoryWindowFactory
           Task t = mw.getMyTask();
           Proc p = t.getProc();
           
-          if (SteppingEngine.removeObserver(mw.getLockObserver(), p) == 1)
-            {
-              map.remove(p);
-            }
+          SteppingEngine.removeObserver(mw.getLockObserver(), p, true);
+          map.remove(p);
 
           mw.hideAll();
           return true;

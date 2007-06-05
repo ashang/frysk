@@ -246,7 +246,7 @@ public class SourceWindowFactory
               Proc p = srcWin.getSwProc();
               
               if (p != null)
-        	SteppingEngine.removeObserver(srcWin.getLockObserver(), p);
+        	SteppingEngine.removeObserver(srcWin.getLockObserver(), p, true);
 
              srcWin.hideAll();
              srcWin = null;

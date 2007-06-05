@@ -1023,7 +1023,7 @@ public class SourceWindow
       public void actionEvent (ActionEvent action)
       {
         // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
-        SteppingEngine.removeObserver(SourceWindow.this.lock, SourceWindow.this.swProc[current]);
+        SteppingEngine.removeObserver(SourceWindow.this.lock, SourceWindow.this.swProc[current], true);
         SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
         WindowManager.theManager.sessionManagerDialog.showAll();
       }

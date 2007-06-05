@@ -557,7 +557,7 @@ public class CLI
 	return;
       // Delete all breakpoints.
       if (steppingObserver != null)
-		SteppingEngine.removeObserver(steppingObserver, proc);
+		SteppingEngine.removeObserver(steppingObserver, proc, true);
 
       proc = null;
       task = null;

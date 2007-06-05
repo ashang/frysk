@@ -1,7 +1,7 @@
 2007-06-04  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (.actionEvent): Open SessionManager upon 
-	window close.
+	window close. Fixes #4561.
 
 2007-06-01  Rick Moseley  <rmoseley@redhat.com>
 

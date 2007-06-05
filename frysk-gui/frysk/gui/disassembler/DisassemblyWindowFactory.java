@@ -164,10 +164,8 @@ public class DisassemblyWindowFactory
           Task t = dw.getMyTask();
           Proc p = t.getProc();
           
-          if (SteppingEngine.removeObserver(dw.getLockObserver(), p) == 1)
-            {
-              map.remove(p);
-            }
+          SteppingEngine.removeObserver(dw.getLockObserver(), p, true);
+          map.remove(p);
 
           dw.hideAll();
           return true;

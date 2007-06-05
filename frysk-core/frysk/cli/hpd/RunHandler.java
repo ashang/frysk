@@ -89,7 +89,7 @@ class RunHandler
       }
     if (unblock)
       {
-	SteppingEngine.removeObserver(this, task.getProc());
+	SteppingEngine.removeObserver(this, task.getProc(), true);
 	task.requestUnblock(this);
       }
   }
