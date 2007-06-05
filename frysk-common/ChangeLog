@@ -1,3 +1,9 @@
+2007-06-05  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (GCJFLAGS, JAVACFLAGS): Clean up -Wall and
+	-fsource=1.4 checks.  Do not pass -Wall to a compiler that accepts
+	-fsource=1.4.  Conditionally add -fsource=1.4 to GCJFLAGS.
+
 2007-05-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (echo_LDFLAGS): Simplify by always passing the

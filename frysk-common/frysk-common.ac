@@ -128,23 +128,44 @@ gcj* | */gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
 ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 * ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 esac
-# See if -fsource=1.4 can be added, if not only use the warning flags.
-# If it is available also use it for the GCJFLAGS.
-# Some versions of gcj don't support -Wall. So explictily test for it.
-JAVACFLAGS_WARN=$JAVACFLAGS
-JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
-AC_COMPILE_IFELSE([public class conftest{}],
-	[test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -fsource=1.4"
-	 GCJ_FSOURCE="yes"],
-	[JAVACFLAGS=$JAVACFLAGS_WARN
-	 GCJ_FSOURCE="no"])
-JAVACFLAGS_WARN=$JAVACFLAGS
-JAVACFLAGS="$JAVACFLAGS -Wall"
-AC_COMPILE_IFELSE([public class conftest{}],
-	[test "x$ac_env_GCJFLAGS_set" != xset && GCJFLAGS="$GCJFLAGS -Wall"],
-	[JAVACFLAGS=$JAVACFLAGS_WARN])
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
+
+# See if -fsource=1.4 can be added, if not only use the warning flags.
+# If it is available also use it for the GCJFLAGS.
+
+AC_MSG_CHECKING([whether ${JAVAC} accepts -fsource=1.4])
+if test "x$ac_env_GCJFLAGS_set" == xset ; then
+	GCJ_FSOURCE="no"
+	AC_MSG_RESULT([not needed])
+else
+	JAVACFLAGS_WARN=$JAVACFLAGS
+	JAVACFLAGS="$JAVACFLAGS -fsource=1.4"
+	AC_COMPILE_IFELSE([public class conftest{}],
+		[GCJ_FSOURCE="yes"
+		 GCJFLAGS="$GCJFLAGS -fsource=1.4"],
+		[GCJ_FSOURCE="no"
+		JAVACFLAGS=$JAVACFLAGS_WARN])
+	AC_MSG_RESULT([${GCJ_FSOURCE}])
+fi
+
+# Some versions of gcj don't support -Wall.  Some versions generate
+# good warnings without it.  So explictily test for it.
+
+AC_MSG_CHECKING([whether ${JAVAC} accepts -Wall])
+if test "x$ac_env_GCJFLAGS_set" == xset || test "x${GCJ_FSOURCE}" == xyes ; then
+	GCJ_WALL=no
+	AC_MSG_RESULT([not needed])
+else
+	JAVACFLAGS_WARN=$JAVACFLAGS
+	JAVACFLAGS="$JAVACFLAGS -Wall"
+	AC_COMPILE_IFELSE([public class conftest{}],
+		[GCJ_WALL=yes
+		 GCJFLAGS="$GCJFLAGS -Wall"],
+		[GCJ_WALL=no
+		 JAVACFLAGS=$JAVACFLAGS_WARN])
+	AC_MSG_RESULT([${GCJ_WALL}])
+fi
 
 # Always use GIJ as the byte code interpreter.  java programs, run
 # during the build, need to see the GNU Java environment.  That
