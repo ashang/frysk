@@ -1051,26 +1051,19 @@ public class SteppingEngine
   
   /**
    * Remove the incoming Observer object from the SteppingObserver's list of 
-   * Observers to notify. If, after removing it, the list is empty, unblock
-   * the process and return 1. Otherwise return 0. Unblocks the requested 
-   * process after deleting it from the Observer list.
+   * Observers to notify. Unblocks the given process if required.
    * 
    * @param o The Observer to delete
    * @param p The Proc to delete the Observer from
-   * 
-   * @return 0 SteppingObserver's Observer list is not empty
-   * @return 1 SteppingObserver's Observer list is empty
+   * @param unblock Whether the given Proc should be unblocked
    */
-  public static int removeObserver (Observer o, Proc p)
+  public static void removeObserver (Observer o, Proc p, boolean unblock)
   {
     steppingObserver.deleteObserver(o);
-    if (p.observationsSize() == p.getTasks().size())
+    if (unblock)
       {
         continueExecution(p.getTasks());
-        return 1;
       }
-    else
-      return 0;
   }
   
   protected static class SteppingObserver

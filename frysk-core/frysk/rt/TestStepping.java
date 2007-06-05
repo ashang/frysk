@@ -125,7 +125,7 @@ public class TestStepping extends TestLib
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
   }
   
   public void testLineStepIfStatementPass ()
@@ -158,7 +158,7 @@ public class TestStepping extends TestLib
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -192,7 +192,7 @@ public class TestStepping extends TestLib
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -226,7 +226,7 @@ public class TestStepping extends TestLib
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -255,7 +255,7 @@ public class TestStepping extends TestLib
     
     assertRunUntilStop("Attempting to add attachedObserver");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -285,7 +285,7 @@ public class TestStepping extends TestLib
     
     assertRunUntilStop("Attempting to add attachedObserver");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -313,7 +313,7 @@ public class TestStepping extends TestLib
     
     assertRunUntilStop("Attempting to add attachedObserver");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -354,7 +354,7 @@ public class TestStepping extends TestLib
     SteppingEngine.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     SteppingEngine.clear();
     this.lineMap.clear();
   }
@@ -388,7 +388,7 @@ public class TestStepping extends TestLib
     SteppingEngine.setProc(myProc);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     SteppingEngine.clear();
     this.lineMap.clear();
   }
@@ -426,7 +426,7 @@ public class TestStepping extends TestLib
 
     assertRunUntilStop("Attempting to add observer");
     SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc());
+    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   

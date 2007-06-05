@@ -151,7 +151,7 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProcs(procs);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.removeObserver(lock, myProc, false);
     SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
@@ -215,7 +215,7 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProcs(procs);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.removeObserver(lock, myProc, false);
     SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
@@ -346,7 +346,7 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProcs(procs);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.removeObserver(lock, myProc, false);
     SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
@@ -379,7 +379,7 @@ public class TestSteppingEngine extends TestLib
     SteppingEngine.setProcs(procs);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc);
+    SteppingEngine.removeObserver(lock, myProc, false);
     SteppingEngine.cleanTask(myTask);
     SteppingEngine.clear();
   }
