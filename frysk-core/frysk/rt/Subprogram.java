@@ -109,7 +109,11 @@ public class Subprogram
       Iterator iterator = this.parameters.iterator();
       while(iterator.hasNext()) {
         Value parameter = (Value) iterator.next();
-        string += parameter.getType() + " " + parameter.getText();
+        if(parameter == null){
+          string += "Could not retrieve var";
+        }else{
+          string += parameter.getType() + " " + parameter.getText();
+        }
 	if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
 	  string += ",";
 	}
