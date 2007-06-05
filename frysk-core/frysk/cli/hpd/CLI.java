@@ -51,7 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.LinkedList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observer;
 import java.util.Observable;
@@ -84,6 +84,7 @@ public class CLI
   int tid = 0;
   DebugInfo debugInfo = null;
   boolean symtabNeedsRefresh = false;
+  boolean running = false;
   int stackLevel = 0;
   private SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
@@ -196,13 +197,13 @@ public class CLI
 	{
 	  String setname = (String)params.get(0);
 
-	  if (builtinPTSets.contains(setname))
+	  if (builtinPTSets.containsKey(setname))
 	    {
 	      addMessage(new Message("The set \"" + setname
 				     + "\" cannot be undefined.",
 				     Message.TYPE_ERROR));
 	    }
-	  else if (namedPTSets.contains(setname))
+	  else if (namedPTSets.containsKey(setname))
 	    {
 	      namedPTSets.remove(setname);
 	      addMessage("Set \"" + setname + "\" successfuly undefined.",
@@ -799,6 +800,49 @@ public class CLI
 	}
     }
   }
+  
+  class StepHandler implements CommandHandler
+  {
+    public void handle(Command cmd) throws ParseException
+    {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      
+      refreshSymtab();
+      if (steppingObserver != null)
+        {
+          if (!running)
+            SteppingEngine.setUpLineStep(proc.getTasks());
+          else
+            addMessage("Process is already running", Message.TYPE_ERROR);
+        }
+      else
+        addMessage("Not attached to any process", Message.TYPE_ERROR);
+    }
+  }
+  
+  class StepInstructionHandler implements CommandHandler
+  {
+    public void handle(Command cmd) throws ParseException
+    {
+      ArrayList params = cmd.getParameters();
+      if (params.size() == 1 && params.get(0).equals("-help"))
+        {
+          printUsage(cmd);
+          return;
+        }
+      
+      refreshSymtab();
+      if (steppingObserver != null)
+        SteppingEngine.stepInstruction(proc.getTasks());
+      else
+        addMessage("Not attached to any process", Message.TYPE_ERROR);
+    }
+  }
 
   class UpDownHandler implements CommandHandler
   {
@@ -848,6 +892,13 @@ public class CLI
           printUsage(cmd);
           return;
         }
+      
+      if (running)
+        {
+          addMessage("Process is running", Message.TYPE_ERROR);
+          return;
+        }
+      
       refreshSymtab();
       int level = 0;
       Frame tmpFrame = null;
@@ -863,10 +914,12 @@ public class CLI
  
       int l = stackLevel;
       int stopLevel;
+      
       if (level > 0)
 	stopLevel = l + level;
       else
 	stopLevel = 0;
+      
       tmpFrame = debugInfo.getCurrentFrame();
       while (tmpFrame != null)
 	{
@@ -1038,7 +1091,10 @@ public class CLI
       refreshSymtab();
       
       if (steppingObserver != null)
-	SteppingEngine.continueExecution(proc.getTasks());
+        {
+          SteppingEngine.continueExecution(proc.getTasks());
+          running = true;
+        }
       else
 	addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
@@ -1059,7 +1115,10 @@ public class CLI
       refreshSymtab();
       
       if (steppingObserver != null)
-	SteppingEngine.stop(null, proc.getTasks());
+        {
+          SteppingEngine.stop(null, proc.getTasks());
+          running = false;
+        }
       else
 	addMessage("Not attached to any process", Message.TYPE_ERROR);
    	   
@@ -1118,15 +1177,15 @@ public class CLI
   private PrintWriter outWriter = null;
   private Preprocessor prepro;
   private String prompt; // string to represent prompt, will be moved
-  private Hashtable handlers;
+  private HashMap handlers;
   private UserHelp userhelp;
   private DbgVariables dbgvars;
 
   // PT set related stuff
   private SetNotationParser setparser;
   private AllPTSet allset; // the "all" set
-  private Hashtable namedPTSets; // user-created named sets
-  private Hashtable builtinPTSets; // predefined named sets
+  private HashMap namedPTSets; // user-created named sets
+  private HashMap builtinPTSets; // predefined named sets
   private PTSet targetset;
 
   // other
@@ -1134,7 +1193,7 @@ public class CLI
   private LinkedList messages; 
 
   // alias
-  private Hashtable aliases;
+  private HashMap aliases;
 
   /*
    * Public methods
@@ -1162,7 +1221,7 @@ public class CLI
     outWriter = new PrintWriter(out, true);
 
     prepro = new Preprocessor();
-    handlers = new Hashtable();
+    handlers = new HashMap();
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
     addHandler(new ActionsHandler(this));
@@ -1184,6 +1243,8 @@ public class CLI
     handlers.put("print", new PrintHandler());
     handlers.put("quit", new QuitHandler());
     handlers.put("set", new SetHandler());
+    handlers.put("step", new StepHandler());
+    handlers.put("stepi", new StepInstructionHandler());
     handlers.put("unalias", new UnaliasHandler());
     handlers.put("undefset", new UndefsetHandler());
     handlers.put("unset", new UnsetHandler());
@@ -1201,16 +1262,16 @@ public class CLI
     allset = new AllPTSet();
     targetset = allset;
 
-    builtinPTSets = new Hashtable();
+    builtinPTSets = new HashMap();
     builtinPTSets.put("all", allset);
 
-    namedPTSets = new Hashtable();
+    namedPTSets = new HashMap();
     namedPTSets.toString(); // avoid unused variable warnings
 
     messages = new LinkedList();
 
     //initialize alias table
-    aliases = new Hashtable();
+    aliases = new HashMap();
     aliases.toString(); // avoid unused variable warnings
   }
 

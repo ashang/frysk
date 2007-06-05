@@ -1,3 +1,16 @@
+2007-06-05  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/CLI.java: Turned Hashtables into HashMaps. Fixes #3986.
+	(running): Added.
+	(StepHandler): Added. Handler for line stepping. Fixes #4594.
+	(StepInstructionHandler): Added. Handler for instruction steping.
+	Fixes #4594.
+	(WhereHandler.handle): Bail immediately if the process is running.
+	Fixes #4595.
+	(GoHandler.handle): Sets running boolean.
+	(HaltHandler.handle): Unsets running boolean.
+	(CLI): Added new stepping handlers.
+
 2007-05-25  Tim Moore  <timoore@redhat.com>
 
 	* hpd/CLI.java (DetachHandler.handle): Skip processes started by
