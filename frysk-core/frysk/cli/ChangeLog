@@ -1,5 +1,6 @@
 2007-06-05  Mike Cvet  <mcvet@redhat.com>
 
+	* hpd/UserHelp.java (UserHelp): Added user help for step and stepi.
 	* hpd/CLI.java: Turned Hashtables into HashMaps. Fixes #3986.
 	(running): Added.
 	(StepHandler): Added. Handler for line stepping. Fixes #4594.

@@ -223,6 +223,16 @@ class UserHelp
 		"halt", temp);
         
         temp = 
+"Line step a process which has been attached to, and is currently blocked.";
+        addHelp("step", "Step a process.",
+                "step", temp);
+
+        temp =
+"Step a process by an instruction. The process must be attached to and blocked.";
+        addHelp("stepi", "Instruction step a process.",
+                "stepi", temp);
+        
+        temp = 
 "The break command defines a breakpoint that will be triggered when some\n" +
 "thread(s) in the trigger set arrives at the specified location during\n" +
 "program execution. When that occurs, the process(es) containing the\n" +
