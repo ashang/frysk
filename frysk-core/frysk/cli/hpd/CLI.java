@@ -117,6 +117,7 @@ public class CLI
 	    if (command.startsWith(buffer.substring(offset)))
 	      candidates.add(command + " ");
 	  }
+        java.util.Collections.sort(candidates);
       }
     // Otherwise assume a symbol is being completed
     else if (debugInfo != null)

@@ -11,6 +11,7 @@
 	(GoHandler.handle): Sets running boolean.
 	(HaltHandler.handle): Unsets running boolean.
 	(CLI): Added new stepping handlers.
+	(complete): Ordered the returned commands alphabetically.
 
 2007-05-25  Tim Moore  <timoore@redhat.com>
 
