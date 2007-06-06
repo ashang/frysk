@@ -74,6 +74,7 @@ public class SessionManager
 
   public SessionManager (File sessionsDir)
   {
+    sessionsDir.mkdirs();
     if(!sessionsDir.isDirectory()){
       throw new IllegalArgumentException("The given file ["+sessionsDir.getPath()+"] is not a directory");
     }

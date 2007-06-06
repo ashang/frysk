@@ -1,3 +1,8 @@
+2007-06-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/SessionManager.java: Now creates the Sessions directory
+	if it has not been created.
+
 2007-05-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Gui.java: Call frysk.proc.Host.requestRefreshXXX() instead of
