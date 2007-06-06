@@ -80,11 +80,14 @@ header
 // exception.
     package frysk.expr;
 
+    import java.util.ArrayList;
+    import frysk.value.ArithmeticType;
+    import frysk.value.Value;
     import javax.naming.NameNotFoundException;
-    import frysk.value.*;
-    import java.util.*;
-    import lib.dw.BaseTypes;
+    import frysk.value.InvalidOperatorException;
+    import frysk.value.OperationNotDefinedException;
     import inua.eio.ByteOrder;
+    import lib.dw.BaseTypes;
 }
 
 class CppParser extends Parser;

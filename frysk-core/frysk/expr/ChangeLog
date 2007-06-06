@@ -1,3 +1,7 @@
+2007-06-06  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g: Replace wildcard with explict imports.
+
 2007-05-17  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (pm_expression): Handle class member tab completion.
