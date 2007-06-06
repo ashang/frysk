@@ -69,6 +69,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.Frame;
+import frysk.rt.RemoteFrame;
 import frysk.rt.SteppingEngine;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
@@ -817,7 +818,25 @@ public class CLI
       if (steppingObserver != null)
         {
           if (!running)
-            SteppingEngine.setUpLineStep(proc.getTasks());
+            {
+              SteppingEngine.setUpLineStep(proc.getTasks());
+              
+              synchronized (steppingObserver.getMonitor())
+                {
+                  try
+                  {
+                    steppingObserver.getMonitor().wait();
+                  }
+                  catch (InterruptedException ie) {}
+                }
+              
+              RemoteFrame rf = (RemoteFrame) debugInfo.getCurrentFrame();
+              
+              if (rf.getLines().length == 0)
+                addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
+              else
+                addMessage("Task stopped at line " + rf.getLines()[0].getLine() + "in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
+            }
           else
             addMessage("Process is already running", Message.TYPE_ERROR);
         }
@@ -839,7 +858,25 @@ public class CLI
       
       refreshSymtab();
       if (steppingObserver != null)
-        SteppingEngine.stepInstruction(proc.getTasks());
+        {
+          SteppingEngine.stepInstruction(proc.getTasks());
+          
+          synchronized (steppingObserver.getMonitor())
+          {
+            try
+            {
+              steppingObserver.getMonitor().wait();
+            }
+            catch (InterruptedException ie) {}
+          }
+        
+        RemoteFrame rf = (RemoteFrame) debugInfo.getCurrentFrame();
+        
+        if (rf.getLines().length == 0)
+          addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
+        else
+          addMessage("Task stopped at line " + rf.getLines()[0].getLine() + " in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
+        }
       else
         addMessage("Not attached to any process", Message.TYPE_ERROR);
     }
@@ -1432,9 +1469,16 @@ public class CLI
       }
     return result;
   }
-    
+  
   private class SteppingObserver implements Observer 
   {
+    private Object monitor = new Object();
+    
+    public Object getMonitor()
+    {
+      return this.monitor;
+    }
+    
     public void update(Observable observable, Object arg)
     {
       if (arg == null)
@@ -1454,6 +1498,11 @@ public class CLI
 	    attached = false;
 	    
 	    //bpt = (Breakpoint.PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
+            synchronized (this.monitor)
+              {
+                this.monitor.notifyAll();
+              }
+
 	  CLI.this.notifyAll();
 	}
       //      if (bpt != null) 

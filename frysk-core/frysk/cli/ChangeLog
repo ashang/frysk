@@ -1,3 +1,13 @@
+2007-06-06  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/CLI.java (SteppingObserver.monitor): Added. Synchronization 
+	object for stepping commands.
+	(SteppingObserver.update): Now synchronizes on, and notifies from
+	monitor object.
+	(StepHandler.handle): Synchronizes on stepping monitor and prints
+	stepping results after completion.
+	(StepInstructionHandler.handle): Ditto.
+
 2007-06-05  Mike Cvet  <mcvet@redhat.com>
 
 	* hpd/UserHelp.java (UserHelp): Added user help for step and stepi.
