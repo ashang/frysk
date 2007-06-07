@@ -55,8 +55,8 @@
 <p>
 <a href="#faq">Build or Test Question?</a><br>
 <br>
-<a href="#fc5">Fedora Core 5</a><br>
 <a href="#fc6">Fedora Core 6</a><br>
+<a href="#f7">Fedora 7</a><br>
 <a href="#rhel4">RHEL 4</a><br>
 <a href="#rhel5">RHEL 5</a><br>
 <a href="#ubuntu-edgy">Ubuntu - Edgy</a><br>
@@ -77,7 +77,8 @@ that all its prerequisites are met.</p>
 
 <dl>
 
-<dt><a name="fc6">Fedora Core 6</a><br><a name="rhel5">RHEL 5</a></dt>
+<dt><a name="f7">Fedora 7</a><br><a name="fc6">Fedora Core 6</a><br><a
+name="rhel5">RHEL 5</a></dt>
 
 <dd>
 
@@ -92,55 +93,8 @@ sudo yum install -y \
     yelp libtool make
 </pre>
 
-In addition, on the PowerPC, check that the following packages were
-installed:
-
-<pre>
-sudo yum install -y \
-    kernel.ppc64 kernel-headers.ppc64 \
-    glibc-devel.ppc libgcj-devel.ppc
-</pre>
-
 For additional updates, check Fedora Core 6's tracker bug's <a
 href="/bugzilla/showdependencytree.cgi?id=2654">dependency tree</a>
-
-</dd>
-
-<dt><a name="fc5">Fedora Core 5</a></dt>
-
-<dd>
-
-With the release of Fedora Core 5 it is largely possible to build and
-run <em>frysk</em> using the distributed RPMs.  Just note the
-following:
-
-<ul>
-
-<li>Check that the <tt>selinux</tt> security database is up-to-date
-(or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
-behave weird; and <tt>/proc</tt> is not accessible</li>
-
-<li>You will need to install a number of packages vis:
-<pre>
-sudo yum install -y \
-    antlr jdom junit gcc-java gcc-c++ \
-    libglade-java-devel libvte-java-devel \
-    automake xmlto transfig eclipse-ecj dogtail \
-    sharutils cvs audit-libs-devel yelp make
-</pre>
-</li>
-
-<li>The <em>frysk</em> RPM included in FC-5 is very different to that
-used for RHEL-4 (the former is a lot simpler).  The Fedora Core 5
-source RPM can be found in the <a
-href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
-development SRPM directory</a>.</li>
-
-</ul>
-
-For additional updates, check Fedora Core 5's tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2104">dependency
-tree</a>
 
 </dd>
 
