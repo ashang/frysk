@@ -1,3 +1,10 @@
+2007-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/CLI.java (ListHandler): Rename to ..
+	(addMessage): Make package private.
+	(outWriter): Make package private and final.
+	* hpd/ListCommand.java: here.  New file.
+
 2007-06-06  Mike Cvet  <mcvet@redhat.com>
 
 	* hpd/CLI.java (SteppingObserver.monitor): Added. Synchronization 

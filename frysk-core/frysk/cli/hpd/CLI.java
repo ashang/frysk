@@ -39,10 +39,6 @@
 
 package frysk.cli.hpd;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
@@ -75,7 +71,6 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 
 import lib.dw.BaseTypes;
-import lib.dw.DwarfDie;
 
 public class CLI 
 {
@@ -607,114 +602,6 @@ public class CLI
     }
   }
     
-  class ListHandler implements CommandHandler
-  {
-    File file = null;
-    int line;
-    int exec_line = 0;
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      int windowSize = 20;
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      if (proc == null)
-	{
-	  addMessage("No symbol table is available.", Message.TYPE_NORMAL);
-	  return;
-	}
-      if (params.size() == 1)			// list N
-	{
-	  try 
-	  {
-	    line = Integer.parseInt((String)params.get(0));
-	  }
-	  catch (NumberFormatException ignore)
-	  {
-	    if (((String)params.get(0)).compareTo("$EXEC") == 0)
-		line = debugInfo.getCurrentFrame().getLines()[0].getLine() - 10;
-	    else 
-	      {
-		DwarfDie funcDie = null;
-		try
-		{
-		  funcDie = debugInfo.getSymbolDie((String)params.get(0));
-		}
-		catch (NameNotFoundException none) {}
-		line = (int)funcDie.getDeclLine();
-	      }
-	  }
-	}
-      else if (params.size() == 2)		// list -length {-}N
-	{
-	  if (((String)params.get(0)).equals("-length"))
-	    {
-	      try 
-	      {
-		windowSize = Integer.parseInt((String)params.get(1));
-		if (windowSize < 0)
-		  {
-		    line += windowSize;
-		  }
-	      }
-	      catch (NumberFormatException ignore)
-	      {}
-	    }
-	}
- 
-      if (file== null)
-	{
-	  Frame frame = debugInfo.getCurrentFrame();
-	  if (frame.getLines().length > 0)
-	    {
-	      file = (frame.getLines()[0]).getFile();
-	      line = (frame.getLines()[0]).getLine() - 10;
-	      exec_line = line;
-	    }
-	  else
-	    outWriter.println("No source for current frame");
-	}
-      
-      if (line < 0)
-	line = 1;
-      try 
-	{
-	  FileReader fr = new FileReader(file);
-	  LineNumberReader lr = new LineNumberReader(fr);
-	  String str;
-	  boolean display = false;
-	  int endLine = line + StrictMath.abs(windowSize);
-	  String flag = "";
-	  while ((str = lr.readLine()) != null) 
-	    {
-	      if (lr.getLineNumber() == line)
-		display = true;
-	      else if (lr.getLineNumber() == exec_line)
-		flag = "*";
-	      else if (lr.getLineNumber() == endLine)
-		break;
-                
-	      if (display)
-		{
-		  outWriter.println(lr.getLineNumber() + flag + "\t "+ str);
-		  flag = "";
-		}
-	    }
-	  if (str != null && windowSize > 0)
-	    line += windowSize;
-	  lr.close();
-	}
-      catch (IOException e) 
-        {
-          addMessage("file " + file + " not found.",
-		     Message.TYPE_ERROR);
-        }
-    }
-  }
 
   class SetHandler implements CommandHandler
   {
@@ -1212,7 +1099,7 @@ public class CLI
    */
 
   //private static PrintStream out = null;// = System.out;
-  private PrintWriter outWriter = null;
+  final PrintWriter outWriter;
   private Preprocessor prepro;
   private String prompt; // string to represent prompt, will be moved
   private HashMap handlers;
@@ -1277,7 +1164,7 @@ public class CLI
     handlers.put("go", new GoHandler());
     handlers.put("halt", new HaltHandler());
     handlers.put("help", new HelpHandler());
-    handlers.put("list", new ListHandler());
+    handlers.put("list", new ListCommand(this));
     handlers.put("print", new PrintHandler());
     handlers.put("quit", new QuitHandler());
     handlers.put("set", new SetHandler());
@@ -1371,12 +1258,12 @@ public class CLI
     return null;
   }
 
-  private void addMessage(Message msg)
+  void addMessage(Message msg)
   {
     messages.add(msg);
   }
 
-  private void addMessage(String msg, int type)
+  void addMessage(String msg, int type)
   {
     addMessage(new Message(msg, type));
   }
