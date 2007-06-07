@@ -111,17 +111,13 @@ public abstract class Frame
       builder.append('0');
     builder.append(addr);
 
-    if (getSubprogram() != null) {
-      builder.append(" in " + getSubprogram().toString() + " ()");
-    }
-    else {
-      // Print the symbol, if known append ().
-      Symbol symbol = getSymbol();
-      builder.append(" in ");
-      builder.append(symbol.getDemangledName());
-      if (symbol != Symbol.UNKNOWN)
-	builder.append(" ()");
-    }
+    // Print the symbol, if known append ().
+    Symbol symbol = getSymbol();
+    builder.append(" in ");
+    builder.append(symbol.getDemangledName());
+    if (symbol != Symbol.UNKNOWN)
+      builder.append(" ()");
+    
 
     // If there's line number information append that.
     Line[] lines = getLines();

@@ -83,17 +83,19 @@ public class TestFStack
 
   public static void multiThreaded (AckProcess ackProc, int numSecondaryThreads)
   {
+    String mainThread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                        + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
+                        + ".*/funit-child.c#[\\d]+\n"
+                        + "#[\\d]+ 0x[\\da-f]+ in main \\(\\) from: "
+                        + ".*/funit-child.c#[\\d]+\n"
+                        + "#[\\d]+ 0x[\\da-f]+ in __libc_start_main \\(\\)\n"
+                        + "#[\\d]+ 0x[\\da-f]+ in _start \\(\\)\n";
 
-    String mainThread = "(?s)"
-                        + ".*server.*funit-child.c"
-                        + ".*main.*funit-child.c"
-                        + ".*__libc_start_main"
-                        + ".*_start.*";
-
-    String thread = "(?s)"
-                    + ".*server.*funit-child.c"
-                    + ".*start_thread"
-                    + ".*clone.*";
+    String thread = "Task #\\d+\n" + "(#[\\d]+ 0x[\\da-f]+ in .*\n)*"
+                    + "#[\\d]+ 0x[\\da-f]+ in server \\(\\) from: "
+                    + ".*/funit-child.c#[\\d]+\n"
+                    + "#[\\d]+ 0x[\\da-f]+ in start_thread \\(\\)\n"
+                    + "#[\\d]+ 0x[\\da-f]+ in (__)?clone \\(\\)\n";
 
     final Proc proc = ackProc.assertFindProcAndTasks();
 
@@ -112,11 +114,12 @@ public class TestFStack
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();
-    regex += "(" + mainThread + ")((?s).*" + thread + "){" + numSecondaryThreads
+    regex += "(" + mainThread + ")(" + thread + "){" + numSecondaryThreads
              + "}";
+
     String result = stacker.toPrint();
     logger.log(Level.FINE, result);
-    assertTrue(result + "should match: " + regex,
+    assertTrue(result + "should match: " + regex + " threads",
                result.matches(regex));
 
   }

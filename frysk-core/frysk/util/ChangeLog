@@ -1,3 +1,9 @@
+2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFCatch.java: Reversed the patch for loosining the output matching
+	chriteria.
+	* TestFStack.java: Ditto.
+
 2007-06-07  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceAction.java (deletedFrom): Added.
