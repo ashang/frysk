@@ -153,9 +153,18 @@ fi
 # good warnings without it.  So explictily test for it.
 
 AC_MSG_CHECKING([whether ${JAVAC} accepts -Wall])
-if test "x$ac_env_GCJFLAGS_set" == xset || test "x${GCJ_FSOURCE}" == xyes ; then
+if test "x$ac_env_GCJFLAGS_set" == xset ; then
 	GCJ_WALL=no
 	AC_MSG_RESULT([not needed])
+elif test "x${GCJ_FSOURCE}" == xyes ; then
+	# Newer compilers have a good default set of warnings so do
+	# not need -Wall.  However, older GCJs barf on stray
+	# semicolons so always check for them to help with
+	# compatibility.
+	GCJ_WALL=-Wsemicolon
+	JAVACFLAGS="$JAVACFLAGS -Wsemicolon"
+	GCJFLAGS="$GCJFLAGS -Wsemicolon"
+	AC_MSG_RESULT([${GCJ_WALL}])
 else
 	JAVACFLAGS_WARN=$JAVACFLAGS
 	JAVACFLAGS="$JAVACFLAGS -Wall"

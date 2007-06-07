@@ -1,3 +1,8 @@
+2007-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk-common.ac (JAVAFLAGS, GCJFLAGS): For -Wall, when a new
+	compiler add -Wsemicolon.
+
 2007-06-05  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (GCJFLAGS, JAVACFLAGS): Clean up -Wall and
