@@ -1,5 +1,8 @@
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-common.ac (JAVAFLAGS, GCJFLAGS): Fix typo, replace
+	-Wsemicolon with -Wextraneous-semicolon.
+
 	* frysk-common.ac (JAVAFLAGS, GCJFLAGS): For -Wall, when a new
 	compiler add -Wsemicolon.
 

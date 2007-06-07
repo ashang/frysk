@@ -161,9 +161,9 @@ elif test "x${GCJ_FSOURCE}" == xyes ; then
 	# not need -Wall.  However, older GCJs barf on stray
 	# semicolons so always check for them to help with
 	# compatibility.
-	GCJ_WALL=-Wsemicolon
-	JAVACFLAGS="$JAVACFLAGS -Wsemicolon"
-	GCJFLAGS="$GCJFLAGS -Wsemicolon"
+	GCJ_WALL=-Wextraneous-semicolon
+	JAVACFLAGS="$JAVACFLAGS ${GCJ_WALL}"
+	GCJFLAGS="$GCJFLAGS ${GCJ_WALL}"
 	AC_MSG_RESULT([${GCJ_WALL}])
 else
 	JAVACFLAGS_WARN=$JAVACFLAGS
