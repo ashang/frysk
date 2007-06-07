@@ -55,8 +55,6 @@ import java.util.Observable;
 import java.text.ParseException;
 import java.lang.RuntimeException;
 
-import javax.naming.NameNotFoundException;
-
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -724,44 +722,6 @@ public class CLI
     }
   }
 
-  class WhatHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      if (params.size() == 0)
-	return;
-        
-      if (proc == null)
-	{
-	  addMessage("No symbol table is available.", Message.TYPE_NORMAL);
-	  return;
-	}
-
-      if (params.size() == 0
-          || (((String)params.get(0)).equals("-help")))
-        {
-          printUsage(cmd);
-          return;
-        }
-      String sInput = ((String)params.get(0));
-      try 
-        {
-          outWriter.println(debugInfo.what(sInput));
-        }
-      catch (NameNotFoundException nnfe)
-        {
-          addMessage(nnfe.getMessage(), Message.TYPE_ERROR);
-        }
-    }
-  }
-
   class GoHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -934,7 +894,7 @@ public class CLI
     handlers.put("unset", new UnsetHandler());
     handlers.put("up", new UpDownHandler());
     handlers.put("viewset", new ViewsetHandler());
-    handlers.put("what", new WhatHandler());
+    handlers.put("what", new WhatCommand(this));
     handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsHandler());
     // New interface
