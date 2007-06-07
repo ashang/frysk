@@ -723,58 +723,7 @@ public class CLI
       outWriter.println(tmpFrame.toPrint(false));        
     }
   }
-  
-  class WhereHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      
-      if (running)
-        {
-          addMessage("Process is running", Message.TYPE_ERROR);
-          return;
-        }
-      
-      refreshSymtab();
-      int level = 0;
-      Frame tmpFrame = null;
-        
-      if (proc == null)
-	{
-	  addMessage("No symbol table is available.", Message.TYPE_NORMAL);
-	  return;
-	}
 
-      if (params.size() != 0)
-	level = Integer.parseInt((String)params.get(0));
- 
-      int l = stackLevel;
-      int stopLevel;
-      
-      if (level > 0)
-	stopLevel = l + level;
-      else
-	stopLevel = 0;
-      
-      tmpFrame = debugInfo.getCurrentFrame();
-      while (tmpFrame != null)
-	{
-	  outWriter.print("#" + l + " ");
-	  outWriter.println(tmpFrame.toPrint(false));
-	  tmpFrame = tmpFrame.getOuter();
-	  l += 1;
-	  if (l == stopLevel)
-	    break;
-	}
-    }
-  }
-    
   class WhatHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -986,7 +935,7 @@ public class CLI
     handlers.put("up", new UpDownHandler());
     handlers.put("viewset", new ViewsetHandler());
     handlers.put("what", new WhatHandler());
-    handlers.put("where", new WhereHandler());
+    handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsHandler());
     // New interface
     addHandler(new RunHandler(this));

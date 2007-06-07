@@ -1,7 +1,10 @@
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
+	* hpd/CLI.java (WhereHandler): Rename to ...
+	* hpd/WhereCommand.java: ... this.  New file.
+
 	* hpd/CLI.java (PrintHandler): Rename to ...
-	* hpd/PrintCommand.java: ... this.  new file.
+	* hpd/PrintCommand.java: ... this.  New file.
 
 2007-06-07  Mike Cvet  <mcvet@redhat.com>
 
