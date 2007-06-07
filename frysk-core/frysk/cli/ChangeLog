@@ -1,5 +1,8 @@
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
+	* hpd/CLI.java (HaltHandler): Rename to ...
+	* hpd/HaltCommand.java: ... this.  New file.
+
 	* hpd/CLI.java (userhelp): Make package private.
 	(HelpHandler): Rename to ...
 	* hpd/HelpCommand.java: ... this.  New file.

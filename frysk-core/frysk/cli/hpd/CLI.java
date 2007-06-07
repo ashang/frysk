@@ -744,31 +744,6 @@ public class CLI
     }
   }
 
-  class HaltHandler
-    implements CommandHandler
-  {
-    public void handle(Command cmd)
-      throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      
-      if (steppingObserver != null)
-        {
-          SteppingEngine.stop(null, proc.getTasks());
-          running = false;
-        }
-      else
-	addMessage("Not attached to any process", Message.TYPE_ERROR);
-   	   
-    }
-  }
-
   class QuitHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -855,7 +830,7 @@ public class CLI
     addHandler(new EnableHandler(this));
     handlers.put("focus", new FocusHandler());
     handlers.put("go", new GoHandler());
-    handlers.put("halt", new HaltHandler());
+    handlers.put("halt", new HaltCommand(this));
     handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
     handlers.put("print", new PrintCommand(this));
