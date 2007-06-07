@@ -1,3 +1,8 @@
+2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/ProcessPicker.java: Deleted. ProcessPicker in the druid
+	should be used instead.
+
 2007-06-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/SessionManager.java: Now creates the Sessions directory
