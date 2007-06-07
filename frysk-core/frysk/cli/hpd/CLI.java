@@ -786,32 +786,6 @@ public class CLI
       detachHandler.handle(command);
     }
   }
-  class HelpHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      String output = "";
-      String temp = "";
-      if (params.size() == 0)
-        for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
-          {  
-            temp = (String)iter.next();
-            output += temp + " - " + userhelp.getCmdDescription(temp) + "\n";
-          }
-      else
-        for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
-          {
-            temp = (String)iter.next();
-            if (temp.compareTo(params.get(0)) == 0)
-              {              
-                output += userhelp.getCmdSyntax(temp) + "\n";
-                output += userhelp.getCmdFullDescr(temp);
-              }
-          }
-      addMessage(output, Message.TYPE_NORMAL);
-    }
-  }
     
   /*
    * Private variables
@@ -822,7 +796,7 @@ public class CLI
   private Preprocessor prepro;
   private String prompt; // string to represent prompt, will be moved
   private HashMap handlers;
-  private UserHelp userhelp;
+  final UserHelp userhelp;
   private DbgVariables dbgvars;
 
   // PT set related stuff
@@ -882,7 +856,7 @@ public class CLI
     handlers.put("focus", new FocusHandler());
     handlers.put("go", new GoHandler());
     handlers.put("halt", new HaltHandler());
-    handlers.put("help", new HelpHandler());
+    handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
     handlers.put("print", new PrintCommand(this));
     handlers.put("quit", new QuitHandler());
