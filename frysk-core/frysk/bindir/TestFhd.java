@@ -39,10 +39,11 @@
 
 package frysk.bindir;
 
-import frysk.junit.TestCase;
-import frysk.expunit.Expect;
-import frysk.Config;
 import java.io.File;
+
+import frysk.Config;
+import frysk.expunit.Expect;
+import frysk.junit.TestCase;
 
 /**
  * This performs a "sniff" test of Fstack, confirming basic
@@ -96,7 +97,7 @@ public class TestFhd
     e.expect ("print.*21.*(fhpd)");
     // Down
     e.send ("d\t");
-    e.expect (".*defset.*down.*detach.*delete.*" + prompt + ".*");
+    e.expect (".*defset.*delete.*detach.*down.*" + prompt + ".*");
     e.send ("own\n");
     e.expect ("own.*#0.*" + prompt);
     e.close();
