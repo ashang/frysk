@@ -154,6 +154,16 @@ public class SessionManager
     sessions.remove(session);
   }
 
+  public void renameSession(final Session session, String newName){
+    if(this.sessions.contains(session)){
+      this.removeSession(session);
+      session.setName(newName);
+      this.addSession(session);
+      this.saveSession(session);
+    }else{
+      session.setName(newName);
+    }
+  }
   
   /**
    * Sets the session that is to be currently examined by frysk.
@@ -175,6 +185,13 @@ public class SessionManager
     return currentSession;
   }
     
+  private void saveSession(Session session){
+    final Element node = new Element("Session");
+    ObjectFactory.theFactory.saveObject(session, node);
+    ObjectFactory.theFactory.exportNode(new File(sessionsDir,
+                                        session.getName()), node);
+  }
+  
   public void save ()
   {
     final Iterator iterator = getSessions().iterator();
@@ -183,10 +200,7 @@ public class SessionManager
         final Session session = (Session) iterator.next();
         if (session.shouldSaveObject())
           {
-            final Element node = new Element("Session");
-            ObjectFactory.theFactory.saveObject(session, node);
-            ObjectFactory.theFactory.exportNode(new File(sessionsDir,
-                                                session.getName()), node);
+            saveSession(session);
           }
       }
   }

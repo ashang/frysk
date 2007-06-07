@@ -1,5 +1,15 @@
 2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* sessions/SessionManager.java (saveSession): New method.
+	(renameSession): New method.
+	* sessions/Session.java (SessionType.toString): Changed it to print
+	name as well as the object's hashCode.
+	* druid/CreateFryskSessionDruid.java (.entryEvent): Now ignores
+	DELETE_TEXT events.
+	Now uses SessionManager.renameSession() instead of session.setName().
+
+2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* sessions/ProcessPicker.java: Deleted. ProcessPicker in the druid
 	should be used instead.
 

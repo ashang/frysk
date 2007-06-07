@@ -609,14 +609,15 @@ public class CreateFryskSessionDruid
 
       public void entryEvent (EntryEvent event)
       {
-//	if(event.getType() == EntryEvent.Type.DELETE_TEXT){
-//	  return;
-//	}
-//	
-	if(!validateSessionName()){
+        
+        if(event.isOfType(EntryEvent.Type.DELETE_TEXT)){
+          return;
+        }
+    System.out.println(".entryEvent() " + event.getType().getName());
+    
+        if(!validateSessionName()){
 	  return;
 	}
-	
 	
 	String proposedName = nameEntry.getText();
 	
@@ -625,7 +626,7 @@ public class CreateFryskSessionDruid
 	}
 	
 	if(proposedName.length() != 0){
-	  SessionManager.theManager.getCurrentSession().setName(proposedName);
+	  SessionManager.theManager.renameSession(SessionManager.theManager.getCurrentSession(), proposedName);
 	}
 	CreateFryskSessionDruid.this.setTitle(": " + SessionManager.theManager.getCurrentSession().getName());
 
@@ -832,7 +833,7 @@ public class CreateFryskSessionDruid
   {
     if (! SessionManager.theManager.getCurrentSession().getName().equals("NoName"))
       {
-	nameEntry.setText(SessionManager.theManager.getCurrentSession().getName());
+        nameEntry.setText(SessionManager.theManager.getCurrentSession().getName());
       }
     
   }
