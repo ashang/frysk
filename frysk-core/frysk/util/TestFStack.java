@@ -49,6 +49,8 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcCoreAction;
 import frysk.proc.corefile.LinuxHost;
 
 public class TestFStack
@@ -106,6 +108,7 @@ public class TestFStack
       }
     };
 
+    new ProcBlockAction (proc, stacker);
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();
@@ -146,6 +149,7 @@ public class TestFStack
           }
         };
 
+        new ProcCoreAction (proc, stacker);
         assertRunUntilStop("perform backtrace");
         
         assertNotNull("has backtrace?", stacker.toPrint());

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,56 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc;
 
-import frysk.event.RequestStopEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-public class StressTestAbandon
-    extends TestLib
+public class ProcCoreAction
 {
-  
-  class Action implements ProcObserver.ProcAction
+
+  public ProcCoreAction (Proc proc, ProcObserver.ProcAction action)
   {
-    private Proc proc;
-
-    public Action(Proc proc)
-    {
-      this.proc = proc;
-    }
-    public void allExistingTasksCompleted ()
-    {
-      proc.requestAbandonAndRunEvent(new RequestStopEvent(Manager.eventLoop));
-      
-    }
-
-    public void existingTask (Task task)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-    }
-
-    public void addedTo (Object observable)
-    {
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-    public void taskAddFailed (Object task, Throwable w)
-    {
-    }
+    LinkedList taskList = proc.getTasks();
     
+    Iterator iterator = taskList.iterator();
+    
+    while (iterator.hasNext())
+      {
+        Task task = (Task) iterator.next();
+        action.existingTask(task);
+      }
+    
+    action.allExistingTasksCompleted();
   }
-  public void testStressAbandon ()
-  {
-    AckProcess ackProc = new AckDaemonProcess(99);
-    Proc proc = ackProc.assertFindProcAndTasks();
 
-    new ProcBlockAction(proc, new Action(proc));
-
-    assertRunUntilStop("testStressAbandon");
-  }
 }

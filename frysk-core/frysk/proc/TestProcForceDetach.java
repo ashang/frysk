@@ -48,7 +48,8 @@ public class TestProcForceDetach
 
   public void requestRemove (AckProcess ackProc, int count)
   {
-    new MyProcBlockAction(ackProc.assertFindProcAndTasks(), count);
+    Proc proc = ackProc.assertFindProcAndTasks();
+    new ProcBlockAction(proc, new MyProcBlockAction(proc));
     assertRunUntilStop("test");
   }
 
@@ -77,11 +78,13 @@ public class TestProcForceDetach
   }
 
   class MyProcBlockAction
-      extends ProcBlockAction
+      implements ProcObserver.ProcAction
   {
-    public MyProcBlockAction (Proc theProc, int c)
+    private Proc proc;
+    
+    public MyProcBlockAction (Proc theProc)
     {
-      super(theProc);
+      this.proc = theProc;
     }
 
     public void existingTask (Task task)
@@ -101,6 +104,14 @@ public class TestProcForceDetach
     public void addFailed (Object observable, Throwable w)
     {
       fail("Proc add failed: " + w.getMessage());
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public void taskAddFailed (Object task, Throwable w)
+    {
     }
 
   }

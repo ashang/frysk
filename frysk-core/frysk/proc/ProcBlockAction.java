@@ -57,9 +57,9 @@ import frysk.proc.corefile.LinuxHost;
  * called on all tasks.
  * 
  */
-abstract public class ProcBlockAction
-    implements ProcObserver
+public class ProcBlockAction
 {
+  private ProcObserver.ProcAction action;
   private ProcBlockTaskObserver taskObserver = new ProcBlockTaskObserver();
 
   private boolean isMainTaskAdded = false;
@@ -94,7 +94,7 @@ abstract public class ProcBlockAction
 
         public void execute ()
         {
-          existingTask(task);
+          action.existingTask(task);
           checkFinish(task);
         }
 
@@ -105,7 +105,7 @@ abstract public class ProcBlockAction
 
     public void addFailed (Object observable, Throwable w)
     {
-      taskAddFailed(observable, w);
+      action.taskAddFailed(observable, w);
       checkFinish((Task) observable);
     }
 
@@ -119,7 +119,7 @@ abstract public class ProcBlockAction
 
     public Action updateTerminated (Task task, boolean signal, int value)
     {
-      taskAddFailed(task, new RuntimeException("Task terminated"));
+      action.taskAddFailed(task, new RuntimeException("Task terminated"));
       checkFinish(task);
       return Action.BLOCK;
     }
@@ -141,10 +141,11 @@ abstract public class ProcBlockAction
    * 
    * @param theProc a non-null Process.
    */
-  public ProcBlockAction (Proc theProc)
+  public ProcBlockAction (Proc theProc, ProcObserver.ProcAction action)
   {
     logger.log(Level.FINE, "{0} new\n", this);
     proc = theProc;
+    this.action = action;
 
     taskList = proc.getTasks();
     requestAdd();
@@ -197,10 +198,10 @@ abstract public class ProcBlockAction
     while (iterator.hasNext())
       {
         Task task = (Task) iterator.next();
-        existingTask(task);
+        action.existingTask(task);
       }
     
-    allExistingTasksCompleted();
+    action.allExistingTasksCompleted();
   }
 
   private void requestAdd ()
@@ -219,7 +220,7 @@ abstract public class ProcBlockAction
           {
             logger.log(Level.FINE, "Could not get main thread of "
                                    + "this process\n {0}", proc);
-            addFailed(proc, new RuntimeException("Process lost: could not get "
+            action.addFailed(proc, new RuntimeException("Process lost: could not get "
                                                  + "the main thread of this "
                                                  + "process.\n" + proc));
             return;
@@ -238,22 +239,6 @@ abstract public class ProcBlockAction
     task.requestAddTerminatedObserver(taskObserver);
   }
 
-  public void addedTo (Object observable)
-  {
-  }   
-
-  public void deletedFrom (Object observable)
-  {
-  }
-
-  public void taskAddFailed (Object observable, Throwable w)
-  {
-  }
-
-  public LinkedList getTasks ()
-  {
-    return tasks;
-  }
 
   private void requestDeleteObservers (Task task)
   {
@@ -271,14 +256,7 @@ abstract public class ProcBlockAction
         requestDeleteObservers(task);
         iter.remove();
       }
-  }
-
-  /**
-   * This method is called once existingTask() has been called on all tasks in 
-   * the given Proc.
-   *
-   */
-  public abstract void allExistingTasksCompleted ();
+  }  
 
   private boolean finished = false;
 
@@ -297,7 +275,7 @@ abstract public class ProcBlockAction
           {
             finished = true;
 
-            allExistingTasksCompleted();
+            action.allExistingTasksCompleted();
 
             requestDelete();
           }

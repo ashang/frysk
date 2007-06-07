@@ -48,6 +48,7 @@ import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 
@@ -117,6 +118,7 @@ public class fcore
               }
             }, writeAllMaps);
 
+            new ProcBlockAction(coreProc, stacker);
           }
 
           public void procNotFound (ProcId procId, Exception e)

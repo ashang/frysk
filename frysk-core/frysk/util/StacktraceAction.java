@@ -40,7 +40,6 @@
 
 package frysk.util;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -51,15 +50,26 @@ import frysk.event.RequestStopEvent;
 import frysk.event.SignalEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
-import frysk.proc.ProcId;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.rt.StackFactory;
 import frysk.sys.Sig;
 
 public abstract class StacktraceAction
-    extends ProcBlockAction
+    implements ProcObserver.ProcAction
 {
+  public void addedTo (Object observable)
+  {
+  }
+
+  public void addFailed (Object observable, Throwable w)
+  {
+  }
+
+  public void deletedFrom (Object observable)
+  {
+  }
+
   protected StringBuffer stackTrace = new StringBuffer();
 
   private TreeMap sortedTasks = new TreeMap();
@@ -78,25 +88,10 @@ public abstract class StacktraceAction
    */
   public StacktraceAction (Proc theProc, Event theEvent)
   {
-    super(theProc);
-    event = theEvent;
+     event = theEvent;
 
-    Manager.eventLoop.add(new InterruptEvent(proc));
-  }
-  
-  public StacktraceAction (ProcId procId, Event theEvent)
-  {
-    super(procId);
-    event = theEvent;
-    Manager.eventLoop.add(new InterruptEvent(proc));
-  }
-  
-  public StacktraceAction (File coreFile, Event theEvent)
-  {
-    super (coreFile);
-    event = theEvent;
-    Manager.eventLoop.add(new InterruptEvent(proc));
-  }
+    Manager.eventLoop.add(new InterruptEvent(theProc));
+  }  
 
   public final void existingTask (Task task)
   {

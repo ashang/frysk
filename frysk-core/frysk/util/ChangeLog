@@ -1,3 +1,17 @@
+2007-06-07  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java (deletedFrom): Added.
+	(addFailed): Added.
+	(addedTo): Added.
+	(StacktraceAction): Removed unused constructors.
+	* TestFCore.java (constructCore): Reflect changes to ProcBlockAction.
+	* CoredumpAction.java (CoredumpAction): Store reference to proc.
+	(taskAddFailed): Added.
+	(addedTo): Added.
+	* StressTestFStack.java (testClone): Use ProcBlockAction.
+	* TestFStack.java (multiThreaded): Use ProcBlockAction.
+	(testCore): Use ProcCoreAction.
+
 2007-06-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFCatch.java: Loosend success chriteria to check for function

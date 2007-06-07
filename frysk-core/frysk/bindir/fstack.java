@@ -50,6 +50,7 @@ import frysk.event.RequestStopEvent;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
 import frysk.proc.Host;
 import frysk.proc.corefile.LinuxHost;
@@ -145,6 +146,8 @@ public final class fstack
 
       }
     };
+    
+    new ProcBlockAction(proc, stacker);
   }
   
   public static void main (String[] args)

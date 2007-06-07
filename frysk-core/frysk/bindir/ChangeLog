@@ -1,3 +1,8 @@
+2007-06-07  Nurdin Premji  <npremji@redhat.com>
+
+	* fstack.java (stackProc): Reflect ProcBlockAction refactor.
+	* fcore.java (.procFound): Ditto.
+	
 2007-06-01  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java: Refactored for core support.

@@ -79,7 +79,7 @@ import frysk.event.SignalEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcObserver;
 import frysk.proc.Task;
 import frysk.sys.Sig;
 import frysk.sys.proc.AuxvBuilder;
@@ -100,7 +100,7 @@ import frysk.sys.proc.Status;
  */
 
 public class CoredumpAction
-    extends ProcBlockAction
+    implements ProcObserver.ProcAction
 {
 
   protected static final Logger logger = Logger.getLogger("frysk");
@@ -119,14 +119,13 @@ public class CoredumpAction
 
   private LinkedList taskList;
 
-  // Proc proc = null;
+  Proc proc = null;
 
   private Event event;
 
   public CoredumpAction (Proc proc, Event theEvent, boolean writeAllMaps)
   {
-    super(proc);
-    // this.proc = proc;
+    this.proc = proc;
     this.event = theEvent;
     taskList = proc.getTasks();
     taskArray = new Task[taskList.size()];
@@ -1174,6 +1173,14 @@ public class CoredumpAction
       {
         abandonCoreDump(e);
       }
+  }
+
+  public void addedTo (Object observable)
+  {
+  }
+
+  public void taskAddFailed (Object task, Throwable w)
+  {
   }
 
 }

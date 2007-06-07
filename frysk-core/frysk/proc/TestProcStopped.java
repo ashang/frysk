@@ -50,13 +50,13 @@ public class TestProcStopped
   {
     ackProc.assertSendStop();
     Proc proc = ackProc.assertFindProcAndTasks();
-    new MyTester(proc, count);
+    new ProcBlockAction(proc, new MyTester());
   }
 
   public void running (AckProcess ackProc, int count)
   {
     Proc proc = ackProc.assertFindProcAndTasks();
-    new MyTester(proc, count);
+    new ProcBlockAction(proc, new MyTester());
   }
 
   public void testStoppedAckDaemon ()
@@ -148,14 +148,8 @@ public class TestProcStopped
   }
 
   public class MyTester
-      extends ProcBlockAction
-  {
-
-    public MyTester (Proc proc, int c)
-    {
-      super(proc);
-
-    }
+      implements ProcObserver.ProcAction
+  {   
 
     public void existingTask (Task task)
     {
@@ -175,6 +169,14 @@ public class TestProcStopped
     public void addFailed (Object observable, Throwable w)
     {
       fail("Proc add failed: " + w.getMessage());
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public void taskAddFailed (Object task, Throwable w)
+    {
     }
 
   }

@@ -60,6 +60,7 @@ import frysk.event.RequestStopEvent;
 import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
 import frysk.sys.proc.MapsBuilder;
 
 public class TestFCore
@@ -241,7 +242,8 @@ public class TestFCore
                                                                Manager.eventLoop));
       }
     }, false);
-
+        
+    new ProcBlockAction(ackProc, coreDump);
     assertRunUntilStop("Running event loop for core file");
     return coreDump.getConstructedFileName();
   }

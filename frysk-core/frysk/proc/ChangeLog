@@ -1,3 +1,24 @@
+2007-06-07  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcCoreAction.java: Added.	
+	* TestProcForceDetach.java (MyProcBlockAction): made to implement
+	ProcObserver.ProcAction.
+	(MyProcBlockAction.taskAddFailed): Added.
+	(MyProcBlockAction.MyProcBlockAction): Removed unused parameter.
+	(MyProcBlockAction.addedTo): Added.
+	(requestRemove): Reflect changes to ProcBlockAction.
+	* ProcBlockAction.java: Changed to take a ProcObserver.ProcAction
+	rather than implement ProcObserver.
+	(ProcBlockAction): Removed unused constructors.	
+	* TestProcStopped.java (MyTester): Implement ProcObserver.ProcAction.
+	(MyTester.taskAddFailed): Added.
+	(MyTester.addedTo): Added.
+	(stopped): Reflect changes to ProcBlockAction.
+	(running): Ditto.
+	* ProcObserver.java (ProcAction): Added.	
+	* StressTestAbandon.java (Action): Added.
+	(testStressAbandon): Use Action, reflect changes to ProcBlockAction.
+
 2007-06-01  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcBlockAction.java (ProcBlockAction): Added constructors that take

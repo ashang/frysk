@@ -70,4 +70,19 @@ public interface ProcObserver
     void taskRemoved (Task task);
 
   }
+  
+  /**
+   * An interface to perform a one time check of all tasks.
+   *
+   */
+  public interface ProcAction
+    extends ProcObserver
+    {
+      /**
+       * Called when all the tasks have been handled.
+       */
+      void allExistingTasksCompleted();
+      
+      void taskAddFailed(Object task, Throwable w);
+    }
 }

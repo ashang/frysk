@@ -46,6 +46,7 @@ import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
+import frysk.proc.ProcBlockAction;
 
 public class StressTestFStack
     extends TestLib
@@ -88,6 +89,8 @@ public class StressTestFStack
         fail("Proc add failed" + w.getMessage());
       }
     };
+    
+    new ProcBlockAction(proc, stacker);
     assertRunUntilStop("perform backtrace");
 
     String regex = new String();
