@@ -57,7 +57,6 @@ import java.lang.RuntimeException;
 
 import javax.naming.NameNotFoundException;
 
-import frysk.value.Value;
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Host;
 import frysk.proc.Manager;
@@ -68,8 +67,6 @@ import frysk.rt.Frame;
 import frysk.rt.SteppingEngine;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
-
-import lib.dw.BaseTypes;
 
 public class CLI 
 {
@@ -815,113 +812,6 @@ public class CLI
         }
     }
   }
-    
-  private static final int DECIMAL = 10;
-  private static final int HEX = 16;
-  private static final int OCTAL = 8;    
-    
-  class PrintHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      if (cmd.getParameters().size() == 0
-          || (((String)params.get(0)).equals("-help")))
-        {
-          printUsage(cmd);
-          return;
-        }
-      boolean haveFormat = false;
-      int outputFormat = DECIMAL;
-
-      String sInput 
-	= cmd.getFullCommand().substring(cmd.getAction().length()).trim();
-
-      for (int i = 0; i < params.size(); i++)
-	{
-	  if (((String)params.get(i)).equals("-format"))
-	    {
-	      haveFormat = true;
-	      i += 1;
-	      String arg = ((String)params.get(i));
-	      if (arg.compareTo("d") == 0)
-		outputFormat = DECIMAL;
-	      else if (arg.compareTo("o") == 0)
-		outputFormat = OCTAL;
-	      else if (arg.compareTo("x") == 0)
-		outputFormat = HEX;
-	    }
-	}
-      if (haveFormat)
-	sInput = sInput.substring(0,sInput.indexOf("-format"));
-
-      if (sInput.length() == 0) 
-	{
-	  printUsage(cmd);
-	  return;
-	}
-
-      if (cmd.getAction().compareTo("assign") == 0) 
-	{
-	  int i = sInput.indexOf(' ');
-	  if (i == -1) 
-	    {
-	      printUsage(cmd);          
-	      return;
-	    }
-	  sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
-	}        
-
-      Value result = null;
-      try 
-        {
-          result = DebugInfo.print(sInput);
-        }
-      catch (NameNotFoundException nnfe)
-        {
-          addMessage(new Message(nnfe.getMessage(),
-                                 Message.TYPE_ERROR));
-          return;
-        }
-      if (result == null)
-	{
-	  addMessage("Variable " + sInput + " not found in scope",
-		     Message.TYPE_ERROR);
-	  return;
-	}
-
-      switch (outputFormat)
-      {
-      case HEX: 
-	outWriter.print("0x");
-	break;
-      case OCTAL: 
-	outWriter.print("0");
-	break;
-      }
-      int resultType = result.getType().getTypeId();
-      if (resultType == BaseTypes.baseTypeFloat
-	  || resultType == BaseTypes.baseTypeDouble)
-	outWriter.println(result.toString());
-      else if (resultType == BaseTypes.baseTypeShort
-	  || resultType == BaseTypes.baseTypeInteger
-	  || resultType == BaseTypes.baseTypeLong)
-	outWriter.println(Long.toString(result.longValue(),
-	                                outputFormat));
-      else if (resultType == BaseTypes.baseTypeByte)
-	outWriter.println(Integer.toString((int)result.longValue(),
-	                                   outputFormat) + 
-	                                   " '" + result.toString() + "'");
-      else
-	outWriter.println(result.toString());
-    }
-  }
 
   class GoHandler implements CommandHandler
   {
@@ -1071,7 +961,7 @@ public class CLI
     dbgvars = new DbgVariables();
     addHandler(new ActionsHandler(this));
     handlers.put("alias", new AliasHandler());
-    handlers.put("assign", new PrintHandler());
+    handlers.put("assign", new PrintCommand(this));
     handlers.put("attach", new AttachHandler());
     addHandler(new BreakpointHandler(this));
     handlers.put("defset", new DefsetHandler());
@@ -1085,7 +975,7 @@ public class CLI
     handlers.put("halt", new HaltHandler());
     handlers.put("help", new HelpHandler());
     handlers.put("list", new ListCommand(this));
-    handlers.put("print", new PrintHandler());
+    handlers.put("print", new PrintCommand(this));
     handlers.put("quit", new QuitHandler());
     handlers.put("set", new SetHandler());
     handlers.put("step", new StepCommand(this));
