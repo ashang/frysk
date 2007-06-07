@@ -1,3 +1,11 @@
+2007-06-07  Andrew Cagney  <cagney@redhat.com>
+
+	* CppParserTokenTypes.sed: Empty.
+	* CppTreeParser.sed: Ditto.
+	* CppTreeParserTokenTypes.sed: Ditto.
+	* CppLexer.sed: Ditto.
+	* CppParser.sed: Ditto; except for workaround of GCJ bug.
+
 2007-06-06  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g: Replace wildcard with explict imports.
