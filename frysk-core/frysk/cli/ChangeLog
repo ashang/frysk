@@ -1,3 +1,12 @@
+2007-06-07  Mike Cvet  <mcvet@redhat.com>
+
+	* hpd/CLI.java (StepHandler): Removed.
+	(StepInstructionHandler): Removed.
+	(CLI): Initialize new step command classes with CLI parameter.
+	(SteppingObserver): Made package private.
+	* hpd/StepInstructionCommand.java: Added.
+	* hpd/StepCommand.java: Added.
+
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/CLI.java (ListHandler): Rename to ..

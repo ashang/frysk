@@ -65,7 +65,6 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.Frame;
-import frysk.rt.RemoteFrame;
 import frysk.rt.SteppingEngine;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
@@ -82,7 +81,7 @@ public class CLI
   boolean symtabNeedsRefresh = false;
   boolean running = false;
   int stackLevel = 0;
-  private SteppingObserver steppingObserver;
+  SteppingObserver steppingObserver;
   boolean procSearchFinished = false;
   boolean attached;
   
@@ -689,85 +688,6 @@ public class CLI
 	}
     }
   }
-  
-  class StepHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      
-      refreshSymtab();
-      if (steppingObserver != null)
-        {
-          if (!running)
-            {
-              SteppingEngine.setUpLineStep(proc.getTasks());
-              
-              synchronized (steppingObserver.getMonitor())
-                {
-                  try
-                  {
-                    steppingObserver.getMonitor().wait();
-                  }
-                  catch (InterruptedException ie) {}
-                }
-              
-              RemoteFrame rf = (RemoteFrame) debugInfo.getCurrentFrame();
-              
-              if (rf.getLines().length == 0)
-                addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
-              else
-                addMessage("Task stopped at line " + rf.getLines()[0].getLine() + "in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
-            }
-          else
-            addMessage("Process is already running", Message.TYPE_ERROR);
-        }
-      else
-        addMessage("Not attached to any process", Message.TYPE_ERROR);
-    }
-  }
-  
-  class StepInstructionHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      
-      refreshSymtab();
-      if (steppingObserver != null)
-        {
-          SteppingEngine.stepInstruction(proc.getTasks());
-          
-          synchronized (steppingObserver.getMonitor())
-          {
-            try
-            {
-              steppingObserver.getMonitor().wait();
-            }
-            catch (InterruptedException ie) {}
-          }
-        
-        RemoteFrame rf = (RemoteFrame) debugInfo.getCurrentFrame();
-        
-        if (rf.getLines().length == 0)
-          addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
-        else
-          addMessage("Task stopped at line " + rf.getLines()[0].getLine() + " in file " + rf.getLines()[0].getFile(), Message.TYPE_NORMAL);
-        }
-      else
-        addMessage("Not attached to any process", Message.TYPE_ERROR);
-    }
-  }
 
   class UpDownHandler implements CommandHandler
   {
@@ -1168,8 +1088,8 @@ public class CLI
     handlers.put("print", new PrintHandler());
     handlers.put("quit", new QuitHandler());
     handlers.put("set", new SetHandler());
-    handlers.put("step", new StepHandler());
-    handlers.put("stepi", new StepInstructionHandler());
+    handlers.put("step", new StepCommand(this));
+    handlers.put("stepi", new StepInstructionCommand(this));
     handlers.put("unalias", new UnaliasHandler());
     handlers.put("undefset", new UndefsetHandler());
     handlers.put("unset", new UnsetHandler());
@@ -1357,7 +1277,7 @@ public class CLI
     return result;
   }
   
-  private class SteppingObserver implements Observer 
+  class SteppingObserver implements Observer 
   {
     private Object monitor = new Object();
     
@@ -1457,4 +1377,8 @@ public class CLI
     return runningProcs;
   }
   
+  boolean isRunning ()
+  {
+    return this.running;
+  }
 }
