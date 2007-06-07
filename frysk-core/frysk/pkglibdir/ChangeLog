@@ -1,3 +1,7 @@
+2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-stacks.c: Renamed parameter.
+
 2007-06-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-stacks.c (fourth): Added a char* parameter.

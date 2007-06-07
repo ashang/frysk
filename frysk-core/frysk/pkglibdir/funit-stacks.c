@@ -17,13 +17,13 @@ void third(int param1, int param2, int param3){
   }
 }
 
-void second(int wassap){
+void second(int w){
   {
     int one = 1;
     {
       int two = 2;
       {
-	third(one,two,wassap);
+	third(one,two,w);
       }
     }
   }
