@@ -613,7 +613,6 @@ public class CreateFryskSessionDruid
         if(event.isOfType(EntryEvent.Type.DELETE_TEXT)){
           return;
         }
-    System.out.println(".entryEvent() " + event.getType().getName());
     
         if(!validateSessionName()){
 	  return;
