@@ -1,5 +1,12 @@
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
+	* Util.java (getProcFromCoreFile): Added.
+	(getProcFromPid): Added.
+	(ProcFinder): Added.
+	(PidCoreParser): Removed.
+	(parsePidsAndCores): Removed.
+	(printStackTrace): Removed.
+	
 	* CommandlineParser.java: Added documentation. 
 	(parse): Don't catch general exceptions.
 	(isCoreFile): Limit try block to just creation of the elf file.

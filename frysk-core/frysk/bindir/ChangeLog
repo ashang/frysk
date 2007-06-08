@@ -1,7 +1,14 @@
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
-	* fstack.java (main): Use a CommandLineParser.
+	* fstack.java (stackProc): Removed.
+	(stackPid): Use Util.getProcFromPid to find the proc.
+	(stackCore): Use Util.getProcFromCore to find the proc.
+	Run the Stacktrace with a ProcCoreAction instead of ProcBlockAction.
+	(AbandonPrintEvent): Added.
+	(Stacker): Added.
 
+	* fstack.java (main): Use a CommandLineParser.
+	
 2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFhd.java: Sorted the expted commands list, to reflect the

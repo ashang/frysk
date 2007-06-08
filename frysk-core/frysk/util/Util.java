@@ -40,15 +40,16 @@
 package frysk.util;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import frysk.Config;
+import frysk.proc.Host;
+import frysk.proc.Manager;
 import frysk.proc.ProcId;
-import frysk.proc.Task;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.proc.corefile.LinuxHost;
+import frysk.proc.Proc;
 import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -58,17 +59,6 @@ public class Util
 
   private Util ()
   {
-  }
-
-  public static void printStackTrace (PrintStream writer, Task task)
-  {
-    writer.println("Stack trace for task " + task);
-    for (Frame frame = StackFactory.createFrame(task);
-	 frame != null; frame = frame.getOuter()) {
-	// FIXME: do valgrind-like '=== PID ===' ?
-	writer.print("  ");
-	writer.println(frame);
-    }
   }
 
   public static class PidParser
@@ -89,33 +79,67 @@ public class Util
 
   }
   
-  public static class PidCoreParser extends Parser
+  /**
+   * Return the Proc associated with a coreFile.
+   * @param coreFile the given coreFile.
+   * @return The Proc for the given coreFile.
+   */
+  public static Proc getProcFromCoreFile(File coreFile)
   {
-    LinkedList pidList = new LinkedList();
-    LinkedList coreList = new LinkedList();
+    LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
+
+    core.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+    Iterator iterator = core.getProcIterator();
+
+    Proc proc;
+    if (iterator.hasNext())
+      proc = (Proc) iterator.next();
+    else
+      {
+        proc = null;
+        throw new RuntimeException("No proc in this corefile");
+      }
+    if (iterator.hasNext())
+      throw new RuntimeException("Too many procs on this corefile");
     
-    public Collection getCoreList()
+    return proc;
+  }
+  
+  /**
+   * Used to find a Proc given a pid.
+   *
+   */
+  private static class ProcFinder implements Host.FindProc
+  {
+    Proc proc;
+    public void procFound (ProcId procId)
     {
-      return coreList;
-    }
-    
-    public PidCoreParser (String programName)
-    {
-      super(programName, Config.getVersion (), true);
-    }
-    
-    protected void validate () throws OptionException
-    {
-      if (pidList.isEmpty() && coreList.isEmpty())
-        throw new OptionException("No pid(s) or core files provided.");
+      proc = Manager.host.getProc(procId);
+      Manager.eventLoop.requestStop();
     }
 
-    public Collection getPidList ()
-    {
-      return pidList;
-    }
-    
+    public void procNotFound (ProcId procId, Exception e)
+    { 
+      System.err.println("Couldn't find the process: "
+                         + procId.toString());
+      Manager.eventLoop.requestStop();  
+    } 
   }
+  
+  /**
+   * Return a Proc associated with the given pid.
+   * @param procId The given pid.
+   * @return A Proc for the given pid.
+   */
+  public static Proc getProcFromPid(ProcId procId)
+  {
+    ProcFinder finder = new ProcFinder();
+    Manager.host.requestFindProc(procId, finder);
+    Manager.eventLoop.run();
+    return finder.proc;
+  }
+    
 
   public static Collection parsePids (final PidParser parser, String[] args)
   {
@@ -137,33 +161,5 @@ public class Util
       }
     });
     return parser.pidList;
-  }
-
-  public static void parsePidsAndCores (final PidCoreParser parser,
-                                              String[] args)
-  {
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-        if (arg.matches(".*core.*"))
-          {
-            parser.coreList.add(new File(arg));
-            return;
-          }
-        try
-          {
-            int pid = Integer.parseInt(arg);
-            parser.pidList.add(new ProcId(pid));
-          }
-        catch (NumberFormatException nfe)
-          {
-            throw new OptionException(
-                                      "Argument " + arg + " does not appear to " 
-                                      + "be a valid pid or core file.");
-
-          }
-      }
-    });
-  }
+  }  
 }
