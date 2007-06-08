@@ -39,7 +39,13 @@
 
 package frysk.rt;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
+import frysk.debuginfo.DebugInfo;
 import frysk.value.Type;
 import frysk.value.Value;
 
@@ -59,16 +65,59 @@ import frysk.value.Value;
  * imported_unit
  * 
  * The most important property of a scope is that it can own variables
- * and this object will give you acess to them.
+ * and this object will give you access to them.
  */
 public class Scope
 {
+  
+  LinkedList scopes;
   LexicalBlock outer;
   Value[] variables;
   DwarfDie[] variableDies;
   Type[] types;
   DwarfDie[] typeDies;
 
+  public Scope(DwarfDie die, DebugInfo debugInfo){
+    LinkedList variables = new LinkedList();
+    this.scopes = new LinkedList();
+    
+    die = die.getChild();
+//  System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
+
+    while(die != null){
+//      System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
+      
+      if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
+        Value value = debugInfo.getVariable(die);
+        variables.add(value);
+      }
+      
+      if(die.getTag() == DwTagEncodings.DW_TAG_lexical_block_){
+        this.scopes.add(new LexicalBlock(die, debugInfo));
+      }
+      
+      if(isScopeDie(die)){
+        this.scopes.add(new Scope(die,debugInfo));
+      }
+      
+      die = die.getSibling();
+    }
+    
+    this.variables = new Value[variables.size()];
+    Iterator iterator = variables.iterator();
+    for (int i = 0; i < this.variables.length; i++){
+      this.variables[i] = (Value) iterator.next();
+    }
+  }
+  
+  public LinkedList getScopes(){
+    return this.scopes;
+  }
+  
+  public Scope(){
+    
+  }
+  
   public Value[] getVariables ()
   {
     return variables;
@@ -99,4 +148,45 @@ public class Scope
     this.typeDies = new DwarfDie[n];
   }
 
+  public static boolean isScopeDie(DwarfDie die){
+    switch (die.getTag())
+      {
+      case DwTagEncodings.DW_TAG_compile_unit_:
+      case DwTagEncodings.DW_TAG_module_:
+      case DwTagEncodings.DW_TAG_lexical_block_:
+      case DwTagEncodings.DW_TAG_with_stmt_:
+      case DwTagEncodings.DW_TAG_catch_block_:
+      case DwTagEncodings.DW_TAG_try_block_:
+      case DwTagEncodings.DW_TAG_entry_point_:
+      case DwTagEncodings.DW_TAG_inlined_subroutine_:
+      case DwTagEncodings.DW_TAG_subprogram_:
+      case DwTagEncodings.DW_TAG_namespace_:
+      case DwTagEncodings.DW_TAG_imported_unit_:
+        return true;
+      default:
+        return false;
+      }
+  }
+  
+  public String toPrint(int indent){
+    StringBuilder stringBuilder = new StringBuilder();
+    char[] indentArray = new char[indent];
+    Arrays.fill(indentArray, ' ');
+    String indentString = new String(indentArray);
+    for (int i = 0; i < this.variables.length; i++){
+      if(variables[i]!=null){
+        stringBuilder.append("\n" + indentString + variables[i].getType() + " " + variables[i].getText());
+      }else{
+        stringBuilder.append("\n" + indentString + "Unhandled type");
+      }
+    }
+    
+    Iterator iterator = this.getScopes().iterator();
+    while(iterator.hasNext()){
+      Scope scope = (Scope) iterator.next();
+      stringBuilder.append(scope.toPrint(indent+1));
+    }
+    
+    return new String(stringBuilder);
+  }
 }

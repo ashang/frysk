@@ -43,8 +43,20 @@
 
 package frysk.rt;
 
+import lib.dw.DwarfDie;
+import frysk.debuginfo.DebugInfo;
+
 
 public class LexicalBlock extends Scope
 {
+
+  public LexicalBlock(){
+    super();  
+  }
+  
+  public LexicalBlock (DwarfDie die, DebugInfo debugInfo)
+  {
+    super(die, debugInfo);
+  }
      
 }

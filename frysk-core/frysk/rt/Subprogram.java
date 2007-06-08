@@ -51,7 +51,7 @@ import lib.dw.DwarfDie;
 import frysk.debuginfo.DebugInfo;
 import frysk.value.Value;
 
-public class Subprogram
+public class Subprogram extends Scope
 {
   // Language language;
     Subprogram outer;
@@ -62,6 +62,7 @@ public class Subprogram
 
     public Subprogram (DwarfDie die, DebugInfo debugInfo)
     {
+      super(die, debugInfo);
       this.name = die.getName();
 //      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
       

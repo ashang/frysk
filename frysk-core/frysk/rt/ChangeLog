@@ -1,3 +1,14 @@
+2007-06-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Subprogram.java: Now extends Scope.
+	* Scope.java: Constructor now finds owned variables and 
+	constructs inner Scopes.
+	Added a LinkedList of possible inner Scopes.
+	(toPrint) : New method.
+	(isScopeDie) : New method.
+	* LexicalBlock.java: Added no argument constructor.
+	Added constructor that requires DebugInfo, and DwarfDie. 
+
 2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java: Removed printing of dwarf info from the default
