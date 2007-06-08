@@ -1,3 +1,11 @@
+2007-06-08  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/CLI.java (AttachHandler): Rename this ...
+	* hpd/AttachCommand.java: ... to this.  New file.
+	* hpd/CLI.java (aliases): Make final package private.
+	(AliasHandler): Rename this ...
+	* hpd/AliasCommand.java: ... to this.  New file.
+
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/CLI.java (DetachHandler): Rename to ...

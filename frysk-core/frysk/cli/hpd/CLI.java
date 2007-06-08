@@ -56,10 +56,7 @@ import java.text.ParseException;
 import java.lang.RuntimeException;
 
 import frysk.debuginfo.DebugInfo;
-import frysk.proc.Host;
-import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.Frame;
 import frysk.rt.SteppingEngine;
@@ -339,153 +336,6 @@ public class CLI
   }
 
 
-  class AliasHandler implements CommandHandler 
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      if (params.size() <= 2)
-	{
-	  if (params.size() == 2)
-	    {
-	      aliases.put((String)params.get(0), (String)params.get(1));
-	    }
-	  else if (params.size() == 1)
-	    {
-	      String temp = (String)params.get(0);
-	      if (aliases.containsKey(temp))
-		{
-		  addMessage(temp + " = " + (String)aliases.get(temp),
-			     Message.TYPE_NORMAL);
-		}
-	      else
-		addMessage("Alias \"" + temp + "\" not defined.", 
-			   Message.TYPE_ERROR);
-	    }
-	  else 
-	    {
-	      addMessage(aliases.toString(), Message.TYPE_NORMAL);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
-  class AttachHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();	// XXX ?
-      boolean cli = true;
-
-      if (params.size() < 1)
-	{
-	  printUsage(cmd);
-	  return;
-	}
- 
-      for (int idx = 0; idx < params.size(); idx++)
-	{
-	  if (((String)params.get(idx)).equals("-cli"))
-	    cli = true;
-	  else if (((String)params.get(idx)).equals("-no-cli"))
-	    cli = false;
-	  else if (((String)params.get(idx)).equals("-task"))
-	    {
-	      idx += 1;
-	      tid = Integer.parseInt(((String)params.get(idx)));
-	    }
-	  else if (((String)params.get(idx)).indexOf('-') == 0)
-	    {
-	      printUsage(cmd);
-	      return;
-	    }
-	  else if (((String)params.get(idx)).matches("[0-9]+"))
-	    pid = Integer.parseInt((String)params.get(idx)); 
-	}
-
-      if (cli)
-	{
-	  procSearchFinished = false;
-	  Manager.host.requestFindProc(new ProcId(pid), new Host.FindProc() {
-	      public void procFound (ProcId procId)
-	      {
-		synchronized (CLI.this)
-		  {
-		    proc = Manager.host.getProc(procId);
-		    procSearchFinished = true;
-		    CLI.this.notifyAll();
-		  }
-	      }
-
-	      public void procNotFound (ProcId procId, Exception e)
-	      {
-		synchronized (CLI.this)
-		  {
-		    proc = null;
-		    procSearchFinished = true;
-		    CLI.this.notifyAll();
-		  }
-	      }});
-	  synchronized (CLI.this)
-	    {
-	      while (!procSearchFinished)
-		{
-		  try
-		    {
-		      CLI.this.wait();
-		    }
-		  catch (InterruptedException ie)
-		    {
-		      proc = null;
-		    }
-		}
-	    }
-	}
-      if (proc == null)
-	{
-	  addMessage("Couldn't find process " + pid, Message.TYPE_ERROR);
-	  return;
-	}
-
-      if (pid == tid || tid == 0)
-	task = proc.getMainTask();
-      else
-	for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); )
-	  {
-	    task = (Task) i.next ();
-	    if (task.getTid () == tid)
-	      break;
-	  }
-      if (cli)
-	{
-	  startAttach(pid, proc, task);
-	  finishAttach();
-	}
-      else
-	{
-	  // This can't work because the event loop isn't started in
-	  // the non-cli case, so we can't find the proc.
-	  // symtab = new SymTab(pid, proc, task, null); 
-	}
-    }
-  }
-
   public void startAttach(int pid, Proc proc, Task task)
   {
     // At some point we will be able to use a RunState object
@@ -732,7 +582,7 @@ public class CLI
   private LinkedList messages; 
 
   // alias
-  private HashMap aliases;
+  final HashMap aliases;
 
   /*
    * Public methods
@@ -764,9 +614,9 @@ public class CLI
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
     addHandler(new ActionsHandler(this));
-    handlers.put("alias", new AliasHandler());
+    handlers.put("alias", new AliasCommand(this));
     handlers.put("assign", new PrintCommand(this));
-    handlers.put("attach", new AttachHandler());
+    handlers.put("attach", new AttachCommand(this));
     addHandler(new BreakpointHandler(this));
     handlers.put("defset", new DefsetHandler());
     addHandler(new DeleteHandler(this));
