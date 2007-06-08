@@ -1,5 +1,10 @@
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
+	* CommandLineParser.java (CommandLineParser): Enable longOnly mode, 
+	allows for long options to start with single -.
+	* Util.java (PidParser): Removed.
+	(parsePids): Removed.
+
 	* Util.java (getProcFromCoreFile): Added.
 	(getProcFromPid): Added.
 	(ProcFinder): Added.

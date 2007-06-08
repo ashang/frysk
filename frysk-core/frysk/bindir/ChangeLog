@@ -1,5 +1,10 @@
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
+	* fcore.java (dumpPid): Added.
+	(AbandonCoreEvent): Added.
+	(main): Use CommandlineParser.
+	(addOptions): Remove console options, added by CommandlineParser.
+	
 	* fstack.java (stackProc): Removed.
 	(stackPid): Use Util.getProcFromPid to find the proc.
 	(stackCore): Use Util.getProcFromCore to find the proc.

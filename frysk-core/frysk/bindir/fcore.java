@@ -39,19 +39,16 @@
 
 package frysk.bindir;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
-import frysk.EventLogger;
 import frysk.event.Event;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcId;
-import frysk.proc.Host;
 
+import frysk.util.CommandlineParser;
 import frysk.util.CoredumpAction;
 import frysk.util.Util;
 
@@ -70,8 +67,40 @@ public class fcore
   private static CoredumpAction stacker;
 
   protected static final Logger logger = Logger.getLogger("frysk");
-  private static Util.PidParser parser;
+  private static CommandlineParser parser;
 
+  private static class AbandonCoreEvent implements Event
+  {
+    private Proc coreProc;
+
+    AbandonCoreEvent(Proc coreProc)
+    {
+      this.coreProc = coreProc;
+    }
+    
+    public void execute()
+    {
+      coreProc.requestAbandonAndRunEvent(new Event()
+      {
+
+        public void execute ()
+        {
+          Manager.eventLoop.requestStop();
+        }
+      });
+    }
+  }
+  
+  public static void dumpPid(ProcId procId)
+  {
+    Proc coreProc = Util.getProcFromPid(procId);
+    stacker = new CoredumpAction(coreProc, filename, 
+                                 new AbandonCoreEvent(coreProc), writeAllMaps);
+
+    new ProcBlockAction(coreProc, stacker);
+    Manager.eventLoop.run();
+  }
+  
   /**
    * Entry function. Starts the fcore dump process. Belongs in bindir/fcore. But
    * here for now.
@@ -82,56 +111,35 @@ public class fcore
   {
 
     // Parse command line. Check pid provided.
-    parser = new Util.PidParser("fcore");
+    parser = new CommandlineParser("fcore")
+    {
+
+      //@Override
+      public void parsePids (ProcId[] pids)
+      {
+        for (int i= 0; i< pids.length; i++)
+          dumpPid(pids[i]);
+      }
+
+      //@Override
+      public void parseCommand (String[] command)
+      {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < command.length; i++)
+          buffer.append(" ").append(command[i]);
+        
+        throw new RuntimeException("fcore: Argument" + buffer + " does not " +
+                        "appear to be a valid pid.");        
+      }
+      
+
+    };
 
     addOptions(parser);
 
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
-    
-    Collection pidList = Util.parsePids(parser, args);
-    
-    Iterator iter = pidList.iterator();
 
-    while (iter.hasNext())
-      {
-    
-        ProcId procId = (ProcId) iter.next();
-
-        Manager.host.requestFindProc(procId, new Host.FindProc()
-        {
-          public void procFound (ProcId procId)
-          {
-            final Proc coreProc = Manager.host.getProc(procId);
-
-            stacker = new CoredumpAction(coreProc, filename, new Event()
-            {
-              public void execute ()
-              {
-                coreProc.requestAbandonAndRunEvent(new Event()
-                {
-
-                  public void execute ()
-                  {
-                    Manager.eventLoop.requestStop();
-                  }
-                });
-              }
-            }, writeAllMaps);
-
-            new ProcBlockAction(coreProc, stacker);
-          }
-
-          public void procNotFound (ProcId procId, Exception e)
-          {
-            System.err.println("fcore: Could not find the process: "
-                               + procId.toString());
-            Manager.eventLoop.requestStop();
-          }
-        });
-
-        Manager.eventLoop.run();
-      }
-
+    parser.parse(args);
     stacker.getClass();
   }
 
@@ -184,7 +192,5 @@ public class fcore
 
       }
     });
-    
-    EventLogger.addConsoleOptions(parser);
   }
 }

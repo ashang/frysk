@@ -60,7 +60,7 @@ public class CommandlineParser
 {
   public CommandlineParser(String name)
   {
-    super(name, Config.getVersion(), false);
+    super(name, Config.getVersion(), true);
     EventLogger.addConsoleOptions(this);
   }
   

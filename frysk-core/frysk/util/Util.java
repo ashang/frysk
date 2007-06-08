@@ -40,43 +40,19 @@
 package frysk.util;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 
-import frysk.Config;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.proc.corefile.LinuxHost;
 import frysk.proc.Proc;
-import gnu.classpath.tools.getopt.FileArgumentCallback;
-import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
 
 public class Util
 {
 
   private Util ()
   {
-  }
-
-  public static class PidParser
-      extends Parser
-  {
-    LinkedList pidList = new LinkedList();
-
-    public PidParser (String programName)
-    {
-	super(programName, Config.getVersion (), true);
-    }
-
-    protected void validate () throws OptionException
-    {
-      if (pidList.isEmpty())
-        throw new OptionException("No pid(s) provided");
-    }
-
   }
   
   /**
@@ -140,26 +116,4 @@ public class Util
     return finder.proc;
   }
     
-
-  public static Collection parsePids (final PidParser parser, String[] args)
-  {
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-        try
-          {
-            int pid = Integer.parseInt(arg);
-            parser.pidList.add(new ProcId(pid));
-          }
-        catch (NumberFormatException nfe)
-          {
-            throw new OptionException("Argument " + arg + " does "
-                                      + "not appear to be a valid pid.");
-
-          }
-      }
-    });
-    return parser.pidList;
-  }  
 }
