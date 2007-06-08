@@ -64,16 +64,30 @@ public class CommandlineParser
     EventLogger.addConsoleOptions(this);
   }
   
+  /**
+   * Callback function. Gives an array of pids if pids were detected on the 
+   * command line.
+   * @param pids The array of pids passed on the command line.
+   */
   public void parsePids(ProcId[] pids)
   {
     
   }
   
+  /**
+   * Callback function. Gives an array of core files if core files were 
+   * detected on the command line.
+   * @param coreFiles The array of core files passed on the command line.
+   */
   public void parseCores(File[] coreFiles)
   {
     
   }
   
+  /**
+   * Callback function. Gives a string array represented a parsed command.
+   * @param command The parsed command.
+   */
   public void parseCommand(String[] command)
   {
     
@@ -82,6 +96,8 @@ public class CommandlineParser
   public String[] parse(String[] args)
   {
     String[] result = super.parse(args);
+    
+    //Check if arguments are all pids.
     try 
     {
       ProcId[] pids = new ProcId[result.length];
@@ -104,14 +120,10 @@ public class CommandlineParser
     }
     catch (NumberFormatException e)
     {
-      
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-      throw new RuntimeException("Something bad happened.");
-    }
+      //Not a pid, continue on.
+    }        
     
+    // Check if arguments are all core files.
     if (isCoreFile(result[0]))
       {
         File[] coreFiles = new File[result.length];
@@ -127,22 +139,33 @@ public class CommandlineParser
         return result;
       }
       
+    
+    // If not above, then this is an executable command.
     parseCommand(result);
     return result;
   }
   
-  private boolean isCoreFile(String fileName)
+  /**
+   * Check if the given file is a coreFile.
+   * @param fileName A file to check.
+   * @return if fileName is a corefile returns true, otherwise false.
+   */
+  private boolean isCoreFile (String fileName)
   {
+    Elf elf;
     try
       {
-        Elf elf = new Elf(fileName, ElfCommand.ELF_C_READ);
-        boolean ret =  elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
-        elf.close();
-        return ret;
+        elf = new Elf(fileName, ElfCommand.ELF_C_READ);
       }
-    catch (Exception e) {
-      return false;
-    }
+    catch (Exception e)
+      {
+        return false;
+      }
+    
+    boolean ret = elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
+    elf.close();
+    return ret;
+
   }
 }
     
