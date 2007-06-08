@@ -127,215 +127,6 @@ public class CLI
   /*
    * Command handlers
    */
-  
-  /*
-   * Set commands
-   */
-  class DefsetHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      String setname = null;
-      String setnot = null;
-      PTSet set = null;
-
-      if (params.size() == 2)
-	{
-	  setname = (String) params.get(0);
-	  if (!setname.matches("\\w+"))
-	    throw new ParseException("Set name must be alphanumeric.", 0);
-	  setnot = (String) params.get(1);
-	  if (!builtinPTSets.containsKey(setnot))
-	    {
-	      set = createSet(setnot);
-	      namedPTSets.put(setname, set);
-	    }
-	  else
-	    {
-	      addMessage("The set name is reserved for a predefined set.",
-			 Message.TYPE_ERROR);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-  class UndefsetHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-        refreshSymtab();
-      if (params.size() == 1)
-	{
-	  String setname = (String)params.get(0);
-
-	  if (builtinPTSets.containsKey(setname))
-	    {
-	      addMessage(new Message("The set \"" + setname
-				     + "\" cannot be undefined.",
-				     Message.TYPE_ERROR));
-	    }
-	  else if (namedPTSets.containsKey(setname))
-	    {
-	      namedPTSets.remove(setname);
-	      addMessage("Set \"" + setname + "\" successfuly undefined.",
-			 Message.TYPE_VERBOSE);
-	    }
-	  else
-	    {
-	      addMessage("Set \"" + setname
-			 + "\" does not exist, no action taken.",
-				     Message.TYPE_NORMAL);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
-  class ViewsetHandler implements CommandHandler 
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      PTSet tempset = null;
-      TaskData temptd = null;
-      String setname = "";
-      String output = "";
-
-      if (params.size() <= 1)
-	{
-	  if (params.size() == 0)
-	    tempset = targetset;
-	  else if (params.size() == 1)
-	    {
-	      setname = (String)params.get(0);
-	      if (namedPTSets.containsKey(setname))
-		tempset = (PTSet) namedPTSets.get(setname);
-	      else
-		{
-		  addMessage(new Message("Set \"" + setname
-					 + "\" does not exist.",
-					 Message.TYPE_NORMAL));
-		  return;
-		}
-	    }
-
-	  for (Iterator iter = tempset.getTaskData(); iter.hasNext();)
-	    {
-	      // ??? this way of outputting is simple, but it's okay for now
-	      temptd = (TaskData)iter.next();
-	      output += "Set " + setname + " includes:\n";
-	      output += "[" + temptd.getParentID() + "." + temptd.getID() + "]\n";
-	      addMessage(output, Message.TYPE_NORMAL);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
-  class WhichsetsHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      PTSet searchset = null;
-      PTSet tempset = null;
-      TaskData temptd = null;
-      String setname = null;
-
-      // ??? check builtin sets
-      if (params.size() <= 1)
-	{
-	  if (params.size() == 0)
-	    searchset = targetset;
-	  else if (params.size() == 1)
-	    searchset = createSet((String)params.get(0));
-
-	  // start iterating through available sets
-	  for (Iterator it = searchset.getTaskData(); it.hasNext();)
-	    {
-	      temptd = (TaskData) it.next();
-	      addMessage("Task " + temptd.getParentID() + "." + temptd.getID()
-			 + " is in sets: \n", Message.TYPE_NORMAL);
-	      for (Iterator iter = namedPTSets.keySet().iterator(); 
-		   iter.hasNext();)
-		{
-		  setname = (String)iter.next();
-		  tempset = (PTSet)namedPTSets.get(setname);
-
-		  if (tempset.containsTask(temptd.getParentID(),
-					   temptd.getID()))
-		    addMessage("\t" + setname + "\n", Message.TYPE_NORMAL);
-		}
-	      addMessage("\n", Message.TYPE_NORMAL);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
-  class FocusHandler implements CommandHandler 
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      if (params.size() <= 1)
-	{
-	  if (params.size() == 1)
-	    targetset = createSet((String)params.get(0));
-	  else
-	    ((CommandHandler)handlers.get("viewset"))
-	      .handle(new Command("viewset"));
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
 
   public void startAttach(int pid, Proc proc, Task task)
   {
@@ -423,16 +214,16 @@ public class CLI
   final PrintWriter outWriter;
   private Preprocessor prepro;
   private String prompt; // string to represent prompt, will be moved
-  private HashMap handlers;
+  final HashMap handlers;
   final UserHelp userhelp;
   private DbgVariables dbgvars;
 
   // PT set related stuff
   private SetNotationParser setparser;
   private AllPTSet allset; // the "all" set
-  private HashMap namedPTSets; // user-created named sets
-  private HashMap builtinPTSets; // predefined named sets
-  private PTSet targetset;
+  final HashMap namedPTSets; // user-created named sets
+  final HashMap builtinPTSets; // predefined named sets
+  PTSet targetset;
 
   // other
   // debugger output messages, e.g. the Message class
@@ -475,13 +266,13 @@ public class CLI
     handlers.put("assign", new PrintCommand(this));
     handlers.put("attach", new AttachCommand(this));
     addHandler(new BreakpointHandler(this));
-    handlers.put("defset", new DefsetHandler());
+    handlers.put("defset", new DefsetCommand(this));
     addHandler(new DeleteHandler(this));
     handlers.put("detach", new DetachCommand(this));
     addHandler(new DisableHandler(this));
     handlers.put("down", new UpDownHandler());
     addHandler(new EnableHandler(this));
-    handlers.put("focus", new FocusHandler());
+    handlers.put("focus", new FocusCommand(this));
     handlers.put("go", new GoCommand(this));
     handlers.put("halt", new HaltCommand(this));
     handlers.put("help", new HelpCommand(this));
@@ -492,13 +283,13 @@ public class CLI
     handlers.put("step", new StepCommand(this));
     handlers.put("stepi", new StepInstructionCommand(this));
     handlers.put("unalias", new UnaliasCommand(this));
-    handlers.put("undefset", new UndefsetHandler());
+    handlers.put("undefset", new UndefsetCommand(this));
     handlers.put("unset", new UnsetCommand(this, dbgvars));
     handlers.put("up", new UpDownHandler());
-    handlers.put("viewset", new ViewsetHandler());
+    handlers.put("viewset", new ViewsetCommand(this));
     handlers.put("what", new WhatCommand(this));
     handlers.put("where", new WhereCommand(this));
-    handlers.put("whichsets", new WhichsetsHandler());
+    handlers.put("whichsets", new WhichsetsCommand(this));
     // New interface
     addHandler(new RunHandler(this));
 
@@ -610,7 +401,7 @@ public class CLI
       }
   }
 
-  private PTSet createSet(String set) throws ParseException
+  PTSet createSet(String set) throws ParseException
   {
     ParsedSet parsed = setparser.parse(set);
     PTSet result = null;
