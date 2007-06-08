@@ -376,41 +376,6 @@ public class CLI
     debugInfo = new DebugInfo(pid, proc, task, null);
   }
   
-  class UnaliasHandler implements CommandHandler
-  {
-    public void handle(Command cmd)  throws ParseException
-    {
-      refreshSymtab();
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1)
-	{
-	  if (((String)params.get(0)).equals("-all"))
-	    {
-	      aliases.clear();
-	      addMessage("Removing all aliases.", Message.TYPE_VERBOSE);
-	    }
-	  else
-	    {
-	      String temp = (String)params.get(0);
-	      if (aliases.containsKey(temp))
-		{
-		  aliases.remove(temp);
-		  addMessage("Removed alias \"" + temp + "\"",
-			     Message.TYPE_VERBOSE);
-		}
-	      else
-		addMessage("Alias \"" + temp + "\" not defined.", 
-			   Message.TYPE_ERROR);
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-    
-
   class SetHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException
@@ -536,28 +501,6 @@ public class CLI
     }
   }
 
-  class GoHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      
-      if (steppingObserver != null)
-        {
-          SteppingEngine.continueExecution(proc.getTasks());
-          running = true;
-        }
-      else
-	addMessage("Not attached to any process", Message.TYPE_ERROR);
-    }
-  }
-
   /*
    * Private variables
    */
@@ -625,7 +568,7 @@ public class CLI
     handlers.put("down", new UpDownHandler());
     addHandler(new EnableHandler(this));
     handlers.put("focus", new FocusHandler());
-    handlers.put("go", new GoHandler());
+    handlers.put("go", new GoCommand(this));
     handlers.put("halt", new HaltCommand(this));
     handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
@@ -634,7 +577,7 @@ public class CLI
     handlers.put("set", new SetHandler());
     handlers.put("step", new StepCommand(this));
     handlers.put("stepi", new StepInstructionCommand(this));
-    handlers.put("unalias", new UnaliasHandler());
+    handlers.put("unalias", new UnaliasCommand(this));
     handlers.put("undefset", new UndefsetHandler());
     handlers.put("unset", new UnsetHandler());
     handlers.put("up", new UpDownHandler());

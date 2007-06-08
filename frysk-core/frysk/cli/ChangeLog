@@ -1,5 +1,10 @@
 2007-06-08  Andrew Cagney  <cagney@redhat.com>
 
+	* hpd/CLI.java (GoHandler): Rename this ...
+	* hpd/GoCommand.java: ... to this.  New file.
+	* hpd/CLI.java (UnaliasHandler): Rename this ...
+	* hpd/UnaliasCommand.java: ... to this.  New file.
+
 	* hpd/CLI.java (AttachHandler): Rename this ...
 	* hpd/AttachCommand.java: ... to this.  New file.
 	* hpd/CLI.java (aliases): Make final package private.
