@@ -36,55 +36,48 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.cli.hpd;
 
-import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
-
-import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SteppingEngine;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.Iterator;
 
-class DisableHandler
-  extends CLIHandler
+class ActionsCommand
+    extends CLIHandler
 {
-  static final String descr = "disable a source breakpoint";
-  
-  DisableHandler(String name, CLI cli)
-  {
-    super(name, cli, new CommandHelp(name, descr, "disable actionpointID",
-				     descr));
-  }
+    private static final String descr = "List action points";
 
-  DisableHandler(CLI cli)
-  {
-    this("disable", cli);
-  }
-
-  public void handle(Command cmd) throws ParseException 
+    private ActionsCommand(String name, CLI cli)
     {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          cli.printUsage(cmd);
-          return;
-        }
-      cli.refreshSymtab();
-      final PrintWriter outWriter = cli.getPrintWriter();
-      int breakpointNumber = Integer.parseInt((String)params.get(0));
-      BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-      Task task = cli.getTask();
-      SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
-      if (bpt != null)
-	{
-	  bpManager.disableBreakpoint(bpt, task);
-	  outWriter.println("breakpoint " + bpt.getId() + " disabled");
-	}
-      else
-	{
-	  outWriter.println("no such breakpoint");
+	super(name, cli, new CommandHelp(name, descr, "actionpoints",
+					 descr));
+    }
+
+    ActionsCommand(CLI cli)
+    {
+	this("actionpoints", cli);
+    }
+
+    public void handle(Command cmd) throws ParseException 
+    {
+	BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+	Iterator iterator = bpManager.getBreakpointTableIterator();
+	PrintWriter outWriter = cli.getPrintWriter();
+	while (iterator.hasNext()) {
+	    SourceBreakpoint bpt = (SourceBreakpoint)iterator.next();
+	    outWriter.print(bpt.getId() + " ");
+	    if (bpt.getState() == SourceBreakpoint.ENABLED) {
+		outWriter.print(" y ");
+	    }
+	    else {
+		outWriter.print(" n ");
+	    }
+	    bpt.output(outWriter);
+	    outWriter.println(" ");
 	}
     }
 }

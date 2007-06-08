@@ -261,17 +261,17 @@ public class CLI
     handlers = new HashMap();
     userhelp = new UserHelp();
     dbgvars = new DbgVariables();
-    addHandler(new ActionsHandler(this));
+    addHandler(new ActionsCommand(this));
     handlers.put("alias", new AliasCommand(this));
     handlers.put("assign", new PrintCommand(this));
     handlers.put("attach", new AttachCommand(this));
-    addHandler(new BreakpointHandler(this));
+    addHandler(new BreakpointCommand(this));
     handlers.put("defset", new DefsetCommand(this));
-    addHandler(new DeleteHandler(this));
+    addHandler(new DeleteCommand(this));
     handlers.put("detach", new DetachCommand(this));
-    addHandler(new DisableHandler(this));
+    addHandler(new DisableCommand(this));
     handlers.put("down", new UpDownHandler());
-    addHandler(new EnableHandler(this));
+    addHandler(new EnableCommand(this));
     handlers.put("focus", new FocusCommand(this));
     handlers.put("go", new GoCommand(this));
     handlers.put("halt", new HaltCommand(this));
@@ -291,7 +291,7 @@ public class CLI
     handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsCommand(this));
     // New interface
-    addHandler(new RunHandler(this));
+    addHandler(new RunCommand(this));
 
     // initialize PT set stuff
     setparser = new SetNotationParser();
