@@ -205,10 +205,6 @@ public class TestDisplayValue
     
     /* 
      * Add the first breakpoint:
-     * voir bar(int z)
-     * {
-     *   int x = 5;
-     *   x = foo(x); <-- First breakpoint
      */
     LineBreakpoint brk1 = 
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
@@ -234,11 +230,6 @@ public class TestDisplayValue
     
     /* 
      * Add the second breakpoint:
-     * int main()
-     *  {
-     *    x = 0;
-     *    bar(x);
-     *    x = 1; <-- Second breakpoint
      */
     LineBreakpoint brk2 =
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
@@ -254,10 +245,26 @@ public class TestDisplayValue
     
     disp.update();
     assertEquals("Variable in scope", false, disp.isInScope());
+    
+    /*
+     * Keep running until we hit the first breakpoint again. Then
+     * check to see if the variable's available again
+     */
+    list = new LinkedList();
+    list.add(myTask);
+    SteppingEngine.continueExecution(list);
+    assertRunUntilStop("First breakpoint again");
+    
+    disp.update();
+    assertEquals("Variable in scope", true, disp.isInScope());
+    Value secondVal = disp.getValue();
+    assertEquals("Variable value at third breakpoint", 5, secondVal.getInt());
+    
   }
   
   public void testVarMasked()
   {
+    
     if(brokenXXX(4576))
       return;
     
@@ -306,7 +313,7 @@ public class TestDisplayValue
     disp.update();
     Value secondVal = disp.getValue();
     assertEquals("Variable in scope", true, disp.isInScope());
-    assertEquals("Variable value", 0, secondVal.getInt());
+    assertEquals("Variable value at second breakpoint", 0, secondVal.getInt());
   }
   
   public void testVarNotInCurrentScope()

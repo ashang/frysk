@@ -1,3 +1,9 @@
+2007-06-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestDisplayValue.java (testVarOutOfScope): Now continues until
+	the variable re-enters the scope.
+	(testVarMasked): More descriptive message for assert statements.
+
 2007-06-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Subprogram.java: Now extends Scope.

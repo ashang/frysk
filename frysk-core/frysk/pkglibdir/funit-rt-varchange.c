@@ -36,9 +36,9 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-#include <math.h>
-static volatile int x;
-static volatile int y;
+
+int x;
+int y;
 
 void bar(int);
 
@@ -56,9 +56,9 @@ int main()
   return 0;
 }
 
-void bar(int z)
+void bar(int x)
 {
-	static volatile int x;
 	x = 5;
+	asm volatile ("" : "+m" (x));
 	return;
 }
