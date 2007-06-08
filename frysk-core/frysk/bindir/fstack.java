@@ -40,11 +40,9 @@
 package frysk.bindir;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import frysk.EventLogger;
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
 
@@ -55,9 +53,8 @@ import frysk.proc.ProcId;
 import frysk.proc.Host;
 import frysk.proc.corefile.LinuxHost;
 
+import frysk.util.CommandlineParser;
 import frysk.util.StacktraceAction;
-import frysk.util.Util;
-import frysk.util.Util.PidCoreParser;
 
 import gnu.classpath.tools.getopt.Parser;
 
@@ -65,14 +62,11 @@ public final class fstack
 {
   private static StacktraceAction stacker;
 
-  private static PidCoreParser parser;
+  private static Parser parser;
 
   protected static final Logger logger = Logger.getLogger("frysk"); 
 
-  private static void addOptions (Parser parser)
-  {
-    EventLogger.addConsoleOptions(parser);
-  }
+  
 
   private static void stackPid(ProcId procId)
   {
@@ -152,30 +146,26 @@ public final class fstack
   
   public static void main (String[] args)
   {
+    parser = new CommandlineParser("fstack")
+    {
 
-    parser = new Util.PidCoreParser("fstack");
-    addOptions(parser);
+      //@Override
+      public void parseCores (File[] coreFiles)
+      {
+       for (int i = 0; i < coreFiles.length; i++)
+         stackCore(coreFiles[i]);
+      }
+
+      //@Override
+      public void parsePids (ProcId[] pids)
+      {
+        for (int i = 0; i < pids.length; i++)
+          stackPid(pids[i]);
+      }
+      
+    };
     parser.setHeader("Usage: fstack <PID> | <CORE> ...");
 
-    Util.parsePidsAndCores(parser, args);
-    Collection pidList = parser.getPidList();
-    Collection coreList = parser.getCoreList();    
-
-    Iterator iter = pidList.iterator();
-
-    while (iter.hasNext())
-      {
-        ProcId procId = (ProcId) iter.next();
-        stackPid(procId);
-      }
-    
-    iter = coreList.iterator();
-    
-    while (iter.hasNext())
-      {
-        File coreFile = (File) iter.next();        
-        stackCore(coreFile);
-      }
-
+    parser.parse(args);    
   }
 }

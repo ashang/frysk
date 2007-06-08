@@ -1,3 +1,11 @@
+2007-06-08  Nurdin Premji  <npremji@redhat.com>
+
+	* CommandlineParser.java (parseCores): Added.
+	(parsePids): Added.
+	(isCoreFile): Added.
+	(parse): Added.
+	(parseCommand): Added.
+
 2007-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFCatch.java: Reversed the patch for loosining the output matching

@@ -39,9 +39,16 @@
 
 package frysk.util;
 
+import java.io.File;
+
+import lib.elf.Elf;
+import lib.elf.ElfCommand;
+import lib.elf.ElfEHeader;
+
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.EventLogger;
+import frysk.proc.ProcId;
 
 /**
  * CommandlineParser extends the getopt {@link Parser} class with common
@@ -55,6 +62,87 @@ public class CommandlineParser
   {
     super(name, Config.getVersion(), false);
     EventLogger.addConsoleOptions(this);
+  }
+  
+  public void parsePids(ProcId[] pids)
+  {
+    
+  }
+  
+  public void parseCores(File[] coreFiles)
+  {
+    
+  }
+  
+  public void parseCommand(String[] command)
+  {
+    
+  }
+  
+  public String[] parse(String[] args)
+  {
+    String[] result = super.parse(args);
+    try 
+    {
+      ProcId[] pids = new ProcId[result.length];
+      pids[0] = new ProcId(Integer.parseInt(result[0]));
+      
+      for (int i = 1; i < result.length; i++)
+        {
+          try
+          {
+          pids[i] = new ProcId(Integer.parseInt(result[i]));
+          }
+          catch (NumberFormatException e)
+          {
+            throw new RuntimeException("Please don't mix pids with core files or executables");
+          }
+        }
+      
+      parsePids(pids);
+      return result;
+    }
+    catch (NumberFormatException e)
+    {
+      
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      throw new RuntimeException("Something bad happened.");
+    }
+    
+    if (isCoreFile(result[0]))
+      {
+        File[] coreFiles = new File[result.length];
+        
+        for (int file = 0; file < result.length; file++)
+          if (isCoreFile(result[file]))
+            coreFiles[file] = new File(result[file]);
+          else
+            throw new RuntimeException("Please don't mix core files with pids or executables.");
+          
+        
+        parseCores(coreFiles);
+        return result;
+      }
+      
+    parseCommand(result);
+    return result;
+  }
+  
+  private boolean isCoreFile(String fileName)
+  {
+    try
+      {
+        Elf elf = new Elf(fileName, ElfCommand.ELF_C_READ);
+        boolean ret =  elf.getEHeader().type == ElfEHeader.PHEADER_ET_CORE;
+        elf.close();
+        return ret;
+      }
+    catch (Exception e) {
+      return false;
+    }
   }
 }
     
