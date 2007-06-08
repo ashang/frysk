@@ -1,3 +1,7 @@
+2007-06-08  Nurdin Premji  <npremji@redhat.com>
+
+	* htdocs/build/index.html: Explain about linked resources in Eclipse.
+
 2007-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Add -Werror to autoconf..

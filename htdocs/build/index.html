@@ -296,6 +296,15 @@ answers</h2></a>
 <li>Add, rename, or delete the file. <li>Run <tt>./bootstrap.sh</tt>
 </ul></dd>
 
+<dt>How do I build under eclipse?</dt> <dd> <ul>
+<li> Go to Window->Preferences...->General->Workspace->Linked Resources.
+<li> Create a new linked resource called "build" and link it to a directory
+where you want to build frysk.
+<li> Select Project->Build Project or Project->Clean to rebuild the project.
+<li> If you already have a build in that directory you can refresh your
+project and the jars will be found.
+</ul></dd>
+
 <dt>How do I add a Java program that should be installed into
 <tt>bin/</tt>?</dt> <dd> <ul> <li>in the <tt>frysk/pkgbindir/</tt>
 directory, create <tt>.java</tt> and <tt>.xml</tt> files named to
@@ -370,168 +379,4 @@ manual pages explicitly refer to @pkglib32dir@ and/or
 mentioned in our meeting today, valgrind can be used to help debug
 gcj-compiled code, but it helps if a "suppression file" is pointed to
 when activated to help filter out errors that are expected due to some
-garbage collection tricks.  Tom Tromey wrote an article on using
-valgrind and is located <a
-href="http://www.redhat.com/magazine/015jan06/features/valgrind/">here</a>.
-In this article, Tom points out <a
-href="http://gcc.gnu.org/wiki/Debugging%20tips%20for%20libgcj">this
-website</a> which has some useful information.  And <a
-href="http://vektor.ca/eclipse/gcj.supp ">this website</a> in turn
-points top a website that has the "suppression file" that should be
-used with valgrind.  If the suppression file is not used, the output
-from valgrind when used on gcj-generated code is several times larger
-and contains useless information.***NOTE*** The suppression file in
-the last link assumes libgcj.so.6.0.0 is being used.  If that file
-is to be used with the current version of libgcj all occurrences of
-"libgcj.so.6.0.0" must be changed to "libgcj.so.7.0.0" or else no
-suppression will take place.</dd>
-
-</dl>
-
-<a name="faq-cvs"><h3>CVS Questions, with Answers</h3></a>
-
-<dl>
-
-<a name="How do I cut a branch?"><dt>How do I cut a branch?</dt></a>
-<dd>First choose a name for your branch, it should include both your
-user name, a terse hint as to the branches purpose, and todays date.
-For instance <tt>pmuldoon-fcore-20061101</tt>, or
-<tt>cagney-triage12345-20061122</tt>.  Two tages will be created,
-first one for the branch point, and second one for the branch:
-
-<pre>
-$ cvs -d:.. rtag BRANCH-branchpoint frysk
-$ cvs -d... rtag -r BRANCH-branchpoint -b BRANCH-branch frysk
-</pre>
-</dd>
-
-<dt>How do I do import a third-party (vendor) package into
-frysk-imports?</dt><dd>Lets say you want to import the thirds party
-sources for <tt>elfutils</tt> into <tt>frysk-imports/elfutils</tt>:
-
-<ul>
-
-<li>Obtain a pristine copy of the sources from the vendor
-(a.k.a. upstream).<br>Typically the official sources come as a tar
-ball, download and unpack them in a new directory.  For
-<tt>elfutils</tt>, since upstream is the source rpm, <tt>rpmbuild
--bp</tt> on the source rpm is used.</li>
-
-<li>Change <b>into</b> the top-level directory of the pristine source
-tree.<br>For instance, for <tt>elfutils</tt> 0.125, that means
-changing into the directory <tt>elfutils-0.125</tt>, for instance:
-
-<pre>
-$ pwd
-.../elfutils-0.125
-</pre>
-</li>
-
-<li>Pick a vendor branch (VENDOR_TAG) and release tags
-(RELEASE_TAG).<br>Make certain that they are meaningful, for instance:
-
-<pre>
-$ VENDOR=elfutils
-$ VERSION=0.125
-$ VENDOR_TAG=ELFUTILS
-$ RELEASE_TAG=elfutils_0_125
-</pre>
-
-Note that the vendor and release tags can not contain periods.</li>
-
-<li>Perform the import using a command like:<br>
-<pre>
-$ cvs -d :ext:${USER}@sourceware.org:/cvs/frysk \
-    import -m "Import of ${VENDOR} version ${VERSION}" \
-    frysk-imports/${VENDOR} \
-    ${VENDOR_TAG} \
-    ${RELEASE_TAG}
-</pre>
-For instance:
-<pre>
-$ pwd
-..../elfutils-0.125
-$ cvs -d :ext:MYNAME@sourceware.org:/cvs/frysk \
-    import -m "Importing elfutils version 0.125" \
-    frysk-imports/elfutils \
-    ELFUTILS \
-    elfutils_0_125
-</pre>
-</ul>
-</dd>
-
-<dt>How do I update a third party package in frysk-imports?</dt>
-<dd>The steps are similar to the initial import above but with a few
-key differences.  Again <tt>elfutils</tt> is used as an example.
-
-<ul>
-
-<li>Checkout a copy of the current sources.</li>
-
-<li>Tag the current sources.<br>This is is so that, should things go
-wrong, it is possible to quickly get back to the pre-merge version.
-Use a tag like: <tt>pre-${RELEASE_TAG}-merge</tt>, for instance
-<tt>pre-elfutils_0_125-merge</tt>.</li>
-
-<li>Force a commit to the current sources.<br>Please note that this
-critical step is missing from the <tt>CVS</tt> documentation.  Without
-it, unmodified files will switch to the new import before you are
-ready.<br>Do this using a command like:
-
-<pre>
-$ cvs -f commit -f -R -m "Touching all ${VENDOR} files" frysk-imports/elfutils
-</pre>
-</li>
-
-<li>Obtain and unpack a pristine copy of the sources.<br>See
-above.</li>
-
-<li>Import the pristine copy of the sources onto the vendor
-branch.<br>See above.  Be sure to use the same VENDOR_TAG.</li>
-
-<li> Note that cvs will automatically add any new files to HEAD, immediately after a cvs import remove those new files until you are ready to merge. </li>
-
-<li>Check out a merged copy of the imported directory.<br>In a new
-directory, enter something like:
-<pre>
-$ cvs -d ... \
-    checkout -j ${OLD_RELEASE_TAG} -j ${NEW_RELEASE_TAG} \
-    frysk-imports/${VENDOR}
-</pre>
-For instance:
-<pre>
-$ cvs -d ... \
-    checkout -j elfutils_0_120 -j elfutils_0_125 \
-    frysk-imports/elfutils
-<pre>
-This will apply all changes between the old and new releases to the
-mainline.  Fix all clashes.
-</li>
-
-<li>Move the updated tree into a full cvs checkout and re-merge, and
-commit</li>
-
-<li>Re-tag with something like <tt>post-${RELEASE_TAG}-merge</tt>,
-e.g. <tt>post-elfutils_0_125-merge</tt>.
-
-</ul>
-</dd>
-
-
-</dl>
-              <!-- end text -->
-              <p>&nbsp;</p>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <table cellspacing="2" cellpadding="2" border="0" width="100%">
-      <tr>
-        <td align="center" class="footer">
-          <a href="http://sources.redhat.com">sources.redhat.com</a>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
+garbage collection tricks.  Tom Tromey wrote an article on usi
