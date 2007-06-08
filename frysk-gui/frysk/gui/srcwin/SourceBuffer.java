@@ -165,6 +165,8 @@ public class SourceBuffer
   // need any information higher than this
   protected Frame scope;
 
+  protected DebugInfo debugInfo;
+
   protected TextChildAnchor anchor;
 
   private int mode = SOURCE_MODE;
@@ -658,7 +660,7 @@ public class SourceBuffer
     Value var;
     try
       {
-        var = DebugInfo.print(line.getText().substring(
+        var = debugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));
@@ -689,7 +691,7 @@ public class SourceBuffer
         while (i.hasNext())
           {
             Value v = (Value) i.next();
-            Value vv = DebugInfo.print(v.getText());
+            Value vv = debugInfo.print(v.getText());
             
             /* Variable is out of scope, leave it as-is */
             if (vv == null || vv.toString().equals("") || vv.toString().equals("\0"))
@@ -731,7 +733,7 @@ public class SourceBuffer
     Value var;
     try
       {
-        var = DebugInfo.print(line.getText().substring(
+        var = debugInfo.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));
@@ -915,12 +917,12 @@ public class SourceBuffer
         e.printStackTrace();
       }
 
-    if (scope != null)
-      {
-        this.fileName = file;
-        if (mode == SOURCE_MODE)
-          this.highlightLine(scope, true);
-      }
+    this.fileName = file;
+    if (mode == SOURCE_MODE)
+      this.highlightLine(scope, true);
+
+    debugInfo = new DebugInfo(scope);
+    debugInfo.refresh();
   }
 
   public void setMode (int mode)

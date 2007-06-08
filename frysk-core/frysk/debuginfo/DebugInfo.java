@@ -42,7 +42,6 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.naming.NameNotFoundException;
@@ -58,11 +57,10 @@ import lib.dw.DwAtEncodings;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import antlr.CommonAST;
+import frysk.value.FunctionType;
 import frysk.value.Value;
 import frysk.proc.Proc;
-import frysk.proc.Task;
 import frysk.rt.Frame;
-import frysk.rt.LexicalBlock;
 import frysk.rt.Subprogram;
 import frysk.dwfl.DwflFactory;
 import frysk.expr.CppParser;
@@ -78,31 +76,28 @@ public class DebugInfo
   Elf elf;
   Dwarf dwarf;
   
-  static DebugInfoEvaluator[] debugInfoEvaluator;
+  DebugInfoEvaluator[] debugInfoEvaluator;
   
-  static Subprogram[] subprogram;
+  Subprogram[] subprogram;
 
   /**
    * Create a symbol table object.  There should be one SymTab per process.
-   * 
-   * @param pid
-   * @param proc
-   * @param task
+   * @param frame
    */
-  public DebugInfo (int tid, Proc proc, Task task, Frame f)
+  public DebugInfo (Frame frame)
     {
-      this.pid = tid;
-      this.proc = proc;
+      this.proc = frame.getTask().getProc();
+      this.pid = this.proc.getPid();
       try 
       {
-        elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+        elf = new Elf(this.proc.getExe(), ElfCommand.ELF_C_READ);
         dwarf = new Dwarf(elf, DwarfCommand.READ, null);
       }
       catch (lib.elf.ElfException ignore)
       {}
       debugInfoEvaluator = new DebugInfoEvaluator[1];
       subprogram = new Subprogram[1];
-      debugInfoEvaluator[0] = new DebugInfoEvaluator (task, pid, f);
+      debugInfoEvaluator[0] = new DebugInfoEvaluator (frame);
     }
 
    /**
@@ -185,7 +180,7 @@ public class DebugInfo
     else
       return result;
   }
-  
+ 
     /**
      * Implement the cli what request
      * 
@@ -221,43 +216,30 @@ public class DebugInfo
             throw new NameNotFoundException(sInput + " not found in scope.");
           if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
-          result.append(varDie + " " + varDie.getName());
-          DwarfDie parm = varDie.getChild();
-          boolean first = true;
-          while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
+          if (varDie.getTag() == DwTagEncodings.DW_TAG_subprogram_)
             {
-              if (parm.getAttrBoolean(DwAtEncodings.DW_AT_artificial_) == false)
-                {
-                  if (first)
-                    {
-                      result.append(" (");
-                      first = false;
-                    }
-                  else
-                    result.append(",");
-                  result.append(getVariable(parm).getType().getName());
-                }
-              parm = parm.getSibling();
+              Value value = debugInfoEvaluator[0].getSubprogramValue(varDie);
+              result.append(((FunctionType)value.getType()).getName());
             }
-          if (first == false)
-            result.append(")");
-
-          if (varDie == null)
-            throw new NameNotFoundException(sInput + " not found in scope.");
+          else
+            result.append(varDie + " " + varDie.getName());
         }
       else
         {
+          Value value = debugInfoEvaluator[0].getValue(varDie);
           if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
-          result.append(varDie);
+
           if (varDie.getType().getTag() == DwTagEncodings.DW_TAG_array_type_
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_structure_type_
               || varDie.getType().getTag() == DwTagEncodings.DW_TAG_enumeration_type_)
             {
-              Value v = DebugInfo.print(sInput);
+              Value v = debugInfoEvaluator[0].get(sInput);
 	      if (v != null)
 		result.append(v.getType().getName());
             }
+          if (value != null)
+            result.append(value.getType().getName());
         }
       if (varDie != null)
         {
@@ -281,8 +263,69 @@ public class DebugInfo
        * @return Variable
        * @throws ParseException
        */
-    static public Value print (String sInput) throws ParseException,
-      NameNotFoundException
+  public Value print (String sInput) throws ParseException,
+    NameNotFoundException
+  {
+    Value result = null;
+    sInput += (char) 3;
+    
+    CppLexer lexer = new CppLexer(new StringReader(sInput));
+    CppParser parser = new CppParser(lexer);
+    try
+      {
+        parser.start();
+      }
+    catch (antlr.RecognitionException r)
+      {
+      }
+    catch (antlr.TokenStreamException t)
+      {
+      }
+    catch (frysk.expr.TabException t)
+      {
+      }
+    
+    CommonAST t = (CommonAST) parser.getAST();
+    CppTreeParser treeParser;
+    /*
+     * If this request has come from the SourceWindow, there's no way to
+     * know which thread the mouse request came from; if there are multiple
+     * innermost frames of multiple threads in the same source file, than
+     * all of the threads have to be checked. If there's only one thread;
+     * than this loop will run only once anyways.
+     */
+    int j = 0;
+    while (result == null && j < debugInfoEvaluator.length)
+      {
+	treeParser = new CppTreeParser(4, 2, debugInfoEvaluator[j]);
+
+	try
+	  {
+	    result = treeParser.expr(t);
+	  }
+	catch (ArithmeticException ae)
+	  {
+	    ae.printStackTrace();
+	    throw ae;
+	  }
+	catch (antlr.RecognitionException r)
+	  {
+	  }
+	catch (frysk.value.InvalidOperatorException i)
+	  {
+	  }
+	catch (frysk.value.OperationNotDefinedException o)
+	  {
+	  }
+            
+	++j;
+      }
+        
+    return result;
+  }
+   
+  static public Value printNoSymbolTable (String sInput) throws ParseException,
+    NameNotFoundException
   {
     Value result = null;
     sInput += (char) 3;
@@ -338,70 +381,29 @@ public class DebugInfo
     
     CommonAST t = (CommonAST) parser.getAST();
     CppTreeParser treeParser;
-    if (debugInfoEvaluator == null)
-      {
-        TmpSymTab tmpSymTab = new TmpSymTab();
-        treeParser = new CppTreeParser(4, 2, tmpSymTab);
+    TmpSymTab tmpSymTab = new TmpSymTab();
+    treeParser = new CppTreeParser(4, 2, tmpSymTab);
         
-        try
-        {
-          result = treeParser.expr(t);
-        }
-      catch (ArithmeticException ae)
-        {
-          ae.printStackTrace();
-          throw ae;
-        }
-      catch (antlr.RecognitionException r)
-        {
-        }
-      catch (frysk.value.InvalidOperatorException i)
-        {
-        }
-      catch (frysk.value.OperationNotDefinedException o)
-        {
-        }
+    try
+      {
+	result = treeParser.expr(t);
+      }
+    catch (ArithmeticException ae)
+      {
+	ae.printStackTrace();
+	throw ae;
+      }
+    catch (antlr.RecognitionException r)
+      {
+      }
+    catch (frysk.value.InvalidOperatorException i)
+      {
+      }
+    catch (frysk.value.OperationNotDefinedException o)
+      {
+      }
       
-      return result;
-      }
-    else
-      {
-        /*
-         * If this request has come from the SourceWindow, there's no way to
-         * know which thread the mouse request came from; if there are multiple
-         * innermost frames of multiple threads in the same source file, than
-         * all of the threads have to be checked. If there's only one thread;
-         * than this loop will run only once anyways.
-         */
-        int j = 0;
-        while (result == null && j < debugInfoEvaluator.length)
-          {
-            treeParser = new CppTreeParser(4, 2, debugInfoEvaluator[j]);
-
-            try
-              {
-                result = treeParser.expr(t);
-              }
-            catch (ArithmeticException ae)
-              {
-                ae.printStackTrace();
-                throw ae;
-              }
-            catch (antlr.RecognitionException r)
-              {
-              }
-            catch (frysk.value.InvalidOperatorException i)
-              {
-              }
-            catch (frysk.value.OperationNotDefinedException o)
-              {
-              }
-            
-            ++j;
-          }
-        
-        return result;
-      }
+    return result;
   }
    
     
@@ -464,93 +466,10 @@ public class DebugInfo
        DwarfDie varDie = DwarfDie.getDecl(dwarf, sf.getSymbol().getName());
        if (varDie == null)
          return null;
-       Subprogram subPr = new Subprogram();
-       LexicalBlock block = new LexicalBlock();
-       subPr.setBlock(block);
-       DwarfDie parm = varDie.getChild();
-       int nParms = 0;
- 
-       while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
-         {
-           nParms += 1;
-           parm = parm.getSibling();
-         }
-       parm = varDie.getChild();
-       
-       LinkedList parms = subPr.getParameters();
-       nParms = 0;
-       while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
-         {
-           if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
-             parms.add(debugInfoEvaluator[0].getValue(parm));
-           parm = parm.getSibling();
-           nParms += 1;
-         }
-       DwarfDie firstVar = parm;
-       nParms = 0;
-       while (parm != null)
-         {
-           nParms += 1;
-           parm = parm.getSibling();
-         }
-       block.setVariables(nParms);
-       Value vars[] = block.getVariables();
-       block.setVariableDies(nParms);
-       DwarfDie dies[] = block.getVariableDies();
-       block.setTypeDies(nParms);
-       DwarfDie types[] = block.getTypeDies();
-       parm = firstVar;
-       nParms = 0;
-       while (parm != null)
-         {
-           vars[nParms] = debugInfoEvaluator[0].getValue(parm);
-           if (vars[nParms] == null)
-             {
-               int tag = parm.getTag();
-               switch (tag)
-               {
-                 case DwTagEncodings.DW_TAG_array_type_:
-                 case DwTagEncodings.DW_TAG_base_type_:
-                 case DwTagEncodings.DW_TAG_const_type_:
-                 case DwTagEncodings.DW_TAG_pointer_type_:
-                 case DwTagEncodings.DW_TAG_structure_type_:
-                 case DwTagEncodings.DW_TAG_subrange_type_:
-                 case DwTagEncodings.DW_TAG_typedef_:
-                   types[nParms] = parm;
-               }
-             }
-           else
-             dies[nParms] = parm;
-           parm = parm.getSibling();
-           nParms += 1;
-         }
-       
-       if (false)
-         {
-           LinkedList p = subPr.getParameters ();
-           System.out.println("Parameters");
-           Iterator iterator = p.iterator();
-           while(iterator.hasNext()){
-             Value parameter = (Value) iterator.next();
-             System.out.println(parameter.getText());
-           }
-           LexicalBlock b = subPr.getBlock();
-           Value v[] = b.getVariables();
-           System.out.println("Variables");
-           for (int j = 0; j < v.length; j++)
-             if (v[j] != null)
-               System.out.println(v[j].getText());
-           DwarfDie d[] = b.getVariableDies();
-           for (int j = 0; j < d.length; j++)
-             if (d[j] != null)
-               System.out.println(d[j].getName());
-           DwarfDie t[] = b.getTypeDies();
-           System.out.println("Types");
-           for (int j = 0; j < t.length; j++)
-             if (t[j] != null)
-               System.out.println(t[j].getName());
-         }
-       
+       // ??? Is this needed or is Frame setting up Subprogram?
+       Subprogram subPr = new Subprogram(varDie, this);
+       subPr.setFunctionType((FunctionType)debugInfoEvaluator[0].getSubprogramValue(varDie).getType());
+
        return subPr;
      }
      
@@ -560,16 +479,14 @@ public class DebugInfo
        subprogram = new Subprogram[newFrames.length];
        for (int i = 0; i < newFrames.length; i++)
          {
-           debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i].getTask(), 
-                                           newFrames[i].getTask().getTid(), 
-                                           newFrames[i]);
+           debugInfoEvaluator[i] = new DebugInfoEvaluator (newFrames[i]);
            subprogram[i] = setSubprogram(newFrames[i]);
 	   debugInfoEvaluator[i].setSubprogram(subprogram[i]);
          }
      }
      
      
-     public Value getVariable (DwarfDie die)
+     public Value getValue (DwarfDie die)
      {
        return debugInfoEvaluator[0].getValue(die);
      } 

@@ -88,7 +88,7 @@ public class Scope
 //      System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
       
       if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
-        Value value = debugInfo.getVariable(die);
+        Value value = debugInfo.getValue(die);
         variables.add(value);
       }
       

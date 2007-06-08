@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import frysk.debuginfo.DebugInfo;
+import frysk.value.FunctionType;
 import frysk.value.Value;
 
 public class Subprogram extends Scope
@@ -56,6 +57,7 @@ public class Subprogram extends Scope
   // Language language;
     Subprogram outer;
     LexicalBlock block;
+    FunctionType functionType;
     LinkedList parameters;
     
     private String name;
@@ -71,12 +73,51 @@ public class Subprogram extends Scope
       while(die != null){
 //	System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
 	if(die.getTag() == DwTagEncodings.DW_TAG_formal_parameter_){
-	  Value value = debugInfo.getVariable(die);
+	  Value value = debugInfo.getValue(die);
 	  parameters.add(value);
 	}
 	die = die.getSibling();
       }
-
+      DwarfDie firstVar = die;
+      int nParms = 0;
+      while (die != null)
+        {
+          nParms += 1;
+          die= die.getSibling();
+        }
+      block = new LexicalBlock();
+      // ??? Move to LexicalBlock?
+      block.setVariables(nParms);
+      Value vars[] = block.getVariables();
+      block.setVariableDies(nParms);
+      DwarfDie dies[] = block.getVariableDies();
+      block.setTypeDies(nParms);
+      DwarfDie types[] = block.getTypeDies();
+      die = firstVar;
+      nParms = 0;
+      while (die != null)
+        {
+          vars[nParms] = debugInfo.getValue(die);
+          if (vars[nParms] == null)
+            {
+              int tag = die.getTag();
+              switch (tag)
+              {
+                case DwTagEncodings.DW_TAG_array_type_:
+                case DwTagEncodings.DW_TAG_base_type_:
+                case DwTagEncodings.DW_TAG_const_type_:
+                case DwTagEncodings.DW_TAG_pointer_type_:
+                case DwTagEncodings.DW_TAG_structure_type_:
+                case DwTagEncodings.DW_TAG_subrange_type_:
+                case DwTagEncodings.DW_TAG_typedef_:
+                  types[nParms] = die;
+              }
+            }
+          else
+            dies[nParms] = die;
+          die = die.getSibling();
+          nParms += 1;
+        }
     }
 
     public Subprogram ()
@@ -103,6 +144,16 @@ public class Subprogram extends Scope
       return parameters;
     }
 
+    public FunctionType getFunctionType ()
+    {
+      return functionType;
+    }
+
+    public void setFunctionType (FunctionType functionType)
+    {
+      this.functionType = functionType;
+    }
+    
     public String toString ()
     {
       String string;

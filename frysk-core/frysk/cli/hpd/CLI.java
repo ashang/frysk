@@ -59,6 +59,7 @@ import frysk.debuginfo.DebugInfo;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Frame;
+import frysk.rt.StackFactory;
 import frysk.rt.SteppingEngine;
 
 public class CLI 
@@ -373,7 +374,7 @@ public class CLI
 	}
       }
     addMessage("Attached to process " + pid, Message.TYPE_NORMAL);
-    debugInfo = new DebugInfo(pid, proc, task, null);
+    debugInfo = new DebugInfo(StackFactory.createFrame(this.task));
   }
   
   class SetHandler implements CommandHandler

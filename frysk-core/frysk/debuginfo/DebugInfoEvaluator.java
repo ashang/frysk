@@ -61,6 +61,7 @@ import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
 import frysk.value.EnumType;
+import frysk.value.FunctionType;
 import frysk.value.PointerType;
 import frysk.value.Type;
 import frysk.value.Value;
@@ -109,31 +110,22 @@ class DebugInfoEvaluator
   /**
    * Create an DebugInfoEvaluator object which is the interface between 
    * DebugInfo and CppTreeParser, the expression parser.
-   * 
+   * @param frame StackFrame
    * @param task_p Task
    * @param pid_p Pid
-   * @param frame StackFrame
    */
-  DebugInfoEvaluator (Task task, int pid, Frame frame)
+  DebugInfoEvaluator (Frame frame)
   {
-    this.task = task;
-    buffer = new AddressSpaceByteBuffer (pid, AddressSpace.TEXT);
-    ByteOrder byteorder = task.getIsa().getByteOrder();
+    this.task = frame.getTask();
+    buffer = new AddressSpaceByteBuffer (this.task.getProc().getPid(), AddressSpace.TEXT);
+    ByteOrder byteorder = this.task.getIsa().getByteOrder();
     buffer.order(byteorder);
 
-    if (frame == null)
-      {
-        currentFrame = StackFactory.createFrame(task);
-      }
+    while (frame.getInner() != null)
+      frame = frame.getInner();
 
-    else
-      {
-        while (frame.getInner() != null)
-          frame = frame.getInner();
-
-        /* currentFrame is now the innermost StackFrame */
-        currentFrame = frame;
-      }
+    /* currentFrame is now the innermost StackFrame */
+    currentFrame = frame;
 
     byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
 //    byteUnsignedType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeUnsignedByte, "unsigned byte");
@@ -489,6 +481,7 @@ class DebugInfoEvaluator
   {
     Dwfl dwfl;
     DwarfDie[] allDies;
+    DwarfDie varDie;
     long pc = this.currentFrame.getAdjustedAddress();
 
     dwfl = DwflFactory.createDwfl(task);
@@ -500,15 +493,14 @@ class DebugInfoEvaluator
     LexicalBlock b = subprogram.getBlock();
     Value vars[] = b.getVariables();
     DwarfDie varDies[] = b.getVariableDies();
-    DwarfDie varDie;
     for (int j = 0; j < vars.length; j++)
       if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
-        {
-          allDies = die.getScopes(pc - bias.bias);
-          varDies[j].setScopes(allDies);
-          return varDies[j];
-        }
-          
+	{
+	  allDies = die.getScopes(pc - bias.bias);
+	  varDies[j].setScopes(allDies);
+	  return varDies[j];
+	}
+
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);
     // Do we have something above didn't find, e.g. DW_TAG_enumerator?
@@ -963,7 +955,43 @@ class DebugInfoEvaluator
     }
     }
     return null;
-}
+  }
+  
+  public Value getSubprogramValue (DwarfDie varDie)
+  {
+    ByteOrder byteorder = task.getIsa().getByteOrder();
+    
+    if (varDie == null)
+      return (null);
+
+    switch (varDie.getTag())
+    {
+    case DwTagEncodings.DW_TAG_subprogram_:
+    {
+      Value value = null;
+      Type type = null;
+      if (varDie.getType() != null)
+        {
+          value = getValue(varDie);
+          if (value != null)
+            type = value.getType();
+        }
+      FunctionType functionType = new FunctionType(byteorder, varDie.getName(), type);
+      DwarfDie parm = varDie.getChild();
+      while (parm != null && parm.getTag() == DwTagEncodings.DW_TAG_formal_parameter_)
+        {
+          if (parm.getAttrBoolean((DwAtEncodings.DW_AT_artificial_)) == false)
+            {
+              value = getValue(parm);
+              functionType.addParameter(value.getType(), value.getText());
+        }
+      parm = parm.getSibling();
+        }
+      return new Value (functionType, varDie.getName());
+    }
+    }
+    return null;
+  }
   
   public Value getValue (DwarfDie varDie)
   {
@@ -975,6 +1003,19 @@ class DebugInfoEvaluator
     DwarfDie type = varDie.getType();
     if (type == null)
       return null;
+    
+    switch (type.getTag())
+    {
+    case DwTagEncodings.DW_TAG_pointer_type_:
+    {
+      type = type.getType();
+      if (type == null)
+        return new Value (new PointerType(byteorder, null, "void*"), varDie.getName());
+      return new Value (new PointerType(byteorder, getPointerTarget (type), "*"), varDie.getName());
+    }
+    // ??? Add DW_TAG_array_type_, DW_TAG_structure_type_, DW_TAG_enumeration_type_ and change what request
+    }
+    
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeLong:
@@ -989,17 +1030,6 @@ class DebugInfoEvaluator
       return ArithmeticType.newFloatValue(floatType, varDie.getName(), 0);
     case BaseTypes.baseTypeDouble:
       return ArithmeticType.newDoubleValue(doubleType, varDie.getName(), 0);
-    }
-    switch (type.getTag())
-    {
-    case DwTagEncodings.DW_TAG_pointer_type_:
-    {
-      type = type.getType();
-      if (type == null)
-	return new Value (new PointerType(byteorder, null, "void*"), varDie.getName());
-      return new Value (new PointerType(byteorder, getPointerTarget (type), "*"), varDie.getName());
-      
-    }
     }
   
     return null;

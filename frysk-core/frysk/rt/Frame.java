@@ -172,8 +172,7 @@ public abstract class Frame
   public final Subprogram getSubprogram ()
   {
     if (subprogram == null) {
-      DebugInfo debugInfo = new DebugInfo(this.getTask().getTid(),
-  			       this.getTask().getProc(), this.getTask(), this);
+      DebugInfo debugInfo = new DebugInfo(this);
       
       Dwfl dwfl = DwflFactory.createDwfl(this.getTask());
       DwflDieBias bias = dwfl.getDie(getAdjustedAddress());

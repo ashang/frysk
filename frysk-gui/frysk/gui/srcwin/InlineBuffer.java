@@ -56,7 +56,6 @@ import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 import frysk.value.Value;
-import frysk.proc.Task;
 import frysk.rt.Frame;
 
 /**
@@ -93,8 +92,7 @@ public class InlineBuffer
     this.declaration = this.instance.getDeclaration();
     this.currentFrame = frame;
     this.setScope(frame);
-    Task myTask = this.scope.getTask();
-    this.stab = new DebugInfo(myTask.getTid(), myTask.getProc(), myTask, scope);
+    this.stab = new DebugInfo(scope);
   }
 
   /**
@@ -216,7 +214,7 @@ public class InlineBuffer
     Value var;
     try
       {
-        var = DebugInfo.print(line.getText().substring(
+        var = stab.print(line.getText().substring(
                                                     tag.getStart(),
                                                     tag.getStart()
                                                         + tag.getLength()));

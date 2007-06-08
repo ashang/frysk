@@ -42,8 +42,8 @@ package frysk.cli.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 import frysk.value.Value;
-import javax.naming.NameNotFoundException;
 import frysk.debuginfo.DebugInfo;
+import javax.naming.NameNotFoundException;
 import lib.dw.BaseTypes;
 
 class PrintCommand
@@ -110,7 +110,10 @@ class PrintCommand
 
 	Value result = null;
 	try {
-	    result = DebugInfo.print(sInput);
+	  if (cli.debugInfo != null)
+	    result = cli.debugInfo.print(sInput);
+	  else
+	    result = DebugInfo.printNoSymbolTable(sInput);
         }
 	catch (NameNotFoundException nnfe)
 	    {

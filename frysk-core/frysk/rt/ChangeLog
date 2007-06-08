@@ -1,3 +1,8 @@
+2007-06-08  Stan Cox  <scox@redhat.com>
+
+	* Subprogram.java (functionType): New.
+	(Subprogram): Setup block.
+
 2007-06-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestDisplayValue.java (testVarOutOfScope): Now continues until
@@ -75,6 +80,7 @@
 	now passes.
 	(testVariableValueNotChanged): Ditto.
 
+>>>>>>> 1.263
 2007-05-30  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java: Reflect movement of DwflFactory.

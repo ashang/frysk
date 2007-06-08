@@ -1,3 +1,7 @@
+2007-06-08  Stan Cox  <scox@redhat.com>
+
+	* FunctionType.java: New file.
+
 2007-05-25  Stan Cox  <scox@redhat.com>
 
 	* PointerType.java: New.

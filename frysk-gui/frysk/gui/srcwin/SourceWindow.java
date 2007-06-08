@@ -2299,9 +2299,6 @@ public class SourceWindow
 	    // && SteppingEngine.getState() != SteppingEngine.RUNNING)
 	      {
 		this.symTab[current] = new DebugInfo(
-						  this.swProc[current].getPid(),
-						  this.swProc[current],
-						  this.swProc[current].getMainTask(),
 						  this.frames[current][0]);
 		this.symTab[current].setFrames(this.frames[current]);
 
@@ -2946,8 +2943,7 @@ public class SourceWindow
 	/* Update SymTab information for the main Task. */ 
 	if (tasks[j].getTid() == main)
 	  {
-	    this.symTab[current] = new DebugInfo(proc.getPid(), proc, tasks[j],
-					      frames[j]);
+	    this.symTab[current] = new DebugInfo(frames[j]);
 	  }
 
 	/* Create a DOM for the Proc */

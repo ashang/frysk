@@ -112,14 +112,11 @@ public class DisplayValue
       }
     
     // We found the correct frame, now refresh the variable
-    DebugInfo info = new DebugInfo(myTask.getTid(), 
-                                   myTask.getProc(), 
-                                   myTask, 
-                                   current);
+    DebugInfo info = new DebugInfo(current);
     info.refresh();
     try
       {
-        myVar = DebugInfo.print(varLabel);
+        myVar = info.print(varLabel);
       }
     catch (NameNotFoundException e)
       {

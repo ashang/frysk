@@ -1,3 +1,12 @@
+2007-06-07  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (DebugInfoEvaluator): New signature.
+	(getSubprogramValue): New.
+	* DebugInfo.java (DebugInfo): New signature.  Change all callers.
+	(print): No longer static.  Change all callers.
+	(printNoSymbolTable): New.
+        (what): Use FunctionType.
+
 2007-06-04  Stan Cox  <scox@redhat.com>
 
 	* frysk/debuginfo/DebugInfoEvaluator.java (getMemory): Add array_type
