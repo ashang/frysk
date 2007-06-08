@@ -63,8 +63,6 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.rt.Frame;
 import frysk.rt.SteppingEngine;
-import frysk.sys.Signal;
-import frysk.sys.Sig;
 
 public class CLI 
 {
@@ -80,7 +78,7 @@ public class CLI
   boolean procSearchFinished = false;
   boolean attached;
   
-  private HashSet runningProcs = new HashSet(); //Processes started with run command
+  final HashSet runningProcs = new HashSet(); //Processes started with run command
   
   /**
    * Handle ConsoleReader Completor
@@ -528,40 +526,6 @@ public class CLI
     debugInfo = new DebugInfo(pid, proc, task, null);
   }
   
-  class DetachHandler implements CommandHandler
-  {
-    public void handle (Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-	{
-	  printUsage(cmd);
-	  return;
-	}
-      refreshSymtab();
-
-      boolean startedByRun;
-      synchronized (CLI.this)
-      {
-	startedByRun = runningProcs.contains(proc);
-      }
-      if (startedByRun)
-	return;
-      // Delete all breakpoints.
-      if (steppingObserver != null)
-		SteppingEngine.removeObserver(steppingObserver, proc, true);
-
-      proc = null;
-      task = null;
-
-      attached = false;
-      if (params.size() > 0)
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-    
   class UnaliasHandler implements CommandHandler
   {
     public void handle(Command cmd)  throws ParseException
@@ -744,24 +708,6 @@ public class CLI
     }
   }
 
-  class QuitHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException 
-    {
-      refreshSymtab();
-      Iterator iterator = runningProcs.iterator();
-      while (iterator.hasNext())
-	{
-	  Proc p = (Proc) iterator.next();
-	  Signal.kill(p.getPid(),Sig.KILL);
-	}
-      addMessage("Quitting...", Message.TYPE_NORMAL);
-      DetachHandler detachHandler = new DetachHandler();
-      Command command = new Command ("detach");
-      detachHandler.handle(command);
-    }
-  }
-    
   /*
    * Private variables
    */
@@ -824,7 +770,7 @@ public class CLI
     addHandler(new BreakpointHandler(this));
     handlers.put("defset", new DefsetHandler());
     addHandler(new DeleteHandler(this));
-    handlers.put("detach", new DetachHandler());
+    handlers.put("detach", new DetachCommand(this));
     addHandler(new DisableHandler(this));
     handlers.put("down", new UpDownHandler());
     addHandler(new EnableHandler(this));
@@ -834,7 +780,7 @@ public class CLI
     handlers.put("help", new HelpCommand(this));
     handlers.put("list", new ListCommand(this));
     handlers.put("print", new PrintCommand(this));
-    handlers.put("quit", new QuitHandler());
+    handlers.put("quit", new QuitCommand(this));
     handlers.put("set", new SetHandler());
     handlers.put("step", new StepCommand(this));
     handlers.put("stepi", new StepInstructionCommand(this));

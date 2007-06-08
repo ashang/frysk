@@ -1,5 +1,11 @@
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
+	* hpd/CLI.java (DetachHandler): Rename to ...
+	* hpd/DetachCommand.java: ... this.  New file.
+	* hpd/CLI.java (runningProcs): Make package private and final.
+	(QuitHandler): Rename to ...
+	* hpd/QuitCommand.java: ... this.  New file.
+
 	* hpd/CLI.java (HaltHandler): Rename to ...
 	* hpd/HaltCommand.java: ... this.  New file.
 
