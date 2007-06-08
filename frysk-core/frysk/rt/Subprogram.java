@@ -61,11 +61,12 @@ public class Subprogram extends Scope
     LinkedList parameters;
     
     private String name;
-
+    
     public Subprogram (DwarfDie die, DebugInfo debugInfo)
     {
       super(die, debugInfo);
       this.name = die.getName();
+      
 //      System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
       
       parameters = new LinkedList();
@@ -144,6 +145,11 @@ public class Subprogram extends Scope
       return parameters;
     }
 
+    public String toString()
+    {
+      return super.toString() + " " + this.getName();
+    }
+
     public FunctionType getFunctionType ()
     {
       return functionType;
@@ -154,25 +160,25 @@ public class Subprogram extends Scope
       this.functionType = functionType;
     }
     
-    public String toString ()
+    public StringBuilder printParameters ()
     {
-      String string;
-      string = this.getName() + "(";
+      StringBuilder stringBuilder = new StringBuilder();
       Iterator iterator = this.parameters.iterator();
       while(iterator.hasNext()) {
         Value parameter = (Value) iterator.next();
         if(parameter == null){
-          string += "Could not retrieve var";
+          stringBuilder.append("Unhandled type");
         }else{
-          string += parameter.getType() + " " + parameter.getText();
+          stringBuilder.append(parameter.getType() + " " + parameter.getText());
         }
-	if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
-	  string += ",";
-	}
+        if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
+          stringBuilder.append(",");
+        }
       }
-      string += ")";
-      return string;
-      
-//      return this.getName();
+      return stringBuilder;
+    }
+    
+    public StringBuilder printScopes(){
+      return new StringBuilder(super.toPrint(1));
     }
 }

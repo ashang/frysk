@@ -81,9 +81,10 @@ public class Scope
     LinkedList variables = new LinkedList();
     this.scopes = new LinkedList();
     
+//    System.out.println("\nScope.Scope() name: " + die.getName() + " " + DwTagEncodings.toName(die.getTag()));
+    
     die = die.getChild();
-//  System.out.println("\nSubprogram.Subprogram() name: " + name + " " + DwTagEncodings.toName(die.getTag()));
-
+    
     while(die != null){
 //      System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
       
@@ -94,12 +95,11 @@ public class Scope
       
       if(die.getTag() == DwTagEncodings.DW_TAG_lexical_block_){
         this.scopes.add(new LexicalBlock(die, debugInfo));
+      }else{
+        if(isScopeDie(die)){
+          this.scopes.add(new Scope(die,debugInfo));
+        }
       }
-      
-      if(isScopeDie(die)){
-        this.scopes.add(new Scope(die,debugInfo));
-      }
-      
       die = die.getSibling();
     }
     

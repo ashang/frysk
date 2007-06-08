@@ -62,8 +62,8 @@ public class TestFrameDebugInfo
     Task task = getStoppedTask();
 
     Frame frame = StackFactory.createFrame(task, 0);
-    String string = StackFactory.printStackTrace(frame);
-    
+    String string = StackFactory.printRichStackTrace(frame, true, true, true);
+      
 //    System.out.println("TestRichFrame.testRichFrame()");
 //    System.out.println(string);
 //    System.out.println();

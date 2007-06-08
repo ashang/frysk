@@ -1,3 +1,11 @@
+2007-06-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java: Now uses StackFactory.printRichStackTrace.
+	* StackFactory.java (printRichStackTrace): New function.
+	* Scope.java: Fixed reinitialzing of the LexicalBlock scope.
+	(printParameters): New function.
+	(printScopes): New function.
+
 2007-06-08  Stan Cox  <scox@redhat.com>
 
 	* Subprogram.java (functionType): New.

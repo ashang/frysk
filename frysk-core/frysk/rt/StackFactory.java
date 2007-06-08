@@ -171,5 +171,50 @@ public class StackFactory
 
     return string;
   }
-  
+
+  public static String printRichStackTrace(Frame topFrame, boolean printParameters, boolean printScopse, boolean fullpath){
+    
+    StringBuilder stringBuilder = new StringBuilder();
+    int count = 0;
+    for (Frame frame = topFrame;
+    frame != null; frame = frame.getOuter()) {
+      
+      stringBuilder.append("#" + count + " ");
+      Subprogram subprogram = frame.getSubprogram();
+
+      if(subprogram != null){
+        
+        stringBuilder.append(subprogram.getName() + "(");
+        if(printParameters){
+          stringBuilder.append(subprogram.printParameters());
+        }
+        stringBuilder.append(") ");
+        
+        if(fullpath){
+          Line line = frame.getLines()[0];
+          stringBuilder.append(line.getFile().getPath());
+          stringBuilder.append(": line #");
+          stringBuilder.append(line.getLine());
+        }else{
+          Line line = frame.getLines()[0];
+          stringBuilder.append(line.getFile().getName());
+          stringBuilder.append(": line #");
+          stringBuilder.append(line.getLine());
+        }
+        
+        if(printScopse){
+          stringBuilder.append(subprogram.printScopes());
+        }
+        
+      }else{
+        stringBuilder.append(frame.toPrint(false));
+      }
+      
+      stringBuilder.append("\n");
+      count++;
+    }
+
+    return new String(stringBuilder);
+  }
+
 }
