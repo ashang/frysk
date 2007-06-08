@@ -377,93 +377,6 @@ public class CLI
     debugInfo = new DebugInfo(StackFactory.createFrame(this.task));
   }
   
-  class SetHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      String temp;
-      if (params.size() == 3 && ((String)params.get(1)).equals("=") )
-	{
-	  temp = (String)params.get(0);
-	  if (dbgvars.variableIsValid(temp))
-	    {
-	      if (dbgvars.valueIsValid(temp, (String)params.get(2)))
-		{
-		  dbgvars.setVariable(temp, (String)params.get(2));
-		}
-	      else
-		addMessage("Illegal variable value.", Message.TYPE_ERROR);
-	    }
-	  else
-	    addMessage(new Message("Illegal debugger variable \""
-				   + (String)params.get(0) + "\"",
-				   Message.TYPE_ERROR));
-	}
-      else if (params.size() == 1)
-	{
-	  temp = (String)params.get(0);
-	  if (dbgvars.variableIsValid(temp))
-	    {
-	      addMessage(temp + " = " + dbgvars.getValue(temp).toString(),
-			 Message.TYPE_NORMAL);
-	    }
-	  else
-	    addMessage(new Message("Illegal debugger variable \"" 
-				   + (String)params.get(0) + "\"",
-				   Message.TYPE_ERROR));
-	}
-      else if (params.size() == 0)
-	{
-	  addMessage(dbgvars.toString(), Message.TYPE_NORMAL);
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
-  class UnsetHandler implements CommandHandler
-  {
-    public void handle(Command cmd) throws ParseException
-    {
-      ArrayList params = cmd.getParameters();
-      if (params.size() == 1 && params.get(0).equals("-help"))
-        {
-          printUsage(cmd);
-          return;
-        }
-      refreshSymtab();
-      String temp;
-      if (params.size() == 1)
-	{
-	  temp = (String)params.get(0);
-	  if (temp.equals("-all"))
-	    dbgvars.unsetAll();
-	  else
-	    {
-	      if (dbgvars.variableIsValid(temp))
-		dbgvars.unsetVariable(temp);
-	      else
-		addMessage(new Message("\"" + (String)params.get(0)
-				       + "\" is not a valid debugger variable",
-				       Message.TYPE_ERROR));
-	    }
-	}
-      else
-	{
-	  printUsage(cmd);
-	}
-    }
-  }
-
   class UpDownHandler implements CommandHandler
   {
     public void handle(Command cmd) throws ParseException 
@@ -575,12 +488,12 @@ public class CLI
     handlers.put("list", new ListCommand(this));
     handlers.put("print", new PrintCommand(this));
     handlers.put("quit", new QuitCommand(this));
-    handlers.put("set", new SetHandler());
+    handlers.put("set", new SetCommand(this, dbgvars));
     handlers.put("step", new StepCommand(this));
     handlers.put("stepi", new StepInstructionCommand(this));
     handlers.put("unalias", new UnaliasCommand(this));
     handlers.put("undefset", new UndefsetHandler());
-    handlers.put("unset", new UnsetHandler());
+    handlers.put("unset", new UnsetCommand(this, dbgvars));
     handlers.put("up", new UpDownHandler());
     handlers.put("viewset", new ViewsetHandler());
     handlers.put("what", new WhatCommand(this));
