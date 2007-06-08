@@ -1,78 +1,78 @@
 2007-06-08  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java (WhichsetsHandler): Rename this ...
-	* hpd/WhichsetsCommand.java: ... to this.  New file.
-	* hpd/CLI.java (UndefsetsHandler): Rename this ...
-	* hpd/UndefsetsCommand.java: ... to this.  New file.
-	* hpd/CLI.java (createSet, namedPTSets): Make package private.
+	* CLI.java (WhichsetsHandler): Rename this ...
+	* WhichsetsCommand.java: ... to this.  New file.
+	* CLI.java (UndefsetsHandler): Rename this ...
+	* UndefsetsCommand.java: ... to this.  New file.
+	* CLI.java (createSet, namedPTSets): Make package private.
 	(DefsetHandler): Rename this ...
-	* hpd/DefsetCommand.java: ... to this.  New file.
-	* hpd/CLI.java (builtinPTSets): Make package private.
+	* DefsetCommand.java: ... to this.  New file.
+	* CLI.java (builtinPTSets): Make package private.
 	(ViewsetHandler): Rename this ...
-	* hpd/ViewsetCommand.java: ... to this.  New file.
-	* hpd/CLI.java (targetset, handlers): Make package private.
+	* ViewsetCommand.java: ... to this.  New file.
+	* CLI.java (targetset, handlers): Make package private.
 	(FocusHandler): Rename this ...
-	* hpd/FocusCommand.java: ... to this.  New file.
+	* FocusCommand.java: ... to this.  New file.
 
-	* hpd/CLI.java (UnsetHandler): Rename this ...
-	* hpd/UnsetCommand.java: ... to this.  New file.
-	* hpd/CLI.java (SetHandler): Rename this ...
-	* hpd/SetCommand.java: ... to this.  New file.
+	* CLI.java (UnsetHandler): Rename this ...
+	* UnsetCommand.java: ... to this.  New file.
+	* CLI.java (SetHandler): Rename this ...
+	* SetCommand.java: ... to this.  New file.
 
-	* hpd/CLI.java (GoHandler): Rename this ...
-	* hpd/GoCommand.java: ... to this.  New file.
-	* hpd/CLI.java (UnaliasHandler): Rename this ...
-	* hpd/UnaliasCommand.java: ... to this.  New file.
+	* CLI.java (GoHandler): Rename this ...
+	* GoCommand.java: ... to this.  New file.
+	* CLI.java (UnaliasHandler): Rename this ...
+	* UnaliasCommand.java: ... to this.  New file.
 
-	* hpd/CLI.java (AttachHandler): Rename this ...
-	* hpd/AttachCommand.java: ... to this.  New file.
-	* hpd/CLI.java (aliases): Make final package private.
+	* CLI.java (AttachHandler): Rename this ...
+	* AttachCommand.java: ... to this.  New file.
+	* CLI.java (aliases): Make final package private.
 	(AliasHandler): Rename this ...
-	* hpd/AliasCommand.java: ... to this.  New file.
+	* AliasCommand.java: ... to this.  New file.
 
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java (DetachHandler): Rename to ...
-	* hpd/DetachCommand.java: ... this.  New file.
-	* hpd/CLI.java (runningProcs): Make package private and final.
+	* CLI.java (DetachHandler): Rename to ...
+	* DetachCommand.java: ... this.  New file.
+	* CLI.java (runningProcs): Make package private and final.
 	(QuitHandler): Rename to ...
-	* hpd/QuitCommand.java: ... this.  New file.
+	* QuitCommand.java: ... this.  New file.
 
-	* hpd/CLI.java (HaltHandler): Rename to ...
-	* hpd/HaltCommand.java: ... this.  New file.
+	* CLI.java (HaltHandler): Rename to ...
+	* HaltCommand.java: ... this.  New file.
 
-	* hpd/CLI.java (userhelp): Make package private.
+	* CLI.java (userhelp): Make package private.
 	(HelpHandler): Rename to ...
-	* hpd/HelpCommand.java: ... this.  New file.
+	* HelpCommand.java: ... this.  New file.
 
-	* hpd/CLI.java (WhatHandler): Rename to ...
-	* hpd/WhatCommand.java: ... this.  New file.
+	* CLI.java (WhatHandler): Rename to ...
+	* WhatCommand.java: ... this.  New file.
 
-	* hpd/CLI.java (WhereHandler): Rename to ...
-	* hpd/WhereCommand.java: ... this.  New file.
+	* CLI.java (WhereHandler): Rename to ...
+	* WhereCommand.java: ... this.  New file.
 
-	* hpd/CLI.java (PrintHandler): Rename to ...
-	* hpd/PrintCommand.java: ... this.  New file.
+	* CLI.java (PrintHandler): Rename to ...
+	* PrintCommand.java: ... this.  New file.
 
 2007-06-07  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/CLI.java (StepHandler): Removed.
+	* CLI.java (StepHandler): Removed.
 	(StepInstructionHandler): Removed.
 	(CLI): Initialize new step command classes with CLI parameter.
 	(SteppingObserver): Made package private.
-	* hpd/StepInstructionCommand.java: Added.
-	* hpd/StepCommand.java: Added.
+	* StepInstructionCommand.java: Added.
+	* StepCommand.java: Added.
 
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java (addMessage): Make package private.
+	* CLI.java (addMessage): Make package private.
 	(outWriter): Make package private and final.
 	(ListHandler): Rename to ..
-	* hpd/ListCommand.java: here.  New file.
+	* ListCommand.java: here.  New file.
 
 2007-06-06  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/CLI.java (SteppingObserver.monitor): Added. Synchronization 
+	* CLI.java (SteppingObserver.monitor): Added. Synchronization 
 	object for stepping commands.
 	(SteppingObserver.update): Now synchronizes on, and notifies from
 	monitor object.
@@ -82,8 +82,8 @@
 
 2007-06-05  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/UserHelp.java (UserHelp): Added user help for step and stepi.
-	* hpd/CLI.java: Turned Hashtables into HashMaps. Fixes #3986.
+	* UserHelp.java (UserHelp): Added user help for step and stepi.
+	* CLI.java: Turned Hashtables into HashMaps. Fixes #3986.
 	(running): Added.
 	(StepHandler): Added. Handler for line stepping. Fixes #4594.
 	(StepInstructionHandler): Added. Handler for instruction steping.
@@ -97,98 +97,98 @@
 
 2007-05-25  Tim Moore  <timoore@redhat.com>
 
-	* hpd/CLI.java (DetachHandler.handle): Skip processes started by
+	* CLI.java (DetachHandler.handle): Skip processes started by
 	the run command without reporting an error.
 
 2007-05-25  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java: Move to frysk.debuginfo.DebugInfo
-	* hpd/ExprSymTab.java: Move to frysk.debuginfo.DebugInfoEvaluator
+	* SymTab.java: Move to frysk.debuginfo.DebugInfo
+	* ExprSymTab.java: Move to frysk.debuginfo.DebugInfoEvaluator
 	
 2007-05-17  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (complete): Handle struct members.
+	* SymTab.java (complete): Handle struct members.
 	(get): Remove get(String s, ArrayList components).
-	* hpd/ExprSymTab.java (get): Remove get(String, ArrayList).
+	* ExprSymTab.java (get): Remove get(String, ArrayList).
 	(ArrayList components): Handle both structs and arrays.
 
 2007-05-16  Tim Moore  <timoore@redhat.com>
 
-	* hpd/ActionsHandler.java: New file.
-	* hpd/DeleteHandler.java: New file.
-	* hpd/DisableHandler.java: New file.
-	* hpd/EnableHandler.java: New file.
-	* hpd/Actionpoint.java: delete.
-	* hpd/ActionpointTable.java: delete.
-	* hpd/FunctionBreakpointAdapter.java: delete.
-	* hpd/LineBreakpointAdapter.java: delete.
-	* hpd/BreakpointHandler.java (handle): Use RT BreakpointManager to
+	* ActionsHandler.java: New file.
+	* DeleteHandler.java: New file.
+	* DisableHandler.java: New file.
+	* EnableHandler.java: New file.
+	* Actionpoint.java: delete.
+	* ActionpointTable.java: delete.
+	* FunctionBreakpointAdapter.java: delete.
+	* LineBreakpointAdapter.java: delete.
+	* BreakpointHandler.java (handle): Use RT BreakpointManager to
 	install breakpoints.
-	* hpd/RunHandler.java (update): New method for observing SteppingEngine.
+	* RunHandler.java (update): New method for observing SteppingEngine.
 	(updateAttached): Use SteppingEngine attached notice to remove the
 	attached observer.
 
 2007-05-10  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Handle union.
+	* ExprSymTab.java (get): Handle union.
 	(getClassType): Likewise.
 
 2007-05-10  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/TestSetCreation.java: Replace references to
+	* TestSetCreation.java: Replace references to
 	frysk.proc.DummyProc and frysk.proc.DummyTask with
 	frysk.proc.dummy.Proc and frysk.proc.dummy.Task.
 
 2007-05-09  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Remove DwarfDie from newXVariable signature.
+	* ExprSymTab.java (get): Remove DwarfDie from newXVariable signature.
 
 2007-05-08  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): newXVariable signature.
+	* ExprSymTab.java (get): newXVariable signature.
 	Changed to use ArrayType.get.
-	* hpd/CLI.java (ListHandler): Implement -length.
+	* CLI.java (ListHandler): Implement -length.
 
 2007-05-07  Tim Moore  <timoore@redhat.com>
 
-	* hpd/RunHandler.java (updateAttached): Put the request to unblock
+	* RunHandler.java (updateAttached): Put the request to unblock
 	this observer in an event for the Event manager.
 
 2007-05-04  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/ExprSymTab.java (refreshCurrentFrame): Updated for 
+	* ExprSymTab.java (refreshCurrentFrame): Updated for 
 	frysk.rt.StackFactory.createFrame name change.
 	(ExprSymTab): Ditto.
 
-	* hpd/SymTab.java (setSubprogram): Abstract StackFrame to Frame.
+	* SymTab.java (setSubprogram): Abstract StackFrame to Frame.
 	(SymTab): Ditto.
 	(getCurrentFrame): Ditto.
 	(setFrames): Ditto.
 	(getInnerMostFrame): Ditto.
 	(setCurrentFrame): Ditto.
-	* hpd/CLI.java (WhereHandler.handle): Ditto.
+	* CLI.java (WhereHandler.handle): Ditto.
 	(UpDownHandler.handle): Ditto.
-	* hpd/ExprSymTab.java (getCurrentFrame): Ditto.
+	* ExprSymTab.java (getCurrentFrame): Ditto.
 	(ExprSymTab): Ditto.
 	(getInnerMostFrame): Ditto.
 	(setCurrentFrame): Ditto.
 	
 2007-05-03  Tim Moore  <timoore@redhat.com>
 
-	* hpd/Actionpoint.java (Actionpoint): Implement BreakpointObserver.
+	* Actionpoint.java (Actionpoint): Implement BreakpointObserver.
 	(Actionpoint constructor): Take cli as argument.
 	(addedTo, addFailed, deletedFrom, updateHit): BreakpointObserver
 	implementation.
-	* hpd/BreakpointHandler.java (handle): New arguments for adapter
+	* BreakpointHandler.java (handle): New arguments for adapter
 	constructors.
-	* hpd/CLI.java (CLI): Expose apTable to package.
+	* CLI.java (CLI): Expose apTable to package.
 	(AttachHandler.handle): Don't start and stop event loop.
 	(startAttach): Store away pid.
 	(CLIEventLoop): Delete.
-	* hpd/FunctionBreakpointAdapter.java (FunctionBreakpointAdapter
+	* FunctionBreakpointAdapter.java (FunctionBreakpointAdapter
 	constructor): Take cli as argument, set observer delegate.
-	* hpd/LineBreakpointAdapter.java: ditto.
-	* hpd/RunHandler.java (updateAttached): request unblock and Return
+	* LineBreakpointAdapter.java: ditto.
+	* RunHandler.java (updateAttached): request unblock and Return
 	BLOCK.
 
 2007-05-02  Andrew Cagney  <cagney@redhat.com>
@@ -197,24 +197,24 @@
 
 2007-05-02  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (getArrayType): New.
+	* ExprSymTab.java (getArrayType): New.
 	(getClassType): New.
 	(navigateType): New.
 	(get): Use above new methods.
-	* hpd/CLI.java (PrintHandler.handle): Remove try/catch block.
+	* CLI.java (PrintHandler.handle): Remove try/catch block.
 	(CLI): Remove command parameter.
 
 2007-05-01  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/SymTab.java (setSubprogram): Switch from StackFrame to Frame.
+	* SymTab.java (setSubprogram): Switch from StackFrame to Frame.
 	(SymTab): Ditto.
 	(getCurrentFrame): Ditto.
 	(setFrames): Ditto.
 	(getInnerMostFrame): Ditto.
 	(setCurrentFrame): 	Ditto.
-	* hpd/CLI.java (WhereHandler.handle): Ditto.
+	* CLI.java (WhereHandler.handle): Ditto.
 	(UpDownHandler.handle): Ditto.
-	* hpd/ExprSymTab.java (AccessDW_FORM_data.getLong): Ditto.
+	* ExprSymTab.java (AccessDW_FORM_data.getLong): Ditto.
 	(AccessDW_FORM_data.getDouble): Ditto.
 	(getCurrentFrame): Ditto.
 	(refreshCurrentFrame): Ditto.
@@ -236,73 +236,73 @@
 
 2007-04-20  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Support bit fields.
+	* ExprSymTab.java (get): Support bit fields.
 	(get): Likewise.
 
 2007-04-19  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/CLI.java: General fixes for RunState -> SteppingEngine move.
+	* CLI.java: General fixes for RunState -> SteppingEngine move.
 	(steppingObserver): Renamed from runStateObserver.
 	(ListHandler.handle): No-debuginfo exception fix.
 	(SteppingObserver): Renamed from RunStateObserver.
 	(SteppingObserver.update): Return if argument is null.
 	(getRunState): Removed.
-	* hpd/BreakpointHandler.java: SteppingEngine fixes.
-	* hpd/FunctionBreakpointAdapter.java: Ditto.
-	* hpd/LineBreakpointAdapter.java: Ditto.
+	* BreakpointHandler.java: SteppingEngine fixes.
+	* FunctionBreakpointAdapter.java: Ditto.
+	* LineBreakpointAdapter.java: Ditto.
 
 2007-04-18  Tim Moore  <timoore@redhat.com>
 
-	* hpd/BreakpointHandler.java (handle): New parameters to
+	* BreakpointHandler.java (handle): New parameters to
 	LineBreakpoint. Support function breakpoint based on symbol name.
 
-	* hpd/CLI.java (AttachHandler.handle): Fix breakage from monitor
+	* CLI.java (AttachHandler.handle): Fix breakage from monitor
 	lock cleanup.
 
 2007-04-17  Tim Moore  <timoore@redhat.com>
 
-	* hpd/CLI.java (CLIMonitor, monitor, procSearchFinished): delete
+	* CLI.java (CLIMonitor, monitor, procSearchFinished): delete
 	monitor and use the cli	object itself as a lock.
 	(runningProcs, getRunningProcs): New field and accessor
 	(QuitHandler): Kill processes started by the run command.
-	* hpd/RunHandler.java (updateAttached): Keep track of running
+	* RunHandler.java (updateAttached): Keep track of running
 	processes with a ProcessTasksObserver.
-	* hpd/ProcData.java (equals): New method.
-	* hpd/ProcTasks.java (equals): New method.
-	* hpd/StaticPTSet.java (union): New method.
+	* ProcData.java (equals): New method.
+	* ProcTasks.java (equals): New method.
+	* StaticPTSet.java (union): New method.
 
 2007-04-15  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (*Type): Use ArithmeticType.
+	* ExprSymTab.java (*Type): Use ArithmeticType.
 	(get): Likewise.
-	* hpd/CLI.java (PrintHandler.handle): Rename baseTypeByte.
+	* CLI.java (PrintHandler.handle): Rename baseTypeByte.
 
 2007-04-10  Andrew Cagney  <cagney@redhat.com>
 	    Phil Muldoon  <pmuldoon@redhat.com>
 
-	* hpd/ExprSymTab.java: Replace PtraceByteBuffer with
+	* ExprSymTab.java: Replace PtraceByteBuffer with
 	Task.getMemory.
 	
 2007-04-08  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/CLI.java (RunStateObserver.update): Updated calls to
+	* CLI.java (RunStateObserver.update): Updated calls to
 	RunState.getState() to getTaskState(Task).
 
 2007-04-03  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (getDecl): Pass scopes to getDeclCU.
+	* ExprSymTab.java (getDecl): Pass scopes to getDeclCU.
 
 2007-04-02  Tim Moore  <timoore@redhat.com>
 
-	* hpd/FunctionBreakpointAdapter.java (output): Print differently
+	* FunctionBreakpointAdapter.java (output): Print differently
 	if function contains inline instances.
 
 2007-03-30  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java: Handle DW_TAG_enumerator.
+	* ExprSymTab.java: Handle DW_TAG_enumerator.
 	(get): Handle DW_TAG_pointer_type, DW_TAG_enumeration_type, and
 	DW_TAG_enumerator.
-	* hpd/SymTab.java (what): Handle DW_TAG_array_type,
+	* SymTab.java (what): Handle DW_TAG_array_type,
 	DW_TAG_structure_type, and DW_TAG_enumeration.
 
 2007-03-30  Mike Cvet  <mcvet@redhat.com>
@@ -342,39 +342,39 @@
 
 2007-03-20  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Set name when creating arrayType/classType.
+	* ExprSymTab.java (get): Set name when creating arrayType/classType.
 	(getAddress): New.
 	(getMemory): New.
-	* hpd/SymTab.java (getAddress, getMemory): Likewise.
+	* SymTab.java (getAddress, getMemory): Likewise.
 
 2007-03-17  Stan Cox  <scox@redhat.com>	
 
-	* hpd/SymTab.java (complete): Handle help request<HT>.
+	* SymTab.java (complete): Handle help request<HT>.
 	(CommandHandler): Add -help to all .handle.
-	* hpd/UserHelp.java (UserHelp): Improve full descriptions.
+	* UserHelp.java (UserHelp): Improve full descriptions.
 
 2007-03-16  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (setSubprogram): Check for no .debug_info.
+	* SymTab.java (setSubprogram): Check for no .debug_info.
 	(what): Likewise.
 	(SetFrames): Set subprogram in ExprSymTab.	
 
 2007-03-15  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (subprogram): New.  Used to initialize dies in
+	* SymTab.java (subprogram): New.  Used to initialize dies in
 	subprogram.
 	(SymTab): Allocate subprogram.
 	(refresh): Set subprogram.
 	(setCurrentFrame): Set subprogram.
 	(setSubprogram): Initialize subprogram.
 	(setFrames): Set subprogram.
-	* hpd/ExprSymTab.java (subprogram, setSubprogram): New.
+	* ExprSymTab.java (subprogram, setSubprogram): New.
 	(getDie): Check if die is in subprogram.
 	(getVariable): New.
 
 2007-03-08  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/Symtab.java (task): Not used, removed.
+	* Symtab.java (task): Not used, removed.
 	(exprSymTab): Changed to an array. Will contain an ExprSymTab for
 	each thread of a process. Fixes #4173.
 	(SymTab): Changed parameter 'pid_p' to 'tid_p'. Initializes the new
@@ -387,8 +387,8 @@
 
 2007-03-07  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (what): Use DwAtEncodings and DwTagEncodings.
-	* hpd/ExprSymTab.java (getBufferAddr): Use DwarfOp and DwOpEncodings.
+	* SymTab.java (what): Use DwAtEncodings and DwTagEncodings.
+	* ExprSymTab.java (getBufferAddr): Use DwarfOp and DwOpEncodings.
 	(AccessDW_FORM_data.getReg): Likewise.
 	(get): Use DwTagEncodings.
 
@@ -417,27 +417,27 @@
 
 2007-02-28  Stan Cox  <scox@redhat.com>
 
-        * hpd/ExprSymTab.java (AccessDW_FORM_block.getBufferAddr):
+        * ExprSymTab.java (AccessDW_FORM_block.getBufferAddr):
         Add x8664 specific registers.
         (AccessDW_FORM_data.getReg): Handle x8664.
         (AccessDW_FORM_data.{getFloat,getDouble}): Cast via Float/Double.
 
 2007-02-27  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java: Replace StackFrame .getSourceFile with Line
+	* CLI.java: Replace StackFrame .getSourceFile with Line
 	.getFile.
 
 2007-02-26  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java: Use frysk.rt.Line instead of Frame getLineNumber.
+	* CLI.java: Use frysk.rt.Line instead of Frame getLineNumber.
 
 2007-02-24  Tim Moore  <timoore@redhat.com>
 
-	* hpd/Actionpoint.java: New file.
-	* hpd/ActionpointTable.java: New file.
-	* hpd/LineBreakpointAdapter.java: New file.
-	* hpd/Command.java (setOut, getOut): remove.
-	* hpd/CLI.java (CLI): Change out PrintStream to outWriter PrintWriter.
+	* Actionpoint.java: New file.
+	* ActionpointTable.java: New file.
+	* LineBreakpointAdapter.java: New file.
+	* Command.java (setOut, getOut): remove.
+	* CLI.java (CLI): Change out PrintStream to outWriter PrintWriter.
 	(apTable): New member.
 	(BreakpointHandler.handle): Add breakpoint to action point table.
 	(DeleteHandler.handle): Implement breakpoint deletion.
@@ -445,20 +445,20 @@
 
 2007-02-21  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (CLI): Add initial command line parameter.
+	* CLI.java (CLI): Add initial command line parameter.
 	(attach): Don't require executable name.
 
 2007-02-19  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/CLI.java (DetachHandler.handle): Updated to call 
+	* CLI.java (DetachHandler.handle): Updated to call 
 	RunState.continueExecution().
-	* hpd/CLI.java (GoHandler.handle): Ditto.
+	* CLI.java (GoHandler.handle): Ditto.
 
 2007-02-15  Tim Moore  <timoore@redhat.com>
 
-	* hpd/SymTab.java (refresh): New method.
-	* hpd/ExprSymTab.java (refreshCurrentFrame): New method.
-	* hpd/CLI.java (symtabNeedsRefresh): New member.
+	* SymTab.java (refresh): New method.
+	* ExprSymTab.java (refreshCurrentFrame): New method.
+	* CLI.java (symtabNeedsRefresh): New member.
 	(refreshSymtab): New method.
 	(handle): In most handler classes, call refreshSymtab.
 	(AttachHandler.handle): Add error messages.
@@ -466,27 +466,27 @@
 
 2007-02-14  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Add offset to classType.addMember.
+	* ExprSymTab.java (get): Add offset to classType.addMember.
 	(get): New for class members.
-	* hpd/SymTab.java (get): Likewise.
+	* SymTab.java (get): Likewise.
 
 2007-02-07  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (frysk.proc.Action, frysk.proc.TaskObserver):
+	* CLI.java (frysk.proc.Action, frysk.proc.TaskObserver):
 	Remove unused imports.
 	(DeleteBreakpointHandler): Remove params, filename, linenumber.	
 	(params): remove.
 
 2007-02-07  Tim Moore  <timoore@redhat.com>	
 
-	* hpd/CLI.java (addMessage): New version that takes string and
+	* CLI.java (addMessage): New version that takes string and
 	message type.
 	(CLI): Reformat to GNU standards, use new addMessage convenience
 	method.
 	
 2007-02-07  Tim Moore  <timoore@redhat.com>
 
-	* hpd/CLI.java (attachedObserver): Remove.
+	* CLI.java (attachedObserver): Remove.
 	(runState, runStateObserver, AttachHandler, DetachHandler): Start
 	and stop processes using RunState object.
 	(BreakpointHandler, DeleteBreakpointHandler): Handlers for
@@ -495,35 +495,35 @@
 	process.
 	(CLI constructor): Add new handlers to handler table.
 	(RunStateObserver): New local class for interacting with RunState.
-	* hpd/UserHelp.java (addHelp): Convenience function.
+	* UserHelp.java (addHelp): Convenience function.
 	(UserHelp constructor): Use it. Add help for "go" and "halt" commands.
 	
 
 2007-01-29  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (byteType,shortType,intType,floatType,doubleType): New.
+	* ExprSymTab.java (byteType,shortType,intType,floatType,doubleType): New.
 	(VariableAccessor.(get*,put*): Add offset to getters and putters.
 	(AccessDW_FORM_block.(get*,put*): Add offset to getters and putters.
 	(AccessDW_FORM_data.(get*,put*): Add offset to getters and putters.
 	(get): Use switch statements.
 	(get): New for array element references.
-	* hpd/CLI.java (WhereHandler.handle): Fix formatting typo.
+	* CLI.java (WhereHandler.handle): Fix formatting typo.
 
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
-	* hpd/SymTab.java: Removed unused import DwflLine.
+	* SymTab.java: Removed unused import DwflLine.
 
 2007-01-26  Mark Wielaard  <mark@klomp.org>
 
-	* hpd/CLI.java: Delete unused import lib.stdcpp.Demangler.
-	* hpd/SymTab.java: Delete unused import frysk.rt.StackFactory.
+	* CLI.java: Delete unused import lib.stdcpp.Demangler.
+	* SymTab.java: Delete unused import frysk.rt.StackFactory.
 	(complete): Removed unused variable result.
 	(what): Removed unused variable line.
 	(print): Removed unused variable intResult.
 
 2007-01-23  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java Delete unused import frysk.rt.StackFactory,
+	* CLI.java Delete unused import frysk.rt.StackFactory,
 	frysk.sys.Errno, frysk.sys.Ptrace, frysk.sys.Sig, lib.dw.DwarfDie,
 	lib.dw.Dwfl, lib.dw.DwflDieBias, lib.dw.DwflLine.
 	(complete): Remove candidates iterator.
@@ -531,34 +531,34 @@
 
 2007-01-23  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java (WhereHandler.handle): Changed to use
+	* CLI.java (WhereHandler.handle): Changed to use
 	Stackframe.toPrint method. 
 	(UpDownHandler.handle): Ditto.
 
 2007-01-23  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java: Delete unused import frysk.proc.TaskException.
+	* CLI.java: Delete unused import frysk.proc.TaskException.
 
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java: Delete unused import java.util.Vector;
+	* CLI.java: Delete unused import java.util.Vector;
 
-	* hpd/SymTab.java: Delete import frysk.proc.TaskException.
+	* SymTab.java: Delete import frysk.proc.TaskException.
 		
 2007-01-22  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/ExprSymTab.java (getReg): Removed erroneous frame PC
+	* ExprSymTab.java (getReg): Removed erroneous frame PC
 	decrement and instead call StackFrame.getAdjustedAddress().
 	(getBufferAddr): Ditto.
 	(getDie): Ditto.
-	* hpd/SymTab.java (complete): Ditto.
+	* SymTab.java (complete): Ditto.
 	(what): Ditto.
 
 2007-01-22  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/ExprSymTab.java: Delete catch throwing TaskException as
+	* ExprSymTab.java: Delete catch throwing TaskException as
 	RuntimeException.
-	* hpd/SymTab.java: Ditto.
+	* SymTab.java: Ditto.
 
 2007-01-18  Tim Moore  <timoore@redhat.com>
 
@@ -568,43 +568,43 @@
 
 2007-01-16  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (PrintHandler.handle): Special case baseTypeChar.
+	* CLI.java (PrintHandler.handle): Special case baseTypeChar.
 
 2007-01-11  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (complete): New.
+	* CLI.java (complete): New.
 	(ListHandler): New.
-	* hpd/SymTab.java (complete): New.
-	* hpd/UserHelp.java (list): New.	
+	* SymTab.java (complete): New.
+	* UserHelp.java (list): New.	
 
 2006-12-20  Stan Cox  <scox@redhat.com>
 
-	* hpd/AllPTSet.java (taskSets): Use ArrayList instead of Vector.
-	* hpd/CLI.java (handle): Likewise.
-	* hpd/Command.java (myParameters): Likewise.
-	* hpd/DynamicPTSet.java (getTasks): Likewise.
-	* hpd/ExecPTSet.java (getTasks): Likewise.
-	* hpd/Preprocessor.java (preprocess): Likewise.
-	* hpd/ProcTasks.java (getTaskData): Likewise.
-	* hpd/SetNotationParser.java (parse): Likewise.
-	* hpd/StaticPTSet.java (getProcs): Likewise.
-	* hpd/StatePTSet.java (getTasks): Likewise.
-	* hpd/UserHelp.java (getCmdList): Likewise.
-	* hpd/SymTab.java (print): Add NameNotFoundException, TmpSymTab.
-	* hpd/CppSymTab.java (print): Add NameNotFoundException.
+	* AllPTSet.java (taskSets): Use ArrayList instead of Vector.
+	* CLI.java (handle): Likewise.
+	* Command.java (myParameters): Likewise.
+	* DynamicPTSet.java (getTasks): Likewise.
+	* ExecPTSet.java (getTasks): Likewise.
+	* Preprocessor.java (preprocess): Likewise.
+	* ProcTasks.java (getTaskData): Likewise.
+	* SetNotationParser.java (parse): Likewise.
+	* StaticPTSet.java (getProcs): Likewise.
+	* StatePTSet.java (getTasks): Likewise.
+	* UserHelp.java (getCmdList): Likewise.
+	* SymTab.java (print): Add NameNotFoundException, TmpSymTab.
+	* CppSymTab.java (print): Add NameNotFoundException.
 
 2006-12-18  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (SymTab): Add elf and dwarf.
+	* SymTab.java (SymTab): Add elf and dwarf.
 	(what): Handle functions.
-	* hpd/CLI.java (WhereHandler): Demangle. Check usage.
+	* CLI.java (WhereHandler): Demangle. Check usage.
 	(UpDownHandler): Demangle.
 	(PrintHandler): Check usage.
 	(WhatHandler): Check usage.
 
 2006-12-14  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (VariableAccessor): Add getLong/putLong/ and
+	* ExprSymTab.java (VariableAccessor): Add getLong/putLong/ and
 	getByte/putByte.
 	(AccessDW_FORM_block): Likewise.
 	(AccessDW_FORM_data): Likewise.
@@ -613,66 +613,66 @@
 
 2006-12-11  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/.cvsignore: Delete.
+	* .cvsignore: Delete.
 
 2006-12-06  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java (AttachHandler.handle): Removed unneccesary TODO:
+	* CLI.java (AttachHandler.handle): Removed unneccesary TODO:
 	Autogenerated method stub.
 
 2006-11-28  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java (AttachHandler.handle): Changed to use simplified
+	* CLI.java (AttachHandler.handle): Changed to use simplified
 	requestFindProc.
 
 2006-11-27  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (AccessDW_FORM_block.getBufferAddr): Change 
+	* ExprSymTab.java (AccessDW_FORM_block.getBufferAddr): Change 
 	getFrameBase.
 	(AccessDW_FORM_data.getReg): Change getFormData.
-	* hpd/CLI.java (QuitHandler.handle): Do implicit detach from quit.
+	* CLI.java (QuitHandler.handle): Do implicit detach from quit.
 
 2006-11-27  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java: Reverted to old refreshRequestXXX and reimplemented 
+	* CLI.java: Reverted to old refreshRequestXXX and reimplemented 
 	FindProc interface.  foundProc method just stops eventLoop rather than 
 	running everything after the runPending.
 
 2006-11-21  Nurdin Premji  <npremji@redhat.com>
 
-	* hpd/CLI.java: Changed to use FindProc interface.
+	* CLI.java: Changed to use FindProc interface.
 
 2006-11-17  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (CLIEventLoop): New.
+	* CLI.java (CLIEventLoop): New.
 	(AttachedObserver): New.
 	(AttachHandler.handle): Attach to process using an attach observer.
 
 2006-11-16  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (PrintHandler.handle): Add -task.
+	* CLI.java (PrintHandler.handle): Add -task.
 	Rename frysk.lang to frysk.value.
-	* hpd/ExprSymTab.java: Rename frysk.lang to frysk.value.
-	* hpd/SymTab.java: Rename frysk.lang to frysk.value.
+	* ExprSymTab.java: Rename frysk.lang to frysk.value.
+	* SymTab.java: Rename frysk.lang to frysk.value.
 
 2006-11-14  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/TestSetCreation.java: Use frysk.junit.TestCase.
-	* hpd/TestSetParser.java: Use frysk.junit.TestCase.
+	* TestSetCreation.java: Use frysk.junit.TestCase.
+	* TestSetParser.java: Use frysk.junit.TestCase.
 
 2006-11-09  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (get): Add isClassType support.
+	* ExprSymTab.java (get): Add isClassType support.
 
 2006-11-03  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (VariableAccessor.getAddr): New.
+	* ExprSymTab.java (VariableAccessor.getAddr): New.
 	(get): Use BaseTypes. Add isArrayType support.
-	* hpd/CLI.java (PrintHandler.handle): Use BaseTypes.
+	* CLI.java (PrintHandler.handle): Use BaseTypes.
 
 2006-10-11  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (VariableAccessor): New.
+	* ExprSymTab.java (VariableAccessor): New.
 	(AccessDW_FORM_block): New.
 	(AccessDW_FORM_data): New.
 	(put): Use VariableAccessor.
@@ -680,7 +680,7 @@
 
 2006-10-06  Mike Cvet  <mcvet@redhat.com>
 
-	* hpd/ExprSymTab.java (ExprSymTab): New StackFrame parameter.Sets
+	* ExprSymTab.java (ExprSymTab): New StackFrame parameter.Sets
 	currentFrame to the inner most frame of the incoming stack trace 
 	if non-null; generates new stack trace otherwise. Got rid of 
 	innermostFrame field. Fixes #3312.
@@ -689,122 +689,122 @@
 	(getDie): Ditto.
 	(getInnerMostFrame): Iterates a pointer to currentFrame's innermost
 	and returns it.
-	* hpd/SymTab.java (SymTab): Added a new constructor with 
+	* SymTab.java (SymTab): Added a new constructor with 
 	an extra parameter - a StackFrame. Calls ExprSymTab with new
 	StackFrame argument; null if no StackFrame was given.
-	* hpd/CLI.java (AttachHandler.handle): Sends in an extra null
+	* CLI.java (AttachHandler.handle): Sends in an extra null
 	argument to the new SymTab.
 
 2006-10-03  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (getBufferAddr): Add x86regnumbers to map x86
+	* ExprSymTab.java (getBufferAddr): Add x86regnumbers to map x86
 	dwarf reg numbers to unwind reg numbers.
 
 2006-10-02  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (getBufferAddr):  Add x86regnames to map x86
+	* ExprSymTab.java (getBufferAddr):  Add x86regnames to map x86
 	dwarf reg numbers to unwind reg names.
 
 2006-10-02  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (put): Check that the die has a type.
+	* ExprSymTab.java (put): Check that the die has a type.
 	(get): Likewise.
 
 2006-09-29  Stan Cox  <scox@redhat.com>
 
-	* hpd/ExprSymTab.java (getBufferAddr): Simplify DW_AT_frame_base handling.
+	* ExprSymTab.java (getBufferAddr): Simplify DW_AT_frame_base handling.
 	(put): Handle Errno.
-	* hpd/CLI.java (PrintHandler.handle): Handle missing variable.
+	* CLI.java (PrintHandler.handle): Handle missing variable.
 
 2006-09-28  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (UpDownHandler): New.
+	* CLI.java (UpDownHandler): New.
 	(WhereHandler): New.
-	* hpd/SymTab.java (CppSymTab): Move from here...
-	* hpd/ExprSymTab.java: to here.
+	* SymTab.java (CppSymTab): Move from here...
+	* ExprSymTab.java: to here.
 
 2006-09-22  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (what,print): Refactor command handling from here...
-	* hpd/CLI.java (what,print): to here.
+	* SymTab.java (what,print): Refactor command handling from here...
+	* CLI.java (what,print): to here.
 
 2006-09-18  Stan Cox  <scox@redhat.com>
 
-	* hpd/SymTab.java (get): Handle float and double.
+	* SymTab.java (get): Handle float and double.
 	(print): Likewise.
 
 2006-09-12  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (proc): New.
+	* CLI.java (proc): New.
 	(task): New.
 	(symtab): New.
 	(AttachHandler): New.
 	(DetachHandler): New.
-	* hpd/hpd.java: New file for standalone execution of hpd.
-	* hpd/SymTab.java (symTab): New.
+	* hpd.java: New file for standalone execution of hpd.
+	* SymTab.java (symTab): New.
 	(what): Use it.
 	(print): Use it.
-	* hpd/UserHelp.java (UserHelp): Add print, assign, what, attach, detach.
-	* hpd/PrintHandler.java: Moved to SymTab.java.
+	* UserHelp.java (UserHelp): Add print, assign, what, attach, detach.
+	* PrintHandler.java: Moved to SymTab.java.
 
 2006-08-21  Stan Cox  <scox@redhat.com>
 
-	* hpd/PrintHandler.java (handle): Add -format and hex/octal output.
+	* PrintHandler.java (handle): Add -format and hex/octal output.
 
 2006-07-14  Stan Cox  <scox@redhat.com>
 
-	* hpd/Command.java (getOut, setOut): New.
-	* hpd/CLI.java (execCommand): Call it.
-	* hpd/PrintHandler.java (PrintHandler): Change println to getOut.
+	* Command.java (getOut, setOut): New.
+	* CLI.java (execCommand): Call it.
+	* PrintHandler.java (PrintHandler): Change println to getOut.
 
 2006-07-07  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/DbgVariables.java: new
-	* hpd/CLI.java: aliasing, variable setting added
-	* hpd/UserHelp.java: help for the newly implemented commands
+	* DbgVariables.java: new
+	* CLI.java: aliasing, variable setting added
+	* UserHelp.java: help for the newly implemented commands
 	
 2006-07-05  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/UserHelp.java: more commands
-	* hpd/CLI.java: some work on set commands, new debugger internal commands
-	* hpd/AllPTSet.java: fixed index out of bounds exception
+	* UserHelp.java: more commands
+	* CLI.java: some work on set commands, new debugger internal commands
+	* AllPTSet.java: fixed index out of bounds exception
 
 2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/UserHelp.java: new
+	* UserHelp.java: new
 
 2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/StatePTSet.java: fixed bug
+	* StatePTSet.java: fixed bug
 
 2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/Message.java: new
-	* hpd/ExecPTSet.java: new
+	* Message.java: new
+	* ExecPTSet.java: new
 
 2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/SetNotationParser.java: fixed bug
-	* hpd/TestSetParser.java: two more tests
+	* SetNotationParser.java: fixed bug
+	* TestSetParser.java: two more tests
 
 2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/ParsedSet.java: Added support for static name and exec sets
-	* hpd/CLI.java: Added support for static name and exec sets, minor fixes
-	* hpd/SetNotationParser.java: Conform to ParsedSet changes
-	* hpd/AllPTSet.java: minor edit
+	* ParsedSet.java: Added support for static name and exec sets
+	* CLI.java: Added support for static name and exec sets, minor fixes
+	* SetNotationParser.java: Conform to ParsedSet changes
+	* AllPTSet.java: minor edit
 
 2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/CLI.java: remove call to System.exit()
+	* CLI.java: remove call to System.exit()
 
 2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/CLI.java: commented out and changed the name of "main"
+	* CLI.java: commented out and changed the name of "main"
 
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* hpd/StatePTSet.java: Broken HEAD build fixes.
+	* StatePTSet.java: Broken HEAD build fixes.
 	Fixed missing java.util import.	Declare state variable.
 	(StatePTSet): Set assignment of this.state to state.
 	Remove this.set = set.
@@ -824,92 +824,92 @@
 	
 2006-06-16  Yao Qi  <qiyaoltc@cn.ibm.com>
 
-	* hpd/PrintHandler.java : Remove unused imports.
-	* hpd/SymTab.java : Ditto.
+	* PrintHandler.java : Remove unused imports.
+	* SymTab.java : Ditto.
 
 2006-06-15  Stan Cox  <scox@redhat.com>
 
-	* hpd/CLI.java (WhatHandler): New.
+	* CLI.java (WhatHandler): New.
 	(QuitHandler): New.
 	(HelpHandler): New.
 	(CLI): New handlers for print, what, help, quit, exit.
-	* hpd/PrintHandler.java: New file.
-	* hpd/SymTab.java: New file.
+	* PrintHandler.java: New file.
+	* SymTab.java: New file.
 
 2006-06-14  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/ParsedSet.java: new
-	* hpd/SetNotationParser: returns ParsedSet now
-	* hpd/TestSetCreation.java: adjusted to conform with changes to other classes
-	* hpd/TestSetParser.java: adjusted to conform with changes to other classes
+	* ParsedSet.java: new
+	* SetNotationParser: returns ParsedSet now
+	* TestSetCreation.java: adjusted to conform with changes to other classes
+	* TestSetParser.java: adjusted to conform with changes to other classes
 
 2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/AllPTSet.java: Removed from public scope
-	* hpd/Command.java: Removed from public scope
-	* hpd/ParseTreeNode.java: Removed from public scope
-	* hpd/Preprocessor.java: Removed from public scope
-	* hpd/SetNotationParser.java: Removed from public scope
-	* hpd/AllPTSet.java: Removed from public scope
+	* AllPTSet.java: Removed from public scope
+	* Command.java: Removed from public scope
+	* ParseTreeNode.java: Removed from public scope
+	* Preprocessor.java: Removed from public scope
+	* SetNotationParser.java: Removed from public scope
+	* AllPTSet.java: Removed from public scope
 
 2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/PTSet.java: new
-	* hpd/DynamicPTSet.java: new
-	* hpd/AllPTSet.java: implements PTSet interface, generalized subset creation
-	* hpd/StaticPTSet.java: implements PTSet interface
-	* hpd/TestSetCreation.java: reflect changes to AllPTSet
+	* PTSet.java: new
+	* DynamicPTSet.java: new
+	* AllPTSet.java: implements PTSet interface, generalized subset creation
+	* StaticPTSet.java: implements PTSet interface
+	* TestSetCreation.java: reflect changes to AllPTSet
 
 2006-06-09  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/ProcData.java: new
-	* hpd/TaskData.java: new
-	* hpd/ProcTasks.java: new
-	* hpd/TestSetCreation.java: new
-	* hpd/StaticPTSet.java: new
-	* hpd/AllPTSet.java: changed algorithms to simpler ones, added support for new classes
-	* hpd/SetNotationParser.java: removed support for "fuzzy" notations
-	* hpd/TestSetParser.java: accomodated to SetNotationParser changes, more tests
+	* ProcData.java: new
+	* TaskData.java: new
+	* ProcTasks.java: new
+	* TestSetCreation.java: new
+	* StaticPTSet.java: new
+	* AllPTSet.java: changed algorithms to simpler ones, added support for new classes
+	* SetNotationParser.java: removed support for "fuzzy" notations
+	* TestSetParser.java: accomodated to SetNotationParser changes, more tests
 
 2006-06-07  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/TestSerParser.java: JUnitified it
+	* TestSerParser.java: JUnitified it
 
 2006-05-31  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/ParseTreeNode.java: Changed all instance of PTNode to ParseTreeNode
-	* hpd/SetParserTest.java: Changed all instance of PTNode to ParseTreeNode
-	* hpd/SetNotationParse.java: Changed all instance of PTNode to ParseTreeNode
-	* hpd/AllPTSet.java: Changed all instance of PTNode to ParseTreeNode
+	* ParseTreeNode.java: Changed all instance of PTNode to ParseTreeNode
+	* SetParserTest.java: Changed all instance of PTNode to ParseTreeNode
+	* SetNotationParse.java: Changed all instance of PTNode to ParseTreeNode
+	* AllPTSet.java: Changed all instance of PTNode to ParseTreeNode
 
 2006-06-01  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/PTNode.java: Renamed to ParseTreeNode
-	* hpd/ParseTreeNode.java: New (renamed PTNode.java to it)
+	* PTNode.java: Renamed to ParseTreeNode
+	* ParseTreeNode.java: New (renamed PTNode.java to it)
 
 2006-05-30  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/TaskSet.java: Renamed to AllPTSet.java
-	* hpd/AllPTSet.java: New
+	* TaskSet.java: Renamed to AllPTSet.java
+	* AllPTSet.java: New
 
 2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/Command.java: New
-	* hpd/CLI.java: Changed to use Command class instead of ParserHelper
-	* hpd/CommandHandler.java: Changed to use Command class instead of ParserHelper
-	* hpd/Preprocessor.java: Made to handle quote-bound compound commands
+	* Command.java: New
+	* CLI.java: Changed to use Command class instead of ParserHelper
+	* CommandHandler.java: Changed to use Command class instead of ParserHelper
+	* Preprocessor.java: Made to handle quote-bound compound commands
 
 2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
 
-	* hpd/ParserHelper.java: Removed
+	* ParserHelper.java: Removed
 
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/CLI.java: Delete unused private member aliases.
+	* CLI.java: Delete unused private member aliases.
 
 2005-09-18  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/package.html: Add a proper package title.
+	* package.html: Add a proper package title.
 
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
@@ -917,27 +917,27 @@
 
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 	
-	* hpd/.cvsignore: New.
+	* .cvsignore: New.
 
 2005-08-19  Ivan Pantuyev  <ipantuye@redhat.com>
 	
-	* hpd/doc-files/parsetree.png: New.
-	* hpd/doc-files/package.html: New.
+	* doc-files/parsetree.png: New.
+	* doc-files/package.html: New.
 
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
-	* hpd/TaskSet.java: Delete java.util.Arrays import.
+	* TaskSet.java: Delete java.util.Arrays import.
 
 2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
 	
-	* hpd/CLI.java: New.
-	* hpd/CommandHandler.java: New.
-	* hpd/PTNode.java: New.
-	* hpd/ParserHelper.java: New.
-	* hpd/Preprocessor.java: New.
-	* hpd/SetNotationParser.java: New.
-	* hpd/SetParserTest.java: New.
-	* hpd/TaskSet.java: New.
+	* CLI.java: New.
+	* CommandHandler.java: New.
+	* PTNode.java: New.
+	* ParserHelper.java: New.
+	* Preprocessor.java: New.
+	* SetNotationParser.java: New.
+	* SetParserTest.java: New.
+	* TaskSet.java: New.
 
 Local Variables:
 mode: change-log
