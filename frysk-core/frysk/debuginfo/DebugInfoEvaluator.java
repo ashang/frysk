@@ -147,6 +147,11 @@ class DebugInfoEvaluator
   {
     currentFrame = StackFactory.createFrame(task);
   }
+  
+  void refreshCurrentFrame(Frame scope)
+  {
+    currentFrame = scope;
+  }
 
   interface VariableAccessor
   {

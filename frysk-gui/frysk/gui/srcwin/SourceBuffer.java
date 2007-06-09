@@ -922,7 +922,7 @@ public class SourceBuffer
       this.highlightLine(scope, true);
 
     debugInfo = new DebugInfo(scope);
-    debugInfo.refresh();
+    debugInfo.refresh(scope);
   }
 
   public void setMode (int mode)

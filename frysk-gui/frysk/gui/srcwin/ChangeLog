@@ -1,5 +1,6 @@
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
+	* SourceBuffer.java (setScope): Calls new DebugInfo.refresh(Frame).
 	* SourceWindowFactory.java: General fixups for new dynamic
 	SteppingEngine class.
 	* SourceWindow.java (steppingEngine): New field.

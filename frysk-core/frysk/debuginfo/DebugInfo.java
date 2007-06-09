@@ -113,6 +113,19 @@ public class DebugInfo
        }
    }
   
+   /**
+    * Synchronize the symbol table with the current state of the task.
+    */
+  public void refresh (Frame scope)
+  {
+    for (int i = 0; i < debugInfoEvaluator.length; i++)
+      {
+        debugInfoEvaluator[i].refreshCurrentFrame(scope);
+        subprogram[i] = setSubprogram(debugInfoEvaluator[i].getCurrentFrame());
+        debugInfoEvaluator[i].setSubprogram(subprogram[i]);
+      }
+  }
+   
     /**
      * Handle ConsoleReader Completor
      * 

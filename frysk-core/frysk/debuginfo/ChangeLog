@@ -1,3 +1,9 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* DebugInfo.java (refresh): Added. Takes a Frame Object; prevents 
+	unnecessary stack tracing from the GUI.
+	* DebugInfoEvaluator.java (refreshCurrentFrame): Ditto.
+
 2007-06-07  Stan Cox  <scox@redhat.com>
 
 	* DebugInfoEvaluator.java (DebugInfoEvaluator): New signature.
