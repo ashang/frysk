@@ -42,7 +42,6 @@ package frysk.cli.hpd;
 import frysk.proc.Task;
 import frysk.rt.BreakpointManager;
 import frysk.rt.SourceBreakpoint;
-import frysk.rt.SteppingEngine;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ class DisableCommand
 	cli.refreshSymtab();
 	final PrintWriter outWriter = cli.getPrintWriter();
 	int breakpointNumber = Integer.parseInt((String)params.get(0));
-	BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
 	Task task = cli.getTask();
 	SourceBreakpoint bpt = bpManager.getBreakpoint(breakpointNumber);
 	if (bpt != null) {

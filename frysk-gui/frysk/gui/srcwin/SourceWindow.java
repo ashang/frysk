@@ -316,6 +316,8 @@ public class SourceWindow
   private ToolTips tips;
 
   // private static Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
+  
+  private SteppingEngine steppingEngine;
 
   // Private inner class to take care of the event handling
   private SourceWindowListener listener;
@@ -356,10 +358,11 @@ public class SourceWindow
     this.frames = new Frame[1][];
     this.symTab = new DebugInfo[1];
     this.lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
-    SteppingEngine.setProc(proc);
+    Proc[] temp = new Proc[1];
+    temp[0] = proc;
+    this.steppingEngine = new SteppingEngine(temp, this.lock);
     this.threadObserver = new ThreadLifeObserver();
-    SteppingEngine.setThreadObserver(this.threadObserver);
+    this.steppingEngine.setThreadObserver(this.threadObserver);
     this.termHash = new HashMap();
   }
   
@@ -386,10 +389,9 @@ public class SourceWindow
     this.symTab = new DebugInfo[this.numProcs];
     this.lock = new LockObserver();
     this.dom = new DOMFrysk[this.numProcs];
-    SteppingEngine.addObserver(lock);
-    SteppingEngine.setProcs(procs);
+    this.steppingEngine = new SteppingEngine(procs, this.lock);
     this.threadObserver = new ThreadLifeObserver();
-    SteppingEngine.setThreadObserver(this.threadObserver);
+    this.steppingEngine.setThreadObserver(this.threadObserver);
     this.termHash = new HashMap();
   }
   
@@ -414,7 +416,8 @@ public class SourceWindow
     this.gladePath = gladePath;
     this.swProc = new Proc[1];
     this.swProc[this.current] = trace.getTask().getProc();
-    SteppingEngine.setRunning(this.swProc[this.current].getTasks());
+    this.steppingEngine = new SteppingEngine();
+    this.steppingEngine.setRunning(this.swProc[this.current].getTasks());
     this.frames = new Frame[1][];
     this.symTab = new DebugInfo[1];
     this.dom = new DOMFrysk[1];
@@ -483,7 +486,7 @@ public class SourceWindow
   private void finishSourceWin ()
   { 
     /* Only because this wouldn't be the case during a Monitor stack trace */
-    if (!SteppingEngine.isTaskRunning(this.swProc[this.current].getMainTask()))
+    if (!this.steppingEngine.isTaskRunning(this.swProc[this.current].getMainTask()))
       {
         for (int j = 0; j < numProcs; j++)
           this.frames[j] = generateProcStackTrace(this.swProc[j], j);
@@ -536,7 +539,7 @@ public class SourceWindow
     this.stop.setSensitive(false);
     
     /* Set up SymTab variable information */
-    if (!SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
+    if (!this.steppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(this.frames[this.current]);
     
     this.showAll();
@@ -614,7 +617,7 @@ public class SourceWindow
 	else
 	  {
 	    /* Only the case during a monitor stack trace */
-	    if (! SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
+	    if (! this.steppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
 	      {
 		SourceBuffer b = (SourceBuffer) ((SourceView) this.view).getBuffer();
 		b.disassembleFrame(this.currentFrame);
@@ -842,7 +845,7 @@ public class SourceWindow
 	Proc[] newSwProc = new Proc[numProcs];
 	
 	DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
-	SteppingEngine.detachProc(this.swProc[this.current], kill);
+	this.steppingEngine.detachProc(this.swProc[this.current], kill);
 	
 	int j = 0;
 	for (int i = 0; i < oldSize; i++)
@@ -906,12 +909,17 @@ public class SourceWindow
 
   public boolean isRunning ()
   {
-    return SteppingEngine.isTaskRunning(this.currentTask);
+    return this.steppingEngine.isTaskRunning(this.currentTask);
   }
 
   public LockObserver getLockObserver ()
   {
     return this.lock;
+  }
+  
+  public SteppingEngine getSteppingEngine ()
+  {
+    return this.steppingEngine;
   }
   
   /*******************************************************************
@@ -1023,7 +1031,8 @@ public class SourceWindow
       public void actionEvent (ActionEvent action)
       {
         // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
-        SteppingEngine.removeObserver(SourceWindow.this.lock, SourceWindow.this.swProc[current], true);
+        SourceWindow.this.steppingEngine.removeObserver(
+         SourceWindow.this.lock, SourceWindow.this.swProc[current], true);
         SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
         WindowManager.theManager.sessionManagerDialog.showAll();
       }
@@ -2270,7 +2279,7 @@ public class SourceWindow
 
 	// if (SteppingEngine.getTaskState(selected.getTask()) ==
         // SteppingEngine.STOPPED)
-	if (! SteppingEngine.isTaskRunning(selected.getTask()))
+	if (! this.steppingEngine.isTaskRunning(selected.getTask()))
 	  {
 	    if (this.stop.isSensitive())
 	      resensitize();
@@ -2293,7 +2302,7 @@ public class SourceWindow
 
 	    this.view.load(selected, mode);
 
-	    boolean running = SteppingEngine.isProcRunning(this.swProc[current].getTasks());
+	    boolean running = this.steppingEngine.isProcRunning(this.swProc[current].getTasks());
 
 	    if (current != this.current && ! running)
 	    // && SteppingEngine.getState() != SteppingEngine.RUNNING)
@@ -2472,11 +2481,11 @@ public class SourceWindow
 
     if (this.threadDialog == null)
       {
-	    SteppingEngine.stop(null, this.swProc[this.current].getTasks());
+	    this.steppingEngine.stop(null, this.swProc[this.current].getTasks());
       }
     else
       {
-        SteppingEngine.stop(this.threadDialog.getBlockTasks(), this.threadDialog.getStopTasks());
+        this.steppingEngine.stop(this.threadDialog.getBlockTasks(), this.threadDialog.getStopTasks());
       }
   }
 
@@ -2512,7 +2521,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (SteppingEngine.setUpLineStep(this.currentTask))
+    if (this.steppingEngine.setUpLineStep(this.currentTask))
       removeTags();
   }
   
@@ -2526,7 +2535,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (SteppingEngine.setUpLineStep(tasks))
+    if (this.steppingEngine.setUpLineStep(tasks))
       removeTags();
   }
 
@@ -2541,7 +2550,7 @@ public class SourceWindow
     desensitize();
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    SteppingEngine.setUpStepOver(l, this.currentFrame);
+    this.steppingEngine.setUpStepOver(l, this.currentFrame);
     removeTags();
   }
   
@@ -2552,7 +2561,7 @@ public class SourceWindow
 
     desensitize();
 
-    SteppingEngine.setUpStepOver(tasks, this.currentFrame);
+    this.steppingEngine.setUpStepOver(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -2566,7 +2575,7 @@ public class SourceWindow
 
     desensitize();
 
-    SteppingEngine.continueExecution(this.swProc[this.current].getTasks());
+    this.steppingEngine.continueExecution(this.swProc[this.current].getTasks());
 
     removeTags();
   }
@@ -2585,7 +2594,7 @@ public class SourceWindow
 
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    SteppingEngine.setUpStepOut(l, this.currentFrame);
+    this.steppingEngine.setUpStepOut(l, this.currentFrame);
     removeTags();
   }
   
@@ -2598,7 +2607,7 @@ public class SourceWindow
 
     desensitize();
 
-    SteppingEngine.setUpStepOut(tasks, this.currentFrame);
+    this.steppingEngine.setUpStepOut(tasks, this.currentFrame);
     removeTags();
   }
   
@@ -2609,7 +2618,7 @@ public class SourceWindow
     
     desensitize();
     
-    SteppingEngine.setUpStepAdvance(this.currentTask, this.currentFrame);
+    this.steppingEngine.setUpStepAdvance(this.currentTask, this.currentFrame);
     removeTags();
   }
 
@@ -2631,7 +2640,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (SteppingEngine.stepInstruction(this.currentTask))
+    if (this.steppingEngine.stepInstruction(this.currentTask))
       removeTags();
   }
   
@@ -2650,7 +2659,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (SteppingEngine.stepInstruction(tasks))
+    if (this.steppingEngine.stepInstruction(tasks))
       removeTags();
   }
 
@@ -2664,7 +2673,7 @@ public class SourceWindow
 
     desensitize();
 
-    SteppingEngine.setUpStepNextInstruction(this.currentTask, this.currentFrame);
+    this.steppingEngine.setUpStepNextInstruction(this.currentTask, this.currentFrame);
     removeTags();
   }
   
@@ -2678,7 +2687,7 @@ public class SourceWindow
 
     desensitize();
 
-    SteppingEngine.setUpStepNextInstruction(tasks, this.currentFrame);
+    this.steppingEngine.setUpStepNextInstruction(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -2782,12 +2791,12 @@ public class SourceWindow
     RegisterWindow regWin = RegisterWindowFactory.regWin;
     if (regWin == null)
       {
-        RegisterWindowFactory.createRegisterWindow(swProc[this.current]);
+        RegisterWindowFactory.createRegisterWindow(swProc[this.current], this.steppingEngine);
         RegisterWindowFactory.setRegWin(swProc[this.current]);
       }
     else
       {
-        SteppingEngine.addObserver(regWin.getLockObserver());
+        this.steppingEngine.addObserver(regWin.getLockObserver());
         regWin.setClosed(false);
         regWin.showAll();
       }
@@ -2812,12 +2821,12 @@ public class SourceWindow
     MemoryWindow memWin = MemoryWindowFactory.memWin;
     if (memWin == null)
       {
-        MemoryWindowFactory.createMemoryWindow(swProc[this.current]);
+        MemoryWindowFactory.createMemoryWindow(swProc[this.current], this.steppingEngine);
         MemoryWindowFactory.setMemWin(swProc[this.current]);
       }
     else
       {
-        SteppingEngine.addObserver(memWin.getLockObserver());
+        this.steppingEngine.addObserver(memWin.getLockObserver());
         memWin.setClosed(false);
         memWin.showAll();
       }
@@ -2841,12 +2850,12 @@ public class SourceWindow
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
     if (disWin == null)
       {
-        DisassemblyWindowFactory.createDisassemblyWindow(swProc[this.current]);
+        DisassemblyWindowFactory.createDisassemblyWindow(swProc[this.current], this.steppingEngine);
         DisassemblyWindowFactory.setDisWin(swProc[this.current]);
       }
     else
       {
-        SteppingEngine.addObserver(disWin.getLockObserver());
+        this.steppingEngine.addObserver(disWin.getLockObserver());
         disWin.setClosed(false);
         disWin.showAll();
       }
@@ -2895,7 +2904,7 @@ public class SourceWindow
 
   private synchronized void executeTasks (LinkedList tasks)
   {
-    SteppingEngine.executeTasks(tasks);
+    this.steppingEngine.executeTasks(tasks);
   }
 
   /**
@@ -2975,7 +2984,7 @@ public class SourceWindow
     /* Clear out any irrelevant DOM information from the last stack trace */
     DOMFactory.clearDOMSourceMap(this.swProc[this.current]);
 
-    if (! SteppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
+    if (! this.steppingEngine.isProcRunning(this.swProc[this.current].getTasks()))
       this.symTab[this.current].setFrames(frames);
 
     return frames;
@@ -3098,7 +3107,7 @@ public class SourceWindow
 	  || newFrame.getTask().getTid() != SourceWindow.this.currentTask.getTid())
         SourceWindow.this.currentTask = newFrame.getTask();
 
-      if (! SteppingEngine.isTaskRunning(newFrame.getTask()))
+      if (! SourceWindow.this.steppingEngine.isTaskRunning(newFrame.getTask()))
 	{
 	  if (SourceWindow.this.currentFrame != null
 	      && SourceWindow.this.currentFrame.getCFA() != newFrame.getCFA())
@@ -3224,7 +3233,7 @@ public class SourceWindow
 			                   SourceWindow.this.swProc[SourceWindow.this.current],
 					   SourceWindow.this.current);
 		  populateStackBrowser(SourceWindow.this.frames);
-		  SteppingEngine.notifyStopped();
+		  SourceWindow.this.steppingEngine.notifyStopped();
 		  procReblocked();
 		}
 	      });

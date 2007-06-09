@@ -169,11 +169,12 @@ public abstract class SourceBreakpoint
   
    /**
     * Add this object's raw breakpoints to the process via the RunState object.
-    * @param runState the RunState object
-    * @param task task to which breakpoints are added, although they are in
+   * @param task task to which breakpoints are added, although they are in
     * 	fact added to the entire process.
+   * @param steppingEngine The SteppingEngine to notify.
+   * @param runState the RunState object
     */
-  public void enableBreakpoint(Task task)
+  public void enableBreakpoint(Task task, SteppingEngine steppingEngine)
   {
     Proc proc = task.getProc();
 
@@ -187,20 +188,21 @@ public abstract class SourceBreakpoint
 	Object bpt = bpts.next();
 	long address = getRawAddress(bpt);
 	Breakpoint.PersistentBreakpoint breakpoint
-	  = new Breakpoint.PersistentBreakpoint(address);
+	  = new Breakpoint.PersistentBreakpoint(address, steppingEngine);
 	breakpoint.addObserver(this);
 	procEntry.breakpoints.add(breakpoint);
-	SteppingEngine.addBreakpoint(task, breakpoint);
+	steppingEngine.addBreakpoint(task, breakpoint);
       }
     state = ENABLED;
   }
 
   /**
    * Delete the object's raw breakpoints from a process via the RunState.
-   * @param runState the RunState object
    * @param task task in the process
+   * @param steppingEngine TODO
+   * @param runState the RunState object
    */
-  public void disableBreakpoint(Task task)
+  public void disableBreakpoint(Task task, SteppingEngine steppingEngine)
   {
     Proc proc = task.getProc();
     ProcEntry procEntry = (ProcEntry)procMap.get(proc);
@@ -212,7 +214,7 @@ public abstract class SourceBreakpoint
       {
 	Breakpoint.PersistentBreakpoint bpt
 	  = (Breakpoint.PersistentBreakpoint) iterator.next();
-        SteppingEngine.deleteBreakpoint(task, bpt);
+        steppingEngine.deleteBreakpoint(task, bpt);
       }
     procEntry.breakpoints.clear();
     state = DISABLED;

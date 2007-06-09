@@ -67,6 +67,8 @@ public class DisassemblyWindowFactory
   /* Keeps track of which DisassemblerWindows belong to which Task. */
   private static HashMap map = new HashMap();
   
+  private static HashMap seMap = new HashMap();
+  
   private final static String DIS_GLADE = "disassemblywindow.glade";
   
   /**
@@ -76,7 +78,7 @@ public class DisassemblyWindowFactory
    * 
    * @param proc    The Proc to be examined by the new DisassemblyWindow.
    */
-  public static void createDisassemblyWindow (Proc proc)
+  public static void createDisassemblyWindow (Proc proc, SteppingEngine steppingEngine)
   {
     DisassemblyWindow dw = (DisassemblyWindow) map.get(proc);
 
@@ -84,7 +86,7 @@ public class DisassemblyWindowFactory
     if (dw != null)
       {
 	dw = (DisassemblyWindow) map.get(proc);
-	SteppingEngine.addObserver(dw.getLockObserver());
+	steppingEngine.addObserver(dw.getLockObserver());
 	dw.showAll();
 	return;
       }
@@ -99,21 +101,13 @@ public class DisassemblyWindowFactory
 	throw new RuntimeException(e);
       }
 
-    if (SteppingEngine.getSteppingObserver() == null)
-      {
-	SteppingEngine.setProc(proc);
-	dw = new DisassemblyWindow(glade);
-	SteppingEngine.addObserver(dw.getLockObserver());
-      }
-    else
-      {
-	dw = new DisassemblyWindow(glade);
-	SteppingEngine.addObserver(dw.getLockObserver());
-	dw.finishDisWin(proc);
-	dw.setObservable(SteppingEngine.getSteppingObserver());
-      }
-
+    dw = new DisassemblyWindow(glade);
+    steppingEngine.addObserver(dw.getLockObserver());
+    dw.finishDisWin(proc);
+    dw.setObservable(steppingEngine.getSteppingObserver());
+      
     map.put(proc, dw);
+    seMap.put(dw, steppingEngine);
     dw.addListener(new DisWinListener());
     dw.grabFocus();
   }
@@ -164,8 +158,10 @@ public class DisassemblyWindowFactory
           Task t = dw.getMyTask();
           Proc p = t.getProc();
           
-          SteppingEngine.removeObserver(dw.getLockObserver(), p, true);
+          SteppingEngine se = (SteppingEngine) seMap.get(dw);
+          se.removeObserver(dw.getLockObserver(), p, true);
           map.remove(p);
+          seMap.remove(dw);
 
           dw.hideAll();
           return true;

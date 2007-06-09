@@ -48,6 +48,7 @@ import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.rt.SteppingEngine;
 
 public class ShowMemWin
     extends TaskAction
@@ -81,7 +82,7 @@ public class ShowMemWin
         dialog.run();
         return;
       }
-    MemoryWindowFactory.createMemoryWindow(task.getProc());
+    MemoryWindowFactory.createMemoryWindow(task.getProc(), new SteppingEngine());
   }
 
   public GuiObject getCopy ()

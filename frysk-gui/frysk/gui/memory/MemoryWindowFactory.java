@@ -66,8 +66,10 @@ public class MemoryWindowFactory
   /* Keeps track of which MemoryWindows belong to which Task. */
   private static HashMap map = new HashMap();
   
+  private static HashMap seMap = new HashMap();
+  
   private final static String MEM_GLADE = "memorywindow.glade";
-
+  
   /**
    * Performs checks to ensure no other MemoryWindow is running on this Task;
    * if not, assigns a ProcBlockCounter and attaches an Observer if there is
@@ -75,7 +77,7 @@ public class MemoryWindowFactory
    * 
    * @param proc    The Proc to be examined by the new MemoryWindow.
    */
-  public static void createMemoryWindow (Proc proc)
+  public static void createMemoryWindow (Proc proc, SteppingEngine steppingEngine)
   {
     MemoryWindow mw = (MemoryWindow) map.get(proc);
 
@@ -83,7 +85,7 @@ public class MemoryWindowFactory
     if (mw != null)
       {
 	mw = (MemoryWindow) map.get(proc);
-	SteppingEngine.addObserver(mw.getLockObserver());
+	steppingEngine.addObserver(mw.getLockObserver());
 	mw.showAll();
 	return;
       }
@@ -98,21 +100,13 @@ public class MemoryWindowFactory
 	throw new RuntimeException(e);
       }
 
-    if (SteppingEngine.getSteppingObserver() == null)
-      {
-	SteppingEngine.setProc(proc);
-	mw = new MemoryWindow(glade);
-	SteppingEngine.addObserver(mw.getLockObserver());
-      }
-    else
-      {
-	mw = new MemoryWindow(glade);
-	SteppingEngine.addObserver(mw.getLockObserver());
-	mw.finishMemWin(proc);
-	mw.setObservable(SteppingEngine.getSteppingObserver());
-      }
-
+    mw = new MemoryWindow(glade);
+    steppingEngine.addObserver(mw.getLockObserver());
+    mw.finishMemWin(proc);
+    mw.setObservable(steppingEngine.getSteppingObserver());
+      
     map.put(proc, mw);
+    seMap.put(mw, steppingEngine);
     mw.addListener(new MemWinListener());
     mw.grabFocus();
   }
@@ -161,8 +155,10 @@ public class MemoryWindowFactory
           Task t = mw.getMyTask();
           Proc p = t.getProc();
           
-          SteppingEngine.removeObserver(mw.getLockObserver(), p, true);
+          SteppingEngine se = (SteppingEngine) seMap.get(mw);
+          se.removeObserver(mw.getLockObserver(), p, true);
           map.remove(p);
+          seMap.remove(mw);
 
           mw.hideAll();
           return true;

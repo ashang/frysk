@@ -63,6 +63,8 @@ public class TestSteppingEngine extends TestLib
   
   private HashMap lineMap;
   
+  private SteppingEngine se;
+  
   private boolean initial;
   
   private int count = 0;
@@ -101,7 +103,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = INSTRUCTION_STEP;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -116,10 +118,12 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    se.clear();
   }
   
   public void testInstructionSteppingList ()
@@ -131,7 +135,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = INSTRUCTION_STEP_LIST;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -146,14 +150,14 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    Proc[] procs = new Proc[1];
-    procs[0] = myProc;
-    SteppingEngine.setProcs(procs);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc, false);
-    SteppingEngine.cleanTask(myTask);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myProc, false);
+    se.cleanTask(myTask);
+    se.clear();
   }
   
   public void testLineStepping ()
@@ -165,7 +169,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = STEP_IN;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -180,10 +184,12 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    se.clear();
   }
   
   public void testLineSteppingList ()
@@ -195,7 +201,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = STEP_IN_LIST;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -210,14 +216,14 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    Proc[] procs = new Proc[1];
-    procs[0] = myProc;
-    SteppingEngine.setProcs(procs);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc, false);
-    SteppingEngine.cleanTask(myTask);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myProc, false);
+    se.cleanTask(myTask);
+    se.clear();
   }
   
   public void testStepOver ()
@@ -232,7 +238,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = STEP_OVER;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -247,10 +253,12 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    se.clear();
   }
   
   public void testInstructionNext ()
@@ -265,7 +273,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = INSTRUCTION_STEP_NEXT;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -280,10 +288,12 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    se.clear();
   }
   
   
@@ -299,7 +309,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = STEP_OUT;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -314,10 +324,12 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
-
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
+    
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    se.clear();
   }
   
   public void testContinue ()
@@ -326,8 +338,8 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     testState = CONTINUE;
+    
     
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.USR1,
@@ -341,14 +353,14 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    Proc[] procs = new Proc[1];
-    procs[0] = myProc;
-    SteppingEngine.setProcs(procs);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc, false);
-    SteppingEngine.cleanTask(myTask);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myProc, false);
+    se.cleanTask(myTask);
+    se.clear();
   }
 
   private long breakpointAddress;
@@ -359,7 +371,7 @@ public class TestSteppingEngine extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
+
     testState = BREAKPOINTING;
     
     AckDaemonProcess process = new AckDaemonProcess
@@ -374,14 +386,14 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    Proc[] procs = new Proc[1];
-    procs[0] = myProc;
-    SteppingEngine.setProcs(procs);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myProc, false);
-    SteppingEngine.cleanTask(myTask);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myProc, false);
+    se.cleanTask(myTask);
+    se.clear();
   }
   
   public void setUpTest ()
@@ -400,12 +412,12 @@ public class TestSteppingEngine extends TestLib
 
     if (testState == INSTRUCTION_STEP)
       {
-	SteppingEngine.stepInstruction(myProc.getMainTask());
+	se.stepInstruction(myProc.getMainTask());
       }
     else if (testState == BREAKPOINTING)
       {
 	breakpointAddress = frame.getOuter().getAddress();
-	SteppingEngine.setBreakpoint(myTask, breakpointAddress);
+	se.setBreakpoint(myTask, breakpointAddress);
 	lock.update(new Observable(), new Object());
 	return;
       }
@@ -413,18 +425,18 @@ public class TestSteppingEngine extends TestLib
       {
 	LinkedList l = new LinkedList();
 	l.add(myTask);
-	SteppingEngine.setUpLineStep(l);
+	se.setUpLineStep(l);
 	testState = STEP_IN;
       }
     else if (testState == INSTRUCTION_STEP_LIST)
       {
 	LinkedList l = new LinkedList();
 	l.add(myTask);
-	SteppingEngine.stepInstruction(l);
+	se.stepInstruction(l);
 	testState = INSTRUCTION_STEP;
       }
     else
-      SteppingEngine.setUpLineStep(myProc.getMainTask());
+      se.setUpLineStep(myProc.getMainTask());
   }
   
   public synchronized void stepAssertions (Task task)
@@ -451,9 +463,9 @@ public class TestSteppingEngine extends TestLib
         LinkedList l = new LinkedList();
         l.add(task);
         if (testState == INSTRUCTION_STEP)
-          SteppingEngine.stepInstruction(l);
+          se.stepInstruction(l);
         else
-          SteppingEngine.setUpLineStep(l);
+          se.setUpLineStep(l);
       }
     
     if (testState == INSTRUCTION_STEP)
@@ -522,14 +534,14 @@ public class TestSteppingEngine extends TestLib
           }
         count++;
         
-//        SteppingEngine.stepCompleted();
+//        se.stepCompleted();
         
         if (count != 50)
           {
             this.lineMap.put(task, new Integer(lineNum));
             LinkedList l = new LinkedList();
             l.add(task);
-            SteppingEngine.stepInstruction(l);
+            se.stepInstruction(l);
           }
       }
     else if (testState == STEP_IN)
@@ -604,14 +616,14 @@ public class TestSteppingEngine extends TestLib
           }
         count++;
         
-//        SteppingEngine.stepCompleted();
+//        se.stepCompleted();
         
         if (count != 50)
           {
             this.lineMap.put(task, new Integer(lineNum));
             LinkedList tasks = new LinkedList();
             tasks.add(task);
-            SteppingEngine.setUpLineStep(tasks);
+            se.setUpLineStep(tasks);
           }
       }
     
@@ -646,21 +658,21 @@ public class TestSteppingEngine extends TestLib
                 this.testState = STEP_OVER_GO;
                 LinkedList l = new LinkedList();
                 l.add(myTask);
-                SteppingEngine.setUpLineStep(l);
+                se.setUpLineStep(l);
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT)
               {
                 this.testState = INSTRUCTION_STEP_NEXT_GO;
                 LinkedList l = new LinkedList();
                 l.add(myTask);
-                SteppingEngine.setUpLineStep(l);
+                se.setUpLineStep(l);
               }
             else if (this.testState == STEP_OUT)
               {
                 this.testState = STEP_OUT_GO;
                 LinkedList l = new LinkedList();
                 l.add(myTask);
-                SteppingEngine.setUpLineStep(l);
+                se.setUpLineStep(l);
               }
             
           }
@@ -669,7 +681,7 @@ public class TestSteppingEngine extends TestLib
         Frame sFrame = StackFactory.createFrame(myTask, 1);
         
         if (sFrame.getLines().length == 0)
-          SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+          se.setUpLineStep(myTask.getProc().getTasks());
         
         Line line = sFrame.getLines()[0];
         
@@ -690,10 +702,10 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OVER_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOver(l, StackFactory.createFrame(myTask, 3));
+                    se.setUpStepOver(l, StackFactory.createFrame(myTask, 3));
                     return;
                   }
-               SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+               se.setUpLineStep(myTask.getProc().getTasks());
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
               {
@@ -703,16 +715,16 @@ public class TestSteppingEngine extends TestLib
                     if (insStepFlag)
                       {
                         insStepFlag = false;
-                        SteppingEngine.stepInstruction(myTask);
+                        se.stepInstruction(myTask);
                       }
                     else
                       {
                         this.testState = INSTRUCTION_STEP_NEXT_STEPPING;
-                        SteppingEngine.setUpStepNextInstruction(myTask, StackFactory.createFrame(myTask, 3));
+                        se.setUpStepNextInstruction(myTask, StackFactory.createFrame(myTask, 3));
                       }
                     return;
                   }
-                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                se.setUpLineStep(myTask.getProc().getTasks());
               }
             else if (this.testState == STEP_OUT_GO)
               {
@@ -721,14 +733,14 @@ public class TestSteppingEngine extends TestLib
                     this.testState = STEP_OUT_STEPPING;
                     LinkedList l = new LinkedList();
                     l.add(myTask);
-                    SteppingEngine.setUpStepOut(l, StackFactory.createFrame(myTask, 3));
+                    se.setUpStepOut(l, StackFactory.createFrame(myTask, 3));
                   }
                 else
-                  SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                  se.setUpLineStep(myTask.getProc().getTasks());
               }
             else
               {
-                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                se.setUpLineStep(myTask.getProc().getTasks());
                 return;
               }
           }
@@ -796,32 +808,32 @@ public class TestSteppingEngine extends TestLib
   private void setUpContinue (Task task)
   {
     myTask = task;
-    State s = SteppingEngine.getTaskState(task);
+    State s = se.getTaskState(task);
     assertNotNull(s);
     assertEquals("Stopped State", true, s.isStopped());
-    assertEquals("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
+    assertEquals("isTaskRunning", false, se.isTaskRunning(task));
 
     LinkedList l = new LinkedList();
     l.add(task);
-    assertEquals("isProcRunning", false, SteppingEngine.isProcRunning(l));
+    assertEquals("isProcRunning", false, se.isProcRunning(l));
 
     if (continueFlag == false)
       {
 	continueFlag = true;
-	SteppingEngine.continueExecution(l);
+	se.continueExecution(l);
       }
     else
       {
-	SteppingEngine.setRunning(l);
-	State r = SteppingEngine.getTaskState(myTask);
+	se.setRunning(l);
+	State r = se.getTaskState(myTask);
 	
 	assertEquals ("Is task now running", false, r.isStopped());
-	assertEquals ("Is proc now running", true, SteppingEngine.isProcRunning(l));
+	assertEquals ("Is proc now running", true, se.isProcRunning(l));
 	
-	SteppingEngine.setTaskState(myTask, s);
+	se.setTaskState(myTask, s);
 	
 	assertEquals ("Stopped State", true, s.isStopped());
-	assertEquals ("isTaskRunning", false, SteppingEngine.isTaskRunning(task));
+	assertEquals ("isTaskRunning", false, se.isTaskRunning(task));
 	
 	Manager.eventLoop.requestStop();
       }
@@ -831,28 +843,28 @@ public class TestSteppingEngine extends TestLib
   
   private void continueAssertions ()
   {
-    State s = SteppingEngine.getTaskState(myTask);
+    State s = se.getTaskState(myTask);
 
     assertNotNull(s);
     
     while (s.isStopped())
       {
-	s = SteppingEngine.getTaskState(myTask);
+	s = se.getTaskState(myTask);
       }
     
     assertEquals ("Running State", false, s.isStopped());
-    assertEquals ("isTaskRunning", true, SteppingEngine.isTaskRunning(myTask));
+    assertEquals ("isTaskRunning", true, se.isTaskRunning(myTask));
     
     LinkedList l = new LinkedList();
     l.add(myTask);
-    assertEquals ("isProcRunning", true, SteppingEngine.isProcRunning(l));
+    assertEquals ("isProcRunning", true, se.isProcRunning(l));
     
-    SteppingEngine.stop(null, l);
+    se.stop(null, l);
   }
   
   private void breakpointAssertions ()
   {
-    Breakpoint b = SteppingEngine.getTaskBreakpoint(myTask);
+    Breakpoint b = se.getTaskBreakpoint(myTask);
     assertNotNull(b);
     
     assertEquals ("isAdded", true, b.isAdded());

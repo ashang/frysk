@@ -41,7 +41,6 @@ package frysk.cli.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import frysk.rt.SteppingEngine;
 
 class DetachCommand
     implements CommandHandler
@@ -69,7 +68,7 @@ class DetachCommand
 	    return;
 	// Delete all breakpoints.
 	if (cli.steppingObserver != null)
-	    SteppingEngine.removeObserver(cli.steppingObserver,
+	    cli.getSteppingEngine().removeObserver(cli.steppingObserver,
 					  cli.proc, true);
 	
 	cli.proc = null;

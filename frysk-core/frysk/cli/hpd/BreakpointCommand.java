@@ -45,7 +45,6 @@ import frysk.rt.FunctionBreakpoint;
 import frysk.rt.LineBreakpoint;
 import frysk.rt.SourceBreakpoint;
 import frysk.rt.SourceBreakpointObserver;
-import frysk.rt.SteppingEngine;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -88,7 +87,7 @@ class BreakpointCommand
 	String fileName;
 	int lineNumber;
 	SourceBreakpoint actionpoint;
-	BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
 	Task task = cli.getTask();
 	final PrintWriter outWriter = cli.getPrintWriter();
 	if (breakpt.charAt(0) == '@') {

@@ -41,7 +41,6 @@ package frysk.cli.hpd;
 
 import java.util.ArrayList;
 import java.text.ParseException;
-import frysk.rt.SteppingEngine;
 
 class HaltCommand
     implements CommandHandler
@@ -62,7 +61,7 @@ class HaltCommand
 	cli.refreshSymtab();
 	
 	if (cli.steppingObserver != null) {
-	    SteppingEngine.stop(null, cli.proc.getTasks());
+	    cli.getSteppingEngine().stop(null, cli.proc.getTasks());
 	    cli.running = false;
         }
 	else

@@ -43,7 +43,6 @@ import lib.dw.DwflLine;
 import frysk.proc.Task;
 import frysk.rt.Frame;
 import frysk.rt.StackFactory;
-import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 
 public class StepOverTestState extends State
@@ -94,13 +93,13 @@ public class StepOverTestState extends State
 	    /* There is a different innermost frame on the stack - run until
 	     * it exits - success! */
 	    Frame frame = newFrame.getOuter();
-	    SteppingEngine.setBreakpoint(this.task, frame.getAddress());
+	    tse.getSteppingEngine().setBreakpoint(this.task, frame.getAddress());
 	    return new StepOverState(this.task);
 	  }	
       }
     else
       {
-	this.task.requestUnblock(SteppingEngine.getSteppingObserver());
+	this.task.requestUnblock(tse.getSteppingEngine().getSteppingObserver());
 	return this;
       }
   }

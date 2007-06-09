@@ -43,7 +43,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import frysk.rt.RemoteFrame;
-import frysk.rt.SteppingEngine;
 
 public class StepCommand implements CommandHandler
 {
@@ -69,7 +68,7 @@ public class StepCommand implements CommandHandler
       {
         if (!this.cli.isRunning())
           {
-            SteppingEngine.setUpLineStep(cli.proc.getTasks());
+            this.cli.getSteppingEngine().setUpLineStep(cli.proc.getTasks());
             
             synchronized (this.cli.steppingObserver.getMonitor())
               {

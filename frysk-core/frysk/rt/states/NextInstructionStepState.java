@@ -40,7 +40,6 @@
 package frysk.rt.states;
 
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 
 public class NextInstructionStepState extends State
@@ -58,7 +57,7 @@ public class NextInstructionStepState extends State
    */
   public State handleUpdate (TaskStepEngine tse)
   {
-    SteppingEngine.removeBreakpoint(this.task);
+    tse.getSteppingEngine().removeBreakpoint(this.task);
     return new StoppedState(this.task);
   }
   

@@ -41,7 +41,6 @@ package frysk.cli.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import frysk.rt.SteppingEngine;
 
 class GoCommand
     implements CommandHandler
@@ -62,7 +61,7 @@ class GoCommand
 	cli.refreshSymtab();
       
 	if (cli.steppingObserver != null) {
-	    SteppingEngine.continueExecution(cli.proc.getTasks());
+	    cli.getSteppingEngine().continueExecution(cli.proc.getTasks());
 	    cli.running = true;
 	}
 	else

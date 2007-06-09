@@ -55,6 +55,8 @@ import lib.dw.DwflLine;
  */
 public class TaskStepEngine
 {
+  private SteppingEngine steppingEngine;
+  
   /* The Task for this TaskStepEngine */
   private Task task;
   
@@ -75,11 +77,13 @@ public class TaskStepEngine
    * to the StoppedState.
    * 
    * @param task The Task for this TaskStepEngine to manage
+   * @param steppingEngine TODO
    */
-  public TaskStepEngine (Task task)
+  public TaskStepEngine (Task task, SteppingEngine steppingEngine)
   {
     this.task = task;
     this.state = new StoppedState(task);
+    this.steppingEngine = steppingEngine;
   }
   
   /**
@@ -114,6 +118,11 @@ public class TaskStepEngine
       }
     
     return false;
+  }
+  
+  public SteppingEngine getSteppingEngine ()
+  {
+    return this.steppingEngine;
   }
   
   /**

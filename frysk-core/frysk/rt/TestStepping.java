@@ -68,6 +68,8 @@ public class TestStepping extends TestLib
   private boolean initial;
   
   int multiCount = 0;
+  
+  private SteppingEngine se;
     
   protected static final int INITIAL = 0;
   protected static final int STEPPING = 1;
@@ -104,7 +106,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = LINE_STEP_FUNCTION_CALL;
@@ -121,11 +122,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
   }
   
   public void testLineStepIfStatementPass ()
@@ -137,7 +140,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = LINE_STEP_IF_PASS;
@@ -154,11 +156,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
-
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
+    
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -171,7 +175,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = LINE_STEP_IF_FAIL;
@@ -188,11 +191,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -205,7 +210,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = LINE_STEP_FUNCTION_RETURN;
@@ -222,11 +226,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -245,8 +251,6 @@ public class TestStepping extends TestLib
     testState = INITIAL;
     test = ASM_STEP_SINGLE_INST;
     
-    SteppingEngine.addObserver(lock);
-    
     String[] cmd = new String[1];
     cmd[0] = getExecPath ("funit-rt-asmstepper");
     
@@ -254,8 +258,8 @@ public class TestStepping extends TestLib
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
     
     assertRunUntilStop("Attempting to add attachedObserver");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -273,8 +277,6 @@ public class TestStepping extends TestLib
     testState = INITIAL;
     test = ASM_STEP_MULTI_LINE;
     
-    SteppingEngine.addObserver(lock);
-    
     multiCount = 0;
     
     String[] cmd = new String[1];
@@ -284,8 +286,8 @@ public class TestStepping extends TestLib
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
     
     assertRunUntilStop("Attempting to add attachedObserver");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -303,8 +305,6 @@ public class TestStepping extends TestLib
     testState = INITIAL;
     test = ASM_STEP_JUMP;
     
-    SteppingEngine.addObserver(lock);
-    
     String[] cmd = new String[1];
     cmd[0] = getExecPath ("funit-rt-asmstepper");
     
@@ -312,8 +312,8 @@ public class TestStepping extends TestLib
     Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
     
     assertRunUntilStop("Attempting to add attachedObserver");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -334,7 +334,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = SIGLONGJMP;
@@ -351,11 +350,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
     this.lineMap.clear();
   }
   
@@ -368,7 +369,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = GOTO;
@@ -385,11 +385,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
-    SteppingEngine.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
     this.lineMap.clear();
   }
   
@@ -405,7 +407,6 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     testState = INITIAL;
     test = SIG_RAISE_ENTER;
@@ -422,11 +423,13 @@ public class TestStepping extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
-    SteppingEngine.setProc(myProc);
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
-    SteppingEngine.removeObserver(lock, myTask.getProc(), false);
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
   
@@ -441,27 +444,27 @@ public class TestStepping extends TestLib
 
     if (test < 10)
       {
-        SteppingEngine.setUpLineStep(myTask);
+        se.setUpLineStep(myTask);
         return;
       }
     else if (test >= 10 && test < 20)
       {
-        SteppingEngine.stepInstruction(myTask);
+        se.stepInstruction(myTask);
       }
     else
       {
         switch (test)
         {
           case SIGLONGJMP:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             return;
           
           case GOTO:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             return;
             
           case SIG_RAISE_ENTER:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             return;
             
           default:
@@ -489,43 +492,43 @@ public class TestStepping extends TestLib
         switch (test)
           {
           case LINE_STEP_FUNCTION_CALL:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_IF_PASS:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_IF_FAIL:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_FUNCTION_RETURN:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case ASM_STEP_SINGLE_INST:
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
 
           case ASM_STEP_MULTI_LINE:
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
             
           case ASM_STEP_JUMP:
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
             
           case SIGLONGJMP:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           case GOTO:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           case SIG_RAISE_ENTER:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           default:
@@ -538,7 +541,7 @@ public class TestStepping extends TestLib
 
         if (sFrame.getLines().length == 0)
           {
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             return;
           }
 
@@ -551,7 +554,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_IF_PASS:
@@ -559,7 +562,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_IF_FAIL:
@@ -567,7 +570,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case LINE_STEP_FUNCTION_RETURN:
@@ -575,7 +578,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
 
           case ASM_STEP_SINGLE_INST:
@@ -583,7 +586,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
             
           case ASM_STEP_MULTI_LINE:
@@ -591,7 +594,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
             
           case ASM_STEP_JUMP:
@@ -599,7 +602,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.stepInstruction(myTask);
+            se.stepInstruction(myTask);
             break;
 
           case SIGLONGJMP:
@@ -607,7 +610,7 @@ public class TestStepping extends TestLib
                {
                  this.testState = FINAL_STEP;
                }
-             SteppingEngine.setUpLineStep(myTask);
+             se.setUpLineStep(myTask);
              break;
              
           case GOTO:
@@ -615,20 +618,20 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           case SIG_RAISE_ENTER:
             if (((Integer) lineMap.get(myTask)).intValue() != 90)
               {
-                SteppingEngine.setUpLineStep(myTask);
+                se.setUpLineStep(myTask);
                 break;
               }
             else if (line.getLine() == 91)
             {
               this.testState = FINAL_STEP;
             }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           case SIG_RAISE_EXIT:
@@ -636,11 +639,11 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
             
           default:
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             break;
           }
         
@@ -651,7 +654,7 @@ public class TestStepping extends TestLib
         Frame frame = StackFactory.createFrame(myTask, 1);
         if (frame.getLines().length == 0)
           {
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             return;
           }
 
@@ -662,7 +665,7 @@ public class TestStepping extends TestLib
           case LINE_STEP_FUNCTION_CALL:
             if (lineNr == 93)
               {
-        	SteppingEngine.setUpLineStep(myTask);
+        	se.setUpLineStep(myTask);
         	return;
               }
             assertTrue("line number", lineNr == 79 || lineNr == 80);
@@ -682,7 +685,7 @@ public class TestStepping extends TestLib
           case LINE_STEP_FUNCTION_RETURN:
             if (lineNr == 103) /* Strange end-of-function thing */
               {
-                SteppingEngine.setUpLineStep(myTask);
+                se.setUpLineStep(myTask);
                 return;
               }
             assertTrue("line number", lineNr == 96 || lineNr == 109);
@@ -698,7 +701,7 @@ public class TestStepping extends TestLib
             if (lineNr == 56)
               {
                 ++multiCount;
-                SteppingEngine.stepInstruction(myTask);
+                se.stepInstruction(myTask);
                 return;
               }
             
@@ -726,7 +729,7 @@ public class TestStepping extends TestLib
             assertTrue("line number", lineNr == 68 || lineNr == 69);
             test = SIG_RAISE_EXIT;
             testState = STEPPING;
-            SteppingEngine.setUpLineStep(myTask);
+            se.setUpLineStep(myTask);
             return;
             
           case SIG_RAISE_EXIT:
@@ -764,7 +767,9 @@ public class TestStepping extends TestLib
     {
       /* Need to give the process some time to get to the looping section */
       try { Thread.sleep(200); } catch (Exception e) {}
-      SteppingEngine.setProc(myProc);
+      Proc[] temp = new Proc[1];
+      temp[0] = myProc;
+      se = new SteppingEngine(temp, lock);
     }
   }
   

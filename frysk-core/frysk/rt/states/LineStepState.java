@@ -41,7 +41,6 @@ package frysk.rt.states;
 
 import lib.dw.DwflLine;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
 import frysk.rt.TaskStepEngine;
 
 public class LineStepState extends State
@@ -83,7 +82,7 @@ public class LineStepState extends State
       }
     else
       {
-        this.task.requestUnblock(SteppingEngine.getSteppingObserver());
+        this.task.requestUnblock(tse.getSteppingEngine().getSteppingObserver());
         return this;
       }
   }

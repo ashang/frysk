@@ -46,7 +46,6 @@ import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.SteppingEngine;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -86,7 +85,7 @@ class RunCommand
 	    }
 	}
 	if (unblock) {
-	    SteppingEngine.removeObserver(this, task.getProc(), true);
+	    cli.getSteppingEngine().removeObserver(this, task.getProc(), true);
 	    task.requestUnblock(this);
 	}
     }
@@ -127,7 +126,8 @@ class RunCommand
 		    }
 		}
 	    });
-	SteppingEngine.addObserver(this);
+        
+	cli.getSteppingEngine().addObserver(this);
 	cli.startAttach(task);
 	// Keep task blocked until the SteppingEngine notifies us that its
 	// instruction observers, etc. have been inserted.

@@ -93,11 +93,11 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
-import frysk.rt.LineBreakpoint;
+//import frysk.rt.LineBreakpoint;
 import frysk.rt.Frame;
 import frysk.value.Value;
-import frysk.rt.BreakpointManager;
-import frysk.rt.SteppingEngine;
+//import frysk.rt.BreakpointManager;
+//import frysk.rt.SteppingEngine;
 //import frysk.rt.Line;
 
 //import lib.dw.Dwfl;
@@ -789,7 +789,7 @@ public class SourceView
     if (event.getButtonPressed() == MouseEvent.BUTTON3
 	&& this.buf.getScope().getLines()[0].getDOMSource().findFunction(breakLine) != null && (! expanded || overNested))
       {
-        Menu m = new Menu();
+//        Menu m = new Menu();
 //        MenuItem mi = new MenuItem("Breakpoint information...", false);
 //        mi.addListener(new MenuItemListener()
 //        {
@@ -811,45 +811,45 @@ public class SourceView
 //            mi2.setSensitive(false);
 //          }
 //        m.append(new MenuItem()); // Separator
-        MenuItem mi = new MenuItem("Toggle Breakpoint", false);
-        m.append(mi);
-        mi.addListener(new MenuItemListener()
-        {
-	  LineBreakpoint lb;
-          public void menuItemEvent (MenuItemEvent event)
-          {
-            if (SourceView.this.buf.toggleBreakpoint(lineNum) == true)
-              {
-        	SourceView.this.buf.setLineBroken(true, breakLine);
-        	Frame frame = SourceView.this.buf.getScope();
-        	if (frame.getLines().length == 0)
-        	  return;
-        	
-        	DOMSource ds = frame.getLines()[0].getDOMSource();
-		BreakpointManager bpm = SteppingEngine.getBreakpointManager();
-		if (lb == null)
-		  lb = bpm.addLineBreakpoint(ds.getFilePath()
-					     + "/" +ds.getFileName(),
-					     breakLine, 0);
-		bpm.enableBreakpoint(lb, frame.getTask());
-              }
-            else
-              {
-        	SourceView.this.buf.setLineBroken(false, breakLine);
-		Frame frame = SourceView.this.buf.getScope();
-        	if (frame.getLines().length == 0)
-        	  return;
-
-		if (lb != null)
-		  SteppingEngine.getBreakpointManager()
-		    .disableBreakpoint(lb, frame.getTask());
-              }
-            
-            SourceView.this.drawMargin();
-          }
-        });
-        m.popup();
-        m.showAll();
+//        MenuItem mi = new MenuItem("Toggle Breakpoint", false);
+//        m.append(mi);
+//        mi.addListener(new MenuItemListener()
+//        {
+//	  LineBreakpoint lb;
+//          public void menuItemEvent (MenuItemEvent event)
+//          {
+//            if (SourceView.this.buf.toggleBreakpoint(lineNum) == true)
+//              {
+//        	SourceView.this.buf.setLineBroken(true, breakLine);
+//        	Frame frame = SourceView.this.buf.getScope();
+//        	if (frame.getLines().length == 0)
+//        	  return;
+//        	
+//        	DOMSource ds = frame.getLines()[0].getDOMSource();
+//		BreakpointManager bpm = SteppingEngine.getBreakpointManager();
+//		if (lb == null)
+//		  lb = bpm.addLineBreakpoint(ds.getFilePath()
+//					     + "/" +ds.getFileName(),
+//					     breakLine, 0);
+//		bpm.enableBreakpoint(lb, frame.getTask());
+//              }
+//            else
+//              {
+//        	SourceView.this.buf.setLineBroken(false, breakLine);
+//		Frame frame = SourceView.this.buf.getScope();
+//        	if (frame.getLines().length == 0)
+//        	  return;
+//
+//		if (lb != null)
+//		  SteppingEngine.getBreakpointManager()
+//		    .disableBreakpoint(lb, frame.getTask());
+//              }
+//            
+//            SourceView.this.drawMargin();
+//          }
+//        });
+//        m.popup();
+//        m.showAll();
       }
 
     // Left click in the margin for a line with inline code - toggle the

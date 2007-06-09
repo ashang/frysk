@@ -41,7 +41,6 @@ package frysk.cli.hpd;
 
 import frysk.rt.BreakpointManager;
 import frysk.rt.SourceBreakpoint;
-import frysk.rt.SteppingEngine;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Iterator;
@@ -64,7 +63,7 @@ class ActionsCommand
 
     public void handle(Command cmd) throws ParseException 
     {
-	BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
+	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
 	Iterator iterator = bpManager.getBreakpointTableIterator();
 	PrintWriter outWriter = cli.getPrintWriter();
 	while (iterator.hasNext()) {

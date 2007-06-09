@@ -40,10 +40,12 @@
 package frysk.rt;
 
 import java.util.Iterator;
+
 import java.util.Observable;
 import java.util.TreeMap;
 //import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.SteppingEngine;
 import lib.dw.DwarfDie;
 
 public class BreakpointManager
@@ -51,9 +53,11 @@ public class BreakpointManager
 {
   private int breakpointID = 0;
   private TreeMap breakpointMap = new TreeMap();
+  private SteppingEngine steppingEngine;
   
-  public BreakpointManager()
+  public BreakpointManager(SteppingEngine steppingEngine)
   {
+    this.steppingEngine = steppingEngine;
   }
 
   public synchronized LineBreakpoint addLineBreakpoint(String fileName,
@@ -82,14 +86,14 @@ public class BreakpointManager
 
   public void enableBreakpoint(SourceBreakpoint breakpoint, Task task)
   {
-    breakpoint.enableBreakpoint(task);
+    breakpoint.enableBreakpoint(task, this.steppingEngine);
     setChanged();
     notifyObservers();
   }
 
   public void disableBreakpoint(SourceBreakpoint breakpoint, Task task)
   {
-    breakpoint.disableBreakpoint(task);
+    breakpoint.disableBreakpoint(task, this.steppingEngine);
     setChanged();
     notifyObservers();
   }

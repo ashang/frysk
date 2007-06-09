@@ -57,6 +57,7 @@ public class TestDisplayValue
   private Task myTask;
   private Proc myProc;
   private AttachedDaemonProcess process;
+  private SteppingEngine steppingEngine;
   
   public void setUp ()
   {
@@ -90,7 +91,7 @@ public class TestDisplayValue
     // Let the process continue until we hit the breakpoint
     LinkedList list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     process.resume();
     assertRunUntilStop("First breakpoint");
     
@@ -118,12 +119,13 @@ public class TestDisplayValue
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
                                   51, 0);
     brk2.addObserver(new BreakpointBlocker());
-    brk2.enableBreakpoint(myTask);
+    brk2.enableBreakpoint(myTask, steppingEngine);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine = new SteppingEngine();
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
     disp.update();
@@ -161,7 +163,7 @@ public class TestDisplayValue
     // Let the process continue until we hit the breakpoint
     LinkedList list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     process.resume();
     assertRunUntilStop("First breakpoint");
     
@@ -185,12 +187,12 @@ public class TestDisplayValue
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
                                   53, 0);
     brk2.addObserver(new BreakpointBlocker());
-    brk2.enableBreakpoint(myTask);
+    brk2.enableBreakpoint(myTask, steppingEngine);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
     disp.update();
@@ -216,7 +218,7 @@ public class TestDisplayValue
     // Let the process continue until we hit the breakpoint
     LinkedList list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     process.resume();
     assertRunUntilStop("First breakpoint");
     
@@ -235,12 +237,13 @@ public class TestDisplayValue
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
                                   49, 0);
     brk2.addObserver(new BreakpointBlocker());
-    brk2.enableBreakpoint(myTask);
+    brk2.enableBreakpoint(myTask, steppingEngine);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine = new SteppingEngine();
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
     disp.update();
@@ -252,7 +255,7 @@ public class TestDisplayValue
      */
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("First breakpoint again");
     
     disp.update();
@@ -283,7 +286,7 @@ public class TestDisplayValue
     // Let the process continue until we hit the breakpoint
     LinkedList list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     process.resume();
     assertRunUntilStop("First breakpoint");
     
@@ -302,12 +305,13 @@ public class TestDisplayValue
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
                                   63, 0);
     brk2.addObserver(new BreakpointBlocker());
-    brk2.enableBreakpoint(myTask);
+    brk2.enableBreakpoint(myTask, steppingEngine);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine = new SteppingEngine();
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
     disp.update();
@@ -334,7 +338,7 @@ public class TestDisplayValue
     // Let the process continue until we hit the breakpoint
     LinkedList list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine.continueExecution(list);
     process.resume();
     assertRunUntilStop("First breakpoint");
     
@@ -353,12 +357,13 @@ public class TestDisplayValue
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
                                   63, 0);
     brk2.addObserver(new BreakpointBlocker());
-    brk2.enableBreakpoint(myTask);
+    brk2.enableBreakpoint(myTask, steppingEngine);
     
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    SteppingEngine.continueExecution(list);
+    steppingEngine = new SteppingEngine();
+    steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
     disp.update();
@@ -379,15 +384,16 @@ public class TestDisplayValue
     assertNotNull("Daemon's proc", myProc);
    
     // Set up the stepping engine, breakpoint manager, and symbol table
-    SteppingEngine.setProc(myProc);
-    BreakpointManager bpManager = SteppingEngine.getBreakpointManager();
-    SteppingEngine.addObserver(new Observer()
+    Proc[] p = new Proc[1];
+    p[0] = myProc;
+    steppingEngine = new SteppingEngine(p, new Observer()
     {
       public void update (Observable observable, Object arg)
       {
         Manager.eventLoop.requestStop();
       }
     });
+    BreakpointManager bpManager = steppingEngine.getBreakpointManager();
     assertRunUntilStop("Adding to Stepping Engine");
     return bpManager;
   }

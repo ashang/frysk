@@ -67,6 +67,8 @@ public class RegisterWindowFactory
   /* Keeps track of which RegisterWindows belong to which Task. */
   private static HashMap map = new HashMap();
   
+  private static HashMap seMap = new HashMap();
+  
   private final static String REG_GLADE = "registerwindow.glade";
 
   /**
@@ -76,7 +78,7 @@ public class RegisterWindowFactory
    * 
    * @param proc    The Proc to be examined by the new RegisterWindow.
    */
-  public static void createRegisterWindow (Proc proc)
+  public static void createRegisterWindow (Proc proc, SteppingEngine steppingEngine)
   {
     RegisterWindow rw = (RegisterWindow) map.get(proc);
 
@@ -84,7 +86,7 @@ public class RegisterWindowFactory
     if (rw != null)
       {
 	rw = (RegisterWindow) map.get(proc);
-	SteppingEngine.addObserver(rw.getLockObserver());
+	steppingEngine.addObserver(rw.getLockObserver());
 	rw.showAll();
 	return;
       }
@@ -99,21 +101,13 @@ public class RegisterWindowFactory
 	throw new RuntimeException(e);
       }
 
-    if (SteppingEngine.getSteppingObserver() == null)
-      {
-	SteppingEngine.setProc(proc);
-	rw = new RegisterWindow(glade);
-	SteppingEngine.addObserver(rw.getLockObserver());
-      }
-    else
-      {
-	rw = new RegisterWindow(glade);
-	SteppingEngine.addObserver(rw.getLockObserver());
-	rw.finishRegWin(proc);
-	rw.setObservable(SteppingEngine.getSteppingObserver());
-      }
+    rw = new RegisterWindow(glade);
+    steppingEngine.addObserver(rw.getLockObserver());
+    rw.finishRegWin(proc);
+    rw.setObservable(steppingEngine.getSteppingObserver());
 
     map.put(proc, rw);
+    seMap.put(rw, steppingEngine);
     rw.addListener(new RegWinListener());
     rw.grabFocus();
   }
@@ -162,9 +156,11 @@ public class RegisterWindowFactory
           Task t = rw.getMyTask();
           Proc p = t.getProc();
           
-          SteppingEngine.removeObserver(rw.getLockObserver(), p, true);
+          SteppingEngine se = (SteppingEngine) seMap.get(rw);
+          se.removeObserver(rw.getLockObserver(), p, true);
           map.remove(p);
-
+          seMap.remove(rw);
+          
           rw.hideAll();
           return true;
         }

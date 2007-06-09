@@ -73,6 +73,7 @@ public class CLI
   boolean running = false;
   int stackLevel = 0;
   SteppingObserver steppingObserver;
+  SteppingEngine steppingEngine;
   boolean procSearchFinished = false;
   boolean attached;
   
@@ -135,12 +136,13 @@ public class CLI
     if (steppingObserver == null) 
       {
 	steppingObserver = new SteppingObserver();
-	SteppingEngine.addObserver(steppingObserver);
       }
     this.pid = pid;
     this.proc = proc;
     this.task = task;
-    SteppingEngine.setProc(proc);
+    Proc[] temp = new Proc[1];
+    temp[0] = proc;
+    steppingEngine = new SteppingEngine(temp, steppingObserver);
   }
   
   public void startAttach(Task task)
@@ -205,7 +207,7 @@ public class CLI
       outWriter.println(tmpFrame.toPrint(false));        
     }
   }
-
+  
   /*
    * Private variables
    */
@@ -488,7 +490,7 @@ public class CLI
 
       synchronized (CLI.this) 
 	{
-	    if (!SteppingEngine.isTaskRunning(task))
+	    if (!steppingEngine.isTaskRunning(task))
 	    {
 	      attached = true;
 	      symtabNeedsRefresh = true;
@@ -572,5 +574,10 @@ public class CLI
   boolean isRunning ()
   {
     return this.running;
+  }
+  
+  SteppingEngine getSteppingEngine ()
+  {
+    return this.steppingEngine;
   }
 }

@@ -61,8 +61,6 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.rt.Frame;
-import frysk.rt.SteppingEngine;
-
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -125,7 +123,6 @@ public class SourceWindowFactory
     
     srcWin = new SourceWindow(glade, Config.getGladeDir (), procs);
     srcWin.addListener(new SourceWinListener());
-//    runState = srcWin.getRunState();
     
     srcWin.grabFocus();
   }
@@ -145,7 +142,6 @@ public class SourceWindowFactory
     
     SourceWindow srcWin = new SourceWindow(glade, Config.getGladeDir(), frame);
     srcWin.addListener(new SourceWinListener());
-//    runState = srcWin.getRunState();
     
     srcWin.grabFocus();
   }
@@ -246,7 +242,7 @@ public class SourceWindowFactory
               Proc p = srcWin.getSwProc();
               
               if (p != null)
-        	SteppingEngine.removeObserver(srcWin.getLockObserver(), p, true);
+        	srcWin.getSteppingEngine().removeObserver(srcWin.getLockObserver(), p, true);
 
              srcWin.hideAll();
              srcWin = null;
@@ -275,7 +271,7 @@ public class SourceWindowFactory
 
       if (srcWin != null)
 	{
-	  SteppingEngine.addProc(proc);
+	  srcWin.getSteppingEngine().addProc(proc);
 	  return Action.BLOCK;
 	}
 

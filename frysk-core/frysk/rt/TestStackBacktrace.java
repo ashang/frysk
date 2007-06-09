@@ -61,6 +61,8 @@ public class TestStackBacktrace
 {
   private Task myTask;
   
+  private SteppingEngine steppingEngine;
+  
   private int task_count;
   
   int test = 0;
@@ -89,7 +91,6 @@ public class TestStackBacktrace
     test = 1;
 
     lock = new LockObserver();
-    SteppingEngine.addObserver(lock);
     
     AckDaemonProcess process = new AckDaemonProcess
 	(Sig.USR1, new String[] {
@@ -100,10 +101,13 @@ public class TestStackBacktrace
     
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
-    SteppingEngine.setProc(myTask.getProc());
-
+    
+    Proc[] temp = new Proc[1];
+    temp[0] = myTask.getProc();
+    steppingEngine = new SteppingEngine(temp, lock);
+    
     assertRunUntilStop("Attempting to add observer");
-    SteppingEngine.clear();
+    steppingEngine.clear();
 
 //    class MyBuilder
 //        extends MapsBuilder
@@ -219,12 +223,13 @@ public class TestStackBacktrace
     myTask = process.findTaskUsingRefresh(true);
     
     task_count = 0;
-    
-    SteppingEngine.addObserver(lock);
-    SteppingEngine.setProc(myTask.getProc());
+
+    Proc[] temp = new Proc[1];
+    temp[0] = myTask.getProc();
+    steppingEngine = new SteppingEngine(temp, lock);
     
     assertRunUntilStop("testThreadedBackTrace");    
-    SteppingEngine.clear();
+    steppingEngine.clear();
   }
   
   private boolean initial;
@@ -256,7 +261,6 @@ public class TestStackBacktrace
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
-  SteppingEngine.addObserver(lock);
   
   testState = PUSH;
   
@@ -272,10 +276,12 @@ public class TestStackBacktrace
   myProc = myTask.getProc();
   assertNotNull(myProc);
   
-  SteppingEngine.setProc(myProc);
+  Proc[] temp = new Proc[1];
+  temp[0] = myProc;
+  steppingEngine = new SteppingEngine(temp, lock);
 
   assertRunUntilStop("Attempting to add observer");
-  SteppingEngine.clear();
+  steppingEngine.clear();
   }
   
   /**
@@ -295,7 +301,6 @@ public class TestStackBacktrace
   this.lineMap = new HashMap();
   
   lock = new LockObserver();
-  SteppingEngine.addObserver(lock);
   
   testState = POP;
   
@@ -311,10 +316,12 @@ public class TestStackBacktrace
   myProc = myTask.getProc();
   assertNotNull(myProc);
   
-  SteppingEngine.setProc(myProc);
+  Proc[] temp = new Proc[1];
+  temp[0] = myProc;
+  steppingEngine = new SteppingEngine(temp, lock);
 
   assertRunUntilStop("Attempting to add observer");
-  SteppingEngine.clear();
+  steppingEngine.clear();
   }
   
   /**
@@ -328,13 +335,13 @@ public class TestStackBacktrace
     if (frame.getLines().length == 0)
       {
         this.lineMap.put(myTask, new Integer(0));
-        SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+        steppingEngine.setUpLineStep(myTask.getProc().getTasks());
         return;
       }
       
     Line line = frame.getLines()[0];
     this.lineMap.put(myTask, new Integer(line.getLine()));
-    SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+    steppingEngine.setUpLineStep(myTask.getProc().getTasks());
   }
   
   /**
@@ -508,7 +515,7 @@ public class TestStackBacktrace
             else if (this.testState == POP)
               this.testState = POP_GO;
             
-            SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+            steppingEngine.setUpLineStep(myTask.getProc().getTasks());
           }
     else
       {
@@ -525,10 +532,10 @@ public class TestStackBacktrace
                 if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     this.testState = PUSH_STEPPING;
-                    SteppingEngine.stepInstruction(myTask.getProc().getTasks());
+                    steppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-               SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+               steppingEngine.setUpLineStep(myTask.getProc().getTasks());
               }
             else if (this.testState == POP_GO)
               {
@@ -536,14 +543,14 @@ public class TestStackBacktrace
                 if (line.getLine() == 63)
                   {
                     this.testState = POP_STEPPING;
-                    SteppingEngine.stepInstruction(myTask.getProc().getTasks());
+                    steppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                steppingEngine.setUpLineStep(myTask.getProc().getTasks());
               }
             else
               {
-                SteppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                steppingEngine.setUpLineStep(myTask.getProc().getTasks());
                 return;
               }
           }
@@ -573,7 +580,7 @@ public class TestStackBacktrace
                 assertEquals ("demangled name", "main",
 			      frame.getSymbol().getDemangledName());
                 
-                SteppingEngine.stepInstruction(myTask.getProc().getTasks());
+                steppingEngine.stepInstruction(myTask.getProc().getTasks());
                 return;
               }
           }
@@ -598,7 +605,7 @@ public class TestStackBacktrace
                 assertEquals ("demangled name", "main",
 			      frame.getSymbol().getDemangledName());
                 
-                SteppingEngine.stepInstruction(myTask.getProc().getTasks());
+                steppingEngine.stepInstruction(myTask.getProc().getTasks());
                 return;
               }
           }

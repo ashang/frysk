@@ -62,11 +62,17 @@ public class Breakpoint implements TaskObserver.Code
   
   protected Object monitor = new Object();
   
-  public Breakpoint () {}
+  protected SteppingEngine steppingEngine;
+  
+  public Breakpoint (SteppingEngine steppingEngine) 
+  {
+    this.steppingEngine = steppingEngine;
+  }
 
-  public Breakpoint (long address)
+  public Breakpoint (SteppingEngine steppingEngine, long address)
   {
 //    System.out.println("Setting address to 0x" + Long.toHexString(address));
+    this.steppingEngine = steppingEngine;
     this.address = address;
   }
 
@@ -95,7 +101,7 @@ public class Breakpoint implements TaskObserver.Code
     else
       {
         logHit(task, address, "adding instructionobserver {0} 0x{2}");
-        task.requestAddInstructionObserver(SteppingEngine.getSteppingObserver());
+        task.requestAddInstructionObserver(this.steppingEngine.getSteppingObserver());
       }
 
     ++triggered;
@@ -121,7 +127,7 @@ public class Breakpoint implements TaskObserver.Code
         monitor.notifyAll();
       }
 //    System.err.println("BreakPoint.addedTo");
-    ((Task) observable).requestDeleteInstructionObserver(SteppingEngine.getSteppingObserver());
+    ((Task) observable).requestDeleteInstructionObserver(this.steppingEngine.getSteppingObserver());
   }
 
   public boolean isAdded ()
@@ -158,9 +164,9 @@ public class Breakpoint implements TaskObserver.Code
      * A breakpoint added by a high-level action e.g., set by the
      * user. It is not meant to be transient.
      */
-    public PersistentBreakpoint(long address) 
+    public PersistentBreakpoint(long address, SteppingEngine steppingEngine) 
     {
-      super(address);
+      super(steppingEngine, address);
       observable = new Observable(this);
     }
 
@@ -198,10 +204,12 @@ public class Breakpoint implements TaskObserver.Code
       //"updateHit");
       logHit(task, address, "Persistent.Breakpoint.updateHit at 0x{1}");
       Action action = super.updateHit(task, address);
+      
       synchronized (SteppingEngine.class)
 	{
-	  SteppingEngine.runningTasks.remove(task);
+	  steppingEngine.runningTasks.remove(task);
 	}
+      
       synchronized (this)
 	{
 	  Iterator iterator = observable.iterator();
@@ -229,10 +237,10 @@ public class Breakpoint implements TaskObserver.Code
 
 
 
-    public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
-    {
-      return (PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
-    }
+//    public PersistentBreakpoint getTaskPersistentBreakpoint(Task task)
+//    {
+//      return (PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
+//    }
     
     public void addPersistentBreakpoint(Task task, PersistentBreakpoint bp)
     {

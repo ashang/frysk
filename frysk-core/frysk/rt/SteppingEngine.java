@@ -69,105 +69,125 @@ import frysk.sys.Signal;
  */
 public class SteppingEngine
 {
-  protected static Logger logger = Logger.getLogger ("frysk");
+  protected Logger logger = Logger.getLogger ("frysk");
 
   /* Set of Tasks currently running, or unblocked.
      Package access so Breakpoint.PersistentBreakpoint can get at it. */
-  static HashSet runningTasks;
+  HashSet runningTasks;
 
   /* Tasks that have hit a breakpoint */
-  private static HashMap breakpointMap;
+  private HashMap breakpointMap;
   
   /* Maps a Proc to an Integer, where the Integer represents the number of
    * Tasks associated with the current context of the process - the number
    * of stepping or running threads of that process. */
-  private static Map contextMap;
+  private Map contextMap;
 
   /* Maps Tasks to TaskStepEngines, which contain information about the 
    * Task State, line number, and other useful things. */
-  private static Map taskStateMap;
+  private Map taskStateMap;
 
   /* Observer used to block Tasks, as well as providing the mechanism to 
    * step them, by an instruction each time. */
-  private static SteppingObserver steppingObserver;
+  private SteppingObserver steppingObserver;
 
   /* Ensures that newly spawned Tasks are maintained by the SteppingEngine
    * class, and also makes sure that exiting Tasks are taken care of and cleaned
    * up after. */
-  private static ThreadLifeObservable threadLifeObservable;
+  private ThreadLifeObservable threadLifeObservable;
   
-  /* List of Tasks which require attachment from the SteppingObserver */
-  private static LinkedList threadsList;
-
-  static
+  /* List of Tasks which require attachment from the this.steppingObserver */
+  private LinkedList threadsList;
+  
+  private BreakpointManager breakpointManager;
+  
+  public SteppingEngine ()
   {
-    runningTasks = new HashSet();
-    breakpointMap = new HashMap();
-    contextMap = Collections.synchronizedMap(new HashMap());
-    taskStateMap = Collections.synchronizedMap(new HashMap());
-    steppingObserver = new SteppingObserver();
+    this.runningTasks = new HashSet();
+    this.breakpointMap = new HashMap();
+    this.contextMap = Collections.synchronizedMap(new HashMap());
+    this.taskStateMap = Collections.synchronizedMap(new HashMap());
+    this.breakpointManager = new BreakpointManager(this);
+    this.steppingObserver = new SteppingObserver();
   }
   
   /**
    * Sets the initial process for this SteppingEngine. Maps the initial keys in
-   * contextMap and taskStateMap, and adds the necessary observers to each of 
+   * this.contextMap and this.taskStateMap, and adds the necessary observers to each of 
    * the Tasks.
    * 
    * @param proc The Proc to be managed by SteppingEngine
    */
-  public static void setProc (Proc proc)
-  {
-    Task t = null;
-    LinkedList tasksList = proc.getTasks();
-    
-    threadLifeObservable = new ThreadLifeObservable();
-    threadsList.addAll(tasksList);
-    
-    Iterator iter = tasksList.iterator();
-    while(iter.hasNext())
-      {
-	t = (Task) iter.next();
-	t.requestAddTerminatingObserver(threadLifeObservable);
-	t.requestAddClonedObserver(threadLifeObservable);
-    	taskStateMap.put(t, new TaskStepEngine(t));
-      }
-    
-    contextMap.put(t.getProc(), new Integer(tasksList.size()));    
-    requestAdd();
-  }
-  
+//  public SteppingEngine (Proc proc)
+//  {
+//    this();
+//    
+//    Task t = null;
+//    LinkedList tasksList = proc.getTasks();
+//    
+//    this.threadLifeObservable = new ThreadLifeObservable();
+//    this.threadsList.addAll(tasksList);
+//    
+//    Iterator iter = tasksList.iterator();
+//    while(iter.hasNext())
+//      {
+//        t = (Task) iter.next();
+//        t.requestAddTerminatingObserver(threadLifeObservable);
+//        t.requestAddClonedObserver(threadLifeObservable);
+//        taskStateMap.put(t, new TaskStepEngine(t));
+//      }
+//    
+//    this.contextMap.put(t.getProc(), new Integer(tasksList.size()));    
+//    requestAdd();
+//  }
+
   /**
    * Sets the initial processes for this SteppingEngine. Maps the initial keys 
-   * in contextMap and taskStateMap for each Task from each Proc, and adds the 
+   * in this.contextMap and this.taskStateMap for each Task from each Proc, and adds the 
    * necessary observers to each of the Tasks.
    * 
    * @param procs The Procs to be managed by SteppingEngine
    */
-  public static void setProcs (Proc[] procs)
+  public SteppingEngine (Proc[] procs)
   {
+    this();
+    
+    init(procs);
+  }
+  
+  public SteppingEngine (Proc[] procs, Observer o)
+  {
+    this();
+    
+    addObserver(o);
+    
+    init(procs);
+  }
+    private void init (Proc[] procs)
+    {
     Task t = null;
     LinkedList tasksList;
 
-    threadLifeObservable = new ThreadLifeObservable();
+    this.threadLifeObservable = new ThreadLifeObservable();
 
     for (int i = procs.length - 1; i >= 0; i--)
       {
-	tasksList = procs[i].getTasks();
-	threadsList.addAll(tasksList);
+        tasksList = procs[i].getTasks();
+        this.threadsList.addAll(tasksList);
 
-	Iterator iter = tasksList.iterator();
-	while (iter.hasNext())
-	  {
-	    t = (Task) iter.next();
-	    t.requestAddTerminatingObserver(threadLifeObservable);
-	    t.requestAddClonedObserver(threadLifeObservable);
-	    taskStateMap.put(t, new TaskStepEngine(t));
-	  }
+        Iterator iter = tasksList.iterator();
+        while (iter.hasNext())
+          {
+            t = (Task) iter.next();
+            t.requestAddTerminatingObserver(this.threadLifeObservable);
+            t.requestAddClonedObserver(this.threadLifeObservable);
+            this.taskStateMap.put(t, new TaskStepEngine(t, this));
+          }
 
-	contextMap.put(t.getProc(), new Integer(tasksList.size()));
+        this.contextMap.put(t.getProc(), new Integer(tasksList.size()));
       }
     
-	requestAdd();
+    requestAdd();
   }
   
   /**
@@ -176,23 +196,23 @@ public class SteppingEngine
    * 
    * @param proc The Proc to be added to SteppingEngine
    */
-  public static boolean addProc (Proc proc)
+  public boolean addProc (Proc proc)
   {
     Task t = null;
     
     LinkedList tasksList = proc.getTasks();
-    threadsList.addAll(tasksList);
+    this.threadsList.addAll(tasksList);
     
     Iterator iter = tasksList.iterator();
     while (iter.hasNext())
       {
 	t = (Task) iter.next();
-	t.requestAddTerminatingObserver(threadLifeObservable);
-	t.requestAddClonedObserver(threadLifeObservable);
-	taskStateMap.put(t, new TaskStepEngine(t));
+	t.requestAddTerminatingObserver(this.threadLifeObservable);
+	t.requestAddClonedObserver(this.threadLifeObservable);
+	this.taskStateMap.put(t, new TaskStepEngine(t, this));
       }
     
-    contextMap.put(t.getProc(), new Integer(tasksList.size()));
+    this.contextMap.put(t.getProc(), new Integer(tasksList.size()));
     requestAdd();
     return true;
   }
@@ -209,17 +229,17 @@ public class SteppingEngine
    * @return false The Task is not currently blocked
    * @return true The step request was successful
    */
-  public static boolean stepInstruction (Task task)
+  public boolean stepInstruction (Task task)
   {
     /* Check to make sure this thread is not already involved with another 
      * operation before asking it to step an instruction. */
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     if (! tse.isStopped())
       return false;
 
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
     tse.setState(new InstructionStepState(task));
-    contextMap.put (task.getProc(), new Integer(1));
+    this.contextMap.put (task.getProc(), new Integer(1));
     
     task.requestUnblock(steppingObserver);
     return true;
@@ -232,7 +252,7 @@ public class SteppingEngine
    * @return false Not all tasks are currently blocked.
    * @return true The step requests were successful
    */
-  public static boolean stepInstruction (LinkedList tasks)
+  public boolean stepInstruction (LinkedList tasks)
   {
     /*
          * Check to make sure these threads are not already involved with
@@ -241,16 +261,16 @@ public class SteppingEngine
     if (isProcRunning(tasks))
       return false;
 
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
 
     Task t = (Task) tasks.getFirst();
-    contextMap.put(t.getProc(), new Integer(tasks.size()));
+    this.contextMap.put(t.getProc(), new Integer(tasks.size()));
 
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
 	t = (Task) iter.next();
-	TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
+	TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
 	tse.setState(new InstructionStepState(t));
 	t.requestUnblock(steppingObserver);
       }
@@ -265,17 +285,17 @@ public class SteppingEngine
  * @return false The Task is not currently blocked
  * @return true The step request was successful
  */
-  public static boolean setUpLineStep (Task task)
+  public boolean setUpLineStep (Task task)
   {
     /* Check to make sure these threads are not already involved with another 
      * operation before asking them to step an instruction. */
     if (isTaskRunning(task))
       return false;
     
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
 
-    contextMap.put(task.getProc(), new Integer(1));
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    this.contextMap.put(task.getProc(), new Integer(1));
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
 
     /* Check to see if either the TaskStepEngine for this Task has not had its
      * line number set yet, or its previous state was in non-debuginfo code. */
@@ -286,7 +306,7 @@ public class SteppingEngine
 	if (line == null)
 	  {
 	    tse.setState(new InstructionStepState(task));
-	    task.requestUnblock(steppingObserver);
+	    task.requestUnblock(this.steppingObserver);
 	    return true;
 	  }
 	else
@@ -296,7 +316,7 @@ public class SteppingEngine
       }
 
     tse.setState(new LineStepState(task));
-    task.requestUnblock(steppingObserver);
+    task.requestUnblock(this.steppingObserver);
     return true;
   }
   
@@ -307,7 +327,7 @@ public class SteppingEngine
    * @return false Not all tasks are currently blocked.
    * @return true The step requests were successful
    */
-  public static boolean setUpLineStep (LinkedList tasks)
+  public boolean setUpLineStep (LinkedList tasks)
   {
     /* Check to make sure these threads are not already involved with another 
      * operation before asking them to step an instruction. */
@@ -327,21 +347,21 @@ public class SteppingEngine
  * @param tasks The Tasks to begin stepping
  * @param isLine Whether this set up is for a line step or otherwise.
  */
-  public static void setUp (LinkedList tasks, boolean isLine)
+  public void setUp (LinkedList tasks, boolean isLine)
   {
     /* Make sure there's actually something to step before going any further. */
     if (tasks.size() == 0)
       return;
     
     TaskStepEngine tse;
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
     
     Task t = null;
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
         t = (Task) i.next();
-        tse = (TaskStepEngine) taskStateMap.get(t);
+        tse = (TaskStepEngine) this.taskStateMap.get(t);
         
         if (tse.getLine() == 0)
           {
@@ -362,17 +382,17 @@ public class SteppingEngine
         tse.setState(new LineStepState(t));
       }
     
-    contextMap.put(t.getProc(), new Integer(tasks.size()));
+    this.contextMap.put(t.getProc(), new Integer(tasks.size()));
     
     i = tasks.iterator();
     while (i.hasNext())
       {
     	t = (Task) i.next();
-    	t.requestUnblock(steppingObserver);
+    	t.requestUnblock(this.steppingObserver);
       }
   }
   
-  public static void setUpStepAdvance (Task task, Frame frame)
+  public void setUpStepAdvance (Task task, Frame frame)
   {
     /* There's nowhere to advance to - this is already the innermost frame */
     if (frame.getInner() == null)
@@ -381,32 +401,32 @@ public class SteppingEngine
         return;
       }
     
-    taskStateMap.put(task, new StepAdvanceState(task));
+    this.taskStateMap.put(task, new StepAdvanceState(task));
     
-    int i = ((Integer) contextMap.get(task.getProc())).intValue();
-    contextMap.put(task.getProc(), new Integer(++i));
+    int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
+    this.contextMap.put(task.getProc(), new Integer(++i));
     
   /* Set a breakpoint on the current address of the given frame, which is
    * the return address of its inner frame(s). */
-  breakpoint = new SteppingBreakpoint(frame.getOuter().getAddress());
-  task.requestAddCodeObserver(breakpoint, frame.getOuter().getAddress());
+  this.breakpoint = new SteppingBreakpoint(this, frame.getOuter().getAddress());
+  task.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
   }
   
-  public static void setUpStepNextInstruction (Task task, Frame lastFrame)
+  public void setUpStepNextInstruction (Task task, Frame lastFrame)
   {
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
     
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setState(new NextInstructionStepTestState(task));
     
-    frameIdentifier = lastFrame.getFrameIdentifier();
-    task.requestUnblock(steppingObserver);
+    this.frameIdentifier = lastFrame.getFrameIdentifier();
+    task.requestUnblock(this.steppingObserver);
   }
   
-  public static void setUpStepNextInstruction (LinkedList tasks, Frame lastFrame)
+  public void setUpStepNextInstruction (LinkedList tasks, Frame lastFrame)
   {
 //    Iterator i = tasks.iterator();
-//   steppingObserver.notifyNotBlocked();
+//   this.steppingObserver.notifyNotBlocked();
 //    while (i.hasNext())
 //      {
 //        Task t = (Task) i.next();
@@ -414,15 +434,15 @@ public class SteppingEngine
 //      }
   }
   
-  public static void stepNextInstruction (Task task)
+  public void stepNextInstruction (Task task)
   {
     Frame newFrame = null;
     newFrame = StackFactory.createFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as an instruction step. */
-    if (newFrame.getFrameIdentifier().equals(frameIdentifier))
+    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
       {
-        steppingObserver.notifyTask(task);
+        this.steppingObserver.notifyTask(task);
         return;
       }
     else
@@ -431,15 +451,15 @@ public class SteppingEngine
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
         Frame frame = newFrame.getOuter();
-        TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
         tse.setState(new NextInstructionStepTestState(task));
-        breakpoint = new SteppingBreakpoint(frame.getAddress());
+        breakpoint = new SteppingBreakpoint(this, frame.getAddress());
         task.requestAddCodeObserver(breakpoint, frame.getAddress());
       }
   }
 
-  static Breakpoint breakpoint;
-  static FrameIdentifier frameIdentifier;
+  Breakpoint breakpoint;
+  FrameIdentifier frameIdentifier;
 //  FrameIdentifier outerFrameIdentifier;
   
   /**
@@ -448,21 +468,21 @@ public class SteppingEngine
    * @param task   The Task to be stepped-over
    * @param lastFrame	The current innermost StackFrame of the given Task
    */
-  public static void setUpStepOver (Task task, Frame lastFrame)
+  public void setUpStepOver (Task task, Frame lastFrame)
   {
-    frameIdentifier = lastFrame.getFrameIdentifier();
-    steppingObserver.notifyNotBlocked();
+    this.frameIdentifier = lastFrame.getFrameIdentifier();
+    this.steppingObserver.notifyNotBlocked();
     
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setState(new StepOverTestState(task));
     
-    int i = ((Integer) contextMap.get(task.getProc())).intValue();
-    contextMap.put(task.getProc(), new Integer(++i));
+    int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
+    this.contextMap.put(task.getProc(), new Integer(++i));
     
-    task.requestUnblock(steppingObserver);
+    task.requestUnblock(this.steppingObserver);
   }
   
-  public static void setUpStepOver (LinkedList tasks, Frame lastFrame)
+  public void setUpStepOver (LinkedList tasks, Frame lastFrame)
   {
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
 ////    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
@@ -479,15 +499,15 @@ public class SteppingEngine
    * 
    * @param task    The Task to execute step-over for.
    */
-  public static void stepOver (Task task)
+  public void stepOver (Task task)
   {
     Frame newFrame = null;
     newFrame = StackFactory.createFrame(task, 2);
    
     /* The two frames are the same; treat this step-over as a line step. */
-    if (newFrame.getFrameIdentifier().equals(frameIdentifier))
+    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
       {
-	steppingObserver.notifyTask(task);
+	this.steppingObserver.notifyTask(task);
         return;
       }
     else
@@ -496,10 +516,10 @@ public class SteppingEngine
         /* There is a different innermost frame on the stack - run until
          * it exits - success!. */
         Frame frame = newFrame.getOuter();
-        TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
         tse.setState(new StepOverState(task));
-        breakpoint = new SteppingBreakpoint(frame.getAddress());
-        task.requestAddCodeObserver(breakpoint, frame.getAddress());
+        this.breakpoint = new SteppingBreakpoint(this, frame.getAddress());
+        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
       }
   }
   
@@ -513,22 +533,22 @@ public class SteppingEngine
    * @param lastFrame
    */
   
-  public static void setUpStepOut (Task task, Frame lastFrame)
+  public void setUpStepOut (Task task, Frame lastFrame)
   {
     long address = lastFrame.getOuter().getAddress();
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
     
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setState(new StepOutState(task));
     
-    int i = ((Integer) contextMap.get(task.getProc())).intValue();
-    contextMap.put(task.getProc(), new Integer(++i));
+    int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
+    this.contextMap.put(task.getProc(), new Integer(++i));
     
-    breakpoint = new SteppingBreakpoint(address);
-    task.requestAddCodeObserver(breakpoint, address);
+    this.breakpoint = new SteppingBreakpoint(this, address);
+    task.requestAddCodeObserver(this.breakpoint, address);
   }
   
-  public static void setUpStepOut (LinkedList tasks, Frame lastFrame)
+  public void setUpStepOut (LinkedList tasks, Frame lastFrame)
   {
 //    taskStepCount =  tasks.size();
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
@@ -548,46 +568,46 @@ public class SteppingEngine
    * 
    * @param task The task finished stepping out.
    */
-  public static void stepOut (Task task)
+  public void stepOut (Task task)
   {
     Frame newFrame = null;
     newFrame = StackFactory.createFrame(task, 3);
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     tse.setState(new StepOutState(task));
 
     FrameIdentifier fi = newFrame.getFrameIdentifier();
     
-    if (fi.equals(frameIdentifier))
+    if (fi.equals(this.frameIdentifier))
       {
-        breakpoint = new SteppingBreakpoint(newFrame.getOuter().getAddress());
-        task.requestAddCodeObserver(breakpoint,
+        this.breakpoint = new SteppingBreakpoint(this, newFrame.getOuter().getAddress());
+        task.requestAddCodeObserver(this.breakpoint,
                                     newFrame.getOuter().getAddress());
       }
     else
       {
-        if (fi.outerTo(frameIdentifier))
+        if (fi.outerTo(this.frameIdentifier))
           {
 //            this.breakpoint = new SteppingBreakpoint(newFrame.getOuter().getAddress());
 //            task.requestAddCodeObserver(
 //                                        this.breakpoint,
 //                                        newFrame.getOuter().getOuter().getAddress());
-            steppingObserver.notifyTask(task);
+            this.steppingObserver.notifyTask(task);
             return;
           }
-        else if (fi.innerTo(frameIdentifier))
+        else if (fi.innerTo(this.frameIdentifier))
           {
-            breakpoint = new SteppingBreakpoint(
+            this.breakpoint = new SteppingBreakpoint(this, 
                                              newFrame.getOuter().getOuter().getAddress());
-            task.requestAddCodeObserver(breakpoint,
+            task.requestAddCodeObserver(this.breakpoint,
                                         newFrame.getOuter().getOuter().getAddress());
           }
       }
   }
   
-  public static void cleanUpBreakPoint (Task task)
+  public void cleanUpBreakPoint (Task task)
   {
-    breakpoint = null;
-    addy = 0;
+    this.breakpoint = null;
+    this.addy = 0;
   }
 
   
@@ -613,20 +633,20 @@ public class SteppingEngine
    * 
    * @param tasks   The list of Tasks to be run
    */
-  public static void continueExecution (LinkedList list)
+  public void continueExecution (LinkedList list)
   {
     TaskStepEngine tse = null;
-    contextMap.put(((Task) list.getFirst()).getProc(), new Integer(list.size()));
+    this.contextMap.put(((Task) list.getFirst()).getProc(), new Integer(list.size()));
     
-    steppingObserver.notifyNotBlocked();
+    this.steppingObserver.notifyNotBlocked();
     Iterator i = list.iterator();
     while (i.hasNext())
       {
         Task t = (Task) i.next();
-        if (! runningTasks.contains(t))
+        if (! this.runningTasks.contains(t))
           {
-            runningTasks.add(t);
-            tse = (TaskStepEngine) taskStateMap.get(t);
+            this.runningTasks.add(t);
+            tse = (TaskStepEngine) this.taskStateMap.get(t);
             if (tse != null)
               tse.setState(new RunningState(t));
 	    TaskObserver[] blockers = t.getBlockers();
@@ -634,7 +654,7 @@ public class SteppingEngine
 	      if (blockers[j] instanceof Breakpoint) // One of ours?
 		t.requestUnblock(blockers[j]);
 	    }
-	    t.requestDeleteInstructionObserver(steppingObserver);
+	    t.requestDeleteInstructionObserver(this.steppingObserver);
           }
       }
   }
@@ -647,51 +667,51 @@ public class SteppingEngine
    * 
    * @param keepRunning    The list of Tasks to not block
    */
-  public static void stop (LinkedList keepRunning, LinkedList stopTasks)
+  public void stop (LinkedList keepRunning, LinkedList stopTasks)
   {
     if (keepRunning == null || keepRunning.size() == 0)
       {
-	if (threadsList.size() > 0)
+	if (this.threadsList.size() > 0)
 	  {
 	    Iterator iter = stopTasks.iterator();
 	    while (iter.hasNext())
 	      {
 			Task t = (Task) iter.next();
-			if (!threadsList.contains(t))
-			  threadsList.addLast(t);
+			if (!this.threadsList.contains(t))
+			  this.threadsList.addLast(t);
 	      }
 	  }
 	else
-	  threadsList.addAll(stopTasks);
+	  this.threadsList.addAll(stopTasks);
 	
 	TaskStepEngine tse;
 	Iterator i = stopTasks.iterator();
 	while (i.hasNext())
 	  {
 	    Task t = (Task) i.next();
-	    tse = (TaskStepEngine) taskStateMap.get(t);
+	    tse = (TaskStepEngine) this.taskStateMap.get(t);
 	    tse.setState(new StoppedState(t));
 	  }
 	requestAdd();
       }
     else
       {
-	synchronized (threadsList)
+	synchronized (this.threadsList)
 	  {
-	    Iterator i = runningTasks.iterator();
+	    Iterator i = this.runningTasks.iterator();
 	    while (i.hasNext())
 	      {
 		Task t = (Task) i.next();
 		if (! keepRunning.contains(t))
 		  {
-		    threadsList.add(t);
+		    this.threadsList.add(t);
 		    i.remove();
 		  }
 	      }
 	    requestAdd();
 	  }
       }
-    runningTasks.clear();
+    this.runningTasks.clear();
   }
   
   /**
@@ -709,22 +729,22 @@ public class SteppingEngine
    * 
    * @param tasks   The list of tasks to be run
    */
-  public static synchronized void executeTasks (LinkedList tasks)
+  public synchronized void executeTasks (LinkedList tasks)
   {
     /* No incoming Tasks and no Tasks already running */
-    if (tasks.size() == 0 && runningTasks.size() == 0)
+    if (tasks.size() == 0 && this.runningTasks.size() == 0)
       {
         return;
       }
 
     /* No incoming Tasks, but some Tasks are running. Block them. */
-    else if (tasks.size() == 0 && runningTasks.size() != 0)
+    else if (tasks.size() == 0 && this.runningTasks.size() != 0)
       {
-        Iterator i = runningTasks.iterator();
+        Iterator i = this.runningTasks.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            threadsList.addLast(t);
+            this.threadsList.addLast(t);
             i.remove();
           }
         requestAdd();
@@ -733,17 +753,17 @@ public class SteppingEngine
 
     TaskStepEngine tse = null;
     /* There are incoming Tasks to be run, and no Tasks already running */
-    if (runningTasks.size() == 0)
+    if (this.runningTasks.size() == 0)
       {
-        steppingObserver.notifyNotBlocked();
+        this.steppingObserver.notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
-            runningTasks.add(t);
-            tse = (TaskStepEngine) taskStateMap.get(t);
+            this.runningTasks.add(t);
+            tse = (TaskStepEngine) this.taskStateMap.get(t);
             tse.setState(new RunningState(t));
-            t.requestDeleteInstructionObserver(steppingObserver);
+            t.requestDeleteInstructionObserver(this.steppingObserver);
           }
         return;
       }
@@ -754,19 +774,19 @@ public class SteppingEngine
       {
         HashSet temp = new HashSet();
         int numRunning = 0;
-        steppingObserver.notifyNotBlocked();
+        this.steppingObserver.notifyNotBlocked();
         Iterator i = tasks.iterator();
         while (i.hasNext())
           {
             Task t = (Task) i.next();
             
             /* If this thread has not already been unblocked, do it */
-            if (! runningTasks.remove(t))
+            if (! this.runningTasks.remove(t))
               {
             	++numRunning;
-                tse = (TaskStepEngine) taskStateMap.get(t);
+                tse = (TaskStepEngine) this.taskStateMap.get(t);
                 tse.setState(new RunningState(t));
-                t.requestDeleteInstructionObserver(steppingObserver);
+                t.requestDeleteInstructionObserver(this.steppingObserver);
               }
             else
               {
@@ -776,20 +796,20 @@ public class SteppingEngine
           }
         
         /* Now catch the threads which have a block request */
-        if (runningTasks.size() != 0)
+        if (this.runningTasks.size() != 0)
           {
-            i = runningTasks.iterator();
+            i = this.runningTasks.iterator();
             while (i.hasNext())
               {
                 Task t = (Task) i.next();
                 --numRunning;
-                threadsList.addLast(t);
+                this.threadsList.addLast(t);
               }
             requestAdd();
           }
 
-        contextMap.put(((Task) tasks.getFirst()).getProc(), new Integer(numRunning));
-        runningTasks = temp;
+        this.contextMap.put(((Task) tasks.getFirst()).getProc(), new Integer(numRunning));
+        this.runningTasks = temp;
       }
     return;
   }
@@ -803,14 +823,14 @@ public class SteppingEngine
    * @return true If any of the Tasks are not stopped
    * @retruen false If all the Tasks are stopped
    */
-  public static boolean isProcRunning (LinkedList tasks)
+  public boolean isProcRunning (LinkedList tasks)
   {
     TaskStepEngine tse = null;
     Iterator iter = tasks.iterator();
     while (iter.hasNext())
       {
 	Task t = (Task) iter.next();
-	tse = (TaskStepEngine) taskStateMap.get(t);
+	tse = (TaskStepEngine) this.taskStateMap.get(t);
 	if (tse != null && ! tse.isStopped())
 	  return true;
       }
@@ -825,9 +845,9 @@ public class SteppingEngine
    * @return true If the Task is not stopped
    * @return false If the Task is stopped
    */
-  public static boolean isTaskRunning (Task task)
+  public boolean isTaskRunning (Task task)
   {
-    TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(task);
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
     
     if (tse == null)
       return false;
@@ -841,7 +861,7 @@ public class SteppingEngine
    * @param proc The Proc to be detached
    * @param kill Whether the Proc should be killed after detaching
    */
-  public static void detachProc (Proc proc, boolean kill)
+  public void detachProc (Proc proc, boolean kill)
   {
     LinkedList list = proc.getTasks();
     Task t;
@@ -849,8 +869,8 @@ public class SteppingEngine
     if (kill)
       {
 	Integer context = new Integer(list.size());
-	contextMap.put(proc, context);
-	threadLifeObservable.setExitingTasks(list);
+	this.contextMap.put(proc, context);
+	this.threadLifeObservable.setExitingTasks(list);
       }
     
     Iterator i = list.iterator();
@@ -858,17 +878,17 @@ public class SteppingEngine
       {
 	t = (Task) i.next();
 	
-        SteppingBreakpoint bpt = (SteppingBreakpoint) breakpointMap.get(t);
+        SteppingBreakpoint bpt = (SteppingBreakpoint) this.breakpointMap.get(t);
         
         if (bpt != null)
           {
-            breakpointMap.remove(t);
+            this.breakpointMap.remove(t);
             t.requestUnblock(bpt);
           }
         
-	t.requestDeleteTerminatingObserver(threadLifeObservable);
-	t.requestDeleteClonedObserver(threadLifeObservable);
-	t.requestDeleteInstructionObserver(steppingObserver);
+	t.requestDeleteTerminatingObserver(this.threadLifeObservable);
+	t.requestDeleteClonedObserver(this.threadLifeObservable);
+	t.requestDeleteInstructionObserver(this.steppingObserver);
 	cleanTask(t);
       }
   }
@@ -879,29 +899,29 @@ public class SteppingEngine
    * 
    * @param task The Task to clear information for
    */
-  public static void cleanTask (Task task)
+  public void cleanTask (Task task)
   {
-    taskStateMap.remove(task);
-    threadsList.remove(task);
-    runningTasks.remove(task);
-    breakpointMap.remove(task);
+    this.taskStateMap.remove(task);
+    this.threadsList.remove(task);
+    this.runningTasks.remove(task);
+    this.breakpointMap.remove(task);
   }
   
   /**
    * Removes all information from all SteppingEngine data structures.
    */
-  public static void clear ()
+  public void clear ()
   {
-    taskStateMap.clear();
-    breakpointMap.clear();
-    contextMap.clear();
-    runningTasks.clear();
-    threadLifeObservable.deleteObservers();
-    threadLifeObservable = new ThreadLifeObservable();
-    threadsList.clear();
+    this.taskStateMap.clear();
+    this.breakpointMap.clear();
+    this.contextMap.clear();
+    this.runningTasks.clear();
+    this.threadLifeObservable.deleteObservers();
+    this.threadLifeObservable = new ThreadLifeObservable();
+    this.threadsList.clear();
     breakpoint = null;
-    steppingObserver.deleteObservers();
-    steppingObserver = new SteppingObserver();
+    this.steppingObserver.deleteObservers();
+    this.steppingObserver = new SteppingObserver();
   }
 
   /*****************************************************************************
@@ -914,9 +934,9 @@ public class SteppingEngine
    * @param task The Task to set the state of
    * @param state The State to set it to
    */
-  public static void setTaskState (Task task, State state)
+  public void setTaskState (Task task, State state)
   {
-    ((TaskStepEngine) taskStateMap.get(task)).setState(state);
+    ((TaskStepEngine) this.taskStateMap.get(task)).setState(state);
   }
   
   /**
@@ -925,19 +945,19 @@ public class SteppingEngine
    * @param task The Task to return the State of
    * @return state The State of the given Task
    */
-  public static State getTaskState (Task task)
+  public State getTaskState (Task task)
   {
-    return ((TaskStepEngine) taskStateMap.get(task)).getState();
+    return ((TaskStepEngine) this.taskStateMap.get(task)).getState();
   }
   
   /**
-   * Gets the SteppingObserver currently being used by the SteppingEngine.
+   * Gets the this.steppingObserver currently being used by the SteppingEngine.
    * 
-   * @return steppingObserver The SteppingObserver currently in use
+   * @return this.steppingObserver The this.steppingObserver currently in use
    */
-  public static SteppingObserver getSteppingObserver ()
+  public SteppingObserver getSteppingObserver ()
   {
-    return steppingObserver;
+    return this.steppingObserver;
   }
   
   /**
@@ -946,11 +966,11 @@ public class SteppingEngine
    * @param task The Task to breakpoint
    * @param address The address to set the breakpoint at
    */
-  public static void setBreakpoint (Task task, long address)
+  public void setBreakpoint (Task task, long address)
   {
-    breakpoint = new SteppingBreakpoint (address);
-    breakpointMap.put(task, breakpoint);
-    task.requestAddCodeObserver(breakpoint, address);
+    this.breakpoint = new SteppingBreakpoint (this, address);
+    this.breakpointMap.put(task, this.breakpoint);
+    task.requestAddCodeObserver(this.breakpoint, address);
   }
   
   /**
@@ -958,10 +978,10 @@ public class SteppingEngine
    * 
    * @param task The Task to remove the SteppingBreakpoint from
    */
-  public static void removeBreakpoint (Task task)
+  public void removeBreakpoint (Task task)
   {
-    breakpointMap.remove(task);
-    task.requestDeleteCodeObserver(breakpoint, breakpoint.getAddress());
+    this.breakpointMap.remove(task);
+    task.requestDeleteCodeObserver(this.breakpoint, this.breakpoint.getAddress());
   }
   
   /**
@@ -970,9 +990,9 @@ public class SteppingEngine
    * @param task The Task whose breakpoint is requested
    * @return bp The Breakpoint set at the given Task
    */
-  public static Breakpoint getTaskBreakpoint (Task task)
+  public Breakpoint getTaskBreakpoint (Task task)
   {
-    return (Breakpoint) breakpointMap.get(task);
+    return (Breakpoint) this.breakpointMap.get(task);
   }
   
   /**
@@ -981,9 +1001,9 @@ public class SteppingEngine
    * @param task The Task to have the Breakpoint added to
    * @param bp The Breakpoint to add to the given Task
    */
-  public static void addBreakpoint (Task task, Breakpoint bp)
+  public void addBreakpoint (Task task, Breakpoint bp)
   {
-    breakpoint = bp;
+    this.breakpoint = bp;
     task.requestAddCodeObserver(bp, bp.getAddress());
   }
   
@@ -993,7 +1013,7 @@ public class SteppingEngine
    * @param task The Task to delete the Breakpoint from
    * @param bp The Breakpoint to delete from the given Task
    */
-  public static void deleteBreakpoint (Task task, Breakpoint bp)
+  public void deleteBreakpoint (Task task, Breakpoint bp)
   {
     task.requestDeleteCodeObserver(bp, bp.getAddress());
   }
@@ -1004,26 +1024,26 @@ public class SteppingEngine
    * 
    * @param tasks The Tasks to be set as running.
    */
-  public static void setRunning (LinkedList tasks)
+  public void setRunning (LinkedList tasks)
   {
     TaskStepEngine tse = null;
     Iterator i = tasks.iterator();
     while (i.hasNext())
       {
 	Task t = (Task) i.next();
-	tse = (TaskStepEngine) taskStateMap.get(t);
+	tse = (TaskStepEngine) this.taskStateMap.get(t);
 	tse.setState(new RunningState(t));
       }
   }
   
   /**
-   * Adds the given Observer to SteppingObserver's Observer list.
+   * Adds the given Observer to this.steppingObserver's Observer list.
    * 
    * @param o The Observer to be added.
    */
-  public static void addObserver (Observer o)
+  public void addObserver (Observer o)
   {
-    steppingObserver.addObserver(o);
+    this.steppingObserver.addObserver(o);
   }
   
   /**
@@ -1031,9 +1051,9 @@ public class SteppingEngine
    * 
    * @param o The Observer to be added.
    */
-  public static void setThreadObserver (Observer o)
+  public void setThreadObserver (Observer o)
   {
-    threadLifeObservable.addObserver(o);
+    this.threadLifeObservable.addObserver(o);
   }
   
   /***********************************************************************
@@ -1041,32 +1061,32 @@ public class SteppingEngine
    **********************************************************************/
   
   /**
-   * Used by other objects to let the steppingObserver know that the work 
+   * Used by other objects to let the this.steppingObserver know that the work 
    * blocking the tasks is complete, from their perspective.
    */
-  public static void notifyStopped ()
+  public void notifyStopped ()
   {
-    steppingObserver.notifyStopped();
+    this.steppingObserver.notifyStopped();
   }
   
   /**
-   * Remove the incoming Observer object from the SteppingObserver's list of 
+   * Remove the incoming Observer object from the this.steppingObserver's list of 
    * Observers to notify. Unblocks the given process if required.
    * 
    * @param o The Observer to delete
    * @param p The Proc to delete the Observer from
    * @param unblock Whether the given Proc should be unblocked
    */
-  public static void removeObserver (Observer o, Proc p, boolean unblock)
+  public void removeObserver (Observer o, Proc p, boolean unblock)
   {
-    steppingObserver.deleteObserver(o);
+    this.steppingObserver.deleteObserver(o);
     if (unblock)
       {
         continueExecution(p.getTasks());
       }
   }
   
-  protected static class SteppingObserver
+  protected class SteppingObserver
   extends Observable
   implements TaskObserver.Instruction
   {
@@ -1086,21 +1106,21 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-//      System.err.println("SE.SO.updateEx: " + task + threadsList.size());
+//      System.err.println("SE.SO.updateEx: " + task + this.threadsList.size());
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 
        * process context. If there are no Tasks left, then notify the this 
        * Object's observers that all work has been completed. */
-      if (((TaskStepEngine) taskStateMap.get(task)).handleUpdate())
+      if (((TaskStepEngine) SteppingEngine.this.taskStateMap.get(task)).handleUpdate())
 	{
 	  Proc proc = task.getProc();
-	  int i = ((Integer) contextMap.get(proc)).intValue();
+	  int i = ((Integer) SteppingEngine.this.contextMap.get(proc)).intValue();
 	  
 	  if (--i <= 0)
 	    {
 	      if (threadsList.size() > 0)
 		{
-		  contextMap.put(proc, new Integer(threadsList.size() + i));
+		  SteppingEngine.this.contextMap.put(proc, new Integer(threadsList.size() + i));
 		  requestAdd();
 		  return Action.BLOCK;
 		}
@@ -1109,7 +1129,7 @@ public class SteppingEngine
 	      this.notifyObservers(task);
 	    }
 	  
-	  contextMap.put(proc, new Integer(i));
+	  SteppingEngine.this.contextMap.put(proc, new Integer(i));
 	}
       
       return Action.BLOCK;
@@ -1162,14 +1182,14 @@ public class SteppingEngine
   }
   
   
-  public static void requestAdd ()
+  public void requestAdd ()
   {
     LinkedList list = new LinkedList();
     Task t;
 
-    while (threadsList.size() > 0)
+    while (this.threadsList.size() > 0)
       {
-	t = (Task) threadsList.removeFirst();
+	t = (Task) this.threadsList.removeFirst();
 
 	if (t == null)
 	  continue;
@@ -1189,7 +1209,7 @@ public class SteppingEngine
     while (i.hasNext())
       {
 	t = (Task) i.next();
-	t.requestAddInstructionObserver(steppingObserver);
+	t.requestAddInstructionObserver(this.steppingObserver);
       }
   }
   
@@ -1197,7 +1217,7 @@ public class SteppingEngine
          * TASKOBSERVER.CLONED/TERMINATED OBSERVER CLASS
          **********************************************************************/
   
-  protected static class ThreadLifeObservable 
+  protected class ThreadLifeObservable 
   extends Observable
   implements TaskObserver.Cloned, TaskObserver.Terminating
   {
@@ -1206,8 +1226,8 @@ public class SteppingEngine
     
     public ThreadLifeObservable ()
     {
-      threadsList = new LinkedList();
-      exitingTasks = new LinkedList();
+      SteppingEngine.this.threadsList = new LinkedList();
+      this.exitingTasks = new LinkedList();
     }
 	
     public Action updateClonedParent (Task parent, Task offspring)
@@ -1217,10 +1237,10 @@ public class SteppingEngine
 
     public Action updateClonedOffspring (Task parent, Task offspring)
     {
-      Integer i = (Integer) contextMap.get(parent.getProc());
-      contextMap.put(parent.getProc(), new Integer(i.intValue() + 1));
-      taskStateMap.put(offspring, new TaskStepEngine(offspring));
-      threadsList.addLast(offspring);
+      Integer i = (Integer) SteppingEngine.this.contextMap.get(parent.getProc());
+      SteppingEngine.this.contextMap.put(parent.getProc(), new Integer(i.intValue() + 1));
+      SteppingEngine.this.taskStateMap.put(offspring, new TaskStepEngine(offspring, SteppingEngine.this));
+      SteppingEngine.this.threadsList.addLast(offspring);
       offspring.requestAddClonedObserver(this);
       offspring.requestAddTerminatingObserver(this);
       return Action.CONTINUE;
@@ -1229,8 +1249,8 @@ public class SteppingEngine
     public Action updateTerminating (Task task, boolean signal, int value)
     {
 //      System.err.println("threadlife.updateTerminating " + task + " " + value);
-      Integer context = (Integer) contextMap.get(task.getProc());
-      contextMap.put (task.getProc(), new Integer(context.intValue() - 1));
+      Integer context = (Integer) SteppingEngine.this.contextMap.get(task.getProc());
+      SteppingEngine.this.contextMap.put (task.getProc(), new Integer(context.intValue() - 1));
       
       cleanTask(task);
       
@@ -1254,10 +1274,11 @@ public class SteppingEngine
 
     public void deletedFrom (Object observable)
     {
-      	Task task = (Task) observable;
-      	if (this.exitingTasks.remove(task))
+//      	Task task = (Task) observable;
+      	if (this.exitingTasks.remove(observable))
       	  {
-      	    int i = ((Integer) contextMap.get(task.getProc())).intValue();
+            Task task = (Task) observable;
+      	    int i = ((Integer) SteppingEngine.this.contextMap.get(task.getProc())).intValue();
       	    if (--i > 0)
       	      {
       		contextMap.put(task.getProc(), new Integer(i));
@@ -1280,9 +1301,9 @@ public class SteppingEngine
    * TASKOBSERVER.CODE BREAKPOINT CLASS
    ****************************************************************************/
   
-  static long addy;
+  long addy;
   
-  protected static class SteppingBreakpoint
+  protected class SteppingBreakpoint
   extends Breakpoint
   implements TaskObserver.Code
   {
@@ -1294,8 +1315,9 @@ public class SteppingEngine
 
     protected boolean removed;
     
-    public SteppingBreakpoint (long address)
+    public SteppingBreakpoint (SteppingEngine steppingEngine, long address)
     {
+      super(steppingEngine, address);
 //      System.out.println("Setting address to 0x" + Long.toHexString(address));
       this.address = address;
       if (monitor == null)
@@ -1328,7 +1350,7 @@ public class SteppingEngine
         {
           addy = address;
           logHit(task, address, "adding instructionobserver {0} 0x{2}");
-          task.requestAddInstructionObserver(steppingObserver);
+          task.requestAddInstructionObserver(SteppingEngine.this.steppingObserver);
         }
 
       ++triggered;
@@ -1356,7 +1378,7 @@ public class SteppingEngine
         }
       
       Task t = (Task) observable;
-      TaskStepEngine tse = (TaskStepEngine) taskStateMap.get(t);
+      TaskStepEngine tse = (TaskStepEngine) SteppingEngine.this.taskStateMap.get(t);
       tse.setState(new RunningState(t));
       t.requestDeleteInstructionObserver(steppingObserver);
     }
@@ -1385,12 +1407,9 @@ public class SteppingEngine
     {
       return address;
     }
-    
   }
 
-  private static BreakpointManager breakpointManager = new BreakpointManager();
-
-  public static BreakpointManager getBreakpointManager()
+  public BreakpointManager getBreakpointManager()
   {
     return breakpointManager;
   }
