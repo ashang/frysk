@@ -32,6 +32,10 @@
 	* states/StepOverState.java: Ditto.
 	* states/StepOverTestState.java: Ditto.
 
+	* TestSteppingEngine (testStepOver): Enabled test.
+	(testStepOut): Enabled test.
+	(stepOverAssertions): Fixed minor bugs.
+
 2007-06-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java: Now uses StackFactory.printRichStackTrace.
