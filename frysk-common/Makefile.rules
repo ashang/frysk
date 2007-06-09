@@ -182,6 +182,7 @@ AM_CFLAGS = \
 	-I$(srcdir) \
 	-I$(top_builddir) \
 	-fPIC \
+	-fasynchronous-unwind-tables \
 	$(ZZZ)
 
 AM_CCASFLAGS = \

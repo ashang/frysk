@@ -1,3 +1,7 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* Makefile.rules (AM_CFLAGS): Build with -fasynchronous-unwind-tables.
+
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-common.ac (JAVAFLAGS, GCJFLAGS): Fix typo, replace
