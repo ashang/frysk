@@ -1,3 +1,20 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java: Fixups for new dynamic SteppingEngine class.
+	(steppingEngine): New field.
+	(getSteppingEngine): Added.
+	* ActionsCommand.java: Fixups for new dynamic SteppingEngine class.
+	* BreakpointCommand.java: Ditto.
+	* DeleteCommand.java: Ditto.
+	* DetachCommand.java: Ditto.
+	* DisableCommand.java: Ditto.
+	* EnableCommand.java: Ditto.
+	* GoCommand.java: Ditto.
+	* HaltCommand.java: Ditto.
+	* RunCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+
 2007-06-08  Andrew Cagney  <cagney@redhat.com>
 
 	* RunHandler.java: Rename this ...

@@ -1,3 +1,37 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java: Turned into dynamic class. Fixes #4605.
+	(SteppingEngine): Added. Empty constructor to inialize class data
+	structures, Proc array constructor to initialize class Procs, Proc 
+	array and Observer constructor to add class Observer before 
+	initialization.
+	(init): Added. Initializes ThreadLifeObservable and adds
+	SteppingObserver to Procs.
+	* Breakpoint.java (Breakpoint): Now takes a SteppingEngine for
+	initialization.
+	(steppingEngine): New field.
+	(PersistentBreakpoint): Takes SteppingEngine for initialization.
+	(getTaskPersistentBreakpoint): Temporarily removed.
+	* BreakpointManager.java: General fixups for dynamic SteppingEngine.
+	(BreakpointManager): Takes a SteppingEngine Object for initialization.
+	(steppingEngine): New field.
+	* SourceBreakpoint.java (enableBreakpoint): Takes a SteppingEngine.
+	(disableBreakpoint): Ditto.
+	* TaskStepEngine.java (steppingEngine): New field. Represents parent
+	SteppingEngine object.
+	(getSteppingEngine): Added.
+	* TestDisplayValue.java: Fixups for new dynamic SteppingEngine.
+	* TestStackBacktrace.java: Ditto.
+	* TestStepping.java: Ditto.
+	* TestSteppingEngine.java: Ditto.
+	* states/LineStepState.java: Ditto.
+	* states/NextInstructionStepState.java: Ditto.
+	* states/NextInstructionStepTestState.java: Ditto.
+	* states/StepAdvanceState.java: Ditto.
+	* states/StepOutState.java: Ditto.
+	* states/StepOverState.java: Ditto.
+	* states/StepOverTestState.java: Ditto.
+
 2007-06-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java: Now uses StackFactory.printRichStackTrace.

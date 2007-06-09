@@ -1,3 +1,25 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: General fixups for new dynamic
+	SteppingEngine class.
+	* SourceWindow.java (steppingEngine): New field.
+	(SourceWindow): Deal with SteppingEngine member variable instead of
+	static class.
+	(finishSourceWin): Ditto.
+	(populateStackBrowser): Ditto.
+	(removeProc): Ditto.
+	(createActions): Ditto.
+	(updateShownStackFrame): Ditto.
+	(generateProcStackTrace): Ditto.
+	(LockObserver.update): Ditto.
+	(getSteppingEngine): Added.
+	(toggleRegisterWindow): Create RegisterWindow with steppingEngine
+	member variable as parameter.
+	(toggleMemoryWindow): Ditto.
+	(toggleDisassemblyWindow): Ditto.
+	* SourceView.java (clickedOnMargin): Temporarily disabled breakpoints
+	from margin clicks.
+
 2007-06-07  Stan Cox  <scox@redhat.com>
 
 	* SourceBuffer.java (debugInfo): New.

@@ -1,3 +1,9 @@
+2007-06-09  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowMemWin.java (execute): Calls factory with new 
+	SteppingEngine object parameter.
+	* actions/ShowRegWin.java (execute): Ditto.
+
 2007-05-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ListView.java: Removed debug print statements.
