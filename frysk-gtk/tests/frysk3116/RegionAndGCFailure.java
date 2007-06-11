@@ -85,7 +85,7 @@ public class RegionAndGCFailure
 	Window drawingArea = tv.getWindow();
     
 	// Get Graphical Context.
-	GC myContext = new GC((Drawable)drawingArea);
+	new GC((Drawable)drawingArea);
 
 	// Get the y coordinates for the top and bottom of the
 	// window. This creates an anonymous Region object, that will

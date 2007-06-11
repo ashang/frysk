@@ -1,3 +1,7 @@
+2007-06-11  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk3116/RegionAndGCFailure.java: Delete myContext, unused.
+
 2007-03-02  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am: Add AM_LDFLAGS to per target LD_FLAGS.
