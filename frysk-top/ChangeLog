@@ -1,3 +1,8 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* .classpath: Fix getopt source location so eclipse can correctly find
+	getopt sources.
+
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
 	* htdocs/build/index.html: Explain about linked resources in Eclipse.
