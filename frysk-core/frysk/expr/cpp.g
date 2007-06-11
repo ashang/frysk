@@ -776,7 +776,7 @@ references returns [ArrayList el = null;]
 	throws  InvalidOperatorException, 
 		OperationNotDefinedException,
 		NameNotFoundException
-    {   String s1 = null;refList = new ArrayList();}
+    {   refList = new ArrayList();}
     :   (subscript_or_member)* {el=refList;};
 
 subscript_or_member returns [String id=null;] 
@@ -791,7 +791,7 @@ expr returns [Value returnVar=null]
 	throws  InvalidOperatorException, 
 		OperationNotDefinedException,
 		NameNotFoundException
-{ Value v1, v2, log_expr; String s1, s2; ArrayList el;}
+{ Value v1, v2, log_expr; String s1; ArrayList el;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
     |   ( #(MINUS expr expr) )=> #(MINUS v1=expr v2=expr) 
         { returnVar = v1.getType().subtract(v1, v2);  }

@@ -1,3 +1,8 @@
+2007-06-11  Andrew Cagney  <cagney@redhat.com>
+
+	* cpp.g (references): Delete unused "s1".
+	(expr): Delete unused "s2".
+
 2007-06-07  Andrew Cagney  <cagney@redhat.com>
 
 	* CppParserTokenTypes.sed: Empty.
