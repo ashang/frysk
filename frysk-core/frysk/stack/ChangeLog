@@ -1,5 +1,10 @@
 2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* StackFactory.java: Fixed package statement, and added import
+	statements to fix broken build.
+
+2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* StackFactory.java (generateTaskStackTrace): Now takes arguments
 	boolean elfOnly, boolean printParameters, boolean printScopes, and
 	boolean fullpath.

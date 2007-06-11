@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.stack;
 
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
@@ -48,6 +48,8 @@ import lib.unwind.Unwind;
 import lib.unwind.UnwindNative;
 import lib.unwind.UnwindX86;
 import frysk.proc.Task;
+import frysk.rt.Line;
+import frysk.rt.Subprogram;
 
 public class StackFactory
 { 
