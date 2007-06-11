@@ -1,3 +1,11 @@
+2007-06-11  Andrew Cagney  <cagney@redhat.com>
+
+	* antlr-warnings.awk: New file.
+	* Makefile.rules (ANTLR_BUILT): Initialize.
+	(antlr-warnings-go-away): New phony target.
+	* Makefile.gen.sh (ANTLR_BUILT): Generate list of .java files
+	built using antlr.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* Makefile.rules (AM_CFLAGS): Build with -fasynchronous-unwind-tables.

@@ -634,13 +634,14 @@ do
       awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
   ) | while read c
   do
+    echo "ANTLR_BUILT += $d/$c.java"
     echo "${nodist_lib_sources} += $d/$c.java"
     echo "BUILT_SOURCES += $d/$c.java"
     echo "EXTRA_DIST += $d/$c.sed"
     t=$d/$c.tmp
     echo "CLEANFILES += $t"
 cat <<EOF
-$d/$c.java: $g $d/$c.sed
+$d/$c.java: $g \$(srcdir)/$d/$c.sed
 	mkdir -p $t
 	\$(ANTLR) -o $t \$(srcdir)/$g
 	sed -f \$(srcdir)/$d/$c.sed < $t/$c.java > $d/$c.java
