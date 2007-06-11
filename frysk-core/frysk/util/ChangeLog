@@ -1,3 +1,12 @@
+2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StacktraceAction.java: Constructor now takes the following
+	parameters: boolean elfOnly, boolean printParameters, boolean
+	printScopes, and boolean fullpath.
+	Added Javadoc for the new parameters.
+	* StressTestFStack.java: Changed to match the above refactoring
+	* TestFStack.java: Ditto.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* StacktraceAction.java: Reflect frysk.stack package movement.

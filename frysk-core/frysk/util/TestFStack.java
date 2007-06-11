@@ -101,7 +101,7 @@ public class TestFStack
 
     StacktraceAction stacker;
 
-    stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop))
+    stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
     {
 
       public void addFailed (Object observable, Throwable w)
@@ -143,7 +143,7 @@ public class TestFStack
         Proc proc = (Proc) iter.next();
         StacktraceAction stacker;
 
-        stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop))
+        stacker = new StacktraceAction(proc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
         {
 
           public void addFailed (Object observable, Throwable w)

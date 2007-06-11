@@ -76,6 +76,11 @@ public abstract class StacktraceAction
 
   private Event event;
 
+  boolean elfOnly;
+  boolean printParameters;
+  boolean printScopes;
+  boolean fullpath;
+  
   protected static Logger logger = Logger.getLogger("frysk"); 
 
   /**
@@ -84,12 +89,26 @@ public abstract class StacktraceAction
    * @param theProc the process to run the stack trace on.
    * @param theEvent an event to run on completion of the stack trace. For
    *          example: Stop the eventLoop and exit the program.
+   * @param elfOnly if true print an elf only stack back trace not referring to any
+   *            stack debug information. Otherwise, print a rich stack trace using
+   *            debug information.
+   * @param printParameters this is only valid if elfOnly is false. If this option
+   *            is true then the parameters of each function are printed.
+   * @param printScopes this is only valid if elfOnly is false. If this is true
+   *            the scopes of the function and their respective variables are printed
+   * @param fullpath this is only valid if elfOnly is false. If this is true the entire
+   *            file path is printed other wise only the name of the file is printed.
    * @throws ProcException
    */
-  public StacktraceAction (Proc theProc, Event theEvent)
+  public StacktraceAction (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
   {
      event = theEvent;
 
+     this.elfOnly = elfOnly;
+     this.printParameters = printParameters;
+     this.printScopes = printScopes;
+     this.fullpath = fullpath;
+     
     Manager.eventLoop.add(new InterruptEvent(theProc));
   }  
 
@@ -100,7 +119,7 @@ public abstract class StacktraceAction
                new Object[] { this, task });
 
     // Print the stack frame for this stack.
-    StringBuffer taskTrace = StackFactory.generateTaskStackTrace(task);
+    StringBuffer taskTrace = StackFactory.generateTaskStackTrace(task,elfOnly,printParameters,printScopes,fullpath);
 
     if (sortedTasks == null)
       sortedTasks = new TreeMap();

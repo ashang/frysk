@@ -79,4 +79,56 @@ public class TestFstack
 	// Just look for main.
 	e.expect ("main");
     }
+    
+    public void testBackTraceWithParams ()
+    {
+        child = new Expect (new String[]
+            {
+                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
+                "5", "0", "0"
+            });
+        e = new Expect (new String[]
+            {
+                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
+                child.getPid () + "",
+                "--print","params"
+            });
+        
+        e.expect ("int argc");
+    }
+
+    public void testBackTraceWithScopes ()
+    {
+        child = new Expect (new String[]
+            {
+                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
+                "5", "0", "0"
+            });
+        e = new Expect (new String[]
+            {
+                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
+                child.getPid () + "",
+                "--print", "scopes"
+            });
+        
+        e.expect ("int sigchld_pid");
+    }
+
+    public void testBackTraceWithFullpath ()
+    {
+        child = new Expect (new String[]
+            {
+                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
+                "5", "0", "0"
+            });
+        e = new Expect (new String[]
+            {
+                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
+                child.getPid () + "",
+                "--print", "fullpath"
+            });
+        
+        e.expect (Config.getAbsRootSrcDir()+ ".*funit-child");
+    }
+
 }

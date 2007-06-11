@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.stack;
+package frysk.rt;
 
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
@@ -48,8 +48,6 @@ import lib.unwind.Unwind;
 import lib.unwind.UnwindNative;
 import lib.unwind.UnwindX86;
 import frysk.proc.Task;
-import frysk.rt.Line;
-import frysk.rt.Subprogram;
 
 public class StackFactory
 { 
@@ -136,30 +134,23 @@ public class StackFactory
   }
   
 
-  public static final StringBuffer generateTaskStackTrace (Task task)
+  public static final StringBuffer generateTaskStackTrace (Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
   {
-    if (task != null)
-      {
-      StringBuffer buffer = new StringBuffer();
+    StringBuffer buffer = new StringBuffer();
+
+    if (task != null){
       buffer.append(new StringBuffer("Task #" + task.getTid() + "\n"));
-      int count = 0;
-      
-      for (Frame frame = StackFactory.createFrame(task); frame != null; frame = frame.getOuter())
-        {
-	 // FIXME: do valgrind-like '=== PID ===' ?
-	 StringBuffer output = new StringBuffer("#" + count + " "
-					     + frame.toPrint(false)
-						     + "\n");
-
-	 buffer.append(output);
-	 count++;
-	}
-      return buffer;
+      Frame frame = StackFactory.createFrame(task);
+      if(elfOnly){
+        buffer.append(printStackTrace(frame));
+      }else{
+        buffer.append(printRichStackTrace(frame, printParameters, printScopes, fullpath));
       }
+    }
 
-    return null;
+    return buffer;
   }
-  
+
   public static String printStackTrace(Frame topFrame){
     
     String string = new String();
@@ -174,7 +165,7 @@ public class StackFactory
     return string;
   }
 
-  public static String printRichStackTrace(Frame topFrame, boolean printParameters, boolean printScopse, boolean fullpath){
+  public static String printRichStackTrace(Frame topFrame, boolean printParameters, boolean printScopes, boolean fullpath){
     
     StringBuilder stringBuilder = new StringBuilder();
     int count = 0;
@@ -182,11 +173,20 @@ public class StackFactory
     frame != null; frame = frame.getOuter()) {
       
       stringBuilder.append("#" + count + " ");
+      
       Subprogram subprogram = frame.getSubprogram();
 
       if(subprogram != null){
+        stringBuilder.append("0x");
+        String addr = Long.toHexString(frame.getAddress());
+        int padding = 2 * frame.getTask().getIsa().getWordSize() - addr.length();
         
-        stringBuilder.append(subprogram.getName() + "(");
+        for (int i = 0; i < padding; ++i)
+          stringBuilder.append('0');
+        
+        stringBuilder.append(addr);
+        
+        stringBuilder.append(" in " + subprogram.getName() + "(");
         if(printParameters){
           stringBuilder.append(subprogram.printParameters());
         }
@@ -195,16 +195,16 @@ public class StackFactory
         if(fullpath){
           Line line = frame.getLines()[0];
           stringBuilder.append(line.getFile().getPath());
-          stringBuilder.append(": line #");
+          stringBuilder.append("#");
           stringBuilder.append(line.getLine());
         }else{
           Line line = frame.getLines()[0];
           stringBuilder.append(line.getFile().getName());
-          stringBuilder.append(": line #");
+          stringBuilder.append("#");
           stringBuilder.append(line.getLine());
         }
         
-        if(printScopse){
+        if(printScopes){
           stringBuilder.append(subprogram.printScopes());
         }
         

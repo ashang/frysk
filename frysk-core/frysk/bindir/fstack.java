@@ -40,21 +40,21 @@
 package frysk.bindir;
 
 import java.io.File;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
 import frysk.event.RequestStopEvent;
-
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcBlockAction;
 import frysk.proc.ProcCoreAction;
 import frysk.proc.ProcId;
-
 import frysk.util.CommandlineParser;
 import frysk.util.StacktraceAction;
 import frysk.util.Util;
-
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 
 public final class fstack
@@ -65,14 +65,18 @@ public final class fstack
 
   protected static final Logger logger = Logger.getLogger("frysk"); 
   
+  static boolean elfOnly = true;
+  static boolean printParameters = false;
+  static boolean printScopes = false;
+  static boolean fullpath = false;
   
   private static class Stacker extends StacktraceAction
   {
 
     Proc proc;
-    public Stacker (Proc theProc, Event theEvent)
+    public Stacker (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
     {
-      super(theProc, theEvent);
+      super(theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
       System.err.println("Stacker created");
       this.proc = theProc;
     }
@@ -122,7 +126,7 @@ public final class fstack
   private static void stackCore(File coreFile)
   {
     Proc proc = Util.getProcFromCoreFile(coreFile);
-    stacker = new Stacker(proc, new AbandonPrintEvent(proc));
+    stacker = new Stacker(proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -130,7 +134,7 @@ public final class fstack
   private static void stackPid (ProcId procId)
   {
     Proc proc = Util.getProcFromPid(procId);
-    stacker = new Stacker(proc, new AbandonPrintEvent(proc));
+    stacker = new Stacker(proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
     new ProcBlockAction(proc, stacker);
     Manager.eventLoop.run();
   }
@@ -139,7 +143,6 @@ public final class fstack
   {
     parser = new CommandlineParser("fstack")
     {
-
       //@Override
       public void parseCores (File[] coreFiles)
       {
@@ -155,8 +158,47 @@ public final class fstack
       }
       
     };
-    parser.setHeader("Usage: fstack <PID> | <CORE> ...");
-
+    
+    parser.add(new Option("print", 'p', "itmes to print. Possible items:\n" +
+                "functions : print function names using debug information\n" +
+                "scopes : print variables declared in each scope within the " +
+                "function.\n" +
+                "params : print function parameters\n" +
+                "fullpath : print full executbale path" , "[item],...") {
+      
+      public void parsed(String arg) throws OptionException
+      {
+        elfOnly = true;
+        printParameters = false;
+        printScopes = false;
+        fullpath = false;
+        
+          StringTokenizer st = new StringTokenizer(arg, ",");
+          while (st.hasMoreTokens())
+          {
+            String name = st.nextToken();
+            if(name.equals("functions")){
+              elfOnly = false;
+            }
+            
+            if(name.equals("params")){
+              elfOnly = false;
+              printParameters = true;
+            }
+            
+            if(name.equals("scopes")){
+              elfOnly = false;
+              printScopes = true;
+            }
+            
+            if(name.equals("fullpath")){
+              elfOnly = false;
+              fullpath = true;
+            }
+            
+          }
+      }
+    });
     parser.parse(args);    
   }
 }

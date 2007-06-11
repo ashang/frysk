@@ -1,3 +1,9 @@
+2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StackFactory.java (generateTaskStackTrace): Now takes arguments
+	boolean elfOnly, boolean printParameters, boolean printScopes, and
+	boolean fullpath.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* RemoteFrame.java: Made less visible.
