@@ -52,7 +52,7 @@ import lib.unwind.Cursor;
 import lib.unwind.ProcInfo;
 import lib.unwind.ProcName;
 
-public class RemoteFrame extends Frame
+class RemoteFrame extends Frame
 {  
   
   private Symbol symbol;

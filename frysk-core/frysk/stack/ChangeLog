@@ -1,5 +1,8 @@
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
+	* RemoteFrame.java: Made less visible.
+	* StackFrame.java: Ditto.
+
 	* Frame.java: Moved here.
 	* FrameIdentifier.java: Ditto.
 	* RemoteFrame.java: Ditto.

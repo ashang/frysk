@@ -48,7 +48,7 @@ import lib.dw.DwflLine;
 import lib.unwind.FrameCursor;
 import java.io.File;
 
-public class StackFrame extends Frame
+class StackFrame extends Frame
 {
 
   private Frame inner;
