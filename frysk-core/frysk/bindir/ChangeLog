@@ -1,3 +1,9 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* fstack.java (stackCore): Changed to use a PrintEvent rather than
+	AbandonPrintEvent.
+	(PrintEvent): Added.
+
 2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* fstack.java: Added the --print options with possible

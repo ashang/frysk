@@ -123,10 +123,19 @@ public final class fstack
     
   }
   
+  private static class PrintEvent implements Event
+  {
+    public void execute()
+    {
+      Manager.eventLoop.requestStop();
+      System.out.println(stacker.toPrint());
+    }
+  }
+  
   private static void stackCore(File coreFile)
   {
     Proc proc = Util.getProcFromCoreFile(coreFile);
-    stacker = new Stacker(proc, new AbandonPrintEvent(proc),elfOnly,printParameters,printScopes, fullpath);
+    stacker = new Stacker(proc, new PrintEvent(),elfOnly,printParameters,printScopes, fullpath);
     new ProcCoreAction(proc, stacker);
     Manager.eventLoop.run();
   }
