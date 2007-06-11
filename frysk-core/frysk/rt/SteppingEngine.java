@@ -403,16 +403,20 @@ public class SteppingEngine
         setUpLineStep(task);
         return;
       }
-    
-    this.taskStateMap.put(task, new StepAdvanceState(task));
-    
+
+    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
+    tse.setState(new StepAdvanceState(task));
+
     int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
     this.contextMap.put(task.getProc(), new Integer(++i));
-    
-  /* Set a breakpoint on the current address of the given frame, which is
-   * the return address of its inner frame(s). */
-  this.breakpoint = new SteppingBreakpoint(this, frame.getOuter().getAddress());
-  task.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
+
+    /*
+     * Set a breakpoint on the current address of the given frame, which is the
+     * return address of its inner frame(s).
+     */
+    this.breakpoint = new SteppingBreakpoint(this,
+                                             frame.getAddress());
+    task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
   }
   
   public void setUpStepNextInstruction (Task task, Frame lastFrame)
@@ -1109,7 +1113,7 @@ public class SteppingEngine
      */
     public synchronized Action updateExecuted (Task task)
     {
-//      System.err.println("SE.SO.updateEx: " + task + this.threadsList.size());
+//      System.err.println("SE.SO.updateEx: " + task);
       /* Check to see if acting upon this event produces a stopped state
        * change. If so, decrement the number of Tasks active in the Task's 
        * process context. If there are no Tasks left, then notify the this 

@@ -1,3 +1,10 @@
+2007-06-11  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (setUpStepAdvance): Fixed some minor bugs.
+	* TestSteppingEngine.java (testStepAdvance): Added.
+	(complexStepAssertions): Added code for step-advance.
+	(LockObserver.update): Ditto.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* Frame.java: Moved to frysk.stack.

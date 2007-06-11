@@ -91,6 +91,10 @@ public class TestSteppingEngine extends TestLib
   protected static final int INSTRUCTION_STEP_LIST = 13;
   protected static final int STEP_IN_LIST = 14;
   
+  protected static final int STEP_ADVANCE = 15;
+  protected static final int STEP_ADVANCE_GO = 16;
+  protected static final int STEP_ADVANCE_STEPPING = 17;
+  
   private boolean insStepFlag = true;
   
   private LockObserver lock;
@@ -314,6 +318,38 @@ public class TestSteppingEngine extends TestLib
     lock = new LockObserver();
 
     testState = STEP_OUT;
+    
+    AckDaemonProcess process = new AckDaemonProcess
+    (Sig.USR1,
+     new String[] {
+        getExecPath ("funit-rt-stepper"),
+        "" + Pid.get (),
+        "" + Sig.USR1_
+    });
+    
+    myTask = process.findTaskUsingRefresh(true);
+    myProc = myTask.getProc();
+    assertNotNull(myProc);
+    
+    Proc[] temp = new Proc[1];
+    temp[0] = myProc;
+    se = new SteppingEngine(temp, lock);
+    
+    assertRunUntilStop("Attempting to add observer");
+    se.clear();
+  }
+  
+  public void testStepAdvance ()
+  {
+      if (brokenPpcXXX (3277))
+      return;
+
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+
+    testState = STEP_ADVANCE;
     
     AckDaemonProcess process = new AckDaemonProcess
     (Sig.USR1,
@@ -639,8 +675,10 @@ public class TestSteppingEngine extends TestLib
   
   public void complexStepAssertions (Task myTask)
   {
-    if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT
-        || this.testState == STEP_OUT)
+    if (this.testState == STEP_OVER 
+        || this.testState == INSTRUCTION_STEP_NEXT
+        || this.testState == STEP_OUT
+        || this.testState == STEP_ADVANCE)
       {
         int lineNum;
         Frame sFrame = StackFactory.createFrame(myTask, 1);
@@ -670,6 +708,11 @@ public class TestSteppingEngine extends TestLib
                 this.testState = STEP_OUT_GO;
                 se.setUpLineStep(myTask);
               }
+            else if (this.testState == STEP_ADVANCE)
+              {
+                this.testState = STEP_ADVANCE_GO;
+                se.setUpLineStep(myTask);
+              }
             
           }
     else
@@ -688,7 +731,8 @@ public class TestSteppingEngine extends TestLib
          * the important sections of code have been reached. */
         if (this.testState != STEP_OVER_STEPPING
             && this.testState != INSTRUCTION_STEP_NEXT_STEPPING
-            && this.testState != STEP_OUT_STEPPING)
+            && this.testState != STEP_OUT_STEPPING
+            && this.testState != STEP_ADVANCE_STEPPING)
           {
             int prev = ((Integer) this.lineMap.get(myTask)).intValue();
             this.lineMap.put(myTask, new Integer(line.getLine()));
@@ -703,6 +747,7 @@ public class TestSteppingEngine extends TestLib
                     return;
                   }
                se.setUpLineStep(myTask);
+               return;
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
               {
@@ -722,6 +767,7 @@ public class TestSteppingEngine extends TestLib
                     return;
                   }
                 se.setUpLineStep(myTask);
+                return;
               }
             else if (this.testState == STEP_OUT_GO)
               {
@@ -732,6 +778,21 @@ public class TestSteppingEngine extends TestLib
                   }
                 else
                   se.setUpLineStep(myTask);
+                
+                return;
+              }
+            else if (this.testState == STEP_ADVANCE_GO)
+              {
+                if (line.getLine() >= 60 && line.getLine() <= 67)
+                  {
+                    this.testState = STEP_ADVANCE_STEPPING;
+                    Frame outer =  StackFactory.createFrame(myTask, 3).getOuter();
+                    se.setUpStepAdvance(myTask, outer);
+                  }
+                else
+                  se.setUpLineStep(myTask);
+                
+                return;
               }
             else
               {
@@ -809,6 +870,30 @@ public class TestSteppingEngine extends TestLib
             frame = frame.getOuter();
             assertEquals ("demangled name", "main",
 			  frame.getSymbol ().getDemangledName ());
+            
+            Manager.eventLoop.requestStop();
+            return;
+          }
+        else if (this.testState == STEP_ADVANCE_STEPPING)
+          {
+            Frame frame = StackFactory.createFrame(myTask, 2);
+            
+            if (frame.getLines().length == 0)
+              {
+                se.stepInstruction(myTask);
+                return;
+              }
+            
+            /* Make sure we're not missing any frames */
+              
+            int lineNr = frame.getLines()[0].getLine ();
+            assertTrue ("line number", (lineNr == 95 || lineNr == 96));
+            
+            assertEquals ("demangled name", "foo",
+                          frame.getSymbol ().getDemangledName ());
+            frame = frame.getOuter();
+            assertEquals ("demangled name", "main",
+                          frame.getSymbol ().getDemangledName ());
             
             Manager.eventLoop.requestStop();
             return;
@@ -938,7 +1023,8 @@ public class TestSteppingEngine extends TestLib
          //System.out.println("Lock.update");
           if (testState <= STEP_IN)
             stepAssertions(myProc.getMainTask());
-          else if (testState > STEP_IN && testState <= STEP_OUT_STEPPING)
+          else if (testState > STEP_IN && testState <= STEP_OUT_STEPPING
+              || testState >= STEP_ADVANCE && testState <= STEP_ADVANCE_STEPPING)
             complexStepAssertions(myProc.getMainTask());
           else if (testState == BREAKPOINTING)
             breakpointAssertions();
