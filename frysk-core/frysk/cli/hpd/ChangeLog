@@ -1,5 +1,9 @@
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
+	* StepInstructionCommand.java (handle): Use abstract Frame rather than 
+	RemoteFrame.
+	* StepInstructionCommand.java (handle): Ditto.
+
 	* CLI.java: Reflect frysk.stack package movement.
 	* WhereCommand.java: Ditto.
 	* StepInstructionCommand.java: Ditto.

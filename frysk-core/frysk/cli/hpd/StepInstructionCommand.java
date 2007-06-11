@@ -42,7 +42,7 @@ package frysk.cli.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import frysk.stack.RemoteFrame;
+import frysk.stack.Frame;
 
 public class StepInstructionCommand implements CommandHandler
 {
@@ -78,7 +78,7 @@ public class StepInstructionCommand implements CommandHandler
                 catch (InterruptedException ie) {}
               }
             
-            RemoteFrame rf = (RemoteFrame) this.cli.debugInfo.getCurrentFrame();
+            Frame rf = this.cli.debugInfo.getCurrentFrame();
             
             if (rf.getLines().length == 0)
               this.cli.addMessage("Task stopped at address 0x" + rf.getAdjustedAddress(), Message.TYPE_NORMAL);
