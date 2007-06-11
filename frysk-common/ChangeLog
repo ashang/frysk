@@ -1,5 +1,9 @@
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (antlr-warnings-go-away): When HAVE_ECJ, run ECJ
+	directly to compile the java files.
+	* antlr-warnings.awk: Add parser for ECJ style warnings.
+	
 	* antlr-warnings.awk: Comment out unused theRetToken.
 	
 	* antlr-warnings.awk: New file.

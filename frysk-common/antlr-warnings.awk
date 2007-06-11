@@ -4,47 +4,62 @@
 # code from antlr.  It needs to be run iteratively as often warnings
 # are masked.
 
-# A GCC warning, from GCJ, looks like:
-# <file>:<line>: error: <what>
-# ... <line> ...
-#     ^^^^^^
-
-# A GCJ warning looks like:
-# ? ? ?
-# ... <line> ...
-
-function sed_comment(code) {
-    return "s," code ",// " code ","
-}
 
 function get_prob_field(field) {
     return gensub(/^(.*\.java):([0-9]+): (error|warning): (.*)$/, \
 		  "\\" field, "")
 }
 
-# Scan for compiler warnings
+{ file = "" }
+
+# A GCJ warning, from ECJ, looks like:
+# <file>:<line>: error: <prob>
+# ... <code> ...
+#     ^^^^^^
+
+/^.*\.java:[0-9]+: (error|warning): .*$/ {
+    file = get_prob_field(1)
+    line = get_prob_field(2)
+    prob = get_prob_field(4)
+    getline
+    code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
+}
+
+# An ECJ  warning looks like:
+# <num>. WARNING in <file>
+#  (at line <line>)
+# ... <code> ...
+#     ^^^^^^
+# <prob>
+
+/^[[:digit:]]+\. WARNING in .*\.java$/ {
+    file = $4
+    getline
+    line = gensub(/)/, "", "", $3)
+    getline
+    code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
+    getline
+    getline
+    prob = $0
+}
+
+# Did the warning get recognized?
+{ if (file == "") next }
+
 {
-    if (/^.*\.java:[0-9]+: (error|warning): .*$/) {
-	file = get_prob_field(1)
-	line = get_prob_field(2)
-	prob = get_prob_field(4)
-	base = gensub(/.*\/([[:alnum:]]*)\.java/, "\\1", "", file)
-	getline
-	code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
-	if (DEBUG) {
-	    print "file=" file >> "/dev/stderr"
-	    print "line=" line >> "/dev/stderr"
-	    print "prob=" prob >> "/dev/stderr"
-	    print "base=" base >> "/dev/stderr"
-	    print "code=" code >> "/dev/stderr"
-	}
-    } else {
-	next
+    base = gensub(/.*\/([[:alnum:]]*)\.java/, "\\1", "", file)
+    sed = ""
+    if (DEBUG) {
+        print "file=" file >> "/dev/stderr"
+        print "line=" line >> "/dev/stderr"
+        print "prob=" prob >> "/dev/stderr"
+        print "base=" base >> "/dev/stderr"
+	print "code=" code >> "/dev/stderr"
     }
 }
 
-{
-    sed = ""
+function sed_comment(code) {
+    return "s," code ",// " code ","
 }
 
 prob ~ /Unnecessary semicolon/ {
