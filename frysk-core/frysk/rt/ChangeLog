@@ -1,3 +1,9 @@
+2007-06-11  Mike Cvet  <mcvet@redhat.com>
+
+	* TestSteppingEngine.java (testInstructionNext): Enabled test.
+	(stepOverAssertions): Renamed to complexStepAssertions().
+	(complexStepAssertions): Minor fixes.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java: Turned into dynamic class. Fixes #4605.

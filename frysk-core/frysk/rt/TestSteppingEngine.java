@@ -263,8 +263,8 @@ public class TestSteppingEngine extends TestLib
   
   public void testInstructionNext ()
   {
-    if (brokenXXX(4083))
-      return;
+//    if (brokenXXX(4083))
+//      return;
     
       if (brokenPpcXXX (3277))
       return;
@@ -288,6 +288,7 @@ public class TestSteppingEngine extends TestLib
     myProc = myTask.getProc();
     assertNotNull(myProc);
     
+    insStepFlag = true;
     Proc[] temp = new Proc[1];
     temp[0] = myProc;
     se = new SteppingEngine(temp, lock);
@@ -634,12 +635,11 @@ public class TestSteppingEngine extends TestLib
       }
   }
   
-  public void stepOverAssertions (Task myTask)
+  public void complexStepAssertions (Task myTask)
   {
     if (this.testState == STEP_OVER || this.testState == INSTRUCTION_STEP_NEXT
         || this.testState == STEP_OUT)
       {
-
         int lineNum;
         Frame sFrame = StackFactory.createFrame(myTask, 1);
         
@@ -677,6 +677,7 @@ public class TestSteppingEngine extends TestLib
         if (sFrame.getLines().length == 0)
           {
             se.setUpLineStep(myTask);
+            return;
           }
         
         Line line = sFrame.getLines()[0];
@@ -704,7 +705,7 @@ public class TestSteppingEngine extends TestLib
             else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
               {
                 /* About to pop a frame off of the stack */
-                if (line.getLine() == 95 && (prev < 95 && prev > 91))
+                if (line.getLine() == 95 && (prev <= 95 && prev > 91))
                   {
                     if (insStepFlag)
                       {
@@ -718,7 +719,7 @@ public class TestSteppingEngine extends TestLib
                       }
                     return;
                   }
-                se.setUpLineStep(myTask.getProc().getTasks());
+                se.setUpLineStep(myTask);
               }
             else if (this.testState == STEP_OUT_GO)
               {
@@ -741,6 +742,12 @@ public class TestSteppingEngine extends TestLib
         else if (this.testState == STEP_OVER_STEPPING)
           {
                 Frame frame = StackFactory.createFrame(myTask, 2);
+                
+                if (frame.getLines().length == 0)
+                  {
+                    se.stepInstruction(myTask);
+                    return;
+                  }
 
                 /* Make sure we're not missing any frames */
                   
@@ -759,6 +766,12 @@ public class TestSteppingEngine extends TestLib
         else if (this.testState == INSTRUCTION_STEP_NEXT_STEPPING)
           {
             Frame frame = StackFactory.createFrame(myTask, 2);
+            
+            if (frame.getLines().length == 0)
+              {
+                se.stepInstruction(myTask);
+                return;
+              }
 
             /* Make sure we're not missing any frames */
               
@@ -778,6 +791,12 @@ public class TestSteppingEngine extends TestLib
           {
             Frame frame = StackFactory.createFrame(myTask, 2);
 
+            if (frame.getLines().length == 0)
+              {
+                se.stepInstruction(myTask);
+                return;
+              }
+            
             /* Make sure we're not missing any frames */
               
 	    int lineNr = frame.getLines()[0].getLine ();
@@ -918,7 +937,7 @@ public class TestSteppingEngine extends TestLib
           if (testState <= STEP_IN)
             stepAssertions(myProc.getMainTask());
           else if (testState > STEP_IN && testState <= STEP_OUT_STEPPING)
-            stepOverAssertions(myProc.getMainTask());
+            complexStepAssertions(myProc.getMainTask());
           else if (testState == BREAKPOINTING)
             breakpointAssertions();
         }
