@@ -1,3 +1,8 @@
+2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (setEditSessionMode): Removed
+	refiltering of data. Fixes 4603.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* disassembler/DisassemblyWindowFactory.java: General fixups for new

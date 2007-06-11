@@ -256,8 +256,6 @@ public class CreateFryskSessionDruid
 
     setupNameEntry();
 
-    unFilterData();
-    filterDataInSession();
   }
 
   public void loadSessionMode (Session givenSession)
