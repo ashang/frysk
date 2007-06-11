@@ -207,6 +207,7 @@ public class TestElf
     // Should only be one thread in this core file.
     assertEquals("Number of  threads",1,threads.length);
 
+    assertNotNull("Check thread data is not null",threads[0]);
     ElfPrstatus elfPrstatusInfo = threads[0];
     
     assertEquals("note: Sig Info -> Sig No",6,elfPrstatusInfo.getPrInfoSiSigno());

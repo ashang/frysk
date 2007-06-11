@@ -165,6 +165,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
       {
 	byte b[]  = (byte[]) i.next();
 	threadList[count] = new ElfPrstatus(b,noteData.getParent());
+	count++;
       }
 	
     internalThreads.clear();
