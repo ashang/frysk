@@ -1,3 +1,14 @@
+2007-06-11  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java (setTask): Default to reading 64-bit words
+	on 64-bit platforms.
+	(setTask.formatDialog.lifeCycleEvent): Refresh display on dialog exit.
+	(setTask.bitsCombo.comboBoxEvent): Update column titles on new bit
+	selection.
+	* disassembler/DisassemblyWindow.java (setTask): Hide format button
+	instead of shading out.
+	(handleToSpin): Fix a couple of spinning bugs.
+
 2007-06-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* gladedir/frysk_create_session_druid.glade: Fix tooltips so they

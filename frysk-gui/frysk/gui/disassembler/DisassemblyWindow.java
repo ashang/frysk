@@ -309,7 +309,7 @@ public class DisassemblyWindow
       }
     });
     
-    ((Button) this.glade.getWidget("formatButton")).setSensitive(false);
+    ((Button) this.glade.getWidget("formatButton")).hideAll();
     
     this.fromSpin.addListener(new SpinListener()
     {
@@ -745,10 +745,7 @@ public class DisassemblyWindow
         Instruction ins = (Instruction) this.model.getValue(this.model.getIter(this.lastPath),
                                                 (DataColumnObject) cols[OBJ]);
         
-        this.toSpin.setValue((double) ins.address);
-        this.toBox.setText(Long.toHexString(ins.address));
-        
-        while (ins.address > val)
+        while (ins != null && ins.address > val)
           {
             model.removeRow(model.getIter(this.lastPath));
             this.lastPath.previous();
@@ -757,6 +754,13 @@ public class DisassemblyWindow
                                                     (DataColumnObject) cols[OBJ]);
             --this.numInstructions;
           }
+        
+        if (ins == null)
+          return;
+        
+        this.toSpin.setValue((double) ins.address);
+        this.lastKnownTo = ins.address;
+        this.toBox.setText(Long.toHexString(ins.address));
         
         refreshList();
       }

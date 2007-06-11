@@ -207,8 +207,6 @@ public class MemoryWindow
     super(glade.getWidget("memoryWindow").getHandle());
     this.glade = glade;
     this.formatDialog = new MemoryFormatDialog(this.glade);
-    if (currentFormat == 0)
-      currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
 
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
@@ -294,6 +292,14 @@ public class MemoryWindow
     this.myTask = myTask;
     long pc_inc;
     
+    if (currentFormat == 0)
+      {
+        if (myTask.getIsa() instanceof frysk.proc.IsaX8664 || myTask.getIsa() instanceof frysk.proc.IsaPPC64)
+          currentFormat = SIXTYFOUR_BIT;
+        else
+          currentFormat = THIRTYTWO_BIT;
+      }
+    
     this.diss = new Disassembler(myTask.getMemory());
     pc_inc = myTask.getIsa().pc(myTask);
     long end = pc_inc + 50;
@@ -378,6 +384,7 @@ public class MemoryWindow
 
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
+        refreshList();
       }
 
     });
@@ -392,7 +399,22 @@ public class MemoryWindow
               {
                 return;
               }
-            currentFormat = bitsList.indexOf(bitsCombo.getSelectedObject());
+            
+            int temp = bitsList.indexOf(bitsCombo.getSelectedObject());
+            
+            /* Replace the X in the title of the column with the bitsize to be displayed,
+             * and then append the columns into the view. */
+            for (int i = 0; i < columns.length - 1; i++)
+              {
+                TreeViewColumn col = columns[i];
+                col.setTitle(colNames[i].replaceFirst(
+                                                      "X",
+                                                      ""
+                                                          + (int) Math.pow(
+                                                                           2,
+                                                                           temp + 3)));
+              }
+            currentFormat = temp;
             recalculate();
           }
       }
@@ -712,7 +734,7 @@ public class MemoryWindow
           }
         catch (Exception e)
           {
-            System.out.println(e.getMessage());
+            return;
           }
         break;
 
@@ -724,7 +746,7 @@ public class MemoryWindow
           }
         catch (Exception e)
           {
-            System.out.println(e.getMessage());
+            return;
           }
         break;
 
@@ -736,7 +758,7 @@ public class MemoryWindow
           }
         catch (Exception e)
           {
-            System.out.println(e.getMessage());
+            return;
           }
         break;
 
@@ -748,7 +770,7 @@ public class MemoryWindow
           }
         catch (Exception e)
           {
-            System.out.println(e.getMessage());
+            return;
           }
         break;
       }
