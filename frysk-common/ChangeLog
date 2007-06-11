@@ -1,5 +1,8 @@
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
+	* antlr-warnings.awk: Parse ECJ warnings with line-number on
+	message line.
+	
 	* Makefile.rules (antlr-warnings-go-away): When HAVE_ECJ, run ECJ
 	directly to compile the java files.
 	* antlr-warnings.awk: Add parser for ECJ style warnings.

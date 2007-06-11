@@ -10,43 +10,48 @@ function get_prob_field(field) {
 		  "\\" field, "")
 }
 
-{ file = "" }
-
+{
+    if ($0 ~ /^.*\.java:[0-9]+: (error|warning): .*$/) {
 # A GCJ warning, from ECJ, looks like:
 # <file>:<line>: error: <prob>
 # ... <code> ...
 #     ^^^^^^
-
-/^.*\.java:[0-9]+: (error|warning): .*$/ {
-    file = get_prob_field(1)
-    line = get_prob_field(2)
-    prob = get_prob_field(4)
-    getline
-    code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
-}
-
+	file = get_prob_field(1)
+	line = get_prob_field(2)
+	prob = get_prob_field(4)
+	getline
+	code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
+    } else if ($0 ~ /^[[:digit:]]+\. WARNING in .*\.java$/) {
 # An ECJ  warning looks like:
 # <num>. WARNING in <file>
 #  (at line <line>)
 # ... <code> ...
 #     ^^^^^^
 # <prob>
-
-/^[[:digit:]]+\. WARNING in .*\.java$/ {
-    file = $4
-    getline
-    line = gensub(/)/, "", "", $3)
-    getline
-    code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
-    getline
-    getline
-    prob = $0
-}
-
-# Did the warning get recognized?
-{ if (file == "") next }
-
-{
+	file = $4
+	getline
+	line = gensub(/)/, "", "", $3)
+	getline
+	code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
+	getline
+	getline
+	prob = $0
+    } else if ($0 ~ /^[[:digit:]]+\. WARNING in .*\.java \(at line .*\)$/) {
+# An ECJ  warning also looks like:
+# <num>. WARNING in <file> (at line <line>)
+# ... <code> ...
+#     ^^^^^^
+# <prob>
+	file = $4
+	line = gensub(/)/, "", "", $7)
+	getline
+	code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
+	getline
+	getline
+	prob = $0
+    } else {
+	next
+    }
     base = gensub(/.*\/([[:alnum:]]*)\.java/, "\\1", "", file)
     sed = ""
     if (DEBUG) {
