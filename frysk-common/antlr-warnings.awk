@@ -70,12 +70,16 @@ prob ~ /The local variable .* is never read/ {
 	sed = sed_comment(code)
     } else if (code ~ /Token _token = null;/) {
 	sed = sed_comment(code)
+    } else if (code ~ /Token theRetToken=null;/) {
+	sed = sed_comment(code)
     }
 }
 
 prob ~ /.* cannot be resolved/ {
     if (code ~ /[_[:alnum:]]*_AST = /) {
 	sed = "s,\\([a-zA-Z0-9]*_AST =\\),/* \\1 */,"
+    } else if (code ~ /theRetToken=_returnToken;/) {
+	sed = sed_comment(code);
     }
 }
 

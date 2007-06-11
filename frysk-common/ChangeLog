@@ -1,5 +1,7 @@
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
+	* antlr-warnings.awk: Comment out unused theRetToken.
+	
 	* antlr-warnings.awk: New file.
 	* Makefile.rules (ANTLR_BUILT): Initialize.
 	(antlr-warnings-go-away): New phony target.
