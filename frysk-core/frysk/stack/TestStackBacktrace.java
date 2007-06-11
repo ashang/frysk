@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.stack;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +53,9 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TestLib;
 //import frysk.sys.proc.MapsBuilder;
+import frysk.rt.Line;
+import frysk.rt.SteppingEngine;
+import frysk.rt.Symbol;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 

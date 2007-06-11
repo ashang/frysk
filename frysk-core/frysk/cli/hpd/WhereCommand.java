@@ -41,7 +41,8 @@ package frysk.cli.hpd;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import frysk.rt.Frame;
+
+import frysk.stack.Frame;
   
 class WhereCommand
     implements CommandHandler

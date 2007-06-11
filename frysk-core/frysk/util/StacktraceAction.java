@@ -52,7 +52,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
 import frysk.proc.Task;
-import frysk.rt.StackFactory;
+import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 
 public abstract class StacktraceAction

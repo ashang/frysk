@@ -1,3 +1,9 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* eventviewer/Event.java: Reflect frysk.stack package movement.
+	* actions/CaptureStackTraceAction.java: Ditto.
+	* actions/PrintTaskBacktrace.java: Ditto.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/ShowMemWin.java (execute): Calls factory with new 

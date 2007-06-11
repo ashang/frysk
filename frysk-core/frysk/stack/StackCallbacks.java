@@ -38,10 +38,11 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.stack;
 
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.rt.RtLogger;
 import inua.eio.ByteBuffer;
 
 import java.util.logging.Level;

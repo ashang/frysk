@@ -1,3 +1,9 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* StacktraceAction.java: Reflect frysk.stack package movement.
+	* Ftrace.java: Ditto.
+	* TestFCatch.java: Ditto.
+
 2007-06-08  Nurdin Premji  <npremji@redhat.com>
 
 	* CommandLineParser.java (CommandLineParser): Enable longOnly mode, 

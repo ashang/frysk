@@ -68,10 +68,10 @@ import frysk.value.Value;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.ptrace.AddressSpaceByteBuffer;
-import frysk.rt.Frame;
 import frysk.rt.LexicalBlock;
-import frysk.rt.StackFactory;
 import frysk.rt.Subprogram;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace.AddressSpace;
 

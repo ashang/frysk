@@ -58,9 +58,9 @@ import java.lang.RuntimeException;
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
 import frysk.rt.SteppingEngine;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class CLI 
 {

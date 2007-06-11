@@ -43,8 +43,8 @@ package frysk.util;
 import java.util.Iterator;
 import java.util.logging.Level;
 
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.proc.Action;

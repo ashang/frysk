@@ -41,9 +41,9 @@ package frysk.rt.states;
 
 import lib.dw.DwflLine;
 import frysk.proc.Task;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
 import frysk.rt.TaskStepEngine;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class StepOverTestState extends State
 {

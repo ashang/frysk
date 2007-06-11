@@ -56,7 +56,7 @@ import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 import frysk.value.Value;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 /**
  * The InlineBuffer performs much of the same functionality as the SourceBuffer,

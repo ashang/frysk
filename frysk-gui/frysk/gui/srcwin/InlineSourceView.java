@@ -59,7 +59,7 @@ import frysk.gui.prefs.IntPreference;
 import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.value.Value;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always

@@ -1,0 +1,12 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* Frame.java: Moved here.
+	* FrameIdentifier.java: Ditto.
+	* RemoteFrame.java: Ditto.
+	* StackAccessors.java: Ditto.
+	* StackCallbacks.java: Ditto.
+	* StackFactory.java: Ditto.
+	* StackFrame.java: Ditto.
+	* TestFrame.java: Ditto.
+	* TestFrameIdentifier.java: Ditto.
+	* TestStackBacktrace.java: Ditto.	

@@ -42,6 +42,7 @@ package frysk.rt;
 import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
 import frysk.rt.states.*;
+import frysk.stack.FrameIdentifier;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 

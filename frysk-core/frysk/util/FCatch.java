@@ -53,8 +53,8 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class FCatch
 {

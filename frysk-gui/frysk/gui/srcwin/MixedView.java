@@ -45,7 +45,7 @@ import java.util.List;
 import org.gnu.gtk.HPaned;
 import org.gnu.gtk.ScrolledWindow;
 
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 public class MixedView
     extends HPaned

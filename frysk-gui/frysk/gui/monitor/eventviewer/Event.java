@@ -47,8 +47,8 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiTask;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class Event extends GuiObject
 {

@@ -82,7 +82,7 @@ public class Symbol
     /**
      * Create a new Symbol; when the size is unknown.
      */
-    Symbol (long address, String name)
+    public Symbol (long address, String name)
     {
 	this (address, -1, name);
     }

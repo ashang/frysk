@@ -48,6 +48,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TestLib;
+import frysk.stack.StackFactory;
 import frysk.value.Value;
 
 public class TestDisplayValue

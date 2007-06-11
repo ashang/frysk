@@ -40,9 +40,9 @@
 package frysk.rt.states;
 
 import frysk.proc.Task;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
 import frysk.rt.TaskStepEngine;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class NextInstructionStepTestState extends State
 {

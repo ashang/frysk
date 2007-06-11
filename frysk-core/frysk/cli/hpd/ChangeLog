@@ -1,3 +1,11 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* CLI.java: Reflect frysk.stack package movement.
+	* WhereCommand.java: Ditto.
+	* StepInstructionCommand.java: Ditto.
+	* StepCommand.java: Ditto.
+	* ListCommand.java: Ditto.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* CLI.java: Fixups for new dynamic SteppingEngine class.

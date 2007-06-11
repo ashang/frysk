@@ -1,3 +1,7 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* DOMFactory.java: Reflect frysk.stack package movement.
+
 2007-05-28  Nurdin Premji  <npremji@redhat.com>
 
 	* TestDOM.java (testDOMFormFeed): Added.

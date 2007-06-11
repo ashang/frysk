@@ -45,6 +45,9 @@ import javax.naming.NameNotFoundException;
 
 import frysk.debuginfo.DebugInfo;
 import frysk.proc.Task;
+import frysk.stack.Frame;
+import frysk.stack.FrameIdentifier;
+import frysk.stack.StackFactory;
 import frysk.value.Value;
 
 /**

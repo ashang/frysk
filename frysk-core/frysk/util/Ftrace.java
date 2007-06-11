@@ -49,8 +49,8 @@ import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Forked;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import inua.util.PrintWriter;
 
 import java.util.HashMap;

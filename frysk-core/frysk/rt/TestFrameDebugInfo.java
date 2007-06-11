@@ -49,6 +49,8 @@ import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TestLib;
 import frysk.proc.TaskObserver.Terminating;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import frysk.value.Value;
 
 public class TestFrameDebugInfo

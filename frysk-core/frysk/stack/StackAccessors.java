@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.stack;
 
 import java.math.BigInteger;
 import java.util.Arrays;

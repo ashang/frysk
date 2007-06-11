@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.stack;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

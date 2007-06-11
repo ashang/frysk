@@ -62,7 +62,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMLine;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 public class CurrentStackView
 	extends TreeView

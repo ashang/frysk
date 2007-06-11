@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.gnu.gtk.Widget;
 
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 
 public interface View{

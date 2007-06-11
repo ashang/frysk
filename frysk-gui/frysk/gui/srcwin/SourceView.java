@@ -94,7 +94,7 @@ import frysk.gui.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 //import frysk.rt.LineBreakpoint;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 import frysk.value.Value;
 //import frysk.rt.BreakpointManager;
 //import frysk.rt.SteppingEngine;

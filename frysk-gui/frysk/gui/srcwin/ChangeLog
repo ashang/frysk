@@ -1,3 +1,13 @@
+2007-06-11  Nurdin Premji  <npremji@redhat.com>
+
+	* MixedView.java: Reflect frysk.stack package movement.
+	* CurrentStackView.java: Ditto.
+	* SourceWindowFactory.java: Ditto.
+	* SourceBuffer.java: Ditto.
+	* SourceWindow.java: Ditto.
+	* InlineSourceView.java: Ditto.	
+	* InlineBuffer.java: Ditto.
+
 2007-06-09  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceBuffer.java (setScope): Calls new DebugInfo.refresh(Frame).

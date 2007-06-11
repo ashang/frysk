@@ -37,12 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.stack;
 
 import java.io.File;
 
 import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
+import frysk.rt.Line;
+import frysk.rt.Symbol;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;

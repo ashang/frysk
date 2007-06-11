@@ -45,8 +45,8 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.eventviewer.Event;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
-import frysk.rt.Frame;
-import frysk.rt.StackFactory;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 public class CaptureStackTraceAction
     extends TaskAction

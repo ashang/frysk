@@ -42,7 +42,7 @@ package frysk.cli.hpd;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import frysk.rt.RemoteFrame;
+import frysk.stack.RemoteFrame;
 
 public class StepInstructionCommand implements CommandHandler
 {

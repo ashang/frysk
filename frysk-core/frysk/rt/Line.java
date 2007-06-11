@@ -68,7 +68,7 @@ public class Line
   
   private DOMFunction function;
 
-  Line (File file, int line, int column, Proc proc)
+  public Line (File file, int line, int column, Proc proc)
   {
     this.file = file;
     this.line = line;

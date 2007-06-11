@@ -40,7 +40,8 @@
 package frysk.cli.hpd;
 
 import java.util.ArrayList;
-import frysk.rt.Frame;
+
+import frysk.stack.Frame;
 import lib.dw.DwarfDie;
 import java.io.IOException;
 import java.io.FileReader;

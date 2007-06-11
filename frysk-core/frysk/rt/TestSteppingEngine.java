@@ -49,6 +49,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TestLib;
 import frysk.rt.states.State;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.event.Event;

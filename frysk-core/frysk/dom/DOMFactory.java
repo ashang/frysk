@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.io.File;
 import lib.dw.NoDebugInfoException;
 import frysk.proc.Proc;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;

@@ -60,7 +60,7 @@ import frysk.proc.Proc;
 import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.rt.Frame;
+import frysk.stack.Frame;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects

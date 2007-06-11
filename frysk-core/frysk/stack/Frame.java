@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+package frysk.stack;
 
 import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
@@ -47,6 +47,9 @@ import lib.unwind.Cursor;
 import frysk.debuginfo.DebugInfo;
 import frysk.dwfl.DwflFactory;
 import frysk.proc.Task;
+import frysk.rt.Line;
+import frysk.rt.Subprogram;
+import frysk.rt.Symbol;
 
 public abstract class Frame
 {
