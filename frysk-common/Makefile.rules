@@ -835,7 +835,7 @@ antlr-warnings-go-away:
 	    echo Scanning warnings ; \
 	    if test x$(HAVE_ECJ_TRUE) = x ; then \
 	        rm -rf ecj ; \
-	        $(GIJ) 2>&1 \
+	        ( set -x ; $(GIJ) 2>&1 \
 		    --classpath $(ECJ_JAR):$(CLASSPATH) \
 		    org.eclipse.jdt.internal.compiler.batch.Main \
 		    \
@@ -843,9 +843,9 @@ antlr-warnings-go-away:
 		    -warn:+semicolon \
 		    -sourcepath $(SOURCEPATH) \
 		    -classpath $(CLASSPATH) \
-		    $(ANTLR_BUILT) ; \
+		    $(ANTLR_BUILT) ) ; \
 	    else \
-	        $(MAKE) -k $(ANTLR_BUILT:.java=.o) ; \
+	        ( set -x ; $(MAKE) -k $(ANTLR_BUILT:.java=.o) ) ; \
 	    fi | $(AWK) -f $(srcdir)/common/antlr-warnings.awk ; \
 	    for antlr_built in $(ANTLR_BUILT) ; do \
 	        dir=`dirname $$antlr_built` ; \

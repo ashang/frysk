@@ -11,9 +11,9 @@ function get_prob_field(field) {
 }
 
 {
-    if ($0 ~ /^.*\.java:[0-9]+: (error|warning): .*$/) {
+    if ($0 ~ /^.*\.java:[0-9]+: (warning|error): .*$/) {
 # A GCJ warning, from ECJ, looks like:
-# <file>:<line>: error: <prob>
+# <file>:<line>: (warning|error): <prob>
 # ... <code> ...
 #     ^^^^^^
 	file = get_prob_field(1)
@@ -21,9 +21,9 @@ function get_prob_field(field) {
 	prob = get_prob_field(4)
 	getline
 	code = gensub(/^[[:space:]]*(.*)[[:space:]]*$/, "\\1", "")
-    } else if ($0 ~ /^[[:digit:]]+\. WARNING in .*\.java$/) {
+    } else if ($0 ~ /^[[:digit:]]+\. (WARNING|ERROR) in .*\.java$/) {
 # An ECJ  warning looks like:
-# <num>. WARNING in <file>
+# <num>. (WARNING|ERROR) in <file>
 #  (at line <line>)
 # ... <code> ...
 #     ^^^^^^
@@ -36,9 +36,9 @@ function get_prob_field(field) {
 	getline
 	getline
 	prob = $0
-    } else if ($0 ~ /^[[:digit:]]+\. WARNING in .*\.java \(at line .*\)$/) {
+    } else if ($0 ~ /^[[:digit:]]+\. (WARNING|ERROR) in .*\.java \(at line .*\)$/) {
 # An ECJ  warning also looks like:
-# <num>. WARNING in <file> (at line <line>)
+# <num>. (WARNING|ERROR) in <file> (at line <line>)
 # ... <code> ...
 #     ^^^^^^
 # <prob>

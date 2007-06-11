@@ -1,5 +1,8 @@
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (antlr-warnings-go-away): Echo compile line.
+	* antlr-warnings.awk: For ECJ accept both WARNING and ERROR.
+
 	* antlr-warnings.awk: Parse ECJ warnings with line-number on
 	message line.
 	
