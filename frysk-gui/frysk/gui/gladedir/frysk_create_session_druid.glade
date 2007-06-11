@@ -644,7 +644,7 @@ You can create two types of sessions:</property>
 		  <child>
 		    <widget class="GtkLabel" id="sessionDruid_feedbackLabel">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Select a &lt;b&gt;Name&lt;/b&gt; for the session, and some &lt;b&gt;Processes&lt;/b&gt; to monitor</property>
+		      <property name="label" translatable="yes">Select a &lt;b&gt;Name&lt;/b&gt; for the session, and some &lt;b&gt;Process(es)&lt;/b&gt; to monitor</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">True</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -804,7 +804,7 @@ You can create two types of sessions:</property>
 			      <child>
 				<widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
 				  <property name="visible">True</property>
-				  <property name="tooltip" translatable="yes">Select from this treeview the Process Groups you wish to monitor. Add them by either double-clicking on the Process Group, or clicking the Add icon.</property>
+				  <property name="tooltip" translatable="yes">Select from this column the process you wish to debug or monitor. Add it to the Processes to be Monitored or Debugged column by either double-clicking on the process, or by selecting it and clicking the right-arrow button.</property>
 				  <property name="can_focus">True</property>
 				  <property name="headers_visible">False</property>
 				  <property name="rules_hint">False</property>
@@ -874,7 +874,7 @@ You can create two types of sessions:</property>
 		      <child>
 			<widget class="GtkButton" id="sessionDruid_addProcessButton">
 			  <property name="visible">True</property>
-			  <property name="tooltip" translatable="yes">Add Process Group icon. Click this to move the selected Process Groups to the Observed Process Groups</property>
+			  <property name="tooltip" translatable="yes">Add process to the Processes to be Monitored or Debugged column. Click this button to move the selected process in the Currently Running Processes column to the Observed Processes column.</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
@@ -957,7 +957,7 @@ You can create two types of sessions:</property>
 		      <child>
 			<widget class="GtkButton" id="sessionDruid_removeProcessButton">
 			  <property name="visible">True</property>
-			  <property name="tooltip" translatable="yes">Remove Process Group icon. Click this to remove the selected Process Groups from the Observed Process Groups Treeview</property>
+			  <property name="tooltip" translatable="yes">Remove process. Click this button to remove the selected process from the Processes to be Monitored or Debugged column and move it back to the Currently Running Processes column.</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
@@ -1100,7 +1100,7 @@ You can create two types of sessions:</property>
 			      <child>
 				<widget class="GtkLabel" id="label77">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">&lt;b&gt;Observed Procesess:&lt;/b&gt;</property>
+				  <property name="label" translatable="yes">&lt;b&gt;Processes to be Monitored or Debugged:&lt;/b&gt;</property>
 				  <property name="use_underline">False</property>
 				  <property name="use_markup">True</property>
 				  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1155,7 +1155,7 @@ You can create two types of sessions:</property>
 			      <child>
 				<widget class="GtkTreeView" id="sessionDruid_addedProcsTreeView">
 				  <property name="visible">True</property>
-				  <property name="tooltip" translatable="yes">These are process groups you wish Frysk to monitor.</property>
+				  <property name="tooltip" translatable="yes">These are processes you wish Frysk to monitor or debug.  Move a process back to the Currently Running Processes column by selecting and clicking the left-arrow button or by double-clicking it.</property>
 				  <property name="can_focus">True</property>
 				  <property name="headers_visible">False</property>
 				  <property name="rules_hint">False</property>

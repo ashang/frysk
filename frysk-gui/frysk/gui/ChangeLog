@@ -1,3 +1,8 @@
+2007-06-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* gladedir/frysk_create_session_druid.glade: Fix tooltips so they
+	reflect both monitoring/debugging point-of-views.
+
 2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (setEditSessionMode): Removed
