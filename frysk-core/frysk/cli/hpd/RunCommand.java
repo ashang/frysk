@@ -86,6 +86,7 @@ class RunCommand
 	}
 	if (unblock) {
 	    cli.getSteppingEngine().removeObserver(this, task.getProc(), true);
+	    //cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
 	    task.requestUnblock(this);
 	}
     }
@@ -126,9 +127,8 @@ class RunCommand
 		    }
 		}
 	    });
-        
-	cli.getSteppingEngine().addObserver(this);
 	cli.startAttach(task);
+	cli.getSteppingEngine().addObserver(this);
 	// Keep task blocked until the SteppingEngine notifies us that its
 	// instruction observers, etc. have been inserted.
 	return Action.BLOCK;
