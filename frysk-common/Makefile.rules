@@ -57,6 +57,7 @@ noinst_SCRIPTS =
 SUFFIXES =
 BUILT_SOURCES = 
 CLEANFILES = $(BUILT_SOURCES)
+CLEANDIRS =
 MOSTLYCLEANFILES = core.[1-9]*
 noinst_PROGRAMS =
 noinst_DATA =
@@ -535,6 +536,13 @@ clean-local: clean-local-po
 clean-local-po:
 	find $(GEN_DIRS) -name '*.Po' -exec cp /dev/null \{\} \;
 
+# Remove any directories, why isn't this part of automake?
+
+clean-local: clean-local-dirs
+.PHONY: clean-local-dirs
+clean-local-dirs:
+	rm -rf $(CLEANDIRS)
+
 # For distclean, which is meant to leave a 100% pristine source tree,
 # remove everything listed in .cvsignore.
 
@@ -555,6 +563,7 @@ distclean-cvsignored:
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files-java.list
+CLEANDIRS += $(GEN_CLASSDIR)
 files-java.list: files.list
 	sed -n < $(top_srcdir)/files.list > $@.tmp \
 		-e 's,\(^.*\.java$$\),$(top_srcdir)/\1, p' -e 't' \
@@ -577,10 +586,6 @@ ${GEN_DIRNAME}.jar: files-java.list
 		find * -name '*.class' -print \
 		| $(JAR) -@ -cf $@
 	mv $(GEN_CLASSDIR)/$@ $@
-.PHONY: clean-classes-dir
-clean-local: clean-classes-dir
-clean-classes-dir:
-	rm -rf $(GEN_CLASSDIR)
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage
@@ -590,6 +595,7 @@ clean-classes-dir:
 
 all-local: checked-ecj-compile
 CLEANFILES += checked-ecj-compile files-java-gen.list
+CLEANDIRS += ecj
 checked-ecj-compile: files-java.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
@@ -633,10 +639,6 @@ if HAVE_ECJ
 	rm -f $@.log $(top_builddir)/files-{java,genjava}.list.ecj
 endif
 	touch $@
-.PHONY: clean-ecj-dir
-clean-local: clean-ecj-dir
-clean-ecj-dir:
-	rm -rf ecj
 
 # Check that everything, well except for a few exceptions, is using
 # frysk.junit and not the junit stuff directly.  Depend on the
