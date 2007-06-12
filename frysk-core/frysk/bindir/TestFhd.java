@@ -91,7 +91,7 @@ public class TestFhd
     e.expect ("print.*2.*\r\n" + prompt);
     // Up
     e.send ("up\n");
-    e.expect ("up.*#1.*" + prompt);
+    e.expect ("up.*#0.*" + prompt);
     // int_21
     e.send ("print int_21\n");
     e.expect ("print.*21.*(fhpd)");
@@ -99,7 +99,7 @@ public class TestFhd
     e.send ("d\t");
     e.expect (".*defset.*delete.*detach.*down.*" + prompt + ".*");
     e.send ("own\n");
-    e.expect ("own.*#0.*" + prompt);
+    e.expect ("own.*#1.*" + prompt);
     e.close();
   }
 

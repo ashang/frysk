@@ -188,13 +188,15 @@ public class CLI
       if (params.size() != 0)
 	level = Integer.parseInt((String)params.get(0));
 
-      if (cmd.getAction().compareTo("up") == 0)
+      // For user command 'down', move a level towards the bottom of the call-stack  
+      if (cmd.getAction().compareTo("down") == 0)
 	{
 	  tmpFrame = debugInfo.setCurrentFrame(level);
 	  if (tmpFrame != currentFrame)
 	    stackLevel += level;
 	}
-      else if (cmd.getAction().compareTo("down") == 0)
+      // For user command 'up', move a level towards the top of the call-stack 
+      else if (cmd.getAction().compareTo("up") == 0)
 	{
 	  tmpFrame = debugInfo.setCurrentFrame(-level);
 	  if (tmpFrame != currentFrame)

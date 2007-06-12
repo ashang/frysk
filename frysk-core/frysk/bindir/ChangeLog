@@ -1,3 +1,8 @@
+2007-06-12  Teresa Thomas  <tthomas@redhat.com>
+
+	* TestFhd.java (testHpdTraceStack): Modified up/down command 
+	tests, to reflect changes in command behavior.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* fstack.java (stackCore): Changed to use a PrintEvent rather than
