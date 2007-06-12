@@ -627,26 +627,26 @@ done
 print_header "... GEN_G = .g"
 grep -e '\.g$' files.list | while read g
 do
-  echo "EXTRA_DIST += $g"
   d=`dirname $g`
+  b=`basename $g .g`
+  echo "EXTRA_DIST += $g"
+  echo "CLEANFILES += $d/$b.antlered"
+  echo "CLEANDIRS += $d/$b.tmp"
+  echo "$d/$b.antlered: $g"
   (
       awk '/class/ { print $2 }' $g
       awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
   ) | while read c
   do
+    echo "# Dummy dependency, see implicit .g.antlered for generation"
+    echo "$d/$c.java: $d/$b.antlered"
     echo "ANTLR_BUILT += $d/$c.java"
-    echo "${nodist_lib_sources} += $d/$c.java"
     echo "BUILT_SOURCES += $d/$c.java"
-    echo "EXTRA_DIST += $d/$c.sed"
-    t=$d/$c.tmp
-    echo "CLEANFILES += $t"
-cat <<EOF
-$d/$c.java: $g \$(srcdir)/$d/$c.sed
-	mkdir -p $t
-	\$(ANTLR) -o $t \$(srcdir)/$g
-	sed -f \$(srcdir)/$d/$c.sed < $t/$c.java > $d/$c.java
-	rm -rf $t
-EOF
+    echo "${nodist_lib_sources} += $d/$c.java"
+    if test -r $d/$c.sed ; then
+	echo "EXTRA_DIST += $d/$c.sed"
+	echo "$d/$b.antlered: $d/$c.sed"
+    fi
   done
 done
 

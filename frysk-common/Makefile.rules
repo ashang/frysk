@@ -439,7 +439,79 @@ endif
 	mv -f "$$depbase.Tpo" "$$depbase.Po"; \
 	rm -f $*.log
 
+# Rule for generating ANTLR output that compiles cleanly using the
+# current compiler.  The problem here is that raw ANTLR output
+# contains compiler warnings such as unused-variable - fix this by
+# running the generated files through the compiler and then "fix" the
+# warnings.
 
+SUFFIXES += .antlered .g
+.g.antlered:
+	rm -rf $*.tmp
+	mkdir -p $*.tmp
+	$(ANTLR) -o $*.tmp \$(srcdir)/$*.g
+	@echo "Setting up generated files ..." ; \
+	d=$*.tmp ; for gen in $$d/*.java ; do \
+	    b=`basename $$gen .java` ; \
+	    ( set -x ; mv $$gen $$d/$$b.gen ) ; \
+	    ( set -x ; rm -f $$d/../$$b.java ) ; \
+	    for f in @abs_srcdir@/`dirname $$d`/$$b.sed /dev/null ; do \
+		if test -r $$f ; then \
+		    ( set -x ; cp $$f $$d/$$b.sed ) ; \
+		    break ; \
+	        fi ; \
+	    done ; \
+	done
+	@edits=true ; d=$*.tmp ; \
+	while $$edits ; do \
+	    edits=false ; \
+	    echo "Applying fixes ..." ; \
+	    for gen in $$d/*.gen ; do \
+		b=`basename $$gen .gen` ; \
+		( set -x ; sed -f $$d/$$b.sed $$gen > $$d/$$b.java ) \
+		     || exit 1 ; \
+	    done ; \
+	    echo "Parsing compiler warnings ..." ; \
+	    rm -f $$d/*.antlr-fixes ; \
+	    ( set -x ; rm -rf $$d/classes ; mkdir -p $$d/classes ) ; \
+	    if test "x@HAVE_ECJ_TRUE@" = x ; then \
+		( set -x ; $(GIJ) 2>&1 \
+		    --classpath $(ECJ_JAR):$(CLASSPATH) \
+		    org.eclipse.jdt.internal.compiler.batch.Main \
+		    \
+		    -d $$d/classes \
+		    -warn:+semicolon \
+		    -sourcepath $(SOURCEPATH) \
+		    -classpath $(CLASSPATH) \
+		    $$d/*.java ) ; \
+	    else \
+		( set -x ; $(GCJCOMPILE) 2>&1 \
+		    -C \
+		    -d $$d/classes \
+		    $$d/*.java ) ; \
+	    fi | ( set -x ; cd $$d ; $(AWK) \
+		-f @abs_srcdir@/common/antlr-warnings.awk ) ; \
+	    echo "Merging `sort -n $$d/*.antlr-fixes 2>/dev/null | uniq | wc -l` fixes" ; \
+	    for fix in $$d/*.antlr-fixes ; do \
+		b=`basename $$fix .antlr-fixes` ; \
+		test -r "$$d/$$b.sed" || continue ; \
+		( set -x ; sort -n $$d/$$b.sed $$fix | uniq > $$d/$$b.tmp ) ; \
+		if ( set -x ; cmp -s $$d/$$b.tmp $$d/$$b.sed ) ; then \
+		    echo "$$d/$$b.sed already contains fixes, oops!" ; \
+		    exit 1 ; \
+		fi ; \
+		mv $$d/$$b.tmp $$d/$$b.sed ; \
+		edits=true ; \
+	    done ; \
+	done || true
+	@echo Installing .java files ... ; \
+	d=$*.tmp ; for java in $$d/*.java ; do \
+	    b=`basename $$java` ; \
+	    ( set -x ; cp $$java $$d/../$$b ) ; \
+	done
+	rm -rf $*.antlered
+	touch $*.antlered
+
 # Get things building on 64-bit-X-32-bit environment.  Mainly need to
 # remove any attempt to force the compile to 64-bit.
 
@@ -600,37 +672,15 @@ checked-ecj-compile: files-java.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ
-	echo Creating a list of build-dir files, compiling them.
-	find * -ignore_readdir_race \
-		-name '[A-Za-z]*.java' \
-		> files-java-gen.list
 	echo Compiling all the generated files.
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
 		\
 		-d ecj \
-		-warn:none \
+		-warn:+semicolon \
 		-sourcepath $(SOURCEPATH) \
 		-classpath $(CLASSPATH) \
-		@files-java-gen.list
-	echo Compiling all the source files, excluding . from search list
-	sourcepath=:
-	for s in $(GEN_SOURCEPATH) ; do \
-		b=`basename $$s` ; \
-		d=`dirname $$s` ; \
-		test x$$s = x. && continue ; \
-		if test -r $$d/$$b/$$b.jar ; then \
-			sourcepath="$${sourcepath}:$$d/$$b/$$b.jar" ; \
-		fi ; \
-	done ; \
-	$(GIJ) \
-		--classpath $(ECJ_JAR):$(CLASSPATH) \
-		org.eclipse.jdt.internal.compiler.batch.Main \
-		\
-		-d ecj \
-		-warn:+semicolon \
-		-classpath $(top_builddir)/ecj:$(CLASSPATH)$${sourcepath} \
 		@files-java.list \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \

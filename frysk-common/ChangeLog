@@ -1,5 +1,16 @@
 2007-06-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.g.antlered): New implicit rule.
+	(SUFFIXES): Add .antlered and .g.
+	(CLEANDIRS): Define.  Add ecj, and $(GEN_CLASSDIR).
+	(clean-classes-dir): Delete.
+	(clean-local): Remove CLEANDIRS.
+	(checked-ecj-compile): Remove special-case code for handling
+	generated files.
+	* Makefile.gen.sh (ANTLR_BUILT, CLEANDIRS): Make generated antlr
+	files depend on a common .antlered file.  Do not generate antlr
+	commands.  Include scratch directories in CLEANDIRS.
+
 	* Makefile.rules (CLEANDIRS): Define, add ecj and $(GEN_CLASSDIR).
 	(clean-classes-dir): Delete.	
 	(clean-ecj-dir): Delete.
@@ -9,7 +20,6 @@
 	* antlr-warnings.awk: For stray semicolons, generate SED to
 	comment them out instead of remove them.  Fix base to handle a
 	file without a path.  Write fixes to a .antlr-fixes file.
-	
 	
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 

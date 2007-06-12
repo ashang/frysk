@@ -1,3 +1,10 @@
+2007-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* CppLexer.sed: Delete.
+	* CppParserTokenTypes.sed: Delete.
+	* CppTreeParser.sed: Delete.
+	* CppTreeParserTokenTypes.sed: Delete.
+
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
 	* cpp.g (references): Delete unused "s1".
