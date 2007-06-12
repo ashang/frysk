@@ -1,3 +1,9 @@
+2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Subroutine.java: New.
+	* InlinedSubroutine.java: New.
+	* Subprogram.java: Now extends Subroutine.
+
 2007-06-11  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (setUpStepAdvance): Fixed some minor bugs.

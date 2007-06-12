@@ -52,7 +52,10 @@ import frysk.debuginfo.DebugInfo;
 import frysk.value.FunctionType;
 import frysk.value.Value;
 
-public class Subprogram extends Scope
+/**
+ * A Subprogram refers to a concrete (not inlined) instance of a function.
+ */
+public class Subprogram extends Subroutine
 {
   // Language language;
     Subprogram outer;
