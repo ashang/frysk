@@ -1,3 +1,8 @@
+2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java: Replaced reference to 
+	subprogram.getBlock() with direct reference to subprogram.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* DebugInfo.java: Reflect frysk.stack package movement.

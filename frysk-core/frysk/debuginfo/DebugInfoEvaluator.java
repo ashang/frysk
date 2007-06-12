@@ -45,18 +45,26 @@ import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.Integer;
 
 import lib.dw.BaseTypes;
+import lib.dw.DwAtEncodings;
 import lib.dw.DwException;
+import lib.dw.DwOpEncodings;
+import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
-import lib.dw.DwOpEncodings;
-import lib.dw.DwAtEncodings;
-import lib.dw.DwTagEncodings;
 import frysk.dwfl.DwflFactory;
 import frysk.expr.CppSymTab;
+import frysk.proc.Isa;
+import frysk.proc.Task;
+import frysk.proc.ptrace.AddressSpaceByteBuffer;
+import frysk.rt.Scope;
+import frysk.rt.Subprogram;
+import frysk.stack.Frame;
+import frysk.stack.StackFactory;
+import frysk.sys.Errno;
+import frysk.sys.Ptrace.AddressSpace;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
@@ -65,15 +73,6 @@ import frysk.value.FunctionType;
 import frysk.value.PointerType;
 import frysk.value.Type;
 import frysk.value.Value;
-import frysk.proc.Isa;
-import frysk.proc.Task;
-import frysk.proc.ptrace.AddressSpaceByteBuffer;
-import frysk.rt.LexicalBlock;
-import frysk.rt.Subprogram;
-import frysk.stack.Frame;
-import frysk.stack.StackFactory;
-import frysk.sys.Errno;
-import frysk.sys.Ptrace.AddressSpace;
 
 class DebugInfoEvaluator
     implements CppSymTab
@@ -495,7 +494,7 @@ class DebugInfoEvaluator
       return null;
     DwarfDie die = bias.die;
 
-    LexicalBlock b = subprogram.getBlock();
+    Scope b = subprogram;
     Value vars[] = b.getVariables();
     DwarfDie varDies[] = b.getVariableDies();
     for (int j = 0; j < vars.length; j++)

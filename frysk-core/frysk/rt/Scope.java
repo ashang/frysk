@@ -71,7 +71,7 @@ public class Scope
 {
   
   LinkedList scopes;
-  LexicalBlock outer;
+  Scope outer;
   Value[] variables;
   DwarfDie[] variableDies;
   Type[] types;

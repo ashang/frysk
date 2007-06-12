@@ -1,5 +1,13 @@
 2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Subprogram.java: Removed outer pointer.
+	Removed LexicalBlock object, getter and setter; Subprogram owns 
+	variables by extending Scope.
+	Removed Scope variable construction as it is done in Scope constructor.
+	* Scope.java: Changed type of outer pointer to Scope from LexicalBlock.
+
+2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Subroutine.java: New.
 	* InlinedSubroutine.java: New.
 	* Subprogram.java: Now extends Subroutine.

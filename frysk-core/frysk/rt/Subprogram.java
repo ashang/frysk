@@ -58,8 +58,6 @@ import frysk.value.Value;
 public class Subprogram extends Subroutine
 {
   // Language language;
-    Subprogram outer;
-    LexicalBlock block;
     FunctionType functionType;
     LinkedList parameters;
     
@@ -82,50 +80,11 @@ public class Subprogram extends Subroutine
 	}
 	die = die.getSibling();
       }
-      DwarfDie firstVar = die;
-      int nParms = 0;
-      while (die != null)
-        {
-          nParms += 1;
-          die= die.getSibling();
-        }
-      block = new LexicalBlock();
-      // ??? Move to LexicalBlock?
-      block.setVariables(nParms);
-      Value vars[] = block.getVariables();
-      block.setVariableDies(nParms);
-      DwarfDie dies[] = block.getVariableDies();
-      block.setTypeDies(nParms);
-      DwarfDie types[] = block.getTypeDies();
-      die = firstVar;
-      nParms = 0;
-      while (die != null)
-        {
-          vars[nParms] = debugInfo.getValue(die);
-          if (vars[nParms] == null)
-            {
-              int tag = die.getTag();
-              switch (tag)
-              {
-                case DwTagEncodings.DW_TAG_array_type_:
-                case DwTagEncodings.DW_TAG_base_type_:
-                case DwTagEncodings.DW_TAG_const_type_:
-                case DwTagEncodings.DW_TAG_pointer_type_:
-                case DwTagEncodings.DW_TAG_structure_type_:
-                case DwTagEncodings.DW_TAG_subrange_type_:
-                case DwTagEncodings.DW_TAG_typedef_:
-                  types[nParms] = die;
-              }
-            }
-          else
-            dies[nParms] = die;
-          die = die.getSibling();
-          nParms += 1;
-        }
     }
 
     public Subprogram ()
     {
+      super();
       parameters = new LinkedList();
     }
 
@@ -133,16 +92,6 @@ public class Subprogram extends Subroutine
       return this.name;
     }
     
-    public LexicalBlock getBlock ()
-    {
-      return block;
-    }
-
-    public void setBlock (LexicalBlock block)
-    {
-      this.block = block;
-    }
-
     public LinkedList getParameters ()
     {
       return parameters;
