@@ -1,3 +1,14 @@
+2007-06-12  Nurdin Premji  <npremji@redhat.com>
+
+	* StackFactory.java (FrameCounter): Added.
+	(FrameCounter.FrameCounter): Added.
+	(createFrame): 	Check a weak hash map for the Frame before creating a new one.
+	* TestFrame.java (BlockingObserver): Added.
+	(testAttached): Use the BlockingObserver.
+	(testFrameSame): Added.
+	(testContinueNotSame): Added.
+	(backtrace): take a blocking observer and return a frame.	
+
 2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StackFactory.java: Fixed package statement, and added import

@@ -61,36 +61,41 @@ public class TestFrame
     
     Task task = ackProc.findTaskUsingRefresh(true);
     
-    backtrace (task);
+    backtrace (task, new BlockingObserver());
     
   }
-    
-  public void backtrace(Task task)
+  
+  class BlockingObserver implements TaskObserver.Instruction
   {
-    task.requestAddInstructionObserver(new TaskObserver.Instruction(){
+    public Action updateExecuted (Task task)
+    {
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
 
-      public Action updateExecuted (Task task)
-      {
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
+    public void addFailed (Object observable, Throwable w)
+    {
+    }
 
-      public void addFailed (Object observable, Throwable w)
-      {
-      }
+    public void addedTo (Object observable)
+    {
+    }
 
-      public void addedTo (Object observable)
-      {
-      }
-
-      public void deletedFrom (Object observable)
-      {
-      }});
+    public void deletedFrom (Object observable)
+    {
+      Manager.eventLoop.requestStop();
+    }
+  }
+    
+  public Frame backtrace(Task task, BlockingObserver blocker)
+  {
+    task.requestAddInstructionObserver(blocker);
     
     assertRunUntilStop("Attach to process");
     
-    Frame frame = StackFactory.createFrame(task);
+    Frame baseFrame = StackFactory.createFrame(task);
  
+    Frame frame = baseFrame;
     while (frame != null)
       {
      // System.err.println(frame.cursor.getProcName(100).name);
@@ -98,6 +103,40 @@ public class TestFrame
                  frame.getSymbol().getName());
       frame = frame.getOuter();
     } 
+    
+    return baseFrame;
+  }
+  
+  public void testFrameSame ()
+  {
+    AckProcess ackProc = new AttachedAckProcess();
+    
+    Task task = ackProc.findTaskUsingRefresh(true);
+    
+    Frame frame = backtrace(task, new BlockingObserver());
+    
+    Frame otherFrame = StackFactory.createFrame(task);
+    
+    assertSame("Frames should be the same", frame, otherFrame);
+    
+  }
+  
+  public void testContinueNotSame()
+  {
+    AckProcess ackProc = new AttachedAckProcess();
+    
+    Task task = ackProc.findTaskUsingRefresh(true);
+    BlockingObserver blocker = new BlockingObserver();
+    
+    Frame frame = backtrace(task, blocker);
+    
+    task.requestDeleteInstructionObserver(blocker);
+    assertRunUntilStop("Removing observer, running process again");
+    
+    Frame otherFrame = backtrace(task, blocker);
+    
+    assertNotSame("Frames should be different", frame, otherFrame);
+    
   }
   
 }

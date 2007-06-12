@@ -40,6 +40,8 @@
 
 package frysk.stack;
 
+import java.util.WeakHashMap;
+
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
 import lib.unwind.FrameCursor;
@@ -59,6 +61,20 @@ public class StackFactory
     remoteUnwind = bool;
   }
   
+  private static class FrameCounter
+  {
+    private Frame frame;
+    private int counter;
+    
+    private FrameCounter (Frame frame, int counter)
+    {
+      this.frame = frame;
+      this.counter = counter;
+    }
+  }
+  
+  private static WeakHashMap taskMap = new WeakHashMap();
+  
   /**
    * Find and return the stack backtrace for the provided task
    * 
@@ -67,6 +83,15 @@ public class StackFactory
    */
   public static Frame createFrame (Task task, int num)
   {
+    if (taskMap.containsKey(task))
+      {
+        FrameCounter frameCounter = (FrameCounter) taskMap.get(task);
+        if (frameCounter.counter == task.getMod())
+          return frameCounter.frame;
+        else
+          taskMap.remove(task);
+      }
+
     if (remoteUnwind)
       {
 	Unwind unwinder;
@@ -81,7 +106,8 @@ public class StackFactory
 	Cursor innermost = new Cursor(addressSpace, accessors);
 	    
 	RemoteFrame innerFrame = new RemoteFrame(innermost, task);
-	        
+	       
+        taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));
 	return innerFrame;
       }
     
@@ -127,6 +153,7 @@ public class StackFactory
             --num;
           }
       }
+    taskMap.put(task, new FrameCounter (toReturn, task.getMod()));
     return toReturn;
   }
   
