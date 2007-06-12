@@ -1,3 +1,9 @@
+2007-06-12  Nurdin Premji  <npremji@redhat.com>
+
+	* Task.java (getMod): Added.
+	(modCount): Added.
+	(incrementMod): Added.
+
 2007-06-07  Nurdin Premji  <npremji@redhat.com>
 
 	* ProcCoreAction.java: Added.	
