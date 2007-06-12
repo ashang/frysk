@@ -1,3 +1,11 @@
+2007-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (antlr-warnings-go-away): Delete.
+	* antlr-warnings.awk: For stray semicolons, generate SED to
+	comment them out instead of remove them.  Fix base to handle a
+	file without a path.  Write fixes to a .antlr-fixes file.
+	
+	
 2007-06-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (antlr-warnings-go-away): Echo compile line.

@@ -42,6 +42,7 @@ function get_prob_field(field) {
 # ... <code> ...
 #     ^^^^^^
 # <prob>
+        java = ECJ
 	file = $4
 	line = gensub(/)/, "", "", $7)
 	getline
@@ -52,7 +53,7 @@ function get_prob_field(field) {
     } else {
 	next
     }
-    base = gensub(/.*\/([[:alnum:]]*)\.java/, "\\1", "", file)
+    base = gensub(/^(|.*\/)([[:alnum:]]*)\.java/, "\\2", "", file)
     sed = ""
     if (DEBUG) {
         print "file=" file >> "/dev/stderr"
@@ -69,9 +70,9 @@ function sed_comment(code) {
 
 prob ~ /Unnecessary semicolon/ {
     if (code ~ /};/) {
-	sed = "s,};,},"
+	sed = "s,};,} // ;,"
     } else if (code ~ /;;$/) {
-	sed = "s,;;,;,"
+	sed = "s,;;,; // ;,"
     }
 }
 
@@ -105,10 +106,10 @@ prob ~ /.* cannot be resolved/ {
 
 {
     if (sed != "") {
-	# print base ": " line " " sed
-	print line " " sed >> base ".antlr-warnings"
+        if (DEBUG) print base ": " line " " sed >> "/dev/stderr"
+	print line " " sed >> base ".antlr-fixes"
     }
     else {
-	print "# " file ":" line ": " prob ": " code >> base ".antlr-warnings"
+	print "# " file ":" line ": " prob ": " code >> base ".antlr-fixes"
     }
 }
