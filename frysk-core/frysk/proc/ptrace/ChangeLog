@@ -1,3 +1,10 @@
+2007-06-12  Nurdin Premji  <npremji@redhat.com>
+
+	* LinuxTask.java (sendContinue): Call incrementMod() to show task has been
+	modified.
+	(sendStepInstruction): Ditto.
+	(sendSyscallContinue): Ditto.
+
 2007-05-25  Tim Moore  <timoore@redhat.com>
 
 	* LinuxTaskState.java (BlockedSignal.handleTerminatedEvent): New
