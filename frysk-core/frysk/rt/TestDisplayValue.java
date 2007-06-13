@@ -266,10 +266,6 @@ public class TestDisplayValue
   
   public void testVarMasked()
   {
-    
-    if(brokenXXX(4576))
-      return;
-    
     BreakpointManager bpManager = createDaemon();
     
     /* 

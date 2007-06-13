@@ -1,5 +1,9 @@
 2007-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DisplayValue.java (refresh): Now calls DebugInfo.refresh(Frame).
+	* TestDisplayValue.java (testVarMasked): Enabled, fixes
+	bz#4576.
+
 	* DisplayValue.java (update): Renamed to refresh.
 	(isInScope): Renamed to isAvailable.
 	* TestDisplayValue.java (testVarValueChanged): Removed superfluous

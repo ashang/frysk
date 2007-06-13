@@ -116,7 +116,7 @@ public class DisplayValue
     
     // We found the correct frame, now refresh the variable
     DebugInfo info = new DebugInfo(current);
-    info.refresh();
+    info.refresh(current);
     try
       {
         myVar = info.print(varLabel);
