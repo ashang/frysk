@@ -1,3 +1,11 @@
+2007-06-13  Nurdin Premji  <npremji@redhat.com>
+
+	* CommandlineParser.java (parse): Exit immediately if there are no 
+	arguments passed on the command line.
+	(parseCommand): throw a default unhandled exception.
+	(parseCores): Ditto.
+	(parsePids): Ditto.
+
 2007-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StacktraceAction.java: Constructor now takes the following

@@ -71,7 +71,7 @@ public class CommandlineParser
    */
   public void parsePids(ProcId[] pids)
   {
-    
+    throw new RuntimeException("pids not supported.");
   }
   
   /**
@@ -81,7 +81,7 @@ public class CommandlineParser
    */
   public void parseCores(File[] coreFiles)
   {
-    
+    throw new RuntimeException("cores not supported.");
   }
   
   /**
@@ -90,12 +90,18 @@ public class CommandlineParser
    */
   public void parseCommand(String[] command)
   {
-    
+    throw new RuntimeException("commands not supported.");
   }
   
   public String[] parse(String[] args)
   {
     String[] result = super.parse(args);
+    
+    //XXX: Should parseCommand be called with an empty array here?
+    if (result == null)
+      return null;
+    if (result.length == 0)
+      return result;
     
     //Check if arguments are all pids.
     try 
