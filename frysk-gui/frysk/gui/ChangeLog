@@ -1,3 +1,8 @@
+2007-06-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (setTitle): used 
+	SessionType.getName() instad of SessionType.toString. 
+
 2007-06-11  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java (setTask): Default to reading 64-bit words

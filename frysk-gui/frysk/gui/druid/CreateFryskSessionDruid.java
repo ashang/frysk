@@ -1030,7 +1030,7 @@ public class CreateFryskSessionDruid
   }
   
   public void setTitle(String string){
-    string = SessionManager.theManager.getCurrentSession().getSessoinType() + ": " +string;
+    string = SessionManager.theManager.getCurrentSession().getSessoinType().getName() + ": " +string;
     super.setTitle(string);
   }
 }
