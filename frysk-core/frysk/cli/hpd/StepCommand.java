@@ -68,7 +68,7 @@ public class StepCommand implements CommandHandler
       {
         if (!this.cli.isRunning())
           {
-            this.cli.getSteppingEngine().setUpLineStep(cli.proc.getTasks());
+            this.cli.getSteppingEngine().stepLine(cli.proc.getTasks());
             
             synchronized (this.cli.steppingObserver.getMonitor())
               {

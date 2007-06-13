@@ -446,7 +446,7 @@ public class TestStepping extends TestLib
 
     if (test < 10)
       {
-        se.setUpLineStep(myTask);
+        se.stepLine(myTask);
         return;
       }
     else if (test >= 10 && test < 20)
@@ -458,15 +458,15 @@ public class TestStepping extends TestLib
         switch (test)
         {
           case SIGLONGJMP:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
           
           case GOTO:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
             
           case SIG_RAISE_ENTER:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
             
           default:
@@ -494,19 +494,19 @@ public class TestStepping extends TestLib
         switch (test)
           {
           case LINE_STEP_FUNCTION_CALL:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_IF_PASS:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_IF_FAIL:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_FUNCTION_RETURN:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case ASM_STEP_SINGLE_INST:
@@ -522,15 +522,15 @@ public class TestStepping extends TestLib
             break;
             
           case SIGLONGJMP:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           case GOTO:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           case SIG_RAISE_ENTER:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           default:
@@ -556,7 +556,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_IF_PASS:
@@ -564,7 +564,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_IF_FAIL:
@@ -572,7 +572,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case LINE_STEP_FUNCTION_RETURN:
@@ -580,7 +580,7 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
 
           case ASM_STEP_SINGLE_INST:
@@ -612,7 +612,7 @@ public class TestStepping extends TestLib
                {
                  this.testState = FINAL_STEP;
                }
-             se.setUpLineStep(myTask);
+             se.stepLine(myTask);
              break;
              
           case GOTO:
@@ -620,20 +620,20 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           case SIG_RAISE_ENTER:
             if (((Integer) lineMap.get(myTask)).intValue() != 90)
               {
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
                 break;
               }
             else if (line.getLine() == 91)
             {
               this.testState = FINAL_STEP;
             }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           case SIG_RAISE_EXIT:
@@ -641,11 +641,11 @@ public class TestStepping extends TestLib
               {
                 this.testState = FINAL_STEP;
               }
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
             
           default:
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             break;
           }
         
@@ -656,7 +656,7 @@ public class TestStepping extends TestLib
         Frame frame = StackFactory.createFrame(myTask, 1);
         if (frame.getLines().length == 0)
           {
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
           }
 
@@ -667,7 +667,7 @@ public class TestStepping extends TestLib
           case LINE_STEP_FUNCTION_CALL:
             if (lineNr == 93)
               {
-        	se.setUpLineStep(myTask);
+        	se.stepLine(myTask);
         	return;
               }
             assertTrue("line number", lineNr == 79 || lineNr == 80);
@@ -687,7 +687,7 @@ public class TestStepping extends TestLib
           case LINE_STEP_FUNCTION_RETURN:
             if (lineNr == 103) /* Strange end-of-function thing */
               {
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
                 return;
               }
             assertTrue("line number", lineNr == 96 || lineNr == 109);
@@ -731,7 +731,7 @@ public class TestStepping extends TestLib
             assertTrue("line number", lineNr == 68 || lineNr == 69);
             test = SIG_RAISE_EXIT;
             testState = STEPPING;
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
             
           case SIG_RAISE_EXIT:

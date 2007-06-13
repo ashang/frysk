@@ -1,3 +1,23 @@
+2007-06-13  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java: Cleaned up.
+	(stepLine): Renamed from setUpLineStep().
+	(stepAdvance): Renamed from setUpStepAdvance().
+	(stepNextInstruction): Deleted, redundant method.
+	(stepNextInstruction): Renamed from setUpStepNextInstruction(). 
+	Updates the context map with an additional Task. Properly sets 
+	FrameIdentifier for the Frame.
+	(stepOver): Deleted, redundant method.
+	(stepOver): Renamed from setUpStepOver(). Sets TaskStepEngine's
+	FrameIdentifier properly.
+	(stepOut): Deleted, redundant method.
+	(stepOut): Renamed from setUpStepOut(). Renamed parameter.
+	(stepAdvance): Commented.
+	* TestStepping.java: Updated method calls to SteppingEngine.
+	* TestSteppingEngine.java: Ditto.
+	* StepOverTestState.java (handleUpdate): Fixed some stepping logic.
+	* NextInstructionStepTestState.java (handleUpdate): Ditto.
+
 2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Subprogram.java: Removed outer pointer.

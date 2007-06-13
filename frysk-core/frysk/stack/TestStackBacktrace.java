@@ -338,13 +338,13 @@ public class TestStackBacktrace
     if (frame.getLines().length == 0)
       {
         this.lineMap.put(myTask, new Integer(0));
-        steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+        steppingEngine.stepLine(myTask.getProc().getTasks());
         return;
       }
       
     Line line = frame.getLines()[0];
     this.lineMap.put(myTask, new Integer(line.getLine()));
-    steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+    steppingEngine.stepLine(myTask.getProc().getTasks());
   }
   
   /**
@@ -518,7 +518,7 @@ public class TestStackBacktrace
             else if (this.testState == POP)
               this.testState = POP_GO;
             
-            steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+            steppingEngine.stepLine(myTask.getProc().getTasks());
           }
     else
       {
@@ -538,7 +538,7 @@ public class TestStackBacktrace
                     steppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-               steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+               steppingEngine.stepLine(myTask.getProc().getTasks());
               }
             else if (this.testState == POP_GO)
               {
@@ -549,11 +549,11 @@ public class TestStackBacktrace
                     steppingEngine.stepInstruction(myTask.getProc().getTasks());
                     return;
                   }
-                steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                steppingEngine.stepLine(myTask.getProc().getTasks());
               }
             else
               {
-                steppingEngine.setUpLineStep(myTask.getProc().getTasks());
+                steppingEngine.stepLine(myTask.getProc().getTasks());
                 return;
               }
           }

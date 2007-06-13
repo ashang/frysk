@@ -2521,7 +2521,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.steppingEngine.setUpLineStep(this.currentTask))
+    if (this.steppingEngine.stepLine(this.currentTask))
       removeTags();
   }
   
@@ -2535,7 +2535,7 @@ public class SourceWindow
 
     desensitize();
 
-    if (this.steppingEngine.setUpLineStep(tasks))
+    if (this.steppingEngine.stepLine(tasks))
       removeTags();
   }
 
@@ -2550,7 +2550,7 @@ public class SourceWindow
     desensitize();
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.steppingEngine.setUpStepOver(l, this.currentFrame);
+    this.steppingEngine.stepOver(l, this.currentFrame);
     removeTags();
   }
   
@@ -2561,7 +2561,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.setUpStepOver(tasks, this.currentFrame);
+    this.steppingEngine.stepOver(tasks, this.currentFrame);
     removeTags();
   }
 
@@ -2594,7 +2594,7 @@ public class SourceWindow
 
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.steppingEngine.setUpStepOut(l, this.currentFrame);
+    this.steppingEngine.stepOut(l, this.currentFrame);
     removeTags();
   }
   
@@ -2607,7 +2607,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.setUpStepOut(tasks, this.currentFrame);
+    this.steppingEngine.stepOut(tasks, this.currentFrame);
     removeTags();
   }
   
@@ -2618,7 +2618,7 @@ public class SourceWindow
     
     desensitize();
     
-    this.steppingEngine.setUpStepAdvance(this.currentTask, this.currentFrame);
+    this.steppingEngine.stepAdvance(this.currentTask, this.currentFrame);
     removeTags();
   }
 
@@ -2673,7 +2673,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.setUpStepNextInstruction(this.currentTask, this.currentFrame);
+    this.steppingEngine.stepNextInstruction(this.currentTask, this.currentFrame);
     removeTags();
   }
   
@@ -2687,7 +2687,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.setUpStepNextInstruction(tasks, this.currentFrame);
+    this.steppingEngine.stepNextInstruction(tasks, this.currentFrame);
     removeTags();
   }
 

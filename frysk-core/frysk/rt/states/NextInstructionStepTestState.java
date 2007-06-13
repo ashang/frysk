@@ -64,20 +64,27 @@ public class NextInstructionStepTestState extends State
   public State handleUpdate (TaskStepEngine tse)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createFrame(task, 2);
+    newFrame = StackFactory.createFrame(this.task, 2);
    
-    /* The two frames are the same; treat this step-over as an instruction step. */
-    if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier()))
-      {
-        return new StoppedState(this.task);
-      }
-    else
+    if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier()))
       {
         /* There is a different innermost frame on the stack - run until
          * it exits - success! */
         Frame frame = newFrame.getOuter();
-	tse.getSteppingEngine().setBreakpoint(this.task, frame.getAddress());
-        return new NextInstructionStepState(this.task);
+        tse.getSteppingEngine().setBreakpoint(this.task, frame.getAddress());
+        return new StepOverState(this.task);
+      }
+        /* The two frames are the same or we've actually stepped over a
+     * frame return; treat this step-over as an instruction step. */
+    else if (newFrame.getFrameIdentifier().equals(tse.getFrameIdentifier()) 
+        || newFrame.getFrameIdentifier().outerTo(tse.getFrameIdentifier()))
+          {
+            return new StoppedState(this.task);
+          }
+    else
+      {
+        /* Leaf function */
+        return new StoppedState(this.task);
       }
   }
   

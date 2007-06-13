@@ -99,7 +99,6 @@ public class TestSteppingEngine extends TestLib
   
   private LockObserver lock;
   
-  
   public void testInstructionStepping ()
   {
       if (brokenPpcXXX (3277))
@@ -234,9 +233,6 @@ public class TestSteppingEngine extends TestLib
   
   public void testStepOver ()
   {
-//      if (brokenXXX(4083))
-//        return;
-    
       if (brokenPpcXXX (3277))
       return;
 
@@ -269,9 +265,6 @@ public class TestSteppingEngine extends TestLib
   
   public void testInstructionNext ()
   {
-//    if (brokenXXX(4083))
-//      return;
-    
       if (brokenPpcXXX (3277))
       return;
 
@@ -306,9 +299,6 @@ public class TestSteppingEngine extends TestLib
   
   public void testStepOut ()
   {
-//    if (brokenXXX(4083))
-//      return;
-//    
       if (brokenPpcXXX (3277))
       return;
 
@@ -464,7 +454,7 @@ public class TestSteppingEngine extends TestLib
       {
 	LinkedList l = new LinkedList();
 	l.add(myTask);
-	se.setUpLineStep(l);
+	se.stepLine(l);
 	testState = STEP_IN;
       }
     else if (testState == INSTRUCTION_STEP_LIST)
@@ -475,7 +465,7 @@ public class TestSteppingEngine extends TestLib
 	testState = INSTRUCTION_STEP;
       }
     else
-      se.setUpLineStep(myProc.getMainTask());
+      se.stepLine(myProc.getMainTask());
   }
   
   public synchronized void stepAssertions (Task task)
@@ -504,7 +494,7 @@ public class TestSteppingEngine extends TestLib
         if (testState == INSTRUCTION_STEP)
           se.stepInstruction(l);
         else
-          se.setUpLineStep(l);
+          se.stepLine(l);
       }
     
     if (testState == INSTRUCTION_STEP)
@@ -662,7 +652,7 @@ public class TestSteppingEngine extends TestLib
             this.lineMap.put(task, new Integer(lineNum));
             LinkedList tasks = new LinkedList();
             tasks.add(task);
-            se.setUpLineStep(tasks);
+            se.stepLine(tasks);
           }
       }
     
@@ -696,22 +686,22 @@ public class TestSteppingEngine extends TestLib
             if (this.testState == STEP_OVER)
               {
                 this.testState = STEP_OVER_GO;
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT)
               {
                 this.testState = INSTRUCTION_STEP_NEXT_GO;
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
               }
             else if (this.testState == STEP_OUT)
               {
                 this.testState = STEP_OUT_GO;
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
               }
             else if (this.testState == STEP_ADVANCE)
               {
                 this.testState = STEP_ADVANCE_GO;
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
               }
             
           }
@@ -721,7 +711,7 @@ public class TestSteppingEngine extends TestLib
         
         if (sFrame.getLines().length == 0)
           {
-            se.setUpLineStep(myTask);
+            se.stepLine(myTask);
             return;
           }
         
@@ -743,10 +733,10 @@ public class TestSteppingEngine extends TestLib
                 if (line.getLine() == 95 && (prev < 95 && prev > 91))
                   {
                     this.testState = STEP_OVER_STEPPING;
-                    se.setUpStepOver(myTask, StackFactory.createFrame(myTask, 3));
+                    se.stepOver(myTask, StackFactory.createFrame(myTask, 3));
                     return;
                   }
-               se.setUpLineStep(myTask);
+               se.stepLine(myTask);
                return;
               }
             else if (this.testState == INSTRUCTION_STEP_NEXT_GO)
@@ -762,11 +752,11 @@ public class TestSteppingEngine extends TestLib
                     else
                       {
                         this.testState = INSTRUCTION_STEP_NEXT_STEPPING;
-                        se.setUpStepNextInstruction(myTask, StackFactory.createFrame(myTask, 3));
+                        se.stepNextInstruction(myTask, StackFactory.createFrame(myTask, 3));
                       }
                     return;
                   }
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
                 return;
               }
             else if (this.testState == STEP_OUT_GO)
@@ -774,10 +764,10 @@ public class TestSteppingEngine extends TestLib
                 if (line.getLine() >= 60 && line.getLine() <= 67)
                   {
                     this.testState = STEP_OUT_STEPPING;
-                    se.setUpStepOut(myTask, StackFactory.createFrame(myTask, 3));
+                    se.stepOut(myTask, StackFactory.createFrame(myTask, 3));
                   }
                 else
-                  se.setUpLineStep(myTask);
+                  se.stepLine(myTask);
                 
                 return;
               }
@@ -787,16 +777,16 @@ public class TestSteppingEngine extends TestLib
                   {
                     this.testState = STEP_ADVANCE_STEPPING;
                     Frame outer =  StackFactory.createFrame(myTask, 3).getOuter();
-                    se.setUpStepAdvance(myTask, outer);
+                    se.stepAdvance(myTask, outer);
                   }
                 else
-                  se.setUpLineStep(myTask);
+                  se.stepLine(myTask);
                 
                 return;
               }
             else
               {
-                se.setUpLineStep(myTask);
+                se.stepLine(myTask);
                 return;
               }
           }

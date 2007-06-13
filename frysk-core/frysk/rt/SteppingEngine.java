@@ -61,7 +61,6 @@ import frysk.proc.TaskObserver;
 import frysk.rt.states.*;
 import frysk.stack.Frame;
 import frysk.stack.FrameIdentifier;
-import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 
@@ -113,36 +112,6 @@ public class SteppingEngine
     this.breakpointManager = new BreakpointManager(this);
     this.steppingObserver = new SteppingObserver();
   }
-  
-  /**
-   * Sets the initial process for this SteppingEngine. Maps the initial keys in
-   * this.contextMap and this.taskStateMap, and adds the necessary observers to each of 
-   * the Tasks.
-   * 
-   * @param proc The Proc to be managed by SteppingEngine
-   */
-//  public SteppingEngine (Proc proc)
-//  {
-//    this();
-//    
-//    Task t = null;
-//    LinkedList tasksList = proc.getTasks();
-//    
-//    this.threadLifeObservable = new ThreadLifeObservable();
-//    this.threadsList.addAll(tasksList);
-//    
-//    Iterator iter = tasksList.iterator();
-//    while(iter.hasNext())
-//      {
-//        t = (Task) iter.next();
-//        t.requestAddTerminatingObserver(threadLifeObservable);
-//        t.requestAddClonedObserver(threadLifeObservable);
-//        taskStateMap.put(t, new TaskStepEngine(t));
-//      }
-//    
-//    this.contextMap.put(t.getProc(), new Integer(tasksList.size()));    
-//    requestAdd();
-//  }
 
   /**
    * Sets the initial processes for this SteppingEngine. Maps the initial keys 
@@ -288,7 +257,7 @@ public class SteppingEngine
  * @return false The Task is not currently blocked
  * @return true The step request was successful
  */
-  public boolean setUpLineStep (Task task)
+  public boolean stepLine (Task task)
   {
     /* Check to make sure these threads are not already involved with another 
      * operation before asking them to step an instruction. */
@@ -330,7 +299,7 @@ public class SteppingEngine
    * @return false Not all tasks are currently blocked.
    * @return true The step requests were successful
    */
-  public boolean setUpLineStep (LinkedList tasks)
+  public boolean stepLine (LinkedList tasks)
   {
     /* Check to make sure these threads are not already involved with another 
      * operation before asking them to step an instruction. */
@@ -395,12 +364,21 @@ public class SteppingEngine
       }
   }
   
-  public void setUpStepAdvance (Task task, Frame frame)
+  /**
+   * Steps the Task until it reaches the given frame's current address.
+   * Intended to be used when the given frame is a frame on the stack 
+   * which is outer to the innermost frame; thus the Task will continue until
+   * the frames inner to this one have all returned.
+   * 
+   * @param task  The Task to be stepped.
+   * @param frame  The frame on the stack to be continued to.
+   */
+  public void stepAdvance (Task task, Frame frame)
   {
     /* There's nowhere to advance to - this is already the innermost frame */
     if (frame.getInner() == null)
       {
-        setUpLineStep(task);
+        stepLine(task);
         return;
       }
 
@@ -419,18 +397,22 @@ public class SteppingEngine
     task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
   }
   
-  public void setUpStepNextInstruction (Task task, Frame lastFrame)
+  public void stepNextInstruction (Task task, Frame lastFrame)
   {
     this.steppingObserver.notifyNotBlocked();
+    this.frameIdentifier = lastFrame.getFrameIdentifier();
     
     TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
+    tse.setFrameIdentifier(this.frameIdentifier);
     tse.setState(new NextInstructionStepTestState(task));
     
-    this.frameIdentifier = lastFrame.getFrameIdentifier();
+    int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
+    this.contextMap.put(task.getProc(), new Integer(++i));
+    
     task.requestUnblock(this.steppingObserver);
   }
   
-  public void setUpStepNextInstruction (LinkedList tasks, Frame lastFrame)
+  public void stepNextInstruction (LinkedList tasks, Frame lastFrame)
   {
 //    Iterator i = tasks.iterator();
 //   this.steppingObserver.notifyNotBlocked();
@@ -440,34 +422,9 @@ public class SteppingEngine
 //        t.requestUnblock(this);
 //      }
   }
-  
-  public void stepNextInstruction (Task task)
-  {
-    Frame newFrame = null;
-    newFrame = StackFactory.createFrame(task, 2);
-   
-    /* The two frames are the same; treat this step-over as an instruction step. */
-    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
-      {
-        this.steppingObserver.notifyTask(task);
-        return;
-      }
-    else
-      {
-        
-        /* There is a different innermost frame on the stack - run until
-         * it exits - success!. */
-        Frame frame = newFrame.getOuter();
-        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
-        tse.setState(new NextInstructionStepTestState(task));
-        breakpoint = new SteppingBreakpoint(this, frame.getAddress());
-        task.requestAddCodeObserver(breakpoint, frame.getAddress());
-      }
-  }
 
   Breakpoint breakpoint;
   FrameIdentifier frameIdentifier;
-//  FrameIdentifier outerFrameIdentifier;
   
   /**
    * Sets up the given Task for a step-over operation.
@@ -475,12 +432,13 @@ public class SteppingEngine
    * @param task   The Task to be stepped-over
    * @param lastFrame	The current innermost StackFrame of the given Task
    */
-  public void setUpStepOver (Task task, Frame lastFrame)
+  public void stepOver (Task task, Frame lastFrame)
   {
     this.frameIdentifier = lastFrame.getFrameIdentifier();
     this.steppingObserver.notifyNotBlocked();
     
     TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
+    tse.setFrameIdentifier(this.frameIdentifier);
     tse.setState(new StepOverTestState(task));
     
     int i = ((Integer) this.contextMap.get(task.getProc())).intValue();
@@ -489,7 +447,7 @@ public class SteppingEngine
     task.requestUnblock(this.steppingObserver);
   }
   
-  public void setUpStepOver (LinkedList tasks, Frame lastFrame)
+  public void stepOver (LinkedList tasks, Frame lastFrame)
   {
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
 ////    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
@@ -497,52 +455,20 @@ public class SteppingEngine
 //
 //    setUp(tasks, STEP_OVER_TEST);
   }
-//  
-  /**
-   * Checks to see if a step actually results in a new frame, and then sets
-   * the breakpoint and lets the thread run.
-   * 
-   * XXX: Needs to work with multiple threads
-   * 
-   * @param task    The Task to execute step-over for.
-   */
-  public void stepOver (Task task)
-  {
-    Frame newFrame = null;
-    newFrame = StackFactory.createFrame(task, 2);
-   
-    /* The two frames are the same; treat this step-over as a line step. */
-    if (newFrame.getFrameIdentifier().equals(this.frameIdentifier))
-      {
-	this.steppingObserver.notifyTask(task);
-        return;
-      }
-    else
-      {
-        
-        /* There is a different innermost frame on the stack - run until
-         * it exits - success!. */
-        Frame frame = newFrame.getOuter();
-        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
-        tse.setState(new StepOverState(task));
-        this.breakpoint = new SteppingBreakpoint(this, frame.getAddress());
-        task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
-      }
-  }
-  
+
   /**
    * Sets the stage for stepping out of a frame. Runs until a breakpoint on the
    * return address is hit. 
    * 
    * XXX: Needs to work properly with multiple threads.
    * 
-   * @param tasks   The Tasks to step out.
-   * @param lastFrame
+   * @param task   The Task to be stepped
+   * @param frame The frame to step out of.
    */
   
-  public void setUpStepOut (Task task, Frame lastFrame)
+  public void stepOut (Task task, Frame frame)
   {
-    long address = lastFrame.getOuter().getAddress();
+    long address = frame.getOuter().getAddress();
     this.steppingObserver.notifyNotBlocked();
     
     TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
@@ -555,7 +481,7 @@ public class SteppingEngine
     task.requestAddCodeObserver(this.breakpoint, address);
   }
   
-  public void setUpStepOut (LinkedList tasks, Frame lastFrame)
+  public void stepOut (LinkedList tasks, Frame lastFrame)
   {
 //    taskStepCount =  tasks.size();
 //    this.frameIdentifier = lastFrame.getFrameIdentifier();
@@ -568,47 +494,6 @@ public class SteppingEngine
 //        stateMap.put(t, new Integer(STEP_OUT_ASM_STEP));
 //        t.requestUnblock(steppingObserver);
 //      }
-  }
-  
-  /**
-   * Cleans up after a step-out operation, deletes the breakpoint.
-   * 
-   * @param task The task finished stepping out.
-   */
-  public void stepOut (Task task)
-  {
-    Frame newFrame = null;
-    newFrame = StackFactory.createFrame(task, 3);
-    TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(task);
-    tse.setState(new StepOutState(task));
-
-    FrameIdentifier fi = newFrame.getFrameIdentifier();
-    
-    if (fi.equals(this.frameIdentifier))
-      {
-        this.breakpoint = new SteppingBreakpoint(this, newFrame.getOuter().getAddress());
-        task.requestAddCodeObserver(this.breakpoint,
-                                    newFrame.getOuter().getAddress());
-      }
-    else
-      {
-        if (fi.outerTo(this.frameIdentifier))
-          {
-//            this.breakpoint = new SteppingBreakpoint(newFrame.getOuter().getAddress());
-//            task.requestAddCodeObserver(
-//                                        this.breakpoint,
-//                                        newFrame.getOuter().getOuter().getAddress());
-            this.steppingObserver.notifyTask(task);
-            return;
-          }
-        else if (fi.innerTo(this.frameIdentifier))
-          {
-            this.breakpoint = new SteppingBreakpoint(this, 
-                                             newFrame.getOuter().getOuter().getAddress());
-            task.requestAddCodeObserver(this.breakpoint,
-                                        newFrame.getOuter().getOuter().getAddress());
-          }
-      }
   }
   
   public void cleanUpBreakPoint (Task task)
