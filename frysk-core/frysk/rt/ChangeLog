@@ -1,5 +1,11 @@
 2007-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* TestUpdatingDisplayValue.java
+	(testUpdateUnavailable): Added, addresses bz#4639 (currently unresolved).
+	(testUpdateUnavailableExceptionThrown): Ditto.
+	(testUpdateUnavailableLongJump): Ditto.
+	(testUpdateUnavailableTaskDead): Ditto.
+
 	* DisplayValue.java: Made fields protected.
 	(getFrameIdentifier): Added.
 	(getName): Added.

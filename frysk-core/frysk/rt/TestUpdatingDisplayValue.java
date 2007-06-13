@@ -110,6 +110,30 @@ public class TestUpdatingDisplayValue extends TestLib
     assertEquals("Observer was notified", true, obs.hit);
   }
   
+  public void testUpdateUnavailable()
+  {
+    if(brokenXXX(4639))
+      return;
+  }
+  
+  public void testUpdateUnavailableExceptionThrown()
+  {
+    if(brokenXXX(4639))
+      return;
+  }
+  
+  public void testUpdateUnavailableLongJump()
+  {
+    if(brokenXXX(4639))
+      return;
+  }
+  
+  public void testUpdateUnavailableTaskDead()
+  {
+    if(brokenXXX(4639))
+      return;
+  }
+  
   private BreakpointManager createDaemon()
   {
     //  Start the daemon process
