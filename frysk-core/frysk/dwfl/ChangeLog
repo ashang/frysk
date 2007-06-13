@@ -1,3 +1,10 @@
+2007-06-13  Nurdin Premji  <npremji@redhat.com>
+
+	* DwflFactory.java (doDwfl): Added. Handles the creation of a Dwfl from a proc.
+	(createDwfl(Proc)): Use doDwfl.
+	(createDwfl(Task)): Use a map and the task's modCount to determine when 
+	to update the Dwfl of the task's associated proc.
+
 2007-05-31  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflFactory.java (createDwfl): Make induction cases more exclusive.

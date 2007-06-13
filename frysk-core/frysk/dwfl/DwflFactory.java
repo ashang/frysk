@@ -40,6 +40,7 @@
 
 package frysk.dwfl;
 
+import java.util.Iterator;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +63,12 @@ public class DwflFactory
    * Used to cache Dwfl objects per proc.
    */
   private static WeakHashMap dwflMap = new WeakHashMap();
-
+  
+  /**
+   * Used to link tasks to proc based dwfls and
+   */
+  private static WeakHashMap taskMap = new WeakHashMap();
+  
   /**
    * Check whether a given {@link frysk.proc.MemoryMap} from a
    * {@link frysk.proc.Proc} refers to the vdso section.
@@ -110,17 +116,8 @@ public class DwflFactory
            || (map.inode == 0 && map.devMinor == 0 && map.devMajor == 0);
   }
 
-  /**
-   * Create a Dwfl for a {@link frysk.proc.Proc}
-   * 
-   * @param proc the given {@link frysk.proc.Proc}.
-   * @return a Dwfl created with proc's maps.
-   */
-  public static Dwfl createDwfl (Proc proc)
+  private static Dwfl doDwfl (Proc proc)
   {
-    if (dwflMap.containsKey(proc.getId()))
-      return (Dwfl) dwflMap.get(proc.getId());
-
     MemoryMap[] maps = proc.getMaps();
 
     Dwfl dwfl = new Dwfl();
@@ -215,7 +212,31 @@ public class DwflFactory
     if (module != null)
       module.setUserData(proc.getMainTask().getMemory());
 
-    dwflMap.put(proc.getId(), dwfl);
+    return dwfl;
+  }
+  
+  /**
+   * Create a Dwfl for a {@link frysk.proc.Proc}
+   * 
+   * @param proc the given {@link frysk.proc.Proc}.
+   * @return a Dwfl created with proc's maps.
+   */
+  public static Dwfl createDwfl (Proc proc)
+  {
+    if (dwflMap.containsKey(proc.getId()))
+      return (Dwfl) dwflMap.get(proc.getId());
+
+    Dwfl dwfl = doDwfl(proc);
+    
+    Iterator iter = proc.getTasks().iterator();
+    
+    while (iter.hasNext())
+      {
+        Task task = (Task) iter.next();
+        taskMap.put(task, new Integer(task.getMod()));
+      }
+    
+    dwflMap.put(proc, dwfl);
     return dwfl;
   }
 
@@ -227,6 +248,22 @@ public class DwflFactory
    */
   public static Dwfl createDwfl (Task task)
   {
+    /* Check if this task has changed since (if) a dwfl was last created.
+     * If it hasn't changed returned the cached dwfl. 
+     * If it has changed recreate the dwfl and update the maps.
+     */
+    if (taskMap.containsKey(task))
+      {
+        Integer count = (Integer) taskMap.get(task);
+        if (count.intValue() == task.getMod())      
+            return (Dwfl) dwflMap.get(task.getProc());
+          
+      }
+
+    taskMap.put(task, new Integer(task.getMod()));
+    if (dwflMap.containsKey(task.getProc()))
+      dwflMap.remove(task.getProc());
+    
     return createDwfl(task.getProc());
   }
 
