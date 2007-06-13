@@ -62,10 +62,10 @@ import frysk.value.Value;
 public class DisplayValue
 {
   
-  private String varLabel;
-  private Task myTask;
-  private FrameIdentifier frameIdentifier;
-  private Value myVar;
+  protected String varLabel;
+  protected Task myTask;
+  protected FrameIdentifier frameIdentifier;
+  protected Value myVar;
   
   /**
    * Creates a new DisplayValue object encompassing a variable from the
@@ -93,10 +93,10 @@ public class DisplayValue
   
   /**
    * Updates the display to refect the new variable value
-   * TODO: should this be automatic?
    */
   public void refresh()
   {
+    
     Frame current = StackFactory.createFrame(myTask);
     // Work backwards through the frames
     // trying to find the one the value came from
@@ -140,5 +140,20 @@ public class DisplayValue
   public Value getValue()
   {
     return myVar;
+  }
+
+  public FrameIdentifier getFrameIdentifier ()
+  {
+    return frameIdentifier;
+  }
+
+  public Task getTask ()
+  {
+    return myTask;
+  }
+
+  public String getName ()
+  {
+    return varLabel;
   }
 }

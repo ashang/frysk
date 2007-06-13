@@ -1,5 +1,13 @@
 2007-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DisplayValue.java: Made fields protected.
+	(getFrameIdentifier): Added.
+	(getName): Added.
+	(getTask): Added.
+	* UpdatingDisplayValue.java: New file, addresses bz#4637.
+	* TestUpdatingDisplayValue.java: New file.
+	* DisplayValueObserver.java: New interface.
+
 	* DisplayValue.java (refresh): Now calls DebugInfo.refresh(Frame).
 	* TestDisplayValue.java (testVarMasked): Enabled, fixes
 	bz#4576.
