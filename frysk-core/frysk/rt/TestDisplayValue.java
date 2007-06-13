@@ -103,7 +103,7 @@ public class TestDisplayValue
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
     assertNotNull("Value from Display", firstVal);
-    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable is in scope", true, disp.isAvailable());
     assertEquals("Variable value at first breakpoint", 0, firstVal.getInt());
     
     /* 
@@ -125,14 +125,13 @@ public class TestDisplayValue
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    steppingEngine = new SteppingEngine();
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    disp.update();
+    disp.refresh();
     Value secondVal = disp.getValue();
     assertNotNull("Value from display", secondVal);
-    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable is in scope", true, disp.isAvailable());
     assertEquals("Value of variable at second breakpoint", 1, secondVal.getInt());
   }
   
@@ -174,7 +173,7 @@ public class TestDisplayValue
     
     // Check the value of the variable 'thevar', make sure it's equal to one
     Value firstVal = disp.getValue();
-    assertEquals("Value is in scope", true, disp.isInScope());
+    assertEquals("Value is in scope", true, disp.isAvailable());
     assertEquals("Variable value at first breakpoint", firstVal.getInt(), 1);
     
     /* 
@@ -196,9 +195,9 @@ public class TestDisplayValue
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    disp.update();
+    disp.refresh();
     Value secondVal = disp.getValue();
-    assertEquals("Value is in scope", true, disp.isInScope());
+    assertEquals("Value is in scope", true, disp.isAvailable());
     assertEquals("Value of variable at second breakpoint", secondVal.getInt(), 1);
   }
   
@@ -228,7 +227,7 @@ public class TestDisplayValue
                                          StackFactory.createFrame(myTask).getFrameIdentifier());
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
-    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable is in scope", true, disp.isAvailable());
     assertEquals("Variable value at first breakpoint", 5, firstVal.getInt());
     
     /* 
@@ -243,12 +242,11 @@ public class TestDisplayValue
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    steppingEngine = new SteppingEngine();
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    disp.update();
-    assertEquals("Variable in scope", false, disp.isInScope());
+    disp.refresh();
+    assertEquals("Variable in scope", false, disp.isAvailable());
     
     /*
      * Keep running until we hit the first breakpoint again. Then
@@ -259,8 +257,8 @@ public class TestDisplayValue
     steppingEngine.continueExecution(list);
     assertRunUntilStop("First breakpoint again");
     
-    disp.update();
-    assertEquals("Variable in scope", true, disp.isInScope());
+    disp.refresh();
+    assertEquals("Variable in scope", true, disp.isAvailable());
     Value secondVal = disp.getValue();
     assertEquals("Variable value at third breakpoint", 5, secondVal.getInt());
     
@@ -296,7 +294,7 @@ public class TestDisplayValue
                                          StackFactory.createFrame(myTask).getFrameIdentifier());
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
-    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable is in scope", true, disp.isAvailable());
     assertEquals("Variable value at first breakpoint", 0, firstVal.getInt());
     
     /* 
@@ -311,13 +309,12 @@ public class TestDisplayValue
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    steppingEngine = new SteppingEngine();
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    disp.update();
+    disp.refresh();
     Value secondVal = disp.getValue();
-    assertEquals("Variable in scope", true, disp.isInScope());
+    assertEquals("Variable in scope", true, disp.isAvailable());
     assertEquals("Variable value at second breakpoint", 0, secondVal.getInt());
   }
   
@@ -348,7 +345,7 @@ public class TestDisplayValue
                                          StackFactory.createFrame(myTask).getFrameIdentifier());
     // Check the value of the variable 'x', make sure it's equal to one
     Value firstVal = disp.getValue();
-    assertEquals("Variable is in scope", true, disp.isInScope());
+    assertEquals("Variable is in scope", true, disp.isAvailable());
     assertEquals("Variable value at first breakpoint", 2, firstVal.getInt());
     
     /* 
@@ -363,13 +360,12 @@ public class TestDisplayValue
     // Run until we hit the second breakpoint
     list = new LinkedList();
     list.add(myTask);
-    steppingEngine = new SteppingEngine();
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    disp.update();
+    disp.refresh();
     Value secondVal = disp.getValue();
-    assertEquals("Variable in scope", true, disp.isInScope());
+    assertEquals("Variable in scope", true, disp.isAvailable());
     assertEquals("Variable value", 2, secondVal.getInt());
   }
   

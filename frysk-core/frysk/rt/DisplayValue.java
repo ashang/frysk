@@ -80,13 +80,13 @@ public class DisplayValue
     varLabel = name;
     myTask = task;
     frameIdentifier = fIdent;
-    update();
+    refresh();
   }
   
   /**
    * @return true iff the variable represented by this Display is in scope
    */
-  public boolean isInScope ()
+  public boolean isAvailable ()
   {
     return myVar != null;
   }
@@ -95,7 +95,7 @@ public class DisplayValue
    * Updates the display to refect the new variable value
    * TODO: should this be automatic?
    */
-  public void update()
+  public void refresh()
   {
     Frame current = StackFactory.createFrame(myTask);
     // Work backwards through the frames

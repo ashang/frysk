@@ -1,3 +1,11 @@
+2007-06-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayValue.java (update): Renamed to refresh.
+	(isInScope): Renamed to isAvailable.
+	* TestDisplayValue.java (testVarValueChanged): Removed superfluous
+	call to SteppingEngine constructor, fixes regression.
+	(testVarValueNotChanged): Ditto.
+
 2007-06-13  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java: Cleaned up.
