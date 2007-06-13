@@ -86,7 +86,21 @@ public class MemoryMap
 
   public String toString()
   {
-    return name + " 0x" + Long.toHexString(addressLow) + "-0x" + 
-    Long.toHexString(addressHigh);
+    StringBuffer perms = new StringBuffer("----");
+    if (permRead) perms.setCharAt(0,'r');
+    if (permWrite) perms.setCharAt(1,'w'); 
+    if (permExecute) perms.setCharAt(2,'x');
+    if (shared) 
+      perms.setCharAt(3,'s');
+    else 
+      perms.setCharAt(3,'p');
+
+    return " 0x" + Long.toHexString(addressLow) + 
+      "-0x" +  Long.toHexString(addressHigh) +
+      " " + perms +
+      " 0x"+Long.toHexString(offset) +
+      " "+devMajor+":"+devMinor +
+      " " + inode +
+      " " + name;
   }
 }
