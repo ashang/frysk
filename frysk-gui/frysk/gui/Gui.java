@@ -55,11 +55,6 @@ import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
-//import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
-
 import org.gnu.gdk.Color;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
@@ -104,6 +99,7 @@ import frysk.proc.Manager;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
+import frysk.util.CommandlineParser;
 
 
 public class Gui implements LifeCycleListener, Saveable {
@@ -144,15 +140,13 @@ public class Gui implements LifeCycleListener, Saveable {
 
     {
     
-    Parser parser = new Parser("frysk", "1..23", true);
+    CommandlineParser parser = new CommandlineParser("frysk")
+    {
+      //XXX: Handle pids, cores and commands by overriding ClP methods here.
+    };
     parser.setHeader("usage: frysk [options]");
 
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-      }
-    });
+    parser.parse(args);
 
     Gui procpop = null;
     Preferences prefs = null;
