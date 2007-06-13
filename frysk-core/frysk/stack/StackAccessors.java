@@ -175,7 +175,7 @@ public class StackAccessors
   {
     logger.log(Level.FINE, "Looking for addr: 0x{0}\n", Long.toHexString(addr));
     Dwfl dwfl = null;
-    dwfl = DwflFactory.createDwfl(myTask.getProc());
+    dwfl = DwflFactory.createDwfl(myTask);
     if (dwfl == null)
       {
 	logger.log(Level.FINE, "Dwfl was null");

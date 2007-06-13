@@ -1,3 +1,8 @@
+2007-06-13  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java (getModuleFromAddress): Create dwfl from task,
+	not proc.
+
 2007-06-12  Nurdin Premji  <npremji@redhat.com>
 
 	* StackFactory.java (FrameCounter): Added.
