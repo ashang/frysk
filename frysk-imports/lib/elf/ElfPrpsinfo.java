@@ -109,7 +109,8 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
 
     noteBuffer.order(order);
     
-    switch (header.machine)
+    int machine = header.machine;
+    switch (machine)
       {
       case ElfEMachine.EM_386:
       case ElfEMachine.EM_PPC:
@@ -127,9 +128,24 @@ public class ElfPrpsinfo extends ElfNhdr.ElfNoteSectionEntry
     pr_sname = (char) noteBuffer.getByte();
     pr_zomb = (char) noteBuffer.getByte();
     pr_nice = (char) noteBuffer.getByte();
-    pr_flag = noteBuffer.getWord();
-    pr_uid = noteBuffer.getShort();
-    pr_gid = noteBuffer.getShort();
+
+    // align to the next long
+    long cp = noteBuffer.position();
+    noteBuffer.position(cp+Math.abs(cp-noteBuffer.wordSize()));
+    pr_flag = noteBuffer.getUWord();
+
+    // 16 bit integer used on i386 here
+    if (machine == ElfEMachine.EM_386)
+      {
+         pr_uid = noteBuffer.getShort();
+         pr_gid = noteBuffer.getShort();
+      }
+    else
+      {
+	pr_uid = noteBuffer.getInt();
+	pr_gid = noteBuffer.getInt();
+       }
+    
     pr_pid = noteBuffer.getInt();
     pr_ppid = noteBuffer.getInt();
     pr_pgrp = noteBuffer.getInt();

@@ -1,3 +1,8 @@
+2007-06-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrpsinfo.java (ElfPrpsinfo): Account for struct
+	alignment and 16 bit integer values ox x86.
+
 2007-06-11  Phil Muldoon <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java (decode): Increment thread counter.
