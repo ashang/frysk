@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,87 +39,89 @@
 
 package frysk.proc.corefile;
 
-import java.util.logging.Level;
-import frysk.proc.ProcState;
-import frysk.proc.Proc;
-import frysk.proc.Observation;
-import frysk.proc.Task;
 
+import lib.elf.Elf;
+import lib.elf.ElfEHeader;
+import lib.elf.ElfPHeader;
+import lib.elf.ElfCommand;
+import java.io.File;
 /**
- * A CoreFile Process State
+ * Build a list of maps from the contents of the file linkmap
+ * table at address specified
  */
-
-class LinuxProcState
-  extends ProcState
+public abstract class SOLibMapBuilder
 {
 
-  protected LinuxProcState (String state)
+
+  /**
+   * Create a LinkmapBuilder; can only extend.
+   */
+
+  protected SOLibMapBuilder ()
   {
-    super (state);
   }
   
   /**
-   * Return the Proc's initial state.
+   * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
+   * a list of memory maps.  Return true if the scan was successful.
+   */
+  public final void construct (File clientSolib)
+  {
+
+    Elf solib = openElf(clientSolib);
+    ElfEHeader eHeader = solib.getEHeader();
+    
+    for(int z=0; z<eHeader.phnum; z++)
+      {
+	
+	ElfPHeader pHeader = solib.getPHeader(z);
+	if ((pHeader.type == ElfPHeader.PTYPE_LOAD))
+	  {
+	    boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
+	    boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
+	    boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
+	    long mapBegin = (pHeader.vaddr &~ (pHeader.align-1));
+	    long mapEnd = ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
+	    long aOffset = (pHeader.offset &- pHeader.align);
+	    buildMap(mapBegin, mapEnd, read, write, execute, 
+		     aOffset, clientSolib.getPath(),pHeader.align);
+	  }
+      }
+    solib.close();
+  }
+  
+  /**
+   * Build an address map covering [addressLow,addressHigh) with
+   * permissions {permR, permW, permX, permP }, device devMajor
+   * devMinor, inode, and the pathname's offset/length within the
+   * buf.
    *
+   * !shared implies private, they are mutually exclusive.
    */
-  static ProcState initial (Proc proc)    
-  {
-    logger.log (Level.FINEST, "{0} initial\n", proc); 
-    return detached;
-  }
   
-  /**
-   * The process is running free (or at least was the last time its
-   * status was checked).
-   */
-  private static final ProcState detached = new ProcState ("detached")
-    {
-      public ProcState handleRefresh (Proc proc)
+  abstract public void buildMap (long addrLow, long addrHigh, 
+				 boolean permRead, boolean permWrite,
+				 boolean permExecute, long offset, 
+				 String name, long align);
+
+  private Elf openElf(File name)
+  {
+
+    Elf exeElf = null;
+    // Open up corefile corresponding directory.
+    try 
       {
-	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
-	((LinuxProc)proc).sendRefresh ();
-	return detached;
+	exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
       }
-      public ProcState handleRemoval (Proc proc)
+    catch (Exception e)
       {
-	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
-	
-	// XXX: Can't remove a core file Proc, it's there forever
-	// and there is only one proc. Maybe need to have a
-	// destroyed state for compatability?
-	
-	return detached;
-      }
-      public ProcState handleAddObservation (Proc proc,
-				      Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	
-	// XXX: Fake out for now. What kind of observers would you
-	// put on a core file? Might need a brain dead
-	// attached state in this scenario for compataibility.
-	return detached;
-	// return Attaching.initialState (proc, observation);
-      }
-      
-      public ProcState handleDeleteObservation (Proc proc,
-					 Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-	// Must be bogus; if there were observations then the
-	// Proc wouldn't be in this state.
-	observation.fail (new RuntimeException ("not attached"));
-	return detached;
+	throw new RuntimeException(e);
       }
 
-      public ProcState handleTaskDetachCompleted (Proc proc, Task task)
-      {
-	return this;
-      }
-      
-      public ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
-      {
-	return detached;
-      } 
-    };
+    return exeElf;
+  }
+
+
+
 }
+

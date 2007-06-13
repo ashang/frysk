@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2007 Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,87 +39,89 @@
 
 package frysk.proc.corefile;
 
-import java.util.logging.Level;
-import frysk.proc.ProcState;
-import frysk.proc.Proc;
-import frysk.proc.Observation;
-import frysk.proc.Task;
+import inua.eio.ByteBuffer;
 
 /**
- * A CoreFile Process State
+ * Build a list of maps from the contents of the file linkmap
+ * table at address specified
  */
-
-class LinuxProcState
-  extends ProcState
+public abstract class LinkmapBuilder
 {
 
-  protected LinuxProcState (String state)
+  /**
+   * Create a LinkmapBuilder; can only extend.
+   */
+  protected LinkmapBuilder ()
   {
-    super (state);
   }
   
   /**
-   * Return the Proc's initial state.
-   *
+   * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
+   * a list of memory maps.  Return true if the scan was successful.
    */
-  static ProcState initial (Proc proc)    
+  public final void construct (long addr, ByteBuffer buffer)
   {
-    logger.log (Level.FINEST, "{0} initial\n", proc); 
-    return detached;
-  }
-  
-  /**
-   * The process is running free (or at least was the last time its
-   * status was checked).
-   */
-  private static final ProcState detached = new ProcState ("detached")
-    {
-      public ProcState handleRefresh (Proc proc)
+    
+    byte[] sbuffer = new byte[255];
+    long linkStep = 0xff;
+    long l_ld = 0;
+    long l_addr = 0;
+    long stringAddr = 0;
+    int count = 0;
+    String name = "";
+    byte in = -1;
+    if (buffer != null)
       {
-	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
-	((LinuxProc)proc).sendRefresh ();
-	return detached;
-      }
-      public ProcState handleRemoval (Proc proc)
-      {
-	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
-	
-	// XXX: Can't remove a core file Proc, it's there forever
-	// and there is only one proc. Maybe need to have a
-	// destroyed state for compatability?
-	
-	return detached;
-      }
-      public ProcState handleAddObservation (Proc proc,
-				      Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	
-	// XXX: Fake out for now. What kind of observers would you
-	// put on a core file? Might need a brain dead
-	// attached state in this scenario for compataibility.
-	return detached;
-	// return Attaching.initialState (proc, observation);
-      }
-      
-      public ProcState handleDeleteObservation (Proc proc,
-					 Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-	// Must be bogus; if there were observations then the
-	// Proc wouldn't be in this state.
-	observation.fail (new RuntimeException ("not attached"));
-	return detached;
-      }
+	buffer.position(addr);
+	while (linkStep != 0)
+	  {
+	    for (int i=0; i<sbuffer.length; i++)
+	      sbuffer[i] = 0; 
+	    
+	    l_addr = buffer.getUWord();
+	    stringAddr = buffer.getUWord();
+	    l_ld = buffer.getUWord();
+	    linkStep = buffer.getUWord();
 
-      public ProcState handleTaskDetachCompleted (Proc proc, Task task)
-      {
-	return this;
+	    try 
+	      {
+		// Construct string
+		if (stringAddr != 0)
+		{
+		  buffer.position(stringAddr);
+		  in = buffer.getByte();
+		  while (in != 0)
+		    {
+		      sbuffer[count] = in;
+		      count++;
+		      in = buffer.getByte();
+		    }
+		  name = new String(sbuffer);
+		  name = name.trim();
+		}
+	      } 
+	    catch (Exception e)
+	      {
+		name = "";
+	      }
+		
+	    buildMap(l_addr,l_ld,stringAddr,name);
+	    if (linkStep !=0)
+	      buffer.position(linkStep);
+	  }
       }
-      
-      public ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
-      {
-	return detached;
-      } 
-    };
+  }
+
+  
+  /**
+   * Build an address map covering [addressLow,addressHigh) with
+   * permissions {permR, permW, permX, permP }, device devMajor
+   * devMinor, inode, and the pathname's offset/length within the
+   * buf.
+   *
+   * !shared implies private, they are mutually exclusive.
+   */
+  
+  abstract public void buildMap (long l_addr, long l_ld, long saddr, String name);
+
 }

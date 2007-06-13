@@ -60,7 +60,8 @@ public class LinuxHost
   extends Host 
 {
 
-  protected File coreFile;
+  protected File coreFile = null;
+  protected File exeFile = null;
   Elf corefileElf;
   EventLoop eventLoop;
 
@@ -78,6 +79,13 @@ public class LinuxHost
         throw new RuntimeException("Corefile " + this.coreFile + " is "+ 
 				   "not a valid ELF core file.");
       }
+  }
+
+
+  public LinuxHost(EventLoop eventLoop, File coreFile, File exeFile)
+  {
+    this(eventLoop, coreFile);
+    this.exeFile = exeFile;
   }
 
   protected void sendRefresh(boolean refreshAll) 

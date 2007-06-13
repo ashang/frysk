@@ -1,3 +1,81 @@
+2007-06-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* MapAddressHeader.java: New.
+	* LinkmapBuilder.java: New.
+	* SOLibMapBuilder.java: New.
+
+	* CorefileByteBuffer.java (MapAddress): Delete. Use
+	MapAddressHeader instead.
+	(CorefileByteBuffer): Add a parameter to take meta data.
+	Do not attempt to construct own meta data.
+	Set Endian and Word size for data read from elf header.	
+	(CorefileByteBuffer(File)): Build own meta data.
+	(peek): Rewrite. Navigate provided meta data to find the peek 
+	offset and the file name of that offset.
+	(buildElfMaps): Rewrite using MapAddressHeader.
+	(isFileSane): Simplify. Check for null on backing
+	corefile.
+	(findMetaData): New. Consolidate all meta data look-ups
+	here.
+	(checkCorefileAddress): New. Answer whether this data is in the
+	core file, or whether the buffer has to revert to the solib.
+	(convertAddresstoOffset): Use MapAddressHeader.
+	(openCoreFileElf): New.
+	(closeCoreFileElf): New.
+	(setEndianWordSize): New. Set word and endian size for buffer
+	from the core file elf header.
+
+	* LinuxHost.java (LinuxHost): Add backing exe and core file
+	references.
+	(LinuxHost): New constructor that takes an exe path.
+
+	* LinuxProc.java (LinuxProc): Add backing exe reference.
+	Add metaData[] store and boolean to indicate meta data built.
+	Derive executable name from corefile is unspecified.
+	(getCommand): Deleted. Unused.
+	(sendrecExe): Rewrite to derive exe and full path from
+	sendrecCmdLine.
+	(getMemory): Check if meta data is built. If not, build it.
+	(sendrecMaps): Implement. Build meta data if needed, and
+	refactor data into MemoryMap format.
+	(constructMetaData): New.Bake either basic or rich meta
+	data.
+	(constructBasicMapMetaData): New. Bake basic meta data only from
+	the core file.
+	(constructEnhandedMapMetaData): New. Bake rich meta data from
+	the basic meta data and the solibs found in the backing exe's
+	linkmap.
+	(isExeProvided): New. Return whether exe backing is provided.
+	(getDynamicSegmentAddress): New. Return tuple of core file
+	dynamic segment address and size.
+	(getExeDynamicSegmentAddress): New. Get backing exe dynamic segment's
+	address.
+	(getLinkmapAddress): New. Get the address of the linkmap table, as
+	derived from the dynamic segment.
+	(getExeEntryPoint): New. Return the  backing exe's entry point.
+	(getExeInterpreterAddress): New. Return the address of the backing
+	exe's interpreter.
+	(getExeInterpreterName): New. Return the name of the backing
+	exe's interpreter.
+	(getCorefileEntryPoint): New. Return the entry point of the
+	backing core file.
+	(getCorefileVDSOAddress): New. Return the address of the VDSO
+	segment in this corefile.
+	(openElf): New. Helper function to open elf files.
+	(DynamicSegmentTuple): New. Private class to hold dynamic segment
+	location information.
+	(Linkmap): New. Private class to hold the linkmap table
+	information.
+
+	* LinuxProcState.java (handleTaskDetachCompleted, handleDetach):
+	Handle detach requests.
+
+	* TestLinuxCore.java (testLinuxCoreFileMaps): New.
+	(testLinuxCoreFileStackTrace): New.
+	(giveMeAProc): New.
+	(ConstructCore): New.
+	
+
 2007-05-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxHost.java (sendRefresh):  Ignore refreshAll for now.

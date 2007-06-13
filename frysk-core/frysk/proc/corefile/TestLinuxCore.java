@@ -53,7 +53,13 @@ import frysk.proc.Auxv;
 import frysk.proc.TestLib;
 import frysk.proc.ProcId;
 import frysk.proc.Manager;
-
+import frysk.proc.MemoryMap;
+import frysk.util.CoredumpAction;
+import frysk.util.StacktraceAction;
+import frysk.event.Event;
+import frysk.event.RequestStopEvent;
+import frysk.proc.ProcBlockAction;
+import frysk.proc.ProcCoreAction;
 public class TestLinuxCore
     extends TestLib
 	    
@@ -63,6 +69,100 @@ public class TestLinuxCore
 					new File(Config.getPkgDataDir (), 
 						 "test-core"));
   
+
+  public void testLinuxCoreFileMaps ()
+  {
+
+    if (brokenX8664XXX(4640) || brokenPpcXXX(4640))
+      return;
+
+    Proc ackProc = giveMeAProc();
+    String coreFileName = constructCore(ackProc);
+    File xtestCore = new File(coreFileName);
+
+    Host lcoreHost = new LinuxHost(Manager.eventLoop, 
+				   xtestCore);
+
+    
+    lcoreHost.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+
+    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+
+    MemoryMap[] list = ackProc.getMaps();
+    MemoryMap[] clist = coreProc.getMaps();
+
+    assertEquals("Number of maps match in corefile/live process",
+		 clist.length,list.length);
+
+    for (int i=0; i<list.length; i++)
+      {
+	assertEquals("vaddr",list[i].addressLow, clist[i].addressLow);
+	assertEquals("vaddr_end",list[i].addressHigh,clist[i].addressHigh);
+	assertEquals("permRead",list[i].permRead,clist[i].permRead);
+	assertEquals("permWrite",list[i].permWrite,clist[i].permWrite);
+	assertEquals("permExecute",list[i].permExecute,clist[i].permExecute);
+      }
+
+    xtestCore.delete();
+  }
+
+  public void testLinuxCoreFileStackTrace ()
+  {
+
+    if (brokenX8664XXX(4601) || brokenPpcXXX(4601))
+      return;
+    Proc ackProc = giveMeAProc();
+    String coreFileName = constructCore(ackProc);
+    File xtestCore = new File(coreFileName);
+
+    Host lcoreHost = new LinuxHost(Manager.eventLoop, 
+				   xtestCore);
+    
+    lcoreHost.requestRefreshXXX();
+    Manager.eventLoop.runPending();
+
+    Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
+
+
+    StacktraceAction stacker;
+    StacktraceAction coreStack;
+
+    stacker = new StacktraceAction(ackProc, new RequestStopEvent(Manager.eventLoop), true, false, false, false)
+    {
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("Proc add failed: " + w.getMessage());
+      }
+    };
+
+    new ProcBlockAction (ackProc, stacker);
+    assertRunUntilStop("perform backtrace");
+
+    coreStack = new StacktraceAction(coreProc, new PrintEvent(),true,false,false,false)
+    {
+
+      public void addFailed (Object observable, Throwable w)
+      {
+        fail("Proc add failed: " + w.getMessage());
+      }
+    };
+    new ProcCoreAction(coreProc, coreStack);
+    assertRunUntilStop("perform corebacktrace");
+
+    assertEquals("Compare stack traces",stacker.toPrint(),coreStack.toPrint());
+    xtestCore.delete();
+  }
+
+  private static class PrintEvent implements Event
+  {
+    public void execute()
+    {
+      Manager.eventLoop.requestStop();
+    }
+  }
+
   public void testLinuxHostPopulation ()
   {
     
@@ -244,4 +344,45 @@ public class TestLinuxCore
 		 isa.getRegisterByName("esp").get(task));
   }
 
+
+  /**
+   * Generate a process suitable for attaching to (ie detached when returned).
+   * Stop the process, check that is is found in the frysk state machine, then
+   * return a proc oject corresponding to that process.
+   * 
+   * @return - Proc - generated process.
+   */
+  protected Proc giveMeAProc ()
+  {
+    AckProcess ackProc = new DetachedAckProcess();
+    assertNotNull(ackProc);
+    Proc proc = ackProc.assertFindProcAndTasks();
+    assertNotNull(proc);
+    return proc;
+  }
+
+
+  /**
+   * Given a Proc object, generate a core file from that given proc.
+   * 
+   * @param ackProc - proc object to generate core from.
+   * @return - name of constructed core file.
+   */
+  public String constructCore (final Proc ackProc)
+  {
+
+    final CoredumpAction coreDump = new CoredumpAction(ackProc, new Event()
+    {
+
+      public void execute ()
+      {
+        ackProc.requestAbandonAndRunEvent(new RequestStopEvent(
+                                                               Manager.eventLoop));
+      }
+    }, false);
+        
+    new ProcBlockAction(ackProc, coreDump);
+    assertRunUntilStop("Running event loop for core file");
+    return coreDump.getConstructedFileName();
+  }
 }

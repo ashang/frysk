@@ -43,8 +43,6 @@ import frysk.sys.StatelessFile;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import lib.elf.ElfEHeader;
@@ -54,51 +52,48 @@ import lib.elf.ElfPHeader;
 
 
 import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 public class CorefileByteBuffer 
 	extends ByteBuffer
 
 {
 
-  
-  // Private class to hold 
-  private class MapAddress
-  {
-    long offsetStart = 0;
-    long offsetEnd = 0;
-    long fileSize = 0;
-    long vaddr = 0;
-    
-    public MapAddress(long vaddr, long start, long end, long fileSize)
-    {
-      this.vaddr = vaddr;
-      this.offsetStart = start;
-      this.offsetEnd = end;
-      this.fileSize = fileSize;
-    }
-  }
-  
-  ArrayList offsetList = new ArrayList();
+  MapAddressHeader[] offsetList;
+  //ArrayList offsetList = new ArrayList();
   File coreFile = null;
+  File exeFile = null;
   StatelessFile coreFileRaw = null;
   boolean fileOpen = false;
 
   private CorefileByteBuffer(File file, long lowerExtreem, 
-			    long upperExtreem) throws ElfException
+			     long upperExtreem, 
+			     MapAddressHeader[] metaData) throws ElfException
 
   {
     super(lowerExtreem, upperExtreem);
     this.coreFile = file;
+    Elf elf = openCoreFileElf(file);
+    setEndianWordSize(elf);
+    offsetList = metaData;
     openFile();
-    buildElfMaps();
+    closeCoreFileElf(elf);
+  }
+
+  public CorefileByteBuffer(File file, MapAddressHeader[] metaData) throws ElfException
+  {
+    // XXX: Don't know the size of the highWater mark
+    // Map -1 to 0xFFFFn (Long max size). Should build the
+    // maps in advance.
+    this(file,0,-1, metaData);
   }
 
   public CorefileByteBuffer(File file) throws ElfException
   {
-    // XXX: Don't know the size of the highWater mark
-    // Map -1 to 0xFFFFn (Long max size). Should build the
-    // maps in adance.
-    this(file,0,-1);
+    this(file,null);
+    Elf elf = openCoreFileElf(file);
+    offsetList = buildElfMaps(elf);
+    closeCoreFileElf(elf);
   }
 
   protected void poke(long arg0, int arg1) 
@@ -110,8 +105,29 @@ public class CorefileByteBuffer
   {
 
     byte[] buffer = new byte[1];
-    long offset = convetAddressToOffset(address);
-    this.coreFileRaw.pread(offset, buffer,0,1);
+    MapAddressHeader metaLine = findMetaData(address);
+
+    if (metaLine != null)
+      if (checkCorefileAddress(metaLine))
+	{
+	  long offset = convertAddressToOffset(address);
+	  this.coreFileRaw.pread(offset, buffer,0,1);
+	}
+      else
+	{
+	  if (!metaLine.name.equals(""))
+	    {
+	      StatelessFile temp = new StatelessFile(new File(metaLine.name));
+	      long offset = metaLine.solibOffset  + (address - metaLine.vaddr);
+	      temp.pread(offset, buffer,0,1);
+	    }
+	}
+	
+    else
+      throw new RuntimeException("peek() at address " +
+				 Long.toHexString(address)+" cannot be "+
+				 "found in metadata table.");
+
     return buffer[0];
   }
 
@@ -124,7 +140,7 @@ public class CorefileByteBuffer
       {
 	sub =  new CorefileByteBuffer (up.coreFile,
 				       lowerExtreem, 
-				       upperExtreem);
+				       upperExtreem,offsetList);
       }
     catch (ElfException e)
       {
@@ -140,74 +156,59 @@ public class CorefileByteBuffer
       if (this.coreFileRaw != null)
 	return true;
 
+      System.out.println("Unable to open " + this.coreFile.getPath());
       return false;
   }
   
-  private void buildElfMaps() throws ElfException  
-  {
-    if (isFileSane())
-      {
-	try
-	{
-	  Elf elf = new Elf (this.coreFile.getPath(), ElfCommand.ELF_C_READ);
-	  ElfEHeader eHeader = elf.getEHeader();
-	  for (int i=0; i<eHeader.phnum; i++)
-	    {
-	      // Test if pheader is of types LOAD. If so add to list
-	      ElfPHeader pHeader = elf.getPHeader(i);
-	      if (pHeader.type == ElfPHeader.PTYPE_LOAD)
-		{
-
-		  offsetList.add(new MapAddress(pHeader.vaddr,
-		                                pHeader.offset, 
-		                                pHeader.offset + 
-		                                pHeader.filesz, 
-		                                pHeader.filesz));
-		}
-	    }  
-	  elf.close();
-	}
-	catch (ElfFileException e)
-	{
-	  throw(e);
-	}
-	catch (ElfException e)
-	{
-	  throw(e);
-	}
-
-
-      }
-    else
-      throw new RuntimeException("Cannot IO access " + this.coreFile.getPath());
-
-  }
-
-
   private boolean isFileSane()
   {
     if (this.coreFileRaw != null)
       return true;
 
-    return false;
+    return true;
   }
   
 
-  private long convetAddressToOffset (long address)
+  private MapAddressHeader findMetaData(long address)
   {
-    MapAddress pair;
+    MapAddressHeader data;
+    for (int i=0; i<offsetList.length; i++)
+      {
+        data = offsetList[i];
+        
+        if ((address >= data.vaddr) && 
+            (address <= (data.vaddr_end)))
+	  return data;
+      }
+
+    return null;
+  }
+  private boolean checkCorefileAddress(MapAddressHeader data)
+  {
+    if (data.fileSize > 0)
+      return true;
+    else
+      return false;
+    
+  }
+	  
+  private long convertAddressToOffset (long address)
+  {
+    MapAddressHeader pair;
     long offset = 0;
     boolean foundOffset = false;
-    
-    Iterator i = offsetList.iterator();
-    while (i.hasNext())
+    boolean presentInFile = false;
+
+    for (int i=0; i<offsetList.length; i++)
       {
-        pair = (MapAddress) i.next();
+        pair = offsetList[i];
         if ((address >= pair.vaddr) && 
-            (address <= (pair.vaddr + pair.fileSize)))
+            (address <= (pair.vaddr_end)))
           {
-            offset = pair.offsetStart + (address - pair.vaddr);
+            offset = pair.corefileOffset + (address - pair.vaddr);
             foundOffset = true;
+	    if (pair.fileSize > 0)
+	      presentInFile = true;
             break;
           }
             
@@ -220,7 +221,94 @@ public class CorefileByteBuffer
     if (!foundOffset)
       throw new RuntimeException("Cannot find file offset for given address 0x"
                                  + Long.toHexString(address));
+
+    
+    if (!presentInFile)
+      throw new RuntimeException("Cannot read file offset for given address 0x"
+                                 + Long.toHexString(address) + 
+				 ". It is elided from the core file");
     return offset;
   }
+
+  private Elf openCoreFileElf(File file)
+  {
+    Elf elf;
+    try
+      {
+	elf =  new Elf (file.getPath(), ElfCommand.ELF_C_READ);
+      }
+    catch (ElfFileException e)
+      {
+	throw new RuntimeException(e);
+      }
+    catch (ElfException e)
+      {
+	throw new RuntimeException(e);
+      }
+
+    return elf;
+  }
+
+  private void closeCoreFileElf(Elf elf)
+  {
+    elf.close();
+    elf = null;
+  }
+
+
+  private void setEndianWordSize(Elf elf)
+  {
+ 
+    ElfEHeader elf_header = elf.getEHeader();
+
+    if (elf_header.ident[5] == ElfEHeader.PHEADER_ELFDATA2MSB)
+      order(ByteOrder.BIG_ENDIAN);
+    else
+      order(ByteOrder.LITTLE_ENDIAN);
+
+    if (elf_header.ident[4] == ElfEHeader.PHEADER_ELFCLASS32)
+      wordSize(4);
+    else
+      wordSize(8);
+  }
+
+  /** Build basic meta data for this Buffer. This allows conversion
+   *  of offset to address, and also tells the buffer whether a read 
+   *  is legal before that read happens.
+   **/
+
+  private MapAddressHeader[] buildElfMaps(Elf elf) throws ElfException
+  {
+
+    ArrayList localList = new ArrayList();
+    if (isFileSane())
+      {
+
+        ElfEHeader eHeader = elf.getEHeader();
+        for (int i=0; i<eHeader.phnum; i++)
+          {
+            // Test if pheader is of types LOAD. If so add to list
+            ElfPHeader pHeader = elf.getPHeader(i);
+            if (pHeader.type == ElfPHeader.PTYPE_LOAD)
+              {
+
+                localList.add(new MapAddressHeader(pHeader.vaddr,
+						   pHeader.vaddr+pHeader.memsz,
+						   false,
+						   false, false,
+						   pHeader.offset,
+						   0,
+						   pHeader.filesz,
+						   pHeader.memsz,
+						   "",0x1000));
+              }
+          }
+      }
+    else
+      throw new RuntimeException("Cannot IO access " + this.coreFile.getPath());
+
+    return (MapAddressHeader[]) localList.toArray(new MapAddressHeader[localList.size()]);
+  }
+
 
 }

@@ -39,87 +39,54 @@
 
 package frysk.proc.corefile;
 
-import java.util.logging.Level;
-import frysk.proc.ProcState;
-import frysk.proc.Proc;
-import frysk.proc.Observation;
-import frysk.proc.Task;
 
-/**
- * A CoreFile Process State
- */
 
-class LinuxProcState
-  extends ProcState
-{
-
-  protected LinuxProcState (String state)
+public class MapAddressHeader
   {
-    super (state);
-  }
-  
-  /**
-   * Return the Proc's initial state.
-   *
-   */
-  static ProcState initial (Proc proc)    
-  {
-    logger.log (Level.FINEST, "{0} initial\n", proc); 
-    return detached;
-  }
-  
-  /**
-   * The process is running free (or at least was the last time its
-   * status was checked).
-   */
-  private static final ProcState detached = new ProcState ("detached")
+
+    long vaddr = 0;
+    long vaddr_end = 0;
+    long corefileOffset = 0;
+    long solibOffset = 0;
+    long fileSize = 0;
+    long memSize = 0;
+    long align = 0;
+    String name = "";
+
+    boolean permRead = false; 
+    boolean permWrite = false;
+    boolean permExecute = false;
+
+    public MapAddressHeader(long vaddr, long vaddr_end, boolean permRead,
+			    boolean permWrite, boolean permExecute, 
+			    long corefileOffset, long solibOffset, 
+			    long fileSize, long memSize, 
+			    String name, long align)
     {
-      public ProcState handleRefresh (Proc proc)
-      {
-	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
-	((LinuxProc)proc).sendRefresh ();
-	return detached;
-      }
-      public ProcState handleRemoval (Proc proc)
-      {
-	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
-	
-	// XXX: Can't remove a core file Proc, it's there forever
-	// and there is only one proc. Maybe need to have a
-	// destroyed state for compatability?
-	
-	return detached;
-      }
-      public ProcState handleAddObservation (Proc proc,
-				      Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	
-	// XXX: Fake out for now. What kind of observers would you
-	// put on a core file? Might need a brain dead
-	// attached state in this scenario for compataibility.
-	return detached;
-	// return Attaching.initialState (proc, observation);
-      }
-      
-      public ProcState handleDeleteObservation (Proc proc,
-					 Observation observation)
-      {
-	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
-	// Must be bogus; if there were observations then the
-	// Proc wouldn't be in this state.
-	observation.fail (new RuntimeException ("not attached"));
-	return detached;
-      }
+      this.vaddr = vaddr;
+      this.vaddr_end = vaddr_end;
+      this.corefileOffset = corefileOffset;
+      this.solibOffset = solibOffset;
+      this.fileSize = fileSize;
+      this.memSize = memSize;
+      this.name = name;
 
-      public ProcState handleTaskDetachCompleted (Proc proc, Task task)
-      {
-	return this;
-      }
-      
-      public ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
-      {
-	return detached;
-      } 
-    };
-}
+      this.permRead = permRead;
+      this.permWrite = permWrite;
+      this.permExecute = permExecute;
+
+      this.align = align;
+    }
+
+    public String toString()
+    {
+      return "0x"+Long.toHexString(vaddr)+"-"+
+	"0x"+Long.toHexString(vaddr_end)+" "+
+	Long.toHexString(corefileOffset)+" "+
+	Long.toHexString(solibOffset)+" "+
+	Long.toHexString(fileSize)+" "+
+	Long.toHexString(memSize)+" "+
+	name;
+    }
+  }
+
