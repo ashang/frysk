@@ -42,7 +42,7 @@ package lib.unwind;
 import gnu.gcj.RawDataManaged;
 import gnu.gcj.RawData;
 
-public class UnwindNative
+public class UnwindPPC64
     extends Unwind
 {
     

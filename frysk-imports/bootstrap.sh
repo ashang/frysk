@@ -72,6 +72,10 @@ FILE_LIST="frysk \
 
 # Create a libunwind-i386 directory
 mkdir -p libunwind-i386
+# Create a libunwind-x86_64 directory
+mkdir -p libunwind-x86_64
+# Create a libunwind-ppc64 directory
+mkdir -p libunwind-ppc64
 (
     cd libunwind
     mkdir -p config

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2007, Red Hat Inc.
+// Copyright 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,118 +37,53 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package lib.unwind;
 
-import lib.stdcpp.Demangler;
-
 import gnu.gcj.RawDataManaged;
+import gnu.gcj.RawData;
 
-public class FrameCursor
+public class UnwindX8664
+    extends Unwind
 {
+    
+  native RawDataManaged initRemote (RawData addressSpace,
+                         Accessors accessors);
+   
+  native RawData createAddressSpace (ByteOrder byteOrder);
 
-  private RawDataManaged nativeCursor;
-
-  protected FrameCursor inner;
-
-  protected FrameCursor outer;
+  native void destroyAddressSpace (RawData addressSpace);
   
-  protected int signal_frame;
+  native void setCachingPolicy (RawData addressSpace, 
+                                CachingPolicy cachingPolicy);
   
-  protected String demangledMethodName;
-  protected String procName;
-  private long procOffset;
-  private long procInfoStart;
-  private long procInfoEnd;
+  native int isSignalFrame (RawDataManaged cursor);
   
-  private long cfa;
+  native int step (RawDataManaged cursor);
   
-  private long address;
-
-  protected FrameCursor (long cursor)
-  {
-    create_frame_cursor(cursor);
-    this.demangledMethodName = Demangler.demangle(this.procName);
-  }
-
-  /**
-   * 
-   * @return The stack frame cursor from the next inner stack
-   */
-  public FrameCursor getInner ()
-  {
-    return inner;
-  }
-
-  /**
-   * 
-   * @return The stack frame cursor from the previous outer stack
-   */
-  public FrameCursor getOuter ()
-  {
-    return outer;
-  }
-
-  /**
-   * 
-   * @return The raw pointer to this frame's unwind cursor
-   */
-  public RawDataManaged getNativeCursor ()
-  {
-    return nativeCursor;
-  }
+  native ProcName getProcName(RawDataManaged cursor, int maxNameSize);
   
-  public int getIsSignalFrame()
-  {
-    return signal_frame;
-  }
-
-  private native void create_frame_cursor (long cursor);
-
-  public long getAddress ()
-  {
-    return address;
-  }
-
-  public long getCfa ()
-  {
-    return cfa;
-  }
-
-  public boolean isSignalFrame()
-  {
-    // ??? Is this right?
-    return signal_frame == 1;
-  }
+  native int getRegister(RawDataManaged cursor, int regNum,
+                           byte[] word);
+ 
+  native int setRegister(RawDataManaged cursor, int regNum, long word);
   
-  public void setIsSignalFrame(boolean isSignalFrame)
-  {
-    signal_frame = isSignalFrame? 1 : 0;
-  }
-
-  public String getMethodName ()
-  {
-    return demangledMethodName;
-  }
+  native int getContext (RawDataManaged context);
   
-  public String getProcName ()
-  {
-    return procName;
-  }
-  public long getProcOffset ()
-  {
-    return procOffset;
-  }
-  public long getProcInfoStart ()
-  {
-    return procInfoStart;
-  }
-  public long getProcInfoEnd ()
-  {
-    return procInfoEnd;
-  }
+  native RawDataManaged copyCursor(RawDataManaged cursor);
+
+  native ProcInfo getProcInfo (RawDataManaged cursor);
+
+  native public ProcInfo createProcInfoFromElfImage (AddressSpace addressSpace, 
+                                                     long ip, 
+                                                     boolean needUnwindInfo, 
+                                                     ElfImage elfImage, 
+                                                     Accessors accessors);
+
+  native public ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
+                                                long segbase, long hi, 
+                                                long mapoff, Accessors accessors);
 
   
-  public native long get_reg (long reg);
-  public native long set_reg (long reg, long val);
+  //@Override
+  native public int getSP (RawDataManaged cursor, byte[] word);
 }

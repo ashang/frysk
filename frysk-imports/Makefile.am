@@ -50,8 +50,8 @@ CHECK_SUBDIRS = \
 	elfutils \
 	getopt
 # Leave out the libunwind-$arch subdirectories from dist:
-DIST_SUBDIRS = $(CHECK_SUBDIRS) libunwind
-SUBDIRS = $(DIST_SUBDIRS) libunwind-i386
+DIST_SUBDIRS = $(CHECK_SUBDIRS)
+SUBDIRS = $(DIST_SUBDIRS) libunwind-i386 libunwind-x86_64 libunwind-ppc64
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 EXTRA_DIST += \
@@ -75,10 +75,9 @@ GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 GEN_GCJ_LDADD += -lstdc++
-GEN_GCJ_LDADD += ./libunwind/src/.libs/libunwind-ptrace.a
-GEN_GCJ_LDADD += ./libunwind/src/.libs/libunwind-$(libunwind_cpu).a 
 GEN_GCJ_LDADD += ./libunwind-i386/src/.libs/libunwind-x86.a
-
+GEN_GCJ_LDADD += ./libunwind-x86_64/src/.libs/libunwind-x86_64.a
+GEN_GCJ_LDADD += ./libunwind-ppc64/src/.libs/libunwind-ppc64.a
 # For CNI code.
 AM_CXXFLAGS += -I$(srcdir)/include
 # For auding of system calls.

@@ -11,3 +11,4 @@ files.list
 install-sh
 missing
 libunwind-i386
+libunwind-x86_64

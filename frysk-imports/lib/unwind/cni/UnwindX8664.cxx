@@ -47,7 +47,7 @@
 
 #include <libdwfl.h>
 
-#include <libunwind.h>
+#include <libunwind-x86_64.h>
 #include <dwarf.h>
 
 #include <gcj/cni.h>
@@ -75,6 +75,6 @@
 
 #include "frysk/sys/cni/Errno.hxx"
 
-#define TARGET UnwindNative
-#include "lib/unwind/UnwindNative.h"
+#define TARGET UnwindX8664
+#include "lib/unwind/UnwindX8664.h"
 #include "lib/unwind/cni/UnwindH.hxx"

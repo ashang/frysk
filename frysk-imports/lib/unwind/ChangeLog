@@ -1,3 +1,19 @@
+2007-06-14  Nurdin Premji  <npremji@redhat.com>
+
+	* FrameCursor.java: Removed.
+	* PtraceAccessors.java: Removed.
+	* StackTraceCreator.java: Removed.
+	* UnwindNative.java: Removed.
+	* UnwindX8664.java: Added.
+	* UnwindPPC64.java: Added.
+	* TestUnwind.java: Removed references to PtraceAccessors.
+	* cni/FrameCursor.cxx: Removed.
+	* cni/PtraceAccessors.cxx: Removed.
+	* cni/StackTraceCreator.cxx: Removed.
+	* cni/UnwindNative.cxx: Removed.
+	* cni/UnwindX8664.cxx: Added.
+	* cni/UNwindPPC64.cxx: Added.
+
 2007-05-10  Nurdin Premji  <npremji@redhat.com>
 
 	* Cursor.java (hasMoreFrames): Removed.

@@ -1,3 +1,8 @@
+2007-06-14  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Removed libunwind-$(libunwind-cpu).
+	Added libunwind-x86_64 and libunwind-ppc64.
+
 2007-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Pass -Werror to all autoconf.

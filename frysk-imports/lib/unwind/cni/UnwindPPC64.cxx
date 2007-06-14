@@ -10,11 +10,11 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
+//
 // In addition, as a special exception, Red Hat, Inc. gives You the
 // additional right to link the code of FRYSK with code not covered
 // under the GNU General Public License ("Non-GPL Code") and to
@@ -37,54 +37,44 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package lib.unwind;
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-import gnu.gcj.RawData;
-import java.util.logging.Logger;
+#include <libdwfl.h>
 
-public class PtraceAccessors
-    extends Accessors
-{
-  Logger logger = Logger.getLogger("frysk");
-  final RawData ptArgs;
-  
-  private native RawData createPtArg (int pid);
-  
-  final RawData addressSpace;
-  
-  private native RawData createAddressSpace(ByteOrder byteOrder);
+#include <libunwind-ppc64.h>
+#include <dwarf.h>
 
-  native public void finalize();
-  
-  public PtraceAccessors (int pid, ByteOrder byteOrder) 
-  {
-    this.addressSpace = createAddressSpace(byteOrder);
-    ptArgs = createPtArg(pid);  
-  }
+#include <gcj/cni.h>
 
-  //@Override
-  public native int accessFPReg (int regnum, byte[] fpvalp, boolean write);
+#include <gnu/gcj/RawDataManaged.h>
 
-  //@Override
-  public native int accessMem (long addr, byte[] valp, boolean write);
+#include <java/lang/String.h>
+#include <java/lang/Object.h>
+#include <java/util/logging/Logger.h>
+#include <java/util/logging/Level.h>
 
-  //@Override
-  public native int accessReg (int regnum, byte[] valp, boolean write);
+#include "inua/eio/ByteBuffer.h"
+#include "lib/dw/Dwfl.h"
 
-  //@Override
-  public native ProcInfo findProcInfo (long ip, boolean needUnwindInfo);
+#include "lib/unwind/Unwind.h"
+#include "lib/unwind/Accessors.h"
+#include "lib/unwind/AddressSpace.h"
+#include "lib/unwind/Cursor.h"
+#include "lib/unwind/ByteOrder.h"
+#include "lib/unwind/CachingPolicy.h"
+#include "lib/unwind/ProcInfo.h"
+#include "lib/unwind/ProcName.h"
+#include "lib/unwind/ProcInfo.h"
+#include "lib/unwind/ElfImage.h"
 
-  //@Override
-  public native int getDynInfoListAddr (byte[] dilap);
+#include "frysk/sys/cni/Errno.hxx"
 
-  //@Override
-  public native ProcName getProcName (long addr, int maxNameSize);
-
-  //@Override
-  public native void putUnwindInfo (ProcInfo procInfo);
-
-  //@Override
-  public native int resume (Cursor cursor);
-  
-  
-}
+#define TARGET UnwindPPC64
+#include "lib/unwind/UnwindPPC64.h"
+#include "lib/unwind/cni/UnwindH.hxx"

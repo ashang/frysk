@@ -44,23 +44,15 @@ import java.util.WeakHashMap;
 
 import lib.unwind.AddressSpace;
 import lib.unwind.Cursor;
-import lib.unwind.FrameCursor;
-import lib.unwind.StackTraceCreator;
 import lib.unwind.Unwind;
-import lib.unwind.UnwindNative;
+import lib.unwind.UnwindX8664;
 import lib.unwind.UnwindX86;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.Subprogram;
 
 public class StackFactory
-{ 
-  private static boolean remoteUnwind = true;
-  public static void setRemoteUnwind(boolean bool)
-  {
-    remoteUnwind = bool;
-  }
-  
+{  
   private static class FrameCounter
   {
     private Frame frame;
@@ -92,13 +84,11 @@ public class StackFactory
           taskMap.remove(task);
       }
 
-    if (remoteUnwind)
-      {
 	Unwind unwinder;
 	if (task.getIsa().getWordSize() == 4)
 	  unwinder = new UnwindX86();
 	else 
-	  unwinder = new UnwindNative();
+	  unwinder = new UnwindX8664();
 	AddressSpace addressSpace = new AddressSpace(unwinder, lib.unwind.ByteOrder.DEFAULT);
 	StackAccessors accessors = new StackAccessors(addressSpace, task, 
 	                                              lib.unwind.ByteOrder.DEFAULT);
@@ -109,52 +99,7 @@ public class StackFactory
 	       
         taskMap.put(task, new FrameCounter(innerFrame, task.getMod()));
 	return innerFrame;
-      }
-    
-    StackCallbacks callbacks = new StackCallbacks(task);
-    FrameCursor innermost = null;
-    try
-    {
-      innermost = StackTraceCreator.createStackTrace(callbacks);
-    }
-    catch (Exception e)
-    {
-      System.out.println("Call stack is broken - couldn't unwind!");
-      e.printStackTrace();
-      return new StackFrame(task);
-    }
-    StackFrame toReturn = new StackFrame(innermost, task);
-
-    if (num == 0)
-      {
-        StackFrame current = toReturn;
-        FrameCursor currentCursor = innermost.getOuter();
-        while (currentCursor != null)
-          {
-            StackFrame outerFrame = new StackFrame(currentCursor, task, current);
-
-            current.outer = outerFrame;
-            current = outerFrame;
-
-            currentCursor = currentCursor.getOuter();
-          }
-      }
-    else
-      {
-        StackFrame current = toReturn;
-        FrameCursor currentCursor = innermost.getOuter();
-        while (num > 0 && currentCursor != null)
-          {
-            StackFrame outerFrame = new StackFrame(currentCursor, task, current);
-            current.outer = outerFrame;
-            current = outerFrame;
-
-            currentCursor = currentCursor.getOuter();
-            --num;
-          }
-      }
-    taskMap.put(task, new FrameCounter (toReturn, task.getMod()));
-    return toReturn;
+      
   }
   
   public static Frame createFrame (Task task)

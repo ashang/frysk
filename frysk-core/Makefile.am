@@ -76,9 +76,9 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/.libs/libunwind-ptrace.a \
-                ../frysk-imports/libunwind/src/.libs/libunwind-$(libunwind_cpu).a \
-                ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a
+GEN_GCJ_LDADD += ../frysk-imports/libunwind-i386/src/.libs/libunwind-x86.a \
+                 ../frysk-imports/libunwind-x86_64/src/.libs/libunwind-x86_64.a \
+                 ../frysk-imports/libunwind-ppc64/src/.libs/libunwind-ppc64.a
 endif
 GEN_GCJ_LDADD += -lstdc++
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally

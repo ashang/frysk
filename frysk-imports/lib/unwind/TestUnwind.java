@@ -40,16 +40,12 @@
 package lib.unwind;
 
 import frysk.testbed.TearDownProcess;
-import frysk.testbed.AttachedSelf;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import frysk.junit.TestCase;
 
 public class TestUnwind
     extends TestCase
 {
-    private final Logger logger = Logger.getLogger("frysk");
 
     public void tearDown ()
     {
@@ -58,14 +54,14 @@ public class TestUnwind
   
   public void testCreateAddress()
   {  
-    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindX8664(), ByteOrder.DEFAULT);
     
     assertNotNull("AddressSpace should not be null", addr.addressSpace);
   }
   
   public void testCreateCursor()
   {
-    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
+    AddressSpace addr = new AddressSpace(new UnwindX8664(), ByteOrder.DEFAULT);
     
      Cursor cursor = new Cursor(addr, new Accessors(){
 
@@ -120,64 +116,5 @@ public class TestUnwind
     
     assertNotNull("Cursor should not be null", cursor.cursor);
   }
-  
-  public void testPtraceAccessorsProc0()
-  {   
-    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
-    PtraceAccessors ptraceAccessors = new PtraceAccessors(0, ByteOrder.DEFAULT);
-    
-    new Cursor(addr, ptraceAccessors);
-  }
-  
-  public void testPtraceAccessorsProcMax()
-  {
-    AddressSpace addr = new AddressSpace(new UnwindNative(), ByteOrder.DEFAULT);
-    PtraceAccessors ptraceAccessors = new PtraceAccessors(Integer.MAX_VALUE, ByteOrder.DEFAULT);
-    
-    new Cursor(addr, ptraceAccessors);
-  }
-  
-    public void testPtraceAccessors()
-    {
-	// This needs to run on the ptrace-server thread.
-	AttachedSelf self = new AttachedSelf ();
-	final int pid = self.hashCode ();
-	AddressSpace addr
-	    = new AddressSpace(new UnwindNative(),
-			       ByteOrder.DEFAULT);
-	PtraceAccessors ptraceAccessors
-	    = new PtraceAccessors(pid, ByteOrder.DEFAULT);
-	Cursor cursor = new Cursor(addr, ptraceAccessors);     
-	int temp = 1;
-	while (temp > 0) {
-	    assertNotNull("Cursor null", cursor.cursor);
-	    logger.log(Level.FINE,
-		       "testPtraceAccessors returned: {0}\n", 
-		       cursor.getProcName(1000).getName());
-	    temp = cursor.step();
-	}
-	assertEquals("Cursor step return value", 0, temp);
-    }
-    
-    public void testPtraceAccessorsSmallMaxName()
-    {
-	//Start a process.
-	AttachedSelf self = new AttachedSelf ();
-	int pid = self.hashCode ();
-	AddressSpace addr
-	    = new AddressSpace(new UnwindNative(),
-			       ByteOrder.DEFAULT);
-	PtraceAccessors ptraceAccessors
-	    = new PtraceAccessors(pid, ByteOrder.DEFAULT);
-	Cursor cursor = new Cursor(addr, ptraceAccessors);     
-	int temp = 1;
-	while (temp > 0) {
-	    assertNotNull("Cursor should not be null",
-			  cursor.cursor);
-	    logger.log(Level.FINE, "testPtraceAccessorsSmallMaxName returned: {0}\n", cursor.getProcName(10).getName());
-	    temp = cursor.step();
-	}
-	assertEquals("Cursor step return value should be 0", 0, temp);
-    }
 }
 
