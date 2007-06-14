@@ -36,20 +36,23 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <libdw.h>
+
 #include <gcj/cni.h>
-#include <lib/dw/DwarfException.h>
-#include <lib/dw/DwException.h>
+
+#include "lib/dw/DwarfException.h"
+#include "lib/dw/DwException.h"
 
 jstring
 lib::dw::DwException::getDwErrMessage(jint errno)
 {
   const char *message = dwarf_errmsg(errno);
 
-  if (message)
+  if (message != NULL)
     return JvNewStringUTF(message);
   else
-    return 0;
+    return NULL;
 }
 
 void
