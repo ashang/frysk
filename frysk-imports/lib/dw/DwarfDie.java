@@ -222,12 +222,23 @@ abstract public class DwarfDie
   }
 
   /**
+   * @return The type die for the current die, following all typedefs.
+   */
+  public DwarfDie getUltimateType ()
+  {
+    return getType(true);
+  }
+  /**
    * @return The type die for the current die.
    */
   public DwarfDie getType ()
   {
+    return getType(false);
+  }
+  private DwarfDie getType (boolean followTypeDef)
+  {
     DwarfDie die = null;
-    long type = get_type(this.getPointer());
+    long type = get_type(this.getPointer(), followTypeDef);
     if (type != 0)
       die = DwarfDieFactory.getFactory().makeDie(type, this.parent);
     return die;
@@ -331,7 +342,7 @@ abstract public class DwarfDie
   public String toString ()
   {
     String typeStr;
-    DwarfDie type = getType();
+    DwarfDie type = getUltimateType();
     if (type == null)
       typeStr = "void";
     else if (type.getBaseType() == BaseTypes.baseTypeLong)
@@ -419,7 +430,7 @@ abstract public class DwarfDie
   
   private native void get_addr (long addr, long pc);
   
-  private native long get_type (long addr);
+  private native long get_type (long addr, boolean followTypeDef);
   
   private native long get_child (long addr);
   

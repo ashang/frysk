@@ -54,6 +54,12 @@ public class ArithmeticType
     super(size, endian, typeId, typeStr);
   }
   
+  public ArithmeticType (int size, ByteOrder endian, 
+                         int typeId, String typeStr, boolean haveTypeDef)
+  {
+    super(size, endian, typeId, typeStr, haveTypeDef);
+  }
+  
   public Value add (Value var1, Value var2)
   {
     Type type;

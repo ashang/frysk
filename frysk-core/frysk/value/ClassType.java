@@ -191,10 +191,18 @@ public class ClassType
   public String getName ()
   {
     StringBuffer strBuf = new StringBuffer();
+    if (this.isTypedef && this.name != null && this.name.length() > 0)
+      {
+        strBuf.append(this.name);
+        return strBuf.toString();
+      }
     strBuf.append("{");
     for (int i = 0; i < this.types.size(); i++)
       {
-	strBuf.append(((Type)this.types.get(i)).getName() + " ");
+        if (((Type)this.types.get(i)).isTypedef())
+          strBuf.append(((Type)this.types.get(i)).name + " ");
+        else
+          strBuf.append(((Type)this.types.get(i)).getName() + " ");
 	strBuf.append((String)this.names.get(i));
 	int mask = ((Integer)this.masks.get(i)).intValue();
 	int bitCount = 0;
@@ -217,10 +225,11 @@ public class ClassType
    * Create an ClassType
    * 
    * @param endian - Endianness of class
+   * @param name TODO
    */
-  public ClassType (ByteOrder endian)
+  public ClassType (ByteOrder endian, String name)
   {
-    super(0, endian, 0, "class");
+    super(0, endian, 0, name);
     types = new ArrayList();
     names = new ArrayList();
     offsets = new ArrayList();

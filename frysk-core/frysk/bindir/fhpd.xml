@@ -73,6 +73,9 @@
       <arg choice="opt">
         <replaceable>pid</replaceable>
       </arg>
+      <arg choice="opt">
+        <replaceable>executable</replaceable>
+      </arg>
        <arg choice="opt">
         <option>-p <replaceable>pid,...</replaceable></option>
       </arg>

@@ -293,7 +293,7 @@ lib::dw::DwarfDie::get_addr (jlong var_die, jlong pc)
 }
 
 jlong
-lib::dw::DwarfDie::get_type (jlong var_die)
+lib::dw::DwarfDie::get_type (jlong var_die, jboolean follow_type_def)
 {
   Dwarf_Die *die = (Dwarf_Die*) var_die;
   Dwarf_Die * type_mem_die = (Dwarf_Die*)JvMalloc(sizeof(Dwarf_Die));
@@ -302,7 +302,7 @@ lib::dw::DwarfDie::get_type (jlong var_die)
   if (dwarf_attr_integrate (die, DW_AT_type, &type_attr))
     {
       if (dwarf_formref_die (&type_attr, type_mem_die))
-	if (dwarf_tag (type_mem_die) == DW_TAG_typedef)
+	while (dwarf_tag (type_mem_die) == DW_TAG_typedef && follow_type_def)
 	  {
 	    dwarf_attr_integrate (type_mem_die, DW_AT_type, &type_attr);
 	    dwarf_formref_die (&type_attr, type_mem_die);

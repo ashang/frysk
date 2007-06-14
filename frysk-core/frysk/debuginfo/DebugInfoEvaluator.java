@@ -59,7 +59,7 @@ import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.proc.ptrace.AddressSpaceByteBuffer;
-import frysk.rt.Scope;
+// import frysk.rt.Scope;
 import frysk.rt.Subprogram;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
@@ -81,7 +81,7 @@ class DebugInfoEvaluator
 
   private Frame currentFrame;
   
-  private Subprogram subprogram;
+  //  private Subprogram subprogram;
 
   private ByteBuffer buffer;
 
@@ -98,7 +98,7 @@ class DebugInfoEvaluator
   
   public void setSubprogram (Subprogram subprogram)
   {
-    this.subprogram = subprogram;
+    //    this.subprogram = subprogram;
   }
 
   public boolean putUndefined ()
@@ -494,16 +494,16 @@ class DebugInfoEvaluator
       return null;
     DwarfDie die = bias.die;
 
-    Scope b = subprogram;
-    Value vars[] = b.getVariables();
-    DwarfDie varDies[] = b.getVariableDies();
-    for (int j = 0; j < vars.length; j++)
-      if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
-	{
-	  allDies = die.getScopes(pc - bias.bias);
-	  varDies[j].setScopes(allDies);
-	  return varDies[j];
-	}
+    //    Scope b = subprogram;
+    //    Value vars[] = b.getVariables();
+    //    DwarfDie varDies[] = b.getVariableDies();
+    //    for (int j = 0; j < vars.length; j++)
+    //      if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
+    //	{
+    //	  allDies = die.getScopes(pc - bias.bias);
+    //	  varDies[j].setScopes(allDies);
+    //	  return varDies[j];
+    //	}
 
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);
@@ -528,8 +528,8 @@ class DebugInfoEvaluator
 	}
 
       ArrayType arrayType = null;
-      int typeSize = BaseTypes.getTypeSize(type.getType().getBaseType());
-      switch (type.getType().getBaseType())
+      int typeSize = BaseTypes.getTypeSize(type.getUltimateType().getBaseType());
+      switch (type.getUltimateType().getBaseType())
       {
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
@@ -555,99 +555,138 @@ class DebugInfoEvaluator
 	break;
       }
 
-      type = navigateType(type.getType());
+      type = type.getUltimateType();
       if (type.getTag() == DwTagEncodings.DW_TAG_structure_type_)
 	{
-	  ClassType classType = getClassType(type.getChild());
+	  ClassType classType = getClassType(type, null);
 	  typeSize = classType.getSize();
 	  arrayType = new ArrayType(classType, elementCount * typeSize, dims);
 	}
       return arrayType;
     }
   
-  
-  private ClassType getClassType (DwarfDie subrange)
+  private ArithmeticType fetchType (boolean haveTypeDef, ArithmeticType type,
+                                    String name)
+  {
+    if (haveTypeDef == false) 
+      return type;
+    switch (type.getTypeId())
+    {
+      case BaseTypes.baseTypeLong:
+      case BaseTypes.baseTypeUnsignedLong:
+        return new ArithmeticType(longType.getSize(), longType.getEndian(), BaseTypes.baseTypeLong, name, true);
+      case BaseTypes.baseTypeInteger:
+      case BaseTypes.baseTypeUnsignedInteger:
+        return new ArithmeticType(intType.getSize(), intType.getEndian(), BaseTypes.baseTypeInteger, name, true);
+      case BaseTypes.baseTypeShort:
+      case BaseTypes.baseTypeUnsignedShort:
+        return new ArithmeticType(shortType.getSize(), shortType.getEndian(), BaseTypes.baseTypeShort, name, true);
+      case BaseTypes.baseTypeByte:
+      case BaseTypes.baseTypeUnsignedByte:
+        return new ArithmeticType(byteType.getSize(), byteType.getEndian(), BaseTypes.baseTypeByte, name, true);
+      case BaseTypes.baseTypeFloat:
+        return new ArithmeticType(floatType.getSize(), floatType.getEndian(), BaseTypes.baseTypeFloat, name, true);
+      case BaseTypes.baseTypeDouble:
+        return new ArithmeticType(doubleType.getSize(), doubleType.getEndian(), BaseTypes.baseTypeDouble, name, true);
+      default:
+        return null;
+    }
+  }
+
+  private ClassType getClassType (DwarfDie classDie, String name)
   {
     int typeSize = 0;
-    ClassType classType = new ClassType(task.getIsa().getByteOrder());
-    while (subrange != null)
+    DwarfDie member = classDie.getChild();
+    ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
+    AddClassMembers:
+    while (member != null)
       {
-	long offset;
-	try
-	{
-	  offset = subrange.getDataMemberLocation();
-	}
-	catch (DwException de)
-	{
-	  offset = 0;				// union
-	}
-	typeSize = (int)offset + BaseTypes.getTypeSize(subrange.getType().getBaseType());
-	switch (subrange.getType().getBaseType())
-	{
-	case BaseTypes.baseTypeByte:
-	case BaseTypes.baseTypeUnsignedByte:
-	  classType.addMember(byteType, subrange.getName(), offset, 0);
-	  break;
-	case BaseTypes.baseTypeShort:
-	case BaseTypes.baseTypeUnsignedShort:
-	  classType.addMember(shortType, subrange.getName(), offset, 0);
-	  break;
-	case BaseTypes.baseTypeInteger:
-	case BaseTypes.baseTypeUnsignedInteger:
-	  // System V ABI Supplements discuss bit field layout 
-	  int bitSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
-	  int bitOffset = 0;
-	  int byteSize = 0;
-	  int mask = 0;
-	  if (bitSize != -1)
-	    {
-	      byteSize = subrange.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
-	      bitOffset = subrange.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
-	      mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
-	    }
-	  classType.addMember(intType, subrange.getName(), offset, mask);
-	  break;
-	case BaseTypes.baseTypeLong:
-	case BaseTypes.baseTypeUnsignedLong:
-	  classType.addMember(longType, subrange.getName(), offset, 0);
-	  break;
-	case BaseTypes.baseTypeFloat:
-	  classType.addMember(floatType, subrange.getName(), offset, 0);
-	  break;
-	case BaseTypes.baseTypeDouble:
-	  classType.addMember(doubleType, subrange.getName(), offset, 0);
-	  break;
-	}
-	
-	DwarfDie classMember = navigateType(subrange.getType());
-	if (classMember.getTag() == DwTagEncodings.DW_TAG_structure_type_)
-	  {
-	    ClassType memberClassType = getClassType(classMember.getChild());
-	    typeSize += memberClassType.getSize();
-	    typeSize += 4 - (typeSize % 4);		// round up to mod 4
-	    classType.addMember(memberClassType, subrange.getName(), offset, 0);
-	  }
-	
-	if (classMember.getTag() == DwTagEncodings.DW_TAG_array_type_)
-	{
-	  ArrayType memberArrayType = getArrayType(classMember, classMember.getChild());
-	  typeSize += memberArrayType.getSize();
-	  classType.addMember(memberArrayType, subrange.getName(), offset, 0);
-	}
-	subrange = subrange.getSibling();
+        long offset;
+        boolean haveTypeDef;
+        try
+        {
+          offset = member.getDataMemberLocation();
+        }
+        catch (DwException de)
+        {
+          offset = 0;                           // union
+        }
+        
+        DwarfDie dieType = member.getType();
+        DwarfDie memberType = member.getUltimateType();
+        Type type;
+        
+        if (dieType != memberType)
+          haveTypeDef = true;
+        else
+          haveTypeDef = false;
+        typeSize = (int)offset + BaseTypes.getTypeSize(member.getUltimateType().getBaseType());
+        switch (memberType.getBaseType())
+        {
+        case BaseTypes.baseTypeByte:
+        case BaseTypes.baseTypeUnsignedByte:
+          classType.addMember(fetchType(haveTypeDef, byteType, dieType.getName()),
+                              member.getName(), offset, 0);
+          break;
+        case BaseTypes.baseTypeShort:
+        case BaseTypes.baseTypeUnsignedShort:
+          classType.addMember(fetchType(haveTypeDef, shortType, dieType.getName()),
+                              member.getName(), offset, 0);
+          break;
+        case BaseTypes.baseTypeInteger:
+        case BaseTypes.baseTypeUnsignedInteger:
+          type = fetchType(haveTypeDef, intType, dieType.getName());
+          // System V ABI Supplements discuss bit field layout 
+          int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
+          int bitOffset = 0;
+          int byteSize = 0;
+          int mask = 0;
+          if (bitSize != -1)
+            {
+              byteSize = member.getAttrConstant(DwAtEncodings.DW_AT_byte_size_);
+              bitOffset = member.getAttrConstant(DwAtEncodings.DW_AT_bit_offset_);
+              mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
+            }
+          classType.addMember(type, member.getName(), offset, mask);
+          break;
+        case BaseTypes.baseTypeLong:
+        case BaseTypes.baseTypeUnsignedLong:
+          classType.addMember(fetchType(haveTypeDef, longType, dieType.getName()),
+                              member.getName(), offset, 0);
+          break;
+        case BaseTypes.baseTypeFloat:
+          classType.addMember(fetchType(haveTypeDef, floatType, dieType.getName()),
+                              member.getName(), offset, 0);
+          break;
+        case BaseTypes.baseTypeDouble:
+          classType.addMember(fetchType(haveTypeDef, doubleType, dieType.getName()),
+                              member.getName(), offset, 0);
+          break;
+        }
+        
+        if (memberType.getTag() == DwTagEncodings.DW_TAG_structure_type_)
+          {
+            ClassType memberClassType = getClassType(memberType, member.getType().getName());
+            memberClassType.setTypedef(haveTypeDef);
+            typeSize += memberClassType.getSize();
+            typeSize += 4 - (typeSize % 4);             // round up to mod 4
+            classType.addMember(memberClassType, member.getName(), offset, 0);
+          }
+        
+        if (memberType.getTag() == DwTagEncodings.DW_TAG_array_type_)
+        {
+          ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
+          typeSize += memberArrayType.getSize();
+          classType.addMember(memberArrayType, member.getName(), offset, 0);
+        }
+        member = member.getSibling();
       }
 
-    typeSize += 4 - (typeSize % 4);		// round up to mod 4
+    typeSize += 4 - (typeSize % 4);             // round up to mod 4
     classType.setSize(typeSize);
     return classType;
   }
   
-  private DwarfDie navigateType (DwarfDie type)
-  {
-    while (type.getTag() == DwTagEncodings.DW_TAG_typedef_)
-      type = type.getType();
-    return type;
-  }
   
   /*
    * (non-Javadoc)
@@ -665,7 +704,7 @@ class DebugInfoEvaluator
 
     try
       {
-        DwarfDie type = varDie.getType();
+        DwarfDie type = varDie.getUltimateType();
         if (type == null)
           return;
         for (int i = 0; i < variableAccessor.length; i++)
@@ -674,8 +713,8 @@ class DebugInfoEvaluator
             {
               case BaseTypes.baseTypeLong:
               case BaseTypes.baseTypeUnsignedLong:
-        	variableAccessor[i].putLong(varDie, 0, v);
-        	break;
+                variableAccessor[i].putLong(varDie, 0, v);
+                break;
               case BaseTypes.baseTypeInteger:
               case BaseTypes.baseTypeUnsignedInteger:
                 variableAccessor[i].putInt(varDie, 0, v);
@@ -721,7 +760,7 @@ class DebugInfoEvaluator
       {
         try
           {
-            DwarfDie type = varDie.getType();
+            DwarfDie type = varDie.getUltimateType();
             // if there is no type then setup a sentinel
             int baseType = type != null ? type.getBaseType() : 0;
             switch (baseType)
@@ -731,7 +770,7 @@ class DebugInfoEvaluator
             {
               long longVal = variableAccessor[i].getLong(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newLongValue(longType, s, longVal);
             }
             case BaseTypes.baseTypeInteger:
@@ -739,7 +778,7 @@ class DebugInfoEvaluator
             {
               int intVal = variableAccessor[i].getInt(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newIntegerValue(intType, s, intVal);
             }
             case BaseTypes.baseTypeShort:
@@ -747,7 +786,7 @@ class DebugInfoEvaluator
             {
               short shortVal = variableAccessor[i].getShort(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newShortValue(shortType, s, shortVal);
             }
             case BaseTypes.baseTypeByte:
@@ -755,21 +794,21 @@ class DebugInfoEvaluator
             {
               byte byteVal = variableAccessor[i].getByte(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newByteValue(byteType, s, byteVal);
             }
             case BaseTypes.baseTypeFloat:
             {
               float floatVal = variableAccessor[i].getFloat(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newFloatValue(floatType, s, floatVal);
             }
             case BaseTypes.baseTypeDouble:
             {
               double doubleVal = variableAccessor[i].getDouble(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
-        	continue;
+                continue;
               return ArithmeticType.newDoubleValue(doubleType, s, doubleVal);
             }
             }
@@ -782,12 +821,12 @@ class DebugInfoEvaluator
               DwarfDie subrange;
               long addr = variableAccessor[0].getAddr(s);
               if (addr == 0)
-        	continue;
+                continue;
               subrange = type.getChild();
               ArrayType arrayType = getArrayType(type, subrange);
 
               if (arrayType == null)
-        	return null;
+                return null;
               int typeSize = arrayType.getSize();
               ByteBuffer  abb = buffer.slice (addr, typeSize);
               abb.order(byteorder);
@@ -796,12 +835,10 @@ class DebugInfoEvaluator
             case DwTagEncodings.DW_TAG_union_type_:
             case DwTagEncodings.DW_TAG_structure_type_:
             {
-              DwarfDie subrange;
               long addr = variableAccessor[0].getAddr(s);
               if (addr == 0)
-        	continue;
-              subrange = type.getChild();
-              ClassType classType = getClassType(subrange);
+                continue;
+              ClassType classType = getClassType(type, null);
 
               ByteBuffer  abb = buffer.slice (addr, classType.getSize());
               abb.order(byteorder);
@@ -817,15 +854,15 @@ class DebugInfoEvaluator
               DwarfDie subrange;
               long addr = variableAccessor[0].getAddr(s);
               if (addr == 0)
-        	continue;
+                continue;
               subrange = type.getChild();
               EnumType enumType = new EnumType(byteorder);
               while (subrange != null)
-        	{
-        	  enumType.addMember(byteType, subrange.getName(), 
-        	                     subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
-        	  subrange = subrange.getSibling();
-        	}
+                {
+                  enumType.addMember(byteType, subrange.getName(), 
+                                     subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+                  subrange = subrange.getSibling();
+                }
               return EnumType.newEnumValue(enumType, s);
             }
             // special case members of an enumeration
@@ -865,36 +902,36 @@ class DebugInfoEvaluator
   }
   
   public Value getMemory (String s)
-  {	
+  {     
     ByteOrder byteorder = task.getIsa().getByteOrder();
     DwarfDie varDie = getDie(s);
     
     if (varDie == null)
       return (null);
     
-    DwarfDie type = varDie.getType();
+    DwarfDie type = varDie.getUltimateType();
     AccessDW_FORM_block access = new AccessDW_FORM_block();
     long addr = access.getAddr(s); 
     long addrIndirect = buffer.getLong(addr);
     
-    switch (type.getType().getBaseType())
+    switch (type.getUltimateType().getBaseType())
       {
       case BaseTypes.baseTypeByte:
       case BaseTypes.baseTypeUnsignedByte:
-	return ArithmeticType.newByteValue(byteType, buffer.getByte(addrIndirect));
+        return ArithmeticType.newByteValue(byteType, buffer.getByte(addrIndirect));
       case BaseTypes.baseTypeShort:
       case BaseTypes.baseTypeUnsignedShort:
-	return ArithmeticType.newShortValue(shortType, buffer.getShort(addrIndirect));
+        return ArithmeticType.newShortValue(shortType, buffer.getShort(addrIndirect));
       case BaseTypes.baseTypeInteger:
       case BaseTypes.baseTypeUnsignedInteger:
-	return ArithmeticType.newIntegerValue(intType, buffer.getInt(addrIndirect));
+        return ArithmeticType.newIntegerValue(intType, buffer.getInt(addrIndirect));
       case BaseTypes.baseTypeLong:
       case BaseTypes.baseTypeUnsignedLong:
-	return ArithmeticType.newLongValue(longType, buffer.getLong(addrIndirect));
+        return ArithmeticType.newLongValue(longType, buffer.getLong(addrIndirect));
       case BaseTypes.baseTypeFloat:
-	return ArithmeticType.newFloatValue(floatType, buffer.getFloat(addrIndirect));
+        return ArithmeticType.newFloatValue(floatType, buffer.getFloat(addrIndirect));
       case BaseTypes.baseTypeDouble:
-	return ArithmeticType.newDoubleValue(doubleType, buffer.getDouble(addrIndirect));
+        return ArithmeticType.newDoubleValue(doubleType, buffer.getDouble(addrIndirect));
       }
     int tag = type != null ? type.getTag() : varDie.getTag();
     switch (tag)
@@ -906,7 +943,7 @@ class DebugInfoEvaluator
       ArrayType arrayType = getArrayType(type, subrange);
 
       if (arrayType == null)
-	return null;
+        return null;
       int typeSize = arrayType.getSize();
       ByteBuffer  abb = buffer.slice (addrIndirect, typeSize);
       abb.order(byteorder);
@@ -915,12 +952,10 @@ class DebugInfoEvaluator
     case DwTagEncodings.DW_TAG_union_type_:
     case DwTagEncodings.DW_TAG_structure_type_:
     {
-      DwarfDie subrange;
-      subrange = type.getChild();
-      ClassType classType = getClassType(subrange);
+      ClassType classType = getClassType(type, null);
 
       if (classType == null)
-	return null;
+        return null;
       ByteBuffer  abb = buffer.slice (addrIndirect, classType.getSize());
       abb.order(byteorder);
       return new Value(classType, s, abb);
@@ -955,7 +990,7 @@ class DebugInfoEvaluator
     {
     case DwTagEncodings.DW_TAG_pointer_type_:
     {
-      return new PointerType(byteorder, getPointerTarget(type.getType()), "void*");
+      return new PointerType(byteorder, getPointerTarget(type.getUltimateType()), "void*");
     }
     }
     return null;
@@ -974,7 +1009,7 @@ class DebugInfoEvaluator
     {
       Value value = null;
       Type type = null;
-      if (varDie.getType() != null)
+      if (varDie.getUltimateType() != null)
         {
           value = getValue(varDie);
           if (value != null)
@@ -1004,36 +1039,79 @@ class DebugInfoEvaluator
     if (varDie == null)
       return (null);
 
-    DwarfDie type = varDie.getType();
+    DwarfDie type = varDie.getUltimateType();
     if (type == null)
-      return null;
+      type = varDie;
     
     switch (type.getTag())
     {
     case DwTagEncodings.DW_TAG_pointer_type_:
     {
-      type = type.getType();
+      type = type.getUltimateType();
       if (type == null)
         return new Value (new PointerType(byteorder, null, "void*"), varDie.getName());
       return new Value (new PointerType(byteorder, getPointerTarget (type), "*"), varDie.getName());
     }
-    // ??? Add DW_TAG_array_type_, DW_TAG_structure_type_, DW_TAG_enumeration_type_ and change what request
+    case DwTagEncodings.DW_TAG_array_type_:
+    {
+      DwarfDie subrange = type.getChild();
+      return new Value (getArrayType(type, subrange), varDie.getName());
+    }
+    case DwTagEncodings.DW_TAG_union_type_:
+    case DwTagEncodings.DW_TAG_structure_type_:
+    {
+      boolean noTypeDef = (varDie.getType() == null);
+      String name = noTypeDef ? varDie.getName() 
+                                               : varDie.getType().getName();
+      Value value = new Value (getClassType(type, name), varDie.getName());
+      if (type != varDie.getType() && noTypeDef == false)
+        value.getType().setTypedef(true);
+      return value;
+    }
+    case DwTagEncodings.DW_TAG_enumeration_type_:
+    {
+      DwarfDie subrange = type.getChild();
+      EnumType enumType = new EnumType(byteorder);
+      while (subrange != null)
+        {
+          enumType.addMember(byteType, subrange.getName(), 
+                             subrange.getAttrConstant(DwAtEncodings.DW_AT_const_value_));
+          subrange = subrange.getSibling();
+        }
+      return new Value (enumType, varDie.getName());
+    }
     }
     
+    type = varDie.getUltimateType();
+    if (type == null)
+      return null;
+    DwarfDie dieType = varDie.getType();
+    boolean haveTypeDef;
+    if (type != dieType)
+      haveTypeDef = true;
+    else
+      haveTypeDef = false;
+
     switch (type.getBaseType())
     {
     case BaseTypes.baseTypeLong:
-      return ArithmeticType.newLongValue(longType, varDie.getName(), 0);
+      return ArithmeticType.newLongValue(fetchType(haveTypeDef, longType, dieType.getName()), 
+                                         varDie.getName(), 0);
     case BaseTypes.baseTypeInteger:
-      return ArithmeticType.newIntegerValue(intType, varDie.getName(), 0);
+      return ArithmeticType.newIntegerValue(fetchType(haveTypeDef, intType, dieType.getName()), 
+                                            varDie.getName(), 0);
     case BaseTypes.baseTypeShort:
-      return ArithmeticType.newShortValue(shortType, varDie.getName(), (short)0);
+      return ArithmeticType.newShortValue(fetchType(haveTypeDef, shortType, dieType.getName()), 
+                                          varDie.getName(), (short)0);
     case BaseTypes.baseTypeByte:
-      return ArithmeticType.newByteValue(byteType, varDie.getName(), (byte)0);
+      return ArithmeticType.newByteValue(fetchType(haveTypeDef, byteType, dieType.getName()), 
+                                         varDie.getName(), (byte)0);
     case BaseTypes.baseTypeFloat:
-      return ArithmeticType.newFloatValue(floatType, varDie.getName(), 0);
+      return ArithmeticType.newFloatValue(fetchType(haveTypeDef, floatType, dieType.getName()), 
+                                          varDie.getName(), 0);
     case BaseTypes.baseTypeDouble:
-      return ArithmeticType.newDoubleValue(doubleType, varDie.getName(), 0);
+      return ArithmeticType.newDoubleValue(fetchType(haveTypeDef, doubleType, dieType.getName()), 
+                                          varDie.getName(), 0);
     }
   
     return null;

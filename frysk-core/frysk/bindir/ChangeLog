@@ -1,3 +1,7 @@
+2007-06-13  Stan Cox  <scox@redhat.com>
+
+	* fhpd.java (execFile): New.
+
 2007-06-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* TestFhd.java (testHpdTraceStack): Modified up/down command 

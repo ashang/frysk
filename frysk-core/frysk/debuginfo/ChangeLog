@@ -1,3 +1,10 @@
+2007-06-13  Stan Cox  <scox@redhat.com>
+
+	* DebugInfo.java (what): Add typedef.
+	* DebugInfoEvaluator.java (fetchType): New.
+	(getClassType): Use it.
+	(getValue): Use it.  Add union_type, structure_type, enumeration_type.
+
 2007-06-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java: Replaced reference to 

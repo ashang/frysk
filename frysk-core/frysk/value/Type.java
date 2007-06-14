@@ -58,18 +58,26 @@ public abstract class Type
   protected final int typeId;
 
   protected final String name;
+  
+  protected boolean isTypedef;
 
   Type (int size, ByteOrder endian, int typeId)
   {
-    this(size, endian, typeId, "");
+    this(size, endian, typeId, "", false);
   }
 
   Type (int size, ByteOrder endian, int typeId, String name)
+  {
+    this(size, endian, typeId, name, false);
+  }
+
+  Type (int size, ByteOrder endian, int typeId, String name, boolean typedef)
   {
     this.size = size;
     this.endian = endian;
     this.typeId = typeId;
     this.name = name;
+    this.isTypedef = false;
   }
 
   public int getSize ()
@@ -190,5 +198,15 @@ public abstract class Type
       throws InvalidOperatorException;
 
   public abstract boolean getLogicalValue (Value var) throws InvalidOperatorException;
+
+  public boolean isTypedef ()
+  {
+    return isTypedef;
+  }
+
+  public void setTypedef (boolean isTypedef)
+  {
+    this.isTypedef = isTypedef;
+  }
   
 }

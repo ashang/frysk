@@ -292,7 +292,7 @@ public class TestValue
   {
     // Also separate tests for 0 dimensioned arrays et.al.
     ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-    ClassType classType = new ClassType(byteOrder);
+    ClassType classType = new ClassType(byteOrder, null);
     classType.addMember(intType, "alpha", 0, 0);
     classType.addMember(intType, "beta", 4, 0);
     classType.addMember(shortType, "gamma", 8, 0);

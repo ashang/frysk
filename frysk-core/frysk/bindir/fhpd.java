@@ -39,6 +39,7 @@
 
 package frysk.bindir;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -60,6 +61,7 @@ import gnu.classpath.tools.getopt.OptionException;
 public class fhpd 
 {
   static int pid;
+  static File execFile;
 
   final static class FhpdCompletor implements Completor
   {
@@ -106,16 +108,28 @@ public class fhpd
         } 
         catch (NumberFormatException e) 
         {
-          OptionException oe = new OptionException("couldn't parse pid: " + arg);
-          oe.initCause(e);
-          throw oe;
+          execFile = new File (arg);
+          if (execFile.canRead() == false)
+            {
+              OptionException oe = new OptionException("couldn't parse pid: " + arg);
+              oe.initCause(e);
+              throw oe;
+            }
         }
       }
     });
     Manager.eventLoop.start();
     String line = "";
-    if (pid > 0)
-      line = "attach " + pid;
+    
+    try 
+    {
+      if (pid > 0)
+        line = "attach " + pid;
+      else if (execFile != null)
+        line = "run " + execFile.getCanonicalPath();
+    }
+    catch (IOException ignore) {}
+    
     cli = new CLI("(fhpd) ", System.out);
     ConsoleReader reader = null; // the jline reader
 

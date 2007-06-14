@@ -81,8 +81,8 @@ public class TestFhd
     e.send ("print 2+2\n");
     e.expect ("\r\n4\r\n" + prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // Where
     e.send ("where\n");
     e.expect ("where.*#0.*" + prompt);
@@ -115,8 +115,8 @@ public class TestFhd
 	});
     e.expect (prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // volatile int_22
     e.send ("print int_22\n");
     e.expect ("print.*22.*\r\n" + prompt);
@@ -158,9 +158,8 @@ public class TestFhd
 	});
     e.expect (prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
-
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // static_class
     e.send ("print static_class\n");
     e.expect ("print.*12\\.34.*" + prompt);
@@ -173,7 +172,7 @@ public class TestFhd
     //	e.expect ("print.*15.*" + prompt);
     // what class
     e.send ("what static_class\n");
-    e.expect ("what.*class_int.*class_float.*hpd-c.c.*" + prompt);
+    e.expect ("what.*static_class_t.*hpd-c.c.*" + prompt);
     e.close();
   }    
 
@@ -189,8 +188,8 @@ public class TestFhd
 	});
     e.expect (prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // arr_1
     e.send ("print arr_\t");
     e.expect ("arr_1.*arr_2.*arr_3.*arr_4.*" + prompt);
@@ -223,8 +222,8 @@ public class TestFhd
 	});
     e.expect (prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // enumeration
     e.send ("print ssportscar\n");
     e.expect ("print.*porsche.*" + prompt);
@@ -245,8 +244,8 @@ public class TestFhd
 	});
     e.expect (prompt);
     // Attach
-    e.send ("attach " + child.getPid () + " -cli\n");
-    e.expect ("attach.*" + prompt);
+    e.send ("attach " + child.getPid () + "\n\n");
+    e.expect (5, "attach.*\n" + prompt);
     // Break
     e.send("break @hpd-c.c@180\n");
     e.expect("breakpoint.*" + prompt);

@@ -229,13 +229,24 @@ public class DebugInfo
             throw new NameNotFoundException(sInput + " not found in scope.");
           if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
-          if (varDie.getTag() == DwTagEncodings.DW_TAG_subprogram_)
+          switch (varDie.getTag())
+          {
+            case DwTagEncodings.DW_TAG_subprogram_:
             {
               Value value = debugInfoEvaluator[0].getSubprogramValue(varDie);
               result.append(((FunctionType)value.getType()).getName());
+              break;
             }
-          else
-            result.append(varDie + " " + varDie.getName());
+            case DwTagEncodings.DW_TAG_typedef_:
+            case DwTagEncodings.DW_TAG_structure_type_:
+            {
+              Value value = debugInfoEvaluator[0].getValue(varDie);
+              result.append(value.getType().getName());
+              break;
+            }
+            default:
+              result.append(varDie + " " + varDie.getName());
+          }
         }
       else
         {
@@ -243,14 +254,6 @@ public class DebugInfo
           if (varDie.getAttrBoolean(DwAtEncodings.DW_AT_external_))
             result.append("extern ");
 
-          if (varDie.getType().getTag() == DwTagEncodings.DW_TAG_array_type_
-              || varDie.getType().getTag() == DwTagEncodings.DW_TAG_structure_type_
-              || varDie.getType().getTag() == DwTagEncodings.DW_TAG_enumeration_type_)
-            {
-              Value v = debugInfoEvaluator[0].get(sInput);
-	      if (v != null)
-		result.append(v.getType().getName());
-            }
           if (value != null)
             result.append(value.getType().getName());
         }

@@ -1,3 +1,9 @@
+2007-06-13  Stan Cox  <scox@redhat.com>
+
+	* Type.java (isTypedef): New.
+	* ArithmeticType.java (ArithmeticType): Use it.
+	* ClassType.java (getName): Use it.
+
 2007-06-08  Stan Cox  <scox@redhat.com>
 
 	* FunctionType.java: New file.
