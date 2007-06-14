@@ -47,8 +47,8 @@ import java.util.logging.Logger;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
-import frysk.proc.TaskObserver.Terminating;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.value.Value;
@@ -73,6 +73,7 @@ public class TestFrameDebugInfo
     assertTrue("first", string.contains("first"));
     assertTrue("second", string.contains("second"));
     assertTrue("third",string.contains("third"));
+    assertTrue("fourth",string.contains("fourth"));
     
   }
 
@@ -117,7 +118,7 @@ public class TestFrameDebugInfo
 
     Task task = ackProc.getMainTask();
 
-    task.requestAddTerminatingObserver(new Terminating()
+    task.requestAddSignaledObserver(new TaskObserver.Signaled()
     {
 
       public void deletedFrom (Object observable)
@@ -128,15 +129,15 @@ public class TestFrameDebugInfo
       {
       }
 
-      public Action updateTerminating (Task task, boolean signal, int value)
-      {
-	Manager.eventLoop.requestStop();
-	return Action.BLOCK;
-      }
-
       public void addFailed (Object observable, Throwable w)
       {
 	throw new RuntimeException(w);
+      }
+
+      public Action updateSignaled (Task task, int signal)
+      {
+        Manager.eventLoop.requestStop();
+        return Action.BLOCK;
       }
     });
     ackProc.resume();

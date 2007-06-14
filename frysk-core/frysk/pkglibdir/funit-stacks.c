@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
 void fourth(int param1, int param2, int param3, char* param4){
-  int var1 = 1;
-  exit(var1);
+  char* c = 0;
+  c[0] = 'a';
 }
 
 void third(int param1, int param2, int param3){
