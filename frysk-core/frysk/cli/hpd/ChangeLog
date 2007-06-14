@@ -1,3 +1,13 @@
+2007-06-14  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointCommand.java (CLIBreakpointObserver.updateHit): Set
+	cli.running to false.
+	(handle): In anonymous CLIBreakpointObserver classes for
+	LineBreakpoint and Function breakpoint, pass cli as argument to
+	constructor and call the superclass method.
+	* RunCommand.java (update): Rename "unblock" to
+	"removeObserver". Tell stepping engine not to unblock this task.
+
 2007-06-12  Teresa Thomas  <tthomas@redhat.com>
 
 	* CLI.java (UpDownHandler): Fixed the up/down commands for call 

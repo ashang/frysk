@@ -75,17 +75,17 @@ class RunCommand
     public void update(Observable observable, Object arg)
     {
 	Task task = (Task)arg;
-	boolean unblock = false;
+	boolean removeObserver = false;
 	if (task == null)
 	    return;
 	synchronized (this) {
 	    if (launchedTasks.contains(task)) {
 		launchedTasks.remove(task);
-		unblock = true;
+		removeObserver = true;
 	    }
 	}
-	if (unblock) {
-	    cli.getSteppingEngine().removeObserver(this, task.getProc(), true);
+	if (removeObserver) {
+	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
 	    //cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
 	    task.requestUnblock(this);
 	}

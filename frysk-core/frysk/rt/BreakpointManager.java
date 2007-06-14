@@ -39,13 +39,18 @@
 
 package frysk.rt;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import java.util.Observable;
 import java.util.TreeMap;
-//import frysk.proc.Proc;
+import frysk.dwfl.DwflFactory;
+import frysk.proc.Proc;
+import frysk.proc.ProcObserver;
+import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-import frysk.rt.SteppingEngine;
+//import frysk.proc.TaskObserver;
 import lib.dw.DwarfDie;
 
 public class BreakpointManager
@@ -60,6 +65,63 @@ public class BreakpointManager
     this.steppingEngine = steppingEngine;
   }
 
+  // Watch a process and its tasks for events that might cause
+  // breakpoints to be added or deleted in it.
+  private class ProcWatcher
+    implements ProcObserver.ProcTasks
+  {
+    Proc proc;
+    ProcTasksObserver ptObs;
+
+    ProcWatcher(Proc proc)
+    {
+      this.proc = proc;
+      ptObs = new ProcTasksObserver(proc, this);
+    }
+    
+    HashSet procTasks = new HashSet();
+
+    public void existingTask(Task task)
+    {
+      procTasks.add(task);
+    }
+
+    public void taskAdded(Task task)
+    {
+      procTasks.add(task);
+
+      Iterator bptIterator = breakpointMap.values().iterator();
+
+      while (bptIterator.hasNext()) {
+	SourceBreakpoint bpt = (SourceBreakpoint)bptIterator.next();
+
+	if (bpt.appliesTo(proc, task)) {
+	  enableBreakpoint(bpt, task);
+	}
+      }
+    }
+
+    public void taskRemoved(Task task)
+    {
+      procTasks.remove(task);
+    }
+
+    public void addedTo(Object observable)
+    {
+    }
+
+    public void addFailed(Object observable, Throwable w)
+    {
+    }
+
+    public void deletedFrom(Object observable)
+    {
+    }
+    
+  }
+
+  private HashMap watchers = new HashMap();
+  
   public synchronized LineBreakpoint addLineBreakpoint(String fileName,
 						       int lineNumber,
 						       int column)
@@ -86,6 +148,13 @@ public class BreakpointManager
 
   public void enableBreakpoint(SourceBreakpoint breakpoint, Task task)
   {
+    Proc proc = task.getProc();
+    ProcWatcher watcher = (ProcWatcher)watchers.get(proc);
+    if (watcher == null) {
+      watcher = new ProcWatcher(proc);
+      watchers.put(proc, watcher);
+    }
+        
     breakpoint.enableBreakpoint(task, this.steppingEngine);
     setChanged();
     notifyObservers();
@@ -108,5 +177,38 @@ public class BreakpointManager
     SourceBreakpoint bpt
       = (SourceBreakpoint)breakpointMap.get(new Integer(bptId));
     return bpt;
+  }
+
+  private HashSet managedProcs = new HashSet();
+  
+  public void manageProcess(Proc proc)
+  {
+    if (managedProcs.contains(proc))
+      return;
+    FunctionBreakpoint sharedLibBpt
+      = new FunctionBreakpoint(-1, "_dl_debug_state", null);
+    sharedLibBpt.addObserver(new SourceBreakpointObserver() {
+	public void updateHit(SourceBreakpoint bpt, Task task, long address)
+	{
+	  Proc proc = task.getProc();
+	  DwflFactory.clearDwfl(proc);
+	  new Exception().printStackTrace();
+	  steppingEngine.continueExecution(proc.getTasks());
+	}
+
+	public void addedTo(Object observable)
+	{
+	}
+
+	public void addFailed(Object observable, Throwable w)
+	{
+	}
+
+	public void deletedFrom(Object observable)
+	{
+	}
+      });
+    managedProcs.add(proc);
+    enableBreakpoint(sharedLibBpt, proc.getMainTask());
   }
 }

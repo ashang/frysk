@@ -1,3 +1,11 @@
+2007-06-14  Tim Moore  <timoore@redhat.com>
+
+	* BreakpointManager.java (ProcWatcher): New class to react to
+	interesting changes in a process
+	(enableBreakpoint): Create a ProcWatcher if necessary.
+	(manageProcess): New method to alert BreakpointManger to a process.
+	* SourceBreakpoint.java: (appliesTo): New method (stub).
+
 2007-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestUpdatingDisplayValue.java

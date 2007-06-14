@@ -1234,7 +1234,12 @@ class LinuxTaskState
 	}
 	public TaskState handleUnblock (Task task, TaskObserver observer)
 	{
-	  logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+	    if (logger.isLoggable(Level.FINEST)) {
+		logger.log(Level.FINEST, "{0} handleUnblock {1}\n",
+			   new Object[] {task, observer});
+	    } else {
+		logger.log (Level.FINE, "{0} handleUnblock\n", task);
+	    }
 	  task.blockers.remove (observer);
 	  if (task.blockers.size () > 0)
 	    return this; // Still blocked.

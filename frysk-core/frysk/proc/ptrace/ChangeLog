@@ -1,3 +1,8 @@
+2007-06-14  Tim Moore  <timoore@redhat.com>
+
+	* LinuxTaskState.java: (BlockedSignal.handleUnblock): At FINEST
+	logging levels print out the blocker.
+
 2007-06-12  Nurdin Premji  <npremji@redhat.com>
 
 	* LinuxTask.java (sendContinue): Call incrementMod() to show task has been

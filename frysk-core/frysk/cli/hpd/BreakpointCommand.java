@@ -69,10 +69,19 @@ class BreakpointCommand
     static private class CLIBreakpointObserver
 	implements SourceBreakpointObserver
     {
+	private CLI cli;
+	public CLIBreakpointObserver(CLI cli) {
+	    this.cli = cli;
+	}
 	public void addedTo (Object observable) {}
 	public void addFailed (Object observable, Throwable w) {}
 	public void deletedFrom (Object observable) {}
-	public void updateHit(SourceBreakpoint bpt, Task task, long address) {}
+	public void updateHit(SourceBreakpoint bpt, Task task, long address) {
+	    //XXX This cli.running business is a hack for other
+	    //commands in CLI (where) and needs to go away when
+	    //multiple processes / tasks are supported.
+	    cli.running = false;
+	}
     }
   
     public void handle(Command cmd) throws ParseException
@@ -100,9 +109,10 @@ class BreakpointCommand
 	    fileName = bptParams[1];
 	    lineNumber = Integer.parseInt((String)bptParams[2]);
 	    actionpoint = bpManager.addLineBreakpoint(fileName, lineNumber, 0);
-	    actionpoint.addObserver(new CLIBreakpointObserver() {
+	    actionpoint.addObserver(new CLIBreakpointObserver(cli) {
 		    public void updateHit(SourceBreakpoint bpt, Task task,
 					  long address) {
+			super.updateHit(bpt, task, address);
 			LineBreakpoint lbpt = (LineBreakpoint)bpt;
 			outWriter.print("Breakpoint ");
 			outWriter.print(lbpt.getId());
@@ -124,11 +134,12 @@ class BreakpointCommand
 	    }
 
 	    actionpoint = bpManager.addFunctionBreakpoint(breakpt, die);
-	    actionpoint.addObserver(new CLIBreakpointObserver()
+	    actionpoint.addObserver(new CLIBreakpointObserver(cli)
 		{
 		    public void updateHit(SourceBreakpoint bpt, Task task,
 					  long address)
 		    {
+			super.updateHit(bpt, task, address);
 			FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
 			outWriter.print("Breakpoint ");
 			outWriter.print(fbpt.getId());

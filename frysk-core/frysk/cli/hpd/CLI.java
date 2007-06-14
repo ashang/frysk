@@ -489,7 +489,6 @@ public class CLI
       
       Task task = (Task)arg;
       //Breakpoint.PersistentBreakpoint bpt = null;
-
       synchronized (CLI.this) 
 	{
 	    if (!steppingEngine.isTaskRunning(task))
@@ -508,26 +507,6 @@ public class CLI
 
 	  CLI.this.notifyAll();
 	}
-      //      if (bpt != null) 
-      //	{
-      //	  int size = apTable.size();
-      //	  int i;
-      //	  for (i = 0; i < size; i++)
-      //	    {
-      //	      Actionpoint ap = apTable.getActionpoint(i);
-      //	      if (ap.getRTBreakpoint().containsPersistantBreakpoint(task.getProc(), bpt))
-      //	{
-      //	  outWriter.print("breakpoint " + i + " hit: ");
-      //	  ap.output(outWriter);
-      //	  outWriter.println("");
-      //	  break;
-      //	}
-      //    }
-      //  if (i >= size)
-      //    {
-      //      outWriter.println("unknown breakpoint hit: " + bpt.toString());
-      //    }
-      //}
     }
   }
 

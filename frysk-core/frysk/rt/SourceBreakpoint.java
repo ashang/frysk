@@ -306,8 +306,20 @@ public abstract class SourceBreakpoint
     else
       return 1;
   }
-  
+
+  /**
+   * Get all the machine addresses for this breakpoint in a process.
+   * @param proc the process
+   * @return list of addresses
+   */
   public abstract LinkedList getRawAddressesForProc(Proc proc);
 
   public abstract PrintWriter output(PrintWriter writer);
+
+  public boolean appliesTo(Proc proc, Task task)
+  {
+    // XXX
+    return true;
+  }
+  
 }
