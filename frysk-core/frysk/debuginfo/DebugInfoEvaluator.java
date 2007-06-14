@@ -598,7 +598,6 @@ class DebugInfoEvaluator
     int typeSize = 0;
     DwarfDie member = classDie.getChild();
     ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
-    AddClassMembers:
     while (member != null)
       {
         long offset;

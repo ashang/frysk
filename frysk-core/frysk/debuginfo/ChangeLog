@@ -1,3 +1,8 @@
+2007-06-14  Mark Wielaard  <mwielaard@redhat.com>
+
+	* DebugInfoEvaluator.java (getClassType): Removed unused label
+	AddClassMembers.
+
 2007-06-13  Stan Cox  <scox@redhat.com>
 
 	* DebugInfo.java (what): Add typedef.
@@ -28,7 +33,7 @@
 	* DebugInfo.java (DebugInfo): New signature.  Change all callers.
 	(print): No longer static.  Change all callers.
 	(printNoSymbolTable): New.
-        (what): Use FunctionType.
+	(what): Use FunctionType.
 
 2007-06-04  Stan Cox  <scox@redhat.com>
 
