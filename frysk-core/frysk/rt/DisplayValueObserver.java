@@ -41,5 +41,7 @@ package frysk.rt;
 
 public interface DisplayValueObserver
 {
-  void updateDisplayValueChanged(DisplayValue value);
+  void updateAvailableTaskStopped(DisplayValue value);
+  void updateUnavailbeResumedExecution(DisplayValue value);
+  void updateValueChanged(DisplayValue value);
 }

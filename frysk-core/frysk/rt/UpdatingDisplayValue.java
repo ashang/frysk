@@ -89,15 +89,22 @@ public class UpdatingDisplayValue
   
   public void refresh()
   { 
-    // Do nothing if the task isn't stopped
+    // If the task isn't running, notify our observers to that extent
     if(myTask.getBlockers().length == 0)
-      return;
+      {
+        /*
+         * TODO: right now we don't get notified when the task is resumed,
+         * should we?
+         */
+        //notifyObserversUnavailableTaskResumed();
+        return;
+      }
     
     super.refresh();
     
     // hear ye! hear ye!
     if(observers != null) // (but only if there's someone to listen)
-      notifyObservers();
+      notifyObserversAvailable();
   }
   
   /**
@@ -124,11 +131,22 @@ public class UpdatingDisplayValue
    * change in the watched value, should be called automatically at the
    * end of a refresh()
    */
-  protected void notifyObservers()
+  protected void notifyObserversAvailable()
   {
     Iterator iter = observers.iterator();
     while(iter.hasNext())
-      ((DisplayValueObserver) iter.next()).updateDisplayValueChanged(this);
+      ((DisplayValueObserver) iter.next()).updateAvailableTaskStopped(this);
+  }
+  
+  /*
+   * Called when we wish to notify the observers that the watched value
+   * is no longer available due to the the task resuming execution
+   */
+  protected void notifyObserversUnavailableTaskResumed()
+  {
+    Iterator iter = observers.iterator();
+    while(iter.hasNext())
+      ((DisplayValueObserver) iter.next()).updateUnavailbeResumedExecution(this);
   }
   
   private class LockObserver implements Observer

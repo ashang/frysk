@@ -1,3 +1,14 @@
+2007-06-14  Adam Jocksch <ajocksch@redhat.com>
+
+	* DisplayValueObserver.java (updateDisplayValueChanged): Renamed
+	to updateAvailableTaskStopped.
+	* TestUpdatingDisplayValue.java (testUpdateDetected): Renamed to 
+	testUpdateTaskStopped.
+	(testUpdateUnavailable): Renamed to testUpdateUnavailableFuncReturn.
+	* UpdatingDisplayValue.java (notifyObservers): Renamed to
+	notifyObserversAvailable.
+	(notifyObserversUnavailableTaskResumed): Added.
+
 2007-06-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java: Added check for "fourth" frame.

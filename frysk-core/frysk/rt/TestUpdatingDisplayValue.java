@@ -67,7 +67,7 @@ public class TestUpdatingDisplayValue extends TestLib
     super.tearDown();
   }
   
-  public void testUpdateDetected()
+  public void testUpdateTaskStopped()
   {
     BreakpointManager bpManager = createDaemon();
     
@@ -107,10 +107,10 @@ public class TestUpdatingDisplayValue extends TestLib
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    assertEquals("Observer was notified", true, obs.hit);
+    assertTrue("Observer was notified of a stop", obs.hitStopped);
   }
   
-  public void testUpdateUnavailable()
+  public void testUpdateUnavailableFuncReturn()
   {
     if(brokenXXX(4639))
       return;
@@ -176,18 +176,27 @@ public class TestUpdatingDisplayValue extends TestLib
   
   private class DisplayObserver implements DisplayValueObserver
   {
-    boolean hit;
+    boolean hitStopped;
+    boolean hitResumed;
     
     DisplayObserver()
     {
-      hit = false;
+      hitStopped = false;
+      hitResumed = false;
     }
     
-    public void updateDisplayValueChanged (DisplayValue value)
+    public void updateAvailableTaskStopped (DisplayValue value)
     {
       assertNotNull("DisplayValue passed to the observer", value);
       assertFalse("Task should have blockers", myTask.getBlockers().length == 0);
-      hit = true;
+      hitStopped = true;
+    }
+
+    public void updateUnavailbeResumedExecution (DisplayValue value)
+    {
+      assertNotNull("DisplayValue passed to the observer", value);
+      assertTrue("Task should not be blocked", myTask.getBlockers().length == 0);
+      hitResumed = true;
     }
     
   }
