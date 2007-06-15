@@ -128,7 +128,43 @@ public class TestFstack
                 "--print", "fullpath"
             });
         
-        e.expect (Config.getAbsRootSrcDir()+ ".*funit-child");
+        e.expect (Config.getRootSrcDir()+ ".*funit-child.c#");
+    }
+
+    public void testBackTraceWithDashA ()
+    {
+        child = new Expect (new String[]
+            {
+                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
+                "5", "0", "0"
+            });
+        e = new Expect (new String[]
+            {
+                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
+                child.getPid () + "",
+                "-a"
+            });
+        
+        e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#.*int argi.*");
+        
+    }
+
+    public void testBackTraceWithDashC ()
+    {
+        child = new Expect (new String[]
+            {
+                new File (Config.getPkgLibDir (), "funit-child").getAbsolutePath (),
+                "5", "0", "0"
+            });
+        e = new Expect (new String[]
+            {
+                new File (Config.getBinDir (), "fstack").getAbsolutePath (),
+                child.getPid () + "",
+                "-c"
+            });
+        
+        e.expect (".*main.*int argc.*"+Config.getRootSrcDir()+ ".*funit-child\\.c#");
+        
     }
 
 }

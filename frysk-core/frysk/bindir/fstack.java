@@ -168,6 +168,31 @@ public final class fstack
       
     };
     
+    parser.add(new Option("all", 'a', "print all information that can currently be retrieved" +
+                          "about the stack\n" +
+                          "this is equivalent to -a functions,params,scopes,fullpath"){
+
+                public void parsed (String argument) throws OptionException
+                {
+                  elfOnly = false;
+                  printParameters = true;
+                  printScopes = true;
+                  fullpath = true;
+                }
+              });
+              
+    parser.add(new Option("common", 'c', "print commonly used debug information:" +
+                          "this is equivalent to -a functions,params,fullpath"){
+
+                public void parsed (String argument) throws OptionException
+                {
+                  elfOnly = false;
+                  printParameters = true;
+                  printScopes = false;
+                  fullpath = true;
+                }
+    });
+              
     parser.add(new Option("print", 'p', "itmes to print. Possible items:\n" +
                 "functions : print function names using debug information\n" +
                 "scopes : print variables declared in each scope within the " +

@@ -1,3 +1,10 @@
+2007-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fstack.java: Added -a option.
+	Added -c option.
+	* TestFstack.java (testBackTraceWithDashA): New.
+	(testBackTraceWithDashC): New.
+
 2007-06-13  Stan Cox  <scox@redhat.com>
 
 	* fhpd.java (execFile): New.
