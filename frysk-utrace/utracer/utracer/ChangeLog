@@ -1,0 +1,30 @@
+2007-06-15  Chris Moller  <moller@mollerware.com>
+
+	* utracer-cf-io.c: Added a mechanism to utrace_attach() the
+	debugging client to watch for the death of the client.
+	* utracer-if-io.c: Added the LKM end of the asynchronous client
+	notification testcase stuff (signal injection).
+	* utracer.h: Added support for the async stuff.
+
+2007-06-13  Chris Moller  <moller@mollerware.com>
+
+	* utracer-errmsgs.h: New file
+	* utracer.h: Added utrace-specific errnos.
+	* utracer-base.c: Added utrace-specific errnos.
+	* utracer-cf-io.c: Added utrace-specific errnos.
+	* utracer-if-io.c: Added utrace-specific errnos.  Added more
+	report_* functions
+	
+
+2007-06-12  Chris Moller  <moller@mollerware.com>
+
+	* ChangeLog:
+	* .cvsignore:
+	* Makefile:
+	* utracer-base.c:
+	* utracer-cf-io.c:
+	* utracer-if-io.c:
+	* utracer-private.h:
+	* utracer.h:  Version 0.0.0.0.0.0
+	
+

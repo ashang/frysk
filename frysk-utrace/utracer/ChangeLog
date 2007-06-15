@@ -1,0 +1,24 @@
+2007-06-15  Chris Moller  <moller@mollerware.com>
+
+	* udb.c: Added SIGUSR1 handler to get asynchronous notification
+	from the LKM.
+	* udb-text-ui.c: Added a cmd to test the above.
+	* udb-utrace-if.c: Added support for above.
+
+2007-06-13  Chris Moller  <moller@mollerware.com>
+
+	* udb-utrace-if.c:Added utrace-specific error message reporting.
+
+2007-06-12  Chris Moller  <moller@mollerware.com>
+
+	* ChangeLog:
+	* .cvsignore:
+	* do_make:
+	* Makefile:
+	* NOTES:
+	* udb.c:
+	* udb-text-ui.c:
+	* udb-utrace-if.c:
+	* udb.h:  Version 0.0.0.0.0.0
+	
+
