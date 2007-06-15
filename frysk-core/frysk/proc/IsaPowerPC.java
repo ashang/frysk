@@ -54,8 +54,9 @@ abstract class IsaPowerPC
 
   // the illegal instruction for powerpc: 0x7d821008.
   // the default order is BIG_ENDIAN
-  protected static byte[] BREAKPOINT_INSTRUCTION = { (byte)0x7d, (byte)0x82, 
-                                                   (byte)0x10, (byte)0x08 };
+  protected static final Instruction ppcBreakpoint
+    = new Instruction(new byte[] { (byte)0x7d, (byte)0x82, 
+				   (byte)0x10, (byte)0x08 }, false);
 
   public Iterator RegisterIterator ()
   {
@@ -87,20 +88,27 @@ abstract class IsaPowerPC
   
   /**
    * Get the breakpoint instruction of the PowerPC platform.
-   * 
-   * @return bytes[] the breakpoint instruction
    */
-  public final byte[] getBreakpointInstruction()
+  public final Instruction getBreakpointInstruction()
   {
-    byte[] instruction = null;
-    
-    instruction = new byte[IsaPowerPC.BREAKPOINT_INSTRUCTION.length];
-    
-    System.arraycopy(IsaPowerPC.BREAKPOINT_INSTRUCTION, 0, 
-                     instruction, 0, IsaPowerPC.BREAKPOINT_INSTRUCTION.length);
-    
-    return instruction;
+    return ppcBreakpoint;
   }
+
+  /**
+   * Returns the instruction at the given location in the memory
+   * buffer, or null if there is no valid instruction at the given
+   * location. FIXME - needs a real InstructionParser!
+   */
+  public Instruction getInstruction(ByteBuffer bb, long addr)
+  {
+    // XXX assume all instructions are 4 bytes.
+    bb.position(addr);
+    byte[] bs = new byte[4];
+    for (int i = 0; i < 4; i++)
+      bs[i] = bb.getByte();
+    return new Instruction(bs, false);
+  }
+
   
   /**
    * Get the true breakpoint address according to PC register after hitting 

@@ -95,7 +95,14 @@ public interface Isa
    * 
    * @return bytes[] the instruction of the ISA.
    */
-  byte[] getBreakpointInstruction();
+  Instruction getBreakpointInstruction();
+
+  /**
+   * Parses the memory at the given buffer location and returns
+   * an Instruction or null when no valid instruction could be
+   * read.
+   */
+  Instruction getInstruction(ByteBuffer bb, long address);
  
   /**
    * Get the true breakpoint address according to PC register after hitting 

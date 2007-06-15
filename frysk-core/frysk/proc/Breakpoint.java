@@ -60,8 +60,9 @@ public class Breakpoint
   // Static cache of installed break points.
   private static HashMap installed = new HashMap();
 
-  // The original instruction at the location we replaced with BREAKPOINT_INSTRUCTION.
-  private byte[] origInstruction;
+  // The original instruction at the location we replaced with
+  // BREAKPOINT_INSTRUCTION.
+  private Instruction origInstruction;
 
   /**
    * Private constructor called by create to record address and
@@ -133,27 +134,17 @@ public class Breakpoint
    */
   private void set(Task task)
   {
-    int len = 0;
-    ByteBuffer buffer = null;
-    byte[] bpInstruction = null;
+    ByteBuffer buffer = task.getMemory();
+    Isa isa = task.getIsa();
+    Instruction bpInstruction = isa.getBreakpointInstruction();
     
-    buffer = task.getMemory();
+    origInstruction = isa.getInstruction(buffer, address);
+
+    // Put in the breakpoint.
+    byte[] bs = bpInstruction.getBytes();
     buffer.position(address);
-    
-    bpInstruction = task.getIsa().getBreakpointInstruction();
-    
-    len = bpInstruction.length;
-    if (len <= 0)
-      throw new IllegalStateException("Breakpoint instruction is invalid: " + 
-                                      this);
-    
-    origInstruction = new byte[len];
-    for (int index = 0; index < len; index++)
-      origInstruction[index] = buffer.getByte();
-    
-    buffer.position(address);
-    for (int index = 0; index < len; index++)
-      buffer.putByte(bpInstruction[index]);
+    for (int index = 0; index < bs.length; index++)
+      buffer.putByte(bs[index]);
   }
 
   /**
@@ -176,15 +167,14 @@ public class Breakpoint
    */
   private void reset(Task task)
   {
-    int len = 0;
     ByteBuffer buffer = null;
     
     buffer = task.getMemory();
     buffer.position(address);
     
-    len = origInstruction.length;
-    for (int index = 0; index < len; index++)
-      buffer.putByte(origInstruction[index]);
+    byte[] bs = origInstruction.getBytes();
+    for (int index = 0; index < bs.length; index++)
+      buffer.putByte(bs[index]);
   }
 
   // XXX Prepare step and step done are not multi-task safe.

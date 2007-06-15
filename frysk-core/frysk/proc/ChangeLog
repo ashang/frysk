@@ -1,3 +1,25 @@
+2007-06-15  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Instruction.java: New class.
+	* Breakpoint.java (origInstruction): Change type to Instruction.
+	(set): Get and set breakpoint and orig through Isa Instruction.
+	(reset): Use origInstruction.getBytes().
+	* Isa (getBreakpointInstruction): return Instruction.
+	(getInstruction): New method.
+	* IsaIA32.java (BREAKPOINT_INSTRUCTION): Removed.
+	(IA32Breakpoint): New static field.
+	(getBreakpointInstruction): Return IA32Breakpoint.
+	(getInstruction): New method.
+	(getBreakpointAddress): Just subtract 1.
+	* IsaX8664.java (BREAKPOINT_INSTRUCTION): Removed.
+	((getBreakpointInstruction): Return X8664Breakpoint.
+	(getInstruction): New method.
+	(getBreakpointAddress): Just subtract 1.
+	* IsaPowerPC.java (BREAKPOINT_INSTRUCTION): Removed.
+	(ppcBreakpoint): New static field.
+	(getBreakpointInstruction): Return ppcBreakpoint.
+	(getInstruction): New method.
+
 2007-06-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* MemoryMap.java (toString): Return richer data.

@@ -71,7 +71,8 @@ public class IsaX8664 implements Isa
    */
   private static final int DBG_OFFSET = 848;
 
-  private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
+  private static final Instruction X8664Breakpoint
+    = new Instruction(new byte[] { (byte)0xcc }, false);
   
   static class X8664Register extends Register
   {
@@ -248,23 +249,26 @@ public class IsaX8664 implements Isa
   }
   
   /**
-   * Get the breakpoint instruction of the specific ISA.
-   * 
-   * @return bytes[] the instruction of the ISA or null if TRAP is not 
-   *         initialized.
+   * Get the breakpoint instruction for X8664.
    */
-  public final byte[] getBreakpointInstruction()
+  public final Instruction getBreakpointInstruction()
   {
-    byte[] instruction = null;
-    
-    instruction = new byte[IsaX8664.BREAKPOINT_INSTRUCTION.length];
-    
-    System.arraycopy(IsaX8664.BREAKPOINT_INSTRUCTION, 0, 
-                     instruction, 0, IsaX8664.BREAKPOINT_INSTRUCTION.length);
-    
-    return instruction;
+    return X8664Breakpoint;
   }
-  
+
+  /**
+   * Returns the instruction at the given location in the memory
+   * buffer, or null if there is no valid instruction at the given
+   * location. FIXME - needs to be plugged into the InstructionParser
+   * and cache the results.
+   */
+  public Instruction getInstruction(ByteBuffer bb, long addr)
+  {
+    bb.position(addr);
+    // return X8664InstructionParser.parse(bb);
+    return new Instruction(new byte[] { bb.getByte() }, false);
+  }
+
   /**
    * Get the true breakpoint address according to PC register after hitting 
    * one breakpoint set in task. In X86-64, the length of breakpoint instruction
@@ -276,7 +280,7 @@ public class IsaX8664 implements Isa
     long pcValue = 0;
 
     pcValue = this.pc(task);
-    pcValue = pcValue - IsaX8664.BREAKPOINT_INSTRUCTION.length;
+    pcValue = pcValue - 1;
     
     return pcValue;
   }

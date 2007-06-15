@@ -70,7 +70,8 @@ public class IsaIA32 implements Isa
    */
   private static final int DBG_OFFSET = 252;
 
-  private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
+  private static final Instruction IA32Breakpoint
+    = new Instruction(new byte[] { (byte)0xcc }, false);
   
   public ByteBuffer[] getRegisterBankBuffers(int pid) 
   {
@@ -251,21 +252,24 @@ public class IsaIA32 implements Isa
   }
   
   /**
-   * Get the breakpoint instruction.
-   * 
-   * @return bytes[] the instruction of the ISA or null if TRAP is not 
-   *         initialized.
+   * Get the breakpoint instruction for IA32.
    */
-  public final byte[] getBreakpointInstruction()
+  public final Instruction getBreakpointInstruction()
   {
-    byte[] instruction = null;
-    
-    instruction = new byte[IsaIA32.BREAKPOINT_INSTRUCTION.length];
-    
-    System.arraycopy(IsaIA32.BREAKPOINT_INSTRUCTION, 0, 
-                     instruction, 0, IsaIA32.BREAKPOINT_INSTRUCTION.length);
-    
-    return instruction;
+    return IA32Breakpoint;
+  }
+
+  /**
+   * Returns the instruction at the given location in the memory
+   * buffer, or null if there is no valid instruction at the given
+   * location. FIXME - needs to be plugged into the InstructionParser
+   * and cache the results.
+   */
+  public Instruction getInstruction(ByteBuffer bb, long addr)
+  {
+    bb.position(addr);
+    // return IA32InstructionParser.parse(bb);
+    return new Instruction(new byte[] { bb.getByte() }, false);
   }
   
   /**
@@ -279,7 +283,7 @@ public class IsaIA32 implements Isa
     long pcValue = 0;
     
     pcValue = this.pc(task);
-    pcValue = pcValue - IsaIA32.BREAKPOINT_INSTRUCTION.length;
+    pcValue = pcValue - 1;
     
     return pcValue;
   }
