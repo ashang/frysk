@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -70,11 +70,6 @@ public class TestFCore
   public void testCoreFileCreated ()
   {
 
-    // Core files not broken on either arch, but just
-    // take a long time to create. 3727 explains issue.
-    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-      return;
-
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File testCore = new File(coreFileName);
@@ -86,10 +81,6 @@ public class TestFCore
   public void testElfCoreHeader ()
   {
 
-    // Core files not broken on either arch, but just
-    // take a long time to create. 3727 explains issue.
-    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-      return;
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
@@ -188,11 +179,6 @@ public class TestFCore
   public void testProgramSegmentHeader ()
   {
 
-    // Core files not broken on either arch, but just
-    // take a long time to create. 3727 explains issue.
-
-    if (brokenX8664XXX(3727) || brokenPpcXXX(3727))
-      return;
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);

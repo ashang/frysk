@@ -1,3 +1,11 @@
+2007-06-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestFCore.java (testCoreFileCreated): brokenXXX removed for
+	64 bit architectures.
+	(testElfCoreHeader): Ditto.
+	(testProgramSegmentHeader): Ditto.
+	
+
 2007-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFCatch.java: Removed checking for line info.
