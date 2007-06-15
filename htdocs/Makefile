@@ -10,7 +10,6 @@ HTML = \
 	zilla/index.html \
 	todo/index.html \
 	bugs/index.html \
-	blog/index.html \
 	bugzilla/index.html \
 	$(ZZZ)
 all: $(HTML:.html=.new)
