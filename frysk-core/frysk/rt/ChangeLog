@@ -1,3 +1,12 @@
+2007-06-15  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (stepNextInstruction): Added Javadoc.
+	(stepNextInstruction): Removed Frame parameter from Task list method.
+	Added some logic for next-instruction stepping multiple Tasks.
+	(stepOver): Added Javadoc. Removed Frame parameter. Added some logic 
+	for stepping multiple Tasks.
+	(stepOut): Ditto.
+
 2007-06-14  Adam Jocksch <ajocksch@redhat.com>
 
 	* DisplayValueObserver.java 

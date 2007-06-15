@@ -2550,7 +2550,7 @@ public class SourceWindow
     desensitize();
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.steppingEngine.stepOver(l, this.currentFrame);
+    this.steppingEngine.stepOver(l);
     removeTags();
   }
   
@@ -2561,7 +2561,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.stepOver(tasks, this.currentFrame);
+    this.steppingEngine.stepOver(tasks);
     removeTags();
   }
 
@@ -2594,7 +2594,7 @@ public class SourceWindow
 
     LinkedList l = new LinkedList();
     l.add(this.currentTask);
-    this.steppingEngine.stepOut(l, this.currentFrame);
+    this.steppingEngine.stepOut(l);
     removeTags();
   }
   
@@ -2607,7 +2607,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.stepOut(tasks, this.currentFrame);
+    this.steppingEngine.stepOut(tasks);
     removeTags();
   }
   
@@ -2687,7 +2687,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.stepNextInstruction(tasks, this.currentFrame);
+    this.steppingEngine.stepNextInstruction(tasks);
     removeTags();
   }
 

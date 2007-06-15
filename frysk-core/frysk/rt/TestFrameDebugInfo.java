@@ -63,7 +63,7 @@ public class TestFrameDebugInfo
   {
     Task task = getStoppedTask();
 
-    Frame frame = StackFactory.createFrame(task, 0);
+    Frame frame = StackFactory.createFrame(task);
     String string = StackFactory.printRichStackTrace(frame, true, true, true);
       
 //    System.out.println("TestRichFrame.testRichFrame()");
@@ -80,7 +80,7 @@ public class TestFrameDebugInfo
   public void testParameters(){
     Task task = getStoppedTask();
 
-    Frame frame = StackFactory.createFrame(task, 0);
+    Frame frame = StackFactory.createFrame(task);
     
     while(!(frame.getSubprogram() != null && frame.getSubprogram().getName().contains("third"))){
       frame = frame.getOuter();

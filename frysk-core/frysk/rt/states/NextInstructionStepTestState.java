@@ -64,7 +64,7 @@ public class NextInstructionStepTestState extends State
   public State handleUpdate (TaskStepEngine tse)
   {
     Frame newFrame = null;
-    newFrame = StackFactory.createFrame(this.task, 2);
+    newFrame = StackFactory.createFrame(this.task);
    
     if (newFrame.getFrameIdentifier().innerTo(tse.getFrameIdentifier()))
       {

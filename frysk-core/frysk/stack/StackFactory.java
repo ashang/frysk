@@ -73,7 +73,7 @@ public class StackFactory
    * @param task The task to get stack information for
    * @return The stack frames as a linked list
    */
-  public static Frame createFrame (Task task, int num)
+  public static Frame createFrame (Task task)
   {
     if (taskMap.containsKey(task))
       {
@@ -101,12 +101,6 @@ public class StackFactory
 	return innerFrame;
       
   }
-  
-  public static Frame createFrame (Task task)
-  {
-    return createFrame(task, 0);
-  }
-  
 
   public static final StringBuffer generateTaskStackTrace (Task task, boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
   {

@@ -61,6 +61,7 @@ import frysk.proc.TaskObserver;
 import frysk.rt.states.*;
 import frysk.stack.Frame;
 import frysk.stack.FrameIdentifier;
+import frysk.stack.StackFactory;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 
@@ -397,6 +398,12 @@ public class SteppingEngine
     task.requestAddCodeObserver(this.breakpoint, frame.getAddress());
   }
   
+  /**
+   * Instruction stepping, but stepping-over any function calls.
+   * 
+   * @param task The stepping Task
+   * @param lastFrame The current innermost frame of the Task
+   */
   public void stepNextInstruction (Task task, Frame lastFrame)
   {
     this.steppingObserver.notifyNotBlocked();
@@ -412,22 +419,50 @@ public class SteppingEngine
     task.requestUnblock(this.steppingObserver);
   }
   
-  public void stepNextInstruction (LinkedList tasks, Frame lastFrame)
+  /**
+   * Instruction steps the list of Tasks, but ensures that none enter any 
+   * new frames on the stack. 
+   * 
+   * @param tasks The list of Tasks to be stepped
+   */
+  public void stepNextInstruction (LinkedList tasks)
   {
-//    Iterator i = tasks.iterator();
-//   this.steppingObserver.notifyNotBlocked();
-//    while (i.hasNext())
-//      {
-//        Task t = (Task) i.next();
-//        t.requestUnblock(this);
-//      }
+    if (tasks.size() < 1)
+      return;
+    
+    Task t = null;
+    
+    this.steppingObserver.notifyNotBlocked();
+    
+    t = (Task) tasks.getFirst();
+    int i = ((Integer) this.contextMap.get(t.getProc())).intValue();
+    this.contextMap.put(t.getProc(), new Integer(i += tasks.size()));
+    
+    Iterator iter = tasks.iterator();
+    while (iter.hasNext())
+      {
+        t = (Task) iter.next();
+        Frame frame = StackFactory.createFrame(t);
+        
+        /* This is trouble. Need to figure out a way to map these properly,
+         * *hopefully* not requiring another HashMap. */ 
+        this.frameIdentifier = frame.getFrameIdentifier(); 
+        
+        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
+        tse.setFrameIdentifier(this.frameIdentifier);
+        tse.setState(new NextInstructionStepTestState(t));
+        
+        t.requestUnblock(this.steppingObserver);
+      }
   }
 
   Breakpoint breakpoint;
   FrameIdentifier frameIdentifier;
   
   /**
-   * Sets up the given Task for a step-over operation.
+   * Performs a step-operation - line-steps the given Task, unless presented
+   * with an entry to a new frame on the stack, which will not be stepped
+   * into.
    * 
    * @param task   The Task to be stepped-over
    * @param lastFrame	The current innermost StackFrame of the given Task
@@ -447,25 +482,50 @@ public class SteppingEngine
     task.requestUnblock(this.steppingObserver);
   }
   
-  public void stepOver (LinkedList tasks, Frame lastFrame)
+  /**
+   * Performs a step-over operation on a list of tasks; none of the given
+   * Tasks will line-step into any new frames.
+   * 
+   * @param tasks The Tasks to step.
+   */
+  public void stepOver (LinkedList tasks)
   {
-//    this.frameIdentifier = lastFrame.getFrameIdentifier();
-////    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
-//    taskStepCount =  tasks.size();
-//
-//    setUp(tasks, STEP_OVER_TEST);
+    if (tasks.size() < 1)
+      return;
+    
+    Task t = null;
+    
+    this.steppingObserver.notifyNotBlocked();
+    
+    t = (Task) tasks.getFirst();
+    int i = ((Integer) this.contextMap.get(t.getProc())).intValue();
+    this.contextMap.put(t.getProc(), new Integer(i += tasks.size()));
+    
+    Iterator iter = tasks.iterator();
+    while (iter.hasNext())
+      {
+        t = (Task) iter.next();
+        Frame frame = StackFactory.createFrame(t);
+        
+        /* This is trouble. Need to figure out a way to map these properly,
+         * *hopefully* not requiring another HashMap. */ 
+        this.frameIdentifier = frame.getFrameIdentifier(); 
+        
+        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
+        tse.setFrameIdentifier(this.frameIdentifier);
+        tse.setState(new StepOverTestState(t));
+        
+        t.requestUnblock(this.steppingObserver);
+      }
   }
 
   /**
    * Sets the stage for stepping out of a frame. Runs until a breakpoint on the
    * return address is hit. 
    * 
-   * XXX: Needs to work properly with multiple threads.
-   * 
    * @param task   The Task to be stepped
    * @param frame The frame to step out of.
    */
-  
   public void stepOut (Task task, Frame frame)
   {
     long address = frame.getOuter().getAddress();
@@ -481,19 +541,39 @@ public class SteppingEngine
     task.requestAddCodeObserver(this.breakpoint, address);
   }
   
-  public void stepOut (LinkedList tasks, Frame lastFrame)
+  /**
+   * Performs a step-out operation on a list of Tasks - runs each Task until 
+   * it returns from its current frame.
+   * 
+   * @param tasks The Tasks to step-out
+   */
+  public void stepOut (LinkedList tasks)
   {
-//    taskStepCount =  tasks.size();
-//    this.frameIdentifier = lastFrame.getFrameIdentifier();
-////    this.outerFrameIdentifier = lastFrame.getOuter().getFrameIdentifier();
-//    
-//    Iterator i = tasks.iterator();
-//    while (i.hasNext())
-//      {
-//        Task t = (Task) i.next();
-//        stateMap.put(t, new Integer(STEP_OUT_ASM_STEP));
-//        t.requestUnblock(steppingObserver);
-//      }
+    if (tasks.size() < 1)
+      return;
+    
+    Task t = null;
+    
+    this.steppingObserver.notifyNotBlocked();
+    
+    t = (Task) tasks.getFirst();
+    int i = ((Integer) this.contextMap.get(t.getProc())).intValue();
+    this.contextMap.put(t.getProc(), new Integer(i += tasks.size()));
+    
+    Iterator iter = tasks.iterator();
+    while (iter.hasNext())
+      {
+        t = (Task) iter.next();
+        Frame frame = StackFactory.createFrame(t);
+        
+        TaskStepEngine tse = (TaskStepEngine) this.taskStateMap.get(t);
+        tse.setState(new StepOutState(t));
+        
+        /* This is trouble. Need to figure out a way to map these properly, and
+         * *hopefully* not requiring another HashMap. */ 
+        this.breakpoint = new SteppingBreakpoint(this, frame.getOuter().getAddress());
+        t.requestAddCodeObserver(this.breakpoint, frame.getOuter().getAddress());
+      }
   }
   
   public void cleanUpBreakPoint (Task task)

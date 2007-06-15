@@ -1,3 +1,9 @@
+2007-06-15  Mike Cvet  <mcvet@redhat.com>
+
+	* StackFactory.java (createFrame): Refactored duplicate method with
+	redundant inteter parameter to take just a Task, and removed overloaded
+	method.
+
 2007-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Frame.java: Removed Line info printing from elf info printing.

@@ -333,7 +333,7 @@ public class TestStackBacktrace
   public void setUpTest ()
   {
 
-    Frame frame = StackFactory.createFrame(myTask, 1);
+    Frame frame = StackFactory.createFrame(myTask);
     
     if (frame.getLines().length == 0)
       {
@@ -496,7 +496,7 @@ public class TestStackBacktrace
   
   public void pushPopAssertions ()
   {
-    Frame sFrame = StackFactory.createFrame(myTask, 1);
+    Frame sFrame = StackFactory.createFrame(myTask);
     Line line = null; 
     
     if (this.testState == PUSH || this.testState == POP)
@@ -568,7 +568,7 @@ public class TestStackBacktrace
               }
             else
               {
-                Frame frame = StackFactory.createFrame(myTask, 3);
+                Frame frame = StackFactory.createFrame(myTask);
 
                 /* Make sure we're not missing any frames */
                 if (frame.getLines()[0].getLine() > 95)
@@ -596,7 +596,7 @@ public class TestStackBacktrace
               }
             else
               {
-                Frame frame = StackFactory.createFrame(myTask, 3);
+                Frame frame = StackFactory.createFrame(myTask);
 
                 /* Make sure we're not missing any frames */
                 assertEquals ("demangled name", "jump",
