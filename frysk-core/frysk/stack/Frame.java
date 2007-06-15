@@ -121,23 +121,6 @@ public abstract class Frame
     if (symbol != Symbol.UNKNOWN)
       builder.append(" ()");
     
-
-    // If there's line number information append that.
-    Line[] lines = getLines();
-    for (int i = 0; i < lines.length; i++) {
-      Line line = lines[i];
-      builder.append(" from: ");
-      if (name) {
-	builder.append(line.getFile().getName());
-	builder.append(": line #");
-	builder.append(line.getLine());
-      }
-      else {
-	builder.append(line.getFile().getPath());
-	builder.append("#");
-	builder.append(line.getLine());
-      }
-    }
     return builder.toString();
   }
   public abstract long getReg(long reg);

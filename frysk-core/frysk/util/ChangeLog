@@ -1,3 +1,8 @@
+2007-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFCatch.java: Removed checking for line info.
+	* TestFStack.java: Ditto.
+	
 2007-06-13  Nurdin Premji  <npremji@redhat.com>
 
 	* CommandlineParser.java (parse): Exit immediately if there are no 
