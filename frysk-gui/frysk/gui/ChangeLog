@@ -1,3 +1,14 @@
+2007-06-15  Mike Cvet  <mcvet@redhat.com>
+
+	* gladedir/disassemblywindow.glade: Changed current PC entry box
+	to label.
+	* gladedir/memorywindow.glade: Ditto.
+	* disassembler/DisassemblyWindow.java (pcLabelDec): Changed to
+	Label from pcEntryDec.
+	(pcLabelHex): Changed to Label from pcEntryHex.
+	* memory/MemoryWindow.java (pcLabelDec): Ditto.
+	(pcLabelHex): Ditto.
+
 2007-06-13  Nurdin Premji  <npremji@redhat.com>
 
 	* Gui.java (gui): Use a CommandlineParser to parse command line options.

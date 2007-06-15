@@ -55,6 +55,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
@@ -122,9 +123,9 @@ public class DisassemblyWindow
 
   private SpinButton toSpin;
 
-  private Entry pcEntryDec;
+  private Label pcLabelDec;
 
-  private Entry pcEntryHex;
+  private Label pcLabelHex;
   
   private Entry fromBox;
     
@@ -171,8 +172,8 @@ public class DisassemblyWindow
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.fromBox = (Entry) this.glade.getWidget("fromBox");
     this.toBox = (Entry) this.glade.getWidget ("toBox");
-    this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
-    this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
+    this.pcLabelDec = (Label) this.glade.getWidget("PCLabelDec");
+    this.pcLabelHex = (Label) this.glade.getWidget("PCLabelHex");
     this.model = new ListStore(cols);
     
     this.lock = new LockObserver();
@@ -266,8 +267,8 @@ public class DisassemblyWindow
     this.fromBox.setText(Long.toHexString(pc_inc));
     this.lastKnownFrom = pc_inc;
     //this.toSpin.setValue((double) end);
-    this.pcEntryDec.setText("" + pc_inc);
-    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    this.pcLabelDec.setText("" + pc_inc);
+    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
 
     setUpColumns();
 
@@ -399,8 +400,8 @@ public class DisassemblyWindow
     this.fromSpin.setValue((double) pc_inc);
     this.lastKnownFrom = pc_inc;
     // this.toSpin.setValue((double) end);
-    this.pcEntryDec.setText("" + pc_inc);
-    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    this.pcLabelDec.setText("" + pc_inc);
+    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
     
     this.model.clear();
     this.model.appendRow();
@@ -479,8 +480,8 @@ public class DisassemblyWindow
     this.refreshLock = true;
     long pc_inc = 0;
     pc_inc = myTask.getIsa().pc(myTask);
-    this.pcEntryDec.setText("" + pc_inc);
-    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
+    this.pcLabelDec.setText("" + pc_inc);
+    this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
     
     this.lastKnownFrom = pc_inc;
     this.fromSpin.setValue((double) pc_inc);
