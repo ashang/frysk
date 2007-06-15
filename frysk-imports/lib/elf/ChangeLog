@@ -1,3 +1,9 @@
+2007-06-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java (ElfPrstatus): Account for alignment
+	on longs.
+	(printAll): New.
+
 2007-06-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrpsinfo.java (ElfPrpsinfo): Account for struct

@@ -131,9 +131,11 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     pr_info_si_signo =  noteBuffer.getInt();
     pr_info_si_code =  noteBuffer.getInt();
     pr_info_si_errno = noteBuffer.getInt();
-    pr_cursig = noteBuffer.getInt();
-    pr_sigpend = noteBuffer.getUInt();
-    pr_sighold = noteBuffer.getUInt();
+    pr_cursig = noteBuffer.getShort();
+    long pos = noteBuffer.position();
+    noteBuffer.position(pos + (noteBuffer.wordSize()-(pos % noteBuffer.wordSize())));
+    pr_sigpend = noteBuffer.getUWord();
+    pr_sighold = noteBuffer.getUWord();
     pr_pid =  noteBuffer.getInt();
     pr_ppid =  noteBuffer.getInt();
     pr_pgrp =  noteBuffer.getInt();
@@ -154,6 +156,29 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
 
   }
 
+  
+  public void printAll()
+  {
+	    System.out.println("signo = "+pr_info_si_signo);
+	    System.out.println("si_code = "+pr_info_si_code);
+	    System.out.println("si_errno = "+pr_info_si_errno);
+	    System.out.println("cur sig = "+pr_cursig);
+		System.out.println("sig pend = "+pr_sigpend);
+		System.out.println("sig hold = "+pr_sighold);
+		System.out.println("pid = "+pr_pid);
+		System.out.println("ppid = "+pr_ppid);
+		System.out.println("pgrp = "+pr_pgrp);
+		System.out.println("sid = "+pr_sid);
+		System.out.println("utime sec = "+pr_utime_sec);
+		System.out.println("utime usec = "+pr_utime_usec);
+		System.out.println("stime sec = "+pr_stime_sec);
+		System.out.println("stime usec = "+pr_stime_usec);
+		System.out.println("cutime sec = "+pr_cutime_sec);
+		System.out.println("cutime usec = "+pr_cutime_usec);
+		System.out.println("cstime sec = "+pr_cstime_sec);
+		System.out.println("cstime usec = "+pr_cstime_usec);		
+  }
+  	
   public static ElfPrstatus[] decode(ElfData noteData)
   {
     getNoteData(noteData);
