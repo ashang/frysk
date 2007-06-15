@@ -73,8 +73,6 @@ public class TestLinuxCore
   public void testLinuxCoreFileMaps ()
   {
 
-    if (brokenX8664XXX(4640) || brokenPpcXXX(4640))
-      return;
 
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
@@ -90,21 +88,45 @@ public class TestLinuxCore
     Proc coreProc = lcoreHost.getProc(new ProcId(ackProc.getPid()));
 
     MemoryMap[] list = ackProc.getMaps();
+  
+
+    int redZoneDiscount = 0;
+    for (int j=0; j<list.length; j++)
+      if (list[j].permRead == false)
+        redZoneDiscount++;
+
     MemoryMap[] clist = coreProc.getMaps();
 
     assertEquals("Number of maps match in corefile/live process",
-		 clist.length,list.length);
+		 clist.length,list.length - redZoneDiscount);
 
     for (int i=0; i<list.length; i++)
       {
-	assertEquals("vaddr",list[i].addressLow, clist[i].addressLow);
-	assertEquals("vaddr_end",list[i].addressHigh,clist[i].addressHigh);
-	assertEquals("permRead",list[i].permRead,clist[i].permRead);
-	assertEquals("permWrite",list[i].permWrite,clist[i].permWrite);
-	assertEquals("permExecute",list[i].permExecute,clist[i].permExecute);
+
+	if (list[i].permRead == false)
+	    continue;
+
+	int cloc = findCoreMap(list[i].addressLow, clist);
+	assertTrue("coreMaps returned -1",cloc >= 0);
+	assertEquals("vaddr",list[i].addressLow, clist[cloc].addressLow);
+	assertEquals("vaddr_end",list[i].addressHigh,clist[cloc].addressHigh);
+	assertEquals("permRead",list[i].permRead,clist[cloc].permRead);
+	assertEquals("permWrite",list[i].permWrite,clist[cloc].permWrite);
+	assertEquals("permExecute",list[i].permExecute,clist[cloc].permExecute);
       }
 
     xtestCore.delete();
+  }
+
+
+  private int findCoreMap(long address, MemoryMap[] maps)
+  {
+
+    for (int i=0; i<maps.length; i++)
+      if (maps[i].addressLow == address)
+	return i;
+
+    return -1;
   }
 
   public void testLinuxCoreFileStackTrace ()
