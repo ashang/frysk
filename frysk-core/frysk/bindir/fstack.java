@@ -74,10 +74,11 @@ public final class fstack
   {
 
     Proc proc;
-    public Stacker (Proc theProc, Event theEvent,boolean elfOnly, boolean printParameters, boolean printScopes, boolean fullpath)
+    public Stacker (Proc theProc, Event theEvent,boolean elfOnly, 
+                    boolean printParameters, boolean printScopes, 
+                    boolean fullpath)
     {
       super(theProc, theEvent, elfOnly, printParameters, printScopes, fullpath);
-      System.err.println("Stacker created");
       this.proc = theProc;
     }
 
