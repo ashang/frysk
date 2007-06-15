@@ -1,3 +1,7 @@
+2007-06-14  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (expr): Use long for OCTALINT, DECIMALINT, HEXADECIMALINT.
+
 2007-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* CppLexer.sed: Delete.

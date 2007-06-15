@@ -39,8 +39,11 @@
      
 package frysk.cli.hpd;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
+
+import frysk.proc.UBigInteger;
 import frysk.value.Value;
 import frysk.debuginfo.DebugInfo;
 import javax.naming.NameNotFoundException;
@@ -142,8 +145,16 @@ class PrintCommand
 	else if (resultType == BaseTypes.baseTypeShort
 		 || resultType == BaseTypes.baseTypeInteger
 		 || resultType == BaseTypes.baseTypeLong)
-	    cli.outWriter.println(Long.toString(result.longValue(),
-						outputFormat));
+          {
+            if (outputFormat == DECIMAL)
+              cli.outWriter.println(Long.toString(result.longValue(),
+                                                  outputFormat));
+            else
+              {
+                BigInteger bigInt = new BigInteger(Long.toString(result.longValue()));
+                cli.outWriter.println(UBigInteger.toString(bigInt, bigInt.bitLength() + 1, 16));
+              }
+          }
 	else if (resultType == BaseTypes.baseTypeByte)
 	    cli.outWriter.println(Integer.toString((int)result.longValue(),
 						   outputFormat) + 

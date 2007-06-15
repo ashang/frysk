@@ -851,24 +851,24 @@ expr returns [Value returnVar=null]
     	    int l = o.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newIntegerValue (
-                intType, Integer.parseInt(o.getText().substring(1, l), 8));
+            returnVar = ArithmeticType.newLongValue (
+                longType, Long.parseLong(o.getText().substring(1, l), 8));
         }
     |   i:DECIMALINT  {
     	    char c = i.getText().charAt(i.getText().length() - 1);
     	    int l = i.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newIntegerValue (
-                intType, Integer.parseInt(i.getText().substring(0, l)));
+            returnVar = ArithmeticType.newLongValue (
+                longType, Long.parseLong(i.getText().substring(0, l)));
         }
     |   h:HEXADECIMALINT  {
     	    char c = h.getText().charAt(h.getText().length() - 1);
     	    int l = h.getText().length();
     	    if (c == 'u' || c == 'U' || c == 'l' || c == 'L')
     	       l -= 1;
-            returnVar = ArithmeticType.newIntegerValue (
-                intType, Integer.parseInt(h.getText().substring(2, l), 16));
+            returnVar = ArithmeticType.newLongValue (
+                longType, Long.parseLong(h.getText().substring(2, l), 16));
         }
     |   f:FLOAT  {
     	    char c = f.getText().charAt(f.getText().length() - 1);

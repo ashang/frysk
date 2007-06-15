@@ -1,3 +1,7 @@
+2007-06-14  Stan Cox  <scox@redhat.com>
+
+	* frysk/cli/hpd/PrintCommand.java (handle): Use BigInteger for hex.
+
 2007-06-14  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointCommand.java (CLIBreakpointObserver.updateHit): Set
