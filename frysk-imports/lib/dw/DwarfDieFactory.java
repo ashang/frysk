@@ -173,72 +173,78 @@ public class DwarfDieFactory
 
   static Class loadDies()
   {
-    Class cls;
+    Class[] cls = {
 
-    cls = lib.dw.die.ArrayType.class;
-    cls = lib.dw.die.ClassType.class;
-    cls = lib.dw.die.EntryPoint.class;
-    cls = lib.dw.die.EnumerationType.class;
-    cls = lib.dw.die.FormalParameter.class;
-    cls = lib.dw.die.ImportedDeclaration.class;
-    cls = lib.dw.die.Label.class;
-    cls = lib.dw.die.LexicalBlock.class;
-    cls = lib.dw.die.Member.class;
-    cls = lib.dw.die.PointerType.class;
-    cls = lib.dw.die.ReferenceType.class;
-    cls = lib.dw.die.CompileUnit.class;
-    cls = lib.dw.die.StringType.class;
-    cls = lib.dw.die.StructureType.class;
-    cls = lib.dw.die.SubroutineType.class;
-    cls = lib.dw.die.Typedef.class;
-    cls = lib.dw.die.UnionType.class;
-    cls = lib.dw.die.UnspecifiedParameters.class;
-    cls = lib.dw.die.Variant.class;
-    cls = lib.dw.die.CommonBlock.class;
-    cls = lib.dw.die.CommonInclusion.class;
-    cls = lib.dw.die.Inheritance.class;
-    cls = lib.dw.die.InlinedSubroutine.class;
-    cls = lib.dw.die.Module.class;
-    cls = lib.dw.die.PtrToMemberType.class;
-    cls = lib.dw.die.SetType.class;
-    cls = lib.dw.die.SubrangeType.class;
-    cls = lib.dw.die.WithStmt.class;
-    cls = lib.dw.die.AccessDeclaration.class;
-    cls = lib.dw.die.BaseType.class;
-    cls = lib.dw.die.CatchBlock.class;
-    cls = lib.dw.die.ConstType.class;
-    cls = lib.dw.die.Constant.class;
-    cls = lib.dw.die.Enumerator.class;
-    cls = lib.dw.die.FileType.class;
-    cls = lib.dw.die.Friend.class;
-    cls = lib.dw.die.Namelist.class;
-    cls = lib.dw.die.NamelistItem.class;
-    cls = lib.dw.die.PackedType.class;
-    cls = lib.dw.die.Subprogram.class;
-    cls = lib.dw.die.TemplateTypeParameter.class;
-    cls = lib.dw.die.TemplateValueParameter.class;
-    cls = lib.dw.die.ThrownType.class;
-    cls = lib.dw.die.TryBlock.class;
-    cls = lib.dw.die.VariantPart.class;
-    cls = lib.dw.die.Variable.class;
-    cls = lib.dw.die.VolatileType.class;
-    cls = lib.dw.die.DwarfProcedure.class;
-    cls = lib.dw.die.RestrictType.class;
-    cls = lib.dw.die.InterfaceType.class;
-    cls = lib.dw.die.Namespace.class;
-    cls = lib.dw.die.ImportedModule.class;
-    cls = lib.dw.die.UnspecifiedType.class;
-    cls = lib.dw.die.PartialUnit.class;
-    cls = lib.dw.die.ImportedUnit.class;
-    cls = lib.dw.die.MutableType.class;
-    cls = lib.dw.die.Condition.class;
-    cls = lib.dw.die.SharedType.class;
-    cls = lib.dw.die.LoUser.class;
-    cls = lib.dw.die.MIPSLoop.class;
-    cls = lib.dw.die.FormatLabel.class;
-    cls = lib.dw.die.FunctionTemplate.class;
-    cls = lib.dw.die.ClassTemplate.class;
-    cls = lib.dw.die.HiUser.class;
-    return cls;	// Damn you ecj!
+    lib.dw.die.ArrayType.class,
+    lib.dw.die.ClassType.class,
+    lib.dw.die.EntryPoint.class,
+    lib.dw.die.EnumerationType.class,
+    lib.dw.die.FormalParameter.class,
+    lib.dw.die.ImportedDeclaration.class,
+    lib.dw.die.Label.class,
+    lib.dw.die.LexicalBlock.class,
+    lib.dw.die.Member.class,
+    lib.dw.die.PointerType.class,
+    lib.dw.die.ReferenceType.class,
+    lib.dw.die.CompileUnit.class,
+    lib.dw.die.StringType.class,
+    lib.dw.die.StructureType.class,
+    lib.dw.die.SubroutineType.class,
+    lib.dw.die.Typedef.class,
+    lib.dw.die.UnionType.class,
+    lib.dw.die.UnspecifiedParameters.class,
+    lib.dw.die.Variant.class,
+    lib.dw.die.CommonBlock.class,
+    lib.dw.die.CommonInclusion.class,
+    lib.dw.die.Inheritance.class,
+    lib.dw.die.InlinedSubroutine.class,
+    lib.dw.die.Module.class,
+    lib.dw.die.PtrToMemberType.class,
+    lib.dw.die.SetType.class,
+    lib.dw.die.SubrangeType.class,
+    lib.dw.die.WithStmt.class,
+    lib.dw.die.AccessDeclaration.class,
+    lib.dw.die.BaseType.class,
+    lib.dw.die.CatchBlock.class,
+    lib.dw.die.ConstType.class,
+    lib.dw.die.Constant.class,
+    lib.dw.die.Enumerator.class,
+    lib.dw.die.FileType.class,
+    lib.dw.die.Friend.class,
+    lib.dw.die.Namelist.class,
+    lib.dw.die.NamelistItem.class,
+    lib.dw.die.PackedType.class,
+    lib.dw.die.Subprogram.class,
+    lib.dw.die.TemplateTypeParameter.class,
+    lib.dw.die.TemplateValueParameter.class,
+    lib.dw.die.ThrownType.class,
+    lib.dw.die.TryBlock.class,
+    lib.dw.die.VariantPart.class,
+    lib.dw.die.Variable.class,
+    lib.dw.die.VolatileType.class,
+    lib.dw.die.DwarfProcedure.class,
+    lib.dw.die.RestrictType.class,
+    lib.dw.die.InterfaceType.class,
+    lib.dw.die.Namespace.class,
+    lib.dw.die.ImportedModule.class,
+    lib.dw.die.UnspecifiedType.class,
+    lib.dw.die.PartialUnit.class,
+    lib.dw.die.ImportedUnit.class,
+    lib.dw.die.MutableType.class,
+    lib.dw.die.Condition.class,
+    lib.dw.die.SharedType.class,
+    lib.dw.die.LoUser.class,
+    lib.dw.die.MIPSLoop.class,
+    lib.dw.die.FormatLabel.class,
+    lib.dw.die.FunctionTemplate.class,
+    lib.dw.die.ClassTemplate.class,
+    lib.dw.die.HiUser.class
+    };
+    
+    for (int i = 0; i < cls.length; i++)
+      {
+        System.err.println(cls[i].getName());
+      }
+    return cls[cls.length];	// Damn you ecj!
   }
 }
