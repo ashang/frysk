@@ -1,3 +1,8 @@
+2007-06-15  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (swapBytes): New.
+	(AccessDW_FORM_block.getBufferAddr): Use it.  Always get regs via unwinder.
+
 2007-06-14  Mark Wielaard  <mwielaard@redhat.com>
 
 	* DebugInfoEvaluator.java (getClassType): Removed unused label

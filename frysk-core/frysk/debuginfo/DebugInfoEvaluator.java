@@ -81,24 +81,24 @@ class DebugInfoEvaluator
 
   private Frame currentFrame;
   
-  //  private Subprogram subprogram;
+  // private Subprogram subprogram;
 
   private ByteBuffer buffer;
 
   private ArithmeticType byteType;
-//  private ArithmeticType byteUnsignedType;
+// private ArithmeticType byteUnsignedType;
   private ArithmeticType shortType;
-//  private ArithmeticType shortUnsignedType;
+// private ArithmeticType shortUnsignedType;
   private ArithmeticType intType;
-//  private ArithmeticType intUnsignedType;
+// private ArithmeticType intUnsignedType;
   private ArithmeticType longType;
-//  private ArithmeticType longUnsignedType;
+// private ArithmeticType longUnsignedType;
   private ArithmeticType floatType;
   private ArithmeticType doubleType;
   
   public void setSubprogram (Subprogram subprogram)
   {
-    //    this.subprogram = subprogram;
+    // this.subprogram = subprogram;
   }
 
   public boolean putUndefined ()
@@ -107,8 +107,9 @@ class DebugInfoEvaluator
   }
 
   /**
-   * Create an DebugInfoEvaluator object which is the interface between 
+   * Create an DebugInfoEvaluator object which is the interface between
    * DebugInfo and CppTreeParser, the expression parser.
+   * 
    * @param frame StackFrame
    * @param task_p Task
    * @param pid_p Pid
@@ -127,13 +128,17 @@ class DebugInfoEvaluator
     currentFrame = frame;
 
     byteType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeByte, "byte");
-//    byteUnsignedType = new ArithmeticType(1, byteorder, BaseTypes.baseTypeUnsignedByte, "unsigned byte");
+// byteUnsignedType = new ArithmeticType(1, byteorder,
+// BaseTypes.baseTypeUnsignedByte, "unsigned byte");
     shortType = new ArithmeticType(2, byteorder, BaseTypes.baseTypeShort, "short");
-//    shortUnsignedType = new ArithmeticType(2, byteorder, BaseTypes.baseTypeUnsignedShort, "unsigned short");
+// shortUnsignedType = new ArithmeticType(2, byteorder,
+// BaseTypes.baseTypeUnsignedShort, "unsigned short");
     intType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeInteger, "int");
-//    intUnsignedType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeUnsignedInteger, "unsigned int");
+// intUnsignedType = new ArithmeticType(4, byteorder,
+// BaseTypes.baseTypeUnsignedInteger, "unsigned int");
     longType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeLong, "long");
-//    longUnsignedType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeUnsignedLong, "unsigned long");
+// longUnsignedType = new ArithmeticType(8, byteorder,
+// BaseTypes.baseTypeUnsignedLong, "unsigned long");
     floatType = new ArithmeticType(4, byteorder, BaseTypes.baseTypeFloat, "float");
     doubleType = new ArithmeticType(8, byteorder, BaseTypes.baseTypeDouble, "double");
   }
@@ -150,6 +155,18 @@ class DebugInfoEvaluator
   void refreshCurrentFrame(Frame scope)
   {
     currentFrame = scope;
+  }
+
+  // ??? Give registers a real type and let the type system do the swap.
+  private long swapBytes(long val)
+  {
+    long newVal = 0;
+    for (int i = 0; i < 8; i++)
+      {
+        newVal = newVal | ((val & 0xff00000000000000L) >>> (56 - (i * 8)));
+        val = val << 8;
+      }
+    return newVal;
   }
 
   interface VariableAccessor
@@ -214,13 +231,7 @@ class DebugInfoEvaluator
     protected long getBufferAddr (DwarfDie varDieP)
     {
       long pc;
-      // ??? Need an isa specific way to get x86 reg names and numbers
-      String[][] x86regnames = { { "eax", "rax" }, { "ecx", "rdx" },
-                                { "edx", "rcx" }, { "ebx", "rbx" },
-                                { "esp", "rsi" }, { "ebp", "rdi" },
-                                { "esi", "rbp" }, { "edi", "rsp" }, 
-                                { "", "r8" }, { "", "r9" }, { "", "r10"},
-                                { "", "r11"}, { "", "r12"}};
+      // ??? Do we need an isa specific way to get x86 reg numbers?
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
 
       pc = currentFrame.getAdjustedAddress();
@@ -246,24 +257,12 @@ class DebugInfoEvaluator
       
       // DW_OP_fbreg
       setSuccessful(true);
-      if (currentFrame.getInner() == null)
-        {
-          Isa isa = task.getIsa();
+      Isa isa = currentFrame.getTask().getIsa();
 
-          if (isa instanceof frysk.proc.IsaIA32)
-            regval = isa.getRegisterByName(x86regnames[reg][0]).get(task);
-          else if (isa instanceof frysk.proc.IsaX8664)
-            regval = isa.getRegisterByName(x86regnames[reg][1]).get(task);
-        }
-      else
-        {
-          Isa isa = currentFrame.getTask().getIsa();
-
-          if (isa instanceof frysk.proc.IsaIA32)
-            regval = currentFrame.getReg(x86regnumbers[reg]);
-          else if (isa instanceof frysk.proc.IsaX8664)
-            regval = currentFrame.getReg(reg);
-        }
+      if (isa instanceof frysk.proc.IsaIA32)
+        regval = swapBytes(currentFrame.getReg(x86regnumbers[reg]));
+      else if (isa instanceof frysk.proc.IsaX8664)
+        regval = swapBytes(currentFrame.getReg(reg));
 
       addr += ((DwarfDie.DwarfOp)ops.get(0)).operand1;
       addr += regval;
@@ -402,7 +401,7 @@ class DebugInfoEvaluator
 
     public long getLong (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return val;
     }
 
@@ -414,7 +413,7 @@ class DebugInfoEvaluator
 
     public int getInt (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (int) val;
     }
 
@@ -426,7 +425,7 @@ class DebugInfoEvaluator
 
     public short getShort (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (short) val;
     }
 
@@ -438,7 +437,7 @@ class DebugInfoEvaluator
 
     public byte getByte (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (byte) val;
     }
 
@@ -450,7 +449,7 @@ class DebugInfoEvaluator
 
     public float getFloat (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
@@ -463,7 +462,7 @@ class DebugInfoEvaluator
 
     public double getDouble (DwarfDie varDieP, long offset)
     {
-      long val = currentFrame.getReg(getReg(varDieP));
+      long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
@@ -494,16 +493,16 @@ class DebugInfoEvaluator
       return null;
     DwarfDie die = bias.die;
 
-    //    Scope b = subprogram;
-    //    Value vars[] = b.getVariables();
-    //    DwarfDie varDies[] = b.getVariableDies();
-    //    for (int j = 0; j < vars.length; j++)
-    //      if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
-    //	{
-    //	  allDies = die.getScopes(pc - bias.bias);
-    //	  varDies[j].setScopes(allDies);
-    //	  return varDies[j];
-    //	}
+    // Scope b = subprogram;
+    // Value vars[] = b.getVariables();
+    // DwarfDie varDies[] = b.getVariableDies();
+    // for (int j = 0; j < vars.length; j++)
+    // if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
+    // {
+    // allDies = die.getScopes(pc - bias.bias);
+    // varDies[j].setScopes(allDies);
+    // return varDies[j];
+    // }
 
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);
@@ -635,7 +634,7 @@ class DebugInfoEvaluator
         case BaseTypes.baseTypeInteger:
         case BaseTypes.baseTypeUnsignedInteger:
           type = fetchType(haveTypeDef, intType, dieType.getName());
-          // System V ABI Supplements discuss bit field layout 
+          // System V ABI Supplements discuss bit field layout
           int bitSize = member.getAttrConstant(DwAtEncodings.DW_AT_bit_size_);
           int bitOffset = 0;
           int byteSize = 0;
