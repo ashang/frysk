@@ -353,7 +353,7 @@ $(GEN_SOURCENAME)/JUnitTests.java: files.list
 			-o $$outputdir/$$outputfile \
 			$(GCJHFLAGS) $$class ; \
 	done ; \
-	echo rm -rf $$tmpdir
+	rm -rf $$tmpdir
 
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so
