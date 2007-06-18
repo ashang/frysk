@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.corefile;
+package frysk.proc.dead;
 
 import lib.elf.Elf;
 import lib.elf.ElfData;

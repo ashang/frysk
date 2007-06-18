@@ -37,56 +37,59 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.corefile;
+package frysk.proc.dead;
 
+import lib.elf.ElfPrstatus;
+import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteOrder;
+import frysk.proc.Task;
+import frysk.proc.TaskId;
+import frysk.proc.Isa;
 
+public class LinuxTask
+    extends Task
+{
 
-public class MapAddressHeader
+  ElfPrstatus elfTask = null;
+  LinuxProc parent = null;
+
+  protected ByteBuffer sendrecMemory ()
   {
-
-    long vaddr = 0;
-    long vaddr_end = 0;
-    long corefileOffset = 0;
-    long solibOffset = 0;
-    long fileSize = 0;
-    long memSize = 0;
-    long align = 0;
-    String name = "";
-
-    boolean permRead = false; 
-    boolean permWrite = false;
-    boolean permExecute = false;
-
-    public MapAddressHeader(long vaddr, long vaddr_end, boolean permRead,
-			    boolean permWrite, boolean permExecute, 
-			    long corefileOffset, long solibOffset, 
-			    long fileSize, long memSize, 
-			    String name, long align)
-    {
-      this.vaddr = vaddr;
-      this.vaddr_end = vaddr_end;
-      this.corefileOffset = corefileOffset;
-      this.solibOffset = solibOffset;
-      this.fileSize = fileSize;
-      this.memSize = memSize;
-      this.name = name;
-
-      this.permRead = permRead;
-      this.permWrite = permWrite;
-      this.permExecute = permExecute;
-
-      this.align = align;
-    }
-
-    public String toString()
-    {
-      return "0x"+Long.toHexString(vaddr)+"-"+
-	"0x"+Long.toHexString(vaddr_end)+" "+
-	Long.toHexString(corefileOffset)+" "+
-	Long.toHexString(solibOffset)+" "+
-	Long.toHexString(fileSize)+" "+
-	Long.toHexString(memSize)+" "+
-	name;
-    }
+    // XXX: Get the Proc's memory (memory maps). Task and register
+    // information is handled differently (through notes) in core
+    // files. There's a potential here for task to have its own memory
+    // maps in some architectures, but not in the current ISAs. In an
+    // attempt to save system resources, get a reference to the proc's
+    // maps for now.
+    return parent.getMemory();
   }
 
+  protected ByteBuffer[] sendrecRegisterBanks () 
+  {
+    ByteBuffer[] bankBuffers;
+ 
+    bankBuffers = new ByteBuffer[4];
+    ByteOrder byteOrder = getIsa().getByteOrder();
+    ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
+    gpRegisters.order(byteOrder);
+    bankBuffers[0] = gpRegisters;
+    return bankBuffers;
+  }
+
+  /**
+   * Create a new unattached Task.
+   */
+  LinuxTask (LinuxProc proc, ElfPrstatus elfTask)
+  {
+    super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
+    this.elfTask = elfTask;
+    this.parent = proc;
+  }
+
+
+  protected Isa sendrecIsa() 
+  {
+    return getProc().getIsa();
+  }
+}

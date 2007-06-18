@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import frysk.event.Event;
-import frysk.proc.corefile.LinuxHost;
+import frysk.proc.dead.LinuxHost;
 
 /**
  * This class blocks all of the threads in a process and performs a given action

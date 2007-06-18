@@ -37,59 +37,89 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.corefile;
+package frysk.proc.dead;
 
-import lib.elf.ElfPrstatus;
-import inua.eio.ByteBuffer;
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteOrder;
+import java.util.logging.Level;
+import frysk.proc.ProcState;
+import frysk.proc.Proc;
+import frysk.proc.Observation;
 import frysk.proc.Task;
-import frysk.proc.TaskId;
-import frysk.proc.Isa;
 
-public class LinuxTask
-    extends Task
+/**
+ * A CoreFile Process State
+ */
+
+class LinuxProcState
+  extends ProcState
 {
 
-  ElfPrstatus elfTask = null;
-  LinuxProc parent = null;
-
-  protected ByteBuffer sendrecMemory ()
+  protected LinuxProcState (String state)
   {
-    // XXX: Get the Proc's memory (memory maps). Task and register
-    // information is handled differently (through notes) in core
-    // files. There's a potential here for task to have its own memory
-    // maps in some architectures, but not in the current ISAs. In an
-    // attempt to save system resources, get a reference to the proc's
-    // maps for now.
-    return parent.getMemory();
+    super (state);
   }
-
-  protected ByteBuffer[] sendrecRegisterBanks () 
-  {
-    ByteBuffer[] bankBuffers;
- 
-    bankBuffers = new ByteBuffer[4];
-    ByteOrder byteOrder = getIsa().getByteOrder();
-    ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
-    gpRegisters.order(byteOrder);
-    bankBuffers[0] = gpRegisters;
-    return bankBuffers;
-  }
-
+  
   /**
-   * Create a new unattached Task.
+   * Return the Proc's initial state.
+   *
    */
-  LinuxTask (LinuxProc proc, ElfPrstatus elfTask)
+  static ProcState initial (Proc proc)    
   {
-    super(proc, new TaskId(elfTask.getPrPid()),LinuxTaskState.initial());
-    this.elfTask = elfTask;
-    this.parent = proc;
+    logger.log (Level.FINEST, "{0} initial\n", proc); 
+    return detached;
   }
+  
+  /**
+   * The process is running free (or at least was the last time its
+   * status was checked).
+   */
+  private static final ProcState detached = new ProcState ("detached")
+    {
+      public ProcState handleRefresh (Proc proc)
+      {
+	logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
+	((LinuxProc)proc).sendRefresh ();
+	return detached;
+      }
+      public ProcState handleRemoval (Proc proc)
+      {
+	logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
+	
+	// XXX: Can't remove a core file Proc, it's there forever
+	// and there is only one proc. Maybe need to have a
+	// destroyed state for compatability?
+	
+	return detached;
+      }
+      public ProcState handleAddObservation (Proc proc,
+				      Observation observation)
+      {
+	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
+	
+	// XXX: Fake out for now. What kind of observers would you
+	// put on a core file? Might need a brain dead
+	// attached state in this scenario for compataibility.
+	return detached;
+	// return Attaching.initialState (proc, observation);
+      }
+      
+      public ProcState handleDeleteObservation (Proc proc,
+					 Observation observation)
+      {
+	logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
+	// Must be bogus; if there were observations then the
+	// Proc wouldn't be in this state.
+	observation.fail (new RuntimeException ("not attached"));
+	return detached;
+      }
 
-
-  protected Isa sendrecIsa() 
-  {
-    return getProc().getIsa();
-  }
+      public ProcState handleTaskDetachCompleted (Proc proc, Task task)
+      {
+	return this;
+      }
+      
+      public ProcState handleDetach(Proc proc, boolean shouldRemoveObservers)
+      {
+	return detached;
+      } 
+    };
 }

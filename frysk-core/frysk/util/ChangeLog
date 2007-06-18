@@ -1,3 +1,9 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Util.java: Update, package frysk.proc.corefile renamed to
+	frysk.proc.dead.
+	* TestFStack.java: Ditto.
+
 2007-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestFCore.java (testCoreFileCreated): brokenXXX removed for

@@ -1,3 +1,7 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Rename package frysk.proc.corefile to frysk.proc.dead.
+
 2007-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxCore.java (testLinuxCoreFileMaps): Rewrite

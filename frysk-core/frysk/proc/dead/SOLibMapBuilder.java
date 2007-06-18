@@ -37,21 +37,27 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.corefile;
+package frysk.proc.dead;
 
-import inua.eio.ByteBuffer;
 
+import lib.elf.Elf;
+import lib.elf.ElfEHeader;
+import lib.elf.ElfPHeader;
+import lib.elf.ElfCommand;
+import java.io.File;
 /**
  * Build a list of maps from the contents of the file linkmap
  * table at address specified
  */
-public abstract class LinkmapBuilder
+public abstract class SOLibMapBuilder
 {
+
 
   /**
    * Create a LinkmapBuilder; can only extend.
    */
-  protected LinkmapBuilder ()
+
+  protected SOLibMapBuilder ()
   {
   }
   
@@ -59,59 +65,30 @@ public abstract class LinkmapBuilder
    * Scan the maps file found in <tt>/proc/PID/auxv</tt> building up
    * a list of memory maps.  Return true if the scan was successful.
    */
-  public final void construct (long addr, ByteBuffer buffer)
+  public final void construct (File clientSolib)
   {
-    
-    byte[] sbuffer = new byte[255];
-    long linkStep = 0xff;
-    long l_ld = 0;
-    long l_addr = 0;
-    long stringAddr = 0;
-    int count = 0;
-    String name = "";
-    byte in = -1;
-    if (buffer != null)
-      {
-	buffer.position(addr);
-	while (linkStep != 0)
-	  {
-	    for (int i=0; i<sbuffer.length; i++)
-	      sbuffer[i] = 0; 
-	    
-	    l_addr = buffer.getUWord();
-	    stringAddr = buffer.getUWord();
-	    l_ld = buffer.getUWord();
-	    linkStep = buffer.getUWord();
 
-	    try 
-	      {
-		// Construct string
-		if (stringAddr != 0)
-		{
-		  buffer.position(stringAddr);
-		  in = buffer.getByte();
-		  while (in != 0)
-		    {
-		      sbuffer[count] = in;
-		      count++;
-		      in = buffer.getByte();
-		    }
-		  name = new String(sbuffer);
-		  name = name.trim();
-		}
-	      } 
-	    catch (Exception e)
-	      {
-		name = "";
-	      }
-		
-	    buildMap(l_addr,l_ld,stringAddr,name);
-	    if (linkStep !=0)
-	      buffer.position(linkStep);
+    Elf solib = openElf(clientSolib);
+    ElfEHeader eHeader = solib.getEHeader();
+    
+    for(int z=0; z<eHeader.phnum; z++)
+      {
+	
+	ElfPHeader pHeader = solib.getPHeader(z);
+	if ((pHeader.type == ElfPHeader.PTYPE_LOAD))
+	  {
+	    boolean read = (pHeader.flags &  ElfPHeader.PHFLAG_READABLE) > 0 ? true:false;
+	    boolean write =  (pHeader.flags & ElfPHeader.PHFLAG_WRITABLE) > 0 ? true:false;
+	    boolean execute = (pHeader.flags & ElfPHeader.PHFLAG_EXECUTABLE) > 0 ? true:false;
+	    long mapBegin = (pHeader.vaddr &~ (pHeader.align-1));
+	    long mapEnd = ((pHeader.vaddr + pHeader.memsz) + pHeader.align -1) &~ (pHeader.align-1);
+	    long aOffset = (pHeader.offset &- pHeader.align);
+	    buildMap(mapBegin, mapEnd, read, write, execute, 
+		     aOffset, clientSolib.getPath(),pHeader.align);
 	  }
       }
+    solib.close();
   }
-
   
   /**
    * Build an address map covering [addressLow,addressHigh) with
@@ -122,6 +99,29 @@ public abstract class LinkmapBuilder
    * !shared implies private, they are mutually exclusive.
    */
   
-  abstract public void buildMap (long l_addr, long l_ld, long saddr, String name);
+  abstract public void buildMap (long addrLow, long addrHigh, 
+				 boolean permRead, boolean permWrite,
+				 boolean permExecute, long offset, 
+				 String name, long align);
+
+  private Elf openElf(File name)
+  {
+
+    Elf exeElf = null;
+    // Open up corefile corresponding directory.
+    try 
+      {
+	exeElf = new Elf(name.getPath(), ElfCommand.ELF_C_READ);
+      }
+    catch (Exception e)
+      {
+	throw new RuntimeException(e);
+      }
+
+    return exeElf;
+  }
+
+
 
 }
+

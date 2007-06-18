@@ -37,59 +37,56 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.corefile;
+package frysk.proc.dead;
 
-import java.util.logging.Level;
-import frysk.proc.TaskState;
-import frysk.proc.Task;
 
-/**
- * The core file task state machine.
- */
 
-abstract class LinuxTaskState
-  extends TaskState
-{
-
-  /**
-   * Return the initial state of a detached task.
-   */
-  static TaskState detachedState ()
+public class MapAddressHeader
   {
-    return detached;
-  }
-  
-  /**
-   * Return the initial state of the Main task.
-   */
-  static TaskState initial ()
-  {
-    return detached;
+
+    long vaddr = 0;
+    long vaddr_end = 0;
+    long corefileOffset = 0;
+    long solibOffset = 0;
+    long fileSize = 0;
+    long memSize = 0;
+    long align = 0;
+    String name = "";
+
+    boolean permRead = false; 
+    boolean permWrite = false;
+    boolean permExecute = false;
+
+    public MapAddressHeader(long vaddr, long vaddr_end, boolean permRead,
+			    boolean permWrite, boolean permExecute, 
+			    long corefileOffset, long solibOffset, 
+			    long fileSize, long memSize, 
+			    String name, long align)
+    {
+      this.vaddr = vaddr;
+      this.vaddr_end = vaddr_end;
+      this.corefileOffset = corefileOffset;
+      this.solibOffset = solibOffset;
+      this.fileSize = fileSize;
+      this.memSize = memSize;
+      this.name = name;
+
+      this.permRead = permRead;
+      this.permWrite = permWrite;
+      this.permExecute = permExecute;
+
+      this.align = align;
+    }
+
+    public String toString()
+    {
+      return "0x"+Long.toHexString(vaddr)+"-"+
+	"0x"+Long.toHexString(vaddr_end)+" "+
+	Long.toHexString(corefileOffset)+" "+
+	Long.toHexString(solibOffset)+" "+
+	Long.toHexString(fileSize)+" "+
+	Long.toHexString(memSize)+" "+
+	name;
+    }
   }
 
-  protected LinuxTaskState (String state)
-  {
-    super (state);
-  }
-  
-  /**
-   * The task isn't attached. Read in from a core file.
-   */
-  private static final TaskState detached = new TaskState ("detached")
-	{
-	  public TaskState handleRemoval (Task task)
-	  {
-	
-	    // XXX: Core file tasks are never removed.
-	    logger.log (Level.FINE, "{0} handleRemoval\n", task); 
-	    throw new RuntimeException("Cannot remove corefile tasks");
-	  }
-	  public TaskState handleAttach (Task task)
-	  {
-	    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-	    // XXX: Cannot attach to core file tasks (For now). In the
-	    // future this may change if the concept of attach is meaningful.
-	    throw new RuntimeException("Cannot attach to corefile tasks");
-	  }
-    };
- }

@@ -1,3 +1,8 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcBlockAction.java: Update, package frysk.proc.corefile
+	renamed to frysk.proc.dead.
+
 2007-06-15  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Instruction.java: New class.

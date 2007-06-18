@@ -45,7 +45,7 @@ import java.util.Iterator;
 import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.ProcId;
-import frysk.proc.corefile.LinuxHost;
+import frysk.proc.dead.LinuxHost;
 import frysk.proc.Proc;
 
 public class Util
