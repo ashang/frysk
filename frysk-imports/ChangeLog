@@ -1,3 +1,7 @@
+2007-06-18  Nurdin Premji  <npremji@redhat.com>
+
+	* configure.ac (AC_CONFIG_SUBDIRS): Removed libunwind-i386 directory.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_HEADERS): Add include/ptrace_wait.h.

@@ -74,6 +74,6 @@ do
 )
 done
 
-AC_CONFIG_SUBDIRS([elfutils libunwind-i386 libunwind])
+AC_CONFIG_SUBDIRS([elfutils libunwind])
 
 AC_OUTPUT
