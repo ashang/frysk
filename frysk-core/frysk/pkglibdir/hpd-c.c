@@ -40,6 +40,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <sys/types.h>
+#include <linux/unistd.h>
+#include <errno.h>
+
+_syscall0(pid_t,gettid)
 
 static int func_1 (int x, int y)  __attribute__ ((noinline));
 static int func_2 (int x, int y)  __attribute__ ((noinline));
@@ -139,23 +145,32 @@ static int func_1 (int x, int y) __attribute__ ((noinline));
 
 
 int static_int = 4;
-struct static_class_t {int class_int_1; float class_float_1;} static_class = {51, 12.34};
+typedef struct {double double_1; int int_1;} static_class_t;
+static_class_t  static_class = {12.34, 51};
 enum cars {bmw, porsche} ssportscar;
 
 static int
 func_2 (int x, int y)
 {
-  typedef struct {double class_double_1, class_int_2;} class_t;
-  class_t class_1;
+  typedef int simode;
+  static_class_t class_1;
   enum cars {bmw, porsche} sportscar;
+  static_class_t classes[] __attribute__ ((unused)) = {{1.0,1},{2.0,2},{3.0,3},{4.0,4}};
+  struct {static_class_t c1; static_class_t c2;} class_2  __attribute__ ((unused)) = {{1.0,1},{2.0,2}};
+  asm volatile ("" : "+m" (class_2));
+  struct {int arr [2][2];} class_3 __attribute__ ((unused)) = {{{1,2},{3,4}}};
+  asm volatile ("" : "+m" (class_3));
+  struct astruct {int x; float y;} class_4 __attribute__ ((unused));
+  struct {simode x; float y;} class_5 __attribute__ ((unused));
+  typedef union {double double_1; long long ll_1;} union_t __attribute__ ((unused));
   volatile int *int_p;
   long arr_1 [32];
   int arr_2 [5][6];
   float arr_3 [4][5];
   char arr_4 [4];
-  class_t *class_p;
+  static_class_t *class_p;
+  volatile simode int_22 = 22;
   sportscar = porsche;
-  volatile int int_22 = 22;
   char char_21 __attribute__((unused)) = assign_char('a');
   short short_21 = assign_short (12);
   int int_21 = assign_int (11);
@@ -170,11 +185,11 @@ func_2 (int x, int y)
   
   int_p = &int_22;
   class_p = &class_1;
-  class_p->class_double_1 = assign_double (43.21);
-  class_p->class_int_2 = assign_int (15);
-  class_1.class_double_1 = assign_double (12.34);
+  class_p->double_1 = assign_double (43.21);
+  class_p->int_1 = assign_int (123456789);
+  class_1.double_1 = assign_double (12.34);
   
-  int_21 = loop_(class_p->class_double_1,*int_p, int_22, short_21,
+  int_21 = loop_(class_p->double_1,*int_p, int_22, short_21,
 		 int_21, float_21,double_21,x,y);
   while (int_21)
     {
@@ -186,14 +201,19 @@ func_2 (int x, int y)
 static int
 func_1 (int x, int y)
 {
-   int int_21 = 21;
-   int int_11 = 12;
-  return func_2 (int_21, int_11);
+  int int_21 = 21;
+  int int_11 = 12;
+  int_21 = assign_int (int_21);
+  int_21 = func_2 (int_21, int_11);
+  return int_21;
 }
 
 int
 main (int argc, char **argv)
 {
+  if (argc > 1 && strcmp (argv[1],"-v") == 0)
+    fprintf (stderr,"attach %s %d -task %d\n", argv[0], getpid(), gettid());
+
   int int_21 = 31;
   int int_1 = 1;
   return func_1 (int_21, int_1);

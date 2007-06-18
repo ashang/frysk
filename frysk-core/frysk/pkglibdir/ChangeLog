@@ -1,3 +1,7 @@
+2007-06-18  Stan Cox  <scox@redhat.com>
+
+	* hpd-c.c (func_2): Add class_2, class_3, class_4, class_5.
+
 2007-06-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-stacks.c (fourth): cases a SIGSEV instead of calling exit.

@@ -89,17 +89,16 @@ public class TestFhd
     // int_21
     e.send ("print int_21\n");
     e.expect ("print.*2.*\r\n" + prompt);
-    // Up
-    e.send ("up\n");
-    e.expect ("up.*#0.*" + prompt);
-    // int_21
-    e.send ("print int_21\n");
-    e.expect ("print.*21.*(fhpd)");
     // Down
     e.send ("d\t");
-    e.expect (".*defset.*delete.*detach.*down.*" + prompt + ".*");
+    e.expect (".*defset.*delete.*detach.*disable.*down.*" + prompt + ".*");
     e.send ("own\n");
     e.expect ("own.*#1.*" + prompt);
+    // int_21
+    e.send ("print int_21\n");
+    e.expect ("print.*int_21.*22.*(fhpd)");
+    e.send ("up\n");
+    e.expect ("up.*#0.*" + prompt);
     e.close();
   }
 
@@ -117,6 +116,9 @@ public class TestFhd
     // Attach
     e.send ("attach " + child.getPid () + "\n\n");
     e.expect (5, "attach.*\n" + prompt);
+    // simode
+    e.send ("what simode\n");
+    e.expect ("what.*int .*\n" + prompt);
     // volatile int_22
     e.send ("print int_22\n");
     e.expect ("print.*22.*\r\n" + prompt);
@@ -163,16 +165,22 @@ public class TestFhd
     // static_class
     e.send ("print static_class\n");
     e.expect ("print.*12\\.34.*" + prompt);
-    e.send ("print static_class.\t\t");
-    e.expect (".*class_int_1.*class_float_1.*" + prompt + ".*");
+    e.send ("print static_class.\t");
+    e.expect (".*double_1.*int_1.*" + prompt + ".*");
     e.send ("int_1\n");
     e.expect (".*51.*" + prompt);
     // class
-    //	e.send ("print class_1\n");
-    //	e.expect ("print.*15.*" + prompt);
+    e.send ("print class_2\n");
+    e.expect ("print.*1.0.*1.*2.0.*2.*" + prompt);
+    e.send ("print class_3\n");
+    e.expect ("print.*1,2.*3,4.*" + prompt);
     // what class
     e.send ("what static_class\n");
     e.expect ("what.*static_class_t.*hpd-c.c.*" + prompt);
+    e.send ("what class_4\n");
+    e.expect ("what.*astruct.*" + prompt);
+    e.send ("what class_5\n");
+    e.expect ("what.*simode.*float.*" + prompt);
     e.close();
   }    
 
@@ -247,10 +255,10 @@ public class TestFhd
     e.send ("attach " + child.getPid () + "\n\n");
     e.expect (5, "attach.*\n" + prompt);
     // Break
-    e.send("break @hpd-c.c@180\n");
+    e.send("break @hpd-c.c@193\n");	// This has to break on: while (int_21)
     e.expect("breakpoint.*" + prompt);
     e.send("go\n");
-    e.expect(prompt + "Breakpoint.*@hpd-c.c@180");
+    e.expect(prompt + "Breakpoint.*@hpd-c.c@193");
     e.send("quit\n");
     e.expect("Quitting...");
     e.close();
