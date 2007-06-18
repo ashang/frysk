@@ -83,6 +83,7 @@ GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
 
 # Need to get this into the distribution
 noinst_HEADERS = \
+	include/ptrace_wait.h \
 	include/frysk-asm.h \
 	include/linux.ptrace.h \
 	include/linux.syscall.h
