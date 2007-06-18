@@ -1,3 +1,7 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd-c.c: Include "linux.syscall.h".
+
 2007-06-18  Stan Cox  <scox@redhat.com>
 
 	* hpd-c.c (func_2): Add class_2, class_3, class_4, class_5.

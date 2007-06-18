@@ -45,6 +45,8 @@
 #include <linux/unistd.h>
 #include <errno.h>
 
+#include "linux.syscall.h"
+
 _syscall0(pid_t,gettid)
 
 static int func_1 (int x, int y)  __attribute__ ((noinline));

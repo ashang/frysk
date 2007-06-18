@@ -13,11 +13,9 @@ package com.redhat.ftk;
 import org.gnu.gdk.Color;
 import org.gnu.glib.GObject;
 import org.gnu.glib.Type;
-import org.gnu.glib.Struct;
 import org.gnu.glib.Handle;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.HScale;
-import org.gnu.gtk.Widget;
 
 /**
  * The EventViewer widget is used for displaying events on multiple timelines.
