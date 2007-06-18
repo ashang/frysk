@@ -70,6 +70,10 @@ public class TestDisplayValue
     super.tearDown ();
   }
   
+  /*
+   * Request the value of the display at two points and verify that they are
+   * different
+   */
   public void testVarValueChanged()
   { 
     BreakpointManager bpManager = createDaemon();
@@ -136,6 +140,9 @@ public class TestDisplayValue
   }
   
   
+  /*
+   * Request the value of the display at two points and verify that they are the same
+   */
   public void testVarValueNotChanged()
   {
     BreakpointManager bpManager = createDaemon();
@@ -201,6 +208,10 @@ public class TestDisplayValue
     assertEquals("Value of variable at second breakpoint", secondVal.getInt(), 1);
   }
   
+  /*
+   * Request the value of 'x' within a function, then verify that it is reported as being
+   * out of scope when the function leaves.
+   */
   public void testVarOutOfScope()
   {
     BreakpointManager bpManager = createDaemon();
@@ -264,6 +275,11 @@ public class TestDisplayValue
     
   }
   
+  /*
+   * Request the value of the display of 'x', and verify that we can still
+   * retrieve the correct value when it is masked by a variable of the
+   * same name in a higher scope
+   */
   public void testVarMasked()
   {
     BreakpointManager bpManager = createDaemon();
@@ -314,6 +330,10 @@ public class TestDisplayValue
     assertEquals("Variable value at second breakpoint", 0, secondVal.getInt());
   }
   
+  /*
+   * Create a display of 'y', and make sure we can access it when it is not in
+   * the most current scope without the presence of a masking variable
+   */
   public void testVarNotInCurrentScope()
   {
     

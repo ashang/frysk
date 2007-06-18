@@ -46,7 +46,7 @@ package frysk.value;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 
-class Location
+public class Location
 {
     private final ByteBuffer location;
     private final int index;

@@ -1,3 +1,21 @@
+2007-06-18  Adam Jocksch <ajocksch@redhat.com>
+
+	* DisplayValueObserver.java (updateValueChanged): Added.
+	* TestDisplayValue.java: Added comments to individual tests.
+	* TestUpdatingDisplayValue.java (testUpdateTaskStopped): Changed
+	lines at which breakpoints were being added.
+	(testUpdateValueChanged): Added, confirms bz# 4644 as fixed.
+	(DisplayObserver): Changed to reflect above change to 
+	DisplayValueObserver.
+	* UpdatingDisplayValue.java (oldValue): Added, tracks previous value
+	of the expression.
+	(refresh): Now compares the current byte array to the previous one
+	and signals the observers if the value has changed.
+	(notifyObserversValueChanged): Added.
+	(arrayChanged): Added.
+	(LockObserver): Now correctly recognizes stopping/continuing events
+	from the SteppingEngine.
+
 2007-06-15  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (stepNextInstruction): Added Javadoc.

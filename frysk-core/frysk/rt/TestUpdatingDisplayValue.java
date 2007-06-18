@@ -67,6 +67,10 @@ public class TestUpdatingDisplayValue extends TestLib
     super.tearDown();
   }
   
+  /*
+   * Create a display of 'x', then resume/stop the process and see that we get
+   * notification of the stop. The Value of x should not change
+   */
   public void testUpdateTaskStopped()
   {
     BreakpointManager bpManager = createDaemon();
@@ -76,7 +80,7 @@ public class TestUpdatingDisplayValue extends TestLib
      */
     LineBreakpoint brk1 = 
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                 49, 0);
+                                 51, 0);
     brk1.addObserver(new BreakpointBlocker());
     bpManager.enableBreakpoint(brk1, myTask);
     
@@ -97,7 +101,7 @@ public class TestUpdatingDisplayValue extends TestLib
      */
     LineBreakpoint brk2 =
       bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
-                                  51, 0);
+                                  52, 0);
     brk2.addObserver(new BreakpointBlocker());
     brk2.enableBreakpoint(myTask, steppingEngine);
     
@@ -107,7 +111,58 @@ public class TestUpdatingDisplayValue extends TestLib
     steppingEngine.continueExecution(list);
     assertRunUntilStop("Second breakpoint");
     
-    assertTrue("Observer was notified of a stop", obs.hitStopped);
+    
+    assertTrue("Observer was not notified of a stop", obs.hitStopped);
+    assertFalse("Observer was notified of a variable change", obs.hitChanged);
+  }
+  
+  /*
+   * Create a display of 'x', then resume/stop the program in the place where
+   * the value of x has changed. We should recieve notification of the event
+   */
+  public void testUpdateValueChanged()
+  {
+    BreakpointManager bpManager = createDaemon();
+    
+    /*
+     * First breakpoint
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                 48, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+    
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("x", myTask,
+                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
+                                                          steppingEngine);
+    DisplayObserver obs = new DisplayObserver();
+    uDisp.addObserver(obs);
+    int oldValue = uDisp.getValue().getInt();
+    
+    /*
+     * Second breakpoint
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                  52, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask, steppingEngine);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    assertTrue("Value did not change", oldValue != uDisp.getValue().getInt());
+    assertTrue("Observer was not notified of a value change", obs.hitChanged);
   }
   
   public void testUpdateUnavailableFuncReturn()
@@ -174,15 +229,21 @@ public class TestUpdatingDisplayValue extends TestLib
     public void deletedFrom (Object observable){}
   }
   
+  /*
+   * A simple observer that tracks when certain events have been fired
+   * and performs some simple assertions
+   */
   private class DisplayObserver implements DisplayValueObserver
   {
     boolean hitStopped;
     boolean hitResumed;
+    boolean hitChanged;
     
     DisplayObserver()
     {
       hitStopped = false;
       hitResumed = false;
+      hitChanged = false;
     }
     
     public void updateAvailableTaskStopped (DisplayValue value)
@@ -197,6 +258,12 @@ public class TestUpdatingDisplayValue extends TestLib
       assertNotNull("DisplayValue passed to the observer", value);
       assertTrue("Task should not be blocked", myTask.getBlockers().length == 0);
       hitResumed = true;
+    }
+
+    public void updateValueChanged (DisplayValue value)
+    {
+      assertNotNull("DisplayValue passed to the observer", value);
+      hitChanged = true;
     }
     
   }

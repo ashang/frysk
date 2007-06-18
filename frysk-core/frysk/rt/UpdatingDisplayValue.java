@@ -39,6 +39,8 @@
 
 package frysk.rt;
 
+import inua.eio.ByteBuffer;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +66,8 @@ public class UpdatingDisplayValue
   private SteppingEngine engine;
   private List observers;
   
+  private byte[] oldValue;
+  
   /**
    * Crate a new UpdatingDisplayValue
    * @param name The name of the variable to track
@@ -77,18 +81,24 @@ public class UpdatingDisplayValue
                                FrameIdentifier fIdent, SteppingEngine eng)
   {
     super(name, task, fIdent);
-    engine = eng;
     
+    engine = eng;
     if(engine.getSteppingObserver() == null)
       engine.addProc(task.getProc());
-    
     engine.addObserver(new LockObserver());
     
     observers = new LinkedList();
   }
   
+  /*
+   * Basically the same as the refresh in the superclass, but we do
+   * some extra observer-related items.
+   * 
+   * (non-Javadoc)
+   * @see frysk.rt.DisplayValue#refresh()
+   */
   public void refresh()
-  { 
+  {
     // If the task isn't running, notify our observers to that extent
     if(myTask.getBlockers().length == 0)
       {
@@ -100,11 +110,28 @@ public class UpdatingDisplayValue
         return;
       }
     
-    super.refresh();
-    
+    super.refresh();    
+
     // hear ye! hear ye!
     if(observers != null) // (but only if there's someone to listen)
       notifyObserversAvailable();
+    
+    ByteBuffer newBuffer = myVar.getLocation().getByteBuffer();
+//  TODO: is this kosher?
+    byte[] newValue = new byte[(int) newBuffer.capacity()];
+    newBuffer.get(newValue);
+    
+    /*
+     * On the first call to refresh, lastValue will be null, so 
+     * we don't need to send out an event, just update the value.
+     * 
+     * On subsequent calls, lastValue will not be null so we compare
+     * it's value to the one that we just got. If they're the same,
+     * fire off an event
+     */
+    if(oldValue != null && arrayChanged(newValue))
+      notifyObserversValueChanged();
+    oldValue = newValue;
   }
   
   /**
@@ -149,24 +176,55 @@ public class UpdatingDisplayValue
       ((DisplayValueObserver) iter.next()).updateUnavailbeResumedExecution(this);
   }
   
+  /*
+   * Called whenever the value that we are watching has changed value
+   */
+  protected void notifyObserversValueChanged()
+  {
+    Iterator iter = observers.iterator();
+    while(iter.hasNext())
+      ((DisplayValueObserver) iter.next()).updateValueChanged(this);
+  }
+  
+  /*
+   * Returns true if newArray is different than the value contained in
+   * oldValue
+   */
+  protected boolean arrayChanged(byte[] newArray)
+  {
+    if(oldValue.length != newArray.length)
+      return true;
+    
+    for(int i = 0; i < newArray.length; i++)
+      if(newArray[i] != oldValue[i])
+        return true;
+    
+    return false;
+  }
+  
+  
+  /*
+   * An observer to notify us when the program execution state changes
+   */
   private class LockObserver implements Observer
   {
 
     public void update (Observable observable, Object arg)
     {
       /*
-       * arg will be null the first time this is fired: we don't need
-       * any task-specific information from this observer, we have had
-       * it all provided for us by the user
+       * When we have received a task, that should mean that the task has stopped.
+       * Ergo, Update.
        */
       if(arg != null)
-        return;
-      
+        {
+          if(arg.equals(myTask))
+            refresh();
+        }
+     
       /*
-       * arg was null, that means that we've recieved notification of a change
-       * in the RunState of the task we're watching. trigger the update
+       * If arg was null, then the stepping engine has resumed. don't refresh
+       * TODO: plug the "resuming" event here?
        */
-      refresh();
     }
   }
   
