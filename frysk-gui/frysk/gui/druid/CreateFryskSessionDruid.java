@@ -78,6 +78,7 @@ import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.sessions.Session.SessionType;
+import frysk.gui.srcwin.SourceWindow;
 
 public class CreateFryskSessionDruid
     extends Dialog
@@ -102,7 +103,7 @@ public class CreateFryskSessionDruid
 
   private Notebook notebook;
 
-    private Button nextButton;
+  private Button nextButton;
 
   private Button backButton;
 
@@ -130,6 +131,10 @@ public class CreateFryskSessionDruid
 
   private DruidMode druidMode = null;
   
+  private LibGlade glade;
+  
+  private SourceWindow srcwin;
+  
   private static class DruidMode
   {
     public static final DruidMode LOAD_SESSION_MODE = new DruidMode("Loading");
@@ -139,6 +144,10 @@ public class CreateFryskSessionDruid
     public static final DruidMode EDIT_SESSION_MODE = new DruidMode("Editing");
 
     public static final DruidMode EDIT_OBSERVER_MODE = new DruidMode("Editing observer");
+    
+    // This mode is used when the process selector is activated from the
+    // Debug Window
+    public static final DruidMode DEBUG_WINDOW_MODE = new DruidMode("Attaching to Debug Window");
 
     private String name;
     
@@ -175,6 +184,7 @@ public class CreateFryskSessionDruid
     this.addListener(this);
 
     this.initialSessionName = new String();
+    this.glade = glade;
 
   }
 
@@ -218,7 +228,7 @@ public class CreateFryskSessionDruid
   }
 
   /**
-         * Sets the druid up into edit mode. Edit mode loads and existing
+         * Sets the druid up into edit mode. Edit mode loads an existing
          * session into the Assistant, and populates the existing widgets with
          * the session data
          * 
@@ -302,7 +312,6 @@ public class CreateFryskSessionDruid
 	DebugProcess dp = (DebugProcess) i.next();
 	if (prev.equals(dp.getName()))
 	  continue;
-
 	prev = dp.getName();
 	this.dataModel.collectProcsByExecutablePath(dp.getExecutablePath(), allProcs);
 	
@@ -351,7 +360,49 @@ public class CreateFryskSessionDruid
 
     this.present();
   }
+  /**
+   * presentProcList is a method used by the debug window to bring up a 
+   * list of procs in the cpu queue that the debug window can attach to.
+   *  
+   */
+  public void presentProcLister(SourceWindow sw)
+  {
+    srcwin = sw;
+    this.setDruidMode(DruidMode.DEBUG_WINDOW_MODE);
+    SessionManager.theManager.setCurrentSession(new Session());
+    SessionManager.theManager.getCurrentSession().addDefaultObservers();
 
+    this.notebook.setCurrentPage(SELECT_PROCS_PAGE);
+    this.setUpCurrentPage();
+    notebook.getPage(0).hideAll();
+
+    this.showAll();
+
+    this.glade.getWidget("sessionDruid_feedbackLabel").setSensitive(false);
+    this.glade.getWidget("sessionDruid_feedbackImage").setSensitive(false);
+    this.glade.getWidget("SessionDruid_nameLabel").setSensitive(false);
+    this.glade.getWidget("sessionDruid_sessionName").setSensitive(false);
+    this.getWindow().setTitle("Frysk: Attach Debug Window to Process");
+    this.backButton.hideAll();
+    this.nextButton.hideAll();
+    this.finishButton.showAll();
+    this.saveButton.hideAll();
+    this.cancelButton.hideAll();
+    this.okButton.hideAll();
+    this.closeButton.showAll();
+    
+    
+    processSelected = SessionManager.theManager.getCurrentSession().getProcesses().size();
+
+    oldSessionName = SessionManager.theManager.getCurrentSession().getName();
+
+    setupNameEntry();
+
+    unFilterData();
+    filterDataInSession();
+    this.show();
+
+  }
   private void filterDataInSession ()
   {
     // Does the current session have any processes?
@@ -418,7 +469,6 @@ public class CreateFryskSessionDruid
          * 
          * @param selected - Iter in tree to affect (from viewer).
          * @param setSelected - set the selected value.
-         * @param setChildren - cascade down to children if true.
          */
   private void setTreeSelected (TreeIter selected, boolean setSelected)
   {
@@ -734,21 +784,35 @@ public class CreateFryskSessionDruid
     {
       public void buttonEvent (ButtonEvent event)
       {
-	if (event.isOfType(ButtonEvent.Type.CLICK))
-	  {
-	    if (getDruidMode() == DruidMode.NEW_SESSION_MODE)
-	      {
-		SessionManager.theManager.addSession(SessionManager.theManager.getCurrentSession());
-		SessionManager.theManager.getCurrentSession().setProcsAdded(true);
-	      }
-	    procMap.clear();
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            if (getDruidMode() == DruidMode.NEW_SESSION_MODE)
+              {
+                SessionManager.theManager.addSession(SessionManager.theManager.getCurrentSession());
+                SessionManager.theManager.getCurrentSession().setProcsAdded(
+                                                                            true);
+              }
 
-	    SessionManager.theManager.save();
-	    SessionManager.theManager.getCurrentSession().startSession();
-	    WindowManager.theManager.sessionManagerDialog.hideAll();
-	    
-	    hide();
-	  }
+            if (getDruidMode() == DruidMode.DEBUG_WINDOW_MODE)
+              {
+                Iterator i = addedProcsTreeView.getListedObjects().iterator();
+                if (i != null)
+                  {
+                    while (i.hasNext())
+                      {
+                        GuiProc gp = (GuiProc) i.next();
+                        srcwin.appendTask(gp.getProc());
+                      }
+                  }
+              }
+            procMap.clear();
+
+            SessionManager.theManager.save();
+            SessionManager.theManager.getCurrentSession().startSession();
+            WindowManager.theManager.sessionManagerDialog.hideAll();
+
+            hide();
+          }
       }
     });
     

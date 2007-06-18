@@ -1,3 +1,7 @@
+2007-06-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Add ability to attach to running processes.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* MixedView.java: Reflect frysk.stack package movement.

@@ -128,6 +128,8 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.sessions.DebugProcess;
+//import frysk.gui.sessions.ProcessPicker;
+//import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.sessions.WatchList;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
@@ -157,52 +159,6 @@ public class SourceWindow
   /*
    * GLADE CONSTANTS
    */
-  // Search bar widgets
-  public static final String LINE_ENTRY = "lineEntry";
-
-  public static final String FIND_TEXT = "findText";
-
-  public static final String FIND_BOX = "findBox";
-
-  public static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
-
-  public static final String LINE_LABEL = "gotoLabel"; //$NON-NLS-1$
-
-  public static final String NEXT_FIND = "nextFind"; //$NON-NLS-1$
-
-  public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
-
-  public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
-
-  public static final String CASE_FIND = "caseFind"; //$NON-NLS-1$
-
-  public static final String CLOSE_FIND = "closeFind"; //$NON-NLS-1$
-
-  // Widget names - toolbar
-  public static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
-
-  public static final String FILE_SELECTOR = "fileSelector";
-
-  public static final String VIEW_COMBO_BOX = "viewComboBox";
-
-  // Widget that the SourceViewWidget will be placed in
-  public static final String TEXT_WINDOW = "textWindow";
-
-  // Name of the top level window
-  public static final String SOURCE_WINDOW = "sourceWindow";
-
-  // Glade file to use
-  public static final String GLADE_FILE = "frysk_debug.glade";
-
-  // Modified FileChooser widget used for executable activation
-  public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
-  
-  // Glade file that contains the process list to attach frysk to
-  public static final String PROC_LIST_GLADE = "frysk_create_session_druid.glade";
-
-  /*
-   * END GLADE CONSTANTS
-   */
 
   private String gladePath;
 
@@ -220,6 +176,8 @@ public class SourceWindow
   private Action open_core;
 
   private Action open_executable;
+  
+  private Action attach_proc;
   
 //  private Action attach_proc;
 
@@ -335,6 +293,56 @@ public class SourceWindow
   private org.gnu.gtk.FileChooserDialog chooser;
   
   private FileChooserDialog fc;
+  
+  // Search bar widgets
+  public static final String LINE_ENTRY = "lineEntry";
+
+  public static final String FIND_TEXT = "findText";
+
+  public static final String FIND_BOX = "findBox";
+
+  public static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
+
+  public static final String LINE_LABEL = "gotoLabel"; //$NON-NLS-1$
+
+  public static final String NEXT_FIND = "nextFind"; //$NON-NLS-1$
+
+  public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
+
+  public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
+
+  public static final String CASE_FIND = "caseFind"; //$NON-NLS-1$
+
+  public static final String CLOSE_FIND = "closeFind"; //$NON-NLS-1$
+
+  // Widget names - toolbar
+  public static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
+
+  public static final String FILE_SELECTOR = "fileSelector";
+
+  public static final String VIEW_COMBO_BOX = "viewComboBox";
+
+  // Widget that the SourceViewWidget will be placed in
+  public static final String TEXT_WINDOW = "textWindow";
+
+  // Name of the top level window
+  public static final String SOURCE_WINDOW = "sourceWindow";
+
+  /*
+   * GLADE CONSTANTS
+   */
+  // Glade file to use
+  public static final String GLADE_FILE = "frysk_debug.glade";
+
+  // Modified FileChooser widget used for executable activation
+  public static final String FILECHOOSER_GLADE = "frysk_filechooser.glade";
+  
+  // Glade file that contains the process list to attach frysk to
+  public static final String PROC_LIST_GLADE = "frysk_create_session_druid.glade";
+
+  /*
+   * END GLADE CONSTANTS
+   */
 
   /**
    * Creates a new source window with the given properties. This constructor
@@ -787,6 +795,11 @@ public class SourceWindow
 	this.SW_add = true;
   	this.addedAttachedObserver = SourceWindowFactory.startNewProc(exe, env_variables, options,
   	                                                              stdin, stdout, stderr);
+  }
+  
+  public void appendTask(Proc proc)
+  {
+       appendProc(proc.getMainTask());
   }
   
   /**
@@ -1374,6 +1387,92 @@ public class SourceWindow
 		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
 		  fc.setCurrentFolder(System.getProperty("user.home"));
 		  int response = fc.open();
+		  // "OK" key has been clickedDebugProcess
+		  if (response == ResponseType.OK.getValue())
+		    activateTerminal();
+		  // "Cancel" key has been clicked
+		  if (response == ResponseType.CANCEL.getValue())
+		    fc.destroy();
+		}
+	    catch (Exception e) 
+	      {
+		throw new RuntimeException (e);
+	      }
+	  }
+      });
+    
+    // Attach to a running process
+    this.attach_proc = new Action("attach to process",
+                                      "Attach to running process...",
+                                      "Attach to process in cpu queue",
+                                      GtkStockItem.FIND.getString());
+    this.attach_proc.setAccelGroup(ag);
+    this.attach_proc.setAccelPath("<sourceWin>/Processes/Attach to running process...");
+    this.attach_proc.addListener(new org.gnu.gtk.event.ActionListener()
+    {
+      public void actionEvent (ActionEvent action)
+      {
+          WindowManager.theManager.createFryskSessionDruid.presentProcLister(SourceWindow.this);
+      }
+    });
+    this.attach_proc.setAccelGroup(ag);
+    this.attach_proc.setAccelPath("<sourceWin>/Processes/Attach to running process...");
+    AccelMap.changeEntry("<sourceWin>/Processes/Attach to running process...", KeyValue.a,
+                         ModifierType.CONTROL_MASK, true);
+    this.attach_proc.connectAccelerator(); 
+    
+    // Run executable action
+    this.open_executable = new Action("start executable",
+                                      "Run a process...",
+                                      "Run a process from a file",
+                                      GtkStockItem.OPEN.getString());
+    this.open_executable.setAccelGroup(ag);
+    this.open_executable.setAccelPath("<sourceWin>/Processes/Run a process...");
+    this.open_executable.addListener(new ActionListener()
+      {
+	public void actionEvent (ActionEvent action)
+	  {
+	    try {
+		  glade_fc = new LibGlade(Config.getGladeDir () + FILECHOOSER_GLADE, null);
+		  fc = (FileChooserDialog) glade_fc.getWidget("frysk_filechooserdialog");
+		  fc.addListener(new LifeCycleListener() {
+		    public void lifeCycleEvent(LifeCycleEvent event)
+		      {
+		      }
+		    public boolean lifeCycleQuery(LifeCycleEvent event)
+		      {
+		        if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+		            event.isOfType(LifeCycleEvent.Type.DESTROY))
+		              fc.destroy();
+		        return false;
+		      }
+		  });
+		  
+		  fc.addListener(new FileChooserListener()
+		  {
+		    public void currentFolderChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void selectionChanged (FileChooserEvent event)
+		      {
+		      }
+
+		    public void updatePreview (FileChooserEvent event)
+		      {
+		      }
+
+		    // This method is called when the "Enter" key is pressed to
+		    // select a file name in the chooser
+		    public void fileActivated (FileChooserEvent event)
+		      {
+			activateTerminal();
+		      }
+		    });
+		  fc.setIcon(IconManager.windowIcon);
+		  fc.setDefaultResponse(FileChooserEvent.Type.FILE_ACTIVATED.getID());
+		  fc.setCurrentFolder(System.getProperty("user.home"));
+		  int response = fc.open();
 		  // "OK" key has been clicked
 		  if (response == ResponseType.OK.getValue())
 		    activateTerminal();
@@ -1389,7 +1488,7 @@ public class SourceWindow
       });
     
     // Attach to a running process
-    /* this.attach_proc = new Action("attach to process",
+    this.attach_proc = new Action("attach to process",
                                       "Attach to running process...",
                                       "Attach to process in cpu queue",
                                       GtkStockItem.FIND.getString());
@@ -1399,27 +1498,14 @@ public class SourceWindow
     {
       public void actionEvent (ActionEvent action)
       {
-	try
-	{
-	  System.out.println("SourceWindow: Before new LibGlade..." + Config.getGladeDir () + SourceWindow.PROC_LIST_GLADE);
-          LibGlade glade_attach = new LibGlade (Config.getGladeDir () + SourceWindow.PROC_LIST_GLADE, null);
-          System.out.println("SourceWindow: After new LibGlade");
-          CreateFryskSessionDruid procLister = new CreateFryskSessionDruid(glade_attach);
-          System.out.println("SourceWindow: After procLister = new ....");
-          procLister.presentProcLister(4);
-          System.out.println("SourceWindow: after procLister.present...");
-	}
-	catch (Exception e)
-	{
-	  throw new RuntimeException (e);
-	}
+	  WindowManager.theManager.createFryskSessionDruid.presentProcLister(SourceWindow.this);
       }
     });
     this.attach_proc.setAccelGroup(ag);
     this.attach_proc.setAccelPath("<sourceWin>/Processes/Attach to running process...");
     AccelMap.changeEntry("<sourceWin>/Processes/Attach to running process...", KeyValue.a,
                          ModifierType.CONTROL_MASK, true);
-    this.attach_proc.connectAccelerator(); */
+    this.attach_proc.connectAccelerator();
 
     toggleRegisterWindow = new ToggleAction("toggleRegWindow",
                                             "Register Window",
@@ -1661,8 +1747,8 @@ public class SourceWindow
     tmp = new Menu();
     mi = (MenuItem) this.open_executable.createMenuItem();
     tmp.append(mi);
-    //mi = (MenuItem) this.attach_proc.createMenuItem();
-    //tmp.append(mi);
+    mi = (MenuItem) this.attach_proc.createMenuItem();
+    tmp.append(mi);
 
     menu.setSubmenu(tmp);
     ((MenuBar) this.glade.getWidget("menubar")).append(menu);
@@ -2687,7 +2773,7 @@ public class SourceWindow
 
     desensitize();
 
-    this.steppingEngine.stepNextInstruction(tasks);
+    this.steppingEngine.stepNextInstruction(this.currentTask, this.currentFrame);
     removeTags();
   }
 

@@ -1,3 +1,9 @@
+2007-06-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (presentProcLister):
+	New method for SourceWindow.java to attach to running
+	processes.
+
 2007-06-15  Mike Cvet  <mcvet@redhat.com>
 
 	* gladedir/disassemblywindow.glade: Changed current PC entry box
