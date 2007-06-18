@@ -1,3 +1,7 @@
+2007-06-18  Nurdin Premji  <npremji@redhat.com>
+
+	* bootstrap.sh: Use for loop to create libunwind directories.
+
 2007-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* .cvsignore: Added libunwind-ppc64.
