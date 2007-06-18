@@ -44,6 +44,7 @@ import gnu.gcj.RawDataManaged;
 
 public class ProcInfo
 {
+  Unwind unwinder;
   RawDataManaged procInfo;
   
   int error;
@@ -53,19 +54,54 @@ public class ProcInfo
     return error;
   }
   
-  public native long getStartIP();
-  native long getEndIP();
-  native long getLSDA();
-  native long getHandler();
-  native long getGP();
-  native long getFlags();
-  
-  native int getFormat();
-  native int getUnwindInfoSize();
-  native RawData getUnwindInfo();
-  
-  ProcInfo(RawDataManaged procInfo)
+  public long getStartIP()
   {
+    return unwinder.getStartIP(procInfo);
+  }
+  
+  long getEndIP()
+  {
+    return unwinder.getEndIP(procInfo);
+  }
+  
+  long getLSDA()
+  {
+    return unwinder.getLSDA(procInfo);
+  }
+  
+  long getHandler()
+  {
+    return unwinder.getHandler(procInfo);
+  }
+  
+  long getGP()
+  {
+    return unwinder.getGP(procInfo);
+  }
+  
+  long getFlags()
+  {
+    return unwinder.getFlags(procInfo);
+  }
+  
+  int getFormat()
+  {
+    return unwinder.getFormat(procInfo);
+  }
+  
+  int getUnwindInfoSize()
+  {
+    return unwinder.getUnwindInfoSize(procInfo);
+  }
+  
+  RawData getUnwindInfo()
+  {
+    return unwinder.getUnwindInfo(procInfo);
+  }
+  
+  ProcInfo(Unwind unwinder, RawDataManaged procInfo)
+  {
+    this.unwinder = unwinder;
     this.error = 0;
     this.procInfo = procInfo; 
   }

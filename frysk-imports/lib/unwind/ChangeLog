@@ -1,3 +1,22 @@
+2007-06-18  Nurdin Premji  <npremji@redhat.com>
+
+	* ProcInfo.java: Use Unwind methods rather than having native methods.
+	(ProcInfo): Take an unwinder as a parameter.
+	* Unwind.java (getStartIP): Added.
+	(getEndIP): Ditto.
+	(getLSDA): Ditto.
+	(getHandler): Ditto.
+	(getGP): Ditto.
+	(getFlags): Ditto.
+	(getFormat): Ditto.
+	(getUnwindInfoSize): Ditto.
+	(getUnwindInfo): Ditto.
+	* UnwindPPC64.java: Ditto.
+	* UnwindX86.java: Ditto.
+	* UnwindX8664.java: Ditto.
+	* cni/ProcInfo.cxx: Removed.
+	* UnwindH.hxx: Implemented above methods. Updated ProcInfo constructors.
+
 2007-06-14  Nurdin Premji  <npremji@redhat.com>
 
 	* FrameCursor.java: Removed.

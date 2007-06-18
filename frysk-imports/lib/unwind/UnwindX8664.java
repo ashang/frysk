@@ -86,4 +86,15 @@ public class UnwindX8664
   
   //@Override
   native public int getSP (RawDataManaged cursor, byte[] word);
+  
+  native long getStartIP(RawDataManaged procInfo);
+  native long getEndIP(RawDataManaged procInfo);
+  native long getLSDA(RawDataManaged procInfo);
+  native long getHandler(RawDataManaged procInfo);
+  native long getGP(RawDataManaged procInfo);
+  native long getFlags(RawDataManaged procInfo);
+  
+  native int getFormat(RawDataManaged procInfo);
+  native int getUnwindInfoSize(RawDataManaged procInfo);
+  native RawData getUnwindInfo(RawDataManaged procInfo);
 }

@@ -112,5 +112,15 @@ public abstract class Unwind
  public abstract ElfImage createElfImageFromVDSO(AddressSpace addressSpace, 
                                                  long segbase, long hi, 
                                                  long mapoff, Accessors accessors);
+
+ abstract long getStartIP(RawDataManaged procInfo);
+ abstract long getEndIP(RawDataManaged procInfo);
+ abstract long getLSDA(RawDataManaged procInfo);
+ abstract long getHandler(RawDataManaged procInfo);
+ abstract long getGP(RawDataManaged procInfo);
+ abstract long getFlags(RawDataManaged procInfo);
  
+ abstract int getFormat(RawDataManaged procInfo);
+ abstract int getUnwindInfoSize(RawDataManaged procInfo);
+ abstract RawData getUnwindInfo(RawDataManaged procInfo);
 }

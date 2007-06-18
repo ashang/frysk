@@ -72,8 +72,9 @@ namespace TARGET
   put_unwind_info (::unw_addr_space_t as, ::unw_proc_info_t *proc_info,
                    void *arg)
   {
-
-    lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo(
+    lib::unwind::Accessors *accessors = (lib::unwind::Accessors *) arg;
+    
+    lib::unwind::ProcInfo * procInfo = new lib::unwind::ProcInfo(accessors->unwinder, 
                                          (gnu::gcj::RawDataManaged *) proc_info);
 
     ((lib::unwind::Accessors *)arg)->putUnwindInfo (procInfo);
@@ -358,7 +359,7 @@ lib::unwind::TARGET::getProcInfo(gnu::gcj::RawDataManaged* cursor)
   if (ret < 0)
     myInfo = new lib::unwind::ProcInfo((jint) ret);
   else
-    myInfo = new lib::unwind::ProcInfo((gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new lib::unwind::ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
   jLogFine (this, logger, "getProcInfo returned: {1}", myInfo);
   return myInfo;
 }
@@ -385,7 +386,7 @@ lib::unwind::TARGET::createProcInfoFromElfImage(lib::unwind::AddressSpace* addre
   if (ret < 0)
     myInfo = new lib::unwind::ProcInfo((jint) ret);
   else
-    myInfo = new lib::unwind::ProcInfo((gnu::gcj::RawDataManaged*) procInfo);
+    myInfo = new lib::unwind::ProcInfo(this, (gnu::gcj::RawDataManaged*) procInfo);
 
   return myInfo;
 }
@@ -477,4 +478,58 @@ lib::unwind::TARGET::createElfImageFromVDSO(lib::unwind::AddressSpace* addressSp
 
   jLogFine(this, logger, "elfImage returned: {1}", elfImage);
   return elfImage;
+}
+
+jlong
+lib::unwind::TARGET::getStartIP(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->start_ip;
+}
+
+jlong
+lib::unwind::TARGET::getEndIP(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->end_ip;
+}
+
+jlong
+lib::unwind::TARGET::getLSDA(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->lsda;
+}
+
+jlong
+lib::unwind::TARGET::getHandler(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->handler;
+}
+
+jlong
+lib::unwind::TARGET::getGP(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->gp;
+}
+
+jlong
+lib::unwind::TARGET::getFlags(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jlong) ((unw_proc_info_t *) procInfo)->flags;
+}
+
+jint
+lib::unwind::TARGET::getFormat(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jint) ((unw_proc_info_t *) procInfo)->format;
+}
+
+jint
+lib::unwind::TARGET::getUnwindInfoSize(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (jint) ((unw_proc_info_t *) procInfo)->unwind_info_size;
+}
+
+gnu::gcj::RawData*
+lib::unwind::TARGET::getUnwindInfo(gnu::gcj::RawDataManaged* procInfo)
+{
+  return (gnu::gcj::RawData *) ((unw_proc_info_t *) procInfo)->unwind_info;
 }
