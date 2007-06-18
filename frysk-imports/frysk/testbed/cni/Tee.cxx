@@ -37,91 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <stdio.h>
+#include <unistd.h>
 
-import frysk.junit.TestCase;
-import frysk.testbed.Tee;
+#include <gcj/cni.h>
 
-/**
- * Test creation of a process wired up to a pipe.
- */
+#include "frysk/testbed/Tee.h"
 
-public class TestPipePair
-    extends TestCase
+void
+frysk::testbed::Tee::execute ()
 {
-    private PipePair pipe;
-    public void tearDown ()
-    {
-	if (pipe != null) {
-	    try {
-		pipe.close ();
-	    }
-	    catch (Errno e) {
-		// discard - tearDown
-	    }
-	    try {
-		pipe.pid.kill ();
-	    }
-	    catch (Errno e) {
-		// discard - tearDown
-	    }
-	    pipe.pid.blockingDrain ();
-	    Signal.drain (Sig.CHLD);
-	    pipe = null;
-	}
-    }
-
-    final String[] tee = new String[] { "/usr/bin/tee" };
-
-    /**
-     * Verify that what goes in comes out.
-     */
-    public void verifyIO ()
-    {
-	assertFalse ("pipe.in.ready at start", pipe.in.ready ());
-	pipe.out.write ('a');
-	assertTrue ("pipe.in.ready with data",
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", 'a', pipe.in.read ());
-	pipe.out.write ('b');
-	assertTrue ("pipe.in.ready with data",
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", 'b', pipe.in.read ());
-	pipe.out.close ();
-	assertTrue ("pipe.in.ready with EOF", 
-		    pipe.in.ready (getTimeoutMilliseconds ()));
-	assertEquals ("pipe.in.read", -1, pipe.in.read ());
-    }
-
-    /**
-     * Test a daemon Pipe pair.
-     */
-    public void testDaemonTee ()
-    {
-	pipe = new DaemonPipePair (tee);
-	verifyIO ();
-    }
-    public void testChildTee ()
-    {
-	pipe = new ChildPipePair (tee);
-	verifyIO ();
-    }
-
-    /**
-     * Test a daemon assembly file.
-     */
-    public void testDaemonExecute ()
-    {
-	pipe = new DaemonPipePair (new Tee ());
-	verifyIO ();
-    }
-
-    /**
-     * Test a child assembly file.
-     */
-    public void testChildExecute ()
-    {
-	pipe = new ChildPipePair (new Tee ());
-	verifyIO ();
-    }
+  char b;
+  while (::read (STDIN_FILENO, &b, 1) > 0) {
+    ::write (STDOUT_FILENO, &b, 1);
+  }
 }

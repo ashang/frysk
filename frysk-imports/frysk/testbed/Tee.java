@@ -37,18 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <unistd.h>
+package frysk.testbed;
 
-#include <gcj/cni.h>
+import frysk.sys.Execute;
 
-#include "frysk/sys/TestPipePair$Tee.h"
+/**
+ * XXX: Instead of having TestPipePair implement Execute, this
+ * static nested class is used.  This is to avoid having a native
+ * class that extends junit.framework.TestCase - a header file for
+ * which which isn't available.
+ */
 
-void
-frysk::sys::TestPipePair$Tee::execute ()
+public class Tee
+    implements Execute
 {
-  char b;
-  while (::read (STDIN_FILENO, &b, 1) > 0) {
-    ::write (STDOUT_FILENO, &b, 1);
-  }
+    public native void execute ();
 }

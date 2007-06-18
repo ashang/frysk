@@ -1,3 +1,8 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Tee.java: New file, moved to here from frysk.sys.TestPipePair.
+	* cni/Tee.cxx: New file.
+
 2007-05-01  Andrew Cagney  <cagney@redhat.com>
 
 	* AttachedSelf.java: Replace frysk.sys.PtraceServer with
