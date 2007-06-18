@@ -36,10 +36,10 @@
 # modification, you must delete this exception statement from your
 # version and license this file solely under the GPL without
 # exception.
-
+
 include common/Makefile.rules
 include Makefile.gen
-
+
 # On all platforms, "make check" in libunwind is disabled.  (This is
 # probably not portable, but we do not mind.)
 CHECK_SUBDIRS = \
@@ -55,13 +55,6 @@ SUBDIRS = $(DIST_SUBDIRS) libunwind-i386 libunwind-x86_64 libunwind-ppc64
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
 EXTRA_DIST += \
-	frysk/ChangeLog \
-	frysk/junit/ChangeLog \
-	inua/ChangeLog \
-	lib/dw/ChangeLog \
-	lib/elf/ChangeLog \
-	lib/opcodes/ChangeLog \
-	lib/stdcpp/ChangeLog \
 	frysk/pkgdatadir/test-core.bz2.uu \
 	frysk/pkgdatadir/test-core-mt-fp.bz2.uu \
 	frysk/pkgdatadir/helloworld.o.bz2.uu

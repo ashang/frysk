@@ -42,7 +42,7 @@ include Makefile.gen
 
 SUBDIRS = tlwidgets tests
 
-EXTRA_DIST += EggTrayIcon/ChangeLog org/gnu/gtk/frysk/ChangeLog
+EXTRA_DIST += EggTrayIcon/ChangeLog
 
 
 GEN_SOURCEPATH += ../frysk-imports/ $(top_srcdir)/../frysk-imports/

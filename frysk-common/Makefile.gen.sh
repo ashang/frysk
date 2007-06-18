@@ -91,6 +91,7 @@ JARS=`echo ${JARS}`
 
 (
     find ${dirs} -name 'CVS' -prune \
+    -o -name "ChangeLog" -print \
     -o -name "[A-Za-z]*\.h" -print \
     -o -name "[A-Za-z]*\.c" -print \
     -o -name "[A-Za-z]*\.cpp" -print \
@@ -727,3 +728,8 @@ EOF
 	printf "\tmv \$@.tmp \$@\n"
     done
 done
+
+
+# All ChangeLog files need to be included in the distro
+print_header "... ChangeLog"
+sed -n -e '\/ChangeLog$/ s,^EXTRA_DIST += ,, p' files.list

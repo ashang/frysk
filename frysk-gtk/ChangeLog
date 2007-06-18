@@ -1,3 +1,8 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Do not add
+	org/gnu/gtk/frysk/ChangeLog.
+
 2007-06-14  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Removed libunwind-$(libunwind-cpu).

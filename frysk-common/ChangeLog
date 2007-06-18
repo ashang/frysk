@@ -1,5 +1,8 @@
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (files.list): Add ChangeLog files.
+	(EXTRA_DIST): Add ChangeLog files.
+
 	* Makefile.rules (.java.h): Uncomment removal of $$tmpdir.
 
 2007-06-17  Andrew Cagney  <cagney@redhat.com>

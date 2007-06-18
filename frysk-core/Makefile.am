@@ -40,19 +40,6 @@
 
 include common/Makefile.rules
 include Makefile.gen
-
-EXTRA_DIST += \
-	prog/ChangeLog \
-	frysk/cli/ChangeLog \
-	frysk/event/ChangeLog \
-	frysk/proc/ChangeLog \
-	frysk/util/ChangeLog \
-	frysk/pkglibdir/ChangeLog \
-	frysk/model/ChangeLog \
-	frysk/value/ChangeLog \
-	frysk/dom/ChangeLog \
-	frysk/expr/ChangeLog
-
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 

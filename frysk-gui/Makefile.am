@@ -36,17 +36,10 @@
 # modification, you must delete this exception statement from your
 # version and license this file solely under the GPL without
 # exception.
-
+
 include common/Makefile.rules
 include Makefile.gen
-
-EXTRA_DIST += \
-	frysk/bindir/ChangeLog \
-	frysk/gui/ChangeLog \
-	frysk/gui/common/ChangeLog \
-	frysk/gui/srcwin/ChangeLog \
-	frysk/gui/monitor/ChangeLog
-
+
 GEN_SOURCEPATH += ../frysk-gtk/ $(top_srcdir)/../frysk-gtk/
 GEN_SOURCEPATH += ../frysk-core/ $(top_srcdir)/../frysk-core/
 GEN_SOURCEPATH += ../frysk-imports/ $(top_srcdir)/../frysk-imports/
