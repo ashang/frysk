@@ -14,12 +14,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #include "utracer/utracer.h"
 #define DO_UDB_INIT
 #include "udb.h"
 
 char * module_name = NULL;
+
+pthread_t	resp_listener_thread;
 
 static int
 utracer_loaded()
@@ -51,11 +54,14 @@ load_utracer()
   case 0:	// child
     {
       char * mod_name;
-      asprintf (&mod_name, "./%s.ko", module_name);
-      int rc = execlp ("insmod", "insmod", mod_name, NULL);
-      free (mod_name);
-      if (-1 == rc)
-	error (1, errno, "Error in loader execlp");
+      if (module_name) {
+	asprintf (&mod_name, "./%s.ko", module_name);
+	int rc = execlp ("insmod", "insmod", mod_name, NULL);
+	free (mod_name);
+	if (-1 == rc)
+	  error (1, errno, "Error in loader execlp");
+      }
+      else fprintf (stderr, "WARNING: No module loaded!\n");
     }
     break;
   default:	// parent
@@ -87,9 +93,13 @@ load_utracer()
 static void
 cleanup_udb()
 {
-  if (-1 != utracer_file_fd) {
-    close (utracer_file_fd);
-    utracer_file_fd = -1;
+  if (-1 != utracer_cmd_file_fd) {
+    close (utracer_cmd_file_fd);
+    utracer_cmd_file_fd = -1;
+  }
+  if (-1 != utracer_resp_file_fd) {
+    close (utracer_resp_file_fd);
+    utracer_resp_file_fd = -1;
   }
 }
 
@@ -131,21 +141,6 @@ sigterm_handler (int sig)
   exit (0);			// when nothing else is registered
 }
 
-#if 0
-static void
-sigusr1_sigaction (int sig, siginfo_t * info, void * ucontext)
-{					
-  fprintf (stderr, "in su1 sigaction errno = %d code = %d\n",
-	   info->si_code, info->si_errno);
-}
-#else
-static void
-sigusr1_handler (int sig)
-{					// fixme -- to be used by utracer to
-  fprintf (stderr, "in su1 handler\n");	// indicate async even happened
-}
-#endif
-
 static int unload_module = 1;
 
 static struct option options[] = {
@@ -155,6 +150,26 @@ static struct option options[] = {
   {NULL,0, NULL, 0}
 };
 
+static void *
+resp_listener (void * arg)
+{
+  readreg_resp_s readreg_resp;
+  ssize_t sz;
+
+  while (1) {
+    sz = pread (utracer_resp_file_fd, &readreg_resp,
+		sizeof(readreg_resp), 0);
+    fprintf (stderr, "got sz = %d\n", (int)sz);
+
+    // just for readreg
+    fprintf (stdout, "\t[%d][%d]: %d [%#08x]\n",
+	     readreg_resp.regset,
+	     readreg_resp.which,
+	     (int)readreg_resp.data,
+	     (int)readreg_resp.data);
+  }
+}
+
 main (int ac, char * av[])
 {
   int * pids_to_attach = NULL;
@@ -162,20 +177,7 @@ main (int ac, char * av[])
   int max_pids_to_attach = 0;
 #define PIDS_TO_ATTACH_INCR	4
 
-  sigset_t set;
-  struct sigaction act;
-  
-  sigemptyset(&set);
-#if 0
-  act.sa_sigaction = sigusr1_sigaction;
-  act.sa_flags = SA_SIGINFO;
-#else
-  act.sa_handler = sigusr1_handler;
-  act.sa_flags = 0;
-#endif
-  act.sa_mask	 = set;
-  
-  sigaction(SIGUSR1, &act, NULL);
+  udb_pid = getpid();
 
   signal (SIGHUP,  sigterm_handler);
   signal (SIGTERM, sigterm_handler);
@@ -215,18 +217,42 @@ main (int ac, char * av[])
   }
   
   if (!utracer_loaded()) load_utracer();
-  register_utracer (getpid());
+  register_utracer (udb_pid);
 
   {
     char * cfn;
     
-    asprintf (&cfn, "/proc/%s/%ld", BASE_DIR, getpid());
-    utracer_file_fd = open (cfn, O_RDWR);
+    asprintf (&cfn, "/proc/%s/cmd_%ld", BASE_DIR, udb_pid);
+    utracer_cmd_file_fd = open (cfn, O_WRONLY);
     free (cfn);
-    if (-1 == utracer_file_fd) {
-      unregister_utracer (getpid());
+    if (-1 == utracer_cmd_file_fd) {
+      unregister_utracer (udb_pid);
       close (ctl_file_fd);
       error (1, errno, "Error opening control file");
+    }
+    
+    asprintf (&cfn, "/proc/%s/resp_%ld", BASE_DIR, udb_pid);
+    utracer_resp_file_fd = open (cfn, O_RDONLY);
+    free (cfn);
+    if (-1 == utracer_resp_file_fd) {
+      unregister_utracer (udb_pid);
+      close (ctl_file_fd);
+      close (utracer_cmd_file_fd);
+      error (1, errno, "Error opening response file");
+    }
+  }
+
+  {
+    int rc = pthread_create (&resp_listener_thread,
+			     NULL,
+			     resp_listener,
+			     NULL);
+    if (rc) {
+      close (ctl_file_fd);
+      close (utracer_cmd_file_fd);
+      close (utracer_resp_file_fd);
+      unregister_utracer (udb_pid);
+      error (1, errno, "pthread_create() failed");
     }
   }
 
@@ -241,7 +267,7 @@ main (int ac, char * av[])
   text_ui();
 
   cleanup_udb();
-  unregister_utracer (getpid());
+  unregister_utracer (udb_pid);
   if (-1 != ctl_file_fd) {
     close (ctl_file_fd);
     ctl_file_fd = -1;

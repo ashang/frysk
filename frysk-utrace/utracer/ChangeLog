@@ -1,3 +1,12 @@
+2007-06-18  Chris Moller  <moller@mollerware.com>
+
+	* Makefile: Added -lpthread to UDB_LIBS
+	* udb-text-ui.c: Added test for empty iline.
+	* udb-utrace-if.c: Removed automatic read if if_resp to get
+	readreg data, replaced with blocked read in udb.c, q.v.
+	* udb.c: Added a thread that listens to the LKM waiting for input.
+	* udb.h: Patch to accomdate the above.
+
 2007-06-15  Chris Moller  <moller@mollerware.com>
 
 	* udb.c: Added SIGUSR1 handler to get asynchronous notification

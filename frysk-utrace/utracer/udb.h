@@ -9,6 +9,8 @@ extern void utrace_readreg_if (long pid, int regset, int reg);
 extern void set_prompt();
 extern void register_utracer(pid_t pid);
 
+pid_t		udb_pid;
+
 char * prompt
 #ifdef DO_UDB_INIT
 = NULL;
@@ -27,7 +29,13 @@ int ctl_file_fd
 #endif
 ;
 
-int utracer_file_fd
+int utracer_cmd_file_fd
+#ifdef DO_UDB_INIT
+= -1
+#endif
+;
+
+int utracer_resp_file_fd
 #ifdef DO_UDB_INIT
 = -1
 #endif

@@ -28,8 +28,10 @@ typedef struct _utraced_info_s {
 
 typedef struct _utracing_info_s {
   long utracing_pid;
-  char * utracing_pid_string;
+  char * utracing_cmd_pid_string;
+  char * utracing_resp_pid_string;
   struct proc_dir_entry * de_utracing_control;
+  struct proc_dir_entry * de_utracing_resp;
   struct utrace_attached_engine * utracing_engine;
   utraced_info_s * utraced_info;
   void * queued_data;
@@ -52,6 +54,15 @@ int control_file_write (struct file *file,
 			unsigned long count,
 			void *data);
 
+int control_file_read ( char *buffer,
+			char **buffer_location,
+			off_t offset,
+			int buffer_length,
+			int *eof,
+			void *data);
+
+void wake_up_cfr_wait(void);
+
 utracing_info_s * lookup_utracing_info (long utracing_pid);
 
 utraced_info_s *
@@ -62,7 +73,9 @@ remove_utracing_info_entry (utracing_info_s * utracing_info_entry);
 
 int create_utracing_info_entry (long utracing_pid,
 				char * utracing_pid_string,
+				char * utracing_cmd_pid_string,
 				struct proc_dir_entry * de_utracing_control,
+				struct proc_dir_entry * de_utracing_resp,
 				struct utrace_attached_engine *
 				     utraced_engine);
 

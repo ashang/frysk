@@ -1,3 +1,13 @@
+2007-06-18  Chris Moller  <moller@mollerware.com>
+
+	* utracer-base.c: Separated the single utraced-specific if_cmd
+	file into a write-only cmd file and a read-only response file.
+	* utracer-cf-io.c: Patched to accomodate above.
+	* utracer-if-io.c: Added a wait queue to the if_resp fcn to block
+	untl data if ready, allowing the userspace debugger to select() on
+	input from the LKM.
+	* utracer-private.h: Patched to accomdate the above.
+
 2007-06-15  Chris Moller  <moller@mollerware.com>
 
 	* utracer-cf-io.c: Added a mechanism to utrace_attach() the

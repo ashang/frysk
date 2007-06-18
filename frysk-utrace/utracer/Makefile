@@ -3,7 +3,7 @@ TARGET=udb
 UDB_CC = gcc
 UDB_CFLAGS = -g
 UDB_LDFLAGS =
-UDB_LIBS = -lreadline -lhistory -lcurses
+UDB_LIBS = -lreadline -lhistory -lcurses -lpthread
 
 UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-utrace-if.c
 UDB_OBJECT_FILES = $(UDB_SOURCE_FILES:.c=.o)

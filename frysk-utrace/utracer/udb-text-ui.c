@@ -75,6 +75,13 @@ testsig_fcn(char ** saveptr)	// fixme -- diagnostic
 }
 
 static int
+testcfread_fcn(char ** saveptr)	// fixme -- diagnostic
+{
+  utrace_testcfread_if ();
+  return 1;
+}
+
+static int
 dettach_fcn(char ** saveptr)
 {
   long pid;
@@ -165,6 +172,7 @@ static ENTRY cmds[] = {
   {"sw",		switchpid_fcn},
   {"switchpid",		switchpid_fcn},
   {"testsig",		testsig_fcn},		// fixme -- diagnostic
+  {"testcfread",	testcfread_fcn},	// fixme -- diagnostic
 };
 static int nr_cmds = sizeof(cmds)/sizeof(ENTRY);
 
@@ -247,24 +255,26 @@ text_ui()
   while (run) {
     iline = readline (prompt);
     if (iline) {
-      ENTRY * entry;
-      ENTRY target;
-      char * iline_copy;
-      char * saveptr;
+      if (*iline) {
+	ENTRY * entry;
+	ENTRY target;
+	char * iline_copy;
+	char * saveptr;
 
-      iline_copy = strdup (iline);
-      target.key = strtok_r (iline_copy, " \t", &saveptr);
+	iline_copy = strdup (iline);
+	target.key = strtok_r (iline_copy, " \t", &saveptr);
       
-      if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
-	run = (*(action_fcn)(entry->data))(&saveptr);
-	add_history (iline);
-      }
-      else {
-	fprintf (stderr, "\tCommand %s not recognised\n", iline);
-      }
+	if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
+	  run = (*(action_fcn)(entry->data))(&saveptr);
+	  add_history (iline);
+	}
+	else {
+	  fprintf (stderr, "\tCommand %s not recognised\n", iline);
+	}
 
+	free (iline_copy);
+      }
       free (iline);
-      free (iline_copy);
     }
   }
 }

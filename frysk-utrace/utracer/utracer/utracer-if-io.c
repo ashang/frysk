@@ -20,6 +20,8 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
+DECLARE_WAIT_QUEUE_HEAD(ifr_wait);
+
 static u32
 report_quiesce (struct utrace_attached_engine *engine,
 		struct task_struct *tsk)
@@ -28,12 +30,15 @@ report_quiesce (struct utrace_attached_engine *engine,
   return UTRACE_ACTION_RESUME;
 }
 
+extern int cfr_data_ready;
 static u32
 report_clone (struct utrace_attached_engine *engine,
 	      struct task_struct *parent,
 	      unsigned long clone_flags,
 	      struct task_struct *child)
 {
+  cfr_data_ready = 1;
+  wake_up_cfr_wait();
   printk(KERN_INFO "reporting clone ppid %d, cpid %d\n",
 	 parent->pid, child->pid);
   return UTRACE_ACTION_RESUME;
@@ -333,7 +338,9 @@ if_file_write (struct file *file,
                 kmalloc (sizeof(readreg_resp), GFP_KERNEL);
               memcpy (utracing_info_found->queued_data,
                       &readreg_resp, sizeof(readreg_resp));
+	      // fixme -- locks around this?
               utracing_info_found->queued_data_length = sizeof(readreg_resp);
+	      wake_up_all (&ifr_wait);
             }
             else return -UTRACER_ETRACING;
           }
@@ -357,16 +364,24 @@ if_file_read ( char *buffer,
                int *eof,
                void *data)
 {
-  int rc = 0;
+  utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
+  if (utracing_info_found) {
+    int rc = 0;
+    int error;
 
-  if (0 < offset) {
-    rc = 0;
-    *eof = 1;
-  }
-  else {
-    utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
-    if (utracing_info_found) {
+    printk (KERN_INFO "about to wait in if_file_read\n");
+    error =
+      wait_event_interruptible (ifr_wait,
+				0 < utracing_info_found->queued_data_length);
+    printk (KERN_INFO "done waiting in if_file_read error = %d\n", error);
+
+    if (0 < offset) {
+      rc = 0;
+      *eof = 1;
+    }
+    else {
       //fixme--check length
+      // fixme -- locks around this?
       if (utracing_info_found->queued_data &&
           (0 < utracing_info_found->queued_data_length)) {
         rc = utracing_info_found->queued_data_length;
@@ -377,7 +392,8 @@ if_file_read ( char *buffer,
         utracing_info_found->queued_data_length = 0;
       }
     }
+    return rc;
   }
 
-  return rc;
+  return -UTRACER_ETRACING;
 }

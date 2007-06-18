@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <alloca.h>
+//#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "udb.h"
 #include "utracer/utracer.h"
@@ -40,8 +44,8 @@ unregister_utracer(pid_t pid)
 void
 utrace_testsig_if ()		// fixme -- diagnostic
 {
-  testsig_cmd_s testsig_cmd = {IF_CMD_TESTSIG, (long)getpid()};
-  ssize_t sz = write (utracer_file_fd, &testsig_cmd, sizeof(testsig_cmd));
+  testsig_cmd_s testsig_cmd = {IF_CMD_TESTSIG, (long)udb_pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &testsig_cmd, sizeof(testsig_cmd));
   if (-1 == sz) uerror ("Writing testsig command.");
   else {
     fprintf (stdout, "\ttestsig sent\n");
@@ -49,10 +53,35 @@ utrace_testsig_if ()		// fixme -- diagnostic
 }
 
 void
+utrace_testcfread_if ()		// fixme -- diagnostic
+{
+  ssize_t sz;
+  fd_set readfds;
+  int rv;
+#define BFFR_LEN 512
+  char * bffr = alloca (BFFR_LEN);
+ 
+  FD_ZERO(&readfds);
+  FD_SET(ctl_file_fd, &readfds);
+
+  fprintf (stderr, "about to select\n");
+  //rv = select(1, &readfds, NULL, NULL, NULL);
+  fprintf (stderr, "back from select, rv = %d, bit is %s\n", 
+       rv, FD_ISSET(ctl_file_fd, &readfds) ? "true" : "false");
+
+
+  fprintf (stderr, "waiting for testcfread\n");
+  sz = pread (ctl_file_fd, bffr, BFFR_LEN, 0);
+  if (0 <= sz) bffr[sz] = 0;
+  fprintf (stderr, "returned from testcfread, sz = %d \"%s\"\n",
+	   (int)sz, bffr);
+}
+
+void
 utrace_attach_if (long pid)
 {
-  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)getpid(), pid};
-  ssize_t sz = write (utracer_file_fd, &attach_cmd, sizeof(attach_cmd));
+  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)udb_pid, pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
   if (-1 == sz) uerror ("Writing attach command.");
   else {
     current_pid = pid;
@@ -64,8 +93,8 @@ utrace_attach_if (long pid)
 void
 utrace_detach_if (long pid)
 {
-  attach_cmd_s attach_cmd = {IF_CMD_DETACH, (long)getpid(), pid};
-  ssize_t sz = write (utracer_file_fd, &attach_cmd, sizeof(attach_cmd));
+  attach_cmd_s attach_cmd = {IF_CMD_DETACH, (long)udb_pid, pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
   if (-1 == sz) uerror ("Writing detach command.");
   else {
     current_pid = -1;	//fixme -- look for another attached pid
@@ -77,8 +106,8 @@ utrace_detach_if (long pid)
 void
 utrace_run_if (long pid)
 {
-  run_cmd_s run_cmd = {IF_CMD_RUN, (long)getpid(), pid};
-  ssize_t sz = write (utracer_file_fd, &run_cmd, sizeof(run_cmd));
+  run_cmd_s run_cmd = {IF_CMD_RUN, (long)udb_pid, pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &run_cmd, sizeof(run_cmd));
   if (-1 == sz) uerror ("Writing run command.");
   else fprintf (stdout, "\t%d  running\n", pid);
 }
@@ -86,8 +115,8 @@ utrace_run_if (long pid)
 void
 utrace_quiesce_if (long pid)
 {
-  run_cmd_s run_cmd = {IF_CMD_QUIESCE, (long)getpid(), pid};
-  ssize_t sz = write (utracer_file_fd, &run_cmd, sizeof(run_cmd));
+  run_cmd_s run_cmd = {IF_CMD_QUIESCE, (long)udb_pid, pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &run_cmd, sizeof(run_cmd));
   if (-1 == sz) uerror ("Writing run command.");
   else fprintf (stdout, "\t%d  quiesced\n", pid);
 }
@@ -96,10 +125,11 @@ utrace_quiesce_if (long pid)
 void
 utrace_readreg_if (long pid, int regset, int reg)
 {
-  readreg_cmd_s readreg_cmd = {IF_CMD_READ_REG, (long)getpid(),
+  readreg_cmd_s readreg_cmd = {IF_CMD_READ_REG, (long)udb_pid,
 			       pid, regset, reg};
-  ssize_t sz = write (utracer_file_fd, &readreg_cmd, sizeof(readreg_cmd));
+  ssize_t sz = write (utracer_cmd_file_fd, &readreg_cmd, sizeof(readreg_cmd));
   if (-1 == sz) uerror ("Writing readreg command.");
+#if 0
   else {
     readreg_resp_s readreg_resp;
     ssize_t sz = pread (utracer_file_fd, &readreg_resp,
@@ -128,4 +158,5 @@ utrace_readreg_if (long pid, int regset, int reg)
 #endif
     }
   }
+#endif
 }

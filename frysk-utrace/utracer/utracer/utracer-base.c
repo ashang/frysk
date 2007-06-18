@@ -107,8 +107,10 @@ remove_utraced_info_entry (utracing_info_s * utracing_info_entry,
  */
 int
 create_utracing_info_entry (long utracing_pid,
-			    char * utracing_pid_string,
+			    char * utracing_cmd_pid_string,
+			    char * utracing_resp_pid_string,
 			    struct proc_dir_entry * de_utracing_control,
+			    struct proc_dir_entry * de_utracing_resp,
 			    struct utrace_attached_engine * utracing_engine)
 {
   utracing_info_s * utracing_info_new =
@@ -124,8 +126,10 @@ create_utracing_info_entry (long utracing_pid,
   utracing_info_new->prev = NULL;
     
   utracing_info_new->utracing_pid		= utracing_pid;
-  utracing_info_new->utracing_pid_string	= utracing_pid_string;
+  utracing_info_new->utracing_cmd_pid_string	= utracing_cmd_pid_string;
+  utracing_info_new->utracing_resp_pid_string	= utracing_resp_pid_string;
   utracing_info_new->de_utracing_control	= de_utracing_control;
+  utracing_info_new->de_utracing_resp		= de_utracing_resp;
   utracing_info_new->utracing_engine		= utracing_engine;
   utracing_info_new->utraced_info		= NULL;
   utracing_info_new->queued_data		= NULL;
@@ -152,12 +156,18 @@ remove_utracing_info_entry (utracing_info_s * utracing_info_entry)
     if (task && utracing_info_entry->utracing_engine)
       utrace_detach (task, utracing_info_entry->utracing_engine);
     
-    if (de_utrace && utracing_info_entry->utracing_pid_string)
-      remove_proc_entry(utracing_info_entry->utracing_pid_string,
+    if (de_utrace && utracing_info_entry->utracing_cmd_pid_string)
+      remove_proc_entry(utracing_info_entry->utracing_cmd_pid_string,
 			de_utrace);
     
-    if (utracing_info_entry->utracing_pid_string)
-      kfree(utracing_info_entry->utracing_pid_string);
+    if (de_utrace && utracing_info_entry->utracing_resp_pid_string)
+      remove_proc_entry(utracing_info_entry->utracing_resp_pid_string,
+			de_utrace);
+    
+    if (utracing_info_entry->utracing_cmd_pid_string)
+      kfree(utracing_info_entry->utracing_cmd_pid_string);
+    if (utracing_info_entry->utracing_resp_pid_string)
+      kfree(utracing_info_entry->utracing_resp_pid_string);
     for (utraced_info_this = utracing_info_entry->utraced_info;
 	 utraced_info_this;
 	 utraced_info_this =
@@ -279,7 +289,7 @@ static int __init utracer_init(void)
   }
 
   de_utrace_control->write_proc = control_file_write;
-#if 0
+#if 1
   de_utrace_control->read_proc  = control_file_read;
 #else
   de_utrace_control->read_proc  = NULL;

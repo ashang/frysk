@@ -1,0 +1,39 @@
+DECLARE_WAIT_QUEUE_HEAD(skeleton_wait);
+static int data_not_ready = 1;
+
+static ssize_t skeleton_read (struct file *file, char *buf,
+		size_t count, loff_t *ppos) {
+	int len, err;
+	
+	// check if we have data - if not, sleep
+	// wake up in interrupt_handler
+	while (data_not_ready) {
+		interruptible_sleep_on(&skeleton_wait);
+	}
+	data_not_ready = 1;
+	
+	if( counter <= 0 ) 
+		return 0;
+	err = copy_to_user(buf,string,counter);
+	if (err != 0)
+		return -EFAULT;
+	len  = counter;
+	counter = 0;
+	return len;
+}
+
+static int interrupt_handler(void)
+{
+	// do stuff
+	interruptcount++;
+	printk(">>> PARALLEL PORT INT HANDLED: interruptcount=%d\n", interruptcount);
+	
+	// wake up (unblock) for reading data from userspace
+	// and ignore first interrupt generated in module init
+	if (interruptcount > 1) {
+		data_not_ready = 0;
+		wake_up_interruptible(&skeleton_wait);
+	}
+	
+	return IRQ_HANDLED;
+}

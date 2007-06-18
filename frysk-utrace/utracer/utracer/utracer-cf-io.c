@@ -19,6 +19,15 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
+DECLARE_WAIT_QUEUE_HEAD(cfr_wait);
+int cfr_data_ready = 0;
+
+void
+wake_up_cfr_wait()
+{
+  wake_up_all (&cfr_wait);
+}
+
 static u32
 client_report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
@@ -89,26 +98,47 @@ control_file_write (struct file *file,
 
       if (!utracing_info_found) {  // if non-null, entry already exists
         struct proc_dir_entry * de_utracing_control;
-        char * client_pid_string = kasprintf(GFP_KERNEL, "%ld", client_pid);
+        struct proc_dir_entry * de_utracing_resp;
+        char * client_cmd_pid_string =
+	  kasprintf(GFP_KERNEL, "cmd_%ld", client_pid);
+        char * client_resp_pid_string =
+	  kasprintf(GFP_KERNEL, "resp_%ld", client_pid);
 	
-        if (client_pid_string) {
+        if (client_cmd_pid_string && client_resp_pid_string) {
           int rc;
 	  struct utrace_attached_engine * utracing_engine;
 	  
-          de_utracing_control = create_proc_entry(client_pid_string,
-                                                  S_IFREG | 0666,
+          de_utracing_control = create_proc_entry(client_cmd_pid_string,
+                                                  S_IFREG | 0222,
                                                   de_utrace);
 
           if (NULL == de_utracing_control) {
-            remove_proc_entry(client_pid_string, de_utrace);
-            kfree (client_pid_string);
+            remove_proc_entry(client_cmd_pid_string, de_utrace);
+            kfree (client_cmd_pid_string);
+            kfree (client_resp_pid_string);
+            return -ENOMEM;
+          }
+	  
+          de_utracing_resp = create_proc_entry(client_resp_pid_string,
+					       S_IFREG | 0444,
+					       de_utrace);
+
+          if (NULL == de_utracing_resp) {
+            remove_proc_entry(client_resp_pid_string, de_utrace);
+            kfree (client_cmd_pid_string);
+            kfree (client_resp_pid_string);
             return -ENOMEM;
           }
 
 	  {
-	    int rc;
 	    struct task_struct * task = get_task (client_pid);
-	    if (!task) return -ESRCH;
+	    if (!task) {
+	      remove_proc_entry(client_cmd_pid_string, de_utrace);
+	      remove_proc_entry(client_resp_pid_string, de_utrace);
+	      kfree (client_cmd_pid_string);
+	      kfree (client_resp_pid_string);
+	      return -ESRCH;
+	    }
 	   
 	    utracing_engine = utrace_attach (task,
 					     UTRACE_ATTACH_CREATE |
@@ -116,7 +146,13 @@ control_file_write (struct file *file,
 					     UTRACE_ATTACH_MATCH_OPS,
 					     &utracing_utrace_ops,
 					     0UL);  //fixme -- maybe use?
-	    if (IS_ERR (utracing_engine)) return -UTRACER_EENGINE;
+	    if (IS_ERR (utracing_engine)) {
+	      remove_proc_entry(client_cmd_pid_string, de_utrace);
+	      remove_proc_entry(client_resp_pid_string, de_utrace);
+	      kfree (client_cmd_pid_string);
+	      kfree (client_resp_pid_string);
+	      return -UTRACER_EENGINE;
+	    }
 
 	    //fixme -- do something with rc?
 	    rc = utrace_set_flags (task,utracing_engine,
@@ -125,33 +161,76 @@ control_file_write (struct file *file,
 	  }
 
 	  rc = create_utracing_info_entry (client_pid,
-					   client_pid_string,
+					   client_cmd_pid_string,
+					   client_resp_pid_string,
 					   de_utracing_control,
+					   de_utracing_resp,
 					   utracing_engine);
           if (0 != rc) {
-            remove_proc_entry(client_pid_string, de_utrace);
-            kfree (client_pid_string);
+	    remove_proc_entry(client_cmd_pid_string, de_utrace);
+	    remove_proc_entry(client_resp_pid_string, de_utrace);
+            kfree (client_cmd_pid_string);
+            kfree (client_resp_pid_string);
             return rc;
           }
 
           de_utracing_control->write_proc = if_file_write;
-          de_utracing_control->read_proc  = if_file_read;
+          de_utracing_control->read_proc  = NULL;
           de_utracing_control->owner      = THIS_MODULE;
-          de_utracing_control->mode       = S_IFREG | 0666;
+          de_utracing_control->mode       = S_IFREG | 0222;
           de_utracing_control->uid        = 0;
           de_utracing_control->gid        = 0;
           de_utracing_control->size       = 0;
           de_utracing_control->data       = utracing_info_top;
 
+          de_utracing_resp->write_proc = NULL;
+          de_utracing_resp->read_proc  = if_file_read;
+          de_utracing_resp->owner      = THIS_MODULE;
+          de_utracing_resp->mode       = S_IFREG | 0444;
+          de_utracing_resp->uid        = 0;
+          de_utracing_resp->gid        = 0;
+          de_utracing_resp->size       = 0;
+          de_utracing_resp->data       = utracing_info_top;
+
 	  return count;
         }
-        else return -ENOMEM;
+        else {
+	  if (client_cmd_pid_string) kfree (client_cmd_pid_string);
+	  if (client_resp_pid_string) kfree (client_resp_pid_string);
+	  return -ENOMEM;
+	}
       }
       else return -UTRACER_ETRACING;
     }
     break;
   }
   return count;
+}
+
+int
+control_file_read ( char *buffer,
+                    char **buffer_location,
+                    off_t offset,
+                    int buffer_length,
+                    int *eof,
+                    void *data)
+{
+  int rc;
+  int error;
+
+  printk (KERN_INFO "about to wait in control_file_read\n");
+  error = wait_event_interruptible (cfr_wait, cfr_data_ready == 1);
+  printk (KERN_INFO "done waiting in control_file_read error = %d\n", error);
+  cfr_data_ready = 0;
+
+  if (0 < offset) rc = 0;
+  else {
+    rc = sprintf (buffer, "Control ready\n");
+    *eof = 1;
+  }
+
+  return rc;
+  
 }
 
 
