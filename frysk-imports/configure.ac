@@ -58,45 +58,21 @@ AC_CONFIG_FILES([
 	cdtparser/Makefile
 	junit/Makefile])
 
-
-test -d libunwind-i386 || mkdir libunwind-i386
+for isa in i386 x86_64 ppc64
+do
 (
+  test -d libunwind-$isa || mkdir libunwind-$isa
   confdir=`(cd "$srcdir";pwd)`
-  cd libunwind-i386
+  cd libunwind-$isa
   # Make sure the inplace build does not break with "already configured"
   # message; the file is going to regenerated, anyway.
   # FIXME - This is wrong since it discards any configure flags given
   # except those explicitly passed on...
   rm -f $confdir/libunwind/config.status
-  $confdir/libunwind/configure --target=i386-unknown-linux-gnu \
+  $confdir/libunwind/configure --target=$isa-unknown-linux-gnu \
 	--build=${build} --host=${host} --prefix=${prefix}
 )
-
-test -d libunwind-x86_64 || mkdir libunwind-x86_64
-(
-  confdir=`(cd "$srcdir";pwd)`
-  cd libunwind-x86_64
-  # Make sure the inplace build does not break with "already configured"
-  # message; the file is going to regenerated, anyway.
-  # FIXME - This is wrong since it discards any configure flags given
-  # except those explicitly passed on...
-  rm -f $confdir/libunwind/config.status
-  $confdir/libunwind/configure --target=x86_64-unknown-linux-gnu \
-	--build=${build} --host=${host} --prefix=${prefix}
-)
-
-test -d libunwind-ppc64 || mkdir libunwind-ppc64
-(
-  confdir=`(cd "$srcdir";pwd)`
-  cd libunwind-ppc64
-  # Make sure the inplace build does not break with "already configured"
-  # message; the file is going to regenerated, anyway.
-  # FIXME - This is wrong since it discards any configure flags given
-  # except those explicitly passed on...
-  rm -f $confdir/libunwind/config.status
-  $confdir/libunwind/configure --target=ppc64-unknown-linux-gnu \
-	--build=${build} --host=${host} --prefix=${prefix}
-)
+done
 
 AC_CONFIG_SUBDIRS([elfutils libunwind-i386 libunwind])
 
