@@ -9,6 +9,10 @@ include_HEADERS_tdep = include/libunwind-x86.h
 else
 if ARCH_X86_64
 include_HEADERS_tdep = include/libunwind-x86_64.h
+else
+if ARCH_PPC64
+include_HEADERS_tdep = include/libunwind-ppc64.h
+endif # ARCH_PPC64
 endif # ARCH_X86_64
 endif # ARCH_X86
 endif # ARCH_HPPA

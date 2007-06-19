@@ -1,5 +1,8 @@
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (include_HEADERS_tdep): Add
+	include/libunwind-ppc64.h.
+
 	* src/Makefile.am (libunwind_la_SOURCES_x86_64_common): Remove
 	stray '\'.
 
