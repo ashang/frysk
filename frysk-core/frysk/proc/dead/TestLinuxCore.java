@@ -96,7 +96,6 @@ public class TestLinuxCore
         redZoneDiscount++;
 
     MemoryMap[] clist = coreProc.getMaps();
-
     assertEquals("Number of maps match in corefile/live process",
 		 clist.length,list.length - redZoneDiscount);
 
@@ -132,8 +131,7 @@ public class TestLinuxCore
   public void testLinuxCoreFileStackTrace ()
   {
 
-    if (brokenX8664XXX(4601) || brokenPpcXXX(4601))
-      return;
+
     Proc ackProc = giveMeAProc();
     String coreFileName = constructCore(ackProc);
     File xtestCore = new File(coreFileName);

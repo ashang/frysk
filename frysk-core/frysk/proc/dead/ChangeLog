@@ -1,3 +1,13 @@
+2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Remove
+	x86_64 broken case.
+	* LinuxProc.java (constructEnhancedMapMetadata): Tighten
+	vDSO check.Tighten map range checking.
+	(getLinkmapAddress): Account for alignment on x86_64 platforms.
+	* LinuxTask.java (sendrecRegisterBanks): Pedantically set
+	wordSize, ignoring inherited wordSize.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Rename package frysk.proc.corefile to frysk.proc.dead.

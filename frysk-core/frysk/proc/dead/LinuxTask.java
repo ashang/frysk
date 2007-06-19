@@ -71,9 +71,14 @@ public class LinuxTask
  
     bankBuffers = new ByteBuffer[4];
     ByteOrder byteOrder = getIsa().getByteOrder();
+    int  wordSize = getIsa().getWordSize();
+    
     ByteBuffer gpRegisters = new ArrayByteBuffer(elfTask.getRawCoreRegisters());
     gpRegisters.order(byteOrder);
+    gpRegisters.wordSize(wordSize);
     bankBuffers[0] = gpRegisters;
+    bankBuffers[0].order(byteOrder);
+    bankBuffers[0].wordSize(wordSize);
     return bankBuffers;
   }
 

@@ -372,7 +372,7 @@ public class LinuxProc
     while (linkMapIterator.hasNext())
       {
 	Linkmap tempMap = (Linkmap) linkMapIterator.next();
-	if (tempMap.l_addr == coreVDSO)
+	if ((tempMap.l_addr == coreVDSO) && (coreVDSO !=0))
 	  tempMap.name = "[vdso]";
 	if (tempMap.s_addr == interpAddr)
 	  tempMap.name = interpName;
@@ -423,7 +423,7 @@ public class LinuxProc
 	for (int l=0; l<tempMaps.length; l++)
 	  {
 	    if ((tempMaps[l].vaddr == localMap.vaddr) || 
-		((tempMaps[l].vaddr > localMap.vaddr) && (tempMaps[l].vaddr<=localMap.vaddr_end)))
+		((tempMaps[l].vaddr > localMap.vaddr) && (tempMaps[l].vaddr<localMap.vaddr_end)))
 	      {
 		if (tempMaps[l].vaddr_end == 0)
 		  tempMaps[l].vaddr_end = ((tempMaps[l].vaddr + tempMaps[l].memSize) + 0x1000 -1) &~ (0x1000-1);
@@ -565,7 +565,13 @@ public class LinuxProc
 	internalMem.position(dtDebugAddress);
 
 	// discard first word at that address;
-	internalMem.getUWord();
+	internalMem.getInt();
+	long pos = internalMem.position();
+	int wordSize = internalMem.wordSize();
+	if (pos % wordSize > 0)
+	  pos = (pos - (pos % wordSize))+wordSize;
+	
+	internalMem.position(pos);
 	actualAddress = internalMem.getUWord();
       }
 
