@@ -1,3 +1,8 @@
+2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CoredumpAction (AbandonCoreDump): Do not use system.exit,
+	instead throw an exception.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Util.java: Update, package frysk.proc.corefile renamed to

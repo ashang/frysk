@@ -177,9 +177,6 @@ public class CoredumpAction
    */
   private void abandonCoreDump (Exception e)
   {
-    System.err.println("ERROR: Core file abandoned. Exception message is: "
-                       + e.getMessage());
-    e.printStackTrace();
     proc.requestAbandon();
     proc.observableDetached.addObserver(new Observer()
     {
@@ -189,7 +186,7 @@ public class CoredumpAction
         Manager.eventLoop.add(new RequestStopEvent(Manager.eventLoop));
       }
     });
-    System.exit(- 1);
+    throw new RuntimeException("Core file abandoned",e);
   }
 
   /**
