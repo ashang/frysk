@@ -1,3 +1,7 @@
+2007-06-19  Nurdin Premji  <npremji@redhat.com>
+
+	* configure.ac (AC_CONFIG_SUBDIRS): Removed libunwind.
+
 2007-06-18  Nurdin Premji  <npremji@redhat.com>
 
 	* configure.ac (AC_CONFIG_SUBDIRS): Removed libunwind-i386 directory.
