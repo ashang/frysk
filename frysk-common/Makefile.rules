@@ -511,7 +511,7 @@ EXTRA_DIST += common/antlr-warnings.awk
 		    echo "$$d/$$b.sed already contains fixes, oops!" ; \
 		    exit 1 ; \
 		fi ; \
-		mv $$d/$$b.tmp $$d/$$b.sed ; \
+		mv -f $$d/$$b.tmp $$d/$$b.sed ; \
 		edits=true ; \
 	    done ; \
 	done || true
