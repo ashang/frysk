@@ -1,5 +1,8 @@
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (EXTRA_DIST): Add include/tdep-ppc64/jmpbuf.h,
+	include/tdep-ppc64/libunwind_i.h, and include/tdep-ppc64/README.
+	
 	* Makefile.am (include_HEADERS_tdep): Add
 	include/libunwind-ppc64.h.
 

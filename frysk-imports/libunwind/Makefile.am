@@ -44,6 +44,10 @@ EXTRA_DIST = include/dwarf.h include/dwarf_i.h include/dwarf-eh.h	\
 	include/libunwind-x86.h include/tdep-x86/libunwind_i.h		\
 	include/tdep-x86/jmpbuf.h include/tdep-x86/dwarf-config.h	\
 	include/libunwind-x86_64.h include/tdep-x86_64/libunwind_i.h	\
-	include/tdep-x86_64/jmpbuf.h include/tdep-x86_64/dwarf-config.h
+	include/tdep-x86_64/jmpbuf.h include/tdep-x86_64/dwarf-config.h	\
+	include/tdep-ppc64/dwarf-config.h				\
+	include/tdep-ppc64/jmpbuf.h					\
+	include/tdep-ppc64/libunwind_i.h				\
+	include/tdep-ppc64/README
 
 DISTCLEANFILES = include/libunwind.h include/tdep
