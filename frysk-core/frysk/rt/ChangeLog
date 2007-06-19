@@ -1,3 +1,28 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* SteppingEngine.java (SteppingObserver.updateExecuted): Instead of 
+	notifying Observers with Task argument, use TaskStepEngine instead.
+	(SteppingEngine.notifyNotBlocked): Now takes TaskStepEngine parameter.
+	(SteppingEngine.notifyStopped): Removed.
+	(SteppingEngine.notifyTask): Removed.
+	(stepInstruction): Update logic for calling 
+	SteppingEngine.notifyNotBlocked with TaskStepEngine parameter.
+	(stepLine): Ditto.
+	(setUp): Ditto.
+	(stepAdvance): Ditto.
+	(stepNextInstruction): Ditto.
+	(stepOver): Ditto.
+	(stepOut): Ditto.
+	(continueExecution): Ditto.
+	(executeTasks): Ditto.
+	* TestStepping.java (LockObserver.update): Updated logic to expect
+	TaskStepEngine parameter from Observable, rather than Task or null
+	Objects.
+	* TestSteppingEngine.java (testLineStepping): Added some cleanup code.
+	(setUpTest): Update breakpoint test with new TaskStepEngine.
+	(LockObserver.update): Updated logic to expect TaskStepEngine parameter
+	instead of null or Task objects.
+
 2007-06-18  Adam Jocksch <ajocksch@redhat.com>
 
 	* DisplayValueObserver.java (updateValueChanged): Added.

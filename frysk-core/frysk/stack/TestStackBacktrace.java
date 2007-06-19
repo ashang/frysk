@@ -56,6 +56,7 @@ import frysk.proc.TestLib;
 import frysk.rt.Line;
 import frysk.rt.SteppingEngine;
 import frysk.rt.Symbol;
+import frysk.rt.TaskStepEngine;
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 
@@ -693,11 +694,12 @@ public class TestStackBacktrace
      */
     public synchronized void update (Observable o, Object arg)
     {
+      TaskStepEngine tse = (TaskStepEngine) arg;
 //      System.err.println("LockObserer.update " + arg + " " + test);
-      if (arg == null)
+      if (!tse.getState().isStopped())
         return;
       
-      Task task = (Task) arg;
+      Task task = tse.getTask();
       
       if (test == 1)
 	{

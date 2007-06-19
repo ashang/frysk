@@ -1,3 +1,10 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* disassembler/DisassemblyWindow.java (LockObserver.update): Now
+	expects TaskStepEngine parameter rather than null or Task object.
+	* memory/MemoryWindow.java (LockObserver.update): Ditto.
+	* register/RegisterWindow.java (LockObserver.update): Ditto.
+
 2007-06-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (presentProcLister):

@@ -194,6 +194,8 @@ public class TestSteppingEngine extends TestLib
     se = new SteppingEngine(temp, lock);
 
     assertRunUntilStop("Attempting to add observer");
+    se.removeObserver(lock, myProc, false);
+    se.cleanTask(myTask);
     se.clear();
   }
   
@@ -447,22 +449,24 @@ public class TestSteppingEngine extends TestLib
       {
 	breakpointAddress = frame.getOuter().getAddress();
 	se.setBreakpoint(myTask, breakpointAddress);
-	lock.update(new Observable(), new Object());
+	lock.update(new Observable(), new TaskStepEngine(myTask, se));
 	return;
       }
     else if (testState == STEP_IN_LIST)
       {
 	LinkedList l = new LinkedList();
 	l.add(myTask);
+        testState = STEP_IN;
 	se.stepLine(l);
-	testState = STEP_IN;
+        return;
       }
     else if (testState == INSTRUCTION_STEP_LIST)
       {
 	LinkedList l = new LinkedList();
 	l.add(myTask);
+        testState = INSTRUCTION_STEP;
 	se.stepInstruction(l);
-	testState = INSTRUCTION_STEP;
+        return;
       }
     else
       se.stepLine(myProc.getMainTask());
@@ -470,7 +474,6 @@ public class TestSteppingEngine extends TestLib
   
   public synchronized void stepAssertions (Task task)
   { 
-   //System.out.println("Test.stepAssertions");
     myTask = task;
     int lineNum;
     Frame frame = StackFactory.createFrame(task);
@@ -563,8 +566,6 @@ public class TestSteppingEngine extends TestLib
           }
         count++;
         
-//        se.stepCompleted();
-        
         if (count != 50)
           {
             this.lineMap.put(task, new Integer(lineNum));
@@ -644,8 +645,6 @@ public class TestSteppingEngine extends TestLib
             break;
           }
         count++;
-        
-//        se.stepCompleted();
         
         if (count != 50)
           {
@@ -975,7 +974,9 @@ public class TestSteppingEngine extends TestLib
     public synchronized void update (Observable o, Object arg)
     {
 //      System.err.println("LockObserver.update " + o + " " + arg + " " + continueFlag);
-      if (arg == null)
+      
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (!tse.getState().isStopped())
 	{
 	  if (testState == CONTINUE && continueFlag == true)
 	    {

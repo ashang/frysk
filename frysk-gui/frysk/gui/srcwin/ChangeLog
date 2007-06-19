@@ -1,3 +1,9 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (LockObserver.update): Removed call to
+	SteppingEngine.notifyStopped. Updated to expect TaskStepEngine parameter
+	rather than null or Task objects.
+
 2007-06-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Add ability to attach to running processes.

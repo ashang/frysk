@@ -787,15 +787,12 @@ public class TestStepping extends TestLib
      */
     public synchronized void update (Observable o, Object arg)
     {
+      TaskStepEngine tse = (TaskStepEngine) arg;
       // System.err.println("LockObserver.update " + arg + " " + initial);
-      if (arg == null)
+      if (!tse.getState().isStopped())
         return;
 
-//      Task t = (Task) arg;
-//      if (!t.equals(t.getProc().getMainTask()))
-//	return;
-      
-      myTask = ((Task) arg).getProc().getMainTask();
+      myTask = tse.getTask().getProc().getMainTask();
 
       Manager.eventLoop.add(new Event()
       {

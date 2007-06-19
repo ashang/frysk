@@ -117,7 +117,6 @@ import frysk.gui.common.IconManager;
 import frysk.gui.dialogs.WarnDialog;
 import frysk.gui.disassembler.DisassemblyWindow;
 import frysk.gui.disassembler.DisassemblyWindowFactory;
-//import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.monitor.WindowManager;
@@ -128,8 +127,6 @@ import frysk.gui.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.sessions.DebugProcess;
-//import frysk.gui.sessions.ProcessPicker;
-//import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.sessions.WatchList;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
@@ -139,6 +136,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.Line;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 import frysk.stack.Frame;
 import frysk.stack.FrameIdentifier;
 import frysk.stack.StackFactory;
@@ -809,6 +807,7 @@ public class SourceWindow
    */
   protected void appendProc (Task task)
   {
+    System.err.println("appendProc");
 	this.SW_add = false;
 	Proc proc = task.getProc();
 	int oldSize = this.numProcs;
@@ -3297,8 +3296,9 @@ public class SourceWindow
     public void update (Observable o, Object arg)
     {
       /* We don't need to worry about this case here */
-//            System.err.println("LockObserver.update " + (Task) arg + " " + SW_active + " " + SW_add);
-      if (arg == null)
+      TaskStepEngine tse = (TaskStepEngine) arg;
+//      System.err.println("LockObserver.update " + tse + " " + SW_active + " " + SW_add);
+      if (!tse.getState().isStopped())
 	return;
 
       if (SW_active)
@@ -3319,14 +3319,14 @@ public class SourceWindow
 			                   SourceWindow.this.swProc[SourceWindow.this.current],
 					   SourceWindow.this.current);
 		  populateStackBrowser(SourceWindow.this.frames);
-		  SourceWindow.this.steppingEngine.notifyStopped();
+//		  SourceWindow.this.steppingEngine.notifyStopped();
 		  procReblocked();
 		}
 	      });
 	    }
 	  else
 	    {
-	      appendProc((Task) arg);
+	      appendProc(tse.getTask());
 	    }
 	}
       else

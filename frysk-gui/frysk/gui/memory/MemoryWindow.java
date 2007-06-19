@@ -84,6 +84,7 @@ import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.TaskStepEngine;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
@@ -1013,23 +1014,20 @@ public class MemoryWindow
      */
     public synchronized void update (Observable o, Object arg)
     {
-      /* The argument is not null. We're only concerned with it here the very
-       * first time we see it, because its used for this window's
-       * initialization. Otherwise, ignore it. */
-      if (arg != null)
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (!tse.getState().isStopped())
         {
           if (! MW_active)
             {
-              Task t = (Task) arg;
               MemoryWindow.this.observable = o;
-              finishMemWin(t.getProc());
+              finishMemWin(tse.getTask().getProc());
             }
           else
             return;
         }
       else
         {
-          /* The argument is null; its used here as a toggle. If the toggle is
+          /* The argument is not stopped. its used here as a toggle. If the toggle is
            * true, the window is sensitive and we set the toggle to false and 
            * desensitize the important widgets. Otherwise, set the toggle 
            * back to true, refresh the window information and resensitize it. */

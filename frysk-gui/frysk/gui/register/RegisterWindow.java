@@ -79,6 +79,7 @@ import frysk.proc.Proc;
 import frysk.proc.Register;
 import frysk.proc.RegisterView;
 import frysk.proc.Task;
+import frysk.rt.TaskStepEngine;
 
 
 public class RegisterWindow
@@ -795,16 +796,13 @@ public class RegisterWindow
      */
     public synchronized void update (Observable o, Object arg)
     {
-      /* The argument is not null. We're only concerned with it here the very
-       * first time we see it, because its used for this window's
-       * initialization. Otherwise, ignore it. */
-      if (arg != null)
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (!tse.getState().isStopped())
         {
           if (! RW_active)
             {
-              Task t = (Task) arg;
               RegisterWindow.this.observable = o;
-              finishRegWin(t.getProc());
+              finishRegWin(tse.getTask().getProc());
             }
           else
             return;
@@ -834,7 +832,6 @@ public class RegisterWindow
                 {
                   toggle = true;
                   resetList();
-                  //refreshList();
                   resensitize();
                 }
               });

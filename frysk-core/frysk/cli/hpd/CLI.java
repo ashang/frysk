@@ -59,6 +59,7 @@ import frysk.debuginfo.DebugInfo;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 
@@ -473,45 +474,45 @@ public class CLI
     return result;
   }
   
-  class SteppingObserver implements Observer 
+  class SteppingObserver
+      implements Observer
   {
     private Object monitor = new Object();
-    
-    public Object getMonitor()
+
+    public Object getMonitor ()
     {
       return this.monitor;
     }
-    
-    public void update(Observable observable, Object arg)
-    {
-      if (arg == null)
-	return;
-      
-      Task task = (Task)arg;
-      //Breakpoint.PersistentBreakpoint bpt = null;
-      synchronized (CLI.this) 
-	{
-	    if (!steppingEngine.isTaskRunning(task))
-	    {
-	      attached = true;
-	      symtabNeedsRefresh = true;
-	    }
-	  else
-	    attached = false;
-	    
-	    //bpt = (Breakpoint.PersistentBreakpoint) SteppingEngine.getTaskBreakpoint(task);
-            synchronized (this.monitor)
-              {
-                this.monitor.notifyAll();
-              }
 
-	  CLI.this.notifyAll();
-	}
+    public void update (Observable observable, Object arg)
+    {
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (! tse.getState().isStopped())
+        {
+          attached = false;
+          return;
+        }
+
+      // Breakpoint.PersistentBreakpoint bpt = null;
+      synchronized (CLI.this)
+        {
+          attached = true;
+          symtabNeedsRefresh = true;
+          // bpt = (Breakpoint.PersistentBreakpoint)
+          // SteppingEngine.getTaskBreakpoint(task);
+          synchronized (this.monitor)
+            {
+              this.monitor.notifyAll();
+            }
+
+          CLI.this.notifyAll();
+        }
     }
   }
 
   /**
    * Prints a usage message for a command.
+   * 
    * @param cmd the command
    */
   public void printUsage(Command cmd)

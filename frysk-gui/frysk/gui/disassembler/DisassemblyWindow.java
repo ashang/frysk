@@ -77,6 +77,7 @@ import frysk.gui.prefs.PreferenceManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.rt.TaskStepEngine;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
@@ -843,16 +844,13 @@ public class DisassemblyWindow
      */
     public synchronized void update (Observable o, Object arg)
     {
-      /* The argument is not null. We're only concerned with it here the very
-       * first time we see it, because its used for this window's
-       * initialization. Otherwise, ignore it. */
-      if (arg != null)
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (!tse.getState().isStopped())
         {
           if (! DW_active)
             {
-              Task t = (Task) arg;
               DisassemblyWindow.this.observable = o;
-              finishDisWin(t.getProc());
+              finishDisWin(tse.getTask().getProc());
             }
           else
             return;

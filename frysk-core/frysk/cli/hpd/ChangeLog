@@ -1,3 +1,8 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* CLI.java (SteppingObserver.update): Updated to expect TaskStepEngine
+	parameter instead of null or Task objects.
+
 2007-06-14  Stan Cox  <scox@redhat.com>
 
 	* frysk/cli/hpd/PrintCommand.java (handle): Use BigInteger for hex.
