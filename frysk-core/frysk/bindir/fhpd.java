@@ -52,9 +52,9 @@ import jline.Completor;
 import jline.ConsoleReader;
 
 import frysk.proc.Manager;
+import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
-import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 
@@ -79,45 +79,30 @@ public class fhpd
   public static void main (String[] args)
   {
     CLI cli;
-    CommandlineParser parser = new CommandlineParser ("fhpd");
-    parser.add(new Option('p', "pid to trace", "PID") 
+    CommandlineParser parser = new CommandlineParser ("fhpd")
     {
-      public void parsed(String arg) throws OptionException
+
+      //@Override
+      public void parseCommand (String[] command)
       {
-        try 
+        execFile = new File (command[0]);
+        if (execFile.canRead() == false)
           {
-            pid = Integer.parseInt(arg);
-          } 
-        catch (NumberFormatException e) 
-          {
-            OptionException oe = new OptionException("couldn't parse pid: " + arg);
-            oe.initCause(e);
-            throw oe;
+            printHelp();
+            throw new RuntimeException("command not readable: " 
+                                                     + command[0]);
           }
       }
-    });
-    parser.setHeader("Usage: fhpd <PID>");
-    parser.parse(args, new FileArgumentCallback() {
-      public void notifyFile(String arg) throws OptionException
+
+      //@Override
+      public void parsePids (ProcId[] pids)
       {
-        // Is the first argument a pid?
-        try 
-        {
-          pid = Integer.parseInt(arg);
-          return;
-        } 
-        catch (NumberFormatException e) 
-        {
-          execFile = new File (arg);
-          if (execFile.canRead() == false)
-            {
-              OptionException oe = new OptionException("couldn't parse pid: " + arg);
-              oe.initCause(e);
-              throw oe;
-            }
-        }
+        pid = pids[0].id;
       }
-    });
+      
+    };    
+    parser.setHeader("Usage: fhpd <PID>");
+    parser.parse(args);
     Manager.eventLoop.start();
     String line = "";
     

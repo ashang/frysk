@@ -1,3 +1,7 @@
+2007-06-19  Nurdin Premji  <npremji@redhat.com>
+
+	* fhpd.java (main): Use CommandLineParser.parse() to parse arguments.
+
 2007-06-18  Stan Cox  <scox@redhat.com>
 
 	* TestFhd.java (testHpdTraceStack):  New defintion of up/down.
