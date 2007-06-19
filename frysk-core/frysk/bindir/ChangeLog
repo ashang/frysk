@@ -1,6 +1,8 @@
 2007-06-19  Nurdin Premji  <npremji@redhat.com>
 
-	* fhpd.java (main): Use CommandLineParser.parse() to parse arguments.
+	* fhpd.java: Remove unused imports.
+
+	* fhpd.java (main): Use CommandLineParser.parse() to parse arguments.	
 
 2007-06-18  Stan Cox  <scox@redhat.com>
 

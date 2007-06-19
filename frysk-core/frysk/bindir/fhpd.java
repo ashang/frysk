@@ -55,8 +55,6 @@ import frysk.proc.Manager;
 import frysk.proc.ProcId;
 import frysk.util.CommandlineParser;
 import frysk.util.PtyTerminal;
-import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.OptionException;
 
 public class fhpd 
 {
