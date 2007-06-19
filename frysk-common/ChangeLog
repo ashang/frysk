@@ -1,3 +1,7 @@
+2007-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (EXTRA_DIST): Add common/antlr-warnings.awk.
+
 2007-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.rules (AM_CXXFLAGS): Updated libunwind build directories

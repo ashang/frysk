@@ -456,6 +456,7 @@ endif
 # warnings.
 
 SUFFIXES += .antlered .g
+EXTRA_DIST += common/antlr-warnings.awk
 .g.antlered:
 	rm -rf $*.tmp
 	mkdir -p $*.tmp
