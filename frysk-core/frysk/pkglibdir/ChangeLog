@@ -1,3 +1,7 @@
+2007-06-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-scopes.c: New.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd-c.c: Include "linux.syscall.h".

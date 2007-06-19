@@ -1,3 +1,7 @@
+2007-06-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameScopes.java: New.
+
 2007-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* SteppingEngine.java (SteppingObserver.updateExecuted): Instead of 
@@ -306,7 +310,6 @@
 	now passes.
 	(testVariableValueNotChanged): Ditto.
 
->>>>>>> 1.263
 2007-05-30  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java: Reflect movement of DwflFactory.
