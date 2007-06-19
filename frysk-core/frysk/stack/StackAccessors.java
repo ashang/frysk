@@ -248,20 +248,31 @@ public class StackAccessors
 
   private ElfImage getElfImage (long addr)
   {
+    logger.log(Level.FINE, "{0} Entering getElfImage, addr: 0x{1}\n", 
+               new Object [] {this, Long.toHexString(addr)} );
     ElfImage elfImage = null;
     MemoryMap map = myTask.getProc().getMap(addr);
-    if (map == null)
-      return null;
     
+    if (map == null)
+      {
+        logger.log(Level.FINEST, "Couldn't find memory map.\n");
+      return null;
+      }
     if (DwflFactory.isVDSO(myTask.getProc(), map))
+      {
+      logger.log(Level.FINEST, "Handling VDSO map\n");
       elfImage = addressSpace.getUnwinder().createElfImageFromVDSO(addressSpace, 
 	                                                           map.addressLow, 
 	                                                           map.addressHigh,
 	                                                           map.offset, this);
+      }
     else 
+      {
+        logger.log(Level.FINEST, "Handling regular map name: {0}", map.name);
       elfImage = ElfImage.mapElfImage(map.name, map.addressLow, 
                                       map.addressHigh, map.offset);
-       
+      }
+    logger.log(Level.FINER, "Leaving getElfImage");
     return elfImage;
   }
 
