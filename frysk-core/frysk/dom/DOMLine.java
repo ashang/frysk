@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.jdom.Element;
+import org.jdom.Verifier;
 import org.jdom.filter.Filter;
 
 /**
@@ -97,18 +98,38 @@ public class DOMLine
 	 * @param address
 	 * 		The program counter value.
 	 */
-	public DOMLine (int lineNo, String lineText, int offset, 
-			boolean executable, boolean hasBreakpoint, long address)
-    {
-		this.myElement = new Element(DOMLine.LINE_NODE);
-		myElement.setText(lineText);
-		myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
-		myElement.setAttribute(DOMSource.ADDR_ATTR, ""+address);
-		myElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset));
-		myElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(lineText.length()));
-		myElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+executable);
-		myElement.setAttribute(DOMLine.HAS_BREAK_ATTR, ""+hasBreakpoint);
-	}
+	public DOMLine (int lineNo, String lineText, int offset, boolean executable,
+                  boolean hasBreakpoint, long address)
+  {
+    this.myElement = new Element(DOMLine.LINE_NODE);
+    // Must check the lineText to ensure no illegal characters.
+    if (Verifier.checkCharacterData(lineText) != null)
+      {
+        // Must be an invalid character in the line
+        // Find it and set it to blank space
+        char ch[] = lineText.toCharArray();
+        // Except for Form Feeds, set them to the XML code for Form Feed(New Page)
+        if (ch[0] == 12)
+          lineText = "&np";
+        else
+          {
+            for (int i = 0; i < lineText.length(); i++)
+              {
+                if (! Verifier.isXMLCharacter(ch[i]))
+                  ch[i] = ' ';
+              }
+            lineText = ch.toString();
+          }
+      }
+    myElement.setText(lineText);
+    myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
+    myElement.setAttribute(DOMSource.ADDR_ATTR, "" + address);
+    myElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset));
+    myElement.setAttribute(DOMLine.LENGTH_ATTR,
+                           Integer.toString(lineText.length()));
+    myElement.setAttribute(DOMLine.EXECUTABLE_ATTR, "" + executable);
+    myElement.setAttribute(DOMLine.HAS_BREAK_ATTR, "" + hasBreakpoint);
+  }
 	
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be

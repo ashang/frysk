@@ -1,3 +1,8 @@
+2007-06-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Fix problem with XML aborting when
+	form feeds are inserted in the code.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* DOMFactory.java: Reflect frysk.stack package movement.
