@@ -1,3 +1,27 @@
+2007-06-19  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxTaskState.java (clonedState): No more syscallRunning and
+	inSyscallRunningTraced.
+	(transitionToRunningState): Use Running.sendContinue() return value.
+	(attemptContinue): Likewise.
+	(blockedOffspring.handleUnblock): Likewise.
+	(Running.syscalltracing): Removed.
+	(Running): Removed syscalltracing argument.
+	(sendContinue): Return new state. Check number of syscallObservers.
+	(handleSignaledEvent): Return sendContinue value.
+	(handleStoppedEvent(: Likewise.
+	(handleTerminatingEvent): Likewise.
+	(handleExecedEvent): Simplify logic, don't check observer, but use
+	sendContinue.
+	(handleClonedEvent): Return sendContinue value.
+	(handleForkedEvent): Likewise.
+	(handleTrappedEvent): Likewise.
+	(handleSyscalledEvent): Check number of syscallObservers and return
+	sendContinue value.
+	(syscallRunning): Removed.
+	(inSyscallRunningTraced): Removed.
+	(BlockedSignal.handleUnblock): Return sendContinue value.
+
 2007-06-14  Tim Moore  <timoore@redhat.com>
 
 	* LinuxTaskState.java: (BlockedSignal.handleUnblock): At FINEST

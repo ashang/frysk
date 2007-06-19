@@ -90,9 +90,7 @@ class LinuxTaskState
 	    // it should detach, and the parent handle that.
 	    return detaching;
 	else if (parentState == running
-		 || parentState == inSyscallRunning
-		 || parentState == syscallRunning
-		 || parentState == inSyscallRunningTraced)
+		 || parentState == inSyscallRunning)
 	    return StartClonedTask.waitForStop;
 	
 	throw new RuntimeException ("clone's parent in unexpected state "
@@ -293,21 +291,8 @@ class LinuxTaskState
 	    task.sendSetOptions();
 	    if (task.notifyAttached () > 0)
 		return new BlockedSignal(signal, false);
-	    if (task.instructionObservers.numberOfObservers() > 0)
-		{
-		    task.sendStepInstruction(signal);
-		    return running;
-		}
-	    else if (task.syscallObservers.numberOfObservers() > 0)
-		{
-		    task.sendSyscallContinue(signal);
-		    return syscallRunning;
-		}
-	    else
-		{
-		    task.sendContinue(signal);
-		    return running;
-		}
+
+	    return running.sendContinue(task, signal);
 	}
 	/**
 	 * The blocked task has stopped, possibly with a pending
@@ -624,9 +609,7 @@ class LinuxTaskState
 	    // XXX: Really notify attached here?
 	    if (task.notifyAttached () > 0)
                 return blockedContinue;
-	    // XXX - What about syscall or instruction observers?
-	    task.sendContinue (0);
-	    return running;
+	    return running.sendContinue(task, 0);
 	}
 	public TaskState handleAddObservation(Task task, TaskObservation observation)
 	{
@@ -682,21 +665,7 @@ class LinuxTaskState
 			{
 			    return blockedContinue;
 			}
-		    if (task.instructionObservers.numberOfObservers() > 0)
-			{
-			    task.sendStepInstruction(0);
-			    return running;
-			}
-		    else if (task.syscallObservers.numberOfObservers() > 0)
-			{
-			    task.sendSyscallContinue (0);
-			    return syscallRunning;
-			}
-		    else
-			{
-			    task.sendContinue (0);
-			    return running;
-			}
+		    return running.sendContinue(task, 0);
 		}
 	    };
     }
@@ -707,25 +676,22 @@ class LinuxTaskState
     private static class Running
 	extends TaskState
     {
-	// Whether or not we are tracing syscalls
-	private final boolean syscalltracing;
-
 	// Whether or not we are running inside a syscall
 	private final boolean insyscall;
 
 	protected Running (String state,
-			   boolean syscalltracing, boolean insyscall)
+			   boolean insyscall)
 	{
 	    super (state);
-	    this.syscalltracing = syscalltracing;
 	    this.insyscall = insyscall;
 	}
 	
         /**
 	 * Tells the Task to continue, keeping in kind pending
 	 * breakpoints, with or without syscall tracing.
+	 * Returns the new Running (sub) state of the Task.
 	 */
-        private void sendContinue(Task task, int sig)
+        private Running sendContinue(Task task, int sig)
         {
 	  Breakpoint bp = task.steppingBreakpoint;
 	  if (bp != null)
@@ -742,10 +708,11 @@ class LinuxTaskState
 	  if (bp != null
 	      || task.instructionObservers.numberOfObservers() > 0)
 	    task.sendStepInstruction(sig);
-	  else if (syscalltracing)
+	  else if (task.syscallObservers.numberOfObservers() > 0)
 	    task.sendSyscallContinue(sig);
 	  else
 	    task.sendContinue(sig);
+	  return this;
         }
 
         /**
@@ -765,10 +732,8 @@ class LinuxTaskState
 	    if (task.notifySignaled (sig) > 0) {
 		return new BlockedSignal(sig, insyscall);
 	    }
-	    else {
-	        sendContinue(task, sig);
-		return this;
-	    }
+	    else
+	      return sendContinue(task, sig);
 	}
 	public TaskState handleStoppedEvent (Task task)
 	{
@@ -797,13 +762,10 @@ class LinuxTaskState
 	    Running newState;
 	    if (task.instructionObservers.numberOfObservers() > 0)
 	      newState = insyscall ? inSyscallRunning : running;
-	    else if (task.syscallObservers.numberOfObservers() > 0)
-	      newState = insyscall ? inSyscallRunningTraced : syscallRunning;
 	    else
 	      newState = insyscall ? inSyscallRunning : running;
 
-	    newState.sendContinue(task, 0);
-	    return newState;
+	    return newState.sendContinue(task, 0);
 	}
 
 	public TaskState handleTerminatingEvent (Task task, boolean signal,
@@ -819,11 +781,9 @@ class LinuxTaskState
 		}
         
 	    if (signal)
-		sendContinue(task, value);
+	      return sendContinue(task, value);
 	    else
-		sendContinue(task, 0);
-        
-	    return this;
+	      return sendContinue(task, 0);
 	}
 	public TaskState handleTerminatedEvent (Task task, boolean signal,
 					 int value)
@@ -855,27 +815,15 @@ class LinuxTaskState
 
 	    if (task.notifyExeced () > 0)
 		{
-		    return (syscalltracing
+		  return (task.syscallObservers.numberOfObservers() > 0
 			    ? syscallBlockedInSyscallContinue
 			    : blockedInExecSyscall);
 		}
 	    else
 		{
-		    if (task.instructionObservers.numberOfObservers() > 0)
-			{
-			    task.sendStepInstruction(0);
-			    return inSyscallRunning;
-			}
-		    if (syscalltracing)
-			{
-			    task.sendSyscallContinue(0);
-			    return inSyscallRunningTraced;
-			}
-		    else
-			{
-			    sendContinue(task, 0);
-			    return inSyscallRunning;
-			}
+		  // XXX logic is slightly confusing after exec() call.
+		  sendContinue(task, 0);
+		  return inSyscallRunning;
 		}
 	}
 	public TaskState handleDisappearedEvent (Task task, Throwable w)
@@ -905,16 +853,14 @@ class LinuxTaskState
 	    logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
 	    if (task.notifyClonedParent (clone) > 0)
 		return blockedContinue();
-	    sendContinue(task, 0);
-	    return this;
+	    return sendContinue(task, 0);
 	}
 	public TaskState handleForkedEvent (Task task, Task fork)
 	{
 	    logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
 	    if (task.notifyForkedParent (fork) > 0)
 		return blockedContinue();
-	    sendContinue(task, 0);
-	    return this;
+	    return sendContinue(task, 0);
 	}
 
 	/**
@@ -961,10 +907,7 @@ class LinuxTaskState
 	      if (task.notifyInstruction() > 0)
 		return blockedContinue();
 	      else
-		{
-		  sendContinue(task, 0);
-		  return this;
-		}
+		return sendContinue(task, 0);
 	    }
 	  else
 	    {
@@ -985,10 +928,7 @@ class LinuxTaskState
 		  task.steppingBreakpoint = bp;
 		  
 		  if (blockers == 0)
-		    {
-		      sendContinue(task, 0);
-		      return this;
-		    }
+		    return sendContinue(task, 0);
 		  else
 		    return blockedContinue();
 		}
@@ -1012,10 +952,7 @@ class LinuxTaskState
 		      && (task.sig_send != 0
 			  || task.syscall_sigret
 			  || isa.hasExecutedSpuriousTrap(task)))
-		    {
-		      sendContinue(task, 0);
-		      return this;
-                    }
+		    return sendContinue(task, 0);
 
 		  // Deliver the real Trap event to the Task.
                   return handleSignaledEvent(task, Sig.TRAP_);
@@ -1064,7 +1001,7 @@ class LinuxTaskState
 	public TaskState handleSyscalledEvent(Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-	    if (syscalltracing)
+	    if (task.syscallObservers.numberOfObservers() > 0)
 		{
 		    if (! insyscall && task.notifySyscallEnter() > 0)
 			return syscallBlockedInSyscallContinue;
@@ -1072,14 +1009,15 @@ class LinuxTaskState
 		    if (insyscall && task.notifySyscallExit() > 0)
 			return blockedContinue;
 
-		    sendContinue(task, 0);
-		    return insyscall ? syscallRunning : inSyscallRunningTraced;
+		    // Swap in/out syscall
+		    Running newState = sendContinue(task, 0);
+		    newState = (newState.insyscall
+				? running
+				: inSyscallRunning);
+		    return newState;
 		}
 	    else
-		{
-		    sendContinue(task, 0);
-		    return this;
-		}
+	      return sendContinue(task, 0);
 	}
     }
   
@@ -1087,21 +1025,11 @@ class LinuxTaskState
      * Sharable instance of the running state.
      */
     protected static final Running running =
-	new Running("running", false, false);
+	new Running("running", false);
 
-    /**
-     * Sharable instance of the syscallRunning state.
-     */
-    protected static final Running syscallRunning =
-	new Running("syscallRunning", true, false);
-    
     // Task is running inside a syscall.
     protected static final Running inSyscallRunning =
-	new Running("inSyscallRunning", true, false);
-
-    // Task is running inside a syscall.
-    protected static final Running inSyscallRunningTraced =
-	new Running("inSyscallRunningTraced", true, true);
+	new Running("inSyscallRunning", true);
 
     protected static final TaskState detaching = new TaskState ("detaching")
 	{
@@ -1247,11 +1175,10 @@ class LinuxTaskState
 	  if (task.instructionObservers.numberOfObservers() > 0)
 	    newState = insyscall ? inSyscallRunning : running;
 	  if (task.syscallObservers.numberOfObservers() > 0)
-	    newState = insyscall ? inSyscallRunningTraced : syscallRunning;
+	    newState = insyscall ? inSyscallRunning : running;
 	  else
 	    newState = running;
-	  newState.sendContinue(task, sig);
-	  return newState;
+	  return newState.sendContinue(task, sig);
 	}
 	
 	public TaskState handleDeleteObservation(Task task, TaskObservation observation)
