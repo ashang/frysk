@@ -67,14 +67,24 @@ resp_listener (void * arg)
     case IF_RESP_SIGNAL_DATA:
       {
 	signal_resp_s signal_resp = if_resp.signal_resp;
-	fprintf (stdout, "\tsignal %ld\n",
+	fprintf (stdout, "\t[%ld] signal %ld\n",
+		 signal_resp.utraced_pid,
 		 signal_resp.signal);
+      }
+      break;
+    case IF_RESP_ATTACH_DATA:
+      {
+	attach_resp_s attach_resp = if_resp.attach_resp;
+	fprintf (stdout, "\tprocess %ld attach %s\n",
+		 attach_resp.utraced_pid,
+		 attach_resp.okay ? "succeeded" : "failed");
       }
       break;
     case IF_RESP_REG_DATA:
       {
 	readreg_resp_s readreg_resp = if_resp.readreg_resp;
-	fprintf (stdout, "\t[%d][%d]: %d [%#08x]\n",
+	fprintf (stdout, "\t[%ld] [%d][%d]: %d [%#08x]\n",
+		 readreg_resp.utraced_pid,
 		 readreg_resp.regset,
 		 readreg_resp.which,
 		 (int)readreg_resp.data,
@@ -84,7 +94,7 @@ resp_listener (void * arg)
     case IF_RESP_CLONE_DATA:
       {
 	clone_resp_s clone_resp = if_resp.clone_resp;
-	fprintf (stdout, "\t%ld cloned to %ld\n",
+	fprintf (stdout, "\t[%ld] cloned to %ld\n",
 		 clone_resp.utracing_pid,
 		 clone_resp.new_utraced_pid);
       }

@@ -61,12 +61,12 @@ typedef enum {
   IF_RESP_NULL,
   IF_RESP_REG_DATA,
   IF_RESP_CLONE_DATA,
-  IF_RESP_SIGNAL_DATA
+  IF_RESP_SIGNAL_DATA,
+  IF_RESP_ATTACH_DATA
 } if_resp_e; 
 
 typedef struct {
   long type;
-  long utracing_pid;
   long utraced_pid;
   int  regset;
   int  which;
@@ -83,14 +83,22 @@ typedef struct {
 
 typedef struct {
   long type;
+  long utraced_pid;
   long signal;
 } signal_resp_s;
+
+typedef struct {
+  long type;
+  long utraced_pid;
+  int  okay;
+} attach_resp_s;
 
 typedef union {
   long type;
   readreg_resp_s	readreg_resp;
   clone_resp_s		clone_resp;
   signal_resp_s		signal_resp;
+  attach_resp_s		attach_resp;
 } if_resp_u;
 
 typedef enum {

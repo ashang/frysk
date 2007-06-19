@@ -8,7 +8,8 @@
 	until data is ready, allowing the userspace debugger to select() on
 	input from the LKM.  Cleaned up diagnostic code.  Added a wait
 	queue to make sure queued data isn't overwritten.  Added responses
-	for clone and signal asynchronous events.
+	for clone and signal asynchronous events.  Added response for
+	attach cmd.
 	* utracer-private.h: Patched to accomdate the above.  
 
 2007-06-15  Chris Moller  <moller@mollerware.com>

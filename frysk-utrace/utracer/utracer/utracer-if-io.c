@@ -118,10 +118,11 @@ report_signal (struct utrace_attached_engine *engine,
     (void *)engine->data;
   
   if (utracing_info_found) {
-    signal_resp_s signal_resp = {IF_RESP_SIGNAL_DATA, (long)info->si_signo};
+    signal_resp_s signal_resp = {IF_RESP_SIGNAL_DATA,
+				 (long)tsk->pid,
+				 (long)info->si_signo};
     queue_response (utracing_info_found,
 		    &signal_resp, sizeof(signal_resp));
-			       
   }
   return UTRACE_ACTION_RESUME;
 }
@@ -146,54 +147,52 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
 static int
 attach_cmd_fcn (long utracing_pid, long utraced_pid)
 {
+  int rc;
   struct task_struct * task = get_task (utraced_pid);
-
-  if (task) {
-    struct utrace_attached_engine * engine;
+  
+  utracing_info_s * utracing_info_found =
+    lookup_utracing_info (utracing_pid);
     
-    engine = utrace_attach (task,
-			    UTRACE_ATTACH_CREATE |
-			    UTRACE_ATTACH_EXCLUSIVE |
-			    UTRACE_ATTACH_MATCH_OPS,
-			    &utraced_utrace_ops,
-			    0UL);  //fixme -- maybe use?
-    if (!IS_ERR (engine)) {
-      int rc;
-      utracing_info_s * utracing_info_found;
-      
-      //fixme -- do something with rc?
-      rc = utrace_set_flags (task,engine,
-			     UTRACE_ACTION_QUIESCE	|
-			     UTRACE_EVENT (EXEC)	|
-			     UTRACE_EVENT (SIGNAL)	|
-			     UTRACE_EVENT (VFORK_DONE) |
-			     UTRACE_EVENT (CLONE)	|
-			     UTRACE_EVENT (EXIT)	|
-			     UTRACE_EVENT (DEATH)	|
-			     UTRACE_EVENT (QUIESCE));
-
-      utracing_info_found =
-	lookup_utracing_info (utracing_pid);
-      
-      if (utracing_info_found) {
-	int rc = create_utraced_info_entry (utracing_info_found,
-					    utraced_pid,
-					    engine);
-	if (0 == rc) {
-	  engine->data = (unsigned long)utracing_info_found;
-	  return 0;		// 0 means okay
-	}
-	else {
-	  utrace_detach(task, engine);
-	  return rc;
-	}
+  if (utracing_info_found) {
+    if (task) {
+      struct utrace_attached_engine * engine;
+      engine = utrace_attach (task,
+			      UTRACE_ATTACH_CREATE |
+			      UTRACE_ATTACH_EXCLUSIVE |
+			      UTRACE_ATTACH_MATCH_OPS,
+			      &utraced_utrace_ops,
+			      0UL);  //fixme -- maybe use?
+      if (!IS_ERR (engine)) {
+	//fixme -- do something with rc?
+	rc = utrace_set_flags (task,engine,
+			       UTRACE_ACTION_QUIESCE	|
+			       UTRACE_EVENT (EXEC)	|
+			       UTRACE_EVENT (SIGNAL)	|
+			       UTRACE_EVENT (VFORK_DONE) |
+			       UTRACE_EVENT (CLONE)	|
+			       UTRACE_EVENT (EXIT)	|
+			       UTRACE_EVENT (DEATH)	|
+			       UTRACE_EVENT (QUIESCE));
+	
+	engine->data = (unsigned long)utracing_info_found;
+	rc = create_utraced_info_entry (utracing_info_found,
+					utraced_pid,
+					  engine);
+	if (0 != rc) utrace_detach(task, engine);
       }
-      else return -UTRACER_ETRACING;
-      
+      else rc = -UTRACER_EENGINE;
     }
-    else return -UTRACER_EENGINE;
+    else rc = -ESRCH;
+    {
+      attach_resp_s attach_resp = {IF_RESP_ATTACH_DATA,
+				   utraced_pid, (0 == rc) ? 1 : 0 };
+      queue_response (utracing_info_found,
+		      &attach_resp, sizeof(attach_resp));
+    }
   }
-  else return -ESRCH;
+  else rc = -UTRACER_ETRACING;
+
+  return rc;
 }
 
 int
@@ -328,7 +327,7 @@ if_file_write (struct file *file,
             utracing_info_s * utracing_info_found;
             readreg_resp_s readreg_resp;
             readreg_resp.type           = IF_RESP_REG_DATA;
-            readreg_resp.utracing_pid   = readreg_cmd.utracing_pid;
+	    //          readreg_resp.utracing_pid   = readreg_cmd.utracing_pid;
             readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
             readreg_resp.regset         = readreg_cmd.regset;
             readreg_resp.which          = readreg_cmd.which;

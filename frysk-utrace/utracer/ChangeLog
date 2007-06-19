@@ -4,7 +4,8 @@
 	from udb.c.  Also added a "--wait" to rmmod to fix the "module in
 	use" problems.
 	* udb.c: Took the module loading/unloading stuff out per above.
-	Added a response parser/formatter to the listener thread.
+	Added a response parser/formatter to the listener thread.  Added a
+	formatter for attach confirmation.
 	* udb.h: Patched a few things for above.
 	* Makefile: Added udb-module.c
 
