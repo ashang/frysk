@@ -46,6 +46,7 @@ import frysk.proc.ProcObserver.ProcTasks;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.rt.TaskStepEngine;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,10 +75,13 @@ class RunCommand
     // Observer for Stepping engine; called when attach is finished.
     public void update(Observable observable, Object arg)
     {
-	Task task = (Task)arg;
+      TaskStepEngine tse = (TaskStepEngine) arg;
+	Task task = tse.getTask();
 	boolean removeObserver = false;
-	if (task == null)
+        
+	if (tse.getState().isStopped())
 	    return;
+        
 	synchronized (this) {
 	    if (launchedTasks.contains(task)) {
 		launchedTasks.remove(task);

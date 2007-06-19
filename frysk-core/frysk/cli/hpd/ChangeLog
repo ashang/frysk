@@ -2,6 +2,8 @@
 
 	* CLI.java (SteppingObserver.update): Updated to expect TaskStepEngine
 	parameter instead of null or Task objects.
+	
+	* RunCommand.java (update): Ditto. Fixes #4665.
 
 2007-06-14  Stan Cox  <scox@redhat.com>
 
