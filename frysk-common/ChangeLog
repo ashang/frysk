@@ -1,3 +1,7 @@
+2007-06-19  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.rules (AM_CXXFLAGS): Updated libunwind build directories
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (files.list): Add ChangeLog files.

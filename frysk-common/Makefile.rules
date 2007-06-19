@@ -175,7 +175,9 @@ AM_CXXFLAGS = \
 	-I$(srcdir)/../frysk-imports/elfutils/libdw \
 	-I$(srcdir)/../frysk-imports/elfutils/libdwfl \
 	-I$(srcdir)/../frysk-imports/libunwind/include \
-	-I$(top_builddir)/../frysk-imports/libunwind/include \
+	-I$(top_builddir)/../frysk-imports/libunwind-i386/include \
+	-I$(top_builddir)/../frysk-imports/libunwind-x86_64/include \
+	-I$(top_builddir)/../frysk-imports/libunwind-ppc64/include \
 	-fPIC \
 	$(ZZZ)
 
