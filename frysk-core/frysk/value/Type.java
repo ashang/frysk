@@ -163,6 +163,9 @@ public abstract class Type
 
   public abstract Value logicalOr (Value var1, Value var2)
       throws InvalidOperatorException;
+  
+  public abstract Value logicalNegation(Value var1) 
+      throws InvalidOperatorException;
 
   public abstract Value assign (Value var1, Value var2)
       throws InvalidOperatorException;

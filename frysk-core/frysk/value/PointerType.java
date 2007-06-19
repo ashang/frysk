@@ -75,7 +75,7 @@ public class PointerType
     }
 
     /**
-     * Create an PointerType
+     * Create a PointerType
      * 
      * @param typep - Type of pointed to value
      */
@@ -99,6 +99,12 @@ public class PointerType
                                          var1.longValue() - var2.longValue());
     }
 
+    public Value logicalNegation(Value var1) 
+        throws InvalidOperatorException
+    {
+      throw (new InvalidOperatorException());
+    }
+    
     public Value assign (Value var1, Value var2)
 	throws InvalidOperatorException
     {

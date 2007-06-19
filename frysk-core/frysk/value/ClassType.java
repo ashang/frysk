@@ -256,11 +256,17 @@ public class ClassType
   }
 
   public Value subtract (Value var1, Value var2)
-      throws InvalidOperatorException
+  throws InvalidOperatorException
   {
     throw (new InvalidOperatorException());
   }
 
+  public Value logicalNegation(Value var1) 
+  throws InvalidOperatorException
+  {
+    throw (new InvalidOperatorException());
+  }
+  
   public Value assign (Value var1, Value var2)
       throws InvalidOperatorException
   {

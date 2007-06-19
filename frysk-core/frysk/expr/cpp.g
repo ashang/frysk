@@ -293,13 +293,13 @@ unary_expression throws TabException
     |   MINUS^ unary_expression
     |   PLUSPLUS^ pm_expression
     |   MINUSMINUS^ pm_expression
+    |   TILDE^ unary_expression
+    |   NOT^ unary_expression
     |   unary_expression_simple
     ;
 
 unary_expression_simple throws TabException 
-    :   TILDE unary_expression
-    |   NOT unary_expression
-    |   AMPERSAND prim_expr: id_expression
+    :   AMPERSAND prim_expr: id_expression
         {
 ## = #([ADDRESS_OF, "Address Of"], #prim_expr); 
         }
@@ -540,8 +540,8 @@ protected
 IDENT
 options {testLiterals = true;}
     :   ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
-    ;
-
+    
+;
 /**
   *  A <TAB> token is returned not only on regular tabs
   *  but also when a TAB is hit after an incomplete variable
@@ -843,6 +843,8 @@ expr returns [Value returnVar=null]
     |   #(BITWISEOR  v1=expr v2=expr)  { returnVar = v1.getType().bitWiseOr(v1, v2);  }
     |   #(AND  v1=expr v2=expr)  { returnVar = v1.getType().logicalAnd(v1, v2);  }
     |   #(OR  v1=expr v2=expr)  { returnVar = v1.getType().logicalOr(v1, v2);  }
+    |   #(NOT  v1=expr)  { returnVar = v1.getType().logicalNegation(v1);  }
+    |   #(TILDE v1=expr)  { returnVar = v1.getType().bitWiseComplement(v1);  }
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr)  { 
             returnVar = ((log_expr.getType().getLogicalValue(log_expr)) ? v1 : v2);  
         }

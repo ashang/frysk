@@ -410,6 +410,20 @@ public class ArithmeticType
     return null;
   }
 
+  public Value logicalNegation(Value var1) throws InvalidOperatorException 
+  {
+    Type type = var1.getType();
+    if (BaseTypes.isInteger(type.typeId))
+      return newValue(type, (var1.intValue() == 0 ? true : false) ? 1 : 0);
+    else if (BaseTypes.isLong(type.typeId))
+      return newValue(type, (var1.longValue() == 0 ? true : false) ? 1 : 0);
+    else if (BaseTypes.isFloat(var1.getType().typeId))
+      throw new InvalidOperatorException(
+                                         "binary operator || not defined for type "
+                                         + var1.getType().getName());
+    return null;
+  }
+
   public Value assign(Value var1, Value var2) 
   {
     return doAssignment(var1, var2);

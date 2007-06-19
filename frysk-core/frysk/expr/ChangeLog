@@ -1,3 +1,8 @@
+2007-06-19  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (unary_expression): Add TILDE and NOT.
+	(expr): Likewise.
+
 2007-06-14  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (expr): Use long for OCTALINT, DECIMALINT, HEXADECIMALINT.
