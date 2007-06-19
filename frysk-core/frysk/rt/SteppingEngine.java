@@ -112,6 +112,7 @@ public class SteppingEngine
     this.taskStateMap = Collections.synchronizedMap(new HashMap());
     this.breakpointManager = new BreakpointManager(this);
     this.steppingObserver = new SteppingObserver();
+    this.threadLifeObservable = new ThreadLifeObservable();
   }
 
   /**
@@ -136,12 +137,11 @@ public class SteppingEngine
     
     init(procs);
   }
-    private void init (Proc[] procs)
-    {
+  
+  private void init (Proc[] procs)
+  {
     Task t = null;
     LinkedList tasksList;
-
-    this.threadLifeObservable = new ThreadLifeObservable();
 
     for (int i = procs.length - 1; i >= 0; i--)
       {
@@ -159,7 +159,7 @@ public class SteppingEngine
 
         this.contextMap.put(t.getProc(), new Integer(tasksList.size()));
       }
-    
+
     requestAdd();
   }
   
@@ -1035,15 +1035,6 @@ public class SteppingEngine
   /***********************************************************************
    * TASKOBSERVER.INSTRUCTION OBSERVER CLASS
    **********************************************************************/
-  
-//  /**
-//   * Used by other objects to let the this.steppingObserver know that the work 
-//   * blocking the tasks is complete, from their perspective.
-//   */
-//  public void notifyStopped ()
-//  {
-//    this.steppingObserver.notifyStopped();
-//  }
   
   /**
    * Remove the incoming Observer object from the this.steppingObserver's list of 

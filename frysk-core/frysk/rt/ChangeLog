@@ -1,3 +1,8 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+	
+	* SteppingEngine.java (SteppingEngine): Initialize ThreadLifeObservable
+	object here in constructor, rather than later.
+
 2007-06-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameScopes.java: New.

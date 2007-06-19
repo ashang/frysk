@@ -807,7 +807,6 @@ public class SourceWindow
    */
   protected void appendProc (Task task)
   {
-    System.err.println("appendProc");
 	this.SW_add = false;
 	Proc proc = task.getProc();
 	int oldSize = this.numProcs;
@@ -3319,7 +3318,6 @@ public class SourceWindow
 			                   SourceWindow.this.swProc[SourceWindow.this.current],
 					   SourceWindow.this.current);
 		  populateStackBrowser(SourceWindow.this.frames);
-//		  SourceWindow.this.steppingEngine.notifyStopped();
 		  procReblocked();
 		}
 	      });

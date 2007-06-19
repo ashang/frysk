@@ -39,6 +39,12 @@
 
 package frysk.proc;
 
+import java.util.Observable;
+import java.util.Observer;
+
+import frysk.rt.SteppingEngine;
+import frysk.rt.TaskStepEngine;
+
 public class TestTaskObserverInstruction extends TestLib
 {
   public void testInstruction()
@@ -110,7 +116,45 @@ public class TestTaskObserverInstruction extends TestLib
     assertTrue("deleted delete and add 2", instr2.deleted);
     assertEquals("hit delete and add 2", 3, instr2.hit);
   }
+  
+  private AttachedObserver ao;
+  private SteppingEngine steppingEngine;
+  private LockObserver lock;
+  
+  public void testFirstInstructionStep ()
+  {
+    if (brokenXXX(4663))
+        return;
+    
+    lock = new LockObserver();
+    steppingEngine = new SteppingEngine();
+    steppingEngine.addObserver(lock);
+    ao = new AttachedObserver();
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-rt-stepper");
+    Manager.host.requestCreateAttachedProc("/dev/null", "/dev/null", "/dev/null", cmd, ao);
+    assertRunUntilStop("Creating attached process");
+  }
 
+  protected class AttachedObserver implements TaskObserver.Attached
+  {
+    public void addedTo (Object o){ }
+    
+    public Action updateAttached (Task task)
+    {
+      Proc proc = task.getProc();
+      steppingEngine.addProc(proc);
+      return Action.BLOCK;
+    }
+    
+    public void addFailed  (Object observable, Throwable w) { }
+    
+    public void deletedFrom (Object o)
+    {
+      steppingEngine.stepInstruction((Task) o);
+    }
+  }
+  
   static class InstructionObserver implements TaskObserver.Instruction
   {
     boolean added;
@@ -138,6 +182,28 @@ public class TestTaskObserverInstruction extends TestLib
     public void addFailed (Object o, Throwable w)
     {
       fail("add to " + o + " failed, because " + w);
+    }
+  }
+  
+  private boolean flag = true;
+  
+  private class LockObserver implements Observer
+  {
+    public void update (Observable o, Object arg)
+    {
+      TaskStepEngine tse = (TaskStepEngine) arg;
+      if (! tse.getState().isStopped())
+        return;
+      
+      if (flag)
+        {
+          flag = false;
+          tse.getTask().requestDeleteAttachedObserver(ao);
+        }
+      else
+        {
+          Manager.eventLoop.requestStop();
+        }
     }
   }
 }

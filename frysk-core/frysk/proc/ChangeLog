@@ -1,3 +1,10 @@
+2007-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TestTaskObserverInstruction.java (testFirstInstructionStep): Added
+	as unit test for #4663.
+	(AttachedObserver): Added.
+	(LockObserver): Added.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcBlockAction.java: Update, package frysk.proc.corefile
