@@ -1,3 +1,8 @@
+2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java (ElfPrstatus): Account for alignment
+	of registers on x86_64.
+
 2007-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrstatus.java (ElfPrstatus): Account for alignment

@@ -133,27 +133,36 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
     pr_info_si_errno = noteBuffer.getInt();
     pr_cursig = noteBuffer.getShort();
     long pos = noteBuffer.position();
-    noteBuffer.position(pos + (noteBuffer.wordSize()-(pos % noteBuffer.wordSize())));
+    int wordSize = noteBuffer.wordSize();
+    if (pos % wordSize > 0)
+       pos = (pos - (pos % wordSize))+wordSize;
+    noteBuffer.position(pos);
     pr_sigpend = noteBuffer.getUWord();
     pr_sighold = noteBuffer.getUWord();
     pr_pid =  noteBuffer.getInt();
     pr_ppid =  noteBuffer.getInt();
     pr_pgrp =  noteBuffer.getInt();
     pr_sid =  noteBuffer.getInt();
-    pr_utime_sec =  noteBuffer.getInt();
-    pr_utime_usec =  noteBuffer.getInt();
-    pr_stime_sec =  noteBuffer.getInt();
-    pr_stime_usec =  noteBuffer.getInt();
-    pr_cutime_sec =  noteBuffer.getInt();
-    pr_cutime_usec =  noteBuffer.getInt();
-    pr_cstime_sec =  noteBuffer.getInt();
-    pr_cstime_usec =  noteBuffer.getInt();
-    
+    pos = noteBuffer.position();
+    if (pos % wordSize > 0)
+       pos = (pos - (pos % wordSize))+wordSize;
+    noteBuffer.position(pos);
+    pr_utime_sec =  noteBuffer.getWord();
+    pr_utime_usec =  noteBuffer.getWord();
+    pr_stime_sec =  noteBuffer.getWord();
+    pr_stime_usec =  noteBuffer.getWord();
+    pr_cutime_sec =  noteBuffer.getWord();
+    pr_cutime_usec =  noteBuffer.getWord();
+    pr_cstime_sec =  noteBuffer.getWord();
+    pr_cstime_usec =  noteBuffer.getWord();
+    	
+     pos = noteBuffer.position();
+    if (pos % wordSize > 0)
+       pos = (pos - (pos % wordSize))+wordSize;
+     noteBuffer.position(pos);
+      
     raw_core_registers = new byte[(int) ((singleNoteData.length) - noteBuffer.position())];
     noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length) - noteBuffer.position()));
-
-
-
   }
 
   
@@ -176,7 +185,7 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
 		System.out.println("cutime sec = "+pr_cutime_sec);
 		System.out.println("cutime usec = "+pr_cutime_usec);
 		System.out.println("cstime sec = "+pr_cstime_sec);
-		System.out.println("cstime usec = "+pr_cstime_usec);		
+		System.out.println("cstime usec = "+pr_cstime_usec);
   }
   	
   public static ElfPrstatus[] decode(ElfData noteData)
