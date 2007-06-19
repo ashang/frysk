@@ -20,13 +20,29 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
-DECLARE_WAIT_QUEUE_HEAD(ifr_wait);
+static void
+queue_response (utracing_info_s * utracing_info_found,
+		void * resp,
+		int resp_len)
+{
+  int error;
+
+  error =
+    wait_event_interruptible (utracing_info_found->ifw_wait,
+			      0 == utracing_info_found->queued_data_length);
+    
+  utracing_info_found->queued_data =
+    kmalloc (resp_len, GFP_KERNEL);
+  memcpy (utracing_info_found->queued_data, resp, resp_len);
+  utracing_info_found->queued_data_length = resp_len;
+  wake_up_all (&(utracing_info_found->ifr_wait));
+}
 
 static u32
 report_quiesce (struct utrace_attached_engine *engine,
 		struct task_struct *tsk)
 {
-  printk(KERN_INFO "reporting quiesce\n");
+  //  printk(KERN_INFO "reporting quiesce\n");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -37,10 +53,18 @@ report_clone (struct utrace_attached_engine *engine,
 	      unsigned long clone_flags,
 	      struct task_struct *child)
 {
-  cfr_data_ready = 1;
-  wake_up_cfr_wait();
-  printk(KERN_INFO "reporting clone ppid %d, cpid %d\n",
-	 parent->pid, child->pid);
+  utracing_info_s * utracing_info_found =
+    (void *)engine->data;
+
+  //fixme -- autoattach?
+  
+  if (utracing_info_found) {
+    clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
+			       parent->pid, child->pid};
+    queue_response (utracing_info_found,
+		    &clone_resp, sizeof(clone_resp));
+			       
+  }
   return UTRACE_ACTION_RESUME;
 }
 
@@ -48,7 +72,7 @@ static u32
 report_vfork_done (struct utrace_attached_engine *engine,
 		   struct task_struct *parent, pid_t child_pid)
 {
-  printk(KERN_INFO "reporting vfork_done, child pid = %d\n", child_pid);
+  //  printk(KERN_INFO "reporting vfork_done, child pid = %d\n", child_pid);
   return UTRACE_ACTION_RESUME;
 }
 
@@ -58,9 +82,9 @@ report_exec (struct utrace_attached_engine *engine,
 	     const struct linux_binprm *bprm,
 	     struct pt_regs *regs)
 {
-  printk(KERN_INFO "reporting exec \"%s\" \"%s\"\n",
-	 (bprm->filename) ? bprm->filename : "unk",
-	 (bprm->interp) ? bprm->interp : "unk");
+  //  printk(KERN_INFO "reporting exec \"%s\" \"%s\"\n",
+  //	 (bprm->filename) ? bprm->filename : "unk",
+  //	 (bprm->interp) ? bprm->interp : "unk");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -69,7 +93,7 @@ report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
 	     long orig_code, long *code)
 {
-  printk(KERN_INFO "reporting exit\n");
+  //  printk(KERN_INFO "reporting exit\n");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -77,7 +101,7 @@ static u32
 report_death (struct utrace_attached_engine *engine,
 	      struct task_struct *tsk)
 {
-  printk(KERN_INFO "reporting death\n");
+  //  printk(KERN_INFO "reporting death\n");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -90,7 +114,15 @@ report_signal (struct utrace_attached_engine *engine,
 	       const struct k_sigaction *orig_ka,
 	       struct k_sigaction *return_ka)
 {
-  printk(KERN_INFO "reporting signal %d\n", info->si_signo);
+  utracing_info_s * utracing_info_found =
+    (void *)engine->data;
+  
+  if (utracing_info_found) {
+    signal_resp_s signal_resp = {IF_RESP_SIGNAL_DATA, (long)info->si_signo};
+    queue_response (utracing_info_found,
+		    &signal_resp, sizeof(signal_resp));
+			       
+  }
   return UTRACE_ACTION_RESUME;
 }
 
@@ -147,7 +179,10 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid)
 	int rc = create_utraced_info_entry (utracing_info_found,
 					    utraced_pid,
 					    engine);
-	if (0 == rc) return 0;		// 0 means okay
+	if (0 == rc) {
+	  engine->data = (unsigned long)utracing_info_found;
+	  return 0;		// 0 means okay
+	}
 	else {
 	  utrace_detach(task, engine);
 	  return rc;
@@ -204,29 +239,6 @@ if_file_write (struct file *file,
         else return -UTRACER_EENGINE;
       }
       else return -ESRCH;
-    }
-    break;
-  case IF_CMD_TESTSIG:		// fixme -- diagnostic
-    {
-      struct task_struct * task;
-      siginfo_t si;
-
-      testsig_cmd_s testsig_cmd = if_cmd.testsig_cmd;
-
-      task = get_task (testsig_cmd.utracing_pid);
-
-      printk(KERN_INFO "testsig to %ld\n", testsig_cmd.utracing_pid);
-
-      si.si_signo = SIGUSR1;
-      si.si_errno = 0;		// may or may not need this
-      si.si_code  = SI_KERNEL;	// may or may not need this
-      // see /usr/include/bits/siginfo.h
-
-      send_sig_info(SIGUSR1,
-		    &si,		// struct siginfo *info
-		    task);
-
-      return count;
     }
     break;
   case IF_CMD_ATTACH:
@@ -334,13 +346,18 @@ if_file_write (struct file *file,
                                4,               // count
                                &readreg_resp.data,      // kbuf
                                NULL);   // ubuf
+#if 1
+	      queue_response (utracing_info_found,
+			      &readreg_resp,
+			      sizeof(readreg_resp));
+#else
               utracing_info_found->queued_data =
                 kmalloc (sizeof(readreg_resp), GFP_KERNEL);
               memcpy (utracing_info_found->queued_data,
                       &readreg_resp, sizeof(readreg_resp));
-	      // fixme -- locks around this?
               utracing_info_found->queued_data_length = sizeof(readreg_resp);
-	      wake_up_all (&ifr_wait);
+	      wake_up_all (&(utracing_info_found->ifr_wait));
+#endif
             }
             else return -UTRACER_ETRACING;
           }
@@ -369,29 +386,24 @@ if_file_read ( char *buffer,
     int rc = 0;
     int error;
 
-    printk (KERN_INFO "about to wait in if_file_read\n");
     error =
-      wait_event_interruptible (ifr_wait,
+      wait_event_interruptible (utracing_info_found->ifr_wait,
 				0 < utracing_info_found->queued_data_length);
-    printk (KERN_INFO "done waiting in if_file_read error = %d\n", error);
 
-    if (0 < offset) {
-      rc = 0;
-      *eof = 1;
-    }
-    else {
-      //fixme--check length
-      // fixme -- locks around this?
-      if (utracing_info_found->queued_data &&
-          (0 < utracing_info_found->queued_data_length)) {
-        rc = utracing_info_found->queued_data_length;
-        memcpy (buffer, utracing_info_found->queued_data, rc);
+    //fixme--check length
+    if (utracing_info_found->queued_data &&
+	(0 < utracing_info_found->queued_data_length)) {
+      rc = utracing_info_found->queued_data_length;
+      memcpy (buffer, utracing_info_found->queued_data, rc);
 
-        kfree (utracing_info_found->queued_data);
-        utracing_info_found->queued_data = NULL;
-        utracing_info_found->queued_data_length = 0;
-      }
     }
+    
+    if (utracing_info_found->queued_data)
+      kfree (utracing_info_found->queued_data);
+    utracing_info_found->queued_data = NULL;
+    utracing_info_found->queued_data_length = 0;
+    *eof = 1;
+    wake_up_all (&(utracing_info_found->ifw_wait));
     return rc;
   }
 

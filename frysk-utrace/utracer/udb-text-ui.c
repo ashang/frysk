@@ -68,20 +68,6 @@ quiesce_fcn(char ** saveptr)
 }
 
 static int
-testsig_fcn(char ** saveptr)	// fixme -- diagnostic
-{
-  utrace_testsig_if ();
-  return 1;
-}
-
-static int
-testcfread_fcn(char ** saveptr)	// fixme -- diagnostic
-{
-  utrace_testcfread_if ();
-  return 1;
-}
-
-static int
 dettach_fcn(char ** saveptr)
 {
   long pid;
@@ -171,8 +157,6 @@ static ENTRY cmds[] = {
   {"step",		step_fcn},
   {"sw",		switchpid_fcn},
   {"switchpid",		switchpid_fcn},
-  {"testsig",		testsig_fcn},		// fixme -- diagnostic
-  {"testcfread",	testcfread_fcn},	// fixme -- diagnostic
 };
 static int nr_cmds = sizeof(cmds)/sizeof(ENTRY);
 

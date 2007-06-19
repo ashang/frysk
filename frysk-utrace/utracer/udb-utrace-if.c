@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <alloca.h>
-//#include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -39,42 +38,6 @@ unregister_utracer(pid_t pid)
   ssize_t sz = write (ctl_file_fd, &register_cmd, sizeof(register_cmd));
   if (-1 == sz) uerror ("Writing unregister command.");
   else fprintf (stdout, "\t%d  unregistering\n", pid);
-}
-
-void
-utrace_testsig_if ()		// fixme -- diagnostic
-{
-  testsig_cmd_s testsig_cmd = {IF_CMD_TESTSIG, (long)udb_pid};
-  ssize_t sz = write (utracer_cmd_file_fd, &testsig_cmd, sizeof(testsig_cmd));
-  if (-1 == sz) uerror ("Writing testsig command.");
-  else {
-    fprintf (stdout, "\ttestsig sent\n");
-  }
-}
-
-void
-utrace_testcfread_if ()		// fixme -- diagnostic
-{
-  ssize_t sz;
-  fd_set readfds;
-  int rv;
-#define BFFR_LEN 512
-  char * bffr = alloca (BFFR_LEN);
- 
-  FD_ZERO(&readfds);
-  FD_SET(ctl_file_fd, &readfds);
-
-  fprintf (stderr, "about to select\n");
-  //rv = select(1, &readfds, NULL, NULL, NULL);
-  fprintf (stderr, "back from select, rv = %d, bit is %s\n", 
-       rv, FD_ISSET(ctl_file_fd, &readfds) ? "true" : "false");
-
-
-  fprintf (stderr, "waiting for testcfread\n");
-  sz = pread (ctl_file_fd, bffr, BFFR_LEN, 0);
-  if (0 <= sz) bffr[sz] = 0;
-  fprintf (stderr, "returned from testcfread, sz = %d \"%s\"\n",
-	   (int)sz, bffr);
 }
 
 void
@@ -129,34 +92,4 @@ utrace_readreg_if (long pid, int regset, int reg)
 			       pid, regset, reg};
   ssize_t sz = write (utracer_cmd_file_fd, &readreg_cmd, sizeof(readreg_cmd));
   if (-1 == sz) uerror ("Writing readreg command.");
-#if 0
-  else {
-    readreg_resp_s readreg_resp;
-    ssize_t sz = pread (utracer_file_fd, &readreg_resp,
-			sizeof(readreg_resp), 0);
-    if (-1 == sz) uerror ("Reading readreg command.");
-    else if (0 == sz) {
-      fprintf (stderr, "\tNo register data returned.\n");
-    }
-    else {
-      fprintf (stdout, "\t[%d][%d]: %d [%#08x]\n",
-	       readreg_resp.regset,
-	       readreg_resp.which,
-	       (int)readreg_resp.data,
-	       (int)readreg_resp.data);
-#if 0
-      fprintf (stderr, "readreg got %d bytes:\n", sz);
-      fprintf (stderr, "\ttype         = %ld\n", readreg_resp.type);
-      fprintf (stderr, "\tutracing_pid = %ld\n", readreg_resp.utracing_pid);
-      fprintf (stderr, "\tutraced_pid  = %ld\n", readreg_resp.utraced_pid);
-      fprintf (stderr, "\tregset       = %d\n",  readreg_resp.regset);
-      fprintf (stderr, "\twhich        = %d\n",  readreg_resp.which);
-      fprintf (stderr, "\tbyte_count   = %d\n",  readreg_resp.byte_count);
-      fprintf (stderr, "\treg_count    = %d\n",  readreg_resp.reg_count);
-      fprintf (stderr, "\tdata         = %d\n",
-	       (int)readreg_resp.data);
-#endif
-    }
-  }
-#endif
 }

@@ -41,4 +41,10 @@ int utracer_resp_file_fd
 #endif
 ;
 
+char * module_name
+#ifdef DO_UDB_INIT
+= NULL
+#endif
+  ;
+
 #endif  /* UDB_H */

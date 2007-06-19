@@ -132,6 +132,8 @@ create_utracing_info_entry (long utracing_pid,
   utracing_info_new->de_utracing_resp		= de_utracing_resp;
   utracing_info_new->utracing_engine		= utracing_engine;
   utracing_info_new->utraced_info		= NULL;
+  init_waitqueue_head (&(utracing_info_new->ifr_wait));
+  init_waitqueue_head (&(utracing_info_new->ifw_wait));
   utracing_info_new->queued_data		= NULL;
   utracing_info_new->queued_data_length		= 0;
 
@@ -289,7 +291,7 @@ static int __init utracer_init(void)
   }
 
   de_utrace_control->write_proc = control_file_write;
-#if 1
+#if 0
   de_utrace_control->read_proc  = control_file_read;
 #else
   de_utrace_control->read_proc  = NULL;

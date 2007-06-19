@@ -1,11 +1,24 @@
+2007-06-19  Chris Moller  <moller@mollerware.com>
+
+	* udb-module.c: New--moved the module loading/unloading code here
+	from udb.c.  Also added a "--wait" to rmmod to fix the "module in
+	use" problems.
+	* udb.c: Took the module loading/unloading stuff out per above.
+	Added a response parser/formatter to the listener thread.
+	* udb.h: Patched a few things for above.
+	* Makefile: Added udb-module.c
+
 2007-06-18  Chris Moller  <moller@mollerware.com>
 
 	* Makefile: Added -lpthread to UDB_LIBS
-	* udb-text-ui.c: Added test for empty iline.
+	* udb-text-ui.c: Added test for empty iline.  Cleaned up
+	diagnostic code.
 	* udb-utrace-if.c: Removed automatic read if if_resp to get
-	readreg data, replaced with blocked read in udb.c, q.v.
+	readreg data, replaced with blocked read in udb.c, q.v.  Cleaned
+	up diagnostic code.
 	* udb.c: Added a thread that listens to the LKM waiting for input.
 	* udb.h: Patch to accomdate the above.
+	
 
 2007-06-15  Chris Moller  <moller@mollerware.com>
 

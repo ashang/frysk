@@ -22,7 +22,6 @@ typedef union {
 
 typedef enum {
   IF_CMD_NULL,
-  IF_CMD_TESTSIG,		// fixme -- diagnostic
   IF_CMD_ATTACH,
   IF_CMD_DETACH,
   IF_CMD_SET_REG,
@@ -43,11 +42,6 @@ typedef struct {
   long utraced_pid;
 } attach_cmd_s;
 
-typedef struct {		// fixme -- diagnostic
-  long cmd;
-  long utracing_pid;
-} testsig_cmd_s;
-
 typedef struct {
   long cmd;
   long utracing_pid;
@@ -61,12 +55,13 @@ typedef union {
   attach_cmd_s	attach_cmd;
   readreg_cmd_s	readreg_cmd;
   run_cmd_s	run_cmd;
-  testsig_cmd_s testsig_cmd;	// fixme -- diagnostic
 } if_cmd_u;
 
 typedef enum {
   IF_RESP_NULL,
-  IF_RESP_REG_DATA
+  IF_RESP_REG_DATA,
+  IF_RESP_CLONE_DATA,
+  IF_RESP_SIGNAL_DATA
 } if_resp_e; 
 
 typedef struct {
@@ -80,9 +75,22 @@ typedef struct {
   void * data;
 } readreg_resp_s;
 
+typedef struct {
+  long type;
+  long utracing_pid;
+  long new_utraced_pid;
+} clone_resp_s;
+
+typedef struct {
+  long type;
+  long signal;
+} signal_resp_s;
+
 typedef union {
   long type;
   readreg_resp_s	readreg_resp;
+  clone_resp_s		clone_resp;
+  signal_resp_s		signal_resp;
 } if_resp_u;
 
 typedef enum {

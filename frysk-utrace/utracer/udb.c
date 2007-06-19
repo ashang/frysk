@@ -6,13 +6,11 @@
 #include <alloca.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <malloc.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <pthread.h>
 
@@ -20,79 +18,14 @@
 #define DO_UDB_INIT
 #include "udb.h"
 
-char * module_name = NULL;
-
-pthread_t	resp_listener_thread;
-
-static int
-utracer_loaded()
-{
-  struct stat buf;
-  int src;
-  char * proc_utrace_fn;
-  int rc = 1;
-  
-  asprintf (&proc_utrace_fn, "/proc/%s", BASE_DIR);
-  src = stat(proc_utrace_fn, &buf);
-  free(proc_utrace_fn);
-  if (-1 == src) {
-    if (errno != ENOENT)
-      error (1, errno, "Error statting /proc/%s", BASE_DIR);
-    rc = 0;
-  }
-  return rc;
-}
-
-static void
-load_utracer()
-{
-  pid_t child_pid = fork();
-  switch (child_pid) {
-  case -1:
-    error (1, errno, "Error forking loader");
-    break;
-  case 0:	// child
-    {
-      char * mod_name;
-      if (module_name) {
-	asprintf (&mod_name, "./%s.ko", module_name);
-	int rc = execlp ("insmod", "insmod", mod_name, NULL);
-	free (mod_name);
-	if (-1 == rc)
-	  error (1, errno, "Error in loader execlp");
-      }
-      else fprintf (stderr, "WARNING: No module loaded!\n");
-    }
-    break;
-  default:	// parent
-    {
-      int status;
-      waitpid (child_pid, &status, 0);
-      if (!utracer_loaded()) {	/* /proc/utrace still doesn't exist */
-	if (WIFEXITED(status)) {	/* even though the child exited ok  */
-	  fprintf (stderr, "\tLoader failed for no identifiable reason\n");
-	  exit (1);
-	}
-	else				/* child came to sad, untimely, end */
-	  error (1, errno, "Error in loader");
-      }
-
-      {
-	char * cfn;
-	asprintf (&cfn, "/proc/%s/%s", BASE_DIR, CONTROL_FN);
-	ctl_file_fd = open (cfn, O_RDWR);
-	free (cfn);
-	if (-1 == ctl_file_fd)
-	  error (1, errno, "Error opening control file");
-      }
-    }
-    break;
-  }
-}
+pthread_t resp_listener_thread;
 
 static void
 cleanup_udb()
 {
+  int rc = pthread_cancel (resp_listener_thread);
+  if (0 != rc) perror ("pthread_cancel");
+  
   if (-1 != utracer_cmd_file_fd) {
     close (utracer_cmd_file_fd);
     utracer_cmd_file_fd = -1;
@@ -100,36 +33,6 @@ cleanup_udb()
   if (-1 != utracer_resp_file_fd) {
     close (utracer_resp_file_fd);
     utracer_resp_file_fd = -1;
-  }
-}
-
-void
-unload_utracer()
-{
-  pid_t child_pid = fork();
-  switch (child_pid) {
-  case -1:
-    error (1, errno, "Error forking unloader");
-    break;
-  case 0:	// child
-    {
-      int rc = execlp ("rmmod", "rmmod", module_name, NULL);
-      if (-1 == rc)
-	error (1, errno, "Error in unloader execlp");
-    }	
-    break;
-  default:	// parent
-    {
-      int status;
-      waitpid (child_pid, &status, 0);
-      if (utracer_loaded()) {	/* /proc/utrace still exists */
-	if (WIFEXITED(status))	/* even though the child exited ok  */
-	  fprintf (stderr, "\tUnloader failed for no identifiable reason\n");
-	else			/* child came to sad, untimely, end */
-	  perror ("Error in unloader");
-      }
-    }
-    break;
   }
 }
 
@@ -153,20 +56,42 @@ static struct option options[] = {
 static void *
 resp_listener (void * arg)
 {
-  readreg_resp_s readreg_resp;
+  if_resp_u if_resp;
   ssize_t sz;
 
   while (1) {
-    sz = pread (utracer_resp_file_fd, &readreg_resp,
-		sizeof(readreg_resp), 0);
-    fprintf (stderr, "got sz = %d\n", (int)sz);
+    sz = pread (utracer_resp_file_fd, &if_resp,
+		sizeof(if_resp), 0);
 
-    // just for readreg
-    fprintf (stdout, "\t[%d][%d]: %d [%#08x]\n",
-	     readreg_resp.regset,
-	     readreg_resp.which,
-	     (int)readreg_resp.data,
-	     (int)readreg_resp.data);
+    switch (if_resp.type) {
+    case IF_RESP_SIGNAL_DATA:
+      {
+	signal_resp_s signal_resp = if_resp.signal_resp;
+	fprintf (stdout, "\tsignal %ld\n",
+		 signal_resp.signal);
+      }
+      break;
+    case IF_RESP_REG_DATA:
+      {
+	readreg_resp_s readreg_resp = if_resp.readreg_resp;
+	fprintf (stdout, "\t[%d][%d]: %d [%#08x]\n",
+		 readreg_resp.regset,
+		 readreg_resp.which,
+		 (int)readreg_resp.data,
+		 (int)readreg_resp.data);
+      }
+      break;
+    case IF_RESP_CLONE_DATA:
+      {
+	clone_resp_s clone_resp = if_resp.clone_resp;
+	fprintf (stdout, "\t%ld cloned to %ld\n",
+		 clone_resp.utracing_pid,
+		 clone_resp.new_utraced_pid);
+      }
+      break;
+    default:
+      break;
+    }
   }
 }
 

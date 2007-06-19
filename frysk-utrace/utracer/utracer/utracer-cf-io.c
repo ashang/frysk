@@ -19,21 +19,12 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
-DECLARE_WAIT_QUEUE_HEAD(cfr_wait);
-int cfr_data_ready = 0;
-
-void
-wake_up_cfr_wait()
-{
-  wake_up_all (&cfr_wait);
-}
-
 static u32
 client_report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
 	     long orig_code, long *code)
 {
-  printk(KERN_INFO "client reporting exit\n");	// fixme use to cleanup 
+  //  printk(KERN_INFO "client reporting exit\n");// fixme use to cleanup 
   return UTRACE_ACTION_RESUME;			// utracing_info list
 }
 
@@ -41,7 +32,7 @@ static u32
 client_report_death (struct utrace_attached_engine *engine,
 	      struct task_struct *tsk)
 {
-  printk(KERN_INFO "client reporting death\n");
+  //  printk(KERN_INFO "client reporting death\n");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -207,6 +198,7 @@ control_file_write (struct file *file,
   return count;
 }
 
+#if 0
 int
 control_file_read ( char *buffer,
                     char **buffer_location,
@@ -216,12 +208,6 @@ control_file_read ( char *buffer,
                     void *data)
 {
   int rc;
-  int error;
-
-  printk (KERN_INFO "about to wait in control_file_read\n");
-  error = wait_event_interruptible (cfr_wait, cfr_data_ready == 1);
-  printk (KERN_INFO "done waiting in control_file_read error = %d\n", error);
-  cfr_data_ready = 0;
 
   if (0 < offset) rc = 0;
   else {
@@ -230,7 +216,7 @@ control_file_read ( char *buffer,
   }
 
   return rc;
-  
 }
+#endif
 
 

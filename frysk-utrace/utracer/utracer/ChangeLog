@@ -2,11 +2,14 @@
 
 	* utracer-base.c: Separated the single utraced-specific if_cmd
 	file into a write-only cmd file and a read-only response file.
-	* utracer-cf-io.c: Patched to accomodate above.
+	* utracer-cf-io.c: Patched to accomodate above.  Cleaned up
+	diagnostic code.
 	* utracer-if-io.c: Added a wait queue to the if_resp fcn to block
-	untl data if ready, allowing the userspace debugger to select() on
-	input from the LKM.
-	* utracer-private.h: Patched to accomdate the above.
+	until data is ready, allowing the userspace debugger to select() on
+	input from the LKM.  Cleaned up diagnostic code.  Added a wait
+	queue to make sure queued data isn't overwritten.  Added responses
+	for clone and signal asynchronous events.
+	* utracer-private.h: Patched to accomdate the above.  
 
 2007-06-15  Chris Moller  <moller@mollerware.com>
 

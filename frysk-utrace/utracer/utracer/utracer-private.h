@@ -34,6 +34,8 @@ typedef struct _utracing_info_s {
   struct proc_dir_entry * de_utracing_resp;
   struct utrace_attached_engine * utracing_engine;
   utraced_info_s * utraced_info;
+  wait_queue_head_t ifr_wait;
+  wait_queue_head_t ifw_wait;
   void * queued_data;
   long queued_data_length;
   struct _utracing_info_s * next;
@@ -54,14 +56,14 @@ int control_file_write (struct file *file,
 			unsigned long count,
 			void *data);
 
+#if 0
 int control_file_read ( char *buffer,
 			char **buffer_location,
 			off_t offset,
 			int buffer_length,
 			int *eof,
 			void *data);
-
-void wake_up_cfr_wait(void);
+#endif
 
 utracing_info_s * lookup_utracing_info (long utracing_pid);
 
