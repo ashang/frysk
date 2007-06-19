@@ -60,20 +60,22 @@ AC_CONFIG_FILES([
 
 for isa in i386 x86_64 ppc64
 do
-(
-  test -d libunwind-$isa || mkdir libunwind-$isa
-  confdir=`(cd "$srcdir";pwd)`
-  cd libunwind-$isa
-  # Make sure the inplace build does not break with "already configured"
-  # message; the file is going to regenerated, anyway.
+  AC_MSG_NOTICE([configuring libunwind-$isa])
+  mkdir -p libunwind-$isa
+  confdir=`cd "$srcdir";pwd`
   # FIXME - This is wrong since it discards any configure flags given
   # except those explicitly passed on...
-  rm -f $confdir/libunwind/config.status
-  $confdir/libunwind/configure --target=$isa-unknown-linux-gnu \
-	--build=${build} --host=${host} --prefix=${prefix}
-)
+  ( cd libunwind-$isa ; $confdir/libunwind/configure \
+	--target=$isa-unknown-linux-gnu \
+	--build=${build} \
+	--host=${host} \
+	--prefix=${prefix} ) || exit $?
 done
 
-AC_CONFIG_SUBDIRS([elfutils])
+# Even though "libunwind" is not built, it is still included in the
+# list of configured subdirectories so that it can be included in
+# "make dist" (or the recursive "make distdir").
+
+AC_CONFIG_SUBDIRS([elfutils libunwind])
 
 AC_OUTPUT

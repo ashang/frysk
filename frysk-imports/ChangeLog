@@ -1,3 +1,18 @@
+2007-06-19  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh (isa): Touch the file .keep_me in each
+	libunwind-$isa directory.
+	* configure.ac (AC_CONFIG_SUBDIRS): Add directory "libunwind".
+	(isa): Do not remove config.guess; exit if sub-configure fails.
+	* Makefile.am (EXTRA_DIST): Add "libunwind-i386/.keep_me",
+	"libunwind-x86_64/.keep_me", and "libunwind-ppc64/.keep_me".
+	(DIST_SUBDIRS): Add directory "libunwind".
+	(install-data-recursive, install-exec-recursive)
+	(install-info-recursive, install-recursive)
+	(installcheck-recursive, installdirs-recursive)
+	(uninstall-info-recursive, uninstall-recursive): Set SUBDIRS to
+	just "tests".
+
 2007-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* configure.ac (AC_CONFIG_SUBDIRS): Removed libunwind.

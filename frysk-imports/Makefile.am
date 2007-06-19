@@ -40,8 +40,9 @@
 include common/Makefile.rules
 include Makefile.gen
 
-# On all platforms, "make check" in libunwind is disabled.  (This is
-# probably not portable, but we do not mind.)
+# List of directories that should both be included in the distro and
+# included in a recursive "make check".  "libunwind" is not included
+# as its testsuite is not portable, and it is not built native.
 CHECK_SUBDIRS = \
 	jline \
 	tests \
@@ -49,10 +50,28 @@ CHECK_SUBDIRS = \
 	junit \
 	elfutils \
 	getopt
-# Leave out the libunwind-$arch subdirectories from dist:
-DIST_SUBDIRS = $(CHECK_SUBDIRS)
-SUBDIRS = $(DIST_SUBDIRS) libunwind-i386 libunwind-x86_64 libunwind-ppc64
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
+
+# List of directories to include in the distro.  This needs to include
+# "libunwind" so its sources are included.
+DIST_SUBDIRS = $(CHECK_SUBDIRS) libunwind
+
+# List of directories to build.  This does not include "libunwind" but
+# does include the unwind cross libraries.
+SUBDIRS = $(CHECK_SUBDIRS) libunwind-i386 libunwind-x86_64 libunwind-ppc64
+
+# List of directories to install, put simply, only install frysk
+# stuff.  Will eventually need to change this so that it installs
+# .so-s for any libraries that frysk uses; of course that assumes that
+# frysk is dynamically linked.
+install-data-recursive \
+install-exec-recursive \
+install-info-recursive \
+install-recursive \
+installcheck-recursive \
+installdirs-recursive \
+uninstall-info-recursive \
+uninstall-recursive: SUBDIRS = tests
 
 EXTRA_DIST += \
 	frysk/pkgdatadir/test-core.bz2.uu \
@@ -87,3 +106,8 @@ noinst_HEADERS = \
 	include/frysk-asm.h \
 	include/linux.ptrace.h \
 	include/linux.syscall.h
+
+EXTRA_DIST += \
+	libunwind-i386/.keep_me \
+	libunwind-x86_64/.keep_me \
+	libunwind-ppc64/.keep_me
