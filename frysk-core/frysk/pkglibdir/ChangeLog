@@ -1,3 +1,7 @@
+2007-06-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-stacks-exit.c: New.
+
 2007-06-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-scopes.c: New.

@@ -77,6 +77,27 @@ public class TestFrameDebugInfo
     
   }
 
+  public void testFrameAdjustedAddress ()
+  {
+    if(brokenXXX(4676))
+	return;
+
+    Task task = getStoppedTask("funit-stacks-exit");
+
+    Frame frame = StackFactory.createFrame(task);
+    String string = StackFactory.printStackTrace(frame);
+      
+//    System.out.println("TestRichFrame.testRichFrame()");
+//    System.out.println(string);
+//    System.out.println();
+//    
+    assertTrue("first", string.contains("first"));
+    assertTrue("second", string.contains("second"));
+    assertTrue("third",string.contains("third"));
+    assertTrue("fourth",string.contains("fourth"));
+    
+  }
+
   public void testParameters(){
     Task task = getStoppedTask();
 
@@ -110,40 +131,53 @@ public class TestFrameDebugInfo
     
   }
 
-  public Task getStoppedTask ()
+  public Task getStoppedTask(){
+    return this.getStoppedTask("funit-stacks");
+  }
+  
+  public Task getStoppedTask (String process)
   {
 
     AttachedDaemonProcess ackProc = new AttachedDaemonProcess(
-							      new String[] { getExecPath("funit-stacks") });
+							      new String[] { getExecPath(process) });
 
     Task task = ackProc.getMainTask();
 
-    task.requestAddSignaledObserver(new TaskObserver.Signaled()
-    {
-
-      public void deletedFrom (Object observable)
-      {
-      }
-
-      public void addedTo (Object observable)
-      {
-      }
-
-      public void addFailed (Object observable, Throwable w)
-      {
-	throw new RuntimeException(w);
-      }
-
-      public Action updateSignaled (Task task, int signal)
-      {
-        Manager.eventLoop.requestStop();
-        return Action.BLOCK;
-      }
-    });
+    task.requestAddSignaledObserver(new TerminatingSignaledObserver());
+    task.requestAddTerminatingObserver(new TerminatingSignaledObserver());
+    
     ackProc.resume();
-    assertRunUntilStop("Add TerminatingObserver");
+    assertRunUntilStop("Add TerminatingSignaledObserver");
 
     return task;
   }
 
+  class TerminatingSignaledObserver implements TaskObserver.Signaled, TaskObserver.Terminating{
+    public void deletedFrom (Object observable)
+    {
+    }
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+        throw new RuntimeException(w);
+    }
+
+    public Action updateSignaled (Task task, int signal)
+    {
+      System.out.println("TerminatingSignaledObserver.updateSignaled()");
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+      System.out.println("TerminatingSignaledObserver.updateTerminating()");
+      Manager.eventLoop.requestStop();
+      return Action.BLOCK;
+    }
+  }
 }
