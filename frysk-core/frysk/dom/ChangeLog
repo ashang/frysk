@@ -1,3 +1,7 @@
+2007-06-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Redo below fix to make it more comprehensive.
+
 2007-06-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMLine.java: Fix problem with XML aborting when

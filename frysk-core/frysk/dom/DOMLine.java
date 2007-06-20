@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -83,44 +83,23 @@ public class DOMLine
 
 	private Element myElement;
 
-	/**
-	 * Creates a new DOMLine
-	 * @param lineNo
-	 * 		The line number of this line
-	 * @param lineText
-	 * 		The text on this line
-	 * @param offset
-	 * 		The offset in characters from the start of the file
-	 * @param executable
-	 * 		Whether this line is executable or not
-	 * @param hasBreakpoint
-	 * 		Whether this line has any breakpoints on it or not
-	 * @param address
-	 * 		The program counter value.
-	 */
-	public DOMLine (int lineNo, String lineText, int offset, boolean executable,
+  /**
+   * Creates a new DOMLine
+   * 
+   * @param lineNo The line number of this line
+   * @param lineText The text on this line
+   * @param offset The offset in characters from the start of the file
+   * @param executable Whether this line is executable or not
+   * @param hasBreakpoint Whether this line has any breakpoints on it or not
+   * @param address The program counter value.
+   */
+  public DOMLine (int lineNo, String lineText, int offset, boolean executable,
                   boolean hasBreakpoint, long address)
   {
     this.myElement = new Element(DOMLine.LINE_NODE);
-    // Must check the lineText to ensure no illegal characters.
+    // Must check the lineText to ensure no illegal XML characters.
     if (Verifier.checkCharacterData(lineText) != null)
-      {
-        // Must be an invalid character in the line
-        // Find it and set it to blank space
-        char ch[] = lineText.toCharArray();
-        // Except for Form Feeds, set them to the XML code for Form Feed(New Page)
-        if (ch[0] == 12)
-          lineText = "&np";
-        else
-          {
-            for (int i = 0; i < lineText.length(); i++)
-              {
-                if (! Verifier.isXMLCharacter(ch[i]))
-                  ch[i] = ' ';
-              }
-            lineText = ch.toString();
-          }
-      }
+      lineText = insertXMLCode(lineText);
     myElement.setText(lineText);
     myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
     myElement.setAttribute(DOMSource.ADDR_ATTR, "" + address);
@@ -390,4 +369,60 @@ public class DOMLine
     {
 		return this.myElement;
 	}
+        
+        /**
+         * inserXMLCode takes a special control character and inserts the
+         * XML code for that char.
+         * @param line
+         * @param ch
+         * @return
+         */
+        private static String insertXMLCode(String line) {
+          // Must be an invalid character in the line
+          // Find it and set it to blank space
+          char ch[] = line.toCharArray();
+          // Except for Form Feeds, set them to the XML code for Form Feed(New
+          // Page)
+              for (int i = 0; i < ch.length; i++)
+                {
+                  if (! Verifier.isXMLCharacter(ch[i]))
+                    {
+                      switch (ch[i])
+                        {
+                        case 12:
+                          if (ch.length == 1)
+                            line = "&np";
+                          else
+                            line = insertCode(line, "&np", i);
+                          break;
+                        default:
+                          if (ch.length == 1)
+                            line = " ";
+                          else
+                            line = insertCode(line, " ", i);
+                          break;
+
+                        }
+                    }
+                }
+          return line;
+        }
+        
+        /**
+         * insertCode inserts the code sent to it to replace the single char
+         * 
+         * @param line is the String to insert the characters into
+         * @param XMLcode is the String to insert
+         * @param i is the location in the line String to insert the chars
+         */
+        private static String insertCode(String line, String code, int pos) {
+          
+          String endline = line.substring(pos+1, line.length());
+          if (pos == 0)
+            return code + endline;
+          else {
+            String startline = line.substring(0, pos-1);
+            return startline + code + endline;
+          }
+        }
 }
