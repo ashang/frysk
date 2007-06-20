@@ -1,3 +1,8 @@
+2007-06-20  Tim Moore  <timoore@redhat.com>
+
+	* DwarfDieFactory.java (DwarfDieFactory, loadDies): Give up on
+	reflection for now and build a table of classes in loadDies.
+
 2007-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* DwarfDieFactory.java (loadDies): Call System.err.println 
