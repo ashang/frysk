@@ -1,5 +1,10 @@
 2007-06-20  Nurdin Premji  <npremji@redhat.com>
 
+	* CommandlineParser.java (parsePids): print error message, help message
+	and exit.
+	(parseCores): Ditto.
+	(parseCommands): Ditto.
+
 	* CommandlineParser.java: Wrap a parser instead of extending it.
 	(printHelp): Added.
 	(setHeader): Added.

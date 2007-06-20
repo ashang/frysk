@@ -79,7 +79,9 @@ public class CommandlineParser
    */
   public void parsePids(ProcId[] pids)
   {
-    throw new RuntimeException("pids not supported.");
+    System.err.println("Error: Pids not supported.");
+    printHelp();
+    System.exit(1);
   }
   
   /**
@@ -89,7 +91,9 @@ public class CommandlineParser
    */
   public void parseCores(File[] coreFiles)
   {
-    throw new RuntimeException("cores not supported.");
+    System.err.println("Error: Cores not supported.");
+    printHelp();
+    System.exit(1);
   }
   
   /**
@@ -98,7 +102,9 @@ public class CommandlineParser
    */
   public void parseCommand(String[] command)
   {
-    throw new RuntimeException("commands not supported.");
+    System.err.println("Error: Commands not supported.");
+    printHelp();
+    System.exit(1);
   }
   
   public String[] parse (String[] args)
