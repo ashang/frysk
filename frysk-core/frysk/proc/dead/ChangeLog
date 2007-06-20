@@ -1,3 +1,8 @@
+2007-06-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxProc.java (LinuxProc): Look in <pwd>, then other
+	common locations for exe before giving up.
+
 2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TestLinuxCore.java (testLinuxCoreFileStackTrace): Remove

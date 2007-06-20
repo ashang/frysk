@@ -77,6 +77,7 @@ public class LinuxProc
   private MapAddressHeader metaData[];
   private boolean metaDataBuilt = false;
 
+
   public LinuxProc(ElfData data, LinuxHost host, ProcId procId )
   {
     super(host, null, procId);
@@ -89,8 +90,24 @@ public class LinuxProc
     if (host.exeFile == null)
       {
 	File exeFileName = new File(sendrecExe());
+	// XXX: Hack here, some processes do not have path information
+	// in the name. 
 	if ((exeFileName.exists()) && (exeFileName.canRead()))
 	  host.exeFile = new File(sendrecExe());
+	else
+	  {
+	    String commonLocations[] = {"/bin/","/usr/bin/"};
+	    for (int i=0; i<commonLocations.length; i++)
+	      {
+		exeFileName = new File(commonLocations[i]+sendrecExe());
+		if ((exeFileName.exists()) && (exeFileName.canRead()))
+		  {
+		    host.exeFile = new File(sendrecExe());
+		    break;
+		  }
+	      }
+	  }
+	
       }
     this.exefileBackEnd = host.exeFile;
   }	
