@@ -44,6 +44,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Logger;
 
+import lib.dw.DwTagEncodings;
+import lib.dw.DwarfDie;
+import lib.dw.Dwfl;
+import lib.dw.DwflDieBias;
+
+import frysk.dwfl.DwflFactory;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
@@ -80,7 +86,7 @@ public class TestFrameDebugInfo
   public void testFrameAdjustedAddress ()
   {
     if(brokenXXX(4676))
-	return;
+        return;
 
     Task task = getStoppedTask("funit-stacks-exit");
 
@@ -97,7 +103,28 @@ public class TestFrameDebugInfo
     assertTrue("fourth",string.contains("fourth"));
     
   }
+  
+  public void testFrameScopes ()
+  {
+    if(brokenXXX(4677))
+        return;
 
+    Task task = getStoppedTask("funit-scopes");
+    Frame frame = StackFactory.createFrame(task);
+    frame = frame.getOuter();
+    
+    Dwfl dwfl = DwflFactory.createDwfl(task);
+    DwflDieBias bias = dwfl.getDie(frame.getAdjustedAddress());
+    DwarfDie[] scopes = bias.die.getScopes(frame.getAdjustedAddress() - bias.bias);
+    
+    assertEquals("number of scopes", 3, scopes.length);
+    
+    assertEquals("inlined die" , DwTagEncodings.DW_TAG_inlined_subroutine_,scopes[0].getTag());
+    assertEquals("function die", DwTagEncodings.DW_TAG_subprogram_, scopes[1].getTag());
+    assertEquals("compliation unit die", DwTagEncodings.DW_TAG_compile_unit_, scopes[0].getTag());
+    
+  }
+  
   public void testParameters(){
     Task task = getStoppedTask();
 

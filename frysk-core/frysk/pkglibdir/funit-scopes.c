@@ -1,21 +1,21 @@
 #include <stdlib.h>
 
-void crash(int param1){
+void crash(){
   int* a = 0;
-  a[0] = param1;
+  a[0] = 0;
 }
 
-inline void second(int w){
-  crash(0);
+extern inline void second(){
+  crash();
 }
 
 void first(){
-  second(0);
+  second();
 }
 
 int main(){
 
-  second(0);
+  first();
 
   return 0;
 }
