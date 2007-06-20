@@ -96,7 +96,7 @@ public class LinuxTask
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
 	ByteBuffer memory
-	    = new AddressSpaceByteBuffer(getTid(), AddressSpace.DATA);
+	    = new MemorySpaceByteBuffer(getTid(), AddressSpace.DATA);
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;
