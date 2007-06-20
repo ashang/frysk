@@ -295,6 +295,7 @@ public class CLI
     handlers.put("what", new WhatCommand(this));
     handlers.put("where", new WhereCommand(this));
     handlers.put("whichsets", new WhichsetsCommand(this));
+    addHandler(new DisplayCommand(this));
     // New interface
     addHandler(new RunCommand(this));
 
