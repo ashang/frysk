@@ -65,6 +65,32 @@ public class TestFhd
       child.close ();
     child = null;
   }
+  
+  public void testHpdPid ()
+  {
+    child = new Expect(new String[] 
+               { 
+                 new File(Config.getPkgLibDir(), "hpd-c").getPath() 
+               });
+    e = new Expect(new String[] 
+               { 
+                 new File(Config.getBinDir(), "fhpd").getPath(), 
+                 child.getPid().toString() 
+                 });
+    e.expect(5, "Attached to process.*\n" + prompt);
+    e.close();
+  }
+  
+  public void testHpdCommand ()
+  {
+    e = new Expect(new String[] 
+                              { 
+                                new File(Config.getBinDir(), "fhpd").getPath(), 
+                                new File(Config.getPkgLibDir(), "hpd-c").getPath() 
+                                });
+                   e.expect(5, "Attached to process.*\n" + prompt);
+                   e.close();
+  }
 
   public void testHpdTraceStack ()
   {

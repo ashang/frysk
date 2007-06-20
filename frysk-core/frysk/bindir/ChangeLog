@@ -1,5 +1,8 @@
 2007-06-20  Nurdin Premji  <npremji@redhat.com>
 
+	* TestFhd.java (testHpdPid): Added.
+	(testHpdCommand): Added.
+	
 	* fcore.java: Use CommandlineParser. Remove references to Parser.
 	* fstep.java: Ditto. 
 	* fcatch.java: Ditto.
