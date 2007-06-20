@@ -118,20 +118,9 @@ public class fcore
       {
         for (int i= 0; i< pids.length; i++)
           dumpPid(pids[i]);
-      }
-
-      //@Override
-      public void parseCommand (String[] command)
-      {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < command.length; i++)
-          buffer.append(" ").append(command[i]);
         
-        throw new RuntimeException("fcore: Argument" + buffer + " does not " +
-                        "appear to be a valid pid.");        
+        System.exit(0);
       }
-      
-
     };
 
     addOptions(parser);
@@ -139,6 +128,11 @@ public class fcore
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
 
     parser.parse(args);
+
+    //If we got here, we didn't find a pid.
+    System.err.println("Error: No pid provided.");
+    parser.printHelp();
+    System.exit(1);
   }
 
   /**

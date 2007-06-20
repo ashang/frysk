@@ -1,3 +1,12 @@
+2007-06-20  Nurdin Premji  <npremji@redhat.com>
+
+	* fcore.java (main): Handle no pids provided case.
+	Removed personalized "parseCommand not supported" error. Now uses 
+	CommandlineParser "parseCommand not supported" error.
+	* TestFcore.java (testNoArguments): Added.
+	(testBadArguments): Expect CommandlineParser "Commands not supported"
+	error.
+
 2007-06-20  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* fcore.java (AddOption): Remove bogus .getClass() call.

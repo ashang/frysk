@@ -54,6 +54,16 @@ public class TestFcore
 	    e.close ();
 	e = null;
     }
+    
+    public void testNoArguments()
+    {
+      e = new Expect (new String[] 
+                  { 
+                    new File (Config.getBinDir (), "fcore").getAbsolutePath ()
+                  });
+                  
+      e.expect ("Error: No pid provided.");      
+    }
 
     public void testBadArguments ()
     {
@@ -61,8 +71,7 @@ public class TestFcore
 	    new File (Config.getBinDir (), "fcore").getAbsolutePath (),
 	    "this is a bad argument"
 	});
-	e.expect ("fcore: Argument this is a bad argument does"
-		  + " not appear to be a valid pid.");
+	e.expect ("Error: Commands not supported.");
     }
 
     public void testBadConsoleParameter ()
