@@ -80,7 +80,7 @@ frysk::sys::StatelessFile::pread(jlong fileOffset,
 		(const char *)elements (unixPath));
 
   // XXX: 64-bit?
-  ssize_t rc = ::pread (fd, start + elements(bytes), length, fileOffset);
+  ssize_t rc = ::pread64 (fd, start + elements(bytes), length, fileOffset);
   if (rc < 0) {
     int savedErrno = errno;
     ::close (fd);
