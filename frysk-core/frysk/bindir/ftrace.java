@@ -49,17 +49,13 @@ import java.util.logging.Logger;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import frysk.proc.ProcId;
+import frysk.util.CommandlineParser;
 import frysk.util.Ftrace;
 import frysk.util.StracePrinter;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
-
-import frysk.Config;
-import frysk.EventLogger;
-
 
 class ftrace
 {
@@ -78,9 +74,8 @@ class ftrace
 
     Ftrace tracer = new Ftrace();
 
-    private void addOptions(Parser parser)
+    private void addOptions(CommandlineParser parser)
     {
-	EventLogger.addConsoleOptions(parser);
         parser.add(new Option('o', "output file name", "FILE") {
             public void parsed(String filename) throws OptionException
             {
@@ -150,33 +145,33 @@ class ftrace
 
     public void run(String[] args)
     {
-        Parser parser = new Parser("ftrace", Config.getVersion (), true) {
+        CommandlineParser parser = new CommandlineParser("ftrace") {
             protected void validate() throws OptionException {
                 if (! requestedPid && commandAndArguments == null)
                     throw new OptionException("no command or PID specified");
+                
+            }
+
+            //@Override
+            public void parseCommand (String[] command)
+            {
+             commandAndArguments = new ArrayList();
+             
+             for (int i = 0; i < command.length; i++)
+               commandAndArguments.add(command[i]);
+            }
+
+            //@Override
+            public void parsePids (ProcId[] pids)
+            {
+              tracer.addTracePid(pids[0].id);
+              requestedPid = true;              
             }
         };
         addOptions(parser);
         parser.setHeader("usage: ftrace [OPTIONS] COMMAND ARGS...");
         
-        parser.parse(args, new FileArgumentCallback() {
-            public void notifyFile(String arg) throws OptionException
-            {
-                if (commandAndArguments == null) {
-                  
-                  //Check if the first argument is a pid, otherwise it will be a command.
-                  try {
-                  int pid = Integer.parseInt(arg);
-                  tracer.addTracePid(pid);
-                  requestedPid = true;
-                  return;
-                  } catch (NumberFormatException e) {
-                    commandAndArguments = new ArrayList();
-                  }
-                }
-                commandAndArguments.add(arg);
-            }
-        });
+        parser.parse(args);
         if (writer == null)
             writer = new PrintWriter(System.out);
         StracePrinter printer = new StracePrinter(writer, tracedCalls);

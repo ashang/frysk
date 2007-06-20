@@ -55,13 +55,12 @@ import frysk.util.StacktraceAction;
 import frysk.util.Util;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
 
 public final class fstack
 {
   private static StacktraceAction stacker;
 
-  private static Parser parser;
+  private static CommandlineParser parser;
 
   protected static final Logger logger = Logger.getLogger("frysk"); 
   

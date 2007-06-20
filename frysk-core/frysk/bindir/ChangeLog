@@ -1,3 +1,12 @@
+2007-06-20  Nurdin Premji  <npremji@redhat.com>
+
+	* fcore.java: Use CommandlineParser. Remove references to Parser.
+	* fstep.java: Ditto. 
+	* fcatch.java: Ditto.
+	* ftrace.java: Ditto.
+	* fstack.java: Ditto.
+	* fhpd.java: Ditto.
+
 2007-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* fhpd.java: Remove unused imports.

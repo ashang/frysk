@@ -45,6 +45,8 @@ import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import lib.elf.ElfEHeader;
 
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
 import frysk.Config;
 import frysk.EventLogger;
@@ -56,14 +58,20 @@ import frysk.proc.ProcId;
  * {@link EventLogger} options.
  */
 public class CommandlineParser
-  extends Parser
 {
-  public CommandlineParser(String name)
+  Parser parser;
+  public CommandlineParser(String name, String version)
   {
-    super(name, Config.getVersion(), true);
-    EventLogger.addConsoleOptions(this);
+    parser = new Parser(name, version, true);
+    
+    EventLogger.addConsoleOptions(parser);
   }
   
+  public CommandlineParser (String programName)
+  {
+    this(programName, Config.getVersion());
+  }
+
   /**
    * Callback function. Gives an array of pids if pids were detected on the 
    * command line.
@@ -93,9 +101,24 @@ public class CommandlineParser
     throw new RuntimeException("commands not supported.");
   }
   
-  public String[] parse(String[] args)
+  public String[] parse (String[] args)
   {
-    String[] result = super.parse(args);
+    String[] result = doParse(args);
+    try
+      {
+        validate();
+      }
+    catch (OptionException e)
+      {
+        printHelp();
+        throw new RuntimeException(e);
+      }
+    return result;
+  }
+  
+  private String[] doParse(String[] args)
+  {
+    String[] result = parser.parse(args);
     
     //XXX: Should parseCommand be called with an empty array here?
     if (result == null)
@@ -119,9 +142,9 @@ public class CommandlineParser
           {
             throw new RuntimeException("Please don't mix pids with core files or executables");
           }
-        }
+        }       
       
-      parsePids(pids);
+      parsePids(pids);      
       return result;
     }
     catch (NumberFormatException e)
@@ -141,13 +164,13 @@ public class CommandlineParser
             throw new RuntimeException("Please don't mix core files with pids or executables.");
           
         
-        parseCores(coreFiles);
+        parseCores(coreFiles);        
         return result;
       }
       
     
     // If not above, then this is an executable command.
-    parseCommand(result);
+    parseCommand(result);    
     return result;
   }
   
@@ -172,6 +195,27 @@ public class CommandlineParser
     elf.close();
     return ret;
 
+  }
+
+  //@Override
+  protected void validate () throws OptionException
+  {
+    //Base implementation does nothing.
+  }
+
+  public void setHeader (String string)
+  {
+    parser.setHeader(string);
+  }
+
+  public void add (Option option)
+  {
+    parser.add(option);
+  }
+
+  public void printHelp ()
+  {
+    parser.printHelp();
   }
 }
     

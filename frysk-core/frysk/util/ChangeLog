@@ -1,3 +1,14 @@
+2007-06-20  Nurdin Premji  <npremji@redhat.com>
+
+	* CommandlineParser.java: Wrap a parser instead of extending it.
+	(printHelp): Added.
+	(setHeader): Added.
+	(doParse): Added.
+	(CommandlineParser): Added.
+	(add): Added.
+	(validate): Added.
+	(parse): Call doParse, call validate.
+
 2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CoredumpAction (AbandonCoreDump): Do not use system.exit,

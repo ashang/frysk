@@ -54,7 +54,6 @@ import frysk.util.Util;
 
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
-import gnu.classpath.tools.getopt.Parser;
 
 
 public class fcore
@@ -148,7 +147,7 @@ public class fcore
    * 
    * @param parser - the parser that is to be worked on.
    */
-  private static void addOptions (Parser parser)
+  private static void addOptions (CommandlineParser parser)
   {
 
     parser.add(new Option("allmaps", 'a',

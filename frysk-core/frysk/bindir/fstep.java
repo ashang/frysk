@@ -39,9 +39,8 @@
 
 package frysk.bindir;
 
-import frysk.Config;
-import frysk.EventLogger;
 import frysk.proc.*;
+import frysk.util.CommandlineParser;
 import lib.opcodes.*;
 import gnu.classpath.tools.getopt.*;
 import java.util.*;
@@ -77,8 +76,15 @@ public class fstep
     sample = 0;
     instrs = 1;
 
-    final Parser parser = new Parser("fstep", Config.getVersion ());
-    EventLogger.addConsoleOptions(parser);
+    final CommandlineParser parser = new CommandlineParser("fstep")
+    {
+
+      public void parseCommand (String[] command)
+      {
+        fstep.command = command;
+      }
+      
+    };
     parser.add(new Option("sample", 's',
 			  "how often to print the current instruction",
 			  "samples")
@@ -139,7 +145,7 @@ public class fstep
 	}
       });
 
-    command = parser.parse(args);
+    parser.parse(args);
     if ((command == null || command.length == 0)
 	&& pid == 0)
       {

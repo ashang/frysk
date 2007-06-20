@@ -41,15 +41,11 @@ package frysk.bindir;
 
 import java.util.logging.Logger;
 
+import frysk.util.CommandlineParser;
 import frysk.util.FCatch;
 
-import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
-import gnu.classpath.tools.getopt.Parser;
 import gnu.classpath.tools.getopt.OptionException;
-
-import frysk.Config;
-import frysk.EventLogger;
 
 public class fcatch
 {
@@ -64,28 +60,29 @@ public class fcatch
 
   private void run (String[] args)
   {
-    Parser parser = new Parser("fcatch", Config.getVersion(), true)
+    CommandlineParser parser = new CommandlineParser("fcatch")
     {
       protected void validate () throws OptionException
       {
         if (! requestedPid && argString == null)
           throw new OptionException("no command or PID specified");
       }
+
+      //@Override
+      public void parseCommand (String[] command)
+      {
+        System.err.println("Entered parseCommand");
+        argString = new StringBuffer(command[0]);
+        for (int i = 1; i < command.length; i++)
+          argString.append(" ").append(command[i]);
+      }
+      
+      
     };
     addOptions(parser);
-    EventLogger.addConsoleOptions(parser);
     parser.setHeader("Usage: fcatch [OPTIONS] -- PATH ARGS || fcatch [OPTIONS] PID");
 
-    parser.parse(args, new FileArgumentCallback()
-    {
-      public void notifyFile (String arg) throws OptionException
-      {
-	     if (argString == null)
-		     argString = new StringBuffer(arg);
-	     else
-		     argString.append(" " + arg);
-      }
-    });
+    parser.parse(args);
 
     if (argString != null)
       {
@@ -95,7 +92,7 @@ public class fcatch
       }
   }
   
-  public void addOptions (Parser p)
+  public void addOptions (CommandlineParser p)
   {
     p.add(new Option('p', "pid to trace", "PID") {
       public void parsed(String arg) throws OptionException
