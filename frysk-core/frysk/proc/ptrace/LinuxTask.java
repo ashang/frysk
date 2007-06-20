@@ -95,8 +95,12 @@ public class LinuxTask
     {
 	logger.log(Level.FINE, "Begin fillMemory\n", this);
 	ByteOrder byteOrder = getIsa().getByteOrder();
+	// temporarily removed and reverted to AddressSpaceByteBuffer
+	// due to 64-bit problems
+	//	ByteBuffer memory
+	//	    = new MemorySpaceByteBuffer(getTid(), AddressSpace.DATA);
 	ByteBuffer memory
-	    = new MemorySpaceByteBuffer(getTid(), AddressSpace.DATA);
+	    = new AddressSpaceByteBuffer(getTid(), AddressSpace.DATA);
 	memory.order(byteOrder);
 	logger.log(Level.FINE, "End fillMemory\n", this); 
 	return memory;
