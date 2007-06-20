@@ -1,3 +1,7 @@
+2007-06-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* fcore.java (AddOption): Remove bogus .getClass() call.
+
 2007-06-20  Nurdin Premji  <npremji@redhat.com>
 
 	* TestFhd.java (testHpdPid): Added.

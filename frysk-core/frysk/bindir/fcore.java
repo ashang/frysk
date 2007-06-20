@@ -139,7 +139,6 @@ public class fcore
     parser.setHeader("Usage: fcore [-a] [-o filename] [-c level] [-l level] <pids>");
 
     parser.parse(args);
-    stacker.getClass();
   }
 
   /**
