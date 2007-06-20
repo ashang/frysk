@@ -1,6 +1,7 @@
 2007-06-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMLine.java: Redo below fix to make it more comprehensive.
+	Change insertion of XML form feed char to just a space.
 
 2007-06-19  Rick Moseley  <rmoseley@redhat.com>
 

@@ -393,7 +393,8 @@ public class DOMLine
                           if (ch.length == 1)
                             line = "&np";
                           else
-                            line = insertCode(line, "&np", i);
+                            //line = insertCode(line, "&np", i);
+                            line = insertCode(line, " ", i);
                           break;
                         default:
                           if (ch.length == 1)
