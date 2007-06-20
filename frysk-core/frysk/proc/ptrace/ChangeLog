@@ -1,8 +1,7 @@
 2007-06-20  Chris Moller  <cmoller@redhat.com>
 
 	* LinuxTask.java (sendrecMemory): Replaced AddressSpaceByteBuffer
-	with the faster pread-based MemorySpaceByteBuffer.  TEMPORARILY
-	reverted due to 64-bit problems.
+	with the faster pread-based MemorySpaceByteBuffer
 
 2007-06-20  Mark Wielaard  <mwielaard@redhat.com>
 
