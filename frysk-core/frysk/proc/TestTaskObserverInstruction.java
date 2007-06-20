@@ -117,15 +117,64 @@ public class TestTaskObserverInstruction extends TestLib
     assertEquals("hit delete and add 2", 3, instr2.hit);
   }
   
+  public void testFirstInstructionStep()
+  {
+    InstructionObserver instr = new InstructionObserver();    
+    StepAttachedObserver sao = new StepAttachedObserver(instr);
+
+    String[] cmd = new String[] { getExecPath("funit-rt-stepper") };
+    Manager.host.requestCreateAttachedProc("/dev/null",
+					   "/dev/null",
+					   "/dev/null", cmd, sao);
+
+    assertRunUntilStop("attach then block");
+    assertTrue("TaskObserver got Task", sao.task != null);
+    assertTrue("InstructionObserver added", instr.added);
+    assertTrue("InstructionObserver hit", instr.hit == 1);
+ 
+    sao.task.requestUnblock(instr);
+    sao.task.requestDeleteAttachedObserver(sao);
+    assertRunUntilStop("DeleteAttachedObserver and wait for step");
+    assertTrue("InstructionObserver hit", instr.hit == 2);
+  }
+
+  class StepAttachedObserver implements TaskObserver.Attached
+  {
+    private final InstructionObserver instr;
+
+    Task task;
+
+    StepAttachedObserver(InstructionObserver instr)
+    {
+      this.instr = instr;
+    }
+
+    public void addedTo (Object o){ }
+    
+    public Action updateAttached (Task task)
+    {
+      this.task = task;
+      task.requestAddInstructionObserver(instr);
+      return Action.BLOCK;
+    }
+    
+    public void addFailed  (Object observable, Throwable w)
+    {
+      System.err.println("addFailed: " + observable + " cause: " + w);
+    }
+    
+    public void deletedFrom (Object o)
+    {
+    }
+    
+  }
+
   private AttachedObserver ao;
   private SteppingEngine steppingEngine;
   private LockObserver lock;
   
-  public void testFirstInstructionStep ()
+  public void testFirstInstructionSteppingEngine ()
   {
-    if (brokenXXX(4663))
-        return;
-    
     lock = new LockObserver();
     steppingEngine = new SteppingEngine();
     steppingEngine.addObserver(lock);
@@ -147,7 +196,10 @@ public class TestTaskObserverInstruction extends TestLib
       return Action.BLOCK;
     }
     
-    public void addFailed  (Object observable, Throwable w) { }
+    public void addFailed  (Object observable, Throwable w)
+    {
+      System.err.println("addFailed: " + observable + " cause: " + w);
+    }
     
     public void deletedFrom (Object o)
     {

@@ -890,6 +890,16 @@ public abstract class Task
   public boolean step_send;
 
   /**
+   * Whether we have just started the Task. Set in
+   * wantToAttachContinue.blockOrAttachContinue() and immediately
+   * reset in sendContinue() unless we request a step or
+   * Running.handleTrappedEvent() when the first step is
+   * received. This is a temporary hack to work around bug
+   * #4663. Needs to be merged with SteppingState (see step_send).
+   */
+  public boolean just_started;
+
+  /**
    * The signal, or zero, send last to the task.
    *
    * XXX: This should be a state in Linux/PTRACE state machine.

@@ -512,6 +512,9 @@ class LinuxTaskState
 	    {
 		TaskState blockOrAttachContinue (Task task, int signal)
 		{
+		    // Mark this Task as just started.
+		    // See Running.handleTrapped for more explanation. 
+		    task.just_started = true;
 		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.attachContinueBlocked;
 		    return Attached.transitionToRunningState(task, signal);
@@ -708,10 +711,16 @@ class LinuxTaskState
 	  if (bp != null
 	      || task.instructionObservers.numberOfObservers() > 0)
 	    task.sendStepInstruction(sig);
-	  else if (task.syscallObservers.numberOfObservers() > 0)
-	    task.sendSyscallContinue(sig);
 	  else
-	    task.sendContinue(sig);
+	    {
+	      // Always reset this, only the first step is important.
+	      // See Running.handleTrapped() for more.
+	      task.just_started = false;
+	      if (task.syscallObservers.numberOfObservers() > 0)
+		task.sendSyscallContinue(sig);
+	      else
+		task.sendContinue(sig);
+	    }
 	  return this;
         }
 
@@ -885,9 +894,14 @@ class LinuxTaskState
 	  // And see if we were stepping a breakpoint.  Or whether we
 	  // installed a breakpoint at the address.  Otherwise it is a
 	  // real trap event and we should treat it like a trap
-	  // signal.
-	  if (isa.isTaskStepped(task))
+	  // signal.  There is a special case for bug #4663.  The
+	  // first step onto the first instruction of a just started
+	  // task sometimes doesn't set the right task stepped flag.
+	  // So we check and immediately clear here.
+	  if (isa.isTaskStepped(task)
+	      || (task.step_send && task.just_started))
 	    {
+	      task.just_started = false;
 	      // Sanity check
 	      if (! task.step_send)
 		throw new IllegalStateException

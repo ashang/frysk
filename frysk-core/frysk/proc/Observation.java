@@ -97,6 +97,7 @@ public abstract class Observation
     
     public String toString() 
     {
-      return ("[Observation Event]");
+      return ("Observation[observable:" + observable
+	      + "observer:" + observer + "]");
     }
 }
