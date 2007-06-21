@@ -58,13 +58,10 @@ import frysk.dwfl.DwflFactory;
 import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
-import frysk.proc.ptrace.AddressSpaceByteBuffer;
-// import frysk.rt.Scope;
 import frysk.rt.Subprogram;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.sys.Errno;
-import frysk.sys.Ptrace.AddressSpace;
 import frysk.value.ArithmeticType;
 import frysk.value.ArrayType;
 import frysk.value.ClassType;
@@ -117,7 +114,8 @@ class DebugInfoEvaluator
   DebugInfoEvaluator (Frame frame)
   {
     this.task = frame.getTask();
-    buffer = new AddressSpaceByteBuffer (this.task.getProc().getPid(), AddressSpace.TEXT);
+    buffer = this.task.getMemory();
+
     ByteOrder byteorder = this.task.getIsa().getByteOrder();
     buffer.order(byteorder);
 
