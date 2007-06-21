@@ -102,7 +102,7 @@ public class LinuxProc
 		exeFileName = new File(commonLocations[i]+sendrecExe());
 		if ((exeFileName.exists()) && (exeFileName.canRead()))
 		  {
-		    host.exeFile = new File(sendrecExe());
+		    host.exeFile = new File(commonLocations[i]+sendrecExe());
 		    break;
 		  }
 	      }

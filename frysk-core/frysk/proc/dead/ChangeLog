@@ -2,6 +2,7 @@
 
 	* LinuxProc.java (LinuxProc): Look in <pwd>, then other
 	common locations for exe before giving up.
+	(LinuxProc): Append new path to exe.
 
 2007-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
