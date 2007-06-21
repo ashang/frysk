@@ -2,6 +2,12 @@
 
 	* cni/StatelessFile.cxx StatelessFile::pread(): Replaced pread()
 	system call with pread64 to fix problems on 64-bit machines.
+	Removed verifyBounds() and replaced it with an upper-bound check.
+	(Nominally negative signed start and length numbers interpreted as
+	large unsigned numbers will exceed bytes->length and cause a
+	bounds exception.  A nominally negative signed fileOffset number
+	interpreted as a large unsigned value will /probably/ result in a
+	read error and a throwErrno().)
 
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 

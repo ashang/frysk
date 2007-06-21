@@ -52,27 +52,14 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-static void
-verifyBounds (jlong fileOffset, jbyteArray bytes, jlong start, jlong length)
-{
-  // XXX: 64-bit?
-  if (fileOffset < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (start < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (length < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (start + length > bytes->length)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-}
-
 jlong
 frysk::sys::StatelessFile::pread(jlong fileOffset,
 				 jbyteArray bytes,
 				 jlong start,
 				 jlong length)
 {
-  verifyBounds(fileOffset, bytes, start, length);
+  if (start + length > bytes->length)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
   
   int fd = ::open ((const char *)elements (unixPath), O_RDONLY);
   if (fd < 0)
@@ -98,7 +85,8 @@ frysk::sys::StatelessFile::pwrite(jlong fileOffset,
 				 jlong start,
 				 jlong length)
 {
-  verifyBounds (fileOffset, bytes, start, length);
+  if (start + length > bytes->length)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
   
   int fd = ::open ((const char *)elements (unixPath), O_WRONLY);
   if (fd < 0)
