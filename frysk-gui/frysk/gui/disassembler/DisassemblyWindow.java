@@ -252,6 +252,8 @@ public class DisassemblyWindow
   {
     this.myTask = myTask;
     long pc_inc;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+
     this.diss = new Disassembler(myTask.getMemory());
 
     pc_inc = myTask.getIsa().pc(myTask);
@@ -264,9 +266,11 @@ public class DisassemblyWindow
     this.disassemblerView = (TreeView) this.glade.getWidget("disassemblerView");
 
     this.diss = new Disassembler(myTask.getMemory());
+    this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
     this.fromBox.setText(Long.toHexString(pc_inc));
     this.lastKnownFrom = pc_inc;
+    this.toSpin.setRange(0.0, highestAddress);
     //this.toSpin.setValue((double) end);
     this.pcLabelDec.setText("" + pc_inc);
     this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
@@ -391,6 +395,8 @@ public class DisassemblyWindow
     this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
+
     this.diss = new Disassembler(myTask.getMemory());
     pc_inc = myTask.getIsa().pc(myTask);
     this.pc = pc_inc;
@@ -398,8 +404,10 @@ public class DisassemblyWindow
     this.numInstructions = 50;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
+    this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
     this.lastKnownFrom = pc_inc;
+    this.toSpin.setRange(0.0, highestAddress);
     // this.toSpin.setValue((double) end);
     this.pcLabelDec.setText("" + pc_inc);
     this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));

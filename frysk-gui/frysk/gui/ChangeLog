@@ -1,3 +1,12 @@
+2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* memory/MemoryWindow.java (setTask, resetTask): Set the valid range
+	of the fromSpin and toSpin buttons from 0 to the highest address for
+	the task's ISA (2^wordsize - 1).
+	* disassembler/DisassemblyWindow.java (setTask, resetTask): Set the
+	valid range of the fromSpin and toSpin buttons from 0 to the highest
+	address for the task's ISA (2^wordsize - 1).
+
 2007-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* disassembler/DisassemblyWindow.java (LockObserver.update): Now

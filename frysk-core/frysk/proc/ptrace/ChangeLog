@@ -1,3 +1,9 @@
+2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* MemorySpaceByteBuffer.java: PeeksRequest.request(...) was not setting
+	the instance variables of the PeeksRequest in the case where the code
+	is not executing on the event loop thread.
+
 2007-06-20  Chris Moller  <cmoller@redhat.com>
 
 	* LinuxTask.java (sendrecMemory): Replaced AddressSpaceByteBuffer

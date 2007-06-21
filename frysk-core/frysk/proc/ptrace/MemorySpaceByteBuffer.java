@@ -159,6 +159,10 @@ public class MemorySpaceByteBuffer
 		}
 	    }
 	    else synchronized (this) {
+		this.index = index;
+		this.bytes = bytes;
+		this.offset = offset;
+		this.length = length;
 		request();
 		rc = length;
 	    }

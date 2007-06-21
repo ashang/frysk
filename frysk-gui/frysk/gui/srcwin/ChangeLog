@@ -1,3 +1,10 @@
+2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* SourceWindow.java(toggleMemoryWindow, toggleDisassemblyWindow): Do
+	not display the dialog for x86_64, and changed the message to simply
+	state that the window is not supported on the current architecture for
+	ISAs where that is still the case.
+
 2007-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (LockObserver.update): Removed call to

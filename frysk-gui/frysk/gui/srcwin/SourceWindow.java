@@ -2892,11 +2892,11 @@ public class SourceWindow
   private void toggleMemoryWindow ()
   {
     Isa isa = getProcIsa();
-    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC))
+    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC || isa instanceof frysk.proc.IsaX8664))
       {
         WarnDialog dialog = new WarnDialog(
                                            " The Memory Window is yet not supported\n"
-                                               + " on 64-bit architectures! ");
+                                               + " on this architectures! ");
         dialog.showAll();
         dialog.run();
         return;
@@ -2921,11 +2921,11 @@ public class SourceWindow
   private void toggleDisassemblyWindow ()
   {
     Isa isa = getProcIsa();
-    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC))
+    if (! (isa instanceof frysk.proc.IsaIA32 || isa instanceof frysk.proc.IsaPPC || isa instanceof frysk.proc.IsaX8664))
       {
         WarnDialog dialog = new WarnDialog(
                                            " The Disassembly Window is yet not supported\n"
-                                               + " on 64-bit architectures! ");
+                                               + " on this architectures! ");
         dialog.showAll();
         dialog.run();
         return;

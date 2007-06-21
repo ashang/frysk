@@ -293,6 +293,7 @@ public class MemoryWindow
   {
     this.myTask = myTask;
     long pc_inc;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
     
     if (currentFormat == 0)
       {
@@ -327,7 +328,9 @@ public class MemoryWindow
 
     this.bitsCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
+    this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
+    this.toSpin.setRange(0.0, highestAddress);
     this.toSpin.setValue((double) end);
     this.fromBox.setText(Long.toHexString(pc_inc));
     this.toBox.setText(Long.toHexString(end));
@@ -525,6 +528,7 @@ public class MemoryWindow
     this.refreshLock = true;
     this.myTask = task;
     long pc_inc;
+    double highestAddress = Math.pow(2.0, (double)(8 * myTask.getIsa().getWordSize())) - 1.0;
     
     this.diss = new Disassembler(myTask.getMemory());
 
@@ -533,7 +537,9 @@ public class MemoryWindow
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
     this.model.clear();
+    this.fromSpin.setRange(0.0, highestAddress);
     this.fromSpin.setValue((double) pc_inc);
+    this.toSpin.setRange(0.0, highestAddress);
     this.toSpin.setValue((double) end);
     this.pcLabelDec.setText("" + pc_inc);
     this.pcLabelHex.setText("0x" + Long.toHexString(pc_inc));
