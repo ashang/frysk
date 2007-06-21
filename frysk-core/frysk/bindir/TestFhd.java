@@ -308,9 +308,9 @@ public class TestFhd
     e.send("break add\n");
     e.expect("break.*" + prompt);
     e.send("go\n");
-    e.expect("go.*" + prompt + ".*Breakpoint.*add");
+    e.expect("go.*" + prompt + ".*Breakpoint.*add.*");
     e.send("where\n");
-    e.expect("where.*#0.* main \\(\\) .*" + prompt);
+    e.expect("where.*#0.* main \\(\\).*" + prompt);
     e.send("quit\n");
     e.expect("Quitting...");
     e.close();

@@ -23,7 +23,7 @@ int funcWithoutParams(void)
   return 0;
 }
 
-inline int add(int i, int j)
+static inline int add(int i, int j)
 {
   result = i + j;
   return result;

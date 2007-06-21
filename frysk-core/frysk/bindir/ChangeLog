@@ -1,5 +1,7 @@
 2007-06-21  Tim Moore  <timoore@redhat.com>
 
+	* TestFhd.java (testHpdBreakpointInline): Fix expect regular
+	expressions for newlines, lack of whitespace, etc.
 	* TestFhd.java (testHpdBreakpoint): Adjust source line of
 	breakpoint to reflect changes in hpd-c.c test program.
 
