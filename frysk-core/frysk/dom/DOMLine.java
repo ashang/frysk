@@ -391,10 +391,8 @@ public class DOMLine
                         {
                         case 12:
                           if (ch.length == 1)
-                            //line = "&np";
                             line = " ";
                           else
-                            //line = insertCode(line, "&np", i);
                             line = insertCode(line, " ", i);
                           break;
                         default:
@@ -423,7 +421,7 @@ public class DOMLine
           if (pos == 0)
             return code + endline;
           else {
-            String startline = line.substring(0, pos-1);
+            String startline = line.substring(0, pos);
             return startline + code + endline;
           }
         }

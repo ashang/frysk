@@ -1,7 +1,7 @@
 2007-06-21 Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMLine.java: Change another insertion of "&np" to a
-	space.
+	space; fix problem of multiple form feeds on a line.
 
 2007-06-20  Rick Moseley  <rmoseley@redhat.com>
 
