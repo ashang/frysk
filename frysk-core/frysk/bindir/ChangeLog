@@ -1,3 +1,8 @@
+2007-06-21  Tim Moore  <timoore@redhat.com>
+
+	* TestFhd.java (testHpdBreakpoint): Adjust source line of
+	breakpoint to reflect changes in hpd-c.c test program.
+
 2007-06-20  Nurdin Premji  <npremji@redhat.com>
 
 	* fcore.java (main): Handle no pids provided case.

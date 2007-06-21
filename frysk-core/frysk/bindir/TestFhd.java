@@ -281,12 +281,12 @@ public class TestFhd
     e.send ("attach " + child.getPid () + "\n\n");
     e.expect (5, "attach.*\n" + prompt);
     // Break
-    e.send("break @hpd-c.c@193\n");	// This has to break on: while (int_21)
+    e.send("break @hpd-c.c@196\n");	// This has to break on: while (int_21)
     e.expect("breakpoint.*" + prompt);
     e.send("go\n");
-    e.expect(prompt + "Breakpoint.*@hpd-c.c@193");
+    e.expect("go.*\n" + prompt + "Breakpoint.*@hpd-c.c@196");
     e.send("quit\n");
-    e.expect("Quitting...");
+    e.expect("quit.*\nQuitting...");
     e.close();
   }
 
