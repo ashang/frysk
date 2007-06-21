@@ -1,3 +1,8 @@
+2007-0621  Nurdin Premji  <npremji@redhat.com>
+
+	* .Settings: Change formatter to default sun format.
+	Change compliance to Java 1.4.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* .classpath: Fix getopt source location so eclipse can correctly find
