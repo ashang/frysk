@@ -1,3 +1,7 @@
+2007-06-21  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk-asm.h: Updated with some new macros.
+
 2007-05-07  Mike Cvet  <mcvet@redhat.com>
 
 	* ptrace_wait.h: Added. Contains functions for verbose waitpid

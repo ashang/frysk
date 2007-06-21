@@ -1,6 +1,8 @@
 2007-06-21  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-frameinfo-looper.S: New file.
+	
+	* funit-frameinfo-loop.S: Fixes and update.
 
 2007-06-21  Tim Moore  <timoore@redhat.com>
 

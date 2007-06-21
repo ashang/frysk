@@ -49,14 +49,13 @@
 	.size	a, 4
 a:
 	.zero	4
-
 .globl b
 	.align 4
 	.type	b, @object
 	.size	b, 4
 b:
 	.zero	4
-	
+	.text
 .globl second
 	.type	second, @function
 second:
@@ -76,11 +75,10 @@ second:
 	TESTL	(%eax, %eax)
 	JUMP_NE	(.L2)
 	LEAVE
-	EXIT
 .LFE5:
 	.size	second, .-second
 .globl first
-	.type	first, @function	
+	.type	first, @function
 first:
 .LFB6:
 	PUSHQ_BASE
@@ -95,30 +93,28 @@ first:
 	MOVL	($0, %eax)
 	CALL	(second@PLT)
 	LEAVE
-	EXIT
 .LFE6:
 	.size	first, .-first
 .globl main
 	.type	main, @function
-main:		
+main:
 .LFB7:
 	PUSHQ_BASE
 .LCFI4:
 	MOVQ_STACK
 .LCFI5:
-	SUBQ	(16, STACKP)
+	subq	$16, STACKP
 .LCFI6:
 	movl	%edi, -4(BASEP)
 	movq	REG3, -16(BASEP)
 	MOVL	($0, %eax)
 	CALL	(first@PLT)
 	LEAVE
-	EXIT
 .LFE7:
 	.size	main, .-main
 	.section	.eh_frame,"a",@progbits
 .Lframe1:
-	.long	.LECIE1-.LSCIE1	# CIE length
+	.long	.LECIE1-.LSCIE1		# CIE length
 .LSCIE1:
 	.long	0x0	# CIE ID tag
 	.byte	0x1	# Version

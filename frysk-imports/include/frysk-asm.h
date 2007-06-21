@@ -83,6 +83,9 @@
 #define REG2 %rdi
 #define REG3 %rsi
 #define REG4 %rdx
+#define BASEP %rbp
+#define STACKP %rsp
+#define IPREG %rip
 
 #define NO_OP nop
 #define ENTER pushq %rbp; movq %rsp, %rbp
@@ -93,6 +96,15 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+#define PUSHQ(REG) pushq REG
+#define MOVQ(A, B) movq A, B
+#define MOVL(A, B) movl A, B
+#define ADDL(A, B) addl $A, B
+#define SUBQ(A, B) subq $A, B
+#define TESTL(A, B) testl A, B
+#define PUSHQ_BASE pushq %rbp
+#define MOVQ_STACK movq %rsp, %rbp
+#define LEAVE leave; ret
 
 //XXX: Need the following to be defined in order to compile. See Bug #3968
 //Intel moves from right to left.
