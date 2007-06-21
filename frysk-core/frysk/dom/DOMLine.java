@@ -391,7 +391,8 @@ public class DOMLine
                         {
                         case 12:
                           if (ch.length == 1)
-                            line = "&np";
+                            //line = "&np";
+                            line = " ";
                           else
                             //line = insertCode(line, "&np", i);
                             line = insertCode(line, " ", i);

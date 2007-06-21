@@ -1,3 +1,8 @@
+2007-06-21 Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Change another insertion of "&np" to a
+	space.
+
 2007-06-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* DOMLine.java: Redo below fix to make it more comprehensive.
