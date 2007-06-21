@@ -1,3 +1,7 @@
+2007-06-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java: New class.
+
 2007-06-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testFrameScopes): New test.
