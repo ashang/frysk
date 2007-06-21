@@ -11,7 +11,7 @@
 
 2007-06-20  Mark Wielaard  <mwielaard@redhat.com>
 
-	* frysk-core/frysk/proc/ptrace/LinuxTaskState.java
+	* LinuxTaskState.java
 	(blockOrAttachContinue): Set just_started marker.
 	(sendContinue): Reset just_started marker unless first step.
 	(Running.handleTrapped): Check and reset just_started marker.

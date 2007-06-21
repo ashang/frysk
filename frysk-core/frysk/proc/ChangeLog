@@ -1,11 +1,11 @@
 2007-06-20  Mark Wielaard  <mwielaard@redhat.com>
 
-	* frysk-core/frysk/proc/Observation.java (toString): Include
+	* Observation.java (toString): Include
 	observable and observer.
 
-	* frysk-core/frysk/proc/Task.java (just_started): New boolean field.
+	* Task.java (just_started): New boolean field.
 
-	* frysk-core/frysk/proc/TestTaskObserverInstruction.java
+	* TestTaskObserverInstruction.java
 	(testFirstInstructionStep): New test)
 	(StepAttachedObserver): New inner class.
 	(testFirstInstructionSteppingEngine): Renamed method from
