@@ -174,10 +174,10 @@ public class TestByteBuffer
     }
     public void testAsyncAddressSpace ()
     {
-	new AsyncModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr());
+	new AsyncModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr()).call();
     }
     public void testAsyncMemorySpace ()
     {
-	new AsyncModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr());
+	new AsyncModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr()).call();
     }
 }

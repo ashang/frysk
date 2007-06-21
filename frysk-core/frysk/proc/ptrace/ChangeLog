@@ -1,3 +1,9 @@
+2007-06-21  Kris Van Hees  <kris.van.hees@oracle.com>
+
+	* TestByteBuffer.java (testAsyncAddressSpace, testAsyncMemorySpace):
+	These tests weren't actually doing anything because call() was never
+	called in the AsyncModify objects they create.
+
 2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* MemorySpaceByteBuffer.java: PeeksRequest.request(...) was not setting
