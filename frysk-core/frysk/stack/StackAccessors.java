@@ -176,9 +176,10 @@ public class StackAccessors
     logger.log(Level.FINE, "Looking for addr: 0x{0}\n", Long.toHexString(addr));
     Dwfl dwfl = null;
     dwfl = DwflFactory.createDwfl(myTask);
+    logger.log(Level.FINEST, "got dwfl: {0}\n", dwfl);
     if (dwfl == null)
       {
-	logger.log(Level.FINE, "Dwfl was null");
+	logger.log(Level.FINE, "Dwfl was null\n");
 	return null;
       }
 
@@ -215,6 +216,7 @@ public class StackAccessors
 
 	DwflModule dwflModule = getModuleFromAddress(addr);
 
+	logger.log(Level.FINEST, "got dwflModule: {0}\n", dwflModule);
 	if (dwflModule != null)
 	  {
 	    dwflModule.getSymbol(addr, this);

@@ -1,3 +1,8 @@
+2007-06-22  Nurdin Premji  <npremji@redhat.com>
+
+	* StackAccessors.java (getModuleFromAddress): Added logging messages.
+	(getProcName): Ditto.
+
 2007-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* StackAccessors.java (getElfImage): Added logging messages.
