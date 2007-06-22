@@ -64,8 +64,6 @@ public class Util
   {
     LinuxHost core = new LinuxHost(Manager.eventLoop, coreFile);
 
-    core.requestRefreshXXX();
-    Manager.eventLoop.runPending();
     Iterator iterator = core.getProcIterator();
 
     Proc proc;

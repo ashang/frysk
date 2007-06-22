@@ -131,9 +131,6 @@ public class TestFStack
 
     assertNotNull("Core file Host is Null?", coreHost);
 
-    coreHost.requestRefreshXXX();
-    Manager.eventLoop.runPending();
-
     Iterator iter = coreHost.getProcIterator();
     while (iter.hasNext())
       {
