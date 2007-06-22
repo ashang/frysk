@@ -41,6 +41,7 @@
 
 package frysk.gui.srcwin;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.io.IOException;
@@ -443,6 +444,56 @@ public class SourceWindow
     Frame[] newTrace = new Frame[1];
     newTrace[0] = trace;
     this.frames[0] = newTrace;
+    
+    finishSourceWin();
+    
+    desensitize();
+    this.stop.setSensitive(false);
+  }
+  
+  /**
+   * Creates a new source window with the given properties. This constructor
+   * builds a SourceWindow based off of a stack trace, and thus has no usable
+   * or running process.
+   * This constructor should not be called explicitly, SourceWindow objects 
+   * should be created through the {@link SourceWindowFactory} class.
+   * 
+   * @param glade The LibGlade object that contains the window for this instance
+   * @param gladePath The path that the .glade file for the LibGlade was on
+   * @param traces The stack frames that represents the current state of execution
+   */
+  public SourceWindow (LibGlade glade, String gladePath, Frame[] traces)
+  {
+    super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
+
+    this.setIcon(IconManager.windowIcon);
+
+    this.glade = glade;
+    this.gladePath = gladePath;
+    this.swProc = new Proc[1];
+    this.swProc[this.current] = traces[0].getTask().getProc();
+    this.steppingEngine = new SteppingEngine();
+    this.frames = new Frame[traces.length][];
+    this.symTab = new DebugInfo[traces.length];
+    this.dom = new DOMFrysk[traces.length];
+    
+    try
+      {
+        for (int i = 0; i < traces.length; i++)
+          {
+            this.dom[i] = DOMFactory.createDOM(traces[i], this.swProc[0]);
+          }
+        
+      }
+    catch (NoDebugInfoException e)
+      {
+      }
+    catch (IOException e)
+      {
+      }
+    
+    for (int i = 0; i < traces.length; i++)      
+      this.frames[i] = new Frame[] {traces[i]};
     
     finishSourceWin();
     
@@ -984,13 +1035,16 @@ public class SourceWindow
                                         (Window) SourceWindow.this.glade.getWidget(SOURCE_WINDOW),
                                         FileChooserAction.ACTION_OPEN);
         // Set the selection insensitive until code is written to handle Core Files
-        chooser.setSensitive(false);
+        chooser.setSensitive(true);
         chooser.addListener(new LifeCycleListener() {
           public void lifeCycleEvent(LifeCycleEvent event)
           {
           }
           public boolean lifeCycleQuery(LifeCycleEvent event)
           {
+            if (event.isOfType(LifeCycleEvent.Type.DELETE) || 
+                    event.isOfType(LifeCycleEvent.Type.DESTROY))
+                      fc.destroy();               
             return false;
           }
         });
@@ -1023,8 +1077,10 @@ public class SourceWindow
           chooser.destroy();
         // The OK button was clicked, go open a source window for this core file
         else if (response == ResponseType.OK.getValue())
+         {
           examineCoreFile(chooser.getFilename());
-        chooser.destroy();
+          chooser.destroy();
+         }
       }
     });
     AccelMap.changeEntry("<sourceWin>/File/Examine core file...", KeyValue.o,
@@ -1043,6 +1099,7 @@ public class SourceWindow
       public void actionEvent (ActionEvent action)
       {
         // SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
+	  if (!SourceWindow.this.swProc[current].getClass().equals(frysk.proc.dead.LinuxProc.class))
         SourceWindow.this.steppingEngine.removeObserver(
          SourceWindow.this.lock, SourceWindow.this.swProc[current], true);
         SourceWindow.this.glade.getWidget(SOURCE_WINDOW).hide();
@@ -1635,8 +1692,9 @@ public class SourceWindow
    *
    */
   private void examineCoreFile(String filename)
-    {
-      // No core here yet
+    {             
+        SourceWindowFactory.attachToCore(new File(filename));
+        this.destroy();
     }
 
 /**
@@ -1747,6 +1805,8 @@ public class SourceWindow
     mi = (MenuItem) this.open_executable.createMenuItem();
     tmp.append(mi);
     mi = (MenuItem) this.attach_proc.createMenuItem();
+    tmp.append(mi);
+    mi = (MenuItem) this.open_core.createMenuItem();
     tmp.append(mi);
 
     menu.setSubmenu(tmp);

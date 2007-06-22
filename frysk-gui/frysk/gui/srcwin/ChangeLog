@@ -1,3 +1,13 @@
+2007-06-22  Nurdin Premji  <npremji@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Added constructor with Frame[].
+	(examineCoreFile): Implemented.
+	(createMenus): Added core file menu.
+	(createActions): Linked core file menu.
+	Don't try to detach from a core file.
+	* SourceWindowFactory.java (createSourceWindow): Added.
+	(attachToCore): Added.
+
 2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* SourceWindow.java(toggleMemoryWindow, toggleDisassemblyWindow): Do

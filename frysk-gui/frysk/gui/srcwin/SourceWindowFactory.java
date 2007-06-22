@@ -42,6 +42,8 @@ package frysk.gui.srcwin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -61,6 +63,7 @@ import frysk.proc.ProcId;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.stack.Frame;
+import frysk.stack.StackFactory;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -146,6 +149,25 @@ public class SourceWindowFactory
     srcWin.grabFocus();
   }
   
+  public static void createSourceWindow (Frame[] frames)
+  {
+    LibGlade glade;
+    try
+      {
+        glade = new LibGlade(Config.getGladeDir() + SourceWindow.GLADE_FILE,
+                             null);
+      }
+    catch (Exception e)
+      {
+        throw new RuntimeException(e);
+      }
+    
+    srcWin = new SourceWindow(glade, Config.getGladeDir(), frames);
+    srcWin.addListener(new SourceWinListener());
+    
+    srcWin.grabFocus();
+  }
+  
   public static void attachToPID (int pid)
   {
     ProcId procID = new ProcId(pid);
@@ -164,6 +186,21 @@ public class SourceWindowFactory
         Gui.quitFrysk();
       }
     });
+  }
+  
+  public static void attachToCore(File coreFile)
+  {
+    Proc proc = frysk.util.Util.getProcFromCoreFile(coreFile);     
+
+    LinkedList tasks = proc.getTasks();
+    Frame[] framez = new Frame[tasks.size()];
+    Iterator iter = tasks.iterator();
+    for (int i = 0; iter.hasNext(); i++)
+      {
+        Task task = (Task) iter.next();
+        framez[i] = StackFactory.createFrame(task);
+      }
+    createSourceWindow(framez);
   }
   
   public static AttachedObserver startNewProc (String file, String env_variables, String options,
