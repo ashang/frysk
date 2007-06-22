@@ -120,8 +120,8 @@ public class DisplayCommand
     
           public void updateUnavailableOutOfScope (DisplayValue value) 
           {
-//              output.println(value.getName() + " is unavailable");
-//              output.flush();
+              output.println(value.getName() + " = <unvailable>");
+              output.flush();
           }
           
           public void updateUnavailbeResumedExecution (DisplayValue value) {}
@@ -130,10 +130,9 @@ public class DisplayCommand
       }
     
     Value v = uDisp.getValue();
-//    if(v == null)
-//      output.println(args.get(0) + " is unavailable");
-//    else
-    if(v != null)
+    if(v == null)
+      output.println(args.get(0) + " = <unavailable>");
+    else
       output.println(v.getText() + " = " + v);
     output.flush();
   }

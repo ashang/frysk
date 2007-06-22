@@ -1,5 +1,8 @@
 2007-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DisplayCommand.java (handle): Enabled notifications to the user
+	when a displayed expressions became unavailable.
+
 	* DisplayCommand.java (handle): Now recieves events when the the value
 	being displayed becomes unavailable, nothing is currently being
 	displayed to the user when this occurs.
