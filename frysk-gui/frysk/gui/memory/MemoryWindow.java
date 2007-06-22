@@ -1,5 +1,6 @@
 //This file is part of the program FRYSK.
 //
+//Copyright 2008 Oracle Corporation.
 //Copyright 2005, Red Hat Inc.
 //
 //FRYSK is free software; you can redistribute it and/or modify it

@@ -1,8 +1,9 @@
 2007-06-21  Kris Van Hees  <kris.van.hees@oracle.com>
 
-	* TestByteBuffer.java (testAsyncAddressSpace, testAsyncMemorySpace):
-	These tests weren't actually doing anything because call() was never
-	called in the AsyncModify objects they create.
+	* TestMemorySpaceByteBuffer.java: Added test case for sync and async
+	multi-byte MemorySpaceByteBuffer peek requests.  Currently uses an ugly
+	trick to get around a problem in frysk.event.EventLoop to ensure that
+	the event loop TID is always set correctly.
 
 2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
 
