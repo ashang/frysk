@@ -1,5 +1,13 @@
 2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Variable.java: Added constructor.
+	* Scope.java: Replaced variable information arrays with a 
+	LinkedList of Variable Objects.
+	(setVariables): Removed.
+	(getVariableDies): Removed.
+	(setVariableDies): Removed.
+	(getTypeDies): Removed.
+	(setTypeDies): Removed.
 	* TestFrameScopes.java: Deleted test (this is already
 	tested in TestFrameDebugInfo).
 

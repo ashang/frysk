@@ -56,6 +56,14 @@ public class Variable
   private Type type;
   private DwarfDie typeDie;
   
+  public Variable(Value variable, DwarfDie variableDie){
+   this.variable = variable;
+   this.variableDie = variableDie;
+   if(variable != null){
+       this.type = variable.getType();
+   }
+//   this.typeDie =  typeDie;
+  }
   public void setVariable (Value variable)
   {
     this.variable = variable;

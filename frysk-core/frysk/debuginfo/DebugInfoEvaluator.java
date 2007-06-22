@@ -44,6 +44,8 @@ import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import lib.dw.BaseTypes;
@@ -59,6 +61,7 @@ import frysk.expr.CppSymTab;
 import frysk.proc.Isa;
 import frysk.proc.Task;
 import frysk.rt.Subprogram;
+import frysk.rt.Variable;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
 import frysk.sys.Errno;
@@ -506,16 +509,19 @@ class DebugInfoEvaluator
       return null;
     DwarfDie die = bias.die;
 
-    // Scope b = subprogram;
-    // Value vars[] = b.getVariables();
-    // DwarfDie varDies[] = b.getVariableDies();
-    // for (int j = 0; j < vars.length; j++)
-    // if (vars[j] != null && vars[j].getText().compareTo(s) == 0)
-    // {
-    // allDies = die.getScopes(pc - bias.bias);
-    // varDies[j].setScopes(allDies);
-    // return varDies[j];
-    // }
+     Subprogram b = currentFrame.getSubprogram();
+     LinkedList vars = b.getVariables();
+     
+     Iterator iterator = vars.iterator();
+     while (iterator.hasNext()) {
+	Variable variable = (Variable) iterator.next();
+	if (variable.getVariable() != null && variable.getVariable().getText().compareTo(s) == 0)
+	{
+	    allDies = die.getScopes(pc - bias.bias);
+	    variable.getVariableDie().setScopes(allDies);
+	    return variable.getVariableDie();
+	}
+     }
 
     allDies = die.getScopes(pc - bias.bias);
     varDie = die.getScopeVar(allDies, s);

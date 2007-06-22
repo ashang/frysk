@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import frysk.debuginfo.DebugInfo;
-import frysk.value.Type;
 import frysk.value.Value;
 
 /**
@@ -70,15 +69,14 @@ import frysk.value.Value;
 public class Scope
 {
   
-  LinkedList scopes;
-  Scope outer;
-  Value[] variables;
-  DwarfDie[] variableDies;
-  Type[] types;
-  DwarfDie[] typeDies;
-
+    Scope outer;
+    
+    LinkedList scopes;
+  
+    LinkedList variables;
+    
   public Scope(DwarfDie die, DebugInfo debugInfo){
-    LinkedList variables = new LinkedList();
+    this.variables = new LinkedList();
     this.scopes = new LinkedList();
     
 //    System.out.println("\nScope.Scope() name: " + die.getName() + " " + DwTagEncodings.toName(die.getTag()));
@@ -90,7 +88,8 @@ public class Scope
       
       if(die.getTag() == DwTagEncodings.DW_TAG_variable_){
         Value value = debugInfo.getValue(die);
-        variables.add(value);
+        Variable variable = new Variable(value, die);
+        variables.add(variable);
       }
       
       if(die.getTag() == DwTagEncodings.DW_TAG_lexical_block_){
@@ -103,11 +102,6 @@ public class Scope
       die = die.getSibling();
     }
     
-    this.variables = new Value[variables.size()];
-    Iterator iterator = variables.iterator();
-    for (int i = 0; i < this.variables.length; i++){
-      this.variables[i] = (Value) iterator.next();
-    }
   }
   
   public LinkedList getScopes(){
@@ -118,34 +112,9 @@ public class Scope
     
   }
   
-  public Value[] getVariables ()
+  public LinkedList getVariables ()
   {
     return variables;
-  }
-
-  public void setVariables (int n)
-  {
-    this.variables = new Value[n];
-  }
-
-  public DwarfDie[] getVariableDies ()
-  {
-    return variableDies;
-  }
-
-  public void setVariableDies (int n)
-  {
-    this.variableDies = new DwarfDie[n];
-  }
-
-  public DwarfDie[] getTypeDies ()
-  {
-    return typeDies;
-  }
-
-  public void setTypeDies (int n)
-  {
-    this.typeDies = new DwarfDie[n];
   }
 
   public static boolean isScopeDie(DwarfDie die){
@@ -173,15 +142,18 @@ public class Scope
     char[] indentArray = new char[indent];
     Arrays.fill(indentArray, ' ');
     String indentString = new String(indentArray);
-    for (int i = 0; i < this.variables.length; i++){
-      if(variables[i]!=null){
-        stringBuilder.append("\n" + indentString + variables[i].getType() + " " + variables[i].getText());
-      }else{
-        stringBuilder.append("\n" + indentString + "Unhandled type");
-      }
+    
+    Iterator iterator = this.variables.iterator();
+    while(iterator.hasNext()){
+	Variable variable = (Variable) iterator.next();
+	if(variable.getVariable()!=null){
+	    stringBuilder.append("\n" + indentString + variable.getVariable().getType() + " " + variable.getVariable().getText());
+	}else{
+	    stringBuilder.append("\n" + indentString + "Unhandled type");
+	}
     }
     
-    Iterator iterator = this.getScopes().iterator();
+    iterator = this.getScopes().iterator();
     while(iterator.hasNext()){
       Scope scope = (Scope) iterator.next();
       stringBuilder.append(scope.toPrint(indent+1));

@@ -1,3 +1,9 @@
+2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java: Re-enabled checking of cached Frame
+	debug info.
+	Replaced use of arrays from Subprogram with LinkedLists.
+
 2007-06-22  Stan Cox  <scox@redhat.com>
 
 	* DebugInfoEvaluator.java (swapBytes): Fix 32 bit case.
