@@ -161,7 +161,6 @@ class DebugInfoEvaluator
 	long newVal = 0;
 	Isa isa = currentFrame.getTask().getIsa();
 
-	System.out.println("val=" + Long.toHexString(val));
 	if (isa.getByteOrder() == ByteOrder.BIG_ENDIAN)
 	    return val;
 	else if (isa.getWordSize() == 4)
@@ -180,7 +179,6 @@ class DebugInfoEvaluator
 		    newVal = newVal | ((val & 0xff00000000000000L) >>> (56 - (i * 8)));
 		    val = val << 8;
 		}
-	System.out.println("newVal=" + Long.toHexString(newVal));
 	return newVal;
     }
 
