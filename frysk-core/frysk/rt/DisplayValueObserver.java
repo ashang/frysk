@@ -44,4 +44,5 @@ public interface DisplayValueObserver
   void updateAvailableTaskStopped(DisplayValue value);
   void updateUnavailbeResumedExecution(DisplayValue value);
   void updateValueChanged(DisplayValue value);
+  void updateUnavailableOutOfScope(DisplayValue value);
 }

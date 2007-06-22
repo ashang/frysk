@@ -114,7 +114,12 @@ public class UpdatingDisplayValue
     super.refresh();
     
     if (myVar == null)
-      return;
+      {
+        notifyObserversUnavailableOutOfScope();
+        oldValue = null;
+        return;
+      }
+      
 
     // hear ye! hear ye!
     if (observers != null) // (but only if there's someone to listen)
@@ -216,6 +221,15 @@ public class UpdatingDisplayValue
       ((DisplayValueObserver) iter.next()).updateValueChanged(this);
   }
 
+  protected void notifyObserversUnavailableOutOfScope ()
+  {
+    if(observers == null)
+      return;
+    Iterator iter = observers.iterator();
+    while(iter.hasNext())
+      ((DisplayValueObserver) iter.next()).updateUnavailableOutOfScope(this);
+  }
+  
   /*
    * Returns true if newArray is different than the value contained in oldValue
    */

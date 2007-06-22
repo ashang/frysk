@@ -118,16 +118,22 @@ public class DisplayCommand
             output.flush();
           }
     
+          public void updateUnavailableOutOfScope (DisplayValue value) 
+          {
+//              output.println(value.getName() + " is unavailable");
+//              output.flush();
+          }
+          
           public void updateUnavailbeResumedExecution (DisplayValue value) {}
           public void updateAvailableTaskStopped (DisplayValue value) {}
         });
       }
     
     Value v = uDisp.getValue();
-    if(v == null)
-      output.println(args.get(0) + " is unavailable");
-
-    else
+//    if(v == null)
+//      output.println(args.get(0) + " is unavailable");
+//    else
+    if(v != null)
       output.println(v.getText() + " = " + v);
     output.flush();
   }

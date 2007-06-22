@@ -165,10 +165,56 @@ public class TestUpdatingDisplayValue extends TestLib
     assertTrue("Observer was not notified of a value change", obs.hitChanged);
   }
   
+  /*
+   * Create a display on 'x', then check to make sure we recieve
+   * notification when 'x' goes out of scope
+   */
   public void testUpdateUnavailableFuncReturn()
   {
-    if(brokenXXX(4639))
-      return;
+//    if(brokenXXX(4639))
+//      return;
+    
+    BreakpointManager bpManager = createDaemon();
+    
+    /*
+     * First breakpoint
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                 63, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+    
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("x", myTask,
+                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
+                                                          steppingEngine);
+    DisplayObserver obs = new DisplayObserver();
+    uDisp.addObserver(obs);
+    assertTrue("Display is not available", uDisp.isAvailable());
+    
+    /*
+     * Second breakpoint
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varchange.c",
+                                  49, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask, steppingEngine);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    assertTrue("Observer was not notified", obs.hitOutOfScope);
+    assertFalse("Display is available", uDisp.isAvailable());
   }
   
   public void testUpdateUnavailableExceptionThrown()
@@ -238,12 +284,14 @@ public class TestUpdatingDisplayValue extends TestLib
     boolean hitStopped;
     boolean hitResumed;
     boolean hitChanged;
+    boolean hitOutOfScope;
     
     DisplayObserver()
     {
       hitStopped = false;
       hitResumed = false;
       hitChanged = false;
+      hitOutOfScope = false;
     }
     
     public void updateAvailableTaskStopped (DisplayValue value)
@@ -264,6 +312,12 @@ public class TestUpdatingDisplayValue extends TestLib
     {
       assertNotNull("DisplayValue passed to the observer", value);
       hitChanged = true;
+    }
+
+    public void updateUnavailableOutOfScope (DisplayValue value)
+    {
+      assertNotNull("DisplayValue passed to the observer", value);
+      hitOutOfScope = true;
     }
     
   }

@@ -123,12 +123,12 @@ public class DisplayValue
       }
     catch (NameNotFoundException e)
       {
-        e.printStackTrace();
+//        e.printStackTrace();
         myVar = null;
       }
     catch (ParseException e)
       {
-        e.printStackTrace();
+//        e.printStackTrace();
         myVar = null;
       }
   }

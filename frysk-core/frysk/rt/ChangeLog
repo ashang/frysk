@@ -1,3 +1,15 @@
+2007-06-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DisplayValue.java (refresh): Disabled stack backtraces when
+	DebugInfo.print throws exceptions.
+	* DisplayValueObserver.java (updateUnavailableOutOfScope): Added.
+	* TestUpdatingDisplayValue.java
+	(testUpdateUnavailableFuncReturn): Added code, enabled test.
+	(DisplayObserver): Refactored to reflect changes to the interface.
+	* UpdatingDisplayValue.java (refresh): If the value retrieved is
+	null, notify the observers.
+	(notifyObserversUnavailableOutOfScope): New method.
+
 2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Variable.java: Added constructor.
