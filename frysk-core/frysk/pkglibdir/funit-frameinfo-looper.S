@@ -65,15 +65,7 @@ second:
 	MOVQ_STACK
 .LCFI1:
 	movq	b@GOTPCREL(%rip), REG1
-	MOVL	((REG1), %eax)
-	leal	1(REG1), %edx
-	movq	b@GOTPCREL(%rip), REG1
-	MOVL	(%edx, (REG1))
-.L2:
-	movq	b@GOTPCREL(%rip), REG1
-	MOVL	((REG1), %eax)
-	TESTL	(%eax, %eax)
-	JUMP_NE	(.L2)
+	MOVL	($1, (REG1))
 	LEAVE
 .LFE5:
 	.size	second, .-second
@@ -90,8 +82,15 @@ first:
 	leal	1(REG1), %edx
 	movq	a@GOTPCREL(%rip), REG1
 	MOVL	(%edx, (REG1))
+	JUMP	(.L4)
+.L5:	
 	MOVL	($0, %eax)
 	CALL	(second@PLT)
+.L4:	
+	movq	a@GOTPCREL(%rip), REG1
+	MOVL	((REG1), %eax)
+	TESTL	(%eax, %eax)
+	JUMP_NE	(.L5)
 	LEAVE
 .LFE6:
 	.size	first, .-first
