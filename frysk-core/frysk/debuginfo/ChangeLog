@@ -1,3 +1,7 @@
+2007-06-22  Stan Cox  <scox@redhat.com>
+
+	* DebugInfoEvaluator.java (swapBytes): Fix 32 bit case.
+
 2007-06-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java (DebugInfoEvaluator): Replaced use of 

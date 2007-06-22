@@ -157,15 +157,32 @@ class DebugInfoEvaluator
 
   // ??? Give registers a real type and let the type system do the swap.
   private long swapBytes(long val)
-  {
-    long newVal = 0;
-    for (int i = 0; i < 8; i++)
-      {
-        newVal = newVal | ((val & 0xff00000000000000L) >>> (56 - (i * 8)));
-        val = val << 8;
-      }
-    return newVal;
-  }
+    {
+	long newVal = 0;
+	Isa isa = currentFrame.getTask().getIsa();
+
+	System.out.println("val=" + Long.toHexString(val));
+	if (isa.getByteOrder() == ByteOrder.BIG_ENDIAN)
+	    return val;
+	else if (isa.getWordSize() == 4)
+	    {
+		int ival = (int)val;
+		for (int i = 0; i < 4; i++)
+		    {
+			newVal = newVal | ((ival & 0xff000000) >>> (24 - (i * 8)));
+			ival = ival << 8;
+		    }
+		newVal = newVal & 0x00000000ffffffffL;
+	    }
+	else if (isa.getWordSize() == 8)
+	    for (int i = 0; i < 8; i++)
+		{
+		    newVal = newVal | ((val & 0xff00000000000000L) >>> (56 - (i * 8)));
+		    val = val << 8;
+		}
+	System.out.println("newVal=" + Long.toHexString(newVal));
+	return newVal;
+    }
 
   interface VariableAccessor
   {

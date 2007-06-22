@@ -122,7 +122,7 @@ public class TestFhd
     e.expect ("own.*#1.*" + prompt);
     // int_21
     e.send ("print int_21\n");
-    e.expect ("print.*int_21.*22.*(fhpd)");
+    e.expect ("print.*int_21.*(fhpd)");
     e.send ("up\n");
     e.expect ("up.*#0.*" + prompt);
     e.close();
