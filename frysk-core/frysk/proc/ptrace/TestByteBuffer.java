@@ -126,58 +126,65 @@ public class TestByteBuffer
 	verifyModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr());
     }
 
-    private class AsyncModify
-	implements Runnable
-    {
-	private boolean ran;
-	private byte oldByte;
-	private byte newByte;
-	private long addr;
-	private ByteBuffer buffer;
-	private Exception e;
-	AsyncModify (ByteBuffer buffer, long addr)
-	{
-	    this.buffer = buffer;
-	    this.addr = addr;
-	}
-	public void run ()
-	{
-	    try {
-		oldByte = buffer.get(addr);
-		buffer.putByte(addr, (byte)~oldByte);
-		newByte = buffer.get(addr);
+    private void verifyAsyncModify(ByteBuffer buffer, long addr) {
+	class AsyncModify implements Runnable {
+	    private boolean ran;
+	    private byte oldByte;
+	    private byte newByte;
+	    private long addr;
+	    private ByteBuffer buffer;
+	    private Exception e;
+	    AsyncModify (ByteBuffer buffer, long addr)
+	    {
+		this.buffer = buffer;
+		this.addr = addr;
 	    }
-	    catch (Exception e) {
-		this.e = e;
+	    public void run ()
+	    {
+		try {
+		    oldByte = buffer.get(addr);
+		    buffer.putByte(addr, (byte)~oldByte);
+		    newByte = buffer.get(addr);
+		}
+		catch (Exception e) {
+		    this.e = e;
+		}
+		ran = true;
+		Manager.eventLoop.requestStop();
 	    }
-	    ran = true;
-	    Manager.eventLoop.requestStop();
 	}
-	void call ()
-	{
-	    new Thread (this).start();
-	    while (!ran)
-		assertTrue ("waiting for async modify",
-			    Manager.eventLoop.runPolling(getTimeoutMilliseconds()));
-	    if (e != null)
-		throw new RuntimeException (e);
-	    assertEquals ("byte modified", (byte)~oldByte, newByte);
+	// Force the event-loop onto the main thread; otherwize the
+	// AsyncModify thread may get in first resulting in an
+	// event-loop thread switch.
+	Manager.eventLoop.runPending();
+	AsyncModify asyncModify = new AsyncModify(buffer, addr);
+	new Thread (asyncModify).start();
+	long endTime = (System.currentTimeMillis()
+			+ getTimeoutMilliseconds());
+	while (!asyncModify.ran) {
+	    assertTrue ("waiting for async modify",
+			Manager.eventLoop.runPolling(getTimeoutMilliseconds()));
+	    if (asyncModify.e != null)
+		throw new RuntimeException (asyncModify.e);
+	    if (endTime < System.currentTimeMillis())
+		fail ("timeout expired");
+	    assertEquals ("byte modified", (byte)~asyncModify.oldByte,
+			  asyncModify.newByte);
 	}
     }
-    public void testAsyncRegisterSet()
-    {
+    public void testAsyncRegisterSet() {
 	if (registerByteBuffer == null) {
 	    System.out.print("<<SKIP>>");
 	    return;
 	}
-	new AsyncModify(registerByteBuffer, 0).call();
+	verifyAsyncModify(registerByteBuffer, 0);
     }
-    public void testAsyncAddressSpace ()
-    {
-	new AsyncModify(addressSpaceByteBuffer, LocalMemory.getFuncAddr()).call();
+    public void testAsyncAddressSpace() {
+	verifyAsyncModify(addressSpaceByteBuffer,
+			  LocalMemory.getFuncAddr());
     }
-    public void testAsyncMemorySpace ()
-    {
-	new AsyncModify(memorySpaceByteBuffer, LocalMemory.getFuncAddr()).call();
+    public void testAsyncMemorySpace() {
+	verifyAsyncModify(memorySpaceByteBuffer,
+			  LocalMemory.getFuncAddr());
     }
 }

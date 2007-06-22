@@ -1,3 +1,12 @@
+2007-06-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestByteBuffer.java (AsyncModify): Make local to
+	verifyAsyncModify.
+	(verifyAsyncModify): Replace AsyncModify.call.  Call
+	EventLoop.runPending.  Check for timeout.
+	(testAsyncRegisterSet, testAsyncAddressSpace)
+	(testAsyncMemorySpace): Call verifyAsyncModify.
+
 2007-06-21  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* TestMemorySpaceByteBuffer.java: Added test case for sync and async
