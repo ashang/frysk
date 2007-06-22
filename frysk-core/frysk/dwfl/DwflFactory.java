@@ -223,6 +223,7 @@ public class DwflFactory
    */
   public static Dwfl createDwfl (Proc proc)
   {
+    logger.log(Level.FINE, "entering createDwfl, proc: {0}\n", proc);
     if (dwflMap.containsKey(proc.getId()))
       return (Dwfl) dwflMap.get(proc.getId());
 
@@ -248,19 +249,27 @@ public class DwflFactory
    */
   public static Dwfl createDwfl (Task task)
   {
+      logger.log(Level.FINE, "entering createDwfl, task: {0}\n", task);
     /* Check if this task has changed since (if) a dwfl was last created.
      * If it hasn't changed returned the cached dwfl. 
      * If it has changed recreate the dwfl and update the maps.
      */
     if (taskMap.containsKey(task))
       {
+	logger.log(Level.FINEST, "taskMap contains task, taskMap {0}\n", taskMap);
         Integer count = (Integer) taskMap.get(task);
-        if (count.intValue() == task.getMod())      
+        if (count.intValue() == task.getMod()) 
+        {
+            logger.log(Level.FINEST, "returning dwfl\n");
             return (Dwfl) dwflMap.get(task.getProc());
-          
+        }
+         
+        taskMap.remove(task);
       }
-
-    taskMap.put(task, new Integer(task.getMod()));
+    
+    logger.log(Level.FINEST, "taskMap doesn't contain task\n", taskMap);
+   
+    //createDwfl(proc) adds the dwfl and updates the tasks list.
     if (dwflMap.containsKey(task.getProc()))
       dwflMap.remove(task.getProc());
     

@@ -1,3 +1,7 @@
+2007-06-22  Nurdin Premji  <npremji@redhat.com>
+
+	* DwflFactory.java (createDwfl): Added logging messages.
+
 2007-06-13  Nurdin Premji  <npremji@redhat.com>
 
 	* DwflFactory.java (doDwfl): Added. Handles the creation of a Dwfl from a proc.
