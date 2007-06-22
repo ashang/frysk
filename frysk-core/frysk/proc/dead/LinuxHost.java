@@ -60,6 +60,7 @@ public class LinuxHost
   extends Host 
 {
 
+  boolean hasRefreshed = false;
   protected File coreFile = null;
   protected File exeFile = null;
   Elf corefileElf;
@@ -79,6 +80,8 @@ public class LinuxHost
         throw new RuntimeException("Corefile " + this.coreFile + " is "+ 
 				   "not a valid ELF core file.");
       }
+
+    this.sendRefresh(true);
   }
 
 
@@ -91,6 +94,8 @@ public class LinuxHost
   protected void sendRefresh(boolean refreshAll) 
   {
 
+    if (this.hasRefreshed)
+      return;
     // Iterate (build) the /proc tree, passing each found PID to
     // procChanges where it can update the /proc tree.
     new DeconstructCoreFile(this.corefileElf);
@@ -100,6 +105,7 @@ public class LinuxHost
 	LinuxProc proc = (LinuxProc) i.next();
 	proc.sendRefresh();
       }
+    this.hasRefreshed = true;
   }
 
   protected void sendRefresh (final ProcId procId, final FindProc finder)

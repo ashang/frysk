@@ -1,3 +1,9 @@
+2007-06-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxHost.java (sendRefresh): Gate refreshes depending
+	on whether a refresh has happned in the past.
+	(LinuxHost): Do an initial refresh in the constructor.
+
 2007-06-20  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxProc.java (LinuxProc): Look in <pwd>, then other
