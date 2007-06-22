@@ -1,3 +1,11 @@
+2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestFrameDebugInfo.java (testParameters): Changed test to expect
+	Variable instead of Value objects.
+	* Subprogram.java (Subprogram): Parameters are now represented using
+	the Variable object instead of the Value object.
+	(printParameters): Changed print method to follow the above.
+
 2007-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayValue.java (refresh): Disabled stack backtraces when

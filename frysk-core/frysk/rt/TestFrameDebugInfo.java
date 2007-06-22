@@ -48,7 +48,6 @@ import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
-
 import frysk.dwfl.DwflFactory;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -57,7 +56,6 @@ import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.stack.Frame;
 import frysk.stack.StackFactory;
-import frysk.value.Value;
 
 public class TestFrameDebugInfo
     extends TestLib
@@ -141,18 +139,18 @@ public class TestFrameDebugInfo
     assertEquals("Number of parameters", parameters.size(), 3);
     
     Iterator iterator = parameters.iterator();
-    Value value = (Value) iterator.next();
-    assertEquals("Parameter name", value.getText(), "param1");
+    Variable variable = (Variable) iterator.next();
+    assertEquals("Parameter name", variable.getVariable().getText(), "param1");
 //    System.out.println("TestFrameDebugInfo.testParameters() param1 " + value);
 //    assertEquals("Parameter value", value.getInt(), 1);
     
-    value = (Value) (Value) iterator.next();
-    assertEquals("Parameter name", value.getText(), "param2");
+    variable = (Variable) iterator.next();
+    assertEquals("Parameter name", variable.getVariable().getText(), "param2");
 //    System.out.println("TestFrameDebugInfo.testParameters() param2 " + value);
 //    assertEquals("Parameter value", value.getInt(), 2);
     
-    value = (Value) (Value) iterator.next();
-    assertEquals("Parameter name", value.getText(), "param3");
+    variable =  (Variable) iterator.next();
+    assertEquals("Parameter name", variable.getVariable().getText(), "param3");
 //    System.out.println("TestFrameDebugInfo.testParameters() param3 " + value);
 //    assertEquals("Parameter value", value.getInt(), 3);
     

@@ -76,7 +76,8 @@ public class Subprogram extends Subroutine
 //	System.out.print(" -> " + die.getName() + ": "+ DwTagEncodings.toName(die.getTag()));
 	if(die.getTag() == DwTagEncodings.DW_TAG_formal_parameter_){
 	  Value value = debugInfo.getValue(die);
-	  parameters.add(value);
+          Variable variable = new Variable(value, die);
+	  parameters.add(variable);
 	}
 	die = die.getSibling();
       }
@@ -117,11 +118,11 @@ public class Subprogram extends Subroutine
       StringBuilder stringBuilder = new StringBuilder();
       Iterator iterator = this.parameters.iterator();
       while(iterator.hasNext()) {
-        Value parameter = (Value) iterator.next();
-        if(parameter == null){
+        Variable parameter = (Variable) iterator.next();
+        if(parameter.getVariable() == null){
           stringBuilder.append("Unhandled type");
         }else{
-          stringBuilder.append(parameter.getType() + " " + parameter.getText());
+          stringBuilder.append(parameter.getType() + " " + parameter.getVariable().getText());
         }
         if(parameters.indexOf(parameter) < (this.parameters.size()-1)){
           stringBuilder.append(",");
