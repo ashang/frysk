@@ -1,5 +1,7 @@
 2007-06-25  Nurdin Premji  <npremji@redhat.com>
 
+	* CoreCommand.java (handle): Add message once core has been attached.
+
 	* CoreCommand.java: Added.
 	* CLI.java (CLI): Added a "core" command.
 
