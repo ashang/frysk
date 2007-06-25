@@ -73,7 +73,7 @@ public class TestUpdatingDisplayValue extends TestLib
    */
   public void testUpdateTaskStopped()
   {
-    BreakpointManager bpManager = createDaemon();
+    BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
     /*
      * First breakpoint
@@ -122,7 +122,7 @@ public class TestUpdatingDisplayValue extends TestLib
    */
   public void testUpdateValueChanged()
   {
-    BreakpointManager bpManager = createDaemon();
+    BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
     /*
      * First breakpoint
@@ -167,14 +167,12 @@ public class TestUpdatingDisplayValue extends TestLib
   
   /*
    * Create a display on 'x', then check to make sure we recieve
-   * notification when 'x' goes out of scope
+   * notification when 'x' goes out of scope do to a function returning
+   * normally
    */
   public void testUpdateUnavailableFuncReturn()
   {
-//    if(brokenXXX(4639))
-//      return;
-    
-    BreakpointManager bpManager = createDaemon();
+    BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
     /*
      * First breakpoint
@@ -225,8 +223,47 @@ public class TestUpdatingDisplayValue extends TestLib
   
   public void testUpdateUnavailableLongJump()
   {
-    if(brokenXXX(4639))
-      return;
+    BreakpointManager bpManager = createDaemon("funit-rt-varlongjmp");
+    
+    /*
+     * First breakpoint
+     */
+    LineBreakpoint brk1 = 
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varlongjmp.c",
+                                 61, 0);
+    brk1.addObserver(new BreakpointBlocker());
+    bpManager.enableBreakpoint(brk1, myTask);
+    
+    LinkedList list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    process.resume();
+    assertRunUntilStop("First breakpoint");
+    
+    UpdatingDisplayValue uDisp = new UpdatingDisplayValue("y", myTask,
+                                                          StackFactory.createFrame(myTask).getFrameIdentifier(),
+                                                          steppingEngine);
+    DisplayObserver obs = new DisplayObserver();
+    uDisp.addObserver(obs);
+    assertTrue("Display is not available", uDisp.isAvailable());
+    
+    /*
+     * Second breakpoint
+     */
+    LineBreakpoint brk2 =
+      bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varlongjmp.c",
+                                  51, 0);
+    brk2.addObserver(new BreakpointBlocker());
+    brk2.enableBreakpoint(myTask, steppingEngine);
+    
+    // Run until we hit the second breakpoint
+    list = new LinkedList();
+    list.add(myTask);
+    steppingEngine.continueExecution(list);
+    assertRunUntilStop("Second breakpoint");
+    
+    assertTrue("Observer was not notified", obs.hitOutOfScope);
+    assertFalse("Display is available", uDisp.isAvailable());
   }
   
   public void testUpdateUnavailableTaskDead()
@@ -235,11 +272,11 @@ public class TestUpdatingDisplayValue extends TestLib
       return;
   }
   
-  private BreakpointManager createDaemon()
+  private BreakpointManager createDaemon(String program)
   {
     //  Start the daemon process
     process = 
-      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/funit-rt-varchange"});
+      new AttachedDaemonProcess(new String[]{Config.getPkgLibDir() + "/" + program});
     
     myTask = process.getMainTask();
     myProc = myTask.getProc();

@@ -1,3 +1,13 @@
+2007-06-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestUpdatingDisplayValue.java (createDaemon): Now takes the name
+	of the program to start.
+	(testUpdateTaskStopped): Refactored for above change.
+	(testUpdateValueChanged): Ditto.
+	(testUpdateUnavailableFuncReturn): Ditto.
+	(testUpdateUnavailableLongjump): Implemented, addresses part of
+	bz#4639.
+
 2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestFrameDebugInfo.java (testParameters): Changed test to expect
