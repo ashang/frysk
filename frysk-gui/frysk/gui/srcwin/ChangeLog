@@ -1,3 +1,9 @@
+2007-06-25  Nurdin Premji  <npremji@redhat.com>
+
+	* SourceWindow.java (getCurrentDebugProcess): Added logging message.
+	(finishSourceWindow): Don't add a variable watch if no DebugProcess exists
+	for this SourceWindow.
+
 2007-06-22  Nurdin Premji  <npremji@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Added constructor with Frame[].

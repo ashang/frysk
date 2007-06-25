@@ -50,6 +50,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lib.dw.NoDebugInfoException;
 
@@ -293,6 +295,8 @@ public class SourceWindow
   private org.gnu.gtk.FileChooserDialog chooser;
   
   private FileChooserDialog fc;
+
+  private Logger logger = Logger.getLogger("frysk");
   
   // Search bar widgets
   public static final String LINE_ENTRY = "lineEntry";
@@ -556,7 +560,10 @@ public class SourceWindow
     this.tips = new ToolTips();
 
     /* Attach the variableWatchView to the WatchList for this process */
-    getCurrentDebugProcess().getWatchList().addListener(watchView);
+    DebugProcess dp = getCurrentDebugProcess();
+    
+    if (dp != null)
+    	dp.getWatchList().addListener(watchView);
     
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 
@@ -995,6 +1002,7 @@ public class SourceWindow
    */
   private DebugProcess getCurrentDebugProcess ()
   {
+    logger.log(Level.FINE, "{0}, entering getCurrentDebugProcess", this);
     Iterator iter = SessionManager.theManager.getCurrentSession().getProcesses().iterator();
     while(iter.hasNext())
       {
