@@ -315,4 +315,28 @@ public class TestFhd
     e.expect("Quitting...");
     e.close();
   }
+
+    public void testHpdBreakpointLibrary() {
+	child = new Expect (new String[] {
+				new File (Config.getPkgLibDir (),
+					  "test1").getPath ()
+			    });
+	e = new Expect (new String[] {
+			    new File (Config.getBinDir (), "fhpd").getPath ()
+			});
+	e.expect (prompt);
+	// Attach
+	e.send ("attach " + child.getPid () + " -cli\n");
+	e.expect ("attach.*" + prompt);
+	// Break
+	e.send("break sin\n");
+	e.expect("break.*" + prompt);
+	e.send("go\n");
+	e.expect("go.*" + prompt + ".*Breakpoint.*sin.*");
+	e.send("where\n");
+	e.expect("where.*#0.* (__)?sin \\(\\).*" + prompt);
+	e.send("quit\n");
+	e.expect("Quitting...");
+	e.close();
+    }
 }

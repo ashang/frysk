@@ -78,6 +78,9 @@ frysk_pkglibdir_funit_child_alias_SOURCES =
 frysk/pkglibdir/funit-child-alias: frysk/pkglibdir/funit-child
 	cp -p frysk/pkglibdir/funit-child $@
 
+# Shared library for inserting a breakpoint
+frysk_pkglibdir_test1_LDADD = -lm
+
 if DO_ARCH32_TEST
 pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
 frysk_pkglibdir_arch32_funit_child_alias_SOURCES =

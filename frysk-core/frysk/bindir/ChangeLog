@@ -1,3 +1,8 @@
+2007-06-25  Tim Moore  <timoore@redhat.com>
+
+	* TestFhd.java (testHpdBreakpointLibrary): New test for inserting
+	a breakpoint in a shared library.
+
 2007-06-21  Tim Moore  <timoore@redhat.com>
 
 	* TestFhd.java (testHpdBreakpointInline): Fix expect regular

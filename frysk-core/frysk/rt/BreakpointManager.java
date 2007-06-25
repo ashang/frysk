@@ -42,23 +42,33 @@ package frysk.rt;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import frysk.dwfl.DwflFactory;
+import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
-//import frysk.proc.TaskObserver;
+import frysk.proc.TaskObserver;
 import lib.dw.DwarfDie;
 
+/**
+ * Class for managing user breakpoints. In particular it defers
+ * inserting breakpoints whose addresses cannot be found in the
+ * executable, trying again when shared libraries are loaded.
+ */
 public class BreakpointManager
   extends Observable
 {
   private int breakpointID = 0;
-  private TreeMap breakpointMap = new TreeMap();
+  private TreeMap breakpointMap = new TreeMap();    
   private SteppingEngine steppingEngine;
+    protected Logger logger = Logger.getLogger("frysk");
   
   public BreakpointManager(SteppingEngine steppingEngine)
   {
@@ -146,18 +156,25 @@ public class BreakpointManager
     return sourceBreakpoint;
   }
 
-  public void enableBreakpoint(SourceBreakpoint breakpoint, Task task)
-  {
-    Proc proc = task.getProc();
-    ProcWatcher watcher = (ProcWatcher)watchers.get(proc);
-    if (watcher == null) {
-      watcher = new ProcWatcher(proc);
-      watchers.put(proc, watcher);
-    }
-        
-    breakpoint.enableBreakpoint(task, this.steppingEngine);
-    setChanged();
-    notifyObservers();
+  public SourceBreakpoint.State enableBreakpoint(SourceBreakpoint breakpoint,
+						 Task task) {
+      Proc proc = task.getProc();
+      ProcWatcher watcher = (ProcWatcher)watchers.get(proc);
+      if (watcher == null) {
+	  watcher = new ProcWatcher(proc);
+	  watchers.put(proc, watcher);
+      }
+      try {
+	  breakpoint.enableBreakpoint(task, this.steppingEngine);
+      }
+      catch (Exception e) {
+	  breakpoint.setState(task, SourceBreakpoint.DEFERRED);
+	  return SourceBreakpoint.DEFERRED;
+      }
+      breakpoint.setState(task, SourceBreakpoint.ENABLED);
+      setChanged();
+      notifyObservers();
+      return SourceBreakpoint.ENABLED;
   }
 
   public void disableBreakpoint(SourceBreakpoint breakpoint, Task task)
@@ -179,36 +196,51 @@ public class BreakpointManager
     return bpt;
   }
 
-  private HashSet managedProcs = new HashSet();
+    public void refreshBreakpoints(Task task) {
+	Iterator iter = breakpointMap.values().iterator();
+	while (iter.hasNext()) {
+	    SourceBreakpoint bpt = (SourceBreakpoint)iter.next();
+	    SourceBreakpoint.State state = bpt.getState(task);
+	    if (state == SourceBreakpoint.DEFERRED) {
+		enableBreakpoint(bpt, task);
+	    }
+	}
+    }
+    
+    private HashSet managedProcs = new HashSet();
   
-  public void manageProcess(Proc proc)
-  {
-    if (managedProcs.contains(proc))
-      return;
-    FunctionBreakpoint sharedLibBpt
-      = new FunctionBreakpoint(-1, "_dl_debug_state", null);
-    sharedLibBpt.addObserver(new SourceBreakpointObserver() {
-	public void updateHit(SourceBreakpoint bpt, Task task, long address)
-	{
-	  Proc proc = task.getProc();
-	  DwflFactory.clearDwfl(proc);
-	  new Exception().printStackTrace();
-	  steppingEngine.continueExecution(proc.getTasks());
-	}
+    public void manageProcess(final Proc proc) {
+	if (managedProcs.contains(proc))
+	    return;
+	managedProcs.add(proc);
+	LinkedList sharedLibBptAddrs
+	    = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", proc);
+	if (sharedLibBptAddrs.size() == 0)
+	    return;
+	long sharedLibBptAddr
+	    = ((Long)sharedLibBptAddrs.getFirst()).longValue();
+	Task task = proc.getMainTask();
+	task.requestAddCodeObserver(new TaskObserver.Code() {
+		public Action updateHit(Task task, long address) {
+		    DwflFactory.clearDwfl(proc);
+		    refreshBreakpoints(task);
+		    return Action.CONTINUE;
+		}
 
-	public void addedTo(Object observable)
-	{
-	}
+		public void addedTo(Object observable) {
+		}
 
-	public void addFailed(Object observable, Throwable w)
-	{
-	}
+		public void addFailed(Object observable, Throwable w) {
+		    logger.log(Level.SEVERE,
+			       "_dl_debug_state breakpoint couldn't be added: {0}",
+			       w.toString());
+		}
 
-	public void deletedFrom(Object observable)
-	{
-	}
-      });
-    managedProcs.add(proc);
-    enableBreakpoint(sharedLibBpt, proc.getMainTask());
-  }
+		public void deletedFrom(Object observable) {
+		}
+	    },
+				    sharedLibBptAddr);
+	
+
+    }
 }

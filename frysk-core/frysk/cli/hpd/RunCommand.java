@@ -90,7 +90,7 @@ class RunCommand
 	}
 	if (removeObserver) {
 	    cli.getSteppingEngine().removeObserver(this, task.getProc(), false);
-	    //cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
+	    cli.getSteppingEngine().getBreakpointManager().manageProcess(task.getProc());
 	    task.requestUnblock(this);
 	}
     }

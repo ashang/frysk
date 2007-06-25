@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
+#include <math.h>
 
 volatile int running = 1;
 volatile int result;
+volatile double doubleResult;
 
 static void
 signal_handler(int sig)
@@ -15,7 +17,8 @@ signal_handler(int sig)
 
 int anotherFunction(int a, int b)
 {
-  return a + b;
+  result = a + b;
+  return result;
 }
 
 int funcWithoutParams(void)
@@ -27,6 +30,12 @@ static inline int add(int i, int j)
 {
   result = i + j;
   return result;
+}
+
+double doubleFun(double a, double b)
+{
+  doubleResult = sin(a) + cos(b);
+  return doubleResult;
 }
 
 int main (int argc, char **argv)
@@ -66,6 +75,7 @@ int main (int argc, char **argv)
 	{
 	  i++;
 	  add(2 * i, i);
+	  doubleFun((double)(2 * i), (double)i);
 	}
     }
   return 0;

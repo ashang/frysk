@@ -40,10 +40,11 @@
 package frysk.rt;
 
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.LinkedList;
 
 import frysk.proc.Task;
 import frysk.proc.Proc;
@@ -65,51 +66,79 @@ public abstract class SourceBreakpoint
   private HashMap procMap;
 
     // Possible actionpoint states
-  public static class State
-  {
-    State(String name)
-    {
-      this.name = name;
+    public static class State {
+	State(String name) {
+	    this.name = name;
+	}
+      
+	public String toString() {
+	    return name;
+	}
+	
+	private String name;
+    }
+
+    /**
+     * Possible states of an action point.
+     */
+  
+    /**
+     * The action point is enabled and will be "fired" when hit.
+     */
+    public static final State ENABLED = new State("enabled");
+
+    /**
+     * The action point is disabled and should have no effect in the
+     * running process.
+     */
+    public static final State DISABLED = new State("disabled");
+
+    /**
+     * The action point is deleted and should not be reenabled.
+     */
+    public static final State DELETED = new State("deleted");
+
+    /**
+     * The action point is should be enabled but is not yet, perhaps
+     * because a shared library hasn't been loaded yet.
+     */
+    public static final State DEFERRED = new State("deferred");
+
+    // map between task and state.
+    private HashMap taskStateMap = new HashMap();
+    // user specified state
+    private State userState;
+
+    /**
+     * Get the state of an action point.
+     * @return state constant object
+     */
+    public State getState(Task task) {
+	return (State)taskStateMap.get(task);
+    }
+
+    /**
+     * Set state of a breakpoint in a task.
+     */
+    public void setState(Task task, State state) {
+	taskStateMap.put(task, state);
+    }
+
+    /**
+     * Get the map from tasks to breakpoint's state in the task. Read
+     * only!
+     */
+    public Map getTaskStateMap() {
+	return taskStateMap;
     }
     
-    private String name;
-
-    public String toString()
-    {
-      return name;
+    public State getUserState() {
+	return userState;
     }
-  }
 
-  /**
-   * Possible states of an action point.
-   */
-  
-  /**
-   * The action point is enabled and will be "fired" when hit.
-   */
-  public static final State ENABLED = new State("enabled");
-
-  /**
-   * The action point is disabled and should have no effect in the
-   * running process.
-   */
-  public static final State DISABLED = new State("disabled");
-
-  /**
-   * The action point is deleted and should not be reenabled.
-   */
-  public static final State DELETED = new State("deleted");
-
-  private State state;
-
-  /**
-   * Get the state of an action point.
-   * @return state constant object
-   */
-  public State getState()
-  {
-    return state;
-  }
+    public void setUserState(State state) {
+	userState = state;
+    }
 
   private class ProcEntry
   {
@@ -120,7 +149,7 @@ public abstract class SourceBreakpoint
   public SourceBreakpoint(int id, State state)
   {
     procMap = new HashMap();
-    this.state = state;
+    this.userState = state;
     this.id = id;
   }
 
@@ -193,7 +222,8 @@ public abstract class SourceBreakpoint
 	procEntry.breakpoints.add(breakpoint);
 	steppingEngine.addBreakpoint(task, breakpoint);
       }
-    state = ENABLED;
+    userState = ENABLED;
+    taskStateMap.put(task, ENABLED);
   }
 
   /**
@@ -217,7 +247,8 @@ public abstract class SourceBreakpoint
         steppingEngine.deleteBreakpoint(task, bpt);
       }
     procEntry.breakpoints.clear();
-    state = DISABLED;
+    userState = DISABLED;
+    taskStateMap.remove(task);
   }
 
   /**

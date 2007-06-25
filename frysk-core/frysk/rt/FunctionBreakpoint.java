@@ -70,52 +70,28 @@ public class FunctionBreakpoint
     this.die = die;
   }
 
-  public LinkedList getRawAddressesForProc(Proc proc)
-  {
-    if (die != null)
-      {
-	ArrayList entryAddrs = die.getEntryBreakpoints();
-	ArrayList inlineDies = null;
-	if (die.isInlineDeclaration())
-	  {
-	    inlineDies = die.getInlinedInstances();
-	  }
-	LinkedList addrs;
-	if (entryAddrs == null)
-	  addrs = new LinkedList();
-	else
-	  addrs = new LinkedList(entryAddrs);
-	if (inlineDies != null)
-	  {
-	    addrs.addAll(inlineDies);
-	    containsInlineInstances = true;
-	  }
-	return addrs;
-      }
-    else
-      {
-	Dwfl dwfl = DwflFactory.createDwfl(proc); // XXX cache Dwfls somewhere?
-	DwflModule[] modules = dwfl.getModules();
-	final LinkedList addrs = new LinkedList();
-	SymbolBuilder builder = new SymbolBuilder() {
-	    public void symbol(String name, long value, long size, int type,
-			       int bind, int visibility)
-	    {
-	      addrs.add(new Long(value));
+    public LinkedList getRawAddressesForProc(Proc proc) {
+	if (die != null) {
+	    ArrayList entryAddrs = die.getEntryBreakpoints();
+	    ArrayList inlineDies = null;
+	    if (die.isInlineDeclaration()) {
+		inlineDies = die.getInlinedInstances();
 	    }
-	  };
-	for (int i = 0; i < modules.length; i++)
-	  {
-	    DwflModule module = modules[i];
-	    module.getSymbolByName(name, builder);
-	  }
-	if (addrs.size() == 0)
-	  throw new RuntimeException("Couldn't find symbol " + name);
-	else
-	  return addrs;
-
-      }
-  }
+	    LinkedList addrs;
+	    if (entryAddrs == null)
+		addrs = new LinkedList();
+	    else
+		addrs = new LinkedList(entryAddrs);
+	    if (inlineDies != null) {
+		addrs.addAll(inlineDies);
+		containsInlineInstances = true;
+	    }
+	    return addrs;
+	}
+	else {
+	    return addressesForSymbol(name, proc);
+	}
+    }
 
   public long getRawAddress(Object addr)
   {
@@ -145,4 +121,26 @@ public class FunctionBreakpoint
       writer.print("*");
     return writer;
   }
+
+    static LinkedList addressesForSymbol(String name, Proc proc)  {
+	Dwfl dwfl = DwflFactory.createDwfl(proc); // XXX cache Dwfls somewhere?
+	DwflModule[] modules = dwfl.getModules();
+	final LinkedList addrs = new LinkedList();
+	SymbolBuilder builder = new SymbolBuilder() {
+		public void symbol(String name, long value, long size,
+				   int type, int bind, int visibility) {
+		    addrs.add(new Long(value));
+		}
+	    };
+	for (int i = 0; i < modules.length; i++)
+	    {
+		DwflModule module = modules[i];
+		module.getSymbolByName(name, builder);
+	    }
+	if (addrs.size() == 0)
+	    throw new RuntimeException("Couldn't find symbol " + name);
+	else
+	    return addrs;
+
+    }
 }

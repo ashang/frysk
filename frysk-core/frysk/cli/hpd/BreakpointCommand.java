@@ -137,8 +137,7 @@ class BreakpointCommand
 	    actionpoint.addObserver(new CLIBreakpointObserver(cli)
 		{
 		    public void updateHit(SourceBreakpoint bpt, Task task,
-					  long address)
-		    {
+					  long address) {
 			super.updateHit(bpt, task, address);
 			FunctionBreakpoint fbpt = (FunctionBreakpoint)bpt;
 			outWriter.print("Breakpoint ");
@@ -149,7 +148,12 @@ class BreakpointCommand
 		});
 	}
 
-	bpManager.enableBreakpoint(actionpoint, task);
-	cli.getPrintWriter().println("breakpoint " + actionpoint.getId());
+	SourceBreakpoint.State result = bpManager.enableBreakpoint(actionpoint,
+								   task);
+	outWriter.print("breakpoint " + actionpoint.getId());
+	if (result != SourceBreakpoint.ENABLED) {
+	    outWriter.print(" " + result.toString());
+	}
+	outWriter.println();
     }
 }

@@ -1,3 +1,20 @@
+2007-06-25  Tim Moore  <timoore@redhat.com>
+
+	* FunctionBreakpoint.java (addressesForSymbol): New static
+	function for getting addresses from raw symbols.
+	(getRawAddressesForProc): Use it.
+	* SourceBreakpoint.java (DEFERRED): New state.
+	(taskStateMap, getState, setState): Map breakpoint state to tasks.
+	(userState, getUserState, setUserState): Breakpoint state as set
+	by user.
+	(SourceBreakpoint): Set userState with state argument.
+	(enableBreakpoint, disableBreakpoint): Set userState and task
+	state.
+	* BreakpointManager.java (enableBreakpoint): Catch error from
+	breakpoint's enableBreakpoint method and defer the breakpoint.
+	(refreshBreakpoints): New method.
+	(manageProcess): Add code observer for shared library breakpoint.
+	
 2007-06-25  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java (testASMFunctionEntry): New test.

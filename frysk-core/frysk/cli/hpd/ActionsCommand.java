@@ -39,11 +39,17 @@
 
 package frysk.cli.hpd;
 
-import frysk.rt.BreakpointManager;
-import frysk.rt.SourceBreakpoint;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import frysk.proc.Task;
+import frysk.rt.BreakpointManager;
+import frysk.rt.SourceBreakpoint;
 
 class ActionsCommand
     extends CLIHandler
@@ -61,6 +67,25 @@ class ActionsCommand
 	this("actionpoints", cli);
     }
 
+    private static final Map.Entry[] dummy = new Map.Entry[] {};
+
+    private static class TaskComparator implements Comparator {
+	public int compare(Object o1, Object o2) {
+	    Map.Entry me1 = (Map.Entry)o1;
+	    Map.Entry me2 = (Map.Entry)o2;
+	    int id1 = ((Task)me1.getKey()).getTaskId().intValue();
+	    int id2 = ((Task)me2.getKey()).getTaskId().intValue();
+	    if (id1 < id2)
+		return -1;
+	    else if (id1 > id2)
+		return 1;
+	    else
+		return 0;
+	}
+    }
+
+    private static final TaskComparator taskComparator = new TaskComparator();
+
     public void handle(Command cmd) throws ParseException 
     {
 	BreakpointManager bpManager = cli.getSteppingEngine().getBreakpointManager();
@@ -69,14 +94,29 @@ class ActionsCommand
 	while (iterator.hasNext()) {
 	    SourceBreakpoint bpt = (SourceBreakpoint)iterator.next();
 	    outWriter.print(bpt.getId() + " ");
-	    if (bpt.getState() == SourceBreakpoint.ENABLED) {
+	    if (bpt.getUserState() == SourceBreakpoint.ENABLED) {
 		outWriter.print(" y ");
 	    }
 	    else {
 		outWriter.print(" n ");
 	    }
 	    bpt.output(outWriter);
-	    outWriter.println(" ");
+	    outWriter.print(" ");
+	    // Print tasks in which breakpoint is enabled
+	    Set taskEntrySet = bpt.getTaskStateMap().entrySet();
+	    Map.Entry[] taskEntries = (Map.Entry[])taskEntrySet.toArray(dummy);
+	    Arrays.sort(taskEntries, taskComparator);
+	    for (int i = 0; i < taskEntries.length; i++) {
+		int id
+		    = ((Task)taskEntries[i].getKey()).getTaskId().intValue();
+		SourceBreakpoint.State state
+		    = (SourceBreakpoint.State)taskEntries[i].getValue();
+		if (state == SourceBreakpoint.ENABLED) {
+		    outWriter.print(id);
+		    outWriter.print(" ");
+		}
+	    }
+	    outWriter.println();
 	}
     }
 }

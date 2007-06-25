@@ -1,3 +1,13 @@
+2007-06-25  Tim Moore  <timoore@redhat.com>
+
+	* RunCommand.java (update): Tell the breakpoint manager to manage
+	the process..
+	* ActionsCommand.java (TaskComparator): Comparator for sorting
+	tasks.
+	(handle): Print out tasks that have a breakpoint enabled.
+	* BreakpointCommand (handle): Print out status of breakpoint if it
+	cannot be enabled.
+
 2007-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DisplayCommand.java (handle): Enabled notifications to the user
