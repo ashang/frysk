@@ -91,6 +91,28 @@ public class TestFhd
                    e.expect(5, "Attached to process.*\n" + prompt);
                    e.close();
   }
+  
+  public void testHpdCore ()
+  {
+      e = new Expect(new String[]
+                                {
+	      			  new File(Config.getBinDir(), "fhpd").getPath(),
+	      			  new File(Config.getPkgDataDir(), "test-core").getPath()
+                                });
+      e.expect(5, "Attached to core file.*");
+      e.close();
+  }
+  public void testHpdCoreCore()
+  {
+      e = new Expect(new String[]
+                                {
+	      			  new File(Config.getBinDir(), "fhpd").getPath(),
+                                });
+      e.expect(prompt);
+      e.send("core " + new File(Config.getPkgDataDir(), "test-core").getPath() + "\n");
+      e.expect(5, "Attached to core file.*");
+      e.close();
+  }
 
   public void testHpdTraceStack ()
   {

@@ -1,3 +1,9 @@
+2007-06-25  Nurdin Premji  <npremji@redhat.com>
+
+	* fhpd.java (main): Handle core file passed as argument.
+	* TestFhd.java (testHpdCore): Added.
+	(testHpdCoreCore): Added.	
+
 2007-06-25  Tim Moore  <timoore@redhat.com>
 
 	* TestFhd.java (testHpdBreakpointLibrary): New test for inserting

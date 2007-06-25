@@ -60,6 +60,7 @@ public class fhpd
 {
   static int pid;
   static File execFile;
+  static File core;
 
   final static class FhpdCompletor implements Completor
   {
@@ -97,6 +98,12 @@ public class fhpd
       {
         pid = pids[0].id;
       }
+
+    public void parseCores(File[] coreFiles) {
+	core = coreFiles[0];
+    }
+      
+      
       
     };    
     parser.setHeader("Usage: fhpd <PID>");
@@ -110,6 +117,8 @@ public class fhpd
         line = "attach " + pid;
       else if (execFile != null)
         line = "run " + execFile.getCanonicalPath();
+      else if (core != null)
+	  line = "core " + core.getCanonicalPath();
     }
     catch (IOException ignore) {}
     
