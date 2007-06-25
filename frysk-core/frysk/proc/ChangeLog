@@ -1,3 +1,7 @@
+2007-06-25  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Task.java (step_send): Removed field, now a real state in ptrace.
+
 2007-06-20  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Observation.java (toString): Include

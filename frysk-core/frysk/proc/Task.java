@@ -883,13 +883,6 @@ public abstract class Task
   public Breakpoint steppingBreakpoint;
 
   /**
-   * Whether the last request to the process was a step request.
-   *
-   * XXX: This should be a state in Linux/PTRACE state machine.
-   */
-  public boolean step_send;
-
-  /**
    * Whether we have just started the Task. Set in
    * wantToAttachContinue.blockOrAttachContinue() and immediately
    * reset in sendContinue() unless we request a step or

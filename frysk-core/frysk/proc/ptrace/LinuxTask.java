@@ -219,7 +219,6 @@ public class LinuxTask
     public void sendContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendContinue\n", this);
-	step_send = false;
 	sig_send = sig;
         incrementMod();
 	try
@@ -234,7 +233,6 @@ public class LinuxTask
     public void sendSyscallContinue (int sig)
     {
 	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
-	step_send = false;
 	sig_send = sig;
         incrementMod();
 	try
@@ -250,7 +248,6 @@ public class LinuxTask
     public void sendStepInstruction (int sig)
     {
 	logger.log(Level.FINE, "{0} sendStepInstruction\n", this);
-	step_send = true;
 	sig_send = sig;
         incrementMod();
 	syscall_sigret = getIsa().isAtSyscallSigReturn(this);

@@ -1,3 +1,15 @@
+2007-06-25  Mark Wielaard  <mwielaard@redhat.com>
+
+	* LinuxTask.java (sendContinue): Don't set step_send.
+	(sendSyscallContinue): Likewise.
+	(sendStepInstruction): Likewise.
+	* LinuxTaskState.java (sendContinue): Mark package private. Return
+	state based on observers and just send ptrace command.
+	(blockedContinue): Mark package private.
+	(Running.handleTrapped): Factor out stepping related handling.
+	(Stepping): New subclass of Running which handles all stepping
+	logic in handleTrappedEvent().
+
 2007-06-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestByteBuffer.java (AsyncModify): Make local to
