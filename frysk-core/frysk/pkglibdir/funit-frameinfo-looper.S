@@ -58,7 +58,7 @@ b:
 	.text
 .globl second
 	.type	second, @function
-second:
+ second:
 .LFB5:
 	PUSHQ_BASE
 .LCFI0:
@@ -85,7 +85,7 @@ first:
 	JUMP	(.L4)
 .L5:	
 	MOVL	($0, %eax)
-	CALL	(second@PLT)
+	CALL	(second@PLT) #x86_64_func_entry_test
 .L4:	
 	movq	a@GOTPCREL(%rip), REG1
 	MOVL	((REG1), %eax)

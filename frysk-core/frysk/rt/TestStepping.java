@@ -40,12 +40,14 @@
 
 package frysk.rt;
 
+//import java.io.*;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
 import frysk.Config;
 import frysk.proc.Action;
+//import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
@@ -86,6 +88,8 @@ public class TestStepping extends TestLib
   protected static final int ASM_STEP_SINGLE_INST = 10;
   protected static final int ASM_STEP_MULTI_LINE = 11;
   protected static final int ASM_STEP_JUMP = 12;
+  
+  protected static final int ASM_STEP_FUNC_ENTRY = 13;
   
   protected static final int SIGLONGJMP = 20;
   protected static final int GOTO = 21;
@@ -319,6 +323,33 @@ public class TestStepping extends TestLib
     this.lineMap.clear();
   }
   
+  public void testASMFunctionEntry ()
+  {
+    
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    asmTestLineNumber = 88;
+    
+    testState = INITIAL;
+    test = ASM_STEP_FUNC_ENTRY;
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    this.lineMap.clear();
+  }
+  
   public void testStepSigLongJmp ()
   {
     if (brokenPpcXXX (3277))
@@ -520,6 +551,10 @@ public class TestStepping extends TestLib
           case ASM_STEP_JUMP:
             se.stepInstruction(myTask);
             break;
+              
+          case ASM_STEP_FUNC_ENTRY:
+            se.stepInstruction(myTask);
+            break;
             
           case SIGLONGJMP:
             se.stepLine(myTask);
@@ -606,6 +641,13 @@ public class TestStepping extends TestLib
               }
             se.stepInstruction(myTask);
             break;
+            
+          case ASM_STEP_FUNC_ENTRY:
+            if (line.getLine() == asmTestLineNumber)
+              {
+                this.testState = FINAL_STEP;
+              }
+            se.stepInstruction(myTask);
 
           case SIGLONGJMP:
              if (line.getLine() == 71)
@@ -717,6 +759,11 @@ public class TestStepping extends TestLib
             Manager.eventLoop.requestStop();
             return;
             
+          case ASM_STEP_FUNC_ENTRY:
+            assertTrue("line number", lineNr == 63);
+            Manager.eventLoop.requestStop();
+            return;
+            
           case SIGLONGJMP:
             assertTrue("line number", lineNr == 80);
             Manager.eventLoop.requestStop();
@@ -745,6 +792,7 @@ public class TestStepping extends TestLib
       }
   }
   
+  int asmTestLineNumber = 0;
   protected class AttachedObserver implements TaskObserver.Attached
   {
     public void addedTo (Object o)
@@ -756,6 +804,55 @@ public class TestStepping extends TestLib
     {
       myTask = task;
       myProc = task.getProc();
+
+//      if (testState == ASM_STEP_FUNC_ENTRY)
+//        {
+//          File f = new File(
+//                            Config.getRootSrcDir()
+//                                + "/frysk-core/frysk/pkglibdir/funit-frameinfo-looper.S");
+//
+//          BufferedReader br = null;
+//          try
+//            {
+//              br = new BufferedReader(new FileReader(f));
+//            }
+//          catch (IOException ioe)
+//            {
+//              ioe.printStackTrace();
+//            }
+//
+//          String bookmark = null;
+//
+//          Isa isa = task.getIsa();
+//          if (isa instanceof frysk.proc.IsaIA32)
+//            {
+//              bookmark = "#i386_func_entry_test";
+//            }
+//          else if (isa instanceof frysk.proc.IsaX8664)
+//            {
+//              bookmark = "#x86_64_func_entry_test";
+//            }
+//
+//          int lineNum = 0;
+//
+//          try
+//            {
+//              String line = br.readLine();
+//              while (line != null)
+//                {
+//                  ++lineNum;
+//                  if (line.indexOf(bookmark) >= 0)
+//                    break;
+//                }
+//            }
+//          catch (IOException ioe)
+//            {
+//              ioe.printStackTrace();
+//            }
+//          
+//          asmTestLineNumber = lineNum;
+//        }
+
       myTask.requestDeleteAttachedObserver(this);
       return Action.CONTINUE;
     }
