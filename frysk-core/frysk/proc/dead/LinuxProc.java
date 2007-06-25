@@ -119,6 +119,9 @@ public class LinuxProc
 
   protected String sendrecExe() 
   {
+
+    if (this.exefileBackEnd != null)
+      return this.exefileBackEnd.getPath();
     // Only place to find full path + exe is
     // in the args list. Remove ./ if present.
     String[] args = sendrecCmdLine();
