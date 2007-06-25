@@ -1,3 +1,8 @@
+2007-06-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DebugInfoEvaluator.java (get): New function.
+	* DebugInfo.java (get): New function.
+
 2007-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java: Re-enabled checking of cached Frame

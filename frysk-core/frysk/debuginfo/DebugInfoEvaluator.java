@@ -252,10 +252,10 @@ class DebugInfoEvaluator
 
       pc = currentFrame.getAdjustedAddress();
 
-      List ops = varDieP.getAddr();
+      List ops = varDieP.getAddr();      
       if (ops.size() == 0 ||
           ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-        return 0;
+	 return 0;
       if (((DwarfDie.DwarfOp)ops.get(0)).operator == DwOpEncodings.DW_OP_addr_)
         {
           setSuccessful(true);
@@ -274,7 +274,6 @@ class DebugInfoEvaluator
       // DW_OP_fbreg
       setSuccessful(true);
       Isa isa = currentFrame.getTask().getIsa();
-
       if (isa instanceof frysk.proc.IsaIA32)
         regval = swapBytes(currentFrame.getReg(x86regnumbers[reg]));
       else if (isa instanceof frysk.proc.IsaX8664)
@@ -411,7 +410,7 @@ class DebugInfoEvaluator
       setSuccessful(true);
       if (isa instanceof frysk.proc.IsaIA32)
           reg = x86regnumbers[(int)reg];
-
+      
       return reg;
     }
 
@@ -758,24 +757,34 @@ class DebugInfoEvaluator
       }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+
+  public Value get (String s)
+  {
+    DwarfDie varDie = getDie(s);
+    if (varDie == null)
+      return (null);
+    
+    return get(varDie);
+  }
+  
+  /**
+   * Returns the Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Value get (String s)
+  public Value get (DwarfDie varDie)
   {
     VariableAccessor[] variableAccessor = { new AccessDW_FORM_block(),
                                            new AccessDW_FORM_data() };
     ByteOrder byteorder = task.getIsa().getByteOrder();
 
-    DwarfDie varDie = getDie(s);
     if (varDie == null)
       return (null);
 
+    String s = varDie.getName();
+    
     for (int i = 0; i < variableAccessor.length; i++)
       {
-        try
+	try
           {
             DwarfDie type = varDie.getUltimateType();
             // if there is no type then setup a sentinel
@@ -793,6 +802,7 @@ class DebugInfoEvaluator
             case BaseTypes.baseTypeInteger:
             case BaseTypes.baseTypeUnsignedInteger:
             {
+        	
               int intVal = variableAccessor[i].getInt(varDie, 0);
               if (variableAccessor[i].isSuccessful() == false)
                 continue;

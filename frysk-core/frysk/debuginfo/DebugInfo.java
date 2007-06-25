@@ -507,4 +507,9 @@ public class DebugInfo
        return debugInfoEvaluator[0].getValue(die);
      } 
 
+     public Value get(DwarfDie die)
+     {
+       return debugInfoEvaluator[0].get(die);
+     } 
+
 }
