@@ -1,3 +1,15 @@
+2007-06-25  Chris Moller  <cmoller@redhat.com>
+
+	* FileDescriptor.java: Added public native void lseek (long off).
+	* cni/FileDescriptor.cxx: Added void
+	frysk::sys::FileDescriptor::lseek (jlong off), the sole purpose of
+	which is to create huge sparse files to test pread64() and
+	pwrite64() in the StatelessFile code.
+	* cni/StatelessFile.cxx: Reinstated verifyBounds(), but without
+	the fileOffset check.
+	* TestStatelessFile.java: Added a check for accessing files with
+	large fileOffsets.
+
 2007-06-20  Chris Moller  <cmoller@redhat.com>
 
 	* cni/StatelessFile.cxx StatelessFile::pread(): Replaced pread()

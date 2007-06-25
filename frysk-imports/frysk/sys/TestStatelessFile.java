@@ -43,8 +43,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import frysk.sys.FileDescriptor;
 import frysk.junit.TestCase;
 import frysk.testbed.TearDownFile;
+
 
 public class TestStatelessFile
     extends TestCase
@@ -76,12 +78,14 @@ public class TestStatelessFile
 
     public void testPreadValidity()
     {
-	StatelessFile sf = new StatelessFile(fakefile);
+	TearDownFile tmp = TearDownFile.create ();
+	StatelessFile sf = new StatelessFile(tmp);
+	StatelessFile sfbad = new StatelessFile(fakefile);
 	final int BYTE_BUFFER_SIZE = 128;
 	byte[] bytes = new byte[BYTE_BUFFER_SIZE];
 
 	try {
-	    sf.pread(0,		// long fileOffset,
+	    sfbad.pread(0,		// long fileOffset,
 		     bytes,	// byte[] bytes,
 		     0,		// long start,
 		     10);	// long length
@@ -97,7 +101,7 @@ public class TestStatelessFile
 		     0,		// long start,
 		     10);	// long length
 	    assertTrue ("invalid file offset pread", false);
-	} catch (ArrayIndexOutOfBoundsException ioe) {
+	} catch (Errno ioe) {
 	    //	    System.out.println ("invalid file offset");
 	    assertTrue (true);
 	}
@@ -134,6 +138,7 @@ public class TestStatelessFile
 	    //	    System.out.println ("read overflow");
 	    assertTrue (true);
 	}
+	tmp.delete();
     }
     
     public void testPread()
@@ -200,18 +205,21 @@ public class TestStatelessFile
     public void testPwriteValidity()
     {
 	File fakefile = new File (".", "*****");
-	StatelessFile sf = new StatelessFile(fakefile);
+	StatelessFile sfbad = new StatelessFile(fakefile);
+	TearDownFile tmp = TearDownFile.create ();
+	StatelessFile sf = new StatelessFile(tmp);
+
 	final int BYTE_BUFFER_SIZE = 128;
 	byte[] bytes = new byte[BYTE_BUFFER_SIZE];
 
 	try {
-	    sf.pwrite(0,	// long fileOffset,
-		      bytes,	// byte[] bytes,
-		      0,	// long start,
-		      10);	// long length
+	    sfbad.pwrite(0,	// long fileOffset,
+			 bytes,	// byte[] bytes,
+			 0,	// long start,
+			 10);	// long length
 	    assertTrue ("invalid file pread", false);
 	} catch (Errno ioe) {
-	    //	    System.out.println ("invalid file name");
+	    // System.out.println ("invalid file name");
 	    assertTrue (true);
 	}
 
@@ -221,8 +229,8 @@ public class TestStatelessFile
 		      0,	// long start,
 		      10);	// long length
 	    assertTrue ("invalid file offset pwrite", false);
-	} catch (ArrayIndexOutOfBoundsException ioe) {
-	    //	    System.out.println ("invalid file offset");
+	} catch (Errno ioe) {
+	    // System.out.println ("invalid file offset");
 	    assertTrue (true);
 	}
 
@@ -233,7 +241,7 @@ public class TestStatelessFile
 		      10);	// long length
 	    assertTrue ("invalid buffer start pwrite", false);
 	} catch (ArrayIndexOutOfBoundsException ioe) {
-	    //	    System.out.println ("invalid buffer start");
+	    //System.out.println ("invalid buffer start");
 	    assertTrue (true);
 	}
 
@@ -244,7 +252,7 @@ public class TestStatelessFile
 		      -1);	// long length
 	    assertTrue ("invalid length pwrite", false);
 	} catch (ArrayIndexOutOfBoundsException ioe) {
-	    //	    System.out.println ("invalid length");
+	    // System.out.println ("invalid length");
 	    assertTrue (true);
 	}
 
@@ -255,8 +263,38 @@ public class TestStatelessFile
 		      BYTE_BUFFER_SIZE+1);	// long length
 	    assertTrue ("read overflow pwrite", false);
 	} catch (ArrayIndexOutOfBoundsException ioe) {
-	    //	    System.out.println ("read overflow");
+	    // System.out.println ("read overflow");
 	    assertTrue (true);
+	}
+	tmp.delete();
+    }
+    
+    public void testPwriteHuge()
+    {
+	try {
+	    long ilen;
+	    //                        0123456789abcdef
+	    final long HugeOffset = 0x000000007fffffffL;
+	    File tmp = File.createTempFile("sftest", null);
+	    FileDescriptor fd = new FileDescriptor(tmp, FileDescriptor.RDWR);
+	    fd.lseek (HugeOffset);
+	    StatelessFile sf = new StatelessFile(tmp);
+
+	    // pwrite to the temp file created above
+	    try {
+		ilen = sf.pwrite(HugeOffset,		// long fileOffset,
+				 stb,		// byte[] bytes,
+				 0,		// long start,
+				 stb.length);	// long length
+		stlen = tmp.length();
+		assertEquals ("initial length pwrite", stb.length, ilen);
+	    } catch (Errno ioe) {
+		System.out.println ("huge offsety pwrite()"  + ioe);
+	    }
+	    
+	    tmp.delete();
+	} catch (IOException ioe) {
+	    System.out.println ("TestStatelessFile() "  + ioe);
 	}
     }
     

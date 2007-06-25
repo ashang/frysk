@@ -276,4 +276,9 @@ public class FileDescriptor
    * Set the size of a terminal window.
    */
   public native void setSize(Size size);
+
+  /**
+   * Seek to the specified position in the file associated with the descriptor.
+   */
+    public native void lseek (long off);
 }

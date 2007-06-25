@@ -226,3 +226,13 @@ frysk::sys::FileDescriptor::setSize(frysk::sys::Size *jsize)
 	throwErrno(errno, "ioctl");
     }
 }
+
+void
+frysk::sys::FileDescriptor::lseek (jlong off)
+{
+  errno = 0;
+  ::lseek64 (fd, off, SEEK_END);
+  int err = errno;
+  if (err != 0)
+    throwErrno (err, "lseek", "fd %d offset %ld", (int)fd, (long)off);
+}

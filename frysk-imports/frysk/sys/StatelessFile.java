@@ -63,9 +63,10 @@ public class StatelessFile
 	this(new File(file));
     }
 
-    public native long pread(long fileOffset, byte[] bytes, long start,
-			     long length);
-    
-    public native long pwrite(long fileOffset, byte[] bytes, long start,
+    public native long pread (long fileOffset, byte[] bytes, long start,
 			      long length);
+   
+    public native long pwrite (long fileOffset, byte[] bytes, long start,
+			       long length);
 }
+
