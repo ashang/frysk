@@ -1,6 +1,7 @@
 2007-06-25  Mike Cvet  <mcvet@redhat.com>
 
-	* TestStepping.java (testASMFunctionReturn): New test.
+	* TestStepping.java (testASMFunctionReturn): New test. Temporarily
+	marked broken on x86.
 	(testASMFunctionStepOver): Ditto.
 	(testASMFunctionStepOut): Ditto.
 

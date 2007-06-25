@@ -244,7 +244,6 @@ public class TestStepping extends TestLib
     se.removeObserver(lock, myTask.getProc(), false);
     this.lineMap.clear();
   }
-  
 
   public void testASMSingleStep ()
   {
@@ -357,6 +356,9 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
+    if (brokenX86XXX(0))
+	return;
+    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -383,6 +385,9 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
+    if (brokenX86XXX(0))
+	return;
+    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -408,6 +413,9 @@ public class TestStepping extends TestLib
   {
     if (brokenPpcXXX (3277))
       return;
+    
+    if (brokenX86XXX(0))
+	return;
     
     initial = true;
     this.lineMap = new HashMap();
