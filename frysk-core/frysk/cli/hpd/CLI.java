@@ -298,6 +298,7 @@ public class CLI
     addHandler(new DisplayCommand(this));
     // New interface
     addHandler(new RunCommand(this));
+    addHandler(new CoreCommand(this));
 
     // initialize PT set stuff
     setparser = new SetNotationParser();

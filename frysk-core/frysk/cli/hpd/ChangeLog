@@ -1,3 +1,8 @@
+2007-06-25  Nurdin Premji  <npremji@redhat.com>
+
+	* CoreCommand.java: Added.
+	* CLI.java (CLI): Added a "core" command.
+
 2007-06-25  Tim Moore  <timoore@redhat.com>
 
 	* RunCommand.java (update): Tell the breakpoint manager to manage
