@@ -110,6 +110,15 @@ public class TestCase
   {
       return Runner.unresolved(bug, Config.getTargetCpuXXX ().indexOf ("_64") != - 1);
   }
+  
+  /**
+   * A method that returns true, and prints skip, when the build
+   * architecture is X86_64.
+   */
+  protected static boolean brokenX86XXX (int bug)
+  {
+      return Runner.unresolved(bug, Config.getTargetCpuXXX ().equals("x86") == true);
+  }
 
     /**
      * Results from uname(2) call.
