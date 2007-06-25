@@ -86,6 +86,7 @@ pkglib32_PROGRAMS += frysk/pkglibdir/arch32/funit-child-alias
 frysk_pkglibdir_arch32_funit_child_alias_SOURCES =
 frysk/pkglibdir/arch32/funit-child-alias: frysk/pkglibdir/arch32/funit-child
 	cp -p frysk/pkglibdir/arch32/funit-child $@
+frysk_pkglibdir_arch32_test1_LDADD = -lm
 endif
 
 EXTRA_DIST += frysk/cli/hpd/doc-files/parsetree.png

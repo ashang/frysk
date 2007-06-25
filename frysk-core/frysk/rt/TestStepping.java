@@ -90,6 +90,9 @@ public class TestStepping extends TestLib
   protected static final int ASM_STEP_JUMP = 12;
   
   protected static final int ASM_STEP_FUNC_ENTRY = 13;
+  protected static final int ASM_STEP_FUNC_RETURN = 14;
+  protected static final int ASM_STEP_FUNC_STEP_OVER = 15;
+  protected static final int ASM_STEP_FUNC_STEP_OUT = 16;
   
   protected static final int SIGLONGJMP = 20;
   protected static final int GOTO = 21;
@@ -325,7 +328,6 @@ public class TestStepping extends TestLib
   
   public void testASMFunctionEntry ()
   {
-    
     if (brokenPpcXXX (3277))
       return;
     
@@ -337,6 +339,84 @@ public class TestStepping extends TestLib
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_ENTRY;
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    this.lineMap.clear();
+  }
+  
+  public void testASMFunctionReturn ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    asmTestLineNumber = 69;
+    
+    testState = INITIAL;
+    test = ASM_STEP_FUNC_RETURN;
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    this.lineMap.clear();
+  }
+  
+  public void testASMFunctionStepOver ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    asmTestLineNumber = 88;
+    
+    testState = INITIAL;
+    test = ASM_STEP_FUNC_STEP_OVER;
+    
+    String[] cmd = new String[1];
+    cmd[0] = getExecPath ("funit-frameinfo-looper");
+    
+    attachedObserver = new AttachedObserver();
+    Manager.host.requestCreateAttachedProc(cmd, attachedObserver);
+    
+    assertRunUntilStop("Attempting to add attachedObserver");
+    se.clear();
+    se.removeObserver(lock, myTask.getProc(), false);
+    this.lineMap.clear();
+  }
+  
+  public void testASMFunctionStepOut ()
+  {
+    if (brokenPpcXXX (3277))
+      return;
+    
+    initial = true;
+    this.lineMap = new HashMap();
+    
+    lock = new LockObserver();
+    asmTestLineNumber = 67;
+    
+    testState = INITIAL;
+    test = ASM_STEP_FUNC_STEP_OUT;
     
     String[] cmd = new String[1];
     cmd[0] = getExecPath ("funit-frameinfo-looper");
@@ -556,6 +636,18 @@ public class TestStepping extends TestLib
             se.stepInstruction(myTask);
             break;
             
+          case ASM_STEP_FUNC_RETURN:
+              se.stepInstruction(myTask);
+              break;
+              
+          case ASM_STEP_FUNC_STEP_OVER:
+              se.stepInstruction(myTask);
+              break;
+              
+          case ASM_STEP_FUNC_STEP_OUT:
+              se.stepInstruction(myTask);
+              break;
+            
           case SIGLONGJMP:
             se.stepLine(myTask);
             break;
@@ -648,6 +740,35 @@ public class TestStepping extends TestLib
                 this.testState = FINAL_STEP;
               }
             se.stepInstruction(myTask);
+            break;
+            
+          case ASM_STEP_FUNC_RETURN:
+              if (line.getLine() == asmTestLineNumber)
+                {
+                  this.testState = FINAL_STEP;
+                }
+              se.stepInstruction(myTask);
+              break;
+              
+          case ASM_STEP_FUNC_STEP_OVER:
+              if (line.getLine() == asmTestLineNumber)
+                {
+                  this.testState = FINAL_STEP;
+                  se.stepOver(myTask, sFrame);
+                  break;
+                }
+              se.stepInstruction(myTask);
+              break;
+              
+          case ASM_STEP_FUNC_STEP_OUT:
+              if (line.getLine() == asmTestLineNumber)
+                {
+                  this.testState = FINAL_STEP;
+                  se.stepOut(myTask, sFrame);
+                  break;
+                }
+              se.stepInstruction(myTask);
+              break;
 
           case SIGLONGJMP:
              if (line.getLine() == 71)
@@ -763,6 +884,26 @@ public class TestStepping extends TestLib
             assertTrue("line number", lineNr == 63);
             Manager.eventLoop.requestStop();
             return;
+            
+          case ASM_STEP_FUNC_RETURN:
+              if (lineNr == 69)
+              {
+        	  se.stepInstruction(myTask);
+        	  return;
+              }
+              assertTrue("line number", lineNr == 90);
+              Manager.eventLoop.requestStop();
+              return;
+              
+          case ASM_STEP_FUNC_STEP_OVER:
+              assertTrue("line number", lineNr == 90);
+              Manager.eventLoop.requestStop();
+              return;
+              
+          case ASM_STEP_FUNC_STEP_OUT:
+              assertTrue("line number", lineNr == 90);
+              Manager.eventLoop.requestStop();
+              return;
             
           case SIGLONGJMP:
             assertTrue("line number", lineNr == 80);

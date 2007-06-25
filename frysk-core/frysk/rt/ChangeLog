@@ -1,3 +1,9 @@
+2007-06-25  Mike Cvet  <mcvet@redhat.com>
+
+	* TestStepping.java (testASMFunctionReturn): New test.
+	(testASMFunctionStepOver): Ditto.
+	(testASMFunctionStepOut): Ditto.
+
 2007-06-25  Tim Moore  <timoore@redhat.com>
 
 	* FunctionBreakpoint.java (addressesForSymbol): New static
