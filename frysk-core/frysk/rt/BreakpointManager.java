@@ -63,184 +63,199 @@ import lib.dw.DwarfDie;
  * executable, trying again when shared libraries are loaded.
  */
 public class BreakpointManager
-  extends Observable
-{
-  private int breakpointID = 0;
-  private TreeMap breakpointMap = new TreeMap();    
-  private SteppingEngine steppingEngine;
+  extends Observable {
+    private int breakpointID = 0;
+    private TreeMap breakpointMap = new TreeMap();    
+    private SteppingEngine steppingEngine;
     protected Logger logger = Logger.getLogger("frysk");
-  
-  public BreakpointManager(SteppingEngine steppingEngine)
-  {
-    this.steppingEngine = steppingEngine;
-  }
 
-  // Watch a process and its tasks for events that might cause
-  // breakpoints to be added or deleted in it.
-  private class ProcWatcher
-    implements ProcObserver.ProcTasks
-  {
-    Proc proc;
-    ProcTasksObserver ptObs;
-
-    ProcWatcher(Proc proc)
-    {
-      this.proc = proc;
-      ptObs = new ProcTasksObserver(proc, this);
+    /**
+     * Initialize the BreakpointManager.
+     * @param steppingEngine the stepping engine the manager will use
+     * to insert / delete breakpoints.
+     */
+    public BreakpointManager(SteppingEngine steppingEngine) {
+        this.steppingEngine = steppingEngine;
     }
+
+    // Watch a process and its tasks for events that might cause
+    // breakpoints to be added or deleted in it.
+    private class ProcWatcher
+        implements ProcObserver.ProcTasks {
+        Proc proc;
+        ProcTasksObserver ptObs;
+
+        ProcWatcher(Proc proc) {
+            this.proc = proc;
+            ptObs = new ProcTasksObserver(proc, this);
+        }
     
-    HashSet procTasks = new HashSet();
+        HashSet procTasks = new HashSet();
 
-    public void existingTask(Task task)
-    {
-      procTasks.add(task);
-    }
+        public void existingTask(Task task) {
+            procTasks.add(task);
+        }
 
-    public void taskAdded(Task task)
-    {
-      procTasks.add(task);
+        public void taskAdded(Task task) {
+            procTasks.add(task);
 
-      Iterator bptIterator = breakpointMap.values().iterator();
+            Iterator bptIterator = breakpointMap.values().iterator();
 
-      while (bptIterator.hasNext()) {
-	SourceBreakpoint bpt = (SourceBreakpoint)bptIterator.next();
+            while (bptIterator.hasNext()) {
+                SourceBreakpoint bpt = (SourceBreakpoint)bptIterator.next();
 
-	if (bpt.appliesTo(proc, task)) {
-	  enableBreakpoint(bpt, task);
-	}
-      }
-    }
+                if (bpt.appliesTo(proc, task)) {
+                    enableBreakpoint(bpt, task);
+                }
+            }
+        }
+        public void taskRemoved(Task task) {
+            procTasks.remove(task);
+        }
+	// Standard observer stuff
+        public void addedTo(Object observable) {
+        }
 
-    public void taskRemoved(Task task)
-    {
-      procTasks.remove(task);
-    }
+        public void addFailed(Object observable, Throwable w) {
+        }
 
-    public void addedTo(Object observable)
-    {
-    }
-
-    public void addFailed(Object observable, Throwable w)
-    {
-    }
-
-    public void deletedFrom(Object observable)
-    {
-    }
+        public void deletedFrom(Object observable) {
+        }
     
-  }
+    }
 
-  private HashMap watchers = new HashMap();
-  
-  public synchronized LineBreakpoint addLineBreakpoint(String fileName,
-						       int lineNumber,
-						       int column)
-  {
-    int bptId = breakpointID++;
-    LineBreakpoint sourceBreakpoint
-      = new LineBreakpoint(bptId, fileName, lineNumber, column);
-    breakpointMap.put(new Integer(bptId), sourceBreakpoint);
-    setChanged();
-    notifyObservers();
-    return sourceBreakpoint;
-  }
+    private HashMap watchers = new HashMap();
 
-  public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die)
-  {
-    int bptId = breakpointID++;
-    FunctionBreakpoint sourceBreakpoint
-      = new FunctionBreakpoint(bptId, name, die);
-    breakpointMap.put(new Integer(bptId), sourceBreakpoint);
-    setChanged();
-    notifyObservers();
-    return sourceBreakpoint;
-  }
+    /**
+     * Create a line breakpoint that is not associated with any
+     * process.
+     * @param fileName the file
+     * @param lineNumber line in the file
+     * @param column column number in the file
+     * @return LineBreakpoint object
+     */
+    public synchronized LineBreakpoint addLineBreakpoint(String fileName,
+                                                         int lineNumber,
+                                                         int column) {
+        int bptId = breakpointID++;
+        LineBreakpoint sourceBreakpoint
+            = new LineBreakpoint(bptId, fileName, lineNumber, column);
+        breakpointMap.put(new Integer(bptId), sourceBreakpoint);
+        setChanged();
+        notifyObservers();
+        return sourceBreakpoint;
+    }
 
-  public SourceBreakpoint.State enableBreakpoint(SourceBreakpoint breakpoint,
-						 Task task) {
-      Proc proc = task.getProc();
-      ProcWatcher watcher = (ProcWatcher)watchers.get(proc);
-      if (watcher == null) {
-	  watcher = new ProcWatcher(proc);
-	  watchers.put(proc, watcher);
-      }
-      try {
-	  breakpoint.enableBreakpoint(task, this.steppingEngine);
-      }
-      catch (Exception e) {
-	  breakpoint.setState(task, SourceBreakpoint.DEFERRED);
-	  return SourceBreakpoint.DEFERRED;
-      }
-      breakpoint.setState(task, SourceBreakpoint.ENABLED);
-      setChanged();
-      notifyObservers();
-      return SourceBreakpoint.ENABLED;
-  }
+    /**
+     * Create a function breakpoint not associated with any process
+     * @param name the name of the function
+     * @param die a DwarfDie representing the function or inlined
+     * instance. If null, a lookup against the Elf symbol name is
+     * performed.
+     * @return FunctionBreakpoint object
+     */
+    public FunctionBreakpoint addFunctionBreakpoint(String name, DwarfDie die) {
+        int bptId = breakpointID++;
+        FunctionBreakpoint sourceBreakpoint
+            = new FunctionBreakpoint(bptId, name, die);
+        breakpointMap.put(new Integer(bptId), sourceBreakpoint);
+        setChanged();
+        notifyObservers();
+        return sourceBreakpoint;
+    }
 
-  public void disableBreakpoint(SourceBreakpoint breakpoint, Task task)
-  {
-    breakpoint.disableBreakpoint(task, this.steppingEngine);
-    setChanged();
-    notifyObservers();
-  }
+    /**
+     * Try to enable a breakpoint in a task. If there is an error, the
+     * state of the breakpoint will be set to DEFERRED.
+     * @param breakpoint the breakpoint
+     * @param task task in which breakpoint will be enabled.
+     * @return the state of the breakpoint of attempting to enable it.
+     */
+    public SourceBreakpoint.State enableBreakpoint(SourceBreakpoint breakpoint,
+                                                   Task task) {
+        Proc proc = task.getProc();
+        ProcWatcher watcher = (ProcWatcher)watchers.get(proc);
+        if (watcher == null) {
+            watcher = new ProcWatcher(proc);
+            watchers.put(proc, watcher);
+        }
+        try {
+            breakpoint.enableBreakpoint(task, this.steppingEngine);
+        }
+        catch (Exception e) {
+            breakpoint.setState(task, SourceBreakpoint.DEFERRED);
+            return SourceBreakpoint.DEFERRED;
+        }
+        breakpoint.setState(task, SourceBreakpoint.ENABLED);
+        setChanged();
+        notifyObservers();
+        return SourceBreakpoint.ENABLED;
+    }
 
-  public Iterator getBreakpointTableIterator()
-  {
-    return breakpointMap.values().iterator();
-  }
+    /**
+     * Disable a breakpoint in a task.
+     * @param breakpoint the breakpoint
+     * @param task the task
+     */
+    public void disableBreakpoint(SourceBreakpoint breakpoint, Task task) {
+        breakpoint.disableBreakpoint(task, this.steppingEngine);
+        setChanged();
+        notifyObservers();
+    }
 
-  public SourceBreakpoint getBreakpoint(int bptId)
-  {
-    SourceBreakpoint bpt
-      = (SourceBreakpoint)breakpointMap.get(new Integer(bptId));
-    return bpt;
-  }
+    public Iterator getBreakpointTableIterator() {
+        return breakpointMap.values().iterator();
+    }
+
+    public SourceBreakpoint getBreakpoint(int bptId) {
+        SourceBreakpoint bpt
+            = (SourceBreakpoint)breakpointMap.get(new Integer(bptId));
+        return bpt;
+    }
 
     public void refreshBreakpoints(Task task) {
-	Iterator iter = breakpointMap.values().iterator();
-	while (iter.hasNext()) {
-	    SourceBreakpoint bpt = (SourceBreakpoint)iter.next();
-	    SourceBreakpoint.State state = bpt.getState(task);
-	    if (state == SourceBreakpoint.DEFERRED) {
-		enableBreakpoint(bpt, task);
-	    }
-	}
+        Iterator iter = breakpointMap.values().iterator();
+        while (iter.hasNext()) {
+            SourceBreakpoint bpt = (SourceBreakpoint)iter.next();
+            SourceBreakpoint.State state = bpt.getState(task);
+            if (state == SourceBreakpoint.DEFERRED) {
+                enableBreakpoint(bpt, task);
+            }
+        }
     }
     
     private HashSet managedProcs = new HashSet();
   
     public void manageProcess(final Proc proc) {
-	if (managedProcs.contains(proc))
-	    return;
-	managedProcs.add(proc);
-	LinkedList sharedLibBptAddrs
-	    = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", proc);
-	if (sharedLibBptAddrs.size() == 0)
-	    return;
-	long sharedLibBptAddr
-	    = ((Long)sharedLibBptAddrs.getFirst()).longValue();
-	Task task = proc.getMainTask();
-	task.requestAddCodeObserver(new TaskObserver.Code() {
-		public Action updateHit(Task task, long address) {
-		    DwflFactory.clearDwfl(proc);
-		    refreshBreakpoints(task);
-		    return Action.CONTINUE;
-		}
+        if (managedProcs.contains(proc))
+            return;
+        managedProcs.add(proc);
+        LinkedList sharedLibBptAddrs
+            = FunctionBreakpoint.addressesForSymbol("_dl_debug_state", proc);
+        if (sharedLibBptAddrs.size() == 0)
+            return;
+        long sharedLibBptAddr
+            = ((Long)sharedLibBptAddrs.getFirst()).longValue();
+        Task task = proc.getMainTask();
+        task.requestAddCodeObserver(new TaskObserver.Code() {
+                public Action updateHit(Task task, long address) {
+                    DwflFactory.clearDwfl(proc);
+                    refreshBreakpoints(task);
+                    return Action.CONTINUE;
+                }
 
-		public void addedTo(Object observable) {
-		}
+                public void addedTo(Object observable) {
+                }
 
-		public void addFailed(Object observable, Throwable w) {
-		    logger.log(Level.SEVERE,
-			       "_dl_debug_state breakpoint couldn't be added: {0}",
-			       w.toString());
-		}
+                public void addFailed(Object observable, Throwable w) {
+                    logger.log(Level.SEVERE,
+                               "_dl_debug_state breakpoint couldn't be added: {0}",
+                               w.toString());
+                }
 
-		public void deletedFrom(Object observable) {
-		}
-	    },
-				    sharedLibBptAddr);
-	
-
+                public void deletedFrom(Object observable) {
+                }
+            },
+            sharedLibBptAddr);
     }
 }
