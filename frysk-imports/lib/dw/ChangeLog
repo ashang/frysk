@@ -1,3 +1,8 @@
+2007-06-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* DwarfDie.java (getFrameBase): Added check and initialization
+	for scopes.
+
 2007-06-20  Tim Moore  <timoore@redhat.com>
 
 	* DwarfDieFactory.java (DwarfDieFactory, loadDies): Give up on

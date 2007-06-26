@@ -41,6 +41,8 @@
 package frysk.rt;
 
 import lib.dw.DwarfDie;
+import frysk.debuginfo.DebugInfo;
+import frysk.stack.Frame;
 import frysk.value.Type;
 import frysk.value.Value;
 
@@ -97,8 +99,8 @@ public class Variable
     return typeDie;
   }
 
-//  XXX: one way to implement getting the value of the variable
-//  public Value getValue(Frame frame){
-//    return null;
-//  }
+  public Value getValue(Frame frame){
+      DebugInfo debugInfo = new DebugInfo(frame);
+      return debugInfo.get(getVariableDie());
+  }
 }

@@ -40,8 +40,6 @@
 
 package frysk.rt;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import lib.dw.DwTagEncodings;
@@ -123,37 +121,26 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testParameters(){
-    Task task = getStoppedTask();
-
-    Frame frame = StackFactory.createFrame(task);
+  public void testValues(){
+      
+      if(brokenX86XXX(4699)){
+	  return;
+      }
+      
+    Task task = getStoppedTask("funit-stacks-values");
+    Subprogram subprogram;
+    Frame frame;
+    Variable variable;
     
-    while(!(frame.getSubprogram() != null && frame.getSubprogram().getName().contains("third"))){
-      frame = frame.getOuter();
-    }
+    frame = StackFactory.createFrame(task);
     
-    Subprogram subprogram = frame.getSubprogram();
+    subprogram = frame.getSubprogram();
     assertEquals("Subprogram name", subprogram.getName(), "third");
-    
-    LinkedList parameters = subprogram.getParameters();
-    assertEquals("Number of parameters", parameters.size(), 3);
-    
-    Iterator iterator = parameters.iterator();
-    Variable variable = (Variable) iterator.next();
-    assertEquals("Parameter name", variable.getVariable().getText(), "param1");
-//    System.out.println("TestFrameDebugInfo.testParameters() param1 " + value);
-//    assertEquals("Parameter value", value.getInt(), 1);
-    
-    variable = (Variable) iterator.next();
-    assertEquals("Parameter name", variable.getVariable().getText(), "param2");
-//    System.out.println("TestFrameDebugInfo.testParameters() param2 " + value);
-//    assertEquals("Parameter value", value.getInt(), 2);
-    
-    variable =  (Variable) iterator.next();
-    assertEquals("Parameter name", variable.getVariable().getText(), "param3");
-//    System.out.println("TestFrameDebugInfo.testParameters() param3 " + value);
-//    assertEquals("Parameter value", value.getInt(), 3);
-    
+    variable = (Variable) subprogram.getParameters().iterator().next();
+    assertNotNull(variable);
+    assertEquals("Name", variable.getVariable().getText(), "param3");
+    assertEquals("Value", variable.getValue(frame).intValue(), 3);
+        
   }
 
   public Task getStoppedTask(){
@@ -193,14 +180,12 @@ public class TestFrameDebugInfo
 
     public Action updateSignaled (Task task, int signal)
     {
-      System.out.println("TerminatingSignaledObserver.updateSignaled()");
       Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }
 
     public Action updateTerminating (Task task, boolean signal, int value)
     {
-      System.out.println("TerminatingSignaledObserver.updateTerminating()");
       Manager.eventLoop.requestStop();
       return Action.BLOCK;
     }

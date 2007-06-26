@@ -1,3 +1,8 @@
+2007-06-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Variable.java: enabled getValue.
+	* TestFrameDebugInfo.java: Added testValues().
+
 2007-06-26  Tim Moore  <timoore@redhat.com>
 
 	* BreakpointManager.java: Indentation and documentation fixes.
