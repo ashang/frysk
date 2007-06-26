@@ -1,3 +1,9 @@
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AM_INIT_AUTOMAKE): Add no-dist.
+	* Makefile.am (DIST_SUBDIRS): Delete.
+	(EXTRA_DIST): Delete.
+
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh (isa): Touch the file .keep_me in each

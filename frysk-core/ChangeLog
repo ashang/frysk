@@ -1,3 +1,8 @@
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AM_INIT_AUTOMAKE): Add no-dist.
+	* Makefile.am (EXTRA_DIST): Delete.
+
 2007-06-25  Mike Cvet  <mcvet@redhat.com>
 
 	* Makefile.am (frysk_pkglibdir_arch32_test1_LDADD): Link with libm for

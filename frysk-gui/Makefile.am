@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -87,7 +87,6 @@ GEN_GCJ_LDADD += -lopcodes -laudit -L../frysk-imports/lib/opcodes -lbfd_get
 TESTS_ENVIRONMENT = ( test $$tst = TestRunner && test -n "$$DISPLAY" || sh -c "exit 77" ) &&
 
 TESTS += frysk/gui/test/dogtail_scripts/frysk_suite.py
-EXTRA_DIST += frysk/gui/test/dogtail_scripts/frysk_suite.in
 noinst_SCRIPTS += frysk/gui/test/dogtail_scripts/frysk_suite.py
 CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.py
 frysk/gui/test/dogtail_scripts/frysk_suite.py: frysk/gui/test/dogtail_scripts/frysk_suite.in

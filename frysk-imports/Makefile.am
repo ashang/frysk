@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -52,10 +52,6 @@ CHECK_SUBDIRS = \
 	getopt
 check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 
-# List of directories to include in the distro.  This needs to include
-# "libunwind" so its sources are included.
-DIST_SUBDIRS = $(CHECK_SUBDIRS) libunwind
-
 # List of directories to build.  This does not include "libunwind" but
 # does include the unwind cross libraries.
 SUBDIRS = $(CHECK_SUBDIRS) libunwind-i386 libunwind-x86_64 libunwind-ppc64
@@ -72,11 +68,6 @@ installcheck-recursive \
 installdirs-recursive \
 uninstall-info-recursive \
 uninstall-recursive: SUBDIRS = tests
-
-EXTRA_DIST += \
-	frysk/pkgdatadir/test-core.bz2.uu \
-	frysk/pkgdatadir/test-core-mt-fp.bz2.uu \
-	frysk/pkgdatadir/helloworld.o.bz2.uu
 
 GEN_CLASSPATH += getopt.jar
 GEN_CLASSPATH += junit.jar
@@ -106,8 +97,3 @@ noinst_HEADERS = \
 	include/frysk-asm.h \
 	include/linux.ptrace.h \
 	include/linux.syscall.h
-
-EXTRA_DIST += \
-	libunwind-i386/.keep_me \
-	libunwind-x86_64/.keep_me \
-	libunwind-ppc64/.keep_me

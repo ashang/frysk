@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -88,9 +88,6 @@ frysk/pkglibdir/arch32/funit-child-alias: frysk/pkglibdir/arch32/funit-child
 	cp -p frysk/pkglibdir/arch32/funit-child $@
 frysk_pkglibdir_arch32_test1_LDADD = -lm
 endif
-
-EXTRA_DIST += frysk/cli/hpd/doc-files/parsetree.png
-EXTRA_DIST += frysk/pkglibdir/util.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.

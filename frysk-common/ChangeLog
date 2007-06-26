@@ -1,3 +1,8 @@
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (EXTRA_DIST): Delete.
+	* Makefile.rules (EXTRA_DIST): Delete.
+
 2007-06-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.g.antlered): Pass -f to "mv".

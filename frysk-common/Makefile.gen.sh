@@ -438,7 +438,6 @@ EOF
 # Test runner program.
 
 cat <<EOF
-EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
@@ -474,7 +473,6 @@ for suffix in .java .mkjava .shjava .mkenum .shenum .javain ; do
 		echo "${sources} += ${file}"
 		;;
 	    *)
-	        echo "EXTRA_DIST += ${file}"
 		echo "BUILT_SOURCES += ${name}.java"
 		case "${suffix}" in
 		    *java ) echo "${name}.java: \$(MKJAVA)" ;;
@@ -501,7 +499,6 @@ for suffix in .cxxin ; do
     grep -e "\\${suffix}\$" files.list | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
-	echo "EXTRA_DIST += ${file}"
 	echo "${nodist_lib_sources} += ${d}/${b}.cxx"
 	echo "BUILT_SOURCES += ${d}/${b}.cxx"
     done
@@ -566,7 +563,6 @@ do
   case "$xml" in
       *dir/* )
           # Only programs in bindir, pkglibdir et.al. get man pages.
-          echo "EXTRA_DIST += $xml"
           # extract the section number
 	  n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $xml`
 	  d=`dirname $xml`
@@ -598,7 +594,6 @@ do
   do
     d=`dirname $file`
     b=`basename $file ${suffix}`
-    echo EXTRA_DIST += ${file}
     echo `expr $d : '.*/\([a-z]*\)dir'`_SCRIPTS += $d/$b
     check_MANS $d/$b
     cat <<EOF
@@ -618,7 +613,6 @@ do
   d=`dirname ${f}`
   b=`basename ${f} .fig`
   jpg=$d/$b.jpg
-  echo EXTRA_DIST += $f
   echo CLEANFILES += $jpg
   echo noinst_DATA += $jpg
 done
@@ -630,7 +624,6 @@ grep -e '\.g$' files.list | while read g
 do
   d=`dirname $g`
   b=`basename $g .g`
-  echo "EXTRA_DIST += $g"
   echo "CLEANFILES += $d/$b.antlered"
   echo "CLEANDIRS += $d/$b.tmp"
   echo "$d/$b.antlered: $g"
@@ -645,7 +638,6 @@ do
     echo "BUILT_SOURCES += $d/$c.java"
     echo "${nodist_lib_sources} += $d/$c.java"
     if test -r $d/$c.sed ; then
-	echo "EXTRA_DIST += $d/$c.sed"
 	echo "$d/$b.antlered: $d/$c.sed"
     fi
   done
@@ -690,7 +682,6 @@ sed -n -e '/dir\// {
     case "$f" in
 	*.bz2.uu )
 	    data=`expr "$f" : '\(.*\).bz2.uu'`
-            echo "EXTRA_DIST += $f"
 	    dist_prefix=nodist_
 	    ;;
 	*/bindir/* | */pkglibdir/* )
@@ -728,8 +719,3 @@ EOF
 	printf "\tmv \$@.tmp \$@\n"
     done
 done
-
-
-# All ChangeLog files need to be included in the distro
-print_header "... ChangeLog"
-sed -n -e '\/ChangeLog$/ s,^EXTRA_DIST += ,, p' files.list

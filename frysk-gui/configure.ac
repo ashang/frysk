@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2005, 2006, 2007, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ AC_INIT(frysk, [FRYSK_VERSION])
 
 m4_include([common/frysk-common.ac])
 
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext no-dist])
 
 lib=lib
 if [[ "x`uname -p`" = "xx86_64" ]]; then

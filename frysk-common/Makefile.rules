@@ -91,7 +91,6 @@ GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
 GEN_CLASSDIR = classes
-EXTRA_DIST = 
 
 GEN_GCC_RPATHS = $(top_builddir)/elfutils/libdw
 
@@ -456,7 +455,6 @@ endif
 # warnings.
 
 SUFFIXES += .antlered .g
-EXTRA_DIST += common/antlr-warnings.awk
 .g.antlered:
 	rm -rf $*.tmp
 	mkdir -p $*.tmp
@@ -593,19 +591,6 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.txt:
 	mkdir -p `dirname $@`
 	echo "@center See the @sc{pdf} or @sc{html} documentation." > $@
-
-
-# Add some needed files to the distribution, include $(srcdir) so that
-# the wildcard expansion occurs there.
-
-EXTRA_DIST += \
-	$(srcdir)/common/ChangeLog \
-	$(srcdir)/common/EXCEPTION \
-	$(srcdir)/common/*.sh \
-	$(srcdir)/common/version.in \
-	$(srcdir)/common/m4/*.m4 \
-	$(srcdir)/bootstrap.sh \
-	$(srcdir)/files.list
 
 # .Po files contain generated build dependencies.  Automake has no way
 # to efficiently detect a file rename or remove, and consequently, the
