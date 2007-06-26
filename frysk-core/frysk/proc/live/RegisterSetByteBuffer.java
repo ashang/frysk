@@ -1,11 +1,11 @@
 // This file is part of the program FRYSK.
-// 
-// Copyright 2007, Red Hat Inc.
-// 
+//
+// Copyright 2006, 2007, Red Hat Inc.
+//
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
 // the Free Software Foundation; version 2 of the License.
-// 
+//
 // FRYSK is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -37,136 +37,120 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.ptrace;
+package frysk.proc.live;
 
-import inua.eio.ByteBuffer;
-import frysk.sys.Ptrace.AddressSpace;
+import frysk.sys.Ptrace.RegisterSet;
 import frysk.event.Request;
 import frysk.proc.Manager;
+import inua.eio.ByteBuffer;
 
-public class AddressSpaceByteBuffer
+/*
+ * A ByteBuffer interface to structures returned by ptrace which must
+ * be read or written all at once e.g., the registers or floating
+ * point registers.
+ */
+public class RegisterSetByteBuffer
     extends ByteBuffer
 {
-    private final AddressSpace addressSpace;
     private final int pid;
-
-    private AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
-				    long lowerExtreem, long upperExtreem)
+    private final RegisterSet registerSet;
+    private final byte[] bytes;
+  
+    private RegisterSetByteBuffer (int pid, RegisterSet registerSet,
+				   long lowerExtreem, long upperExtreem)
     {
-	super (lowerExtreem, upperExtreem);
+	super(lowerExtreem, upperExtreem);
 	this.pid = pid;
-	this.addressSpace = addressSpace;
-	peekRequest = new PeekRequest();
-	pokeRequest = new PokeRequest();
-	peeksRequest = new PeeksRequest();
+	this.registerSet = registerSet;
+	bytes = new byte[registerSet.length ()];
+	getRegs = new GetRegs();
+	setRegs = new SetRegs();
     }
-    public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
+    public RegisterSetByteBuffer(int pid, RegisterSet registerSet) 
     {
-	this (pid, addressSpace, 0, addressSpace.length ());
+	this (pid, registerSet, 0, registerSet.length());
     }
-
-
-    private class PeekRequest
+  
+    private class GetRegs
 	extends Request
     {
-	private long index;
-	private int value;
-	PeekRequest()
+	GetRegs()
 	{
 	    super(Manager.eventLoop);
 	}
-	public void execute ()
+	public final void execute()
 	{
-	    value = addressSpace.peek(pid, index);
+	    registerSet.get(pid, bytes);
 	}
-	public int request (long index)
+	public void request ()
 	{
 	    if (isEventLoopThread())
-		return addressSpace.peek(pid, index);
+		execute();
 	    else synchronized (this) {
-		this.index = index;
-		request();
-		return value;
+		super.request();
 	    }
 	}
     }
-    private final PeekRequest peekRequest;
-    protected int peek (long index)
+    private final GetRegs getRegs;
+    private void getRegs()
     {
-	return peekRequest.request (index);
+	getRegs.request();
     }
 
-    private class PokeRequest
+    private class SetRegs
 	extends Request
     {
-	private long index;
-	private int value;
-	PokeRequest()
+	SetRegs()
 	{
 	    super(Manager.eventLoop);
 	}
-	public void execute ()
+	public void execute()
 	{
-	    addressSpace.poke(pid, index, value);
+	    registerSet.set(pid, bytes);
 	}
-	public void request (long index, int value)
+	public void request ()
 	{
 	    if (isEventLoopThread())
-		addressSpace.poke(pid, index, value);
+		// Skip the event-loop
+		execute ();
 	    else synchronized (this) {
-		this.index = index;
-		this.value = value;
-		request();
+		super.request();
 	    }
 	}
     }
-    private final PokeRequest pokeRequest;
+    private final SetRegs setRegs;
+    private void setRegs()
+    {
+	setRegs.request();
+    }
+
+    protected int peek (long index) 
+    {
+	getRegs();
+	return bytes[(int)index];
+    }
+  
     protected void poke (long index, int value)
     {
-	pokeRequest.request (index, value);
+	getRegs();
+	bytes[(int)index] = (byte)value;
+	setRegs();
     }
-
-    private class PeeksRequest
-	extends Request
+  
+    protected long peek (long index, byte[] bytes, long off, long len) 
     {
-	private long index;
-	private long length;
-	private long offset;
-	private byte[] bytes;
-	PeeksRequest()
-	{
-	    super(Manager.eventLoop);
+	getRegs();
+	for (int i = 0; i < len; i++) {
+	    bytes[(int)off + i] = this.bytes[(int)index + i];
 	}
-	public void execute ()
-	{
-	    length = addressSpace.peek(pid, index, length, bytes, offset);
-	}
-	public long request (long index, byte[] bytes,
-			     long offset, long length)
-	{
-	    if (isEventLoopThread())
-		return addressSpace.peek(pid, index, length, bytes, offset);
-	    else synchronized (this) {
-		this.index = index;
-		this.bytes = bytes;
-		this.offset = offset;
-		this.length = length;
-		request();
-		return length;
-	    }
-	}
+	return len;
     }
-    private final PeeksRequest peeksRequest;
-    protected long peek (long index, byte[] bytes, long offset, long length)
-    {
-	return peeksRequest.request(index, bytes, offset, length);
-    }
-
+  
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
 				    long upperExtreem)
     {
-	AddressSpaceByteBuffer up = (AddressSpaceByteBuffer)parent;
-	return new AddressSpaceByteBuffer (up.pid, up.addressSpace,
-					   lowerExtreem, upperExtreem);
+	RegisterSetByteBuffer up = (RegisterSetByteBuffer)parent;
+	return new RegisterSetByteBuffer (up.pid, up.registerSet,
+					  lowerExtreem, upperExtreem);
     }
 }

@@ -1,3 +1,7 @@
+2007-06-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Rename package frysk.proc.ptrace to frysk.proc.live.
+
 2007-06-25  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxTask.java (sendContinue): Don't set step_send.

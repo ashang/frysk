@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import frysk.event.EventLoop;
-import frysk.proc.ptrace.LinuxHost;
+import frysk.proc.live.LinuxHost;
 
 /**
  * Manager of all operations within the proc model.

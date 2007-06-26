@@ -1,3 +1,11 @@
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Manager.java: Update, package frysk.proc.ptrace renamed to
+	frysk.proc.live.
+	* IsaX8664.java: Ditto.
+	* IsaIA32.java: Ditto.
+	* IsaPowerPC.java: Ditto.
+
 2007-06-25  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Task.java (step_send): Removed field, now a real state in ptrace.

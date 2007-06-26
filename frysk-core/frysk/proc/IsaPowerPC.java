@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import inua.eio.ByteBuffer;
-import frysk.proc.ptrace.AddressSpaceByteBuffer;
+import frysk.proc.live.AddressSpaceByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
 
 import inua.eio.ByteOrder;

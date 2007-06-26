@@ -46,8 +46,8 @@ import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
-import frysk.proc.ptrace.RegisterSetByteBuffer;
-import frysk.proc.ptrace.AddressSpaceByteBuffer;
+import frysk.proc.live.RegisterSetByteBuffer;
+import frysk.proc.live.AddressSpaceByteBuffer;
 
 import lib.elf.ElfEMachine;
 import lib.unwind.RegisterAMD64;

@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.ptrace;
+package frysk.proc.live;
 
 import frysk.proc.TaskObserver;
 import frysk.proc.Proc;

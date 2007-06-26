@@ -1,6 +1,5 @@
 // This file is part of the program FRYSK.
 // 
-// Copyright 2007 Oracle Corporation.
 // Copyright 2007, Red Hat Inc.
 // 
 // FRYSK is free software; you can redistribute it and/or modify it
@@ -38,25 +37,21 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc.ptrace;
+package frysk.proc.live;
 
-import java.io.File;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
-import frysk.sys.Errno;
-//import java.io.IOException;
-import frysk.sys.StatelessFile;
 import frysk.event.Request;
 import frysk.proc.Manager;
 
-public class MemorySpaceByteBuffer
+public class AddressSpaceByteBuffer
     extends ByteBuffer
 {
     private final AddressSpace addressSpace;
     private final int pid;
 
-    private MemorySpaceByteBuffer (int pid, AddressSpace addressSpace,
-				   long lowerExtreem, long upperExtreem)
+    private AddressSpaceByteBuffer (int pid, AddressSpace addressSpace,
+				    long lowerExtreem, long upperExtreem)
     {
 	super (lowerExtreem, upperExtreem);
 	this.pid = pid;
@@ -65,7 +60,7 @@ public class MemorySpaceByteBuffer
 	pokeRequest = new PokeRequest();
 	peeksRequest = new PeeksRequest();
     }
-    public MemorySpaceByteBuffer (int pid, AddressSpace addressSpace)
+    public AddressSpaceByteBuffer (int pid, AddressSpace addressSpace)
     {
 	this (pid, addressSpace, 0, addressSpace.length ());
     }
@@ -149,25 +144,16 @@ public class MemorySpaceByteBuffer
 	public long request (long index, byte[] bytes,
 			     long offset, long length)
 	{
-	    long rc;
-	    if (isEventLoopThread()) {
-		File fn = new File ("/proc/" + pid + "/mem");
-		StatelessFile sf = new StatelessFile (fn);
-		try {
-		    rc = sf.pread (index, bytes, offset, length);
-		} catch (Errno ioe) {
-		    rc = addressSpace.peek(pid, index, length, bytes, offset);
-		}
-	    }
+	    if (isEventLoopThread())
+		return addressSpace.peek(pid, index, length, bytes, offset);
 	    else synchronized (this) {
 		this.index = index;
 		this.bytes = bytes;
 		this.offset = offset;
 		this.length = length;
 		request();
-		rc = length;
+		return length;
 	    }
-	    return rc;
 	}
     }
     private final PeeksRequest peeksRequest;
@@ -179,8 +165,8 @@ public class MemorySpaceByteBuffer
     protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
 				    long upperExtreem)
     {
-	MemorySpaceByteBuffer up = (MemorySpaceByteBuffer)parent;
-	return new MemorySpaceByteBuffer (up.pid, up.addressSpace,
-					  lowerExtreem, upperExtreem);
+	AddressSpaceByteBuffer up = (AddressSpaceByteBuffer)parent;
+	return new AddressSpaceByteBuffer (up.pid, up.addressSpace,
+					   lowerExtreem, upperExtreem);
     }
 }
