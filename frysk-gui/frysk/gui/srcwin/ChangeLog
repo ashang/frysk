@@ -1,3 +1,8 @@
+2007-06-27  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Enabled actions for
+	disassembly and memory windows, for core files.
+
 2007-06-25  Nurdin Premji  <npremji@redhat.com>
 
 	* SourceWindow.java (getCurrentDebugProcess): Added logging message.

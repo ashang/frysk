@@ -503,6 +503,9 @@ public class SourceWindow
     
     desensitize();
     this.stop.setSensitive(false);
+    this.toggleDisassemblyWindow.setSensitive(true);
+    this.toggleMemoryWindow.setSensitive(true);
+    //this.toggleRegisterWindow.setSensitive(true);
   }
 
   /**
@@ -2968,7 +2971,7 @@ public class SourceWindow
                                                + " on this architectures! ");
         dialog.showAll();
         dialog.run();
-        return;
+//        return;
       }
 
     MemoryWindow memWin = MemoryWindowFactory.memWin;
@@ -2997,7 +3000,7 @@ public class SourceWindow
                                                + " on this architectures! ");
         dialog.showAll();
         dialog.run();
-        return;
+//        return;
       }
 
     DisassemblyWindow disWin = DisassemblyWindowFactory.disWin;
