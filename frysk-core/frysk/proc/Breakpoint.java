@@ -191,17 +191,6 @@ public class Breakpoint
     if (stepping)
       throw new IllegalStateException("Already stepping");
 
-    Isa isa = task.getIsa();
-    Register pc;
-    if (isa instanceof LinuxIa32)
-      pc = isa.getRegisterByName("eip");
-    else if (isa instanceof LinuxX8664)
-      pc = isa.getRegisterByName("rip");
-    else if (isa instanceof LinuxPPC64)
-      pc = isa.getRegisterByName("nip");
-    else
-      throw new RuntimeException("unsupported architecture: " + isa);
-    pc.put(task, address);
     reset(task);
     stepping = true;
   }
@@ -213,11 +202,14 @@ public class Breakpoint
    */
   public void stepDone(Task task)
   {
-    if (! stepping)
-      throw new IllegalStateException("Not stepping");
-          
     if (isInstalled())
+      {
+	if (! stepping)
+	  throw new IllegalStateException("Not stepping");
+
 	set(task);
+      }
+
     // This throws RuntimeException for the following two reasons:
     // 1st) thrown out by Task.getIsa() in set(), if the
     //      frysk works well, the exception shouldnot be thrown out. If we

@@ -689,6 +689,29 @@ class LinuxTaskState
 	    this.insyscall = insyscall;
 	}
 	
+      void setupSteppingBreakpoint(Task task, long address)
+      {
+	// Reset pc, this should maybe be moved into the
+	// Breakpoint, but if the breakpoint gets removed before
+	// we step it, and the architecture puts the pc just behind
+	// the breakpoint address, then there is no good other place
+	// to get at the original pc location.
+	Isa isa = task.getIsa();
+	isa.setPC(task, address);
+
+	// All logic for determining how and where to step the
+	// Breakpoint is determined by Proc and
+	// Breakpoint.prepareStep() (called in sendContinue).
+	Proc proc = task.getProc();
+	Breakpoint bp = Breakpoint.create(address, proc);
+	
+	// TODO: This should really move us to a new TaskState.
+	// Currently we rely on the Task.steppingBreakpoint
+	// being set and the Breakpoint/Instruction having all
+	// the state necessary.
+	task.steppingBreakpoint = bp;
+      }
+      
         /**
 	 * Tells the Task to continue, keeping in kind pending
 	 * breakpoints, with or without syscall tracing.
@@ -700,11 +723,23 @@ class LinuxTaskState
 	  if (bp != null)
 	    if (! bp.isInstalled())
 	      {
-		// Apparently the breakpoint was removed already.
+		// Apparently the breakpoint was removed already
+		// which means it was never stepped, stepDone()
+		// will only do some bookkeeping, but not (re)set
+		// the breakpoint.
 		bp.stepDone(task);
 		task.steppingBreakpoint = null;
 		bp = null;
 	      }
+	    else
+	      {
+		// The breakpoint knows the instruction, address and
+		// Proc and will negotiate with the Proc how to step
+		// depending on the cababilities (canExecuteOutOfLine)
+		// of the Instruction.
+		bp.prepareStep(task);
+	      }
+
 	  
 	  // Step when there is a breakpoint at the current location
 	  // or there are Instruction observers installed.
@@ -928,10 +963,7 @@ class LinuxTaskState
 	      if (blockers >= 0)
 		{
 		  // Prepare for stepping the breakpoint
-		  Proc proc = task.getProc();
-		  Breakpoint bp = Breakpoint.create(address, proc);
-		  bp.prepareStep(task);
-		  task.steppingBreakpoint = bp;
+		  setupSteppingBreakpoint(task, address);
 		  
 		  if (blockers == 0)
 		    return sendContinue(task, 0);
@@ -1051,10 +1083,10 @@ class LinuxTaskState
 	{
 	  task.just_started = false;
 	  
-	  // Are we stepping a breakpoint? Reset/Reinstall it.
-	  // To be fully correct we should also check that the
-	  // 'current' instruction is right 'after' the
-	  // breakpoint.
+	  // Are we stepping a breakpoint? (This should be a new
+	  // State).  Reset/Reinstall Intruction, all logic is in the
+	  // Breakpoint and associated Instruction, which will fixup
+	  // any registers for us.
 	  Breakpoint steppingBreakpoint = task.steppingBreakpoint;
 	  if (steppingBreakpoint != null)
 	    {
@@ -1080,10 +1112,7 @@ class LinuxTaskState
 					   + task.steppingBreakpoint);
 	      
 	      // Prepare for stepping the breakpoint
-	      Proc proc = task.getProc();
-	      Breakpoint bp = Breakpoint.create(address, proc);
-	      bp.prepareStep(task);
-	      task.steppingBreakpoint = bp;
+	      setupSteppingBreakpoint(task, address);
 	      
 	      if (blockers == 0)
 		return sendContinue(task, 0);

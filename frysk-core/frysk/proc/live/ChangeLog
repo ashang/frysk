@@ -1,3 +1,15 @@
+2007-06-27  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java (prepareStep): Don't reset pc.
+	(stepDone): Only set breakpoint back when installed.
+
+	* LinuxTaskState.java (Running.setupSteppingBreakpoint):
+	New method.
+	(Running.sendContine): Prepare breakpoint step when breakpoint
+	is installed and about to be stepped.
+	(Running.handleTrappedEvent): Call setupSteppingBreakpoint.
+	(Stepping.handleTrappedEvent): Likewise.
+
 2007-06-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Rename package frysk.proc.ptrace to frysk.proc.live.
