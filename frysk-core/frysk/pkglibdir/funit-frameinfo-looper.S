@@ -190,7 +190,7 @@ main:
 	.ident	"GCC: (GNU) 4.1.1 20070105 (Red Hat 4.1.1-51)"
 	.section	.note.GNU-stack,"",@progbits
 	
-#elif defined __i386__
+#else
 
 	
 main:
