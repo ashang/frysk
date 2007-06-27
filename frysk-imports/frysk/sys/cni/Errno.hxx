@@ -113,3 +113,9 @@ extern void logFinest (jobject myThis, java::util::logging::Logger* logger, char
 extern void jLogFine (jobject myThis, java::util::logging::Logger* logger, char *message, ...);
 
 extern void jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, ...);
+
+/**
+ * Throw an ArrayIndexOutOfBounds exception if START and LENGTH do not
+ * fall within the byte array.
+ */
+extern void verifyBounds (jbyteArray bytes, jlong start, jlong length);

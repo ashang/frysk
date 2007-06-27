@@ -277,7 +277,7 @@ public class TestStatelessFile
 	    final long HugeOffset = 0x000000007fffffffL;
 	    File tmp = File.createTempFile("sftest", null);
 	    FileDescriptor fd = new FileDescriptor(tmp, FileDescriptor.RDWR);
-	    fd.lseek (HugeOffset);
+	    fd.seekEnd (HugeOffset);
 	    StatelessFile sf = new StatelessFile(tmp);
 
 	    // pwrite to the temp file created above

@@ -46,6 +46,7 @@
 
 #include <java/lang/System.h>
 #include <java/lang/Thread.h>
+#include <java/lang/ArrayIndexOutOfBoundsException.h>
 
 #include "frysk/sys/Errno.h"
 #include "frysk/sys/Errno$Ebadf.h"
@@ -403,4 +404,17 @@ jLogFinest (jobject myThis, java::util::logging::Logger* logger, char *message, 
 	va_end(argp);
 	
 	logger->log(java::util::logging::Level::FINEST, ajprintf("{0} %s\n", message), params);
+}
+
+void
+verifyBounds (jbyteArray bytes, jlong start, jlong length)
+{
+  if (start < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  if (length < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  if (start + length < 0)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
+  if (start + length > bytes->length)
+    throw new java::lang::ArrayIndexOutOfBoundsException ();
 }

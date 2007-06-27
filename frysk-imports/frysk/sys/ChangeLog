@@ -1,3 +1,23 @@
+2007-06-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/StatelessFile.cxx (verifyBounds): Delete, moved to ...
+	* cni/Errno.cxx (verifyBounds): ... here.
+	* cni/Errno.hxx (verifyBounds): Declare.
+	* FileDescriptor.java (seekSet, seekCurrent, seekEnd): Declare.
+	(read(byte[],long,long), write(byte[],long,long)): Make offset and
+	length longs.
+	(lseek): Replaced by seekEnd
+	* cni/FileDescriptor.cxx (read, write): Update.
+	(seek, seekSet, seekCurrent, seekEnd): Implement.
+	(open): Initialize gc_count.
+	* TestStatelessFile.java: Update; use .seekEnd.
+	* TestFileDescriptor.java (file): Add; initialize in setUp, close
+	in tearDown.
+	(testOpenEtcPasswd): Simplify; use 'file'.
+	(IO, assertArrayIndexOutOfBounds, verifyOutOfBounds)
+	(testReadOutOfBounds, testWriteOutOfBounds, testSeek)
+	(testLeakyFileDescriptor): New tests.
+
 2007-06-25  Chris Moller  <cmoller@redhat.com>
 
 	* FileDescriptor.java: Added public native void lseek (long off).

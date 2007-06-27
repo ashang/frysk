@@ -52,18 +52,6 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-static void
-verifyBounds (jbyteArray bytes, jlong start, jlong length)
-{
-
-  if (start < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (length < 0)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-  if (start + length > bytes->length)
-    throw new java::lang::ArrayIndexOutOfBoundsException ();
-}
-
 jlong
 frysk::sys::StatelessFile::pread (jlong fileOffset,
 				  jbyteArray bytes,

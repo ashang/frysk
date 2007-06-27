@@ -137,22 +137,24 @@ public class FileDescriptor
      * end-of-file.
      */
     public native int read ();
-
     /**
      * Read bytes from the file descriptor.  Return number of bytes
      * read, or -1 of end-of-file.
+     *
+     * XXX: Since read is capped by byte[].length, int is returned.
      */
-    public native int read (byte[] bytes, int off, int len);
+    public native int read(byte[] bytes, long start, long length);
 
     /**
      * Write a single byte to the file descriptor.
      */
     public native void write (int b);
-
     /**
-     * Write an entire array of bytes to the file descriptor.
+     * Write elements of BUF to the file descriptor.
+     *
+     * XXX: Since write is capped by byte[].lenght, int is returned.
      */
-    public native void write (byte[] bytes, int off, int len);
+    public native int write(byte[] bytes, long start, long length);
 
     /**
      * Close the file descriptor.
@@ -277,8 +279,16 @@ public class FileDescriptor
    */
   public native void setSize(Size size);
 
-  /**
-   * Seek to the specified position in the file associated with the descriptor.
-   */
-    public native void lseek (long off);
+    /**
+     * Seek to OFFSET from start of file.
+     */
+    public native long seekSet(long offset);
+    /**
+     * Seek to OFFSET from end of file.
+     */
+    public native long seekEnd(long offset);
+    /**
+     * Seek to OFFSET from current position.
+     */
+    public native long seekCurrent(long offset);
 }

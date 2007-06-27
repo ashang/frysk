@@ -54,9 +54,11 @@ public class TestFileDescriptor
     extends TestCase
 {
     private Pipe pipe;
+    private FileDescriptor file;
     public void setUp ()
     {
 	pipe = new Pipe ();
+	file = new FileDescriptor("/etc/passwd", FileDescriptor.RDONLY);
     }
     public void tearDown ()
     {
@@ -64,6 +66,11 @@ public class TestFileDescriptor
 	    pipe.close ();
 	}
 	catch (Errno e) {
+	    // Toss it, tear down.
+	}
+	try {
+	    file.close();
+	} catch (Errno e) {
 	    // Toss it, tear down.
 	}
     }
@@ -151,7 +158,7 @@ public class TestFileDescriptor
 	// This is risky, could hang.
 	assertTrue ("ready", pipe.in.ready ());
 	byte[] bytesIn = "xxxHELLOyyy".getBytes ();
-	int bytesRead = pipe.in.read (bytesIn, 3, bytesIn.length);
+	int bytesRead = pipe.in.read (bytesIn, 3, bytesIn.length - 3);
 	assertEquals ("bytes transfered", hello.length (), bytesRead);
 	assertEquals ("contents", xxxhelloyyy, new String (bytesIn));
     }
@@ -212,9 +219,79 @@ public class TestFileDescriptor
      */
     public void testOpenEtcPasswd ()
     {
-	FileDescriptor f = new FileDescriptor ("/etc/passwd",
-					       FileDescriptor.RDONLY);
-	f.read ();
+	file.read ();
+    }
+
+    abstract static private class IO {
+	final FileDescriptor fd;
+	private IO(FileDescriptor fd) {
+	    this.fd = fd;
+	}
+	abstract void op(byte[] buf, long start, long length);
+    }
+
+    /**
+     * Check that an IO operation throws an exception.
+     */
+    private void assertArrayIndexOutOfBounds(String what, IO io,
+					     byte[] buf, long start,
+					     long length)
+    {
+	boolean thrown = false;
+	try {
+	    io.op(buf, start, length);
+	} catch (ArrayIndexOutOfBoundsException b) {
+	    thrown = true;
+	}
+	assertTrue (what, thrown);
+    }
+
+    /**
+     * Try performing OP with various out-of-bounds array parameters.
+     */
+    private void verifyOutOfBounds(final IO io)
+    {
+	assertArrayIndexOutOfBounds("len < 0", io, new byte[1], 0, -1);
+	assertArrayIndexOutOfBounds("off < 0", io, new byte[1], -1, 1);
+	assertArrayIndexOutOfBounds("len + off > buf.length", io,
+				    new byte[1], 1, 1);
+	assertArrayIndexOutOfBounds("len + off < 0", io, new byte[1],
+				    0x7fffffffffffffffL, 1);
+    }
+
+    /**
+     * Try performing IO outside of an array's bounds.
+     */
+    public void testReadOutOfBounds()
+    {
+	verifyOutOfBounds(new IO(file) {
+		public void op(byte[] buf, long start, long length) {
+		    fd.read(buf, start, length);
+		}
+	    });
+    }
+    public void testWriteOutOfBounds()
+    {
+	verifyOutOfBounds(new IO(file) {
+		public void op(byte[] buf, long start, long length) {
+		    fd.write(buf, start, length);
+		}
+	    });
+    }
+
+
+    /**
+     * Try wondering round the file using seeks.
+     */
+    public void testSeek()
+    {
+	long size = file.seekEnd(0);
+	assertTrue ("file not empty", size > 0);
+	assertEquals ("seekSet(0)@0", 0, file.seekSet(0));
+	assertEquals ("seekSet(1)@0", 1, file.seekSet(1));
+	assertEquals ("seekCurrent(1)@1", 2, file.seekCurrent(1));
+	assertEquals ("seekCurrent(-2)@2", 0, file.seekCurrent(-2));
+	assertEquals ("seekEnd(-size)@0", 0, file.seekEnd(-size));
     }
 
     /**
@@ -233,9 +310,35 @@ public class TestFileDescriptor
 	Map fds = new WeakHashMap ();
 	
 	for (int i = 0; i < 2000; i++) {
-	    setUp ();
+	    pipe = new Pipe();
 	    fds.put (pipe.in, null);
 	    fds.put (pipe.out, null);
+	}
+	// Close out any FileDescriptors not yet garbage collected.
+	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {
+	    FileDescriptor fd = (FileDescriptor) i.next ();
+	    fd.close ();
+	}
+    }
+
+    /**
+     * Allocate, but loose, lots and lots of FileDesciptors, checks
+     * that a garbage collect eventually occures.
+     *
+     * This test relies on the underlying code managing to trigger a
+     * garbage collect, something that in java, isn't really reliable.
+     * However, with a requested garbage collect, and a yield, the gc
+     * likes to run.
+     */
+    public void testLeakyFileDescriptors ()
+    {
+	// Keep a table of all file file descriptors created; weak so
+	// that a garbage collect can empty it.
+	Map fds = new WeakHashMap ();
+	
+	for (int i = 0; i < 4000; i++) {
+	    file = new FileDescriptor("/etc/passwd", FileDescriptor.RDONLY);
+	    fds.put (file, null);
 	}
 	// Close out any FileDescriptors not yet garbage collected.
 	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {
