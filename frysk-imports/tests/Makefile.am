@@ -487,6 +487,9 @@ systests_PASS_PROGRAM += frysk4217/attachstop
 # test if PTRACE_CONT with SIGSTOP does not kill the process
 systests_PASS_PROGRAM += frysk4330/stopkills
 
+# test if /proc/PID/maps has r-xp permissions for the VDSO entry
+systests_PASS_PROGRAM += frysk4704/vdso-permissions
+
 # A final variable/inner class test.
 
 noinst_PROGRAMS += frysk4282/StackAccessors

@@ -1,3 +1,8 @@
+2007-06-27  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* frysk4704/vdso-permissions.c: New file.
+	* Makefile.am (systests_PASS_PROGRAM): Added frysk4704/vdso-permissions.
+
 2007-06-22  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2137/Gcov.java: Add a single statement.
