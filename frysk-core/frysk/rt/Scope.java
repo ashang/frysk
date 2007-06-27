@@ -149,7 +149,7 @@ public class Scope
 	if(variable.getVariable()!=null){
 	    stringBuilder.append("\n" + indentString + variable.getVariable().getType() + " " + variable.getVariable().getText());
 	}else{
-	    stringBuilder.append("\n" + indentString + "Unhandled type");
+	    stringBuilder.append("\n" + indentString + "Unhandled type on line: " + variable.getVariableDie().getDeclLine());
 	}
     }
     

@@ -1,3 +1,8 @@
+2007-06-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Scope.java (toPrint): Added line number to the unhandled type
+	message.
+
 2007-06-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Variable.java: enabled getValue.
