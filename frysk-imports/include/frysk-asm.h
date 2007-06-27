@@ -83,9 +83,6 @@
 #define REG2 %rdi
 #define REG3 %rsi
 #define REG4 %rdx
-#define BASEP %rbp
-#define STACKP %rsp
-#define IPREG %rip
 
 #define NO_OP nop
 #define ENTER pushq %rbp; movq %rsp, %rbp
@@ -96,15 +93,6 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) mov SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
-#define PUSHQ(REG) pushq REG
-#define MOVQ(A, B) movq A, B
-#define MOVL(A, B) movl A, B
-#define ADDL(A, B) addl $A, B
-#define SUBQ(A, B) subq $A, B
-#define TESTL(A, B) testl A, B
-#define PUSHQ_BASE pushq %rbp
-#define MOVQ_STACK movq %rsp, %rbp
-#define LEAVE leave; ret
 
 //XXX: Need the following to be defined in order to compile. See Bug #3968
 //Intel moves from right to left.
@@ -116,9 +104,56 @@
 
 #elif defined __powerpc__
 
-.text                       # section declaration - begin code
+//General Purpose PowerPC Registers
+#define REG1 3
+#define REG2 4
+#define REG3 5
+#define REG4 6
+
+	.text                       # section declaration - begin code
 	.global  main
-main:
+
+//There is no stack register or instructions
+//In C and C++ EABI its standard to use %gpr1 as stack register
+
+#define REG_TMP_IMMED 7
+
+#define ENTER \
+	stwu    1, -32(1)  ; \
+	mflr    0          ; \
+	stw     0,  36(1)  ; \
+	stw    31,  28(1)  ; \
+        mr     31,   1     ; \
+        stw  REG1,  12(31) ; \
+	stw  REG2,  16(31) ; \
+	stw  REG3,  20(31) ; \
+	stw  REG4,  24(31)
+        
+#define EXIT \
+	lwz  REG4, 24(31) ; \
+        lwz  REG3, 20(31) ; \
+	lwz  REG2, 16(31) ; \
+	lwz  REG1, 12(31) ; \
+	lwz    11,  0(1)  ; \
+	lwz     0,  4(11) ; \
+	mtlr    0         ; \
+	lwz    31, -4(11) ; \
+	mr      1, 11     ; \
+	blr
+
+//In PowerPC ABI argc comes by default in reg 3 (Frysk REG1) and argv in reg 4 (Frysk REG2) 
+#define ENTER_MAIN ENTER
+
+#define CALL(LABEL) bl LABEL
+
+#define LOAD_IMMED(DEST_REG,CONST) li DEST_REG, CONST
+#define STORE(SOURCE_REG,BASE_REG) stw SOURCE_REG, 0(BASE_REG)
+
+#define NO_OP nop
+
+#define COMPARE_IMMED(REG, IMMED) li REG_TMP_IMMED, IMMED ; cmpd REG_TMP_IMMED, REG
+#define JUMP(LABEL) b LABEL
+#define JUMP_NE(LABEL) bf eq, LABEL
 
 #elif defined __powerpc64__
 
@@ -131,10 +166,13 @@ main:
 	.global  ._main
 ._main:
 
-#define REG1 %gpr0
-#define REG2 %gpr3
-#define REG3 %gpr4
+#define REG1 %gpr3
+#define REG2 %gpr4
+#define REG3 %gpr5
 #define REG4 %gpr5
+
+#define ENTER push %gpr0; push %gpr3
+#define EXIT pop %gpr0; ret
 
 #define NO_OP nop
 #define CALL(FUNC) brlr FUNC
