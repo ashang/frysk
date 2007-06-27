@@ -79,6 +79,11 @@ abstract class IsaPowerPC
     return getRegisterByName("nip").get(task);
   }
 
+  public void setPC (Task task, long address)
+  {
+    getRegisterByName("nip").put(task, address);
+  }
+
   abstract public int getWordSize ();
   
   public ByteOrder getByteOrder ()

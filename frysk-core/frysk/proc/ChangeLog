@@ -1,3 +1,10 @@
+2007-06-27  Mark Wielaard  <mwielaard@redhat.com>
+	
+	* Isa.java (setPC): New method.
+	* IsaIA32.java (setPC): Likewise.
+	* IsaPowerPC.java (setPC): Likewise.
+	* IsaX8664.java (setPC): Likewise.
+	
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Manager.java: Update, package frysk.proc.ptrace renamed to

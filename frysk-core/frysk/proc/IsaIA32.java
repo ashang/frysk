@@ -241,6 +241,11 @@ public class IsaIA32 implements Isa
     return getRegisterByName("eip").get(task);
   }
 
+  public void setPC(Task task, long address)
+  {
+    getRegisterByName("eip").put(task, address);
+  }
+
   public int getWordSize()
   {
     return 4;

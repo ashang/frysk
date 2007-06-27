@@ -238,6 +238,11 @@ public class IsaX8664 implements Isa
     return getRegisterByName("rip").get(task);
   }
 
+  public void setPC(Task task, long address)
+  {
+    getRegisterByName("rip").put(task, address);
+  }
+
   public int getWordSize()
   {
     return 8;

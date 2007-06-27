@@ -76,6 +76,12 @@ public interface Isa
    */
   long pc(Task task);
   
+
+  /**
+   * Sets the value of the program counter in a task to the given address.
+   */
+  void setPC(Task task, long address);
+
   /**
    * Get the word size.
    *
