@@ -1,3 +1,9 @@
+Wed Jun 27 23:27:03 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c: Added a printregall command to print all
+	available register values.
+	* udb.c: Added display capability for the printregall cmd.
+
 Wed Jun 27 21:33:01 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c: Added a means of listing all attached processes.

@@ -324,11 +324,9 @@ if_file_write (struct file *file,
 	      utraced_info = utraced_info->next) pids_resp.nr_pids++;
 	if (0 < pids_resp.nr_pids) {
 	  pids_list = kmalloc (pids_resp.nr_pids * sizeof(long), GFP_KERNEL);
-	  for ( i = 0,
-		  utraced_info = utracing_info_found->utraced_info;
+	  for ( i = 0, utraced_info = utracing_info_found->utraced_info;
 		utraced_info;
-		i++,
-		  utraced_info = utraced_info->next)
+		i++, utraced_info = utraced_info->next)
 	    pids_list[i] = utraced_info->utraced_pid;
 	}
 	//	printk (KERN_INFO "listpids\n");
@@ -368,19 +366,45 @@ if_file_write (struct file *file,
 	    return -EIO;
 
           if (-1 ==  readreg_cmd.which) {
-            /* fixme -- if this is kept, use fetch mutiple */
-            int i;
-            for (i = 0; i < regset->n; i++) {
-              int rc;
-              long kbuf;
+            utracing_info_s * utracing_info_found;
+            readreg_resp_s readreg_resp;
+            readreg_resp.type           = IF_RESP_REG_DATA;
+            readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
+            readreg_resp.regset         = readreg_cmd.regset;
+            readreg_resp.which          = -1;
+            readreg_resp.byte_count     = regset->size;
+            readreg_resp.reg_count      = regset->n;
+	    readreg_resp.data		= NULL;
 
-              rc = regset->get(task,
-                               regset,
-                               i<<2,        // pos
-                               4,           // count
-                               &kbuf,       // kbuf
-                               NULL);       // ubuf
+            utracing_info_found =
+              lookup_utracing_info (readreg_cmd.utracing_pid);
+
+            if (utracing_info_found) {
+	      int i;
+	      void * rvp;
+	      void * reg_vals =
+		kmalloc (regset->size * regset->n, GFP_KERNEL);
+	      
+	      for (i = 0, rvp = reg_vals;
+		   i < regset->n;
+		   i++, rvp += regset->size) {
+		int rc;
+
+		rc = regset->get(task,
+				 regset,
+				 i<<2,		// pos
+				 regset->size,	// count
+				 rvp,		// kbuf
+				 NULL);		// ubuf
+	      }
+	      queue_response (utracing_info_found,
+			      &readreg_resp,
+			      sizeof(readreg_resp),
+			      reg_vals,
+			      regset->size * regset->n);
+	      if (reg_vals) kfree (reg_vals);
             }
+            else return -UTRACER_ETRACING;
           }
           else if ((0 <=  readreg_cmd.which) &&
                    (readreg_cmd.which < regset->n)) {
@@ -390,7 +414,7 @@ if_file_write (struct file *file,
             readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
             readreg_resp.regset         = readreg_cmd.regset;
             readreg_resp.which          = readreg_cmd.which;
-            readreg_resp.byte_count     = 4;
+            readreg_resp.byte_count     = regset->size;
             readreg_resp.reg_count      = 1;
 
             utracing_info_found =
@@ -401,7 +425,7 @@ if_file_write (struct file *file,
               rc = regset->get(task,
                                regset,
                                readreg_cmd.which << 2,  // fixme pos
-                               4,               // count
+                               regset->size,		// count
                                &readreg_resp.data,      // kbuf
                                NULL);   // ubuf
 	      queue_response (utracing_info_found,

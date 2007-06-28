@@ -7,7 +7,7 @@
 #include <alloca.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
+#include <search.h>
 
 #include "udb.h"
 #include "utracer/utracer.h"

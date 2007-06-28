@@ -147,6 +147,13 @@ printreg_fcn (char ** saveptr)
 }
 
 static int
+printregall_fcn (char ** saveptr)
+{
+  utrace_readreg_if (current_pid, 0, -1);  // fixme--first arg == regset
+  return 1;
+}
+
+static int
 quit_fcn(char ** saveptr)
 {
   return 0;
@@ -183,6 +190,11 @@ static cmd_info_s printreg_info =
   {printreg_fcn, "(pr) -- Print the value of the specified register."};
 static cmd_info_s printreg_info_brief =
   {printreg_fcn, NULL};
+
+static cmd_info_s printregall_info =
+  {printregall_fcn, "(pra) -- Print the values of all the registers."};
+static cmd_info_s printregall_info_brief =
+  {printregall_fcn, NULL};
 
 static cmd_info_s quiesce_info =
   {quiesce_fcn, "(halt) -- Quiesce the specified PID."};
@@ -228,6 +240,9 @@ static ENTRY cmds[] = {
   {"pr",		&printreg_info_brief},
   {"printreg",		&printreg_info},
   
+  {"pra",		&printregall_info_brief},
+  {"printregall",	&printregall_info},
+  
   {"halt",		&quiesce_info_brief},
   {"quiesce",		&quiesce_info},
   
@@ -266,27 +281,6 @@ create_cmd_hash_table()
       error (1, errno, "Error building commands hash.");
   }
 }
-
-static ENTRY reg_mapping[] = {
-  {"ebx",	 (void *)0},
-  {"ecx",	 (void *)1},
-  {"edx",	 (void *)2},
-  {"esi",	 (void *)3},
-  {"edi",	 (void *)4},
-  {"ebp",	 (void *)5},
-  {"eax",	 (void *)6},
-  {"ds",	 (void *)7},
-  {"es",	 (void *)8},
-  {"fs",	 (void *)9},
-  {"gs",	(void *)10},
-  {"cs",	(void *)13},
-  {"orig_eax",	(void *)11},
-  {"eip",	(void *)12},
-  {"efl",	(void *)14},
-  {"esp",	(void *)15},
-  {"ss",	(void *)16}
-};
-static int nr_regs = sizeof(reg_mapping)/sizeof(ENTRY);
 
 static void
 create_reg_hash_table()

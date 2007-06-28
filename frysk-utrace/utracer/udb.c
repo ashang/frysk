@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <alloca.h>
 #include <string.h>
+#include <search.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -101,6 +102,53 @@ resp_listener (void * arg)
 		sizeof(if_resp), 0);
     
     switch (if_resp.type) {
+    case IF_RESP_REG_DATA:
+      {
+	// fixme -- handle non-int values
+	// fixme -- use reg name in addition to number
+	readreg_resp_s readreg_resp = if_resp.readreg_resp;
+	
+	if (-1 == readreg_resp.which) {
+	  int i;
+	  int regs_received;
+	  long * regs_list = NULL;
+	  
+	  regs_received = (sz - sizeof(readreg_resp))/ sizeof(long);
+	  regs_list = alloca (readreg_resp.reg_count * sizeof(long));
+	  
+	  if (0 < regs_received)
+	    memcpy (regs_list, ((void *)(&if_resp)) + sizeof(readreg_resp),
+		    regs_received * sizeof(long));
+	  
+	  if (regs_received < readreg_resp.reg_count) {
+	    size_t sz_req = (readreg_resp.reg_count -
+			     regs_received) * sizeof(long);
+	    sz = pread (utracer_resp_file_fd, &regs_list[regs_received],
+			sz_req, sz);
+	  }
+
+	  for (i = 0; i < readreg_resp.reg_count; i++)
+	    fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
+		     readreg_resp.utraced_pid,
+		     readreg_resp.regset,
+		     i,
+		     reg_mapping[i].key,
+		     regs_list[i],
+		     regs_list[i]);
+	}
+	else {
+	  fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %d\n",
+		   readreg_resp.utraced_pid,
+		   readreg_resp.regset,
+		   readreg_resp.which,
+		   reg_mapping[readreg_resp.which].key,
+		   (int)readreg_resp.data,
+		   (int)readreg_resp.data);
+	}
+	fprintf (stdout, "%s", prompt);
+	fflush (stdout);
+      }
+      break;
     case IF_RESP_PIDS_DATA:
       {
 	int i;
@@ -110,11 +158,6 @@ resp_listener (void * arg)
 	
 	pids_received = (sz - sizeof(pids_resp))/ sizeof(long);
 	
-	fprintf (stdout, "\tsz_req = %d sz = %d\n\
-nr pids = %ld,pids_received = %d\n",
-		 sizeof(if_resp), sz,	 
-		 pids_resp.nr_pids, pids_received);
-
 	pids_list = alloca (pids_resp.nr_pids * sizeof(long));
 	if (0 < pids_received)
 	  memcpy (pids_list, ((void *)(&if_resp)) + sizeof(pids_resp),
@@ -170,19 +213,6 @@ nr pids = %ld,pids_received = %d\n",
 	fprintf (stdout, "\tprocess %ld attach %s\n",
 		 attach_resp.utraced_pid,
 		 attach_resp.okay ? "succeeded" : "failed");
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_REG_DATA:
-      {
-	readreg_resp_s readreg_resp = if_resp.readreg_resp;
-	fprintf (stdout, "\t[%ld] [%d][%d]: %d [%#08x]\n",
-		 readreg_resp.utraced_pid,
-		 readreg_resp.regset,
-		 readreg_resp.which,
-		 (int)readreg_resp.data,
-		 (int)readreg_resp.data);
 	fprintf (stdout, "%s", prompt);
 	fflush (stdout);
       }
