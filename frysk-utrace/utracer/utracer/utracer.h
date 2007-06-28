@@ -27,6 +27,7 @@ typedef enum {
   IF_CMD_SET_REG,
   IF_CMD_READ_REG,
   IF_CMD_RUN,
+  IF_CMD_LIST_PIDS,
   IF_CMD_QUIESCE
 } if_cmd_e;
 
@@ -39,7 +40,13 @@ typedef struct {
 typedef struct {
   long cmd;
   long utracing_pid;
+} listpids_cmd_s;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
   long utraced_pid;
+  long quiesce;
 } attach_cmd_s;
 
 typedef struct {
@@ -55,6 +62,7 @@ typedef union {
   attach_cmd_s	attach_cmd;
   readreg_cmd_s	readreg_cmd;
   run_cmd_s	run_cmd;
+  listpids_cmd_s listpids_cmd;
 } if_cmd_u;
 
 typedef enum {
@@ -62,6 +70,9 @@ typedef enum {
   IF_RESP_REG_DATA,
   IF_RESP_CLONE_DATA,
   IF_RESP_SIGNAL_DATA,
+  IF_RESP_EXIT_DATA,
+  IF_RESP_PIDS_DATA,
+  IF_RESP_DEATH_DATA,
   IF_RESP_ATTACH_DATA
 } if_resp_e; 
 
@@ -90,6 +101,22 @@ typedef struct {
 typedef struct {
   long type;
   long utraced_pid;
+  long code;
+} exit_resp_s;
+
+typedef struct {
+  long type;
+  long utraced_pid;
+} death_resp_s;
+
+typedef struct {
+  long type;
+  long nr_pids;
+} pids_resp_s;
+
+typedef struct {
+  long type;
+  long utraced_pid;
   int  okay;
 } attach_resp_s;
 
@@ -99,6 +126,9 @@ typedef union {
   clone_resp_s		clone_resp;
   signal_resp_s		signal_resp;
   attach_resp_s		attach_resp;
+  death_resp_s		death_resp;
+  exit_resp_s		exit_resp;
+  pids_resp_s		pids_resp;
 } if_resp_u;
 
 typedef enum {

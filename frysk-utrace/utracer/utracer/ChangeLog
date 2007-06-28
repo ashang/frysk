@@ -1,3 +1,21 @@
+Wed Jun 27 21:43:57 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c: Added a means of including data of arbitrary
+	size to responses (e.g., the list of attached PIDs).  Adding
+	support for death and exit reporting.  Added support for attaching
+	without quiescing.  Added support for listing attached processes.
+	Fixed if_file_read().  (Note to self: check for negative array
+	indices /before/ spending two days wondering how a simple wait
+	queue can blow up a kernel.)
+	* utracer.h: Add support for all the above.
+
+Wed Jun 19 23:25:20 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c: Added responses for report_exit and
+	report_death.  Added a passive attach (Attaches a process but
+	doesn't quiesce it.).
+	* utracer.h:  Patched to accomdate the above.
+
 2007-06-18  Chris Moller  <moller@mollerware.com>
 
 	* utracer-base.c: Separated the single utraced-specific if_cmd

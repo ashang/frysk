@@ -1,4 +1,24 @@
-2007-06-19  Chris Moller  <moller@mollerware.com>
+Wed Jun 27 21:33:01 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c: Added a means of listing all attached processes.
+	Added a means of attaching to a process without quiescing it.
+	Added a little help for supported commands.
+	* udb-utrace-if.c: Added support for a means of attaching to a
+	process without quiescing it.  Added support for a means of
+	listing all attached processes.
+	* udb.c: Added a pthread_join() to wait for the listener thread to
+	die after pthread_cancel().  (The absence of the join was
+	interfering with module unloading.)  Added a text description of
+	received signals.   Added support for a means of listing all
+	attached processes.  Added support for death and exit reporting.
+	Added support for a "-w" option that watches (attaches without
+	quiescing) specified processes.
+
+Wed Jun 20 12:04:04 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c: Added descriptions to CLI commands.
+
+2007-06-19  Chris Moller  <cmoller@redhat.com>
 
 	* udb-module.c: New--moved the module loading/unloading code here
 	from udb.c.  Also added a "--wait" to rmmod to fix the "module in
@@ -9,7 +29,7 @@
 	* udb.h: Patched a few things for above.
 	* Makefile: Added udb-module.c
 
-2007-06-18  Chris Moller  <moller@mollerware.com>
+2007-06-18  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile: Added -lpthread to UDB_LIBS
 	* udb-text-ui.c: Added test for empty iline.  Cleaned up
@@ -21,18 +41,18 @@
 	* udb.h: Patch to accomdate the above.
 	
 
-2007-06-15  Chris Moller  <moller@mollerware.com>
+2007-06-15  Chris Moller  <cmoller@redhat.com>
 
 	* udb.c: Added SIGUSR1 handler to get asynchronous notification
 	from the LKM.
 	* udb-text-ui.c: Added a cmd to test the above.
 	* udb-utrace-if.c: Added support for above.
 
-2007-06-13  Chris Moller  <moller@mollerware.com>
+2007-06-13  Chris Moller  <cmoller@redhat.com>
 
 	* udb-utrace-if.c:Added utrace-specific error message reporting.
 
-2007-06-12  Chris Moller  <moller@mollerware.com>
+2007-06-12  Chris Moller  <cmoller@redhat.com>
 
 	* ChangeLog:
 	* .cvsignore:

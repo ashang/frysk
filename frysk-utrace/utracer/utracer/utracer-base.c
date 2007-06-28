@@ -20,7 +20,6 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
-
 /*
  * locate the task structure coresponding to the given pid
  *
@@ -159,17 +158,17 @@ remove_utracing_info_entry (utracing_info_s * utracing_info_entry)
       utrace_detach (task, utracing_info_entry->utracing_engine);
     
     if (de_utrace && utracing_info_entry->utracing_cmd_pid_string)
-      remove_proc_entry(utracing_info_entry->utracing_cmd_pid_string,
-			de_utrace);
+      remove_proc_entry (utracing_info_entry->utracing_cmd_pid_string,
+			 de_utrace);
     
     if (de_utrace && utracing_info_entry->utracing_resp_pid_string)
-      remove_proc_entry(utracing_info_entry->utracing_resp_pid_string,
-			de_utrace);
+      remove_proc_entry (utracing_info_entry->utracing_resp_pid_string,
+			 de_utrace);
     
     if (utracing_info_entry->utracing_cmd_pid_string)
-      kfree(utracing_info_entry->utracing_cmd_pid_string);
+      kfree (utracing_info_entry->utracing_cmd_pid_string);
     if (utracing_info_entry->utracing_resp_pid_string)
-      kfree(utracing_info_entry->utracing_resp_pid_string);
+      kfree (utracing_info_entry->utracing_resp_pid_string);
     for (utraced_info_this = utracing_info_entry->utraced_info;
 	 utraced_info_this;
 	 utraced_info_this =
@@ -305,7 +304,7 @@ static int __init utracer_init(void)
   return 0;
 }
 
-static void __exit utracer_exit(void)
+static void __exit utracer_exit (void)
 {
   utracing_info_s * utracing_info_entry;
 
@@ -313,9 +312,9 @@ static void __exit utracer_exit(void)
        utracing_info_entry;
        utracing_info_entry = remove_utracing_info_entry (utracing_info_entry));
 
-  remove_proc_entry(CONTROL_FN, de_utrace);
-  remove_proc_entry(BASE_DIR, &proc_root);
+  remove_proc_entry (CONTROL_FN, de_utrace);
+  remove_proc_entry (BASE_DIR, &proc_root);
 }
 
-module_init(utracer_init);
-module_exit(utracer_exit);
+module_init (utracer_init);
+module_exit (utracer_exit);

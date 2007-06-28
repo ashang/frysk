@@ -95,7 +95,9 @@ unload_utracer()
     break;
   case 0:	// child
     {
-      int rc = execlp ("rmmod", "rmmod", "--wait", module_name, NULL);
+      int rc;
+
+      rc = execlp ("rmmod", "rmmod", "--wait", module_name, NULL);
       if (-1 == rc)
 	error (1, errno, "Error in unloader execlp");
     }	

@@ -41,9 +41,9 @@ unregister_utracer(pid_t pid)
 }
 
 void
-utrace_attach_if (long pid)
+utrace_attach_if (long pid, long quiesce)
 {
-  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)udb_pid, pid};
+  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)udb_pid, pid, quiesce};
   ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
   if (-1 == sz) uerror ("Writing attach command.");
   else {
@@ -56,7 +56,7 @@ utrace_attach_if (long pid)
 void
 utrace_detach_if (long pid)
 {
-  attach_cmd_s attach_cmd = {IF_CMD_DETACH, (long)udb_pid, pid};
+  attach_cmd_s attach_cmd = {IF_CMD_DETACH, (long)udb_pid, pid, 0};
   ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
   if (-1 == sz) uerror ("Writing detach command.");
   else {
@@ -73,6 +73,15 @@ utrace_run_if (long pid)
   ssize_t sz = write (utracer_cmd_file_fd, &run_cmd, sizeof(run_cmd));
   if (-1 == sz) uerror ("Writing run command.");
   else fprintf (stdout, "\t%d  running\n", pid);
+}
+
+void
+utrace_listpids_if ()
+{
+  listpids_cmd_s listpids_cmd = {IF_CMD_LIST_PIDS, (long)udb_pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &listpids_cmd,
+		      sizeof(listpids_cmd));
+  if (-1 == sz) uerror ("Writing listpids command.");
 }
 
 void

@@ -22,20 +22,19 @@ MODULE_AUTHOR("Chris Moller");
 
 static void
 queue_response (utracing_info_s * utracing_info_found,
-		void * resp,
-		int resp_len)
+		void * resp,  int resp_len,
+		void * extra, int extra_len)
 {
-  int error;
-
-  error =
-    wait_event_interruptible (utracing_info_found->ifw_wait,
-			      0 == utracing_info_found->queued_data_length);
+  wait_event (utracing_info_found->ifw_wait,
+	      (0 >= utracing_info_found->queued_data_length));
     
+  utracing_info_found->queued_data_length = resp_len + extra_len;
   utracing_info_found->queued_data =
-    kmalloc (resp_len, GFP_KERNEL);
+    kmalloc (resp_len + extra_len, GFP_KERNEL);
   memcpy (utracing_info_found->queued_data, resp, resp_len);
-  utracing_info_found->queued_data_length = resp_len;
-  wake_up_all (&(utracing_info_found->ifr_wait));
+  if (extra)
+    memcpy (utracing_info_found->queued_data + resp_len, extra, extra_len);
+  wake_up (&(utracing_info_found->ifr_wait));
 }
 
 static u32
@@ -62,7 +61,7 @@ report_clone (struct utrace_attached_engine *engine,
     clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
 			       parent->pid, child->pid};
     queue_response (utracing_info_found,
-		    &clone_resp, sizeof(clone_resp));
+		    &clone_resp, sizeof(clone_resp), NULL, 0);
 			       
   }
   return UTRACE_ACTION_RESUME;
@@ -93,7 +92,14 @@ report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
 	     long orig_code, long *code)
 {
-  //  printk(KERN_INFO "reporting exit\n");
+  utracing_info_s * utracing_info_found = (void *)engine->data;
+
+  if (utracing_info_found) {
+    exit_resp_s exit_resp = {IF_RESP_EXIT_DATA,
+			     (long)tsk->pid, orig_code };
+    queue_response (utracing_info_found,
+		    &exit_resp, sizeof(exit_resp), NULL, 0);
+  }
   return UTRACE_ACTION_RESUME;
 }
 
@@ -101,7 +107,15 @@ static u32
 report_death (struct utrace_attached_engine *engine,
 	      struct task_struct *tsk)
 {
-  //  printk(KERN_INFO "reporting death\n");
+  utracing_info_s * utracing_info_found = (void *)engine->data;
+
+  // fixme -- utrace_detach?  remove info?
+  if (utracing_info_found) {
+    death_resp_s death_resp = {IF_RESP_DEATH_DATA,
+			       (long)tsk->pid };
+    queue_response (utracing_info_found,
+		    &death_resp, sizeof(death_resp), NULL, 0);
+  }
   return UTRACE_ACTION_RESUME;
 }
 
@@ -114,15 +128,14 @@ report_signal (struct utrace_attached_engine *engine,
 	       const struct k_sigaction *orig_ka,
 	       struct k_sigaction *return_ka)
 {
-  utracing_info_s * utracing_info_found =
-    (void *)engine->data;
-  
+  utracing_info_s * utracing_info_found = (void *)engine->data;
+
   if (utracing_info_found) {
     signal_resp_s signal_resp = {IF_RESP_SIGNAL_DATA,
 				 (long)tsk->pid,
 				 (long)info->si_signo};
     queue_response (utracing_info_found,
-		    &signal_resp, sizeof(signal_resp));
+		    &signal_resp, sizeof(signal_resp), NULL, 0);
   }
   return UTRACE_ACTION_RESUME;
 }
@@ -145,7 +158,7 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
 };
 
 static int
-attach_cmd_fcn (long utracing_pid, long utraced_pid)
+attach_cmd_fcn (long utracing_pid, long utraced_pid, long quiesce)
 {
   int rc;
   struct task_struct * task = get_task (utraced_pid);
@@ -163,21 +176,24 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid)
 			      &utraced_utrace_ops,
 			      0UL);  //fixme -- maybe use?
       if (!IS_ERR (engine)) {
-	//fixme -- do something with rc?
-	rc = utrace_set_flags (task,engine,
-			       UTRACE_ACTION_QUIESCE	|
-			       UTRACE_EVENT (EXEC)	|
-			       UTRACE_EVENT (SIGNAL)	|
-			       UTRACE_EVENT (VFORK_DONE) |
-			       UTRACE_EVENT (CLONE)	|
-			       UTRACE_EVENT (EXIT)	|
-			       UTRACE_EVENT (DEATH)	|
-			       UTRACE_EVENT (QUIESCE));
+	unsigned long flags =
+	  UTRACE_EVENT (EXEC)	    |
+	  UTRACE_EVENT (SIGNAL)	    |
+	  UTRACE_EVENT (VFORK_DONE) |
+	  UTRACE_EVENT (CLONE)	    |
+	  UTRACE_EVENT (EXIT)	    |
+	  UTRACE_EVENT (QUIESCE)    |
+	  UTRACE_EVENT (DEATH);
+
+	if (quiesce) flags |= UTRACE_ACTION_QUIESCE;
 	
+	//fixme -- do something with rc?
+	rc = utrace_set_flags (task,engine, flags);
+
 	engine->data = (unsigned long)utracing_info_found;
 	rc = create_utraced_info_entry (utracing_info_found,
 					utraced_pid,
-					  engine);
+					engine);
 	if (0 != rc) utrace_detach(task, engine);
       }
       else rc = -UTRACER_EENGINE;
@@ -187,7 +203,7 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid)
       attach_resp_s attach_resp = {IF_RESP_ATTACH_DATA,
 				   utraced_pid, (0 == rc) ? 1 : 0 };
       queue_response (utracing_info_found,
-		      &attach_resp, sizeof(attach_resp));
+		      &attach_resp, sizeof(attach_resp), NULL, 0);
     }
   }
   else rc = -UTRACER_ETRACING;
@@ -244,7 +260,9 @@ if_file_write (struct file *file,
     {
       attach_cmd_s attach_cmd = if_cmd.attach_cmd;
       int rc =
-	attach_cmd_fcn (attach_cmd.utracing_pid, attach_cmd.utraced_pid);
+	attach_cmd_fcn (attach_cmd.utracing_pid,
+			attach_cmd.utraced_pid,
+			attach_cmd.quiesce);
       if (0 == rc) rc = count;
       return rc;
     }
@@ -281,6 +299,48 @@ if_file_write (struct file *file,
         else return -UTRACER_EENGINE;
       }
       else return -ESRCH;
+    }
+    break;
+  case IF_CMD_LIST_PIDS:
+    {
+      int rc;
+      utracing_info_s * utracing_info_found;
+
+      listpids_cmd_s listpids_cmd = if_cmd.listpids_cmd;
+      
+      utracing_info_found =
+	lookup_utracing_info (listpids_cmd.utracing_pid);
+
+      if (utracing_info_found) {
+	utraced_info_s * utraced_info;
+	pids_resp_s pids_resp;
+	long * pids_list = NULL;
+	int i;
+	
+	pids_resp.type		= IF_RESP_PIDS_DATA;
+	for ( pids_resp.nr_pids	= 0,
+		utraced_info = utracing_info_found->utraced_info;
+	      utraced_info;
+	      utraced_info = utraced_info->next) pids_resp.nr_pids++;
+	if (0 < pids_resp.nr_pids) {
+	  pids_list = kmalloc (pids_resp.nr_pids * sizeof(long), GFP_KERNEL);
+	  for ( i = 0,
+		  utraced_info = utracing_info_found->utraced_info;
+		utraced_info;
+		i++,
+		  utraced_info = utraced_info->next)
+	    pids_list[i] = utraced_info->utraced_pid;
+	}
+	//	printk (KERN_INFO "listpids\n");
+	queue_response (utracing_info_found,
+			&pids_resp, sizeof(pids_resp),
+			pids_list, pids_resp.nr_pids * sizeof(long));
+	if (pids_list) kfree (pids_list);
+	rc = count;
+      }
+      else rc = -UTRACER_ETRACING;
+
+      return rc;
     }
     break;
   case IF_CMD_SET_REG:
@@ -327,7 +387,6 @@ if_file_write (struct file *file,
             utracing_info_s * utracing_info_found;
             readreg_resp_s readreg_resp;
             readreg_resp.type           = IF_RESP_REG_DATA;
-	    //          readreg_resp.utracing_pid   = readreg_cmd.utracing_pid;
             readreg_resp.utraced_pid    = readreg_cmd.utraced_pid;
             readreg_resp.regset         = readreg_cmd.regset;
             readreg_resp.which          = readreg_cmd.which;
@@ -345,18 +404,9 @@ if_file_write (struct file *file,
                                4,               // count
                                &readreg_resp.data,      // kbuf
                                NULL);   // ubuf
-#if 1
 	      queue_response (utracing_info_found,
 			      &readreg_resp,
-			      sizeof(readreg_resp));
-#else
-              utracing_info_found->queued_data =
-                kmalloc (sizeof(readreg_resp), GFP_KERNEL);
-              memcpy (utracing_info_found->queued_data,
-                      &readreg_resp, sizeof(readreg_resp));
-              utracing_info_found->queued_data_length = sizeof(readreg_resp);
-	      wake_up_all (&(utracing_info_found->ifr_wait));
-#endif
+			      sizeof(readreg_resp), NULL, 0);
             }
             else return -UTRACER_ETRACING;
           }
@@ -383,28 +433,33 @@ if_file_read ( char *buffer,
   utracing_info_s * utracing_info_found  = (utracing_info_s *)data;
   if (utracing_info_found) {
     int rc = 0;
-    int error;
 
-    error =
+    if (0 == offset)
       wait_event_interruptible (utracing_info_found->ifr_wait,
-				0 < utracing_info_found->queued_data_length);
+				(0 < utracing_info_found->queued_data_length));
 
-    //fixme--check length
     if (utracing_info_found->queued_data &&
 	(0 < utracing_info_found->queued_data_length)) {
       rc = utracing_info_found->queued_data_length;
-      memcpy (buffer, utracing_info_found->queued_data, rc);
-
+      if (rc > buffer_length) rc = buffer_length;
+      memcpy (buffer, utracing_info_found->queued_data + offset, rc);
+      utracing_info_found->queued_data_length -= rc;
+      if (0 >= utracing_info_found->queued_data_length) {
+	kfree (utracing_info_found->queued_data);
+	utracing_info_found->queued_data = NULL;
+	wake_up (&(utracing_info_found->ifw_wait));
+      }
     }
-    
-    if (utracing_info_found->queued_data)
-      kfree (utracing_info_found->queued_data);
-    utracing_info_found->queued_data = NULL;
-    utracing_info_found->queued_data_length = 0;
-    *eof = 1;
-    wake_up_all (&(utracing_info_found->ifw_wait));
+#if 0
+    if (0 >= utracing_info_found->queued_data_length) {
+      //      printk (KERN_ALERT "sending eof\n");
+      *eof = 1;
+    }
+#endif
+
+    *buffer_location = buffer;
     return rc;
   }
 
-  return -UTRACER_ETRACING;
+  else return -UTRACER_ETRACING;
 }

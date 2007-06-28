@@ -7,6 +7,7 @@ all:
 clean:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 	sudo rm -f  Module.symvers
+	sudo rm -rf .tmp_versions
 
 veryclean: clean
 	rm -f utracer.ko

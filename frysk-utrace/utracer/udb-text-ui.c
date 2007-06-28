@@ -29,13 +29,33 @@ static int reg_hash_table_valid = 0;
 typedef int (*action_fcn)(char ** saveptr);
 
 static int
+listpids_fcn(char ** saveptr)
+{
+  utrace_listpids_if ();
+  return 1;
+}
+
+static int
+watch_fcn(char ** saveptr)
+{
+  long pid;
+  char * pid_c = strtok_r (NULL, " \t", saveptr);
+  if (pid_c) {
+    pid = atol (pid_c);
+    utrace_attach_if (pid, 0);
+  }
+  else fprintf (stderr, "\twatch requires an argument\n");
+  return 1;
+}
+
+static int
 attach_fcn(char ** saveptr)
 {
   long pid;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    utrace_attach_if (pid);
+    utrace_attach_if (pid, 1);
   }
   else fprintf (stderr, "\tattach requires an argument\n");
   return 1;
@@ -68,7 +88,7 @@ quiesce_fcn(char ** saveptr)
 }
 
 static int
-dettach_fcn(char ** saveptr)
+detach_fcn(char ** saveptr)
 {
   long pid;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
@@ -139,24 +159,93 @@ set_prompt()
   asprintf (&prompt, "udb [%ld] >", current_pid);
 }
 
+typedef struct {
+  int (*cmd_fcn)(char ** saveptr);
+  char * desc;
+} cmd_info_s;
+
+static cmd_info_s attach_info =
+  {attach_fcn, "(at) -- Attach and quiesce the given PID."};
+static cmd_info_s attach_info_brief =
+  {attach_fcn, NULL};
+
+static cmd_info_s quit_info =
+  {quit_fcn, "(bye, q) -- Quit the debugger."};
+static cmd_info_s quit_info_brief =
+  {quit_fcn, NULL};
+
+static cmd_info_s detach_info =
+  {detach_fcn, "(det) -- Detach the given PID."};
+static cmd_info_s detach_info_brief =
+  {detach_fcn, NULL};
+
+static cmd_info_s printreg_info =
+  {printreg_fcn, "(pr) -- Print the value of the specified register."};
+static cmd_info_s printreg_info_brief =
+  {printreg_fcn, NULL};
+
+static cmd_info_s quiesce_info =
+  {quiesce_fcn, "(halt) -- Quiesce the specified PID."};
+static cmd_info_s quiesce_info_brief =
+  {quiesce_fcn, NULL};
+
+static cmd_info_s run_info =
+  {run_fcn, "(r, c) -- Continue the specified PID."};
+static cmd_info_s run_info_brief =
+  {run_fcn, NULL};
+
+static cmd_info_s step_info =
+  {step_fcn, "(s) -- Single-step the specified PID."};
+static cmd_info_s step_info_brief =
+  {step_fcn, NULL};
+
+static cmd_info_s switchpid_info =
+  {switchpid_fcn, "(sw) -- Switch to the specified PID."};
+static cmd_info_s switchpid_info_brief =
+  {switchpid_fcn, NULL};
+
+static cmd_info_s listpids_info =
+  {listpids_fcn, "(lp) -- List the attached PIDs."};
+static cmd_info_s listpids_info_brief =
+  {listpids_fcn, NULL};
+
+static cmd_info_s watch_info =
+  {watch_fcn, "(w) -- Watch the specified PID.  (Attach w/o quiesce.)"};
+static cmd_info_s watch_info_brief =
+  {watch_fcn, NULL};
+
 static ENTRY cmds[] = {
-  {"at",		attach_fcn},
-  {"attach",		attach_fcn},
-  {"bye",		quit_fcn},
-  {"det",		dettach_fcn},
-  {"dettach",		dettach_fcn},
-  {"pr",		printreg_fcn},
-  {"printreg",		printreg_fcn},
-  {"q",			quit_fcn},
-  {"quiesce",		quiesce_fcn},
-  {"halt",		quiesce_fcn},
-  {"quit",		quit_fcn},
-  {"run",		run_fcn},
-  {"r",			run_fcn},
-  {"s",			step_fcn},
-  {"step",		step_fcn},
-  {"sw",		switchpid_fcn},
-  {"switchpid",		switchpid_fcn},
+  {"at",		&attach_info_brief},
+  {"attach",		&attach_info},
+  
+  {"det",		&detach_info_brief},
+  {"detach",		&detach_info},
+  
+  {"q",			&quit_info_brief},
+  {"bye",		&quit_info_brief},
+  {"quit",		&quit_info},
+  
+  {"pr",		&printreg_info_brief},
+  {"printreg",		&printreg_info},
+  
+  {"halt",		&quiesce_info_brief},
+  {"quiesce",		&quiesce_info},
+  
+  {"r",			&run_info_brief},
+  {"c",			&run_info_brief},
+  {"run",		&run_info},
+  
+  {"s",			&step_info_brief},
+  {"step",		&step_info},
+  
+  {"sw",		&switchpid_info_brief},
+  {"switchpid",		&switchpid_info},
+  
+  {"lp",		&listpids_info_brief},
+  {"listpids",		&listpids_info},
+  
+  {"w",			&watch_info_brief},
+  {"watch",		&watch_info},
 };
 static int nr_cmds = sizeof(cmds)/sizeof(ENTRY);
 
@@ -239,24 +328,41 @@ text_ui()
   while (run) {
     iline = readline (prompt);
     if (iline) {
-      if (*iline) {
-	ENTRY * entry;
-	ENTRY target;
-	char * iline_copy;
-	char * saveptr;
-
-	iline_copy = strdup (iline);
-	target.key = strtok_r (iline_copy, " \t", &saveptr);
-      
-	if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
-	  run = (*(action_fcn)(entry->data))(&saveptr);
-	  add_history (iline);
+      switch (*iline) {
+      case 0:
+	break;
+      case '?':
+	{
+	  int i;
+	  for (i = 0; i < nr_cmds; i++) {
+	    cmd_info_s * cmd_info = (cmd_info_s *)cmds[i].data;
+	    if (cmd_info->desc)
+	      fprintf (stderr, "\t%s %s\n", cmds[i].key, cmd_info->desc);
+	  }
 	}
-	else {
-	  fprintf (stderr, "\tCommand %s not recognised\n", iline);
-	}
+	break;
+      default:
+	{
+	  ENTRY * entry;
+	  ENTRY target;
+	  char * iline_copy;
+	  char * saveptr;
 
-	free (iline_copy);
+	  iline_copy = strdup (iline);
+	  target.key = strtok_r (iline_copy, " \t", &saveptr);
+
+	  if (0 != hsearch_r (target, FIND, &entry, &cmd_hash_table)) {
+	    cmd_info_s * cmd_info = (cmd_info_s *)entry->data;
+	    run = (*(action_fcn)(cmd_info->cmd_fcn))(&saveptr);
+	    add_history (iline);
+	  }
+	  else {
+	    fprintf (stderr, "\tCommand %s not recognised\n", iline);
+	  }
+
+	  free (iline_copy);
+	}
+	break;
       }
       free (iline);
     }
