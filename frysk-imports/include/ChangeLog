@@ -1,3 +1,7 @@
+2007-06-28  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk-asm.h: Update.
+
 2007-06-27  Mark Wielaard  <mwielaard@redhat.com>
 
 	* frysk-asm.h: Various x86 defines back.

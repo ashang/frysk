@@ -57,6 +57,10 @@
 #define REG3 %ecx
 #define REG4 %edx
 
+#define BASEP %ebp
+#define STACKP %esp
+#define IPREG %eip
+
 #define NO_OP nop
 #define ENTER pushl %ebp ; movl %esp, %ebp 
 #define EXIT popl %ebp ; ret
@@ -66,6 +70,11 @@
 #define LOAD_IMMED(DEST_REG,CONST) mov $CONST, DEST_REG
 #define STORE(SOURCE_REG,BASE_REG) movl SOURCE_REG, (BASE_REG)
 #define COMPARE_IMMED(REG,CONST) cmp $CONST, REG
+
+#define PUSH_BASEP pushl %ebp
+#define MOV_STACKP movl %esp, %ebp
+#define POP(A) popl A
+
 #define ENTER_MAIN \
 	pushl %ebp ; \
 	movl %esp, %ebp ; \
@@ -103,8 +112,8 @@
 #define ADDL(A, B) addl $A, B
 #define SUBQ(A, B) subq $A, B
 #define TESTL(A, B) testl A, B
-#define PUSHQ_BASE pushq %rbp
-#define MOVQ_STACK movq %rsp, %rbp
+#define PUSH_BASEP pushq %rbp
+#define MOV_STACKP movq %rsp, %rbp
 #define LEAVE leave; ret
 
 //XXX: Need the following to be defined in order to compile. See Bug #3968
