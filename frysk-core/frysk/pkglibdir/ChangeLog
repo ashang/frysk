@@ -1,7 +1,13 @@
+2007-06-28  Mike Cvet  <mcvet@redhat.com>
+
+	* funit-frameinfo-looper.S: Added i386 asm code.
+
 2007-06-26  Jose Flavio Aguilar Paulino <jflavio@br.ibm.com>
 
-	* funit-frameinfo-looper.S: Correcting error in this test, it does not support PowerPC64, lacking main method for other archs than x386 or x86_64. At least a dummy test should be available so frysk can compile in all archs.
-
+	* funit-frameinfo-looper.S: Correcting error in this test, it does not 
+	support PowerPC64, lacking main method for other archs than x386 or 
+	x86_64. At least a dummy test should be available so frysk can compile 
+	in all archs.
 
 2007-06-26  Sami Wagiaalla  <swagiaal@redhat.com>
 

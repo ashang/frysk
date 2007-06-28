@@ -28,7 +28,7 @@
 // resulting work to be covered by the GNU General Public
 // License. Only Red Hat, Inc. may make changes or additions to the
 // list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all o;f the FRYSK code and other code
+// License in all respects for all of the FRYSK code and other code
 // used in conjunction with FRYSK except the Non-GPL Code covered by
 // this exception. If you modify this file, you may extend this
 // exception to your version of the file, but you are not obligated to
@@ -42,30 +42,17 @@
 
 #ifdef __x86_64__
 
-.globl a
-	.bss
-	.align 4
-	.type	a, @object
-	.size	a, 4
-a:
-	.zero	4
-.globl b
-	.align 4
-	.type	b, @object
-	.size	b, 4
-b:
-	.zero	4
-	.text
 .globl second
 	.type	second, @function
  second:
 .LFB5:
-	PUSHQ_BASE
+	PUSH_BASEP
 .LCFI0:
-	MOVQ_STACK
+	MOV_STACKP
 .LCFI1:
-	movq	b@GOTPCREL(%rip), REG1
-	MOVL	($1, (REG1))
+	NO_OP
+	NO_OP
+	NO_OP	;  NO_OP ; NO_OP
 	LEAVE
 .LFE5:
 	.size	second, .-second
@@ -73,24 +60,22 @@ b:
 	.type	first, @function
 first:
 .LFB6:
-	PUSHQ_BASE
+	PUSH_BASEP
 .LCFI2:
-	MOVQ_STACK
+	MOV_STACKP
 .LCFI3:
-	movq	a@GOTPCREL(%rip), REG1
-	MOVL	((REG1), %eax)
-	leal	1(REG1), %edx
-	movq	a@GOTPCREL(%rip), REG1
-	MOVL	(%edx, (REG1))
+	NO_OP
+	NO_OP
+	NO_OP	; NO_OP ; NO_OP
+	NO_OP
 	JUMP	(.L4)
 .L5:	
-	MOVL	($0, %eax)
+	NO_OP
 	CALL	(second@PLT) #x86_64_func_entry_test
 .L4:	
-	movq	a@GOTPCREL(%rip), REG1
-	MOVL	((REG1), %eax)
-	TESTL	(%eax, %eax)
-	JUMP_NE	(.L5)
+	NO_OP
+	NO_OP
+	JUMP	(.L5)
 	LEAVE
 .LFE6:
 	.size	first, .-first
@@ -98,9 +83,9 @@ first:
 	.type	main, @function
 main:
 .LFB7:
-	PUSHQ_BASE
+	PUSH_BASEP
 .LCFI4:
-	MOVQ_STACK
+	MOV_STACKP
 .LCFI5:
 	subq	$16, STACKP
 .LCFI6:
@@ -190,10 +175,161 @@ main:
 	.ident	"GCC: (GNU) 4.1.1 20070105 (Red Hat 4.1.1-51)"
 	.section	.note.GNU-stack,"",@progbits
 	
+#elif defined __i386__
+
+.globl second
+	.type	second, @function
+second:
+.LFB5:
+	PUSH_BASEP
+.LCFI0:
+	MOV_STACKP
+.LCFI1:
+	NO_OP
+	NO_OP
+	NO_OP
+.L2:
+	NO_OP
+	NO_OP
+	JUMP	(.L2)
+	EXIT
+.LFE5:
+	.size	second, .-second
+.globl first
+	.type	first, @function
+first:
+.LFB6:
+	PUSH_BASEP
+.LCFI2:
+	MOV_STACKP
+.LCFI3:
+	NO_OP
+	NO_OP
+.L3:	
+	NO_OP
+	CALL	(second)
+	NO_OP
+	JUMP	(.L3)
+	EXIT
+.LFE6:
+	.size	first, .-first
+.globl main
+	.type	main, @function
+main:
+.LFB7:
+	leal	4(%esp), %ecx
+.LCFI4:
+	andl	$-16, %esp
+	pushl	-4(%ecx)
+.LCFI5:
+	PUSH_BASEP
+.LCFI6:
+	MOV_STACKP
+.LCFI7:
+	pushl	%ecx
+.LCFI8:
+	CALL	(first)
+	POP	(%ecx)
+	POP	(%ebp)
+	leal	-4(%ecx), %esp
+	ret
+.LFE7:
+	.size	main, .-main
+	.section	.eh_frame,"a",@progbits
+.Lframe1:
+	.long	.LECIE1-.LSCIE1
+.LSCIE1:
+	.long	0x0
+	.byte	0x1
+	.string	""
+	.uleb128 0x1
+	.sleb128 -4
+	.byte	0x8
+	.byte	0xc
+	.uleb128 0x4
+	.uleb128 0x4
+	.byte	0x88
+	.uleb128 0x1
+	.align 4
+.LECIE1:
+.LSFDE1:
+	.long	.LEFDE1-.LASFDE1
+.LASFDE1:
+	.long	.LASFDE1-.Lframe1
+	.long	.LFB5
+	.long	.LFE5-.LFB5
+	.byte	0x4
+	.long	.LCFI0-.LFB5
+	.byte	0xe
+	.uleb128 0x8
+	.byte	0x85
+	.uleb128 0x2
+	.byte	0x4
+	.long	.LCFI1-.LCFI0
+	.byte	0xd
+	.uleb128 0x5
+	.align 4
+.LEFDE1:
+.LSFDE3:
+	.long	.LEFDE3-.LASFDE3
+.LASFDE3:
+	.long	.LASFDE3-.Lframe1
+	.long	.LFB6
+	.long	.LFE6-.LFB6
+	.byte	0x4
+	.long	.LCFI2-.LFB6
+	.byte	0xe
+	.uleb128 0x8
+	.byte	0x85
+	.uleb128 0x2
+	.byte	0x4
+	.long	.LCFI3-.LCFI2
+	.byte	0xd
+	.uleb128 0x5
+	.align 4
+.LEFDE3:
+.LSFDE5:
+	.long	.LEFDE5-.LASFDE5
+.LASFDE5:
+	.long	.LASFDE5-.Lframe1
+	.long	.LFB7
+	.long	.LFE7-.LFB7
+	.byte	0x4
+	.long	.LCFI4-.LFB7
+	.byte	0xc
+	.uleb128 0x1
+	.uleb128 0x0
+	.byte	0x9
+	.uleb128 0x4
+	.uleb128 0x1
+	.byte	0x4
+	.long	.LCFI5-.LCFI4
+	.byte	0xc
+	.uleb128 0x4
+	.uleb128 0x4
+	.byte	0x4
+	.long	.LCFI6-.LCFI5
+	.byte	0xe
+	.uleb128 0x8
+	.byte	0x85
+	.uleb128 0x2
+	.byte	0x4
+	.long	.LCFI7-.LCFI6
+	.byte	0xd
+	.uleb128 0x5
+	.byte	0x4
+	.long	.LCFI8-.LCFI7
+	.byte	0x84
+	.uleb128 0x3
+	.align 4
+.LEFDE5:
+	.ident	"GCC: (GNU) 4.1.2 20070502 (Red Hat 4.1.2-12)"
+	.section	.note.GNU-stack,"",@progbits	
+
+
 #else
 
-	
-main:
+	main:
 	
 	ENTER
 	
@@ -219,6 +355,5 @@ loop:
 	JUMP (loop)
 	EXIT
 fail: JUMP (0)
-
-
+	
 #endif
