@@ -662,10 +662,10 @@ public class CreateFryskSessionDruid
           return;
         }
     
-        if(!validateSessionName()){
-	  return;
-	}
-	
+        if(!validateCurrentPage()){
+            return;
+        }
+        
 	String proposedName = nameEntry.getText();
 	
 	if(proposedName == null){
@@ -936,12 +936,14 @@ public class CreateFryskSessionDruid
   
   private boolean validateSessionName ()
   {
-    String proposedName = nameEntry.getName();
+    String proposedName = nameEntry.getText();
+    
     Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
     if (theSessionUsingProposedName != null && theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
       setWarning(WarningType.NAME_ALREADY_USED);
       return false;
     }else{
+	setWarning(WarningType.NORMAL);
       return true;
     }
   }

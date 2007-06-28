@@ -1,3 +1,8 @@
+2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* UniqueHashMap.java (add): Added printing of object holding the
+	key to error message.
+
 2007-06-11  Nurdin Premji  <npremji@redhat.com>
 
 	* eventviewer/Event.java: Reflect frysk.stack package movement.

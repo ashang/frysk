@@ -76,7 +76,7 @@ public class UniqueHashMap{
 	public void add(GuiObject object){
 	  	GuiObject oldObject = (GuiObject) this.nameHash.get(object.getName());
 		if(oldObject != null && object != oldObject){
-			throw new IllegalArgumentException("The given item name"+"["+ object.getName()+"]"+" is already used");
+			throw new IllegalArgumentException("The given item name"+"["+ object.getName()+"]"+" is already used by " + oldObject);
 		}else{
 			this.nameHash.put(object.getName(), object);
 			this.keyHash.put(object, object.getName());

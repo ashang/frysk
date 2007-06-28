@@ -1,3 +1,10 @@
+2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (validateSessionName): replaced
+	nameEntry.getName() with nameEntry.getText().
+	Made the name entry change cause a page recheck instead of a name only
+	recheck.
+
 2007-06-20  Kris Van Hees  <kris.van.hees@oracle.com>
 
 	* memory/MemoryWindow.java (setTask, resetTask): Set the valid range
