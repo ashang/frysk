@@ -9,6 +9,7 @@
 #include <linux/slab.h>
 #include <linux/proc_fs.h>
 #include <linux/utrace.h>
+#include <linux/binfmts.h>
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm-i386/tracehook.h>
@@ -20,11 +21,24 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Chris Moller");
 
 static u32
+client_report_exec (struct utrace_attached_engine *engine,
+	     struct task_struct *tsk,
+	     const struct linux_binprm *bprm,
+	     struct pt_regs *regs)
+{
+  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
+  	 (bprm->filename) ? bprm->filename : "unk",
+  	 (bprm->interp) ? bprm->interp : "unk");
+  return UTRACE_ACTION_RESUME;
+}
+
+
+static u32
 client_report_exit (struct utrace_attached_engine *engine,
 	     struct task_struct *tsk,
 	     long orig_code, long *code)
 {
-  //  printk(KERN_INFO "client reporting exit\n");// fixme use to cleanup 
+  //  printk(KERN_ALERT "client reporting exit\n");// fixme use to cleanup 
   return UTRACE_ACTION_RESUME;			// utracing_info list
 }
 
@@ -32,14 +46,14 @@ static u32
 client_report_death (struct utrace_attached_engine *engine,
 	      struct task_struct *tsk)
 {
-  //  printk(KERN_INFO "client reporting death\n");
+  //  printk(KERN_ALERT "client reporting death\n");
   return UTRACE_ACTION_RESUME;
 }
 
 static const struct utrace_engine_ops utracing_utrace_ops = {
   .report_syscall_entry	= NULL,
   .report_syscall_exit	= NULL,
-  .report_exec		= NULL,
+  .report_exec		= client_report_exec,
   .report_jctl		= NULL,
   .report_signal	= NULL,
   .report_vfork_done	= NULL,
@@ -147,6 +161,7 @@ control_file_write (struct file *file,
 
 	    //fixme -- do something with rc?
 	    rc = utrace_set_flags (task,utracing_engine,
+				   UTRACE_EVENT (EXEC)	|
 				   UTRACE_EVENT (EXIT)	|
 				   UTRACE_EVENT (DEATH));
 	  }

@@ -1,3 +1,15 @@
+Thu Jun 28 10:41:46 2007  Chris Moller  <cmoller@redhat.com>
+
+	* OVERVIEW: Added to provide of utracer and udb.
+	* udb-response.c: Added by separating it out of udb.c.  Provides
+	the response entry listener.
+	* udb-i386.h: Added by separating i386-specific stuff from other
+	sources.
+	* udb-text-ui.c: Added a switchpid command to verify that the
+	specified PID exists, then switch to it if it does.
+	* udb.c: Added support for forking/attaching/execing a
+	command-line specified program (DEVELOPMENTAL--not working yet).
+
 Wed Jun 27 23:27:03 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-text-ui.c: Added a printregall command to print all

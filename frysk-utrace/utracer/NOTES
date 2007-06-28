@@ -1,9 +1,7 @@
 TODO
 
-research having utracer kill() udb, then udb read utracer
-make udb reader handle multiple reqs
+provide a command to req the process tree starting at any point
 
-async signalling back to udb
 in utracer.c, trace registering apps & report death; auto-unregister
 research self-unload of module
 use report callbacks

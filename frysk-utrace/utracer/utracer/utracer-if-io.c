@@ -41,7 +41,7 @@ static u32
 report_quiesce (struct utrace_attached_engine *engine,
 		struct task_struct *tsk)
 {
-  //  printk(KERN_INFO "reporting quiesce\n");
+  //  printk(KERN_ALERT "reporting quiesce\n");
   return UTRACE_ACTION_RESUME;
 }
 
@@ -56,6 +56,7 @@ report_clone (struct utrace_attached_engine *engine,
     (void *)engine->data;
 
   //fixme -- autoattach?
+  printk(KERN_ALERT "reporting clone\n");
   
   if (utracing_info_found) {
     clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
@@ -71,7 +72,7 @@ static u32
 report_vfork_done (struct utrace_attached_engine *engine,
 		   struct task_struct *parent, pid_t child_pid)
 {
-  //  printk(KERN_INFO "reporting vfork_done, child pid = %d\n", child_pid);
+  printk(KERN_ALERT "reporting vfork_done, child pid = %d\n", child_pid);
   return UTRACE_ACTION_RESUME;
 }
 
@@ -81,10 +82,10 @@ report_exec (struct utrace_attached_engine *engine,
 	     const struct linux_binprm *bprm,
 	     struct pt_regs *regs)
 {
-  //  printk(KERN_INFO "reporting exec \"%s\" \"%s\"\n",
-  //	 (bprm->filename) ? bprm->filename : "unk",
-  //	 (bprm->interp) ? bprm->interp : "unk");
-  return UTRACE_ACTION_RESUME;
+  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
+  	 (bprm->filename) ? bprm->filename : "unk",
+  	 (bprm->interp) ? bprm->interp : "unk");
+  return UTRACE_ACTION_QUIESCE;
 }
 
 static u32
@@ -256,6 +257,34 @@ if_file_write (struct file *file,
       else return -ESRCH;
     }
     break;
+  case IF_CMD_SWITCHPID:
+    {
+      utracing_info_s * utracing_info_found;
+      
+      switchpid_cmd_s switchpid_cmd = if_cmd.switchpid_cmd;
+
+      utracing_info_found =
+	lookup_utracing_info (switchpid_cmd.utracing_pid);
+
+      if (utracing_info_found) {
+	struct task_struct * task;
+	switchpid_resp_s switchpid_resp;
+	task = get_task (switchpid_cmd.utraced_pid);
+
+	switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
+	switchpid_resp.utraced_pid    = switchpid_cmd.utraced_pid;
+	switchpid_resp.okay = task ? 1 : 0;
+      
+	queue_response (utracing_info_found,
+			&switchpid_resp,
+			sizeof(switchpid_resp),
+			NULL, 0);
+      
+	return count;
+      }
+      else return -UTRACER_ETRACING;
+    }
+    break;
   case IF_CMD_ATTACH:
     {
       attach_cmd_s attach_cmd = if_cmd.attach_cmd;
@@ -329,7 +358,7 @@ if_file_write (struct file *file,
 		i++, utraced_info = utraced_info->next)
 	    pids_list[i] = utraced_info->utraced_pid;
 	}
-	//	printk (KERN_INFO "listpids\n");
+	//	printk (KERN_ALERT "listpids\n");
 	queue_response (utracing_info_found,
 			&pids_resp, sizeof(pids_resp),
 			pids_list, pids_resp.nr_pids * sizeof(long));

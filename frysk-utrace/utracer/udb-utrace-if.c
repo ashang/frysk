@@ -7,7 +7,6 @@
 #include <alloca.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <search.h>
 
 #include "udb.h"
 #include "utracer/utracer.h"
@@ -41,16 +40,34 @@ unregister_utracer(pid_t pid)
 }
 
 void
-utrace_attach_if (long pid, long quiesce)
+utrace_switchpid_if (long pid)
 {
-  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)udb_pid, pid, quiesce};
-  ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
-  if (-1 == sz) uerror ("Writing attach command.");
+  switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID, (long)udb_pid, pid};
+  ssize_t sz = write (utracer_cmd_file_fd, &switchpid_cmd,
+		      sizeof(switchpid_cmd));
+  if (-1 == sz) uerror ("Writing switchpid command.");
+#if 0
   else {
     current_pid = pid;
     set_prompt();
     fprintf (stdout, "\t%d  attached\n", pid);
   }
+#endif
+}
+
+void
+utrace_attach_if (long pid, long quiesce)
+{
+  attach_cmd_s attach_cmd = {IF_CMD_ATTACH, (long)udb_pid, pid, quiesce};
+  ssize_t sz = write (utracer_cmd_file_fd, &attach_cmd, sizeof(attach_cmd));
+  if (-1 == sz) uerror ("Writing attach command.");
+#if 0
+  else {
+    current_pid = pid;
+    set_prompt();
+    fprintf (stdout, "\t%d  attached\n", pid);
+  }
+#endif
 }
 
 void

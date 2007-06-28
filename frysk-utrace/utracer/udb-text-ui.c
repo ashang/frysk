@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <search.h>
 #include <error.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <search.h>
 
 #include "udb.h"
+#include "udb-i386.h"
 
 
 /*
@@ -117,7 +118,7 @@ switchpid_fcn (char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    fprintf (stderr, "switchpid_fcn %ld\n", pid);
+    utrace_switchpid_if (pid, 0);
   }
   else fprintf (stderr, "\tswitchpid requires an argument\n");
   return 1;

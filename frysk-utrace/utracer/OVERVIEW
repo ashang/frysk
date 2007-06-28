@@ -1,0 +1,22 @@
+A quick overview of utracer.
+
+utracer is a "loadable kernel module" (LKM) that provides an interface to
+utrace. Briefly:
+
+	It supports multiple concurrent clients, i.e., once loaded, utracer
+	can provide services to any number of debuggers or other utilities.
+	For each client, utracer supports any number of concurrently attached
+	processes.
+
+	Clients communicate with utracer through /proc entries that appear
+	to the clients as ordinary files.  Each client is provided a unique
+	"command" entry, writing to which controls the behaviour of utracer
+	for that client, and a "response" entry through which utracer returns
+	information to the client.  The response entry blocks on file-read,
+	allowing it to asynchronously relay utrace report_* information
+	(such as changes in attached-process status and attached-process
+	signals) to the client without the necessity for polling.
+
+Included in this package is an example utracer client called udb.  The primary
+purpose of udb is to provide a means of exercising utracer, but it may also
+serve as a collection of recipes for use by the authors of real clients.

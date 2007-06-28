@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <alloca.h>
 #include <string.h>
-#include <search.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -18,8 +17,13 @@
 #include "utracer/utracer.h"
 #define DO_UDB_INIT
 #include "udb.h"
+#include "udb-i386.h"
 
 pthread_t resp_listener_thread;
+
+static int unload_module = 1;
+
+extern void * resp_listener (void * arg);
 
 static void
 cleanup_udb()
@@ -50,187 +54,6 @@ sigterm_handler (int sig)
   cleanup_udb();		// fixme -- eventually, just unregister
   unload_utracer();		// and have utracer unload itsef 
   exit (0);			// when nothing else is registered
-}
-
-static int unload_module = 1;
-
-static const char * i386_signals[] = {
-  "unused",			//  0
-  "SIGHUP",			//  1
-  "SIGINT",			//  2
-  "SIGQUIT",			//  3
-  "SIGILL",			//  4
-  "SIGTRAP",			//  5
-  "SIGABRT",			//  6
-  "SIGBUS",			//  7
-  "SIGFPE",			//  8
-  "SIGKILL",			//  9
-  "SIGUSR1",			// 10
-  "SIGSEGV",			// 11
-  "SIGUSR2",			// 12
-  "SIGPIPE",			// 13
-  "SIGALRM",			// 14
-  "SIGTERM",			// 15
-  "SIGSTKFLT",			// 16
-  "SIGCHLD",			// 17
-  "SIGCONT",			// 18
-  "SIGSTOP",			// 19
-  "SIGTSTP",			// 20
-  "SIGTTIN",			// 21
-  "SIGTTOU",			// 22
-  "SIGURG",			// 23
-  "SIGXCPU",			// 24
-  "SIGXFSZ",			// 25
-  "SIGVTALRM",			// 26
-  "SIGPROF",			// 27
-  "SIGWINCH",			// 28
-  "SIGIO",			// 29
-  "SIGPWR",			// 30
-  "SIGUNUSED"			// 31
-};
-
-static int nr_signals	= sizeof(i386_signals)/sizeof(char *);
-
-static void *
-resp_listener (void * arg)
-{
-  if_resp_u if_resp;
-  ssize_t sz;
-
-  while (1) {
-    sz = pread (utracer_resp_file_fd, &if_resp,
-		sizeof(if_resp), 0);
-    
-    switch (if_resp.type) {
-    case IF_RESP_REG_DATA:
-      {
-	// fixme -- handle non-int values
-	// fixme -- use reg name in addition to number
-	readreg_resp_s readreg_resp = if_resp.readreg_resp;
-	
-	if (-1 == readreg_resp.which) {
-	  int i;
-	  int regs_received;
-	  long * regs_list = NULL;
-	  
-	  regs_received = (sz - sizeof(readreg_resp))/ sizeof(long);
-	  regs_list = alloca (readreg_resp.reg_count * sizeof(long));
-	  
-	  if (0 < regs_received)
-	    memcpy (regs_list, ((void *)(&if_resp)) + sizeof(readreg_resp),
-		    regs_received * sizeof(long));
-	  
-	  if (regs_received < readreg_resp.reg_count) {
-	    size_t sz_req = (readreg_resp.reg_count -
-			     regs_received) * sizeof(long);
-	    sz = pread (utracer_resp_file_fd, &regs_list[regs_received],
-			sz_req, sz);
-	  }
-
-	  for (i = 0; i < readreg_resp.reg_count; i++)
-	    fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %ld\n",
-		     readreg_resp.utraced_pid,
-		     readreg_resp.regset,
-		     i,
-		     reg_mapping[i].key,
-		     regs_list[i],
-		     regs_list[i]);
-	}
-	else {
-	  fprintf (stdout, "\t[%ld] [%d][%d (%s)]: [%#08x] %d\n",
-		   readreg_resp.utraced_pid,
-		   readreg_resp.regset,
-		   readreg_resp.which,
-		   reg_mapping[readreg_resp.which].key,
-		   (int)readreg_resp.data,
-		   (int)readreg_resp.data);
-	}
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_PIDS_DATA:
-      {
-	int i;
-	int pids_received;
-	long * pids_list = NULL;
-	pids_resp_s pids_resp = if_resp.pids_resp;
-	
-	pids_received = (sz - sizeof(pids_resp))/ sizeof(long);
-	
-	pids_list = alloca (pids_resp.nr_pids * sizeof(long));
-	if (0 < pids_received)
-	  memcpy (pids_list, ((void *)(&if_resp)) + sizeof(pids_resp),
-		  pids_received * sizeof(long));
-	
-	if (pids_received < pids_resp.nr_pids) {
-	  size_t sz_req = (pids_resp.nr_pids - pids_received) * sizeof(long);
-	  sz = pread (utracer_resp_file_fd, &pids_list[pids_received],
-		      sz_req, sz);
-	}
-
-	for (i = 0; i < pids_resp.nr_pids; i++)
-	  fprintf (stdout, "\t[%d] %ld\n", i, pids_list[i]);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_DEATH_DATA:
-      {
-	death_resp_s death_resp = if_resp.death_resp;
-	fprintf (stdout, "\t[%ld] died\n",
-		 death_resp.utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_EXIT_DATA:
-      {
-	exit_resp_s exit_resp = if_resp.exit_resp;
-	fprintf (stdout, "\t[%ld] exit with code %ld\n",
-		 exit_resp.utraced_pid,
-		 exit_resp.code);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_SIGNAL_DATA:
-      {
-	signal_resp_s signal_resp = if_resp.signal_resp;
-	fprintf (stdout, "\t[%ld] signal %ld (%s)\n",
-		 signal_resp.utraced_pid,
-		 signal_resp.signal,
-		 ((0 <= signal_resp.signal) &&
-		  (signal_resp.signal < nr_signals)) ?
-		 i386_signals[signal_resp.signal] : "unused");
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_ATTACH_DATA:
-      {
-	attach_resp_s attach_resp = if_resp.attach_resp;
-	fprintf (stdout, "\tprocess %ld attach %s\n",
-		 attach_resp.utraced_pid,
-		 attach_resp.okay ? "succeeded" : "failed");
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    case IF_RESP_CLONE_DATA:
-      {
-	clone_resp_s clone_resp = if_resp.clone_resp;
-	fprintf (stdout, "\t[%ld] cloned to %ld\n",
-		 clone_resp.utracing_pid,
-		 clone_resp.new_utraced_pid);
-	fprintf (stdout, "%s", prompt);
-	fflush (stdout);
-      }
-      break;
-    default:
-      break;
-    }
-  }
 }
 
 static struct option options[] = {
@@ -340,6 +163,33 @@ main (int ac, char * av[])
     for (i = 0; i < nr_pids_to_attach; i++)
       utrace_attach_if (pids_to_attach[i].pid, pids_to_attach[i].quiesce);
     free (pids_to_attach);
+  }
+
+  for (;optind < ac; optind++) {
+    pid_t child_pid;
+    
+    printf ("loading %s\n", av[optind]);
+
+    child_pid = fork();
+    switch (child_pid) {
+    case -1:
+      error (1, errno, "Error forking spawner");
+      break;
+    case 0:       // child
+      {
+	int rc;
+	long cp = (long)getpid();
+	fprintf (stderr, "child pid = %ld\n", cp);
+	utrace_attach_if (cp, 0);
+	rc = execlp (av[optind], av[optind],  NULL);
+	if (-1 == rc)
+          error (1, errno, "Error in spawner execlp");
+      }
+      break;
+    default:      // parent
+      //      utrace_attach_if (child_pid, 1);
+      break;
+    }
   }
 
   text_ui_init();

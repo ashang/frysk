@@ -28,6 +28,7 @@ typedef enum {
   IF_CMD_READ_REG,
   IF_CMD_RUN,
   IF_CMD_LIST_PIDS,
+  IF_CMD_SWITCHPID,
   IF_CMD_QUIESCE
 } if_cmd_e;
 
@@ -41,6 +42,12 @@ typedef struct {
   long cmd;
   long utracing_pid;
 } listpids_cmd_s;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
+  long utraced_pid;
+} switchpid_cmd_s;
 
 typedef struct {
   long cmd;
@@ -63,6 +70,7 @@ typedef union {
   readreg_cmd_s	readreg_cmd;
   run_cmd_s	run_cmd;
   listpids_cmd_s listpids_cmd;
+  switchpid_cmd_s switchpid_cmd;
 } if_cmd_u;
 
 typedef enum {
@@ -73,6 +81,7 @@ typedef enum {
   IF_RESP_EXIT_DATA,
   IF_RESP_PIDS_DATA,
   IF_RESP_DEATH_DATA,
+  IF_RESP_SWITCHPID_DATA,
   IF_RESP_ATTACH_DATA
 } if_resp_e; 
 
@@ -120,6 +129,12 @@ typedef struct {
   int  okay;
 } attach_resp_s;
 
+typedef struct {
+  long type;
+  long utraced_pid;
+  int  okay;
+} switchpid_resp_s;
+
 typedef union {
   long type;
   readreg_resp_s	readreg_resp;
@@ -129,6 +144,7 @@ typedef union {
   death_resp_s		death_resp;
   exit_resp_s		exit_resp;
   pids_resp_s		pids_resp;
+  switchpid_resp_s	switchpid_resp;
 } if_resp_u;
 
 typedef enum {

@@ -5,7 +5,8 @@ UDB_CFLAGS = -g
 UDB_LDFLAGS =
 UDB_LIBS = -lreadline -lhistory -lcurses -lpthread
 
-UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-utrace-if.c udb-module.c
+UDB_SOURCE_FILES = udb.c udb-text-ui.c udb-utrace-if.c udb-module.c \
+                   udb-response.c
 UDB_OBJECT_FILES = $(UDB_SOURCE_FILES:.c=.o)
 
 all::lcl_install
