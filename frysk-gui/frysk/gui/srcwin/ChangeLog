@@ -1,3 +1,8 @@
+2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SourceWindow.java (generateProcStackTrace): Added a null check
+	for this.dom; work-around for NPE when creating a SW from a Frame.
+
 2007-06-27  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Enabled actions for

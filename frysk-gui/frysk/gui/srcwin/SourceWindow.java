@@ -3112,29 +3112,31 @@ public class SourceWindow
 	  }
 
 	/* Create a DOM for the Proc */
-	while (curr != null && this.dom[this.current] == null)
-	  {
-	    if (this.dom[this.current] == null)
-	      {
-		try
-		  {
-		    this.dom[this.current] = DOMFactory.createDOM(
-								  curr,
-								  this.swProc[this.current]);
-		  }
-
-		catch (NoDebugInfoException e)
-		  {
-		  }
-		catch (IOException e)
-		  {
-		  }
-	      }
-	    else
-	      break;
-
-	    curr = curr.getOuter();
-	  }
+	if(this.dom != null){
+        	while (curr != null && this.dom[this.current] == null)
+        	  {
+        	    if (this.dom[this.current] == null)
+        	      {
+        		try
+        		  {
+        		    this.dom[this.current] = DOMFactory.createDOM(
+        								  curr,
+        								  this.swProc[this.current]);
+        		  }
+        
+        		catch (NoDebugInfoException e)
+        		  {
+        		  }
+        		catch (IOException e)
+        		  {
+        		  }
+        	      }
+        	    else
+        	      break;
+        
+        	    curr = curr.getOuter();
+        	  }
+	}
       }
 
     /* Clear out any irrelevant DOM information from the last stack trace */
