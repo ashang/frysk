@@ -516,7 +516,6 @@ class DebugInfoEvaluator
   private ArrayType getArrayType (DwarfDie type, DwarfDie subrange)
     {
       int elementCount = 1;
-      System.out.println("die=" + Long.toHexString(type.getOffset()) + " tag=" + Long.toHexString(type.getTag()) + " "+ type.getName());
       ArrayList dims = new ArrayList();
       while (subrange != null)
 	{
@@ -595,13 +594,11 @@ class DebugInfoEvaluator
   private ClassType getClassType (DwarfDie classDie, String name)
   {
     int typeSize = 0;
-    System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
     ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
     for (DwarfDie member = classDie.getChild();
     	 member != null;
     	 member = member.getSibling())
       {
-	System.out.println("member=" + Long.toHexString(member.getOffset()) + " tag=" + Long.toHexString(member.getTag()) + " " + member.getName());
         long offset;
         boolean haveTypeDef;
         try
