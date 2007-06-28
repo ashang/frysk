@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.naming.NameNotFoundException;
 
 import lib.dw.BaseTypes;
 import lib.dw.DwAtEncodings;
@@ -187,64 +188,48 @@ class DebugInfoEvaluator
 
   interface VariableAccessor
   {
-    boolean isSuccessful ();
-
-    void setSuccessful (boolean b);
-
     DwarfDie varDie = null;
 
-    long getAddr (String s);
+    long getAddr (String s) throws NameNotFoundException;
 
-    long getLong (DwarfDie varDieP, long offset);
+    long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putLong (DwarfDie varDieP, long offset, Value v);
+    void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
-    int getInt (DwarfDie varDieP, long offset);
+    int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putInt (DwarfDie varDieP, long offset, Value v);
+    void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
-    short getShort (DwarfDie varDieP, long offset);
+    short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putShort (DwarfDie varDieP, long offset, Value v);
+    void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
-    byte getByte (DwarfDie varDieP, long offset);
+    byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putByte (DwarfDie varDieP, long offset, Value v);
+    void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
-    float getFloat (DwarfDie varDieP, long offset);
+    float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putFloat (DwarfDie varDieP, long offset, Value v);
+    void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
 
-    double getDouble (DwarfDie varDieP, long offset);
+    double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException;
 
-    void putDouble (DwarfDie varDieP, long offset, Value v);
+    void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException;
   }
 
   /**
    * Access by DW_FORM_block. Typically this is a static address or ptr+disp.
    */
-  class AccessDW_FORM_block
+  class AccessMemory
       implements VariableAccessor
   {
-    private boolean succeeded = false;
-
-    public boolean isSuccessful ()
-    {
-      return succeeded;
-    }
-
-    public void setSuccessful (boolean b)
-    {
-      succeeded = b;
-    }
-
     /**
      * Given a variable's Die return its address.
      * 
      * @param varDieP
      * @return
      */
-    protected long getBufferAddr (DwarfDie varDieP)
+    protected long getBufferAddr (DwarfDie varDieP) throws NameNotFoundException
     {
       long pc;
       // ??? Do we need an isa specific way to get x86 reg numbers?
@@ -255,10 +240,9 @@ class DebugInfoEvaluator
       List ops = varDieP.getAddr();      
       if (ops.size() == 0 ||
           ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-	 return 0;
+	  throw new NameNotFoundException();
       if (((DwarfDie.DwarfOp)ops.get(0)).operator == DwOpEncodings.DW_OP_addr_)
         {
-          setSuccessful(true);
           return ((DwarfDie.DwarfOp)ops.get(0)).operand1;
         }
       long addr = ((DwarfDie.DwarfOp)ops.get(0)).operand1;
@@ -266,13 +250,15 @@ class DebugInfoEvaluator
       ops = varDieP.getFrameBase(pc);
       if (ops.size() == 0 ||
           ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-        return 0;
+	  throw new NameNotFoundException();
       int reg = ((DwarfDie.DwarfOp)ops.get(0)).operator;
-      reg = (reg >= 0x70) ? reg - 0x70 : reg - 0x50;
+      if (reg >= DwOpEncodings.DW_OP_reg0_ && reg <= DwOpEncodings.DW_OP_reg31_)
+	  reg = reg - DwOpEncodings.DW_OP_reg0_;
+      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
+	  reg = reg - DwOpEncodings.DW_OP_breg0_;
       long regval = 0;
       
       // DW_OP_fbreg
-      setSuccessful(true);
       Isa isa = currentFrame.getTask().getIsa();
       if (isa instanceof frysk.proc.IsaIA32)
         regval = swapBytes(currentFrame.getReg(x86regnumbers[reg]));
@@ -284,79 +270,79 @@ class DebugInfoEvaluator
       return addr;
     }
 
-    public long getAddr (String s)
+    public long getAddr (String s) throws NameNotFoundException
     {
       DwarfDie die = getDie(s);
       return getBufferAddr(die);
     }
 
-    public long getLong (DwarfDie varDieP, long offset)
+    public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getLong(addr + offset);
     }
 
-    public void putLong (DwarfDie varDieP, long offset, Value v)
+    public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putLong(addr + offset, v.getLong());
     }
 
-    public int getInt (DwarfDie varDieP, long offset)
+    public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getInt(addr + offset);
     }
 
-    public void putInt (DwarfDie varDieP, long offset, Value v)
+    public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putInt(addr + offset, v.getInt());
     }
 
-    public short getShort (DwarfDie varDieP, long offset)
+    public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getShort(addr + offset);
     }
 
-    public void putShort (DwarfDie varDieP, long offset, Value v)
+    public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putShort(addr + offset, v.getShort());
     }
 
-    public byte getByte (DwarfDie varDieP, long offset)
+    public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getByte(addr + offset);
     }
 
-    public void putByte (DwarfDie varDieP, long offset, Value v)
+    public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putByte(addr + offset, v.getByte());
     }
 
-    public float getFloat (DwarfDie varDieP, long offset)
+    public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getFloat(addr + offset);
     }
 
-    public void putFloat (DwarfDie varDieP, long offset, Value v)
+    public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putFloat(addr + offset, v.getFloat());
     }
 
-    public double getDouble (DwarfDie varDieP, long offset)
+    public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       return buffer.getDouble(addr + offset);
     }
 
-    public void putDouble (DwarfDie varDieP, long offset, Value v)
+    public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long addr = getBufferAddr(varDieP);
       buffer.putDouble(addr + offset, v.getDouble());
@@ -366,31 +352,18 @@ class DebugInfoEvaluator
   /**
    * Access by DW_FORM_data. Typically this is a location list.
    */
-  class AccessDW_FORM_data
+  class AccessRegisters
       implements VariableAccessor
   {
-    private boolean succeeded = false;
-
-    public boolean isSuccessful ()
-    {
-      return succeeded;
-    }
-
-    public void setSuccessful (boolean b)
-    {
-      succeeded = b;
-    }
-
-    public long getAddr (String s)
+    public long getAddr (String s) throws NameNotFoundException
     {
       return 0;
     }
 
-    private long getReg (DwarfDie varDieP)
+    private long getReg (DwarfDie varDieP) throws NameNotFoundException
     {
       long pc;
       int[] x86regnumbers = { 0, 2, 1, 3, 7, 6, 4, 5 };
-      long reg = 0;
       Isa isa;
 
       if (currentFrame.getInner() == null)
@@ -400,89 +373,97 @@ class DebugInfoEvaluator
 
       pc = currentFrame.getAdjustedAddress();
       List ops = varDieP.getFormData(pc);
-      
-      if (ops.size() == 0 ||
-          ((DwarfDie.DwarfOp)ops.get(0)).operator == -1)
-        return 0;
-      
-      reg = ((DwarfDie.DwarfOp)ops.get(0)).operator;
-      reg = (reg >= 0x70) ? reg - 0x70 : reg - 0x50;
-      setSuccessful(true);
+      int op = -1;
+
+      if (ops.size() != 0)
+	  op = ((DwarfDie.DwarfOp)ops.get(0)).operator;
+	      
+      if (op == -1 
+	  || (op < DwOpEncodings.DW_OP_reg0_ || op > DwOpEncodings.DW_OP_breg31_))
+	  throw new NameNotFoundException();
+
+      int reg = 0;
+      if (op >= DwOpEncodings.DW_OP_reg0_ && op <= DwOpEncodings.DW_OP_reg31_)
+	  reg = op - DwOpEncodings.DW_OP_reg0_;
+      else if (reg >= DwOpEncodings.DW_OP_breg0_ && reg <= DwOpEncodings.DW_OP_breg31_)
+	  reg = op - DwOpEncodings.DW_OP_breg0_;
+      else
+	  throw new NameNotFoundException();
       if (isa instanceof frysk.proc.IsaIA32)
           reg = x86regnumbers[(int)reg];
       
       return reg;
     }
 
-    public long getLong (DwarfDie varDieP, long offset)
+    public long getLong (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return val;
     }
 
-    public void putLong (DwarfDie varDieP, long offset, Value v)
+    public void putLong (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getLong());
     }
 
-    public int getInt (DwarfDie varDieP, long offset)
+    public int getInt (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (int) val;
     }
 
-    public void putInt (DwarfDie varDieP, long offset, Value v)
+    public void putInt (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getInt());
     }
 
-    public short getShort (DwarfDie varDieP, long offset)
+    public short getShort (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (short) val;
     }
 
-    public void putShort (DwarfDie varDieP, long offset, Value v)
+    public void putShort (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getShort());
     }
 
-    public byte getByte (DwarfDie varDieP, long offset)
+    public byte getByte (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       return (byte) val;
     }
 
-    public void putByte (DwarfDie varDieP, long offset, Value v)
+    public void putByte (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, v.getByte());
     }
 
-    public float getFloat (DwarfDie varDieP, long offset)
+    public float getFloat (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       float fval = Float.intBitsToFloat((int)val);
       return fval;
     }
 
-    public void putFloat (DwarfDie varDieP, long offset, Value v)
+    public void putFloat (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, (long) v.getFloat());
     }
 
-    public double getDouble (DwarfDie varDieP, long offset)
+    public double getDouble (DwarfDie varDieP, long offset) throws NameNotFoundException
     {
       long val = swapBytes(currentFrame.getReg(getReg(varDieP)));
       double dval = Double.longBitsToDouble(val);
       return dval;
     }
 
-    public void putDouble (DwarfDie varDieP, long offset, Value v)
+    public void putDouble (DwarfDie varDieP, long offset, Value v) throws NameNotFoundException
     {
       long reg = getReg(varDieP);
       currentFrame.setReg(reg, (long) v.getDouble());
@@ -495,7 +476,7 @@ class DebugInfoEvaluator
    * @param s
    * @return DwarfDie
    */
-  private DwarfDie getDie (String s)
+  private DwarfDie getDie (String s) throws NameNotFoundException
   {
     Dwfl dwfl;
     DwarfDie[] allDies;
@@ -535,6 +516,7 @@ class DebugInfoEvaluator
   private ArrayType getArrayType (DwarfDie type, DwarfDie subrange)
     {
       int elementCount = 1;
+      System.out.println("die=" + Long.toHexString(type.getOffset()) + " tag=" + Long.toHexString(type.getTag()) + " "+ type.getName());
       ArrayList dims = new ArrayList();
       while (subrange != null)
 	{
@@ -613,10 +595,13 @@ class DebugInfoEvaluator
   private ClassType getClassType (DwarfDie classDie, String name)
   {
     int typeSize = 0;
-    DwarfDie member = classDie.getChild();
+    System.out.println("die=" + Long.toHexString(classDie.getOffset()) + " tag=" + Long.toHexString(classDie.getTag()) + " " + classDie.getName());
     ClassType classType = new ClassType(task.getIsa().getByteOrder(), name);
-    while (member != null)
+    for (DwarfDie member = classDie.getChild();
+    	 member != null;
+    	 member = member.getSibling())
       {
+	System.out.println("member=" + Long.toHexString(member.getOffset()) + " tag=" + Long.toHexString(member.getTag()) + " " + member.getName());
         long offset;
         boolean haveTypeDef;
         try
@@ -636,19 +621,21 @@ class DebugInfoEvaluator
           haveTypeDef = true;
         else
           haveTypeDef = false;
-        typeSize = (int)offset + BaseTypes.getTypeSize(member.getUltimateType().getBaseType());
+        
+        if (memberType != null)
+          typeSize = (int)offset + BaseTypes.getTypeSize(memberType.getBaseType());
         switch (memberType.getBaseType())
         {
         case BaseTypes.baseTypeByte:
         case BaseTypes.baseTypeUnsignedByte:
           classType.addMember(fetchType(haveTypeDef, byteType, dieType.getName()),
                               member.getName(), offset, 0);
-          break;
+          continue;
         case BaseTypes.baseTypeShort:
         case BaseTypes.baseTypeUnsignedShort:
           classType.addMember(fetchType(haveTypeDef, shortType, dieType.getName()),
                               member.getName(), offset, 0);
-          break;
+          continue;
         case BaseTypes.baseTypeInteger:
         case BaseTypes.baseTypeUnsignedInteger:
           type = fetchType(haveTypeDef, intType, dieType.getName());
@@ -664,38 +651,52 @@ class DebugInfoEvaluator
               mask = (0xffffffff >>> (byteSize * 8 - bitSize) << (4 * 8 - bitOffset - bitSize));
             }
           classType.addMember(type, member.getName(), offset, mask);
-          break;
+          continue;
         case BaseTypes.baseTypeLong:
         case BaseTypes.baseTypeUnsignedLong:
           classType.addMember(fetchType(haveTypeDef, longType, dieType.getName()),
                               member.getName(), offset, 0);
-          break;
+          continue;
         case BaseTypes.baseTypeFloat:
           classType.addMember(fetchType(haveTypeDef, floatType, dieType.getName()),
                               member.getName(), offset, 0);
-          break;
+          continue;
         case BaseTypes.baseTypeDouble:
           classType.addMember(fetchType(haveTypeDef, doubleType, dieType.getName()),
                               member.getName(), offset, 0);
-          break;
+          continue;
         }
         
-        if (memberType.getTag() == DwTagEncodings.DW_TAG_structure_type_)
-          {
-            ClassType memberClassType = getClassType(memberType, member.getType().getName());
-            memberClassType.setTypedef(haveTypeDef);
-            typeSize += memberClassType.getSize();
-            typeSize += 4 - (typeSize % 4);             // round up to mod 4
-            classType.addMember(memberClassType, member.getName(), offset, 0);
-          }
+	switch (memberType.getTag())
+	{
+	case DwTagEncodings.DW_TAG_structure_type_:
+	{
+          ClassType memberClassType = getClassType(memberType, dieType.getName());
+          memberClassType.setTypedef(haveTypeDef);
+          typeSize += memberClassType.getSize();
+          typeSize += 4 - (typeSize % 4);             // round up to mod 4
+          classType.addMember(memberClassType, member.getName(), offset, 0);
+          continue;
+	}
         
-        if (memberType.getTag() == DwTagEncodings.DW_TAG_array_type_)
+	case DwTagEncodings.DW_TAG_inheritance_:
+        {
+          ClassType memberClassType = getClassType(memberType, dieType.getName());
+          typeSize += memberClassType.getSize();
+          typeSize += 4 - (typeSize % 4);             // round up to mod 4
+          classType.addMember(memberClassType, member.getName(), offset, 0);
+          classType.setBaseClass();
+          continue;
+        }
+
+        case DwTagEncodings.DW_TAG_array_type_:
         {
           ArrayType memberArrayType = getArrayType(memberType, memberType.getChild());
           typeSize += memberArrayType.getSize();
           classType.addMember(memberArrayType, member.getName(), offset, 0);
+          continue;
         }
-        member = member.getSibling();
+	}
       }
 
     typeSize += 4 - (typeSize % 4);             // round up to mod 4
@@ -709,9 +710,9 @@ class DebugInfoEvaluator
    * 
    * @see frysk.expr.CppSymTab#put(java.lang.String, frysk.lang.Value)
    */
-  public void put (String s, Value v)
+  public void put (String s, Value v) throws NameNotFoundException
   {
-    VariableAccessor[] variableAccessor = { new AccessDW_FORM_block()
+    VariableAccessor[] variableAccessor = { new AccessMemory()
     // new AccessDwOpData()
     };
     DwarfDie varDie = getDie(s);
@@ -758,7 +759,7 @@ class DebugInfoEvaluator
   }
 
 
-  public Value get (String s)
+  public Value get (String s) throws NameNotFoundException
   {
     DwarfDie varDie = getDie(s);
     if (varDie == null)
@@ -771,10 +772,10 @@ class DebugInfoEvaluator
    * Returns the Value associated with the given DwarfDie.
    * @see frysk.expr.CppSymTab#get(java.lang.String)
    */
-  public Value get (DwarfDie varDie)
+  public Value get (DwarfDie varDie) throws NameNotFoundException
   {
-    VariableAccessor[] variableAccessor = { new AccessDW_FORM_block(),
-                                           new AccessDW_FORM_data() };
+    VariableAccessor[] variableAccessor = { new AccessMemory(),
+                                           new AccessRegisters() };
     ByteOrder byteorder = task.getIsa().getByteOrder();
 
     if (varDie == null)
@@ -795,8 +796,6 @@ class DebugInfoEvaluator
             case BaseTypes.baseTypeUnsignedLong:
             {
               long longVal = variableAccessor[i].getLong(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newLongValue(longType, s, longVal);
             }
             case BaseTypes.baseTypeInteger:
@@ -804,38 +803,28 @@ class DebugInfoEvaluator
             {
         	
               int intVal = variableAccessor[i].getInt(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newIntegerValue(intType, s, intVal);
             }
             case BaseTypes.baseTypeShort:
             case BaseTypes.baseTypeUnsignedShort:
             {
               short shortVal = variableAccessor[i].getShort(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newShortValue(shortType, s, shortVal);
             }
             case BaseTypes.baseTypeByte:
             case BaseTypes.baseTypeUnsignedByte:
             {
               byte byteVal = variableAccessor[i].getByte(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newByteValue(byteType, s, byteVal);
             }
             case BaseTypes.baseTypeFloat:
             {
               float floatVal = variableAccessor[i].getFloat(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newFloatValue(floatType, s, floatVal);
             }
             case BaseTypes.baseTypeDouble:
             {
               double doubleVal = variableAccessor[i].getDouble(varDie, 0);
-              if (variableAccessor[i].isSuccessful() == false)
-                continue;
               return ArithmeticType.newDoubleValue(doubleType, s, doubleVal);
             }
             }
@@ -899,6 +888,9 @@ class DebugInfoEvaluator
             }
             }
           }
+	catch (NameNotFoundException ignore)
+	{
+	}
         catch (Errno ignore)
           {
           }
@@ -906,7 +898,7 @@ class DebugInfoEvaluator
     return null;
   }
     
-  public Value get (ArrayList components)
+  public Value get (ArrayList components) throws NameNotFoundException
   {
     String s = (String)components.get(0);
     DwarfDie varDie = getDie(s);
@@ -922,13 +914,13 @@ class DebugInfoEvaluator
       return null;
   }
   
-  public Value getAddress (String s)
+  public Value getAddress (String s) throws NameNotFoundException
   {
-    AccessDW_FORM_block access = new AccessDW_FORM_block();
+    AccessMemory access = new AccessMemory();
     return ArithmeticType.newLongValue(longType, access.getAddr(s)); 
   }
   
-  public Value getMemory (String s)
+  public Value getMemory (String s) throws NameNotFoundException
   {     
     ByteOrder byteorder = task.getIsa().getByteOrder();
     DwarfDie varDie = getDie(s);
@@ -937,7 +929,7 @@ class DebugInfoEvaluator
       return (null);
     
     DwarfDie type = varDie.getUltimateType();
-    AccessDW_FORM_block access = new AccessDW_FORM_block();
+    AccessMemory access = new AccessMemory();
     long addr = access.getAddr(s); 
     long addrIndirect = buffer.getLong(addr);
     

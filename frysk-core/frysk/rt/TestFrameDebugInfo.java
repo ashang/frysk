@@ -41,6 +41,7 @@
 package frysk.rt;
 
 import java.util.logging.Logger;
+import javax.naming.NameNotFoundException;
 
 import lib.dw.DwTagEncodings;
 import lib.dw.DwarfDie;
@@ -121,7 +122,8 @@ public class TestFrameDebugInfo
     
   }
   
-  public void testValues(){
+  public void testValues() throws NameNotFoundException
+  {
       
       if(brokenX86XXX(4699)){
 	  return;

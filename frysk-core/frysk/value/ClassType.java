@@ -59,6 +59,8 @@ public class ClassType
   ArrayList offsets;	// Long offset into class
   
   ArrayList masks;	// Integer mask for bitfields
+  
+  ArrayList baseClass;
 
   /**
    * Iterate through the class types.
@@ -234,6 +236,7 @@ public class ClassType
     names = new ArrayList();
     offsets = new ArrayList();
     masks = new ArrayList();
+    baseClass = new ArrayList();
   }
 
   public void addMember (Type member, String name, long offset, int mask)
@@ -242,8 +245,14 @@ public class ClassType
     names.add(name);
     offsets.add(new Long(offset));
     masks.add(new Integer(mask));
+    baseClass.add(new Boolean(false));
   }
 
+  public void setBaseClass ()
+  {
+    baseClass.add(new Boolean(true));
+  }
+  
   public void setSize (int size)
   {
     this.size = size;
@@ -440,4 +449,5 @@ public class ClassType
   {
     throw (new InvalidOperatorException());
   }
+
 }

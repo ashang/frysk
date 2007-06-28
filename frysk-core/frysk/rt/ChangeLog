@@ -1,3 +1,8 @@
+2007-06-28  Stan Cox  <scox@redhat.com>
+
+	* TestFrameDebugInfo.java (testValue): Handle NameNotFoundException.
+	* Variable (getValue): Handle NameNotFoundException.
+	
 2007-06-28  Mike Cvet  <mcvet@redhat.com>
 
 	* TestStepping.java (AttachedObserver.updateAttached): Dynamically

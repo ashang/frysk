@@ -1,3 +1,8 @@
+2007-06-28  Stan Cox  <scox@redhat.com>
+
+	* ClassType.java (baseClass): New.
+	(setBaseClass): New.
+
 2007-06-19  Stan Cox  <scox@redhat.com>
 
 	* ArithmeticType.java (logicalNegation): New.

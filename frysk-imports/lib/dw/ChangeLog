@@ -1,3 +1,10 @@
+2007-06-28  Stan Cox  <scox@redhat.com>
+
+	* cni/DwarfDie.cxx (getOffset): New.
+	* cni/DwarfDie.cxx (get_offset): New.
+	* DwAtEncodings.shenum: List all Dwarf attributes.
+	* DwOpEncodings.shenum: List all Dwarf operators.
+
 2007-06-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DwarfDie.java (getFrameBase): Added check and initialization

@@ -1,3 +1,14 @@
+2007-06-28  Stan Cox  <scox@redhat.com>
+
+	* DebugInfo.java (get): Handle NameNotFoundException.
+	* DebugInfoEvaluator.java (VariableAccessor): Remove isSuccessful.
+	Add NameNotFoundException and handle it in all callers.
+	(AccessMemory.getBufferAddr): Throw NameNotFoundException.
+	Check register encoding via DwOpEncodings.a
+	(AccessRegisters.getReg): Throw NameNotFoundException.
+	Check register encoding via DwOpEncodings.a
+	(getClassType): Handle DW_TAG_inheritance.
+	
 2007-06-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DebugInfoEvaluator.java (get): New function.

@@ -40,6 +40,7 @@
 
 package frysk.rt;
 
+import javax.naming.NameNotFoundException;
 import lib.dw.DwarfDie;
 import frysk.debuginfo.DebugInfo;
 import frysk.stack.Frame;
@@ -99,7 +100,8 @@ public class Variable
     return typeDie;
   }
 
-  public Value getValue(Frame frame){
+  public Value getValue(Frame frame) throws NameNotFoundException
+  {
       DebugInfo debugInfo = new DebugInfo(frame);
       return debugInfo.get(getVariableDie());
   }

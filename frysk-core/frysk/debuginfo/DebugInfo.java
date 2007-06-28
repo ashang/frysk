@@ -507,7 +507,7 @@ public class DebugInfo
        return debugInfoEvaluator[0].getValue(die);
      } 
 
-     public Value get(DwarfDie die)
+     public Value get(DwarfDie die) throws NameNotFoundException
      {
        return debugInfoEvaluator[0].get(die);
      } 

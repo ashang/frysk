@@ -271,6 +271,14 @@ abstract public class DwarfDie
   }
 
   /**
+   * @return The offset for this die.
+   */
+  public int getOffset ()
+  {
+    return get_offset(this.getPointer());
+  }
+
+  /**
    * @return The child for the current die.
    */
   public DwarfDie getChild ()
@@ -446,6 +454,8 @@ abstract public class DwarfDie
   
   private native int get_attr_constant (long addr, int attr);
   
+  private native int get_offset (long addr);
+
   // Package access for DwarfDieFactory
   static native int get_tag (long var_die);
   
