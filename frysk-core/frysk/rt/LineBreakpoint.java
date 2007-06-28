@@ -43,6 +43,7 @@ package frysk.rt;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
@@ -91,28 +92,30 @@ public class LineBreakpoint
 
   public long getRawAddress(Object addr)
   {
-    DwflLine dwflLine = (DwflLine)addr;
-    return dwflLine.getAddress();
+    return ((Long)addr).longValue();
   }
 
-  public LinkedList getRawAddressesForProc(Proc proc)
-  {
-    LinkedList result = DwflFactory.createDwfl(proc).getLineAddresses(fileName,
-								   lineNumber,
-								   column);
-    if (logger == null)
-      logger = LogManager.getLogManager().getLogger("frysk");
-    if (logger != null && logger.isLoggable(Level.FINEST) && result != null)
-      {
-	Iterator iterator = result.iterator();
-	int i;
-	for (i = 0; iterator.hasNext(); i++)
-	  {
-	    logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
-			"dwfl[" + i + "]: {0}", iterator.next());
-	  }
+  public LinkedList getRawAddressesForProc(Proc proc) {
+      LinkedList dies
+          = DwflFactory.createDwfl(proc).getLineAddresses(fileName, lineNumber,
+                                                          column);
+      LinkedList result = new LinkedList();
+      ListIterator iterator = dies.listIterator();
+      while (iterator.hasNext()) {
+          result.add(new Long(((DwflLine)iterator.next()).getAddress()));
       }
-    return result;
+      
+      if (logger == null)
+          logger = LogManager.getLogManager().getLogger("frysk");
+      if (logger != null && logger.isLoggable(Level.FINEST) && result != null) {
+          Iterator iter = result.iterator();
+          int i;
+          for (i = 0; iter.hasNext(); i++) {
+              logger.logp(Level.FINEST, "LineBreakpoint", "LineBreakpoint",
+                          "dwfl[" + i + "]: {0}", iter.next());
+          }
+      }
+      return result;
   }
 
   public PrintWriter output(PrintWriter writer)

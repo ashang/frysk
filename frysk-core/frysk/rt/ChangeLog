@@ -1,3 +1,10 @@
+2007-06-28  Tim Moore  <timoore@redhat.com>
+
+	* LineBreakpoint.java (getRawAddress, getRawAddressesForProc):
+	Simplify by putting only addresses in the raw address list.
+	* FunctionBreakpoint.java (getRawAddress, getRawAddressesForProc):
+	Simplify by putting only addresses in the raw address list.
+
 2007-06-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Scope.java (toPrint): Added line number to the unhandled type

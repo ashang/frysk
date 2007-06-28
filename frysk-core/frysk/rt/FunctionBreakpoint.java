@@ -43,6 +43,7 @@ package frysk.rt;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
@@ -83,7 +84,11 @@ public class FunctionBreakpoint
 	    else
 		addrs = new LinkedList(entryAddrs);
 	    if (inlineDies != null) {
-		addrs.addAll(inlineDies);
+                ListIterator iterator = inlineDies.listIterator();
+                while (iterator.hasNext()) {
+                    addrs.add(new Long(((InlinedSubroutine)iterator.next())
+                                       .getLowPC()));
+                }
 		containsInlineInstances = true;
 	    }
 	    return addrs;
@@ -95,12 +100,7 @@ public class FunctionBreakpoint
 
   public long getRawAddress(Object addr)
   {
-    if (addr instanceof Long)
       return ((Long)addr).longValue();
-    else if (addr instanceof InlinedSubroutine)
-      return ((InlinedSubroutine)addr).getLowPC();
-    else
-      throw new RuntimeException("Can't get address from " + addr.toString());
   }
 
   public String getName()
