@@ -166,6 +166,8 @@ public class CreateFryskSessionDruid
     public static final WarningType NORMAL = new WarningType();
     
     public static final WarningType NAME_ALREADY_USED =  new WarningType();
+    
+    public static final WarningType CHOOSE_NAME =  new WarningType();
   }
   /**
          * Create a new instance of the Session Assistant
@@ -939,6 +941,12 @@ public class CreateFryskSessionDruid
     String proposedName = nameEntry.getText();
     
     Session theSessionUsingProposedName = SessionManager.theManager.getSessionByName(proposedName);
+    
+    if(proposedName.trim().length() == 0){
+	setWarning(WarningType.CHOOSE_NAME);
+	return false;
+    }
+    
     if (theSessionUsingProposedName != null && theSessionUsingProposedName != SessionManager.theManager.getCurrentSession()){
       setWarning(WarningType.NAME_ALREADY_USED);
       return false;
@@ -1092,7 +1100,12 @@ public class CreateFryskSessionDruid
       warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
       return;
     }
-    
+
+    if(warning == WarningType.CHOOSE_NAME){
+	warningLabel.setMarkup("<b>Warning:</b> You must choose a session name.");
+	warningIcon.set(GtkStockItem.DIALOG_WARNING, IconSize.BUTTON);
+	return;
+    }   
   }
   
   public void setTitle(String string){

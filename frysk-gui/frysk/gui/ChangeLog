@@ -1,5 +1,12 @@
 2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (WarningType.CHOOSE_NAME): New
+	warining type.
+	(validateSessionName): Added checking for empty session name.
+	(setWarning): Added handling for new warining type.
+	
+2007-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* druid/CreateFryskSessionDruid.java (validateSessionName): replaced
 	nameEntry.getName() with nameEntry.getText().
 	Made the name entry change cause a page recheck instead of a name only
