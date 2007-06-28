@@ -47,7 +47,7 @@ import java.util.Observer;
 
 import frysk.Config;
 import frysk.proc.Action;
-//import frysk.proc.Isa;
+import frysk.proc.Isa;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.TaskObserver;
@@ -100,6 +100,9 @@ public class TestStepping extends TestLib
   protected static final int SIG_RAISE_EXIT = 23;
   
   private LockObserver lock;
+  
+  int asmTestStartVal = 0;
+  int asmTestFinishVal = 0;
   
   private AttachedObserver attachedObserver;
   
@@ -334,7 +337,7 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    asmTestLineNumber = 88;
+//    asmTestStartVal = 74;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_ENTRY;
@@ -363,7 +366,7 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    asmTestLineNumber = 69;
+//    asmTestStartVal = 56;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_RETURN;
@@ -392,7 +395,7 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    asmTestLineNumber = 88;
+//    asmTestStartVal = 74;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_STEP_OVER;
@@ -421,7 +424,7 @@ public class TestStepping extends TestLib
     this.lineMap = new HashMap();
     
     lock = new LockObserver();
-    asmTestLineNumber = 67;
+//    asmTestStartVal = 49;
     
     testState = INITIAL;
     test = ASM_STEP_FUNC_STEP_OUT;
@@ -596,7 +599,6 @@ public class TestStepping extends TestLib
   
   public synchronized void assertions ()
   {
-    
     if (this.testState == INITIAL)
       {
         int lineNum;
@@ -743,7 +745,7 @@ public class TestStepping extends TestLib
             break;
             
           case ASM_STEP_FUNC_ENTRY:
-            if (line.getLine() == asmTestLineNumber)
+            if (line.getLine() == asmTestStartVal)
               {
                 this.testState = FINAL_STEP;
               }
@@ -751,7 +753,7 @@ public class TestStepping extends TestLib
             break;
             
           case ASM_STEP_FUNC_RETURN:
-              if (line.getLine() == asmTestLineNumber)
+              if (line.getLine() == asmTestStartVal)
                 {
                   this.testState = FINAL_STEP;
                 }
@@ -759,7 +761,7 @@ public class TestStepping extends TestLib
               break;
               
           case ASM_STEP_FUNC_STEP_OVER:
-              if (line.getLine() == asmTestLineNumber)
+              if (line.getLine() == asmTestStartVal)
                 {
                   this.testState = FINAL_STEP;
                   se.stepOver(myTask, sFrame);
@@ -769,7 +771,7 @@ public class TestStepping extends TestLib
               break;
               
           case ASM_STEP_FUNC_STEP_OUT:
-              if (line.getLine() == asmTestLineNumber)
+              if (line.getLine() == asmTestStartVal)
                 {
                   this.testState = FINAL_STEP;
                   se.stepOut(myTask, sFrame);
@@ -889,27 +891,27 @@ public class TestStepping extends TestLib
             return;
             
           case ASM_STEP_FUNC_ENTRY:
-            assertTrue("line number", lineNr == 63);
+            assertTrue("line number", lineNr == asmTestFinishVal);
             Manager.eventLoop.requestStop();
             return;
             
           case ASM_STEP_FUNC_RETURN:
-              if (lineNr == 69)
+              if (lineNr == asmTestStartVal)
               {
         	  se.stepInstruction(myTask);
         	  return;
               }
-              assertTrue("line number", lineNr == 90);
+              assertTrue("line number", lineNr == asmTestFinishVal);
               Manager.eventLoop.requestStop();
               return;
               
           case ASM_STEP_FUNC_STEP_OVER:
-              assertTrue("line number", lineNr == 90);
+              assertTrue("line number", lineNr == asmTestFinishVal);
               Manager.eventLoop.requestStop();
               return;
               
           case ASM_STEP_FUNC_STEP_OUT:
-              assertTrue("line number", lineNr == 90);
+              assertTrue("line number", lineNr == asmTestFinishVal);
               Manager.eventLoop.requestStop();
               return;
             
@@ -941,7 +943,6 @@ public class TestStepping extends TestLib
       }
   }
   
-  int asmTestLineNumber = 0;
   protected class AttachedObserver implements TaskObserver.Attached
   {
     public void addedTo (Object o)
@@ -953,54 +954,66 @@ public class TestStepping extends TestLib
     {
       myTask = task;
       myProc = task.getProc();
-
-//      if (testState == ASM_STEP_FUNC_ENTRY)
-//        {
-//          File f = new File(
-//                            Config.getRootSrcDir()
-//                                + "/frysk-core/frysk/pkglibdir/funit-frameinfo-looper.S");
-//
-//          BufferedReader br = null;
-//          try
-//            {
-//              br = new BufferedReader(new FileReader(f));
-//            }
-//          catch (IOException ioe)
-//            {
-//              ioe.printStackTrace();
-//            }
-//
-//          String bookmark = null;
-//
-//          Isa isa = task.getIsa();
-//          if (isa instanceof frysk.proc.IsaIA32)
-//            {
-//              bookmark = "#i386_func_entry_test";
-//            }
-//          else if (isa instanceof frysk.proc.IsaX8664)
-//            {
-//              bookmark = "#x86_64_func_entry_test";
-//            }
-//
-//          int lineNum = 0;
-//
-//          try
-//            {
-//              String line = br.readLine();
-//              while (line != null)
-//                {
-//                  ++lineNum;
-//                  if (line.indexOf(bookmark) >= 0)
-//                    break;
-//                }
-//            }
-//          catch (IOException ioe)
-//            {
-//              ioe.printStackTrace();
-//            }
-//          
-//          asmTestLineNumber = lineNum;
-//        }
+      
+      Isa isa = task.getIsa();
+      
+      switch (test)
+      {
+      	case ASM_STEP_FUNC_ENTRY:
+      	    if (isa instanceof frysk.proc.IsaIA32)
+      	    {
+      		asmTestStartVal = 210;
+      		asmTestFinishVal = 184;
+      	    }
+      	    else
+      	    {
+      		asmTestStartVal = 74;
+      		asmTestFinishVal = 49;
+      	    }
+      	    break;
+      	
+      	case ASM_STEP_FUNC_RETURN:
+      	    if (isa instanceof frysk.proc.IsaIA32)
+      	    {
+      		asmTestStartVal = 195;
+      		asmTestFinishVal = 211;
+      	    }
+      	    else
+      	    {
+      		asmTestStartVal = 56;
+      		asmTestFinishVal = 76;
+      	    }
+      	    break;
+      	    
+      	case ASM_STEP_FUNC_STEP_OVER:
+      	    if (isa instanceof frysk.proc.IsaIA32)
+      	    {
+      		asmTestStartVal = 210;
+      		asmTestFinishVal = 211;
+      	    }
+      	    else
+      	    {
+      		asmTestStartVal = 74;
+      		asmTestFinishVal = 76;
+      	    }
+      	    break;
+      	    
+      	case ASM_STEP_FUNC_STEP_OUT:
+      	    if (isa instanceof frysk.proc.IsaIA32)
+      	    {
+      		asmTestStartVal = 184;
+      		asmTestFinishVal = 211;
+      	    }
+      	    else
+      	    {
+      		asmTestStartVal = 49;
+      		asmTestFinishVal = 76;
+      	    }
+      	    break;
+      	    
+      	    default:
+      		break;
+      }
 
       myTask.requestDeleteAttachedObserver(this);
       return Action.CONTINUE;
@@ -1034,7 +1047,7 @@ public class TestStepping extends TestLib
     public synchronized void update (Observable o, Object arg)
     {
       TaskStepEngine tse = (TaskStepEngine) arg;
-      // System.err.println("LockObserver.update " + arg + " " + initial);
+//       System.err.println("LockObserver.update " + arg + " " + initial);
       if (!tse.getState().isStopped())
         return;
 
