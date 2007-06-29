@@ -21,6 +21,7 @@ struct proc_dir_entry * de_utrace_control
 
 typedef struct _utraced_info_s {
   long utraced_pid;
+  long exec_quiesce;
   struct utrace_attached_engine * utraced_engine;
   struct _utraced_info_s * next;
   struct _utraced_info_s * prev;
@@ -87,7 +88,8 @@ remove_utraced_info_entry (utracing_info_s * utracing_info_entry,
 
 int create_utraced_info_entry (utracing_info_s * utracing_info_entry,
 			       long utraced_pid,
-			       struct utrace_attached_engine * utraced_engine);
+			       struct utrace_attached_engine * utraced_engine,
+			       long exec_quiesce);
 
 int if_file_read ( char *buffer,
 		   char **buffer_location,

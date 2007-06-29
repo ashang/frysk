@@ -1,3 +1,11 @@
+Thu Jun 28 23:34:32 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-base.c: Added support for selectively execing a pgm and
+	immediately quiescing it, or execing it and running it.
+	* utracer-if-io.c: Same as above.
+	* utracer-private.h: Same as above.
+	* utracer.h: Same as above.
+
 Thu Jun 28 20:50:15 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-if-io.c: Fixed fork/attach/exec--it forks, attaches, and

@@ -45,13 +45,15 @@ get_task (long utraced_pid)
 int
 create_utraced_info_entry (utracing_info_s * utracing_info_entry,
 			   long utraced_pid,
-			   struct utrace_attached_engine * utraced_engine)
+			   struct utrace_attached_engine * utraced_engine,
+			   long exec_quiesce)
 {
   if (utracing_info_entry) {
     utraced_info_s  * utraced_info_new =
       kmalloc (sizeof(utraced_info_s), GFP_KERNEL);
     if (!utraced_info_new) return -ENOMEM;
 
+    utraced_info_new->exec_quiesce = exec_quiesce;
     utraced_info_new->utraced_pid = utraced_pid;
     utraced_info_new->utraced_engine = utraced_engine;
 

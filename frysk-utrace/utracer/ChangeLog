@@ -1,3 +1,9 @@
+Thu Jun 28 23:30:55 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-utrace-if.c: Added support for selectively execing a pgm and
+	immediately quiescing it, or execing it and running it.
+	* udb.c: Same as above.
+
 Thu Jun 28 10:41:46 2007  Chris Moller  <cmoller@redhat.com>
 
 	* OVERVIEW: Added to provide of utracer and udb.
@@ -8,7 +14,7 @@ Thu Jun 28 10:41:46 2007  Chris Moller  <cmoller@redhat.com>
 	* udb-text-ui.c: Added a switchpid command to verify that the
 	specified PID exists, then switch to it if it does.
 	* udb.c: Added support for forking/attaching/execing a
-	command-line specified program (DEVELOPMENTAL--not working yet).
+	command-line specified program.
 
 Wed Jun 27 23:27:03 2007  Chris Moller  <cmoller@redhat.com>
 

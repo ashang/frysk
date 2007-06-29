@@ -43,7 +43,7 @@ watch_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    utrace_attach_if (pid, 0);
+    utrace_attach_if (pid, 0, 0);
   }
   else fprintf (stderr, "\twatch requires an argument\n");
   return 1;
@@ -56,7 +56,7 @@ attach_fcn(char ** saveptr)
   char * pid_c = strtok_r (NULL, " \t", saveptr);
   if (pid_c) {
     pid = atol (pid_c);
-    utrace_attach_if (pid, 1);
+    utrace_attach_if (pid, 1, 0);
   }
   else fprintf (stderr, "\tattach requires an argument\n");
   return 1;

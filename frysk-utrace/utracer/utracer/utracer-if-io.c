@@ -78,22 +78,38 @@ report_vfork_done (struct utrace_attached_engine *engine,
 
 static u32
 report_exec (struct utrace_attached_engine *engine,
-	     struct task_struct *tsk,
+	     struct task_struct * tsk,
 	     const struct linux_binprm *bprm,
 	     struct pt_regs *regs)
 {
-  unsigned long flags;
-  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
-  	 (bprm->filename) ? bprm->filename : "unk",
-  	 (bprm->interp) ? bprm->interp : "unk");
-  flags = engine->flags |  UTRACE_ACTION_QUIESCE;
-  utrace_set_flags(tsk,engine, flags);
-  return UTRACE_ACTION_QUIESCE;
+  //  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
+  //  	 (bprm->filename) ? bprm->filename : "unk",
+  //  	 (bprm->interp) ? bprm->interp : "unk");
+  utracing_info_s * utracing_info_found = (void *)engine->data;
+  u32 rc = UTRACE_ACTION_RESUME;
+  
+  if (utracing_info_found) {
+    utraced_info_s * utraced_info_found =
+      lookup_utraced_info (utracing_info_found, (long)tsk->pid);
+    if (utraced_info_found) {
+      unsigned long flags;
+      if (utraced_info_found->exec_quiesce) {
+	flags = engine->flags |  UTRACE_ACTION_QUIESCE;
+	rc = UTRACE_ACTION_QUIESCE;
+      }
+      else {
+	flags = engine->flags &  ~UTRACE_ACTION_QUIESCE;
+	rc = UTRACE_ACTION_RESUME;
+      }
+      utrace_set_flags(tsk, engine, flags);
+    }
+  }
+  return rc;
 }
 
 static u32
 report_exit (struct utrace_attached_engine *engine,
-	     struct task_struct *tsk,
+	     struct task_struct * tsk,
 	     long orig_code, long *code)
 {
   utracing_info_s * utracing_info_found = (void *)engine->data;
@@ -162,7 +178,8 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
 };
 
 static int
-attach_cmd_fcn (long utracing_pid, long utraced_pid, long quiesce)
+attach_cmd_fcn (long utracing_pid, long utraced_pid,
+		long quiesce, long exec_quiesce)
 {
   int rc;
   struct task_struct * task = get_task (utraced_pid);
@@ -197,7 +214,8 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid, long quiesce)
 	engine->data = (unsigned long)utracing_info_found;
 	rc = create_utraced_info_entry (utracing_info_found,
 					utraced_pid,
-					engine);
+					engine,
+					exec_quiesce);
 	if (0 != rc) utrace_detach(task, engine);
       }
       else rc = -UTRACER_EENGINE;
@@ -294,7 +312,8 @@ if_file_write (struct file *file,
       int rc =
 	attach_cmd_fcn (attach_cmd.utracing_pid,
 			attach_cmd.utraced_pid,
-			attach_cmd.quiesce);
+			attach_cmd.quiesce,
+			attach_cmd.exec_quiesce);
       if (0 == rc) rc = count;
       return rc;
     }

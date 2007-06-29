@@ -54,6 +54,7 @@ typedef struct {
   long utracing_pid;
   long utraced_pid;
   long quiesce;
+  long exec_quiesce;
 } attach_cmd_s;
 
 typedef struct {

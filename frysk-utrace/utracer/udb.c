@@ -21,8 +21,6 @@
 
 pthread_t resp_listener_thread;
 
-static int unload_module = 1;
-
 extern void * resp_listener (void * arg);
 
 static void
@@ -56,10 +54,17 @@ sigterm_handler (int sig)
   exit (0);			// when nothing else is registered
 }
 
+static int unload_module = 1;
+static int default_quiesce = 1;
+
 static struct option options[] = {
   {"watch",     required_argument, NULL, (int)'w'},
   {"attach",    required_argument, NULL, (int)'a'},
   {"module",    required_argument, NULL, (int)'m'},
+  {"load",      required_argument, NULL, (int)'l'},
+  {"run",       required_argument, NULL, (int)'r'},
+  {"default-quiesce", no_argument, &default_quiesce, 1},
+  {"default-run",     no_argument, &default_quiesce, 0},
   {"no-unload", no_argument, &unload_module, 0},
   {NULL,0, NULL, 0}
 };
@@ -69,12 +74,33 @@ typedef struct {
   long quiesce;
 } pta_s;
 
+typedef struct {
+  char * cmd;
+  long quiesce;
+} ptc_s;
+static pta_s * pids_to_attach = NULL;
+static int nr_pids_to_attach = 0;
+static int max_pids_to_attach = 0;
+static ptc_s * cmds_to_attach = NULL;
+static int nr_cmds_to_attach = 0;
+static int max_cmds_to_attach = 0;
+#define PIDS_TO_ATTACH_INCR	4
+
+static void
+append_cmd (char * oa, long quiesce)
+{
+  fprintf (stderr, "append_cmd \"%s\"\n", oa);
+  if (max_cmds_to_attach <= nr_cmds_to_attach) {
+    max_cmds_to_attach += PIDS_TO_ATTACH_INCR;
+    cmds_to_attach = realloc (cmds_to_attach,
+			      max_cmds_to_attach * sizeof(ptc_s));
+  }
+  cmds_to_attach[nr_cmds_to_attach].quiesce = quiesce;
+  cmds_to_attach[nr_cmds_to_attach++].cmd = strdup (oa);
+}
+
 main (int ac, char * av[])
 {
-  pta_s * pids_to_attach = NULL;
-  int nr_pids_to_attach = 0;
-  int max_pids_to_attach = 0;
-#define PIDS_TO_ATTACH_INCR	4
 
   udb_pid = getpid();
 
@@ -84,7 +110,7 @@ main (int ac, char * av[])
   {
     int run = 1;
     while (1 == run) {
-      int val = getopt_long (ac, av, "a:m:w:", options, NULL);
+      int val = getopt_long (ac, av, "a:m:w:l:r:", options, NULL);
       switch (val) {
       case -1:
 	run = 0;
@@ -108,6 +134,10 @@ main (int ac, char * av[])
 	  pids_to_attach[nr_pids_to_attach++].pid = atol (optarg);
 	}
 	break;
+      case 'r':		// execlp the given pgm and run
+      case 'l':		// execlp the given pgm and quiesce
+	if (optarg) append_cmd (optarg, ('l' == val) ? 1 : 0);
+	break;
       case 0:		// flags already handled--do nothing
 	break;
       case (int)'?':
@@ -117,6 +147,8 @@ main (int ac, char * av[])
       }
     }
   }
+
+  for (;optind < ac; optind++) append_cmd (av[optind], default_quiesce);
   
   if (!utracer_loaded()) load_utracer();
   register_utracer (udb_pid);
@@ -161,34 +193,42 @@ main (int ac, char * av[])
   if (0 < nr_pids_to_attach) {
     int i;
     for (i = 0; i < nr_pids_to_attach; i++)
-      utrace_attach_if (pids_to_attach[i].pid, pids_to_attach[i].quiesce);
+      utrace_attach_if (pids_to_attach[i].pid,
+			pids_to_attach[i].quiesce, 0);
     free (pids_to_attach);
   }
+  
+  {
+    int i;
 
-  for (;optind < ac; optind++) {
-    pid_t child_pid;
+    for (i = 0; i < nr_cmds_to_attach; i++) {
+      pid_t child_pid;
     
-    printf ("loading %s\n", av[optind]);
+      printf ("loading %s\n", cmds_to_attach[i].cmd);
 
-    child_pid = fork();
-    switch (child_pid) {
-    case -1:
-      error (1, errno, "Error forking spawner");
-      break;
-    case 0:       // child
-      {
-	int rc;
-	long cp = (long)getpid();
-	fprintf (stderr, "child pid = %ld\n", cp);
-	utrace_attach_if (cp, 0);
-	rc = execlp (av[optind], av[optind],  NULL);
-	if (-1 == rc)
-          error (1, errno, "Error in spawner execlp");
+      child_pid = fork();
+      switch (child_pid) {
+      case -1:
+	error (1, errno, "Error forking spawner");
+	break;
+      case 0:       // child
+	{
+	  int rc;
+	  long cp = (long)getpid();
+	  fprintf (stderr, "child pid = %ld\n", cp);
+	  utrace_attach_if (cp, 0, cmds_to_attach[i].quiesce);
+	  // utrace_attach_if (cp, 0);
+	  rc = execlp (cmds_to_attach[i].cmd,
+		       cmds_to_attach[i].cmd,
+		       NULL);
+	  if (-1 == rc)
+	    error (1, errno, "Error in spawner execlp");
+	}
+	break;
+      default:      // parent
+	// fixme -- record pid somewhere?
+	break;
       }
-      break;
-    default:      // parent
-      //      utrace_attach_if (child_pid, 1);
-      break;
     }
   }
 
