@@ -333,6 +333,9 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
+    if (brokenXXX(4711))
+	return;
+    
     initial = true;
     this.lineMap = new HashMap();
     
@@ -359,7 +362,7 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
-    if (brokenX86XXX(0))
+    if (brokenXXX(4711))
 	return;
     
     initial = true;
@@ -388,7 +391,7 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
-    if (brokenX86XXX(0))
+    if (brokenXXX(4711))
 	return;
     
     initial = true;
@@ -417,7 +420,7 @@ public class TestStepping extends TestLib
     if (brokenPpcXXX (3277))
       return;
     
-    if (brokenX86XXX(0))
+    if (brokenXXX(4711))
 	return;
     
     initial = true;
