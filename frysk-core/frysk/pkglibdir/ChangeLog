@@ -1,3 +1,7 @@
+2007-06-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* funit-rt-varsegv.c: New test program.
+
 2007-06-28  Mike Cvet  <mcvet@redhat.com>
 
 	* funit-frameinfo-looper.S: Added i386 asm code.

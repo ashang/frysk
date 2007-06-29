@@ -44,9 +44,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 import frysk.Config;
+import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.stack.StackFactory;
 
@@ -71,7 +73,7 @@ public class TestUpdatingDisplayValue extends TestLib
    * Create a display of 'x', then resume/stop the process and see that we get
    * notification of the stop. The Value of x should not change
    */
-  public void testUpdateTaskStopped()
+  public void testTaskStopped()
   {
     BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
@@ -120,7 +122,7 @@ public class TestUpdatingDisplayValue extends TestLib
    * Create a display of 'x', then resume/stop the program in the place where
    * the value of x has changed. We should recieve notification of the event
    */
-  public void testUpdateValueChanged()
+  public void testValueChanged()
   {
     BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
@@ -170,7 +172,7 @@ public class TestUpdatingDisplayValue extends TestLib
    * notification when 'x' goes out of scope do to a function returning
    * normally
    */
-  public void testUpdateUnavailableFuncReturn()
+  public void testFuncReturn()
   {
     BreakpointManager bpManager = createDaemon("funit-rt-varchange");
     
@@ -215,13 +217,13 @@ public class TestUpdatingDisplayValue extends TestLib
     assertFalse("Display is available", uDisp.isAvailable());
   }
   
-  public void testUpdateUnavailableExceptionThrown()
+  public void testExceptionThrown()
   {
     if(brokenXXX(4639))
       return;
   }
   
-  public void testUpdateUnavailableLongJump()
+  public void testLongjmp()
   {
     BreakpointManager bpManager = createDaemon("funit-rt-varlongjmp");
     
@@ -266,10 +268,68 @@ public class TestUpdatingDisplayValue extends TestLib
     assertFalse("Display is available", uDisp.isAvailable());
   }
   
-  public void testUpdateUnavailableTaskDead()
+  public void testTaskDead()
   {
-    if(brokenXXX(4639))
-      return;
+      BreakpointManager bpManager = createDaemon("funit-rt-varsegv");
+      
+      myTask.requestAddTerminatingObserver(new TaskObserver.Terminating() {
+    
+        public void deletedFrom(Object observable) {
+        }
+    
+        public void addedTo(Object observable) {
+        }
+    
+        public void addFailed(Object observable, Throwable w) {
+        }
+    
+        /* When the task dies, stop the event loop */
+        public Action updateTerminating(Task task, boolean signal, int value) {
+            	Manager.eventLoop.requestStop();
+    		return Action.CONTINUE;
+        }
+    
+    });
+      
+      /*
+       * First breakpoint
+       */
+      LineBreakpoint brk1 = 
+        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varsegv.c",
+                                   52, 0);
+      brk1.addObserver(new BreakpointBlocker());
+      bpManager.enableBreakpoint(brk1, myTask);
+      
+      LinkedList list = new LinkedList();
+      list.add(myTask);
+      steppingEngine.continueExecution(list);
+      process.resume();
+      assertRunUntilStop("First breakpoint");
+      
+      UpdatingDisplayValue uDisp = new UpdatingDisplayValue("y", myTask,
+                                                            StackFactory.createFrame(myTask).getFrameIdentifier(),
+                                                            steppingEngine);
+      DisplayObserver obs = new DisplayObserver();
+      uDisp.addObserver(obs);
+      assertTrue("Display is not available", uDisp.isAvailable());
+      
+      /*
+       * Second breakpoint
+       */
+//      LineBreakpoint brk2 =
+//        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varsegv.c",
+//                                    51, 0);
+//      brk2.addObserver(new BreakpointBlocker());
+//      brk2.enableBreakpoint(myTask, steppingEngine);
+      
+      // Run until we hit the second breakpoint
+      list = new LinkedList();
+      list.add(myTask);
+      steppingEngine.continueExecution(list);
+      assertRunUntilStop("Second breakpoint");
+      
+      assertTrue("Observer was not notified", obs.hitOutOfScope);
+      assertFalse("Display is available", uDisp.isAvailable());
   }
   
   private BreakpointManager createDaemon(String program)

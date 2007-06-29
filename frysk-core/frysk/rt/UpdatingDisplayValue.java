@@ -48,7 +48,9 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import frysk.proc.Action;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 import frysk.stack.FrameIdentifier;
 
 /**
@@ -88,6 +90,8 @@ public class UpdatingDisplayValue
       engine.addProc(task.getProc());
     lock = new LockObserver();
     engine.addObserver(lock);
+    
+    task.requestAddTerminatingObserver(new TermObserver());
     
     observers = new LinkedList();
   }
@@ -267,6 +271,21 @@ public class UpdatingDisplayValue
             refresh();
         }
     }
+  }
+  
+  private class TermObserver 
+  	implements TaskObserver.Terminating
+  {
+
+    public Action updateTerminating(Task task, boolean signal, int value) {
+	UpdatingDisplayValue.this.myVar = null;
+	notifyObserversUnavailableOutOfScope();
+	return Action.CONTINUE;
+    }
+    
+    public void addFailed(Object observable, Throwable w) {}
+    public void addedTo(Object observable) {}
+    public void deletedFrom(Object observable) {}
   }
 
 }
