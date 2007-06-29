@@ -1,3 +1,9 @@
+Thu Jun 28 20:50:15 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c: Fixed fork/attach/exec--it forks, attaches, and
+	execs, then quiesces.  (Note to self:  add option to not quiesce for
+	report_syscall_* and other on-the-fly monitoring.)
+
 Thu Jun 28 18:11:58 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-if-io.c: Added support for the switchpid command.

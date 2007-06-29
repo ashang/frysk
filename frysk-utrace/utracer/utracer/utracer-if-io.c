@@ -82,9 +82,12 @@ report_exec (struct utrace_attached_engine *engine,
 	     const struct linux_binprm *bprm,
 	     struct pt_regs *regs)
 {
+  unsigned long flags;
   printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
   	 (bprm->filename) ? bprm->filename : "unk",
   	 (bprm->interp) ? bprm->interp : "unk");
+  flags = engine->flags |  UTRACE_ACTION_QUIESCE;
+  utrace_set_flags(tsk,engine, flags);
   return UTRACE_ACTION_QUIESCE;
 }
 
