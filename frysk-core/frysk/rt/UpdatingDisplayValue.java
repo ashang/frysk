@@ -91,7 +91,7 @@ public class UpdatingDisplayValue
     lock = new LockObserver();
     engine.addObserver(lock);
     
-    task.requestAddTerminatingObserver(new TermObserver());
+    task.requestAddTerminatedObserver(new TermObserver());
     
     observers = new LinkedList();
   }
@@ -273,19 +273,23 @@ public class UpdatingDisplayValue
     }
   }
   
+  /*
+   * When the task dies, let the people watching us know that the value
+   * is no longer available.
+   */
   private class TermObserver 
-  	implements TaskObserver.Terminating
+  	implements TaskObserver.Terminated
   {
-
-    public Action updateTerminating(Task task, boolean signal, int value) {
-	UpdatingDisplayValue.this.myVar = null;
-	notifyObserversUnavailableOutOfScope();
-	return Action.CONTINUE;
-    }
     
     public void addFailed(Object observable, Throwable w) {}
     public void addedTo(Object observable) {}
     public void deletedFrom(Object observable) {}
+
+    public Action updateTerminated(Task task, boolean signal, int value) {
+	UpdatingDisplayValue.this.myVar = null;
+	notifyObserversUnavailableOutOfScope();
+	return Action.CONTINUE;
+    }
   }
 
 }

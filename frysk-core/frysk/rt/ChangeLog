@@ -1,5 +1,9 @@
 2007-06-29  Adam Jocksch  <ajocksch@redhat.com>
 
+	* UpdatingDisplayVAlue.java (TermObserver): Switched to
+	TaskObserver.Terminated from TaskObserver.Terminating.
+	* TestUpdatingDisplayValue.java (testTaskDead): Ditto.
+
 	* TestUpdatingDisplayValue.java: Simiplified test names.
 	(testTaskDead): Now passes, enabled.
 	* UpdatingDisplayValue.java (TermObserver): Added so we can

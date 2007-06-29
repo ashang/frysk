@@ -272,19 +272,13 @@ public class TestUpdatingDisplayValue extends TestLib
   {
       BreakpointManager bpManager = createDaemon("funit-rt-varsegv");
       
-      myTask.requestAddTerminatingObserver(new TaskObserver.Terminating() {
-    
-        public void deletedFrom(Object observable) {
-        }
-    
-        public void addedTo(Object observable) {
-        }
-    
-        public void addFailed(Object observable, Throwable w) {
-        }
+      myTask.requestAddTerminatedObserver(new TaskObserver.Terminated() {
+        public void deletedFrom(Object observable) {}
+        public void addedTo(Object observable) {}
+        public void addFailed(Object observable, Throwable w) {}
     
         /* When the task dies, stop the event loop */
-        public Action updateTerminating(Task task, boolean signal, int value) {
+        public Action updateTerminated(Task task, boolean signal, int value) {
             	Manager.eventLoop.requestStop();
     		return Action.CONTINUE;
         }
@@ -312,15 +306,6 @@ public class TestUpdatingDisplayValue extends TestLib
       DisplayObserver obs = new DisplayObserver();
       uDisp.addObserver(obs);
       assertTrue("Display is not available", uDisp.isAvailable());
-      
-      /*
-       * Second breakpoint
-       */
-//      LineBreakpoint brk2 =
-//        bpManager.addLineBreakpoint(Config.getRootSrcDir() + "frysk-core/frysk/pkglibdir/funit-rt-varsegv.c",
-//                                    51, 0);
-//      brk2.addObserver(new BreakpointBlocker());
-//      brk2.enableBreakpoint(myTask, steppingEngine);
       
       // Run until we hit the second breakpoint
       list = new LinkedList();
