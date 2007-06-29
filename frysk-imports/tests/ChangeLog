@@ -1,3 +1,8 @@
+2007-06-28  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Makefike.am (frysk4704_vdso_permissions_CFLAGS): Add
+	-I$(top_srcdir)/elfutils/libelf.
+
 2007-06-27  Jan Kratochvil  <jan.kratochvil@redhat.com>
 
 	* frysk4704/vdso-permissions.c: New file.

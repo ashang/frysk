@@ -488,6 +488,7 @@ systests_PASS_PROGRAM += frysk4217/attachstop
 systests_PASS_PROGRAM += frysk4330/stopkills
 
 # test if /proc/PID/maps has r-xp permissions for the VDSO entry
+frysk4704_vdso_permissions_CFLAGS =  -I$(top_srcdir)/elfutils/libelf
 systests_PASS_PROGRAM += frysk4704/vdso-permissions
 
 # A final variable/inner class test.
