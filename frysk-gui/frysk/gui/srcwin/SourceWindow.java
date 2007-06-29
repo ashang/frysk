@@ -2339,10 +2339,11 @@ public class SourceWindow
     if (sf == null) 
       {
 	String task_name = this.swProc[0].getExe();
-	int proc_id = this.swProc[0].getPid();
+	int proc_id = sf.getTask().getProc().getPid();
 	setSourceLabel("Unknown File for: ", task_name, proc_id);
 	return;
       }
+    
      ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     String task_name = sf.getTask().getProc().getExe();
     int proc_id = sf.getTask().getProc().getPid();
@@ -2395,7 +2396,7 @@ public class SourceWindow
   private void updateShownStackFrame (Frame selected, int current)
   {
     int mode = this.viewPicker.getActive();
-
+    
     DOMSource source = null;
     Line[] lines = selected.getLines();
 
@@ -2466,8 +2467,6 @@ public class SourceWindow
 		this.symTab[current] = new DebugInfo(
 						  this.frames[current][0]);
 		this.symTab[current].setFrames(this.frames[current]);
-
-		updateSourceLabel(this.currentFrame);
 
 		if (this.stop.isSensitive())
 		  resensitize();
