@@ -4,47 +4,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <alloca.h>
+#include <asm/ptrace.h>
 
 #include "utracer/utracer.h"
 #include "udb.h"
 #include "udb-i386.h"
 
-static const char * i386_signals[] = {
-  "unused",			//  0
-  "SIGHUP",			//  1
-  "SIGINT",			//  2
-  "SIGQUIT",			//  3
-  "SIGILL",			//  4
-  "SIGTRAP",			//  5
-  "SIGABRT",			//  6
-  "SIGBUS",			//  7
-  "SIGFPE",			//  8
-  "SIGKILL",			//  9
-  "SIGUSR1",			// 10
-  "SIGSEGV",			// 11
-  "SIGUSR2",			// 12
-  "SIGPIPE",			// 13
-  "SIGALRM",			// 14
-  "SIGTERM",			// 15
-  "SIGSTKFLT",			// 16
-  "SIGCHLD",			// 17
-  "SIGCONT",			// 18
-  "SIGSTOP",			// 19
-  "SIGTSTP",			// 20
-  "SIGTTIN",			// 21
-  "SIGTTOU",			// 22
-  "SIGURG",			// 23
-  "SIGXCPU",			// 24
-  "SIGXFSZ",			// 25
-  "SIGVTALRM",			// 26
-  "SIGPROF",			// 27
-  "SIGWINCH",			// 28
-  "SIGIO",			// 29
-  "SIGPWR",			// 30
-  "SIGUNUSED"			// 31
-};
-
-static int nr_signals	= sizeof(i386_signals)/sizeof(char *);
 
 void *
 resp_listener (void * arg)
@@ -57,6 +22,30 @@ resp_listener (void * arg)
 		sizeof(if_resp), 0);
     
     switch (if_resp.type) {
+    case IF_RESP_SYSCALL_DATA:
+      {
+	syscall_resp_s syscall_resp = if_resp.syscall_resp;
+	long bytes_to_get = sizeof (struct pt_regs);
+	long bytes_gotten = 0;
+	struct pt_regs * regs = alloca (bytes_to_get);
+
+	if (sz > sizeof(syscall_resp)) {
+	  long bytes_avail =  sz - sizeof(syscall_resp);
+	  memcpy ((void *)regs, (void *)(&if_resp) + sizeof (syscall_resp),
+		  bytes_avail);
+	  bytes_to_get -= bytes_avail;
+	  bytes_gotten = bytes_avail;
+	}
+
+	if (0 < bytes_to_get) {
+	  sz = pread (utracer_resp_file_fd,
+		      (void *)regs + bytes_gotten,
+		      bytes_to_get, sz);
+	}
+	
+	show_regs (regs);
+      }
+      break;
     case IF_RESP_REG_DATA:
       {
 	// fixme -- handle non-int values

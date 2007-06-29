@@ -1,3 +1,8 @@
+Fri Jun 29 12:08:53 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c:
+	* utracer.h:  Added support for syscall reports.
+
 Thu Jun 28 23:34:32 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-base.c: Added support for selectively execing a pgm and

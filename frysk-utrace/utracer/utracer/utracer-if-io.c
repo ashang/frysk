@@ -82,11 +82,12 @@ report_exec (struct utrace_attached_engine *engine,
 	     const struct linux_binprm *bprm,
 	     struct pt_regs *regs)
 {
-  //  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
-  //  	 (bprm->filename) ? bprm->filename : "unk",
-  //  	 (bprm->interp) ? bprm->interp : "unk");
   utracing_info_s * utracing_info_found = (void *)engine->data;
   u32 rc = UTRACE_ACTION_RESUME;
+  
+  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
+    	 (bprm->filename) ? bprm->filename : "unk",
+    	 (bprm->interp) ? bprm->interp : "unk");
   
   if (utracing_info_found) {
     utraced_info_s * utraced_info_found =
@@ -160,9 +161,55 @@ report_signal (struct utrace_attached_engine *engine,
   return UTRACE_ACTION_RESUME;
 }
 
+// include/asm-i386/unistd.h  -- syscalls
+static u32
+report_syscall_entry (struct utrace_attached_engine * engine,
+		      struct task_struct * tsk,
+		      struct pt_regs * regs)
+{
+  utracing_info_s * utracing_info_found = (void *)engine->data;
+
+  if (utracing_info_found) {
+    syscall_resp_s syscall_resp;
+
+    syscall_resp.type = IF_RESP_SYSCALL_DATA;
+    syscall_resp.data_length = sizeof (struct pt_regs);
+    queue_response (utracing_info_found,
+		    &syscall_resp, sizeof(syscall_resp),
+		    regs, sizeof (struct pt_regs));
+  }
+#if 0
+  printk(KERN_ALERT "reporting syscall entry pid = %ld\n",
+	 (long)tsk->pid);
+  printk_pt_regs (regs);
+#endif
+  return UTRACE_ACTION_RESUME;
+}
+
+static u32
+report_syscall_exit (struct utrace_attached_engine *engine,
+		     struct task_struct *tsk,
+		     struct pt_regs *regs)
+{
+#if 0
+  printk(KERN_ALERT "reporting syscall exit pid = %ld\n",
+	 (long)tsk->pid);
+  printk_pt_regs (regs);
+#endif
+  return UTRACE_ACTION_RESUME;
+}
+
+static void
+report_reap (struct utrace_attached_engine *engine,
+	     struct task_struct *tsk)
+{
+  printk(KERN_ALERT "reporting reap\n");
+}
+
+
 static const struct utrace_engine_ops utraced_utrace_ops = {
-  .report_syscall_entry	= NULL,
-  .report_syscall_exit	= NULL,
+  .report_syscall_entry	= report_syscall_entry,
+  .report_syscall_exit	= report_syscall_exit,
   .report_exec		= report_exec,
   .report_jctl		= NULL,
   .report_signal	= report_signal,
@@ -170,7 +217,7 @@ static const struct utrace_engine_ops utraced_utrace_ops = {
   .report_clone		= report_clone,
   .report_exit		= report_exit,
   .report_death		= report_death,
-  .report_reap		= NULL,
+  .report_reap		= report_reap,
   .report_quiesce	= report_quiesce,
   .unsafe_exec		= NULL,
   .tracer_task		= NULL,
@@ -204,6 +251,9 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
 	  UTRACE_EVENT (CLONE)	    |
 	  UTRACE_EVENT (EXIT)	    |
 	  UTRACE_EVENT (QUIESCE)    |
+	  UTRACE_EVENT (SYSCALL_EXIT)    |
+	  UTRACE_EVENT (SYSCALL_ENTRY)    |
+	  UTRACE_EVENT (REAP)    |
 	  UTRACE_EVENT (DEATH);
 
 	if (quiesce) flags |= UTRACE_ACTION_QUIESCE;
@@ -368,11 +418,11 @@ if_file_write (struct file *file,
 	long * pids_list = NULL;
 	int i;
 	
-	pids_resp.type		= IF_RESP_PIDS_DATA;
-	for ( pids_resp.nr_pids	= 0,
-		utraced_info = utracing_info_found->utraced_info;
-	      utraced_info;
-	      utraced_info = utraced_info->next) pids_resp.nr_pids++;
+	pids_resp.type = IF_RESP_PIDS_DATA;
+	for (pids_resp.nr_pids	= 0,
+	       utraced_info = utracing_info_found->utraced_info;
+	     utraced_info;
+	     utraced_info = utraced_info->next) pids_resp.nr_pids++;
 	if (0 < pids_resp.nr_pids) {
 	  pids_list = kmalloc (pids_resp.nr_pids * sizeof(long), GFP_KERNEL);
 	  for ( i = 0, utraced_info = utracing_info_found->utraced_info;

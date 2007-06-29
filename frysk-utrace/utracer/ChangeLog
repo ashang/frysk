@@ -1,3 +1,11 @@
+Fri Jun 29 12:05:34 2007  Chris Moller  <cmoller@redhat.com>
+
+	* Makefile: Added udb-i386.c and tweaked dependencies
+	* udb-i386.h: Moved i386_signals from udb-response.c.
+	* udb-i386.c: New source file to handle i386-specific stuff.
+	* udb-response.c: Removed i386_signals to udb-i386.h and added
+	support for syscall data.
+	
 Thu Jun 28 23:30:55 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-utrace-if.c: Added support for selectively execing a pgm and
