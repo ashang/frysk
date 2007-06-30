@@ -1,3 +1,12 @@
+Fri Jun 29 21:40:04 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.c: New source file containing i386-specific code
+	* udb-i386.h: Added a local copy of the struct pt_regs decl--the
+	one in /usr/include/asm/ptrace.h doesn't match the one in
+	<kernel>/include/asm/ptrace.h. The local copy is from the kernel
+	header. Added a table of syscall name strings derived from
+	<kernel>/include/asm-i386/unistd.h. 
+
 Fri Jun 29 12:05:34 2007  Chris Moller  <cmoller@redhat.com>
 
 	* Makefile: Added udb-i386.c and tweaked dependencies

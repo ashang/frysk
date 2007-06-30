@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <alloca.h>
-#include <asm/ptrace.h>
+// this isn't the same as the one in the kernel
+//#include <asm/ptrace.h>
 
 #include "utracer/utracer.h"
 #include "udb.h"
@@ -24,6 +25,7 @@ resp_listener (void * arg)
     switch (if_resp.type) {
     case IF_RESP_SYSCALL_DATA:
       {
+
 	syscall_resp_s syscall_resp = if_resp.syscall_resp;
 	long bytes_to_get = sizeof (struct pt_regs);
 	long bytes_gotten = 0;
@@ -43,7 +45,8 @@ resp_listener (void * arg)
 		      bytes_to_get, sz);
 	}
 	
-	show_regs (regs);
+	//show_syscall_regs (regs);
+	show_syscall (regs);
       }
       break;
     case IF_RESP_REG_DATA:

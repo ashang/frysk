@@ -56,7 +56,7 @@ report_clone (struct utrace_attached_engine *engine,
     (void *)engine->data;
 
   //fixme -- autoattach?
-  printk(KERN_ALERT "reporting clone\n");
+  //  printk(KERN_ALERT "reporting clone\n");
   
   if (utracing_info_found) {
     clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
@@ -85,9 +85,9 @@ report_exec (struct utrace_attached_engine *engine,
   utracing_info_s * utracing_info_found = (void *)engine->data;
   u32 rc = UTRACE_ACTION_RESUME;
   
-  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
-    	 (bprm->filename) ? bprm->filename : "unk",
-    	 (bprm->interp) ? bprm->interp : "unk");
+  //  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
+  //    	 (bprm->filename) ? bprm->filename : "unk",
+  //    	 (bprm->interp) ? bprm->interp : "unk");
   
   if (utracing_info_found) {
     utraced_info_s * utraced_info_found =
@@ -167,7 +167,13 @@ report_syscall_entry (struct utrace_attached_engine * engine,
 		      struct task_struct * tsk,
 		      struct pt_regs * regs)
 {
-  utracing_info_s * utracing_info_found = (void *)engine->data;
+  utracing_info_s * utracing_info_found;
+  unsigned long flags;
+  
+  flags = engine->flags |  UTRACE_ACTION_QUIESCE;
+  utrace_set_flags(tsk, engine, flags);
+  
+  utracing_info_found = (void *)engine->data;
 
   if (utracing_info_found) {
     syscall_resp_s syscall_resp;
@@ -178,11 +184,10 @@ report_syscall_entry (struct utrace_attached_engine * engine,
 		    &syscall_resp, sizeof(syscall_resp),
 		    regs, sizeof (struct pt_regs));
   }
-#if 0
-  printk(KERN_ALERT "reporting syscall entry pid = %ld\n",
-	 (long)tsk->pid);
-  printk_pt_regs (regs);
-#endif
+  
+  flags = engine->flags &  ~UTRACE_ACTION_QUIESCE;
+  utrace_set_flags(tsk, engine, flags);
+
   return UTRACE_ACTION_RESUME;
 }
 
@@ -191,11 +196,8 @@ report_syscall_exit (struct utrace_attached_engine *engine,
 		     struct task_struct *tsk,
 		     struct pt_regs *regs)
 {
-#if 0
   printk(KERN_ALERT "reporting syscall exit pid = %ld\n",
 	 (long)tsk->pid);
-  printk_pt_regs (regs);
-#endif
   return UTRACE_ACTION_RESUME;
 }
 
@@ -430,7 +432,6 @@ if_file_write (struct file *file,
 		i++, utraced_info = utraced_info->next)
 	    pids_list[i] = utraced_info->utraced_pid;
 	}
-	//	printk (KERN_ALERT "listpids\n");
 	queue_response (utracing_info_found,
 			&pids_resp, sizeof(pids_resp),
 			pids_list, pids_resp.nr_pids * sizeof(long));
@@ -466,6 +467,7 @@ if_file_write (struct file *file,
 	  if (unlikely(regset == NULL))
 	    return -EIO;
 
+	  // fixme -- see kernel/ptrace.c for use of bias and align
           if (-1 ==  readreg_cmd.which) {
             utracing_info_s * utracing_info_found;
             readreg_resp_s readreg_resp;
