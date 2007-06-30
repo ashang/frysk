@@ -215,12 +215,35 @@ main (int ac, char * av[])
 	{
 	  int rc;
 	  long cp = (long)getpid();
-	  fprintf (stderr, "child pid = %ld\n", cp);
+	  char * cl_copy = strdup (cmds_to_attach[i].cmd);
+	  char * tok = strtok (cl_copy, " \t");
+	  char ** args = NULL;
+	  int args_next = 0;
+	  int args_max  = 0;
+#define ARGS_INCR 4
+	  
 	  utrace_attach_if (cp, 0, cmds_to_attach[i].quiesce);
-	  // utrace_attach_if (cp, 0);
-	  rc = execlp (cmds_to_attach[i].cmd,
-		       cmds_to_attach[i].cmd,
-		       NULL);
+
+	  while (tok) {
+	    fprintf (stderr, "tok = \"%s\"\n", tok);
+	    if (args_max >= args_next) {
+	      args_max += ARGS_INCR;
+	      args = realloc (args, ARGS_INCR * sizeof(char *));
+	    }
+	    args[args_next++] = tok;
+	    tok = strtok (NULL, " \t");
+	  }
+	  if (args_max >= args_next) {
+	    args_max += ARGS_INCR;
+	    args = realloc (args, ARGS_INCR * sizeof(char *));
+	  }
+	  args[args_next++] = NULL;
+
+	  rc = execvp (args[0], args);
+
+	  if (args) free (args);
+	  if (cl_copy) free (cl_copy);
+	  
 	  if (-1 == rc)
 	    error (1, errno, "Error in spawner execlp");
 	}

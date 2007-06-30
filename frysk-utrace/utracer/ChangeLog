@@ -1,6 +1,13 @@
-Fri Jun 29 21:40:04 2007  Chris Moller  <cmoller@redhat.com>
+Fri Jun 29 23:04:02 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c: New source file containing i386-specific code
+	* udb.c: Added a capability to pass arguments with pgms to be
+	loaded and, optionally, run.  (Note that this doesn't provide
+	globbing, parm expansion, or any of that shell stuff, but passing,
+	e.g., "ls -1" does what you expect.)
+
+Fri Jun 29 21:40:04 2007  Chris Moller  <cmoller@redhat.com>
+
 	* udb-i386.h: Added a local copy of the struct pt_regs decl--the
 	one in /usr/include/asm/ptrace.h doesn't match the one in
 	<kernel>/include/asm/ptrace.h. The local copy is from the kernel
