@@ -23,11 +23,36 @@ resp_listener (void * arg)
 		sizeof(if_resp), 0);
     
     switch (if_resp.type) {
-    case IF_RESP_SYSCALL_DATA:
+    case IF_RESP_EXEC_DATA:
       {
+	exec_resp_s exec_resp = if_resp.exec_resp;
+	long bytes_to_get = exec_resp.data_length;
+	long bytes_gotten = 0;
+	char * cstr = alloca (bytes_to_get + 2);
 
+	if (sz > sizeof(exec_resp)) {
+	  long bytes_avail =  sz - sizeof(exec_resp);
+	  memcpy ((void *)cstr, (void *)(&if_resp) + sizeof (exec_resp),
+		  bytes_avail);
+	  bytes_to_get -= bytes_avail;
+	  bytes_gotten = bytes_avail;
+	}
+
+	if (0 < bytes_to_get) {
+	  sz = pread (utracer_resp_file_fd,
+		      (void *)cstr + bytes_gotten,
+		      bytes_to_get, sz);
+	  bytes_gotten += sz;
+	}
+	fprintf (stdout, "\tProcess %ld execing %s (%s)\n",
+		 exec_resp.utraced_pid, cstr, cstr + 1 + strlen (cstr));
+      }
+      break;
+    case IF_RESP_SYSCALL_ENTRY_DATA:
+    case IF_RESP_SYSCALL_EXIT_DATA:
+      {
 	syscall_resp_s syscall_resp = if_resp.syscall_resp;
-	long bytes_to_get = sizeof (struct pt_regs);
+	long bytes_to_get = syscall_resp.data_length;
 	long bytes_gotten = 0;
 	struct pt_regs * regs = alloca (bytes_to_get);
 
@@ -46,7 +71,7 @@ resp_listener (void * arg)
 	}
 	
 	//show_syscall_regs (regs);
-	show_syscall (regs);
+	show_syscall (if_resp.type, regs);
       }
       break;
     case IF_RESP_REG_DATA:

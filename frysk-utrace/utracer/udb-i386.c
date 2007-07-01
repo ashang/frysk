@@ -1,14 +1,17 @@
 #include <stdio.h>
 /*#include <asm/ptrace.h>*/
 
+#include "utracer/utracer.h"
 #include "udb-i386.h"
 #include <asm/unistd.h>
 
 
 void
-show_syscall (struct pt_regs * regs)
+show_syscall (long type, struct pt_regs * regs)
 {
-  fprintf (stdout, "\tsyscall: %s (", 
+  fprintf (stdout, "\t%s syscall: %s (",
+	   ((IF_RESP_SYSCALL_EXIT_DATA == type) ?
+	    "Exiting" : "Entering"),
     ((0 <= regs->orig_eax) && (regs->orig_eax < nr_syscall_names))
 	   ? syscall_names[regs->orig_eax] : "unknown");
 	   
@@ -17,7 +20,10 @@ show_syscall (struct pt_regs * regs)
     fprintf (stdout, "%ld, 0x%08x, %ld", regs->ebx, regs->ecx, regs->edx);
     break;
   case __NR_write:
-    fprintf (stdout, "%ld, 0x%08x, %ld", regs->ebx, regs->ecx, regs->edx);
+    fprintf (stdout, "%ld, 0x%08x, %ld",
+	     regs->ebx,
+	     regs->ecx,
+	     regs->edx);
     break;
   case __NR_close:
     fprintf (stdout, "%ld", regs->ebx);

@@ -1,3 +1,8 @@
+Sat Jun 30 22:09:47 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-response.c:  Added code to display report_exec results
+	(i.e., the name of the binary file execed.)
+
 Fri Jun 29 23:04:02 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.c: New source file containing i386-specific code

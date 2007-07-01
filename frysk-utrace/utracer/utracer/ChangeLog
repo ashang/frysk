@@ -1,3 +1,9 @@
+Sat Jun 30 22:11:38 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer.h: 
+	* utracer-if-io.c: Added code to queue report_exec data to the
+	client.
+
 Fri Jun 29 12:08:53 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer-if-io.c:

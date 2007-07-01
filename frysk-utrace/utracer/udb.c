@@ -225,7 +225,6 @@ main (int ac, char * av[])
 	  utrace_attach_if (cp, 0, cmds_to_attach[i].quiesce);
 
 	  while (tok) {
-	    fprintf (stderr, "tok = \"%s\"\n", tok);
 	    if (args_max >= args_next) {
 	      args_max += ARGS_INCR;
 	      args = realloc (args, ARGS_INCR * sizeof(char *));

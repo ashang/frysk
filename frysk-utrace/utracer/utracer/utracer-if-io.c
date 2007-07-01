@@ -22,18 +22,23 @@ MODULE_AUTHOR("Chris Moller");
 
 static void
 queue_response (utracing_info_s * utracing_info_found,
-		void * resp,  int resp_len,
-		void * extra, int extra_len)
+		void * resp,   int resp_len,
+		void * extra,  int extra_len,
+		void * extra2, int extra2_len)
 {
   wait_event (utracing_info_found->ifw_wait,
 	      (0 >= utracing_info_found->queued_data_length));
-    
-  utracing_info_found->queued_data_length = resp_len + extra_len;
+
+  utracing_info_found->queued_data_length =
+    resp_len + extra_len + extra2_len;
   utracing_info_found->queued_data =
-    kmalloc (resp_len + extra_len, GFP_KERNEL);
+    kmalloc (resp_len + extra_len + extra2_len, GFP_KERNEL);
   memcpy (utracing_info_found->queued_data, resp, resp_len);
   if (extra)
     memcpy (utracing_info_found->queued_data + resp_len, extra, extra_len);
+  if (extra2)
+    memcpy (utracing_info_found->queued_data + resp_len + extra_len,
+	    extra2, extra2_len);
   wake_up (&(utracing_info_found->ifr_wait));
 }
 
@@ -62,7 +67,9 @@ report_clone (struct utrace_attached_engine *engine,
     clone_resp_s clone_resp = {IF_RESP_CLONE_DATA,
 			       parent->pid, child->pid};
     queue_response (utracing_info_found,
-		    &clone_resp, sizeof(clone_resp), NULL, 0);
+		    &clone_resp, sizeof(clone_resp),
+		    NULL, 0,
+		    NULL, 0);
 			       
   }
   return UTRACE_ACTION_RESUME;
@@ -85,15 +92,21 @@ report_exec (struct utrace_attached_engine *engine,
   utracing_info_s * utracing_info_found = (void *)engine->data;
   u32 rc = UTRACE_ACTION_RESUME;
   
-  //  printk(KERN_ALERT "reporting exec \"%s\" \"%s\"\n",
-  //    	 (bprm->filename) ? bprm->filename : "unk",
-  //    	 (bprm->interp) ? bprm->interp : "unk");
-  
   if (utracing_info_found) {
     utraced_info_s * utraced_info_found =
       lookup_utraced_info (utracing_info_found, (long)tsk->pid);
     if (utraced_info_found) {
       unsigned long flags;
+      long str_len = 
+	((bprm->filename) ? (1 + strlen (bprm->filename)) : 0) +
+	((bprm->interp)   ? (1 + strlen (bprm->interp))   : 0);
+      exec_resp_s exec_resp = {IF_RESP_EXEC_DATA,
+			       (long)tsk->pid, str_len };
+      queue_response (utracing_info_found,
+		      &exec_resp, sizeof(exec_resp),
+		      bprm->filename, 1 + strlen(bprm->filename),
+		      bprm->interp, 1 + strlen (bprm->interp));
+      
       if (utraced_info_found->exec_quiesce) {
 	flags = engine->flags |  UTRACE_ACTION_QUIESCE;
 	rc = UTRACE_ACTION_QUIESCE;
@@ -119,7 +132,9 @@ report_exit (struct utrace_attached_engine *engine,
     exit_resp_s exit_resp = {IF_RESP_EXIT_DATA,
 			     (long)tsk->pid, orig_code };
     queue_response (utracing_info_found,
-		    &exit_resp, sizeof(exit_resp), NULL, 0);
+		    &exit_resp, sizeof(exit_resp),
+		    NULL, 0,
+		    NULL, 0);
   }
   return UTRACE_ACTION_RESUME;
 }
@@ -135,7 +150,9 @@ report_death (struct utrace_attached_engine *engine,
     death_resp_s death_resp = {IF_RESP_DEATH_DATA,
 			       (long)tsk->pid };
     queue_response (utracing_info_found,
-		    &death_resp, sizeof(death_resp), NULL, 0);
+		    &death_resp, sizeof(death_resp),
+		    NULL, 0,
+		    NULL, 0);
   }
   return UTRACE_ACTION_RESUME;
 }
@@ -156,16 +173,19 @@ report_signal (struct utrace_attached_engine *engine,
 				 (long)tsk->pid,
 				 (long)info->si_signo};
     queue_response (utracing_info_found,
-		    &signal_resp, sizeof(signal_resp), NULL, 0);
+		    &signal_resp, sizeof(signal_resp),
+		    NULL, 0,
+		    NULL, 0);
   }
   return UTRACE_ACTION_RESUME;
 }
 
 // include/asm-i386/unistd.h  -- syscalls
 static u32
-report_syscall_entry (struct utrace_attached_engine * engine,
-		      struct task_struct * tsk,
-		      struct pt_regs * regs)
+report_syscall (struct utrace_attached_engine * engine,
+		struct task_struct * tsk,
+		struct pt_regs * regs,
+		long type)
 {
   utracing_info_s * utracing_info_found;
   unsigned long flags;
@@ -178,11 +198,11 @@ report_syscall_entry (struct utrace_attached_engine * engine,
   if (utracing_info_found) {
     syscall_resp_s syscall_resp;
 
-    syscall_resp.type = IF_RESP_SYSCALL_DATA;
+    syscall_resp.type = type;
     syscall_resp.data_length = sizeof (struct pt_regs);
     queue_response (utracing_info_found,
 		    &syscall_resp, sizeof(syscall_resp),
-		    regs, sizeof (struct pt_regs));
+		    regs, sizeof (struct pt_regs), NULL, 0);
   }
   
   flags = engine->flags &  ~UTRACE_ACTION_QUIESCE;
@@ -196,9 +216,15 @@ report_syscall_exit (struct utrace_attached_engine *engine,
 		     struct task_struct *tsk,
 		     struct pt_regs *regs)
 {
-  printk(KERN_ALERT "reporting syscall exit pid = %ld\n",
-	 (long)tsk->pid);
-  return UTRACE_ACTION_RESUME;
+  return report_syscall (engine, tsk, regs,IF_RESP_SYSCALL_EXIT_DATA);
+}
+
+static u32
+report_syscall_entry (struct utrace_attached_engine *engine,
+		      struct task_struct *tsk,
+		      struct pt_regs *regs)
+{
+  return report_syscall (engine, tsk, regs,IF_RESP_SYSCALL_ENTRY_DATA);
 }
 
 static void
@@ -277,7 +303,9 @@ attach_cmd_fcn (long utracing_pid, long utraced_pid,
       attach_resp_s attach_resp = {IF_RESP_ATTACH_DATA,
 				   utraced_pid, (0 == rc) ? 1 : 0 };
       queue_response (utracing_info_found,
-		      &attach_resp, sizeof(attach_resp), NULL, 0);
+		      &attach_resp, sizeof(attach_resp),
+		      NULL, 0,
+		      NULL, 0);
     }
   }
   else rc = -UTRACER_ETRACING;
@@ -351,6 +379,7 @@ if_file_write (struct file *file,
 	queue_response (utracing_info_found,
 			&switchpid_resp,
 			sizeof(switchpid_resp),
+			NULL, 0,
 			NULL, 0);
       
 	return count;
@@ -434,7 +463,8 @@ if_file_write (struct file *file,
 	}
 	queue_response (utracing_info_found,
 			&pids_resp, sizeof(pids_resp),
-			pids_list, pids_resp.nr_pids * sizeof(long));
+			pids_list, pids_resp.nr_pids * sizeof(long),
+			NULL, 0);
 	if (pids_list) kfree (pids_list);
 	rc = count;
       }
@@ -504,7 +534,8 @@ if_file_write (struct file *file,
 			      &readreg_resp,
 			      sizeof(readreg_resp),
 			      reg_vals,
-			      regset->size * regset->n);
+			      regset->size * regset->n,
+			      NULL, 0);
 	      if (reg_vals) kfree (reg_vals);
             }
             else return -UTRACER_ETRACING;
@@ -533,7 +564,9 @@ if_file_write (struct file *file,
                                NULL);   // ubuf
 	      queue_response (utracing_info_found,
 			      &readreg_resp,
-			      sizeof(readreg_resp), NULL, 0);
+			      sizeof(readreg_resp),
+			      NULL, 0,
+			      NULL, 0);
             }
             else return -UTRACER_ETRACING;
           }
