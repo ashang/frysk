@@ -13,7 +13,7 @@ show_syscall (long type, struct pt_regs * regs)
 	   ((IF_RESP_SYSCALL_EXIT_DATA == type) ?
 	    "Exiting" : "Entering"),
     ((0 <= regs->orig_eax) && (regs->orig_eax < nr_syscall_names))
-	   ? syscall_names[regs->orig_eax] : "unknown");
+	   ? syscall_names[regs->orig_eax].key : "unknown");
 	   
   switch (regs->orig_eax) {
   case __NR_read:

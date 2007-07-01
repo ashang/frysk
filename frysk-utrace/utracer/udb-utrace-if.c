@@ -40,6 +40,21 @@ unregister_utracer(pid_t pid)
 }
 
 void
+utrace_syscall_if (short which, short cmd, long syscall)
+{
+  ssize_t sz;
+  syscall_cmd_s syscall_cmd;
+  
+  syscall_cmd.cmd			= IF_CMD_SYSCALL;
+  syscall_cmd.utracing_pid		= (long)udb_pid;
+  syscall_cmd_which (syscall_cmd)	= which;
+  syscall_cmd_cmd (syscall_cmd)		= cmd;
+  syscall_cmd.syscall_nr		= syscall;
+  sz = write (utracer_cmd_file_fd, &syscall_cmd, sizeof(syscall_cmd));
+  if (-1 == sz) uerror ("Writing syscall command.");
+}
+
+void
 utrace_switchpid_if (long pid)
 {
   switchpid_cmd_s switchpid_cmd = {IF_CMD_SWITCHPID, (long)udb_pid, pid};

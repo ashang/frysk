@@ -10,6 +10,7 @@
 
 #include "udb.h"
 #include "udb-i386.h"
+#include "utracer/utracer.h"
 
 
 /*
@@ -25,9 +26,124 @@
 
 static struct hsearch_data cmd_hash_table;
 static struct hsearch_data reg_hash_table;
+static struct hsearch_data sys_hash_table;
 static int reg_hash_table_valid = 0;
+static int sys_hash_table_valid = 0;
 
 typedef int (*action_fcn)(char ** saveptr);
+
+static int
+syscall_fcn(char ** saveptr)
+{
+  int run = 1;
+  int got_it = 0;
+  int em_sent = 0;
+  char * tok;
+  long syscall_nr = -1;
+  enum {SY_STATE_A1, SY_STATE_A2, SY_STATE_A3} sy_state = SY_STATE_A1;
+  enum {SY_MODE_NULL, SY_MODE_ENTRY, SY_MODE_EXIT} sy_mode = SY_MODE_NULL;
+  enum {SY_ENABLE_NULL, SY_ENABLE_ON, SY_ENABLE_OFF} sy_enable = SY_ENABLE_NULL;
+  enum {SY_ADD_NULL, SY_ADD_ADD, SY_ADD_REMOVE} sy_add = SY_ADD_NULL;
+  long sy_nr;
+
+  /*
+   * sy[scall] {en[try] | ex[it]} (e(nable) | d(isable))
+   *                              (a(dd) | r(emove)) (<nr> | <symbol>)
+   *
+   */
+
+  while (run && (tok = strtok_r (NULL, " \t", saveptr))) {
+    switch(sy_state) {
+    case SY_STATE_A1:
+      if (0 == strncasecmp (tok, "entry", 2)) {
+	sy_mode = SY_MODE_ENTRY;
+	sy_state = SY_STATE_A2;
+      }
+      else if (0 == strncasecmp (tok, "exit", 2)) {
+	sy_mode = SY_MODE_EXIT;
+	sy_state = SY_STATE_A2;
+      }
+      else run = 0;
+      break;
+    case SY_STATE_A2:
+      if (0 == strncasecmp (tok, "enable", 1)) {
+	sy_enable = SY_ENABLE_ON;
+	got_it = 1;
+	run = 0;
+      }
+      else if (0 == strncasecmp (tok, "disable", 1)) {
+	sy_enable = SY_ENABLE_OFF;
+	got_it = 1;
+	run = 0;
+      }
+      if (0 == strncasecmp (tok, "add", 1)) {
+	sy_add = SY_ADD_ADD;
+	sy_state = SY_STATE_A3;
+      }
+      else if (0 == strncasecmp (tok, "remove", 1)) {
+	sy_add = SY_ADD_REMOVE;
+	sy_state = SY_STATE_A3;
+      }
+      else run = 0;
+      break;
+    case SY_STATE_A3:
+      if (sys_hash_table_valid) {
+	ENTRY * entry;
+	ENTRY target;
+	
+	target.key = tok;
+	if (0 != hsearch_r (target, FIND, &entry, &sys_hash_table)) {
+	  syscall_nr = (long)(entry->data);
+	  got_it = 1;
+	}
+      }
+      if (-1 == syscall_nr) {
+	char * ep;
+	
+	syscall_nr = strtol (tok, &ep, 0);
+
+	if (0 == *ep) {
+	  if ((0 <= syscall_nr) && (syscall_nr < nr_syscall_names))
+	    got_it = 1;
+	  else {
+	    em_sent = 1;
+	    fprintf (stderr, "\tSorry, syscall number %ld is out of range.\n",
+		     syscall_nr);
+	  }
+	}
+	else {
+	  em_sent = 1;
+	  fprintf (stderr, "\tSorry, I don't recognise syscall %s\n", tok);
+	}
+      }
+      break;
+    }
+  }
+    
+  if (got_it) {
+    switch (sy_state) {
+    case SY_STATE_A2:
+      utrace_syscall_if (((SY_MODE_ENTRY == sy_mode) ?
+			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
+			 ((SY_ENABLE_ON == sy_enable) ?
+			  SYSCALL_CMD_ENABLE : SYSCALL_CMD_DISABLE),
+			 0);
+      break;
+    case SY_STATE_A3:
+      utrace_syscall_if (((SY_MODE_ENTRY == sy_mode) ?
+			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
+			 ((SY_ADD_ADD == sy_add) ?
+			  SYSCALL_CMD_ADD : SYSCALL_CMD_REMOVE),
+			 syscall_nr);
+      break;
+    }
+  }
+  else
+    if (!em_sent)
+      fprintf (stderr, "\tSorry, I've no clue what you want me to do.\n");
+  
+  return 1;
+}
 
 static int
 listpids_fcn(char ** saveptr)
@@ -227,6 +343,11 @@ static cmd_info_s watch_info =
 static cmd_info_s watch_info_brief =
   {watch_fcn, NULL};
 
+static cmd_info_s syscall_info =
+  {syscall_fcn, "(sy) -- Control syscall reporting.)"};
+static cmd_info_s syscall_info_brief =
+  {syscall_fcn, NULL};
+
 static ENTRY cmds[] = {
   {"at",		&attach_info_brief},
   {"attach",		&attach_info},
@@ -256,6 +377,9 @@ static ENTRY cmds[] = {
   
   {"sw",		&switchpid_info_brief},
   {"switchpid",		&switchpid_info},
+  
+  {"sy",		&syscall_info_brief},
+  {"syscallpid",	&syscall_info},
   
   {"lp",		&listpids_info_brief},
   {"listpids",		&listpids_info},
@@ -301,6 +425,24 @@ create_reg_hash_table()
   reg_hash_table_valid = 1;
 }
 
+static void
+create_sys_hash_table()
+{
+  int i, rc;
+  rc = hcreate_r ((4 * nr_syscall_names)/3, &sys_hash_table);
+  if (0 == rc) {
+    fprintf (stderr, "\tCreating syscall hash table failed.\n");
+    _exit (1);
+  }
+
+  for (i = 0; i < nr_syscall_names; i++) {
+    ENTRY * entry;
+    if (0 == hsearch_r (syscall_names[i], ENTER, &entry, &sys_hash_table))
+      error (1, errno, "Error building syscall hash.");
+  }
+  sys_hash_table_valid = 1;
+}
+
 void
 text_ui_init()
 {
@@ -308,7 +450,8 @@ text_ui_init()
   stifle_history (HISTORY_LIMIT);	// fixme--make settable
 
   create_cmd_hash_table();
-  create_reg_hash_table();	//fixme -- talk roland into putting in utrace
+  create_reg_hash_table();
+  create_sys_hash_table();
 
   set_prompt();
 }

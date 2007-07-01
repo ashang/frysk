@@ -149,7 +149,7 @@ main (int ac, char * av[])
   }
 
   for (;optind < ac; optind++) append_cmd (av[optind], default_quiesce);
-  
+
   if (!utracer_loaded()) load_utracer();
   register_utracer (udb_pid);
 

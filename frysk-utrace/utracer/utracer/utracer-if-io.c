@@ -331,6 +331,36 @@ if_file_write (struct file *file,
   switch (if_cmd_cmd) {
   case IF_CMD_NULL:
     break;
+  case IF_CMD_SYSCALL:
+    {
+      utracing_info_s * utracing_info_found;
+      
+      syscall_cmd_s syscall_cmd = if_cmd.syscall_cmd;
+
+      utracing_info_found =
+	lookup_utracing_info (syscall_cmd.utracing_pid);
+
+      if (utracing_info_found) {
+	struct task_struct * task;
+	switchpid_resp_s switchpid_resp;
+	task = get_task (switchpid_cmd.utraced_pid);
+
+#if 0
+	switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
+	switchpid_resp.utraced_pid    = switchpid_cmd.utraced_pid;
+	switchpid_resp.okay = task ? 1 : 0;
+      
+	queue_response (utracing_info_found,
+			&switchpid_resp,
+			sizeof(switchpid_resp),
+			NULL, 0,
+			NULL, 0);
+endif#
+	return count;
+      }
+      else return -UTRACER_ETRACING;
+    }
+    break;
   case IF_CMD_RUN:
   case IF_CMD_QUIESCE:
     {

@@ -1,3 +1,12 @@
+Sun Jul  1 16:28:05 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-i386.h:
+	* udb-i386.c: Revised syscall_names table to make it hsearchable.
+	* udb-text-ui.c:
+	* udb-text-ui.c:
+	* udb-utrace-if.c: Added controls to enable, disable, and filter
+	syscalls. 
+
 Sat Jun 30 22:09:47 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-response.c:  Added code to display report_exec results

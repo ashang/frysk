@@ -29,8 +29,33 @@ typedef enum {
   IF_CMD_RUN,
   IF_CMD_LIST_PIDS,
   IF_CMD_SWITCHPID,
+  IF_CMD_SYSCALL,
   IF_CMD_QUIESCE
 } if_cmd_e;
+
+typedef enum {
+  SYSCALL_CMD_ENTRY,
+  SYSCALL_CMD_EXIT,
+  SYSCALL_CMD_ENABLE,
+  SYSCALL_CMD_DISABLE,
+  SYSCALL_CMD_ADD,
+  SYSCALL_CMD_REMOVE
+} syscall_cmd_e;
+
+typedef struct {
+  long cmd;
+  long utracing_pid;
+  union {
+    long l;
+    struct {
+      short which;
+      short cmd;
+    } cmd;
+  } syscall_cmd;
+  long syscall_nr;
+} syscall_cmd_s;
+#define syscall_cmd_cmd(s)	(s).syscall_cmd.cmd.cmd
+#define syscall_cmd_which(s)	(s).syscall_cmd.cmd.which
 
 typedef struct {
   long cmd;
@@ -72,6 +97,7 @@ typedef union {
   run_cmd_s	run_cmd;
   listpids_cmd_s listpids_cmd;
   switchpid_cmd_s switchpid_cmd;
+  syscall_cmd_s syscall_cmd;
 } if_cmd_u;
 
 typedef enum {

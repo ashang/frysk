@@ -1,3 +1,10 @@
+Sun Jul  1 16:32:53 2007  Chris Moller  <cmoller@redhat.com>
+
+	* utracer-if-io.c:
+	* utracer.h: Added controls to enable, disable, and filter
+	syscalls. (INCOMPLETE) 
+	
+
 Sat Jun 30 22:11:38 2007  Chris Moller  <cmoller@redhat.com>
 
 	* utracer.h: 
