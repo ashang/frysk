@@ -47,6 +47,7 @@ import frysk.proc.ProcId;
 import frysk.proc.ProcObserver;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.Task;
+import frysk.proc.Host;
 import frysk.proc.TaskObserver;
 import frysk.proc.TaskObserver.Forked;
 import frysk.stack.Frame;
@@ -57,6 +58,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Iterator;
 
 public class Ftrace
 {
@@ -152,9 +154,17 @@ public class Ftrace
   public void trace ()
   {
     init();
-    // XXX: Should not be calling requestRefresh, instead call
-    // requestFindProc on every pid; which is much lighter in weight.
-    Manager.host.requestRefreshXXX();
+    for (Iterator it = tracedParents.iterator(); it.hasNext(); )
+      Manager.host.requestFindProc(
+	(ProcId)it.next(),
+	new Host.FindProc() {
+	  public void procFound (ProcId procId) {}
+	  public void procNotFound (ProcId procId, Exception e) {
+	    System.err.println("No process with ID " + procId.intValue() + " found.");
+	  }
+	}
+      );
+
     Manager.eventLoop.run();
   }
 
