@@ -41,6 +41,7 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import inua.eio.ByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
 import frysk.sys.Ptrace.AddressSpace;
@@ -97,6 +98,11 @@ abstract class IsaPowerPC
   public final Instruction getBreakpointInstruction()
   {
     return ppcBreakpoint;
+  }
+
+  public List getOutOfLineAddresses(Proc proc)
+  {
+    throw new IllegalStateException("getOutOfLineAddresses not implemented");
   }
 
   /**

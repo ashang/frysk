@@ -41,6 +41,7 @@ package frysk.proc;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 
@@ -121,6 +122,13 @@ public interface Isa
    * 
    */
   long getBreakpointAddress(Task task);
+
+  /**
+   * Returns a non-empty list of addresses that can be used for out of
+   * line stepping. Each address should point to a location at least
+   * big enough for the largest instruction of this ISA.
+   */
+  List getOutOfLineAddresses(Proc proc);
 
   /**
    * Reports whether or not the given Task just did a step of an

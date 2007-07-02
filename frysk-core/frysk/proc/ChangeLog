@@ -1,13 +1,33 @@
-2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+2007-07-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* Breakpoint.java (NOT_STEPPING, OUT_OF_LINE_STEPPING,
+	SIMULATE_STEPPING, RESET_STEPPING): New constants.
+	(stepping): Now a byte field.
+	(oo_address): New private long field.
+	(remove): Add sanity check for removing while stepping.
+	(prepareStep): Select stepping mechanism based on properties of
+	Instruction. Get oo_address from Proc when necessary.
+	(stepDone): Fixup task and/or code based on properties of
+	Instruction. Let Proc know we are done with oo_address.
+	* Isa.java (getOutOfLineAddresses): New interface method.
+	* IsaIA32.java (getOutOfLineAddresses): Likewise.
+	* IsaPowerPC.java (getOutOfLineAddresses): Likewise.
+	* IsaX8664.java (getOutOfLineAddresses): Likewise.
+	* Proc.java (outOfLineAddresses): New private final field.
+	(requestedOutOfLineAddresses): New boolean field.
+	(getOutOfLineAddress): New method.
+	(doneOutOfLine): Likewise.
+
+2007-07-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* TestSyscallRunning.java (testSyscallRunning):
 	Rename final task field to proc_task.
 
-2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+2007-07-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* LinuxPowerPCSyscall.java (syscallList): Add getcpu and epoll_pwait.
 
-2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+2007-07-02  Mark Wielaard  <mwielaard@redhat.com>
 
 	* Instruction.java: Document and add convenience constructors.
 	(getName): New method.

@@ -42,14 +42,23 @@ package frysk.proc;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import inua.eio.ByteOrder;
-import lib.elf.ElfEMachine;
 import lib.unwind.RegisterX86;
 import inua.eio.ByteBuffer;
 import frysk.sys.Ptrace.RegisterSet;
 import frysk.sys.Ptrace.AddressSpace;
 import frysk.proc.live.RegisterSetByteBuffer;
 import frysk.proc.live.AddressSpaceByteBuffer;
+
+import lib.elf.Elf;
+import lib.elf.ElfCommand;
+import lib.elf.ElfException;
+import lib.elf.ElfEMachine;
+
+import lib.dw.Dwarf;
+import lib.dw.DwarfCommand;
+import lib.dw.DwarfDie;
 
 public class IsaIA32 implements Isa
 {
@@ -291,6 +300,30 @@ public class IsaIA32 implements Isa
     pcValue = pcValue - 1;
     
     return pcValue;
+  }
+
+  /**
+   * Returns a non-empty list of addresses that can be used for out of
+   * line stepping. Each address should point to a location at least
+   * big enough for the largest instruction of this ISA.
+   */
+  public List getOutOfLineAddresses(Proc proc)
+  {
+    String func = "main";
+    try
+      {
+	Elf elf = new Elf(proc.getExe(), ElfCommand.ELF_C_READ);
+        Dwarf dwarf = new Dwarf(elf, DwarfCommand.READ, null);
+        DwarfDie die = DwarfDie.getDecl(dwarf, func);
+        return die.getEntryBreakpoints();
+      }
+    catch (ElfException ee)
+      {
+	IllegalStateException ise;
+	ise = new IllegalStateException("Unable to get at " + func);
+	ise.initCause(ee);
+	throw ise;
+      }
   }
 
   /**

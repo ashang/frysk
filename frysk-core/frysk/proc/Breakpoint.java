@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006, Red Hat Inc.
+// Copyright 2006, 2007 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -54,8 +54,15 @@ public class Breakpoint
   private final long address;
   private final Proc proc;
 
+  // Different ways to setup a breakpoint for stepping.
+  private static final byte NOT_STEPPING = 0;
+  private static final byte OUT_OF_LINE_STEPPING = 1;
+  private static final byte SIMULATE_STEPPING = 2;
+  private static final byte RESET_STEPPING = 3;
+
   // Whether the breakpoint is setup for a step instruction.
-  private boolean stepping;
+  // And if so how according to one of the above constants.
+  private byte stepping;
 
   // Static cache of installed break points.
   private static HashMap installed = new HashMap();
@@ -63,6 +70,9 @@ public class Breakpoint
   // The original instruction at the location we replaced with
   // BREAKPOINT_INSTRUCTION.
   private Instruction origInstruction;
+
+  // The address to execute out of line if any.
+  private long oo_address;
 
   /**
    * Private constructor called by create to record address and
@@ -118,14 +128,6 @@ public class Breakpoint
 	installed.put(this, this);
     
 	set(task);
-	// This throws RuntimeException for the following two reasons:
-	// 1st) thrown out by Task.getIsa() in set(), if the
-	//      frysk works well, the exception shouldnot be thrown out. If we
-	//      get one, it mean some runtime exception occurs.
-	// 2nd) This method will be called in
-	//      TaskState.Running.handleStoppedEvent().
-	//      There's no exception hanling there. So we have to throw one
-	//      RuntimeException here.
       }
   }
 
@@ -149,10 +151,13 @@ public class Breakpoint
 
   /**
    * Removes the breakpoint. Caller must make sure it is called only
-   * when it is installed.
+   * when it is installed and not in the middle of a step.
    */
   public void remove(Task task)
   {
+    if (stepping != NOT_STEPPING)
+      throw new IllegalStateException("Currently stepping: " + this);
+
     synchronized (installed)
       {
 	if (! this.equals(installed.remove(this)))
@@ -167,7 +172,7 @@ public class Breakpoint
    */
   private void reset(Task task)
   {
-    ByteBuffer buffer = null;
+    ByteBuffer buffer;
     
     buffer = task.getMemory();
     buffer.position(address);
@@ -177,22 +182,52 @@ public class Breakpoint
       buffer.putByte(bs[index]);
   }
 
-  // XXX Prepare step and step done are not multi-task safe.
-
   /**
    * Prepares the given Task for a step over the breakpoint.
    * This sets up the program counter and makes sure the next
    * instruction is the one on which the breakpoint was placed.
    * Should not be called again until <code>stepDone</code> is
-   * called. The given Task should be stopped.
+   * called. The given Task should be stopped and the intention
+   * is that the Task immediately tries to do a step and stepDone()
+   * called immediately afterwards (since this method might
+   * temporarily adjust registers for this Task that get cleaned up
+   * by stepDone() afterwards).
    */
   public void prepareStep(Task task)
   {
-    if (stepping)
+    if (stepping != NOT_STEPPING)
       throw new IllegalStateException("Already stepping");
 
-    reset(task);
-    stepping = true;
+    // We like out of line stepping above simulating the instruction
+    // and if neither is possible we reset the instruction and risk
+    // other Tasks missing the breakpoint (FIXME: the right way in
+    // that case would be to stop all other Tasks in the Proc first.)
+    if (origInstruction.canExecuteOutOfLine())
+      {
+	// Proc will collect an address for our usage, our wait
+	// till one if available. We need to return it to Proc
+	// afterwards in stepDone().
+	stepping = OUT_OF_LINE_STEPPING;
+	oo_address = proc.getOutOfLineAddress();
+	origInstruction.setupExecuteOutOfLine(task, address, oo_address);
+      }
+    else if (origInstruction.canSimulate())
+      {
+	// FIXME: We haven't actually abstracted this correctly.  No
+	// task step is really needed here, so a task step will step
+	// the next instruction after this simulation before calling
+	// stepDone().  Luckily no Instructions can actually simulate
+	// themselves at this time.  stepDone() will warn if it does
+	// happen in the future.
+	stepping = SIMULATE_STEPPING;
+	origInstruction.simulate(task);
+      }
+    else
+      {
+	// WARNING, WILL ROBINSON!
+	stepping = RESET_STEPPING;
+	reset(task);
+      }
   }
 
   /**
@@ -204,22 +239,33 @@ public class Breakpoint
   {
     if (isInstalled())
       {
-	if (! stepping)
+	if (stepping == NOT_STEPPING)
 	  throw new IllegalStateException("Not stepping");
-
-	set(task);
+	else if (stepping == OUT_OF_LINE_STEPPING)
+	  {
+	    // Fixup any registers depending on the instruction being
+	    // at the original pc address. And let Proc know the address
+	    // is available again.
+	    origInstruction.fixupExecuteOutOfLine(task, address, oo_address);
+	    proc.doneOutOfLine(oo_address);
+	  }
+	else if (stepping == SIMULATE_STEPPING)
+	  {
+	    // FIXME: See prepareStep().
+	    System.err.println("Instruction simulation not finished! "
+			       + "Already stepped next instruction. Sorry.");
+	  }
+	else if (stepping == RESET_STEPPING)
+	  {
+	    // Put the breakpoint instruction quickly back.
+	    set(task);
+	  }
+	else
+	  throw new IllegalStateException("Impossible stepping state: "
+					  + stepping);
       }
 
-    // This throws RuntimeException for the following two reasons:
-    // 1st) thrown out by Task.getIsa() in set(), if the
-    //      frysk works well, the exception shouldnot be thrown out. If we
-    //      get one, it mean some runtime exception occurs.
-    // 2nd) setDone() will be called in
-    //      TaskState.Running.handleTrappedEvent().
-    //      There's no exception hanling there. So we have to throw one
-    //      RuntimeException here.
-    
-    stepping = false;
+    stepping = NOT_STEPPING;
   }
 
   /**

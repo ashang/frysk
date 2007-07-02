@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -193,6 +194,64 @@ public abstract class Proc
    * XXX: Should not be public.
    */
   public final BreakpointAddresses breakpoints;
+
+  // List of available addresses for out of line stepping.
+  // Used a lock in getOutOfLineAddress() and doneOutOfLine().
+  private final ArrayList outOfLineAddresses = new ArrayList();
+
+  // Whether the Isa has been asked for addresses yet.
+  // Guarded by outOfLineAddresses in getOutOfLineAddress.
+  private boolean requestedOutOfLineAddresses;
+
+  /**
+   * Returns an available address for out of line stepping. Blocks
+   * till an address is available. Queries the Isa if not done so
+   * before.  Returned addresses should be returned by calling
+   * doneOutOfLine().
+   */
+  long getOutOfLineAddress()
+  {
+    synchronized (outOfLineAddresses)
+      {
+	while (outOfLineAddresses.isEmpty())
+	  {
+	    if (! requestedOutOfLineAddresses)
+	      {
+		Isa isa = getIsa();
+		outOfLineAddresses.addAll(isa.getOutOfLineAddresses(this));
+		if (outOfLineAddresses.isEmpty())
+		  throw new IllegalStateException("Isa.getOutOfLineAddresses"
+						  + " returned empty List");
+		requestedOutOfLineAddresses = true;
+	      }
+	    else
+	      {
+		try
+		  {
+		    outOfLineAddresses.wait();
+		  }
+		catch (InterruptedException ignored)
+		  {
+		    // Just try again...
+		  }
+	      }
+	  }
+	return ((Long) outOfLineAddresses.remove(0)).longValue();
+      }
+  }
+
+  /**
+   * Called by Breakpoint with an address returned by
+   * getOutOfLineAddress() to put it back in the pool.
+   */
+  void doneOutOfLine(long address)
+  {
+    synchronized (outOfLineAddresses)
+      {
+	outOfLineAddresses.add(Long.valueOf(address));
+	outOfLineAddresses.notifyAll();
+      }
+  }
 
   protected abstract ProcState getInitialState (boolean procStarting);
 
