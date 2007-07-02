@@ -1,3 +1,8 @@
+2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+
+	* TestTaskObserverCode.java: Add running without deletion and
+	deletion and inserting after running again.
+	
 2007-06-27  Mark Wielaard  <mwielaard@redhat.com>
 	
 	* Isa.java (setPC): New method.

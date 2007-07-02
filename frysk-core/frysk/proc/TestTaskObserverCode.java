@@ -92,6 +92,49 @@ public class TestTaskObserverCode extends TestLib
 
     assertTrue(code.hit);
 
+    // Now try it running without deleting the observer a couple of times.
+    for (int i = 0; i < 12; i++)
+      {
+	code.hit = false;
+	task.requestUnblock(code);
+	Manager.eventLoop.runPending();
+	
+	requestDummyRun();
+	assertRunUntilStop("hit it again Sam: " + i);
+	
+	assertTrue(code.hit);
+      }
+
+    // Another remove, add, hit.
+    task.requestDeleteCodeObserver(code, address);
+    assertRunUntilStop("remove code observer again");
+
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("readd breakpoint observer again");
+
+    code.hit = false;
+
+    requestDummyRun();
+    assertRunUntilStop("signal and wait for next hit again");
+
+    assertTrue(code.hit);
+
+    // Remove, run again, insert and hit
+    code.hit = false;
+    task.requestDeleteCodeObserver(code, address);
+    requestDummyRun();
+    Manager.eventLoop.runPending();
+
+    assertFalse(code.hit);
+
+    task.requestAddCodeObserver(code, address);
+    assertRunUntilStop("readd breakpoint observer after run");
+
+    requestDummyRun();
+    assertRunUntilStop("signal and wait for next hit after run");
+
+    assertTrue(code.hit);
+
     // And cleanup
     task.requestDeleteCodeObserver(code, address);
     assertRunUntilStop("cleanup");
