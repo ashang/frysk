@@ -1,5 +1,9 @@
 2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
 
+	* LinuxPowerPCSyscall.java (syscallList): Add getcpu and epoll_pwait.
+
+2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+
 	* Instruction.java: Document and add convenience constructors.
 	(getName): New method.
 	(canExecuteOutOfLine): Likewise.
