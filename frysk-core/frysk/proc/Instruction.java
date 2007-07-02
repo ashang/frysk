@@ -40,44 +40,165 @@
 
 package frysk.proc;
 
+import inua.eio.ByteBuffer;
+
 /**
  * An architecture independent way of representing an assembly level
  * instruction which is used for stepping and breakpoint insertion.
  * Possibly knows about displaced instruction execution and/or
  * emultation. Constructed by archtecture Isas given a memory buffer
- * and address of the instruction.
+ * and address of the instruction. Instruction objects are immutable.
  * 
  * @see Isa.getInstruction(Buffer, long)
  */
 public class Instruction
 {
+  // Opcode name
+  private final String name;
+
   // The instruction bytes.
   private final byte[] instr;
 
   // Whether the instruction can be done out-of-line.
   private final boolean executeOutOfLine;
 
+  // Whether the instruction can be simulated.
+  private final boolean simulate;
+
   /**
-   * Package private constructor called by the Isa create an inmutable
+   * Package private constructor called by the Isa ito create an inmutable
    * Instruction.
    */
-  Instruction(byte[] instr, boolean executeOutOfLine)
+  Instruction(String name, byte[] instr,
+	      boolean executeOutOfLine, boolean simulate)
   {
+    this.name = name;
     this.instr = (byte[]) instr.clone();
     this.executeOutOfLine = executeOutOfLine;
+    this.simulate = simulate;
   }
 
+  Instruction(byte[] instr)
+  {
+    this(instr, false);
+  }
+
+  Instruction(String name, byte[] instr)
+  {
+    this(name, instr, false);
+  }
+
+  Instruction(byte[] instr, boolean executeOutOfLine)
+  {
+    this("UNKNOWN", instr, executeOutOfLine, false);
+  }
+
+  Instruction(byte[] instr, boolean executeOutOfLine, boolean simulate)
+  {
+    this("UNKNOWN", instr, executeOutOfLine, simulate);
+  }
+
+  Instruction(String name, byte[] instr, boolean executeOutOfLine)
+  {
+    this(name, instr, executeOutOfLine, false);
+  }
+
+  /**
+   * Returns a human readable string representation of the instruction.
+   * Often just the opcode name, but can include any instruction arguments.
+   */
+  public String getName()
+  {
+    return name;
+  }
+
+  /**
+   * Returns the raw instruction bytes.
+   */
   public byte[] getBytes()
   {
     return (byte[]) instr.clone();
   }
 
+  /**
+   * Whether or not this instruction can be executed out of line.
+   */
   public boolean canExecuteOutOfLine()
   {
     return executeOutOfLine;
   }
 
-  // Currently this only models simple out of line execution
-  // and no emulation. For more complicated instructions some
-  // register fixup() will be necessary.
+  /**
+   * Prepares the given Task for executing this instruction at the
+   * given address. Pair with fixupExecuteOutOfLine after a Task step
+   * over the out of line instruction to setup the Task as if the Task
+   * did a step over the instruction at the given pc.
+   * <p>
+   * The default implementation puts the bytes of the instruction at
+   * address and sets the pc of the Task to that address. Override when
+   * the instruction needs anything more.
+   */
+  public void setupExecuteOutOfLine(Task task, long pc, long address)
+  {
+    ByteBuffer buffer = task.getMemory();
+    buffer.position(address);
+    for (int i = 0; i < instr.length; i++)
+      buffer.putByte(instr[i]);
+    task.getIsa().setPC(task, address);
+  }
+
+  /**
+   * After the instruction has been executed out of line fixes up the
+   * given Task as if the instruction was actually executed at the
+   * given pc instead of the given address.
+   * <p>
+   * The default implementation just sets the pc at the given pc plus
+   * the length of this instruction. Override when the instruction needs
+   * to do anything else.
+   */
+  public void fixupExecuteOutOfLine(Task task, long pc, long address)
+  {
+    Isa isa = task.getIsa();
+    isa.setPC(task, pc + instr.length);
+  }
+
+  /**
+   * Whether or not this instruction can be emulated.
+   */
+  public boolean canSimulate()
+  {
+    return simulate;
+  }
+
+  /**
+   * The default implementation just does a sanity check and throws
+   * an exception if simulation was requested on a instruction that
+   * cannot be emulated.
+   */
+  public void simulate(Task task)
+  {
+    if (! simulate)
+      throw new IllegalStateException("Cannot simulate instruction");
+    else
+      throw new IllegalStateException("Can simulate instruction,"
+				      + " but Instruction doesn't override"
+				      + " simultate() method: "
+				      + this);
+  }
+
+  /**
+   * A human readable representation of the Instruction including the
+   * class name, the opcode name and the instruction bytes.
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder(this.getClass().getName());
+    sb.append("[");
+    sb.append(getName());
+    sb.append(", 0x");
+    for (int i = 0; i < instr.length; i++)
+      sb.append(Integer.toHexString(instr[i] & 0xff));
+    sb.append("]");
+    return sb.toString();
+  }
 }

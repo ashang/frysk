@@ -1,5 +1,15 @@
 2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
 
+	* Instruction.java: Document and add convenience constructors.
+	(getName): New method.
+	(canExecuteOutOfLine): Likewise.
+	(fixupExecuteOutOfLine): Likewise.
+	(canSimulate): Likewise.
+	(simulate): Likewise.
+	(toString): Likewise.
+
+2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+
 	* TestTaskObserverCode.java: Add running without deletion and
 	deletion and inserting after running again.
 	
