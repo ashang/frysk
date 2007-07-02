@@ -22,10 +22,17 @@ struct proc_dir_entry * de_utrace_control
 typedef struct _utraced_info_s {
   long utraced_pid;
   long exec_quiesce;
+  unsigned long * entry_bv;
+  unsigned long * exit_bv;
+  long bv_len;
   struct utrace_attached_engine * utraced_engine;
   struct _utraced_info_s * next;
   struct _utraced_info_s * prev;
 } utraced_info_s;
+
+#define setbit(bv, b) (bv[(b)/(8*sizeof(long))] |= (1<<((b)%(8*sizeof(long)))))
+#define testbit(bv, b) (bv[(b)/(8*sizeof(long))] & (1<<((b)%(8*sizeof(long)))))
+#define clearbit(bv, b) (bv[(b)/(8*sizeof(long))] &= ~(1<<((b)%(8*sizeof(long)))))
 
 typedef struct _utracing_info_s {
   long utracing_pid;

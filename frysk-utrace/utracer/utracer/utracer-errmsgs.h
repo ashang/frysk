@@ -7,6 +7,7 @@ const char * utrace_emsg[] = {
   "Invalid utracing structure.",
   "Invalid utraced structure.",
   "Register out of range."
+  "Syscall number out of range."
 };
   
 

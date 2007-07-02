@@ -39,7 +39,8 @@ syscall_fcn(char ** saveptr)
   int got_it = 0;
   int em_sent = 0;
   char * tok;
-  long syscall_nr = -1;
+#define SYSCALL_INVALID		-5
+  long syscall_nr = SYSCALL_INVALID;
   enum {SY_STATE_A1, SY_STATE_A2, SY_STATE_A3} sy_state = SY_STATE_A1;
   enum {SY_MODE_NULL, SY_MODE_ENTRY, SY_MODE_EXIT} sy_mode = SY_MODE_NULL;
   enum {SY_ENABLE_NULL, SY_ENABLE_ON, SY_ENABLE_OFF} sy_enable = SY_ENABLE_NULL;
@@ -87,7 +88,11 @@ syscall_fcn(char ** saveptr)
       else run = 0;
       break;
     case SY_STATE_A3:
-      if (sys_hash_table_valid) {
+      if (0 == strcasecmp (tok, "all")) {
+	syscall_nr = SYSCALL_ALL;
+	got_it = 1;
+      }
+      else if (sys_hash_table_valid) {
 	ENTRY * entry;
 	ENTRY target;
 	
@@ -97,7 +102,7 @@ syscall_fcn(char ** saveptr)
 	  got_it = 1;
 	}
       }
-      if (-1 == syscall_nr) {
+      if (SYSCALL_INVALID == syscall_nr) {
 	char * ep;
 	
 	syscall_nr = strtol (tok, &ep, 0);
@@ -127,6 +132,7 @@ syscall_fcn(char ** saveptr)
 			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
 			 ((SY_ENABLE_ON == sy_enable) ?
 			  SYSCALL_CMD_ENABLE : SYSCALL_CMD_DISABLE),
+			 current_pid,
 			 0);
       break;
     case SY_STATE_A3:
@@ -134,6 +140,7 @@ syscall_fcn(char ** saveptr)
 			  SYSCALL_CMD_ENTRY : SYSCALL_CMD_EXIT),
 			 ((SY_ADD_ADD == sy_add) ?
 			  SYSCALL_CMD_ADD : SYSCALL_CMD_REMOVE),
+			 current_pid,
 			 syscall_nr);
       break;
     }

@@ -40,13 +40,14 @@ unregister_utracer(pid_t pid)
 }
 
 void
-utrace_syscall_if (short which, short cmd, long syscall)
+utrace_syscall_if (short which, short cmd, long cp, long syscall)
 {
   ssize_t sz;
   syscall_cmd_s syscall_cmd;
   
   syscall_cmd.cmd			= IF_CMD_SYSCALL;
   syscall_cmd.utracing_pid		= (long)udb_pid;
+  syscall_cmd.utraced_pid		= cp;
   syscall_cmd_which (syscall_cmd)	= which;
   syscall_cmd_cmd (syscall_cmd)		= cmd;
   syscall_cmd.syscall_nr		= syscall;

@@ -12,6 +12,7 @@
 #include <asm/uaccess.h>
 #include <linux/tracehook.h>
 #include <asm-i386/tracehook.h>
+#include <asm-i386/unistd.h>
 
 #include "utracer.h"
 #define DO_INIT
@@ -56,6 +57,20 @@ create_utraced_info_entry (utracing_info_s * utracing_info_entry,
     utraced_info_new->exec_quiesce = exec_quiesce;
     utraced_info_new->utraced_pid = utraced_pid;
     utraced_info_new->utraced_engine = utraced_engine;
+#if defined (NR_syscalls) && (0 < NR_syscalls)
+    {
+      int nr_bits_per_long  = 8 * sizeof(long);
+      int nr_longs =  (NR_syscalls + nr_bits_per_long)/nr_bits_per_long;
+      utraced_info_new->bv_len = nr_longs * sizeof(long);
+      utraced_info_new->entry_bv =
+	kmalloc (nr_longs * sizeof(long),GFP_KERNEL);
+      utraced_info_new->exit_bv =
+	kmalloc (nr_longs * sizeof(long),GFP_KERNEL);
+    }
+#else
+    utraced_info_new->entry_bv = NULL;
+    utraced_info_new->exit_bv  = NULL;
+#endif
 
     if (utracing_info_entry->utraced_info)
       (utracing_info_entry->utraced_info)->prev = utraced_info_new;
@@ -94,6 +109,8 @@ remove_utraced_info_entry (utracing_info_s * utracing_info_entry,
       else
 	utracing_info_entry->utraced_info = utraced_info_entry->next;
     }
+    if (utraced_info_entry->entry_bv) kfree (utraced_info_entry->entry_bv);
+    if (utraced_info_entry->exit_bv) kfree (utraced_info_entry->exit_bv);
     next_ety = utraced_info_entry->next;
     kfree(utraced_info_entry);
   }

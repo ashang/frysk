@@ -45,6 +45,7 @@ typedef enum {
 typedef struct {
   long cmd;
   long utracing_pid;
+  long utraced_pid;
   union {
     long l;
     struct {
@@ -56,6 +57,7 @@ typedef struct {
 } syscall_cmd_s;
 #define syscall_cmd_cmd(s)	(s).syscall_cmd.cmd.cmd
 #define syscall_cmd_which(s)	(s).syscall_cmd.cmd.which
+#define SYSCALL_ALL  -1
 
 typedef struct {
   long cmd;
@@ -196,6 +198,7 @@ typedef enum {
   UTRACER_ETRACING,
   UTRACER_ETRACED,
   UTRACER_EREG,
+  UTRACER_ESYSRANGE,
   UTRACER_EMAX,
 } utracer_errno_e;
 
