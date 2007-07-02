@@ -341,11 +341,11 @@ if_file_write (struct file *file,
 	lookup_utracing_info (syscall_cmd.utracing_pid);
 
       if (utracing_info_found) {
-	struct task_struct * task;
-	switchpid_resp_s switchpid_resp;
-	task = get_task (switchpid_cmd.utraced_pid);
-
 #if 0
+	struct task_struct * task;
+	syscall_resp_s syscall_resp;
+	task = get_task (syscall_cmd.utraced_pid);
+
 	switchpid_resp.type           = IF_RESP_SWITCHPID_DATA;
 	switchpid_resp.utraced_pid    = switchpid_cmd.utraced_pid;
 	switchpid_resp.okay = task ? 1 : 0;
@@ -355,7 +355,7 @@ if_file_write (struct file *file,
 			sizeof(switchpid_resp),
 			NULL, 0,
 			NULL, 0);
-endif#
+#endif
 	return count;
       }
       else return -UTRACER_ETRACING;
