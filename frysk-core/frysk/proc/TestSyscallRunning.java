@@ -103,10 +103,10 @@ public class TestSyscallRunning
     // Get the port that will be listened on.
     int port = Integer.decode(in.readLine()).intValue();
 
-    final Task task = proc.getMainTask();
+    final Task proc_task = proc.getMainTask();
 
-    final SyscallObserver syso = new SyscallObserver("accept", task, false);
-    task.requestAddSyscallObserver(syso);
+    final SyscallObserver syso = new SyscallObserver("accept", proc_task, false);
+    proc_task.requestAddSyscallObserver(syso);
 
     // Make sure the observer is properly installed.
     while (! syso.isAdded())
@@ -122,15 +122,15 @@ public class TestSyscallRunning
 
     // Now unblock and then attach another observer.
     // Do all this on the eventloop so properly serialize calls.
-    final SyscallObserver syso2 = new SyscallObserver("accept", task, true);
+    final SyscallObserver syso2 = new SyscallObserver("accept", proc_task, true);
     Manager.eventLoop.add(new TaskEvent()
       {
 	public void execute ()
 	{
 	  // Continue running (inside syscall),
 	  // while attaching another syscall observer
-	  task.requestUnblock(syso);
-	  task.requestAddSyscallObserver(syso2);
+	  proc_task.requestUnblock(syso);
+	  proc_task.requestAddSyscallObserver(syso2);
 	}
       });
 

@@ -1,5 +1,10 @@
 2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
 
+	* TestSyscallRunning.java (testSyscallRunning):
+	Rename final task field to proc_task.
+
+2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
+
 	* LinuxPowerPCSyscall.java (syscallList): Add getcpu and epoll_pwait.
 
 2007-06-02  Mark Wielaard  <mwielaard@redhat.com>
