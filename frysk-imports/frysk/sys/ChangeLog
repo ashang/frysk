@@ -1,3 +1,9 @@
+2007-07-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestFileDescriptor.java (testLeakyFileDescriptors)
+	(testLeakyPipes): Delete; moved to ..
+	* TestLeakingFileDescriptor.java: ... to here.  New file.
+
 2007-06-26  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/StatelessFile.cxx (verifyBounds): Delete, moved to ...

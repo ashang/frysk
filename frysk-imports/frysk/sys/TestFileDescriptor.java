@@ -42,9 +42,6 @@ package frysk.sys;
 import frysk.junit.TestCase;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.WeakHashMap;
-import java.util.Map;
-import java.util.Iterator;
 
 /**
  * Minimal testing for the FileDescriptor.
@@ -292,58 +289,5 @@ public class TestFileDescriptor
 	assertEquals ("seekCurrent(1)@1", 2, file.seekCurrent(1));
 	assertEquals ("seekCurrent(-2)@2", 0, file.seekCurrent(-2));
 	assertEquals ("seekEnd(-size)@0", 0, file.seekEnd(-size));
-    }
-
-    /**
-     * Allocate, but loose, lots and lots of pipe file desciptors,
-     * checks that a garbage collect eventually occures.
-     *
-     * This test relies on the underlying code managing to trigger a
-     * garbage collect, something that in java, isn't really reliable.
-     * However, with a requested garbage collect, and a yield, the gc
-     * likes to run.
-     */
-    public void testLeakyPipes ()
-    {
-	// Keep a table of all file file descriptors created; weak so
-	// that a garbage collect can empty it.
-	Map fds = new WeakHashMap ();
-	
-	for (int i = 0; i < 2000; i++) {
-	    pipe = new Pipe();
-	    fds.put (pipe.in, null);
-	    fds.put (pipe.out, null);
-	}
-	// Close out any FileDescriptors not yet garbage collected.
-	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {
-	    FileDescriptor fd = (FileDescriptor) i.next ();
-	    fd.close ();
-	}
-    }
-
-    /**
-     * Allocate, but loose, lots and lots of FileDesciptors, checks
-     * that a garbage collect eventually occures.
-     *
-     * This test relies on the underlying code managing to trigger a
-     * garbage collect, something that in java, isn't really reliable.
-     * However, with a requested garbage collect, and a yield, the gc
-     * likes to run.
-     */
-    public void testLeakyFileDescriptors ()
-    {
-	// Keep a table of all file file descriptors created; weak so
-	// that a garbage collect can empty it.
-	Map fds = new WeakHashMap ();
-	
-	for (int i = 0; i < 4000; i++) {
-	    file = new FileDescriptor("/etc/passwd", FileDescriptor.RDONLY);
-	    fds.put (file, null);
-	}
-	// Close out any FileDescriptors not yet garbage collected.
-	for (Iterator i = fds.keySet ().iterator (); i.hasNext (); ) {
-	    FileDescriptor fd = (FileDescriptor) i.next ();
-	    fd.close ();
-	}
     }
 }
