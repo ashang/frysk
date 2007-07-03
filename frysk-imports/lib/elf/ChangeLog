@@ -1,3 +1,7 @@
+2007-07-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ElfPrstatus.java (ElfPrStatus): Remove alignment.
+
 2007-07-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ElfPrFPRegSet.java (ElfPrFPRegSet): New private constructor.

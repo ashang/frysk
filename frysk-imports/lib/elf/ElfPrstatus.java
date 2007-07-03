@@ -163,10 +163,6 @@ public class ElfPrstatus extends ElfNhdr.ElfNoteSectionEntry
       
     raw_core_registers = new byte[(int) ((singleNoteData.length-4) -  noteBuffer.position())];    
     noteBuffer.get(raw_core_registers,0, (int) ((singleNoteData.length-4) - noteBuffer.position()));
-    pos = noteBuffer.position();
-    if (pos % wordSize > 0)
-       pos = (pos - (pos % wordSize))+wordSize;
-    noteBuffer.position(pos);
     pr_fpvalid = noteBuffer.getInt();
   }
 
