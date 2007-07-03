@@ -1,3 +1,8 @@
+2007-07-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Subroutine.java: Added copyright.
+	* InlinedSubroutine.java: Ditto.
+
 2007-06-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* UpdatingDisplayVAlue.java (TermObserver): Switched to
