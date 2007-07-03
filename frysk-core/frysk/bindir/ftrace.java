@@ -114,11 +114,9 @@ class ftrace
             public void parsed(String arg) throws OptionException
             {
                 try {
-                    int pid = Integer.parseInt(arg);
-                    // FIXME: we have no good way of giving the user an
-                    // error message if the PID is not available.
-                    tracer.addTracePid(pid);
-                    requestedPid = true;
+		    int pid = Integer.parseInt(arg);
+		    tracer.addTracePid(new ProcId(pid));
+		    requestedPid = true;
                 } catch (NumberFormatException e) {
                     OptionException oe = new OptionException("couldn't parse pid: " + arg);
                     oe.initCause(e);
@@ -164,8 +162,9 @@ class ftrace
             //@Override
             public void parsePids (ProcId[] pids)
             {
-              tracer.addTracePid(pids[0].id);
-              requestedPid = true;              
+		for (int i = 0; i < pids.length; ++i)
+		    tracer.addTracePid(pids[i]);
+		requestedPid = true;
             }
         };
         addOptions(parser);

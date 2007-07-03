@@ -1,3 +1,8 @@
+2007-07-03  Petr Machata  <pmachata@redhat.com>
+
+	* Ftrace.java (addTracePid): take ProcId argument instead of int,
+	to avoid conversions back and forth.
+
 2007-07-02  Petr Machata  <pmachata@redhat.com>
 
 	* Ftrace.java (trace): Use Host.requestFindProc instead of

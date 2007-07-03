@@ -89,9 +89,9 @@ public class Ftrace
     traceChildren = true;
   }
 
-  public void addTracePid (int id)
+  public void addTracePid (ProcId id)
   {
-    tracedParents.add(new ProcId(id));
+    tracedParents.add(id);
   }
 
   public void setSyscallStackTracing (HashSet syscallSet)

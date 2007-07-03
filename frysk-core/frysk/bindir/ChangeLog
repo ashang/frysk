@@ -1,3 +1,10 @@
+2007-07-03  Petr Machata  <pmachata@redhat.com>
+
+	* ftrace.java (addOptions): Ftrace.addTracePid take ProcId
+	argument, adjust
+	* ftrace.java (run.parsePids): likewise, plus add all pids on
+	command line, not just the first one
+
 2007-06-25  Nurdin Premji  <npremji@redhat.com>
 
 	* fhpd.java (main): Handle core file passed as argument.
