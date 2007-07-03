@@ -43,7 +43,8 @@ syscall_fcn(char ** saveptr)
   long syscall_nr = SYSCALL_INVALID;
   enum {SY_STATE_A1, SY_STATE_A2, SY_STATE_A3} sy_state = SY_STATE_A1;
   enum {SY_MODE_NULL, SY_MODE_ENTRY, SY_MODE_EXIT} sy_mode = SY_MODE_NULL;
-  enum {SY_ENABLE_NULL, SY_ENABLE_ON, SY_ENABLE_OFF} sy_enable = SY_ENABLE_NULL;
+  enum {SY_ENABLE_NULL, SY_ENABLE_ON, SY_ENABLE_OFF}
+    sy_enable = SY_ENABLE_NULL;
   enum {SY_ADD_NULL, SY_ADD_ADD, SY_ADD_REMOVE} sy_add = SY_ADD_NULL;
   long sy_nr;
 
@@ -162,12 +163,10 @@ listpids_fcn(char ** saveptr)
 static int
 watch_fcn(char ** saveptr)
 {
-  long pid;
+  long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
-  if (pid_c) {
-    pid = atol (pid_c);
-    utrace_attach_if (pid, 0, 0);
-  }
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) utrace_attach_if (pid, 0, 0);
   else fprintf (stderr, "\twatch requires an argument\n");
   return 1;
 }
@@ -175,12 +174,10 @@ watch_fcn(char ** saveptr)
 static int
 attach_fcn(char ** saveptr)
 {
-  long pid;
+  long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
-  if (pid_c) {
-    pid = atol (pid_c);
-    utrace_attach_if (pid, 1, 0);
-  }
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) utrace_attach_if (pid, 1, 0);
   else fprintf (stderr, "\tattach requires an argument\n");
   return 1;
 }
@@ -188,12 +185,10 @@ attach_fcn(char ** saveptr)
 static int
 run_fcn(char ** saveptr)
 {
-  long pid;
+  long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
-  if (pid_c) {
-    pid = atol (pid_c);
-    utrace_run_if (pid);
-  }
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) utrace_run_if (pid);
   else fprintf (stderr, "\trun requires an argument\n");
   return 1;
 }
@@ -201,12 +196,10 @@ run_fcn(char ** saveptr)
 static int
 quiesce_fcn(char ** saveptr)
 {
-  long pid;
+  long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
-  if (pid_c) {
-    pid = atol (pid_c);
-    utrace_quiesce_if (pid);
-  }
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) utrace_quiesce_if (pid);
   else fprintf (stderr, "\tquiesce requires an argument\n");
   return 1;
 }
@@ -214,12 +207,10 @@ quiesce_fcn(char ** saveptr)
 static int
 detach_fcn(char ** saveptr)
 {
-  long pid;
+  long pid = -1;
   char * pid_c = strtok_r (NULL, " \t", saveptr);
-  if (pid_c) {
-    pid = atol (pid_c);
-    utrace_detach_if (pid);
-  }
+  pid = pid_c ? atol (pid_c) : current_pid;
+  if (-1 != pid) utrace_detach_if (pid);
   else fprintf (stderr, "\tdetach requires an argument\n");
   return 1;
 }

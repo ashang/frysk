@@ -181,7 +181,7 @@ report_signal (struct utrace_attached_engine *engine,
   return UTRACE_ACTION_RESUME;
 }
 
-// include/asm-i386/unistd.h  -- syscalls
+// include/asm-i386/unistd.h  -- syscallls
 static u32
 report_syscall (struct utrace_attached_engine * engine,
 		struct task_struct * tsk,
@@ -197,13 +197,35 @@ report_syscall (struct utrace_attached_engine * engine,
   utracing_info_found = (void *)engine->data;
 
   if (utracing_info_found) {
-    syscall_resp_s syscall_resp;
+    utraced_info_s * utraced_info_found =
+      lookup_utraced_info (utracing_info_found, (long)tsk->pid);
+    if (utraced_info_found) {
+      unsigned long * bv =
+	(IF_RESP_SYSCALL_EXIT_DATA == type) ?
+	utraced_info_found->exit_bv :
+	utraced_info_found->entry_bv;
+      long syscall_nr = regs->orig_eax;	// fixme -- arch dependent
+#if 0
+      printk (KERN_ALERT "report_syscall\n");
+      {
+	int i;
+	int nr_bits_per_long  = 8 * sizeof(long);
+	int nr_longs =  (NR_syscalls + nr_bits_per_long)/nr_bits_per_long;
+	for (i = 0; i < nr_longs; i++)
+	  printk (KERN_ALERT "[%d]: %08x\n", i, (unsigned int)bv[i]);
+      }
+#endif
+      if ((0 <= syscall_nr) && (syscall_nr < NR_syscalls) &&
+	  testbit (bv, syscall_nr)) {
+	syscall_resp_s syscall_resp;
 
-    syscall_resp.type = type;
-    syscall_resp.data_length = sizeof (struct pt_regs);
-    queue_response (utracing_info_found,
-		    &syscall_resp, sizeof(syscall_resp),
-		    regs, sizeof (struct pt_regs), NULL, 0);
+	syscall_resp.type = type;
+	syscall_resp.data_length = sizeof (struct pt_regs);
+	queue_response (utracing_info_found,
+			&syscall_resp, sizeof(syscall_resp),
+			regs, sizeof (struct pt_regs), NULL, 0);
+      }
+    }
   }
   
   flags = engine->flags &  ~UTRACE_ACTION_QUIESCE;
@@ -217,7 +239,7 @@ report_syscall_exit (struct utrace_attached_engine *engine,
 		     struct task_struct *tsk,
 		     struct pt_regs *regs)
 {
-  return report_syscall (engine, tsk, regs,IF_RESP_SYSCALL_EXIT_DATA);
+  return report_syscall (engine, tsk, regs, IF_RESP_SYSCALL_EXIT_DATA);
 }
 
 static u32
@@ -225,7 +247,7 @@ report_syscall_entry (struct utrace_attached_engine *engine,
 		      struct task_struct *tsk,
 		      struct pt_regs *regs)
 {
-  return report_syscall (engine, tsk, regs,IF_RESP_SYSCALL_ENTRY_DATA);
+  return report_syscall (engine, tsk, regs, IF_RESP_SYSCALL_ENTRY_DATA);
 }
 
 static void
@@ -342,7 +364,6 @@ if_file_write (struct file *file,
       task = get_task (syscall_cmd.utraced_pid);
 
       if (task) {
-
 	utracing_info_s * utracing_info_found =
 	  lookup_utracing_info (syscall_cmd.utracing_pid);
 
@@ -351,7 +372,8 @@ if_file_write (struct file *file,
 	    lookup_utraced_info (utracing_info_found, (long)task->pid);
 	  if (utraced_info_found) {
 	    struct utrace_attached_engine * engine =
-	      locate_engine (syscall_cmd.utracing_pid, syscall_cmd.utraced_pid);
+	      locate_engine (syscall_cmd.utracing_pid,
+			     syscall_cmd.utraced_pid);
 	    if (engine) {
 	      unsigned long flags = engine->flags;
 	      unsigned long ** bv;
@@ -387,6 +409,7 @@ if_file_write (struct file *file,
 		else rc = -UTRACER_ESYSRANGE;
 		break;
 	      }
+	      utrace_set_flags(task, engine, flags);
 	    }
 	    else rc = -UTRACER_EENGINE;
 	  }

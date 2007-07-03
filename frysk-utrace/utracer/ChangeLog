@@ -1,3 +1,11 @@
+Tue Jul  3 11:10:11 2007  Chris Moller  <cmoller@redhat.com>
+
+	* udb-text-ui.c: Added hash table for syscall names.  Added parser
+	for syscall filte commands.  Fixed several cmds to accept
+	current_pid if no pid argument supplied.
+	* udb-utrace-if.c: Added syscall filter command i/f.
+	* screendumps.txt: New file with sample screendumps.
+
 Sun Jul  1 16:28:05 2007  Chris Moller  <cmoller@redhat.com>
 
 	* udb-i386.h:

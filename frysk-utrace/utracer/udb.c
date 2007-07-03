@@ -89,7 +89,6 @@ static int max_cmds_to_attach = 0;
 static void
 append_cmd (char * oa, long quiesce)
 {
-  fprintf (stderr, "append_cmd \"%s\"\n", oa);
   if (max_cmds_to_attach <= nr_cmds_to_attach) {
     max_cmds_to_attach += PIDS_TO_ATTACH_INCR;
     cmds_to_attach = realloc (cmds_to_attach,
@@ -204,8 +203,6 @@ main (int ac, char * av[])
     for (i = 0; i < nr_cmds_to_attach; i++) {
       pid_t child_pid;
     
-      printf ("loading %s\n", cmds_to_attach[i].cmd);
-
       child_pid = fork();
       switch (child_pid) {
       case -1:

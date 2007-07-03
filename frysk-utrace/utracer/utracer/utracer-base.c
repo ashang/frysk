@@ -66,6 +66,8 @@ create_utraced_info_entry (utracing_info_s * utracing_info_entry,
 	kmalloc (nr_longs * sizeof(long),GFP_KERNEL);
       utraced_info_new->exit_bv =
 	kmalloc (nr_longs * sizeof(long),GFP_KERNEL);
+      memset (utraced_info_new->entry_bv, 0, utraced_info_new->bv_len);
+      memset (utraced_info_new->exit_bv, 0, utraced_info_new->bv_len);
     }
 #else
     utraced_info_new->entry_bv = NULL;
